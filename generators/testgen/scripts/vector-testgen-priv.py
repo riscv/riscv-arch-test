@@ -46,13 +46,13 @@ from vector_testgen_common import (
   eew64_ins,
   encodeIndexedLSAsInsn,
   finalizeSigupdCount,
-  flen,
   genRandomVectorLS,
   genVMaskedges,
   getBaseSuiteTestCount,
   getInstructionArguments,
   getInstructionSegments,
   getLengthLmul,
+  getWholeRegisterCount,
   getLengthSuiteTestCount,
   getSigSpace,
   handleSignaturePointerConflict,
@@ -349,6 +349,7 @@ def writePrivTestPrep(description, instruction, instruction_data=None, lmul = 1,
         vd_reg  = vec_data['vd']['reg']
         vs2_reg = vec_data['vs2']['reg']
         vs1_reg = vec_data['vs1']['reg']
+        vs3_reg = vec_data['vs3']['reg']
         # vd's SIGUPD_V_LEN comparison runs at sig_lmul (= getLengthLmul for
         # whole-register moves, otherwise = test lmul, otherwise = 1 for mask/scalar).
         # The init must cover at least sig_lmul regs of vd so the data-vector
@@ -366,12 +367,20 @@ def writePrivTestPrep(description, instruction, instruction_data=None, lmul = 1,
         vd_emul  = max(1, int(lmul * vec_data['vd' ].get('size_multiplier', 1) * vec_data['vd' ].get('segments', 1)), vd_sig_lmul)
         vs2_emul = max(1, int(lmul * vec_data['vs2'].get('size_multiplier', 1) * vec_data['vs2'].get('segments', 1)))
         vs1_emul = max(1, int(lmul * vec_data['vs1'].get('size_multiplier', 1) * vec_data['vs1'].get('segments', 1)))
+        vs3_emul = max(1, int(lmul * vec_data['vs3'].get('size_multiplier', 1) * vec_data['vs3'].get('segments', 1)))
+        nreg = getWholeRegisterCount(instruction)
+        if nreg is not None:
+            # vmv<nr>r.v / vl<nr>re<eew>.v / vs<nr>r.v access NREG whole registers
+            # regardless of the vtype LMUL the testcase runs at, so initialize all NREG.
+            vd_emul  = max(vd_emul,  nreg)
+            vs2_emul = max(vs2_emul, nreg)
+            vs3_emul = max(vs3_emul, nreg)
     else:
         # Backwards-compatible legacy path (should not be used by new code).
         if scratch is None:
             scratch = 8
-        vd_reg, vs2_reg, vs1_reg = 8, 16, 24
-        vd_emul = vs2_emul = vs1_emul = 1
+        vd_reg, vs2_reg, vs1_reg, vs3_reg = 8, 16, 24, 8
+        vd_emul = vs2_emul = vs1_emul = vs3_emul = 1
 
     # Init each constituent vector register of every operand at LMUL=1 vl=VLMAX.
     # This fully initializes every architectural vreg the test instruction will
@@ -408,7 +417,10 @@ def writePrivTestPrep(description, instruction, instruction_data=None, lmul = 1,
             writeLine(f"vremu.vx v{base_reg}, v{base_reg}, x{scratch}",              "# ensure all values are within [0, 2*vlmax)")
             writeLine(f"vand.vi v{base_reg}, v{base_reg}, {sew_aligned}",             "# sew-aligning elements")
 
+    # vs3 before vs2: an indexed store's data group may legally overlap its index
+    # register, and the vs2 init bounds the indices, so it must run last.
     _emit_init("vd",  vd_reg,  vd_emul)
+    _emit_init("vs3", vs3_reg, vs3_emul)
     _emit_init("vs2", vs2_reg, vs2_emul)
     _emit_init("vs1", vs1_reg, vs1_emul)
     if maskval:
@@ -544,6 +556,7 @@ if __name__ == '__main__':
 
     testplans = readTestplans(priv=True)
     extensions = list(testplans.keys())
+    generated_files: dict[str, set[pathlib.Path]] = {extension: set() for extension in extensions}
 
     for xlen in xlens:
       for extension in extensions:
@@ -606,11 +619,6 @@ if __name__ == '__main__':
             CHUNK_SIZE = max(len(instructions), 1)
 
         chunks = [instructions[i:i + CHUNK_SIZE] for i in range(0, len(instructions), CHUNK_SIZE)]
-        # Discover existing chunk files so stale outputs from a larger split
-        # don't leak into the build (e.g. switching from 6 chunks to 4).
-        for stale in pathlib.Path(pathname).glob(f"{basename}_rv{xlen}*.S"):
-            os.system(f"rm -f {stale}")
-
         for chunk_idx, chunk_instructions in enumerate(chunks):
             # Reset per-file generator state (sigupd_count, testcase_count, sigReg, ...)
             # so each chunk starts clean and signature counts / label numbering
@@ -641,6 +649,15 @@ if __name__ == '__main__':
             # insert generic header
             insertTemplate(chunk_basename, 0, "testgen_header.S", priv=True, vdsew=64)
 
+            if extension == "SsstrictV":
+                writeLine("")
+                writeLine("// Every testcase instruction in this file is a reserved encoding: the point of")
+                writeLine("// the suite is that the DUT must raise an illegal-instruction trap on it. They")
+                writeLine("// are emitted as raw .insn words with the mnemonic in a trailing comment because")
+                writeLine("// assemblers disagree about whether the mnemonic may be written at all -- GNU as")
+                writeLine("// accepts most reserved operand combinations, clang's integrated assembler")
+                writeLine("// rejects them. The .insn word is the same instruction on every toolchain.")
+
             ###############################     test body      ###############################
             for instruction in chunk_instructions:
                 coverpoints = list(testplans[extension][instruction])
@@ -663,7 +680,7 @@ if __name__ == '__main__':
             test_data += genRandomVectorLS()
 
             # print footer with test data and signature
-            signatureWords = getSigSpace(xlen, flen)
+            signatureWords = getSigSpace(xlen, common.getFlen())
             insertTemplate(chunk_basename, signatureWords, "testgen_footer.S", test_data=test_data)
 
             # Finish
@@ -673,7 +690,7 @@ if __name__ == '__main__':
             # used by vector-testgen-unpriv.py). PR #1353 dropped the _OFFSET arg from
             # RVTEST_SIGUPD_V/_V_LEN, so the previous regex-based byte counter no longer
             # works.
-            finalizeSigupdCount(tempfname, xlen, flen)
+            finalizeSigupdCount(tempfname, xlen, common.getFlen())
             # if new file is different from old file, replace old file with new file
             if pathlib.Path(fname).exists():
                 if filecmp.cmp(fname, tempfname): # files are the same
@@ -683,3 +700,9 @@ if __name__ == '__main__':
                     print("Updated " + fname)
             else:
                 os.system(f"mv {tempfname} {fname}")
+            generated_files[extension].add(pathlib.Path(fname))
+
+    for extension, extension_files in generated_files.items():
+        output_dir = pathlib.Path(ARCH_VERIF) / "tests" / "priv" / extension
+        for stale_file in set(output_dir.glob("*.S")) - extension_files:
+            stale_file.unlink()

@@ -7,15 +7,14 @@
 
 """Register coverpoint handlers (cp_rd, cp_rs1, cp_rs2)"""
 
-from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.coverpoints.vector.vector_helpers import get_base_lmul
 from testgen.data.random import random_range
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
-from testgen.formatters.params import generate_random_params
-from testgen.formatters.vector_params import generate_random_vector_params
+from testgen.instructions.params import generate_random_params
+from testgen.instructions.vector import get_base_lmul
+from testgen.instructions.vector_params import generate_random_vector_params
 
 
 def get_zacas_mask(instr_name: str, instr_type: str, test_data: TestData) -> int:
@@ -114,7 +113,7 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
             if asm_setup:
                 tc.code.insert(0, asm_setup)
             test_chunks.append(tc)
-            return_test_regs(test_data, params)
+            return_testcase_registers(test_data, params)
 
     return test_chunks
 
@@ -194,7 +193,7 @@ def make_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
             if asm_setup:
                 tc.code.insert(0, asm_setup)
             test_chunks.append(tc)
-            return_test_regs(test_data, params)
+            return_testcase_registers(test_data, params)
 
     return test_chunks
 
@@ -220,6 +219,13 @@ def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     is_zacas = instr_name.lower().startswith("amocas")
     equal_cases = [True, False] if is_zacas else [None]
     all_ones = get_zacas_mask(instr_name, instr_type, test_data)
+
+    is_vector = instr_name.lower().startswith("v")
+    if is_vector:
+        assert test_data.config.sew is not None, "SEW must be set for vector tests"
+        lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
+    else:
+        lmul = 1  # Placeholder to keep the type-checker happy
 
     for rs2 in rs2_regs:
         for equal_case in equal_cases:
@@ -253,7 +259,10 @@ def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
                 desc = f"{coverpoint} (Test source rs2 = x{rs2}, {case_desc})"
                 bin_name = f"b{rs2}_{bin_suffix}"
             else:
-                params = generate_random_params(test_data, instr_type, rs2=rs2)
+                if is_vector:
+                    params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, rs2=rs2)
+                else:
+                    params = generate_random_params(test_data, instr_type, rs2=rs2)
                 desc = f"{coverpoint} (Test source rs2 = x{rs2})"
                 bin_name = f"b{rs2}"
 
@@ -262,6 +271,6 @@ def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
             if asm_setup:
                 tc.code.insert(0, asm_setup)
             test_chunks.append(tc)
-            return_test_regs(test_data, params)
+            return_testcase_registers(test_data, params)
 
     return test_chunks

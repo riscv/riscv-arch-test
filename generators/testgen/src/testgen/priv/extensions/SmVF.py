@@ -22,9 +22,9 @@ _VS_MASK = 3 << 9  # mstatus.VS = bits [10:9]
 def _set_fs_vs(fs: int, vs: int, temp_reg: int) -> list[str]:
     return [
         f"LI(x{temp_reg}, {_FS_MASK | _VS_MASK})",
-        f"CSRC(mstatus, x{temp_reg})  # clear FS and VS",
+        f"csrc mstatus, x{temp_reg}  # clear FS and VS",
         f"LI(x{temp_reg}, {(fs << 13) | (vs << 9)})",
-        f"CSRS(mstatus, x{temp_reg})  # FS={fs}, VS={vs}",
+        f"csrs mstatus, x{temp_reg}  # FS={fs}, VS={vs}",
     ]
 
 
@@ -148,7 +148,6 @@ def _gen_fs_off(test_data: TestData, temp_reg: int) -> list[str]:
         lines.extend(_set_fs_vs(fs=0, vs=3, temp_reg=temp_reg))
         lines.append(test_data.add_testcase(f"vfadd_{name}_fs_off", coverpoint, _CG))
         lines.append(f"vfadd.vv v3, {vs2_reg}, {vs1_reg}  # traps: FS=Off")
-        lines.append("nop")
     lines.extend(_set_fs_vs(fs=3, vs=3, temp_reg=temp_reg))
     return lines
 
@@ -161,6 +160,8 @@ def _gen_fs_off(test_data: TestData, temp_reg: int) -> list[str]:
         "#define RVTEST_VECTOR",
         "#define RVTEST_SEW 0",
         "#define VDSEW 0",
+        # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+        "#define BOOT_TO_MMODE",
     ],
 )
 def make_smvf(test_data: TestData) -> list[TestChunk]:

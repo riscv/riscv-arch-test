@@ -16,10 +16,7 @@ from testgen.priv.registry import add_priv_test_generator
     "SdtrigU",
     required_extensions=["U", "Sdtrig"],
     march_extensions=[],
-    extra_defines=[
-        *UDB_DEFINES,
-        "#define RVTEST_TEMP_BOOT_TO_U",
-    ],
+    extra_defines=[*UDB_DEFINES],
 )
 def make_sdtrigu(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the SdtrigU debug-trigger testsuite."""

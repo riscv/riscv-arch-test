@@ -7,14 +7,12 @@
 # Select tests to run based on UDB config and test list
 ##################################
 
-from __future__ import annotations
-
 import re
 from collections.abc import Sequence
 from pathlib import Path
 
 from act.config import Config, load_config
-from act.parse_test_constraints import TestMetadata
+from act.parse_test_constraints import ExtensionRequirement, TestMetadata
 from act.parse_udb_config import get_config_params, get_implemented_extensions, prepare_dut_outputs
 
 PRIV_EXTENSIONS = {"Sm", "S", "U"}
@@ -55,6 +53,31 @@ def _compare_param(test_value: object, config_value: object) -> bool:
     return test_value == config_value
 
 
+def check_test_extensions(
+    required_extensions: frozenset[ExtensionRequirement],
+    forbidden_extensions: frozenset[str],
+    implemented_extensions: set[str],
+) -> bool:
+    """Check required, alternative, and forbidden extension constraints."""
+    if not forbidden_extensions.isdisjoint(implemented_extensions):
+        return False
+
+    return all(
+        requirement in implemented_extensions
+        if isinstance(requirement, str)
+        else not requirement.isdisjoint(implemented_extensions)
+        for requirement in required_extensions
+    )
+
+
+def _requires_privilege_extension(required_extensions: frozenset[ExtensionRequirement]) -> bool:
+    """Check whether the requirements can only be met with a privilege extension."""
+    return any(
+        requirement in PRIV_EXTENSIONS if isinstance(requirement, str) else requirement.issubset(PRIV_EXTENSIONS)
+        for requirement in required_extensions
+    )
+
+
 def check_test_params(test_params: dict[str, int | bool | str], config_params: dict[str, ConfigParamValue]) -> bool:
     """Check if all parameters in test_params match those in config_params."""
     for param, value in test_params.items():
@@ -76,10 +99,14 @@ def select_tests(
     selected_tests: dict[str, TestMetadata] = {}
     for test_name, test_metadata in test_dict.items():
         # Skip privileged tests if disabled
-        if not include_priv_tests and not test_metadata.required_extensions.isdisjoint(PRIV_EXTENSIONS):
+        if not include_priv_tests and _requires_privilege_extension(test_metadata.required_extensions):
             continue
-        # Check if all required extensions are implemented
-        if test_metadata.required_extensions.issubset(implemented_extensions):
+        # Check if all extensions match
+        if check_test_extensions(
+            test_metadata.required_extensions,
+            test_metadata.forbidden_extensions,
+            implemented_extensions,
+        ):
             # Check if all parameters match
             test_params = test_metadata.params
             if check_test_params(test_params, config_params):

@@ -5,17 +5,21 @@
 
 [[t-Sscofpmf-coverpoints]]
 .Sscofpmf Coverpoints
-//,===
-//include::{testplansdir}/Sscofpmf.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/13ibIsAhJpQBXcL1Y5F7sddysLPFpaCr8_oDyQV_Boqw/edit?gid=0#gid=0[Google Sheet Testplan]
+,===
+
+include::norm/Sscofpmf_norm_rules.adoc[]
 
 ==== Ssstateen Supervisor State Enable
 
 [[t-Ssstateen-coverpoints]]
 .Ssstateen Coverpoints
-//,===
-//include::{testplansdir}/Ssstateen.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/1zm67nLKLn_tszDTzJQ9BIMOB7wuiskcuj3Mql4TOciA/edit?gid=1207083655#gid=1207083655[Google Sheet Testplan]
+,===
+
+The same normative rules apply to Ssstateen as to Smstateen (see <<t-Smstateen-normative-rules>>).
 
 ==== Ssu64xl 64-bit User Mode
 
@@ -23,41 +27,62 @@ RV64 only
 
 [[t-Ssu64xl-coverpoints]]
 .Ssu64xl Coverpoints
-//,===
-//include::{testplansdir}/Ssu64xl.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=108970394#gid=108970394[Google Sheet Testplan]
+,===
+
+include::norm/Ssu64xl_norm_rules.adoc[]
 
 ==== Sscounterenw Writable Counter Enables
 
 [[t-Sscounterenw-coverpoints]]
 .Sscounterenw Coverpoints
-//,===
-//include::{testplansdir}/Sscounterenw.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=316102369#gid=316102369[Google Sheet Testplan]
+,===
+
+include::norm/Sscounterenw_norm_rules.adoc[]
 
 ==== Sstvecd Direct Trap Vector
 
 [[t-Sstvecd-coverpoints]]
 .Sstvecd Coverpoints
-//,===
-//include::{testplansdir}/Sstvecd.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=435052299#gid=435052299[Google Sheet Testplan]
+,===
+
+include::norm/Sstvecd_norm_rules.adoc[]
 
 ==== Sstvala Trap Address
 
 [[t-Sstvala-coverpoints]]
 .Sstvala Coverpoints
-//,===
-//include::{testplansdir}/Sstvala.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=691634508#gid=691634508[Google Sheet Testplan]
+,===
+
+include::norm/Sstvala_norm_rules.adoc[]
+
+==== Ssccptr Page Table Reads
+
+[[t-Ssccptr-coverpoints]]
+.Ssccptr Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=16223482#gid=16223482[Google Sheet Testplan]
+,===
+
+include::norm/Ssccptr_norm_rules.adoc[]
+
 
 ==== Ss1p13 Supervisor Mode 1.13
 
 [[t-Ss1p13-coverpoints]]
 .Ss1p13 Coverpoints
-//,===
-//include::{testplansdir}/Ss1p13.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=108970394#gid=108970394[Google Sheet Testplan]
+,===
+
+include::norm/Ss1p13_norm_rules.adoc[]
 
 ==== Ssnpm Pointer Masking
 
@@ -103,50 +128,59 @@ In Privileged section because it has both unpriv and privileged behaviors.
 //include::{testplansdir}/Zicfiss.adoc[]
 //,===
 
-==== ZawrsSm Machine-Mode Wait on Reservation Set
+==== Zawrs Wait on Reservation Set
 
-These tests only test single hart behavior and run on any configuration with machine mode that supports Zawrs
+Waits until timer interrupt or timeout on a single hart that cannot modify the reservation set.  Tests behave differently in
+different privilege modes, so a suite is defined for each.
 
 [[t-ZawrsSm-coverpoints]]
 .ZawrsSm Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=1449589527#gid=1449589527
-,===
-
-include::norm/ZawrsSm_norm_rules.adoc[]
-
-==== ZawrsS Supervisor-Mode Wait on Reservation Set
-
-These tests only test single hart behavior and run on any configuration with supervisor mode that supports Zawrs
+https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=1449589527#gid=1449589527[Google Sheet Testplan]
 
 [[t-ZawrsS-coverpoints]]
 .ZawrsS Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=0#gid=0
-,===
-
-include::norm/ZawrsS_norm_rules.adoc[]
-
-==== ZawrsU User-Mode Wait on Reservation Set
-
-These tests only test single hart behavior and run on any configuration with user mode that supports Zawrs
+https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=0#gid=0[Google Sheet Testplan]
 
 [[t-ZawrsU-coverpoints]]
 .ZawrsU Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=1437737576#gid=1437737576
-,===
+https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=1437737576#gid=1437737576[Google Sheet Testplan]
+
+include::norm/ZawrsSm_norm_rules.adoc[]
+
+include::norm/ZawrsS_norm_rules.adoc[]
 
 include::norm/ZawrsU_norm_rules.adoc[]
+
+These tests require support for MTI and/or STI interrupts.
+Note that these tests can have race conditions of timeouts, timer interrupts, and spontaneous resumption, and thus may be fussy on different implementations.
 
 ==== Sdtrig Debug Triggers
 
 Located here because it is part of RVA23 and can function without the rest of the https://docs.riscv.org/reference/debug-trace-ras/debug/_attachments/riscv-debug-specification.pdf[Debug Specification].  See <<Debug>> for non-RVA23 debug extensions.
+The suite is divided into SdtrigSm, SdtrigS, and SdtrigU suites that are essentially identical, but are run on different privilege levels and thus produce different results for coverpoints such as reading debug registers or triggering in certain modes.
+Only SdtrigSm is listed here but the others are the same and also cover the same normative rules.
 
-[[t-Sdtrig-coverpoints]]
-.Sdtrig Coverpoints
-//,===
-//include::{testplansdir}/Sdtrig.adoc[]
-//,===
+[[t-SdtrigSm-coverpoints]]
+.SdtrigSm Coverpoints
 
-*** also check the value written to stval and vstval.  Should be the VA of the breakpoint when Sstvala and Shvstvala are supported.  This is automatically checked against the reference model, so there is no need for additional SdtrigSstvala and SdtrigShvstvala test suites.
+https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1OhdhcQ/edit?gid=1209377334#gid=1209377334[Google Sheet Testplan]
+
+include::norm/SdtrigSm_norm_rules.adoc[]
+
+As of 7/24/26, Sdtrig is partially implemented.  Only the mcontrol6 covergroup is fully developed. Coverpoints are incomplete and are in a draft PR.
+Sail does not yet support Sdtrig, so the tests are exercised by running whisper against spike.  QEMU and Imperas do not yet match spike and some issues
+have been filed and are tracked https://docs.google.com/spreadsheets/d/1EuG4LV1TQDx4wTzYDWEAvq0fwaWjNuxenwDARZmrN-E/edit?gid=0#gid=0[here].
+Run with `make whisper-rv64-max-spike-ref EXTENSIONS=SdtrigSm`.
+
+An initial set of parameters for Sdtrig is proposed for https://github.com/riscv/riscv-unified-db/pull/2069[UDB].
+
+Most Sdtrig features are optional, so defining what to test requires many parameters.  UDB_SDTRIG_NUM_TRIGGERS define how many triggers exist.
+For each trigger, each type (mcontrol6, icount, itrigger, etrigger) is optionally supported. Many of the fields in `tdata1` for each type are optional.
+
+`uncertainen` and `uncertain` are vague and implementation-specific and is thus not tested.  `hit` varies based on timing and is
+optional and difficult to check so is presently not tested. Only `action`=0 is tested because the others depend on Sdext or trace or
+implementation-specific external triggers.
+`dmode` is not tested in Sdtrig because it depends on Sdext. `hcontext` is not tested because it depends on Hypervisor.  Non-maskable interrupts
+are not tested because they are not part of RVA23.
+
+`mcontrol` has been replaced by `mcontrol6`.  It is deprecated and not tested.  `mscontext` is only for backward compatibility with Sdtrig 0.13 and is not tested.

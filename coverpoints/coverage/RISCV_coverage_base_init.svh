@@ -122,6 +122,10 @@
         `cover_info("//      ExceptionsZicboS - Enabled");
         `include "ExceptionsZicboS_coverage_init.svh"
     `endif
+    `ifdef COVER_EXCEPTIONSZICBOSM
+        `cover_info("//      ExceptionsZicboSm - Enabled");
+        `include "ExceptionsZicboSm_coverage_init.svh"
+    `endif
     `ifdef COVER_EXCEPTIONSZICBOU
         `cover_info("//      ExceptionsZicboU - Enabled");
         `include "ExceptionsZicboU_coverage_init.svh"
@@ -434,13 +438,17 @@
         `cover_info("//      Zama16b - Enabled");
         `include "Zama16b_coverage_init.svh"
     `endif
-    `ifdef COVER_ZAWRSSU
-        `cover_info("//      ZawrsSU - Enabled");
-        `include "ZawrsSU_coverage_init.svh"
+    `ifdef COVER_ZAWRSS
+        `cover_info("//      ZawrsS - Enabled");
+        `include "ZawrsS_coverage_init.svh"
     `endif
     `ifdef COVER_ZAWRSSM
         `cover_info("//      ZawrsSm - Enabled");
         `include "ZawrsSm_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZAWRSU
+        `cover_info("//      ZawrsU - Enabled");
+        `include "ZawrsU_coverage_init.svh"
     `endif
     `ifdef COVER_ZBA
         `cover_info("//      Zba - Enabled");
@@ -558,6 +566,22 @@
         `cover_info("//      Zicboz - Enabled");
         `include "Zicboz_coverage_init.svh"
     `endif
+    `ifdef COVER_ZICFILPS
+        `cover_info("//      ZicfilpS - Enabled");
+        `include "ZicfilpS_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZICFILPSU
+        `cover_info("//      ZicfilpSU - Enabled");
+        `include "ZicfilpSU_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZICFILPSM
+        `cover_info("//      ZicfilpSm - Enabled");
+        `include "ZicfilpSm_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZICFILPU
+        `cover_info("//      ZicfilpU - Enabled");
+        `include "ZicfilpU_coverage_init.svh"
+    `endif
     `ifdef COVER_ZICNTR
         `cover_info("//      Zicntr - Enabled");
         `include "Zicntr_coverage_init.svh"
@@ -622,9 +646,17 @@
         `cover_info("//      Zknh - Enabled");
         `include "Zknh_coverage_init.svh"
     `endif
-    `ifdef COVER_ZKR
-        `cover_info("//      Zkr - Enabled");
-        `include "Zkr_coverage_init.svh"
+    `ifdef COVER_ZKRS
+        `cover_info("//      ZkrS - Enabled");
+        `include "ZkrS_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZKRSM
+        `cover_info("//      ZkrSm - Enabled");
+        `include "ZkrSm_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZKRU
+        `cover_info("//      ZkrU - Enabled");
+        `include "ZkrU_coverage_init.svh"
     `endif
     `ifdef COVER_ZKSED
         `cover_info("//      Zksed - Enabled");

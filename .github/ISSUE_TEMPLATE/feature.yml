@@ -1,0 +1,37 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: Apache-2.0
+
+name: Feature request
+description: Suggest an improvement to the project.
+title: "[Feature] "
+labels: [enhancement]
+body:
+  - type: dropdown
+    id: affected-area
+    attributes:
+      label: Affected area
+      description: Select the area most directly related to the request.
+      options:
+        - "Tests — Test generation or individual test files"
+        - "Test Environment — Trap handler, boot code, signature checking, etc."
+        - "Test Framework — Test selection or compilation"
+        - "Coverpoints — Coverage model or coverage generation"
+        - "Other — An improvement not listed above"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or motivation
+      description: What problem would this solve? Include concrete use cases.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the change you would like to see.
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context

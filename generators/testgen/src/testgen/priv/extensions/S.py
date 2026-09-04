@@ -15,6 +15,47 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
+# Standard S-mode CSRs, shared with the Sm suite (cp_scsr_from_m)
+# Format: (CSR Name, Mask).  Mask specifies a set of bits to check
+
+# Create bit masks.  WPRI fields should be 0 to ignore reads.
+
+# sstatus bit mask
+S_SSTATUS_MASK = (
+    (1 << 1)  # SIE:  Supervisor Interrupt Enable
+    | (1 << 5)  # SPIE: Supervisor Previous Interrupt Enable
+    | (0 << 6)  # UBE not yet supported by Sail; test in Endian
+    | (1 << 8)  # SPP:  Supervisor Previous Privilege
+    | (3 << 9)  # VS:   Vector Status
+    | (3 << 13)  # FS:   Floating-Point Status
+    | (3 << 15)  # XS:   Custom Extension Status
+    | (1 << 18)  # SUM:  Supervisor User Memory Access
+    | (1 << 19)  # MXR:  Make eXecutable Readable
+    | (1 << 23)  # SPELP: Supervisor Previous Expect Landing Pad
+    | (0 << 24)  # SDT: not yet supported by Sail; TODO change to 1 when Ssdbltrp implemented
+    | (1 << 31)  # SD for RV32 (probably shouldn't be tested for RV64, but seems to work ok)
+    | (0 << 32)  # UXL:  User-Mode XLEN not changeable in Sail yet; should be tested in Xlen suite
+    | (1 << 63)  # SD for RV64
+)
+
+S_CSRS = [
+    ("sstatus", S_SSTATUS_MASK),
+    # cp_scause is tested separately. WLRL fields can't be managed with masks.
+    # stvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
+    ("stvec", 0b10),
+    ("scounteren", None),
+    ("sscratch", None),
+    ("sip", 0xFFFF),  # only test standard non-reserved portion
+    ("sie", 0xFFFF),  # only test standard non-reserved portion
+]
+# skip walking 1s on this because valid virtual addresses is not described adequately
+S_CSRS_NOWALK = [
+    ("sepc", None),  # only has to be able to hold all valid virtual addresses
+    ("stval", None),  # only has to be able to hold all valid virtual addresses and 0
+]
+# senvcfg CBIE/PMM reserved values are handled with warl_fields in the walk test below
+S_CSR_SENVCFG = ("senvcfg", None)
+
 
 def _generate_scause_tests(test_data: TestData) -> list[str]:
     """Generate tests for scause CSR."""
@@ -29,41 +70,24 @@ def _generate_scause_tests(test_data: TestData) -> list[str]:
             coverpoint,
             "with interrupt = 0: test writing each exception cause",
         ),
-        f"CSRR(x{save_reg}, scause)     # save CSR before testing it",
+        f"csrr x{save_reg}, scause     # save CSR before testing it",
     ]
 
-    gated_exceptions = [
-        (10, "#ifdef H_SUPPORTED"),  # ecall from VS-mode
-        (11, "RESERVED"),  # ecall from M-mode never delegated
-        (14, "RESERVED"),
-        (16, "RESERVED"),  # Double trap never delegated
-        (17, "RESERVED"),
-        (18, "#if defined(ZICFILP_SUPPORTED) || defined(ZICFISS_SUPPORTED)"),  # software check
-        (19, "RESERVED"),  # not all systems may produce hardware-error exceptions
-        (20, "#ifdef H_SUPPORTED"),  # instruction guest-page fault
-        (21, "#ifdef H_SUPPORTED"),  # load guest-page fault
-        (22, "#ifdef H_SUPPORTED"),  # virtual instruction
-        (23, "#ifdef H_SUPPORTED"),  # store guest-page fault
-    ]
-
-    for i in range(24):
-        gated = next((g for g in gated_exceptions if g[0] == i), None)
-        if gated is not None and gated[1] == "RESERVED":
-            lines.append(f"\n# Exception cause {i} is reserved")
-        else:
-            if gated is not None:
-                lines.append(f"{gated[1]}")
-            lines.extend(
-                [
-                    "",
-                    f"# Testcase: set scause to exception cause {i}",
-                    f"LI(x{check_reg}, {i})",
-                    test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
-                    gen_csr_write_sigupd(check_reg, "scause", test_data),
-                ]
-            )
-            if gated is not None:
-                lines.append("#endif")
+    for i in range(32):
+        gated = i in {10, 11, 14, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31}
+        if gated:
+            lines.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
+        lines.extend(
+            [
+                "",
+                f"# Testcase: set scause to exception cause {i}",
+                f"LI(x{check_reg}, {i})",
+                test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
+                gen_csr_write_sigupd(check_reg, "scause", test_data),
+            ]
+        )
+        if gated:
+            lines.append("#endif")
 
     ######################################
     coverpoint = "cp_scause_write_interrupt"
@@ -79,9 +103,10 @@ def _generate_scause_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-    for i in range(14):
-        if i in {0, 4, 8}:  # skip reserved causes
-            continue
+    for i in range(32):
+        gated = i in {0, 2, 4, 6, 8, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31}
+        if gated:
+            lines.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
         lines.extend(
             [
                 "",
@@ -92,8 +117,10 @@ def _generate_scause_tests(test_data: TestData) -> list[str]:
                 gen_csr_write_sigupd(check_reg, "scause", test_data),
             ]
         )
+        if gated:
+            lines.append("#endif")
 
-    lines.append(f"\nCSRW(scause, x{save_reg})       # restore CSR")
+    lines.append(f"\ncsrw scause, x{save_reg}       # restore CSR")
 
     test_data.int_regs.return_registers([save_reg, check_reg, temp_reg])
     return lines
@@ -116,7 +143,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
         "",
         "# Setup",
         f"SET_MSB(x{reg1}) # put a 1 in the msb of x{reg1} (XLEN-1)",
-        f"CSRR(x{save_reg}, sstatus)        # read and save sstatus",
+        f"csrr x{save_reg}, sstatus        # read and save sstatus",
         f"{INDENT}# set up x{reg3} with sstatus except SD, FS, XS, VS cleared",
         f"not x{reg2}, x{reg1}              # x{reg2} has all but msb set",
         f"and x{reg3}, x{save_reg}, x{reg2} # clear SD bit",
@@ -148,20 +175,20 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
                         ]
                     )
 
-    lines.append(f"\nCSRW(sstatus, x{save_reg})    # restore CSR")
+    lines.append(f"\ncsrw sstatus, x{save_reg}    # restore CSR")
 
     coverpoint = "cp_sxlen_ge_uxlen"  # For SS1P13 extension.
     lines.extend(
         [
             "",
-            "#ifdef S1P13P0_SUPPORTED",
+            "#ifdef S1P13P0_OR_LATER_SUPPORTED",
             "#if __riscv_xlen == 64",
             comment_banner(
                 coverpoint,
                 "Ss1p13: from S-mode attempt to set sstatus.UXL = 1 and UXL = 2.\n"
                 "UXL=2 must be silently rejected when SXLEN=32 (UXLEN <= SXLEN).",
             ),
-            f"CSRR(x{save_reg}, sstatus)",
+            f"csrr x{save_reg}, sstatus",
             "",
         ]
     )
@@ -171,7 +198,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
             [
                 "",
                 f"# Testcase: Ss1p13 attempt to set sstatus.UXL = {uxl} ({label})",
-                f"CSRR(x{check_reg}, sstatus)                     # read current sstatus into GPR",
+                f"csrr x{check_reg}, sstatus                     # read current sstatus into GPR",
                 f"LI(x{reg2}, {~(3 << 32) & 0xFFFFFFFFFFFFFFFF})  # mask to clear UXL bits [33:32]",
                 f"and x{check_reg}, x{check_reg}, x{reg2}         # clear UXL bits [33:32]",
                 f"LI(x{reg2}, {uxl << 32})                        # UXL={uxl} shifted into position [33:32]",
@@ -184,9 +211,9 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "",
-            f"CSRW(sstatus, x{save_reg})        # restore sstatus after Ss1p13 UXL tests",
+            f"csrw sstatus, x{save_reg}        # restore sstatus after Ss1p13 UXL tests",
             "#endif // UDB_MXLEN_64",
-            "#endif // S1P13P0_SUPPORTED",
+            "#endif // S1P13P0_OR_LATER_SUPPORTED",
         ]
     )
 
@@ -218,146 +245,23 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
         "# Testcase: ebreak instruction",
         test_data.add_testcase("ebreak", coverpoint, covergroup),
         "ebreak              # test ebreak instruction",
-        "nop                 # trap handler skips following instruction so this should not be executed",
         "",
         # mret test
         "# Testcase: mret instruction",
         test_data.add_testcase("mret", coverpoint, covergroup),
         "mret                # test mret instruction",
-        "nop                 # trap handler skips following instruction so this should not be executed",
         "",
         # sfence.vma test
         "# Testcase: sfence.vma instruction",
         test_data.add_testcase("sfence_vma", coverpoint, covergroup),
         "sfence.vma          # test sfence.vma instruction",
-        "nop                 # might be skipped",
     ]
 
-    return lines
-
-
-def _generate_mretm_tests(test_data: TestData) -> list[str]:
-    """Generate mret from M-mode with mpp, mprv, mpie, mie sweep."""
-    ######################################
-    covergroup = "S_sprivinst_cg"
-    coverpoint = "cp_mret_m"
-    ######################################
-    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5)
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "Execute mret while sweeping cross-product of mpp, mprv, mpie, mie",
-        ),
-        "",
-        "# Setup",
-        f"CSRR(x{save_reg}, mstatus)        # read and save mstatus",
-        f"{INDENT}# set up x{reg1} with mstatus except MPP, MPRV, MPIE, MIE cleared",
-        f"LI(x{reg2}, 0x21888)          # x{reg2} has all MPP, MPRV, MPIE, MIE bits set (bits [12:11], [17], [7], [3], respectively)",
-        f"not x{reg2}, x{reg2}              # x{reg2} has all but MPP, MPRV, MPIE, MIE bits set",
-        f"and x{reg1}, x{save_reg}, x{reg2}          # clear MPP, MPRV, MPIE, MIE bits",
-    ]
-
-    for mpp in (0, 1, 3):  # all modes
-        for mprv in (0, 1):
-            for mpie in (0, 1):
-                for mie in (0, 1):
-                    binname = f"mpp_{mpp:02b}_mprv_{mprv}_mpie_{mpie}_mie_{mie}"
-                    fields = (mpp << 11) | (mprv << 17) | (mpie << 7) | (mie << 3)
-
-                    lines.extend(
-                        [
-                            "",
-                            f"# Testcase: mret with mpp = {mpp:02b}, mprv = {mprv}, mpie = {mpie}, mie = {mie}",
-                            # Test the write value
-                            f"LI(x{check_reg}, 0x{fields:08x})  # mpp = {mpp:02b} mprv = {mprv} mpie = {mpie} mie = {mie}",
-                            f"or x{check_reg}, x{check_reg}, x{reg1}          # value to write to mstatus with MPP/MPRV/MPIE/MIE bits set/clear",
-                            f"LA(x{reg3}, 1f)             # return address after mret",
-                            f"CSRW(mepc, x{reg3})          # set mepc to return address",
-                            f"CSRW(mstatus, x{check_reg})       # write mstatus with MPP/MPRV/MPIE/MIE bits set/clear",
-                            test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
-                            "mret                   # test mret instruction",
-                            f"addi x{check_reg}, zero, -1              # should not be executed",
-                            "1:                         # mret should return to here",
-                            "RVTEST_GOTO_MMODE      # make sure we return to machine mode",
-                            write_sigupd(check_reg, test_data),
-                            # Test mstatus was updated properly
-                            gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
-                        ]
-                    )
-
-    lines.append(f"\nCSRW(mstatus, x{save_reg})    # restore CSR")
-    test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
-    return lines
-
-
-def _generate_sretm_tests(test_data: TestData) -> list[str]:
-    """Generate sret from M-mode with spp, mprv, spie, sie, tsr sweep."""
-    ######################################
-    covergroup = "S_sprivinst_cg"
-    coverpoint = "cp_sret_m"
-    ######################################
-    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5)
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "Execute sret while sweeping cross-product of mprv, spp, spie, sie, tsr\n"
-            "Go to S or U mode depending on SPP.  SIE <- SPIE.  SPIE <- 1.  "
-            "MPRV <- 0. SPP <- 0 (U-mode).  TSR has no effect.",
-        ),
-        "",
-        "# Setup",
-        f"CSRR(x{save_reg}, mstatus)        # read and save mstatus",
-        f"LI(x{reg1}, 1 << 2)",
-        f"CSRC(medeleg, x{reg1})          # turn off delegating illegal instruction exceptions so TSR won't cause a trap loop on sret",
-        f"{INDENT}# set up x{reg1} with mstatus except MPRV, SPP, SPIE, SIE, TSR cleared",
-        f"LI(x{reg2}, 0x420122)          # x{reg2} has all MPRV, SPP, SPIE, SIE, TSR bits set (bits [17], [8], [5], [1], [22] respectively)",
-        f"not x{reg2}, x{reg2}              # x{reg2} has all but MPRV, SPP, SPIE, SIE, TSR bits set",
-        f"and x{reg1}, x{save_reg}, x{reg2}          # clear MPRV, SPP, SPIE, SIE, TSR bits",
-    ]
-
-    for spp in (0, 1):
-        for mprv in (0, 1):
-            for spie in (0, 1):
-                for sie in (0, 1):
-                    for tsr in (0, 1):
-                        binname = f"spp_{spp}_mprv_{mprv}_spie_{spie}_sie_{sie}_tsr_{tsr}"
-                        fields = (mprv << 17) | (spp << 8) | (spie << 5) | (sie << 1) | (tsr << 22)
-
-                        lines.extend(
-                            [
-                                "",
-                                f"# Testcase: sret from m-mode with spp = {spp}, mprv = {mprv}, spie = {spie}, sie = {sie}, tsr = {tsr}",
-                                # Test the write value
-                                f"LI(x{check_reg}, 0x{fields:08x}) # mprv = {mprv} spp = {spp} spie = {spie} sie = {sie} tsr = {tsr}",
-                                f"or x{check_reg}, x{check_reg}, x{reg1}          # value to write to mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
-                                f"LA(x{reg3}, 1f)             # return address after sret",
-                                f"CSRW(sepc, x{reg3})          # set sepc to return address (if S mode exists).",
-                                f"CSRW(mstatus, x{check_reg})       # write mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
-                                test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
-                                "sret                   # test sret instruction, expect illegal instruction if S mode is not supported",
-                                f"addi x{check_reg}, zero, -1              # should not be executed",
-                                "1:                         # sret should return to here",
-                                write_sigupd(check_reg, test_data),
-                                "RVTEST_GOTO_MMODE      # make sure we return to machine mode",
-                                # Test mstatus was updated properly
-                                gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
-                            ]
-                        )
-
-    lines.extend(
-        [
-            "# leave medeleg of illegal instruction off because it will be needed in the upcoming srets tests",
-            f"\nCSRW(mstatus, x{save_reg})    # restore CSR",
-        ]
-    )
-    test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
     return lines
 
 
 def _generate_srets_tests(test_data: TestData) -> list[str]:
-    """Generate sret from S-mode with spp, mprv, spie, sie, tsr sweep."""
+    """Generate sret from S-mode with spp, spie, sie sweep (no TSR: that needs M-mode and lives in Sm)."""
     ######################################
     covergroup = "S_sprivinst_cg"
     coverpoint = "cp_sret_s"
@@ -367,100 +271,61 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(
             coverpoint,
-            "Execute sret from S-mode while sweeping cross-product of sstatus.spp, spie, sie; mstatus.tsr\n"
+            "Execute sret from S-mode while sweeping cross-product of sstatus.spp, spie, sie\n"
             "Go to S or U mode depending on SPP.  SIE <- SPIE.  SPIE <- 1.  "
-            "MPRV <- 0. SPP <- 0 (U-mode).  TSR causes illegal instruction.",
+            "MPRV <- 0. SPP <- 0 (U-mode).",
         ),
         "",
         "# Setup",
-        f"CSRR(x{save_reg}, sstatus)        # read and save sstatus",
+        f"csrr x{save_reg}, sstatus        # read and save sstatus",
         f"{INDENT}# set up x{reg1} with sstatus except SPP, SPIE, SIE cleared",
         f"LI(x{reg2}, 0x122)          # x{reg2} has all SPP, SPIE, SIE bits set (bits [8], [5], [1] respectively)",
         f"not x{reg2}, x{reg2}              # x{reg2} has all but SPP, SPIE, SIE bits set",
         f"and x{reg1}, x{save_reg}, x{reg2}          # clear SPP, SPIE, SIE bits",
     ]
 
-    for tsr in (1, 0):
-        lines.extend(
-            [
-                # Set mstatus.TSR from M-mode
-                "",
-                "# Set mstatus.TSR",
-                "RVTEST_GOTO_MMODE      # enter machine mode for twiddling mstatus.TSR",
-                f"LI(x{check_reg}, {1 << 22})  # mstatus.TSR bit",
-            ]
-        )
+    for spp in (0, 1):
+        for spie in (0, 1):
+            for sie in (0, 1):
+                binname = f"spp_{spp}_spie_{spie}_sie_{sie}"
+                fields = (spp << 8) | (spie << 5) | (sie << 1)
 
-        if tsr == 1:
-            lines.append(f"CSRS(mstatus, x{check_reg})          # set TSR bit")
-        else:
-            lines.append(f"CSRC(mstatus, x{check_reg})          # clear TSR bit")
-        lines.append("RVTEST_GOTO_LOWER_MODE Smode # return to supervisor mode to execute sret tests")
+                lines.extend(
+                    [
+                        "",
+                        f"# Testcase: sret from s-mode with spp = {spp}, spie = {spie}, sie = {sie}",
+                        # Test the write value
+                        f"LI(x{check_reg}, 0x{fields:08x}) # spp = {spp} spie = {spie} sie = {sie}",
+                        f"or x{check_reg}, x{check_reg}, x{reg1}          # value to write to sstatus with SPP/SPIE/SIE bits set/clear",
+                        f"LA(x{reg3}, 1f)             # return address after sret",
+                        f"csrw sepc, x{reg3}          # set sepc to return address.",
+                        f"csrw sstatus, x{check_reg}       # write sstatus with SPP/SPIE/SIE bits set/clear",
+                        test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
+                        "sret                   # test sret instruction",
+                        f"addi x{check_reg}, zero, -1              # should not be executed",  # should not be executed
+                        "1:                         # sret should return to here",
+                        write_sigupd(check_reg, test_data),
+                        "RVTEST_TSBI_GOTO_SMODE # return to supervisor mode",
+                        # Test sstatus was updated properly.  x{reg3} is free again (sepc consumed it), so
+                        # reuse it for the mask; split the load because the mask has bits above 31.
+                        "#if __riscv_xlen == 64",
+                        f"LI(x{reg3}, {S_SSTATUS_MASK:#x})    # sstatus mask",
+                        "#else",
+                        f"LI(x{reg3}, {S_SSTATUS_MASK & 0xFFFFFFFF:#x})    # sstatus mask (low 32 bits)",
+                        "#endif",
+                        gen_csr_read_sigupd(check_reg, ("sstatus", S_SSTATUS_MASK), test_data, reg3),
+                    ]
+                )
 
-        for spp in (0, 1):
-            for spie in (0, 1):
-                for sie in (0, 1):
-                    binname = f"spp_{spp}_spie_{spie}_sie_{sie}_tsr_{tsr}"
-                    fields = (spp << 8) | (spie << 5) | (sie << 1)
-
-                    lines.extend(
-                        [
-                            "",
-                            f"# Testcase: sret from s-mode with spp = {spp}, spie = {spie}, sie = {sie}, tsr = {tsr}",
-                            # Test the write value
-                            f"LI(x{check_reg}, 0x{fields:08x}) # spp = {spp} spie = {spie} sie = {sie}",
-                            f"or x{check_reg}, x{check_reg}, x{reg1}          # value to write to sstatus with SPP/SPIE/SIE bits set/clear",
-                            f"LA(x{reg3}, 1f)             # return address after sret",
-                            f"CSRW(sepc, x{reg3})          # set sepc to return address.",
-                            f"CSRW(sstatus, x{check_reg})       # write sstatus with SPP/SPIE/SIE bits set/clear",
-                            test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
-                            "sret                   # test sret instruction",
-                            f"addi x{check_reg}, zero, -1              # should not be executed",  # should not be executed
-                            "1:                         # sret should return to here",
-                            write_sigupd(check_reg, test_data),
-                            "RVTEST_GOTO_MMODE      # We might be coming from U-mode, so to get back to S-mode, macros may have to go through M",
-                            "RVTEST_GOTO_LOWER_MODE Smode      # make sure we return to supervisor mode",
-                            # Test sstatus was updated properly
-                            gen_csr_read_sigupd(check_reg, ("sstatus", None), test_data),
-                        ]
-                    )
-
-    lines.extend(
-        [
-            f"\nCSRW(sstatus, x{save_reg})    # restore CSR",
-            "RVTEST_GOTO_MMODE      # back to M-mode to touch medeleg",
-            f"LI(x{reg1}, 1 << 2)",
-            f"CSRS(medeleg, x{reg1})           # restore delegating illegal instructions",
-        ]
-    )
+    lines.append(f"\ncsrw sstatus, x{save_reg}    # restore CSR")
     test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
     return lines
 
 
-def _generate_scsr_tests(test_data: TestData) -> list[str]:
-    """Generate CSR tests"""
+def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
+    """Generate CSR tests, one test chunk per CSR so they can be split across files."""
     covergroup = "S_scsr_cg"
 
-    # Standard S-mode CSRs
-    # Format: (CSR Name, Mask).  Mask specifies a set of bits to check
-
-    csrs = [
-        # TODO: sail does not yet support sstatus.UBE; mask it until available to avoid mismatches with CVW.  Delete mask when Sail has UBE support.
-        # TODO: sail does not yet support sstatus.SPELP; mask it until available to avoid mismatches with Whisper.  Delete mask when Sail has SPELP support.
-        ("sstatus", 0xFFFFFFFFFF7FFFBF),
-        # WLRL fields can't be managed with masks.  Use cp_scause_* instead
-        #        ("scause", 0x7FFFFFFFFFFFFFF0),
-        ("sie", None),
-        # stvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
-        ("stvec", 0b10),
-        ("scounteren", None),
-        # senvcfg CBIE/PMM reserved values are handled with warl_fields in the walk test below
-        ("senvcfg", None),
-        ("sscratch", None),
-        ("sepc", None),
-        ("stval", None),
-        ("sip", None),
-    ]
     # Floating-point CSRs
     csrf = [("fflags", None), ("frm", None), ("fcsr", None)]
     # Vector CSRs
@@ -477,56 +342,65 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     ######################################
     coverpoint = "cp_scsr_access"
     ######################################
-    lines = [
-        comment_banner(
-            coverpoint,
-            "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all S-mode CSRs",
-        ),
-    ]
+    tc = test_data.new_test_chunk(test_chunks, "scsr")
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all S-mode CSRs",
+    )
 
-    for csr in csrs:
-        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+    for csr in S_CSRS + S_CSRS_NOWALK:
+        tc = test_data.new_test_chunk(test_chunks)
+        tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
+    tc.code.extend(csr_access_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint))
+    tc.code.extend(["", "#endif"])
 
     ######################################
     coverpoint = "cp_ucsr_from_s"
     ######################################
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all U-mode CSRs from S-mode",
-        ),
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all U-mode CSRs from S-mode",
     )
 
-    lines.extend(["", "#ifdef F_SUPPORTED"])
+    # The #ifdef guard has to stay in one chunk, so all F (and all V) CSRs share a chunk.
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.extend(["", "#ifdef F_SUPPORTED"])
     for csr in csrf:
-        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
-    lines.extend(["", "#endif"])
+        tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+    tc.code.extend(["", "#endif"])
 
-    lines.extend(["", "#ifdef V_SUPPORTED"])
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.extend(["", "#ifdef V_SUPPORTED"])
     for csr in csrv:
-        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
-    lines.extend(["", "#endif"])
+        tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+    tc.code.extend(["", "#endif"])
 
     ######################################
     coverpoint = "cp_scsrwalk"
     ######################################
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "Set and clear each bit individually in all writable S-mode CSRs",
-        ),
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Set and clear each bit individually in all writable S-mode CSRs",
     )
 
-    for csr in csrs:
-        if csr[0] == "senvcfg":
-            # senvcfg.CBIE (bits 5:4) and senvcfg.PMM (bits 33:32) are WARL fields with reserved
-            # values 0b10 and 0b01 respectively. Walk iterations that write a reserved value may
-            # legalize to any legal value, so those iterations check that the field is legal
-            # instead of exact-matching the reference model.
-            warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
-            lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint, warl_fields=warl_fields))
-        else:
-            lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
+    for csr in S_CSRS:
+        tc = test_data.new_test_chunk(test_chunks)
+        tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
+
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
+    # senvcfg.CBIE (bits 5:4) and senvcfg.PMM (bits 33:32) are WARL fields with reserved
+    # values 0b10 and 0b01 respectively. Walk iterations that write a reserved value may
+    # legalize to any legal value, so those iterations check that the field is legal
+    # instead of exact-matching the reference model.
+    warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
+    tc.code.extend(csr_walk_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint, warl_fields=warl_fields))
+    tc.code.extend(["", "#endif"])
 
     # cp_csr_satp waived because behavior of other fields is UNSPECIFIED when satp.MODE = Bare
     # ######################################
@@ -574,12 +448,12 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_csr_insufficient_priv"
     ######################################
 
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "Attempt to read debug and machine mode registers.  Should throw illegal instruction",
-        ),
+    tc = test_data.new_test_chunk(test_chunks, "scsr_insufficient_priv")
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Attempt to read debug and machine mode registers.  Should throw illegal instruction",
     )
+
     for csr in (
         list(range(0x300, 0x400))
         + list(range(0x700, 0x7AA))  # exclude 0x7AA mscontext, which is accessible from S-mode
@@ -587,12 +461,13 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
         + list(range(0xB00, 0xC00))
         + list(range(0xF00, 0x1000))
     ):
-        lines.extend(
+        tc = test_data.new_test_chunk(test_chunks, "scsr_insufficient_priv")
+        tc.code.extend(
             [
                 "",
                 f"# Testcase: attempt to access CSR 0x{csr:03x}",
                 test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"CSRR(t0, 0x{csr:03x})    # attempt to read higher-privilege CSR {csr:03x}; should get illegal instruction",
+                f"csrr t0, 0x{csr:03x}    # attempt to read higher-privilege CSR {csr:03x}; should get illegal instruction",
             ]
         )
 
@@ -600,120 +475,42 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_csr_ro"
     ######################################
 
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "Attempt to write read-only CSRs.  Should throw illegal instruction",
-        ),
+    tc = test_data.new_test_chunk(test_chunks, "scsr_ro")
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Attempt to write read-only CSRs.  Should throw illegal instruction",
     )
-    r1 = test_data.int_regs.get_register()
 
-    lines.append(f"LI(x{r1}, -1)          # x{r1} = all 1s")
     for csr in range(0xC00, 0xF00):
-        lines.extend(
+        tc = test_data.new_test_chunk(test_chunks)
+        r1 = test_data.int_regs.get_register()
+        tc.code.extend(
             [
                 "",
                 f"# Testcase: attempt to access CSR 0x{csr:03x}",
                 test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"CSRW(0x{csr:03x}, x{r1})    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
+                f"LI(x{r1}, -1)          # x{r1} = all 1s",
+                f"csrw 0x{csr:03x}, x{r1}    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
             ]
         )
-    test_data.int_regs.return_register(r1)
-
-    ######################################
-    coverpoint = "cp_scsr_from_m"
-    ######################################
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all S-mode CSRs from M-mode",
-        ),
-    )
-
-    lines.append("RVTEST_GOTO_MMODE      # enter machine mode for testing S-mode CSRs from M-mode\n")
-    for csr in csrs:
-        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
-
-    ######################################
-    coverpoint = "cp_shadow"
-    ######################################
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "Check that values written to shadowed registers are consistent between machine and supervisor mode",
-        ),
-    )
-    r1, r2, rmask, rsave = test_data.int_regs.get_registers(4)
-    lines.extend(
-        [
-            f"LI(x{r1}, 0x007FFFBF) # skip UBE, UXL bits which would cause weird behavior",
-            _add_shadow(r1, r2, rmask, rsave, "mstatus", "sstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data),
-            _add_shadow(r1, r2, rmask, rsave, "sstatus", "mstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data),
-            f"LI(x{r1}, 0xFFFF) # all interrupts",
-            _add_shadow(r1, r2, rmask, rsave, "mie", "sie", 0x3666, coverpoint, covergroup, test_data),
-            _add_shadow(r1, r2, rmask, rsave, "mip", "sip", 0x3666, coverpoint, covergroup, test_data),
-            _add_shadow(r1, r2, rmask, rsave, "sie", "mie", 0x3666, coverpoint, covergroup, test_data),
-            _add_shadow(r1, r2, rmask, rsave, "sip", "mip", 0x3666, coverpoint, covergroup, test_data),
-        ]
-    )
-    test_data.int_regs.return_registers([r1, r2, rmask, rsave])
-
-    return lines
+        test_data.int_regs.return_register(r1)
 
 
-def _add_shadow(
-    r1: int,
-    r2: int,
-    rmask: int,
-    rsave: int,
-    wreg: str,
-    rreg: str,
-    mask: int,
-    coverpoint: str,
-    covergroup: str,
-    test_data: TestData,
-) -> str:
-    """Helper function to generate shadow CSR test lines for writing wreg and reading rreg."""
-    return str.join(
-        "\n",
-        [
-            "",
-            f"# Testcase: shadow CSR test for writing {wreg} and reading {rreg} with mask 0x{mask:x}",
-            f"LI(x{rmask}, 0x{mask:x}) # mask specifying bits to keep",
-            f"csrr x{rsave}, {wreg}       # save original value of {wreg}",
-            f"csrw {wreg}, x{r1}       # write many 1s to {wreg}",
-            test_data.add_testcase(f"{wreg}_{rreg}_1s", coverpoint, covergroup),
-            gen_csr_read_sigupd(r2, (rreg, mask), test_data, rmask),
-            f"csrw {wreg}, x0       # write all 0s to {wreg}",
-            test_data.add_testcase(f"{wreg}_{rreg}_0s", coverpoint, covergroup),
-            gen_csr_read_sigupd(r2, (rreg, mask), test_data, rmask),
-            f"csrw {wreg}, x{rsave}       # write back saved value of {wreg}",
-        ],
-    )
-
-
-@add_priv_test_generator("S", required_extensions=["S"])
+@add_priv_test_generator(
+    "S",
+    required_extensions=["S"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+)
 def make_s(test_data: TestData) -> list[TestChunk]:
     """Generate tests for S supervisor-mode testsuite."""
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
 
-    tc.code.append("### Run some tests in machine mode")
-    tc.code.extend(_generate_mretm_tests(test_data))
-    tc.code.extend(_generate_sretm_tests(test_data))
     tc.code.extend(_generate_srets_tests(test_data))
-    tc.code.extend(
-        [
-            "",
-            "",
-            "RVTEST_GOTO_MMODE  # Get back to machine mode to prepare to go to supervisor mode",
-            "RVTEST_GOTO_LOWER_MODE Smode  # Run remaining tests in supervisor mode",
-        ]
-    )
     tc.code.extend(_generate_scause_tests(test_data))
     tc.code.extend(_generate_sstatus_sd_tests(test_data))
     tc.code.extend(_generate_priv_inst_tests(test_data))
-    tc.code.extend(_generate_scsr_tests(test_data))
 
+    _generate_scsr_tests(test_data, test_chunks)
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

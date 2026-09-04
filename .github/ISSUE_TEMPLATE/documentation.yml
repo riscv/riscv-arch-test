@@ -1,0 +1,37 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: Apache-2.0
+
+name: Documentation issue
+description: Report a documentation problem or suggest a change.
+title: "[Docs] "
+body:
+  - type: dropdown
+    id: affected-area
+    attributes:
+      label: Affected area
+      description: Select the document that needs attention.
+      options:
+        - "CTP — Certification Test Plan"
+        - "CRD — Certification Requirements Document"
+        - "Other — Other project documentation"
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Published document location
+      description: Provide a document name, version, page or section title, or URL.
+      placeholder: "e.g., CTP 1.0, Table 20. M Normative Rules"
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: Problem or requested improvement
+      description: Explain what is incorrect, unclear, missing, or should change.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context

@@ -2,20 +2,13 @@
 # Jordan Carlin jcarlin@hmc.edu April 2026
 # CI configuration for Whisper simulator
 
-# SsstrictSm, SsstrictS, SsstrictU excluded because of Sail bugs and not all instructions in whisper-max supported by Sail
-# Smstateen will be added back once issue related srmcfg in whisper is resolved
-# S excluded due to Whisper bug (to be reported upstream): SRET that drops below M-mode must
-# clear mstatus.MPRV (priv spec 3.1.6.3), but whisper's execSret applies the clear through the
-# SSTATUS shadow view whose write mask excludes MPRV, so the clear is silently dropped
-# The MRET path writes MSTATUS directly and is unaffected. The S suite's
-# cp_sret_m mprv=1 bins catch this: sail clears MPRV, whisper keeps it -> selfcheck mismatch.
-# SmV excluded due to https://github.com/tenstorrent/whisper/issues/33
-# ExceptionsZaamo: Whisper reports mtval from the second half of cross-granule AMOCAS faults.
+# SsstrictSm, SsstrictS, SsstrictU excluded because of sail-riscv#1882, sail-riscv#1880
+#   Should be fixed in Sail 0.14
+# Smstateen Sail does not yet support 1P13 bit
 # ExceptionsSvZalrsc: Whisper reports page faults where Sail expects access faults.
-# InterruptsSSm excluded because whisper supports M mode interrupt delegation and Sail currently only supports S mode interrupt delegation.
+# Sdtrig* not yet implemented in Sail
 ci_enabled: true
-# TODO: Remove SsstrictV when sail SsstrictV is implemented
-exclude_extensions: "S,Sm,SmV,SsstrictSm,SsstrictS,SsstrictU,ExceptionsZaamo,ExceptionsSvZalrsc,SsstrictV,Smstateen,InterruptsSSm,Zkr,Vx8,Vx16,Vx32,SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,ExceptionsSvZalrsc,Smstateen,SdtrigSm,SdtrigS,SdtrigU"
 exclude_configs:
   - whisper-rv32-max-spike-ref
   - whisper-rv64-max-spike-ref

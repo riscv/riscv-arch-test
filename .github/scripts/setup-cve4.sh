@@ -8,6 +8,6 @@ set -euo pipefail
 
 INSTALL_DIR="${1:?Usage: setup-cve4.sh <install-dir>}"
 
-echo "$INSTALL_DIR/bin" >> "$GITHUB_PATH"
-echo "CVE4_DV_ROOT=$INSTALL_DIR/cv32e40p-dv" >> "$GITHUB_ENV"
-echo "CVE40X_DV_ROOT=$INSTALL_DIR/cv32e40x-dv" >> "$GITHUB_ENV"
+echo "$INSTALL_DIR/bin" >>"$GITHUB_PATH"
+echo "CVE4_DV_ROOT=$INSTALL_DIR/cv32e40p-dv" >>"$GITHUB_ENV"
+echo "CVE40X_DV_ROOT=$INSTALL_DIR/cv32e40x-dv" >>"$GITHUB_ENV"

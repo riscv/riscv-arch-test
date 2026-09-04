@@ -5,13 +5,12 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.params import PresetMask
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
-from testgen.formatters.vector_params import generate_random_vector_params
+from testgen.instructions.vector_params import generate_random_vector_params
 
 
 @add_coverpoint_generator("cp_custom_vmask_write_lmulge1")
@@ -28,7 +27,7 @@ def make_vmask_write_lmulge1(instr_name: str, instr_type: str, coverpoint: str, 
         bin_name = f"cp_custom_vmask_write_lmulge1_lmul_{lmul}"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
         test_chunks.append(tc)
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
     return test_chunks
 
 
@@ -54,7 +53,7 @@ def make_vmask_write_v0_masked(
     desc = "cp_custom_vmask_write_v0_masked (vd=v0, mask=ones)"
     bin_name = "cp_custom_vmask_write_v0_masked"
     tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_test_regs(test_data, params)
+    return_testcase_registers(test_data, params)
     return [tc]
 
 
@@ -79,7 +78,7 @@ def make_element0Masked(instr_name: str, instr_type: str, coverpoint: str, test_
     desc = "cp_custom_element0Masked (maskval=ones, vl=vlmax)"
     bin_name = "cp_custom_element0Masked"
     tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_test_regs(test_data, params)
+    return_testcase_registers(test_data, params)
     return [tc]
 
 
@@ -96,7 +95,7 @@ def make_vreductionw_vd_vs1_emul_16(
     desc = "cp_custom_vreductionw_vd_vs1_emul_16 (lmul=8)"
     bin_name = "cp_custom_vreductionw_vd_vs1_emul_16"
     tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_test_regs(test_data, params)
+    return_testcase_registers(test_data, params)
     return [tc]
 
 
@@ -119,7 +118,7 @@ def make_voffgroup_vd(instr_name: str, instr_type: str, coverpoint: str, test_da
         bin_name = f"cp_custom_voffgroup_vd_lmul{lmul}_b{v}"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
         test_chunks.append(tc)
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
     return test_chunks
 
 
@@ -142,7 +141,7 @@ def make_voffgroup_vs1(instr_name: str, instr_type: str, coverpoint: str, test_d
         bin_name = f"cp_custom_voffgroup_vs1_lmul{lmul}_b{v}"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
         test_chunks.append(tc)
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
     return test_chunks
 
 
@@ -165,5 +164,5 @@ def make_voffgroup_vs2(instr_name: str, instr_type: str, coverpoint: str, test_d
         bin_name = f"cp_custom_voffgroup_vs2_lmul{lmul}_b{v}"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
         test_chunks.append(tc)
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
     return test_chunks

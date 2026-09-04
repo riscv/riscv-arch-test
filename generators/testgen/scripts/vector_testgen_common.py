@@ -1612,8 +1612,7 @@ def getPrivExtraDefines(sew):
     sewsize = sew_to_suffix[minSEW_MIN] if sew == 0 else sew_to_suffix[sew]
     vle = f"vle{minSEW_MIN}.v"
     return "\n".join([
-        "#define rvtest_mtrap_routine",
-        "#define rvtest_strap_routine",
+        "#define BOOT_TO_MMODE",
         "#define RVTEST_PRIV_TEST",
         f"#define SEWMIN {minSEW_MIN}",
         f"#define SEWMINSIZE e{minSEW_MIN}",
@@ -1714,11 +1713,13 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
         if ext == "V" and matched_alias is not None:
           ext_str_no_I += "_" + ext
           continue
-        # Bit Manipulation, Carryless Multiplication, and Crypto Bit Manipulation
-        if ext in ["Zvbb", "Zvbc", "Zvkb"]:
+        # Vector Bit Manipulation, Carryless Multiplication, and Crypto
+        if ext in ["Zvbb", "Zvbc", "Zvkb", "Zvkg", "Zvkned", "Zvknha", "Zvknhb", "Zvksed", "Zvksh"]:
           # Assemblers require an explicit Zve base when only Zv* sub-extensions
-          # are listed. Pick the smallest Zve that covers the active SEW/VDSEW.
-          zve_extension = f"Zve{max(32, sew, vdsew)}x"
+          # are listed. Pick the smallest Zve that covers the active SEW/VDSEW;
+          # Zvknhb requires Zve64x regardless of the test SEW.
+          zve_sew = 64 if ext == "Zvknhb" else max(32, sew, vdsew)
+          zve_extension = f"Zve{zve_sew}x"
           ext_parts_no_I.append(zve_extension)
           ext_str_no_I += "_" + zve_extension.lower()
         ext_parts_no_I.append(ext)
@@ -1760,7 +1761,6 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
         .replace("@MARCH@", march.lower())
         .replace("@PARAMS@", f"params:\n#   MXLEN: {xlen}")
         .replace("@TEST_DATA@", test_data)
-        .replace("@TEST_FILE_NAME@", f"{test}.S")
         # @SIGUPD_COUNT_FROM_TESTGEN@ intentionally left unreplaced; finalizeSigupdCount()
         # rewrites it after the test body is fully generated and sigupd_count is final.
         .replace("@TESTCASE_STRINGS@", generate_testcase_string_section())
@@ -1814,9 +1814,9 @@ def writeSIGUPD_FFLAGS(inst_ptr):
     sigupd_count += 1    # Increment counter on each call
     str_ptr = "test_" + str(testcase_count) + "_str"
     # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
-    # and rd. linkReg must come from {5, 8, 13} (the only values the macro
+    # and rd. linkReg must come from {5, 8, 14} (the only values the macro
     # supports given its tempReg layout); pick randomly among the legal options.
-    linkOptions = [lr for lr in (5, 8, 13)
+    linkOptions = [lr for lr in (5, 8, 14)
                    if lr != sigReg and lr - 1 != sigReg]
     if not linkOptions:
       raise RuntimeError(f"writeSIGUPD_FFLAGS: no legal linkReg given sigReg={sigReg}")
@@ -1829,9 +1829,9 @@ def writeSIGUPD_VXSAT(inst_ptr):
     sigupd_count += 1    # Increment counter on each call
     str_ptr = "test_" + str(testcase_count) + "_str"
     # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
-    # and rd. linkReg must come from {5, 8, 13} (the only values the macro
+    # and rd. linkReg must come from {5, 8, 14} (the only values the macro
     # supports given its tempReg layout); pick randomly among the legal options.
-    linkOptions = [lr for lr in (5, 8, 13)
+    linkOptions = [lr for lr in (5, 8, 14)
                    if lr != sigReg and lr - 1 != sigReg]
     if not linkOptions:
       raise RuntimeError(f"writeSIGUPD_VXSAT: no legal linkReg given sigReg={sigReg}")
@@ -2475,7 +2475,6 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
       writeLine(f"vsetivli x0, 1, e{sew}, m{lmulflag}, tu, mu", "# Restore valid vtype after vill test")
 
     if (priv):
-      writeLine("nop",                                           "# nop after possible trap")
       # The test instruction may have trapped or otherwise left mstatus.VS in a
       # state where vector CSR access (csrw vstart) is itself illegal. Restore
       # FS|VS = Dirty BEFORE touching any vector CSR so the cleanup epilog never
@@ -3092,7 +3091,9 @@ def writeTest(description, instruction, cp, instruction_data=None,
         # _LMUL (= sig_lmul, capped to integer EMUL since whole-register/mask
         # paths use sig_lmul=1 and fractional groups fit in one register).
         sig_emul = max(int(sig_lmul), 1) if sig_lmul is not None and sig_lmul >= 1 else 1
-        reload_zero_lmul = getLmulFlag(sig_emul)
+        # Whole-register store reloads zero each physical destination register individually.
+        # Use LMUL=1 for that setup so v8/v9/... are all legal vmv.v.i destinations.
+        reload_zero_lmul = 1 if instruction in whole_register_stores else getLmulFlag(sig_emul)
         default_lmul_flag = getLmulFlag(lmul)
         reload_pre_init = [
           f"csrr x{mi_t1}, vl",
@@ -3243,6 +3244,11 @@ def randomizeRegister(instruction, eew, register_argument_name: str, reg_count: 
       segments  =     register_data['segments']
       if register_data['reg_type'] == "scalar" or register_data['reg_type'] == "mask" or emul < 1:
         emul = 1
+      nreg = getWholeRegisterCount(instruction)
+      if nreg is not None:
+        # Whole-register ops touch NREG registers regardless of the vtype LMUL,
+        # so the operand must be NREG-aligned and must not run past v31.
+        emul = nreg
       # Align to lmul even for scalar/mask registers so that scaffolding
       # loads/stores (which execute at the current vtype LMUL) don't trap
       # on misaligned register numbers.
@@ -3260,6 +3266,9 @@ def randomizeRegister(instruction, eew, register_argument_name: str, reg_count: 
     emul_check = int(register_data['size_multiplier'] * lmul)
     if register_data['reg_type'] == "scalar" or register_data['reg_type'] == "mask" or emul_check < 1:
       emul_check = 1
+    nreg = getWholeRegisterCount(instruction)
+    if nreg is not None:
+      emul_check = nreg
     if register + emul_check * register_data['segments'] > reg_count:
       raise ValueError(
         f"preset {register_argument_name}=v{register} with NF={register_data['segments']} "
@@ -3665,6 +3674,13 @@ def getBaseLmul(instruction, sew):
 def getLengthLmul(instruction):
   if instruction in whole_register_move       : return int(instruction[3])
   else                                        : return None
+
+def getWholeRegisterCount(instruction):
+  # Whole-register moves and loads/stores operate on NREG registers fixed by the
+  # mnemonic regardless of vtype LMUL: vmv<nr>r.v, vl<nr>re<eew>.v, vs<nr>r.v.
+  if   instruction in whole_register_move : return int(instruction[3])
+  elif instruction in whole_register_ls   : return int(instruction[2])
+  else                                    : return None
 
 ##################################
 # length suite

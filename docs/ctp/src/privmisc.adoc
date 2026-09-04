@@ -13,9 +13,11 @@
 
 [[t-Smstateen-coverpoints]]
 .Smstateen Coverpoints
-//,===
-//include::{testplansdir}/Smstateen.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/1zm67nLKLn_tszDTzJQ9BIMOB7wuiskcuj3Mql4TOciA/edit?gid=1207083655#gid=1207083655[Google Sheet Testplan]
+,===
+
+include::norm/Smstateen_norm_rules.adoc[]
 
 ==== Smcsrind Machine-Mode Indirect CSR Access
 

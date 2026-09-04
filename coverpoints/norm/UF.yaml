@@ -11,4 +11,4 @@ normative_rule_definitions:
   # make them read-only zero. These fields are labeled WPRI in the register
   # descriptions.
   - name: Zicsr_wpri_roz
-    coverpoint: ["UF_cg/cp_ufcsrwalk"]
+    coverpoint: ["UF_ufcsr_cg/cp_ufcsrwalk"]

@@ -14,7 +14,7 @@ implemented_extensions:
   - { name: H, version: "= 1.0.0" }
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
-  - { name: Q, version: "= 1.0.0" }
+  - { name: Q, version: "= 2.2.0" }
   - { name: S, version: "= 1.13.0" }
   - { name: Sdext, version: "= 1.0.0" }
   - { name: Sdtrig, version: "= 1.0.0" }
@@ -66,7 +66,6 @@ implemented_extensions:
   - { name: Svinval, version: "= 1.0.0" }
   - { name: Svnapot, version: "= 1.0.0" }
   - { name: Svpbmt, version: "= 1.0.0" }
-  - { name: Svrsw60t59b, version: "= 1.0.0" }
   - { name: Svvptc, version: "= 1.0.0" }
   - { name: U, version: "= 1.0.0" }
   - { name: V, version: "= 1.0.0" }
@@ -137,18 +136,11 @@ implemented_extensions:
   - { name: Zvfhmin, version: "= 1.0.0" }
   - { name: Zvkb, version: "= 1.0.0" }
   - { name: Zvkg, version: "= 1.0.0" }
-  - { name: Zvkn, version: "= 1.0.0" }
-  - { name: Zvknc, version: "= 1.0.0" }
   - { name: Zvkned, version: "= 1.0.0" }
-  - { name: Zvkng, version: "= 1.0.0" }
   - { name: Zvknha, version: "= 1.0.0" }
   - { name: Zvknhb, version: "= 1.0.0" }
-  - { name: Zvks, version: "= 1.0.0" }
-  - { name: Zvksc, version: "= 1.0.0" }
   - { name: Zvksed, version: "= 1.0.0" }
-  - { name: Zvksg, version: "= 1.0.0" }
   - { name: Zvksh, version: "= 1.0.0" }
-  - { name: Zvkt, version: "= 1.0.0" }
   - { name: Zvl32b, version: "= 1.0.0" }
   - { name: Zvl64b, version: "= 1.0.0" }
   - { name: Zvl128b, version: "= 1.0.0" }
@@ -220,27 +212,27 @@ params:
       true,
       true,
       true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
   STVEC_MODE_DIRECT: true
   STVEC_MODE_VECTORED: true
@@ -300,30 +292,32 @@ params:
       true,
       true,
       true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
   HPM_EVENTS: [0]
   MCOUNTINHIBIT_IMPLEMENTED: true
+  # Whisper's mcountinhibit mask is 0xFFFFFFFD regardless of num_mmode_perf_regs, but UDB requires
+  # COUNTINHIBIT_EN[n] to be false whenever HPM_COUNTER_EN[n] is false, so bits 11-31 are listed as false.
   COUNTINHIBIT_EN:
     [
       true,
@@ -337,27 +331,27 @@ params:
       true,
       true,
       true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
   MCOUNTENABLE_EN:
     [
@@ -372,27 +366,27 @@ params:
       true,
       true,
       true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
   # Vector params
   MUTABLE_MISA_V: true
@@ -489,27 +483,27 @@ params:
       true,
       true,
       true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
   # Zicfilp params
   REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK: true
@@ -530,7 +524,7 @@ params:
   HSTATEEN_CONTEXT_TYPE: rw
   MCONTEXT_AVAILABLE: true
   # Pointer masking params
-  PMLEN: 17
+  PMLEN: 7
   # Ssqosid params
   MCID_WIDTH: 12
   RCID_WIDTH: 12

@@ -32,10 +32,10 @@
 # MARCH: rv32i_zicsr_zifencei_zaamo
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_exceptions_Zaamo_Umode.S"
 #define SIGUPD_COUNT 45
 #define TRAP_SIGUPD_COUNT 110
-
+// TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+#define BOOT_TO_MMODE
 
 #include "riscv_arch_test.h"
 
@@ -163,6 +163,7 @@ main:
 //                    4MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 3-4: Test in U-Mode | Valid PTE | Points to RVMODEL_ACCESS_FAULT_ADDRESS | expected = 2 faults
   SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -170,6 +171,7 @@ main:
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test3, RVMODEL_ACCESS_FAULT_ADDRESS
   sfence.vma
   TEST_CASES_RUNNER Umode, (va_data+0x2), LEVEL1, test4, RVMODEL_ACCESS_FAULT_ADDRESS
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    4MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
@@ -187,6 +189,7 @@ main:
 //                    4MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 7-8: Test in U-Mode | Invalid PTE | Points to RVMODEL_ACCESS_FAULT_ADDRESS | expected = 2 faults
   SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
   sfence.vma
@@ -194,6 +197,7 @@ main:
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test7, RVMODEL_ACCESS_FAULT_ADDRESS
   sfence.vma
   TEST_CASES_RUNNER Umode, (va_data+0x2), LEVEL1, test8, RVMODEL_ACCESS_FAULT_ADDRESS
+#endif
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -206,7 +210,7 @@ main:
 
   // Test case 9-10: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[0] set | expected = 1 Store/AMO page fault
   li a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test9
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL1, test10
@@ -214,7 +218,7 @@ main:
 
   // Test case 11-12: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[1] set | expected = 1 Store/AMO page fault
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test11
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL1, test12
@@ -222,7 +226,7 @@ main:
 
   // Test case 13-14: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[2] set | expected = 1 Store/AMO page fault
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test13
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL1, test14
@@ -230,7 +234,7 @@ main:
 
   // Test case 15-16: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[3] set | expected = 1 Store/AMO page fault
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test15
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL1, test16
@@ -238,7 +242,7 @@ main:
 
   // Test case 17-18: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[4] set | expected = 1 Store/AMO page fault
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test17
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL1, test18
@@ -246,7 +250,7 @@ main:
 
   // Test case 19-20: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[5] set | expected = 1 Store/AMO page fault
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test19
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL1, test20
@@ -254,7 +258,7 @@ main:
 
   // Test case 21-22: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[6] set | expected = 1 Store/AMO page fault
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test21
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL1, test22
@@ -262,7 +266,7 @@ main:
 
   // Test case 23-24: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[7] set | expected = 1 Store/AMO page fault
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test23
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL1, test24
@@ -270,7 +274,7 @@ main:
 
   // Test case 25-26: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[8] set | expected = 1 Store/AMO page fault
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test25, ECALL_DELEG=1
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL1, test26, ECALL_DELEG=1
@@ -278,7 +282,7 @@ main:
 
   // Test case 27-28: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[9] set | expected = 1 Store/AMO page fault
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test27
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL1, test28
@@ -286,7 +290,7 @@ main:
 
   // Test case 29-30: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[12] set | expected = 1 Store/AMO page fault
   slli a1, a1, 3
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test29
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL1, test30
@@ -294,7 +298,7 @@ main:
 
   // Test case 31-32: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[13] set | expected = 1 Store/AMO page fault
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test31
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL1, test32
@@ -302,7 +306,7 @@ main:
 
   // Test case 33-34: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[15] set | expected = 1 Store/AMO page fault
   slli a1, a1, 2
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test33
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL1, test34
@@ -310,7 +314,7 @@ main:
 
   // Test case 35-36: Test in U-Mode | Valid & Invalid PTEs | RWX set | set medeleg = 0xB1FF | expected = 1 Store/AMO page fault
   LI(a1, 0xB1FF)
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test35, ECALL_DELEG=2
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL1, test36, ECALL_DELEG=2

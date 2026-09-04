@@ -1,0 +1,27 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: Apache-2.0
+
+name: Question
+description: Ask a question about using or contributing to the project.
+title: "[Question] "
+labels: [Question]
+body:
+  - type: dropdown
+    id: affected-area
+    attributes:
+      label: Affected area
+      description: Select the area most relevant to the question.
+      options:
+        - "Tests — Test generation or individual test files"
+        - "Test Environment — Trap handler, boot code, signature checking, etc."
+        - "Test Framework — Test selection or compilation"
+        - "Coverpoints — Coverage model or coverage generation"
+        - "Other — A question not listed above"
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+    validations:
+      required: true

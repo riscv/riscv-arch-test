@@ -43,16 +43,36 @@
     .option pop
 #endif
 
+// RVTEST_SIGUPD_FAST_TRAP(sigptr, tempreg, sigreg, csr, offset, mismatch)
+// Reads, records, or compares one CSR field without advancing sigptr.
+// Fast trap handlers use fixed offsets for their cause, EPC, and TVAL fields,
+// then advance sigptr once after all three fields. Both compile modes emit two
+// instructions so the signature and self-check ELFs have identical code layout.
+#ifdef RVTEST_SELFCHECK
+  #define RVTEST_SIGUPD_FAST_TRAP(_SIG_PTR, _TMPREG, _R, _CSR, _OFF, _MISMATCH) \
+    csrr _R, _CSR                                                           ;\
+    LREG _TMPREG, _OFF(_SIG_PTR)                                           ;\
+    bne _R, _TMPREG, _MISMATCH
+#else
+  #define RVTEST_SIGUPD_FAST_TRAP(_SIG_PTR, _TMPREG, _R, _CSR, _OFF, _MISMATCH) \
+    csrr _R, _CSR                                                           ;\
+    SREG _R, _OFF(_SIG_PTR)                                                ;\
+    nop
+#endif
+
 // TRAP_SIGUPD(tempreg, sigreg, offset, instptr, strptr)
 // Used to compare/write signatures while handling traps.
 // In Self Check mode, compare reference and DUT signatures and jump to
 // failedtest_trap_x7_x9 in case of a mismatch.
-// In failedtest_trap_x7_x9, x7/T2 is LINK_REG & x9/T4 is TEMP_REG
+// On failure, x6/T1 carries the actual value, DEFAULT_TEMP_REG carries the
+// expected value, x7/T2 is the link register, and x9/T4 is scratch.
 // If not in Self Check mode, just store signatures to the trap signature region
 #ifdef RVTEST_SELFCHECK
   #define TRAP_SIGUPD(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR)    \
     LREG _TMPREG, _OFF*REGWIDTH(T1)                             ;\
     beq  _TMPREG, _R, 2f                                        ;\
+    mv   T1, _R                                                 ;\
+    mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
     jal  T2, failedtest_trap_x7_x9                              ;\
     RVTEST_WORD_PTR _INST_PTR                                   ;\
     RVTEST_WORD_PTR _STR_PTR                                    ;\
@@ -62,6 +82,8 @@
   #define TRAP_SIGUPD(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR)    \
     SREG _R, _OFF*REGWIDTH(T1)                                  ;\
     beq  x0, x0, 2f                                             ;\
+    mv   T1, _R                                                 ;\
+    mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
     jal  T2, failedtest_trap_x7_x9                              ;\
     RVTEST_WORD_PTR _INST_PTR                                   ;\
     RVTEST_WORD_PTR _STR_PTR                                    ;\
@@ -885,11 +907,19 @@
 #endif
 
 #if UDB_MXLEN==64
+  #define FINAL_SIG_OFFSET_CANARY_VALUE \
+      0x4B8E2D17A6C0F953
+  #define FINAL_SIG_OFFSET_CANARY \
+      .dword FINAL_SIG_OFFSET_CANARY_VALUE
   #define FINAL_TRAP_OFFSET_CANARY_VALUE \
       0x7A110FF5C0DEF00D
   #define FINAL_TRAP_OFFSET_CANARY \
       .dword FINAL_TRAP_OFFSET_CANARY_VALUE
 #else
+  #define FINAL_SIG_OFFSET_CANARY_VALUE \
+      0x4B8E2D17
+  #define FINAL_SIG_OFFSET_CANARY \
+      .word FINAL_SIG_OFFSET_CANARY_VALUE
   #define FINAL_TRAP_OFFSET_CANARY_VALUE \
       0x7A110FF5
   #define FINAL_TRAP_OFFSET_CANARY \
@@ -898,7 +928,7 @@
 
 // Read _CSR into _R and record/check the signature
 #define RVTEST_SIGUPD_CSR_RD(_SIG_PTR, _LINK_REG, _TEMP_REG, _CSR, _R, _INST_PTR, _STR_PTR) \
-    CSRR(_R, _CSR)                                       ;\
+    csrr _R, _CSR                                    ;\
     RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _INST_PTR, _STR_PTR)
 
 // Abbreviated form with default registers
@@ -908,7 +938,7 @@
 
 // Write _R1 into _CSR, then read back into _R2 and record/check the signature
 #define RVTEST_SIGUPD_CSR_WR(_SIG_PTR, _LINK_REG, _TEMP_REG, _CSR, _R1, _R2, _INST_PTR, _STR_PTR) \
-    CSRW(_CSR, _R1)                                      ;\
+    csrw _CSR, _R1                                      ;\
     RVTEST_SIGUPD_CSR_RD(_SIG_PTR, _LINK_REG, _TEMP_REG, _CSR, _R2, _INST_PTR, _STR_PTR)
 
 // Abbreviated form with default registers, overwrites _R with value read back

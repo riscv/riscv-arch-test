@@ -3,11 +3,25 @@
 # Jordan Carlin jcarlin@hmc.edu October 2025, Sadhvi Narayanan sanarayanan@hmc.edu February 2026
 # SPDX-License-Identifier: BSD-3-Clause
 
+// Absolute .option arch strings used to bracket the FP/vector register init below.
+// An absolute arch string resets the arch for the block (rather than adding to the
+// test's -march), so it drops any mutually-exclusive extension the test declared
+// (e.g. Zfinx in the Sm/Ssstateen suites, which conflicts with F). .option pop then
+// restores the test's real march. Supersets are harmless: only the init instructions
+// are emitted inside the block. See rv..imafdcv (V implies zve64d->d->f->m).
+#if __riscv_xlen == 64
+  #define RVTEST_FP_INIT_ARCH  rv64if
+  #define RVTEST_VEC_INIT_ARCH rv64imfv
+#else
+  #define RVTEST_FP_INIT_ARCH  rv32if
+  #define RVTEST_VEC_INIT_ARCH rv32imfv
+#endif
+
 /*************************************** RVTEST_BEGIN **************************************/
 /**** RVTEST_BEGIN sets up the test environment and is run before the actual test code. ****/
 /**** - sets up main entry point labels                                                 ****/
 /**** - runs model specific boot code                                                   ****/
-/**** - instantiate prologs using RVTEST_TRAP_PROLOG() if rvtests_xtrap_routine defined ****/
+/**** - instantiates trap prologs when STANDARD_SM_SUPPORTED is defined                 ****/
 /**** - initializes regs                                                                ****/
 /**** - defines rvtest_code_begin global label                                          ****/
 /*******************************************************************************************/
@@ -60,7 +74,7 @@
 /************************************* RVTEST_CODE_END *************************************/
 /**** RVTEST_CODE_END is run after the actual test code.                                ****/
 /**** - Switch to M Mode                                                                ****/
-/**** - Instantiate epilogs using RVTEST_TRAP_EPILOG() if rvtests_xtrap_routine defined ****/
+/**** - instantiates trap epilogs when STANDARD_SM_SUPPORTED is defined                 ****/
 /**** - Instantiate trap handlers for each priv mode                                    ****/
 /**** - Include headers that contain code (not macros) that would throw off the address ****/
 /**** - Terminate test with call to RVMODEL_HALT                                        ****/
@@ -96,11 +110,56 @@
       RVTEST_TRAP_EPILOG M            // actual m-mode prolog/epilog/handler code
     #endif
 
+  #ifndef RVTEST_NOSIG
+    // Check the regular signature offset to make sure the correct number of
+    // signature updates occurred.
+    check_regular_sig_offset:
+      LA(     T1, signature_base)
+      sub     T1, DEFAULT_SIG_REG, T1
+      LA(     T3, final_sig_offset)
+    #ifdef RVTEST_SELFCHECK
+      LREG    DEFAULT_TEMP_REG, 0(T3)
+      beq     DEFAULT_TEMP_REG, T1, check_regular_sig_offset_done
+    #else
+      SREG    T1, 0(T3)
+      beq     x0, x0, check_regular_sig_offset_done
+    #endif
+
+      // Print only the expected and actual offsets for this framework error.
+      LA(a0, failstr)
+      call rvmodel_io_write_str
+      LA(a0, begin_debugstr)
+      call rvmodel_io_write_str
+      LA(a0, regular_sig_offset_header)
+      call rvmodel_io_write_str
+      LA(a0, regular_sig_offset_actual_str)
+      call rvmodel_io_write_str
+      mv      a0, T1
+      li      a1, UDB_MXLEN
+      jal     ra, failedtest_hex_to_str
+      LA(a0, ascii_buffer)
+      call rvmodel_io_write_str
+      LA(a0, regular_sig_offset_expected_str)
+      call rvmodel_io_write_str
+      LA(T3, final_sig_offset)
+      LREG    a0, 0(T3)
+      li      a1, UDB_MXLEN
+      jal     ra, failedtest_hex_to_str
+      LA(a0, ascii_buffer)
+      call rvmodel_io_write_str
+      LA(a0, endstr)
+      call rvmodel_io_write_str
+      call rvmodel_halt_fail
+    check_regular_sig_offset_done:
+  #endif
+
   #ifdef STANDARD_SM_SUPPORTED
     check_trap_sig_overflow:
       LA(     T4, trap_sig_overflow)
-      bne     T4, T5, check_abort_test
+      bne     T4, T5, check_trap_sig_offset
       LA(a0, failstr)
+      call rvmodel_io_write_str
+      LA(a0, begin_debugstr)
       call rvmodel_io_write_str
       LA(a0, trap_sig_overflowstr)
       call rvmodel_io_write_str
@@ -108,39 +167,52 @@
       call rvmodel_io_write_str
       call rvmodel_halt_fail
 
-    check_abort_test:
-      LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
-      bne     T4, T5, check_trap_sig_offset
-      jal     T2, failedtest_trap_x7_x9
-      RVTEST_WORD_PTR abort_test
-      RVTEST_WORD_PTR abortstr
-      .word   CSR_MEPC
-
-    // Check trap signature offset to make sure the correct number of traps occurred
+    // Check trap signature offset to make sure the correct number of traps occurred.
+    // This is a trap-framework diagnostic, not a normal signature check. Pass the
+    // already-available actual and expected offsets to the trap failure entry before
+    // any diagnostic code can fault and overwrite trap CSRs.
     check_trap_sig_offset:
+    #ifndef RVTEST_NOSIG
       LA(     T1, Mtrap_sig)
       LREG    T1, 0(T1)               // Trap signature pointer
-      LA(     T2, trap_sigptr)       // Base address of trap signature region
+      LA(     T2, trap_sigptr)        // Base address of trap signature region
       sub     T1, T1, T2              // Calculate DUT trap signature byte count
       LA(     T3, final_trap_sig_offset)
     #ifdef RVTEST_SELFCHECK
-      LREG    T4, 0(T3)               // Reference trap signature byte count
-      beq     T4, T1, 1f
+      LREG    DEFAULT_TEMP_REG, 0(T3) // Reference trap signature byte count
+      beq     DEFAULT_TEMP_REG, T1, check_abort_test
     #else
       SREG    T1, 0(T3)               // Save reference trap signature byte count
-      beq     x0, x0, 1f
+      beq     x0, x0, check_abort_test
     #endif
       jal     T2, failedtest_trap_x7_x9
       RVTEST_WORD_PTR check_trap_sig_offset
       RVTEST_WORD_PTR trap_sig_offset_mismatch
-    1:
+    #endif
+
+    check_abort_test:
+      LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
+      bne     T4, T5, exit_cleanup
+      jal     T2, failedtest_trap_x7_x9
+      RVTEST_WORD_PTR abort_test
+      RVTEST_WORD_PTR abortstr
+      .word   CSR_MEPC
   #endif
 
-  // Terminate test
+  // Terminate test with passing status
   exit_cleanup:
     LA(a0, successstr)
     call rvmodel_io_write_str
     call rvmodel_halt_pass
+
+  // Terminate the test with a failure message
+  // Does not include any debug information.
+  // Used for C tests that print their own failure messages inline.
+  .global rvtest_fail_summary
+  rvtest_fail_summary:
+    LA(a0, failstr)
+    call rvmodel_io_write_str
+    call rvmodel_halt_fail
 
   // Terminate the test with a failure message indicating the trap signature overflowed
   trap_sig_overflow:
@@ -184,31 +256,21 @@
       RVMODEL_IO_INIT(T1, T2, T3)
     #endif
 
-    // boot to the lowest supported privilege mode unless a higher mode is specified by BOOT_TO_MMODE or BOOT_TO_SMODE
-    // always boot to at least M-mode
-    // TODO: RVTEST_BOOT_TO_S/UMODE are temporarily gated, so we remain in M-mode unless BOOT_TO_S/UMODE parameters are set.  Remove this once all tests are ported to T-SBI.
+    // Boot to the lowest supported privilege mode unless a test requests M-mode or S-mode.
     RVTEST_BOOT_TO_MMODE
+    // The BOOT_TO_MMODE symbol will be defined in any tests that should run in M-mode.
+    // Otherwise continue to a lower privilege mode (if one exists) depending on the type of test
     #ifndef BOOT_TO_MMODE
-      // the BOOT_TO_MMODE symbol will be defined in any tests that should run in M-mode.
-      // otherwise continue to a lower privilege mode (if one exists) depending on the type of test
       #ifdef S_SUPPORTED
         RVTEST_BOOT_TO_SMODE
       #endif
+      // The BOOT_TO_SMODE symbol will be defined in any tests that should run in S-mode.
+      // Otherwise continue to U-mode if U-mode supported
       #ifndef BOOT_TO_SMODE
-        // the BOOT_TO_SMODE symbol will be defined in any tests that should run in S-mode.
-        // otherwise continue to U-mode if U-mode supported
         #ifdef U_SUPPORTED
           RVTEST_BOOT_TO_UMODE
         #endif
       #endif
-    #endif
-
-    // Temporary workaround to boot to correct mode in Ssstrict tests until
-    // full boot flow with mode selection is working. TODO: Remove this
-    #ifdef RVTEST_TEMP_BOOT_TO_S
-      RVTEST_GOTO_LOWER_MODE Smode
-    #elif defined(RVTEST_TEMP_BOOT_TO_U)
-      RVTEST_GOTO_LOWER_MODE Umode
     #endif
 
     #ifdef S_SUPPORTED
@@ -242,6 +304,10 @@
         #endif
     #endif
 
+    // Clear the global trap counter at the end of boot code
+    LA (T1, rvtest_trap_count)
+    SREG zero, 0(T1)
+
     RVTEST_INIT_REGS // Put deterministic values in each register
 
     LA (T1, rvtest_code_begin)
@@ -249,8 +315,19 @@
 
   rvmodel_io_write_str:
     // a0 = string pointer; T1-T3 (x6-x8) are scratch. Clobbers ra.
-    // safe to use T1-T3 because this is only invoked in termination code
+    // Use rvmodel_io_write_str_c for C-ABI compatible version.
     RVMODEL_IO_WRITE_STR(T1, T2, T3, a0)
+    ret
+
+  .global rvmodel_io_write_str_c
+  rvmodel_io_write_str_c:
+    addi sp, sp, -16
+    SREG ra, 0(sp)
+    SREG s0, REGWIDTH(sp)
+    call rvmodel_io_write_str
+    LREG s0, REGWIDTH(sp)
+    LREG ra, 0(sp)
+    addi sp, sp, 16
     ret
 
   rvmodel_halt_pass:
@@ -346,6 +423,15 @@
     .dword 0xDEAD001FFFE0BEEF, 0xDEAD0020FFDFBEEF
     .dword 0xDEAD0021FFDEBEEF
 
+  // Global counter of the number of traps taken, incremented by every mode's
+  // trap handler. Lives in .data (NOT the signature region) so it does not
+  // participate in signature self-checking. Readable from any privilege mode
+  // when paging is off (Bare mode ignores the PTE U bit).
+  .p2align 3
+  .global rvtest_trap_count
+  rvtest_trap_count:
+    .dword 0
+
   .p2align 4
 
   // Create separate save areas for each priv mode trap handler
@@ -410,11 +496,18 @@
   rvtest_sig_begin:
 
     // Main signature region
-    #ifdef RVTEST_SELFCHECK
-        signature_base:
-          // Preload signature region with correct values for self-checking
-          #include SIGNATURE_FILE
-    #else
+    #ifdef RVTEST_NOSIG
+      // No signature storage; keep compatibility labels for shared ACT code.
+      signature_base:
+      final_trap_sig_offset:
+      tsig_begin_canary:
+      trap_sigptr:
+      sig_end_canary:
+    #elif defined(RVTEST_SELFCHECK)
+      signature_base:
+        // Preload signature region with correct values for self-checking
+        #include SIGNATURE_FILE
+    #else // SIGNATURE Mode
       // Canary is the first entry in the signature region; the dynamic canary
       // check at test start reads and verifies this value to ensure the signature
       // mechanism is functioning correctly.
@@ -423,9 +516,11 @@
         // Initialize remaining signature region to known value for initial pass
         .fill SIGUPD_COUNT*(SIG_STRIDE>>2),4,0xdeadbeef
 
-      // Fixed diagnostic slot for the final trap signature byte count.
-      // sig_modify.py inserts the final_trap_sig_offset label after this canary
-      // in self-checking builds, where the raw signature data is included.
+      // Fixed diagnostic slots for the final signature offsets.
+      final_sig_offset_canary:
+        FINAL_SIG_OFFSET_CANARY
+      final_sig_offset:
+        .fill (REGWIDTH>>2),4,0xdeadbeef
       final_trap_sig_offset_canary:
         FINAL_TRAP_OFFSET_CANARY
       final_trap_sig_offset:
@@ -536,7 +631,7 @@
       #else    // RV32
         li t0, MSTATUS_MPP
         csrw mstatus, t0
-        #ifndef SM1P11P0_SUPPORTED
+        #ifdef SM1P12P0_OR_LATER_SUPPORTED
           csrw mstatush, zero // Clear all these fields
         #endif
       #endif
@@ -557,10 +652,12 @@
       // menvcfg.CBCFE = 1: Enable Zicbom cache block clean/flush instructions
       // menvcfg.CBIE = 11: Enable Zicbom cache block invalidate instructions to perform invalidate operation
       #ifdef U_SUPPORTED // menvcfg only exists if U-mode is supported
-        li t0, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE
-        csrw menvcfg, t0
-        #if __riscv_xlen == 32
-          csrw menvcfgh, zero // Clear upper bits if they exist
+        #ifdef SM1P12P0_OR_LATER_SUPPORTED
+          li t0, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE
+          csrw menvcfg, t0
+          #if __riscv_xlen == 32
+            csrw menvcfgh, zero // Clear upper bits if they exist
+          #endif
         #endif
       #endif
 
@@ -689,11 +786,11 @@
       #if (UDB_NUM_PMP_ENTRIES > 0) && defined(U_SUPPORTED)
         // Set up PMP so lower privilege modes can access the full address space.
         LI(t0, -1)
-        CSRW(pmpaddr0, t0)   // all-ones address gives the largest TOR/NAPOT range
+        csrw pmpaddr0, t0   // all-ones address gives the largest TOR/NAPOT range
         #ifdef UDB_PMP_TOR_SUPPORTED
-          CSRW(pmpcfg0, 0x0F)   // configure PMP0 to TOR RWX
+          csrw pmpcfg0, 0x0F   // configure PMP0 to TOR RWX
         #elif defined(UDB_PMP_NAPOT_SUPPORTED)
-          CSRW(pmpcfg0, 0x1F)   // configure PMP0 to NAPOT RWX
+          csrw pmpcfg0, 0x1F   // configure PMP0 to NAPOT RWX
         #else
           #error "PMP initialization requires TOR or NAPOT support"
         #endif
@@ -813,16 +910,13 @@
     // senvcfg.CBZE = 1: Enable Zicboz cache block zero instructions
     // senvcfg.CBCFE = 1: Enable Zicbom cache block clean/flush instructions
     // senvcfg.CBIE = 11: Enable Zicbom cache block invalidate instructions to perform invalidate operation
-    li t0, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE
-    csrw senvcfg, t0
+    #ifdef S1P12P0_OR_LATER_SUPPORTED
+      li t0, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE
+      csrw senvcfg, t0
+    #endif
 
     // Boot into S-mode
-    // temporarily gate going to SMODE with BOOT_TO_SMODE until all tests are updated to work with S-mode booting
-    // dh 7/1/26 remove this gating when all tests are updated to handle booting to modes other than M
-    // Also this avoids going to S-mode when the goal is to get to U-mode
-    #ifdef BOOT_TO_SMODE
-      RVTEST_GOTO_LOWER_MODE Smode
-    #endif
+    RVTEST_TSBI_GOTO_SMODE
   #endif
 .endm
 
@@ -831,7 +925,6 @@
 /*******************************************************************************************/
 .macro RVTEST_BOOT_TO_UMODE
   // We arrive here in S-mode if S_SUPPORTED, else in M-mode.
-  // dh 7/1/26 temporarily arriving here in M-mode if the goal is to go to U-mode
 
   // Run custom RVMODEL flavor if the DUT provides it to override this default boot
   #ifdef RVMODEL_BOOT_TO_UMODE
@@ -839,22 +932,7 @@
   #else
     rvtest_boot_to_umode:
     // Boot into U-mode
-    #ifdef BOOT_TO_UMODE
-      RVTEST_GOTO_LOWER_MODE Umode
-    #endif
-
-    // disabled 7/1/26 dh while booting to U-mode without going through S-mode until all tests are updated to handle booting to modes other than M
-    // #ifdef S_SUPPORTED
-    //   // RVTEST_GOTO_LOWER_MODE Umode // *** need a version that works from S-mode
-    // #else
-    //   // if S-mode not supported, we must be in M-mode, so we can just switch to U-mode without an SBI call
-
-    //   // temporarily gate going to UMODE with BOOT_TO_UMODE until all tests are updated to work with U-mode booting
-    //   // dh 7/1/26 remove this gating when all tests are updated to handle booting to modes other than M
-    //   #ifdef BOOT_TO_UMODE
-    //     RVTEST_GOTO_LOWER_MODE Umode
-    //   #endif
-    // #endif
+    RVTEST_TSBI_GOTO_UMODE
   #endif
   nop
 .endm
@@ -878,7 +956,14 @@
       li t0, MSTATUS_VS
       csrs mstatus, t0 // Set VS to dirty to enable vector
       csrr t0, vlenb   // Read VLENB so coverage trace records VLEN/8 (used by vlmax computation)
-    #endif
+      csrw vstart, x0  // vstart = 0
+      #ifdef ZVE32X_SUPPORTED // this should be defined if EEW of 32 is supported
+        .option push
+        .option arch, RVTEST_VEC_INIT_ARCH
+        vsetivli t0, 1, e32, m1, tu, mu // predictable initial state with 1 element, 32-bit EEW, LMUL=1, tail and masked elements undistrubed
+        .option pop
+      #endif // ZVE32X_SUPPORTED
+    #endif // ZVL32B_SUPPORTED
 .endm
 
 /*****************************************************************/
@@ -894,20 +979,6 @@
 /************************************ RVTEST_INIT_REGS ********************************/
 /**** Initialize registers and signature/data pointers                             ****/
 /**************************************************************************************/
-
-// Absolute .option arch strings used to bracket the FP/vector register init below.
-// An absolute arch string resets the arch for the block (rather than adding to the
-// test's -march), so it drops any mutually-exclusive extension the test declared
-// (e.g. Zfinx in the Sm/Ssstateen suites, which conflicts with F). .option pop then
-// restores the test's real march. Supersets are harmless: only the init instructions
-// are emitted inside the block. See rv..imafdcv (V implies zve64d->d->f->m).
-#if __riscv_xlen == 64
-  #define RVTEST_FP_INIT_ARCH  rv64if
-  #define RVTEST_VEC_INIT_ARCH rv64imfv
-#else
-  #define RVTEST_FP_INIT_ARCH  rv32if
-  #define RVTEST_VEC_INIT_ARCH rv32imfv
-#endif
 
 .macro RVTEST_INIT_REGS
   /* init regs, to ensure you catch any errors */
@@ -1031,31 +1102,46 @@
     .option pop
   #endif
 
-  // Initialize signature pointer
-  LA(DEFAULT_SIG_REG, signature_base)
+  #ifndef RVTEST_NOSIG
+    // Initialize signature pointer
+    LA(DEFAULT_SIG_REG, signature_base)
 
-  // Initial signature check to confirm self-checking is working
-  canary_check:
-  LI(T1, CANARY_VALUE)
-  #ifdef RVTEST_SELFCHECK
-    // Can't use DEFAULT_*_REG macros here because of macro expansion order
-    // DEFAULT_SIG_REG = x2, DEFAULT_TEMP_REG = x4, DEFAULT_LINK_REG = x5
-    RVTEST_SIGUPD(x2, x5, x4, T1, canary_check, canary_mismatch) # signature_base canary
-  #else
-    // Increment sig pointer to skip the CANARY
-    addi DEFAULT_SIG_REG, DEFAULT_SIG_REG, SIG_STRIDE
-    // NOPs to keep the emitted code size/bytes aligned with the RVTEST_SIGUPD sequence
-    // used in self-check mode (including its embedded pointer words/dwords).
-    nop
-    nop
-    nop
-    nop
-    nop
-    #if __riscv_xlen == 64
+    // Initial signature check to confirm self-checking is working
+    canary_check:
+    LI(T1, CANARY_VALUE)
+    // The canary check runs in .text.rvmodel, which may be more than a jal away
+    // from the shared failure handler. Preload the handler address into
+    // DEFAULT_DATA_REG, which is reinitialized as the data pointer after this block.
+    LA(DEFAULT_DATA_REG, failedtest_x5_x4)
+    #ifdef RVTEST_SELFCHECK
+      .option push
+      .option norvc
+      LREG DEFAULT_TEMP_REG, 0(DEFAULT_SIG_REG)
+      beq DEFAULT_TEMP_REG, T1, 1f
+      // Keep jalr immediately after the compare so the failure reporter can
+      // decode the preceding LREG/beq pair using the DEFAULT_LINK_REG return address.
+      jalr DEFAULT_LINK_REG, 0(DEFAULT_DATA_REG)
+      RVTEST_WORD_PTR canary_check
+      RVTEST_WORD_PTR canary_mismatch
+      1:
+      addi DEFAULT_SIG_REG, DEFAULT_SIG_REG, SIG_STRIDE
+      .option pop
+    #else
+      // Increment sig pointer to skip the CANARY
+      addi DEFAULT_SIG_REG, DEFAULT_SIG_REG, SIG_STRIDE
+      // NOPs to keep the emitted code size/bytes aligned with the self-check
+      // sequence above (including its embedded pointer words/dwords).
       nop
       nop
-    #endif
-  #endif
+      nop
+      nop
+      nop
+      #if __riscv_xlen == 64
+        nop
+        nop
+      #endif // __riscv_xlen == 64
+    #endif // !RVTEST_SELFCHECK
+  #endif // RVTEST_NOSIG
   // Initialize test data pointer
   LA(DEFAULT_DATA_REG, rvtest_data_begin)
 .endm

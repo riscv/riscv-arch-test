@@ -3,14 +3,14 @@
 # CI configuration for Sail reference model
 
 ci_enabled: true
-exclude_extensions: "Zkr,SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions: "SdtrigSm,SdtrigS,SdtrigU"
 shards: 1
 config_shards:
   sail-RVA22S64-optional: 2
   sail-RVA23S64: 2
   sail-RVA23S64-optional: 2
   sail-RVB23S64-optional: 2
-  sail-rv32-max: 3
-  sail-rv32-max-clang: 3
-  sail-rv64-max: 3
-  sail-rv64-max-clang: 3
+  sail-rv32-max: 4
+  sail-rv32-max-clang: 4
+  sail-rv64-max: 4
+  sail-rv64-max-clang: 4

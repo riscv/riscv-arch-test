@@ -148,7 +148,9 @@ def _generate_ssccptr_lw(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "Ssccptr",
     required_extensions=["S", "Ssccptr"],
-    march_extensions=[],
+    march_extensions=["S"],
+    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def _generate_ssccptr_main(test_data: TestData) -> list[TestChunk]:
     """Generate all Ssccptr tests running in S-mode."""

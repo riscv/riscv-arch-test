@@ -550,7 +550,7 @@ normative_rule_definitions:
 
   # It is only accessible in M-mode and Debug mode.
   - name: Sdtrig_mcontext_access
-    coverpoint: ["SdtrigSm_sdtrig_cg/cp_sdtrig_csr_access_common"]
+    coverpoint: ["SdtrigSm_csr_cg/cp_sdtrig_mcontext_smode"]
 
   # M-Mode or HS-Mode (using hcontext) software can write a context number to this
   # register, which can be used to set triggers that only fire in that specific
@@ -1538,8 +1538,8 @@ normative_rule_definitions:
   - name: Sdtrig_textra32_filter_modes
     coverpoint:
       [
-        "SdtrigSm_textra_cg/cp_sdtrig_textra_mcontext",
-        "SdtrigSm_textra_cg/cp_sdtrig_textra_scontext",
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_mcontext_smode",
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_scontext_smode",
       ]
 
   # Ignore mhvalue.

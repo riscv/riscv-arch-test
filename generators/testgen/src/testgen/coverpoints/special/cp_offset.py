@@ -7,12 +7,12 @@
 
 """cp_offset coverpoint generator."""
 
-from testgen.asm.helpers import load_int_reg, return_test_regs, write_sigupd
+from testgen.asm.helpers import load_int_reg, write_sigupd
 from testgen.constants import INDENT
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
-from testgen.formatters.params import generate_random_params
+from testgen.instructions.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_offset")
@@ -108,7 +108,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
     elif coverpoint != "cp_offset":
         raise ValueError(f"Unknown variant {coverpoint} for cp_offset coverpoint.")
 
-    return_test_regs(test_data, params)
+    return_testcase_registers(test_data, params)
     return [test_data.end_test_chunk()]
 
 
@@ -146,7 +146,7 @@ def make_offset_lsbs(instr_name: str, instr_type: str, test_data: TestData) -> l
                         write_sigupd(params.rd, test_data),
                     ]
                 )
-                return_test_regs(test_data, params)
+                return_testcase_registers(test_data, params)
     elif instr_type in ["CJR", "CJALR"]:
         # Loop over all 4 (rs1[1:0]) combinations
         for rs1_lsbs in range(4):
@@ -181,7 +181,7 @@ def make_offset_lsbs(instr_name: str, instr_type: str, test_data: TestData) -> l
                     write_sigupd(params.rd, test_data),
                 ]
             )
-            return_test_regs(test_data, params)
+            return_testcase_registers(test_data, params)
     else:
         raise ValueError(f"cp_offset_lsbs coverpoint not supported for instruction type {instr_type}.")
 

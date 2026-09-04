@@ -406,6 +406,14 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       default: val = 0;
     endcase
   end
+  if (name == "menvcfgh") begin
+    case(field)
+`ifdef UDB_MXLEN_32
+      "stce" : val = (val >> 31) & 32'h1;
+`endif
+      default: val = 0; // Todo: error
+    endcase
+  end
   if (name == "mideleg") begin
     case(field)
       "meip" : val = (val >> 11) & 'h1;

@@ -8,6 +8,7 @@ description: RVI20U64 with all optional extensions
 implemented_extensions:
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
   - { name: A, version: "= 2.1.0" }
   - { name: F, version: "= 2.2.0" }
   - { name: D, version: "= 2.2.0" }

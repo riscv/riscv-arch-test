@@ -2,57 +2,53 @@
 # Top-level python project configuration file for riscv-arch-test
 # Jordan Carlin jcarlin@hmc.edu October 2025
 # SPDX-License-Identifier: Apache-2.0
+[dependency-groups]
+dev = [ "pyright==1.1.411", "ruff==0.16.4" ]
 
 [tool.uv]
 exclude-newer = "7 days"
-
-[tool.uv.workspace]
-members = ["framework", "generators/testgen", "generators/coverage"]
-
-[dependency-groups]
-dev = ["pyright==1.1.411", "ruff==0.15.22"]
+workspace.members = [ "framework", "generators/coverage", "generators/testgen" ]
 
 ###### RUFF CONFIG #####
 [tool.ruff]
+target-version = "py310"
 line-length = 120
 extend-exclude = [
   "docs/docs-resources",
   "generators/testgen/scripts", # Old scripts that still need to be updated
 ]
-
-[tool.ruff.lint]
-preview = true
-
 # Extra rules to enable beyond the default set
-extend-select = [
-  "ANN", # type annotation rules
+lint.extend-select = [
   "A",   # shadow builtins
+  "ANN", # type annotation rules
+  "ISC", # Implicit string concatenation
+  "PTH", # Use Pathlib
   "SIM", # Simplifications
   "TID", # Tidy imports
-  "PTH", # Use Pathlib
-  "I",   # Import related rules (isort)
-  "ISC", # Implicit string concatenation
 ]
+lint.ignore = [
+  "N", # Naming requirements
+]
+lint.preview = true
 
-ignore = [
-  "RET504", # Unnecessary assignment to {name} before return statement
-  "N",      # Naming requirements
-]
-
-[tool.ty.src]
-exclude = [
-  "generators/testgen/scripts", # Old scripts that still need to be updated
-]
+##### PYPROJECT-FMT CONFIG #####
+[tool.pyproject-fmt]
+keep_full_version = true
 
 ##### PYRIGHT CONFIG #####
 [tool.pyright]
+pythonVersion = "3.10"
+typeCheckingMode = "standard"
 exclude = [
+  "**/.*",
   "**/__pycache__",
   "**/node_modules",
-  "**/.*",
   ".venv",
   "docs/docs-resources",
   "generators/testgen/scripts", # Old scripts that still need to be updated
 ]
-typeCheckingMode = "standard"
-pythonVersion = "3.10"
+
+[tool.ty]
+src.exclude = [
+  "generators/testgen/scripts", # Old scripts that still need to be updated
+]

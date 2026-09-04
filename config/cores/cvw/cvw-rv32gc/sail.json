@@ -82,7 +82,7 @@
       // not exist.
       "delegatable_bits": {
         "len": 64,
-        "value": "0x0000_0000_000c_b3FF"
+        "value": "0x0000_0000_0000_b3FF"
       }
     },
     "mideleg": {
@@ -599,9 +599,9 @@
       "supported": true
     },
     // This extension just asserts that each memory region has a MAG
-    // PMA of 16 bytes.  If you enable this you also need to ensure
+    // PMA of at least 16 bytes.  If you enable this you also need to ensure
     // `misaligned_atomicity_granule_size_exp` for each coherent and
-    // cacheable main memory region is 4, otherwise you will get a
+    // cacheable main memory region is >= 4, otherwise you will get a
     // config validation error.
     "Zama16b": {
       "supported": false

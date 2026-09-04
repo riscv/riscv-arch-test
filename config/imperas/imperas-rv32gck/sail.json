@@ -15,7 +15,7 @@
     // (writable_hpm_counters[2 .. 0]) are ignored.
     "writable_hpm_counters": {
       "len": 32,
-      "value": "0xFFFF_FFFF"
+      "value": "0x0000_0007"
     },
     // The bits in this value control whether the corresponding bits
     // of the `scounteren` CSR that control access to HPM counters,
@@ -82,7 +82,7 @@
       // not exist.
       "delegatable_bits": {
         "len": 64,
-        "value": "0x0000_0000_000c_b3FF"
+        "value": "0x0000_0000_000c_b3af"
       }
     },
     "mideleg": {
@@ -599,12 +599,12 @@
       "supported": true
     },
     // This extension just asserts that each memory region has a MAG
-    // PMA of 16 bytes.  If you enable this you also need to ensure
+    // PMA of at least 16 bytes.  If you enable this you also need to ensure
     // `misaligned_atomicity_granule_size_exp` for each coherent and
-    // cacheable main memory region is 4, otherwise you will get a
+    // cacheable main memory region is >= 4, otherwise you will get a
     // config validation error.
     "Zama16b": {
-      "supported": false
+      "supported": true
     },
     "Zawrs": {
       "supported": true,

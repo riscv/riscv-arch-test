@@ -8,12 +8,11 @@
 
 """cp_bs coverpoint generator."""
 
-from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
-from testgen.formatters.params import generate_random_params
+from testgen.instructions.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_bs")
@@ -30,6 +29,6 @@ def make_cp_bs(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
         desc = f"{coverpoint}: bs={bs}"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{bs}", coverpoint)
         test_chunks.append(tc)
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
     return test_chunks

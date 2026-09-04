@@ -14,8 +14,7 @@
 # MARCH: @MARCH@
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "@TEST_FILE_NAME@"
+// Define the size of the signature region
 #define SIGUPD_COUNT @SIGUPD_COUNT_FROM_TESTGEN@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.

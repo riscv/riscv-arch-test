@@ -22,8 +22,8 @@ def _generate_stvec_mode_tests(test_data: TestData) -> list[str]:
             "Write stvec with MODE=Direct (0) and walking 1s through BASE field.\n"
             "Must execute in S-mode so that priv_mode_s is sampled in the cross.\n"
             "MODE bits[1:0] are kept 0 throughout to satisfy stvec_mode 'direct' bin.\n"
-            "Walking 1s use CSRS (CSRRS) — csrrc/walking 0s not needed per CTP.\n"
-            "stvec is cleared via CSRW zero before each CSRS so the OR result is\n"
+            "Walking 1s use csrs (csrrs) — csrrc/walking 0s not needed per CTP.\n"
+            "stvec is cleared via csrw zero before each csrs so the OR result is\n"
             "exactly the walking-1 pattern.",
         ),
         "RVTEST_GOTO_LOWER_MODE Smode  # switch to S-mode before walking stvec",
@@ -43,7 +43,12 @@ def _generate_stvec_mode_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("Sstvecd", required_extensions=["S"])
+@add_priv_test_generator(
+    "Sstvecd",
+    required_extensions=["S"],
+    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
 def make_sstvecd(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()

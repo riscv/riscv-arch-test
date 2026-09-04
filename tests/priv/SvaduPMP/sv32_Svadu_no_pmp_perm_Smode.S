@@ -29,7 +29,6 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_Svadu_no_pmp_perm_Smode.S"
 #define SIGUPD_COUNT 30
 #define BOOT_TO_MMODE
 
@@ -132,7 +131,7 @@ main:
   sfence.vma                                                             // Flush TLB
 
   LI(t0, MENVCFGH_ADUE)
-  CSRS(menvcfgh, t0)                                                     // Enable Svadu
+  csrs menvcfgh, t0                                                     // Enable Svadu
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -144,11 +143,12 @@ main:
   srl t2, t2, PMP_SHIFT
   LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (NAPOT). Increase range according to G
   or t2, t2, t1
-  CSRW(pmpaddr0, t2)
+  csrw pmpaddr0, t2
 
   LI (t2, PMP0CFG_RX)
   write_pmpcfg0:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, write_pmpcfg0, write_pmpcfg0_str)
+  sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -194,7 +194,8 @@ main:
   srl t2, t2, PMP_SHIFT
   LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (NAPOT). Increase range according to G
   or t2, t2, t1
-  CSRW(pmpaddr0, t2)
+  csrw pmpaddr0, t2
+  sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------

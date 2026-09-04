@@ -13,7 +13,7 @@ from testgen.formatters.registry import InstructionTypeConfig, add_instruction_f
 csr_config = InstructionTypeConfig(required_params={"rd", "rs1", "rs1val", "rs2", "rs2val"})
 
 
-def zicsr_acccess(instr_name: str, rd: int, rs1: int) -> str:
+def zicsr_access(instr_name: str, rd: int, rs1: int) -> str:
     """Helper function to determine which CSR to use for testing based on supported extensions."""
     # Use writable unprivileged extension CSRs if any exist,
     # else use mepc if U is not supported
@@ -39,7 +39,7 @@ def zicsr_acccess(instr_name: str, rd: int, rs1: int) -> str:
         "#elif defined(ZICNTR_SUPPORTED)\n"
         f"{instret_access}\n"
         "#else\n"
-        f"  #error no CSR known for testing\n"
+        "  #error no CSR known for testing\n"
         "#endif\n"
     )
 
@@ -57,16 +57,16 @@ def format_csr_type(
         load_int_reg("temp reg", params.rs2, params.rs2val, test_data),
         "// Initialize CSR with random value",
         "// Pick most suitable CSR to test based on supported extensions",
-        zicsr_acccess("csrrw", 0, params.rs2),
+        zicsr_access("csrrw", 0, params.rs2),
     ]
     test = [
         "// perform operation",
-        zicsr_acccess(instr_name, params.rd, params.rs1),
+        zicsr_access(instr_name, params.rd, params.rs1),
     ]
     check = [
         write_sigupd(params.rd, test_data, "int"),
         "// read back CSR to check updated value",
-        zicsr_acccess("csrrs", params.rs2, 0),
+        zicsr_access("csrrs", params.rs2, 0),
         write_sigupd(params.rs2, test_data, "int"),
     ]
     return (setup, test, check)

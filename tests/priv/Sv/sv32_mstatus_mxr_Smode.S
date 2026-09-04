@@ -29,7 +29,9 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_mstatus_mxr_Smode.S"
+// TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+#define BOOT_TO_MMODE
+
 #define SIGUPD_COUNT 20
 #define TRAP_SIGUPD_COUNT 40
 
@@ -126,7 +128,7 @@ main:
   sfence.vma
 
   LI(   t0, MSTATUS_MXR)
-  CSRC( mstatus, t0)                                                             // Clear mstatus.MXR
+  csrc  mstatus, t0                                                             // Clear mstatus.MXR
   TEST_CASES_RUNNER Smode, va_data, LEVEL1, test1
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -138,7 +140,7 @@ main:
   sfence.vma
 
   LI(   t0, MSTATUS_MXR)
-  CSRS( mstatus, t0)                                                             // Set mstatus.MXR
+  csrs  mstatus, t0                                                             // Set mstatus.MXR
   TEST_CASES_RUNNER Smode, va_data, LEVEL1, test2
 
 
@@ -155,7 +157,7 @@ main:
   sfence.vma
 
   LI(   t0, MSTATUS_MXR)
-  CSRC( mstatus, t0)                                                             // Clear mstatus.MXR
+  csrc  mstatus, t0                                                             // Clear mstatus.MXR
   TEST_CASES_RUNNER Smode, va_data, LEVEL0, test3
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -168,7 +170,7 @@ main:
   sfence.vma
 
   LI(   t0, MSTATUS_MXR)
-  CSRS( mstatus, t0)                                                             // Set mstatus.MXR
+  csrs  mstatus, t0                                                             // Set mstatus.MXR
   TEST_CASES_RUNNER Smode, va_data, LEVEL0, test4
 
 

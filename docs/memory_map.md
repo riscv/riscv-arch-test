@@ -1,6 +1,6 @@
 # Test Memory Map
 
-The test memory layout is divided into four linker sections, each aligned and ordered so that the DUT ELF and the reference-model ELF produce identical addresses for all test-visible symbols.
+The test memory layout is divided into ordered linker sections so that the DUT ELF and the reference-model ELF produce identical addresses for all test-visible symbols.
 
 The test memory map has several requirements:
 
@@ -22,12 +22,17 @@ The linker places the following output sections in order:
 | ----------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | `.text.init`                        | R X         | Entry point (`rvtest_entry_point`), boot call, and jump to `.text.rvtest`.                                                                 |
 | `.text.rvtest`                      | R X         | All test code: initialization, trap handlers, the test body, and failure-reporting code.                                                   |
-| `.data` (aligned to 0x4000)         | RWX         | All test data and the signature region (see below).                                                                                        |
+| `.rodata` (aligned to 0x4000)       | R           | Read-only C data such as string literals.                                                                                                  |
+| `.data`                             | RW          | Initialized test data and the signature region (see below).                                                                                |
+| `.bss`                              | RW          | Zero-initialized C data, bounded by `__bss_start` and `__bss_end`.                                                                         |
+| Stack                               | RW          | `__stack_size * __num_harts` bytes, bounded by `__stack_bottom` and `__stack_top`.                                                         |
 | `.text.rvmodel` (aligned to 0x1000) | R X         | Out-of-line DUT-specific helpers (`rvmodel_boot`, `rvmodel_halt_pass`, etc.) and catch-all for remaining `.text`/`.text.*` input sections. |
 
-Any additional DUT-specific data sections (such as `.tohost` for HTIF) are emitted via `.pushsection` in the RVMODEL macros and placed by the linker as orphan sections after `.text.rvmodel`.
+Any additional DUT-specific data sections (such as `.tohost` for HTIF) are emitted via `.pushsection` in the RVMODEL macros and placed by the linker as orphan sections.
 
-`rvtest_entry_point` is the first symbol in the `.text.init` section (which is the first section), so its address is set to the starting address specified in the linker script with `. = 0x...`. For most DUTs, this should be set to the reset vector of your processor and will be the only think in the linker script that needs to be customized. Advanced users can set the starting address to a different address, run a custom bootloader, and then jump to `rvtest_entry_point` to start the test.
+`rvtest_entry_point` is the first symbol in the `.text.init` section (which is the first section), so its address is set by `TEST_BASE` at the top of the linker script. For most DUTs, `TEST_BASE` is the same as `RAM_ORIGIN` and should be set to the reset vector of your processor. Advanced users can set the starting address to a different address, run a custom bootloader, and then jump to `rvtest_entry_point` to start the test. When `RAM_ORIGIN` differs from `TEST_BASE`, the `.text.init` output section uses an explicit `TEST_BASE` address so the linker does not start it at the beginning of the `MEMORY` region.
+
+The sample linker scripts also define `RAM_ORIGIN`, `RAM_LENGTH`, and `NUM_HARTS` as user-editable variables above the `/* Most users should not need to modify anything below this line. */` comment. `RAM_ORIGIN` and `RAM_LENGTH` define the `ram` linker `MEMORY` region and should match the corresponding RISC-V Sail `memory.regions` entry in `sail.json`. The scripts assert that `TEST_BASE` is within `ram` and that the ELF fits in `ram`; if those assertions fail, update `link.ld` and the matching `sail.json` memory region. `STACK_SIZE` defaults to `0x20000` bytes per hart below that comment. `NUM_HARTS` and `STACK_SIZE` are provided to the ACT runtime as `__num_harts` and `__stack_size`.
 
 Additional details on what each section contains and why each section is needed are provided below.
 
@@ -37,25 +42,25 @@ Additional details on what each section contains and why each section is needed 
 | -------------------- | -------------------------------------------------------------------------------------------------------- |
 | `rvtest_entry_point` | Entry point. Calls `rvmodel_boot` (in the `.text.rvmodel` section) then falls through to `.text.rvtest`. |
 
-`.text.init` is intentionally kept in a separate output section so that `.balign`/`.p2align` directives in test code do not increase `.text.init`'s alignment and shift `rvtest_entry_point` to an unexpected address. For example, [CV32E20](../config/cores/cve2/cv32e20/link.ld) has a reset vector of 0x4000 (`. = 0x00004000` in the linker script). Some tests (e.g. `I-jal-00`) have large `.p2align` directives (`.p2align 14`). Output sections are aligned to the maximum internal alignment of all input sections, so if the test code was in the same section as the entry point, then the entry point would need to be aligned to 16K and the CV32E20 reset vector would not line up.
+`.text.init` is intentionally kept in a separate output section so that `.balign`/`.p2align` directives in test code do not increase `.text.init`'s alignment and shift `rvtest_entry_point` to an unexpected address. For example, [CV32E20](../config/cores/cve2/cv32e20/link.ld) has a reset vector of 0x4000 (`TEST_BASE = 0x00004000` in the linker script). Some tests (e.g. `I-jal-00`) have large `.p2align` directives (`.p2align 14`). Output sections are aligned to the maximum internal alignment of all input sections, so if the test code was in the same section as the entry point, then the entry point would need to be aligned to 16K and the CV32E20 reset vector would not line up.
 
 ## `.text.rvtest` Section Layout
 
-| Symbol / Region               | Purpose                                                                                                         |
-| ----------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `rvtest_init`                 | Trap prologs, PMP setup, and register initialization. **\_ This is going to change with the new boot macros _** |
-| `rvtest_code_begin`           | Start of the test body (signature pointer initialized here).                                                    |
-| _(test code)_                 | The actual test, generated between `RVTEST_CODE_BEGIN` and `RVTEST_CODE_END`.                                   |
-| `rvtest_code_end`             | End of the test body. Switches back to M-mode.                                                                  |
-| `cleanup_epilogs`             | Trap epilogs (restore xTVEC, trampoline, and saved registers per mode).                                         |
-| `exit_cleanup` / `abort_test` | Test termination paths (calls `rvmodel_halt_pass` or `rvmodel_halt_fail`).                                      |
-| Trap handlers                 | One handler per privilege mode (`RVTEST_TRAP_HANDLER`).                                                         |
-| Failure code                  | Failure detection and diagnostic reporting (`RVTEST_FAILURE_CODE`).                                             |
-| `rvtest_identity_map`         | Forms identity-mapped superpages for S-mode trap handler access.                                                |
+| Symbol / Region               | Purpose                                                                       |
+| ----------------------------- | ----------------------------------------------------------------------------- |
+| `rvtest_init`                 | Trap prologs, PMP setup, and register initialization.                         |
+| `rvtest_code_begin`           | Start of the test body (signature pointer initialized here).                  |
+| _(test code)_                 | The actual test, generated between `RVTEST_CODE_BEGIN` and `RVTEST_CODE_END`. |
+| `rvtest_code_end`             | End of the test body. Switches back to M-mode.                                |
+| `cleanup_epilogs`             | Trap epilogs (restore xTVEC, trampoline, and saved registers per mode).       |
+| `exit_cleanup` / `abort_test` | Test termination paths (calls `rvmodel_halt_pass` or `rvmodel_halt_fail`).    |
+| Trap handlers                 | One handler per privilege mode (`RVTEST_TRAP_HANDLER`).                       |
+| Failure code                  | Failure detection and diagnostic reporting (`RVTEST_FAILURE_CODE`).           |
+| `rvtest_identity_map`         | Forms identity-mapped superpages for S-mode trap handler access.              |
 
 `.text.rvtest` contains all of the actual test code that is common across all DUTs. For any DUT-specific operations, the DUT jumps to a function in the `.text.rvmodel` section to ensure the `.text.rvtest` section remains constant length.
 
-## `.data` Section Layout
+## `.rodata`, `.data`, `.bss`, and Stack Layout
 
 | Symbol / Region                        | Purpose                                                                                                                                                                                     |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -72,7 +77,9 @@ Additional details on what each section contains and why each section is needed 
 | `end_signature` / `rvtest_sig_end`     | End of the signature region.                                                                                                                                                                |
 | `RVMODEL_DATA_SECTION`                 | DUT-specific data defined in `rvmodel_macros.h` (e.g. `tohost`/`fromhost` for HTIF). May be empty. Placed last so variable-size DUT data does not affect any test-visible symbol addresses. |
 
-All addresses in the `.data` section are constant and DUT-independent except for the contents of `RVMODEL_DATA_SECTION`, which is why it is placed last. This ensures the rest of the `.data` section has addresses that are the same for both the reference model and DUT.
+The `.bss` section defines `__bss_start` and `__bss_end`; C test startup clears this range before calling `main`. The stack region follows `.bss`; each hart gets `__stack_size` bytes, and the total stack allocation is `__stack_size * __num_harts`.
+
+All addresses in these data sections are constant and DUT-independent except for the contents of `RVMODEL_DATA_SECTION`, which is why it is placed last. This ensures the rest of the data layout has addresses that are the same for both the reference model and DUT.
 
 ## `.text.rvmodel` Section Layout
 

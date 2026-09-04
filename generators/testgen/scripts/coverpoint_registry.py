@@ -21,7 +21,7 @@ def import_all_modules(package):
     Import every module in a package so decorators execute and register functions.
     Example: import_all_modules(handlers)
     """
-    for _, module_name, is_pkg in pkgutil.iter_modules(package.__path__):
+    for _, module_name, is_pkg in sorted(pkgutil.iter_modules(package.__path__), key=lambda module: module.name):
         if is_pkg:
             continue  # skip subpackages for now (or recurse if you want)
         importlib.import_module(f"{package.__name__}.{module_name}")

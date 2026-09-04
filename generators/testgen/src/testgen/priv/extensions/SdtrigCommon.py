@@ -8,8 +8,6 @@
 
 """Shared Sdtrig debug-trigger test-case generators."""
 
-from __future__ import annotations
-
 from random import seed
 
 from testgen.asm.helpers import comment_banner, reproducible_hash, write_sigupd

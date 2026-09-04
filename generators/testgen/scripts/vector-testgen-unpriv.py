@@ -35,6 +35,7 @@ from rich.progress import (
   TextColumn,
   TimeElapsedColumn,
 )
+from testgen.io.testplans import get_extensions as get_main_testgen_extensions
 
 import vector_testgen_common as common
 from vector_testgen_common import (
@@ -1606,7 +1607,6 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
   global f, legalvlmuls, redgesv, redges_ls_e8, redges_ls_e16, redges_ls_e32, redges_ls_e64
   global immedgesv, NaNBox_tests, test, xlen, extension
 
-  flen = getFlen()
   xlen = xlen_arg
   extension = extension_arg
 
@@ -1652,6 +1652,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
       applicable_instructions.remove(test)
 
   written = 0
+  generated_files: set[Path] = set()
   for test in applicable_instructions:
     newInstruction()
 
@@ -1670,7 +1671,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
 
     f = open(tempfname, "w")
 
-    insertTemplate(test, getSigSpace(xlen, flen), "testgen_header.S", sew=sew, vdsew=vdsew)
+    insertTemplate(test, getSigSpace(xlen, getFlen()), "testgen_header.S", sew=sew, vdsew=vdsew)
 
     if test in vfloattypes:
       float_en = "\n# set mstatus.FS to 10 to enable fp\nli t0,0x4000\ncsrs mstatus, t0\n\n"
@@ -1709,13 +1710,13 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
 
     test_data = genVtestdata(test, sew)
 
-    signatureWords = getSigSpace(xlen, flen)
+    signatureWords = getSigSpace(xlen, getFlen())
     sigReg = getSigReg()
     f.write(f"mv x2, x{sigReg} # restore signature pointer to default register for teardown\n")
     insertTemplate(test, signatureWords, "testgen_footer.S", test_data=test_data)
 
     f.close()
-    finalizeSigupdCount(tempfname, xlen, flen)
+    finalizeSigupdCount(tempfname, xlen, getFlen())
     fname_p = Path(fname)
     tempfname_p = Path(tempfname)
     if fname_p.exists():
@@ -1725,7 +1726,11 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
         tempfname_p.replace(fname_p)
     else:
       tempfname_p.replace(fname_p)
+    generated_files.add(fname_p)
     written += 1
+
+  for stale_file in set(Path(pathname).glob("*.S")) - generated_files:
+    stale_file.unlink()
 
   return f"rv{xlen}/{extension}: {written} test(s)"
 
@@ -1734,7 +1739,8 @@ def _list_tasks(include_set: set[str], exclude_set: set[str]) -> list[tuple[int,
   """Build the list of (xlen, extension) tasks honoring filters."""
   tasks: list[tuple[int, str]] = []
   testplans = readTestplans()
-  extensions = list(testplans.keys())
+  main_testgen_extensions = set(get_main_testgen_extensions(Path(ARCH_VERIF) / "testplans"))
+  extensions = [extension for extension in testplans if extension not in main_testgen_extensions]
   if include_set:
     extensions = [e for e in extensions if e in include_set]
   if exclude_set:
@@ -1760,7 +1766,7 @@ def run(
     int, typer.Option("--jobs", "-j", help="Parallel worker processes (0 = auto-detect, 1 = serial)")
   ] = 0,
 ) -> None:
-  """Generate directed vector tests for functional coverage."""
+  """Generate directed vector tests not handled by the main testgen."""
   include_set = set(filter(None, (s.strip() for s in extensions.split(",")))) if extensions else set()
   exclude_set = set(filter(None, (s.strip() for s in exclude.split(",")))) if exclude else set()
 

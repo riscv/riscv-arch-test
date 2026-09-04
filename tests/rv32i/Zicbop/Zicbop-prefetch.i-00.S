@@ -15,8 +15,7 @@
 # MARCH: rv32i_zicbop_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "Zicbop-prefetch.i-00.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 75
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.

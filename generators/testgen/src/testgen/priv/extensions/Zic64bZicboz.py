@@ -75,6 +75,8 @@ def _generate_zic64b_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "Zic64bZicboz",
     required_extensions=["Zicboz", "Zic64b"],
+    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_zic64bzicboz(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the Zic64bZicboz extension."""

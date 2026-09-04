@@ -96,12 +96,6 @@ interface rvviTrace
   wire [4095:0][(XLEN-1):0] csr        [(NHART-1):0][(RETIRE-1):0];   // Full CSR Address range
   wire [4095:0]             csr_wb     [(NHART-1):0][(RETIRE-1):0];   // CSR writeback (change) flag
 
-  // Interrupts
-  wire                      m_ext_intr  [(NHART-1):0][(RETIRE-1):0];   // Machine external interrupt
-  wire                      s_ext_intr  [(NHART-1):0][(RETIRE-1):0];   // Supervisor external interrupt
-  wire                      m_timer_intr[(NHART-1):0][(RETIRE-1):0];   // Machine timer interrupt
-  wire                      m_soft_intr [(NHART-1):0][(RETIRE-1):0];   // Machine software interrupt
-
   // Atomic Memory Control
   wire                      lrsc_cancel[(NHART-1):0][(RETIRE-1):0];   // Implementation defined cancel
 

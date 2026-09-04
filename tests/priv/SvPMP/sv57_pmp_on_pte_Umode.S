@@ -39,7 +39,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv57_pmp_on_pte_Umode.S"
 #define SIGUPD_COUNT 25
 #define TRAP_SIGUPD_COUNT 70
 #define BOOT_TO_MMODE
@@ -140,12 +139,12 @@ main:
   srl t2, t2, PMP_SHIFT
   LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
-  CSRW(pmpaddr0, t2)
+  csrw pmpaddr0, t2
 
   LI (t2, PMP0CFG_X)
   write_pmpcfg0:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, write_pmpcfg0, write_pmpcfg0_str)
-
+  sfence.vma
   // This test case for root page table is skipped if G >= 10, because with PMP granularity ≥ 4KB,
   // the entire root page table will lose its read/write permissions, preventing entry into S-Mode.
   .if (UDB_PMP_GRANULARITY < 12)
@@ -173,7 +172,8 @@ main:
   srl t2, t2, PMP_SHIFT
   LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
-  CSRW(pmpaddr0, t2)
+  csrw pmpaddr0, t2
+  sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    TESTS AT LEVEL 3
@@ -199,7 +199,8 @@ main:
   srl t2, t2, PMP_SHIFT
   LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
-  CSRW(pmpaddr0, t2)
+  csrw pmpaddr0, t2
+  sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    TESTS AT LEVEL 2
@@ -226,7 +227,8 @@ main:
   srl t2, t2, PMP_SHIFT
   LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
-  CSRW(pmpaddr0, t2)
+  csrw pmpaddr0, t2
+  sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    TESTS AT LEVEL 1
@@ -254,7 +256,8 @@ main:
   srl t2, t2, PMP_SHIFT
   LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
-  CSRW(pmpaddr0, t2)
+  csrw pmpaddr0, t2
+  sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    TESTS AT LEVEL 0

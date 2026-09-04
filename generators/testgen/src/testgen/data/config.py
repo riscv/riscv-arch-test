@@ -7,8 +7,6 @@
 
 """Test configuration for RISC-V test generation."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 
@@ -40,7 +38,7 @@ class TestConfig:
     testsuite: str
     E_ext: bool = False
     sew: int | None = None
-    required_extensions: list[str] | None = None
+    required_extensions: list[str | list[str]] | None = None
     march_extensions: list[str] | None = None
     extra_params: list[str] | None = None
 

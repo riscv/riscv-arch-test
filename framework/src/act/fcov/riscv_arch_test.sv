@@ -11,6 +11,10 @@
 
 // Load configuration parameters
 `include "rvtest_config.svh"
+// Mirror the same undef in tests/env/riscv_arch_test.h: the tests are compiled without
+// H_SUPPORTED, so any H-gated coverpoint bin is unreachable by construction.  Keep these two
+// files in sync. TODO: Remove this once Sail supports Hypervisor
+`undef H_SUPPORTED
 `include "rvmodel_macros.svh"
 `include "derived_config.svh"
 

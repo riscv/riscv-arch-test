@@ -19,6 +19,9 @@ covergroup ZicntrS_cg with function sample(ins_t ins);
     mcounteren_ones: coverpoint ins.current.csr[CSR_MCOUNTEREN]{
         bins ones = {32'b11111111111111111111111111111111};
     }
+    mcounteren_zeros: coverpoint ins.current.csr[CSR_MCOUNTEREN]{
+        bins zeros = {32'b0};
+    }
     counters_scounteren: coverpoint {ins.current.insn[31:20], ins.current.csr[CSR_SCOUNTEREN][31:0]} {
     bins cycle_enabled         = {44'b110000000000_00000000000000000000000000000001};
     bins time_enabled          = {44'b110000000001_00000000000000000000000000000010};
@@ -315,6 +318,7 @@ covergroup ZicntrS_cg with function sample(ins_t ins);
     cp_scounteren_access_m: cross csrr, counters_scounteren, mcounteren_ones, priv_mode_m;
     cp_scounteren_access_u: cross csrr, counters_scounteren, mcounteren_ones, priv_mode_u;
     cp_mscounteren_access_u: cross csrr, counters_mcounteren, priv_mode_u iff (ins.current.csr[CSR_MCOUNTEREN] == ins.current.csr[CSR_SCOUNTEREN]);
+    cp_mcounteren_inc_inaccessible: cross mcounteren_zeros, priv_mode_s;
 endgroup
 
 

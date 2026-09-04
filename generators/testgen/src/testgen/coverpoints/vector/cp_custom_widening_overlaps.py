@@ -11,12 +11,11 @@
 
 import random
 
-from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
-from testgen.formatters.vector_params import generate_random_vector_params
+from testgen.instructions.vector_params import generate_random_vector_params
 
 
 def _parse_lmul(coverpoint: str) -> int:
@@ -48,7 +47,7 @@ def make_vd_overlap_top_vs2(instr_name: str, instr_type: str, coverpoint: str, t
     )
 
     tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_test_regs(test_data, params)
+    return_testcase_registers(test_data, params)
     return [tc]
 
 
@@ -73,7 +72,7 @@ def make_all_vd_overlap_top_vs2(
         )
 
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
         chunks.append(tc)
 
@@ -104,7 +103,7 @@ def make_vd_overlap_top_vs1(instr_name: str, instr_type: str, coverpoint: str, t
     )
 
     tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_test_regs(test_data, params)
+    return_testcase_registers(test_data, params)
 
     return [tc]
 
@@ -131,7 +130,7 @@ def make_all_vd_overlap_top_vs1(
         )
 
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
         chunks.append(tc)
 
@@ -163,7 +162,7 @@ def make_vd_overlap_btm_vs2(instr_name: str, instr_type: str, coverpoint: str, t
     )
 
     tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_test_regs(test_data, params)
+    return_testcase_registers(test_data, params)
 
     return [tc]
 
@@ -189,7 +188,7 @@ def make_all_vd_overlap_btm_vs2(
         )
 
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
         chunks.append(tc)
 

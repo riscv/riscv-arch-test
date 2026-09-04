@@ -7,7 +7,6 @@
 ##################################
 
 from testgen.asm.helpers import load_int_reg, write_sigupd
-from testgen.constants import INDENT
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -63,22 +62,13 @@ def format_css_type(
     test = [f"{instr_name} x{params.rs2}, {params.immval}(sp) # perform store"]
 
     check = [
-        "#ifdef RVTEST_SELFCHECK",
         f"LREG x{params.temp_reg}, 0(x{test_data.int_regs.sig_reg}) # load stored value for checking",
-        write_sigupd(params.temp_reg, test_data),
-        "#else",
-        f"addi sp, sp, {params.immval} # remove offset from sp",
-        "addi sp, sp, SIG_STRIDE # increment signature pointer in sp",
-        f"{instr_name} x{params.rs2}, 0(sp) # repeat store so it is available for checking",
         f"addi x{test_data.int_regs.sig_reg}, x{test_data.int_regs.sig_reg}, SIG_STRIDE # increment signature pointer",
-        f"{INDENT}# nops to ensure length matches SELFCHECK",
-        "nop",
-        "nop",
-        "#endif",
+        write_sigupd(params.temp_reg, test_data),
     ]
 
     assert test_data.test_chunk is not None
-    test_data.test_chunk.sigupd_count += 1  # Extra sigupd that doesn't use the write_sigupd helper
+    test_data.test_chunk.sigupd_count += 1  # Test store writes one extra signature slot
 
     if params.rs2 != 2:
         # Return sp if it was allocated specially for this testcase

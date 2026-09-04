@@ -22,12 +22,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Set up mise
-        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4
+        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
 
       - name: Regenerate tests and coverpoints
-        run: make clean-tests tests
+        run: make tests
 
       - name: Apply fixes
         uses: autofix-ci/action@7a166d7532b277f34e16238930461bf77f9d7ed8

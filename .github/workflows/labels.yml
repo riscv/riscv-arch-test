@@ -1,0 +1,403 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: Apache-2.0
+
+name: Manage labels
+
+on:
+  schedule:
+    - cron: "17,47 * * * *"
+  workflow_dispatch:
+  issues:
+    types: [opened, reopened, labeled]
+  issue_comment:
+    types: [created]
+
+permissions: {}
+
+jobs:
+  update-issue-status:
+    if: >-
+      github.event_name == 'issues' ||
+      (github.event_name == 'issue_comment' && !github.event.issue.pull_request)
+    concurrency:
+      group: issue-status-${{ github.event.issue.number }}
+      cancel-in-progress: false
+    permissions:
+      issues: write
+    runs-on: ubuntu-slim
+    steps:
+      - name: Update the issue status
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const statusPrefix = "status: ";
+            const staleLabel = "Stale";
+            const issueAreaLabels = new Map([
+              ["Tests — Test generation or individual test files", "Tests"],
+              ["Test Environment — Trap handler, boot code, signature checking, etc.", "Test Environment"],
+              ["Test Framework — Test selection or compilation", "Test Framework"],
+              ["Coverpoints — Coverage model or coverage generation", "Coverpoints"],
+              ["CTP — Certification Test Plan", "CTP"],
+              ["CRD — Certification Requirements Document", "CRD"],
+              ["Other — Other project documentation", "documentation"],
+            ]);
+
+            async function getLabels(issue_number) {
+              return github.paginate(github.rest.issues.listLabelsOnIssue, {
+                ...context.repo,
+                issue_number,
+              });
+            }
+
+            async function addIssueAreaLabel(issue) {
+              const match = issue.body?.match(/^### Affected area\s*\r?\n\s*\r?\n([^\r\n]+)/m);
+              const areaLabel = issueAreaLabels.get(match?.[1].trim());
+              if (areaLabel) {
+                await github.rest.issues.addLabels({
+                  ...context.repo,
+                  issue_number: issue.number,
+                  labels: [areaLabel],
+                });
+              }
+            }
+
+            async function setStatus(issue_number, status) {
+              const labels = await getLabels(issue_number);
+              const labelNames = labels.map(({ name }) => name);
+              const labelsToRemove = labelNames.filter(
+                (name) => name.startsWith(statusPrefix) && name !== status,
+              );
+              if (labelNames.includes(staleLabel)) {
+                labelsToRemove.push(staleLabel);
+              }
+
+              await Promise.all(
+                labelsToRemove.map((name) =>
+                  github.rest.issues.removeLabel({ ...context.repo, issue_number, name }),
+                ),
+              );
+              if (status && !labelNames.includes(status)) {
+                await github.rest.issues.addLabels({ ...context.repo, issue_number, labels: [status] });
+              }
+            }
+
+            if (context.eventName === "issues") {
+              const { action, issue, label } = context.payload;
+              if (action === "labeled") {
+                if (label.name.startsWith(statusPrefix)) {
+                  await setStatus(issue.number, label.name);
+                }
+                return;
+              }
+
+              await addIssueAreaLabel(issue);
+              const labels = await getLabels(issue.number);
+              if (!labels.some(({ name }) => name.startsWith(statusPrefix))) {
+                await setStatus(issue.number, "status: needs-triage");
+              }
+              return;
+            }
+
+            const { issue, comment } = context.payload;
+            if (comment.user.login !== issue.user.login) {
+              return;
+            }
+            const labels = await getLabels(issue.number);
+            if (labels.some(({ name }) => name === "status: needs-author")) {
+              await setStatus(issue.number, "status: needs-triage");
+            }
+
+  reconcile-pull-request-labels:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    concurrency:
+      group: pull-request-label-reconciliation
+      cancel-in-progress: false
+    permissions:
+      issues: write
+      pull-requests: write
+    runs-on: ubuntu-slim
+    steps:
+      - name: Reconcile pull request labels
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const statusPrefix = "status: ";
+            const staleLabel = "Stale";
+            const needsAuthor = "status: needs-author";
+            const needsReview = "status: needs-review";
+            const fixInPr = "status: fix-in-pr";
+            const { owner, repo } = context.repo;
+            const repositoryName = `${owner}/${repo}`;
+
+            async function getLabels(issue_number) {
+              return github.paginate(github.rest.issues.listLabelsOnIssue, {
+                ...context.repo,
+                issue_number,
+              });
+            }
+
+            async function setStatus(issue_number, status, clearStale = false) {
+              const labels = await getLabels(issue_number);
+              const labelNames = labels.map(({ name }) => name);
+              const statusLabels = labelNames.filter((name) => name.startsWith(statusPrefix));
+              const statusChanged =
+                statusLabels.length !== (status ? 1 : 0) || (status && !statusLabels.includes(status));
+              const labelsToRemove = statusLabels.filter((name) => name !== status);
+              if ((clearStale || statusChanged) && labelNames.includes(staleLabel)) {
+                labelsToRemove.push(staleLabel);
+              }
+
+              await Promise.all(
+                labelsToRemove.map((name) =>
+                  github.rest.issues.removeLabel({ ...context.repo, issue_number, name }),
+                ),
+              );
+              if (status && !labelNames.includes(status)) {
+                await github.rest.issues.addLabels({ ...context.repo, issue_number, labels: [status] });
+              }
+            }
+
+            async function addAreaLabels(pull_number) {
+              const files = await github.paginate(github.rest.pulls.listFiles, {
+                ...context.repo,
+                pull_number,
+                per_page: 100,
+              });
+              const paths = files.map(({ filename }) => filename);
+              const labels = new Set();
+              const hasPath = (prefix) => paths.some((path) => path.startsWith(prefix));
+              const hasGeneralDocumentation = paths.some(
+                (path) =>
+                  path.startsWith("docs/") && !path.startsWith("docs/ctp/") && !path.startsWith("docs/crd/"),
+              );
+              const hasCtp =
+                hasPath("docs/ctp/") || hasPath("coverpoints/norm/") || hasPath("coverpoints/param/");
+              const hasCoverpoints =
+                hasPath("generators/coverage/") ||
+                hasPath("framework/src/act/fcov/") ||
+                paths.some(
+                  (path) =>
+                    path.startsWith("coverpoints/") &&
+                    !path.startsWith("coverpoints/norm/") &&
+                    !path.startsWith("coverpoints/param/"),
+                );
+              const hasTestEnvironment = hasPath("tests/env/");
+              const hasTests =
+                hasPath("generators/testgen/") ||
+                hasPath("testplans/") ||
+                paths.some((path) => path.startsWith("tests/") && !path.startsWith("tests/env/"));
+              const hasTestFramework =
+                paths.some((path) => path.startsWith("framework/") && !path.startsWith("framework/src/act/fcov/")) ||
+                paths.includes("Makefile") ||
+                paths.includes("run_tests.py");
+              const dependencyFiles = new Set([
+                "pyproject.toml",
+                "uv.lock",
+                "Gemfile",
+                "Gemfile.lock",
+                "package.json",
+                "package-lock.json",
+                "requirements.txt",
+                "requirements-dev.txt",
+              ]);
+
+              if (
+                hasPath(".github/actions/") ||
+                hasPath(".github/scripts/") ||
+                hasPath(".github/workflows/") ||
+                paths.includes(".github/dependabot.yml")
+              ) {
+                labels.add("CI");
+              }
+              if (hasGeneralDocumentation) {
+                labels.add("documentation");
+              }
+              if (hasCtp) {
+                labels.add("CTP");
+              }
+              if (hasPath("docs/crd/")) {
+                labels.add("CRD");
+              }
+              if (hasTestEnvironment) {
+                labels.add("Test Environment");
+              }
+              if (hasTests) {
+                labels.add("Tests");
+              }
+              if (hasTestFramework) {
+                labels.add("Test Framework");
+              }
+              if (hasCoverpoints) {
+                labels.add("Coverpoints");
+              }
+              if (paths.some((path) => dependencyFiles.has(path.split("/").at(-1)))) {
+                labels.add("dependencies");
+              }
+
+              if (labels.size > 0) {
+                await github.rest.issues.addLabels({
+                  ...context.repo,
+                  issue_number: pull_number,
+                  labels: [...labels],
+                });
+              }
+            }
+
+            async function getLinkedIssues(pull_number) {
+              const { repository } = await github.graphql(
+                `query($owner: String!, $repo: String!, $number: Int!) {
+                  repository(owner: $owner, name: $repo) {
+                    pullRequest(number: $number) {
+                      closingIssuesReferences(first: 100) {
+                        nodes {
+                          number
+                          state
+                          repository {
+                            nameWithOwner
+                          }
+                        }
+                      }
+                    }
+                  }
+                }`,
+                { owner, repo, number: pull_number },
+              );
+              return repository.pullRequest.closingIssuesReferences.nodes.filter(
+                (issue) => issue.repository.nameWithOwner === repositoryName && issue.state === "OPEN",
+              );
+            }
+
+            async function changesRequestedOnHead(pullRequest) {
+              const reviews = await github.paginate(github.rest.pulls.listReviews, {
+                ...context.repo,
+                pull_number: pullRequest.number,
+                per_page: 100,
+              });
+              const latestReviews = new Map();
+              for (const review of reviews) {
+                if (!review.submitted_at || !review.user) {
+                  continue;
+                }
+                const latestReview = latestReviews.get(review.user.login);
+                if (!latestReview || review.submitted_at > latestReview.submitted_at) {
+                  latestReviews.set(review.user.login, review);
+                }
+              }
+              return [...latestReviews.values()].some(
+                (review) => review.state === "CHANGES_REQUESTED" && review.commit_id === pullRequest.head.sha,
+              );
+            }
+
+            async function hasCommitSinceNeedsAuthor(pullRequest) {
+              const events = await github.paginate(github.rest.issues.listEventsForTimeline, {
+                ...context.repo,
+                issue_number: pullRequest.number,
+                per_page: 100,
+              });
+              let needsAuthorEventIndex = -1;
+              for (let index = events.length - 1; index >= 0; index -= 1) {
+                if (events[index].event === "labeled" && events[index].label?.name === needsAuthor) {
+                  needsAuthorEventIndex = index;
+                  break;
+                }
+              }
+              return (
+                needsAuthorEventIndex !== -1 &&
+                events.slice(needsAuthorEventIndex + 1).some((event) => event.event === "committed")
+              );
+            }
+
+            async function reconcilePullRequest(pullRequest) {
+              if (pullRequest.draft) {
+                return;
+              }
+
+              const labels = await getLabels(pullRequest.number);
+              const statusLabels = labels.map(({ name }) => name).filter((name) => name.startsWith(statusPrefix));
+              if (await changesRequestedOnHead(pullRequest)) {
+                await setStatus(pullRequest.number, needsAuthor);
+              } else if (statusLabels.includes(needsAuthor) && (await hasCommitSinceNeedsAuthor(pullRequest))) {
+                await setStatus(pullRequest.number, needsReview);
+              } else if (statusLabels.length === 0) {
+                await setStatus(pullRequest.number, needsReview);
+              }
+
+              await addAreaLabels(pullRequest.number);
+              for (const issue of await getLinkedIssues(pullRequest.number)) {
+                await setStatus(issue.number, fixInPr, true);
+              }
+            }
+
+            async function removeOrphanedFixInPrLabels() {
+              const issues = await github.paginate(github.rest.search.issuesAndPullRequests, {
+                q: `repo:${repositoryName} is:issue is:open label:"${fixInPr}"`,
+                per_page: 100,
+              });
+              for (const issue of issues) {
+                const { repository } = await github.graphql(
+                  `query($owner: String!, $repo: String!, $number: Int!) {
+                    repository(owner: $owner, name: $repo) {
+                      issue(number: $number) {
+                        closedByPullRequestsReferences(first: 100, includeClosedPrs: false) {
+                          nodes {
+                            number
+                          }
+                        }
+                      }
+                    }
+                  }`,
+                  { owner, repo, number: issue.number },
+                );
+                if (repository.issue.closedByPullRequestsReferences.nodes.length === 0) {
+                  await github.rest.issues.removeLabel({
+                    ...context.repo,
+                    issue_number: issue.number,
+                    name: fixInPr,
+                  });
+                }
+              }
+            }
+
+            const pullRequests = await github.paginate(github.rest.pulls.list, {
+              ...context.repo,
+              state: "open",
+              per_page: 100,
+            });
+            for (const pullRequest of pullRequests) {
+              await reconcilePullRequest(pullRequest);
+            }
+            await removeOrphanedFixInPrLabels();
+            core.info(`Reconciled labels for ${pullRequests.length} open pull request(s)`);
+
+  mark-stale:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    concurrency:
+      group: stale-needs-author
+      cancel-in-progress: false
+    permissions:
+      actions: write
+      issues: write
+      pull-requests: write
+    runs-on: ubuntu-slim
+    steps:
+      - name: Mark and close inactive needs-author items
+        uses: actions/stale@4391f3da665fdf50b6810c1a66712fb9ba21aa93 # v11.0.0
+        with:
+          only-labels: "status: needs-author"
+          days-before-stale: 10
+          days-before-close: 5
+          stale-issue-label: Stale
+          stale-pr-label: Stale
+          stale-issue-message: >-
+            This issue has been marked stale because it has had no activity for 10 days while awaiting an update from
+            its author. It will be closed in 5 days if there is no further activity.
+          stale-pr-message: >-
+            This pull request has been marked stale because it has had no activity for 10 days while awaiting an update
+            from its author. It will be closed in 5 days if there is no further activity.
+          close-issue-message: >-
+            This issue has been closed because it remained inactive for 5 days after being marked stale while awaiting
+            an update from its author. If you are still interested in addressing this, please open a new issue.
+          close-pr-message: >-
+            This pull request has been closed because it remained inactive for 5 days after being marked stale while
+            awaiting an update from its author. If you are still interested in addressing this, please open a new pull
+            request.

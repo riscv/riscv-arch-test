@@ -21,7 +21,8 @@ from testgen.data.config import TestConfig
 from testgen.data.registers import IntegerRegisterFile
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, split_test_chunks
-from testgen.formatters.vector_params import extract_instruction_info
+from testgen.formatters.registry import get_instruction_type_config
+from testgen.instructions.vector import parse_vector_instruction_info
 from testgen.io.testplans import read_testplan
 from testgen.io.writer import write_test_file
 
@@ -77,6 +78,7 @@ def generate_unpriv_extension_tests(
     # Create testsuite-wide test configuration
     output_dir = output_test_dir / f"rv{xlen}{'e' if E_ext else 'i'}/{testsuite}"
     output_dir.mkdir(parents=True, exist_ok=True)
+    generated_files: set[Path] = set()
 
     flen = get_flen_for_extension(testsuite)
     test_config = TestConfig(xlen=xlen, flen=flen, testsuite=testsuite, E_ext=E_ext, sew=sew)
@@ -90,14 +92,19 @@ def generate_unpriv_extension_tests(
         if is_vector and sew not in instr_data.sews_supported:
             continue
 
-        _generate_unpriv_tests_for_instruction(
-            instr_data.instr_name,
-            instr_data.instr_type,
-            instr_data.coverpoints,
-            test_config,
-            output_dir,
-            is_vector,
+        generated_files.update(
+            _generate_unpriv_tests_for_instruction(
+                instr_data.instr_name,
+                instr_data.instr_type,
+                instr_data.coverpoints,
+                test_config,
+                output_dir,
+                is_vector,
+            )
         )
+
+    for stale_file in set(output_dir.glob("*.S")) - generated_files:
+        stale_file.unlink()
 
 
 def _detect_sew(testsuite: str) -> int:
@@ -130,7 +137,7 @@ def _generate_unpriv_tests_for_instruction(
     test_config: TestConfig,
     output_dir: Path,
     is_vector: bool = False,
-) -> None:
+) -> set[Path]:
     """
     Generate tests for a specific instruction based on its coverpoints.
     Splits test chunks into multiple test files if they exceed TESTCASES_PER_FILE.
@@ -145,6 +152,7 @@ def _generate_unpriv_tests_for_instruction(
     """
     test_data = TestData(test_config, instr_name)
     all_test_chunks: list[TestChunk] = []
+    generated_files: set[Path] = set()
 
     # Iterate through each coverpoint and generate test chunks
     for coverpoint in coverpoints:
@@ -161,9 +169,13 @@ def _generate_unpriv_tests_for_instruction(
         if is_vector:
             assert test_config.sew is not None, "SEW must be set for vector tests"
             sew = test_config.sew
+
+            info = parse_vector_instruction_info(instr_name, instr_type)
+            instr_type_config = get_instruction_type_config(instr_type)
+            assert instr_type_config.vector_data is not None, "vector_data must be provided for all vector instructions"
+
             vdsew = sew
-            info = extract_instruction_info(instr_name, instr_type)
-            if "vd" in info.widened_regs:
+            if "vd" in instr_type_config.vector_data.widened_regs:
                 vdsew *= 2
             elif info.load_store_eew == 64:
                 vdsew = 64
@@ -175,7 +187,10 @@ def _generate_unpriv_tests_for_instruction(
         else:
             extra_defines = []
 
-        write_test_file(test_config, instr_name, test_file_chunks, output_dir, file_idx, extra_defines)
+        generated_files.add(
+            write_test_file(test_config, instr_name, test_file_chunks, output_dir, file_idx, extra_defines)
+        )
 
     # Clean up (make sure all registers were returned)
     test_data.destroy()
+    return generated_files

@@ -103,6 +103,41 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
     }
     rs1_1_0: coverpoint ins.current.rs1_val[1:0] {
     }
+    `ifdef S_SUPPORTED
+        medeleg_walk: coverpoint ins.current.csr[CSR_MEDELEG] {
+            bins zeros                    = {16'b0000_0000_0000_0000};
+            `ifndef ZCA_SUPPORTED
+                bins instrmisaligned_enabled  = {16'b0000_0000_0000_0001};
+            `endif
+            bins instraccessfault_enabled = {16'b0000_0000_0000_0010};
+            bins illegalinstr_enabled     = {16'b0000_0000_0000_0100};
+            bins breakpoint_enabled       = {16'b0000_0000_0000_1000};
+            bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000};
+            bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000};
+            bins storemisaligned_enabled  = {16'b0000_0000_0100_0000};
+            bins storeaccessfault_enabled = {16'b0000_0000_1000_0000};
+            bins ecallu_enabled           = {16'b0000_0001_0000_0000};
+            // Delegating ecall to S mode makes it impossible to escape S mode
+            // bins ecalls_enabled           = {16'b0000_0010_0000_0000};
+            // bit 10 reserved
+            // bit 11 is read only zero
+            bins instrpagefault_enabled   = {16'b0001_0000_0000_0000};
+            bins loadpagefault_enabled    = {16'b0010_0000_0000_0000};
+            // bit 14 reserved
+            bins storepagefault_enabled   = {16'b1000_0000_0000_0000};
+            wildcard bins ones            = {16'b1011_00?1_1111_111?};
+        }
+        mstatus_SIE: coverpoint ins.prev.csr[CSR_MSTATUS][1] {
+            // auto fills 1 and 0
+        }
+        medeleg_b8: coverpoint ins.current.csr[CSR_MEDELEG][8] {
+            // auto fills 1 and 0: ecall from U-mode delegated to S-mode or not
+        }
+        jalr_target_bit1: coverpoint {ins.current.rs1_val + ins.current.imm}[1] {
+            bins aligned    = {0};  // 4-byte aligned target
+            bins misaligned = {1};  // bit 1 set: instruction address misaligned (a legal target with Zca)
+        }
+    `endif
 
     // main coverpoints
     cp_instr_adr_misaligned_branch:          cross priv_mode_m, branch, branches_taken, pc_bit_1, imm_bit_1;
@@ -116,6 +151,15 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
     cp_store_address_misaligned:             cross priv_mode_m, storeops, adr_LSBs;
     cp_ecall_m:                              cross priv_mode_m, ecall;
     cp_mstatus_ie:                           cross priv_mode_m, ecall, mstatus_MIE;
+    `ifdef S_SUPPORTED
+        cp_medeleg_msu_instrmisaligned:      cross priv_mode_m_s_u, jalr,       jalr_target_bit1, medeleg_walk;
+        cp_medeleg_msu_loadmisaligned:       cross priv_mode_m_s_u, loadops,    adr_LSBs,         medeleg_walk;
+        cp_medeleg_msu_storemisaligned:      cross priv_mode_m_s_u, storeops,   adr_LSBs,         medeleg_walk;
+        cp_medeleg_msu_illegalinstruction:   cross priv_mode_m_s_u, illegalops,                   medeleg_walk;
+        cp_medeleg_msu_ecall:                cross priv_mode_m_s_u, ecall,                        medeleg_walk;
+        cp_medeleg_msu_ebreak:               cross priv_mode_m_s_u, ebreak,                       medeleg_walk;
+        cp_xstatus_ie:                       cross priv_mode_s_u, ecall, mstatus_MIE, mstatus_SIE, medeleg_b8;
+    `endif
 
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
@@ -144,6 +188,11 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
         cp_misaligned_priority_fetch:            cross priv_mode_m, i_phys_adr_misaligned, i_phys_address_nonexistent, jalr;
         cp_misaligned_priority_load:             cross priv_mode_m, loadops, adr_LSBs, illegal_address_priority;
         cp_misaligned_priority_store:            cross priv_mode_m, storeops, adr_LSBs, illegal_address_priority;
+        `ifdef S_SUPPORTED
+            cp_medeleg_msu_instraccessfault:         cross priv_mode_m_s_u, jalr,       illegal_address,  medeleg_walk;
+            cp_medeleg_msu_loadaccessfault:          cross priv_mode_m_s_u, loadops,    illegal_address,  medeleg_walk;
+            cp_medeleg_msu_storeaccessfault:         cross priv_mode_m_s_u, storeops,   illegal_address,  medeleg_walk;
+        `endif
     `endif
 
 endgroup

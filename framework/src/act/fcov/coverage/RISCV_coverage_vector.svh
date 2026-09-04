@@ -416,6 +416,30 @@ function logic[63:0] get_vr_element_zero_widen(int hart, int issue, `VLEN_BITS v
 
 endfunction
 
+// Like get_vr_element_zero but extracts at a given EEW, used in indexed load/store instructions
+function logic[63:0] get_vr_element_zero_eew(int hart, int issue, `VLEN_BITS val, int eew);
+    case (eew)
+    `ifdef SEW8_SUPPORTED
+    8:   return {56'b0, val[7:0]};
+    `endif
+    `ifdef SEW16_SUPPORTED
+    16:  return {48'b0, val[15:0]};
+    `endif
+    `ifdef SEW32_SUPPORTED
+    32:  return {32'b0, val[31:0]};
+    `endif
+    `ifdef SEW64_SUPPORTED
+    64:  return val[63:0];
+    `endif
+    default: begin
+      $error("ERROR: SystemVerilog Functional Coverage: Unsupported EEW: %s", eew);
+      $fatal(1);
+    end
+  endcase
+  return 0;
+
+endfunction
+
 typedef enum {
     mask_zero,
     mask_ones,

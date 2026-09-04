@@ -7,12 +7,11 @@
 
 """Compare register coverpoint generators (cmp_rd_rs1, cmp_rd_rs2, cmp_rs1_rs2, cmp_rd_rs1_rs2)."""
 
-from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
-from testgen.formatters.params import generate_random_params
+from testgen.instructions.params import generate_random_params
 
 
 @add_coverpoint_generator("cmp_rd_rs1")
@@ -49,7 +48,7 @@ def make_cmp_rd_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data
         if asm_setup:
             tc.code.insert(0, asm_setup)
         test_chunks.append(tc)
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
     return test_chunks
 
@@ -88,7 +87,7 @@ def make_cmp_rd_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data
         if asm_setup:
             tc.code.insert(0, asm_setup)
         test_chunks.append(tc)
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
     return test_chunks
 
@@ -127,7 +126,7 @@ def make_cmp_rs1_rs2(instr_name: str, instr_type: str, coverpoint: str, test_dat
         if asm_setup:
             tc.code.insert(0, asm_setup)
         test_chunks.append(tc)
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
     return test_chunks
 
@@ -164,6 +163,6 @@ def make_cmp_rd_rs1_rs2(instr_name: str, instr_type: str, coverpoint: str, test_
         if asm_setup:
             tc.code.insert(0, asm_setup)
         test_chunks.append(tc)
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
     return test_chunks

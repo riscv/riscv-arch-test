@@ -64,12 +64,6 @@ class riscvTraceData
   logic [4095:0][(XLEN-1):0] csr   ;   // Full CSR Address range
   logic [4095:0]             csr_wb;   // CSR writeback (change) flag
 
-  // Interrupts
-  logic                      m_ext_intr;    // Machine external interrupt
-  logic                      s_ext_intr;    // Supervisor external interrupt
-  logic                      m_timer_intr;  // Machine timer interrupt
-  logic                      m_soft_intr;   // Machine software interrupt
-
   logic                      lrsc_cancel;   // Implementation defined cancel
 
 // Virtual Memory signals for verification

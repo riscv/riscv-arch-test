@@ -14,7 +14,7 @@ COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/
 # Default exclusion reasons:
 #  - Sm: Insufficient WARL configuration options.
 EXTENSIONS  ?=
-EXCLUDE_EXTENSIONS ?= Sm,SdtrigSm,SdtrigS,SdtrigU
+EXCLUDE_EXTENSIONS ?= SdtrigSm,SdtrigS,SdtrigU
 
 # DEBUG, FAST, VERBOSE, and CLEAN_INTERMEDIATES are runtime options for controlling build output. DEBUG is mutually exclusive with FAST and CLEAN_INTERMEDIATES.
 # Set to True to enable, or leave blank to disable.
@@ -128,7 +128,6 @@ help:
 	  'coverage'            'Build with coverage instrumentation for $$(COVERAGE_CONFIG_FILES)' \
 	  'regression'          'Clean, run coverage, then every config with a run_cmd.txt' \
 	  'clean'               'Remove build artifacts (preserves extensions.txt and .validated)' \
-	  'clean-tests'         'Remove generated test sources'
 	@printf '\n\033[1mGenerators:\033[0m\n'
 	@printf '  \033[36m%-20s\033[0m %s\n' \
 	  'testgen'             'Run testgen only' \
@@ -221,12 +220,6 @@ tests: covergroupgen testgen
 .PHONY: vector-tests
 vector-tests: covergroupgen vector-testgen
 
-.PHONY: clean-tests
-clean-tests:
-	rm -rf $(SRCDIR64) $(SRCDIR32) $(SRCDIR64E) $(SRCDIR32E)
-	rm -rf $(UNPRIV_COVERPOINTS_DIR) $(COVERAGE_HELPERS_DIR)
-	rm -rf $(STAMP_DIR)
-
 
 
 ########### Coverage ###########
@@ -270,6 +263,13 @@ RUN_CMD_FILES := $(shell find config -name run_cmd.txt)
 $(foreach f,$(RUN_CMD_FILES),\
   $(foreach d,$(filter-out config,$(subst /, ,$(patsubst %/run_cmd.txt,%,$(f)))),\
     $(eval _TARGETS_$(d) += $(f))))
+
+# Keep spike-reference comparison configs available as explicit targets, but
+# exclude them from the aggregate `make whisper` target.
+WHISPER_RUN_TARGET_EXCLUDES := \
+  config/whisper/whisper-rv32-max-spike-ref/run_cmd.txt \
+  config/whisper/whisper-rv64-max-spike-ref/run_cmd.txt
+_TARGETS_whisper := $(filter-out $(WHISPER_RUN_TARGET_EXCLUDES),$(_TARGETS_whisper))
 
 # Collect all unique target names
 ALL_RUN_TARGETS := $(sort $(foreach f,$(RUN_CMD_FILES),\

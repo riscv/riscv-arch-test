@@ -11,8 +11,12 @@ from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
 
 r_config = InstructionTypeConfig(required_params={"rd", "rs1", "rs1val", "rs2", "rs2val"})
+r_rd_nx0_config = InstructionTypeConfig(
+    required_params={"rd", "rs1", "rs1val", "rs2", "rs2val"}, excluded_regs={"rd": {0}}
+)
 
 
+@add_instruction_formatter("R_RD_NX0", r_rd_nx0_config)
 @add_instruction_formatter("R", r_config)
 def format_r_type(
     instr_name: str, test_data: TestData, params: InstructionParams

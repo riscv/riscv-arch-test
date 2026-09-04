@@ -32,7 +32,9 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv39_Svpbmt_Smode.S"
+// TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+#define BOOT_TO_MMODE
+
 #define SIGUPD_COUNT 35
 
 
@@ -114,7 +116,7 @@ main:
   sfence.vma                                                             // Flush TLB
 
   LI(t0, MENVCFG_PBMTE)
-  CSRS(menvcfg, t0)                                                      // Enable Svpbmt
+  csrs menvcfg, t0                                                      // Enable Svpbmt
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -143,11 +145,13 @@ main:
 //                    1GB PAGE    Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 3: Test in S-Mode | RWX bit set | PTE.PBMT=3 | expected = Store, Load & Instr page faults
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, ((3 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
   TEST_CASES_RUNNER Smode, va_data, LEVEL2, test3
+#endif
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -179,12 +183,14 @@ main:
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 6: Test in S-Mode | RWX bit set | PTE.PBMT=3 | expected = Store, Load & Instr page faults
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, ((3 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
   TEST_CASES_RUNNER Smode, va_data, LEVEL1, test6
+#endif
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -218,6 +224,7 @@ main:
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 9: Test in S-Mode | RWX bit set | PTE.PBMT=3 | expected = Store, Load & Instr page faults
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
@@ -225,6 +232,7 @@ main:
   sfence.vma
 
   TEST_CASES_RUNNER Smode, va_data, LEVEL0, test9
+#endif
 
 
 //---------------------------------------------------------------------------------------------------------------------------------

@@ -1,68 +1,62 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
 normative_rule_definitions:
-  # If the Sscofpmf extension is implemented, bits mip.LCOFIP and mie.LCOFIE are the
-  # interrupt-pending and interrupt-enable bits for local-counter-overflow
-  # interrupts. reflects the occurrence of a local counter-overflow overflow
-  # interrupt request resulting from any of the mhpmeventn.OF bits being set.
-  - name: mip_lcofip_op
-    coverpoint: [""]
-
-  # If the Sscofpmf extension is implemented, bits mip.LCOFIP and mie.LCOFIE are the
-  # interrupt-pending and interrupt-enable bits for local-counter-overflow
-  # interrupts.
-  - name: mie_lcofie_op
-    coverpoint: [""]
-
-  # The mhpmeventnh CSRs are provided only if the Sscofpmf extension is implemented.
-  - name: mhpmeventh_presence
-    coverpoint: ["TODO, also in Ssstrict"]
-
-  # If the Sscofpmf extension is implemented, bits sip.LCOFIP and sie.LCOFIE are the
-  # interrupt-pending and interrupt-enable bits for local-counter-overflow
-  # interrupts. LCOFIP is read-write in sip and reflects the occurrence of a local
-  # counter-overflow overflow interrupt request resulting from any of the
-  # mhpmeventn.OF bits being set. If the Sscofpmf extension is not implemented,
-  # sip.LCOFIP and sie.LCOFIE are read-only zeros.
-  - names:
+  - name: mhpmevent_inh_op
+    coverpoint:
       [
-        sip_lcofip_Sscofpmf_acc,
-        sip_lcofip_Sscofpmf_op,
-        sie_lcofip_Sscofpmf_acc,
-        sie_lcofip_Sscofpmf_op,
+        "{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_minh_inhibits_mmode,cp_sinh_inhibits_smode,cp_uinh_inhibits_umode}",
       ]
-    coverpoint: [""]
 
-  - name: mhpmevent-INH_op
-    coverpoint: [""]
-
-  - name: mhpmevent-OF_op
-    coverpoint: [""]
-
-  - name: hpmcounter_overflow
-    coverpoint: [""]
-
-  - name: count_overflow_interrupt
-    coverpoint: [""]
+  - name:
+      [
+        mhpmevent_of_op,
+        mhpmevent_of_bit_set,
+        hpmcounter_overflow,
+        count_overflow_interrupt,
+        LCOFIP_op,
+      ]
+    coverpoint:
+      ["{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_of_set_on_overflow}"]
 
   - name: count_overflow_trigger
-    coverpoint: [""]
+    coverpoint:
+      ["{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_overflow_hw_only}"]
 
-  - name: mhpmevent-OF_bit_Set
-    coverpoint: [""]
-
-  - names: [mip-LCOFIP_op, sip-LCOFIP_op]
-    coverpoint: [""]
+  - names: LCOFIP_op
+    coverpoint: ["SscofpmfS_cg/cp_lcofip_hw_only"]
 
   - name: scountovf_op
-    coverpoint: [""]
+    coverpoint: ["SscofpmfS_cg/cp_scountovf_shadow"]
 
-  - name: scountovf_smode_read_access_control
-    coverpoint: [""]
+  - name: [scountovf_mmode_read_access, scountovf_smode_read_access]
+    coverpoint: ["{SscofpmfSm_cg,SscofpmfS_cg}/{cp_scountovf_mcounteren}"]
 
-  - name: scountovf_mmode_read_access
-    coverpoint: [""]
+  - name:
+      [
+        scountovf_mmode_read_access,
+        scountovf_smode_read_access,
+        mhpmeventh_presence,
+      ]
+    coverpoint: ["{SscofpmfSm_cg,SscofpmfS_cg}/{cp_sscofpmf_access}"]
 
-  - name: scountovf_smode_read_access
-    coverpoint: [""]
+  - name:
+      [
+        count_overflow_triggermip_lcofip_mie_lcofie_op,
+        mip_lcofip_acc,
+        sip_sie_Sscofpmf,
+      ]
+    coverpoint: ["{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_lcofi}"]
+
+  - name: sip_sie_Sscofpmf
+    coverpoint: ["SscofpmfS_cg/cp_lcofi_sip_s"]
+
+  - names: sip_sie_Sscofpmf
+    coverpoint: ["SscofpmfU_cg/cp_lcofi_sip_u"]
+
+  - name: [intr_M_mode_pri, sip_sie_priority_bit_order]
+    coverpoint:
+      ["{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_lcofip_priority}"]
 
   - name: scountovf_vsmode_read_access
     coverpoint: [""]

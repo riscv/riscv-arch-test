@@ -16,7 +16,7 @@ normative_rule_definitions:
   - name: M_access_all_lower_priv_CSRs
     coverpoint:
       [
-        "S_scsr_cg/cp_scsr_from_m, UF_ufcsr_cg/cp_ufcsr_from_m, UV_vucsr_cg/cp_vucsr_from_m, H_mcsr_cg/cp_hcsr_access",
+        "Sm_mcsr_cg/cp_scsr_from_m, SmF_cg/cp_fcsr_access, SmV_cg/cp_vcsrrswc, H_mcsr_cg/cp_hcsr_access",
       ]
 
   # The misa CSR is a WARL read-write register
@@ -275,12 +275,12 @@ normative_rule_definitions:
   # &lt;&lt;mstatusreg-rv32&gt;&gt; for RV32 and &lt;&lt;mstatusreg&gt;&gt; for
   # RV64.
   - names: [mstatus_sz, mstatus_acc]
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # For RV32 only, mstatush is a 32-bit read/write register formatted as shown in
   # &lt;&lt;mstatushreg&gt;&gt;.
   - names: [mstatush_sz, mstatush_acc]
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatush"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatush"]
 
   # When executing an xRET instruction, supposing xPP holds the value y, xIE is set
   # to xPIE; the privilege mode is changed to y; xPIE is set to 1; and xPP is set to
@@ -293,47 +293,51 @@ normative_rule_definitions:
         mstatus_xpp_xret_op,
         mstatus_mprv_xret_op,
       ]
-    coverpoint: ["Sm_mprivinst_cg/{cp_mret, cp_sret}"]
+    coverpoint:
+      [
+        "Sm_mprivinst_cg/{cp_mret, cp_sret, cp_sret_s}, S_sprivinst_cg/cp_sret_s",
+      ]
 
   # Bits 30:4 of mstatush generally contain the same fields found in bits 62:36 of
   # mstatus for RV64. Fields SD, SXL, and UXL do not exist in mstatush.
   - name: mstatush_enc
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatush"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatush"]
 
   # If supervisor mode is not implemented, then SIE and SPIE are read-only 0.
   - names: [mstatus_sie_rdonly0, mstatus_spie_rdonly0]
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatush"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatush"]
 
   # The xPP fields can only hold privilege modes up to x
   - name: mstatus_xpp_enc
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # MPP is two bits wide
   - name: mstatus_mpp_sz
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # xPP fields are WARL fields that can hold only privilege mode x and any
   # implemented privilege mode lower than x.
   - name: mstatus_xpp_warl
-    coverpoint: ["Sm_mcsr_cg/{cp_mcsr_access,cp_mcsrwalk}/mstatus"]
+    coverpoint:
+      ["Sm_mcsr_cg/{cp_mcsr_access_masked,cp_mcsrwalk_masked}/mstatus"]
 
   # If privilege mode x is not implemented, then xPP must be read-only 0.
   - name: mstatus_xpp_rdonly0
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # SPP is one bit wide.
   - name: mstatus_spp_sz
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # The M-mode-disable-trap (MDT) bit is a WARL field introduced by the Smdbltrp
   # extension.
   - names: [mstatus_mdt_sz, mstatus_mdt_warl]
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # For RV64 harts, the SXL and UXL fields are WARL fields that control the value of
   # XLEN for S-mode and U-mode, respectively.
   - names: [mstatus_sxl_warl, mstatus_uxl_warl, mstatus_sxl_op, mstatus_uxl_op]
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # For RV64 harts, the SXL and UXL fields are WARL fields that control the value of
   # XLEN for S-mode and U-mode, respectively. The encoding of these fields is the
@@ -343,32 +347,32 @@ normative_rule_definitions:
 
   # When MXLEN=32, the SXL and UXL fields do not exist, and SXLEN=32 and UXLEN=32.
   - names: [mstatus_sxl_exist_mxlen32, mstatus_uxl_exist_mxlen32]
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # When MXLEN=64, if S-mode is not supported, then SXL is read-only zero.
   # Otherwise, it is a WARL field that encodes the current value of SXLEN.
   - name: mstatus_sxl_acc_mxlen64
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # an implementation may make SXL be a read-only field whose value always ensures
   # that SXLEN=MXLEN.
   - name: mstatus_sxl_rdonly_mxlen64
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # When MXLEN=64, if U-mode is not supported, then UXL is read-only zero.
   # Otherwise, it is a WARL field that encodes the current value of UXLEN.
   - name: mstatus_uxl_acc_mxlen64
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # an implementation may make UXL be a read-only field whose value always ensures
   # that UXLEN=MXLEN or UXLEN=SXLEN.
   - name: mstatus_uxl_rdonly_mxlen64
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # If S-mode is implemented, the set of legal values that the UXL field may assume
   # excludes those that would cause UXLEN to be greater than SXLEN.
   - name: mstatus_uxl_legal_vals_smode
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # When MPRV=0, explicit memory accesses behave as normal, using the translation
   # and protection mechanisms of the current privilege mode. When MPRV=1, load and
@@ -384,12 +388,15 @@ normative_rule_definitions:
 
   # MPRV is read-only 0 if U-mode is not supported.
   - name: mstatus_mprv_rdonly0_no_umode
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # An MRET or SRET instruction that changes the privilege mode to a mode less
   # privileged than M also sets MPRV=0.
   - name: mstatus_mprv_clr_mret_sret_less_priv
-    coverpoint: ["{Sm_mprivinst_cg/S_sprivinst_cg}/{cp_mret, cp_sret}"]
+    coverpoint:
+      [
+        "Sm_mprivinst_cg/{cp_mret, cp_sret, cp_sret_s}, S_sprivinst_cg/cp_sret_s",
+      ]
 
   - name: mret_op
     coverpoint: ["Sm_mprivinst_cg/cp_mret"]
@@ -412,7 +419,7 @@ normative_rule_definitions:
 
   # MXR is read-only 0 if S-mode is not supported.
   - name: mstatus_mxr_rdonly0_no_smode
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # When SUM=0, S-mode memory accesses to pages that are accessible by U-mode (U=1
   # in &lt;&lt;sv32pte&gt;&gt;) will fault. When SUM=1, these accesses are
@@ -431,7 +438,7 @@ normative_rule_definitions:
 
   # SUM is read-only 0 if S-mode is not supported or if satp.MODE is read-only 0.
   - name: mstatus_sum_rdonly0
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # The MXR and SUM mechanisms only affect the interpretation of permissions encoded
   # in page-table entries. In particular, they have no impact on whether
@@ -451,8 +458,8 @@ normative_rule_definitions:
       ]
     coverpoint:
       [
-        "Sm_mcsr_cg/cp_mcsr_access/mstatus",
-        "Sm_mcsr_cg/cp_mcsr_access/mstatush",
+        "Sm_mcsr_cg/cp_mcsr_access_masked/mstatus",
+        "Sm_mcsr_cg/cp_mcsr_access_masked/mstatush",
       ]
 
   # The TVM (Trap Virtual Memory) bit is a WARL field that supports intercepting
@@ -462,7 +469,7 @@ normative_rule_definitions:
   # these operations are permitted in S-mode. TVM is read-only 0 when S-mode is not
   # supported.
   - name: mstatus_tvm_warl
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # The TVM (Trap Virtual Memory) bit is a WARL field that supports intercepting
   # supervisor virtual-memory management operations. When TVM=1, attempts to read or
@@ -475,27 +482,29 @@ normative_rule_definitions:
 
   # TW is read-only 0 when there are no modes less privileged than M.
   - name: mstatus_tw_acc
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # The TSR (Trap SRET) bit is a WARL field that supports intercepting the
   # supervisor exception return instruction, SRET.
   - name: mstatus_tsr_warl
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # When TSR=1, attempts to execute SRET while executing in S-mode will raise an
   # illegal-instruction exception. When TSR=0, this operation is permitted in
   # S-mode.
   - name: mstatus_tsr_op
-    coverpoint: ["Sm_mprivinst/cp_sret"]
+    coverpoint: ["Sm_mprivinst_cg/cp_sret_s"]
 
   # TSR is read-only 0 when S-mode is not supported.
   - name: mstatus_tsr_acc
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # The FS[1:0] and VS[1:0] WARL fields
   - names: [mstatus_fs_warl, mstatus_vs_warl]
     coverpoint:
-      ["Sm_mcsr_cg/cp_mcsr_access/mstatus, Sm_mcsr_cg/cp_mcsrwalk/mstatus"]
+      [
+        "Sm_mcsr_cg/cp_mcsr_access_masked/mstatus, Sm_mcsr_cg/cp_mcsrwalk_masked/mstatus",
+      ]
 
   # The FS field encodes the status of the floating-point unit state, including the
   # floating-point registers f0–f31 and the CSRs fcsr, frm, and fflags.
@@ -518,22 +527,24 @@ normative_rule_definitions:
   # None dirty or clean, some on None dirty, some clean Some dirty ===
   - names: [mstatus_fs_enc, mstatus_vs_enc, mstatus_xs_enc]
     coverpoint:
-      ["Sm_mcsr_cg/cp_mcsr_access/mstatus, SmF_cg/cp_mstatus_FS_transition"]
+      [
+        "Sm_mcsr_cg/cp_mcsr_access_masked/mstatus, SmF_cg/cp_mstatus_FS_transition",
+      ]
 
   # If the F extension is implemented, the FS field shall not be read-only zero. If
   # neither the F extension nor S-mode is implemented, then FS is read-only zero.
   - name: mstatus_fs_acc
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # If S-mode is implemented but the F extension is not, FS may optionally be
   # read-only zero.
   - name: mstatus_fs_rdonly0_s-no-f
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # If the v registers are implemented, the VS field shall not be read-only zero. If
   # neither the v registers nor S-mode is implemented, then VS is read-only zero.
   - name: mstatus_vs_acc
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # If S-mode is implemented but the v registers are not, VS may optionally be
   # read-only zero.
@@ -543,7 +554,7 @@ normative_rule_definitions:
   # In harts without additional user extensions requiring new state, the XS field is
   # read-only zero.
   - name: mstatus_xs_acc
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # Every additional extension with state provides a CSR field that encodes the
   # equivalent of the XS states.
@@ -796,7 +807,7 @@ normative_rule_definitions:
   # implemented. Further, if the H extension is implemented, then hip.VSTIP also
   # reverts its defined behavior as if this extension is not implemented.
   - name: menvcfg-stce
-    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk/menvcfg"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg"]
 
   # The Zicboz extension adds the CBZE (Cache Block Zero instruction enable) field
   # to menvcfg. When the CBZE field is set to 1, it enables execution of the cache
@@ -806,7 +817,7 @@ normative_rule_definitions:
   - name: menvcfg-cbze
     coverpoint:
       [
-        "Sm_mcsr_cg/cp_mcsrwalk/menvcfg, Zicboz_cg/{zero.1, zero.2, zero.4, zero.5}",
+        "Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg, Zicboz_cg/{zero.1, zero.2, zero.4, zero.5}",
       ]
 
   # The Zicbom extension adds the CBCFE (Cache Block Clean and Flush instruction
@@ -817,7 +828,9 @@ normative_rule_definitions:
   # than M. When the Zicbom extension is not implemented, CBCFE is read-only zero.
   - name: menvcfg-cbcfe
     coverpoint:
-      ["Sm_mcsr_cg/cp_mcsrwalk/menvcfg, Zicbom_cg/{cl.1, cl.4, fl.1, fl.4}"]
+      [
+        "Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg, Zicbom_cg/{cl.1, cl.4, fl.1, fl.4}",
+      ]
 
   # The Zicbom extension adds the CBIE (Cache Block Invalidate instruction Enable)
   # WARL field to menvcfg to control execution of the cache block invalidate
@@ -827,7 +840,7 @@ normative_rule_definitions:
   # read-only zero. The encoding 10b is reserved.
   - name: menvcfg-cbie
     coverpoint:
-      ["Sm_mcsr_cg/cp_mcsrwalk/menvcfg, Zicbom_cg/{inv.1, inv.4, inv.6}"]
+      ["Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg, Zicbom_cg/{inv.1, inv.4, inv.6}"]
 
   # When CBIE is set to 01b or 11b, and when enabled for execution in modes less
   # privileged than M, it behaves as follows:
@@ -837,7 +850,8 @@ normative_rule_definitions:
   # The mcycle CSR counts the number of clock cycles executed by the processor core
   # on which the hart is running.
   - name: mcycle_op
-    coverpoint: ["Sm_mcsr_cg/cp_cntr_access/mcycle"]
+    coverpoint:
+      ["Sm_mcsr_cg/cp_cntr_access/mcycle, Sm_mcsr_cg/cp_mcycle_wraparound"]
 
   # The mcycle and minstret registers have 64-bit precision on all RV32 and RV64
   # harts.
@@ -867,7 +881,8 @@ normative_rule_definitions:
 
   # The minstret CSR counts the number of instructions the hart has retired.
   - name: minstret_op
-    coverpoint: ["Sm_mcsr_cg/cp_cntr_access/minstret"]
+    coverpoint:
+      ["Sm_mcsr_cg/cp_cntr_access/minstret, Sm_mcsr_cg/cp_minstret_wraparound"]
 
   # The mcycle and minstret registers have 64-bit precision on all RV32 and RV64
   # harts.
@@ -1096,7 +1111,7 @@ normative_rule_definitions:
   - names: [time_op, time_rdonly]
     coverpoint:
       [
-        "Zicntr_csrrs_cg/cp_cntr/csr_time, Sm_mcsr_cg/cp_mtime_write, Sm_mcsr_cg/cp_csrw_readonly/time",
+        "Zicntr_csrrs_cg/cp_cntr/csr_time, Sm_mcsr_cg/cp_mtime_write, Sm_mcsr_cg/cp_csrw_readonly/time, Sm_mcsr_cg/cp_mtime_wraparound",
       ]
 
   # when XLEN=32, the cycleh, instreth and hpmcounternh CSRs are read-only shadows
@@ -1227,7 +1242,7 @@ normative_rule_definitions:
   # respectively. When MXLEN=32, the SXL and UXL fields do not exist, and SXLEN=32
   # and UXLEN=32.
   - names: [SXLEN, UXLEN]
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # Whenever XLEN in any mode is set to a value less than the widest supported XLEN,
   # all operations must ignore source operand register bits above the configured
@@ -1303,3 +1318,7 @@ normative_rule_definitions:
   # WARL field.
   - name: Zicsr_warl
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access"]
+
+  # The mtime register will wrap around if the count overflows.
+  - name: mtime_wrap
+    coverpoint: ["Sm_mcsr_cg/cp_mtime_wraparound"]

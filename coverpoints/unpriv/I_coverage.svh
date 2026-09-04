@@ -2029,8 +2029,9 @@ endgroup
 // ---------------------
 covergroup I_slli_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
-        // Compare assignments of all registers
+    cmp_rd_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
+        // Compare assignments of all 31 registers excluding x0
+        ignore_bins x0 = {x0};
     }
 
     cp_asm_count : coverpoint ins.ins_str == "slli"  iff (ins.trap == 0 )  {
@@ -2038,8 +2039,9 @@ covergroup I_slli_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
-        // RD register assignment
+    cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
+        // RD register assignment (excluding x0)
+        ignore_bins x0 = {x0};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -2106,16 +2108,19 @@ endgroup
 // ---------------------
 covergroup I_slt_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
-        // Compare assignments of all registers
+    cmp_rd_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
+        // Compare assignments of all 31 registers excluding x0
+        ignore_bins x0 = {x0};
     }
 
-    cmp_rd_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
-        // Compare assignments of all registers
+    cmp_rd_rs1_rs2_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
+        // Compare assignments of all registers excluding x0
+        ignore_bins x0 = {x0};
     }
 
-    cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
-        // Compare assignments of all registers
+    cmp_rd_rs2_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
+        // Compare assignments of all 31 registers excluding x0
+        ignore_bins x0 = {x0};
     }
 
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
@@ -2127,8 +2132,9 @@ covergroup I_slt_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
-        // RD register assignment
+    cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
+        // RD register assignment (excluding x0)
+        ignore_bins x0 = {x0};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -2215,8 +2221,9 @@ endgroup
 // ---------------------
 covergroup I_slti_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
-        // Compare assignments of all registers
+    cmp_rd_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
+        // Compare assignments of all 31 registers excluding x0
+        ignore_bins x0 = {x0};
     }
 
     cp_asm_count : coverpoint ins.ins_str == "slti"  iff (ins.trap == 0 )  {
@@ -2247,8 +2254,9 @@ covergroup I_slti_cg with function sample(ins_t ins);
         bins randomp = {1795};
     }
 
-    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
-        // RD register assignment
+    cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
+        // RD register assignment (excluding x0)
+        ignore_bins x0 = {x0};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -2297,8 +2305,9 @@ endgroup
 // ---------------------
 covergroup I_sltiu_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
-        // Compare assignments of all registers
+    cmp_rd_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
+        // Compare assignments of all 31 registers excluding x0
+        ignore_bins x0 = {x0};
     }
 
     cp_asm_count : coverpoint ins.ins_str == "sltiu"  iff (ins.trap == 0 )  {
@@ -2329,8 +2338,9 @@ covergroup I_sltiu_cg with function sample(ins_t ins);
         bins randomp = {1795};
     }
 
-    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
-        // RD register assignment
+    cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
+        // RD register assignment (excluding x0)
+        ignore_bins x0 = {x0};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -2379,16 +2389,19 @@ endgroup
 // ---------------------
 covergroup I_sltu_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
-        // Compare assignments of all registers
+    cmp_rd_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
+        // Compare assignments of all 31 registers excluding x0
+        ignore_bins x0 = {x0};
     }
 
-    cmp_rd_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
-        // Compare assignments of all registers
+    cmp_rd_rs1_rs2_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
+        // Compare assignments of all registers excluding x0
+        ignore_bins x0 = {x0};
     }
 
-    cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
-        // Compare assignments of all registers
+    cmp_rd_rs2_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
+        // Compare assignments of all 31 registers excluding x0
+        ignore_bins x0 = {x0};
     }
 
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
@@ -2400,8 +2413,9 @@ covergroup I_sltu_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
-        // RD register assignment
+    cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
+        // RD register assignment (excluding x0)
+        ignore_bins x0 = {x0};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -2597,8 +2611,9 @@ endgroup
 // ---------------------
 covergroup I_srai_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
-        // Compare assignments of all registers
+    cmp_rd_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
+        // Compare assignments of all 31 registers excluding x0
+        ignore_bins x0 = {x0};
     }
 
     cp_asm_count : coverpoint ins.ins_str == "srai"  iff (ins.trap == 0 )  {
@@ -2606,8 +2621,9 @@ covergroup I_srai_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
-        // RD register assignment
+    cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
+        // RD register assignment (excluding x0)
+        ignore_bins x0 = {x0};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -2783,8 +2799,9 @@ endgroup
 // ---------------------
 covergroup I_srli_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
-        // Compare assignments of all registers
+    cmp_rd_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
+        // Compare assignments of all 31 registers excluding x0
+        ignore_bins x0 = {x0};
     }
 
     cp_asm_count : coverpoint ins.ins_str == "srli"  iff (ins.trap == 0 )  {
@@ -2792,8 +2809,9 @@ covergroup I_srli_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
-        // RD register assignment
+    cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
+        // RD register assignment (excluding x0)
+        ignore_bins x0 = {x0};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -3616,8 +3634,9 @@ endgroup
 // ---------------------
 covergroup I_slliw_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
-        // Compare assignments of all registers
+    cmp_rd_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
+        // Compare assignments of all 31 registers excluding x0
+        ignore_bins x0 = {x0};
     }
 
     cp_asm_count : coverpoint ins.ins_str == "slliw"  iff (ins.trap == 0 )  {
@@ -3625,8 +3644,9 @@ covergroup I_slliw_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
-        // RD register assignment
+    cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
+        // RD register assignment (excluding x0)
+        ignore_bins x0 = {x0};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -3795,8 +3815,9 @@ endgroup
 // ---------------------
 covergroup I_sraiw_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
-        // Compare assignments of all registers
+    cmp_rd_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
+        // Compare assignments of all 31 registers excluding x0
+        ignore_bins x0 = {x0};
     }
 
     cp_asm_count : coverpoint ins.ins_str == "sraiw"  iff (ins.trap == 0 )  {
@@ -3804,8 +3825,9 @@ covergroup I_sraiw_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
-        // RD register assignment
+    cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
+        // RD register assignment (excluding x0)
+        ignore_bins x0 = {x0};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -3974,8 +3996,9 @@ endgroup
 // ---------------------
 covergroup I_srliw_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
-        // Compare assignments of all registers
+    cmp_rd_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
+        // Compare assignments of all 31 registers excluding x0
+        ignore_bins x0 = {x0};
     }
 
     cp_asm_count : coverpoint ins.ins_str == "srliw"  iff (ins.trap == 0 )  {
@@ -3983,8 +4006,9 @@ covergroup I_srliw_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
-        // RD register assignment
+    cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
+        // RD register assignment (excluding x0)
+        ignore_bins x0 = {x0};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {

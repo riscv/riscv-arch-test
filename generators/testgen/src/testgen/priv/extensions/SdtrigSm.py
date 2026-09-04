@@ -16,7 +16,7 @@ from testgen.priv.registry import add_priv_test_generator
     "SdtrigSm",
     required_extensions=["Sm", "Sdtrig"],
     march_extensions=[],
-    extra_defines=UDB_DEFINES,
+    extra_defines=[*UDB_DEFINES, "#define BOOT_TO_MMODE"],
 )
 def make_sdtrigsm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the SdtrigSm debug-trigger testsuite."""

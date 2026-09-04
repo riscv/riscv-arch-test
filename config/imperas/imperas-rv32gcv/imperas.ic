@@ -50,11 +50,16 @@
 --override cpu*/Zcmop=T
 --override cpu*/Smstateen=T
 --override cpu*/Ssstateen=T
-
+--override cpu*/Zawrs=T
 
 # Misaligned access (Zicclsm)
 --override cpu*/unaligned=T
 --override cpu*/Zam=T # misaligned AMOs are supported (needed for Zama16b)
+
+# Timeout
+--override cpu*/TW_time_limit=100
+--override cpu*/STO_time_limit=100
+--override iss/quantum=1e-5 # affects timer comparator scheduling
 
 # PMP Configuration
 --override cpu*/PMP_registers=16
@@ -65,8 +70,9 @@
 # More extensions
 --override cpu*/Smdbltrp=T
 --override cpu*/Ssdbltrp=T
---override iss/cpu0/Zicfilp=T
---override iss/cpu0/Zicfiss=T
+--override cpu*/Zicfilp=T
+--override cpu*/Zicfiss=T
+--override cpu*/d_requires_f=T
 
 # PMA Settings
 # 'r': read access allowed
@@ -83,6 +89,10 @@
 #
 # SVxx Memory 0x0000000000 0x7FFFFFFFFF
 #
+# Restrict ISS memory to defined regions so fetches from unmapped addresses
+# raise instruction access faults (setPMA only polices data accesses)
+--memory ram:0x80000000:0x8FFFFFFF:rwx,io:0x10010000:0x1001FFFF:rw
+--override iss/cpu0/CLINT_address=0x02000000 # enables mtime and msip memory-mapped registers
 --callcommand iss/cpu0/setPMA -lo 0x0000000000 -hi 0xFFFFFFFFFF -attributes " ---a-- ---- " # All memory inaccessible unless defined otherwise
 --callcommand iss/cpu0/setPMA -lo 0x0000000000 -hi 0x7FFFFFFFFF -attributes " ---a-- ---- " # INITIAL
 --callcommand iss/cpu0/setPMA -lo 0x0002000000 -hi 0x000200FFFF -attributes " rw-aA- 1248 " # CLINT

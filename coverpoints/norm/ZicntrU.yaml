@@ -15,7 +15,7 @@ normative_rule_definitions:
   # writing this register does not affect the underlying counters, which continue to
   # increment even when not accessible.
   - name: mcounteren_inc_inaccessible
-    coverpoint: ["TODO"]
+    coverpoint: ["ZicntrU_cg/cp_mcounteren_inc_inaccessible"]
 
   - name: mcounteren_enc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mcounteren"]

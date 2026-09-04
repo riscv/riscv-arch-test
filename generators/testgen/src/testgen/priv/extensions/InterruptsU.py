@@ -54,9 +54,9 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"LI(x{r_scratch}, 0x80)",
-                    f"{'CSRS' if mstatus_mie else 'CSRC'}(mstatus, x{r_scratch})",
+                    f"{'csrs' if mstatus_mie else 'csrc'} mstatus, x{r_scratch}",
                     f"LI(x{r_scratch}, 0x80)",
-                    f"CSRW(mie, x{r_scratch})",
+                    f"csrw mie, x{r_scratch}",
                     "RVTEST_GOTO_LOWER_MODE Umode",
                     test_data.add_testcase(binname, coverpoint, covergroup),
                     *set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2),
@@ -113,9 +113,9 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"LI(x{r_scratch}, 0x80) # mstatus.MPIE bit mask (bit 7)",
-                    f"{'CSRS' if mstatus_mie else 'CSRC'}(mstatus, x{r_scratch})",
+                    f"{'csrs' if mstatus_mie else 'csrc'} mstatus, x{r_scratch}",
                     f"LI(x{r_scratch}, 0x08) # Enable MSIE",
-                    f"CSRW(mie, x{r_scratch})",
+                    f"csrw mie, x{r_scratch}",
                     "RVTEST_GOTO_LOWER_MODE Umode",
                     test_data.add_testcase(binname, coverpoint, covergroup),
                     "RVTEST_SET_MSW_INT",
@@ -172,9 +172,9 @@ def _generate_user_mei_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"LI(x{r_scratch}, 0x80) # mstatus.MPIE bit mask (bit 7)",
-                    f"{'CSRS' if mstatus_mie else 'CSRC'}(mstatus, x{r_scratch})",
+                    f"{'csrs' if mstatus_mie else 'csrc'} mstatus, x{r_scratch}",
                     f"LI(x{r_scratch}, 0x800) # Enable MEIE",
-                    f"CSRW(mie, x{r_scratch})",
+                    f"csrw mie, x{r_scratch}",
                     "RVTEST_GOTO_LOWER_MODE Umode",
                     test_data.add_testcase(binname, coverpoint, covergroup),
                     "RVTEST_SET_MEXT_INT",
@@ -199,9 +199,7 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(
             "cp_wfi",
-            "WFI in U-mode waits for interrupt\n"
-            "Cross: mstatus.MIE={0/1} x mstatus.TW={0/1}\n"
-            "mie.MTIE=1, timer fires soon",
+            "WFI in U-mode waits for interrupt\nCross: mstatus.MIE={0/1}\nmie.MTIE=1, timer fires soon",
         ),
         "",
     ]
@@ -214,7 +212,7 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
             [
                 "",
                 f"LI(x{r_scratch}, 0x200008)",
-                f"CSRC(mstatus, x{r_scratch})",
+                f"csrc mstatus, x{r_scratch}",
             ]
         )
 
@@ -222,7 +220,7 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
             [
                 "# Write MIE based on bins",
                 f"LI(x{r_scratch}, 0x80) # mstatus.MPIE bit mask (bit 7)",
-                f"{'CSRS' if mie_val else 'CSRC'}(mstatus, x{r_scratch})",
+                f"{'csrs' if mie_val else 'csrc'} mstatus, x{r_scratch}",
             ]
         )
 
@@ -230,7 +228,7 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"LI(x{r_scratch}, 0x80)",
-                f"CSRW(mie, x{r_scratch})",
+                f"csrw mie, x{r_scratch}",
                 "RVTEST_GOTO_LOWER_MODE Umode",
             ]
         )
@@ -268,9 +266,9 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
         ),
         "",
         "# Set TW=1 for entire test block",
-        "CSRW(medeleg, x0)",
+        "csrw medeleg, x0",
         f"LI(x{r_scratch}, 0x200000)",
-        f"CSRS(mstatus, x{r_scratch})",
+        f"csrs mstatus, x{r_scratch}",
         "",
     ]
 
@@ -284,9 +282,9 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
                     "",
                     "csrci mstatus, 8 # Clear mstatus.MIE (bit 3)",
                     f"LI(x{r_scratch}, 0x80)",
-                    f"CSRC(mie, x{r_scratch})",
+                    f"csrc mie, x{r_scratch}",
                     f"LI(x{r_scratch}, 0x80) # mstatus.MPIE bit mask (bit 7)",
-                    f"{'CSRS' if mie_val else 'CSRC'}(mstatus, x{r_scratch})",
+                    f"{'csrs' if mie_val else 'csrc'} mstatus, x{r_scratch}",
                 ]
             )
 
@@ -295,7 +293,7 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
                     [
                         "# Set MTIE",
                         f"LI(x{r_scratch}, 0x80)",
-                        f"CSRS(mie, x{r_scratch})",
+                        f"csrs mie, x{r_scratch}",
                     ]
                 )
 
@@ -317,7 +315,10 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("InterruptsU", required_extensions=["U"])
+@add_priv_test_generator(
+    "InterruptsU",
+    required_extensions=["U"],
+)
 def make_interruptsu(test_data: TestData) -> list[TestChunk]:
     """Generate tests for InterruptsU user-mode interrupt behavior."""
     test_chunks: list[TestChunk] = []
@@ -326,7 +327,8 @@ def make_interruptsu(test_data: TestData) -> list[TestChunk]:
     r_temp, r_mtimecmp = test_data.int_regs.get_registers(2)
 
     # Initial setup - clear any pending timer
-    tc.code.append("CSRW(mideleg, zero)")
+    tc.code.append("RVTEST_TSBI_GOTO_MMODE")
+    tc.code.append("csrw mideleg, zero")
     tc.code.extend(clr_mtimer_int(r_temp, r_mtimecmp))
     tc.code.append("")
 

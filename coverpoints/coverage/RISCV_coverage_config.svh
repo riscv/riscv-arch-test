@@ -95,6 +95,9 @@
 `ifdef EXCEPTIONSZICBOS_COVERAGE
   `include "ExceptionsZicboS_coverage.svh"
 `endif
+`ifdef EXCEPTIONSZICBOSM_COVERAGE
+  `include "ExceptionsZicboSm_coverage.svh"
+`endif
 `ifdef EXCEPTIONSZICBOU_COVERAGE
   `include "ExceptionsZicboU_coverage.svh"
 `endif
@@ -329,11 +332,14 @@
 `ifdef ZAMA16B_COVERAGE
   `include "Zama16b_coverage.svh"
 `endif
-`ifdef ZAWRSSU_COVERAGE
-  `include "ZawrsSU_coverage.svh"
+`ifdef ZAWRSS_COVERAGE
+  `include "ZawrsS_coverage.svh"
 `endif
 `ifdef ZAWRSSM_COVERAGE
   `include "ZawrsSm_coverage.svh"
+`endif
+`ifdef ZAWRSU_COVERAGE
+  `include "ZawrsU_coverage.svh"
 `endif
 `ifdef ZBA_COVERAGE
   `include "Zba_coverage.svh"
@@ -422,6 +428,18 @@
 `ifdef ZICBOZ_COVERAGE
   `include "Zicboz_coverage.svh"
 `endif
+`ifdef ZICFILPS_COVERAGE
+  `include "ZicfilpS_coverage.svh"
+`endif
+`ifdef ZICFILPSU_COVERAGE
+  `include "ZicfilpSU_coverage.svh"
+`endif
+`ifdef ZICFILPSM_COVERAGE
+  `include "ZicfilpSm_coverage.svh"
+`endif
+`ifdef ZICFILPU_COVERAGE
+  `include "ZicfilpU_coverage.svh"
+`endif
 `ifdef ZICNTR_COVERAGE
   `include "Zicntr_coverage.svh"
 `endif
@@ -470,8 +488,14 @@
 `ifdef ZKNH_COVERAGE
   `include "Zknh_coverage.svh"
 `endif
-`ifdef ZKR_COVERAGE
-  `include "Zkr_coverage.svh"
+`ifdef ZKRS_COVERAGE
+  `include "ZkrS_coverage.svh"
+`endif
+`ifdef ZKRSM_COVERAGE
+  `include "ZkrSm_coverage.svh"
+`endif
+`ifdef ZKRU_COVERAGE
+  `include "ZkrU_coverage.svh"
 `endif
 `ifdef ZKSED_COVERAGE
   `include "Zksed_coverage.svh"

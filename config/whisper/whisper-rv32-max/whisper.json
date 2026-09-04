@@ -3,8 +3,7 @@
 
   "address_translation_pmms": ["off"],
 
-  // restore smmpm_smnpm_ssnpm when supported by Sail; affects mseccfg.PMM
-  "isa": "rv32imafdcvhus_zicbom_zicbop_zicboz_zicntr_zicond_zicsr_zihintpause_zihpm_zimop_zawrs_zfa_zfbfmin_zfh_zkr_zcb_zcmop_zba_zbb_zbs_zvbb_zvbc_zvfbfmin_zvfbfwma_zvfh_zvkg_zvkned_zvknhb_zvksed_zvksh_zvqdot_sdtrig_smaia_smstateen_ssaia_sscofpmf_sstc_svadu_svinval_svvptc_zifencei_zabha_zbc_zkne_zknd_zknh_zbkb_zbkc_zbkx_zksed_zksh_zacas_zicfilp_zicfiss_smdbltrp_ssdbltrp_smrnmi",
+  "isa": "rv32imafdcbvhus_zicbom_zicbop_zicboz_zicntr_zicond_zicsr_zihintpause_zihpm_zimop_zawrs_zfa_zfbfmin_zfh_zkr_zcb_zcmop_zba_zbb_zbs_zvbb_zvbc_zvfbfmin_zvfbfwma_zvfh_zvkg_zvkned_zvknhb_zvksed_zvksh_sdtrig_smaia_smcntrpmf_smstateen_ssaia_sscofpmf_sstc_svadu_svinval_svvptc_zifencei_zabha_zbc_zkne_zknd_zknh_zbkb_zbkc_zbkx_zksed_zksh_zacas_zicfilp_zicfiss_ssqosid_smdbltrp_ssdbltrp_smrnmi",
 
   "all_inst_addr_trigger": "false",
   "cancel_lr_on_trap": false,
@@ -47,6 +46,9 @@
   },
 
   "csr": {
+    "misa": { "reset": "0x4034112f" }, // acdfimsuv + B (bit 1). Whisper only derives misa from the
+    // ISA string under --newlib/--linux, so set it explicitly.
+    // TODO: delete misa override in all whisper configs when https://github.com/tenstorrent/whisper/issues/48 merged
     "vstart": {
       "mask": "0xff",
       "poke_mask": "0xff"
@@ -63,14 +65,17 @@
       "mask": "0x2222", // determines what bits of mip can be set by M-mode software [SEIP, STIP, SSIP]
       "poke_mask": "0x2aaa" //determines what bits of mip can be set by simulator injecting external events
     },
+    "mideleg": {
+      "mask": "0x3666" // determines what bits of mideleg can be set by M-mode software [SEIP, STIP, SSIP]
+    },
     "stvec": {
       "mask": "0xFFFFFFFD" // don't allow setting MODE field to 2 (reserved)
     },
     "mcounteren": {
-      "mask": "0x00000007"
+      "mask": "0x000007FF"
     },
     "scounteren": {
-      "mask": "0x00000007"
+      "mask": "0x000007FF"
     }
   },
 
@@ -127,7 +132,7 @@
     "tail_agnostic_policy": "ones",
     "trap_invalid_vtype": false,
     "trap_non_zero_vstart": true,
-    "tt_clear_tval_vl_egs": true,
+    "tt_clear_tval_vl_egs": false,
     "tt_fp_usum_tree_reduction": ["e16", "e32", "e64"],
     "update_whole_mask": true
   },

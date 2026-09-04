@@ -15,8 +15,7 @@
 # MARCH: rv32if_zicsr_zifencei_zfa
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "ZfaF-fround.s-00.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 280
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.

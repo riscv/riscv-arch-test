@@ -10,8 +10,6 @@
 
 """Derive a minimal rvmodel_macros.svh from rvmodel_macros.h."""
 
-from __future__ import annotations
-
 import re
 from pathlib import Path
 

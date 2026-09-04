@@ -49,6 +49,7 @@
                         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
                     }
     {
+        type_option.weight = 0;
         bins true = {1'b1};
     }
 

@@ -17,9 +17,9 @@
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv_mstatus_tvm_test.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 30
+// TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
 #define BOOT_TO_MMODE
 
 
@@ -32,7 +32,7 @@ main:
 
   // Set mstatus.TVM
   LI(   a0, MSTATUS_TVM)
-  CSRS( mstatus, a0)
+  csrs  mstatus, a0
 
   tvm:
   RVTEST_SIGUPD_CSR_READ(mstatus, a4, tvm, tvm_str)
@@ -41,13 +41,13 @@ main:
 // Test case 1: Access satp in M-mode | mstatus.TVM set | Expected: Successful access
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  CSRW(satp, zero)
+  csrw satp, zero
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test case 2: Access sfence.vma in M-mode | mstatus.TVM set | Expected: Successful access
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  SFENCE_VMA
+  sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test case 3: Access satp in S-mode | mstatus.TVM set | Expected: 3 Illegal instruction exceptions
@@ -55,11 +55,11 @@ main:
 
   RVTEST_GOTO_LOWER_MODE Smode
 
-  CSRW(satp, zero)
+  csrw satp, zero
 
-  CSRS(satp, zero)
+  csrs satp, zero
 
-  CSRC(satp, zero)
+  csrc satp, zero
 
   RVTEST_GOTO_MMODE
 
@@ -69,7 +69,7 @@ main:
 
   RVTEST_GOTO_LOWER_MODE Smode
 
-  SFENCE_VMA
+  sfence.vma
 
   RVTEST_GOTO_MMODE
 

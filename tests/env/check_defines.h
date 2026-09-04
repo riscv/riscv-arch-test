@@ -5,7 +5,7 @@
 
 ########## test.S CHECKS ##########
 #ifndef TEST_FILE
-  #error "TEST_FILE not defined. It should be defined at the beginning of the test file."
+  #error "TEST_FILE not defined. It should be passed on the compiler command line."
 #endif
 
 #ifndef SIGUPD_COUNT

@@ -60,6 +60,13 @@
   #endif
 #endif
 
+// Execute an sfence.vma if supported by the DUT. Primarily used in PMP tests.
+.macro RVTEST_SFENCE_VMA_IF_SUPPORTED
+  #if defined(SV32_SUPPORTED) || defined(SV39_SUPPORTED)
+    sfence.vma
+  #endif
+.endm
+
 // FLEN specific macros
 // ============================================================================
 // Tests are written assuming a certain FLEN. For most tests, the test will only
@@ -198,16 +205,25 @@
 #endif
 
 // PMP macros
-#define PMP0_CFG_SHIFT  0
-#define PMP1_CFG_SHIFT  8
-#define PMP2_CFG_SHIFT  16
-#define PMP3_CFG_SHIFT  24
-#define PMP4_CFG_SHIFT  32
-#define PMP5_CFG_SHIFT  40
-#define PMP6_CFG_SHIFT  48
-#define PMP7_CFG_SHIFT  56
-#define NOP              0x13
-#define DOUBLE_NOP       (0x13<<32)+0x13
+#define PMP_CFG_SHIFT(_ENTRY) (((_ENTRY) % (UDB_MXLEN / 8)) * 8)
+#define PMP0_CFG_SHIFT         PMP_CFG_SHIFT(0)
+#define PMP1_CFG_SHIFT         PMP_CFG_SHIFT(1)
+#define PMP2_CFG_SHIFT         PMP_CFG_SHIFT(2)
+#define PMP3_CFG_SHIFT         PMP_CFG_SHIFT(3)
+#define PMP4_CFG_SHIFT         PMP_CFG_SHIFT(4)
+#define PMP5_CFG_SHIFT         PMP_CFG_SHIFT(5)
+#define PMP6_CFG_SHIFT         PMP_CFG_SHIFT(6)
+#define PMP7_CFG_SHIFT         PMP_CFG_SHIFT(7)
+#define PMP8_CFG_SHIFT         PMP_CFG_SHIFT(8)
+#define PMP9_CFG_SHIFT         PMP_CFG_SHIFT(9)
+#define PMP10_CFG_SHIFT        PMP_CFG_SHIFT(10)
+#define PMP11_CFG_SHIFT        PMP_CFG_SHIFT(11)
+#define PMP12_CFG_SHIFT        PMP_CFG_SHIFT(12)
+#define PMP13_CFG_SHIFT        PMP_CFG_SHIFT(13)
+#define PMP14_CFG_SHIFT        PMP_CFG_SHIFT(14)
+#define PMP15_CFG_SHIFT        PMP_CFG_SHIFT(15)
+#define NOP                    0x13
+#define DOUBLE_NOP             (0x13<<32)+0x13
 
 // RVTEST_TESTDATA_LOAD_INT(data_ptr, dest_reg) loads an integer value from the
 // test data section into dest_reg and increments the data_ptr pointer by SIG_STRIDE.
@@ -386,46 +402,6 @@
     .p2align UNROLLSZ ;\
     .option pop     ;\
   .endif
-
-// CSR Macros
-// each access is followed by a nop in case the access causes a trap
-// because the trap return skips the next instruction
-
-#define CSRRW(_R2, _CSR, _R1) \
-    csrrw _R2, _CSR, _R1      ;\
-    nop
-
-#define CSRRS(_R2, _CSR, _R1) \
-    csrrs _R2, _CSR, _R1      ;\
-    nop
-
-#define CSRRC(_R2, _CSR, _R1) \
-    csrrc _R2, _CSR, _R1      ;\
-    nop
-
-#define CSRR(_R2, _CSR) \
-    csrr _R2, _CSR      ;\
-    nop
-
-#define CSRW(_CSR, _R1) \
-    csrw _CSR, _R1      ;\
-    nop
-
-#define CSRS(_CSR, _R1) \
-    csrs _CSR, _R1      ;\
-    nop
-
-#define CSRC(_CSR, _R1) \
-    csrc _CSR, _R1      ;\
-    nop
-
-// Macros for instructions that can trap
-// each instruction is followed by a nop in case the access causes a trap
-// because the trap return skips the next instruction
-
-#define SFENCE_VMA \
-    sfence.vma         ;\
-    nop
 
 // Utility Macros
 

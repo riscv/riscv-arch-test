@@ -91,7 +91,9 @@
 --override cpu*/Zam=T # misaligned AMOs are supported (needed for Zama16b)
 
 # Timeout
-#--override cpu*/TW_time_limit=65536  # *** attempted adding this summer 2025 for interrupt tests, but it breaks WALLY-status-tw-01.elf test and tests/coverage/priv.elf.  Not in rv32gc either
+--override cpu*/TW_time_limit=100
+--override cpu*/STO_time_limit=100
+--override iss/quantum=1e-5 # affects timer comparator scheduling
 
 # PMP Configuration
 --override cpu*/PMP_registers=64
@@ -100,13 +102,14 @@
 --override cpu*/PMP_undefined=T # access to unimplemented PMP registers cause illegal instruction exception
 
 # Pointer Masking
---override iss/cpu0/Smmpm=48_57 # (Enumeration) (default=none) (default) Specify Smmpm implemented modes
---override iss/cpu0/Smnpm=48_57 # (Enumeration) (default=48_57) (default) Specify Smnpm implemented modes
---override iss/cpu0/Ssnpm=48_57 # (Enumeration) (default=48_57) (default) Specify Ssnpm implemented modes
+--override cpu*/Smmpm=48_57 # (Enumeration) (default=none) (default) Specify Smmpm implemented modes
+--override cpu*/Smnpm=48_57 # (Enumeration) (default=48_57) (default) Specify Smnpm implemented modes
+--override cpu*/Ssnpm=48_57 # (Enumeration) (default=48_57) (default) Specify Ssnpm implemented modes
 
 # More extensions
 --override cpu*/Smdbltrp=T
 --override cpu*/Ssdbltrp=T
+--override cpu*/d_requires_f=T
 
 # PMA Settings
 # 'r': read access allowed
@@ -123,6 +126,10 @@
 #
 # SVxx Memory 0x0000000000 0x7FFFFFFFFF
 #
+# Restrict ISS memory to defined regions so fetches from unmapped addresses
+# raise instruction access faults (setPMA only polices data accesses)
+--memory ram:0x80000000:0x8FFFFFFF:rwx,io:0x10010000:0x1001FFFF:rw
+--override iss/cpu0/CLINT_address=0x02000000 # enables mtime and msip memory-mapped registers
 --callcommand iss/cpu0/setPMA -lo 0x0000000000 -hi 0xFFFFFFFFFFFFFF -attributes " ---a-- ---- " # All memory inaccessible unless defined otherwise
 --callcommand iss/cpu0/setPMA -lo 0x0000000000 -hi 0x00007FFFFFFFFF -attributes " ---a-- ---- " # INITIAL
 --callcommand iss/cpu0/setPMA -lo 0x0002000000 -hi 0x0000000200FFFF -attributes " rw-aA- 1248 " # CLINT

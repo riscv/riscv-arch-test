@@ -15,6 +15,7 @@ description: CV32E40X v0.10.0 (CORE-V security) - RV32IMC default configuration 
 implemented_extensions: # VERIFIED against User Manual (Introduction)
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
   - { name: C, version: "= 2.0" }
   - { name: Zca, version: "= 1.0.0" }
   - { name: Zcb, version: "= 1.0.0" } # VERIFIED -- always enabled per User Manual, Introduction

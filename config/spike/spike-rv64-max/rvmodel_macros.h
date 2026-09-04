@@ -108,10 +108,7 @@
 
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
-// Spike ticks the CLINT timer every 100 instructions (default --insns-per-tick).
-// Define a 100x multiplier to convert between timer tick and processor cycle count.
-
-#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 100
+#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 5000
 
 #define CLINT_BASE_ADDRESS 0x02000000
 #define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)

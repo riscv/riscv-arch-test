@@ -569,18 +569,18 @@ def _walk_asm(mode: str, tables: list[str], va_reg: str, td: TestData) -> list[s
 
 def build_finegrained_text_map_asm(mode: str, img_tables: list[str], td: TestData) -> list[str]:
     """Split the 2 MiB region containing rvtest_code_begin into 4 KiB leaves,
-    granting PTE_U only to the U-mode-executable text (pm_utext_begin..end)
-    and the U-accessible data range (rvtest_data_begin..end_signature).
+    granting PTE_U to:
+    1. U-mode-executable text (pm_utext_begin..end)
+    2. U-accessible framework data range (rvtest_data_begin..end_signature)
+    3. PM data pages (pm_lo_page and pm_hi_page for non-bare modes)
+
     The S-mode trap handler, which lives outside that bracket in the same
     2 MiB region, is left without PTE_U so S-mode can still fetch it.
-
-    Register budget: same constraint as build_data_only_u_map_asm -- only 6
-    int registers total. Text and data bounds are both reloaded with LA
-    every iteration rather than held live, so only r0/r1/r6 persist across
-    the loop; s0/s1/s2 are reused scratch.
     """
     (r0,) = td.int_regs.get_registers(1)
-    lines = [f"# {mode.upper()}: 4 KiB mapping of the test image; PTE_U only on test code and data"]
+    lines = [
+        f"# {mode.upper()}: 4 KiB mapping of the test image; PTE_U on test code, framework data, and PM data pages"
+    ]
     lines += [f"LA(x{r0}, rvtest_code_begin)"]
     lines += _walk_asm(mode, img_tables, f"x{r0}", td)
 
@@ -600,7 +600,24 @@ def build_finegrained_text_map_asm(mode: str, img_tables: list[str], td: TestDat
         f"sub  x{s2}, x{s2}, x{s1}                  # x{s2} = size of the U-executable text",
         f"sub  x{s1}, x{r0}, x{s1}                  # x{s1} = offset from text begin",
         f"bltu x{s1}, x{s2}, 2f                  # inside the code segment -> U-accessible",
-        # Not in the text range -- check the U-accessible data range.
+        # Check PM data pages: pm_lo_page
+        f"LA(x{s1}, pm_lo_page)",
+        f"sub  x{s1}, x{r0}, x{s1}                  # x{s1} = offset from pm_lo_page",
+        f"li   x{s2}, 4096                     # x{s2} = size of pm_lo_page",
+        f"bltu x{s1}, x{s2}, 2f                # within pm_lo_page -> U-accessible",
+    ]
+
+    # For non-bare modes, also check pm_hi_page
+    if mode != "bare":
+        lines += [
+            f"LA(x{s1}, pm_hi_page)",
+            f"sub  x{s1}, x{r0}, x{s1}                  # x{s1} = offset from pm_hi_page",
+            f"li   x{s2}, 4096                     # x{s2} = size of pm_hi_page",
+            f"bltu x{s1}, x{s2}, 2f                # within pm_hi_page -> U-accessible",
+        ]
+
+    # Not in text or PM range -- check the U-accessible framework data range.
+    lines += [
         f"LA(x{s1}, rvtest_data_begin)",
         f"LA(x{s2}, end_signature)",
         f"sub  x{s2}, x{s2}, x{s1}                  # x{s2} = size of the U-accessible data",

@@ -21,7 +21,7 @@ from testgen.priv.extensions.ZpmCommon import (
     PMM_CONFIGS,
     Regs,
     _pte_chain_asm,
-    alloc_pm_regs_wide,
+    alloc_pm_regs_paired,
     build_finegrained_text_map_asm,
     data_pm_hi_page,
     data_pm_lo_page,
@@ -124,7 +124,6 @@ def _emit_mode(mode: str, td: TestData, regs: Regs, finegrained_map: list[str] |
     "Ssnpm",
     required_extensions=["Ssnpm"],
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
-    extra_defines=["#define TRAP_SIGUPD_COUNT 40000"],
 )
 def make_ssnpm(td: TestData) -> list[TestChunk]:
     # Build the fine-grained U-text/data page-table setup for every non-bare
@@ -136,7 +135,7 @@ def make_ssnpm(td: TestData) -> list[TestChunk]:
         img_tables = [f"pm_img_slvl{i}_pg_tbl" for i in range(LEVELS_BELOW_ROOT[mode] - 1, -1, -1)]
         finegrained_maps[mode] = build_finegrained_text_map_asm(mode, img_tables, td)
 
-    regs = alloc_pm_regs_wide(td)
+    regs = alloc_pm_regs_paired(td)
 
     chunks = []
     for mode in MODES:

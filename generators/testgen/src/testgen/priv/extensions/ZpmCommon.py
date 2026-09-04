@@ -172,8 +172,6 @@ class Regs:
     tmp2: int
     fp: int
     fp_c: int
-    dest_pair: int  # for amocas.q (register pair)
-    source_pair: int  # for amocas.q (register pair)
 
 
 # ── Register allocation helpers ─────────────────────────────────────────────
@@ -204,42 +202,17 @@ def alloc_pm_regs_paired(td: TestData) -> Regs:
         tmp2=tmp2,
         fp=fp,
         fp_c=fp_c,
-        dest_pair=chk,
-        source_pair=data,
-    )
-
-
-def alloc_pm_regs_wide(td: TestData) -> Regs:
-    """Same reasoning as alloc_pm_regs_paired"""
-    chk = td.int_regs.get_register_pair()
-    data = td.int_regs.get_register_pair()
-    tmp = chk + 1
-    tmp2 = data + 1
-    a = td.int_regs.get_registers(1, reg_range=list(range(8, 16)))[0]
-    base = td.int_regs.get_registers(1)[0]
-    fp, fp_c = td.float_regs.get_register(), td.float_regs.get_register(reg_range=list(range(8, 16)))
-    return Regs(
-        base=base,
-        a=a,
-        data=data,
-        chk=chk,
-        tmp=tmp,
-        tmp2=tmp2,
-        fp=fp,
-        fp_c=fp_c,
-        dest_pair=chk,
-        source_pair=data,
     )
 
 
 def free_pm_regs(td: TestData, regs: Regs) -> None:
-    """Return every register a probe module borrows. dest_pair/source_pair are
+    """Return every register a probe module borrows. chk/data are
     reserved as register pairs; tmp/tmp2 alias their +1 halves rather than
     being separately reserved, so returning the two pairs already releases
     tmp/tmp2.
     """
-    td.int_regs.return_register_pair(regs.dest_pair)
-    td.int_regs.return_register_pair(regs.source_pair)
+    td.int_regs.return_register_pair(regs.chk)
+    td.int_regs.return_register_pair(regs.data)
     td.int_regs.return_registers([regs.base, regs.a])
     td.float_regs.return_registers([regs.fp, regs.fp_c])
 
@@ -698,8 +671,8 @@ def _probe_amo(mn: str, readback: str, tid: str, td: TestData, regs: Regs, cg: s
 def _probe_zacas(mn: str, tid: str, td: TestData, regs: Regs, cg: str) -> list[str]:
     """ZACAS probe: handles amocas.w/d (single registers) and amocas.q (register pairs)."""
     if mn == "amocas.q":
-        dest_lo, dest_hi = regs.dest_pair, regs.tmp
-        src_lo, src_hi = regs.source_pair, regs.tmp2
+        dest_lo, dest_hi = regs.chk, regs.tmp
+        src_lo, src_hi = regs.data, regs.tmp2
         return [
             *_seed(regs),
             f"sd x0, 8(x{regs.base})   # seed high dword of the 128-bit comparand",
@@ -999,10 +972,26 @@ def pass_a_all_instructions(cfg: object | None, prefix: str, td: TestData, regs:
 
         lines.append("#ifdef ZVL32B_SUPPORTED")
         for mn, sew, template in VEC_READS:
+            if sew > 32:
+                continue
             lines += _probe_vec_load(mn, sew, template, _tid(prefix, upper, mn), td, regs, cg)
         for mn, sew, template, rb in VEC_WRITES:
+            if sew > 32:
+                continue
             lines += _probe_vec_store(mn, sew, template, rb, _tid(prefix, upper, mn), td, regs, cg)
         lines.append("#endif // ZVL32B_SUPPORTED")
+
+        lines.append("#ifdef ZVL64B_SUPPORTED")
+        for mn, sew, template in VEC_READS:
+            if sew <= 32:
+                continue
+            lines += _probe_vec_load(mn, sew, template, _tid(prefix, upper, mn), td, regs, cg)
+        for mn, sew, template, rb in VEC_WRITES:
+            if sew <= 32:
+                continue
+            lines += _probe_vec_store(mn, sew, template, rb, _tid(prefix, upper, mn), td, regs, cg)
+        lines.append("#endif // ZVL64B_SUPPORTED")
+
     return lines
 
 
@@ -1272,9 +1261,9 @@ def pass_i_mprv_mxr_pmm_loop(
     the data range with build_data_only_u_map_asm before enabling SATP --
     without this, every mppu/sv39 access would page-fault regardless of
     tag/PMLEN and the masking behavior would never actually be exercised.
-    MPP=S: guarded by S_SUPPORTED; loops satp.MODE in {Bare, Sv39}. No remap
-    needed here -- S-mode can access pm_lo_page under the framework's
-    default identity map without PTE_U, same as SmnpmS.
+    MPP=S (S_SUPPORTED only): loops satp.MODE in {Bare, Sv39}.
+    The MPP=U remap already put PTE_U on the data pages, so SUM must be
+    set for S-mode accesses to succeed.  No further remap is done here.
 
     mstatus.MPRV, .MXR and .SUM are all explicitly cleared at the end rather
     than snapshotted/restored

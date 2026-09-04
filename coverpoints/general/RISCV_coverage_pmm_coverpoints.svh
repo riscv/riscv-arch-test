@@ -135,39 +135,42 @@
             wildcard bins sspopchk       = {SSPOPCHK_X1, SSPOPCHK_X5};
             wildcard bins c_sspopchk_x5  = {C_SSPOPCHK_X5};
         `endif // ZICFISS_SUPPORTED
-        // RVV 1.0 vector stores and loads (ZVL32B minimum)
+                // RVV 1.0 vector stores and loads
         `ifdef ZVL32B_SUPPORTED
-            // Vector stores
+            // EEW ≤ 32 (legal on Zve32x / Zvl32b)
             wildcard bins vse8_v      = {VSE8_V};
             wildcard bins vse16_v     = {VSE16_V};
             wildcard bins vse32_v     = {VSE32_V};
-            wildcard bins vse64_v     = {VSE64_V};
             wildcard bins vsse32_v    = {VSSE32_V};
-            wildcard bins vsse64_v    = {VSSE64_V};
             wildcard bins vsuxei32_v  = {VSUXEI32_V};
-            wildcard bins vsuxei64_v  = {VSUXEI64_V};
             wildcard bins vsoxei32_v  = {VSOXEI32_V};
-            wildcard bins vsoxei64_v  = {VSOXEI64_V};
-            wildcard bins vs1r_v      = {VS1R_V};
             wildcard bins vsseg2e32_v = {VSSEG2E32_V};
-            // Vector loads
             wildcard bins vle8_v      = {VLE8_V};
             wildcard bins vle16_v     = {VLE16_V};
             wildcard bins vle32_v     = {VLE32_V};
-            wildcard bins vle64_v     = {VLE64_V};
             wildcard bins vlse32_v    = {VLSE32_V};
-            wildcard bins vlse64_v    = {VLSE64_V};
             wildcard bins vluxei32_v  = {VLUXEI32_V};
-            wildcard bins vluxei64_v  = {VLUXEI64_V};
             wildcard bins vloxei32_v  = {VLOXEI32_V};
-            wildcard bins vloxei64_v  = {VLOXEI64_V};
-            wildcard bins vl1r_v      = {VL1R_V};
             wildcard bins vle8ff_v    = {VLE8FF_V};
             wildcard bins vle16ff_v   = {VLE16FF_V};
             wildcard bins vle32ff_v   = {VLE32FF_V};
-            wildcard bins vle64ff_v   = {VLE64FF_V};
             wildcard bins vlseg2e32_v = {VLSEG2E32_V};
         `endif // ZVL32B_SUPPORTED
+
+        `ifdef ZVL64B_SUPPORTED
+            // EEW = 64 (needs Zvl64b / Zve64*)
+            wildcard bins vse64_v     = {VSE64_V};
+            wildcard bins vsse64_v    = {VSSE64_V};
+            wildcard bins vsuxei64_v  = {VSUXEI64_V};
+            wildcard bins vsoxei64_v  = {VSOXEI64_V};
+            wildcard bins vs1r_v      = {VS1R_V};
+            wildcard bins vle64_v     = {VLE64_V};
+            wildcard bins vlse64_v    = {VLSE64_V};
+            wildcard bins vluxei64_v  = {VLUXEI64_V};
+            wildcard bins vloxei64_v  = {VLOXEI64_V};
+            wildcard bins vl1r_v      = {VL1R_V};
+            wildcard bins vle64ff_v   = {VLE64FF_V};
+        `endif // ZVL64B_SUPPORTED
     }
 
     sw_lw_insn:  coverpoint ins.current.insn {

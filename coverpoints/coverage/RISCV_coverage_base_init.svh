@@ -626,6 +626,10 @@
         `cover_info("//      Zihpm - Enabled");
         `include "Zihpm_coverage_init.svh"
     `endif
+    `ifdef COVER_ZILX
+        `cover_info("//      Zilx - Enabled");
+        `include "Zilx_coverage_init.svh"
+    `endif
     `ifdef COVER_ZIMOP
         `cover_info("//      Zimop - Enabled");
         `include "Zimop_coverage_init.svh"

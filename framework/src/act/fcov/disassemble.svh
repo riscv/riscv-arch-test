@@ -366,6 +366,29 @@ function string disassemble (logic [31:0] instrRaw);
     AMOCAS_Q:  $sformat(decoded, "amocas.q %s, %s, (%s)", rd, rs2, rs1);
   `endif
 
+    // Zilx Extension
+    LXH:      $sformat(decoded, "lxh %s, (%s), %s", rd, rs2, rs1);
+    LXHU:     $sformat(decoded, "lxhu %s, (%s), %s", rd, rs2, rs1);
+    LXW:      $sformat(decoded, "lxw %s, (%s), %s", rd, rs2, rs1);
+    LXSB:     $sformat(decoded, "lxsb %s, (%s), %s", rd, rs2, rs1);
+    LXSBU:    $sformat(decoded, "lxsbu %s, (%s), %s", rd, rs2, rs1);
+    LXSH:     $sformat(decoded, "lxsh %s, (%s), %s", rd, rs2, rs1);
+    LXSHU:    $sformat(decoded, "lxshu %s, (%s), %s", rd, rs2, rs1);
+    LXSW:     $sformat(decoded, "lxsw %s, (%s), %s", rd, rs2, rs1);
+  `ifdef UDB_MXLEN_64
+    LXD:      $sformat(decoded, "lxd %s, (%s), %s", rd, rs2, rs1);
+    LXWU:     $sformat(decoded, "lxwu %s, (%s), %s", rd, rs2, rs1);
+    LXSD:     $sformat(decoded, "lxsd %s, (%s), %s", rd, rs2, rs1);
+    LXSWU:    $sformat(decoded, "lxswu %s, (%s), %s", rd, rs2, rs1);
+    LXSUWB:   $sformat(decoded, "lxsuwb %s, (%s), %s", rd, rs2, rs1);
+    LXSUWBU:  $sformat(decoded, "lxsuwbu %s, (%s), %s", rd, rs2, rs1);
+    LXSUWH:   $sformat(decoded, "lxsuwh %s, (%s), %s", rd, rs2, rs1);
+    LXSUWHU:  $sformat(decoded, "lxsuwhu %s, (%s), %s", rd, rs2, rs1);
+    LXSUWW:   $sformat(decoded, "lxsuww %s, (%s), %s", rd, rs2, rs1);
+    LXSUWWU:  $sformat(decoded, "lxsuwwu %s, (%s), %s", rd, rs2, rs1);
+    LXSUWD:   $sformat(decoded, "lxsuwd %s, (%s), %s", rd, rs2, rs1);
+  `endif
+
     // Zalrsc Extension
     LR_W:      $sformat(decoded, "lr.w %s, (%s)", rd, rs1);
     SC_W:      $sformat(decoded, "sc.w %s, %s, (%s)", rd, rs2, rs1);

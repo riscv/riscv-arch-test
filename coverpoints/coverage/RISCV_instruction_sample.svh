@@ -1261,6 +1261,62 @@
             ins.current.inst_category = INST_CAT_LOAD;
             ins.add_mem_address();
         end
+        "lxh"     : begin
+            ins.add_rd(0);
+            ins.add_rs2(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_LOAD;
+            ins.add_zilx_mem_address();
+        end
+        "lxhu"     : begin
+            ins.add_rd(0);
+            ins.add_rs2(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_LOAD;
+            ins.add_zilx_mem_address();
+        end
+        "lxsb"     : begin
+            ins.add_rd(0);
+            ins.add_rs2(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_LOAD;
+            ins.add_zilx_mem_address();
+        end
+        "lxsbu"     : begin
+            ins.add_rd(0);
+            ins.add_rs2(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_LOAD;
+            ins.add_zilx_mem_address();
+        end
+        "lxsh"     : begin
+            ins.add_rd(0);
+            ins.add_rs2(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_LOAD;
+            ins.add_zilx_mem_address();
+        end
+        "lxshu"     : begin
+            ins.add_rd(0);
+            ins.add_rs2(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_LOAD;
+            ins.add_zilx_mem_address();
+        end
+        "lxsw"     : begin
+            ins.add_rd(0);
+            ins.add_rs2(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_LOAD;
+            ins.add_zilx_mem_address();
+        end
+        "lxw"     : begin
+            ins.add_rd(0);
+            ins.add_rs2(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_LOAD;
+            ins.add_zilx_mem_address();
+        end
         "max"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
@@ -6495,6 +6551,83 @@
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
             ins.add_mem_address();
+        end
+        "lxd"     : begin
+            ins.add_rd(0);
+            ins.add_rs2(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_LOAD;
+            ins.add_zilx_mem_address();
+        end
+        "lxsd"     : begin
+            ins.add_rd(0);
+            ins.add_rs2(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_LOAD;
+            ins.add_zilx_mem_address();
+        end
+        "lxsuwb"     : begin
+            ins.add_rd(0);
+            ins.add_rs2(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_LOAD;
+            ins.add_zilx_mem_address();
+        end
+        "lxsuwbu"     : begin
+            ins.add_rd(0);
+            ins.add_rs2(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_LOAD;
+            ins.add_zilx_mem_address();
+        end
+        "lxsuwd"     : begin
+            ins.add_rd(0);
+            ins.add_rs2(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_LOAD;
+            ins.add_zilx_mem_address();
+        end
+        "lxsuwh"     : begin
+            ins.add_rd(0);
+            ins.add_rs2(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_LOAD;
+            ins.add_zilx_mem_address();
+        end
+        "lxsuwhu"     : begin
+            ins.add_rd(0);
+            ins.add_rs2(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_LOAD;
+            ins.add_zilx_mem_address();
+        end
+        "lxsuww"     : begin
+            ins.add_rd(0);
+            ins.add_rs2(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_LOAD;
+            ins.add_zilx_mem_address();
+        end
+        "lxsuwwu"     : begin
+            ins.add_rd(0);
+            ins.add_rs2(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_LOAD;
+            ins.add_zilx_mem_address();
+        end
+        "lxswu"     : begin
+            ins.add_rd(0);
+            ins.add_rs2(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_LOAD;
+            ins.add_zilx_mem_address();
+        end
+        "lxwu"     : begin
+            ins.add_rd(0);
+            ins.add_rs2(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_LOAD;
+            ins.add_zilx_mem_address();
         end
         "mulw"     : begin
             ins.add_rd(0);

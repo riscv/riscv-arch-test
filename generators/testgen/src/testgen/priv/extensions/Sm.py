@@ -554,7 +554,10 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     csr_mstatush = ("mstatush", (mstatus_mask >> 32) & 0x7FFFFFFF)  # SD not in bit 31 of mstatush
     csr_menvcfgh = ("menvcfgh", menvcfg_mask >> 32)
     csr_mseccfgh = ("mseccfgh", mseccfg_mask >> 32)
-    csr_medelegh = ("medelegh", 0x00000000)  # all bits are reserved or custom
+    csr_medelegh = (
+        "0x312",
+        0x00000000,
+    )  # all bits are reserved or custom # TODO: rename to medelegh when Clang knows that name
     # Read-only CSRs
     csrmro = [("mvendorid", None), ("mimpid", None), ("marchid", None), ("mhartid", None), ("mconfigptr", None)]
 

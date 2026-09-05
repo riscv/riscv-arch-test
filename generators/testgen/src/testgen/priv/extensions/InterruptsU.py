@@ -118,7 +118,7 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
                     f"csrw mie, x{r_scratch}",
                     "RVTEST_GOTO_LOWER_MODE Umode",
                     test_data.add_testcase(binname, coverpoint, covergroup),
-                    "RVTEST_SET_MSW_INT",
+                    "RVTEST_SET_MSW_INT_U",
                 ]
             )
 
@@ -127,7 +127,7 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{r_scratch})",
                     "RVTEST_GOTO_MMODE",
                     "nop",
-                    "RVTEST_CLR_MSW_INT",
+                    "RVTEST_CLR_MSW_INT_M",
                 ]
             )
 
@@ -177,11 +177,11 @@ def _generate_user_mei_tests(test_data: TestData) -> list[str]:
                     f"csrw mie, x{r_scratch}",
                     "RVTEST_GOTO_LOWER_MODE Umode",
                     test_data.add_testcase(binname, coverpoint, covergroup),
-                    "RVTEST_SET_MEXT_INT",
+                    "RVTEST_SET_MEXT_INT_U",
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{r_scratch})",
                     "RVTEST_GOTO_MMODE",
                     "nop",
-                    "RVTEST_CLR_MEXT_INT",
+                    "RVTEST_CLR_MEXT_INT_M",
                 ]
             )
 

@@ -103,12 +103,14 @@
 //    TSBI_GOTO_VUMODE (a0=5)          — Switch caller to VU-mode (H required)
 //    TSBI_ECALL_TEST  (a0=0x73)       — Test ecall path; returns xEPC in a0
 //    CSR_ACCESS       (a0=CSR opcode) — Execute CSR instruction; rd must be a0
+//    TSBI_LW/LWP4/LD  (a0=load opcode) — Load from physical address a1 into a0
+//    TSBI_SW/SWP4/SD  (a0=store opcode)— Store a2 to physical address a1
 //    Any other value                  — Returns -1 in a0 (TSBI_RESERVED_RET)
 //
 //  Dispatch hierarchy:
 //    M-mode handler:  handles all operations directly
 //    S-mode handler:  handles ECALL_TEST, GOTO_S/U, S-mode CSR_ACCESS locally;
-//                     forwards GOTO_M/VS/VU and M-mode CSR_ACCESS to M-mode via ecall
+//                     forwards GOTO_M/VS/VU, M-mode CSR_ACCESS, and loads/stores to M-mode via ecall
 //
 //************************************************************************************
 
@@ -190,6 +192,19 @@
 #define TSBI_GOTO_VSMODE    0x00000004
 #define TSBI_GOTO_VUMODE    0x00000005
 #define TSBI_ECALL_TEST     0x00000073
+#define TSBI_LW             0x0005a503
+#define TSBI_LWP4           0x0045a503
+#define TSBI_LD             0x0005b503
+#define TSBI_SW             0x00c5a023
+#define TSBI_SWP4           0x00c5a223
+#define TSBI_SD             0x00c5b023
+
+// CSR access operation codes: the encoding of a CSR instruction with rs1 = a1 and rd = a0.
+// csr is a 12-bit CSR number such as CSR_MIP from encoding.h.
+#define TSBI_CSR_SET(csr)    ((((csr) & 0xFFF) << 20) | 0x0005a073)  // csrrs x0, csr, a1
+#define TSBI_CSR_CLEAR(csr)  ((((csr) & 0xFFF) << 20) | 0x0005b073)  // csrrc x0, csr, a1
+#define TSBI_CSR_WRITE(csr)  ((((csr) & 0xFFF) << 20) | 0x00059073)  // csrrw x0, csr, a1
+#define TSBI_CSR_READ(csr)   ((((csr) & 0xFFF) << 20) | 0x00002573)  // csrrs a0, csr, x0
 
 // CSR_ACCESS is not a single #define — it's any value where:
 //   bits[6:0]   == 0x73 (SYSTEM opcode)    AND
@@ -259,7 +274,8 @@
 #define ptr_sv_sz       (16*8)                                           // 16 pointer slots × 8 bytes each
 #define reg_sv_sz       ( 8*REGWIDTH)                                    // 8 handler temp regs saved
 #define model_sv_sz     ( 8*REGWIDTH)                                    // 8 slots for RVMODEL macro scratch
-#define sv_area_sz      (tramp_sz + ptr_sv_sz + reg_sv_sz + model_sv_sz) // total save area per mode
+#define int_clr_sv_sz   ( 4*REGWIDTH)                                    // 4 slots: a0-a2 across interrupt clearing
+#define sv_area_sz      (tramp_sz + ptr_sv_sz + reg_sv_sz + model_sv_sz + int_clr_sv_sz) // total save area per mode
 #define int_hndlr_tblsz (UDB_MXLEN*2*WDBYTSZ)                                // size of combined int+exception dispatch tables
 
 //==============================================================================
@@ -275,6 +291,7 @@
 //   ...                         (see full layout in FILE OVERVIEW above)
 //   [tramp_sz + 16*8]           trap_sv_off     — start of handler register save (T1..T6,sp,spare)
 //   [tramp_sz + 24*8]           rvmodel_sv_off  — start of RVMODEL macro scratch area
+//   [tramp_sz + 32*8]           int_clr_sv_off  — a0-a2 save across interrupt clearing
 //
 // T-SBI CSR_ACCESS reuses rvmodel_sv_off for its dynamic instruction scratch.
 // This is safe because RVMODEL macros (HALT, IO_WRITE) never execute inside
@@ -316,6 +333,7 @@
 // overlap the CSR_ACCESS scratch (slots 0-1) or an RVMODEL macro invocation:
 // neither can be active while RVTEST_GOTO_LOWER_MODE executes.
 #define goto_lower_sv_off (rvmodel_sv_off+4*(REGWIDTH)) // GOTO_LOWER_MODE T1/T2/T4/T3 save slots
+#define int_clr_sv_off  (rvmodel_sv_off+8*(REGWIDTH))   // a0/a1/a2 save slots for interrupt clearing routines
 
 //==============================================================================
 // SECTION 8: INSTANTIATE_MODE_MACRO
@@ -499,7 +517,7 @@
 //   RVTEST_TSBI_GOTO_MMODE              // switch to M-mode, clobbers a0
 //   RVTEST_TSBI_GOTO_UMODE              // switch to U-mode, clobbers a0
 //   RVTEST_TSBI_ECALL_TEST              // test ecall path, result in a0
-//   RVTEST_TSBI_CSR_ACCESS 0x30052573, zero  // read mstatus into a0
+//   RVTEST_TSBI_CSR_ACCESS 0x30052573   // read mstatus into a0
 //
 // CLOBBERS: a0 (operation code / return value), a1 (CSR_ACCESS argument only)
 // PRESERVES: all other registers
@@ -548,14 +566,61 @@
   .option pop
 .endm
 
+.macro RVTEST_TSBI_LW
+  .option push
+  .option norvc                                  // ensure consistent code size
+  li   a0, TSBI_LW                               // code for lw a0, 0(a1)
+  ecall                                          // T-SBI call
+  .option pop
+.endm
+
+.macro RVTEST_TSBI_LWP4
+  .option push
+  .option norvc                                  // ensure consistent code size
+  li   a0, TSBI_LWP4                             // code for lw a0, 4(a1)
+  ecall                                          // T-SBI call
+  .option pop
+.endm
+
+.macro RVTEST_TSBI_LD
+  .option push
+  .option norvc                                  // ensure consistent code size
+  li   a0, TSBI_LD                               // code for ld a0, 0(a1)
+  ecall                                          // T-SBI call
+  .option pop
+.endm
+
+.macro RVTEST_TSBI_SW
+  .option push
+  .option norvc                                  // ensure consistent code size
+  li   a0, TSBI_SW                               // code for sw a2, 0(a1)
+  ecall                                          // T-SBI call
+  .option pop
+.endm
+
+.macro RVTEST_TSBI_SWP4
+  .option push
+  .option norvc                                  // ensure consistent code size
+  li   a0, TSBI_SWP4                             // code for sw a2, 4(a1)
+  ecall                                          // T-SBI call
+  .option pop
+.endm
+
+.macro RVTEST_TSBI_SD
+  .option push
+  .option norvc                                  // ensure consistent code size
+  li   a0, TSBI_SD                               // code for sd a2, 0(a1)
+  ecall                                          // T-SBI call
+  .option pop
+.endm
+
 // Access a CSR via T-SBI (read, write, or read-modify-write).
 //
 // Parameters:
 //   encoding: the 32-bit RISC-V CSR instruction encoding to execute.
 //             The rd field MUST be a0 (x10, register 10) for reads.
 //             The rs1 field SHOULD be a1 (x11, register 11) for writes.
-//   arg:      value to place in a1 before the ecall (default: zero).
-//             This becomes the rs1 value for csrrs/csrrc/csrrw.
+//   a1 holds the rs1 value for csrrs/csrrc/csrrw; the caller loads it before the macro.
 //
 // After this macro, a0 contains the CSR read result (if rd==a0 in encoding).
 //
@@ -567,17 +632,26 @@
 // Example: Set mstatus.TVM via csrrs x0, mstatus, a1 (a1 has bit 20 set)
 //   Encoding: imm=0x300, rs1=01011(a1), funct3=010, rd=00000(x0), opcode=1110011
 //   Binary:   0011_0000_0000_01011_010_00000_1110011 = 0x3005A073
-//   Usage:    li t0, (1 << 20)
-//             RVTEST_TSBI_CSR_ACCESS 0x3005A073, t0
-.macro RVTEST_TSBI_CSR_ACCESS encoding, arg=zero
+//   Usage:    li a1, (1 << 20)
+//             RVTEST_TSBI_CSR_ACCESS 0x3005A073
+.macro RVTEST_TSBI_CSR_ACCESS encoding
   .option push
   .option norvc                                  // ensure consistent code size
-  LI(a0, \encoding)                              // a0 = CSR instruction encoding
-  mv a1, \arg                                    // a1 = argument value (for rs1 of CSR instruction)
+  li a0, \encoding                               // a0 = CSR instruction encoding (32-bit value)
   ecall                                          // trap to handler; handler executes CSR instr dynamically
   // a0 now contains the CSR read result (if rd==a0 in the encoding)
   .option pop
 .endm
+
+// CSR access by CSR number: csr is a 12-bit CSR number such as CSR_MIP from encoding.h,
+// imm is a constant loaded into a1 with li before the call.
+#define RVTEST_TSBI_CSR_SET(csr, imm)    li a1, imm; RVTEST_TSBI_CSR_ACCESS TSBI_CSR_SET(csr)
+#define RVTEST_TSBI_CSR_CLEAR(csr, imm)  li a1, imm; RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(csr)
+#define RVTEST_TSBI_CSR_WRITE(csr, imm)  li a1, imm; RVTEST_TSBI_CSR_ACCESS TSBI_CSR_WRITE(csr)
+// write value in a1 to CSR
+#define RVTEST_TSBI_CSR_WRITE_A1(csr)       RVTEST_TSBI_CSR_ACCESS TSBI_CSR_WRITE(csr)
+// read value from CSR into a0
+#define RVTEST_TSBI_CSR_READ(csr)        RVTEST_TSBI_CSR_ACCESS TSBI_CSR_READ(csr)
 
 #ifdef H_SUPPORTED
 // Switch to VS-mode via T-SBI. Requires hypervisor extension.
@@ -838,27 +912,21 @@
 
 // M-mode interrupt defaults
 #ifndef RVMODEL_SET_MSW_INT
-        #define  RVMODEL_SET_MSW_INT     RVTEST_DFLT_INT_HNDLR  // M-mode SW interrupt set: abort
+        #define  RVMODEL_SET_MSW_INT(_R1, _R2) RVTEST_DFLT_INT_HNDLR  // M-mode SW interrupt set: abort
 #endif
 #ifndef RVMODEL_CLR_MSW_INT
-        #define  RVMODEL_CLR_MSW_INT     RVTEST_DFLT_INT_HNDLR  // M-mode SW interrupt clear: abort
+        #define  RVMODEL_CLR_MSW_INT(_R1, _R2) RVTEST_DFLT_INT_HNDLR  // M-mode SW interrupt clear: abort
 #endif
 #ifndef RVMODEL_CLR_MEXT_INT
-        #define  RVMODEL_CLR_MEXT_INT    RVTEST_DFLT_INT_HNDLR  // M-mode ext interrupt clear: abort
+        #define  RVMODEL_CLR_MEXT_INT(_R1, _R2) RVTEST_DFLT_INT_HNDLR  // M-mode ext interrupt clear: abort
 #endif
 
 // S-mode interrupt defaults
-#ifndef RVMODEL_SET_SSW_INT
-        #define  RVMODEL_SET_SSW_INT     RVTEST_DFLT_INT_HNDLR  // S-mode SW interrupt set: abort
-#endif
-#ifndef RVMODEL_CLR_SSW_INT
-        #define  RVMODEL_CLR_SSW_INT     RVTEST_DFLT_INT_HNDLR  // S-mode SW interrupt clear: abort
-#endif
 #ifndef RVMODEL_CLR_STIMER_INT
         #define  RVMODEL_CLR_STIMER_INT  RVTEST_DFLT_INT_HNDLR  // S-mode timer interrupt clear: abort
 #endif
 #ifndef RVMODEL_CLR_SEXT_INT
-        #define  RVMODEL_CLR_SEXT_INT    RVTEST_DFLT_INT_HNDLR  // S-mode ext interrupt clear: abort
+        #define  RVMODEL_CLR_SEXT_INT(_R1, _R2) RVTEST_DFLT_INT_HNDLR  // S-mode ext interrupt clear: abort
 #endif
 
 // VS-mode interrupt defaults
@@ -1110,6 +1178,30 @@ rvtest_\__MODE__\()prolog_done:
 //
 //==============================================================================
 //==============================================================================
+
+//==============================================================================
+// CLR_INT_ENTER / CLR_INT_RETURN
+// Bracket a call to an RVTEST_CLR_*_INT_M/_S function inside an interrupt
+// clearing routine. Those functions are jal-called and clobber ra and a0-a2,
+// which belong to the interrupted test, so they are parked in the save area
+// around the call. The return loads the resto_Xrtn address instead of jumping
+// directly because .text.rvmodel sits after .data, which can exceed jal range.
+//==============================================================================
+.macro CLR_INT_ENTER
+        SREG    ra, trap_sv_off+0*REGWIDTH(sp)      // slot 0 is the handler's ra scratch
+        SREG    a0, int_clr_sv_off+0*REGWIDTH(sp)
+        SREG    a1, int_clr_sv_off+1*REGWIDTH(sp)
+        SREG    a2, int_clr_sv_off+2*REGWIDTH(sp)
+.endm
+
+.macro CLR_INT_RETURN __MODE__
+        LREG    a2, int_clr_sv_off+2*REGWIDTH(sp)
+        LREG    a1, int_clr_sv_off+1*REGWIDTH(sp)
+        LREG    a0, int_clr_sv_off+0*REGWIDTH(sp)
+        LREG    ra, trap_sv_off+0*REGWIDTH(sp)
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
+.endm
 
 .macro RVTEST_TRAP_HANDLER __MODE__
 .option push
@@ -1476,12 +1568,13 @@ tsbi_\__MODE__\()goto_vu:
 //   - GOTO_VSMODE: needs M-mode to set MPV  TODO: can do with SPV
 //   - GOTO_VUMODE: needs M-mode to set MPV  TODO: can do with SPV
 //   - CSR_ACCESS for M-mode CSRs: needs M-mode privilege (CSR addr[9:8] == 11)
+//   - LW/LWP4/LD/SW/SWP4/SD: physical memory-mapped I/O access needs M-mode
 //
 // FORWARDING MECHANISM:
 //   The S-mode handler restores all handler temporary registers, then executes
 //   ecall. This traps to M-mode with cause=CAUSE_SUPERVISOR_ECALL (9).
-//   The caller's a0/a1 pass through unchanged because:
-//   - a0/a1 are never touched by the handler (its temporaries are
+//   The caller's a0/a1/a2 pass through unchanged because:
+//   - a0/a1/a2 are never touched by the handler (its temporaries are
 //     T1..T6 = x6..x9, x14, x15)
 //   M-mode's T-SBI dispatch sees the S-mode ecall, detects a0!=0 and a0 as
 //   a valid SBI op, and handles it directly.
@@ -1514,6 +1607,11 @@ tsbi_\__MODE__\()dispatch:
         // Check for ECALL_TEST (a0 == 0x73)
         LI(     T2, TSBI_ECALL_TEST)              // T2 = 0x73
         beq     a0, T2, tsbi_\__MODE__\()ecall_test // match -> ECALL_TEST handler
+
+        // Check for LOAD/STORE (a0[6:0] == 0?00011): physical memory access needs M-mode
+        andi    T2, a0, 0x5F                       // T2 = a0[6:0] ignoring bit 5 (LOAD=0x03, STORE=0x23)
+        li      T4, 0x03                            // T4 = LOAD opcode with bit 5 cleared
+        beq     T2, T4, tsbi_\__MODE__\()forward_to_m // LOAD/STORE -> forward to M-mode
 
         // Check for CSR_ACCESS
         andi    T2, a0, 0x7F                       // T2 = a0[6:0]
@@ -1580,6 +1678,9 @@ tsbi_\__MODE__\()goto_u:                          // Return to U-mode via sret
         // their registers — the handler never modified them — so they pass to
         // M-mode without any reload.
 tsbi_\__MODE__\()forward_to_m:
+        csrr    T3, CSR_XEPC                        // T3 = sepc (caller's ecall address)
+        addi    T3, T3, 4                            // skip past the caller's ecall
+        csrw    CSR_XEPC, T3                         // sepc += 4 so the sret below resumes after it
         LREG    T1, trap_sv_off+1*REGWIDTH(sp)    // restore T1 (x6)
         LREG    T2, trap_sv_off+2*REGWIDTH(sp)    // restore T2 (x7)
         LREG    T3, trap_sv_off+3*REGWIDTH(sp)    // restore T3 (x8)
@@ -2320,92 +2421,103 @@ excpt_\__MODE__\()hndlr_tbl:
 // in PMP tests with large granularity. Load the restore routine address instead
 // of using direct jumps.
 
-\__MODE__\()clr_Msw_int:                             // M-mode software interrupt: invoke RVMODEL macro
-        RVMODEL_CLR_MSW_INT(T2, T5)
-        la      T2, resto_\__MODE__\()rtn
-        jr      T2
+// Each routine below clears its interrupt source through the RVTEST_CLR_*_INT
+// flavor for the mode this handler runs in: _M performs the operation directly,
+// _S (S/HS handlers) goes through T-SBI. Both flavors live in rvtest_setup.h and
+// exist only when Sm is supported; without Sm these interrupts are unexpected.
+#ifdef STANDARD_SM_SUPPORTED
 
-\__MODE__\()clr_Mtmr_int:                            // M-mode timer interrupt: write max to mtimecmp
-        li T5, -1
-        #ifdef RVMODEL_MTIMECMP_ADDRESS
-                la T2, RVMODEL_MTIMECMP_ADDRESS
-                SREG T5, 0(T2)
-        #endif
-        #if(UDB_MXLEN == 32)
-                sw T5, 4(T2)
-        #endif
-        la      T2, resto_\__MODE__\()rtn
-        jr      T2
+\__MODE__\()clr_Msw_int:                             // M-mode software interrupt
+        CLR_INT_ENTER
+  .ifc \__MODE__ , M
+        RVTEST_CLR_MSW_INT_M
+  .else
+        RVTEST_CLR_MSW_INT_S
+  .endif
+        CLR_INT_RETURN \__MODE__
 
-\__MODE__\()clr_Mext_int:                            // M-mode external interrupt: clear + save intID
-        RVMODEL_CLR_MEXT_INT(T2, T5)
-        // TRAP_SIGUPD(T4, T3, 3, \__MODE__\()clr_Mext_int, \__MODE__\()clr_Mext_int_str)  // Save intID
-        // removed because cause mepc might be different across different DUTs
-        la      T2, resto_\__MODE__\()rtn
-        jr      T2
+\__MODE__\()clr_Mtmr_int:                            // M-mode timer interrupt
+        CLR_INT_ENTER
+  .ifc \__MODE__ , M
+        RVTEST_CLR_MTIME_INT_M
+  .else
+        RVTEST_CLR_MTIME_INT_S
+  .endif
+        CLR_INT_RETURN \__MODE__
 
+\__MODE__\()clr_Mext_int:                            // M-mode external interrupt
+        CLR_INT_ENTER
+  .ifc \__MODE__ , M
+        RVTEST_CLR_MEXT_INT_M
+  .else
+        RVTEST_CLR_MEXT_INT_S
+  .endif
+        CLR_INT_RETURN \__MODE__
+
+#ifdef S_SUPPORTED
 \__MODE__\()clr_Ssw_int:                             // S-mode software interrupt
-        .ifc \__MODE__ , M
-            li T2, 2                                  // SSIP bit
-            csrc mip, T2                              // M-mode: clear via mip (sip.SSIP is read-only from M)
-            RVMODEL_CLR_SSW_INT(T2, T5)
-        .else
-                .ifc \__MODE__ , S
-                        li T2, 2
-                        csrc sip, T2                  // S-mode: clear via sip (writable when delegated)
-                        RVMODEL_CLR_SSW_INT(T2, T5)
-                .else
-                        li T2, 2
-                        csrc sip, T2
-                        RVMODEL_CLR_SSW_INT(T2, T5)
-                .endif
-        .endif
-        la      T2, resto_\__MODE__\()rtn
-        jr      T2
+        CLR_INT_ENTER
+  .ifc \__MODE__ , M
+        RVTEST_CLR_SSW_INT_M
+  .else
+        RVTEST_CLR_SSW_INT_S
+  .endif
+        CLR_INT_RETURN \__MODE__
+#else
+\__MODE__\()clr_Ssw_int:
+        RVTEST_DFLT_INT_HNDLR
+#endif
 
 \__MODE__\()clr_Stmr_int:                            // S-mode timer interrupt
-        .ifc \__MODE__ , M
-            RVTEST_CLR_STIMER_INT
-        .else
-                .ifc \__MODE__ , S
-                        RVTEST_CLR_STIMER_INT
-                .else
-                        RVTEST_CLR_STIMER_INT
-                .endif
-        .endif
+        RVTEST_CLR_STIMER_INT
         la      T2, resto_\__MODE__\()rtn
         jr      T2
 
-\__MODE__\()clr_Sext_int:                            // S-mode external interrupt: clear + save intID
-        .ifc \__MODE__ , M
-            li T3, 0x200
-            csrc mip, T3                             // Clear mip.SEIP
-            csrr T3, mip
-        .else
-                .ifc \__MODE__ , S
-                        // Handler-context GOTO_MMODE: RVTEST_GOTO_MMODE clobbers a0,
-                        // but here a0 belongs to the interrupted test and is NOT part
-                        // of the saved/restored register set. Use T5 to hold a0
-                        // instead — T5 is restored from the save area by resto_Srtn,
-                        // so its use here is invisible to the test.
-                        mv   T5, a0               // save a0 (T5 survives the nested trap: the
-                                                  // M-handler restores it from its save slot)
-                        li   a0, 0                // a0==0 signals legacy GOTO_MMODE
-                        ecall                     // trap to M-mode; returns here in M-mode
-                        mv   a0, T5               // restore a0
-                        li T3, 0x200
-                        csrc mip, T3
-                        csrr T3, mip
-                        RVTEST_GOTO_LOWER_MODE Smode
-                .endif
-        .endif
-        li T1, 0x800
-        and T3, T3, T1
-        beq T1, T3, 1f
-        RVMODEL_CLR_SEXT_INT(T2, T5)
-    1:
+#ifdef S_SUPPORTED
+\__MODE__\()clr_Sext_int:                            // S-mode external interrupt
+        CLR_INT_ENTER
+        // A PLIC may drive the M and S external contexts from one source, so
+        // completing the S-context claim while MEIP is pending would also drop
+        // MEIP. In that case only mip.SEIP is cleared.
+  .ifc \__MODE__ , M
+        csrr    T3, CSR_MIP
+        srli    T3, T3, 11
+        andi    T3, T3, 1                            // T3 = mip.MEIP
+        bnez    T3, 1f
+        RVTEST_CLR_SEXT_INT_M
+        j       2f
+1:      li      T3, 0x200
+        csrc    CSR_MIP, T3
+  .else
+        RVTEST_TSBI_CSR_READ(CSR_MIP)                // a0 = mip
+        srli    T3, a0, 11
+        andi    T3, T3, 1                            // T3 = mip.MEIP
+        bnez    T3, 1f
+        RVTEST_CLR_SEXT_INT_S
+        j       2f
+1:      RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<9)
+  .endif
+2:      CLR_INT_RETURN \__MODE__
+#else
+\__MODE__\()clr_Sext_int:
+        RVTEST_DFLT_INT_HNDLR
+#endif
+
+#else
+
+\__MODE__\()clr_Msw_int:
+\__MODE__\()clr_Mtmr_int:
+\__MODE__\()clr_Mext_int:
+\__MODE__\()clr_Ssw_int:
+\__MODE__\()clr_Sext_int:
+        RVTEST_DFLT_INT_HNDLR
+
+\__MODE__\()clr_Stmr_int:                            // S-mode timer interrupt
+        RVTEST_CLR_STIMER_INT
         la      T2, resto_\__MODE__\()rtn
         jr      T2
+
+#endif
 
 \__MODE__\()clr_Vsw_int:                             // VS-mode software interrupt
         RVMODEL_CLR_VSW_INT
@@ -2906,6 +3018,7 @@ rvtest_\__MODE__\()end:                            // epilog is done for this mo
 // (goto_lower_sv_off): T1, T2, T4, T3. None of these uses can be active at
 // the same time.
 \__MODE__\()rvmodel_sv:    .fill   8, REGWIDTH, 0xdeadbeef                   // RVMODEL/T-SBI scratch area
+\__MODE__\()int_clr_sv:    .fill   4, REGWIDTH, 0xdeadbeef                   // a0-a2 save across interrupt clearing
 \__MODE__\()sv_area_end:                           // end marker (used for size calculation assertions)
 
 .option pop

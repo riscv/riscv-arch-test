@@ -93,7 +93,7 @@ Most macros are implemented in config/cores/<core>/<version>/rvmodel_macros.h.  
 
 ==== Macros
 
-The RVMODEL DUT-Specific Macros are given in <<t-rvmodel>>. The "Can Be Empty?" field indicates circumstances under which the macro can be empty. The Mode column indicates the privilege mode from which the macro is called.
+The RVMODEL DUT-Specific Macros are given in <<t-rvmodel>>. The "Can Be Empty?" field indicates circumstances under which the macro can be empty. The Mode column indicates the privilege mode from which the macro can be called.  All macros can clobber `a0`, `a1`, and `a2` if needed to make T-SBI calls.
 
 [[t-rvmodel]]
 .RVMODEL DUT-Specific Macros
@@ -107,29 +107,33 @@ The RVMODEL DUT-Specific Macros are given in <<t-rvmodel>>. The "Can Be Empty?" 
 |RVMODEL_HALT_FAIL|Terminate test with a fail indication.  When the test is run in simulation, this should end the simulation.|No | Any
 |RVMODEL_IO_INIT(_R1, _R2, _R3)|Initialization steps needed prior to writing to the console. _R1, _R2, and _R3 are temporary registers that may be trashed by the macro.|Empty or omitted if no I/O initialization is needed. | Machine
 |RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR)|Write a null-terminated ASCII string to the console, where _R1, _R2, and _R3 are temporary registers that may be trashed by the macro and _STR_PTR is a register containing the address of the first byte of the string.|If the console is unavailable and the user implements an alternate way to signal success (such as test bench reporting or colored LEDs controlled by RVMODEL_HALT). However, a console is required for certification. | Any
-|RVMODEL_SET_MEXT_INT(_R1, _R2)|Sets the Machine External Interrupt `mip.MEIP` using platform-specific interrupt controller, if supported. _R1 and _R2 are temporary registers that may be trashed by the macro.|If M-mode external interrupts are not tested.| Machine or Supervisor
-|RVMODEL_CLR_MEXT_INT(_R1, _R2)|Clears the Machine External Interrupt `mip.MEIP` using platform-specific interrupt controller. _R1 and _R2 are temporary registers that may be trashed by the macro.|If M-mode external interrupts are not tested. | Machine or Supervisor
-|RVMODEL_SET_MSW_INT(_R1, _R2)|Sets the Machine Software Interrupt `mip.MSIP` using a memory-mapped control register, if supported. _R1 and _R2 are temporary registers that may be trashed by the macro.|If M-mode software interrupts are not tested. | Machine or Supervisor
-|RVMODEL_CLR_MSW_INT(_R1, _R2)|Clears the Machine Software Interrupt `mip.MSIP` using a memory-mapped control register. _R1 and _R2 are temporary registers that may be trashed by the macro.|If M-mode software interrupts are not tested. | Machine or Supervisor
-|RVMODEL_SET_SEXT_INT(_R1, _R2)|Sets the Supervisor External Interrupt `sip.SEIP` using platform-specific interrupt controller, if supported. _R1 and _R2 are temporary registers that may be trashed by the macro.|If S-mode external interrupts are not tested.  | Machine or Supervisor
-|RVMODEL_CLR_SEXT_INT(_R1, _R2)|Clears the Supervisor External Interrupt `sip.SEIP` using platform-specific interrupt controller. _R1 and _R2 are temporary registers that may be trashed by the macro.|If S-mode external interrupts are not tested.  | Machine or Supervisor
-|RVMODEL_SET_SSW_INT(_R1, _R2)|Sets the Supervisor Software Interrupt `sip.SSIP` using a platform-specific interrupt controller, if supported. _R1 and _R2 are temporary registers that may be trashed by the macro.|If S-mode software interrupts are not tested.  | Machine or Supervisor
-|RVMODEL_CLR_SSW_INT(_R1, _R2)|Clears the Supervisor Software Interrupt `sip.SSIP` by using a platform-specific interrupt controller, as applicable. _R1 and _R2 are temporary registers that may be trashed by the macro.|If S-mode software interrupts are not tested.  | Machine or Supervisor
+|RVMODEL_SET_MEXT_INT(_R1, _R2)|Sets the Machine External Interrupt `mip.MEIP` using platform-specific interrupt controller, if supported. _R1 and _R2 are temporary registers that may be trashed by the macro. Uses T-SBI if necessary to access controller from any privilege mode.|If machine external interrupts are not tested.| Any
+|RVMODEL_CLR_MEXT_INT_M(_R1, _R2)|Clears the Machine External Interrupt `mip.MEIP` using platform-specific interrupt controller. _R1 and _R2 are temporary registers that may be trashed by the macro. Only runs in machine mode, so it is usable within a M-mode interrupt handler without making a T-SBI call. Leave undefined to use non-M version.|If machine external interrupts are not tested. | Machine
+|RVMODEL_CLR_MEXT_INT(_R1, _R2)|Clears the Machine External Interrupt `mip.MEIP` using platform-specific interrupt controller. _R1 and _R2 are temporary registers that may be trashed by the macro. Uses T-SBI if necessary to access controller from any privilege mode.|If machine external interrupts are not supported.  | Any
+|RVMODEL_SET_MSW_INT(_R1, _R2)|Sets the Machine Software Interrupt `mip.MSIP` using a memory-mapped control register, if supported. Leave undefined if RVMODEL_MSIP_ADDRESS is defined or there are no machine software interrupts. _R1 and _R2 are temporary registers that may be trashed by the macro. Uses T-SBI if necessary to access controller from any privilege mode.|If machine software interrupts are not tested. | Any
+|RVMODEL_CLR_MSW_INT_M(_R1, _R2)|Clears the Machine Software Interrupt `mip.MSIP` using a memory-mapped control register. Leave undefined if RVMODEL_MSIP_ADDRESS is defined or there are no machine software interrupts. _R1 and _R2 are temporary registers that may be trashed by the macro. Only runs in machine mode, so it is usable within a M-mode interrupt handler without making a T-SBI call. Leave undefined to use non-M version.|If machine software interrupts are not tested.| Machine
+|RVMODEL_CLR_MSW_INT(_R1, _R2)|Clears the Machine Software Interrupt `mip.MSIP` using a memory-mapped control register. Leave undefined if RVMODEL_MSIP_ADDRESS is defined or there are no machine software interrupts. _R1 and _R2 are temporary registers that may be trashed by the macro. Uses T-SBI if necessary to access controller from any privilege mode.|If machine software interrupts are not tested. | Any
+|RVMODEL_SET_SEXT_INT(_R1, _R2)|Sets the Supervisor External Interrupt `sip.SEIP` using platform-specific interrupt controller, if supported. _R1 and _R2 are temporary registers that may be trashed by the macro. Uses T-SBI if necessary to access controller from any privilege mode.|If supervisor external interrupts are not supported. | Any
+|RVMODEL_CLR_SEXT_INT_M(_R1, _R2)|Clears the Supervisor External Interrupt `sip.SEIP` using platform-specific interrupt controller. _R1 and _R2 are temporary registers that may be trashed by the macro. Only runs in machine mode, so it is usable within a M-mode interrupt handler without making a T-SBI call. Leave undefined to use non-M version.|If supervisor external interrupts are not supported.  | Machine
+|RVMODEL_CLR_SEXT_INT(_R1, _R2)|Clears the Supervisor External Interrupt `sip.SEIP` using platform-specific interrupt controller.  _R1 and _R2 are temporary registers that may be trashed by the macro. Uses T-SBI if necessary to access controller from any privilege mode.|If supervisor external interrupts are not supported.  | Any
+|RVMODEL_SET_SSW_INT(_R1, _R2)|Sets the Supervisor Software Interrupt `sip.SSIP` using a platform-specific interrupt controller, if supported. _R1 and _R2 are temporary registers that may be trashed by the macro. Uses T-SBI if necessary to access controller from any privilege mode.|If there is no platform-specific interrupt controller for SSI or no supervisor software interrupts.  | Any
+|RVMODEL_CLR_SSW_INT_M(_R1, _R2)|Clears the Supervisor Software Interrupt `sip.SSIP` by using a platform-specific interrupt controller, if supported. _R1 and _R2 are temporary registers that may be trashed by the macro. Only runs in machine mode, so it is usable within a M-mode interrupt handler without making a T-SBI call. Leave undefined to use non-M version.|If there is no platform-specific interrupt controller for SSI or no supervisor software interrupts. | Machine
+|RVMODEL_CLR_SSW_INT(_R1, _R2)|Clears the Supervisor Software Interrupt `sip.SSIP` by using a platform-specific interrupt controller, if supported. _R1 and _R2 are temporary registers that may be trashed by the macro. Uses T-SBI if necessary to access controller from any privilege mode.|If there is no platform-specific interrupt controller for SSI or no supervisor software interrupts. | Any
 |RVMODEL_ACCESS_FAULT_ADDRESS|The base physical address of a region that causes an access fault when any part of the region is read or written. This is used to test exceptions. The faulting region must be at least 128 bytes; if vector fault-only-first loads are tested, it must be at least ceil(VLEN*LMUL/8) bytes (the vector coverpoints exercise up to 2*VLEN/8 bytes with LMUL=2). For typical implementations where address 0 is unmapped, the entire first page satisfies both requirements.|Omit if DUT does not generate some/all access faults.| n/a
+|RVMODEL_MSIP_ADDRESS|The address of the memory-mapped `msip` register, used to set and clear machine software interrupts (`mip.MSIP`).**Formally defined only for Sm version 1.13 and above; preferred over RVMODEL_SET_MSW_INT if `msip` exists.**|Omit if machine software interrupts are not tested or require a platform-specific controller. | n/a
 |RVMODEL_MTIME_ADDRESS|The address of the memory-mapped `mtime` register, used for timer accesses and interrupts.|Omit if machine timer interrupts are not tested. | n/a
-|RVMODEL_MSIP_ADDRESS|The address of the memory-mapped `msip` register, used to set and clear machine software interrupts (`mip.MSIP`).**Required only for Sm version 1.13 and above.**|Omit if machine software interrupts are not tested. | n/a
 |RVMODEL_MTIMECMP_ADDRESS|The address of the memory-mapped `mtimecmp` register, used for timer interrupts.| Omit if machine timer interrupts are not tested. | n/a
 |RVMODEL_INTERRUPT_LATENCY|Expected latency (in cycles/NOPs) for interrupt trap processing. Ensures interrupt is received and can be processed before test continues.|Can be 0 if interrupt controller adds no delay. | n/a
-|RVMODEL_TIMER_INT_SOON_DELAY|The delay (in timer ticks) before a timer interrupt fires when using `set_mtimer_int_soon()`. Sets `mtimecmp = mtime + delay`. Should be long enough that the core can run a few instructions before the interrupt fires.| If Machine timer interrupts are not tested. | n/a
-|RVMODEL_MAX_CYCLES_PER_TIMER_TICK|The highest possible ratio of the clock frequency to the timer frequency in any mode of operation. Defaults to 1 if not defined | If Machine timer interrupts are not tested. | n/a
+|RVMODEL_TIMER_INT_SOON_DELAY|The delay (in timer ticks) before a timer interrupt fires when an interrupt is requested "soon". Used in logic such as `mtimecmp = mtime + delay`. Should be long enough that the core can run a few instructions before the interrupt fires.| If timer interrupts, `wfi`, and `wrs` are not tested. | n/a
+|RVMODEL_MAX_CYCLES_PER_TIMER_TICK|The highest possible ratio of the clock frequency to the timer frequency in any mode of operation. Defaults to 1 if not defined | If Machine timer interrupts, `wfi`, and `wrs` are not tested. | n/a
 |RVMODEL_DATA_SECTION|DUT-specific data that will be placed in a .data section. Used for memory-mapped regions like `tohost`/`fromhost`.  |Yes, if not needed by DUT. | n/a
 |===
 
 [NOTE]
-The `RVMODEL_MTIME_ADDRESS`, `RVMODEL_MTIMECMP_ADDRESS` and `RVMODEL_TIMER_INT_SOON_DELAY` macros are required in order to certify timer interrupts.  Similarly, the DUT (or its testbench) must implement the memory-mapped `MTIME` and `MTIMECMP` registers.  The `RVMODEL_SET_*_INT` and `RVMODEL_CLR_*_INT` macros are only required for interrupts controlled in a platform-specific fashion.
+The `RVMODEL_MTIME_ADDRESS`, `RVMODEL_MTIMECMP_ADDRESS` and `RVMODEL_TIMER_INT_SOON_DELAY` macros are required in order to test timer interrupts.  Similarly, the DUT (or its testbench) must implement the memory-mapped `MTIME` and `MTIMECMP` registers.  The `RVMODEL_SET_*_INT` and `RVMODEL_CLR_*_INT` macros are only required for interrupts controlled in a platform-specific fashion.
 
 [NOTE]
-If a macro needs machine mode privileges to perform its function but might be called from any mode, it must change privilege level.  For example, if RVMODEL_IO_WRITE_STR needs machine mode to access a UART, it may call RVTEST_GOTO_M_MODE.  Printing (and halting) is done at the end of a test, so there is no need to return to the previous privilege mode.
+If a macro needs machine mode privileges to perform its function but might be called from any mode, it must change privilege level.  For example, if RVMODEL_IO_WRITE_STR needs machine mode to access a UART, it may call RVTEST_TSBI_GOTO_MMODE or use a T-SBI call to access UART memory.  Printing (and halting) is done at the end of a test, so there is no need to return to the previous privilege mode.
 
 ==== RVMODEL_BOOT Requirements
 
@@ -199,11 +203,11 @@ The SBI is invoked with the `ecall` instruction.  The operation is passed in `a0
 |TSBI_CSR_WRITE|0x<CSR>59073|Performs CSRW instruction specified by the opcode.  `a1` contains the value to write.
 |TSBI_CSR_READ|0x<CSR>02573|Performs CSRR instruction specified by the opcode.  Returns result in `a0`.
 |TSBI_LW|0x0005a503|LW a0, 0(a1) - Load word from physical address in `a1` with machine-mode privileges.  Returns result in `a0`.  Used to read `mtime` or access other memory-mapped I/O.
-|TSBI_LW+4|0x0045a503|LW a0, 4(a1) - Load word from physical address in `a1`+4 with machine-mode privileges.  Returns result in `a0`.  Used to read upper half of `mtime` or access other memory-mapped I/O.
+|TSBI_LWP4|0x0045a503|LW a0, 4(a1) - Load word from physical address in `a1`+4 with machine-mode privileges.  Returns result in `a0`.  Used to read upper half of `mtime` or access other memory-mapped I/O.
 |TSBI_LD|0x0005b503|LD a0, 0(a1) - Load doubleword from physical address in `a1` with machine-mode privileges.  Returns result in `a0`.  Used to read `mtime` or access other memory-mapped I/O.  RV64 only
-|TSBI_SW|0x00a5a023|SW a0, 0(a1) - Store word to physical address in `a1` with machine-mode privileges.  Used to write memory-mapped I/O.
-|TSBI_SW+4|0x00a5a223|SW a0, 4(a1) - Store word to physical address in `a1`+4 with machine-mode privileges.  Used to write memory-mapped I/O.
-|TSBI_SD|0x00a5b023|SD a0, 0(a1) - Store doubleword to physical address in `a1` with machine-mode privileges.  Used to write memory-mapped I/O.  RV64 only
+|TSBI_SW|0x00c5a023|SW a2, 0(a1) - Store word to physical address in `a1` with machine-mode privileges.  Used to write memory-mapped I/O.
+|TSBI_SWP4|0x00c5a223|SW a2, 4(a1) - Store word to physical address in `a1`+4 with machine-mode privileges.  Used to write memory-mapped I/O.
+|TSBI_SD|0x00c5b023|SD a2, 0(a1) - Store doubleword to physical address in `a1` with machine-mode privileges.  Used to write memory-mapped I/O.  RV64 only
 |===
 
 For example, an S-mode program can request setting `mstatus.TVM` with a CSR_SET call corresponding to `csrrs x0, mstatus, a1` (`a0` = 0x3005a073) with `a1` containing a 1 in bit 20 (the `TVM` bit) and all other bits 0.  A possible implementation with standard M-mode is for the trap handler to write this value to memory, perform `fence.i` to synchronize the instruction stream, execute the instruction, and return to the test.  If a custom M-mode does not implement `mstatus.TVM`, it must emulate the behavior in some other way. Similarly, S-mode can read `mip` to `a0` with a CSR_READ call corresponding to `csrrs a0, mip, x0` (`a0` = 0x34402573).
@@ -232,16 +236,24 @@ NOTE: The ACT S/HS and VS-mode trap handlers implement the same calls.  Each tra
 The following macros are defined for developer convenience to access the T-SBI and ACT system calls.  They are not required.
 
 * RVTEST_TSBI_ECALL_TEST(): returns xEPC in `a0`
-* RVTEST_TSBI_CSR_SET(csr, value)
-* RVTEST_TSBI_CSR_CLEAR(csr, value)
-* RVTEST_TSBI_CSR_WRITE(csr, value)
+* RVTEST_TSBI_CSR_SET(csr, imm)
+* RVTEST_TSBI_CSR_CLEAR(csr, imm)
+* RVTEST_TSBI_CSR_WRITE(csr, imm)
+* RVTEST_TSBI_CSR_WRITE_A1(csr): write value in `a1`
 * RVTEST_TSBI_CSR_READ(csr): returns value in `a0`
++
+`csr` is the 12-bit CSR number (e.g. `CSR_MIP` from `encoding.h`) and `imm` is a constant that the macro loads into `a1` with `li` before the call.
 * RVTEST_TSBI_GOTO_MMODE
 * RVTEST_TSBI_GOTO_SMODE
 * RVTEST_TSBI_GOTO_UMODE
 * RVTEST_TSBI_GOTO_VSMODE
 * RVTEST_TSBI_GOTO_VUMODE
-
+* RVTEST_TSBI_LW: performs `lw a0, 0(a1)` with machine-mode privileges.  Returns result in `a0`.  Used to read `mtime` or access other memory-mapped I/O.
+* RVTEST_TSBI_LWP4: performs `lw a0, 4(a1)` with machine-mode privileges.  Returns result in `a0`.  Used to read `mtime` or access other memory-mapped I/O.
+* RVTEST_TSBI_LD: performs `ld a0, 0(a1)` with machine-mode privileges.  Returns result in `a0`.  Used to read `mtime` or access other memory-mapped I/O.
+* RVTEST_TSBI_SW: performs `sw a2, 0(a1)` with machine-mode privileges.  Used to write memory-mapped I/O such as `mtimecmp` or `msip`.
+* RVTEST_TSBI_SWP4: performs `sw a2, 4(a1)` with machine-mode privileges.  Used to write memory-mapped I/O such as `mtimecmph`.
+* RVTEST_TSBI_SD: performs `sd a2, 0(a1)` with machine-mode privileges.  Used to write memory-mapped I/O such as `mtimecmp` or `msip`.
 
 TODO
 

@@ -95,11 +95,4 @@
     li _R2, 0x15000024           ;                                      \
     sw _R1, 0(_R2)
 
-##### Supervisor Interrupts #####
-
-#define RVMODEL_SET_SEXT_INT(_R1, _R2)
-#define RVMODEL_CLR_SEXT_INT(_R1, _R2)
-#define RVMODEL_SET_SSW_INT(_R1, _R2)
-#define RVMODEL_CLR_SSW_INT(_R1, _R2)
-
 #endif // _RVMODEL_MACROS_H

@@ -205,6 +205,7 @@ def _disable_trigger(reg: int, trig_num: int, mode: str) -> list[str]:
 
 def _cause_interrupt(code: int, mode: str, r1: int, r2: int, r3: int, r4: int) -> list[str]:
     """Emit assembly that makes interrupt ``code`` (mcause interrupt code) pending."""
+    flavor = "M" if mode == "Sm" else mode
     if code == 1:  # supervisor software interrupt (SSIP)
         return [f"LI(x{r1}, 0x2) # SSIP", _csr_access(f"csrs mip, x{r1}", mode)]
     if code == 5:  # supervisor timer interrupt (STIP)
@@ -214,11 +215,11 @@ def _cause_interrupt(code: int, mode: str, r1: int, r2: int, r3: int, r4: int) -
     if code == 13:  # local counter overflow interrupt (LCOFIP)
         return [f"LI(x{r1}, 0x2000) # LCOFIP", _csr_access(f"csrs mip, x{r1}", mode)]
     if code == 3:  # machine software interrupt (CLINT MSIP; M-mode only)
-        return ["RVTEST_SET_MSW_INT"]
+        return [f"RVTEST_SET_MSW_INT_{flavor}"]
     if code == 7:  # machine timer interrupt (mtimecmp = mtime; M-mode only)
         return set_mtimer_int(r1, r2, r3, r4)
     if code == 11:  # machine external interrupt (PLIC MEIP; M-mode only)
-        return ["RVTEST_SET_MEXT_INT"]
+        return [f"RVTEST_SET_MEXT_INT_{flavor}"]
     raise ValueError(f"unsupported interrupt code {code}")
 
 

@@ -1,6 +1,17 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  # TODO when rules from profiles are merged
-  - name: satp_mode_op
-    coverpoint: ["Svbare_cg/cp_satp_bare"]
+  - name: satp_mode
+    coverpoint:
+      ["Svbare_cg/{cp_satp_bare_load,cp_satp_bare_store,cp_satp_bare_exec}"]
+
+  #When csr::[mprv]=0, explicit memory accesses
+  #behave as normal, using the translation and
+  #protection mechanisms of the current privilege mode. When csr::[mprv]=1, load
+  #and store memory addresses are translated and protected, and endianness
+  #is applied, as though the current privilege mode were set to csr::[mpp].#
+  - name: mstatus_mprv_ldst_op
+    coverpoint: ["Svbare_cg/{cp_satp_bare_mprv_load,cp_satp_bare_mprv_store}"]
+
+  - name: mstatus_mprv_inst_xlat_op
+    coverpoint: ["Svbare_cg/cp_satp_bare_mprv_exec"]

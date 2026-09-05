@@ -1,0 +1,27 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  #If the Svadu extension is implemented, the ADUE bit controls whether hardware
+  #updating of PTE A/D bits is enabled for S-mode and G-stage address translations.
+  #When ADUE=1, hardware updating of PTE A/D bits is enabled during S-mode
+  #address translation, and the implementation behaves as though the Svade
+  #extension were not implemented for S-mode address translation.
+  #When the hypervisor extension is implemented, if ADUE=1, hardware updating of
+  #PTE A/D bits is enabled during G-stage address translation, and the
+  #implementation behaves as though the Svade extension were not implemented for
+  #G-stage address translation.
+  #When ADUE=0, the implementation behaves as though Svade were implemented for
+  #S-mode and G-stage address translation.#
+  - name: menvcfg_adue_op
+    coverpoint:
+      [
+        "SvaduPMP_cg/{Abit_unset_pmpW_unset_exec_s,Abit_unset_pmpW_unset_exec_u,Abit_unset_pmpW_unset_read_s,Abit_unset_pmpW_unset_read_u,Abit_unset_pmpW_unset_write_s,Abit_unset_pmpW_unset_write_u,Dbit_unset_pmpW_unset_write_s,Dbit_unset_pmpW_unset_write_u}",
+      ]
+
+  #Failed memory operations generate an instruction, load, or store access-fault
+  #exception.
+  - name: pmp_access_fault_exception
+    coverpoint:
+      [
+        "SvaduPMP_cg/{Abit_unset_pmpW_unset_exec_s,Abit_unset_pmpW_unset_exec_u,Abit_unset_pmpW_unset_read_s,Abit_unset_pmpW_unset_read_u,Abit_unset_pmpW_unset_write_s,Abit_unset_pmpW_unset_write_u,Dbit_unset_pmpW_unset_write_s,Dbit_unset_pmpW_unset_write_u}",
+      ]

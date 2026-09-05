@@ -1,0 +1,8 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: pmp_check_pagetable_access
+    coverpoint:
+      [
+        "SvPMP_cg/{pmp0_pte_noread_s,pmp0_pte_noread_u,pmp0_pte_nowrite_s,pmp0_pte_nowrite_u,pmp0_pte_noexec_s,pmp0_pte_noexec_u}",
+      ]

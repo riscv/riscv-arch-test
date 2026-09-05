@@ -8,10 +8,16 @@ normative_rule_definitions:
     coverpoint: [""]
 
   - name: Svpbmt_nonleaf_pte_pbmt_must_be_zero
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Svpbmt_cg/{nonleaf_PTE_pbmt_i,nonleaf_PTE_pbmt_d,ins_page_fault,load_page_fault,store_page_fault,jalr,lw,sw}",
+      ]
 
   - name: Svpbmt_leaf_pte_pbmt_reserved_3_fault
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Svpbmt_cg/{leaf_PTE_pbmt_res_s_i,leaf_PTE_pbmt_res_u_i,leaf_PTE_pbmt_res_s_d,leaf_PTE_pbmt_res_u_d,ins_page_fault,load_page_fault,store_page_fault,,jalr,lw,sw}",
+      ]
 
   - name: Svpbmt_obeys_mem_ordering
     coverpoint: [""]

@@ -1,1 +1,13 @@
 normative_rule_definitions:
+  #csr:medeleg[] has a bit position allocated for every synchronous exception
+  - name: medeleg_enc_txt
+    coverpoint:
+      ["ExceptionsSvZaamo_cg/{cp_medeleg_m,cp_medeleg_s,cp_medeleg_u}"]
+
+  #Load/store/AMO address-misaligned exceptions may have either higher or
+  #lower priority than load/store/AMO page-fault and access-fault exceptions.
+  - name: mcause_exccode_pri2
+    coverpoint:
+      [
+        "ExceptionsSvZaamo_cg/{cp_misaligned_priority_m,cp_misaligned_priority_s,cp_misaligned_priority_u}",
+      ]

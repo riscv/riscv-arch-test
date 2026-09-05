@@ -151,4 +151,12 @@
   li _R2, CLINT_SSIP_ADDRESS;              \
   sw zero, 0(_R2);
 
+##### Sscofpmf #####
+
+#define RVMODEL_MHPMEVENT   mhpmevent3
+#define RVMODEL_MHPMCOUNTER mhpmcounter3
+#define RVMODEL_MHPMEVENT_VAL 0x00000000  // will be updated once there is a way to increment counters
+#define RVMODEL_MHPMEVENT_CODE 0x00000000 // will be updated once there is a way to increment counters
+
+
 #endif // _RVMODEL_MACROS_H

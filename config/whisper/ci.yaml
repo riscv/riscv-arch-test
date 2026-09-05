@@ -7,8 +7,9 @@
 # Smstateen Sail does not yet support 1P13 bit
 # ExceptionsSvZalrsc: Whisper reports page faults where Sail expects access faults.
 # Sdtrig* not yet implemented in Sail
+# Sscofpmf: Counters aren't incrementing
 ci_enabled: true
-exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,ExceptionsSvZalrsc,Smstateen,SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,ExceptionsSvZalrsc,Smstateen,SdtrigSm,SdtrigS,SdtrigU,SscofpmfSm,SscofpmfS,SscofpmfU"
 exclude_configs:
   - whisper-rv32-max-spike-ref
   - whisper-rv64-max-spike-ref

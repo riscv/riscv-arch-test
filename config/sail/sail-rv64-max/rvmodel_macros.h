@@ -151,4 +151,12 @@
   li _R2, SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear SSW interrupt */ \
 
+##### Sscofpmf #####
+
+#define RVMODEL_MHPMEVENT   CSR_MHPMEVENT3
+#define RVMODEL_MHPMCOUNTER CSR_MHPMCOUNTER3
+#define RVMODEL_MHPMEVENT_VAL 0x0                     // Values will be assigned once there is a way to increment counters Issue: https://github.com/riscv/sail-riscv/issues/1733
+#define RVMODEL_MHPMEVENT_CODE(_R1, _R2) \           // Values will be assigned once there is a way to increment counters
+  nop
+
 #endif // _RVMODEL_MACROS_H

@@ -213,4 +213,12 @@
   li _R2, WHISPER_SSIP_ADDRESS; \
   sw zero, 0(_R2);
 
+##### Sscofpmf #####
+
+#define RVMODEL_MHPMEVENT   CSR_MHPMEVENT3
+#define RVMODEL_MHPMCOUNTER CSR_MHPMCOUNTER3
+#define RVMODEL_MHPMEVENT_VAL  11
+#define RVMODEL_MHPMEVENT_CODE(_R1, _R2)  \
+    lw _R2, 0(_R1);
+
 #endif // _RVMODEL_MACROS_H

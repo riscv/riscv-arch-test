@@ -51,6 +51,27 @@ def to_hex(value: int, bits: int) -> str:
     return f"0x{value:0{bits // 4}x}"
 
 
+def format_zibi_branch(instr_name: str, rs1: int, cimm: int, target: str) -> str:
+    """Format a Zibi branch for assemblers without Zibi mnemonic support.
+
+    Zibi uses the B-type rs2 field for cimm, with field value zero encoding
+    the effective comparison constant -1.
+    """
+    try:
+        funct3 = {"beqi": 0b010, "bnei": 0b011}[instr_name]
+    except KeyError as error:
+        raise ValueError(f"Unsupported Zibi branch instruction: {instr_name}") from error
+
+    if cimm == -1:
+        cimm_field = 0
+    elif 1 <= cimm <= 31:
+        cimm_field = cimm
+    else:
+        raise ValueError(f"Invalid Zibi comparison immediate: {cimm}")
+
+    return f".insn b 0x63, {funct3}, x{rs1}, x{cimm_field}, {target}"
+
+
 def load_int_reg(name: str, reg: int, val: int, test_data: TestData) -> str:
     """Generate assembly to load an integer register with a specific value."""
     assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"

@@ -21,6 +21,7 @@ from pathlib import Path
 
 _SUMMARY_RE = re.compile(r'RVCP-SUMMARY: TEST (PASSED|FAILED|SIGRUN) - Test File ".*"')
 _DEBUG_PLACEHOLDER_RE = re.compile(r"\{debug:([^}]*)\}")
+_PATH_PLACEHOLDER_RE = re.compile(r"\{path:([^:}]+):([^}]*)\}")
 _TRACEFILE_PLACEHOLDER = "__TRACEFILE__"
 _SUMMARYFILE_PLACEHOLDER = "__SUMMARYFILE__"
 # Simulator-reported failure reasons worth surfacing verbatim in FAIL messages, e.g.
@@ -40,6 +41,16 @@ def _expand_debug_placeholders(command: str, *, debug: bool) -> str:
     """
     result = _DEBUG_PLACEHOLDER_RE.sub(lambda m: m.group(1) if debug else "", command)
     return " ".join(result.split())
+
+
+def _expand_path_placeholders(command: str, *, relative_elf: Path) -> str:
+    """Expand flags that apply only to matching ELF path components."""
+
+    def replace(match: re.Match[str]) -> str:
+        path_components = {name.strip() for name in match.group(1).split(",")}
+        return match.group(2) if not path_components.isdisjoint(relative_elf.parts[:-1]) else ""
+
+    return _PATH_PLACEHOLDER_RE.sub(replace, command)
 
 
 def _color(code: str, text: str) -> str:
@@ -89,6 +100,7 @@ def run_test(
 
     # Create log, trace, and summary file paths mirroring the ELF subdirectory hierarchy
     rel = elf_path.relative_to(elf_dir)
+    command = _expand_path_placeholders(command, relative_elf=rel)
     log_file = log_dir / rel.with_suffix(".log")
     trace_file = log_dir / rel.with_suffix(".trace.log")
     summary_file = log_dir / rel.with_suffix(".summary.log")

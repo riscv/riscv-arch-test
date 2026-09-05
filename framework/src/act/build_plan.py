@@ -34,10 +34,17 @@ _OBJDUMP_FLAGS_COMMON = ["-x", "-d", "-S", "-M", "no-aliases,numeric"]
 # -t: print the full symbol table
 # -s: print a full hex+ASCII dump of every section
 _OBJDUMP_FLAGS_DEBUG = [*_OBJDUMP_FLAGS_COMMON, "-t", "-s"]
+_SAIL_EXPERIMENTAL_EXTENSIONS = frozenset({"Zibi", "Zvabd"})
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+
+def _sail_extension_flags(test_metadata: TestMetadata) -> tuple[str, ...]:
+    if test_metadata.required_extensions.isdisjoint(_SAIL_EXPERIMENTAL_EXTENSIONS):
+        return ()
+    return ("--enable-experimental-extensions",)
 
 
 def _sail_platform_base(data: dict[object, object], name: str, path: Path) -> int:
@@ -83,6 +90,7 @@ def _sail_platform_defines(sail_config_path: Path) -> tuple[str, ...]:
 
 def _ref_model_sig_cmd(
     config: Config,
+    test_metadata: TestMetadata,
     sig_elf: Path,
     sig_file: Path,
     sig_trace_file: Path,
@@ -92,7 +100,7 @@ def _ref_model_sig_cmd(
     """Build the command for invoking the reference model to produce a signature file."""
     if config.ref_model_type == RefModelType.SAIL:
         sail_config_path = config.dut_include_dir / "sail.json"
-        cmd = [str(config.ref_model_exe)]
+        cmd = [str(config.ref_model_exe), *_sail_extension_flags(test_metadata)]
         if debug:
             cmd.append("--trace")
             cmd.extend(["--trace-output", str(sig_trace_file)])
@@ -233,7 +241,7 @@ def gen_compile_tasks(
             )
 
         # 2. sig – run reference model
-        ref_model_cmd = _ref_model_sig_cmd(config, sig_elf, sig_file, sig_trace_file, xlen, debug)
+        ref_model_cmd = _ref_model_sig_cmd(config, test_metadata, sig_elf, sig_file, sig_trace_file, xlen, debug)
         ref_model_outputs = (sig_file, sig_trace_file) if debug else (sig_file,)
         tasks.append(
             BuildTask(
@@ -318,6 +326,7 @@ def gen_compile_tasks(
 
 def gen_rvvi_tasks(
     test_name: Path,
+    test_metadata: TestMetadata,
     base_dir: Path,
     config: Config,
     ref_model_inputs: tuple[Path, ...] = (),
@@ -356,15 +365,17 @@ def gen_rvvi_tasks(
         )
 
     # Run Sail with trace
-    sail_cmd = [
-        str(config.ref_model_exe),
-        "--trace",
-        "--trace-output",
-        str(sail_trace),
-        "--config",
-        str(config.dut_include_dir / "sail.json"),
-        str(elf),
-    ]
+    sail_cmd = [str(config.ref_model_exe), *_sail_extension_flags(test_metadata)]
+    sail_cmd.extend(
+        [
+            "--trace",
+            "--trace-output",
+            str(sail_trace),
+            "--config",
+            str(config.dut_include_dir / "sail.json"),
+            str(elf),
+        ]
+    )
     tasks.append(
         BuildTask(
             outputs=(sail_trace,),
@@ -604,6 +615,7 @@ def generate_build_plan(
             tasks.extend(
                 gen_rvvi_tasks(
                     test_name,
+                    test_metadata,
                     config_wkdir,
                     config,
                     ref_model_inputs,

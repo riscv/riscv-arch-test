@@ -546,6 +546,10 @@
         `cover_info("//      ZfhminD - Enabled");
         `include "ZfhminD_coverage_init.svh"
     `endif
+    `ifdef COVER_ZIBI
+        `cover_info("//      Zibi - Enabled");
+        `include "Zibi_coverage_init.svh"
+    `endif
     `ifdef COVER_ZIC64BZICBOZ
         `cover_info("//      Zic64bZicboz - Enabled");
         `include "Zic64bZicboz_coverage_init.svh"

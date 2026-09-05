@@ -56,6 +56,7 @@ function string disassemble (logic [31:0] instrRaw);
   automatic bit        [1:0]  bs       = instr[31:30];
   automatic bit        [4:0]  uimm5    = instr[19:15];
   automatic bit signed [4:0]  imm5     = instr[19:15];
+  automatic int cimm5 = (instr[24:20] == 0) ? -1 : instr[24:20];
 
   // Compressed immediates
   automatic bit signed [5:0]  immCIType     = {instr[12], instr[6:2]};
@@ -293,6 +294,9 @@ function string disassemble (logic [31:0] instrRaw);
     CSRRCI: $sformat(decoded, "csrrci %s, %0d, %0d", rd, csr, rs1Bits);
     // Zifencei Extension
     FENCE_I: $sformat(decoded, "fence.i");
+    // Zibi Extension
+    BEQI: $sformat(decoded, "beqi %s, %0d, %0d", rs1, cimm5, immBType);
+    BNEI: $sformat(decoded, "bnei %s, %0d, %0d", rs1, cimm5, immBType);
     // M Extension
     MUL:    $sformat(decoded, "mul %s, %s, %s", rd, rs1, rs2);
     MULH:   $sformat(decoded, "mulh %s, %s, %s", rd, rs1, rs2);

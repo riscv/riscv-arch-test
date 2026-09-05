@@ -260,15 +260,110 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         bins nonzero = { [1:$] }; // rd != 0
     }
 
+    // Real addresses are valid even when address translation is off, so these are not gated on
+    // Sv* support (the walk coverpoints below are). The generator emits the csrw immediately
+    // after `auipc xN, 0`, so the pc value written equals the csrw's pc - 4; the scratch value
+    // is scratch + 0xA8, an offset chosen so no walk, zero, or all-ones pattern shares its low byte.
+    stvec: coverpoint ins.current.insn[31:20] {
+        bins stvec = {CSR_STVEC};
+    }
+    sepc: coverpoint ins.current.insn[31:20] {
+        bins sepc = {CSR_SEPC};
+    }
+    stval: coverpoint ins.current.insn[31:20] {
+        bins stval = {CSR_STVAL};
+    }
+    // stval must hold 0 and, when the illegal instruction encoding is reported in it, every ILEN-bit value
+    stval_zero: coverpoint ins.current.rs1_val {
+        bins zero = {0};
+    }
+    xaddr_pc: coverpoint (ins.current.rs1_val + 4 == ins.current.pc_rdata) {
+        bins pc = {1};
+    }
+    xaddr_scratch: coverpoint (ins.current.rs1_val[7:0] == 8'hA8) {
+        bins scratch = {1};
+    }
+    `ifdef UDB_REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION
+        stval_ilen_walk1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+            bins b_1[] = { [0:31] };
+        }
+        stval_ilen_ones: coverpoint ins.current.rs1_val {
+            bins ones = {32'hFFFFFFFF};
+        }
+    `endif
+
+    // Valid virtual address walks: stvec, sepc, and stval must hold every canonical virtual address.
+    // Canonical addresses have bits XLEN-1:VALEN-1 equal, so bit VALEN-2 is the msb walked on its own
+    // (31 for Sv32, where VALEN = XLEN).
+    `ifdef SV57_SUPPORTED
+        `define S_VADDR_WALK_MSB 55
+    `elsif SV48_SUPPORTED
+        `define S_VADDR_WALK_MSB 46
+    `elsif SV39_SUPPORTED
+        `define S_VADDR_WALK_MSB 37
+    `elsif SV32_SUPPORTED
+        `define S_VADDR_WALK_MSB 31
+    `endif
+    `ifdef S_VADDR_WALK_MSB
+        // stvec: BASE holds the address with MODE = Direct, so bits 1:0 stay 0
+        stvec_vaddr_walk1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+            bins b_1[] = { [2:`S_VADDR_WALK_MSB] };
+        }
+        stvec_vaddr_walk0: coverpoint $clog2(~(ins.current.rs1_val | 3))
+                           iff ($onehot(~(ins.current.rs1_val | 3))) {
+            bins b_0[] = { [2:`S_VADDR_WALK_MSB] };
+        }
+        // sepc: bit 0 is always 0; bit 1 is 0 unless Zca allows 2-byte instruction alignment
+        sepc_vaddr_walk1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+            `ifdef ZCA_SUPPORTED
+                bins b_1[] = { [1:`S_VADDR_WALK_MSB] };
+            `else
+                bins b_1[] = { [2:`S_VADDR_WALK_MSB] };
+            `endif
+        }
+        `ifdef ZCA_SUPPORTED
+            sepc_vaddr_walk0: coverpoint $clog2(~(ins.current.rs1_val | 1))
+                              iff ($onehot(~(ins.current.rs1_val | 1))) {
+                bins b_0[] = { [1:`S_VADDR_WALK_MSB] };
+            }
+        `else
+            sepc_vaddr_walk0: coverpoint $clog2(~(ins.current.rs1_val | 3))
+                              iff ($onehot(~(ins.current.rs1_val | 3))) {
+                bins b_0[] = { [2:`S_VADDR_WALK_MSB] };
+            }
+        `endif
+        // stval: any byte address is a valid virtual address
+        stval_vaddr_walk1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+            bins b_1[] = { [0:`S_VADDR_WALK_MSB] };
+        }
+        stval_vaddr_walk0: coverpoint $clog2(~ins.current.rs1_val) iff ($onehot(~ins.current.rs1_val)) {
+            bins b_0[] = { [0:`S_VADDR_WALK_MSB] };
+        }
+
+        cp_stvec_vaddr_walk1:     cross priv_mode_s, csrw, stvec, stvec_vaddr_walk1;
+        cp_stvec_vaddr_walk0:     cross priv_mode_s, csrw, stvec, stvec_vaddr_walk0;
+        cp_sepc_vaddr_walk1:      cross priv_mode_s, csrw, sepc, sepc_vaddr_walk1;
+        cp_sepc_vaddr_walk0:      cross priv_mode_s, csrw, sepc, sepc_vaddr_walk0;
+        cp_stval_vaddr_walk1:     cross priv_mode_s, csrw, stval, stval_vaddr_walk1;
+        cp_stval_vaddr_walk0:     cross priv_mode_s, csrw, stval, stval_vaddr_walk0;
+    `endif
+
     cp_scsr_access:           cross priv_mode_s, csrname, csraccesses;
     cp_scsrwalk:              cross priv_mode_s, csrwalk, csrop, walking_ones;
     cp_ucsr_from_s:           cross priv_mode_s, csruname, csraccesses;
     cp_csr_insufficient_priv: cross priv_mode_s, csrr, csr_machine, nonzerord;
     cp_csr_ro:                cross priv_mode_s, csrw, csr_sro;
-
-// waived because behavior of other fields is UNSPECIFIED when satp.MODE=Bare
-//    cp_csr_satp:              cross priv_mode_s, satp, csrop, walking_ones_nonmode;
-
+    cp_stvec_vaddr_pc:        cross priv_mode_s, csrw, stvec, xaddr_pc;
+    cp_stvec_vaddr_scratch:   cross priv_mode_s, csrw, stvec, xaddr_scratch;
+    cp_sepc_vaddr_pc:         cross priv_mode_s, csrw, sepc, xaddr_pc;
+    cp_sepc_vaddr_scratch:    cross priv_mode_s, csrw, sepc, xaddr_scratch;
+    cp_stval_vaddr_pc:        cross priv_mode_s, csrw, stval, xaddr_pc;
+    cp_stval_vaddr_scratch:   cross priv_mode_s, csrw, stval, xaddr_scratch;
+    cp_stval_zero:            cross priv_mode_s, csrw, stval, stval_zero;
+    `ifdef UDB_REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION
+        cp_stval_ilen_walk1:  cross priv_mode_s, csrw, stval, stval_ilen_walk1;
+        cp_stval_ilen_ones:   cross priv_mode_s, csrw, stval, stval_ilen_ones;
+    `endif
 endgroup
 
 function void s_sample(int hart, int issue, ins_t ins);

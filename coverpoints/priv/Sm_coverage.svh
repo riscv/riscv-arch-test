@@ -451,10 +451,89 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins even = {1'b0}; // trivial case of 4-byte alignment
     }
 
+    // mtval must hold 0 and, when the illegal instruction encoding is reported in it, every ILEN-bit value
+    mtval: coverpoint ins.current.insn[31:20] {
+        bins mtval = {CSR_MTVAL};
+    }
+    mtval_zero: coverpoint ins.current.rs1_val {
+        bins zero = {0};
+    }
+    // Real addresses are valid even when address translation is off, so these are not gated on
+    // Sv* support (the walk coverpoints below are). The generator emits the csrw immediately
+    // after `auipc xN, 0`, so the pc value written equals the csrw's pc - 4; the scratch value
+    // is scratch + 0xA8, an offset chosen so no walk, zero, or all-ones pattern shares its low byte.
+    mepc: coverpoint ins.current.insn[31:20] {
+        bins mepc = {CSR_MEPC};
+    }
+    xaddr_pc: coverpoint (ins.current.rs1_val + 4 == ins.current.pc_rdata) {
+        bins pc = {1};
+    }
+    xaddr_scratch: coverpoint (ins.current.rs1_val[7:0] == 8'hA8) {
+        bins scratch = {1};
+    }
+    `ifdef UDB_REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION
+        mtval_ilen_walk1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+            bins b_1[] = { [0:31] };
+        }
+        mtval_ilen_ones: coverpoint ins.current.rs1_val {
+            bins ones = {32'hFFFFFFFF};
+        }
+    `endif
+
+    // Valid virtual address walks: mepc and mtval must hold every canonical virtual address.
+    // Canonical addresses have bits XLEN-1:VALEN-1 equal, so bit VALEN-2 is the msb walked on its own
+    // (31 for Sv32, where VALEN = XLEN).
+    `ifdef SV57_SUPPORTED
+        `define SM_VADDR_WALK_MSB 55
+    `elsif SV48_SUPPORTED
+        `define SM_VADDR_WALK_MSB 46
+    `elsif SV39_SUPPORTED
+        `define SM_VADDR_WALK_MSB 37
+    `elsif SV32_SUPPORTED
+        `define SM_VADDR_WALK_MSB 31
+    `endif
+    `ifdef SM_VADDR_WALK_MSB
+        // mepc: bit 0 is always 0; bit 1 is 0 unless Zca allows 2-byte instruction alignment
+        xepc_vaddr_walk1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+            `ifdef ZCA_SUPPORTED
+                bins b_1[] = { [1:`SM_VADDR_WALK_MSB] };
+            `else
+                bins b_1[] = { [2:`SM_VADDR_WALK_MSB] };
+            `endif
+        }
+        `ifdef ZCA_SUPPORTED
+            xepc_vaddr_walk0: coverpoint $clog2(~(ins.current.rs1_val | 1))
+                              iff ($onehot(~(ins.current.rs1_val | 1))) {
+                bins b_0[] = { [1:`SM_VADDR_WALK_MSB] };
+            }
+        `else
+            xepc_vaddr_walk0: coverpoint $clog2(~(ins.current.rs1_val | 3))
+                              iff ($onehot(~(ins.current.rs1_val | 3))) {
+                bins b_0[] = { [2:`SM_VADDR_WALK_MSB] };
+            }
+        `endif
+        // mtval: any byte address is a valid virtual address
+        mtval_vaddr_walk1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+            bins b_1[] = { [0:`SM_VADDR_WALK_MSB] };
+        }
+        mtval_vaddr_walk0: coverpoint $clog2(~ins.current.rs1_val) iff ($onehot(~ins.current.rs1_val)) {
+            bins b_0[] = { [0:`SM_VADDR_WALK_MSB] };
+        }
+
+        cp_mepc_vaddr_walk1:    cross priv_mode_m, csrrw, mepc, xepc_vaddr_walk1;
+        cp_mepc_vaddr_walk0:    cross priv_mode_m, csrrw, mepc, xepc_vaddr_walk0;
+        cp_mtval_vaddr_walk1:   cross priv_mode_m, csrrw, mtval, mtval_vaddr_walk1;
+        cp_mtval_vaddr_walk0:   cross priv_mode_m, csrrw, mtval, mtval_vaddr_walk0;
+    `endif
+
     cp_mcsr_access:             cross priv_mode_m, mcsrname, csraccesses;
     cp_mcsr_access_masked:      cross priv_mode_m, mcsrname_masked, csraccesses_masked;
     cp_mcsr_access_ro:          cross priv_mode_m, mcsrname_ro, csraccesses;
-    cp_mcsrwalk :               cross priv_mode_m, mcsrname, csrop, walking_ones;
+    cp_mcsrwalk :               cross priv_mode_m, mcsrname, csrop, walking_ones {
+        // mepc and mtval only have to hold valid virtual addresses; see cp_{mepc,mtval}_vaddr_walk*
+        ignore_bins mepc_not_walked  = binsof(mcsrname.mepc);
+        ignore_bins mtval_not_walked = binsof(mcsrname.mtval);
+    }
     // Avoid testing WPRI bits and those that don't like being poked.
     // Keep the lists below in sync with the masks in Sm.py.
     cp_mcsrwalk_masked :        cross priv_mode_m, mcsrname_masked, csrop, walking_ones {
@@ -481,6 +560,15 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             `endif
         `endif
     }
+    cp_mtval_zero:              cross priv_mode_m, csrrw, mtval, mtval_zero;
+    cp_mepc_vaddr_pc:           cross priv_mode_m, csrrw, mepc, xaddr_pc;
+    cp_mepc_vaddr_scratch:      cross priv_mode_m, csrrw, mepc, xaddr_scratch;
+    cp_mtval_vaddr_pc:          cross priv_mode_m, csrrw, mtval, xaddr_pc;
+    cp_mtval_vaddr_scratch:     cross priv_mode_m, csrrw, mtval, xaddr_scratch;
+    `ifdef UDB_REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION
+        cp_mtval_ilen_walk1:    cross priv_mode_m, csrrw, mtval, mtval_ilen_walk1;
+        cp_mtval_ilen_ones:     cross priv_mode_m, csrrw, mtval, mtval_ilen_ones;
+    `endif
     cp_csr_insufficient_priv:   cross priv_mode_m, csrr, csr_debug, nonzerord;
     cp_csr_ro:                  cross priv_mode_m, csrrw, csr_ro, rs1_ones;
 

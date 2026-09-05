@@ -8,99 +8,39 @@
 
 """U privileged extension test generator."""
 
-from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.PrivCommon import csr_insufficient_priv_tests, csr_ro_write_tests, priv_inst_trap_tests
 from testgen.priv.registry import add_priv_test_generator
 
 
-def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
-    """Generate ecall, ebreak, mret, sret tests."""
-    ######################################
-    covergroup = "U_uprivinst_cg"
-    coverpoint = "cp_uprivinst"
-    ######################################
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "Execute privileged instructions\nShould cause ecall, breakpoint, illegal instruction traps",
-        ),
-        test_data.add_testcase("ecall", coverpoint, covergroup),
-        "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
-        "# ecall returns xepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
-        write_sigupd(10, test_data),
-        test_data.add_testcase("ebreak", coverpoint, covergroup),
-        "ebreak                # test ebreak instruction",
-        test_data.add_testcase("mret", coverpoint, covergroup),
-        "mret                  # test mret instruction",
-        test_data.add_testcase("sret", coverpoint, covergroup),
-        "sret                  # test sret instruction",
-    ]
-
-    return lines
-
-
-def _generate_ucsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
-    """Generate CSR tests, one test chunk per CSR so they can be split across files."""
-    covergroup = "U_ucsr_cg"
-
-    ######################################
-    coverpoint = "cp_csr_insufficient_priv"
-    ######################################
-
-    tc = test_data.new_test_chunk(test_chunks, "ucsr")
-    tc.section_header = comment_banner(
-        coverpoint,
-        "Attempt to read non-user-mode registers.  Should throw illegal instruction",
-    )
-
-    for csr in (
-        list(range(0x100, 0x400)) + list(range(0x500, 0x800)) + list(range(0x900, 0xC00)) + list(range(0xD00, 0x1000))
-    ):
-        tc = test_data.new_test_chunk(test_chunks, "ucsr")
-        temp_reg = test_data.int_regs.get_register()
-        tc.code.extend(
-            [
-                test_data.add_testcase(f"{csr:03x}", coverpoint, covergroup),
-                f"csrr x{temp_reg}, 0x{csr:03x}    # attempt to read CSR {csr:03x}; should get illegal instruction",
-                "",
-            ]
-        )
-        test_data.int_regs.return_register(temp_reg)
-
-    ######################################
-    coverpoint = "cp_csr_ro"
-    ######################################
-
-    tc = test_data.new_test_chunk(test_chunks, "ucsr_ro")
-    tc.section_header = comment_banner(
-        coverpoint,
-        "Attempt to write read-only CSRs.  Should throw illegal instruction",
-    )
-
-    for csr in range(0xC00, 0xD00):
-        tc = test_data.new_test_chunk(test_chunks, "ucsr_ro")
-        temp_reg = test_data.int_regs.get_register()
-        tc.code.extend(
-            [
-                test_data.add_testcase(f"{csr:03x}", coverpoint, covergroup),
-                f"LI(x{temp_reg}, -1)          # x{temp_reg} = all 1s",
-                f"csrw 0x{csr:03x}, x{temp_reg}    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
-                "",
-            ]
-        )
-        test_data.int_regs.return_register(temp_reg)
-
-
-@add_priv_test_generator("U", required_extensions=["U"])
+@add_priv_test_generator(
+    "U",
+    required_extensions=["U"],
+)
 def make_u(test_data: TestData) -> list[TestChunk]:
     """Generate tests for U user-mode testsuite."""
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
 
-    tc.code.extend(_generate_priv_inst_tests(test_data))
-    _generate_ucsr_tests(test_data, test_chunks)
+    tc.code.extend(
+        priv_inst_trap_tests(
+            test_data,
+            "U_uprivinst_cg",
+            "cp_uprivinst",
+            "Execute privileged instructions",
+            ["ebreak", "mret", "sret"],
+        )
+    )
+    csr_insufficient_priv_tests(
+        test_data,
+        test_chunks,
+        "U_ucsr_cg",
+        [range(0x100, 0x400), range(0x500, 0x800), range(0x900, 0xC00), range(0xD00, 0x1000)],
+        "ucsr",
+        "Attempt to read non-user-mode registers.  Should throw illegal instruction",
+    )
+    csr_ro_write_tests(test_data, test_chunks, "U_ucsr_cg", [range(0xC00, 0xD00)], "ucsr_ro")
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

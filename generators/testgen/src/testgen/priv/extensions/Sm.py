@@ -13,8 +13,22 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.S import S_CSR_SENVCFG, S_CSRS, S_CSRS_NOWALK, S_SSTATUS_MASK
+from testgen.priv.extensions.PrivCommon import (
+    S_CSR_SENVCFG,
+    S_CSRS,
+    S_SSTATUS_MASK,
+    addr_csr_tests,
+    csr_insufficient_priv_tests,
+    csr_ro_write_tests,
+    xtval_value_tests,
+)
 from testgen.priv.registry import add_priv_test_generator
+
+# Address CSRs that must hold every valid virtual address: {csr: (held-low mask, {bit: gate define})}
+SM_VADDR_CSRS = {
+    "mepc": (0b00, {}),
+    "mtval": (0b00, {}),
+}
 
 
 def _gen_misa_dependencies(
@@ -228,7 +242,7 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
     mpp_guard = {3: None, 1: "S_SUPPORTED", 0: "U_SUPPORTED"}
     for mpp, guard in mpp_guard.items():
         if guard:
-            lines.append("#ifdef guard")
+            lines.append(f"#ifdef {guard}")
         for mprv in (0, 1):
             for mpie in (0, 1):
                 for mie in (0, 1):
@@ -257,7 +271,7 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
                         ]
                     )
         if guard:
-            lines.append("#endif // guard")
+            lines.append(f"#endif // {guard}")
 
     lines.append(f"\ncsrw mstatus, x{save_reg}    # restore CSR")
     test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
@@ -304,7 +318,9 @@ def _generate_sret_tests(test_data: TestData) -> list[str]:
                                 f"LI(x{check_reg}, 0x{fields:08x})",
                                 f"or x{check_reg}, x{check_reg}, x{reg1}          # value to write to mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
                                 f"LA(x{reg3}, 1f)             # return address after sret",
+                                "#ifdef S_SUPPORTED",
                                 f"csrw sepc, x{reg3}         # set sepc to return address. Note that sepc does not exist if S-mode is not implemented, and this test will break if writing it hangs",
+                                "#endif // S_SUPPORTED",
                                 f"csrw mstatus, x{check_reg}       # write mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
                                 test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
                                 "sret                    # test sret instruction",
@@ -509,12 +525,12 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ),  # mask off custom bits and reserved bits; instr misaligned [0] depends on ZCA_SUPPORTED so don't check it
         ("mideleg", 0xFFFF),  # limit to standard interrupt bits
         ("mie", 0xFFFF),  # limit to standard interrupt bits
-        ("mtvec", 0b10),  # mtvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
+        ("mtvec", 0b10),  # mtvec.MODE[1] must be 0.
         ("mcounteren", None),
         ("mscratch", None),
-        ("mepc", None),
+        ("mepc", None),  # only accessed here; walked as a valid virtual address in cp_mepc_vaddr_walk*
         #        ("mcause", None), # WLRL fields can't be handled with masks.  Use cp_mcause_* instead
-        ("mtval", None),
+        ("mtval", None),  # only accessed here; walked in cp_mtval_* instead
         ("mip", 0xFFFF),  # limit to standard interrupt bits
         # TODO: remove mcountinhibit mask when Sail gets parameters for writable bits
         ("mcountinhibit", 0b111),
@@ -644,6 +660,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     )
 
     for csr in csrm:
+        if csr[0] in SM_VADDR_CSRS:
+            continue  # skip the virtual-address CSRs; they are walked in addr_csr_tests
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
 
@@ -681,51 +699,24 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.append("#endif // MEDELEGH")
     tc.code.append("#endif // __riscv_xlen == 32")
 
-    ######################################
-    coverpoint = "cp_csr_insufficient_priv"
-    ######################################
-
-    tc = test_data.new_test_chunk(test_chunks, "csr_insufficient_priv")
-
+    tc = test_data.new_test_chunk(test_chunks, "mcsr_addr")
     tc.section_header = comment_banner(
-        coverpoint,
+        "cp_mtval_{zero,ilen_walk1,ilen_ones}",
+        "Write 0 to mtval, and every ILEN-bit value as a walking 1 and all 32 1s when the illegal\n"
+        "instruction encoding is reported in mtval",
+    )
+    tc.code.extend(xtval_value_tests(test_data, "mtval", "Sm_mcsr_cg"))
+    addr_csr_tests(test_data, test_chunks, SM_VADDR_CSRS, "Sm_mcsr_cg", "mcsr_addr")
+
+    csr_insufficient_priv_tests(
+        test_data,
+        test_chunks,
+        covergroup,
+        [range(0x7B0, 0x7C0)],
+        "csr_insufficient_priv",
         "Attempt to read debug-mode registers.  Should throw illegal instruction",
     )
-    temp_reg = test_data.int_regs.get_register()
-    for csr in range(0x7B0, 0x7C0):
-        tc.code.extend(
-            [
-                "",
-                # Test the write value
-                test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"csrr x{temp_reg}, 0x{csr:03x}    # attempt to read debug-mode CSR {csr:03x}; should get illegal instruction",
-            ]
-        )
-    test_data.int_regs.return_register(temp_reg)
-
-    ######################################
-    coverpoint = "cp_csr_ro"
-    ######################################
-
-    tc = test_data.new_test_chunk(test_chunks, "csr_ro")
-
-    tc.section_header = comment_banner(
-        coverpoint,
-        "Attempt to write read-only CSRs.  Should throw illegal instruction",
-    )
-
-    for csr in range(0xC00, 0x1000):
-        tc = test_data.new_test_chunk(test_chunks, "csr_ro")
-        temp_reg = test_data.int_regs.get_register()
-        tc.code.extend(
-            [
-                "",
-                f"\nLI(x{temp_reg}, -1)          # x{temp_reg} = all 1s",
-                test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"csrw 0x{csr:03x}, x{temp_reg}    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
-            ]
-        )
-        test_data.int_regs.return_register(temp_reg)
+    csr_ro_write_tests(test_data, test_chunks, covergroup, [range(0xC00, 0x1000)], "csr_ro")
 
     ######################################
     coverpoint = "cp_scsr_from_m"
@@ -737,7 +728,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     )
 
     tc.code.append("#ifdef S_SUPPORTED")
-    for csr in S_CSRS + S_CSRS_NOWALK:
+    for csr in S_CSRS:
         tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
     tc.code.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
     tc.code.extend(csr_access_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint))

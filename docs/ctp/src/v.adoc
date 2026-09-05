@@ -228,6 +228,8 @@ Some vector tests are currently skipped pending fixes to the Sail RISC-V referen
 * `vstart` coverpoint tests — skipped pending link:https://github.com/riscv/sail-riscv/pull/1703[sail-riscv PR #1703].
 * `vmv<nr>r.v` tests — skipped because Sail behavior is incorrect; tracked in link:https://github.com/riscv/sail-riscv/issues/1709[sail-riscv issue #1709].
 
+TODO: Re-evaluate whether the hardcoded skips / commented generation lines for these tests can be removed now that the referenced sail-riscv PR/issue are closed.
+
 ==== Zvfh Vector Half-Precision Floating-Point Extension
 
 Half-precision vector floating-point is part of the Zvfh and Zvfhmin extensions, not the base V extension.  Nevertheless, Zvfh tests are in the same directory structure as V, under Vf16. Zvfh uses Vf16 <<t-Vf-coverpoints>> to exercise all floating-point instructions with SEW=16.
@@ -296,7 +298,7 @@ include::norm/Zvkb_norm_rules.adoc[]
 
 Only SEW=32 is defined.
 
-//include::{testplansdir}/Zvkg.adoc[]
+include::{testplansdir}/Zvkg.adoc[]
 
 include::norm/Zvkg_norm_rules.adoc[]
 
@@ -304,7 +306,7 @@ include::norm/Zvkg_norm_rules.adoc[]
 
 Only SEW=32 is defined.
 
-//include::{testplansdir}/Zvkned.adoc[]
+include::{testplansdir}/Zvkned.adoc[]
 
 include::norm/Zvkned_norm_rules.adoc[]
 
@@ -314,7 +316,8 @@ Both Zvknha32 and Zvknhb64 are defined.
 
 <<t-Zvknh-coverpoints>> lists the vector hashing instructions.  These apply to both Zknha and Zknhb.
 
-//include::{testplansdir}/Zvknh.adoc[]
+include::{testplansdir}/Zvknha.adoc[]
+include::{testplansdir}/Zvknhb.adoc[]
 
 include::norm/Zvknh_norm_rules.adoc[]
 
@@ -322,7 +325,7 @@ include::norm/Zvknh_norm_rules.adoc[]
 
 Only Zvksed32 is defined.
 
-//include::{testplansdir}/Zvksed.adoc[]
+include::{testplansdir}/Zvksed.adoc[]
 
 include::norm/Zvksed_norm_rules.adoc[]
 
@@ -330,14 +333,10 @@ include::norm/Zvksed_norm_rules.adoc[]
 
 Only Zvksh32 is defined.
 
-//include::{testplansdir}/Zvksh.adoc[]
+include::{testplansdir}/Zvksh.adoc[]
 
 include::norm/Zvksh_norm_rules.adoc[]
 
 ==== Zvkt Constant-Time Vector Instructions
 
 Not tested yet.
-
-==== MisalignV
-
-TBD, Kaden moving over from SsstrictV

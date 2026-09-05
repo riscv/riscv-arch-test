@@ -88,25 +88,32 @@ include::norm/Ss1p13_norm_rules.adoc[]
 
 [[t-Ssnpm-coverpoints]]
 .Ssnpm Coverpoints
-//,===
-//include::{testplansdir}/Ssnpm.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/15yJhyhBB5X9cq4SDQ-YCPzo2oPQnDBh5wEIZhi0-9Ps/edit?gid=0#gid=0[Google Sheet Testplan]
+,===
+
+include::norm/Zpm_norm_rules.adoc[]
 
 ==== Smnpm Pointer Masking
 
 [[t-Smnpm-coverpoints]]
 .Smnpm Coverpoints
-//,===
-//include::{testplansdir}/Smnpm.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/15yJhyhBB5X9cq4SDQ-YCPzo2oPQnDBh5wEIZhi0-9Ps/edit?gid=720514871#gid=720514871[Google Sheet Testplan for S mode]
+https://docs.google.com/spreadsheets/d/15yJhyhBB5X9cq4SDQ-YCPzo2oPQnDBh5wEIZhi0-9Ps/edit?gid=165573130#gid=165573130[Google Sheet Testplan for no S mode]
+,===
+
+See Ssnpm for normative rules.
 
 ==== Smmpm Pointer Masking
 
 [[t-Smmpm-coverpoints]]
 .Smmpm Coverpoints
-//,===
-//include::{testplansdir}/Smmpm.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/15yJhyhBB5X9cq4SDQ-YCPzo2oPQnDBh5wEIZhi0-9Ps/edit?gid=645084995#gid=645084995[Google Sheet Testplan]
+,===
+
+See Ssnpm for normative rules.
 
 ==== Zicfilp Landing Pads
 
@@ -135,15 +142,21 @@ different privilege modes, so a suite is defined for each.
 
 [[t-ZawrsSm-coverpoints]]
 .ZawrsSm Coverpoints
+,===
 https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=1449589527#gid=1449589527[Google Sheet Testplan]
+,===
 
 [[t-ZawrsS-coverpoints]]
 .ZawrsS Coverpoints
+,===
 https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=0#gid=0[Google Sheet Testplan]
+,===
 
 [[t-ZawrsU-coverpoints]]
 .ZawrsU Coverpoints
+,===
 https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=1437737576#gid=1437737576[Google Sheet Testplan]
+,===
 
 include::norm/ZawrsSm_norm_rules.adoc[]
 
@@ -153,6 +166,19 @@ include::norm/ZawrsU_norm_rules.adoc[]
 
 These tests require support for MTI and/or STI interrupts.
 Note that these tests can have race conditions of timeouts, timer interrupts, and spontaneous resumption, and thus may be fussy on different implementations.
+
+
+==== Zama16b Misaligned Atomics
+
+Misaligned atomics are supported by the Misaligned Atomicity Granularity.  They are also exercised via ExceptionsZaamo.
+
+[[t-Zama16b-coverpoints]]
+.Zama16b Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=907997467#gid=907997467[Google Sheet Testplan]
+,===
+
+include::norm/Zama16b_norm_rules.adoc[]
 
 ==== Sdtrig Debug Triggers
 

@@ -8,8 +8,10 @@ All of the vector privileged suites are collected in this section.
 MisalignV tests misaligned vector loads and stores.  Unlike scalar misaligned suites, they are privileged tests that run whether or not misaligned accesses are supported, so they may trap or not depending on TODO UDBParameter.
 
 [[t-MisalignV-coverpoints]]
-
-TODO: coverpoints are part of SsstrictV.  Pull them out.
+.MisalignV Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=319983819#gid=319983819[Google Sheet Testplan]
+,===
 
 include::norm/MisalignV_norm_rules.adoc[]
 

@@ -3,7 +3,7 @@
 
 These privileged tests exercise counters and HPMs reads (`time`, `cycle`, `instret`, `hpmcounter[31:3]`)
 from lower privilege modes, as controlled by `mcounteren`, etc..
-Note that the <<t-Zicntr-coverpoints, Zicntr>> and <<t-Zihpm-coverpoints, Zihpm>> unprivileged tests exercise access to these counters from M-mode
+Note that the <<t-Zicntr-coverpoints, Zicntr>> and <<t-Zihpm-coverpoints, Zihpm>> unprivileged tests exercise access to these counters from U-mode
 and the <<t-Sm-coverpoints, Sm>> tests exercise access to `mcycle`, `minstret`, `mhpmcounter`, etc. from M-mode.
 
 ==== ZicntrS Supervisor-Mode Counter Reads
@@ -11,13 +11,17 @@ and the <<t-Sm-coverpoints, Sm>> tests exercise access to `mcycle`, `minstret`, 
 [[t-ZicntrS-coverpoints]]
 .ZicntrS Coverpoints
 ,===
-https://docs.google.com/spreadsheets/d/1wfMzXqXOjg_ND9BhFxChQCi9s4BwsZREPtGS8O1q4tM/edit?gid=521853953#gid=521853953[Google Sheet Testplan]
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1677990180#gid=1677990180[Google Sheet Testplan]
 ,===
+
+include::norm/ZicntrS_norm_rules.adoc[]
 
 ==== ZicntrU User-Mode Counter Reads
 
 [[t-ZicntrU-coverpoints]]
 .ZicntrU Coverpoints
 ,===
-https://docs.google.com/spreadsheets/d/1wfMzXqXOjg_ND9BhFxChQCi9s4BwsZREPtGS8O1q4tM/edit?gid=516633595#gid=516633595[Google Sheet Testplan]
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1677990180#gid=1677990180[Google Sheet Testplan]
 ,===
+
+include::norm/ZicntrU_norm_rules.adoc[]

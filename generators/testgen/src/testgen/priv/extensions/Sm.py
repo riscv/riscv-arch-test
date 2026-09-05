@@ -554,7 +554,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     csr_mstatush = ("mstatush", (mstatus_mask >> 32) & 0x7FFFFFFF)  # SD not in bit 31 of mstatush
     csr_menvcfgh = ("menvcfgh", menvcfg_mask >> 32)
     csr_mseccfgh = ("mseccfgh", mseccfg_mask >> 32)
-    csr_medelegh = ("medelegh", 0x00000000)  # all bits are reserved or custom
+    # medelegh (0x312) by number: clang 20 does not accept the CSR name (gcc does).  All bits reserved/custom.
+    csr_medelegh = ("0x312", 0x00000000)
     # Read-only CSRs
     csrmro = [("mvendorid", None), ("mimpid", None), ("marchid", None), ("mhartid", None), ("mconfigptr", None)]
 
@@ -1333,13 +1334,14 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             "#endif",
             test_data.add_testcase("mtime_wrap", coverpoint, covergroup),
             f"SREG x{r_val}, 0(x{r_temp})          # write all-ones to the base word; arms the counter",
-            f"LI(x{r_counter}, RVMODEL_MAX_CYCLES_PER_TIMER_TICK * 2) # Wait loop for two timer ticks",
+            f"LI(x{r_counter}, 100000)            # wrap threshold; too big for an sltiu immediate (12-bit signed)",
+            f"LI(x{r_val}, 20000)                 # bounded poll iterations (models tick mtime at different rates)",
             "1:",
-            "nop",
-            f"addi x{r_counter}, x{r_counter}, -1",
-            f"bnez x{r_counter}, 1b",
-            f"LREG x{r_val2}, 0(x{r_temp})         # read raw lower half after the bounded wait",
-            f"LI(x{r_counter}, 100000)            # threshold; too big for an sltiu immediate (12-bit signed)",
+            f"LREG x{r_val2}, 0(x{r_temp})         # read raw lower half",
+            f"bltu x{r_val2}, x{r_counter}, 2f     # wrapped to a small value -> done",
+            f"addi x{r_val}, x{r_val}, -1",
+            f"bnez x{r_val}, 1b",
+            "2:",
             f"sltu x{r_val}, x{r_val2}, x{r_counter}  # pass if mtime wrapped to a small value",
             "#if __riscv_xlen == 32",
             f"LREG x{r_val2}, 4(x{r_temp})         # read raw upper half after the bounded wait",

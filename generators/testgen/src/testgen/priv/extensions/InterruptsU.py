@@ -43,7 +43,6 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "",
-                    "csrci mstatus, 8 # Clear mstatus.MIE (bit 3)",
                     "csrci mtvec, 3 # Clear mtvec.MODE (bits 1:0)",
                 ]
             )
@@ -53,11 +52,10 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
 
             lines.extend(
                 [
-                    f"LI(x{r_scratch}, 0x80)",
-                    f"{'csrs' if mstatus_mie else 'csrc'} mstatus, x{r_scratch}",
+                    f"{'csrsi' if mstatus_mie else 'csrci'} mstatus, 8",
                     f"LI(x{r_scratch}, 0x80)",
                     f"csrw mie, x{r_scratch}",
-                    "RVTEST_GOTO_LOWER_MODE Umode",
+                    "RVTEST_TSBI_GOTO_UMODE",
                     test_data.add_testcase(binname, coverpoint, covergroup),
                     *set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2),
                 ]
@@ -66,7 +64,7 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{r_scratch})",
-                    "RVTEST_GOTO_MMODE",
+                    "RVTEST_TSBI_GOTO_MMODE",
                     "nop",
                     *clr_mtimer_int(r_temp, r_mtimecmp),
                 ]
@@ -102,7 +100,6 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "",
-                    "csrci mstatus, 8 # Clear mstatus.MIE (bit 3)",
                     "csrci mtvec, 3 # Clear mtvec.MODE (bits 1:0)",
                 ]
             )
@@ -112,11 +109,10 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
 
             lines.extend(
                 [
-                    f"LI(x{r_scratch}, 0x80) # mstatus.MPIE bit mask (bit 7)",
-                    f"{'csrs' if mstatus_mie else 'csrc'} mstatus, x{r_scratch}",
+                    f"{'csrsi' if mstatus_mie else 'csrci'} mstatus, 8",
                     f"LI(x{r_scratch}, 0x08) # Enable MSIE",
                     f"csrw mie, x{r_scratch}",
-                    "RVTEST_GOTO_LOWER_MODE Umode",
+                    "RVTEST_TSBI_GOTO_UMODE",
                     test_data.add_testcase(binname, coverpoint, covergroup),
                     "RVTEST_SET_MSW_INT",
                 ]
@@ -125,7 +121,7 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{r_scratch})",
-                    "RVTEST_GOTO_MMODE",
+                    "RVTEST_TSBI_GOTO_MMODE",
                     "nop",
                     "RVTEST_CLR_MSW_INT",
                 ]
@@ -161,7 +157,6 @@ def _generate_user_mei_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "",
-                    "csrci mstatus, 8 # Clear mstatus.MIE (bit 3)",
                     "csrci mtvec, 3 # Clear mtvec.MODE (bits 1:0)",
                 ]
             )
@@ -171,15 +166,14 @@ def _generate_user_mei_tests(test_data: TestData) -> list[str]:
 
             lines.extend(
                 [
-                    f"LI(x{r_scratch}, 0x80) # mstatus.MPIE bit mask (bit 7)",
-                    f"{'csrs' if mstatus_mie else 'csrc'} mstatus, x{r_scratch}",
+                    f"{'csrsi' if mstatus_mie else 'csrci'} mstatus, 8",
                     f"LI(x{r_scratch}, 0x800) # Enable MEIE",
                     f"csrw mie, x{r_scratch}",
-                    "RVTEST_GOTO_LOWER_MODE Umode",
+                    "RVTEST_TSBI_GOTO_UMODE",
                     test_data.add_testcase(binname, coverpoint, covergroup),
                     "RVTEST_SET_MEXT_INT",
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{r_scratch})",
-                    "RVTEST_GOTO_MMODE",
+                    "RVTEST_TSBI_GOTO_MMODE",
                     "nop",
                     "RVTEST_CLR_MEXT_INT",
                 ]
@@ -219,8 +213,7 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 "# Write MIE based on bins",
-                f"LI(x{r_scratch}, 0x80) # mstatus.MPIE bit mask (bit 7)",
-                f"{'csrs' if mie_val else 'csrc'} mstatus, x{r_scratch}",
+                f"{'csrsi' if mie_val else 'csrci'} mstatus, 8",
             ]
         )
 
@@ -229,7 +222,7 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
             [
                 f"LI(x{r_scratch}, 0x80)",
                 f"csrw mie, x{r_scratch}",
-                "RVTEST_GOTO_LOWER_MODE Umode",
+                "RVTEST_TSBI_GOTO_UMODE",
             ]
         )
 
@@ -241,7 +234,8 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
                 test_data.add_testcase(binname, coverpoint, covergroup),
                 "    wfi",
                 "    nop",
-                "    RVTEST_GOTO_MMODE",
+                f"    RVTEST_IDLE_FOR_TIMER_INTERRUPT(x{r_scratch})",
+                "    RVTEST_TSBI_GOTO_MMODE",
                 *clr_mtimer_int(r_temp, r_mtimecmp),
             ]
         )
@@ -280,11 +274,9 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "",
-                    "csrci mstatus, 8 # Clear mstatus.MIE (bit 3)",
                     f"LI(x{r_scratch}, 0x80)",
                     f"csrc mie, x{r_scratch}",
-                    f"LI(x{r_scratch}, 0x80) # mstatus.MPIE bit mask (bit 7)",
-                    f"{'csrs' if mie_val else 'csrc'} mstatus, x{r_scratch}",
+                    f"{'csrsi' if mie_val else 'csrci'} mstatus, 8",
                 ]
             )
 
@@ -302,12 +294,12 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
 
             lines.extend(
                 [
-                    "RVTEST_GOTO_LOWER_MODE Umode",
+                    "RVTEST_TSBI_GOTO_UMODE",
                     "",
                     test_data.add_testcase(binname, coverpoint, covergroup),
                     "wfi",
                     "nop",
-                    "RVTEST_GOTO_MMODE",
+                    "RVTEST_TSBI_GOTO_MMODE",
                 ]
             )
 

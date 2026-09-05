@@ -561,6 +561,24 @@
             ins.add_rd(0);
             ins.add_rs1(1);
         end
+        "cm.mva01s"     : begin
+            ins.add_imm(0);
+        end
+        "cm.mvsa01"     : begin
+            ins.add_imm(0);
+        end
+        "cm.pop"     : begin
+            ins.add_imm(0);
+        end
+        "cm.popret"     : begin
+            ins.add_imm(0);
+        end
+        "cm.popretz"     : begin
+            ins.add_imm(0);
+        end
+        "cm.push"     : begin
+            ins.add_imm(0);
+        end
         "cpop"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);

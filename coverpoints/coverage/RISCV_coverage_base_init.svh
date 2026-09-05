@@ -506,6 +506,10 @@
         `cover_info("//      Zcmop - Enabled");
         `include "Zcmop_coverage_init.svh"
     `endif
+    `ifdef COVER_ZCMP
+        `cover_info("//      Zcmp - Enabled");
+        `include "Zcmp_coverage_init.svh"
+    `endif
     `ifdef COVER_ZFAD
         `cover_info("//      ZfaD - Enabled");
         `include "ZfaD_coverage_init.svh"

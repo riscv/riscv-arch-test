@@ -59,6 +59,7 @@ def clr_mtimer_int(r_temp: int, r_mtimecmp: int) -> list[str]:
         "#if __riscv_xlen == 32",
         f"sw x{r_temp}, 4(x{r_mtimecmp})",
         "#endif",
+        f"RVTEST_WAIT_MTIP_CLEAR x{r_temp}",
         "#endif",
     ]
 

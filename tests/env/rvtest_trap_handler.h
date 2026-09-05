@@ -875,6 +875,18 @@
         #define  RVMODEL_CLR_VEXT_INT    RVTEST_DFLT_INT_HNDLR  // VS-mode ext interrupt clear: abort
 #endif
 
+// After a store to mtimecmp, mip.MTIP is guaranteed to fall eventually, not
+// necessarily on the next instruction. Fence the MMIO write, then spin until
+// MTIP reads 0. M-mode only (csrr mip). tmp is clobbered.
+.macro RVTEST_WAIT_MTIP_CLEAR tmp
+#ifdef RVMODEL_MTIMECMP_ADDRESS
+        fence
+1:      csrr    \tmp, mip
+        andi    \tmp, \tmp, 0x80
+        bnez    \tmp, 1b
+#endif
+.endm
+
 
 //==============================================================================
 //==============================================================================
@@ -2334,6 +2346,14 @@ excpt_\__MODE__\()hndlr_tbl:
         #if(UDB_MXLEN == 32)
                 sw T5, 4(T2)
         #endif
+        #ifdef RVMODEL_MTIMECMP_ADDRESS
+        .ifc \__MODE__ , M
+                RVTEST_WAIT_MTIP_CLEAR T5
+        .else
+                fence
+        .endif
+        #endif
+
         la      T2, resto_\__MODE__\()rtn
         jr      T2
 

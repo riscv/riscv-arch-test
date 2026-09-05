@@ -2105,6 +2105,29 @@ adj_\__MODE__\()epc_rtn:
         // addressing/permission context of the code that trapped, then
         // advance 4 (bits[1:0]==0b11) or 2 (compressed).
         // xEPC is >=2-byte aligned, so lhu cannot misalign-fault.
+  .ifc \__MODE__ , H
+#ifdef RVTEST_HYPERVISOR
+        // A trap from VS/VU saves a guest virtual PC in sepc. An ordinary
+        // HS-mode load would use satp rather than the guest VS/G-stage
+        // translation context, so use HLVX with the SPVP value saved by the
+        // trap. SUM permits the VS-effective path to read a U code page;
+        // clear UKTE only for this code fetch since the guest PC may itself
+        // be in the Svukte-invalid half of the virtual address space.
+        csrr    T4, CSR_HSTATUS
+        andi    T4, T4, HSTATUS_SPV
+        beqz    T4, 1f
+        csrr    T4, CSR_VSSTATUS
+        LI(     T2, (MSTATUS_SUM | MSTATUS_MXR))
+        csrs    CSR_VSSTATUS, T2
+        LI(     T2, SENVCFG_UKTE)
+        csrrc   T6, CSR_SENVCFG, T2
+        hlvx.hu T2, (T3)
+        csrw    CSR_SENVCFG, T6
+        csrw    CSR_VSSTATUS, T4
+        j       2f
+#endif
+1:
+  .endif
   .ifc \__MODE__ , M
         // M-mode has no translation of its own. Use MPRV so the load is
         // performed with MPP's privilege + translation (resolves a virtual
@@ -2126,6 +2149,7 @@ adj_\__MODE__\()epc_rtn:
         lhu     T2, 0(T3)
         csrw    CSR_SSTATUS, T6                      // restore sstatus verbatim
   .endif
+2:
         andi    T2, T2, 3                            // bits[1:0]
         addi    T2, T2, 1                            // ==4 iff bits were 0b11
         srli    T2, T2, 2                            // 1 if 32-bit, 0 if compressed

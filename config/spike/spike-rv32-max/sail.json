@@ -783,6 +783,9 @@
     "Svnapot": {
       "supported": false
     },
+    "Svukte": {
+      "supported": false
+    },
     "Ssnpm": {
       "supported": false,
       "supported_pmlen_7": true,

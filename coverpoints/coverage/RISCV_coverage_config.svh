@@ -266,6 +266,15 @@
 `ifdef SVPBMT_COVERAGE
   `include "Svpbmt_coverage.svh"
 `endif
+`ifdef SVUKTEH_COVERAGE
+  `include "SvukteH_coverage.svh"
+`endif
+`ifdef SVUKTES_COVERAGE
+  `include "SvukteS_coverage.svh"
+`endif
+`ifdef SVUKTESM_COVERAGE
+  `include "SvukteSm_coverage.svh"
+`endif
 `ifdef U_COVERAGE
   `include "U_coverage.svh"
 `endif

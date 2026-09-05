@@ -350,6 +350,18 @@
         `cover_info("//      Svpbmt - Enabled");
         `include "Svpbmt_coverage_init.svh"
     `endif
+    `ifdef COVER_SVUKTEH
+        `cover_info("//      SvukteH - Enabled");
+        `include "SvukteH_coverage_init.svh"
+    `endif
+    `ifdef COVER_SVUKTES
+        `cover_info("//      SvukteS - Enabled");
+        `include "SvukteS_coverage_init.svh"
+    `endif
+    `ifdef COVER_SVUKTESM
+        `cover_info("//      SvukteSm - Enabled");
+        `include "SvukteSm_coverage_init.svh"
+    `endif
     `ifdef COVER_U
         `cover_info("//      U - Enabled");
         `include "U_coverage_init.svh"

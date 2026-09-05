@@ -21,6 +21,9 @@
 #define sv39 0x00
 #define sv48 0x01
 #define sv57 0x02
+// Only referenced by the VS-stage helpers in rvtest_macros_hypervisor.h, which test MODE against
+// sv32 before the RV64 modes. The value just has to be distinct from the three above.
+#define sv32 0x03
 
 #define CODE code_bgn_off
 #define DATA data_bgn_off

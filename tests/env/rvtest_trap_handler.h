@@ -2070,10 +2070,27 @@ code_adj_\__MODE__\()epc:
 
 data_adj_\__MODE__\()epc:
         LREG    T2, data_bgn_off(T4)                  // check if EPC is in data segment
+        sub     T2, T3, T2                            // T2 = EPC - data_begin, wraps if EPC is below it
         LREG    T6, data_seg_siz(T4)
-        add     T6, T6, T2
-        bgeu    T3, T6, abort_test                    // EPC beyond all known segments -> abort
-        bltu    T3, T2, abort_test                    // EPC before data segment -> abort
+        bgeu    T2, T6, oos_\__MODE__\()epc           // outside the data segment, either side
+        mv      T3, T2                                // relocated offset
+        j       sv_\__MODE__\()epc
+
+// Fetch access/page/guest-page fault at a deliberately out-of-segment target
+// (PM JALR-through-tagged-pointer probes, Sv/PMP execute-permission probes):
+// xEPC is the bogus target itself, not segment-relocatable, so record it raw
+// -- it's a test-chosen constant, deterministic on DUT and reference model,
+// and the return path below resumes via ra regardless. Any other cause here
+// is a genuine runaway EPC and still aborts.
+oos_\__MODE__\()epc:
+        csrr    T2, CSR_XCAUSE
+        LI(     T6, CAUSE_FETCH_ACCESS)
+        beq     T2, T6, sv_\__MODE__\()epc
+        LI(     T6, CAUSE_FETCH_PAGE_FAULT)
+        beq     T2, T6, sv_\__MODE__\()epc
+        LI(     T6, CAUSE_FETCH_GUEST_PAGE_FAULT)
+        beq     T2, T6, sv_\__MODE__\()epc
+        j       abort_test                            // runaway EPC -> abort
 
 adj_\__MODE__\()epc:
         sub     T3, T3, T2                            // T3 = EPC - segment_begin (relocated offset)

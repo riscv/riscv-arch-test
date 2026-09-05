@@ -36,16 +36,20 @@
         bins mxr_1 = {1'b1};   // MXR=1: execute-only pages readable
         bins mxr_0 = {1'b0};   // MXR=0: normal permission checks
     }
-    uxl_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "uxl") {
-        bins uxl_01 = {2'b01};
-    }
+    `ifdef UDB_UXLEN_32  // UXL=01 is only reachable when U-mode supports RV32
+        uxl_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "uxl") {
+            bins uxl_01 = {2'b01};
+        }
+    `endif // UDB_UXLEN_32
 
     //Main Crosses
     cp_pmlen_masking : cross priv_mode_u, pmm, satp_mode, a_upper_bits, pm_insn;
-    cp_pmlen_misaligned_word: cross priv_mode_u, pm_misalign;
+    cp_pmlen_misaligned_word: cross priv_mode_u, satp_mode, pm_misalign;
     cp_pmm_mxr: cross priv_mode_u, pmm, a_upper_bits, mxr_bit, satp_mode, sw_lw_insn;
     cp_pmm_jalr: cross priv_mode_u, pmm, a_upper_bits, mxr_bit, satp_mode, jalr_insn;
-    cp_pmm_uxl_clear: cross pmm, uxl_rv32;
+    `ifdef UDB_UXLEN_32
+        cp_pmm_uxl_clear: cross pmm, uxl_rv32;
+    `endif // UDB_UXLEN_32
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         // Fault crosses confirm lw/sw executed in U-mode at the illegal address.

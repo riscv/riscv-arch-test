@@ -315,7 +315,6 @@ covergroup ZicntrS_cg with function sample(ins_t ins);
     // main coverpoints
     cp_mcounteren_access_s: cross csrr, counters_mcounteren, priv_mode_s;
     cp_scounteren_access_s: cross csrr, counters_scounteren, mcounteren_ones, priv_mode_s;
-    cp_scounteren_access_m: cross csrr, counters_scounteren, mcounteren_ones, priv_mode_m;
     cp_scounteren_access_u: cross csrr, counters_scounteren, mcounteren_ones, priv_mode_u;
     cp_mscounteren_access_u: cross csrr, counters_mcounteren, priv_mode_u iff (ins.current.csr[CSR_MCOUNTEREN] == ins.current.csr[CSR_SCOUNTEREN]);
     cp_mcounteren_inc_inaccessible: cross mcounteren_zeros, priv_mode_s;

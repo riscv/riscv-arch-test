@@ -182,7 +182,7 @@
 //   4. Otherwise       -> RESERVED        (return -1)
 //==============================================================================
 
-// a0 values for TSBI_GOTO_xMODE.  ALT_GOTO_MODE is used by RVTEST_GOTO_DELEGATED_MMODE
+// a0 values for TSBI_GOTO_xMODE.  ALT_GOTO_MMODE is used by RVTEST_GOTO_DELEGATED_MMODE
 #define ALT_GOTO_MMODE      0x00000000
 #define TSBI_GOTO_MMODE     0x00000001
 #define TSBI_GOTO_SMODE     0x00000002

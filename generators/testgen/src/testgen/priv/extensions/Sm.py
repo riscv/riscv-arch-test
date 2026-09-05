@@ -228,7 +228,7 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
     mpp_guard = {3: None, 1: "S_SUPPORTED", 0: "U_SUPPORTED"}
     for mpp, guard in mpp_guard.items():
         if guard:
-            lines.append("#ifdef guard")
+            lines.append(f"#ifdef {guard}")
         for mprv in (0, 1):
             for mpie in (0, 1):
                 for mie in (0, 1):
@@ -257,7 +257,7 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
                         ]
                     )
         if guard:
-            lines.append("#endif // guard")
+            lines.append(f"#endif // {guard}")
 
     lines.append(f"\ncsrw mstatus, x{save_reg}    # restore CSR")
     test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])

@@ -590,6 +590,10 @@
         `cover_info("//      ZicntrS - Enabled");
         `include "ZicntrS_coverage_init.svh"
     `endif
+    `ifdef COVER_ZICNTRSM
+        `cover_info("//      ZicntrSm - Enabled");
+        `include "ZicntrSm_coverage_init.svh"
+    `endif
     `ifdef COVER_ZICNTRU
         `cover_info("//      ZicntrU - Enabled");
         `include "ZicntrU_coverage_init.svh"

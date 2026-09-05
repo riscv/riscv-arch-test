@@ -8,7 +8,7 @@ normative_rule_definitions:
   - name: mcounteren_op
     coverpoint:
       [
-        "ZicntrS_cg/cp_mcounteren_access_s, ZicntrU_cg/cp_mcounteren_access_u, ZicntrH_cg/cp_mcounteren_access_vs",
+        "ZicntrS_cg/cp_mcounteren_access_s, ZicntrU_cg/cp_mcounteren_access_u, ZicntrSm_cg/cp_mcounteren_access_m, ZicntrH_cg/cp_mcounteren_access_vs",
       ]
 
   # The settings in this register only control accessibility. The act of reading or

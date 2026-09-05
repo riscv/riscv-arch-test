@@ -7,7 +7,13 @@
 ##################################
 
 
+from testgen.asm.tsbi import tsbi_call
 from testgen.constants import INDENT
+
+
+def _csr_instr(instr: str, tsbi: bool) -> str:
+    """Emit a CSR instruction directly, or as a T-SBI call when the test cannot access the CSR itself."""
+    return tsbi_call(instr.strip()) if tsbi else instr
 
 
 def set_mtimer_int(r_mtime: int, r_mtimecmp: int, r_temp: int, r_temp2: int) -> list[str]:
@@ -236,48 +242,69 @@ def clr_stimer_int(r_temp: int, r_stimecmp: int, r_scratch: int, r_stce: int) ->
     return lines
 
 
-def set_stimer_int_soon_sstc(r_mtime: int, r_temp1: int, r_temp2: int, r_temp3: int, r_temp4: int) -> list[str]:
-    """Set supervisor timer interrupt to fire soon WITH Sstc extension.
-
+def set_stimer_int_soon_sstc(
+    r_mtime: int,
+    r_temp1: int,
+    r_temp2: int,
+    r_temp3: int,
+    r_temp4: int,
+    delay: str | int | None = None,
+    tsbi: bool = False,
+) -> list[str]:
+    """Set supervisor timer interrupt to fire soon WITH Sstc extension (stimecmp = mtime + DELAY).
 
     Uses stimecmp CSR (not MTIMECMP memory). Otherwise identical to set_mtimer_int_soon.
+    On RV32 the two halves are written in the order the privileged spec recommends for
+    mtimecmp: low = -1, then the new high word, then the new low word, so the comparand is
+    never smaller than both the old and the new value.
+
+    Args:
+        r_mtime: Register for MTIME address
+        r_temp1, r_temp2, r_temp3, r_temp4: Temp registers for calculations
+        delay: Delay in mtime ticks, as a count or C preprocessor expression.
+               Defaults to RVMODEL_TIMER_INT_SOON_DELAY macro.
+        tsbi: Issue the stimecmp/stimecmph writes as T-SBI calls (test runs in U-mode)
     """
+    delay_val = str(delay) if delay is not None else "RVMODEL_TIMER_INT_SOON_DELAY"
     return [
         f"{INDENT}# Set supervisor timer interrupt to fire soon with Sstc extension",
         f"LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)  # NOTE: This will need to be replaced by a SBI call because MTIME might not exist or be accessible",
         "#if __riscv_xlen == 64",
         f"{INDENT}# Disable comparator first",
         f"LI(x{r_temp1}, -1)",
-        f"csrw stimecmp, x{r_temp1}",
+        _csr_instr(f"csrw stimecmp, x{r_temp1}", tsbi),
         f"{INDENT}# Read current time and add delay",
+        f"LI(x{r_temp2}, {delay_val})",
         f"ld x{r_temp1}, 0(x{r_mtime})",
-        f"addi x{r_temp1}, x{r_temp1}, RVMODEL_TIMER_INT_SOON_DELAY",
-        f"csrw stimecmp, x{r_temp1}",
+        f"add x{r_temp1}, x{r_temp1}, x{r_temp2}",
+        _csr_instr(f"csrw stimecmp, x{r_temp1}", tsbi),
         "#elif __riscv_xlen == 32",
-        f"{INDENT}# Disable comparator first --> set to high value to prevent early firing",
-        f"LI(x{r_temp1}, -1)",
-        f"csrw stimecmp, x{r_temp1}",
-        f"csrw stimecmph, x{r_temp1}",
-        f"{INDENT}# Read current time",
+        f"LI(x{r_temp4}, {delay_val})",
+        f"{INDENT}# Read current time (64-bit on RV32)",
         f"lw x{r_temp1}, 0(x{r_mtime})",
         f"lw x{r_temp2}, 4(x{r_mtime})",
-        f"addi x{r_temp3}, x{r_temp1}, RVMODEL_TIMER_INT_SOON_DELAY",
+        f"{INDENT}# Add delay to 64-bit value",
+        f"add x{r_temp3}, x{r_temp1}, x{r_temp4}",
         f"sltu x{r_temp4}, x{r_temp3}, x{r_temp1}",
         f"add x{r_temp2}, x{r_temp2}, x{r_temp4}",
-        f"csrw stimecmp, x{r_temp3}",
-        f"csrw stimecmph, x{r_temp2}",
+        f"{INDENT}# Per RISC-V Spec 3.2.1: Write sequence to prevent spurious interrupt",
+        f"LI(x{r_temp1}, -1)",
+        _csr_instr(f"csrw stimecmp, x{r_temp1}", tsbi),
+        _csr_instr(f"csrw stimecmph, x{r_temp2}", tsbi),
+        _csr_instr(f"csrw stimecmp, x{r_temp3}", tsbi),
         "#endif",
     ]
 
 
-def set_stimer_mmode(r_scratch: int) -> list[str]:
+def set_stimer_mmode(r_scratch: int, tsbi: bool = False) -> list[str]:
     """Set supervisor timer interrupt in M-mode (direct mip write).
 
     This function directly writes mip.STIP without mode transitions.
-    Must be called from M-mode.
+    Must be called from M-mode, or with tsbi=True to make the mip write a T-SBI call.
 
     Args:
         r_scratch: Scratch register for loading immediate
+        tsbi: Issue the mip write as a T-SBI call (test runs below M-mode)
 
     Returns:
         List of assembly instructions
@@ -285,7 +312,7 @@ def set_stimer_mmode(r_scratch: int) -> list[str]:
     return [
         f"{INDENT}# Set supervisor timer interrupt (M-mode direct)",
         f"LI(x{r_scratch}, 0x20) # STIP bit (bit 5)",
-        f"csrs mip, x{r_scratch}",
+        _csr_instr(f"csrs mip, x{r_scratch}", tsbi),
         "nop",
     ]
 
@@ -310,14 +337,15 @@ def clr_stimer_mmode(r_scratch: int) -> list[str]:
     ]
 
 
-def set_menvcfg_stce(r_scratch: int, enable: bool) -> list[str]:
+def set_menvcfg_stce(r_scratch: int, enable: bool, tsbi: bool = False) -> list[str]:
     """Set or clear menvcfg.STCE (bit 63 on RV64, bit 31 of menvcfgh on RV32).
 
-    Must be called from M-mode.
+    Must be called from M-mode, or with tsbi=True to make the menvcfg write a T-SBI call.
 
     Args:
         r_scratch: Scratch register
         enable: True to set STCE=1, False to clear STCE=0
+        tsbi: Issue the menvcfg/menvcfgh write as a T-SBI call (test runs below M-mode)
     """
     op = "csrs" if enable else "csrc"
     return [
@@ -325,23 +353,28 @@ def set_menvcfg_stce(r_scratch: int, enable: bool) -> list[str]:
         "#if __riscv_xlen == 64",
         f"    LI(x{r_scratch}, 1)",
         f"    slli x{r_scratch}, x{r_scratch}, 63",
-        f"    {op} menvcfg, x{r_scratch}",
+        _csr_instr(f"    {op} menvcfg, x{r_scratch}", tsbi),
         "#else",
         f"    LI(x{r_scratch}, 0x80000000)",
-        f"    {op} menvcfgh, x{r_scratch}",
+        _csr_instr(f"    {op} menvcfgh, x{r_scratch}", tsbi),
         "#endif",
     ]
 
 
-def set_stimecmp_max(r_scratch: int) -> list[str]:
-    """Write stimecmp = -1 (max) to disable Sstc timer interrupt."""
+def set_stimecmp_max(r_scratch: int, tsbi: bool = False) -> list[str]:
+    """Write stimecmp = -1 (max) to disable Sstc timer interrupt.
+
+    Args:
+        r_scratch: Scratch register
+        tsbi: Issue the stimecmp/stimecmph writes as T-SBI calls (test runs in U-mode)
+    """
     return [
         f"{INDENT}# Disable Sstc timer: stimecmp = -1",
         f"LI(x{r_scratch}, -1)",
         "#if __riscv_xlen == 32",
-        f"    csrw stimecmph, x{r_scratch}",
+        _csr_instr(f"    csrw stimecmph, x{r_scratch}", tsbi),
         "#endif",
-        f"csrw stimecmp, x{r_scratch}",
+        _csr_instr(f"csrw stimecmp, x{r_scratch}", tsbi),
     ]
 
 

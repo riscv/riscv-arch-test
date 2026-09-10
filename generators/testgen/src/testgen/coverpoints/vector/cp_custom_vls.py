@@ -137,6 +137,9 @@ def make_cp_custom_ls_indexed_truncated(
     Runs a test confirming that at XLEN=32, INDEX EEW=64, the index values are truncated to XLEN bits.
     """
 
+    if test_data.xlen != 32:
+        return []
+
     info = parse_vector_instruction_info(instr_name, instr_type)
     eew = info.index_eew
 

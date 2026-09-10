@@ -116,10 +116,11 @@ jobs:
           release_args=(
             --title "$VERSION"
             --notes-file "$RELEASE_NOTES_FILE"
-            --latest
           )
           if [ "$RELEASE_DRAFT" = "true" ]; then
             release_args+=(--draft)
+          else
+            release_args+=(--latest)
           fi
 
           gh release create "$VERSION" \

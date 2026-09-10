@@ -83,13 +83,13 @@ All addresses in these data sections are constant and DUT-independent except for
 
 ## `.text.rvmodel` Section Layout
 
-| Symbol / Region        | Purpose                                                                                                   |
-| ---------------------- | --------------------------------------------------------------------------------------------------------- |
-| `rvmodel_boot`         | DUT-specific boot code (`RVMODEL_BOOT`), I/O init (`RVMODEL_IO_INIT`), then jump to `rvtest_init`.        |
-| `rvmodel_io_write_str` | Wrapper for `RVMODEL_IO_WRITE_STR`.                                                                       |
-| `rvmodel_halt_pass`    | Wrapper for `RVMODEL_HALT_PASS`.                                                                          |
-| `rvmodel_halt_fail`    | Wrapper for `RVMODEL_HALT_FAIL`.                                                                          |
-| Interrupt helpers      | `rvtest_set_msw_int`, `rvtest_clr_msw_int`, `rvtest_set_mext_int`, etc. (when trap routines are defined). |
+| Symbol / Region        | Purpose                                                                                            |
+| ---------------------- | -------------------------------------------------------------------------------------------------- |
+| `rvmodel_boot`         | DUT-specific boot code (`RVMODEL_BOOT`), I/O init (`RVMODEL_IO_INIT`), then jump to `rvtest_init`. |
+| `rvmodel_io_write_str` | Wrapper for `RVMODEL_IO_WRITE_STR`.                                                                |
+| `rvmodel_halt_pass`    | Wrapper for `RVMODEL_HALT_PASS`.                                                                   |
+| `rvmodel_halt_fail`    | Wrapper for `RVMODEL_HALT_FAIL`.                                                                   |
+| Interrupt helpers      | `rvtest_set_msw_int_m`, etc. (when trap routines are defined).                                     |
 
 This section also acts as a catch-all for any remaining `.text` or `.text.*` input sections that might be provided by the DUT.
 

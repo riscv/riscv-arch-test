@@ -32,7 +32,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
+        uses: $/.github/actions/setup-tools
 
       - name: Run prek
         uses: j178/prek-action@4e14d07f9231acabce116ccfca13b13dd9755ece # v3.0.0
@@ -54,7 +54,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
+        uses: $/.github/actions/setup-tools
         with:
           udb-gems: "true"
 
@@ -98,7 +98,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
+        uses: $/.github/actions/setup-tools
         with:
           udb-gems: "true"
 
@@ -242,7 +242,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
+        uses: $/.github/actions/setup-tools
 
       - name: Generate vector tests
         run: make vector-tests --jobs "$(nproc)"
@@ -256,7 +256,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
+        uses: $/.github/actions/setup-tools
 
       - run: git submodule update --init docs/docs-resources
 
@@ -287,7 +287,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
+        uses: $/.github/actions/setup-tools
 
       - name: Regenerate tests and coverpoints
         run: make tests
@@ -323,7 +323,7 @@ jobs:
         run: echo "${{ matrix.python-version }}" > .python-version
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
+        uses: $/.github/actions/setup-tools
         with:
           udb-gems: "true"
 

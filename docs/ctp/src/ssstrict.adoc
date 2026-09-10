@@ -14,6 +14,8 @@ Vector instructions introduce complex register constraints and are tested separa
 
 RISC-V does not have a ratified equivalent of Ssstrict for machine mode, but this optional test suite checks the behavior of unimplemented instructions and CSRs from machine mode.  It runs the same tests as SsstrictS but from machine mode.
 
+include::norm/SsstrictSm_norm_rules.adoc[]
+
 ==== SsstrictS
 
 Attempt to issue all flavors of 32-bit instructions in the standard and reserved spaces and all 16-bit compressed instructions.  Also attempt to access all CSRs in the standard and reserved spaces that should be inaccessible.  Expect illegal instruction trap for unimplemented instructions and CSRs, matching reference model.

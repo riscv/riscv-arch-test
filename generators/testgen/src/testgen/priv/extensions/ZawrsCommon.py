@@ -219,8 +219,8 @@ def wrs_no_mie_helper(
         lines.extend(
             [
                 "# Set all M mode interrupts pending",
-                "RVTEST_SET_MEXT_INT",
-                "RVTEST_SET_MSW_INT",
+                "RVTEST_SET_MEXT_INT_M",
+                "RVTEST_SET_MSW_INT_M",
                 *set_mtimer_int(r_time, r_timecmp, r_temp, r_temp2),
             ]
         )
@@ -292,8 +292,8 @@ def wrs_no_mie_helper(
         lines.extend(
             [
                 "# Clear M mode interrupts",
-                "RVTEST_CLR_MEXT_INT",
-                "RVTEST_CLR_MSW_INT",
+                "RVTEST_CLR_MEXT_INT_M",
+                "RVTEST_CLR_MSW_INT_M",
                 *clr_mtimer_int(r_temp, r_temp2),
             ]
         )

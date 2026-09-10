@@ -19,7 +19,7 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZicfilpCommon import (
     COVERGROUP_M,
-    both_xlens,
+    both_xlens_bare,
     emit_mode,
 )
 from testgen.priv.registry import add_priv_test_generator
@@ -36,11 +36,32 @@ def make_zicfilp_m(td: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
 
     def build_sm(xlen: int) -> list[str]:
-        # M-mode always runs bare, no satp modes
-        return emit_mode(td, "mmode", COVERGROUP_M, xlen, "bare")
+        # M-mode always runs bare, no satp modes.
+        # trampoline_section=".text.rvtest": matches the other modes for
+        # consistency, though M-mode's own _build_faults deliberate-mismatch
+        # testcases are skipped entirely (see the comment there -- tripping
+        # LPE=1 in M-mode recurses into the shared M-mode dispatcher's own
+        # unguarded indirect jump), so no real fault currently lands on
+        # these trampolines here either way.
+        #
+        # skip_trampoline_fallthrough=True: without it, mode-entry code
+        # falls straight through into _tgt_lpad_zero's `c.jr x7` with x7
+        # uncontrolled, landing back on an earlier ecall and looping
+        # forever -- the same bug fixed for ZicfilpUS, independently
+        # confirmed here too (Sail's own watchdog reports "possible trap
+        # loop detected" for this suite).
+        return emit_mode(
+            td,
+            "mmode",
+            COVERGROUP_M,
+            xlen,
+            "bare",
+            trampoline_section=".text.rvtest",
+            skip_trampoline_fallthrough=True,
+        )
 
     tc = td.begin_test_chunk(split_name="Sm")
-    tc.code.extend(both_xlens(build_sm))
+    tc.code.extend(both_xlens_bare(build_sm))
     test_chunks.append(td.end_test_chunk())
 
     return test_chunks

@@ -11,7 +11,7 @@
 //
 ///////////////////////////////////////////////
 
-`define COVER_ZICFILPSU
+`define COVER_ZICFILPUS
 
 covergroup Zicfilpsu_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -23,22 +23,22 @@ covergroup Zicfilpsu_cg with function sample(ins_t ins);
         bins lp_expected    = {1};
         bins no_lp_expected = {0};
     }
-    menvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue,
-                                `SAMPLE_CURRENT, "menvcfg", "lpe") {
+    senvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue,
+                                `SAMPLE_CURRENT, "senvcfg", "lpe") {
         bins enabled  = {1};
         bins disabled = {0};
     }
     lpe_disabled: coverpoint get_csr_val(ins.hart, ins.issue,
-                                `SAMPLE_CURRENT, "menvcfg", "lpe") {
+                                `SAMPLE_CURRENT, "senvcfg", "lpe") {
         bins disabled = {0};
     }
     xtval_lpad: coverpoint ins.current.csr[12'h343] {
         bins code_2 = {2};
     }
-    cp_zicfilp_indirect_elp_state_update: cross priv_mode_u, menvcfg_lpe, indirect_ct_prev, rs1_all_prev, lpad_dest, spelp;
+    cp_zicfilp_indirect_elp_state_update: cross priv_mode_u, senvcfg_lpe, indirect_ct_prev, rs1_all_prev, lpad_dest, spelp;
 
     `ifdef COVER_ZCA
-        cp_zicfilp_indirect_elp_state_update_c: cross priv_mode_u, menvcfg_lpe, indirect_ct_prev_c, rs1_all_prev_c, lpad_dest, spelp;
+        cp_zicfilp_indirect_elp_state_update_c: cross priv_mode_u, senvcfg_lpe, indirect_ct_prev_c, rs1_all_prev_c, lpad_dest, spelp;
     `endif
     cp_zicfilp_lpad_zero_label_bypass: cross priv_mode_u, spelp, lpad_lpl_zero, x7_label;
 

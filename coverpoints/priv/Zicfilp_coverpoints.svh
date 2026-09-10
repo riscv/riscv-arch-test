@@ -73,7 +73,10 @@
         bins label_zero    = {20'h0};
         bins label_nonzero = {[20'h1:20'hFFFFF]};
     }
-    lpl_match: coverpoint (ins.current.imm[31:12] == ins.prev.x_wdata[7][31:12]) { }
+    lpl_match: coverpoint (ins.current.imm[31:12] == ins.prev.x_wdata[7][31:12]) {
+        bins match    = {1};
+        bins mismatch = {0};
+    }
     lpad_scenario: coverpoint {
         ins.current.insn[11:0] == 12'b000000010111,
         (ins.current.imm[31:12] == ins.prev.x_wdata[7][31:12]),

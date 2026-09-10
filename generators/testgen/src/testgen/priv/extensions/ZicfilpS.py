@@ -31,7 +31,7 @@ from testgen.priv.registry import add_priv_test_generator
     "ZicfilpS",
     required_extensions=["Zicfilp", "Zicsr", "S"],
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz", "Zca"],
-    extra_defines=["#define BOOT_TO_MMODE"],
+    extra_defines=["#define BOOT_TO_MMODE", "#define TRAP_SIGUPD_COUNT 40000"],
 )
 def make_zicfilp_s(td: TestData) -> list[TestChunk]:
     """Generate S-mode tests. One chunk per SATP mode."""
@@ -41,7 +41,26 @@ def make_zicfilp_s(td: TestData) -> list[TestChunk]:
         guard = MODE_GUARDS[satp_mode]
 
         def build_s(xlen: int, mode: str = satp_mode) -> list[str]:
-            return emit_mode(td, "smode", COVERGROUP_S, xlen, mode)
+            # trampoline_section=".text.rvtest": S-mode's LPAD exception is
+            # reachable (menvcfg.LPE gates it directly, no cross-CSR
+            # mismatch like the no-S U-mode case), so a real fault can land
+            # here and needs to be recorded rather than treated as
+            # unrecognized.
+            #
+            # skip_trampoline_fallthrough=True: without it, mode-entry code
+            # falls straight through into _tgt_lpad_zero's `c.jr x7` with x7
+            # uncontrolled, which lands back on an earlier ecall and loops
+            # forever -- the same bug fixed for ZicfilpUS, confirmed here
+            # too (this suite overflows TRAP_SIGUPD_COUNT without it).
+            return emit_mode(
+                td,
+                "smode",
+                COVERGROUP_S,
+                xlen,
+                mode,
+                trampoline_section=".text.rvtest",
+                skip_trampoline_fallthrough=True,
+            )
 
         tc = td.begin_test_chunk(split_name=f"S_{satp_mode}")
 

@@ -295,7 +295,7 @@ def add_fp_load_misaligned_test(
         [
             test_data.add_testcase(f"{op}_off{offset}", coverpoint, covergroup),
             f"{op} f{check_reg}, 0(x{addr_reg})",
-            write_sigupd(check_reg, test_data),
+            write_sigupd(check_reg, test_data, sig_type="float"),
         ]
     )
 

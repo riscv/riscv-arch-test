@@ -247,7 +247,7 @@ def cbo_misaligned_helper(
     mode: str,
     cross_senvcfg: bool = False,
 ) -> list[str]:
-    """Generate cbo/prefetch misaligned-address trap tests."""
+    """Generate cbo/prefetch tests showing a misaligned address does not trap."""
     assert not (mode == "Sm" and cross_senvcfg), "senvcfg is not applicable in M-mode"
     coverpoint = "cp_cbo_address_misaligned"
     addr_reg, cfg_reg = test_data.int_regs.get_registers(2)

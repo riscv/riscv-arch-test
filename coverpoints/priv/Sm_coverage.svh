@@ -696,9 +696,36 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             bins zero = { 0 };
             bins nonzero = { [1:$] };
         }
+        shadow_int : coverpoint {ins.prev.insn[31:20], ins.current.insn[31:20]} {
+            bins mie_sie         = { {CSR_MIE, CSR_SIE} };
+            bins mip_sip         = { {CSR_MIP, CSR_SIP} };
+            bins sie_mie         = { {CSR_SIE, CSR_MIE} };
+            bins sip_mip         = { {CSR_SIP, CSR_MIP} };
+        }
+        // S-level interrupt delegation bits {LCOFI, SEI, STI, SSI}; the VS bits are read-only without H
+        mideleg_s: coverpoint {ins.current.csr[CSR_MIDELEG][13], ins.current.csr[CSR_MIDELEG][9],
+                               ins.current.csr[CSR_MIDELEG][5],  ins.current.csr[CSR_MIDELEG][1]} {
+            bins none = {4'b0000};
+            bins all  = {4'b1111};
+        }
+        mideleg_s_walking: coverpoint {ins.current.csr[CSR_MIDELEG][13], ins.current.csr[CSR_MIDELEG][9],
+                                       ins.current.csr[CSR_MIDELEG][5],  ins.current.csr[CSR_MIDELEG][1]} {
+            bins lcofi = {4'b1000};
+            bins sei   = {4'b0100};
+            bins sti   = {4'b0010};
+            bins ssi   = {4'b0001};
+        }
+        sip_sie: coverpoint ins.current.insn[31:20] {
+            bins sip = {CSR_SIP};
+            bins sie = {CSR_SIE};
+        }
 
         cp_scsr_from_m :            cross priv_mode_m, scsrname, csraccesses;
         cp_shadow :                 cross priv_mode_m, shadow, csrw_prev, rs1_prev, csrr;
+        // sip/sie alias mip/mie only for delegated interrupts
+        cp_shadow_deleg :           cross priv_mode_m, shadow_int, csrw_prev, csrr, mideleg_s;
+        // delegate one interrupt at a time and read sip/sie
+        cp_shadow_deleg_walk :      cross priv_mode_m, csrr, sip_sie, mideleg_s_walking;
     `endif
 
 endgroup

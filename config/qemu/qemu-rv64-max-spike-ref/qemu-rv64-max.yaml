@@ -3,7 +3,7 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: whisper-rv64-max-spike-ref
+name: qemu-rv64-max
 description: rv64 with all non-conflicting extensions enabled
 implemented_extensions:
   - { name: A, version: "= 2.1.0" }
@@ -14,9 +14,8 @@ implemented_extensions:
   - { name: H, version: "= 1.0.0" }
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
-  - { name: Q, version: "= 2.2.0" }
+  - { name: Q, version: "= 1.0.0" }
   - { name: S, version: "= 1.13.0" }
-  - { name: Sdext, version: "= 1.0.0" }
   - { name: Sdtrig, version: "= 1.0.0" }
   - { name: Sha, version: "= 1.0.0" }
   - { name: Shcounterenw, version: "= 1.0.0" }
@@ -35,7 +34,7 @@ implemented_extensions:
   - { name: Smepmp, version: "= 1.0.0" }
   - { name: Smmpm, version: "= 1.0.0" }
   - { name: Smnpm, version: "= 1.0.0" }
-  - { name: Smrnmi, version: "= 1.0.0" }
+  # - { name: Smrnmi, version: "= 1.0.0" } # Sail does not support this extension yet
   - { name: Smstateen, version: "= 1.0.0" }
   - { name: Ssaia, version: "= 1.0.0" }
   - { name: Ssccfg, version: "= 1.0.0" }
@@ -47,15 +46,12 @@ implemented_extensions:
   - { name: Ssdbltrp, version: "= 1.0.0" }
   - { name: Ssnpm, version: "= 1.0.0" }
   - { name: Sspm, version: "= 1.0.0" }
-  - { name: Ssqosid, version: "= 1.0.0" }
   - { name: Ssstateen, version: "= 1.0.0" }
   - { name: Ssstrict, version: "= 1.0.0" }
   - { name: Sstc, version: "= 1.0.0" }
   - { name: Sstvala, version: "= 1.0.0" }
   - { name: Sstvecd, version: "= 1.0.0" }
-  - { name: Sstvecv, version: "= 1.0.0" }
   - { name: Ssu64xl, version: "= 1.0.0" }
-  - { name: Ssube, version: "= 1.0.0" }
   - { name: Supm, version: "= 1.0.0" }
   - { name: Sv39, version: "= 1.0.0" }
   - { name: Sv48, version: "= 1.0.0" }
@@ -66,6 +62,7 @@ implemented_extensions:
   - { name: Svinval, version: "= 1.0.0" }
   - { name: Svnapot, version: "= 1.0.0" }
   - { name: Svpbmt, version: "= 1.0.0" }
+  - { name: Svrsw60t59b, version: "= 1.0.0" }
   - { name: Svvptc, version: "= 1.0.0" }
   - { name: U, version: "= 1.0.0" }
   - { name: V, version: "= 1.0.0" }
@@ -136,34 +133,42 @@ implemented_extensions:
   - { name: Zvfhmin, version: "= 1.0.0" }
   - { name: Zvkb, version: "= 1.0.0" }
   - { name: Zvkg, version: "= 1.0.0" }
+  - { name: Zvkn, version: "= 1.0.0" }
+  - { name: Zvknc, version: "= 1.0.0" }
   - { name: Zvkned, version: "= 1.0.0" }
+  - { name: Zvkng, version: "= 1.0.0" }
   - { name: Zvknha, version: "= 1.0.0" }
   - { name: Zvknhb, version: "= 1.0.0" }
+  - { name: Zvks, version: "= 1.0.0" }
+  - { name: Zvksc, version: "= 1.0.0" }
   - { name: Zvksed, version: "= 1.0.0" }
+  - { name: Zvksg, version: "= 1.0.0" }
   - { name: Zvksh, version: "= 1.0.0" }
+  - { name: Zvkt, version: "= 1.0.0" }
   - { name: Zvl32b, version: "= 1.0.0" }
   - { name: Zvl64b, version: "= 1.0.0" }
   - { name: Zvl128b, version: "= 1.0.0" }
+
 params:
   # A params
   MISALIGNED_AMO: false
   LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
   LRSC_FAIL_ON_VA_SYNONYM: false
   LRSC_MISALIGNED_BEHAVIOR: "always raise access fault"
-  LRSC_FAIL_ON_NON_EXACT_LRSC: false
-  MUTABLE_MISA_A: true
+  LRSC_FAIL_ON_NON_EXACT_LRSC: true
+  MUTABLE_MISA_A: false
   # M params
-  MUTABLE_MISA_M: true
+  MUTABLE_MISA_M: false
   # F params
-  MUTABLE_MISA_F: true
+  MUTABLE_MISA_F: false
   HW_MSTATUS_FS_DIRTY_UPDATE: precise
   MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3]
   # D params
-  MUTABLE_MISA_D: true
+  MUTABLE_MISA_D: false
   # Q params
-  MUTABLE_MISA_Q: true
+  MUTABLE_MISA_Q: false
   # C params
-  MUTABLE_MISA_C: true
+  MUTABLE_MISA_C: false
   # B params
   MUTABLE_MISA_B: true
   # V params
@@ -175,12 +180,12 @@ params:
   # Zicntr params
   TIME_CSR_IMPLEMENTED: true
   # U params
-  MUTABLE_MISA_U: true
+  MUTABLE_MISA_U: false
   U_MODE_ENDIANNESS: dynamic
   UXLEN: [64]
   TRAP_ON_ECALL_FROM_U: true
   # S params
-  MUTABLE_MISA_S: true
+  MUTABLE_MISA_S: false
   ASID_WIDTH: 16
   S_MODE_ENDIANNESS: dynamic
   SXLEN: [64]
@@ -212,30 +217,30 @@ params:
       true,
       true,
       true,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
     ]
-  STVEC_MODES: [0, 1]
-  STVEC_BASE_ALIGNMENT_VECTORED: 4
+  STVEC_MODE_DIRECT: true
+  STVEC_MODE_VECTORED: true
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
   MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
@@ -245,14 +250,14 @@ params:
   TRAP_ON_ECALL_FROM_M: true
   TRAP_ON_EBREAK: true
   MARCHID_IMPLEMENTED: true
-  ARCH_ID_VALUE: 0x80000008
+  ARCH_ID_VALUE: 5
   MIMPID_IMPLEMENTED: true
   IMP_ID_VALUE: 0
   VENDOR_ID_BANK: 0
   VENDOR_ID_OFFSET: 0
   MISALIGNED_LDST: true
   MISALIGNED_LDST_EXCEPTION_PRIORITY: low
-  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 16
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096
   MISALIGNED_SPLIT_STRATEGY: sequential_bytes
   TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
   TRAP_ON_RESERVED_INSTRUCTION: true
@@ -277,8 +282,12 @@ params:
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
-  NUM_PMP_ENTRIES: 64
-  PMP_GRANULARITY: 12
+  NUM_PMP_ENTRIES: 16
+  PMP_GRANULARITY: 2
+  NUM_USABLE_PMP_ENTRIES: 16
+  PMP_NA4_SUPPORTED: true
+  PMP_NAPOT_SUPPORTED: true
+  PMP_TOR_SUPPORTED: true
   HPM_COUNTER_EN:
     [
       false,
@@ -292,32 +301,30 @@ params:
       true,
       true,
       true,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
     ]
   HPM_EVENTS: [0]
   MCOUNTINHIBIT_IMPLEMENTED: true
-  # Whisper's mcountinhibit mask is 0xFFFFFFFD regardless of num_mmode_perf_regs, but UDB requires
-  # COUNTINHIBIT_EN[n] to be false whenever HPM_COUNTER_EN[n] is false, so bits 11-31 are listed as false.
   COUNTINHIBIT_EN:
     [
       true,
@@ -331,27 +338,27 @@ params:
       true,
       true,
       true,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
     ]
   MCOUNTENABLE_EN:
     [
@@ -366,31 +373,31 @@ params:
       true,
       true,
       true,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
     ]
   # Vector params
-  MUTABLE_MISA_V: true
-  VLEN: 256
+  MUTABLE_MISA_V: false
+  VLEN: 128
   ELEN: 64
   FOLLOW_VTYPE_RESET_RECOMMENDATION: true
   HW_MSTATUS_VS_DIRTY_UPDATE: precise
@@ -417,7 +424,7 @@ params:
   VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR: "additive_identity"
   IMPRECISE_VECTOR_TRAP_SETTABLE: false
   # H params
-  MUTABLE_MISA_H: true
+  MUTABLE_MISA_H: false
   VSXLEN: [64]
   VUXLEN: [64]
   VMID_WIDTH: 14
@@ -425,7 +432,8 @@ params:
   VU_MODE_ENDIANNESS: little
   GSTAGE_MODE_BARE: true
   VSSTAGE_MODE_BARE: true
-  VSTVEC_MODES: [0, 1]
+  VSTVEC_MODE_DIRECT: true
+  VSTVEC_MODE_VECTORED: true
   HSTATEEN_ENVCFG_TYPE: rw
   IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
   NUM_EXTERNAL_GUEST_INTERRUPTS: 63
@@ -482,27 +490,27 @@ params:
       true,
       true,
       true,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
     ]
   # Zicfilp params
   REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK: true
@@ -523,10 +531,7 @@ params:
   HSTATEEN_CONTEXT_TYPE: rw
   MCONTEXT_AVAILABLE: true
   # Pointer masking params
-  PMLEN: 7
-  # Ssqosid params
-  MCID_WIDTH: 12
-  RCID_WIDTH: 12
+  PMLEN: 17
   # Smstateen params
   MSTATEEN_ENVCFG_TYPE: rw
   MSTATEEN_CONTEXT_TYPE: rw
@@ -556,10 +561,5 @@ params:
   MCTRCTL_STE_IMPLEMENTED: true
   MCTRCTL_TKBRINH_IMPLEMENTED: true
   MCTRCTL_TRETINH_IMPLEMENTED: true
-  # PMP params
-  NUM_USABLE_PMP_ENTRIES: 16
-  PMP_NA4_SUPPORTED: false # NA4 requires PMP_GRANULARITY==2; whisper granularity is 12
-  PMP_NAPOT_SUPPORTED: true
-  PMP_TOR_SUPPORTED: true
   # Zawrs params
   ZAWRS_NTO_IS_NOP: true

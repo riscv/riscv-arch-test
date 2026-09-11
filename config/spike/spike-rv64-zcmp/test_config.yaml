@@ -1,0 +1,9 @@
+name: spike-rv64-zcmp
+compiler_exe: riscv64-unknown-elf-gcc # executable name on $PATH or full path to executable
+objdump_exe: riscv64-unknown-elf-objdump # executable name on $PATH or full path to executable, optional
+ref_model_exe: spike # executable name on $PATH or full path to executable
+# Zcmp is incompatible with the default Zcd in spike's --isa, so the reference model needs its own isa string.
+ref_model_isa: rv64imafdbvh_zicbom_zicboz_zicbop_zicfilp_zicfiss_zicond_zicsr_zicntr_zicclsm_ziccif_zifencei_zihintntl_zihintpause_zihpm_zimop_zabha_zacas_zaamo_zalrsc_zawrs_zfa_zfbfmin_zfh_zca_zcb_zcmop_zcmp_zbc_zkn_zkr_zks_zvfbfmin_zvfbfwma_zvfh_zvbb_zvbc_zvkg_zvkned_zvknha_zvknhb_zvksed_zvksh_zvkt_sscofpmf_smcntrpmf_sstc_svinval_svade_svadu_svnapot_svpbmt
+udb_config: spike-rv64-zcmp.yaml
+linker_script: link.ld
+dut_include_dir: . # Directory containing DUT specific rvmodel_macros.h header

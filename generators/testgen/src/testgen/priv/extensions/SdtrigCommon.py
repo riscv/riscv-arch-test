@@ -87,6 +87,12 @@ INSTR_IFDEFS = {
     "lh": [],
     "lhu": [],
     "lw": [],
+    "lr.w": [],
+    "sc.w": [],
+    "amoswap.w": [],
+    "lr.d": ["#if __riscv_xlen == 64"],
+    "sc.d": ["#if __riscv_xlen == 64"],
+    "amoswap.d": ["#if __riscv_xlen == 64"],
     "sd": ["#if __riscv_xlen == 64"],
     "lwu": ["#if __riscv_xlen == 64"],
     "ld": ["#if __riscv_xlen == 64"],
@@ -555,13 +561,19 @@ def _generate_native_triggers_tests(test_data: TestData, mode: str) -> list[Test
 def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate A-extension load/store/AMO matching tests."""
     covergroup = f"Sdtrig{mode}_a_cg"
+    seed(reproducible_hash(covergroup))
     tc = test_data.begin_test_chunk("AExt")
     lines: list[str] = tc.code
 
     # setup registers
-    sp_reg, addr_reg, data_reg, temp_reg = test_data.int_regs.get_registers(
+    dest_reg, addr_reg, data_reg, temp_reg = test_data.int_regs.get_registers(
         4, exclude_regs=[2], reg_range=list(range(8, 16))
     )
+    lines.extend(_global_ie(mode, True))
+
+    # both halves nonzero so the value stays distinct from the tdata2=0 case once LI trims it to XLEN
+    dataval = random_int(32, signed=False, nonzero=True) << 32 | random_int(32, signed=False, nonzero=True)
+    perms = (0b100, 0b010, 0b001)  # exec / store / load
 
     ######################################
     coverpoint = "cp_sdtrig_lrsc_addr"
@@ -570,37 +582,46 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines.append(
         comment_banner(
             coverpoint,
-            "mcontrol6 address match on lr/sc access address",
+            "lr is a load, sc is a store: breakpoint when the access address matches tdata2",
         )
     )
-    # for trig_num in range(UDB_NUM_TRIGGERS):
-    #     for tdata2 in ("scratch", 0):
-    #         for perm in range(4):
-    #             binname = f"trig_num_{trig_num}_tdata2_{tdata2}_perm_{perm:03b}"
-    #             lines.extend(
-    #                 [
-    #                     _add_tc(test_data, binname, coverpoint, covergroup),
-    #                     f"LA(x{addr_reg}, scratch) # x{addr_reg} = &scratch",
-    #                     f"LI(x{data_reg}, {random_int(32, signed=False)})",
-    #                     f"sw x{data_reg}, 0(x{addr_reg})",
-    #                     *_config_mcontrol6(temp_reg, trig_num, tdata2, mode, xsl=perm, select=0),
-
-    #                     *_arch_guard(f"lr.w x{data_reg}, (x{addr_reg}) # fire if addr==tdata2 and xsl has load bit", ["zalrsc"]),
-    #                     "nop # spacer",
-    #                     *_arch_guard(f"sc.w x{temp_reg}, x{data_reg}, (x{addr_reg}) # fire if addr==tdata2 and xsl has store bit", ["zalrsc"]),
-    #                     "nop # spacer",
-
-    #                     "#if __riscv_xlen == 64",
-    #                     *_arch_guard(f"lr.d x{data_reg}, (x{addr_reg}) # fire if addr==tdata2 and xsl has load bit", ["zalrsc"]),
-    #                     "nop # spacer",
-    #                     *_arch_guard(f"sc.d x{temp_reg}, x{data_reg}, (x{addr_reg}) # fire if addr==tdata2 and xsl has store bit", ["zalrsc"]),
-    #                     "nop # spacer",
-    #                     "#endif",
-
-    #                     *_disable_trigger(temp_reg, trig_num, mode)
-    #                 ]
-    #             )
-    lines.append("#endif")
+    for trig_num in range(UDB_NUM_TRIGGERS):
+        lines.append(f"\n#ifdef UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num}")
+        for tdata2 in ("scratch", 0):
+            for perm in perms:  # perm_xsl
+                lines.extend(_xsl_ifdefs(perm))
+                for width in ("w", "d"):
+                    lines.extend(_ifdef_guard(f"lr.{width}"))
+                    binname = f"trig_num_{trig_num}_td2_{tdata2}_lr_{width}_perm_{perm:03b}"
+                    lines.extend(
+                        [
+                            _add_tc(test_data, binname, coverpoint, covergroup),
+                            f"LA(x{addr_reg}, scratch) # access address",
+                            _load_reg(data_reg, dataval),
+                            *_config_mcontrol6(temp_reg, trig_num, tdata2, mode, xsl=perm, select=0),
+                            *_arch_guard(
+                                f"lr.{width} x{dest_reg}, (x{addr_reg}) # load, fires on address match",
+                                ["zalrsc"],
+                            ),
+                            "nop # landing pad",
+                        ]
+                    )
+                    binname = f"trig_num_{trig_num}_td2_{tdata2}_sc_{width}_perm_{perm:03b}"
+                    lines.extend(
+                        [
+                            _add_tc(test_data, binname, coverpoint, covergroup),
+                            *_arch_guard(
+                                f"sc.{width} x{temp_reg}, x{data_reg}, (x{addr_reg}) # store, fires on address match",
+                                ["zalrsc"],
+                            ),
+                            "nop # landing pad",
+                        ]
+                    )
+                    lines.extend(_ifdef_guard(f"lr.{width}", closing=True))
+                lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_AVAILABLE"] * len(_xsl_ifdefs(perm)))
+        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
+        lines.append(f"#endif // UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num}")
+    lines.append("#endif // ZALRSC_SUPPORTED")
 
     ######################################
     coverpoint = "cp_sdtrig_lrsc_data"
@@ -609,20 +630,53 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines.append(
         comment_banner(
             coverpoint,
-            "mcontrol6 data match on lr/sc value",
+            "lr is a load, sc is a store: breakpoint when the accessed value matches tdata2",
         )
     )
+    lines.extend(
+        [
+            f"LA(x{addr_reg}, scratch) # access address",
+            _load_reg(data_reg, dataval),
+            f"SREG x{data_reg}, 0(x{addr_reg}) # seed the watched value, no trigger armed yet",
+        ]
+    )
     for trig_num in range(UDB_NUM_TRIGGERS):
-        for addrval in ("marker", "zero"):
-            for insn in ("lr_w", "sc_w", "lr_d", "sc_d"):
-                for perm in range(4):
-                    binname = f"trig_num_{trig_num}_data_{addrval}_{insn}_perm_{perm:03b}"
+        lines.append(f"\n#ifdef UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num}")
+        for td2_name, tdata2 in (("dataval", dataval), ("zero", 0)):
+            for perm in perms:  # perm_xsl
+                lines.extend(_xsl_ifdefs(perm))
+                for width in ("w", "d"):
+                    lines.extend(_ifdef_guard(f"lr.{width}"))
+                    binname = f"trig_num_{trig_num}_td2_{td2_name}_lr_{width}_perm_{perm:03b}"
                     lines.extend(
                         [
                             _add_tc(test_data, binname, coverpoint, covergroup),
+                            f"LA(x{addr_reg}, scratch) # access address",
+                            _load_reg(data_reg, dataval),
+                            *_config_mcontrol6(temp_reg, trig_num, tdata2, mode, xsl=perm, select=1),
+                            *_arch_guard(
+                                f"lr.{width} x{dest_reg}, (x{addr_reg}) # load, fires on data match",
+                                ["zalrsc"],
+                            ),
+                            "nop # landing pad",
                         ]
                     )
-    lines.append("#endif")
+                    binname = f"trig_num_{trig_num}_td2_{td2_name}_sc_{width}_perm_{perm:03b}"
+                    lines.extend(
+                        [
+                            _add_tc(test_data, binname, coverpoint, covergroup),
+                            *_arch_guard(
+                                f"sc.{width} x{temp_reg}, x{data_reg}, (x{addr_reg}) # store, fires on data match",
+                                ["zalrsc"],
+                            ),
+                            "nop # landing pad",
+                        ]
+                    )
+                    lines.extend(_ifdef_guard(f"lr.{width}", closing=True))
+                lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_AVAILABLE"] * len(_xsl_ifdefs(perm)))
+        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
+        lines.append(f"#endif // UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num}")
+    lines.append("#endif // ZALRSC_SUPPORTED")
 
     ######################################
     coverpoint = "cp_sdtrig_amo"
@@ -631,22 +685,37 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines.append(
         comment_banner(
             coverpoint,
-            "mcontrol6 address match on AMO read and write portions",
+            "amo reads then writes: breakpoint when either half's address matches tdata2",
         )
     )
     for trig_num in range(UDB_NUM_TRIGGERS):
-        for addrval in ("marker", "zero"):
-            for insn in ("amoswap_w", "amoswap_d"):
-                for perm in range(4):
-                    binname = f"trig_num_{trig_num}_addr_{addrval}_{insn}_perm_{perm:03b}"
+        lines.append(f"\n#ifdef UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num}")
+        for tdata2 in ("scratch", 0):
+            for perm in perms:  # perm_xsl
+                lines.extend(_xsl_ifdefs(perm))
+                for width in ("w", "d"):
+                    lines.extend(_ifdef_guard(f"amoswap.{width}"))
+                    binname = f"trig_num_{trig_num}_td2_{tdata2}_amoswap_{width}_perm_{perm:03b}"
                     lines.extend(
                         [
                             _add_tc(test_data, binname, coverpoint, covergroup),
+                            f"LA(x{addr_reg}, scratch) # access address",
+                            _load_reg(data_reg, dataval),
+                            *_config_mcontrol6(temp_reg, trig_num, tdata2, mode, xsl=perm, select=0),
+                            *_arch_guard(
+                                f"amoswap.{width} x{dest_reg}, x{data_reg}, (x{addr_reg}) # load and store, fires on address match",
+                                ["zaamo"],
+                            ),
+                            "nop # landing pad",
                         ]
                     )
-    lines.append("#endif")
+                    lines.extend(_ifdef_guard(f"amoswap.{width}", closing=True))
+                lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_AVAILABLE"] * len(_xsl_ifdefs(perm)))
+        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
+        lines.append(f"#endif // UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num}")
+    lines.append("#endif // ZAAMO_SUPPORTED")
 
-    test_data.int_regs.return_registers([sp_reg, addr_reg, data_reg, temp_reg])
+    test_data.int_regs.return_registers([dest_reg, addr_reg, data_reg, temp_reg])
 
     return [test_data.end_test_chunk()]
 
@@ -1839,6 +1908,8 @@ def generate_sdtrig_suite(test_data: TestData, mode: str) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     test_chunks.extend(_generate_access_tests(test_data, mode))
     test_chunks.extend(_generate_native_triggers_tests(test_data, mode))
+    # Parked: whisper does not fire select=1 (data match) triggers on lr.w/lr.d, so the DUT
+    # records fewer breakpoints than the spike reference. See docs/whisper-mcontrol6-lr-data-match-bug.md
     # test_chunks.extend(_generate_a_tests(test_data, mode))
     # test_chunks.extend(_generate_combined_accesses_tests(test_data, mode))
     # test_chunks.extend(_generate_cache_operations_tests(test_data, mode))

@@ -530,7 +530,7 @@ params:
   HSTATEEN_CONTEXT_TYPE: rw
   MCONTEXT_AVAILABLE: true
   # Pointer masking params
-  PMLEN: 17
+  PMLEN: 16
   # Smstateen params
   MSTATEEN_ENVCFG_TYPE: rw
   MSTATEEN_CONTEXT_TYPE: rw

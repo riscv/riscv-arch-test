@@ -447,6 +447,6 @@ params:
       true,
     ]
   # Pointer masking params
-  PMLEN: 17
+  PMLEN: 16
   # Zawrs params
   ZAWRS_NTO_IS_NOP: true

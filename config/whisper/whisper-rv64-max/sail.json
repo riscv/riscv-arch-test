@@ -749,17 +749,17 @@
     "Ssnpm": {
       "supported": true,
       "supported_pmlen_7": true,
-      "supported_pmlen_16": false
+      "supported_pmlen_16": true
     },
     "Smnpm": {
       "supported": true,
       "supported_pmlen_7": true,
-      "supported_pmlen_16": false
+      "supported_pmlen_16": true
     },
     "Smmpm": {
       "supported": true,
       "supported_pmlen_7": true,
-      "supported_pmlen_16": false
+      "supported_pmlen_16": true
     },
     "Smcntrpmf": {
       "supported": true

@@ -71,6 +71,22 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                     f"Error: 'Type' column missing in testplan {testplan_path}. Make sure you remembered to shrink the CSV."
                 )
                 raise
+            # csv.DictReader collects fields past the end of the header under the None key and
+            # pads a short row with None values. Both mean the row and the header disagree, and
+            # both are silently dropped by the coverpoint loop below, so reject them here.
+            extra = row.pop(None, None)
+            if extra:
+                raise ValueError(
+                    f"{testplan_path}: row for {instr!r} has {len(extra)} field(s) past the end of "
+                    f"the header: {extra}. Add the missing column(s) or remove the trailing commas."
+                )
+            missing = [key for key, value in row.items() if value is None]
+            if missing:
+                raise ValueError(
+                    f"{testplan_path}: row for {instr!r} is missing field(s) {missing}; "
+                    f"it has fewer columns than the header."
+                )
+
             rv32 = row["RV32"].strip().lower() == "x"
             rv64 = row["RV64"].strip().lower() == "x"
             sews = []

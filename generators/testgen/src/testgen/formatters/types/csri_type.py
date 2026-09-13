@@ -11,7 +11,10 @@ from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
 from testgen.formatters.types.csr_type import zicsr_access
 
-csri_config = InstructionTypeConfig(required_params={"rd", "rs2", "rs2val", "immval"}, imm_bits=5, imm_signed=False)
+# rs2 is the scratch register used to seed and read back the CSR, so it must not be x0
+csri_config = InstructionTypeConfig(
+    required_params={"rd", "rs2", "rs2val", "immval"}, imm_bits=5, imm_signed=False, excluded_regs={"rs2": {0}}
+)
 
 
 def zicsr_accessi(instr_name: str, rd: int, rs2: int, immval: int) -> str:

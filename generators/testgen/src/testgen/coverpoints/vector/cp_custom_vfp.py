@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
+from testgen.asm.tsbi import tsbi_call
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.params import PresetMask
 from testgen.data.state import TestData, return_testcase_registers
@@ -87,10 +88,10 @@ def cp_custom_vfp_state(instr_name: str, instr_type: str, coverpoint: str, test_
         [
             "# Clear mstatus.fs",
             f"li x{reg}, 0x6000",
-            f"csrc mstatus, x{reg}",
+            tsbi_call(f"csrc mstatus, x{reg}"),
             "# Set mstatus.fs = clean",
             f"li x{reg}, 0x4000",
-            f"csrs mstatus, x{reg}",
+            tsbi_call(f"csrs mstatus, x{reg}"),
         ]
     )
 

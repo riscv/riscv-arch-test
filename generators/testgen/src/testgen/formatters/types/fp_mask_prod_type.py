@@ -29,6 +29,7 @@ fmvv_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
     vector_data=VectorTypeConfig(
         mask_regs={"vd"},
+        overlap_constraints={("vd", "vs1_not_one"), ("vd", "vs2_not_one")},
         masked_constraints={("vs1", "v0"), ("vs2", "v0")},
     ),
 )
@@ -36,7 +37,9 @@ fmvv_config = InstructionTypeConfig(
 fmvf_config = InstructionTypeConfig(
     instruction_class=["vector_fp"],
     required_params={"vd", "fs1", "vs2"},
-    vector_data=VectorTypeConfig(mask_regs={"vd"}, masked_constraints={("vs2", "v0")}),
+    vector_data=VectorTypeConfig(
+        mask_regs={"vd"}, overlap_constraints={("vd", "vs2_not_one")}, masked_constraints={("vs2", "v0")}
+    ),
 )
 
 

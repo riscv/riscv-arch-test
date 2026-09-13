@@ -169,9 +169,11 @@ def get_vector_base_extension(testsuite: str, instr_name: str, xlen: int, sew: i
         "Vls32": ["Zve32x"],
         "Vx64": ["Zve64x"],
         "Vls64": ["Zve64x"],
-        "Vf16": ["Zvfh"],
-        "Vf32": ["Zve32f"],
-        "Vf64": ["Zve64d"],
+        "Vf16": ["Zvfh", "Zfhmin", "F"],
+        "Vf32": ["Zve32f", "F"],
+        "Vf64": ["Zve64d", "F", "D"],
+        "Zvfbfmin": ["Zve32f"],
+        "Zvfbfwma": ["Zve32f", "Zfbfmin"],
     }
 
     if testsuite not in vector_map:
@@ -213,6 +215,11 @@ def get_vector_base_extension(testsuite: str, instr_name: str, xlen: int, sew: i
         # requires Zve64x.
         mapped.remove("Zve32x")
         mapped.append("Zve64x")
+
+    if "Zve32f" in mapped and instr_name.startswith(("vfw", "vfn")) and sew == 32:
+        # Same logic for floating point
+        mapped.remove("Zve32f")
+        mapped.append("Zve64f")
 
     if "Zve32x" in mapped and "64" in instr_name:
         # This is an unsupported EEW (happens for vle64.v)

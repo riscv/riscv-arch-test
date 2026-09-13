@@ -177,7 +177,7 @@ def randomize_registers(
 
     if "fs1" in registers:
         new_params.fs1 = randomize_register("fs1", test_data, instr_type_config, lmul, info, new_params.fs1)
-        if new_params.fs1val is not None:
+        if new_params.fs1val is None:
             new_params.fs1val = random_int(test_data.config.flen)
     if "fd" in registers:
         new_params.fd = randomize_register("fd", test_data, instr_type_config, lmul, info, new_params.fd)
@@ -475,7 +475,7 @@ def generate_random_vector_params(
             eew = int(sew * info.get_size_multiplier(register, sew, widened_regs))
             element_count = 1 if suite == "base" else math.ceil(VLEN_MAX * lmul / sew)
             if instr_type_config.vector_data.random_element_generator:
-                elements = instr_type_config.vector_data.random_element_generator(element_count, eew)
+                elements = instr_type_config.vector_data.random_element_generator(element_count, eew, register)
                 test_data.register_vector_data(label, eew, elements=elements)
             else:
                 test_data.register_vector_data(label, eew, random_elements=element_count)
@@ -497,6 +497,10 @@ def generate_random_vector_params(
             raise ValueError(
                 f"Instruction type '{instr_type}' requires immval but has no imm_bits or imm_range configured"
             )
+
+    # All vector floating point instructions use the dyn rounding mode
+    if "vector_fp" in instr_type_config.instruction_class and params.csr_frm_val is None:
+        params.csr_frm_val = random_range(0, 4)
 
     if (
         instr_type_config.required_params is not None

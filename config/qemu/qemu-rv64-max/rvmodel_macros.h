@@ -171,7 +171,7 @@
 
 #define RVMODEL_INTERRUPT_LATENCY 10
 
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
+#define RVMODEL_TIMER_INT_SOON_DELAY 1000
 
 // QEMU virt CLINT runs at 10 MHz; with -icount shift=1 (2 ns/insn) that is ~50 insns/tick.
 // Define a 50x multiplier to convert between timer tick and processor cycle count.

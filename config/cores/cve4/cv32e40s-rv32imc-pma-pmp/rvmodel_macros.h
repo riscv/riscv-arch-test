@@ -65,7 +65,7 @@
 # MTIME is not implemented on this DUT. Comment out to prevent testing them.
 //#define RVMODEL_MTIME_ADDRESS    0x0200BFF8
 //#define RVMODEL_MTIMECMP_ADDRESS 0x02004000
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
+#define RVMODEL_TIMER_INT_SOON_DELAY 10000
 
 ##### Machine Interrupts #####
 

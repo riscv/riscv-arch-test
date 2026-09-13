@@ -8,22 +8,80 @@
 
 """Functions for generating Zawrs tests in all priv modes"""
 
-from testgen.asm.helpers import write_sigupd
-from testgen.asm.interrupts import (
-    clr_mtimer_int,
-    clr_stimer_int,
-    set_menvcfg_stce,
-    set_mtimer_int,
-    set_mtimer_int_soon,
-    set_stimer_int_soon_sstc,
-    set_stimer_mmode,
-)
+from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
+
+
+def m_csr(priv: str, instr: str) -> str:
+    """M-mode CSR instruction; a T-SBI call when the test runs below M-mode."""
+    return instr if priv == "M" else tsbi_call(instr)
+
+
+def s_csr(priv: str, instr: str) -> str:
+    """S-mode CSR instruction; a T-SBI call when the test runs in U-mode."""
+    return instr if priv != "U" else tsbi_call(instr)
+
+
+def _menvcfg_stce(priv: str, r: int, enable: bool) -> list[str]:
+    """menvcfg.STCE (bit 63 on RV64, bit 31 of menvcfgh on RV32); an M-mode CSR reached via T-SBI below M-mode."""
+    op = "csrs" if enable else "csrc"
+    return [
+        f"# {'Enable' if enable else 'Disable'} menvcfg.STCE",
+        f"LI(x{r}, 1)",
+        "#if __riscv_xlen == 64",
+        f"slli x{r}, x{r}, 63",
+        m_csr(priv, f"{op} menvcfg, x{r}"),
+        "#else",
+        f"slli x{r}, x{r}, 31",
+        m_csr(priv, f"{op} menvcfgh, x{r}"),
+        "#endif",
+    ]
+
+
+def _disable_stimecmp(priv: str, r: int) -> list[str]:
+    """stimecmp = -1 to disarm the Sstc timer; an S-mode CSR reached via T-SBI from U-mode."""
+    return [
+        "# Disable Sstc timer: stimecmp = -1",
+        f"LI(x{r}, -1)",
+        "#if __riscv_xlen == 32",
+        s_csr(priv, f"csrw stimecmph, x{r}"),
+        "#endif",
+        s_csr(priv, f"csrw stimecmp, x{r}"),
+    ]
 
 
 def _read_trap_count_helper(r_temp: int) -> list[str]:
     """Read trap count into r_temp"""
     return [f"# Read trap count into x{r_temp}", f"LA(x{r_temp}, rvtest_trap_count)", f"LREG x{r_temp}, 0(x{r_temp})"]
+
+
+def _sstatus_sie(priv: str, r_temp: int, value: int) -> list[str]:
+    """sstatus.SIE = value, for tests running below M-mode.
+
+    SPIE is written along with SIE so the value survives the sret of the S-mode
+    T-SBI handler when the test runs in U-mode.
+    """
+    lines = [
+        f"# sstatus.SIE = {value}",
+        f"LI(x{r_temp}, 0x22)",
+        s_csr(priv, f"{'csrs' if value else 'csrc'} sstatus, x{r_temp}"),
+    ]
+    if priv == "U":
+        return ["#ifdef S_SUPPORTED", *lines, "#endif"]
+    return lines
+
+
+def _disable_interrupts(priv: str, r_temp: int) -> list[str]:
+    """mie = 0, mstatus.MIE = MPIE = 0, and SPIE/SIE = 0 where it exists."""
+    lines = [
+        "# Disable all interrupts in mie",
+        m_csr(priv, "csrw mie, zero"),
+        "# mstatus.MPIE, SPIE, MIE, AND SIE = 0",
+        f"LI(x{r_temp}, 0xAA)",
+        m_csr(priv, f"csrc mstatus, x{r_temp}"),
+    ]
+    return lines
 
 
 def wrs_resume_helper(
@@ -37,25 +95,25 @@ def wrs_resume_helper(
     coverpoint = "cp_wrs_resume"
     ######################################
 
-    r_time, r_temp3, r_cause, r_temp, r_temp2, r_timecmp = test_data.int_regs.get_registers(6)
+    r_cause, r_temp, r_temp2 = test_data.int_regs.get_registers(3)
 
-    lines = []
-    if priv != "M":
+    lower = priv != "M"
+    lines = [comment_banner(coverpoint, f"Generate {priv} mode WRS instruction resume when interrupt pending tests")]
+    if lower:
         sie_list = [0, 1]
         tw_list = [0]
     else:  # if test is for M mode
         sie_list = [0]  # SIE value does not matter for M mode, just set to 0
         tw_list = [0, 1]
 
-    if priv != "M":
+    if lower:
         lines.extend(
             [
                 "#ifdef SSTC_SUPPORTED",
-                "# Enable Sstc (menvcfg.STCE) so stimecmp drives sip.STIP",
-                *set_menvcfg_stce(r_temp, True),
-                "# Delegate supervisor timer interrupt (STI) to S-mode",
-                f"LI(x{r_temp}, 0x20)",
-                f"csrs mideleg, x{r_temp}",
+                "# Enable Sstc (menvcfg.STCE) so stimecmp drives sip.STIP, then disarm the comparator",
+                "# so whatever stimecmp held before does not raise STIP once STIE is set",
+                *_menvcfg_stce(priv, r_temp, True),
+                *_disable_stimecmp(priv, r_temp),
                 "#endif",
             ]
         )
@@ -68,43 +126,31 @@ def wrs_resume_helper(
                             "#### Setup ####",
                             f"# mstatus.MPIE and mstatus.MIE = {mie_val}",
                             f"LI(x{r_temp}, 0x88)",
-                            f"{'csrs' if mie_val else 'csrc'} mstatus, x{r_temp}",
+                            m_csr(priv, f"{'csrs' if mie_val else 'csrc'} mstatus, x{r_temp}"),
                             "# Write mstatus.TW",
                             f"LI(x{r_temp}, 0x200000)",
-                            f"{'csrs' if tw_val else 'csrc'} mstatus, x{r_temp}",
+                            m_csr(priv, f"{'csrs' if tw_val else 'csrc'} mstatus, x{r_temp}"),
                             "",
                         ]
                     )
 
-                    if priv != "M":
+                    if lower:
                         lines.extend(
                             [
-                                "#ifdef S_SUPPORTED",
-                                f"# sstatus.SIE = {sie_val}",
-                                f"{'csrsi' if sie_val else 'csrci'} sstatus, 2",
-                                "#endif",
+                                *_sstatus_sie(priv, r_temp, sie_val),
                                 "#ifdef SSTC_SUPPORTED",
                                 "# Set sie.STIE",
                                 f"LI(x{r_temp}, 0x20)",
-                                f"csrs sie, x{r_temp}",
+                                s_csr(priv, f"csrs sie, x{r_temp}"),
                                 "# Set stimer interrupt soon",
-                                *set_stimer_int_soon_sstc(r_time, r_temp, r_temp2, r_temp3, r_cause),
+                                f"RVTEST_SET_SSTC_INT_SOON_{priv}",
                                 "#else",
                                 "# Set mie.MTIE",
                                 f"LI(x{r_temp}, 0x80)",
-                                f"csrs mie, x{r_temp}",
+                                m_csr(priv, f"csrs mie, x{r_temp}"),
                                 "# Set mtimer interrupt soon",
-                                *set_mtimer_int_soon(
-                                    r_time,
-                                    r_timecmp,
-                                    r_temp,
-                                    r_temp2,
-                                    r_temp3,
-                                    r_cause,
-                                    delay="(RVMODEL_TIMER_INT_SOON_DELAY * 8)",
-                                ),
+                                f"RVTEST_SET_MTIME_INT_SOON_{priv}",
                                 "#endif",
-                                f"RVTEST_GOTO_LOWER_MODE {priv}mode",
                             ]
                         )
                     else:
@@ -114,7 +160,7 @@ def wrs_resume_helper(
                                 f"LI(x{r_temp}, 0x80)",
                                 f"csrs mie, x{r_temp}",
                                 "# Set mtimer interrupt soon",
-                                *set_mtimer_int_soon(r_time, r_timecmp, r_temp, r_temp2, r_temp3, r_cause),
+                                "RVTEST_SET_MTIME_INT_SOON_M",
                             ]
                         )
 
@@ -148,15 +194,15 @@ def wrs_resume_helper(
                                 f"bnez x{r_temp}, 2f              # Interrupt pending -> done",
                             ]
                         )
-                    ################## The test runs in S mode with mstatus.SIE = 0 ######################################
+                    ################## The test runs in S mode with sstatus.SIE = 0 ######################################
                     if (priv == "S") & (sie_val == 0):
                         lines.extend(
                             [
                                 "#ifdef SSTC_SUPPORTED",
                                 "# Only moves on if SIE = 0 and sip.STIP = 1, expect no interrupt should be taken",
                                 f"csrr x{r_temp}, sip",
-                                f"andi x{r_temp}, x{r_temp}, 0x20  # Extract mip.MTIP",
-                                f"bnez x{r_temp}, 2f              # No interrupt pending -> retry",
+                                f"andi x{r_temp}, x{r_temp}, 0x20  # Extract sip.STIP",
+                                f"bnez x{r_temp}, 2f              # Interrupt pending -> done",
                                 "#endif",
                             ]
                         )
@@ -167,24 +213,28 @@ def wrs_resume_helper(
                             write_sigupd(r_cause, test_data),
                         ]
                     )
-                    if priv != "M":
-                        lines.extend(
-                            [
-                                "RVTEST_GOTO_MMODE",
-                            ]
-                        )
                     # Disarm timers so no pending interrupt carries into the next testcase
-                    lines.extend(clr_mtimer_int(r_temp, r_timecmp))
-                    if priv != "M":
+                    lines.append(f"RVTEST_CLR_MTIME_INT_{priv}")
+                    if lower:
                         lines.extend(
                             [
                                 "#ifdef SSTC_SUPPORTED",
-                                *clr_stimer_int(r_temp, r_timecmp, r_temp2, r_cause),
+                                *_disable_stimecmp(priv, r_temp),
                                 "#endif",
                             ]
                         )
 
-    test_data.int_regs.return_registers([r_time, r_temp3, r_cause, r_temp, r_temp2, r_timecmp])
+    if lower:
+        lines.extend(
+            [
+                "#ifdef SSTC_SUPPORTED",
+                "# Restore the boot value of menvcfg.STCE so mip.STIP is writable again",
+                *_menvcfg_stce(priv, r_temp, False),
+                "#endif",
+            ]
+        )
+
+    test_data.int_regs.return_registers([r_cause, r_temp, r_temp2])
     return lines
 
 
@@ -193,52 +243,60 @@ def wrs_no_mie_helper(
     priv: str,
     covergroup: str,
 ) -> list[str]:
-    """when mie = all 0s, pendng interrupt does not cause WRS to resume"""
+    """when mie = all 0s, pending interrupt does not cause WRS to resume"""
 
     ######################################
     coverpoint = "cp_wrs_no_mie"
     ######################################
 
-    r_time, r_cause, r_temp, r_temp2, r_timecmp = test_data.int_regs.get_registers(5)
+    r_cause, r_temp, r_temp2 = test_data.int_regs.get_registers(3)
 
-    lines = []
+    lower = priv != "M"
+    description = [
+        f"Generate {priv} mode wrs tests with mie = all 0s.",
+        "",
+        "cross lr instruction to set up reservation",
+        "mstatus.MIE = 1",
+        *([f"mstatus.SIE = 1{' (if S supported)' if priv == 'U' else ''}"] if lower else []),
+        "mie = all 0s",
+        "mstatus.TW = 1" if lower else "mstatus.TW = 0",
+        "mip = {SSIP + SEIP + STIP + MSIP + MEIP + MTIP}" if lower else "mip = {MSIP + MEIP + MTIP}",
+        f"execute {{WRS.NTO/WRS.STO}} in {priv} mode" if lower else "execute WRS.STO in M mode",
+        "2 bins" if lower else "1 bin",
+    ]
+    lines = [comment_banner(coverpoint, "\n".join(description))]
     # wrs.nto can only be tested in non-M mode using TW = 1
-    wrs_list = ["WRS.STO", "WRS.NTO"] if priv != "M" else ["WRS.STO"]
+    wrs_list = ["WRS.STO", "WRS.NTO"] if lower else ["WRS.STO"]
 
     for op in wrs_list:
         lines.extend(
             [
-                "###### Setup (M Mode) ######",
+                "###### Setup ######",
                 "# Disable all interrupts in mie",
-                "csrw mie, zero",
-                "# mstatus.MIE, SIE and MPIE = 1",
-                f"LI(x{r_temp}, 0x8A)",
-                f"csrs mstatus, x{r_temp}",
-            ]
-        )
-        lines.extend(
-            [
+                m_csr(priv, "csrw mie, zero"),
+                "# mstatus.MIE, SIE, MPIE, and SPIE = 1",
+                f"LI(x{r_temp}, 0xAA)",
+                m_csr(priv, f"csrs mstatus, x{r_temp}"),
                 "# Set all M mode interrupts pending",
-                "RVTEST_SET_MEXT_INT_M",
-                "RVTEST_SET_MSW_INT_M",
-                *set_mtimer_int(r_time, r_timecmp, r_temp, r_temp2),
+                f"RVTEST_SET_MEXT_INT_{priv}",
+                f"RVTEST_SET_MSW_INT_{priv}",
+                f"RVTEST_SET_MTIME_INT_{priv}",
             ]
         )
-        if priv != "M":
+        if lower:
             lines.extend(
                 [
                     "# Set the S mode interrupts if supported",
                     "#ifdef S_SUPPORTED",
-                    *set_stimer_mmode(r_temp),
+                    f"RVTEST_SET_STIME_INT_{priv}",
                     "# set SSI and SEI through mip",
                     f"LI(x{r_temp}, 0x202)",
-                    f"csrs mip, x{r_temp}",
+                    m_csr(priv, f"csrs mip, x{r_temp}"),
                     "#endif",
                     "",
                     "# Set TW bit",
                     f"LI(x{r_temp}, 0x200000)",
-                    f"csrs mstatus, x{r_temp}",
-                    f"RVTEST_GOTO_LOWER_MODE {priv}mode",
+                    m_csr(priv, f"csrs mstatus, x{r_temp}"),
                 ]
             )
         else:
@@ -276,28 +334,26 @@ def wrs_no_mie_helper(
                 "#### Clean up ####",
             ]
         )
-        if priv != "M":
+        if lower:
             lines.extend(
                 [
-                    "RVTEST_GOTO_MMODE",
                     "# Clear S mode interrupts",
                     "#ifdef S_SUPPORTED",
-                    *clr_stimer_int(r_temp, r_timecmp, r_temp2, r_cause),
-                    "# clear SSI and SEI through mip",
-                    f"LI(x{r_temp}, 0x202)",
-                    f"csrc mip, x{r_temp}",
+                    "# clear SSI, STI and SEI through mip, the way they were set",
+                    f"LI(x{r_temp}, 0x222)",
+                    m_csr(priv, f"csrc mip, x{r_temp}"),
                     "#endif",
                 ]
             )
         lines.extend(
             [
                 "# Clear M mode interrupts",
-                "RVTEST_CLR_MEXT_INT_M",
-                "RVTEST_CLR_MSW_INT_M",
-                *clr_mtimer_int(r_temp, r_temp2),
+                f"RVTEST_CLR_MEXT_INT_{priv}",
+                f"RVTEST_CLR_MSW_INT_{priv}",
+                f"RVTEST_CLR_MTIME_INT_{priv}",
             ]
         )
-    test_data.int_regs.return_registers([r_time, r_cause, r_temp, r_temp2, r_timecmp])
+    test_data.int_regs.return_registers([r_cause, r_temp, r_temp2])
     return lines
 
 
@@ -308,35 +364,31 @@ def wrs_no_res_helper(test_data: TestData, priv: str, covergroup: str) -> list[s
     ######################################
     coverpoint = "cp_wrs_no_res"
     ######################################
-    lines = []
+    lower = priv != "M"
+    description = [
+        f"Generate {priv} mode WRS instruction no reservation tests",
+        "",
+        "mstatus.TW = 0" if lower else "mstatus.TW = {0/1}",
+        "mstatus.MIE = 0",
+        *([f"mstatus.SIE = 0{' (if S supported)' if priv == 'U' else ''}"] if lower else []),
+        "mie = all 0s to disable interrupts",
+        f"Clear all reservation with sc.w, then execute {{WRS.STO, WRS.NTO}} with no reservation created in {priv} mode",
+        "2 bins" if lower else "2 x 2 bins",
+    ]
+    lines = [comment_banner(coverpoint, "\n".join(description))]
 
-    tw_list = [0] if priv != "M" else [0, 1]
+    tw_list = [0] if lower else [0, 1]
 
     for tw_val in tw_list:
         for wrs_op in ["WRS.STO", "WRS.NTO"]:
             lines.extend(
                 [
-                    "#### Setup (M mode) ####",
-                    "# Disable all interrupts in mie",
-                    "csrw mie, zero",
-                    "# mstatus.MPIE, SIE and MIE = 0",
-                    f"LI(x{r_temp}, 0x8A)",
-                    f"csrc mstatus, x{r_temp}",
+                    "#### Setup ####",
+                    *_disable_interrupts(priv, r_temp),
                     "# Write mstatus.TW",
                     f"LI(x{r_temp}, 0x200000)",
-                    f"{'csrs' if tw_val else 'csrc'} mstatus, x{r_temp}",
+                    m_csr(priv, f"{'csrs' if tw_val else 'csrc'} mstatus, x{r_temp}"),
                     "",
-                ]
-            )
-            if priv != "M":
-                lines.extend(
-                    [
-                        f"RVTEST_GOTO_LOWER_MODE {priv}mode",
-                    ]
-                )
-
-            lines.extend(
-                [
                     "# sc.w to clear reservation",
                     f"LA(x{r_scratch}, scratch)",
                     f"sc.w x{r_temp}, x{r_temp2}, (x{r_scratch})",
@@ -347,7 +399,6 @@ def wrs_no_res_helper(test_data: TestData, priv: str, covergroup: str) -> list[s
                     ),
                     f"{wrs_op}",
                     "",
-                    "RVTEST_GOTO_MMODE",
                 ]
             )
 
@@ -358,35 +409,90 @@ def wrs_no_res_helper(test_data: TestData, priv: str, covergroup: str) -> list[s
 
 def wrs_timeout_helper(
     test_data: TestData,
-    priv_list: list[str],
-    coverpoint: str,
+    priv: str,
     covergroup: str,
+    timeout: str,
+    virtualized: bool = False,
 ) -> list[str]:
-    """WRS ops timeout behavior"""
+    """WRS timeout behavior with interrupts disabled.
+
+    Args:
+        timeout: "short" tests WRS.STO, which times out on its own;
+                 "no" tests WRS.NTO, which only ends through the mstatus.TW illegal-instruction trap
+        virtualized: run the WRS.NTO test in VS and VU mode from an S-mode test, with hstatus.VTW = 1
+    """
+    if timeout not in ("short", "no"):
+        raise ValueError(f"timeout must be 'short' or 'no', got {timeout!r}")
+    if virtualized and (timeout != "no" or priv != "S"):
+        raise ValueError("virtualized timeout tests are WRS.NTO tests generated from the S-mode suite")
+
     r_cause, r_temp, r_temp2 = test_data.int_regs.get_registers(3)
-    lines = []
-    op = "WRS.STO" if coverpoint == "cp_wrs_sto_timeout" else "WRS.NTO"
+    op = "WRS.STO" if timeout == "short" else "WRS.NTO"
 
-    tw_list = [1] if coverpoint == "cp_wrs_nto_timeout" else [0, 1]
+    sie0 = f"mstatus.SIE = 0{' (if S supported)' if priv == 'U' else ''}"
+    if virtualized:
+        coverpoint = "cp_wrs_nto_timeout_h"
+        description = [
+            "Generate WRS.NTO timeout test in VS/VU mode",
+            "",
+            "cross lr instruction to set up reservation.",
+            "mstatus.TW = {0/1}",
+            "mstatus.MIE = 0",
+            "mstatus.SIE = 0",
+            "hstatus.VTW = 1",
+            "hedeleg = all 0s",
+            "mie = all 0s to disable interrupts",
+            "execute WRS.NTO in VS/VU mode",
+            "2 x 2 bins",
+        ]
+        tw_list = [0, 1]
+        mode_list = ["VS", "VU"]
+    elif op == "WRS.STO":
+        coverpoint = "cp_wrs_sto_timeout"
+        description = [
+            f"Generate {priv} mode wrs.sto timeout tests.",
+            "",
+            "cross lr instruction to set up reservation.",
+            "mstatus.TW = {0/1}",
+            "mstatus.MIE = 0",
+            *([sie0] if priv != "M" else []),
+            "mie = all 0s to disable interrupts",
+            f"Execute WRS.STO in {priv} mode",
+            "2 bins",
+        ]
+        tw_list = [0, 1]
+        mode_list = [priv]
+    else:
+        coverpoint = "cp_wrs_nto_timeout"
+        description = [
+            f"Generate {priv} mode WRS.NTO timeout test",
+            "",
+            "cross lr instruction to set up reservation.",
+            "mstatus.TW = 1",
+            "mstatus.MIE = 0",
+            sie0,
+            "mie = all 0s to disable interrupts",
+            f"execute WRS.NTO in {priv} mode",
+            "1 bin",
+        ]
+        tw_list = [1]
+        mode_list = [priv]
+    lines = [comment_banner(coverpoint, "\n".join(description))]
 
-    if coverpoint == "cp_wrs_nto_timeout_h":
+    if virtualized:
         lines.append("#ifdef H_SUPPORTED")
-    for priv in priv_list:
+    for mode in mode_list:
         for tw_val in tw_list:
             lines.extend(
                 [
-                    "###### Setup (M Mode) ######",
-                    "# Disable all interrupts in mie",
-                    "csrw mie, zero",
-                    "# mstatus.MIE, SIE and MPIE = 0",
-                    f"LI(x{r_temp}, 0x8A)",
-                    f"csrc mstatus, x{r_temp}",
-                    "# Write TW bit",
+                    "###### Setup ######",
+                    *_disable_interrupts(priv, r_temp),
+                    "# Write mstatus.TW",
                     f"LI(x{r_temp}, 0x200000)",
-                    f"{'csrs' if tw_val else 'csrc'} mstatus, x{r_temp}",
+                    m_csr(priv, f"{'csrs' if tw_val else 'csrc'} mstatus, x{r_temp}"),
                 ]
             )
-            if coverpoint == "cp_wrs_nto_timeout_h":
+            if virtualized:
                 lines.extend(
                     [
                         "# Set VTW",
@@ -396,19 +502,15 @@ def wrs_timeout_helper(
                         "csrw hedeleg, zero",
                     ]
                 )
-            if priv != "M":
-                lines.extend(
-                    [
-                        f"RVTEST_GOTO_LOWER_MODE {priv}mode",
-                    ]
-                )
+            if mode != priv:
+                lines.append(f"RVTEST_TSBI_GOTO_{mode}MODE")
             lines.extend(
                 [
                     *_read_trap_count_helper(r_cause),
                     "# lr.w to set up reservation",
                     f"LA(x{r_temp}, scratch)",
                     f"lr.w x{r_temp2}, (x{r_temp})",
-                    test_data.add_testcase(f"tw_{tw_val}_{priv}_{op}", coverpoint, covergroup),
+                    test_data.add_testcase(f"tw_{tw_val}_{mode}_{op}", coverpoint, covergroup),
                     "1:",
                     f"{op}",
                 ]
@@ -429,14 +531,10 @@ def wrs_timeout_helper(
                     "#### Clean up ####",
                 ]
             )
-            if priv != "M":
-                lines.extend(
-                    [
-                        "RVTEST_GOTO_MMODE",
-                    ]
-                )
+            if mode != priv:
+                lines.append(f"RVTEST_TSBI_GOTO_{priv}MODE")
 
-    if coverpoint == "cp_wrs_nto_timeout_h":
+    if virtualized:
         lines.append("#endif // H_SUPPORTED")
     test_data.int_regs.return_registers([r_cause, r_temp, r_temp2])
     return lines

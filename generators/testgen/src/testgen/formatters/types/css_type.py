@@ -15,6 +15,8 @@ css_config = InstructionTypeConfig(
     required_params={"rs2", "rs2val", "immval", "temp_reg"},
     imm_bits=9,
     imm_signed=False,
+    # sp holds the store base address, so a randomly chosen rs2 must not be x2
+    excluded_regs={"rs2": {2}},
 )
 
 

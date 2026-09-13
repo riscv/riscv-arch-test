@@ -178,7 +178,8 @@ def randomize_registers(
     if "fs1" in registers:
         new_params.fs1 = randomize_register("fs1", test_data, instr_type_config, lmul, info, new_params.fs1)
         if new_params.fs1val is None:
-            new_params.fs1val = random_int(test_data.config.flen)
+            assert test_data.config.sew is not None, "SEW must be Set For Vector Register Randomization"
+            new_params.fs1val = random_int(test_data.config.sew, signed=False)
     if "fd" in registers:
         new_params.fd = randomize_register("fd", test_data, instr_type_config, lmul, info, new_params.fd)
 

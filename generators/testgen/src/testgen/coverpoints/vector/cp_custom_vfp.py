@@ -861,12 +861,21 @@ def _vfp_flags_gen_spacer(
 ) -> TestChunk:
     """Clean spacer (fflags=0) so the first flag test gets a 0->1 transition."""
     t = _VFP_FLAGS_TV[sew]
-    if instr_name in _VFP_FLAGS_WIDE_SRC:
-        one = 1 if instr_name in _VFP_FLAGS_NARROW_I2F else _VFP_FLAGS_TV.get(sew * 2, {}).get("ONE", t["ONE"])
+
+    vector_config = get_instruction_type_config(instr_type).vector_data
+    assert vector_config is not None
+
+    one = t["ONE"]
+    if "vs2" in vector_config.widened_regs:
+        vs2_one = 1 if instr_name in _VFP_FLAGS_NARROW_I2F else _VFP_FLAGS_TV.get(sew * 2, {}).get("ONE", t["ONE"])
     else:
-        one = t["ONE"]
+        vs2_one = one
+
+    vs1_one = one
     desc = f"cp_custom_vfp_flags (clean spacer, {instr_name})"
-    return _vfp_flags_emit(instr_name, instr_type, test_data, coverpoint, sew, one, one, "spacer", desc, "spacer")
+    return _vfp_flags_emit(
+        instr_name, instr_type, test_data, coverpoint, sew, vs2_one, vs1_one, "spacer", desc, "spacer"
+    )
 
 
 def _vfp_flags_gen_nv(
@@ -874,19 +883,20 @@ def _vfp_flags_gen_nv(
 ) -> list[TestChunk]:
     """NV (Invalid Operation) via sNaN input."""
     t = _VFP_FLAGS_TV[sew]
-    if instr_name in _VFP_FLAGS_WIDE_SRC and instr_name not in _VFP_FLAGS_NARROW_I2F:
-        nv = _VFP_FLAGS_TV.get(sew * 2, {}).get("NV", t["NV"])
-    else:
-        nv = t["NV"]
-    return _vfp_flags_pair(instr_name, instr_type, test_data, coverpoint, sew, nv, nv, "NV", "sNaN")
+
+    vector_config = get_instruction_type_config(instr_type).vector_data
+    assert vector_config is not None
+
+    nv = t["NV"]
+    vs2_nv = _VFP_FLAGS_TV.get(sew * 2, {}).get("NV", t["NV"]) if "vs2" in vector_config.widened_regs else nv
+    vs1_nv = nv
+    return _vfp_flags_pair(instr_name, instr_type, test_data, coverpoint, sew, vs2_nv, vs1_nv, "NV", "sNaN")
 
 
 def _vfp_flags_gen_dz(
     instr_name: str, instr_type: str, test_data: TestData, coverpoint: str, sew: int
 ) -> list[TestChunk]:
     """DZ (Divide by Zero) -- only for instructions in _VFP_FLAGS_DZ_PAIR."""
-    if instr_name not in _VFP_FLAGS_DZ_PAIR:
-        return []
     t = _VFP_FLAGS_TV[sew]
     keys = _VFP_FLAGS_DZ_PAIR[instr_name]
     vs2 = t[keys[0]]
@@ -898,8 +908,6 @@ def _vfp_flags_gen_of(
     instr_name: str, instr_type: str, test_data: TestData, coverpoint: str, sew: int
 ) -> list[TestChunk]:
     """OF (Overflow) via max + max or max * max -- only for instructions in _VFP_FLAGS_OF_SET."""
-    if instr_name not in _VFP_FLAGS_OF_SET:
-        return []
     of_val = _VFP_FLAGS_TV[sew]["OF"]
     return _vfp_flags_pair(instr_name, instr_type, test_data, coverpoint, sew, of_val, of_val, "OF", "max normal")
 
@@ -908,18 +916,19 @@ def _vfp_flags_gen_uf(
     instr_name: str, instr_type: str, test_data: TestData, coverpoint: str, sew: int
 ) -> list[TestChunk]:
     """UF (Underflow) via tiny * tiny -- only for instructions in _VFP_FLAGS_UF_SET."""
-    if instr_name not in _VFP_FLAGS_UF_SET:
-        return []
     uf = _VFP_FLAGS_TV[sew]["UF"]
     return _vfp_flags_pair(instr_name, instr_type, test_data, coverpoint, sew, uf, uf, "UF", "tiny*tiny")
 
 
-def _vfp_flags_resolve_nx(instr_name: str, sew: int) -> int:
+def _vfp_flags_resolve_nx(instr_name: str, instr_type: str, sew: int) -> int:
     """Resolve the default-path NX trigger value."""
     t = _VFP_FLAGS_TV[sew]
     if instr_name in _VFP_FLAGS_NX_OVERRIDE:
         return _VFP_FLAGS_NX_OVERRIDE[instr_name].get(sew, t["NX"])
-    if instr_name in _VFP_FLAGS_WIDE_SRC:
+    vector_config = get_instruction_type_config(instr_type).vector_data
+    assert vector_config is not None
+
+    if "vs2" in vector_config.widened_regs:
         return _VFP_FLAGS_TV.get(sew * 2, {}).get("NX", t["NX"])
     return t["NX"]
 
@@ -964,9 +973,6 @@ def _vfp_flags_gen_nx(
     """NX (Inexact) -- strategy depends on the instruction's operand shape."""
     t = _VFP_FLAGS_TV[sew]
 
-    if instr_name in _VFP_FLAGS_WIDENING_NX_IMPOSSIBLE:
-        return []
-
     if instr_name in _VFP_FLAGS_NX_PAIR:
         k2, k1 = _VFP_FLAGS_NX_PAIR[instr_name]
         return _vfp_flags_pair(
@@ -984,7 +990,7 @@ def _vfp_flags_gen_nx(
         )
 
     # Default: alternate between two NX trigger values so consecutive tests aren't identical.
-    nx_val = _vfp_flags_resolve_nx(instr_name, sew)
+    nx_val = _vfp_flags_resolve_nx(instr_name, instr_type, sew)
     if instr_name in _VFP_FLAGS_NARROW_I2F:
         nx2_val = nx_val + 2
         label_base = "custom_flag_int_nx"

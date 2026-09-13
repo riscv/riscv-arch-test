@@ -15,10 +15,14 @@ fvv_config = InstructionTypeConfig(
     instruction_class=["vector_fp"], required_params={"vd", "vs2"}, vector_data=VectorTypeConfig()
 )
 fwv_config = InstructionTypeConfig(
-    instruction_class=["vector_fp"], required_params={"vd", "vs2"}, vector_data=VectorTypeConfig(widened_regs={"vd"})
+    instruction_class=["vector_fp"],
+    required_params={"vd", "vs2"},
+    vector_data=VectorTypeConfig(overlap_constraints={("vd_bottom", "vs2")}, widened_regs={"vd"}),
 )
 fvw_config = InstructionTypeConfig(
-    instruction_class=["vector_fp"], required_params={"vd", "vs2"}, vector_data=VectorTypeConfig(widened_regs={"vs2"})
+    instruction_class=["vector_fp"],
+    required_params={"vd", "vs2"},
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2_top")}, widened_regs={"vs2"}),
 )
 
 

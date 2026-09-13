@@ -154,6 +154,10 @@
         `cover_info("//      InterruptsSm - Enabled");
         `include "InterruptsSm_coverage_init.svh"
     `endif
+    `ifdef COVER_INTERRUPTSSM2
+        `cover_info("//      InterruptsSm2 - Enabled");
+        `include "InterruptsSm2_coverage_init.svh"
+    `endif
     `ifdef COVER_INTERRUPTSSSTC
         `cover_info("//      InterruptsSstc - Enabled");
         `include "InterruptsSstc_coverage_init.svh"

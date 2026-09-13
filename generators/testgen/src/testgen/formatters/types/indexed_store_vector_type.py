@@ -25,7 +25,7 @@ from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig,
 from testgen.instructions.vector import parse_vector_instruction_info
 
 
-def unordered_index_element_generator(element_count: int, sew: int) -> list[int]:
+def unordered_index_element_generator(element_count: int, sew: int, _register: str) -> list[int]:
     # vlmax can take on values of any power of two, from 1 to the power of two exceeding element_count
     # All items in the generated list from [0, vlmax) must be unique mod 2*vlmax for all possible vlmaxes
     # LIMITATIONS: For SEW=8, unique indices are not guaranteed

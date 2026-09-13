@@ -2213,6 +2213,12 @@
             ins.add_vm(2);
             ins.add_v0();
         end
+        "vfncvt.f.f.w"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vm(2);
+            ins.add_v0();
+        end
         "vfncvt.f.x.w"     : begin
             ins.add_vd(0);
             ins.add_vs2(1);
@@ -2473,6 +2479,12 @@
             ins.add_vs2(1);
             ins.add_vs1(2);
             ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vfwcvt.f.f.v"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vm(2);
             ins.add_v0();
         end
         "vfwcvt.f.f.v"     : begin

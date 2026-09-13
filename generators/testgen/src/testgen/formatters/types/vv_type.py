@@ -68,6 +68,7 @@ def format_vv_like_type(
     vs2_lmul_multiplier: float = 1,
     vs2_mask: bool = False,
     preload_vs2: bool = False,
+    widened_regs: set[str] | None = None,
 ) -> tuple[list[str], list[str], list[str]]:
     assert params.vs2 is not None and params.vs2_val_pointer is not None, (
         f"vs2 and vs2_val_pointer must be provided for {type_name}-type instructions"
@@ -81,6 +82,9 @@ def format_vv_like_type(
         f"lmul must be provided for {type_name}-type instructions"
     )
     assert test_data.test_chunk is not None, f"format_{type_name.lower()}_type must be used with an active TestChunk"
+
+    if widened_regs is None:
+        widened_regs = set()
 
     test_data.test_chunk.vector_labels.extend(
         [
@@ -101,12 +105,16 @@ def format_vv_like_type(
     assert lmul is not None
 
     vd_vl = params.vl if params.vector_suite == "base" else "vlmax"
+    vd_lmul = lmul if "vd" not in widened_regs else lmul * 2
     vs2_vl = params.vl if params.vector_suite == "base" or not preload_vs2 else "vlmax"
+    if "vs2" in widened_regs:
+        assert vs2_lmul_multiplier == 1, "Conflicting values for widened_regs and vs2_lmul_multiplier"
+        vs2_lmul_multiplier = 2
     vs2_lmul = max(lmul * vs2_lmul_multiplier, 1) if not vs2_mask else 1
     vs2_sew = int(params.sew * vs2_lmul_multiplier)
 
     to_load = [
-        VectorLoad(reg="vd", vl=vd_vl, lmul=lmul, no_fractional_load=True),
+        VectorLoad(reg="vd", vl=vd_vl, lmul=vd_lmul, no_fractional_load=True),
         VectorLoad(reg="vs2", vl=vs2_vl, lmul=vs2_lmul, sew=vs2_sew),
     ]
 
@@ -124,9 +132,9 @@ def format_vv_like_type(
         test = [f"{instr_str} v{params.vd}, v{params.vs2}"]
 
     if params.vector_suite == "length":
-        check = [*write_sigupd_v_len(test_data, params, lmul)]
+        check = [*write_sigupd_v_len(test_data, params, vd_lmul, widen_vd="vd" in widened_regs)]
     else:
-        check = [*write_sigupd_v(test_data, params)]
+        check = [*write_sigupd_v(test_data, params, widen_vd="vd" in widened_regs)]
 
     # This can only be released after sigupd
     if params.maskval:

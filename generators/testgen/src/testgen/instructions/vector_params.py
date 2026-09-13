@@ -177,8 +177,9 @@ def randomize_registers(
 
     if "fs1" in registers:
         new_params.fs1 = randomize_register("fs1", test_data, instr_type_config, lmul, info, new_params.fs1)
-        if new_params.fs1val is not None:
-            new_params.fs1val = random_int(test_data.config.flen)
+        if new_params.fs1val is None:
+            assert test_data.config.sew is not None, "SEW must be Set For Vector Register Randomization"
+            new_params.fs1val = random_int(test_data.config.sew, signed=False)
     if "fd" in registers:
         new_params.fd = randomize_register("fd", test_data, instr_type_config, lmul, info, new_params.fd)
 
@@ -270,6 +271,11 @@ def get_occupied_v_registers(
         start_no_overlap = True  # save for reserved section below
         register = register[:-6]  # remove "_start" from register name
 
+    not_one_no_overlap = False
+    if register[-8:] == "_not_one":  # Specify no overlap with all but the first register
+        not_one_no_overlap = True
+        register = register[:-8]
+
     # We can check that the register that can't overlap is even assigned now that the suffixes have been removed
     if params_dict[register] is None:
         return []
@@ -291,6 +297,9 @@ def get_occupied_v_registers(
     if start_no_overlap or single_register or emul < 1:
         start_no_register_overlap = 0
         end_register_no_overlap = 1
+    elif not_one_no_overlap:
+        start_no_register_overlap = 1
+        end_register_no_overlap = emul
     else:
         start_no_register_overlap = smallest_emul if top_no_overlap and smallest_emul >= 1 else 0
         # need to include nfields (there is no bottom or top overlap allowed)
@@ -475,7 +484,7 @@ def generate_random_vector_params(
             eew = int(sew * info.get_size_multiplier(register, sew, widened_regs))
             element_count = 1 if suite == "base" else math.ceil(VLEN_MAX * lmul / sew)
             if instr_type_config.vector_data.random_element_generator:
-                elements = instr_type_config.vector_data.random_element_generator(element_count, eew)
+                elements = instr_type_config.vector_data.random_element_generator(element_count, eew, register)
                 test_data.register_vector_data(label, eew, elements=elements)
             else:
                 test_data.register_vector_data(label, eew, random_elements=element_count)
@@ -497,6 +506,10 @@ def generate_random_vector_params(
             raise ValueError(
                 f"Instruction type '{instr_type}' requires immval but has no imm_bits or imm_range configured"
             )
+
+    # All vector floating point instructions use the dyn rounding mode
+    if "vector_fp" in instr_type_config.instruction_class and params.csr_frm_val is None:
+        params.csr_frm_val = random_range(0, 4)
 
     if (
         instr_type_config.required_params is not None

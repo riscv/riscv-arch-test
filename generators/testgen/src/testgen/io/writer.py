@@ -114,7 +114,10 @@ def write_test_file(
 
     # Test footer
     test_data_section = generate_test_data_section(data_values, test_config.xlen, test_config.flen)
-    test_data_section += generate_vector_data_section(vector_data_labels)
+    vector_data_section = generate_vector_data_section(vector_data_labels)
+    if test_data_section != "" and vector_data_section != "":
+        test_data_section += "\n"
+    test_data_section += vector_data_section
     if raw_data:
         raw_data_lines = "\n".join(raw_data).splitlines()
         test_data_section += "\n" + "\n".join(indent_asm(line) for line in raw_data_lines)

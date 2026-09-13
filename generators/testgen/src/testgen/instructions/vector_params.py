@@ -271,6 +271,11 @@ def get_occupied_v_registers(
         start_no_overlap = True  # save for reserved section below
         register = register[:-6]  # remove "_start" from register name
 
+    not_one_no_overlap = False
+    if register[-8:] == "_not_one":  # Specify no overlap with all but the first register
+        not_one_no_overlap = True
+        register = register[:-8]
+
     # We can check that the register that can't overlap is even assigned now that the suffixes have been removed
     if params_dict[register] is None:
         return []
@@ -292,6 +297,9 @@ def get_occupied_v_registers(
     if start_no_overlap or single_register or emul < 1:
         start_no_register_overlap = 0
         end_register_no_overlap = 1
+    elif not_one_no_overlap:
+        start_no_register_overlap = 1
+        end_register_no_overlap = emul
     else:
         start_no_register_overlap = smallest_emul if top_no_overlap and smallest_emul >= 1 else 0
         # need to include nfields (there is no bottom or top overlap allowed)

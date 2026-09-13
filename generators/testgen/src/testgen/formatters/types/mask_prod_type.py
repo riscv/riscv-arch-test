@@ -28,38 +28,47 @@ mvv_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
     vector_data=VectorTypeConfig(
         mask_regs={"vd"},
+        overlap_constraints={("vd", "vs1_not_one"), ("vd", "vs2_not_one")},
         masked_constraints={("vs1", "v0"), ("vs2", "v0")},
     ),
 )
 # Mask = Vector op Integer
 mvx_config = InstructionTypeConfig(
     required_params={"vd", "rs1", "vs2"},
-    vector_data=VectorTypeConfig(mask_regs={"vd"}, masked_constraints={("vs2", "v0")}),
+    vector_data=VectorTypeConfig(
+        mask_regs={"vd"}, overlap_constraints={("vd", "vs2_not_one")}, masked_constraints={("vs2", "v0")}
+    ),
 )
 # Mask = Vector op Immediate
 mvi_config = InstructionTypeConfig(
     required_params={"vd", "vs2", "immval"},
     imm_bits=5,
-    vector_data=VectorTypeConfig(mask_regs={"vd"}, masked_constraints={("vs2", "v0")}),
+    vector_data=VectorTypeConfig(
+        mask_regs={"vd"}, overlap_constraints={("vd", "vs2_not_one")}, masked_constraints={("vs2", "v0")}
+    ),
 )
 # Mask = Vector op Vector (carry variant, so not maskable)
 mvvc_config = InstructionTypeConfig(
-    required_params={"vd", "vs1", "vs2"}, vector_data=VectorTypeConfig(mask_regs={"vd"})
+    required_params={"vd", "vs1", "vs2"},
+    vector_data=VectorTypeConfig(mask_regs={"vd"}, overlap_constraints={("vd", "vs2_not_one"), ("vd", "vs1_not_one")}),
 )
 # Mask = Vector op Integer (carry variant, so not maskable)
 mvxc_config = InstructionTypeConfig(
-    required_params={"vd", "rs1", "vs2"}, vector_data=VectorTypeConfig(mask_regs={"vd"})
+    required_params={"vd", "rs1", "vs2"},
+    vector_data=VectorTypeConfig(mask_regs={"vd"}, overlap_constraints={("vd", "vs2_not_one")}),
 )
 # Mask = Vector op Immediate (carry variant, so not maskable)
 mvic_config = InstructionTypeConfig(
-    required_params={"vd", "vs2", "immval"}, imm_bits=5, vector_data=VectorTypeConfig(mask_regs={"vd"})
+    required_params={"vd", "vs2", "immval"},
+    imm_bits=5,
+    vector_data=VectorTypeConfig(mask_regs={"vd"}, overlap_constraints={("vd", "vs2_not_one")}),
 )
 # Mask = Vector op Vector op Mask
 mvvm_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2", "maskval"},
     vector_data=VectorTypeConfig(
         mask_regs={"vd"},
-        overlap_constraints={("vs2", "v0"), ("vs1", "v0")},
+        overlap_constraints={("vs2", "v0"), ("vs1", "v0"), ("vd", "vs1_not_one"), ("vd", "vs2_not_one")},
     ),
 )
 # Mask = Vector op Integer op Mask
@@ -67,7 +76,7 @@ mvxm_config = InstructionTypeConfig(
     required_params={"vd", "rs1", "vs2", "maskval"},
     vector_data=VectorTypeConfig(
         mask_regs={"vd"},
-        overlap_constraints={("vs2", "v0")},
+        overlap_constraints={("vs2", "v0"), ("vd", "vs2_not_one")},
     ),
 )
 # Mask = Vector op Immediate op Mask
@@ -76,7 +85,7 @@ mvim_config = InstructionTypeConfig(
     imm_bits=5,
     vector_data=VectorTypeConfig(
         mask_regs={"vd"},
-        overlap_constraints={("vs2", "v0")},
+        overlap_constraints={("vs2", "v0"), ("vd", "vs2_not_one")},
     ),
 )
 # Mask = unary-op(Mask)

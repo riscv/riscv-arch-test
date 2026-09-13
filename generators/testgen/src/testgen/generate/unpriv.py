@@ -80,7 +80,8 @@ def generate_unpriv_extension_tests(
     output_dir.mkdir(parents=True, exist_ok=True)
     generated_files: set[Path] = set()
 
-    flen = get_flen_for_extension(testsuite)
+    # FLEN comes from the same name components MARCH is built from, so the two always agree.
+    flen = max((get_flen_for_extension(c) for c in re.findall(r"[A-Z][a-z]*", testsuite)), default=32)
     test_config = TestConfig(xlen=xlen, flen=flen, testsuite=testsuite, E_ext=E_ext, sew=sew)
 
     # Iterate through each instruction in the testsuite; generate separate test files for each

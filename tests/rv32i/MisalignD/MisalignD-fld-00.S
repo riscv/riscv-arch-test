@@ -17,7 +17,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 28
+#define SIGUPD_COUNT 37
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -116,10 +116,10 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test data
-.word 0x44556677
-.word 0x00112233
-.word 0x89abcdef
-.word 0x01234567
+.dword 0x0000000044556677
+.dword 0x0000000000112233
+.dword 0x0000000089abcdef
+.dword 0x0000000001234567
 
 // Testcase strings
 MisalignD_fld_cg_cp_misalign_0_str: .string "\"test: 1; cg: MisalignD_fld_cg; cp: cp_misalign; bin: 0\""

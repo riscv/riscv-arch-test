@@ -111,5 +111,15 @@
 #define RVMODEL_SET_SEXT_INT(_R1, _R2)        nop
 #define RVMODEL_CLR_SEXT_INT(_R1, _R2)        nop
 
+##### Sscofpmf #####
+
+#define RVMODEL_MHPMEVENT   CSR_MHPMEVENT3
+#define RVMODEL_MHPMCOUNTER CSR_MHPMCOUNTER3
+// No event code counts: there are no plans for Imperas to support HPM events, so this is
+// not expected to change in the foreseeable future.
+#define RVMODEL_MHPMEVENT_VAL 0x00000000
+#define RVMODEL_MHPMEVENT_CODE(_R1, _R2) \
+    nop
+
 
 #endif // _RVMODEL_MACROS_H

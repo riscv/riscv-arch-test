@@ -154,6 +154,11 @@ def format_fp_mask_producing_type(
         if mask_reg != 0:
             recover_mask = [f"vmand.mm v0, v{mask_reg}, v{mask_reg}"]
 
+        reload_data = []
+        if params.vd == params.vs1 or params.vd == params.vs2:
+            # Then the loads were overwritten by the mask result
+            reload_data = load_code
+
         vlmax_vsetvli = [load_test_vtype(params, random_vl_reg, force_vlmax=True)]
 
         check = [
@@ -163,6 +168,7 @@ def format_fp_mask_producing_type(
             "# clobbered in the sigupd, however, in the case of a masked instruction with vd = v0, v0 was overwritten.",
             "# So, we may have to recover that value.",
             *recover_mask,
+            *reload_data,
             *vlmax_vsetvli,
             test[0],
             "# This sigupd variant saves this result to the signature in non-selfcheck mode, and no-ops in selfcheck mode",

@@ -699,5 +699,5 @@ def handle_vector_fp(setup: list[str], check: list[str], frm_val: int, test_data
     """Modifies Setup, Test, Check in place to ensure that vector-fp tests are run with the correct rounding mode"""
     setup.append(f"fsrmi {frm_val}")
     setup.append("fsflagsi 0b00000 # clear all fflags")
-    check.append(write_sigupd(None, test_data, "fflags"))
+    check.insert(0, write_sigupd(None, test_data, "fflags"))
     check.append("fsrmi 0x0")

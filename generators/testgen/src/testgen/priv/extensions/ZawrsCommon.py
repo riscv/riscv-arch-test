@@ -23,17 +23,18 @@ def s_csr(priv: str, instr: str) -> str:
     return instr if priv != "U" else tsbi_call(instr)
 
 
-def _enable_menvcfg_stce(priv: str, r: int) -> list[str]:
-    """menvcfg.STCE = 1 (bit 63 on RV64, bit 31 of menvcfgh on RV32); an M-mode CSR reached via T-SBI below M-mode."""
+def _menvcfg_stce(priv: str, r: int, enable: bool) -> list[str]:
+    """menvcfg.STCE (bit 63 on RV64, bit 31 of menvcfgh on RV32); an M-mode CSR reached via T-SBI below M-mode."""
+    op = "csrs" if enable else "csrc"
     return [
-        "# Enable menvcfg.STCE",
+        f"# {'Enable' if enable else 'Disable'} menvcfg.STCE",
         f"LI(x{r}, 1)",
         "#if __riscv_xlen == 64",
         f"slli x{r}, x{r}, 63",
-        m_csr(priv, f"csrs menvcfg, x{r}"),
+        m_csr(priv, f"{op} menvcfg, x{r}"),
         "#else",
         f"slli x{r}, x{r}, 31",
-        m_csr(priv, f"csrs menvcfgh, x{r}"),
+        m_csr(priv, f"{op} menvcfgh, x{r}"),
         "#endif",
     ]
 
@@ -111,7 +112,7 @@ def wrs_resume_helper(
                 "#ifdef SSTC_SUPPORTED",
                 "# Enable Sstc (menvcfg.STCE) so stimecmp drives sip.STIP, then disarm the comparator",
                 "# so whatever stimecmp held before does not raise STIP once STIE is set",
-                *_enable_menvcfg_stce(priv, r_temp),
+                *_menvcfg_stce(priv, r_temp, True),
                 *_disable_stimecmp(priv, r_temp),
                 "#endif",
             ]
@@ -222,6 +223,16 @@ def wrs_resume_helper(
                                 "#endif",
                             ]
                         )
+
+    if lower:
+        lines.extend(
+            [
+                "#ifdef SSTC_SUPPORTED",
+                "# Restore the boot value of menvcfg.STCE so mip.STIP is writable again",
+                *_menvcfg_stce(priv, r_temp, False),
+                "#endif",
+            ]
+        )
 
     test_data.int_regs.return_registers([r_cause, r_temp, r_temp2])
     return lines

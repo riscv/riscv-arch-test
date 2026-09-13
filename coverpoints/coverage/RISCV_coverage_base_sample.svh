@@ -118,6 +118,9 @@
     `ifdef COVER_INTERRUPTSSM
         interruptssm_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_INTERRUPTSSM2
+        interruptssm2_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_INTERRUPTSSSTC
         interruptssstc_sample(hart, issue, ins);
     `endif

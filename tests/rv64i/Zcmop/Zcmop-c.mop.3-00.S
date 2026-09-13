@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 10
+#define SIGUPD_COUNT 13
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -30,12 +30,27 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_asm_count
+// cp_custom_mop_no_write
 /////////////////////////////////
 
-# Testcase cp_asm_count
-Zcmop_c_mop_3_cg_cp_asm_count_count:
-  c.mop.3
+  mv x12, x3 # switch data pointer register to avoid conflict with test
+# cp_custom_mop_no_write: c.mop.3 must not write x3 (the c.lui x3, 0 encoding it reuses) or any other register
+  RVTEST_TESTDATA_LOAD_INT(x12, x3) # load x3: x3 = 0x8323603bed6d8f45
+  RVTEST_TESTDATA_LOAD_INT(x12, x7) # load x7: x7 = 0xf329d2752960fb7f
+  RVTEST_TESTDATA_LOAD_INT(x12, x14) # load x14: x14 = 0xe3eb2d6b39ed2aa6
+  c.mop.3 # must not write any register
+Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x3:
+  # Check if x3 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x3, Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x3, Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x3_str)
+
+Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x7:
+  # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x7, Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x7, Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x7_str)
+
+Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x14:
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x14, Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x14_str)
+
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -44,10 +59,14 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test data
-
+.dword 0x8323603bed6d8f45
+.dword 0xf329d2752960fb7f
+.dword 0xe3eb2d6b39ed2aa6
 
 // Testcase strings
-Zcmop_c_mop_3_cg_cp_asm_count_count_str: .string "\"test: 1; cg: Zcmop_c.mop.3_cg; cp: cp_asm_count; bin: count\""
+Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x3_str: .string "\"test: 1; cg: Zcmop_c.mop.3_cg; cp: cp_custom_mop_no_write; bin: x3\""
+Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x7_str: .string "\"test: 2; cg: Zcmop_c.mop.3_cg; cp: cp_custom_mop_no_write; bin: x7\""
+Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x14_str: .string "\"test: 3; cg: Zcmop_c.mop.3_cg; cp: cp_custom_mop_no_write; bin: x14\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

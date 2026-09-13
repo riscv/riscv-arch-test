@@ -206,6 +206,15 @@ def _warl_reserved_check(
     return lines
 
 
+def frm_reserved_fields(lsb: int) -> list[tuple]:
+    """WARL entries for the reserved frm encodings 5-7, where frm is the three bits at `lsb`.
+
+    frm is bits 7:5 of fcsr and bits 2:0 of frm. A walk writes these encodings, so the
+    readback is checked only for holding some legal rounding mode.
+    """
+    return [("frm", lsb, 3, value) for value in (5, 6, 7)]
+
+
 def csr_walk_test(
     test_data: TestData,
     csr: tuple,

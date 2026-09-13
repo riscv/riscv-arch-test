@@ -43,10 +43,12 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
         bins fflags = {CSR_FFLAGS};
     }
     fcsr_frm_edges: coverpoint ins.current.rs1_val[7:5] {
-        // auto fills 0 through 7
+        // auto fills 0 through 7; 5-7 are reserved rounding modes, written only by the walk
+        ignore_bins reserved = {[5:7]};
     }
     frm_edges: coverpoint ins.current.rs1_val[2:0] {
-        // auto fills 0 through 7
+        // auto fills 0 through 7; 5-7 are reserved rounding modes, written only by the walk
+        ignore_bins reserved = {[5:7]};
     }
     fflags_edges: coverpoint ins.current.rs1_val[4:0] {
         // auto fills 0 through 15

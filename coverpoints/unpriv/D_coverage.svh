@@ -897,6 +897,15 @@ covergroup D_feq_d_cg with function sample(ins_t ins);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
     }
 
+    cp_custom_fflags_accrue_D : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")  iff (ins.trap == 0 )  {
+        // fflags accrues: this operation raises only NV, so any other set flag was carried in
+        bins accrue_NX  = {5'b10001};
+        bins accrue_UF  = {5'b10010};
+        bins accrue_OF  = {5'b10100};
+        bins accrue_DZ  = {5'b11000};
+        bins accrue_all = {5'b11111};
+    }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -1063,6 +1072,15 @@ covergroup D_fle_d_cg with function sample(ins_t ins);
         // Value of FCSR.fflags
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
+    }
+
+    cp_custom_fflags_accrue_D : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")  iff (ins.trap == 0 )  {
+        // fflags accrues: this operation raises only NV, so any other set flag was carried in
+        bins accrue_NX  = {5'b10001};
+        bins accrue_UF  = {5'b10010};
+        bins accrue_OF  = {5'b10100};
+        bins accrue_DZ  = {5'b11000};
+        bins accrue_all = {5'b11111};
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {

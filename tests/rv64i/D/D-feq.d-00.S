@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 1882
+#define SIGUPD_COUNT 1892
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -10358,6 +10358,65 @@ D_feq_d_cg_cr_fs1_fs2_edges_D_fs1val_0xa6e895993737426c_fs2val_0xa6e895993737426
   # Check fflags. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x15, x5, x4, D_feq_d_cg_cr_fs1_fs2_edges_D_fs1val_0xa6e895993737426c_fs2val_0xa6e895993737426c_frm_None, D_feq_d_cg_cr_fs1_fs2_edges_D_fs1val_0xa6e895993737426c_fs2val_0xa6e895993737426c_frm_None_str)
 
+/////////////////////////////////
+// cp_custom_fflags_accrue_D
+/////////////////////////////////
+
+# Testcase cp_custom_fflags_accrue_D (fflags pre-set to 0b00001, operation raises NV)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x16, f22) # load fs1: f22 = 0x7ff0000000000001
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x16, f21) # load fs2: f21 = 0x3ff0000000000000
+  fsflagsi 0b00001 # pre-set fflags with flags the operation cannot raise
+D_feq_d_cg_cp_custom_fflags_accrue_D_preset_00001:
+  feq.d x22, f22, f21 # raises NV, must accrue onto the pre-set flags
+  # Check if x22 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x22, D_feq_d_cg_cp_custom_fflags_accrue_D_preset_00001, D_feq_d_cg_cp_custom_fflags_accrue_D_preset_00001_str)
+  # Check fflags. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x15, x5, x4, D_feq_d_cg_cp_custom_fflags_accrue_D_preset_00001, D_feq_d_cg_cp_custom_fflags_accrue_D_preset_00001_str)
+
+# Testcase cp_custom_fflags_accrue_D (fflags pre-set to 0b00010, operation raises NV)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x16, f9) # load fs1: f9 = 0x7ff0000000000001
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x16, f24) # load fs2: f24 = 0x3ff0000000000000
+  fsflagsi 0b00010 # pre-set fflags with flags the operation cannot raise
+D_feq_d_cg_cp_custom_fflags_accrue_D_preset_00010:
+  feq.d x25, f9, f24 # raises NV, must accrue onto the pre-set flags
+  # Check if x25 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x25, D_feq_d_cg_cp_custom_fflags_accrue_D_preset_00010, D_feq_d_cg_cp_custom_fflags_accrue_D_preset_00010_str)
+  # Check fflags. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x15, x5, x4, D_feq_d_cg_cp_custom_fflags_accrue_D_preset_00010, D_feq_d_cg_cp_custom_fflags_accrue_D_preset_00010_str)
+
+# Testcase cp_custom_fflags_accrue_D (fflags pre-set to 0b00100, operation raises NV)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x16, f25) # load fs1: f25 = 0x7ff0000000000001
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x16, f1) # load fs2: f1 = 0x3ff0000000000000
+  fsflagsi 0b00100 # pre-set fflags with flags the operation cannot raise
+D_feq_d_cg_cp_custom_fflags_accrue_D_preset_00100:
+  feq.d x20, f25, f1 # raises NV, must accrue onto the pre-set flags
+  # Check if x20 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x20, D_feq_d_cg_cp_custom_fflags_accrue_D_preset_00100, D_feq_d_cg_cp_custom_fflags_accrue_D_preset_00100_str)
+  # Check fflags. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x15, x5, x4, D_feq_d_cg_cp_custom_fflags_accrue_D_preset_00100, D_feq_d_cg_cp_custom_fflags_accrue_D_preset_00100_str)
+
+# Testcase cp_custom_fflags_accrue_D (fflags pre-set to 0b01000, operation raises NV)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x16, f14) # load fs1: f14 = 0x7ff0000000000001
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x16, f5) # load fs2: f5 = 0x3ff0000000000000
+  fsflagsi 0b01000 # pre-set fflags with flags the operation cannot raise
+D_feq_d_cg_cp_custom_fflags_accrue_D_preset_01000:
+  feq.d x13, f14, f5 # raises NV, must accrue onto the pre-set flags
+  # Check if x13 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x13, D_feq_d_cg_cp_custom_fflags_accrue_D_preset_01000, D_feq_d_cg_cp_custom_fflags_accrue_D_preset_01000_str)
+  # Check fflags. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x15, x5, x4, D_feq_d_cg_cp_custom_fflags_accrue_D_preset_01000, D_feq_d_cg_cp_custom_fflags_accrue_D_preset_01000_str)
+
+# Testcase cp_custom_fflags_accrue_D (fflags pre-set to 0b01111, operation raises NV)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x16, f5) # load fs1: f5 = 0x7ff0000000000001
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x16, f4) # load fs2: f4 = 0x3ff0000000000000
+  fsflagsi 0b01111 # pre-set fflags with flags the operation cannot raise
+D_feq_d_cg_cp_custom_fflags_accrue_D_preset_01111:
+  feq.d x3, f5, f4 # raises NV, must accrue onto the pre-set flags
+  # Check if x3 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x3, D_feq_d_cg_cp_custom_fflags_accrue_D_preset_01111, D_feq_d_cg_cp_custom_fflags_accrue_D_preset_01111_str)
+  # Check fflags. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x15, x5, x4, D_feq_d_cg_cp_custom_fflags_accrue_D_preset_01111, D_feq_d_cg_cp_custom_fflags_accrue_D_preset_01111_str)
+
   mv x2, x15 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -12239,6 +12298,16 @@ RVTEST_DATA_BEGIN
 .dword 0x5a392534a57711ad
 .dword 0xa6e895993737426c
 .dword 0xa6e895993737426c
+.dword 0x7ff0000000000001
+.dword 0x3ff0000000000000
+.dword 0x7ff0000000000001
+.dword 0x3ff0000000000000
+.dword 0x7ff0000000000001
+.dword 0x3ff0000000000000
+.dword 0x7ff0000000000001
+.dword 0x3ff0000000000000
+.dword 0x7ff0000000000001
+.dword 0x3ff0000000000000
 
 // Testcase strings
 D_feq_d_cg_cp_rd_b0_str: .string "\"test: 1; cg: D_feq.d_cg; cp: cp_rd; bin: b0\""
@@ -13177,6 +13246,11 @@ D_feq_d_cg_cr_fs1_fs2_edges_D_fs1val_0xa6e895993737426c_fs2val_0x7ff7fffffffffff
 D_feq_d_cg_cr_fs1_fs2_edges_D_fs1val_0xa6e895993737426c_fs2val_0xfff0000000000001_frm_None_str: .string "\"test: 934; cg: D_feq.d_cg; cp: cr_fs1_fs2_edges_D; bin: fs1val=0xa6e895993737426c, fs2val=0xfff0000000000001, frm=None\""
 D_feq_d_cg_cr_fs1_fs2_edges_D_fs1val_0xa6e895993737426c_fs2val_0x5a392534a57711ad_frm_None_str: .string "\"test: 935; cg: D_feq.d_cg; cp: cr_fs1_fs2_edges_D; bin: fs1val=0xa6e895993737426c, fs2val=0x5a392534a57711ad, frm=None\""
 D_feq_d_cg_cr_fs1_fs2_edges_D_fs1val_0xa6e895993737426c_fs2val_0xa6e895993737426c_frm_None_str: .string "\"test: 936; cg: D_feq.d_cg; cp: cr_fs1_fs2_edges_D; bin: fs1val=0xa6e895993737426c, fs2val=0xa6e895993737426c, frm=None\""
+D_feq_d_cg_cp_custom_fflags_accrue_D_preset_00001_str: .string "\"test: 937; cg: D_feq.d_cg; cp: cp_custom_fflags_accrue_D; bin: preset_00001\""
+D_feq_d_cg_cp_custom_fflags_accrue_D_preset_00010_str: .string "\"test: 938; cg: D_feq.d_cg; cp: cp_custom_fflags_accrue_D; bin: preset_00010\""
+D_feq_d_cg_cp_custom_fflags_accrue_D_preset_00100_str: .string "\"test: 939; cg: D_feq.d_cg; cp: cp_custom_fflags_accrue_D; bin: preset_00100\""
+D_feq_d_cg_cp_custom_fflags_accrue_D_preset_01000_str: .string "\"test: 940; cg: D_feq.d_cg; cp: cp_custom_fflags_accrue_D; bin: preset_01000\""
+D_feq_d_cg_cp_custom_fflags_accrue_D_preset_01111_str: .string "\"test: 941; cg: D_feq.d_cg; cp: cp_custom_fflags_accrue_D; bin: preset_01111\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

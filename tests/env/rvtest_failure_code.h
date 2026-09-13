@@ -763,7 +763,7 @@
         add  x6, x7, x6
 
         # offset by mismatch index
-        slli x8, x8, 0                    # already scaled above
+        mul  x8, x8, x17                  # failing_index * eew_bytes
         add  x6, x6, x8
 
         # store SEW-length expected value bytewise

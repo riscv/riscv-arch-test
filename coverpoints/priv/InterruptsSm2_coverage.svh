@@ -66,24 +66,25 @@ covergroup InterruptsSm2_cg with function sample(ins_t ins);
         `endif
     }
 
-    // Exactly one interrupt delegated: mideleg masked to the bits software can write is one-hot.
-    // H hardwires bits 12, 10, 6, and 2 to 1, so they are left out of the mask to keep it one-hot.
-    // Reads ins.prev to match mip_pairs and mie_pairs, which it is crossed with.
+    // Interrupt bits without H: MEI, SEI, MTI, STI, MSI, SSI, and LCOFI with Sscofpmf.
+    // H hardwires mideleg bits 12, 10, 6, and 2 to 1, so they are left out.
+    `ifdef SSCOFPMF_SUPPORTED
+        `define SM2_NOH_MASK 16'h2AAA
+    `else
+        `define SM2_NOH_MASK 16'h0AAA
+    `endif
+    `define SM2_MIDELEG_NOH (ins.prev.csr[CSR_MIDELEG][15:0] & `SM2_NOH_MASK)
+    `define SM2_MIP_NOH (ins.prev.csr[CSR_MIP][15:0] & `SM2_NOH_MASK)
+
+    // mideleg delegates exactly one interrupt of the pending mip pair and nothing else.
+    // x & -x keeps the lowest set bit; x & (x-1) clears it, leaving the higher bit of the pair.
+    // Reads ins.prev to match mip_pairs_noh, which it is crossed with.
     `ifdef S_SUPPORTED
-        mideleg_walking_one: coverpoint (ins.prev.csr[CSR_MIDELEG][15:0] & (16'h0AAA // MEI, SEI, MTI, STI, MSI, SSI
-                                         `ifdef SSCOFPMF_SUPPORTED
-                                             | 16'h2000 // LCOFI
-                                         `endif
-                                         )) {
-            bins mei = {16'h0800};
-            bins sei = {16'h0200};
-            bins mti = {16'h0080};
-            bins sti = {16'h0020};
-            bins msi = {16'h0008};
-            bins ssi = {16'h0002};
-            `ifdef SSCOFPMF_SUPPORTED
-                bins lcofi = {16'h2000};
-            `endif
+        mideleg_one_of_mip_pair: coverpoint
+            ((`SM2_MIDELEG_NOH == (`SM2_MIP_NOH & -`SM2_MIP_NOH))          ? 2'd1 :
+             (`SM2_MIDELEG_NOH == (`SM2_MIP_NOH & (`SM2_MIP_NOH - 16'd1))) ? 2'd2 : 2'd0) {
+            bins lower_delegated  = {2'd1};
+            bins higher_delegated = {2'd2};
         }
     `endif
 
@@ -254,6 +255,13 @@ covergroup InterruptsSm2_cg with function sample(ins_t ins);
                                      )) == 0);
     }
 
+    // Exactly two interrupts pending, excluding the H interrupts
+    `ifdef S_SUPPORTED
+        mip_pairs_noh: coverpoint `SM2_MIP_NOH {
+            bins pairs[] = {[0:$]} with ($countones(item) == 2 && (item & ~`SM2_NOH_MASK) == 0);
+        }
+    `endif
+
     // Every interrupt pending at once: reduction AND over every pending bit the config supports
     mip_all_ones: coverpoint (&{ins.prev.csr[CSR_MIP][11],  // MEIP
                             ins.prev.csr[CSR_MIP][7],   // MTIP
@@ -356,7 +364,7 @@ covergroup InterruptsSm2_cg with function sample(ins_t ins);
     cp_priority_mip:            cross priv_mode_m_hs_vs_u_vu, mideleg_zeros, mstatus_mie_one, mie_ones, mip_pairs;
     cp_priority_mie:            cross priv_mode_m_hs_vs_u_vu, mideleg_zeros, mstatus_mie_one, mip_all_ones, mie_pairs;
     `ifdef S_SUPPORTED
-        cp_priority_mideleg:        cross priv_mode_m_hs_vs_u_vu, mstatus_mie_one, mip_pairs;
+        cp_priority_mideleg:        cross priv_mode_m_hs_vs_u_vu, mstatus_mie_one, mie_ones, mip_pairs_noh, mideleg_one_of_mip_pair;
     `endif
     cp_wfi_m:                   cross priv_mode_m, mstatus_mie, mstatus_tw, wfi;
     cp_wfi:                     cross priv_mode_hs_vs_u_vu, mstatus_mie, mstatus_tw_zero, wfi;
@@ -369,6 +377,10 @@ covergroup InterruptsSm2_cg with function sample(ins_t ins);
 
 
 endgroup
+
+`undef SM2_NOH_MASK
+`undef SM2_MIDELEG_NOH
+`undef SM2_MIP_NOH
 
 function void interruptssm2_sample(int hart, int issue, ins_t ins);
     InterruptsSm2_cg.sample(ins);

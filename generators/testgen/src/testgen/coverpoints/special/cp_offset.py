@@ -75,10 +75,17 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
                 f"addi x{params.temp_reg}, x{params.temp_reg}, -2 # jump not taken, decrement check value",
                 "3:  # done with sequence",
                 write_sigupd(params.temp_reg, test_data),
-                f"{INDENT}# check return address from {instr_name}",
-                f"auipc x{params.temp_reg}, 0 # get current PC",
-                f"sub x{params.rd}, x{params.rd}, x{params.temp_reg} # subtract PC to make position-independent",
-                write_sigupd(params.rd, test_data),
+                # c.jr has no link register, so its return address check would sign a constant 0
+                *(
+                    [
+                        f"{INDENT}# check return address from {instr_name}",
+                        f"auipc x{params.temp_reg}, 0 # get current PC",
+                        f"sub x{params.rd}, x{params.rd}, x{params.temp_reg} # subtract PC to make position-independent",
+                        write_sigupd(params.rd, test_data),
+                    ]
+                    if params.rd != 0
+                    else []
+                ),
             ]
         )
     elif instr_type in ["CJ", "CJAL"]:
@@ -175,10 +182,17 @@ def make_offset_lsbs(instr_name: str, instr_type: str, test_data: TestData) -> l
                     f"addi x{params.temp_reg}, x{params.temp_reg}, 2 # should execute; branch taken",
                     f"{INDENT}# check jump taken",
                     write_sigupd(params.temp_reg, test_data),
-                    f"{INDENT}# check return address from {instr_name}",
-                    f"auipc x{params.temp_reg}, 0 # get current PC",
-                    f"sub x{params.rd}, x{params.rd}, x{params.temp_reg} # subtract PC to make position-independent",
-                    write_sigupd(params.rd, test_data),
+                    # c.jr has no link register, so its return address check would sign a constant 0
+                    *(
+                        [
+                            f"{INDENT}# check return address from {instr_name}",
+                            f"auipc x{params.temp_reg}, 0 # get current PC",
+                            f"sub x{params.rd}, x{params.rd}, x{params.temp_reg} # subtract PC to make position-independent",
+                            write_sigupd(params.rd, test_data),
+                        ]
+                        if params.rd != 0
+                        else []
+                    ),
                 ]
             )
             return_testcase_registers(test_data, params)

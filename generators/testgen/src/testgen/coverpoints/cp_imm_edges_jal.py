@@ -74,8 +74,12 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
                 write_sigupd(params.temp_reg, test_data)
                 if not skip_check
                 else f"{INDENT}# offset too small, skipping self-check",
-                f"{INDENT}# Check destination register",
-                write_sigupd(params.rd, test_data),
+                # c.j hardwires rd to x0, so its link check would sign a constant 0
+                *(
+                    [f"{INDENT}# Check destination register", write_sigupd(params.rd, test_data)]
+                    if params.rd != 0
+                    else []
+                ),
                 "",
             ]
         )
@@ -140,8 +144,12 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
                 write_sigupd(params.temp_reg, test_data)
                 if not skip_check
                 else f"{INDENT}# offset too small, skipping self-check",
-                f"{INDENT}# Check destination register",
-                write_sigupd(params.rd, test_data),
+                # c.j hardwires rd to x0, so its link check would sign a constant 0
+                *(
+                    [f"{INDENT}# Check destination register", write_sigupd(params.rd, test_data)]
+                    if params.rd != 0
+                    else []
+                ),
                 "",
             ]
         )

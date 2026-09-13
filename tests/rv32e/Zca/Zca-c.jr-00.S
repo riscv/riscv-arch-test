@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 35
+#define SIGUPD_COUNT 30
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -207,11 +207,6 @@ Zca_c_jr_cg_cp_offset_c_jr_neg:
 3:  # done with sequence
   # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x3, x5, x4, x13, Zca_c_jr_cg_cp_offset_c_jr_neg, Zca_c_jr_cg_cp_offset_c_jr_neg_str)
-  # check return address from c.jr
-  auipc x13, 0 # get current PC
-  sub x0, x0, x13 # subtract PC to make position-independent
-  # Check if x0 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x0, Zca_c_jr_cg_cp_offset_c_jr_neg, Zca_c_jr_cg_cp_offset_c_jr_neg_str)
 
 # Testcase cp_offset_lsbs (rs1 LSB=0)
   RVTEST_TESTDATA_LOAD_INT(x1, x10) # load jump check value: x10 = 0xa7507a62
@@ -226,11 +221,6 @@ jalrlsb_0:
   # check jump taken
   # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x3, x5, x4, x10, Zca_c_jr_cg_cp_offset_lsbs_00, Zca_c_jr_cg_cp_offset_lsbs_00_str)
-  # check return address from c.jr
-  auipc x10, 0 # get current PC
-  sub x0, x0, x10 # subtract PC to make position-independent
-  # Check if x0 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x0, Zca_c_jr_cg_cp_offset_lsbs_00, Zca_c_jr_cg_cp_offset_lsbs_00_str)
 
 # Testcase cp_offset_lsbs (rs1 LSB=1)
   RVTEST_TESTDATA_LOAD_INT(x1, x11) # load jump check value: x11 = 0x692974e2
@@ -245,11 +235,6 @@ jalrlsb_1:
   # check jump taken
   # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x3, x5, x4, x11, Zca_c_jr_cg_cp_offset_lsbs_01, Zca_c_jr_cg_cp_offset_lsbs_01_str)
-  # check return address from c.jr
-  auipc x11, 0 # get current PC
-  sub x0, x0, x11 # subtract PC to make position-independent
-  # Check if x0 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x0, Zca_c_jr_cg_cp_offset_lsbs_01, Zca_c_jr_cg_cp_offset_lsbs_01_str)
 
 # Testcase cp_offset_lsbs (rs1 LSB=2)
   RVTEST_TESTDATA_LOAD_INT(x1, x14) # load jump check value: x14 = 0x8060a6a8
@@ -264,11 +249,6 @@ jalrlsb_2: c.nop
   # check jump taken
   # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x3, x5, x4, x14, Zca_c_jr_cg_cp_offset_lsbs_10, Zca_c_jr_cg_cp_offset_lsbs_10_str)
-  # check return address from c.jr
-  auipc x14, 0 # get current PC
-  sub x0, x0, x14 # subtract PC to make position-independent
-  # Check if x0 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x0, Zca_c_jr_cg_cp_offset_lsbs_10, Zca_c_jr_cg_cp_offset_lsbs_10_str)
 
 # Testcase cp_offset_lsbs (rs1 LSB=3)
   RVTEST_TESTDATA_LOAD_INT(x1, x6) # load jump check value: x6 = 0x4aae5c89
@@ -283,11 +263,6 @@ jalrlsb_3: c.nop
   # check jump taken
   # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x3, x5, x4, x6, Zca_c_jr_cg_cp_offset_lsbs_11, Zca_c_jr_cg_cp_offset_lsbs_11_str)
-  # check return address from c.jr
-  auipc x6, 0 # get current PC
-  sub x0, x0, x6 # subtract PC to make position-independent
-  # Check if x0 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x0, Zca_c_jr_cg_cp_offset_lsbs_11, Zca_c_jr_cg_cp_offset_lsbs_11_str)
 
   mv x2, x3 # restore signature pointer to default register for teardown
 

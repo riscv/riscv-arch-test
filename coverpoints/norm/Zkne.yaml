@@ -14,7 +14,7 @@ normative_rule_definitions:
     coverpoint: ["Definition, checked through UDB"]
 
   - name: zk_scalar_xreg_op
-    coverpoint: ["Zkne_aes32esi_cg/{cr_rs1_rs2_edges}"]
+    coverpoint: ["{Zkne_aes32esi_cg, Zkne_aes64es_cg}/{cr_rs1_rs2_edges}"]
 
   - name: aes32esi_enc
     coverpoint: ["Zkne_aes32esi_cg/{cr_rs1_rs2_edges}"]

@@ -10,7 +10,7 @@
 import re
 
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.data.edges import VECTOR_EDGES, get_general_edges, get_orcb_edges
+from testgen.data.edges import VECTOR_EDGES, get_general_edges, get_orcb_edges, get_word_edges
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -26,6 +26,8 @@ def make_rs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
         edges = get_general_edges(test_data.xlen)
     elif coverpoint.endswith("_orcb"):
         edges = get_orcb_edges(test_data.xlen)
+    elif coverpoint.endswith("_w"):
+        edges = get_word_edges(test_data.xlen)
     else:
         raise ValueError(f"Unknown cp_rs1_edges coverpoint variant: {coverpoint} for {instr_name}")
 
@@ -55,6 +57,8 @@ def make_rs2_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
     """Generate tests for rs2 edge values."""
     if coverpoint == "cp_rs2_edges":
         edges = get_general_edges(test_data.xlen)
+    elif coverpoint.endswith("_w"):
+        edges = get_word_edges(test_data.xlen)
     elif match := re.search(r"ls_e(\d+)", coverpoint):
         eew = int(match.group(1))
         edges = VECTOR_EDGES.load_store_edges(eew)

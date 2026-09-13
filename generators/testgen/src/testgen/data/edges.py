@@ -677,6 +677,15 @@ def get_general_edges(xlen: int) -> tuple[int, ...]:
     return base_edges
 
 
+def get_word_edges(xlen: int) -> tuple[int, ...]:
+    """Get edge values for 32-bit word operands, sign-extended to XLEN."""
+    edges = get_general_edges(32)
+    if xlen == 32:
+        return edges
+    # Sign-extend so that the low word takes on every 32-bit edge value.
+    return tuple(edge + 2**xlen - 2**32 if edge & 0x80000000 else edge for edge in edges)
+
+
 # TODO: Do we really need these extra edges for orcb?
 def get_orcb_edges(xlen: int) -> tuple[int, ...]:
     """

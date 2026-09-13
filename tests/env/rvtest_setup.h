@@ -247,6 +247,14 @@
   // .data (scratch, begin_signature, etc.) have identical addresses in both
   // the .elf and .sig.elf builds.
   .pushsection .text.rvmodel,"ax",@progbits
+
+  // Instantiate invisible trap handler if required
+  #ifdef STANDARD_SM_SUPPORTED
+    #ifdef RVTEST_INVISIBLE_TRAP_HANDLER
+      RVTEST_INVISIBLE_TRAP_HANDLER_CODE
+    #endif
+  #endif
+
   // Model specific boot code
   rvmodel_boot:
     #ifdef RVMODEL_BOOT
@@ -1203,7 +1211,9 @@
     // Delegate exceptions to S-mode, except those that must be directed to M-mode
     // medeleg[0] = 1: delegate instruction address misaligned exception
     // medeleg[1] = 1: delegate instruction access fault exception
-    // medeleg[2] = 1: delegate illegal instruction exception
+    // medeleg[2] = 1: logically delegate illegal instruction exceptions to S-mode.
+    //                 See RVTEST_SAVE_MEDELEG_ILLEGAL and RVTEST_RESTORE_MEDELEG_ILLEGAL
+    //                 in rvtest_trap_handler.h for details on medeleg[2] emulation.
     // medeleg[3] = 1: delegate breakpoint exception
     // medeleg[4] = 1: delegate load address misaligned exception
     // medeleg[5] = 1: delegate load access fault exception

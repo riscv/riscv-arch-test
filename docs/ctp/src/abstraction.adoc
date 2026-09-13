@@ -89,8 +89,6 @@ The macro names begin with RVMODEL, so they are called _RVMODEL DUT-Specific Mac
 
 The RVMODEL DUT-Specific Macros rely on the capabilities of the SoC and/or testbench.  For example, a SoC with a 16550-compatible UART sends a character by writing a byte to the UART's memory-mapped Transmit Holding Register. A SoC without a UART may have a testbench that monitors writes to a specific memory address and prints the byte written to that address.
 
-Most macros are implemented in config/cores/<core>/<version>/rvmodel_macros.h.  RVMODEL_ACCESS_FAULT_ADDRESS is defined in rvtest_config.h and rvtest_config.svh for the test programs and coverpoints, respectively.
-
 ==== Macros
 
 The RVMODEL DUT-Specific Macros are given in <<t-rvmodel>>. The "Can Be Empty?" field indicates circumstances under which the macro can be empty. The Mode column indicates the privilege mode from which the macro can be called.  All macros can clobber `a0`, `a1`, and `a2` if needed to make T-SBI calls.
@@ -127,6 +125,7 @@ The RVMODEL DUT-Specific Macros are given in <<t-rvmodel>>. The "Can Be Empty?" 
 |RVMODEL_TIMER_INT_SOON_DELAY|The delay (in timer ticks) before a timer interrupt fires when an interrupt is requested "soon". Used in logic such as `mtimecmp = mtime + delay`. Should be long enough that the core can run a few instructions before the interrupt fires.| If timer interrupts, `wfi`, and `wrs` are not tested. | n/a
 |RVMODEL_MAX_CYCLES_PER_TIMER_TICK|The highest possible ratio of the clock frequency to the timer frequency in any mode of operation. Defaults to 1 if not defined | If Machine timer interrupts, `wfi`, and `wrs` are not tested. | n/a
 |RVMODEL_DATA_SECTION|DUT-specific data that will be placed in a .data section. Used for memory-mapped regions like `tohost`/`fromhost`.  |Yes, if not needed by DUT. | n/a
+|RVMODEL_INVISIBLE_TRAP_HANDLER(_PC_REG, _INSTRUCTION_REG, _ACTION_REG, _DEST_REG, _VALUE_REG)|Optionally emulates an illegal instruction in the M-mode invisible trap handler. `_PC_REG` and `_INSTRUCTION_REG` are read-only and contain the trapping PC and instruction, respectively. `_ACTION_REG`, `_DEST_REG`, and `_VALUE_REG` may be changed. See <<invisible-traps>> for full details.|Omit if the DUT has no invisible trap emulation. | Machine
 |===
 
 [NOTE]
@@ -134,6 +133,55 @@ The `RVMODEL_MTIME_ADDRESS`, `RVMODEL_MTIMECMP_ADDRESS` and `RVMODEL_TIMER_INT_S
 
 [NOTE]
 If a macro needs machine mode privileges to perform its function but might be called from any mode, it must change privilege level.  For example, if RVMODEL_IO_WRITE_STR needs machine mode to access a UART, it may call RVTEST_TSBI_GOTO_MMODE or use a T-SBI call to access UART memory.  Printing (and halting) is done at the end of a test, so there is no need to return to the previous privilege mode.
+
+[[invisible-traps]]
+==== Invisible Trap Emulation
+
+A DUT can use an invisible trap to emulate an instruction that is not implemented in hardware or has a known bug.
+When invisible traps are enabled, all illegal-instruction exceptions are first sent to M-mode for possible
+emulation before being forwarded to the normal trap handler. Invisible traps are enabled when `RVMODEL_INVISIBLE_TRAP_HANDLER` is defined or `UDB_TIME_CSR_IMPLEMENTED` is false. In the latter case, the framework emulates the `time` and `timeh` CSRs using `mtime`.
+
+Custom invisible traps implemented using the `RVMODEL_INVISIBLE_TRAP_HANDLER` macro must follow the conventions described below.
+
+`RVMODEL_INVISIBLE_TRAP_HANDLER` gets five inputs:
+
+  - `_PC_REG`: A register containing the trapping PC. Read-only.
+  - `_INSTRUCTION_REG`: A register containing the trapping instruction. Read-only.
+  - `_ACTION_REG`: The action to be taken by the trap handler.
+  - `_DEST_REG`: The destination GPR number for action 2.
+  - `_VALUE_REG`: The value to write for action 2.
+
+The supported return codes in the `_ACTION_REG` are:
+
+  - `0`: The macro did not handle the instruction. Continue with the normal trap handling. `_ACTION_REG` is preset to 0 before `RVMODEL_INVISIBLE_TRAP_HANDLER`.
+  - `1`: The macro handled the instruction and wrote all required architectural state. Resume after the instruction.
+  - `2`: The macro handled the instruction and needs to write a GPR result. Write `_VALUE_REG` to the GPR whose number is in `_DEST_REG`, then resume after the instruction.
+  - Any other code is invalid and the test will produce an error.
+
+Action 2 must be used to write GPR results because a direct write to a saved GPR would be lost when the trap
+handler restores that register upon exiting. Floating-point and vector registers are not restored, so they can
+be directly written without using action 2.
+
+The following example emulates a read of custom CSR `0xBC0` and returns 42.
+It accepts `CSRRS`, `CSRRC`, `CSRRSI`, or `CSRRCI` only when `rs1` or `uimm` is zero.
+The mask ignores the `rd` field and CSR function bit 12.
+
+[source,c]
+----
+#define RVMODEL_INVISIBLE_TRAP_HANDLER(_PC_REG, _INSTRUCTION_REG, _ACTION_REG, _DEST_REG, _VALUE_REG) \
+  li  _VALUE_REG, INSN_FIELD_CSR | INSN_FIELD_RS1 | INSN_FIELD_OPCODE | (2 << 12); \
+  and _DEST_REG, _INSTRUCTION_REG, _VALUE_REG;                                         \
+  li  _VALUE_REG, (0xBC0 << 20) | (2 << 12) | 0x73;                                   \
+  bne _DEST_REG, _VALUE_REG, 1f;                                                       \
+  li  _VALUE_REG, 42;                                                                  \
+  srli _DEST_REG, _INSTRUCTION_REG, 7;                                                  \
+  andi _DEST_REG, _DEST_REG, 0x1F;                                                     \
+  li  _ACTION_REG, 2;                                                                  \
+1:
+----
+
+The built-in `RVTEST_INVISIBLE_TIME_HANDLER` macro in `tests/env/rvtest_invisible_trap_handler.h` uses the same interface and is a larger example.
+It checks the CSR instruction and counter permissions, reads `RVMODEL_MTIME_ADDRESS`, and returns the value with action 2.
 
 ==== RVMODEL_BOOT Requirements
 

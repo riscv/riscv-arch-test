@@ -25,5 +25,6 @@
   #include "rvtest_macros_hypervisor.h"
 #endif
 #include "rvtest_trap_handler.h"
+#include "rvtest_invisible_trap_handler.h"
 #include "rvtest_failure_code.h"
 #include "rvtest_setup.h"

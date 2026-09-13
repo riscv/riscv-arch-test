@@ -1,6 +1,6 @@
 # RISC-V Architectural Certification Tests
 
-The RISC-V Architectural Certification Tests (ACTs) are a set of assembly language tests designed to certify that a design faithfully implements the RISC-V specification. These are not verification tests and additional verification should be run on all processors.
+The RISC-V Architectural Certification Tests (ACTs) are a set of assembly language tests intended to help test that a design faithfully implements the RISC-V specification. These are not verification tests and additional verification should be run on all processors.
 
 The Architectural Certification Tests are used with the ACT4 Framework, a Makefile and Python based tool that replaces the deprecated riscof tool. The ACT4 Framework generates and compiles self-checking tests in Executable Linkable Format (ELF) for a device under test (DUT) and optionally collects coverage showing that the tests hit the coverpoints that check the normative rules. The user is then responsible for running all of the ELF files on the DUT with the user's own testbench. Each test reports success or failure, and if possible prints error messages to a console.
 
@@ -245,6 +245,7 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_DATA_SECTION`
 - `RVMODEL_BOOT` (can be omitted if not needed)
 - `RVMODEL_ACCESS_FAULT_ADDRESS` (can be omitted if DUT does not generate some/all access faults)
+- `RVMODEL_INVISIBLE_TRAP_HANDLER(_PC_REG, _INSTRUCTION_REG, _ACTION_REG, _DEST_REG, _VALUE_REG)` (can be omitted if the DUT does not trap and emulate instructions)
 
 **Timer Macros**: Can be left blank if machine mode is not supported.
 

@@ -18,30 +18,20 @@ def _generate_scounteren_tests(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(
             coverpoint,
-            "Set and clear each bit individually in scounteren.\n"
-            "Must execute in S-mode so that priv_mode_s is sampled in the cross.",
+            "Set and clear each bit individually in scounteren.",
         ),
-        "RVTEST_GOTO_LOWER_MODE Smode  # switch to S-mode before walking scounteren",
         "",
     ]
 
     lines.extend(csr_walk_test(test_data, ("scounteren", None), covergroup, coverpoint))
     lines.extend(csr_access_test(test_data, ("scounteren", None), covergroup, coverpoint))
-    lines.extend(
-        [
-            "",
-            "RVTEST_GOTO_MMODE       # return to M-mode after test",
-        ]
-    )
-
     return lines
 
 
 @add_priv_test_generator(
     "Sscounterenw",
     required_extensions=["S"],
-    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
-    extra_defines=["#define BOOT_TO_MMODE"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_scounterenw(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Scounteren supervisor counter-enable register."""

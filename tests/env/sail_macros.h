@@ -25,6 +25,10 @@
 #define SAIL_MTIME_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0xBFF8)
 #define SAIL_SIG_ADDRESS (SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS + 0x4)
 
+// Don't use invisible trap emulation for expected result generation
+#undef RVTEST_EMULATE_TIME_CSR
+#undef RVMODEL_INVISIBLE_TRAP_HANDLER
+
 #undef RVMODEL_DATA_SECTION
 #define RVMODEL_DATA_SECTION \
         .pushsection .tohost,"aw",@progbits;                \

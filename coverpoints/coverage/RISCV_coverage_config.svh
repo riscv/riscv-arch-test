@@ -170,6 +170,9 @@
 `ifdef S_COVERAGE
   `include "S_coverage.svh"
 `endif
+`ifdef SDTRIGSM_COVERAGE
+  `include "SdtrigSm_coverage.svh"
+`endif
 `ifdef SM_COVERAGE
   `include "Sm_coverage.svh"
 `endif
@@ -196,6 +199,15 @@
 `endif
 `ifdef SSCCPTR_COVERAGE
   `include "Ssccptr_coverage.svh"
+`endif
+`ifdef SSCOFPMFS_COVERAGE
+  `include "SscofpmfS_coverage.svh"
+`endif
+`ifdef SSCOFPMFSM_COVERAGE
+  `include "SscofpmfSm_coverage.svh"
+`endif
+`ifdef SSCOFPMFU_COVERAGE
+  `include "SscofpmfU_coverage.svh"
 `endif
 `ifdef SSCOUNTERENW_COVERAGE
   `include "Sscounterenw_coverage.svh"
@@ -445,6 +457,9 @@
 `endif
 `ifdef ZICNTRS_COVERAGE
   `include "ZicntrS_coverage.svh"
+`endif
+`ifdef ZICNTRSM_COVERAGE
+  `include "ZicntrSm_coverage.svh"
 `endif
 `ifdef ZICNTRU_COVERAGE
   `include "ZicntrU_coverage.svh"

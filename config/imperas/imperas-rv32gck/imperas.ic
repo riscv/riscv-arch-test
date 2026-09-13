@@ -57,6 +57,7 @@
 --override cpu*/Zcmop=T
 --override cpu*/Smstateen=T
 --override cpu*/Ssstateen=T
+--override cpu*/Sscofpmf=T
 
 # Misaligned access (Zicclsm)
 --override cpu*/unaligned=T

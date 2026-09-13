@@ -451,6 +451,7 @@ def _add_shadow(
     coverpoint: str,
     covergroup: str,
     test_data: TestData,
+    bin_suffix: str = "",
 ) -> str:
     """Generate shadow CSR test lines for writing wreg and reading rreg (direct CSR access, M-mode)."""
     return str.join(
@@ -461,14 +462,87 @@ def _add_shadow(
             f"LI(x{rmask}, 0x{mask:x}) # mask specifying bits to keep",
             f"csrr x{rsave}, {wreg}       # save original value of {wreg}",
             f"csrw {wreg}, x{r1}       # write many 1s to {wreg}",
-            test_data.add_testcase(f"{wreg}_{rreg}_1s", coverpoint, covergroup),
+            test_data.add_testcase(f"{wreg}_{rreg}_1s{bin_suffix}", coverpoint, covergroup),
             gen_csr_read_sigupd(r2, (rreg, mask), test_data, rmask),
             f"csrw {wreg}, x0       # write all 0s to {wreg}",
-            test_data.add_testcase(f"{wreg}_{rreg}_0s", coverpoint, covergroup),
+            test_data.add_testcase(f"{wreg}_{rreg}_0s{bin_suffix}", coverpoint, covergroup),
             gen_csr_read_sigupd(r2, (rreg, mask), test_data, rmask),
             f"csrw {wreg}, x{rsave}       # write back saved value of {wreg}",
         ],
     )
+
+
+def _add_deleg_alias(r1: int, r2: int, coverpoint: str, covergroup: str, test_data: TestData) -> list[str]:
+    """sip/sie alias the delegated bits of mip/mie and read as zero for the bits mideleg does not delegate."""
+
+    def read(csr: str, bin_name: str, comment: str) -> list[str]:
+        return [
+            f"# {comment}",
+            test_data.add_testcase(bin_name, coverpoint, covergroup),
+            gen_csr_read_sigupd(r2, (csr, None), test_data),
+        ]
+
+    lines = [
+        "# Test mip/sip and mie/sie with delegation on and off",
+        f"LI(x{r1}, 0x3EEE) # all S-, VS-, and M-level interrupts",
+        "csrw mideleg, zero # delegate nothing",
+        "csrw mie, zero",
+        "csrw mip, zero",
+        *read("sip", "sip_readback_zero", "sip reads zero"),
+        *read("sie", "sie_readback_zero", "sie reads zero"),
+        f"csrw mip, x{r1} # set all writable interrupts in mip",
+        *read("sip", "sip_readback_zero_masked", "sip reads zero because nothing is delegated"),
+        "csrw sip, zero # ignored because nothing is delegated",
+        *read("mip", "mip_readback_nonzero_masked", "mip keeps its value because the sip write is ignored"),
+        "csrw mip, zero",
+        f"csrw mie, x{r1} # set all writable interrupts in mie",
+        *read("sie", "sie_readback_zero_masked", "sie reads zero because nothing is delegated"),
+        "csrw sie, zero # ignored because nothing is delegated",
+        *read("mie", "mie_readback_nonzero_masked", "mie keeps its value because the sie write is ignored"),
+        "csrw mie, zero",
+        "",
+        f"csrw mideleg, x{r1} # delegate all delegable interrupts to S-mode",
+        *read("sip", "sip_readback_zero_2", "sip reads zero"),
+        *read("sie", "sie_readback_zero_2", "sie reads zero"),
+        f"csrw mip, x{r1} # set all interrupts in mip",
+        *read("sip", "sip_readback_nonzero", "sip reads the delegated bits"),
+        "csrw sip, zero # clears SSIP and LCOFIP; STIP and SEIP are read-only in sip",
+        *read("mip", "mip_readback_partiallyzero", "mip typically keeps STIP and SEIP"),
+        f"csrw mie, x{r1} # set all interrupts in mie",
+        *read("sie", "sie_readback_nonzero_deleg", "sie reads the delegated bits"),
+        "csrw sie, zero # clears every delegated S-level enable",
+        *read("mie", "mie_readback_m_only_deleg", "mie keeps only the M-level enables"),
+        "",
+        "# Delegate one interrupt at a time; sip and sie show just that bit",
+        f"csrw mip, x{r1} # set all interrupts in mip",
+        f"csrw mie, x{r1} # set all interrupts in mie",
+    ]
+    # Test all delegation bits individually. Machine mode bits are usually but not necessarily read-only in mideleg and thus have no effect.
+    # https://github.com/riscv/riscv-isa-manual/issues/153
+    for name, bit in [
+        ("SSI", 1),
+        ("STI", 5),
+        ("SEI", 9),
+        ("LCOFI", 13),
+        ("MSI", 3),
+        ("MTI", 7),
+        ("MEI", 11),
+        ("VSSI", 2),
+        ("VSTI", 6),
+        ("VSEI", 10),
+    ]:
+        lines += [
+            f"LI(x{r1}, {1 << bit:#x})",
+            f"csrw mideleg, x{r1} # delegate only {name}",
+            *read("sip", f"deleg_sip_{name}", f"sip reads only {name}P if delegable"),
+            *read("sie", f"deleg_sie_{name}", f"sie reads only {name}E if delegable"),
+        ]
+    lines += [
+        "csrw mip, zero # restore mip",
+        "csrw mie, zero # restore mie",
+        "csrw mideleg, zero # restore mideleg",
+    ]
+    return lines
 
 
 def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
@@ -750,6 +824,55 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.append("#endif // S_SUPPORTED")
 
     ######################################
+    coverpoint = "cp_satp_from_m"
+    ######################################
+    tc = test_data.new_test_chunk(test_chunks, "satp_from_m")
+    tc.section_header = comment_banner(coverpoint, "Read satp from M-mode with mstatus.TVM = 1 and 0")
+    temp_reg, tvm_reg = test_data.int_regs.get_registers(2)
+    tc.code.extend(
+        [
+            "#ifdef S_SUPPORTED",
+            f"LI(x{tvm_reg}, 0x00100000) # mstatus.TVM (bit 20)",
+            f"csrs mstatus, x{tvm_reg}",
+            test_data.add_testcase("tvm_enabled", coverpoint, covergroup),
+            f"csrr x{temp_reg}, satp # read satp with mstatus.TVM = 1; TVM only traps S-mode, so expect no trap",
+            f"csrc mstatus, x{tvm_reg}",
+            test_data.add_testcase("tvm_disabled", coverpoint, covergroup),
+            f"csrr x{temp_reg}, satp # read satp with mstatus.TVM = 0; expect no trap.  Value is WARL and unpredictable so don't sigupd it",
+            "#endif // S_SUPPORTED",
+        ]
+    )
+    test_data.int_regs.return_registers([temp_reg, tvm_reg])
+
+    ######################################
+    coverpoint = "cp_satp_from_s"
+    ######################################
+    tc = test_data.new_test_chunk(test_chunks, "satp_from_s")
+    tc.section_header = comment_banner(coverpoint, "Read satp from S-mode with mstatus.TVM = 1 and 0")
+    temp_reg, tvm_reg = test_data.int_regs.get_registers(2)
+    # This suite does not delegate illegal instructions, so the TVM = 1 trap is taken in M-mode,
+    # whose handler can read satp.  The S suite cannot host this case: it delegates to S-mode and
+    # the S-mode handler reads satp itself.
+    tc.code.extend(
+        [
+            "#ifdef S_SUPPORTED",
+            f"LI(x{tvm_reg}, 0x00100000) # mstatus.TVM (bit 20)",
+            f"csrs mstatus, x{tvm_reg}",
+            "RVTEST_TSBI_GOTO_SMODE",
+            test_data.add_testcase("tvm_enabled", coverpoint, covergroup),
+            f"csrr x{temp_reg}, satp # read satp from S-mode with mstatus.TVM = 1; expect illegal instruction trap",
+            "RVTEST_TSBI_GOTO_MMODE",
+            f"csrc mstatus, x{tvm_reg}",
+            "RVTEST_TSBI_GOTO_SMODE",
+            test_data.add_testcase("tvm_disabled", coverpoint, covergroup),
+            f"csrr x{temp_reg}, satp # read satp from S-mode with mstatus.TVM = 0; expect no trap.  Value is WARL and unpredictable so don't sigupd it",
+            "RVTEST_TSBI_GOTO_MMODE",
+            "#endif // S_SUPPORTED",
+        ]
+    )
+    test_data.int_regs.return_registers([temp_reg, tvm_reg])
+
+    ######################################
     coverpoint = "cp_shadow"
     ######################################
     tc = test_data.new_test_chunk(test_chunks, "shadow")
@@ -767,10 +890,20 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             _add_shadow(r1, r2, rmask, rsave, "mstatus", "sstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data),
             _add_shadow(r1, r2, rmask, rsave, "sstatus", "mstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data),
             f"LI(x{r1}, 0xFFFF) # all interrupts",
-            _add_shadow(r1, r2, rmask, rsave, "mie", "sie", 0x3666, coverpoint, covergroup, test_data),
-            _add_shadow(r1, r2, rmask, rsave, "mip", "sip", 0x3666, coverpoint, covergroup, test_data),
-            _add_shadow(r1, r2, rmask, rsave, "sie", "mie", 0x3666, coverpoint, covergroup, test_data),
-            _add_shadow(r1, r2, rmask, rsave, "sip", "mip", 0x3666, coverpoint, covergroup, test_data),
+            "# Without delegation, S-mode should not see any of the M-mode interrupts",
+            "csrw mideleg, zero # disable delegation",
+            _add_shadow(r1, r2, rmask, rsave, "mie", "sie", 0x3EEE, coverpoint, covergroup, test_data),
+            _add_shadow(r1, r2, rmask, rsave, "mip", "sip", 0x3EEE, coverpoint, covergroup, test_data),
+            _add_shadow(r1, r2, rmask, rsave, "sie", "mie", 0x3EEE, coverpoint, covergroup, test_data),
+            _add_shadow(r1, r2, rmask, rsave, "sip", "mip", 0x3EEE, coverpoint, covergroup, test_data),
+            "# With delegation, S-mode should see the delegated M-mode interrupts",
+            f"csrw mideleg, x{r1} # delegate all interrupts to S-mode",
+            _add_shadow(r1, r2, rmask, rsave, "mie", "sie", 0x3EEE, coverpoint, covergroup, test_data, "_deleg"),
+            _add_shadow(r1, r2, rmask, rsave, "mip", "sip", 0x3EEE, coverpoint, covergroup, test_data, "_deleg"),
+            _add_shadow(r1, r2, rmask, rsave, "sie", "mie", 0x3EEE, coverpoint, covergroup, test_data, "_deleg"),
+            _add_shadow(r1, r2, rmask, rsave, "sip", "mip", 0x3EEE, coverpoint, covergroup, test_data, "_deleg"),
+            *_add_deleg_alias(r1, r2, coverpoint, covergroup, test_data),
+            # mideleg restored to 0 by _add_deleg_alias()
             "#endif // S_SUPPORTED",
         ]
     )
@@ -1243,7 +1376,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             test_data.add_testcase("", coverpoint, covergroup),
             f"csrr x{r2}, time        # read time",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be small",
-            f"slti x{r2}, x{r2}, 10          # signature is 1 if difference < 10",
+            f"slti x{r2}, x{r2}, 100          # signature is 1 if difference < 100",
             write_sigupd(r2, test_data),
             "",
             "#if __riscv_xlen == 32",

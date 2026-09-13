@@ -54,9 +54,13 @@
 //    tramp_sz + 13*8        | 8             | xtvec_new      — trampoline address currently in xTVEC
 //    tramp_sz + 14*8        | 8             | xtvec_save     — original xTVEC value before prolog
 //    tramp_sz + 15*8        | 8             | xscratch_save  — original xSCRATCH value before prolog
-//    tramp_sz + 16*8        | 8*REGWIDTH    | trapreg_sv     — ra scratch (slot 0), T1..T6 (slots 1-6), sp (slot 7)
-//    (after trapreg_sv)     | 8*REGWIDTH    | rvmodel_sv     — RVMODEL macro scratch + T-SBI CSR scratch
-//                           |               |   (slots 4-7: GOTO_LOWER_MODE register save)
+//    tramp_sz + 16*8        | 8             | medeleg_illegal_sv — shadow value of medeleg[2]
+//    tramp_sz + 17*8        | 8*REGWIDTH    | trapreg_sv     — ra scratch (slot 0), T1..T6 (slots 1-6), sp (slot 7)
+//    (after trapreg_sv)     | 8*REGWIDTH    | rvmodel_sv     — shared scratch area:
+//                           |               |   first 8 bytes: T-SBI CSR instruction and return
+//                           |               |   slot 0: fast-handler invisible-trap handoff marker
+//                           |               |   slots 2-3: fast-handler a1 and a2 save
+//                           |               |   slots 4-7: GOTO_LOWER_MODE T1, T2, T4, and T3 save
 //
 //  xSCRATCH always points to the top of the current mode's save area (Xtramptbl_sv).
 //  On trap entry, sp is swapped with xSCRATCH so sp points to the save area.
@@ -184,7 +188,7 @@
 //   4. Otherwise       -> RESERVED        (return -1)
 //==============================================================================
 
-// a0 values for TSBI_GOTO_xMODE.  ALT_GOTO_MODE is used by RVTEST_GOTO_DELEGATED_MMODE
+// a0 values for TSBI_GOTO_xMODE.  ALT_GOTO_MMODE is used by RVTEST_GOTO_DELEGATED_MMODE
 #define ALT_GOTO_MMODE      0x00000000
 #define TSBI_GOTO_MMODE     0x00000001
 #define TSBI_GOTO_SMODE     0x00000002
@@ -272,7 +276,7 @@
 
 #define actual_tramp_sz ((UDB_MXLEN + 3* NUM_SPECD_INTCAUSES + 9 + 5) * 4)  // total trampoline bytes
 #define tramp_sz        ((actual_tramp_sz+4) & -8)                       // round up to dword alignment
-#define ptr_sv_sz       (16*8)                                           // 16 pointer slots × 8 bytes each
+#define ptr_sv_sz       (17*8)                                           // 17 metadata slots × 8 bytes each
 #define reg_sv_sz       ( 8*REGWIDTH)                                    // 8 handler temp regs saved
 #define model_sv_sz     ( 8*REGWIDTH)                                    // 8 slots for RVMODEL macro scratch
 #define int_clr_sv_sz   ( 4*REGWIDTH)                                    // 4 slots: a0-a2 across interrupt clearing
@@ -290,13 +294,16 @@
 //   [tramp_sz + 0*8]            code_bgn_off    — rvtest_code_begin phys addr
 //   [tramp_sz + 1*8]            code_seg_siz    — code segment size
 //   ...                         (see full layout in FILE OVERVIEW above)
-//   [tramp_sz + 16*8]           trap_sv_off     — start of handler register save (T1..T6,sp,spare)
-//   [tramp_sz + 24*8]           rvmodel_sv_off  — start of RVMODEL macro scratch area
-//   [tramp_sz + 32*8]           int_clr_sv_off  — a0-a2 save across interrupt clearing
+//   [tramp_sz + 16*8]           medeleg_illegal_sv_off — logical medeleg[2] value
+//   [tramp_sz + 17*8]           trap_sv_off     — start of handler register save (T1..T6,sp,spare)
+//   [after trap_sv]             rvmodel_sv_off  — start of RVMODEL macro scratch area
+//   [after rvmodel_sv]          int_clr_sv_off  — a0-a2 save across interrupt clearing
 //
-// T-SBI CSR_ACCESS reuses rvmodel_sv_off for its dynamic instruction scratch.
-// This is safe because RVMODEL macros (HALT, IO_WRITE) never execute inside
-// the T-SBI dispatch path.
+// T-SBI CSR_ACCESS reuses the first 8 bytes at rvmodel_sv_off for its dynamic
+// instruction scratch. On RV32 these are slots 0-1; on RV64 this is slot 0.
+// The fast trap handler uses slot 0 as its invisible-trap handoff marker and
+// slots 2-3 to save a1 and a2. These uses do not overlap in time. Slots 4-7
+// save T1, T2, T4, and T3 for RVTEST_GOTO_LOWER_MODE.
 //==============================================================================
 
 #define tramp_sv_off                         ( 0*8) // offset to trampoline save area
@@ -318,7 +325,8 @@
 #define xtvec_new_off               (tramp_sz+13*8) // offset to new xTVEC value (trampoline addr)
 #define xtvec_sav_off               (tramp_sz+14*8) // offset to saved original xTVEC value
 #define xscr_save_off               (tramp_sz+15*8) // offset to saved original xSCRATCH value
-#define trap_sv_off                 (tramp_sz+16*8) // offset to handler register save area (8 regs)
+#define medeleg_illegal_sv_off      (tramp_sz+16*8) // offset to logical medeleg[2] value
+#define trap_sv_off                 (tramp_sz+17*8) // offset to handler register save area (8 regs)
 // rvmodel_sv starts right after the 8 REGWIDTH-sized trapreg_sv slots. This must
 // be expressed in REGWIDTH (not 8*8) so the offset also matches the emitted
 // .data layout on RV32, where REGWIDTH is 4.
@@ -335,6 +343,71 @@
 // neither can be active while RVTEST_GOTO_LOWER_MODE executes.
 #define goto_lower_sv_off (rvmodel_sv_off+4*(REGWIDTH)) // GOTO_LOWER_MODE T1/T2/T4/T3 save slots
 #define int_clr_sv_off  (rvmodel_sv_off+8*(REGWIDTH))   // a0/a1/a2 save slots for interrupt clearing routines
+
+
+// Invisible trap handling requires illegal instruction exceptions to always go through M-mode for possible
+// emulation. When emulation does not occur, the trap must be forwarded to S-mode if delegation is supposed to
+// be enabled and to the normal M-mode trap handler if delegation is supposed to be disabled. This requires an
+// alternative way of tracking the desired state of medeleg[2] since it needs to be cleared in lower priv modes
+// even when we want delegation to happen. The desired state is stored in the save area at medeleg_illegal_sv_off
+// and is saved/restored during privilege mode switches using the macros below. When switching to M-mode, the real
+// value of medeleg[2] must be restored so that code that reads medeleg seems the correct value. When switching to
+// a lower-priv mode, the value of medeleg[2] must be saved and then cleared so that illegal instructions go
+// through M-mode.
+
+
+// Record the current value of medeleg[2] in the save area and clear it in the actual CSR.
+// Used when switching from M-mode to a lower priv mode.
+.macro RVTEST_SAVE_MEDELEG_ILLEGAL SAVE_AREA_REG, TMP_REG
+#if defined(RVTEST_INVISIBLE_TRAP_HANDLER) && defined(S_SUPPORTED)
+  csrr    \TMP_REG, CSR_MEDELEG
+  andi    \TMP_REG, \TMP_REG, (1 << CAUSE_ILLEGAL_INSTRUCTION)
+  SREG    \TMP_REG, medeleg_illegal_sv_off(\SAVE_AREA_REG)
+  csrci   CSR_MEDELEG, (1 << CAUSE_ILLEGAL_INSTRUCTION)
+#else
+  nop
+  nop
+  nop
+  nop
+#endif
+.endm
+
+// Restore the saved value of medeleg[2] to the actual CSR.
+// Used when switching from a lower priv mode back to M-mode.
+.macro RVTEST_RESTORE_MEDELEG_ILLEGAL SAVE_AREA_REG, TMP_REG
+#if defined(RVTEST_INVISIBLE_TRAP_HANDLER) && defined(S_SUPPORTED)
+  csrci   CSR_MEDELEG, (1 << CAUSE_ILLEGAL_INSTRUCTION)
+  LREG    \TMP_REG, medeleg_illegal_sv_off(\SAVE_AREA_REG)
+  csrs    CSR_MEDELEG, \TMP_REG
+#else
+  nop
+  nop
+  nop
+#endif
+.endm
+
+// Check the mode we are going to and save the current value of medeleg[2]
+// if we are switching to a lower-priv mode. Used when doing a mode-switch
+// to anything other than M-mode.
+.macro RVTEST_PREPARE_MEDELEG_FOR_LOWER SAVE_AREA_REG, STATUS_REG, TMP_REG
+  csrr    \STATUS_REG, CSR_MSTATUS
+  LI(     \TMP_REG, MSTATUS_MPP)
+  and     \STATUS_REG, \STATUS_REG, \TMP_REG
+  bne     \STATUS_REG, \TMP_REG, 1f
+  RVTEST_SAVE_MEDELEG_ILLEGAL \SAVE_AREA_REG, \TMP_REG
+1:
+.endm
+
+// Check the mode we are coming from and restore the saved value of medeleg[2]
+// if we are switching from a lower-priv mode. Used when doing a mode-switch to M-mode.
+.macro RVTEST_PREPARE_MEDELEG_FOR_M SAVE_AREA_REG, STATUS_REG, TMP_REG
+  csrr    \STATUS_REG, CSR_MSTATUS
+  LI(     \TMP_REG, MSTATUS_MPP)
+  and     \STATUS_REG, \STATUS_REG, \TMP_REG
+  beq     \STATUS_REG, \TMP_REG, 1f
+  RVTEST_RESTORE_MEDELEG_ILLEGAL \SAVE_AREA_REG, \TMP_REG
+1:
+.endm
 
 //==============================================================================
 // SECTION 8: INSTANTIATE_MODE_MACRO
@@ -818,6 +891,10 @@
         SREG   T4, goto_lower_sv_off+2*REGWIDTH(T3) // save T4
         csrrw  T1, CSR_MSCRATCH, T3               // T1 = orig T3; mscratch = save area ptr (restored)
         SREG   T1, goto_lower_sv_off+3*REGWIDTH(T3) // save orig T3
+
+  .if (\LMODE\()!=Mmode)
+        RVTEST_SAVE_MEDELEG_ILLEGAL T3, T2
+  .endif
 
         //---- Step 1: Set/clear mstatus.MPV (virtualization bit) ----
    .if     ((\LMODE\()==VUmode) || (\LMODE\()==VSmode))
@@ -1325,11 +1402,27 @@ common_\__MODE__\()handler:                      // entered with T6 = vector add
 //   orig sp saved at trap_sv_off+7*REGWIDTH(sp)
 //   a0/a1  untouched — they carry the T-SBI operation code/argument (if any)
 
-common_\__MODE__\()entry:                        // common entry for all traps in this mode
+common_\__MODE__\()entry:                       // common entry for all traps in this mode
         SREG    T4, trap_sv_off+4*REGWIDTH(sp)  // save T4 (x9)
         SREG    T3, trap_sv_off+3*REGWIDTH(sp)  // save T3 (x8)
         SREG    T2, trap_sv_off+2*REGWIDTH(sp)  // save T2 (x7)
         SREG    T1, trap_sv_off+1*REGWIDTH(sp)  // save T1 (x6)
+        csrr    T5, CSR_XCAUSE                  // T5 = xcause
+
+  // Route M-mode illegal instructions to the invisible trap handler. Keep this
+  // sequence the same size when emulation is disabled. The Sail signature build
+  // disables emulation, and a size change would move later trap-handler labels.
+  .ifc \__MODE__ , M
+      LI(T4, CAUSE_ILLEGAL_INSTRUCTION)
+      bne T5, T4, invisible_Mcontinue
+      #ifdef RVTEST_INVISIBLE_TRAP_HANDLER
+          LA(T4, invisible_Mhandler)
+      #else
+          LA(T4, invisible_Mcontinue)
+      #endif
+      jr T4
+      invisible_Mcontinue:
+  .endif
 
         // ---- Global trap counter: shared by every privilege mode's handler ----
         // T1..T4 were just saved above, so they are free scratch here.
@@ -1337,8 +1430,6 @@ common_\__MODE__\()entry:                        // common entry for all traps i
         LREG    T2, 0(T1)                        // T2 = current count
         addi    T2, T2, 1                         // count++
         SREG    T2, 0(T1)                        // store back
-
-        csrr    T5, CSR_XCAUSE                   // T5 = xcause (T5 is x14, so caller's a0 is NOT disturbed)
 
 //==============================================================================
 // T-SBI DISPATCH — M-MODE
@@ -1475,6 +1566,7 @@ tsbi_\__MODE__\()goto_mode:
 
         //--- GOTO M-mode: set MPP=11 (M), clear MPV ---
 tsbi_\__MODE__\()goto_m:
+        RVTEST_PREPARE_MEDELEG_FOR_M sp, T2, T4
         LI(     T4, MSTATUS_MPP)                     // T4 = MPP field mask (bits 12:11)
         csrs    CSR_MSTATUS, T4                       // set MPP = 11 (M-mode): sets both bits
   #ifdef H_SUPPORTED
@@ -1492,6 +1584,7 @@ tsbi_\__MODE__\()goto_m:
 
         //--- GOTO S-mode: set MPP=01 (S), clear MPV ---
 tsbi_\__MODE__\()goto_s:
+        RVTEST_PREPARE_MEDELEG_FOR_LOWER sp, T2, T4
         LI(     T4, MSTATUS_MPP)                     // T4 = MPP field mask
         csrc    CSR_MSTATUS, T4                       // clear MPP bits first (to 00)
         LI(     T4, MPP_SMODE)                        // T4 = 01 << 11 (S-mode MPP value)
@@ -1511,6 +1604,7 @@ tsbi_\__MODE__\()goto_s:
 
         //--- GOTO U-mode: set MPP=00 (U), clear MPV ---
 tsbi_\__MODE__\()goto_u:
+        RVTEST_PREPARE_MEDELEG_FOR_LOWER sp, T2, T4
         LI(     T4, MSTATUS_MPP)                     // T4 = MPP field mask
         csrc    CSR_MSTATUS, T4                       // clear MPP = 00 (U-mode)
   #ifdef H_SUPPORTED
@@ -1529,6 +1623,7 @@ tsbi_\__MODE__\()goto_u:
   #ifdef H_SUPPORTED
         //--- GOTO VS-mode: set MPP=01 (S), set MPV=1 (virtual) ---
 tsbi_\__MODE__\()goto_vs:
+        RVTEST_PREPARE_MEDELEG_FOR_LOWER sp, T2, T4
         LI(     T4, MSTATUS_MPP)                     // T4 = MPP field mask
         csrc    CSR_MSTATUS, T4                       // clear MPP first
         LI(     T4, MPP_SMODE)                        // T4 = S-mode MPP value (VS uses S-mode MPP with MPV=1)
@@ -1546,6 +1641,7 @@ tsbi_\__MODE__\()goto_vs:
 
         //--- GOTO VU-mode: set MPP=00 (U), set MPV=1 (virtual) ---
 tsbi_\__MODE__\()goto_vu:
+        RVTEST_PREPARE_MEDELEG_FOR_LOWER sp, T2, T4
         LI(     T4, MSTATUS_MPP)                     // T4 = MPP field mask
         csrc    CSR_MSTATUS, T4                       // clear MPP = 00 (U-mode)
         LI(     T2, (1<<MPV_LSB))                    // T2 = MPV bit mask
@@ -2645,6 +2741,7 @@ from_hs_u:
         sub     T2, T2, T6                             // T2 = mepc - caller_code_begin (relative offset)
         addi    sp, sp, -sv_area_sz                    // undo sp adjustment
         LREG    T4, code_bgn_off-0*sv_area_sz(sp)     // T4 = M-mode code_begin
+        RVTEST_RESTORE_MEDELEG_ILLEGAL sp, T3
 
 rtn_fm_mmode:
         add     T2, T4, T2                             // T2 = M-mode code_begin + relative offset = return addr
@@ -2802,7 +2899,19 @@ trap_handler_fastillegalinstr:
         LREG a2, code_bgn_off(a0)       // a2 = rvtest_code_begin
         sub  a1, a1, a2                 // a1 = mepc - code_begin (wraps if mepc is below it)
         LREG a2, code_seg_siz(a0)       // a2 = code segment size
-        bgeu a1, a2, fast_Mbootrap      // outside the test code — use the standard handler
+        bgeu a1, a2, fast_Mboot_trap    // outside the test code — use the standard handler
+#ifdef RVTEST_INVISIBLE_TRAP_HANDLER
+        // Let the invisible handler try emulation before recording this trap.
+        li   a1, 1
+        SREG a1, rvmodel_sv_off(a0)     // Mark a declined M-mode trap for the fast path.
+        j    fast_Mboot_trap            // Restore a2, which the range check clobbered.
+#else
+        // Match the three-instruction invisible-trap path. The code must be the same
+        // length so the addresses are the same in the DUT and Sail signature builds.
+        nop
+        nop
+        nop
+#endif
         LREG a2, rvmodel_sv_off+3*REGWIDTH(a0)  // restore caller's a2
         LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
         csrrw a0, CSR_MSCRATCH, a0      // restore mscratch = save ptr; a0 = caller's a0
@@ -2829,7 +2938,7 @@ fast_Mdone:
         csrw mepc, a0
         mret
 
-fast_Mbootrap:
+fast_Mboot_trap:
         LREG a2, rvmodel_sv_off+3*REGWIDTH(a0)  // restore caller's a2, then fall through
 fast_Mothertrap:
         LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
@@ -2871,7 +2980,7 @@ strap_handler_fastillegalinstr:
         LREG a2, code_bgn_off(a0)       // a2 = rvtest_code_begin
         sub  a1, a1, a2                 // a1 = sepc - code_begin (wraps if sepc is below it)
         LREG a2, code_seg_siz(a0)       // a2 = code segment size
-        bgeu a1, a2, fast_Sbootrap      // outside the test code — use the S framework handler
+        bgeu a1, a2, fast_Sboot_trap    // outside the test code — use the S framework handler
         LREG a2, rvmodel_sv_off+3*REGWIDTH(a0)  // restore caller's a2
         LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
         csrrw a0, CSR_SSCRATCH, a0      // restore sscratch = save ptr; a0 = caller's a0
@@ -2899,7 +3008,7 @@ fast_Sdone:
                                         // is itself an illegal instruction and re-enters this
                                         // handler forever
 
-fast_Sbootrap:
+fast_Sboot_trap:
         LREG a2, rvmodel_sv_off+3*REGWIDTH(a0)  // restore caller's a2, then fall through
 fast_Sothertrap:
         LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
@@ -3032,12 +3141,13 @@ rvtest_\__MODE__\()end:                            // epilog is done for this mo
 //
 //  Layout: See SAVE AREA OFFSET DEFINITIONS (Section 8) for the full structure.
 //
-//  The rvmodel_sv area (8 REGWIDTH entries at offset rvmodel_sv_off) serves
-//  dual purpose:
-//    1. Scratch space for RVMODEL macros that need temporary storage
-//    2. T-SBI CSR_ACCESS scratch: first 8 bytes hold the dynamically-written
-//       CSR instruction (4B) + ret instruction (4B)
-//  These uses never overlap because RVMODEL macros are not active during SBI calls.
+//  The rvmodel_sv area has eight REGWIDTH entries at rvmodel_sv_off:
+//    - The first 8 bytes hold a T-SBI CSR instruction and return instruction.
+//    - Slot 0 is also the fast-handler invisible-trap handoff marker.
+//    - Slots 2-3 save a1 and a2 in the fast trap handlers.
+//    - Slots 4-7 save T1, T2, T4, and T3 for RVTEST_GOTO_LOWER_MODE.
+//  The whole scratch space is also available for RVMODEL macros that need temporary storage.
+//  These uses never overlap, so reusing the same space is safe.
 //
 //==============================================================================
 //==============================================================================
@@ -3074,14 +3184,13 @@ rvtest_\__MODE__\()end:                            // epilog is done for this mo
 \__MODE__\()tvec_new:      .dword  0                                         // current xTVEC value (trampoline)
 \__MODE__\()tvec_save:     .dword  0                                         // original xTVEC before prolog
 \__MODE__\()scratch_save:  .dword  0                                         // original xSCRATCH before prolog
+\__MODE__\()medeleg_illegal_sv: .dword 0                                     // logical medeleg[2] value
 \__MODE__\()trapreg_sv:    .fill   8, REGWIDTH, 0xdeadbeef                   // handler reg save: ra scratch (slot 0), T1..T6 (1-6), sp (7)
 
-// rvmodel_sv: scratch area for RVMODEL macros AND T-SBI CSR_ACCESS.
-// T-SBI CSR_ACCESS writes a CSR instruction (4B) + ret (4B) to the first 8 bytes,
-// then executes it via jalr. See tsbi_Xcsr_access in the HANDLER macro.
-// Slots 4-7 of the M-mode copy are the RVTEST_GOTO_LOWER_MODE register save
-// (goto_lower_sv_off): T1, T2, T4, T3. None of these uses can be active at
-// the same time.
+// rvmodel_sv is shared scratch space. T-SBI CSR_ACCESS writes an instruction
+// and return to the first 8 bytes. The fast trap handlers use slot 0 as the
+// invisible-trap handoff marker and slots 2-3 to save a1 and a2. Slots 4-7 of
+// the M-mode copy save T1, T2, T4, and T3 for RVTEST_GOTO_LOWER_MODE.
 \__MODE__\()rvmodel_sv:    .fill   8, REGWIDTH, 0xdeadbeef                   // RVMODEL/T-SBI scratch area
 \__MODE__\()int_clr_sv:    .fill   4, REGWIDTH, 0xdeadbeef                   // a0-a2 save across interrupt clearing
 \__MODE__\()sv_area_end:                           // end marker (used for size calculation assertions)

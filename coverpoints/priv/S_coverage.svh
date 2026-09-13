@@ -171,15 +171,6 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         bins b_1[] = { [0:`UDB_MXLEN-1] };
     }
 
-    // walking_ones_nonmode: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
-    //     `ifdef UDB_MXLEN_64
-    //         bins b_1[] = { [0:`UDB_MXLEN-5] };
-    //     `else
-    //         bins b_1[] = { [0:`UDB_MXLEN-2] };
-    //     `endif
-    // }
-
-
     csrname : coverpoint ins.current.insn[31:20] {
         bins sstatus       = {CSR_SSTATUS};
         bins sie           = {CSR_SIE};
@@ -221,9 +212,9 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         `endif
         // counters tested in ZicntrS
     }
-    // satp : coverpoint ins.current.insn[31:20] {
-    //     bins satp          = {CSR_SATP};
-    // }
+    satp : coverpoint ins.current.insn[31:20] {
+        bins satp = {CSR_SATP};
+    }
 
     csrop: coverpoint ins.current.insn {
         wildcard bins csrrs = {CSRRS};
@@ -338,6 +329,7 @@ covergroup S_scsr_cg with function sample(ins_t ins);
     `endif
 
     cp_scsr_access:           cross priv_mode_s, csrname, csraccesses;
+    cp_satp:                  cross priv_mode_s, csrr, satp;
     cp_scsrwalk:              cross priv_mode_s, csrwalk, csrop, walking_ones;
     cp_ucsr_from_s:           cross priv_mode_s, csruname, csraccesses;
     cp_csr_insufficient_priv: cross priv_mode_s, csrr, csr_machine, nonzerord;

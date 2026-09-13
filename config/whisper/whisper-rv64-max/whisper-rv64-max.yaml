@@ -173,7 +173,7 @@ params:
   CACHE_BLOCK_SIZE: 64
   FORCE_UPGRADE_CBO_INVAL_TO_FLUSH: false
   # Zicntr params
-  TIME_CSR_IMPLEMENTED: true
+  TIME_CSR_IMPLEMENTED: false
   # U params
   MUTABLE_MISA_U: true
   U_MODE_ENDIANNESS: dynamic

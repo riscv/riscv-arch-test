@@ -46,6 +46,7 @@
   },
 
   "csr": {
+    "time": { "exists": "false" }, // Exercise M-mode emulation of time reads from S-mode and U-mode.
     "vstart": {
       "mask": "0xff",
       "poke_mask": "0xff"
@@ -134,5 +135,8 @@
     "update_whole_mask": true
   },
 
-  "wfi_timeout": 200
+  "wfi_timeout": 200,
+  "mmode_perf_event_map": {
+    "Load": 11
+  }
 }

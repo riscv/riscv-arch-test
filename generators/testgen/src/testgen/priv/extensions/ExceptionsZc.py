@@ -73,9 +73,22 @@ def _add_store_test(
     is_sp = op.endswith("sp")
     t_lines = []
 
-    # Initialize store register to a known value before setting up address
+    # Initialize scratch before each store so a missing store changes the signature.
+    t_lines.extend(
+        (
+            f"LA(x{addr_reg}, scratch)",
+            f"LI(x{base_reg}, {0x0C0DE000 | offset:#x})",
+            f"sw x{base_reg}, 0(x{addr_reg})",
+            f"sw x{base_reg}, 4(x{addr_reg})",
+            f"sw x{base_reg}, 8(x{addr_reg})",
+            f"sw x{base_reg}, 12(x{addr_reg})",
+        )
+    )
+
+    # Load the floating-point value from outside the bytes checked below.
     if is_float:
         t_lines.append(f"LA(x{addr_reg}, scratch)")
+        t_lines.append(f"addi x{addr_reg}, x{addr_reg}, 32")
         if "fld" in op or "fsd" in op:
             t_lines.append(f"fld f{fp_reg}, 0(x{addr_reg})")
         else:
@@ -103,7 +116,7 @@ def _add_store_test(
         t_lines.append(test_data.add_testcase(f"{op.lower()}_off{offset}", coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(x{addr_reg})")
 
-    # Read 16 bytes from scratch as signature to verify the store result
+    # Read scratch back as the signature to verify the store result
     t_lines.append(f"LA(x{addr_reg}, scratch)")
     t_lines.append(f"lw x{check_reg}, 0(x{addr_reg})")
     t_lines.append(write_sigupd(check_reg, test_data))

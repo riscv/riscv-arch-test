@@ -2,7 +2,7 @@
 
 normative_rule_definitions:
   - name: a_aq_rl_bits
-    coverpoint: ["TODO add coverpoint cp_custom_aqrl like Zalrsc"]
+    coverpoint: ["Zaamo_amoadd_w_cg/cp_custom_aqrl"]
 
   - name: amo_release_consistency
     coverpoint: ["OUT-OF-SCOPE for single hart"]

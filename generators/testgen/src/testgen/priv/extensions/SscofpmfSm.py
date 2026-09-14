@@ -23,7 +23,7 @@ def _generate_lcofi_m_tests(test_data: TestData) -> list[str]:
     MIE_BIT = 0x8
     SIE_BIT = 0x2
 
-    r_val, r_temp = test_data.int_regs.get_registers(2, exclude_regs=[0, 31])
+    r_val, r_temp, r_idle = test_data.int_regs.get_registers(3, exclude_regs=[0, 31])
 
     lines = [
         comment_banner(
@@ -76,7 +76,7 @@ def _generate_lcofi_m_tests(test_data: TestData) -> list[str]:
                         "    # mstatus.MIE (fixed 1) and mie.LCOFIE actually gate the trap.",
                         "    # Fires during the idle window below if LCOFIP=1 & LCOFIE=1; else",
                         "    # falls through once the countdown expires.",
-                        f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
+                        f"RVTEST_IDLE_FOR_INTERRUPT(x{r_idle})",
                         "",
                         f"csrc mip, x{r_temp}   # clear LCOFIP for next iteration (if it latched)" if lcofip else "",
                         "csrw mie, zero        # disable LCOFIE before next iteration",
@@ -98,7 +98,7 @@ def _generate_lcofi_m_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-    test_data.int_regs.return_registers([r_val, r_temp])
+    test_data.int_regs.return_registers([r_val, r_temp, r_idle])
     return lines
 
 

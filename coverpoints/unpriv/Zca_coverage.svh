@@ -211,7 +211,7 @@ covergroup Zca_c_addi4spn_cg with function sample(ins_t ins);
         bins offset[] = {[4:1020]} with (item % 4 == 0);
     }
 
-    cp_rdp : coverpoint ins.get_gpr_c_reg(ins.current.rd)  iff (ins.trap == 0 )  {
+    cp_rd_p : coverpoint ins.get_gpr_c_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
 
@@ -262,7 +262,7 @@ covergroup Zca_c_and_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
@@ -300,7 +300,7 @@ covergroup Zca_c_and_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs2p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
+    cp_rs2_p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
 
@@ -351,7 +351,7 @@ covergroup Zca_c_andi_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
@@ -423,7 +423,7 @@ covergroup Zca_c_beqz_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
@@ -476,7 +476,7 @@ covergroup Zca_c_bnez_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
@@ -656,11 +656,11 @@ covergroup Zca_c_lw_cg with function sample(ins_t ins);
         bins offset[] = {[0:124]} with (item % 4 == 0);
     }
 
-    cp_rdp : coverpoint ins.get_gpr_c_reg(ins.current.rd)  iff (ins.trap == 0 )  {
+    cp_rd_p : coverpoint ins.get_gpr_c_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
@@ -750,7 +750,7 @@ endgroup
 // ---------------------
 covergroup Zca_c_nop_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cp_asm_count : coverpoint ins.ins_str == "c.nop" iff (ins.trap == 0 && ins.current.imm == 0) {
+    cp_asm_count_nop : coverpoint ins.ins_str == "c.nop" iff (ins.trap == 0 && ins.current.imm == 0) {
         // Number of times the canonical c.nop (imm == 0) is executed
         bins count[] = {1};
     }
@@ -808,7 +808,7 @@ covergroup Zca_c_or_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
@@ -846,7 +846,7 @@ covergroup Zca_c_or_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs2p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
+    cp_rs2_p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
 
@@ -902,7 +902,7 @@ covergroup Zca_c_slli_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_uimm : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
+    cp_uimm_n0 : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins uimm[] = {[1:`UDB_MXLEN - 1]}; // 5/6 bit immediates, skip 0
     }
 
@@ -973,11 +973,11 @@ covergroup Zca_c_srai_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
-    cp_uimm : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
+    cp_uimm_n0 : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins uimm[] = {[1:`UDB_MXLEN - 1]}; // 5/6 bit immediates, skip 0
     }
 
@@ -1048,11 +1048,11 @@ covergroup Zca_c_srli_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
-    cp_uimm : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
+    cp_uimm_n0 : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins uimm[] = {[1:`UDB_MXLEN - 1]}; // 5/6 bit immediates, skip 0
     }
 
@@ -1127,7 +1127,7 @@ covergroup Zca_c_sub_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
@@ -1165,7 +1165,7 @@ covergroup Zca_c_sub_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs2p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
+    cp_rs2_p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
 
@@ -1187,7 +1187,7 @@ covergroup Zca_c_sw_cg with function sample(ins_t ins);
         bins offset[] = {[0:124]} with (item % 4 == 0);
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
@@ -1225,7 +1225,7 @@ covergroup Zca_c_sw_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs2p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
+    cp_rs2_p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
 
@@ -1328,7 +1328,7 @@ covergroup Zca_c_xor_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
@@ -1366,7 +1366,7 @@ covergroup Zca_c_xor_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs2p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
+    cp_rs2_p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
 
@@ -1532,7 +1532,7 @@ covergroup Zca_c_addw_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
@@ -1570,7 +1570,7 @@ covergroup Zca_c_addw_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs2p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
+    cp_rs2_p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
 
@@ -1596,11 +1596,11 @@ covergroup Zca_c_ld_cg with function sample(ins_t ins);
         bins offset[] = {[0:248]} with (item % 8 == 0);
     }
 
-    cp_rdp : coverpoint ins.get_gpr_c_reg(ins.current.rd)  iff (ins.trap == 0 )  {
+    cp_rd_p : coverpoint ins.get_gpr_c_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
@@ -1637,7 +1637,7 @@ covergroup Zca_c_sd_cg with function sample(ins_t ins);
         bins offset[] = {[0:248]} with (item % 8 == 0);
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
@@ -1675,7 +1675,7 @@ covergroup Zca_c_sd_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs2p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
+    cp_rs2_p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
 
@@ -1778,7 +1778,7 @@ covergroup Zca_c_subw_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
@@ -1816,7 +1816,7 @@ covergroup Zca_c_subw_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs2p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
+    cp_rs2_p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
 

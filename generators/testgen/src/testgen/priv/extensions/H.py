@@ -221,7 +221,10 @@ def _gen_twostage_setup(test_data: TestData, check: int, temp: int) -> list[str]
         f"{INDENT}VS_PTE_SETUP(sv39, GPA, 0x{_HOLE_GIB:08X}, {_VS_PERMS}, 0x{_HOLE_GIB:08X}, LEVEL2)",
         f"{INDENT}VS_PTE_SETUP(sv39, GPA, 0x{_TEST_GIB:08X}, {_VS_PERMS}, 0x{_ALIAS_GIB:08X}, LEVEL2)",
         f"{INDENT}HGATP_SETUP(sv39x4)",
-        f"{INDENT}VSATP_SETUP(sv39, PA)   # vsatp.PPN is a GPA; the G-stage map is identity",
+        # The trailing comment must not contain the tokens PA or GPA: they are
+        # object-like macros, and cpp expands them inside a `#` assembler
+        # comment because it has no idea the line is a comment.
+        f"{INDENT}VSATP_SETUP(sv39, PA)   # the guest root table is named by its physical address",
         f"{INDENT}hfence.gvma",
         f"{INDENT}hfence.vvma",
         f"{INDENT}sfence.vma",

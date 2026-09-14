@@ -67,6 +67,10 @@ def insert_header_template(
         all_extensions = flat_ext_components
         march = generate_march_string(all_extensions, xlen)
     all_defines = [*(extra_defines or []), *generate_defines_from_extensions(all_extensions)]
+    # Opt in to the hypervisor only for suites that require H. A suite that lists H
+    # in march_extensions just needs the assembler to accept H CSR names.
+    if "H" in flat_ext_components:
+        all_defines.append("#define RVTEST_HYPERVISOR")
     # Replace placeholders
     template = (
         template.replace("@TEST_PATH@", f"{test_file}")
@@ -318,12 +322,6 @@ def format_params(params: list[str], ext_components: list[str]) -> str:
 def generate_defines_from_extensions(ext_components: list[str]) -> list[str]:
     """Generate extra #define statements from extension components."""
     extra_defines: list[str] = []
-
-    # riscv_arch_test.h undefines H_SUPPORTED unless a test asks for the
-    # hypervisor, so that configs implementing H do not build every test with
-    # the HS and VS trap handlers instantiated.
-    if "H" in ext_components:
-        extra_defines.append("#define RVTEST_HYPERVISOR")
 
     # disable the following defines until booting to modes is implemented dh 7/1/26
     # if any(ext in ext_components for ext in ["H", "S"]):

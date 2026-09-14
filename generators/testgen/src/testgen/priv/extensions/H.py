@@ -334,10 +334,17 @@ def _gen_twostage_guest(test_data: TestData, check: int, temp: int, addr: int) -
     return code
 
 
+# Invisible trap emulation cannot yet handle traps from VS or VU mode, so
+# check_defines.h rejects it on a hypervisor build. It is enabled whenever the
+# time CSR is emulated, which is what TIME_CSR_IMPLEMENTED=false means.
+_PARAMS = ["TIME_CSR_IMPLEMENTED: true"]
+
+
 @add_priv_test_generator(
     "H",
     required_extensions=["S", "H"],
     extra_defines=["#define BOOT_TO_SMODE"],
+    params=_PARAMS,
 )
 def make_h(test_data: TestData) -> list[TestChunk]:
     """Generate the HS-mode and VS-mode trap handler and T-SBI tests."""
@@ -361,7 +368,7 @@ def make_h(test_data: TestData) -> list[TestChunk]:
     "H",
     required_extensions=["S", "H"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    params=["MXLEN: 64"],
+    params=[*_PARAMS, "MXLEN: 64"],
 )
 def make_h_twostage(test_data: TestData) -> list[TestChunk]:
     """Generate the two-stage translation tests (Sv39x4 G-stage over Sv39 VS-stage)."""

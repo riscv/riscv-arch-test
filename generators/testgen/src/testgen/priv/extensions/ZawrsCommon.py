@@ -39,18 +39,6 @@ def _menvcfg_stce(priv: str, r: int, enable: bool) -> list[str]:
     ]
 
 
-def _disable_stimecmp(priv: str, r: int) -> list[str]:
-    """stimecmp = -1 to disarm the Sstc timer; an S-mode CSR reached via T-SBI from U-mode."""
-    return [
-        "# Disable Sstc timer: stimecmp = -1",
-        f"LI(x{r}, -1)",
-        "#if __riscv_xlen == 32",
-        s_csr(priv, f"csrw stimecmph, x{r}"),
-        "#endif",
-        s_csr(priv, f"csrw stimecmp, x{r}"),
-    ]
-
-
 def _read_trap_count_helper(r_temp: int) -> list[str]:
     """Read trap count into r_temp"""
     return [f"# Read trap count into x{r_temp}", f"LA(x{r_temp}, rvtest_trap_count)", f"LREG x{r_temp}, 0(x{r_temp})"]
@@ -113,7 +101,7 @@ def wrs_resume_helper(
                 "# Enable Sstc (menvcfg.STCE) so stimecmp drives sip.STIP, then disarm the comparator",
                 "# so whatever stimecmp held before does not raise STIP once STIE is set",
                 *_menvcfg_stce(priv, r_temp, True),
-                *_disable_stimecmp(priv, r_temp),
+                f"RVTEST_CLR_SSTC_INT_{priv}",
                 "#endif",
             ]
         )
@@ -219,7 +207,7 @@ def wrs_resume_helper(
                         lines.extend(
                             [
                                 "#ifdef SSTC_SUPPORTED",
-                                *_disable_stimecmp(priv, r_temp),
+                                f"RVTEST_CLR_SSTC_INT_{priv}",
                                 "#endif",
                             ]
                         )

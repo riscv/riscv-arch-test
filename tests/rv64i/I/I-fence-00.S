@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 20
+#define SIGUPD_COUNT 13
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -43,68 +43,50 @@ I_fence_cg_cp_custom_fence_fence_rw_rw:
 I_fence_cg_cp_custom_fence_fence_tso_rw_rw:
   fence.tso
 
+  mv x6, x2 # switch signature pointer register to avoid conflict with test
 # Testcase cp_custom_fence (reserved fence encodings)
-  LI(x1, 0x5A5A5A5A)
 I_fence_cg_cp_custom_fence_fence_nonzerors1:
   .word 0x0331000f    # fence with nonzero rs1 behaves normally
-  # Check if x2 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x2, I_fence_cg_cp_custom_fence_fence_nonzerors1, I_fence_cg_cp_custom_fence_fence_nonzerors1_str)
 
   LI(x1, 0x5A5A5A5A)
 I_fence_cg_cp_custom_fence_fence_nonzerord:
-  .word 0x0330008f    # fence with nonzero rd  behaves normally
-  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, I_fence_cg_cp_custom_fence_fence_nonzerord, I_fence_cg_cp_custom_fence_fence_nonzerord_str)
+  .word 0x0330008f    # fence with nonzero rd behaves normally
+  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x1, I_fence_cg_cp_custom_fence_fence_nonzerord, I_fence_cg_cp_custom_fence_fence_nonzerord_str)
 
-  LI(x1, 0x5A5A5A5A)
 I_fence_cg_cp_custom_fence_fence_fm:
   .word 0x1330000f    # fence with reserved fm behaves as fence with fm = 0000
-  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, I_fence_cg_cp_custom_fence_fence_fm, I_fence_cg_cp_custom_fence_fence_fm_str)
 
-  LI(x1, 0x5A5A5A5A)
 I_fence_cg_cp_custom_fence_fence_tso_r_r:
-  .word 0x8110000f    # fence.TSO with R,R rather than RW, RW behaves as fence
-  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, I_fence_cg_cp_custom_fence_fence_tso_r_r, I_fence_cg_cp_custom_fence_fence_tso_r_r_str)
+  .word 0x8110000f    # fence.TSO with R,R rather than RW behaves as fence
 
 # Testcase cp_custom_fence (hint fence encodings)
-  LI(x1, 0x5A5A5A5A)
 I_fence_cg_cp_custom_fence_fence_hint0a:
   .word 0x0031000f    # fence with rd = x0, rs1 != x0, fm = 0, pred = 0 is a hint
-  # Check if x2 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x2, I_fence_cg_cp_custom_fence_fence_hint0a, I_fence_cg_cp_custom_fence_fence_hint0a_str)
 
-  LI(x1, 0x5A5A5A5A)
 I_fence_cg_cp_custom_fence_fence_hint0b:
   .word 0x0301000f    # fence with rd = x0, rs1 != x0, fm = 0, succ = 0 is a hint
-  # Check if x2 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x2, I_fence_cg_cp_custom_fence_fence_hint0b, I_fence_cg_cp_custom_fence_fence_hint0b_str)
 
   LI(x1, 0x5A5A5A5A)
 I_fence_cg_cp_custom_fence_fence_hint1a:
   .word 0x0030008f    # fence with rd != x0, rs1 = x0, fm = 0, pred = 0 is a hint
-  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, I_fence_cg_cp_custom_fence_fence_hint1a, I_fence_cg_cp_custom_fence_fence_hint1a_str)
+  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x1, I_fence_cg_cp_custom_fence_fence_hint1a, I_fence_cg_cp_custom_fence_fence_hint1a_str)
 
   LI(x1, 0x5A5A5A5A)
 I_fence_cg_cp_custom_fence_fence_hint1b:
   .word 0x0300008f    # fence with rd != x0, rs1 = x0, fm = 0, succ = 0 is a hint
-  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, I_fence_cg_cp_custom_fence_fence_hint1b, I_fence_cg_cp_custom_fence_fence_hint1b_str)
+  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x1, I_fence_cg_cp_custom_fence_fence_hint1b, I_fence_cg_cp_custom_fence_fence_hint1b_str)
 
-  LI(x1, 0x5A5A5A5A)
 I_fence_cg_cp_custom_fence_fence_hint2:
   .word 0x0020000f    # fence with rd = x0, rs1 = x0, fm = 0, pred = 0, succ != 0 is a hint
-  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, I_fence_cg_cp_custom_fence_fence_hint2, I_fence_cg_cp_custom_fence_fence_hint2_str)
 
-  LI(x1, 0x5A5A5A5A)
 I_fence_cg_cp_custom_fence_fence_hint3:
   .word 0x0200000f    # fence with rd = x0, rs1 = x0, fm = 0, pred != W, succ = 0 is a hint
-  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, I_fence_cg_cp_custom_fence_fence_hint3, I_fence_cg_cp_custom_fence_fence_hint3_str)
 
+
+  mv x2, x6 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    InterruptsSstc_cg = new();         InterruptsSstc_cg.set_inst_name("obj_InterruptsSstc");
+    SstcSm_cg = new();         SstcSm_cg.set_inst_name("obj_SstcSm");

@@ -1309,15 +1309,6 @@
     #ifdef H_SUPPORTED
       // Initialize HS-mode CSRs.
       //
-      // Nothing else in the boot chain touches these, so without this block a
-      // test entering VS-mode inherits whatever the reset state happened to be
-      // for hstatus, hideleg, hcounteren and henvcfg -- which is not
-      // architecturally defined -- and the first guest counter read or CBO
-      // traps for reasons that have nothing to do with what is being tested.
-      //
-      // The policy mirrors the S-mode block above, one level down: HS-mode is
-      // the execution environment for VS/VU exactly as M-mode is for S/U.
-
       // hstatus to a known state:
       //   SPV   = 0: last trap did not come from a virtual mode
       //   SPVP  = 0: HLV/HSV check guest accesses as VU until a test says otherwise

@@ -110,24 +110,27 @@
       "currentValueTemplate": "master"
     },
     {
-      "description": "RISC-V GCC toolchain version in CI workflow and Dockerfile",
+      "description": "RISC-V GCC toolchain version in setup action and Dockerfile",
       "customType": "regex",
       "managerFilePatterns": [
-        "/^\\.github/workflows/regress\\.yml$/",
+        "/^\\.github/actions/setup-tools/action\\.yml$/",
         "/^Dockerfile$/"
       ],
       "matchStrings": [
-        "RISCV_TOOLCHAIN_VERSION[=:]\\s*\"?(?<currentValue>[\\d.]+)\"?"
+        "riscv-toolchain-version:[^\\n]+\\n\\s+description:[^\\n]+\\n\\s+required: false\\n\\s+default: \\\"(?<currentValue>[\\d.]+)\\\"",
+        "RISCV_TOOLCHAIN_VERSION[=:]\\s*\\\"?(?<currentValue>[\\d.]+)\\\"?"
       ],
       "depNameTemplate": "riscv-collab/riscv-gnu-toolchain",
       "datasourceTemplate": "github-releases",
       "versioningTemplate": "loose"
     },
     {
-      "description": "LLVM version in CI workflow",
+      "description": "LLVM version in setup action",
       "customType": "regex",
-      "managerFilePatterns": ["/^\\.github/workflows/regress\\.yml$/"],
-      "matchStrings": ["LLVM_VERSION:\\s*\"(?<currentValue>\\d+)\""],
+      "managerFilePatterns": ["/^\\.github/actions/setup-tools/action\\.yml$/"],
+      "matchStrings": [
+        "llvm-version:[^\\n]+\\n\\s+description:[^\\n]+\\n\\s+required: false\\n\\s+default: \\\"(?<currentValue>\\d+)\\\""
+      ],
       "depNameTemplate": "llvm/llvm-project",
       "datasourceTemplate": "github-tags",
       "extractVersionTemplate": "^llvmorg-(?<version>\\d+)\\.\\d+\\.\\d+$"

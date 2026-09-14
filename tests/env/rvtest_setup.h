@@ -101,11 +101,15 @@
     #ifdef STANDARD_SM_SUPPORTED
       RVTEST_TSBI_GOTO_MMODE
       #ifdef S_SUPPORTED
+        // Exact reverse of the prolog order (M, H, S, V) so the modes that
+        // share the S CSR space unwind in the order they were nested.
         #ifdef H_SUPPORTED
           RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code
-          RVTEST_TRAP_EPILOG H        // actual h-mode prolog/epilog/handler code
         #endif
         RVTEST_TRAP_EPILOG S          // actual s-mode prolog/epilog/handler code
+        #ifdef H_SUPPORTED
+          RVTEST_TRAP_EPILOG H        // actual h-mode prolog/epilog/handler code
+        #endif
       #endif
       RVTEST_TRAP_EPILOG M            // actual m-mode prolog/epilog/handler code
     #endif
@@ -954,9 +958,15 @@
       // and there is no harm setting up all the trap handlers here
       RVTEST_TRAP_PROLOG M
       #ifdef S_SUPPORTED
-        RVTEST_TRAP_PROLOG S
+        // Order matches INSTANTIATE_MODE_MACRO: M, H, S, V. S must run after H
+        // because HS-mode has no trap CSRs of its own — stvec, sscratch, sepc
+        // and scause ARE the S-mode ones — so whichever prolog runs last owns
+        // them.
         #ifdef H_SUPPORTED
           RVTEST_TRAP_PROLOG H
+        #endif
+        RVTEST_TRAP_PROLOG S
+        #ifdef H_SUPPORTED
           RVTEST_TRAP_PROLOG V
         #endif
       #endif
@@ -1295,6 +1305,54 @@
       li t0, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE
       csrw senvcfg, t0
     #endif
+
+    #ifdef H_SUPPORTED
+      // Initialize HS-mode CSRs.
+      //
+      // Nothing else in the boot chain touches these, so without this block a
+      // test entering VS-mode inherits whatever the reset state happened to be
+      // for hstatus, hideleg, hcounteren and henvcfg -- which is not
+      // architecturally defined -- and the first guest counter read or CBO
+      // traps for reasons that have nothing to do with what is being tested.
+      //
+      // The policy mirrors the S-mode block above, one level down: HS-mode is
+      // the execution environment for VS/VU exactly as M-mode is for S/U.
+
+      // hstatus to a known state:
+      //   SPV   = 0: last trap did not come from a virtual mode
+      //   SPVP  = 0: HLV/HSV check guest accesses as VU until a test says otherwise
+      //   HU    = 0: no hypervisor loads/stores from U-mode
+      //   VGEIN = 0: no guest external interrupt selected
+      //   VTVM  = 0: guest may use sfence.vma and satp
+      //   VTW   = 0: guest wfi does not trap
+      //   VTSR  = 0: guest sret does not trap
+      //   VSBE  = 0: VS-mode is little endian
+      // Tests that need any of these set them themselves.
+      LI(t0, HSTATUS_SPV | HSTATUS_SPVP | HSTATUS_HU | HSTATUS_VGEIN | \
+             HSTATUS_VTVM | HSTATUS_VTW | HSTATUS_VTSR | HSTATUS_VSBE)
+      csrc hstatus, t0
+
+      // Delegate nothing to VS-mode by default: a guest trap goes to HS-mode,
+      // where the framework's trap handler is, unless a test opts in by writing
+      // hedeleg/hideleg itself. hedeleg is also cleared by RVTEST_TRAP_PROLOG H,
+      // which saves the incoming value; this keeps hideleg consistent with it.
+      csrw hideleg, zero
+      csrw hvip, zero     // no guest-visible interrupts pending at boot
+
+      // Make counters readable from VS/VU. hcounteren gates guest counter
+      // access the same way mcounteren gates HS-mode's, so leaving it at 0
+      // makes every guest rdcycle/rdtime an illegal instruction.
+      li t0, -1
+      csrw hcounteren, t0
+
+      // henvcfg mirrors senvcfg: unprivileged configuration enabled, privileged
+      // features off until a test turns them on. henvcfg gates the guest's view,
+      // so a feature disabled here stays disabled however senvcfg is set.
+      #ifdef S1P12P0_OR_LATER_SUPPORTED
+        li t0, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE
+        csrw henvcfg, t0
+      #endif
+    #endif // H_SUPPORTED
 
     // Boot into S-mode
     RVTEST_TSBI_GOTO_SMODE

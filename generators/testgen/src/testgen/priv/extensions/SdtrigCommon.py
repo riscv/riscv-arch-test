@@ -11,7 +11,6 @@
 from random import seed
 
 from testgen.asm.helpers import comment_banner, reproducible_hash, write_sigupd
-from testgen.asm.interrupts import clr_mtimer_int, set_mtimer_int
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.random import random_int
 from testgen.data.state import TestData
@@ -485,24 +484,19 @@ def _fire_supported_triggers(trig_num: int, mode: str, cfg_reg: int, addr_reg: i
     #     ]
     # )
 
-    # etrigger: watch ecall-from-<mode>, fire with an ecall
-    # ecall_cause = {"M": 11, "S": 9, "U": 8}.get(mode[0], 11)
+    # # itrigger: mask SSIP, fire by making it pending
     # lines.extend(
     #     [
-    #         f"#ifdef UDB_ETRIGGER_TRIG{trig_num}_AVAILABLE",
-    #         *_config_etrigger(cfg_reg, trig_num, 1 << ecall_cause, mode),
-    #         "ecall # fire etrigger",
+    #         f"#ifdef UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE",
+    #         *_config_itrigger(cfg_reg, trig_num, 1 << 1, mode),
+    #         *_cause_interrupt(1, mode, cfg_reg),
     #         "nop # spacer",
     #         *_disable_trigger(cfg_reg, trig_num, mode),
-    #         f"#endif // UDB_ETRIGGER_TRIG{trig_num}_AVAILABLE",
+    #         f"#endif // UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE",
     #     ]
     # )
 
-    return lines
-
-
 ### COVERPOINTS
-
 
 def _generate_access_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate common trigger-CSR access tests."""

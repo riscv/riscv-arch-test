@@ -60,42 +60,12 @@ EXTENSION_PARAM_MAP = {
 # FLEN Mapping
 # =============================================================================
 
-# Extensions requiring 128-bit FLEN (Q extension)
-FLEN_128_EXTENSIONS = frozenset(
-    {
-        "Q",
-        "ZfaQ",
-        "ZfhQ",
-    }
-)
 
-# Extensions requiring 64-bit FLEN (D extension)
-FLEN_64_EXTENSIONS = frozenset(
-    {
-        "D",
-        "ZfhD",
-        "ZfhminD",
-        "ZfaD",
-        "ZfaZfhD",
-        "Zcd",
-    }
-)
-
-# All other extensions default to 32-bit FLEN
-
-
-def get_flen_for_extension(extension: str) -> int:
-    """Get the required FLEN for a given extension.
-
-    Args:
-        extension: The extension name (e.g., 'F', 'D', 'Q')
-
-    Returns:
-        The FLEN value (32, 64, or 128)
-    """
-    if extension in FLEN_128_EXTENSIONS:
+def get_flen_for_extensions(extensions: list[str]) -> int:
+    """Get the required FLEN for canonical extension components."""
+    if "Q" in extensions:
         return 128
-    if extension in FLEN_64_EXTENSIONS:
+    if "D" in extensions:
         return 64
     return 32
 

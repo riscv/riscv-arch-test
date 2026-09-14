@@ -24,11 +24,10 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
     sstateen_walk_csr: coverpoint ins.current.insn[31:20] {
             bins sstateen0 = {CSR_SSTATEEN0};
     }
+    // Ssstateen implies S-mode, so both bins are always reachable.
     priv_mode_maybes_u: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
             bins U_mode = {3'b000};
-            `ifdef S_SUPPORTED
-                    bins S_mode = {3'b001};
-            `endif
+            bins S_mode = {3'b001};
     }
 
     `ifdef UDB_MXLEN_64
@@ -67,16 +66,6 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
                 bins se0_enabled  = {1'b1};
         }
     `endif
-    `ifdef UDB_MXLEN_64
-        se0_zero: coverpoint ins.current.csr[CSR_MSTATEEN0][63] {
-                bins se0_disabled  = {1'b0};
-        }
-    `else
-        se0_zero: coverpoint ins.current.csr[CSR_MSTATEEN0H][31] {
-                bins se0_disabled  = {1'b0};
-        }
-    `endif
-
     `ifdef ZFINX_SUPPORTED
         misa_F: coverpoint ins.current.csr[CSR_MISA][5] {
                 bins F_set   = {1'b1};
@@ -117,16 +106,6 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
                 ignore_bins ig2 = binsof(misa_F.F_clear) && binsof(sstateen0_fcsr_bit.fcsr_zero);
         }
     `endif
-    cp_mstateen0_se0_zero_controls_sstateen0: cross csrops, priv_mode_s, se0_zero, sstateen_csrs {
-            ignore_bins ig1 = binsof(sstateen_csrs.sstateen1);
-            ignore_bins ig2 = binsof(sstateen_csrs.sstateen2);
-            ignore_bins ig3 = binsof(sstateen_csrs.sstateen3);
-    }
-    cp_mstateen0_se0_one_controls_sstateen0: cross csrops, priv_mode_s, se0_one, sstateen_csrs {
-            ignore_bins ig1 = binsof(sstateen_csrs.sstateen1);
-            ignore_bins ig2 = binsof(sstateen_csrs.sstateen2);
-            ignore_bins ig3 = binsof(sstateen_csrs.sstateen3);
-    }
     cp_csr_illegal_accesses: cross priv_mode_u, sstateen_csrs, csrops, se0_one;
     cp_walking_ones:         cross priv_mode_s, sstateen_walk_csr, csrops, csr_walk, se0_one;
     `ifdef ZCMT_SUPPORTED

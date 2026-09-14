@@ -1942,6 +1942,8 @@ tsbi_instr_table:
         //TSBI_CSR_INSTR_TABLE(0x305) // mtvec
         TSBI_CSR_INSTR_TABLE(0x306) // mcounteren
         TSBI_CSR_INSTR_TABLE(0x30A) // menvcfg
+        TSBI_CSR_INSTR_TABLE(0x30C) // mstateen0
+        TSBI_CSR_INSTR_TABLE(0x31C) // mstateen0h
         TSBI_CSR_INSTR_TABLE(0x344) // mip
         TSBI_CSR_INSTR_TABLE(0x747) // mseccfg
         TSBI_CSR_INSTR_TABLE(0x320) // mcountinhibit

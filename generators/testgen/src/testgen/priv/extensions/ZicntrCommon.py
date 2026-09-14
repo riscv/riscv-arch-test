@@ -20,13 +20,13 @@ Counteren = Literal["ones", "zeros"]
 _COUNTERS = ["cycle", "time", "instret"]
 
 
-def _read_counter(
+def _access_counter(
     test_data: TestData, covergroup: str, coverpoint: str, bin_prefix: str, read_reg: int, i: int
 ) -> list[str]:
     """Read counter i and attempt to write it, low half and high half on RV32.
 
     The read traps or not according to mcounteren and scounteren; the write always raises an illegal
-    instruction, because the unprivileged counters are read-only CSRs. Each access is its own testcase.
+    instruction, because the unprivileged counters are read-only CSRs.
     """
 
     def access(name: str, suffix: str) -> list[str]:
@@ -106,7 +106,7 @@ def counteren_walk_tests(
     for i in range(32):
         lines += [
             *(_write_counteren(csr, f"x{walk_reg}", mode, "set only the current bit") for csr in csrs),
-            *_read_counter(test_data, covergroup, coverpoint, f"{tag}walking_1_{i}", read_reg, i),
+            *_access_counter(test_data, covergroup, coverpoint, f"{tag}walking_1_{i}", read_reg, i),
             f"slli x{walk_reg}, x{walk_reg}, 1",
         ]
 
@@ -115,7 +115,7 @@ def counteren_walk_tests(
         lines += [
             f"not x{inv_reg}, x{walk_reg}  # all bits but the current one",
             *(_write_counteren(csr, f"x{inv_reg}", mode, "clear only the current bit") for csr in csrs),
-            *_read_counter(test_data, covergroup, coverpoint, f"{tag}walking_0_{i}", read_reg, i),
+            *_access_counter(test_data, covergroup, coverpoint, f"{tag}walking_0_{i}", read_reg, i),
             f"slli x{walk_reg}, x{walk_reg}, 1",
         ]
     test_data.int_regs.return_registers([read_reg, ones_reg, walk_reg, inv_reg])

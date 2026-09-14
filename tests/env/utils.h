@@ -231,12 +231,12 @@
   #define RVTEST_TEST_CSR fflags
 #elif defined(ZVE32X_SUPPORTED)
   #define RVTEST_TEST_CSR vxsat
-#elif defined(ZICNTR_SUPPORTED) && defined(U_SUPPORTED)
-  #define RVTEST_TEST_CSR instret
-  #define RVTEST_READ_ONLY_TEST_CSR
 #elif defined(S_SUPPORTED)
   #define RVTEST_TEST_CSR sepc
   #define BOOT_TO_SMODE
+#elif defined(ZICNTR_SUPPORTED) && defined(U_SUPPORTED)
+  #define RVTEST_TEST_CSR instret
+  #define RVTEST_READ_ONLY_TEST_CSR
 #else
   #define RVTEST_TEST_CSR mepc
   #define BOOT_TO_MMODE

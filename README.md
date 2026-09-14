@@ -245,6 +245,7 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_DATA_SECTION`
 - `RVMODEL_BOOT` (can be omitted if not needed)
 - `RVMODEL_ACCESS_FAULT_ADDRESS` (can be omitted if DUT does not generate some/all access faults)
+- `RVMODEL_INVISIBLE_TRAP_HANDLER(_PC_REG, _INSTRUCTION_REG, _ACTION_REG, _DEST_REG, _VALUE_REG)` (can be omitted if the DUT does not trap and emulate instructions)
 
 **Timer Macros**: Can be left blank if machine mode is not supported.
 

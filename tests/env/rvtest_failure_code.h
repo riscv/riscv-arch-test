@@ -2281,6 +2281,8 @@
         .ascii "\nRVCP-SUMMARY: TEST FAILED - Test File \""
         .ascii TEST_FILE
         .asciz "\"\n"
+    invisible_Minvalid_action_str:
+        .string "RVCP ERROR: Invalid invisible trap action code: "
     begin_debugstr:
         .string "\nRVCP: DEBUG INFORMATION FOLLOWS\n"
     abortstr:

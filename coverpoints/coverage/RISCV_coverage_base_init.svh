@@ -222,6 +222,10 @@
         `cover_info("//      S - Enabled");
         `include "S_coverage_init.svh"
     `endif
+    `ifdef COVER_SDTRIGSM
+        `cover_info("//      SdtrigSm - Enabled");
+        `include "SdtrigSm_coverage_init.svh"
+    `endif
     `ifdef COVER_SM
         `cover_info("//      Sm - Enabled");
         `include "Sm_coverage_init.svh"

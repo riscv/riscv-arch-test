@@ -64,6 +64,17 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
         reader = csv.DictReader(csvfile)
         for row in reader:
             instr = row["Instruction"]
+
+            # Check for extra/missing columns
+            extra = row.pop(None, [])
+            if extra:
+                raise ValueError(
+                    f"{testplan_path}:{reader.line_num}: row for {instr!r} has {len(extra)} extra field(s): {extra}"
+                )
+            missing = [key for key, value in row.items() if value is None]
+            if missing:
+                raise ValueError(f"{testplan_path}:{reader.line_num}: row for {instr!r} is missing field(s): {missing}")
+
             try:
                 instr_type = row["Type"]
             except KeyError:
@@ -71,22 +82,6 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                     f"Error: 'Type' column missing in testplan {testplan_path}. Make sure you remembered to shrink the CSV."
                 )
                 raise
-            # csv.DictReader collects fields past the end of the header under the None key and
-            # pads a short row with None values. Both mean the row and the header disagree, and
-            # both are silently dropped by the coverpoint loop below, so reject them here.
-            extra = row.pop(None, None)
-            if extra:
-                raise ValueError(
-                    f"{testplan_path}: row for {instr!r} has {len(extra)} field(s) past the end of "
-                    f"the header: {extra}. Add the missing column(s) or remove the trailing commas."
-                )
-            missing = [key for key, value in row.items() if value is None]
-            if missing:
-                raise ValueError(
-                    f"{testplan_path}: row for {instr!r} is missing field(s) {missing}; "
-                    f"it has fewer columns than the header."
-                )
-
             rv32 = row["RV32"].strip().lower() == "x"
             rv64 = row["RV64"].strip().lower() == "x"
             sews = []
@@ -98,9 +93,8 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                 if key in non_coverpoint_columns:
                     continue
                 if isinstance(value, str) and value != "":
-                    if (
-                        value != "x"
-                    ):  # for special entries, append the entry name (e.g. cp_rd_edges becomes cp_rd_edges_lui)
+                    # for special entries, append the entry name (e.g. cp_rd_edges becomes cp_rd_edges_lui)
+                    if value != "x":
                         key = key + "_" + value
                     coverpoints.append(key)
 

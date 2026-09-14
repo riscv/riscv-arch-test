@@ -127,11 +127,13 @@ runs:
             --output /tmp/llvm.sh
           chmod +x /tmp/llvm.sh
           retry 3 sudo bash /tmp/llvm.sh "$LLVM_VERSION"
-          retry 3 sudo apt-get update
-          retry 3 sudo apt-get --download-only -y \
-            -o Acquire::Retries=3 \
-            -o Dir::Cache::archives="$llvm_cache/" \
-            install clang-"$LLVM_VERSION" lld-"$LLVM_VERSION" llvm-"$LLVM_VERSION"
+          mapfile -t llvm_packages < <(
+            dpkg-query -W -f='${binary:Package}=${Version}\n' | awk -F= '$2 ~ /~\+\+/ { print }'
+          )
+          (
+            cd "$llvm_cache"
+            retry 3 apt-get download "${llvm_packages[@]}"
+          )
         fi
         llvm_root="$llvm_cache/root"
         mkdir -p "$llvm_root"
@@ -139,7 +141,7 @@ runs:
           dpkg-deb -x "$package" "$llvm_root"
         done
         for tool in clang clang++ lld llvm-objdump llvm-as llvm-ar llvm-nm llvm-readelf; do
-          ln -sf "/usr/bin/${tool}-${LLVM_VERSION}" "$llvm_root/usr/bin/${tool}"
+          ln -sf "${tool}-${LLVM_VERSION}" "$llvm_root/usr/bin/${tool}"
         done
         rm -f "$llvm_cache"/*.deb
 

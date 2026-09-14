@@ -7,7 +7,7 @@
 
 """cp_misalign coverpoint generator."""
 
-from testgen.asm.helpers import load_int_reg, write_sigupd
+from testgen.asm.helpers import load_float_reg, load_int_reg, write_sigupd
 from testgen.constants import INDENT
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
@@ -95,9 +95,8 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             )
             test_data.int_regs.return_registers([2])
         elif instr_type in {"S", "FS", "CS", "CSS"}:
-            val = (
-                0x0F1E2D3C if test_data.xlen == 32 else 0x0F1E2D3C4B5A6978
-            )  # bytes to store all differ from values placed in scratch
+            # bytes to store all differ from values placed in scratch
+            val = 0x0F1E2D3C if test_data.xlen == 32 else 0x0F1E2D3C4B5A6978
             tc.code.extend(
                 [
                     f"# Testcase: {coverpoint} (imm[2:0] = {alignment:03b})",
@@ -111,12 +110,12 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
                     f"sw x{r2}, 8(x{r1}) # store at offset 8",
                     load_int_reg("testdata_0", r2, 0x01234567, test_data),
                     f"sw x{r2}, 12(x{r1}) # store at offset 12",
-                    load_int_reg("rs2", r2, val, test_data),
                 ]
             )
             if instr_type == "S":
                 tc.code.extend(
                     [
+                        load_int_reg("rs2", r2, val, test_data),
                         test_data.add_testcase(f"{alignment}", coverpoint),
                         f"{instr_name} x{r2}, {alignment}(x{r1}) # perform store to scratch memory",
                     ]
@@ -124,6 +123,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             elif instr_type == "FS":
                 tc.code.extend(
                     [
+                        load_float_reg("fs2", r2, val, test_data),
                         test_data.add_testcase(f"{alignment}", coverpoint),
                         f"{instr_name} f{r2}, {alignment}(x{r1}) # perform store to scratch memory",
                     ]
@@ -131,6 +131,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             elif instr_type == "CS":
                 tc.code.extend(
                     [
+                        load_int_reg("rs2", r2, val, test_data),
                         f"addi x{r1}, x{r1}, {alignment} # adjust for alignment",
                         test_data.add_testcase(f"{alignment}", coverpoint),
                         f"{instr_name} x{r2}, 0(x{r1}) # perform store",
@@ -143,6 +144,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
                     tc.code.append(asm)
                 tc.code.extend(
                     [
+                        load_int_reg("rs2", r2, val, test_data),
                         "LA(sp, scratch) # load base address",
                         f"addi sp, sp, {alignment} # adjust for alignment",
                         test_data.add_testcase(f"{alignment}", coverpoint),

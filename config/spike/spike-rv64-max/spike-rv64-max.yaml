@@ -69,6 +69,7 @@ implemented_extensions:
   - { name: Svpbmt, version: "= 1.0.0" }
   - { name: Svrsw60t59b, version: "= 1.0.0" }
   - { name: Svvptc, version: "= 1.0.0" }
+  - { name: Svukte, version: "= 0.4.0" }
   - { name: U, version: "= 1.0.0" }
   - { name: V, version: "= 1.0.0" }
   - { name: Za128rs, version: "= 1.0.0" }

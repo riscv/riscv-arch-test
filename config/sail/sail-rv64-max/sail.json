@@ -38,6 +38,16 @@
       "len": 32,
       "value": "0xFFFF_FFFF"
     },
+    // The bits in this value control whether the corresponding bits
+    // of the `hcounteren` CSR that control access to HPM counters,
+    // and `cycle`, `time` and `instret` registers from VS/VU-mode,
+    // are read-only zero. A set bit specifies that the corresponding
+    // bit of `hcounteren` is writable, otherwise the bit is read-only
+    // zero. Same layout as `mcounteren`.
+    "hcounteren_writable_bits": {
+      "len": 32,
+      "value": "0xFFFF_FFFF"
+    },
     // `mtvec.{direct,vectored}.supported` indicates whether the
     // corresponding mode is supported for `mtvec`.  At least one mode
     // should be supported.  If both modes are supported, the mode on
@@ -82,7 +92,7 @@
       // not exist.
       "delegatable_bits": {
         "len": 64,
-        "value": "0x0000_0000_000c_b3FF"
+        "value": "0x0000_0000_00fc_b7FF"
       }
     },
     "mideleg": {
@@ -104,17 +114,21 @@
     // `xtval` registers.
     "xtval_nonzero": {
       "illegal_instruction": true,
+      "virtual_instruction": true,
       "software_breakpoint": true,
       "hardware_breakpoint": true,
       "load_address_misaligned": true,
       "load_access_fault": true,
       "load_page_fault": true,
+      "load_guest_page_fault": true,
       "samo_address_misaligned": true,
       "samo_access_fault": true,
       "samo_page_fault": true,
+      "samo_guest_page_fault": true,
       "fetch_address_misaligned": true,
       "fetch_access_fault": true,
       "fetch_page_fault": true,
+      "fetch_guest_page_fault": true,
       "software_check": true,
       "reserved_exceptions": false
     },
@@ -520,6 +534,9 @@
     "U": {
       "supported": true
     },
+    "H": {
+      "supported": true
+    },
     "Zibi": {
       "supported": true
     },
@@ -804,6 +821,9 @@
     "Svbare": {
       "supported": true,
       "sfence_vma_illegal_if_svbare_only": true
+    },
+    "Svukte": {
+      "supported": true
     },
     "Sv32": {
       "supported": false

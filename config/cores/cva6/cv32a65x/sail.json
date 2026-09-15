@@ -617,6 +617,9 @@
       "supported": false,
       "sfence_vma_illegal_if_svbare_only": true
     },
+    "Svukte": {
+      "supported": false
+    },
     "Sv32": {
       "supported": false
     },

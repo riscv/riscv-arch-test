@@ -108,3 +108,11 @@ https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jv
 ,===
 https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=375458051#gid=375458051[Google Sheet Testplan]
 ,===
+
+==== Svukte User-Mode Faults to Supervisor Addresses
+
+[[t-Svukte-coverpoints]]
+.Svukte Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=2065954789#gid=2065954789[Google Sheet Testplan]
+,===

@@ -134,7 +134,7 @@ def gen_seed_illegal_csr_op_tests(test_data: TestData, covergroup: str, mode: st
 
 def gen_seed_entropy_zero_non_es16_tests(test_data: TestData, covergroup: str, mode: str) -> list[str]:
     """Read seed twice in a row using csrrw.
-    If OPST is not ES16, fail when entropy bits are nonzero.
+    Fail on OPST == DEAD. If OPST is WAIT/BIST, fail when entropy bits are nonzero.
     Always SIGUPD 0xB0BA on success so the scorecard does not depend on OPST.
     """
     coverpoint = "cp_zkr_seed_entropy_zero_non_es16"
@@ -161,18 +161,26 @@ def gen_seed_entropy_zero_non_es16_tests(test_data: TestData, covergroup: str, m
         "# entropy bits",
         f"LI(x{entropy_reg}, 0xFFFF)",
         f"and x{entropy_reg}, x{entropy_reg}, x{read_reg}",
+        "# DEAD (OPST == 3)",
+        f"LI(x{cmp_reg}, 0x3)",
+        f"beq x{opst_reg}, x{cmp_reg}, .Lzkr_seed_entropy_dead",
         "# ES16 (OPST == 2): skip the empty-source leak check",
         f"LI(x{cmp_reg}, 0x2)",
         f"beq x{opst_reg}, x{cmp_reg}, .Lzkr_seed_entropy_ok",
-        "# Not ES16: entropy must be 0 (spec seed_entropy_zero_non_es16)",
+        "# WAIT/BIST: entropy must be 0 (spec seed_entropy_zero_non_es16)",
         f"bnez x{entropy_reg}, .Lzkr_seed_entropy_leak",
         ".Lzkr_seed_entropy_ok:",
-        "# Same success token for ES16 and for WAIT/BIST/DEAD with entropy 0",
+        "# Same success token for ES16 and for WAIT/BIST with entropy 0",
         f"LI(x{cmp_reg}, 0xB0BA)",
         write_sigupd(cmp_reg, test_data),
         "j .Lzkr_seed_entropy_done",
+        ".Lzkr_seed_entropy_dead:",
+        "# DEAD: SIGUPD 0xDEAD vs Sail 0xB0BA",
+        f"LI(x{cmp_reg}, 0xDEAD)",
+        write_sigupd(cmp_reg, test_data),
+        "j .Lzkr_seed_entropy_done",
         ".Lzkr_seed_entropy_leak:",
-        "# Nonzero entropy while not ES16: SIGUPD leaked bits vs Sail 0xB0BA",
+        "# Nonzero entropy while WAIT/BIST: SIGUPD leaked bits vs Sail 0xB0BA",
         write_sigupd(entropy_reg, test_data),
         ".Lzkr_seed_entropy_done:",
         *_gate(mode, [_mseccfg(mode, f"csrw mseccfg, x{save_reg}")]),

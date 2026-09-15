@@ -397,12 +397,14 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins ones = {'1};
     }
 
-    old_mcountinhibit_cy: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "cy") {
-        bins zero = {1'b0};
+    `ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
         `ifdef UDB_COUNTINHIBIT_EN_0
-            bins one = {1'b1}; // only if counter can be inhibited
+            old_mcountinhibit_cy: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "cy") {
+                bins zero = {1'b0};
+                bins one = {1'b1};
+            }
         `endif
-    }
+    `endif
     old_mcountinhibit_ir: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "ir") {
         bins zero = {1'b0};
         `ifdef UDB_COUNTINHIBIT_EN_2
@@ -573,7 +575,11 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     // counters
     cp_cntr_access :            cross priv_mode_m, mcounters, cntraccesses;
-    cp_inhibit_mcycle :         cross priv_mode_m, csrr, mcycle, old_mcountinhibit_cy;
+    `ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
+        `ifdef UDB_COUNTINHIBIT_EN_0
+            cp_inhibit_mcycle : cross priv_mode_m, csrr, mcycle, old_mcountinhibit_cy;
+        `endif
+    `endif
     cp_inhibit_minstret :       cross priv_mode_m, csrr, minstret, old_mcountinhibit_ir;
 
     // misa

@@ -8,7 +8,8 @@
 
 """SmVF privileged test generator: vector-FP × mstatus.FS state."""
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.csr import gen_csr_read_sigupd
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
@@ -69,7 +70,7 @@ def _gen_fs_state_affecting_register(test_data: TestData, temp_reg: int) -> list
         lines.extend(_set_fs_vs(fs=fs, vs=3, temp_reg=temp_reg))
         lines.append(test_data.add_testcase(f"vfmv_f_s_fs{fs}", coverpoint, _CG))
         lines.append("vfmv.f.s f1, v2")
-        lines.append("nop")
+        lines.append(gen_csr_read_sigupd(temp_reg, ("mstatus", None), test_data))
     return lines
 
 
@@ -90,7 +91,9 @@ def _gen_fs_state_affecting_csr(test_data: TestData, temp_reg: int) -> list[str]
             lines.extend(_set_fs_vs(fs=fs, vs=3, temp_reg=temp_reg))
             lines.append(test_data.add_testcase(f"vfdiv_vv_fs{fs}_t{trial}", coverpoint, _CG))
             lines.append("vfdiv.vv v3, v1, v2  # 1.0/0.0 -> +inf, DZ flag")
-            lines.append("nop")
+            # mstatus first: reading fflags may itself dirty FS on a conservative DUT
+            lines.append(gen_csr_read_sigupd(temp_reg, ("mstatus", None), test_data))
+            lines.append(write_sigupd(None, test_data, "fflags"))
     # Also exercise an exception with vfadd inf-inf and vfmul 0*inf
     for fs in (1, 2):
         lines.extend(_set_fs_vs(fs=3, vs=3, temp_reg=temp_reg))
@@ -105,7 +108,8 @@ def _gen_fs_state_affecting_csr(test_data: TestData, temp_reg: int) -> list[str]
         lines.extend(_set_fs_vs(fs=fs, vs=3, temp_reg=temp_reg))
         lines.append(test_data.add_testcase(f"vfadd_inf_minf_fs{fs}", coverpoint, _CG))
         lines.append("vfadd.vv v3, v6, v7  # inf + -inf -> NV flag")
-        lines.append("nop")
+        lines.append(gen_csr_read_sigupd(temp_reg, ("mstatus", None), test_data))
+        lines.append(write_sigupd(None, test_data, "fflags"))
     return lines
 
 
@@ -120,11 +124,14 @@ def _gen_fs_state_nonaffecting(test_data: TestData, temp_reg: int) -> list[str]:
             lines.extend(_set_fs_vs(fs=3, vs=3, temp_reg=temp_reg))
             lines.extend(_vector_setup(temp_reg))
             lines.extend(_load_v_zero_one(temp_reg))
+            lines.append("csrwi fcsr, 0  # clear fcsr under FS=Dirty, as the sibling generator does")
             lines.extend(_set_fs_vs(fs=fs, vs=3, temp_reg=temp_reg))
             lines.append(test_data.add_testcase(f"vfadd_{name}_fs{fs}", coverpoint, _CG))
             # vfadd.vv vd, vs2, vs1  — operand order: result = vs2 + vs1
             lines.append(f"vfadd.vv v3, {vs2_reg}, {vs1_reg}")
-            lines.append("nop")
+            # All four patterns are exact, so no flag may be raised: that is the evidence
+            # no FP state moved. FS is not committed; it may legally stay or go dirty.
+            lines.append(write_sigupd(None, test_data, "fflags"))
     return lines
 
 

@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 122
+#define SIGUPD_COUNT 182
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -505,120 +505,540 @@ Zbb_cpop_cg_cp_rd_b31:
   RVTEST_SIGUPD(x6, x5, x4, x31, Zbb_cpop_cg_cp_rd_b31, Zbb_cpop_cg_cp_rd_b31_str)
 
 /////////////////////////////////
-// cp_rs1_edges
+// cp_rs1_edges_walkmask
 /////////////////////////////////
 
-# Testcase cp_rs1_edges (Test source rs1 value = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x16, x7) # load rs1: x7 = 0x0000000000000000
-Zbb_cpop_cg_cp_rs1_edges_0x0:
-  cpop x31, x7 # perform operation
-  # Check if x31 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x31, Zbb_cpop_cg_cp_rs1_edges_0x0, Zbb_cpop_cg_cp_rs1_edges_0x0_str)
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load rs1: x30 = 0x0000000000000000
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x0:
+  cpop x3, x30 # perform operation
+  # Check if x3 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x3, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x0, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x0_str)
 
-# Testcase cp_rs1_edges (Test source rs1 value = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load rs1: x11 = 0x0000000000000001
-Zbb_cpop_cg_cp_rs1_edges_0x1:
-  cpop x10, x11 # perform operation
-  # Check if x10 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x10, Zbb_cpop_cg_cp_rs1_edges_0x1, Zbb_cpop_cg_cp_rs1_edges_0x1_str)
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x16, x31) # load rs1: x31 = 0x0000000000000001
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1:
+  cpop x18, x31 # perform operation
+  # Check if x18 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x18, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1_str)
 
-# Testcase cp_rs1_edges (Test source rs1 value = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x16, x7) # load rs1: x7 = 0x0000000000000002
-Zbb_cpop_cg_cp_rs1_edges_0x2:
-  cpop x28, x7 # perform operation
-  # Check if x28 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x28, Zbb_cpop_cg_cp_rs1_edges_0x2, Zbb_cpop_cg_cp_rs1_edges_0x2_str)
-
-# Testcase cp_rs1_edges (Test source rs1 value = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x16, x8) # load rs1: x8 = 0x8000000000000000
-Zbb_cpop_cg_cp_rs1_edges_0x8000000000000000:
-  cpop x25, x8 # perform operation
-  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x25, Zbb_cpop_cg_cp_rs1_edges_0x8000000000000000, Zbb_cpop_cg_cp_rs1_edges_0x8000000000000000_str)
-
-# Testcase cp_rs1_edges (Test source rs1 value = 0x8000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x16, x12) # load rs1: x12 = 0x8000000000000001
-Zbb_cpop_cg_cp_rs1_edges_0x8000000000000001:
-  cpop x29, x12 # perform operation
-  # Check if x29 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x29, Zbb_cpop_cg_cp_rs1_edges_0x8000000000000001, Zbb_cpop_cg_cp_rs1_edges_0x8000000000000001_str)
-
-# Testcase cp_rs1_edges (Test source rs1 value = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x16, x29) # load rs1: x29 = 0x7fffffffffffffff
-Zbb_cpop_cg_cp_rs1_edges_0x7fffffffffffffff:
-  cpop x8, x29 # perform operation
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0000000000000002)
+  RVTEST_TESTDATA_LOAD_INT(x16, x27) # load rs1: x27 = 0x0000000000000002
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x2:
+  cpop x8, x27 # perform operation
   # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x8, Zbb_cpop_cg_cp_rs1_edges_0x7fffffffffffffff, Zbb_cpop_cg_cp_rs1_edges_0x7fffffffffffffff_str)
+  RVTEST_SIGUPD(x6, x5, x4, x8, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x2, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x2_str)
 
-# Testcase cp_rs1_edges (Test source rs1 value = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x16, x2) # load rs1: x2 = 0x7ffffffffffffffe
-Zbb_cpop_cg_cp_rs1_edges_0x7ffffffffffffffe:
-  cpop x14, x2 # perform operation
-  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x14, Zbb_cpop_cg_cp_rs1_edges_0x7ffffffffffffffe, Zbb_cpop_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x8000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x16, x8) # load rs1: x8 = 0x8000000000000000
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x8000000000000000:
+  cpop x28, x8 # perform operation
+  # Check if x28 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x28, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x8000000000000000, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x8000000000000000_str)
 
-# Testcase cp_rs1_edges (Test source rs1 value = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x16, x27) # load rs1: x27 = 0xffffffffffffffff
-Zbb_cpop_cg_cp_rs1_edges_0xffffffffffffffff:
-  cpop x22, x27 # perform operation
-  # Check if x22 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x22, Zbb_cpop_cg_cp_rs1_edges_0xffffffffffffffff, Zbb_cpop_cg_cp_rs1_edges_0xffffffffffffffff_str)
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x8000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x16, x29) # load rs1: x29 = 0x8000000000000001
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x8000000000000001:
+  cpop x1, x29 # perform operation
+  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x1, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x8000000000000001, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x8000000000000001_str)
 
-# Testcase cp_rs1_edges (Test source rs1 value = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x16, x7) # load rs1: x7 = 0xfffffffffffffffe
-Zbb_cpop_cg_cp_rs1_edges_0xfffffffffffffffe:
-  cpop x13, x7 # perform operation
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x7fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load rs1: x3 = 0x7fffffffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffffffffffffff:
+  cpop x25, x3 # perform operation
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffffffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffffffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x7ffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x16, x7) # load rs1: x7 = 0x7ffffffffffffffe
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffffffffffffe:
+  cpop x19, x7 # perform operation
+  # Check if x19 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x19, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffffffffffffe, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffffffffffffe_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0xffffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load rs1: x13 = 0xffffffffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffffffffffffff:
+  cpop x18, x13 # perform operation
+  # Check if x18 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x18, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffffffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffffffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0xfffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x16, x29) # load rs1: x29 = 0xfffffffffffffffe
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffffffffffe:
+  cpop x24, x29 # perform operation
+  # Check if x24 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x24, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffffffffffe, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffffffffffe_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x5bbc887763ae86f2)
+  RVTEST_TESTDATA_LOAD_INT(x16, x31) # load rs1: x31 = 0x5bbc887763ae86f2
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x5bbc887763ae86f2:
+  cpop x29, x31 # perform operation
+  # Check if x29 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x29, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x5bbc887763ae86f2, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x5bbc887763ae86f2_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0xaaaaaaaaaaaaaaaa)
+  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load rs1: x23 = 0xaaaaaaaaaaaaaaaa
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xaaaaaaaaaaaaaaaa:
+  cpop x25, x23 # perform operation
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xaaaaaaaaaaaaaaaa, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xaaaaaaaaaaaaaaaa_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x5555555555555555)
+  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load rs1: x23 = 0x5555555555555555
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x5555555555555555:
+  cpop x12, x23 # perform operation
+  # Check if x12 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x12, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x5555555555555555, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x5555555555555555_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x00000000ffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load rs1: x15 = 0x00000000ffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffffff:
+  cpop x18, x15 # perform operation
+  # Check if x18 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x18, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x00000000fffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load rs1: x22 = 0x00000000fffffffe
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffe:
+  cpop x17, x22 # perform operation
+  # Check if x17 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x17, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffe, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffe_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0000000100000000)
+  RVTEST_TESTDATA_LOAD_INT(x16, x28) # load rs1: x28 = 0x0000000100000000
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x100000000:
+  cpop x2, x28 # perform operation
+  # Check if x2 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x2, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x100000000, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x100000000_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0000000100000001)
+  RVTEST_TESTDATA_LOAD_INT(x16, x20) # load rs1: x20 = 0x0000000100000001
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x100000001:
+  cpop x23, x20 # perform operation
+  # Check if x23 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x23, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x100000001, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x100000001_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0000000000000003)
+  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load rs1: x30 = 0x0000000000000003
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3:
+  cpop x23, x30 # perform operation
+  # Check if x23 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x23, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0000000000000007)
+  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load rs1: x3 = 0x0000000000000007
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7:
+  cpop x13, x3 # perform operation
   # Check if x13 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x13, Zbb_cpop_cg_cp_rs1_edges_0xfffffffffffffffe, Zbb_cpop_cg_cp_rs1_edges_0xfffffffffffffffe_str)
+  RVTEST_SIGUPD(x6, x5, x4, x13, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7_str)
 
-# Testcase cp_rs1_edges (Test source rs1 value = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x16, x20) # load rs1: x20 = 0x5bbc887763ae86f2
-Zbb_cpop_cg_cp_rs1_edges_0x5bbc887763ae86f2:
-  cpop x28, x20 # perform operation
-  # Check if x28 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x28, Zbb_cpop_cg_cp_rs1_edges_0x5bbc887763ae86f2, Zbb_cpop_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x000000000000000f)
+  RVTEST_TESTDATA_LOAD_INT(x16, x2) # load rs1: x2 = 0x000000000000000f
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xf:
+  cpop x10, x2 # perform operation
+  # Check if x10 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x10, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xf, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xf_str)
 
-# Testcase cp_rs1_edges (Test source rs1 value = 0xaaaaaaaaaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x16, x18) # load rs1: x18 = 0xaaaaaaaaaaaaaaaa
-Zbb_cpop_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa:
-  cpop x22, x18 # perform operation
-  # Check if x22 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x22, Zbb_cpop_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, Zbb_cpop_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x000000000000001f)
+  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load rs1: x15 = 0x000000000000001f
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1f:
+  cpop x3, x15 # perform operation
+  # Check if x3 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x3, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1f, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1f_str)
 
-# Testcase cp_rs1_edges (Test source rs1 value = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load rs1: x22 = 0x5555555555555555
-Zbb_cpop_cg_cp_rs1_edges_0x5555555555555555:
-  cpop x28, x22 # perform operation
-  # Check if x28 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x28, Zbb_cpop_cg_cp_rs1_edges_0x5555555555555555, Zbb_cpop_cg_cp_rs1_edges_0x5555555555555555_str)
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x000000000000003f)
+  RVTEST_TESTDATA_LOAD_INT(x16, x24) # load rs1: x24 = 0x000000000000003f
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3f:
+  cpop x12, x24 # perform operation
+  # Check if x12 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x12, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3f, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3f_str)
 
-# Testcase cp_rs1_edges (Test source rs1 value = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load rs1: x11 = 0x00000000ffffffff
-Zbb_cpop_cg_cp_rs1_edges_0xffffffff:
-  cpop x30, x11 # perform operation
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x000000000000007f)
+  RVTEST_TESTDATA_LOAD_INT(x16, x9) # load rs1: x9 = 0x000000000000007f
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7f:
+  cpop x7, x9 # perform operation
+  # Check if x7 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x7, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7f, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7f_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x00000000000000ff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x20) # load rs1: x20 = 0x00000000000000ff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xff:
+  cpop x1, x20 # perform operation
+  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x1, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x00000000000001ff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load rs1: x23 = 0x00000000000001ff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ff:
+  cpop x24, x23 # perform operation
+  # Check if x24 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x24, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x00000000000003ff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x12) # load rs1: x12 = 0x00000000000003ff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ff:
+  cpop x25, x12 # perform operation
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x00000000000007ff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x25) # load rs1: x25 = 0x00000000000007ff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ff:
+  cpop x31, x25 # perform operation
+  # Check if x31 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x31, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0000000000000fff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load rs1: x3 = 0x0000000000000fff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfff:
+  cpop x10, x3 # perform operation
+  # Check if x10 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x10, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0000000000001fff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x9) # load rs1: x9 = 0x0000000000001fff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fff:
+  cpop x11, x9 # perform operation
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0000000000003fff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load rs1: x22 = 0x0000000000003fff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fff:
+  cpop x25, x22 # perform operation
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0000000000007fff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x14) # load rs1: x14 = 0x0000000000007fff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fff:
+  cpop x15, x14 # perform operation
+  # Check if x15 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x15, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x000000000000ffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x14) # load rs1: x14 = 0x000000000000ffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffff:
+  cpop x30, x14 # perform operation
   # Check if x30 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x30, Zbb_cpop_cg_cp_rs1_edges_0xffffffff, Zbb_cpop_cg_cp_rs1_edges_0xffffffff_str)
+  RVTEST_SIGUPD(x6, x5, x4, x30, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffff_str)
 
-# Testcase cp_rs1_edges (Test source rs1 value = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x16, x1) # load rs1: x1 = 0x00000000fffffffe
-Zbb_cpop_cg_cp_rs1_edges_0xfffffffe:
-  cpop x20, x1 # perform operation
-  # Check if x20 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x20, Zbb_cpop_cg_cp_rs1_edges_0xfffffffe, Zbb_cpop_cg_cp_rs1_edges_0xfffffffe_str)
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x000000000001ffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load rs1: x22 = 0x000000000001ffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffff:
+  cpop x31, x22 # perform operation
+  # Check if x31 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x31, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffff_str)
 
-# Testcase cp_rs1_edges (Test source rs1 value = 0x0000000100000000)
-  RVTEST_TESTDATA_LOAD_INT(x16, x31) # load rs1: x31 = 0x0000000100000000
-Zbb_cpop_cg_cp_rs1_edges_0x100000000:
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x000000000003ffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x2) # load rs1: x2 = 0x000000000003ffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffff:
+  cpop x18, x2 # perform operation
+  # Check if x18 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x18, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x000000000007ffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load rs1: x3 = 0x000000000007ffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffff:
+  cpop x25, x3 # perform operation
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x00000000000fffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x31) # load rs1: x31 = 0x00000000000fffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffff:
   cpop x28, x31 # perform operation
   # Check if x28 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x28, Zbb_cpop_cg_cp_rs1_edges_0x100000000, Zbb_cpop_cg_cp_rs1_edges_0x100000000_str)
+  RVTEST_SIGUPD(x6, x5, x4, x28, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffff_str)
 
-# Testcase cp_rs1_edges (Test source rs1 value = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x16, x24) # load rs1: x24 = 0x0000000100000001
-Zbb_cpop_cg_cp_rs1_edges_0x100000001:
-  cpop x17, x24 # perform operation
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x00000000001fffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x10) # load rs1: x10 = 0x00000000001fffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffff:
+  cpop x23, x10 # perform operation
+  # Check if x23 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x23, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x00000000003fffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x24) # load rs1: x24 = 0x00000000003fffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffff:
+  cpop x18, x24 # perform operation
+  # Check if x18 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x18, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x00000000007fffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x18) # load rs1: x18 = 0x00000000007fffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffff:
+  cpop x14, x18 # perform operation
+  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x14, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0000000000ffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x8) # load rs1: x8 = 0x0000000000ffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffff:
+  cpop x7, x8 # perform operation
+  # Check if x7 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x7, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0000000001ffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load rs1: x15 = 0x0000000001ffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffffff:
+  cpop x27, x15 # perform operation
+  # Check if x27 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x27, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0000000003ffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x29) # load rs1: x29 = 0x0000000003ffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffffff:
+  cpop x1, x29 # perform operation
+  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x1, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0000000007ffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x9) # load rs1: x9 = 0x0000000007ffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffff:
+  cpop x13, x9 # perform operation
+  # Check if x13 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x13, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x000000000fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x10) # load rs1: x10 = 0x000000000fffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffff:
+  cpop x12, x10 # perform operation
+  # Check if x12 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x12, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x000000001fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x14) # load rs1: x14 = 0x000000001fffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffffff:
+  cpop x1, x14 # perform operation
+  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x1, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x000000003fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load rs1: x13 = 0x000000003fffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffffff:
+  cpop x23, x13 # perform operation
+  # Check if x23 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x23, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x27) # load rs1: x27 = 0x000000007fffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffffff:
+  cpop x14, x27 # perform operation
+  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x14, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x00000001ffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x25) # load rs1: x25 = 0x00000001ffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffffffff:
+  cpop x22, x25 # perform operation
+  # Check if x22 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x22, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x00000003ffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x31) # load rs1: x31 = 0x00000003ffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffffffff:
+  cpop x1, x31 # perform operation
+  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x1, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x00000007ffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x25) # load rs1: x25 = 0x00000007ffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffffff:
+  cpop x24, x25 # perform operation
+  # Check if x24 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x24, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0000000fffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load rs1: x23 = 0x0000000fffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffff:
+  cpop x14, x23 # perform operation
+  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x14, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0000001fffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x31) # load rs1: x31 = 0x0000001fffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffffffff:
+  cpop x8, x31 # perform operation
+  # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x8, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0000003fffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load rs1: x23 = 0x0000003fffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffffffff:
+  cpop x14, x23 # perform operation
+  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x14, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0000007fffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x7) # load rs1: x7 = 0x0000007fffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffffffff:
+  cpop x8, x7 # perform operation
+  # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x8, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x000000ffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x27) # load rs1: x27 = 0x000000ffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffffffff:
+  cpop x20, x27 # perform operation
+  # Check if x20 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x20, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x000001ffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x25) # load rs1: x25 = 0x000001ffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffffffffff:
+  cpop x12, x25 # perform operation
+  # Check if x12 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x12, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x000003ffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x27) # load rs1: x27 = 0x000003ffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffffffffff:
+  cpop x29, x27 # perform operation
+  # Check if x29 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x29, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x000007ffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load rs1: x23 = 0x000007ffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffffffff:
+  cpop x12, x23 # perform operation
+  # Check if x12 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x12, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x00000fffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x10) # load rs1: x10 = 0x00000fffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffffff:
+  cpop x8, x10 # perform operation
+  # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x8, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x00001fffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x18) # load rs1: x18 = 0x00001fffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffffffffff:
+  cpop x31, x18 # perform operation
+  # Check if x31 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x31, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x00003fffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load rs1: x22 = 0x00003fffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffffffffff:
+  cpop x19, x22 # perform operation
+  # Check if x19 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x19, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x00007fffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load rs1: x3 = 0x00007fffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffffffffff:
+  cpop x26, x3 # perform operation
+  # Check if x26 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x26, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0000ffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x29) # load rs1: x29 = 0x0000ffffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffffffffff:
+  cpop x19, x29 # perform operation
+  # Check if x19 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x19, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0001ffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x17) # load rs1: x17 = 0x0001ffffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffffffffffff:
+  cpop x10, x17 # perform operation
+  # Check if x10 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x10, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0003ffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load rs1: x22 = 0x0003ffffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffffffffffff:
+  cpop x12, x22 # perform operation
+  # Check if x12 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x12, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0007ffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x17) # load rs1: x17 = 0x0007ffffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffffffffff:
+  cpop x21, x17 # perform operation
+  # Check if x21 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x21, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x000fffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load rs1: x15 = 0x000fffffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffffffff:
+  cpop x28, x15 # perform operation
+  # Check if x28 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x28, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x001fffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x20) # load rs1: x20 = 0x001fffffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffffffffffff:
+  cpop x28, x20 # perform operation
+  # Check if x28 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x28, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x003fffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x14) # load rs1: x14 = 0x003fffffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffffffffffff:
+  cpop x27, x14 # perform operation
+  # Check if x27 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x27, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x007fffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x8) # load rs1: x8 = 0x007fffffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffffffffffff:
+  cpop x2, x8 # perform operation
+  # Check if x2 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x2, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x00ffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load rs1: x13 = 0x00ffffffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffffffffffff:
+  cpop x17, x13 # perform operation
   # Check if x17 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x17, Zbb_cpop_cg_cp_rs1_edges_0x100000001, Zbb_cpop_cg_cp_rs1_edges_0x100000001_str)
+  RVTEST_SIGUPD(x6, x5, x4, x17, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x01ffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x26) # load rs1: x26 = 0x01ffffffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffffffffffffff:
+  cpop x22, x26 # perform operation
+  # Check if x22 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x22, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffffffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffffffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x03ffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load rs1: x30 = 0x03ffffffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffffffffffffff:
+  cpop x29, x30 # perform operation
+  # Check if x29 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x29, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffffffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffffffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x07ffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load rs1: x15 = 0x07ffffffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffffffffffff:
+  cpop x14, x15 # perform operation
+  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x14, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x0fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x12) # load rs1: x12 = 0x0fffffffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffffffffff:
+  cpop x29, x12 # perform operation
+  # Check if x29 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x29, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x1fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x27) # load rs1: x27 = 0x1fffffffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffffffffffffff:
+  cpop x14, x27 # perform operation
+  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x14, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffffffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffffffffffffff_str)
+
+# Testcase cp_rs1_edges_walkmask (Test source rs1 value = 0x3fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x19) # load rs1: x19 = 0x3fffffffffffffff
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffffffffffffff:
+  cpop x15, x19 # perform operation
+  # Check if x15 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x15, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffffffffffffff, Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffffffffffffff_str)
 
 /////////////////////////////////
 // cmp_rd_rs1
@@ -947,6 +1367,66 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000fffffffe
 .dword 0x0000000100000000
 .dword 0x0000000100000001
+.dword 0x0000000000000003
+.dword 0x0000000000000007
+.dword 0x000000000000000f
+.dword 0x000000000000001f
+.dword 0x000000000000003f
+.dword 0x000000000000007f
+.dword 0x00000000000000ff
+.dword 0x00000000000001ff
+.dword 0x00000000000003ff
+.dword 0x00000000000007ff
+.dword 0x0000000000000fff
+.dword 0x0000000000001fff
+.dword 0x0000000000003fff
+.dword 0x0000000000007fff
+.dword 0x000000000000ffff
+.dword 0x000000000001ffff
+.dword 0x000000000003ffff
+.dword 0x000000000007ffff
+.dword 0x00000000000fffff
+.dword 0x00000000001fffff
+.dword 0x00000000003fffff
+.dword 0x00000000007fffff
+.dword 0x0000000000ffffff
+.dword 0x0000000001ffffff
+.dword 0x0000000003ffffff
+.dword 0x0000000007ffffff
+.dword 0x000000000fffffff
+.dword 0x000000001fffffff
+.dword 0x000000003fffffff
+.dword 0x000000007fffffff
+.dword 0x00000001ffffffff
+.dword 0x00000003ffffffff
+.dword 0x00000007ffffffff
+.dword 0x0000000fffffffff
+.dword 0x0000001fffffffff
+.dword 0x0000003fffffffff
+.dword 0x0000007fffffffff
+.dword 0x000000ffffffffff
+.dword 0x000001ffffffffff
+.dword 0x000003ffffffffff
+.dword 0x000007ffffffffff
+.dword 0x00000fffffffffff
+.dword 0x00001fffffffffff
+.dword 0x00003fffffffffff
+.dword 0x00007fffffffffff
+.dword 0x0000ffffffffffff
+.dword 0x0001ffffffffffff
+.dword 0x0003ffffffffffff
+.dword 0x0007ffffffffffff
+.dword 0x000fffffffffffff
+.dword 0x001fffffffffffff
+.dword 0x003fffffffffffff
+.dword 0x007fffffffffffff
+.dword 0x00ffffffffffffff
+.dword 0x01ffffffffffffff
+.dword 0x03ffffffffffffff
+.dword 0x07ffffffffffffff
+.dword 0x0fffffffffffffff
+.dword 0x1fffffffffffffff
+.dword 0x3fffffffffffffff
 .dword 0x0b64355c807f5280
 .dword 0x8aa7c9ef70dcb93f
 .dword 0xa9324091174631f8
@@ -1045,54 +1525,114 @@ Zbb_cpop_cg_cp_rd_b28_str: .string "\"test: 61; cg: Zbb_cpop_cg; cp: cp_rd; bin:
 Zbb_cpop_cg_cp_rd_b29_str: .string "\"test: 62; cg: Zbb_cpop_cg; cp: cp_rd; bin: b29\""
 Zbb_cpop_cg_cp_rd_b30_str: .string "\"test: 63; cg: Zbb_cpop_cg; cp: cp_rd; bin: b30\""
 Zbb_cpop_cg_cp_rd_b31_str: .string "\"test: 64; cg: Zbb_cpop_cg; cp: cp_rd; bin: b31\""
-Zbb_cpop_cg_cp_rs1_edges_0x0_str: .string "\"test: 65; cg: Zbb_cpop_cg; cp: cp_rs1_edges; bin: 0x0\""
-Zbb_cpop_cg_cp_rs1_edges_0x1_str: .string "\"test: 66; cg: Zbb_cpop_cg; cp: cp_rs1_edges; bin: 0x1\""
-Zbb_cpop_cg_cp_rs1_edges_0x2_str: .string "\"test: 67; cg: Zbb_cpop_cg; cp: cp_rs1_edges; bin: 0x2\""
-Zbb_cpop_cg_cp_rs1_edges_0x8000000000000000_str: .string "\"test: 68; cg: Zbb_cpop_cg; cp: cp_rs1_edges; bin: 0x8000000000000000\""
-Zbb_cpop_cg_cp_rs1_edges_0x8000000000000001_str: .string "\"test: 69; cg: Zbb_cpop_cg; cp: cp_rs1_edges; bin: 0x8000000000000001\""
-Zbb_cpop_cg_cp_rs1_edges_0x7fffffffffffffff_str: .string "\"test: 70; cg: Zbb_cpop_cg; cp: cp_rs1_edges; bin: 0x7fffffffffffffff\""
-Zbb_cpop_cg_cp_rs1_edges_0x7ffffffffffffffe_str: .string "\"test: 71; cg: Zbb_cpop_cg; cp: cp_rs1_edges; bin: 0x7ffffffffffffffe\""
-Zbb_cpop_cg_cp_rs1_edges_0xffffffffffffffff_str: .string "\"test: 72; cg: Zbb_cpop_cg; cp: cp_rs1_edges; bin: 0xffffffffffffffff\""
-Zbb_cpop_cg_cp_rs1_edges_0xfffffffffffffffe_str: .string "\"test: 73; cg: Zbb_cpop_cg; cp: cp_rs1_edges; bin: 0xfffffffffffffffe\""
-Zbb_cpop_cg_cp_rs1_edges_0x5bbc887763ae86f2_str: .string "\"test: 74; cg: Zbb_cpop_cg; cp: cp_rs1_edges; bin: 0x5bbc887763ae86f2\""
-Zbb_cpop_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 75; cg: Zbb_cpop_cg; cp: cp_rs1_edges; bin: 0xaaaaaaaaaaaaaaaa\""
-Zbb_cpop_cg_cp_rs1_edges_0x5555555555555555_str: .string "\"test: 76; cg: Zbb_cpop_cg; cp: cp_rs1_edges; bin: 0x5555555555555555\""
-Zbb_cpop_cg_cp_rs1_edges_0xffffffff_str: .string "\"test: 77; cg: Zbb_cpop_cg; cp: cp_rs1_edges; bin: 0xffffffff\""
-Zbb_cpop_cg_cp_rs1_edges_0xfffffffe_str: .string "\"test: 78; cg: Zbb_cpop_cg; cp: cp_rs1_edges; bin: 0xfffffffe\""
-Zbb_cpop_cg_cp_rs1_edges_0x100000000_str: .string "\"test: 79; cg: Zbb_cpop_cg; cp: cp_rs1_edges; bin: 0x100000000\""
-Zbb_cpop_cg_cp_rs1_edges_0x100000001_str: .string "\"test: 80; cg: Zbb_cpop_cg; cp: cp_rs1_edges; bin: 0x100000001\""
-Zbb_cpop_cg_cmp_rd_rs1_b0_str: .string "\"test: 81; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b0\""
-Zbb_cpop_cg_cmp_rd_rs1_b1_str: .string "\"test: 82; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b1\""
-Zbb_cpop_cg_cmp_rd_rs1_b2_str: .string "\"test: 83; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b2\""
-Zbb_cpop_cg_cmp_rd_rs1_b3_str: .string "\"test: 84; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b3\""
-Zbb_cpop_cg_cmp_rd_rs1_b4_str: .string "\"test: 85; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b4\""
-Zbb_cpop_cg_cmp_rd_rs1_b5_str: .string "\"test: 86; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b5\""
-Zbb_cpop_cg_cmp_rd_rs1_b6_str: .string "\"test: 87; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b6\""
-Zbb_cpop_cg_cmp_rd_rs1_b7_str: .string "\"test: 88; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b7\""
-Zbb_cpop_cg_cmp_rd_rs1_b8_str: .string "\"test: 89; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b8\""
-Zbb_cpop_cg_cmp_rd_rs1_b9_str: .string "\"test: 90; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b9\""
-Zbb_cpop_cg_cmp_rd_rs1_b10_str: .string "\"test: 91; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b10\""
-Zbb_cpop_cg_cmp_rd_rs1_b11_str: .string "\"test: 92; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b11\""
-Zbb_cpop_cg_cmp_rd_rs1_b12_str: .string "\"test: 93; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b12\""
-Zbb_cpop_cg_cmp_rd_rs1_b13_str: .string "\"test: 94; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b13\""
-Zbb_cpop_cg_cmp_rd_rs1_b14_str: .string "\"test: 95; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b14\""
-Zbb_cpop_cg_cmp_rd_rs1_b15_str: .string "\"test: 96; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b15\""
-Zbb_cpop_cg_cmp_rd_rs1_b16_str: .string "\"test: 97; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b16\""
-Zbb_cpop_cg_cmp_rd_rs1_b17_str: .string "\"test: 98; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b17\""
-Zbb_cpop_cg_cmp_rd_rs1_b18_str: .string "\"test: 99; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b18\""
-Zbb_cpop_cg_cmp_rd_rs1_b19_str: .string "\"test: 100; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b19\""
-Zbb_cpop_cg_cmp_rd_rs1_b20_str: .string "\"test: 101; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b20\""
-Zbb_cpop_cg_cmp_rd_rs1_b21_str: .string "\"test: 102; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b21\""
-Zbb_cpop_cg_cmp_rd_rs1_b22_str: .string "\"test: 103; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b22\""
-Zbb_cpop_cg_cmp_rd_rs1_b23_str: .string "\"test: 104; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b23\""
-Zbb_cpop_cg_cmp_rd_rs1_b24_str: .string "\"test: 105; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b24\""
-Zbb_cpop_cg_cmp_rd_rs1_b25_str: .string "\"test: 106; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b25\""
-Zbb_cpop_cg_cmp_rd_rs1_b26_str: .string "\"test: 107; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b26\""
-Zbb_cpop_cg_cmp_rd_rs1_b27_str: .string "\"test: 108; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b27\""
-Zbb_cpop_cg_cmp_rd_rs1_b28_str: .string "\"test: 109; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b28\""
-Zbb_cpop_cg_cmp_rd_rs1_b29_str: .string "\"test: 110; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b29\""
-Zbb_cpop_cg_cmp_rd_rs1_b30_str: .string "\"test: 111; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b30\""
-Zbb_cpop_cg_cmp_rd_rs1_b31_str: .string "\"test: 112; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b31\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x0_str: .string "\"test: 65; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x0\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1_str: .string "\"test: 66; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x1\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x2_str: .string "\"test: 67; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x2\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x8000000000000000_str: .string "\"test: 68; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x8000000000000000\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x8000000000000001_str: .string "\"test: 69; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x8000000000000001\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffffffffffffff_str: .string "\"test: 70; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x7fffffffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffffffffffffe_str: .string "\"test: 71; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x7ffffffffffffffe\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffffffffffffff_str: .string "\"test: 72; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0xffffffffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffffffffffe_str: .string "\"test: 73; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0xfffffffffffffffe\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x5bbc887763ae86f2_str: .string "\"test: 74; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x5bbc887763ae86f2\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 75; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0xaaaaaaaaaaaaaaaa\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x5555555555555555_str: .string "\"test: 76; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x5555555555555555\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffffff_str: .string "\"test: 77; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0xffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffe_str: .string "\"test: 78; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0xfffffffe\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x100000000_str: .string "\"test: 79; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x100000000\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x100000001_str: .string "\"test: 80; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x100000001\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3_str: .string "\"test: 81; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x3\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7_str: .string "\"test: 82; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x7\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xf_str: .string "\"test: 83; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0xf\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1f_str: .string "\"test: 84; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x1f\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3f_str: .string "\"test: 85; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x3f\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7f_str: .string "\"test: 86; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x7f\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xff_str: .string "\"test: 87; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0xff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ff_str: .string "\"test: 88; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x1ff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ff_str: .string "\"test: 89; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x3ff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ff_str: .string "\"test: 90; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x7ff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfff_str: .string "\"test: 91; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0xfff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fff_str: .string "\"test: 92; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x1fff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fff_str: .string "\"test: 93; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x3fff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fff_str: .string "\"test: 94; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x7fff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffff_str: .string "\"test: 95; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0xffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffff_str: .string "\"test: 96; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x1ffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffff_str: .string "\"test: 97; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x3ffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffff_str: .string "\"test: 98; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x7ffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffff_str: .string "\"test: 99; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0xfffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffff_str: .string "\"test: 100; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x1fffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffff_str: .string "\"test: 101; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x3fffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffff_str: .string "\"test: 102; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x7fffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffff_str: .string "\"test: 103; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0xffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffffff_str: .string "\"test: 104; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x1ffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffffff_str: .string "\"test: 105; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x3ffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffff_str: .string "\"test: 106; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x7ffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffff_str: .string "\"test: 107; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0xfffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffffff_str: .string "\"test: 108; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x1fffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffffff_str: .string "\"test: 109; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x3fffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffffff_str: .string "\"test: 110; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x7fffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffffffff_str: .string "\"test: 111; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x1ffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffffffff_str: .string "\"test: 112; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x3ffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffffff_str: .string "\"test: 113; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x7ffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffff_str: .string "\"test: 114; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0xfffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffffffff_str: .string "\"test: 115; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x1fffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffffffff_str: .string "\"test: 116; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x3fffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffffffff_str: .string "\"test: 117; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x7fffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffffffff_str: .string "\"test: 118; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0xffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffffffffff_str: .string "\"test: 119; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x1ffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffffffffff_str: .string "\"test: 120; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x3ffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffffffff_str: .string "\"test: 121; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x7ffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffffff_str: .string "\"test: 122; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0xfffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffffffffff_str: .string "\"test: 123; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x1fffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffffffffff_str: .string "\"test: 124; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x3fffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffffffffff_str: .string "\"test: 125; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x7fffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffffffffff_str: .string "\"test: 126; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0xffffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffffffffffff_str: .string "\"test: 127; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x1ffffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffffffffffff_str: .string "\"test: 128; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x3ffffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffffffffff_str: .string "\"test: 129; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x7ffffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffffffff_str: .string "\"test: 130; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0xfffffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffffffffffff_str: .string "\"test: 131; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x1fffffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffffffffffff_str: .string "\"test: 132; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x3fffffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7fffffffffffff_str: .string "\"test: 133; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x7fffffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xffffffffffffff_str: .string "\"test: 134; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0xffffffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1ffffffffffffff_str: .string "\"test: 135; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x1ffffffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3ffffffffffffff_str: .string "\"test: 136; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x3ffffffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x7ffffffffffffff_str: .string "\"test: 137; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x7ffffffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0xfffffffffffffff_str: .string "\"test: 138; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0xfffffffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x1fffffffffffffff_str: .string "\"test: 139; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x1fffffffffffffff\""
+Zbb_cpop_cg_cp_rs1_edges_walkmask_0x3fffffffffffffff_str: .string "\"test: 140; cg: Zbb_cpop_cg; cp: cp_rs1_edges_walkmask; bin: 0x3fffffffffffffff\""
+Zbb_cpop_cg_cmp_rd_rs1_b0_str: .string "\"test: 141; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b0\""
+Zbb_cpop_cg_cmp_rd_rs1_b1_str: .string "\"test: 142; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b1\""
+Zbb_cpop_cg_cmp_rd_rs1_b2_str: .string "\"test: 143; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b2\""
+Zbb_cpop_cg_cmp_rd_rs1_b3_str: .string "\"test: 144; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b3\""
+Zbb_cpop_cg_cmp_rd_rs1_b4_str: .string "\"test: 145; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b4\""
+Zbb_cpop_cg_cmp_rd_rs1_b5_str: .string "\"test: 146; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b5\""
+Zbb_cpop_cg_cmp_rd_rs1_b6_str: .string "\"test: 147; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b6\""
+Zbb_cpop_cg_cmp_rd_rs1_b7_str: .string "\"test: 148; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b7\""
+Zbb_cpop_cg_cmp_rd_rs1_b8_str: .string "\"test: 149; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b8\""
+Zbb_cpop_cg_cmp_rd_rs1_b9_str: .string "\"test: 150; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b9\""
+Zbb_cpop_cg_cmp_rd_rs1_b10_str: .string "\"test: 151; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b10\""
+Zbb_cpop_cg_cmp_rd_rs1_b11_str: .string "\"test: 152; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b11\""
+Zbb_cpop_cg_cmp_rd_rs1_b12_str: .string "\"test: 153; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b12\""
+Zbb_cpop_cg_cmp_rd_rs1_b13_str: .string "\"test: 154; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b13\""
+Zbb_cpop_cg_cmp_rd_rs1_b14_str: .string "\"test: 155; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b14\""
+Zbb_cpop_cg_cmp_rd_rs1_b15_str: .string "\"test: 156; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b15\""
+Zbb_cpop_cg_cmp_rd_rs1_b16_str: .string "\"test: 157; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b16\""
+Zbb_cpop_cg_cmp_rd_rs1_b17_str: .string "\"test: 158; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b17\""
+Zbb_cpop_cg_cmp_rd_rs1_b18_str: .string "\"test: 159; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b18\""
+Zbb_cpop_cg_cmp_rd_rs1_b19_str: .string "\"test: 160; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b19\""
+Zbb_cpop_cg_cmp_rd_rs1_b20_str: .string "\"test: 161; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b20\""
+Zbb_cpop_cg_cmp_rd_rs1_b21_str: .string "\"test: 162; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b21\""
+Zbb_cpop_cg_cmp_rd_rs1_b22_str: .string "\"test: 163; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b22\""
+Zbb_cpop_cg_cmp_rd_rs1_b23_str: .string "\"test: 164; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b23\""
+Zbb_cpop_cg_cmp_rd_rs1_b24_str: .string "\"test: 165; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b24\""
+Zbb_cpop_cg_cmp_rd_rs1_b25_str: .string "\"test: 166; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b25\""
+Zbb_cpop_cg_cmp_rd_rs1_b26_str: .string "\"test: 167; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b26\""
+Zbb_cpop_cg_cmp_rd_rs1_b27_str: .string "\"test: 168; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b27\""
+Zbb_cpop_cg_cmp_rd_rs1_b28_str: .string "\"test: 169; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b28\""
+Zbb_cpop_cg_cmp_rd_rs1_b29_str: .string "\"test: 170; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b29\""
+Zbb_cpop_cg_cmp_rd_rs1_b30_str: .string "\"test: 171; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b30\""
+Zbb_cpop_cg_cmp_rd_rs1_b31_str: .string "\"test: 172; cg: Zbb_cpop_cg; cp: cmp_rd_rs1; bin: b31\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

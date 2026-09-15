@@ -179,3 +179,7 @@ runs:
           .bundle-gems
           ~/.cache/udb
         key: udb-gems-${{ runner.os }}-${{ hashFiles('.mise.toml', 'framework/src/act/data/Gemfile.lock') }}
+
+    - name: Install project dependencies
+      shell: bash
+      run: mise deps

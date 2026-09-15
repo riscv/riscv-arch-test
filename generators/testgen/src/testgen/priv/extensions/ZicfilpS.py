@@ -50,7 +50,7 @@ def make_zicfilp_s(td: TestData) -> list[TestChunk]:
             # skip_trampoline_fallthrough=True: without it, mode-entry code
             # falls straight through into _tgt_lpad_zero's `c.jr x7` with x7
             # uncontrolled, which lands back on an earlier ecall and loops
-            # forever -- the same bug fixed for ZicfilpUS, confirmed here
+            # forever -- the same bug fixed for ZicfilpSU, confirmed here
             # too (this suite overflows TRAP_SIGUPD_COUNT without it).
             return emit_mode(
                 td,

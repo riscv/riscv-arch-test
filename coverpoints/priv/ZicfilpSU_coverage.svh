@@ -11,7 +11,7 @@
 //
 ///////////////////////////////////////////////
 
-`define COVER_ZICFILPUS
+`define COVER_ZICFILPSU
 
 covergroup Zicfilpsu_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -76,6 +76,6 @@ covergroup Zicfilpsu_cg with function sample(ins_t ins);
     `endif
 endgroup
 
-function void zicfilpus_sample(int hart, int issue, ins_t ins);
+function void zicfilpsu_sample(int hart, int issue, ins_t ins);
     Zicfilpsu_cg.sample(ins);
 endfunction

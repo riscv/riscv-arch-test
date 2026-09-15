@@ -47,7 +47,7 @@ def make_zicfilp_m(td: TestData) -> list[TestChunk]:
         # skip_trampoline_fallthrough=True: without it, mode-entry code
         # falls straight through into _tgt_lpad_zero's `c.jr x7` with x7
         # uncontrolled, landing back on an earlier ecall and looping
-        # forever -- the same bug fixed for ZicfilpSU, independently
+        # forever -- the same bug fixed for ZicfilpS, independently
         # confirmed here too (Sail's own watchdog reports "possible trap
         # loop detected" for this suite).
         return emit_mode(

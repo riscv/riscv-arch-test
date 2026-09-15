@@ -8,7 +8,7 @@
 """Cross-product register edge value coverpoint generator (cr_rs1_rs2_edges)."""
 
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.data.edges import get_general_edges
+from testgen.data.edges import get_general_edges, get_word_edges
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -21,6 +21,9 @@ def make_cr_rs1_rs2_edges(instr_name: str, instr_type: str, coverpoint: str, tes
     if coverpoint == "cr_rs1_rs2_edges":
         edges1 = get_general_edges(test_data.xlen)
         edges2 = get_general_edges(test_data.xlen)
+    elif coverpoint == "cr_rs1_rs2_edges_w":
+        edges1 = get_word_edges(test_data.xlen)
+        edges2 = get_word_edges(test_data.xlen)
     else:
         raise ValueError(f"Unknown cr_rs1_rs2_edges coverpoint variant: {coverpoint} for {instr_name}")
 

@@ -141,8 +141,8 @@
 // On an F-only DUT with TEST_FLEN=64, CONFIG_FLEN is 32 so we take the single-
 // store path. Each slot is still SIG_STRIDE (=TEST_FLEN/8) bytes wide, leaving
 // 4 bytes of unused padding — harmless because the .fill reservation driven by
-// SIGUPD_COUNT is already an upper bound. The scratch load uses FP_LREG so only
-// the CONFIG_FLEN bits actually written by FSREG are read back.
+// SIGUPD_COUNT is already an upper bound. The temporary-memory load uses FP_LREG
+// so only the CONFIG_FLEN bits written by FSREG are read back.
 // See tests/env/utils.h for an explanation of CONFIG_FLEN and TEST_FLEN.
 //
 //  _SIG_PTR - Base register for signature region
@@ -164,7 +164,7 @@
     #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _INST_PTR, _STR_PTR)  \
       .option push                                           ;\
       .option norvc                                          ;\
-      LA(_LINK_REG, fp_sigupd_scratch)                       ;\
+      LA(_LINK_REG, fp_sigupd_temp)                          ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       LREG _LINK_REG, 0(_LINK_REG)                           ;\
       LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
@@ -173,7 +173,7 @@
       RVTEST_WORD_PTR _INST_PTR                              ;\
       RVTEST_WORD_PTR _STR_PTR                               ;\
       1:                                                     ;\
-      LA(_LINK_REG, fp_sigupd_scratch)                       ;\
+      LA(_LINK_REG, fp_sigupd_temp)                          ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       LREG _LINK_REG, REGWIDTH(_LINK_REG)                    ;\
       LREG _TEMP_REG, SIG_STRIDE(_SIG_PTR)                   ;\
@@ -189,7 +189,7 @@
     #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _INST_PTR, _STR_PTR)  \
       .option push                                           ;\
       .option norvc                                          ;\
-      LA(_LINK_REG, fp_sigupd_scratch)                       ;\
+      LA(_LINK_REG, fp_sigupd_temp)                          ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       LREG _LINK_REG, 0(_LINK_REG)                           ;\
       SREG _LINK_REG, 0(_SIG_PTR)                            ;\
@@ -198,7 +198,7 @@
       RVTEST_WORD_PTR _INST_PTR                              ;\
       RVTEST_WORD_PTR _STR_PTR                               ;\
       1:                                                     ;\
-      LA(_LINK_REG, fp_sigupd_scratch)                       ;\
+      LA(_LINK_REG, fp_sigupd_temp)                          ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       LREG _LINK_REG, REGWIDTH(_LINK_REG)                    ;\
       SREG _LINK_REG, SIG_STRIDE(_SIG_PTR)                   ;\
@@ -216,7 +216,7 @@
     #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _INST_PTR, _STR_PTR)  \
       .option push                                           ;\
       .option norvc                                          ;\
-      LA(_LINK_REG, fp_sigupd_scratch)                       ;\
+      LA(_LINK_REG, fp_sigupd_temp)                          ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       FP_LREG _LINK_REG, 0(_LINK_REG)                        ;\
       LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
@@ -232,7 +232,7 @@
     #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _INST_PTR, _STR_PTR)  \
       .option push                                           ;\
       .option norvc                                          ;\
-      LA(_LINK_REG, fp_sigupd_scratch)                       ;\
+      LA(_LINK_REG, fp_sigupd_temp)                          ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       FP_LREG _LINK_REG, 0(_LINK_REG)                        ;\
       SREG _LINK_REG, 0(_SIG_PTR)                            ;\

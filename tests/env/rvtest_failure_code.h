@@ -547,11 +547,11 @@
         andi x6, x6, 31                   # FP register number (rs2 of FSREG)
         sw x6, 260(DEFAULT_TEMP_REG)      # record failing_reg
 
-        # Load bad FP value from the spill slot written by FSREG in the sigupd macro.
+        # Load the bad FP value from the temporary memory written by FSREG.
         # Use FP_LREG so we read exactly the CONFIG_FLEN bits FSREG stored,
         # zero-extending on RV64+F-only where fsw wrote fewer bytes than LREG reads.
         # See tests/env/utils.h for an explanation of CONFIG_FLEN and TEST_FLEN.
-        la x6, fp_sigupd_scratch
+        la x6, fp_sigupd_temp
         FP_LREG x7, 0(x6)
         SREG x7, 272(DEFAULT_TEMP_REG)    # failing_value (lower/only)
     #if CONFIG_FLEN > UDB_MXLEN

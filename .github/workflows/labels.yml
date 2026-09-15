@@ -236,11 +236,13 @@ jobs:
                 labels.add("dependencies");
               }
 
-              if (labels.size > 0) {
+              const existingLabels = new Set((await getLabels(pull_number)).map(({ name }) => name));
+              const labelsToAdd = [...labels].filter((label) => !existingLabels.has(label));
+              if (labelsToAdd.length > 0) {
                 await github.rest.issues.addLabels({
                   ...context.repo,
                   issue_number: pull_number,
-                  labels: [...labels],
+                  labels: labelsToAdd,
                 });
               }
             }

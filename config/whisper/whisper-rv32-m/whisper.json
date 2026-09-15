@@ -1,0 +1,123 @@
+{
+  "clint": "0x2000000",
+
+  "address_translation_pmms": ["off"],
+
+  "isa": "rv32imafdcbv_zicbom_zicbop_zicboz_zicntr_zicond_zicsr_zihintpause_zihpm_zimop_zawrs_zfa_zfbfmin_zfh_zkr_zcb_zcmop_zba_zbb_zbs_zvbb_zvbc_zvfbfmin_zvfbfwma_zvfh_zvkg_zvkned_zvknhb_zvksed_zvksh_sdtrig_smaia_smcntrpmf_zifencei_zabha_zbc_zkne_zknd_zknh_zbkb_zbkc_zbkx_zksed_zksh_zacas_zicfilp_smdbltrp_smrnmi",
+
+  "all_inst_addr_trigger": "false",
+  "cancel_lr_on_trap": false,
+  "clear_mtval_on_ebreak": false,
+  "clear_mtval_on_illegal_instruction": false,
+  "clear_tinst_on_cbo_flush": false,
+  "clear_tinst_on_cbo_inval": false,
+  "enable_pmp_na4": false,
+  "enable_pmp_tor": true,
+  "indexed_nmi": false,
+
+  "memmap": {
+    "pma": [
+      {
+        // Make address range 0 to 1023 non readable to support ACCESS_FAULT_ADDR in rvtest_config.h
+        "attribs": [],
+        "high": 1023,
+        "low": 0
+      },
+      {
+        // Main memory supports a 16-byte misaligned atomicity granule.
+        "attribs": [
+          "read",
+          "write",
+          "exec",
+          "amo",
+          "rsrv",
+          "idempotent",
+          "misal_ok",
+          "mag16"
+        ],
+        "high": "0xffffffff",
+        "low": "0x80000000"
+      }
+    ],
+    "consoleio": "0x10000000", // Matches virtual printer address in rvmodel_macros.h
+    "Comment": "Set physical memory size to be 32-bits",
+    "size": "0x100000000"
+  },
+
+  "csr": {
+    "misa": { "reset": "0x4020112f" }, // acdfimv + B (bit 1). Whisper only derives misa from the
+    // ISA string under --newlib/--linux, so set it explicitly.
+    // TODO: delete misa override in all whisper configs when https://github.com/tenstorrent/whisper/issues/48 merged
+    "vstart": {
+      "mask": "0xff",
+      "poke_mask": "0xff"
+    },
+    "mstatus": {
+      "mask": "0x00006688",
+      "poke_mask": "0x80006688"
+    },
+    "mie": {
+      "mask": "0x0888", // ensuring that all non writable bits remain as read only 0
+      "poke_mask": "0x0888"
+    },
+    "mcounteren": { "exists": false },
+    "menvcfg": { "exists": false },
+    "menvcfgh": { "exists": false },
+    "mip": {
+      "mask": "0x0", // no mip bits are writable by M-mode software without S-mode
+      "poke_mask": "0x0888" // determines what bits of mip can be set by simulator injecting external events
+    }
+  },
+
+  "misaligned_has_priority": false,
+  "num_mmode_perf_regs": 8,
+  "physical_memory_protection_grain": "0x1000",
+  "reservation_bytes": 64,
+  "reset_vec": "0x80000000",
+
+  "trigger_actions": [
+    "raisebreak",
+    "enterdebug",
+    "starttrace",
+    "stoptrace",
+    "emittrace"
+  ],
+  "aplic": {
+    "num_sources": 1, // one source (MEXT)
+    "domains": {
+      "maplic": {
+        "base": "0x0c000000",
+        "size": "0x00100000",
+        "parent": null,
+        "is_machine": true,
+        "hart_indices": [0],
+        "child_index": 0
+      }
+    }
+  },
+  "vector": {
+    "always_mark_dirty": true,
+    "bytes_per_vec": 32,
+    "fp_usum_nan_canonicalize": ["e16", "e32", "e64"],
+    "legalize_for_egs": false,
+    "legalize_vsetvl_avl": true,
+    "legalize_vsetvli_avl": true,
+    "mask_agnostic_policy": "ones",
+    "max_bytes_per_elem": 8,
+    "max_bytes_per_lmul": {
+      "mf2": 4,
+      "mf4": 2,
+      "mf8": 1
+    },
+    "min_bytes_per_elem": 1,
+    "partial_segment_update": false,
+    "tail_agnostic_policy": "ones",
+    "trap_invalid_vtype": false,
+    "trap_non_zero_vstart": true,
+    "tt_clear_tval_vl_egs": false,
+    "tt_fp_usum_tree_reduction": ["e16", "e32", "e64"],
+    "update_whole_mask": true
+  },
+
+  "wfi_timeout": 200
+}

@@ -9,9 +9,12 @@
 # Sdtrig* not yet implemented in Sail
 ci_enabled: true
 exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,ExceptionsSvZalrsc,Smstateen,SdtrigSm,SdtrigS,SdtrigU"
+# whisper-rv64-mu: Sail 0.13.1 reads mstatus.SXL for U-mode address translation even when S is
+#   not supported (internal error "architecture(0b00) is invalid"); fixed in Sail 0.14
 exclude_configs:
   - whisper-rv32-max-spike-ref
   - whisper-rv64-max-spike-ref
+  - whisper-rv64-mu
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"
 shards: 1

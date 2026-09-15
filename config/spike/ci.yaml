@@ -7,6 +7,10 @@ ci_enabled: true
 # Smstateen will be added back once sail starts supporting Sscsrind too
 # Sdtrig* not yet supported in Sail reference
 exclude_extensions: "Smstateen,SdtrigSm,SdtrigS,SdtrigU"
+# spike-rv64-mu: Sail 0.13.1 reads mstatus.SXL for U-mode address translation even when S is
+#   not supported (internal error "architecture(0b00) is invalid"); fixed in Sail 0.14
+exclude_configs:
+  - spike-rv64-mu
 install_script: ".github/scripts/install-spike.sh"
 apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"
 shards: 1

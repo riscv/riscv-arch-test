@@ -78,6 +78,7 @@ FLEN_64_EXTENSIONS = frozenset(
         "ZfaD",
         "ZfaZfhD",
         "Zcd",
+        "Vf64",
     }
 )
 

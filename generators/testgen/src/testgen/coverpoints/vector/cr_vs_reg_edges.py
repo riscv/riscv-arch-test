@@ -164,3 +164,42 @@ def make_vs2_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_d
             return_testcase_registers(test_data, params)
 
     return test_chunks
+
+
+@add_coverpoint_generator("cr_vs2_fs1_edges")
+def make_vs2_fs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """
+    Generate tests crossing edge values for vs2 and rs1. Supports only floating point crosses.
+    """
+
+    sew = test_data.config.sew
+    assert sew is not None, "SEW must be set for vector tests"
+
+    vs2_edges = VECTOR_EDGES.vf_edges
+    suffix = "f_emul2" if coverpoint.endswith("wf") else "f"
+    if sew == 16:
+        fs1_edges = VECTOR_EDGES.f16
+    elif sew == 32:
+        fs1_edges = VECTOR_EDGES.f32
+    elif sew == 64:
+        fs1_edges = VECTOR_EDGES.f64
+    else:
+        raise ValueError(f"Unsupported SEW ({sew}) for cr_vs2_fs2_edges")
+
+    test_chunks = []
+    for vs2_edge in vs2_edges:
+        vs2_label = make_and_register_edge_label("vs2", vs2_edge, suffix, test_data)
+
+        for fs1_edge_name in fs1_edges:
+            params = generate_random_vector_params(
+                test_data, instr_name, instr_type, lmul=1, fs1val=fs1_edges[fs1_edge_name], vs2_val_pointer=vs2_label
+            )
+            desc = f"{coverpoint} (vs2={vs2_edge}, fs1={fs1_edge_name})"
+            bin_name = f"cp_vs2_rs1_edges_b{vs2_edge}_{fs1_edge_name}"
+
+            tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+
+            test_chunks.append(tc)
+            return_testcase_registers(test_data, params)
+
+    return test_chunks

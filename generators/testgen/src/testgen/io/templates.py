@@ -212,6 +212,11 @@ def get_vector_base_extension(testsuite: str, instr_name: str, xlen: int, sew: i
         mapped.remove("Zve32x")
         mapped.append("Zve64x")
 
+    if "Zve32f" in mapped and instr_name.startswith(("vfw", "vfn")) and sew == 32:
+        # Same logic for floating point
+        mapped.remove("Zve32f")
+        mapped.append("Zve64f")
+
     if "Zve32x" in mapped and "64" in instr_name:
         # This is an unsupported EEW (happens for vle64.v)
         mapped.remove("Zve32x")

@@ -1325,7 +1325,6 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     )
     lines.extend(
         [
-            
             "#if defined(UDB_MCOUNTINHIBIT_IMPLEMENTED) && defined(UDB_COUNTINHIBIT_EN_0)",
             f"LI(x{r1}, 0b1)        # inhibit mcycle",
             f"csrw mcountinhibit, x{r1}        # inhibit mcycle",

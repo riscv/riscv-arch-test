@@ -37,18 +37,14 @@ RVTEST_BEGIN
   RVTEST_TESTDATA_LOAD_INT(x3, x13) # load x13: x13 = 0xbe6028f9
   RVTEST_TESTDATA_LOAD_INT(x3, x27) # load x27: x27 = 0x859fb581
   RVTEST_TESTDATA_LOAD_INT(x3, x1) # load x1: x1 = 0x42e2fb16
-  c.mop.13 # must not write any register
 Zcmop_c_mop_13_cg_cp_custom_mop_no_write_x13:
+  c.mop.13 # must not write any register
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Zcmop_c_mop_13_cg_cp_custom_mop_no_write_x13, Zcmop_c_mop_13_cg_cp_custom_mop_no_write_x13_str)
-
-Zcmop_c_mop_13_cg_cp_custom_mop_no_write_x27:
   # Check if x27 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x27, Zcmop_c_mop_13_cg_cp_custom_mop_no_write_x27, Zcmop_c_mop_13_cg_cp_custom_mop_no_write_x27_str)
-
-Zcmop_c_mop_13_cg_cp_custom_mop_no_write_x1:
+  RVTEST_SIGUPD(x2, x5, x4, x27, Zcmop_c_mop_13_cg_cp_custom_mop_no_write_x13, Zcmop_c_mop_13_cg_cp_custom_mop_no_write_x13_str)
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, Zcmop_c_mop_13_cg_cp_custom_mop_no_write_x1, Zcmop_c_mop_13_cg_cp_custom_mop_no_write_x1_str)
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zcmop_c_mop_13_cg_cp_custom_mop_no_write_x13, Zcmop_c_mop_13_cg_cp_custom_mop_no_write_x13_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -64,8 +60,6 @@ RVTEST_DATA_BEGIN
 
 // Testcase strings
 Zcmop_c_mop_13_cg_cp_custom_mop_no_write_x13_str: .string "\"test: 1; cg: Zcmop_c.mop.13_cg; cp: cp_custom_mop_no_write; bin: x13\""
-Zcmop_c_mop_13_cg_cp_custom_mop_no_write_x27_str: .string "\"test: 2; cg: Zcmop_c.mop.13_cg; cp: cp_custom_mop_no_write; bin: x27\""
-Zcmop_c_mop_13_cg_cp_custom_mop_no_write_x1_str: .string "\"test: 3; cg: Zcmop_c.mop.13_cg; cp: cp_custom_mop_no_write; bin: x1\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

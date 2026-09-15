@@ -39,16 +39,11 @@ def make_custom_mop_no_write(instr_name: str, instr_type: str, coverpoint: str, 
     )
     for reg in regs:
         tc.code.append(load_int_reg(f"x{reg}", reg, random_int(bits=test_data.xlen), test_data))
+    # Single testcase label placed before the instruction so a failure points at the c.mop.n
+    tc.code.append(test_data.add_testcase(f"x{mop_reg}", coverpoint))
     tc.code.append(f"{instr_name} # must not write any register")
-
-    for reg in regs:
-        tc.code.extend(
-            [
-                test_data.add_testcase(f"x{reg}", coverpoint),
-                write_sigupd(reg, test_data),
-                "",
-            ]
-        )
+    tc.code.extend([write_sigupd(reg, test_data) for reg in regs])
+    tc.code.append("")
 
     test_data.int_regs.return_registers(regs)
 

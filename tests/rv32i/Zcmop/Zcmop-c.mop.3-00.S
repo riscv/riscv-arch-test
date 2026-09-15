@@ -38,18 +38,14 @@ RVTEST_BEGIN
   RVTEST_TESTDATA_LOAD_INT(x12, x3) # load x3: x3 = 0x6d6d8f45
   RVTEST_TESTDATA_LOAD_INT(x12, x7) # load x7: x7 = 0xdd88a5f5
   RVTEST_TESTDATA_LOAD_INT(x12, x14) # load x14: x14 = 0xf329d275
-  c.mop.3 # must not write any register
 Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x3:
+  c.mop.3 # must not write any register
   # Check if x3 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x3, Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x3, Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x3_str)
-
-Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x7:
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x7, Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x7, Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x7_str)
-
-Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x14:
+  RVTEST_SIGUPD(x2, x5, x4, x7, Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x3, Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x3_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x14, Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x14_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x3, Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x3_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -65,8 +61,6 @@ RVTEST_DATA_BEGIN
 
 // Testcase strings
 Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x3_str: .string "\"test: 1; cg: Zcmop_c.mop.3_cg; cp: cp_custom_mop_no_write; bin: x3\""
-Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x7_str: .string "\"test: 2; cg: Zcmop_c.mop.3_cg; cp: cp_custom_mop_no_write; bin: x7\""
-Zcmop_c_mop_3_cg_cp_custom_mop_no_write_x14_str: .string "\"test: 3; cg: Zcmop_c.mop.3_cg; cp: cp_custom_mop_no_write; bin: x14\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

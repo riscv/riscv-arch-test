@@ -39,18 +39,14 @@ RVTEST_BEGIN
   RVTEST_TESTDATA_LOAD_INT(x3, x5) # load x5: x5 = 0xda0661a65dce7f23
   RVTEST_TESTDATA_LOAD_INT(x3, x1) # load x1: x1 = 0xaa02247ec0ef39b0
   RVTEST_TESTDATA_LOAD_INT(x3, x26) # load x26: x26 = 0xb411352ddac83e12
-  c.mop.5 # must not write any register
 Zcmop_c_mop_5_cg_cp_custom_mop_no_write_x5:
+  c.mop.5 # must not write any register
   # Check if x5 contains the expected result. x2 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x2, x14, x13, x5, Zcmop_c_mop_5_cg_cp_custom_mop_no_write_x5, Zcmop_c_mop_5_cg_cp_custom_mop_no_write_x5_str)
-
-Zcmop_c_mop_5_cg_cp_custom_mop_no_write_x1:
   # Check if x1 contains the expected result. x2 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x2, x14, x13, x1, Zcmop_c_mop_5_cg_cp_custom_mop_no_write_x1, Zcmop_c_mop_5_cg_cp_custom_mop_no_write_x1_str)
-
-Zcmop_c_mop_5_cg_cp_custom_mop_no_write_x26:
+  RVTEST_SIGUPD(x2, x14, x13, x1, Zcmop_c_mop_5_cg_cp_custom_mop_no_write_x5, Zcmop_c_mop_5_cg_cp_custom_mop_no_write_x5_str)
   # Check if x26 contains the expected result. x2 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x2, x14, x13, x26, Zcmop_c_mop_5_cg_cp_custom_mop_no_write_x26, Zcmop_c_mop_5_cg_cp_custom_mop_no_write_x26_str)
+  RVTEST_SIGUPD(x2, x14, x13, x26, Zcmop_c_mop_5_cg_cp_custom_mop_no_write_x5, Zcmop_c_mop_5_cg_cp_custom_mop_no_write_x5_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -66,8 +62,6 @@ RVTEST_DATA_BEGIN
 
 // Testcase strings
 Zcmop_c_mop_5_cg_cp_custom_mop_no_write_x5_str: .string "\"test: 1; cg: Zcmop_c.mop.5_cg; cp: cp_custom_mop_no_write; bin: x5\""
-Zcmop_c_mop_5_cg_cp_custom_mop_no_write_x1_str: .string "\"test: 2; cg: Zcmop_c.mop.5_cg; cp: cp_custom_mop_no_write; bin: x1\""
-Zcmop_c_mop_5_cg_cp_custom_mop_no_write_x26_str: .string "\"test: 3; cg: Zcmop_c.mop.5_cg; cp: cp_custom_mop_no_write; bin: x26\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

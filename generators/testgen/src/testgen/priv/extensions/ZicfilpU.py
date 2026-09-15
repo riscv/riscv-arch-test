@@ -45,7 +45,7 @@ def make_zicfilp_u(td: TestData) -> list[TestChunk]:
         # which was enough to trip an unrelated, pre-existing fragility in
         # the shared trap handler's dispatch-table addressing (an early
         # boot-time trap reading a poisoned mepc). Keep the old placement
-        # here until that's root-caused; ZicfilpUS needs .text.rvtest
+        # here until that's root-caused; ZicfilpSU needs .text.rvtest
         # because its exception is genuinely reachable.
         return emit_mode(td, "umode_nos", COVERGROUP_U_NS, xlen, "bare", trampoline_section=".text")
 

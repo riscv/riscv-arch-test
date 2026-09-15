@@ -7,7 +7,7 @@
 ##################################
 
 """Shared Zicfilp extension test infrastructure.
-Common code for ZicfilpSm (M-mode), ZicfilpS (S-mode), ZicfilpUS (U+S), ZicfilpU (U-S)
+Common code for ZicfilpSm (M-mode), ZicfilpS (S-mode), ZicfilpSU (U+S), ZicfilpU (U-S)
 test generators.
 """
 
@@ -100,7 +100,7 @@ class XLPEConfig:
     # instruction (not itself a jump target) fails the same check and the
     # fault cascades forward one instruction at a time until the
     # trap-signature buffer overflows. Set for "smode" and "umode", where
-    # this cascade was actually observed (ZicfilpS/ZicfilpUS).
+    # this cascade was actually observed (ZicfilpS/ZicfilpSU).
     clear_live_elp: bool = False
 
 
@@ -138,7 +138,7 @@ def _get_xlpe_config(mode: str, xlen: int) -> XLPEConfig:
             _MENVCFG_LPE_BIT,
             "LPE",
             pelp_csr=pelp_csr,
-            pelp_bit=_MSTATUS_MPELP_BIT,
+            pelp_bit=_MSTATUS_MPELP_BIT if xlen == 64 else _MSTATUSH_MPELP_BIT,
             guard="#ifndef S_SUPPORTED",
             pelp_needs_elevation=True,  # mstatus/mstatush isn't readable from U-mode
         )
@@ -259,7 +259,7 @@ def _set_lpe(xlpe: XLPEConfig, reg: int, en: bool) -> list[str]:
         lines += [
             f"# {xlpe.csr}.{xlpe.name} = {int(en)} (via T-SBI CSR access)",
             f"LI(a1, {hex(msk)})",
-            f"RVTEST_TSBI_CSR_ACCESS {hex(encoding)}, a1",
+            f"RVTEST_TSBI_CSR_ACCESS {hex(encoding)}",
         ]
     if guard:
         lines.append(f"#endif // {guard.split()[-1]}")
@@ -312,6 +312,37 @@ def _read_pelp(xlpe: XLPEConfig, dst: int) -> list[str]:
         f"andi x{dst}, x{dst}, 1",
     ]
     lines += _clear_pelp(xlpe)
+    if guard:
+        lines.append(f"#endif // {guard.split()[-1]}")
+    return lines
+
+
+def _set_pelp(xlpe: XLPEConfig, reg: int) -> list[str]:
+    """Set xPELP=1 in the mode's status CSR.
+
+    Landing-pad faults are taken in M-mode (medeleg is cleared), so they set
+    mstatus.MPELP and leave sstatus.SPELP at 0. mcause/mtval keep the fault's
+    values after the handler returns, so setting SPELP here puts all three in
+    the state the exception crosses sample together.
+    """
+    guard = xlpe.guard
+    lines = []
+    if guard:
+        lines.append(guard)
+    msk = 1 << xlpe.pelp_bit
+    if xlpe.pelp_needs_elevation:
+        encoding = (_CSR_ADDR[xlpe.pelp_csr] << 20) | _TSBI_CSRRS_X0_A1
+        lines += [
+            f"# {xlpe.pelp_csr}.PELP = 1 (via T-SBI CSR access)",
+            f"LI(a1, {hex(msk)})",
+            f"RVTEST_TSBI_CSR_ACCESS {hex(encoding)}",
+        ]
+    else:
+        lines += [
+            f"# {xlpe.pelp_csr}.PELP = 1",
+            f"LI(x{reg}, {hex(msk)})",
+            f"csrs {xlpe.pelp_csr}, x{reg}",
+        ]
     if guard:
         lines.append(f"#endif // {guard.split()[-1]}")
     return lines
@@ -571,7 +602,9 @@ def satp_setup(xlen: int, mode: str, grant_umode_access: bool = False) -> list[s
     return lines
 
 
-def teardown_vm() -> list[str]:
+def teardown_vm(has_satp: bool = True) -> list[str]:
+    if not has_satp:
+        return [GOTO_MMODE, ""]
     return [GOTO_MMODE, "csrwi satp, 0", "sfence.vma", ""]
 
 
@@ -728,6 +761,7 @@ def _build_bypass(pfx: str, td: TestData, cg: str, xlpe: XLPEConfig, xlen: int) 
     rs1, tmp, chk = td.int_regs.get_registers(3, exclude_regs=[1])
     out = [comment_banner(f"{pfx}: LPAD LPL=0 Bypass")]
     out.extend(_set_lpe(xlpe, tmp, True))
+    out.extend(_set_pelp(xlpe, tmp))
 
     # Case 1: x7_label.zero (ins.prev.x_wdata[7] == 0)
     # x7 is deliberately zeroed here to cover x7_label, so the jump can't use
@@ -795,6 +829,7 @@ def _build_valid(pfx: str, td: TestData, cg: str, xlpe: XLPEConfig, xlen: int) -
     rs1, tmp, chk = td.int_regs.get_registers(3, exclude_regs=[1])
     out = [comment_banner(f"{pfx}: Valid LPAD Execution (Match)")]
     out.extend(_set_lpe(xlpe, tmp, True))
+    out.extend(_set_pelp(xlpe, tmp))
 
     # A genuine match needs x7[31:12] == the target's encoded label (0xABCDE
     # here) at the moment the lpad executes. rd=x7 (rd_is_x7=True) can't
@@ -821,6 +856,39 @@ def _build_valid(pfx: str, td: TestData, cg: str, xlpe: XLPEConfig, xlen: int) -
     return out
 
 
+def _build_scenario_match(pfx: str, td: TestData, cg: str, xlpe: XLPEConfig, xlen: int) -> list[str]:
+    """CP_LPAD_SCENARIO sc1_match: LPAD whose label equals x7's upper bits.
+
+    lpad_scenario compares against ins.prev.x_wdata[7], which holds only what
+    the immediately-preceding instruction wrote to x7 (0 when it wrote nothing).
+    A jump can't satisfy that -- jalr x7 leaves a return address there -- so the
+    landing pad runs in sequential flow directly after a lui. ELP is not armed
+    in sequential flow, so the pad is an AUIPC-shaped no-op and cannot fault.
+
+    The compared value is ins.current.imm[31:12], and imm is the raw 20-bit
+    label the decoder reports (0xABCDE), so bits [31:12] of it are 0xAB. x7 is
+    loaded with 0xAB in its own [31:12] to match that.
+    """
+    chk = td.int_regs.get_registers(1)[0]
+    tc = _tid(pfx, "scenario", "sc1_match")
+    out = [
+        comment_banner(f"{pfx}: LPAD Label Match (sequential)"),
+        "",
+        td.add_testcase(tc, CP_LPAD_SCENARIO, cg),
+        *_fixed_block(
+            [
+                ".p2align 2",
+                "lui x7, 0xAB",
+                f".word {hex(_lpad_encoding(0xABCDE))}",
+            ]
+        ),
+        *_read_pelp(xlpe, chk),
+        write_sigupd(chk, td),
+    ]
+    td.int_regs.return_registers([chk])
+    return out
+
+
 def _build_faults(pfx: str, td: TestData, cg: str, xlpe: XLPEConfig, xlen: int) -> list[str]:
     """CP_LPAD_MISSING, CP_LPAD_MISMATCH, CP_EXC_DELIVERY, CP_LPAD_SCENARIO."""
     if xlpe.csr == "mseccfg":
@@ -831,6 +899,7 @@ def _build_faults(pfx: str, td: TestData, cg: str, xlpe: XLPEConfig, xlen: int) 
     rs1, tmp, chk = td.int_regs.get_registers(3)
     out = [comment_banner(f"{pfx}: LPAD Faults & Scenarios")]
     out.extend(_set_lpe(xlpe, tmp, True))
+    out.extend(_set_pelp(xlpe, tmp))
 
     # 1. Missing Instruction -> sc3_not_lpad
     # mcause/mtval aren't recorded explicitly here: this function only ever
@@ -924,6 +993,7 @@ def _build_elp_clear(pfx: str, td: TestData, cg: str, xlpe: XLPEConfig, xlen: in
     rs1, tmp, chk = td.int_regs.get_registers(3)
     out = [comment_banner(f"{pfx}: ELP Clear (LPL=0)")]
     out.extend(_set_lpe(xlpe, tmp, True))
+    out.extend(_set_pelp(xlpe, tmp))
 
     tc = _tid(pfx, "elp_clear")
     out += [
@@ -999,14 +1069,14 @@ def emit_mode(
 
     trampoline_section: which section the LPAD-target trampolines land in.
     Each generator picks this for itself -- see the call site in
-    ZicfilpU.py/ZicfilpUS.py/ZicfilpS.py/ZicfilpSm.py for the reasoning
+    ZicfilpU.py/ZicfilpSU.py/ZicfilpS.py/ZicfilpSm.py for the reasoning
     specific to that mode.
 
     skip_trampoline_fallthrough: emit an unconditional jump around the
     trampoline block below so mode-entry code doesn't fall through into it.
     Without this, execution runs off the end of the mode-entry sequence
     straight into _tgt_lpad_zero's `c.jr x7` with x7 uncontrolled; see the
-    call site in ZicfilpUS.py for why that's unsafe there.
+    call site in ZicfilpSU.py for why that's unsafe there.
     """
     xlpe = _get_xlpe_config(mode, xlen)
     pfx = f"{mode}_{satp_mode}_rv{xlen}"
@@ -1021,8 +1091,14 @@ def emit_mode(
     lines += _data_section()
 
     # Page Tables & SATP -- EXPLICIT GUARD
+    # satp and sfence.vma only exist when S-mode does. Touching either on a
+    # part without S-mode is an illegal instruction, and Sail resolves satp's
+    # XLEN through mstatus.SXL, which reads 0 there.
+    has_satp = mode != "umode_nos"
     is_translation_mode = satp_mode in ("sv39", "sv48", "sv57")
-    if mode in ("smode", "umode", "umode_nos") and is_translation_mode:
+    if not has_satp:
+        pass
+    elif mode in ("smode", "umode") and is_translation_mode:
         lines += _data_slvl_tables(satp_mode)
         lines += satp_setup(xlen, satp_mode, grant_umode_access=(mode == "umode"))
     else:
@@ -1067,6 +1143,7 @@ def emit_mode(
     lines += _build_elp_update(pfx, td, cg, xlpe, xlen)
     lines += _build_bypass(pfx, td, cg, xlpe, xlen)
     lines += _build_valid(pfx, td, cg, xlpe, xlen)
+    lines += _build_scenario_match(pfx, td, cg, xlpe, xlen)
     lines += _build_faults(pfx, td, cg, xlpe, xlen)
     lines += _build_disabled(pfx, td, cg, xlpe, xlen)
     lines += _build_elp_clear(pfx, td, cg, xlpe, xlen)
@@ -1090,7 +1167,7 @@ def emit_mode(
     # so a fault from the very last testcase would otherwise leave ELP
     # armed straight into the framework's own teardown/cleanup code.
     lines += _clear_pelp(xlpe)
-    lines += teardown_vm()
+    lines += teardown_vm(has_satp=has_satp)
     if xlpe.guard:
         lines.append(f"#endif // {xlpe.guard.split()[-1]}")
     return lines

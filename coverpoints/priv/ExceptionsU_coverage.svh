@@ -44,6 +44,18 @@ covergroup ExceptionsU_cg with function sample(ins_t ins);
         wildcard bins bltu_nottaken = {6'b110_?_?_0};
         wildcard bins bgeu_nottaken = {6'b111_?_?_1};
     }
+    `ifdef ZIBI_SUPPORTED
+        zibi_branches_taken: coverpoint {ins.current.insn[6:0], ins.current.insn[14:12],
+                                         ins.current.rs1_val == ins.current.imm2} {
+            bins beqi_taken = {11'b1100011_010_1};
+            bins bnei_taken = {11'b1100011_011_0};
+        }
+        zibi_branches_nottaken: coverpoint {ins.current.insn[6:0], ins.current.insn[14:12],
+                                            ins.current.rs1_val == ins.current.imm2} {
+            bins beqi_nottaken = {11'b1100011_010_0};
+            bins bnei_nottaken = {11'b1100011_011_1};
+        }
+    `endif
     jal: coverpoint ins.current.insn {
         wildcard bins jal = {JAL};
     }
@@ -114,6 +126,10 @@ covergroup ExceptionsU_cg with function sample(ins_t ins);
     // main coverpoints
     cp_instr_adr_misaligned_branch:          cross priv_mode_u, branch, branches_taken, pc_bit_1, imm_bit_1;
     cp_instr_adr_misaligned_branch_nottaken: cross priv_mode_u, branch, branches_nottaken, pc_bit_1, imm_bit_1;
+    `ifdef ZIBI_SUPPORTED
+        cp_instr_adr_misaligned_zibi_branch:          cross priv_mode_u, zibi_branches_taken, pc_bit_1, imm_bit_1;
+        cp_instr_adr_misaligned_zibi_branch_nottaken: cross priv_mode_u, zibi_branches_nottaken, pc_bit_1, imm_bit_1;
+    `endif
     cp_instr_adr_misaligned_jal:             cross priv_mode_u, jal, pc_bit_1, imm_bit_1;
     cp_instr_adr_misaligned_jalr:            cross priv_mode_u, jalr, rs1_1_0, offset;
     cp_illegal_instruction:                  cross priv_mode_u, illegalops;

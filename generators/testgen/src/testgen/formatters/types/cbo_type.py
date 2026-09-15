@@ -28,8 +28,6 @@ def format_cbo_type(
     ]
     # cbo.zero must zero the block holding rs1; the other CBOs may legally be no-ops, so they have no check.
     # Dirtying the byte first keeps the check meaningful when an earlier testcase already zeroed the block.
-    # rs1 supplies the stored byte and is the load destination so no extra register is needed; setup reloads
-    # it for each testcase.
     check = [""]
     if instr_name == "cbo.zero":
         setup.append(f"sb x{params.rs1}, 0(x{params.rs1}) # dirty a byte inside the block so zeroing it is observable")

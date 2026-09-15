@@ -17,6 +17,7 @@ from testgen.priv.extensions.PrivCommon import (
     S_CSR_SENVCFG,
     S_CSRS,
     S_SSTATUS_MASK,
+    SV_GATE,
     addr_csr_tests,
     csr_insufficient_priv_tests,
     csr_ro_write_tests,
@@ -227,6 +228,59 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
         "ebreak                # test ebreak instruction",
     ]
 
+    return lines
+
+
+def _generate_sfence_tvm_tests(test_data: TestData) -> list[str]:
+    """Generate sfence.vma from S-mode under both mstatus.TVM settings (cp_sfence_tvm)."""
+    ######################################
+    covergroup = "Sm_mprivinst_cg"
+    coverpoint = "cp_sfence_tvm"
+    ######################################
+    tvm_reg = test_data.int_regs.get_register()
+
+    lines = [
+        # sfence.vma may raise an illegal instruction on a hart that makes satp.MODE read-only zero
+        # (norm:satp-mode_roz_sfence_illegal), so these cases need a supported Sv mode, which in turn
+        # implies S-mode.
+        SV_GATE,
+        comment_banner(
+            coverpoint,
+            "Execute sfence.vma in M-mode and S-mode under both mstatus.TVM settings\n"
+            "TVM restricts S-mode only: TVM=1 raises an illegal instruction there.\n"
+            "M-mode, and S-mode with TVM=0, execute it with no trap.",
+        ),
+        "",
+        "# Setup",
+        "csrci medeleg, 1 << 2          # turn off delegating illegal instruction exceptions so TVM won't cause a trap loop on sfence.vma",
+        f"LI(x{tvm_reg}, {1 << 20:#x})          # mstatus.TVM bit",
+    ]
+
+    for tvm in (0, 1):
+        set_or_clear = "csrs" if tvm else "csrc"
+        lines.extend(
+            [
+                "",
+                f"# Testcase: sfence.vma with tvm = {tvm}",
+                f"{set_or_clear} mstatus, x{tvm_reg}          # {'set' if tvm else 'clear'} TVM bit",
+                test_data.add_testcase(f"sfence_vma_m_tvm{tvm}", coverpoint, covergroup),
+                "sfence.vma             # permitted in M-mode whatever TVM says",
+                "RVTEST_TSBI_GOTO_SMODE      # TVM restricts S-mode only",
+                test_data.add_testcase(f"sfence_vma_s_tvm{tvm}", coverpoint, covergroup),
+                "sfence.vma             # test sfence.vma instruction",
+                "RVTEST_TSBI_GOTO_MMODE      # back to M-mode to twiddle mstatus.TVM",
+            ]
+        )
+
+    lines.extend(
+        [
+            "",
+            f"csrc mstatus, x{tvm_reg}          # clear TVM bit",
+            "csrsi medeleg, 1 << 2          # restore delegating illegal instructions",
+            f"#endif // {SV_GATE.split(' ', 1)[1]}",
+        ]
+    )
+    test_data.int_regs.return_registers([tvm_reg])
     return lines
 
 
@@ -1515,6 +1569,7 @@ def make_sm(test_data: TestData) -> list[TestChunk]:
 
     tc = test_data.begin_test_chunk("inst")
     tc.code.extend(_generate_priv_inst_tests(test_data))
+    tc.code.extend(_generate_sfence_tvm_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
 
     tc = test_data.begin_test_chunk("xret")

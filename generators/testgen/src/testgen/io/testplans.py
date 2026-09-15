@@ -96,7 +96,10 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                     # for special entries, append the entry name (e.g. cp_rd_edges becomes cp_rd_edges_lui)
                     if value != "x":
                         key = key + "_" + value
-                    coverpoints.append(key)
+                    if key == "cp_ibm":
+                        coverpoints.extend([f"cp_ibm_b{n}" for n in range(1, 29)])
+                    else:
+                        coverpoints.append(key)
 
             # Some cp_custom coverpoints are
             coverpoints = expand_coverpoints(coverpoints)

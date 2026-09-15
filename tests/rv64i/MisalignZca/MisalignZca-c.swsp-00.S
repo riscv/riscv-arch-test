@@ -45,8 +45,8 @@ RVTEST_BEGIN
   sw x12, 8(x14) # store at offset 8
   RVTEST_TESTDATA_LOAD_INT(x3, x12) # load testdata_0: x12 = 0x0000000001234567
   sw x12, 12(x14) # store at offset 12
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs2: x12 = 0x0f1e2d3c4b5a6978
   mv x1, x2 # switch signature pointer register to avoid conflict with test
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs2: x12 = 0x0f1e2d3c4b5a6978
   LA(sp, scratch) # load base address
   addi sp, sp, 0 # adjust for alignment
 MisalignZca_c_swsp_cg_cp_misalign_0:

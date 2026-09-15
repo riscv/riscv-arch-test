@@ -104,12 +104,12 @@
             wildcard bins c_ld   = {C_LD};
             wildcard bins c_lwsp = {C_LWSP};
             wildcard bins c_ldsp = {C_LDSP};
+            // Zcd compressed double-precision FP store and load
+            `ifdef ZCD_SUPPORTED
+                wildcard bins c_fsdsp = {C_FSDSP};
+                wildcard bins c_fldsp = {C_FLDSP};
+            `endif // ZCD_SUPPORTED
         `endif // ZCA_SUPPORTED
-        // Zcd compressed double-precision FP store and load
-        `ifdef ZCD_SUPPORTED
-            wildcard bins c_fsdsp = {C_FSDSP};
-            wildcard bins c_fldsp = {C_FLDSP};
-        `endif // ZCD_SUPPORTED
         // Zicboz cache-block zero (write, address in rs1)
         `ifdef ZICBOZ_SUPPORTED
             wildcard bins cbo_zero = {CBO_ZERO};
@@ -128,46 +128,49 @@
         `endif
         // Zicfiss shadow-stack stores and loads
         `ifdef ZICFISS_SUPPORTED
-            wildcard bins sspush      = {SSPUSH};
-            wildcard bins c_sspush    = {C_SSPUSH};
-            wildcard bins ssamoswap_w = {SSAMOSWAP_W};
-            wildcard bins ssamoswap_d = {SSAMOSWAP_D};
-            wildcard bins sspopchk    = {SSPOPCHK};
-            wildcard bins c_sspopchk  = {C_SSPOPCHK};
+            wildcard bins sspush         = {SSPUSH_X1, SSPUSH_X5};
+            wildcard bins c_sspush_x1    = {C_SSPUSH_X1};
+            wildcard bins ssamoswap_w    = {SSAMOSWAP_W};
+            wildcard bins ssamoswap_d    = {SSAMOSWAP_D};
+            wildcard bins sspopchk       = {SSPOPCHK_X1, SSPOPCHK_X5};
+            wildcard bins c_sspopchk_x5  = {C_SSPOPCHK_X5};
         `endif // ZICFISS_SUPPORTED
-        // RVV 1.0 vector stores and loads (ZVL32B minimum)
+        // RVV 1.0 vector stores and loads
         `ifdef ZVL32B_SUPPORTED
-            // Vector stores
+            // EEW ≤ 32 (legal on Zve32x / Zvl32b)
             wildcard bins vse8_v      = {VSE8_V};
             wildcard bins vse16_v     = {VSE16_V};
             wildcard bins vse32_v     = {VSE32_V};
-            wildcard bins vse64_v     = {VSE64_V};
             wildcard bins vsse32_v    = {VSSE32_V};
-            wildcard bins vsse64_v    = {VSSE64_V};
             wildcard bins vsuxei32_v  = {VSUXEI32_V};
-            wildcard bins vsuxei64_v  = {VSUXEI64_V};
             wildcard bins vsoxei32_v  = {VSOXEI32_V};
-            wildcard bins vsoxei64_v  = {VSOXEI64_V};
-            wildcard bins vs1r_v      = {VS1R_V};
             wildcard bins vsseg2e32_v = {VSSEG2E32_V};
-            // Vector loads
             wildcard bins vle8_v      = {VLE8_V};
             wildcard bins vle16_v     = {VLE16_V};
             wildcard bins vle32_v     = {VLE32_V};
-            wildcard bins vle64_v     = {VLE64_V};
             wildcard bins vlse32_v    = {VLSE32_V};
-            wildcard bins vlse64_v    = {VLSE64_V};
             wildcard bins vluxei32_v  = {VLUXEI32_V};
-            wildcard bins vluxei64_v  = {VLUXEI64_V};
             wildcard bins vloxei32_v  = {VLOXEI32_V};
-            wildcard bins vloxei64_v  = {VLOXEI64_V};
-            wildcard bins vl1r_v      = {VL1R_V};
             wildcard bins vle8ff_v    = {VLE8FF_V};
             wildcard bins vle16ff_v   = {VLE16FF_V};
             wildcard bins vle32ff_v   = {VLE32FF_V};
-            wildcard bins vle64ff_v   = {VLE64FF_V};
             wildcard bins vlseg2e32_v = {VLSEG2E32_V};
         `endif // ZVL32B_SUPPORTED
+
+        `ifdef ZVL64B_SUPPORTED
+            // EEW = 64 (needs Zvl64b / Zve64*)
+            wildcard bins vse64_v     = {VSE64_V};
+            wildcard bins vsse64_v    = {VSSE64_V};
+            wildcard bins vsuxei64_v  = {VSUXEI64_V};
+            wildcard bins vsoxei64_v  = {VSOXEI64_V};
+            wildcard bins vs1r_v      = {VS1R_V};
+            wildcard bins vle64_v     = {VLE64_V};
+            wildcard bins vlse64_v    = {VLSE64_V};
+            wildcard bins vluxei64_v  = {VLUXEI64_V};
+            wildcard bins vloxei64_v  = {VLOXEI64_V};
+            wildcard bins vl1r_v      = {VL1R_V};
+            wildcard bins vle64ff_v   = {VLE64FF_V};
+        `endif // ZVL64B_SUPPORTED
     }
 
     sw_lw_insn:  coverpoint ins.current.insn {
@@ -188,7 +191,14 @@
             bins sv57 = {4'b1010};
         `endif
     }
-    a_upper_bits: coverpoint (ins.current.rs1_val + ins.current.imm)[63:48] {
+    satp_mode_mprv: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
+        type_option.weight = 0;
+        bins bare = {4'b0000};
+        `ifdef SV39_SUPPORTED
+            bins sv39 = {4'b1000};
+        `endif
+    }
+    a_upper_bits: coverpoint ((ins.current.rs1_val + ins.current.imm)>> 48) {
         type_option.weight = 0;
         bins upper_0000 = {16'h0000};   // Unaffected by pointer masking
         bins upper_0001 = {16'h0001};   // Bit 48 masked if PMLEN=16 but not 7
@@ -198,6 +208,12 @@
         bins upper_FFFF = {16'hFFFF};   // Bits 63:48 masked if PMLEN=16, only partially if PMLEN=7
         bins upper_FE00 = {16'hFE00};   // Bits 63:57 masked if PMLEN=16 or 7
         bins upper_FF00 = {16'hFF00};   // Bits 63:56 masked if PMLEN=16, only partially if PMLEN=7
+    }
+    a_upper_bits_mprv: coverpoint ((ins.current.rs1_val + ins.current.imm)>> 48) {
+        type_option.weight = 0;
+        bins upper_0000 = {16'h0000};   // no tag: masking is a no-op, the control case
+        bins upper_0001 = {16'h0001};   // bit 48   -- stripped by PMLEN=16 only
+        bins upper_0200 = {16'h0200};   // bit 57   -- stripped by PMLEN=16 and PMLEN=7
     }
     jalr_insn: coverpoint ins.current.insn {
         type_option.weight = 0;
@@ -209,18 +225,18 @@
     }
 
     // Misaligned address (e.g. scratch+1); upper 7 bits = 0x01 or 0x00
-    misaligned_addr: coverpoint (ins.current.rs1_val + ins.current.imm)[1:0] {
+    misaligned_addr: coverpoint ((ins.current.rs1_val + ins.current.imm) & 2'b11) {
         type_option.weight = 0;
         bins misaligned = {[2'b01:2'b11]};
     }
     // ---- Misalign common cross dimensions ----
-    pm_misalign : cross pmm, a_upper_bits, sw_lw_insn, satp_mode, misaligned_addr;
+    pm_misalign : cross pmm, a_upper_bits, sw_lw_insn, misaligned_addr;
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         // Exception should write xtval with masked version of pointer.
-        illegal_addr: coverpoint (ins.current.rs1_val + ins.current.imm)[47:0] {
+        illegal_addr: coverpoint ((ins.current.rs1_val + ins.current.imm) & 48'hFFFF_FFFF_FFFF) {
             type_option.weight = 0;
-            bins is_illegal_base = {`RVMODEL_ACCESS_FAULT_ADDRESS[47:0]};
+            bins is_illegal_base = {`RVMODEL_ACCESS_FAULT_ADDRESS& 48'hFFFF_FFFF_FFFF};
         }
         pm_fault : cross pmm, a_upper_bits, sw_lw_insn, illegal_addr;
     `endif

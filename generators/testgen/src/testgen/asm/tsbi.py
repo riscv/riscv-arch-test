@@ -13,6 +13,7 @@ import re
 from testgen.constants import INDENT
 
 _CSR_INSTR_RE = re.compile(r"(?i)(csrr|csrw|csrs|csrc)\s+([^,\s]+)\s*,\s*([^,\s]+)")
+_SFENCE_VMA_ENCODING = 0x12000073
 _MEM_INSTR_RE = re.compile(r"(?i)(lw|ld|sw|sd)\s+([^,\s]+)\s*,\s*([-+]?(?:0x[0-9a-f]+|\d+))\s*\(\s*([^\)\s]+)\s*\)")
 
 
@@ -28,6 +29,14 @@ def tsbi_call(instr: str) -> str:
     """
 
     normalized_instr = _normalize_instr(instr)
+    if normalized_instr.lower() == "sfence.vma":
+        return "\n".join(
+            [
+                f"{INDENT}# T-SBI call to execute instruction: {instr}",
+                f"{INDENT}LI(a0, {_SFENCE_VMA_ENCODING:#010x}) # {instr}",
+                f"{INDENT}ecall # T-SBI call to execute instruction at suitable privilege level",
+            ]
+        )
     rs1 = get_rs1(normalized_instr)
     rs2 = get_rs2(normalized_instr)
     rd = get_rd(normalized_instr)

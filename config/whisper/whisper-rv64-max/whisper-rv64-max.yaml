@@ -527,7 +527,7 @@ params:
   HSTATEEN_CONTEXT_TYPE: rw
   MCONTEXT_AVAILABLE: true
   # Pointer masking params
-  PMLEN: 7
+  PMLEN: 16
   # Ssqosid params
   MCID_WIDTH: 12
   RCID_WIDTH: 12

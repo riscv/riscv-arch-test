@@ -96,7 +96,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             test_data.int_regs.return_registers([2])
         elif instr_type in {"S", "FS", "CS", "CSS"}:
             # bytes to store all differ from values placed in scratch
-            val = 0x0F1E2D3C if test_data.xlen == 32 else 0x0F1E2D3C4B5A6978
+            val = 0x0F1E2D3C4B5A6978 if max(test_data.xlen, test_data.flen) == 64 else 0x0F1E2D3C
             tc.code.extend(
                 [
                     f"# Testcase: {coverpoint} (imm[2:0] = {alignment:03b})",

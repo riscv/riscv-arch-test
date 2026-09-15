@@ -33,6 +33,10 @@ normative_rule_definitions:
   - name: H_virtinst_vu_vs_nonhigh_allowedhs_tvm0
     coverpoint:
       - H_cg/cp_vu_csr_denied
+  - name: H_vm_gpatrans
+    coverpoint:
+      - H_cg/cp_hlv
+      - H_cg/cp_hsv
   - name: H_vscsrs_acc_m_hs
     coverpoint:
       - H_cg/cp_hs_hcsr_access
@@ -73,6 +77,29 @@ normative_rule_definitions:
   - name: hip_acc
     coverpoint:
       - H_cg/cp_hs_hcsr_walk
+  - name: hlsv_mode
+    coverpoint:
+      - H_cg/cp_hlv
+      - H_cg/cp_hlvx
+      - H_cg/cp_hsv
+  - name: hlsv_op
+    coverpoint:
+      - H_cg/cp_hlv
+      - H_cg/cp_hsv
+  - name: hlsv_priv
+    coverpoint:
+      - H_cg/cp_hlv
+  - name: hlsv_trans
+    coverpoint:
+      - H_cg/cp_hlv
+      - H_cg/cp_hlvx
+      - H_cg/cp_hsv
+  - name: hlsv_u_op
+    coverpoint:
+      - H_cg/cp_hlvx
+  - name: hlvx-wu_valid32
+    coverpoint:
+      - H_cg/cp_hlvx
   - name: htinst_acc
     coverpoint:
       - H_cg/cp_hs_hcsr_walk

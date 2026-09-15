@@ -64,6 +64,38 @@ function automatic bit h_csr_outcome(ins_t ins);
     return h_outcome(ins, expected);
 endfunction
 
+function automatic bit h_fence_outcome(ins_t ins);
+    int expected;
+    expected = 0;
+    casez (ins.current.insn)
+        HFENCE_GVMA: if (ins.current.mode == 1 &&
+            get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") != 0) expected = 2;
+        SFENCE_VMA: begin
+            if (ins.current.mode_virt && ins.prev.csr[CSR_HSTATUS][20]) expected = 22;
+            else if (!ins.current.mode_virt && ins.current.mode == 1 &&
+                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") != 0) expected = 2;
+        end
+        HFENCE_VVMA: expected = 0;
+        default: return 0;
+    endcase
+    return h_outcome(ins, expected);
+endfunction
+
+function automatic bit h_load_extension(ins_t ins);
+    casez (ins.current.insn)
+        HLV_B: return $signed(ins.current.rd_val) == $signed(ins.current.rd_val[7:0]);
+        HLV_BU: return ins.current.rd_val == `UDB_MXLEN'(ins.current.rd_val[7:0]);
+        HLV_H: return $signed(ins.current.rd_val) == $signed(ins.current.rd_val[15:0]);
+        HLV_HU, HLVX_HU: return ins.current.rd_val == `UDB_MXLEN'(ins.current.rd_val[15:0]);
+        HLV_W: return $signed(ins.current.rd_val) == $signed(ins.current.rd_val[31:0]);
+        HLVX_WU: return ins.current.rd_val == `UDB_MXLEN'(ins.current.rd_val[31:0]);
+        `ifdef UDB_MXLEN_64
+        HLV_WU: return ins.current.rd_val == `UDB_MXLEN'(ins.current.rd_val[31:0]);
+        HLV_D: return 1;
+        `endif
+        default: return 0;
+    endcase
+endfunction
 covergroup H_cg with function sample(ins_t ins);
     option.per_instance = 0;
     source_mode: coverpoint {ins.current.mode_virt, ins.current.mode} {
@@ -87,6 +119,15 @@ covergroup H_cg with function sample(ins_t ins);
     }
     mode_vu: coverpoint {ins.current.mode_virt, ins.current.mode} {
         bins modes[] = {4};
+    }
+    mode_m_hs_u: coverpoint {ins.current.mode_virt, ins.current.mode} {
+        bins modes[] = {3, 1, 0};
+    }
+    mode_m_hs: coverpoint {ins.current.mode_virt, ins.current.mode} {
+        bins modes[] = {3, 1};
+    }
+    mode_m_hs_vs: coverpoint {ins.current.mode_virt, ins.current.mode} {
+        bins modes[] = {3, 1, 5};
     }
     csr_operation: coverpoint {ins.current.insn[14:12], ins.current.insn[19:15] == 0} iff (ins.current.insn[6:0] == 7'h73 && ins.current.insn[14:12] inside {1,2,3}) {
         bins write = {4'b0010,4'b0011};
@@ -116,6 +157,12 @@ covergroup H_cg with function sample(ins_t ins);
     illegal_outcome: coverpoint h_outcome(ins, 2) {
         bins correct = {1};
     }
+    fence_expected_outcome: coverpoint h_fence_outcome(ins) {
+        bins correct = {1};
+    }
+    load_extension: coverpoint h_load_extension(ins) {
+        bins correct = {1};
+    }
     peer_unchanged: coverpoint h_peer_unchanged(ins) {
         bins unchanged = {1};
     }
@@ -138,6 +185,7 @@ covergroup H_cg with function sample(ins_t ins);
         bins hip = {CSR_HIP};
         bins hvip = {CSR_HVIP};
         bins htinst = {CSR_HTINST};
+        bins hgatp = {CSR_HGATP};
         bins vsstatus = {CSR_VSSTATUS};
         bins vsie = {CSR_VSIE};
         bins vstval = {CSR_VSTVAL};
@@ -146,6 +194,7 @@ covergroup H_cg with function sample(ins_t ins);
         bins vsscratch = {CSR_VSSCRATCH};
         bins vsepc = {CSR_VSEPC};
         bins vscause = {CSR_VSCAUSE};
+        bins vsatp = {CSR_VSATP};
         bins hgeip = {CSR_HGEIP};
         `ifdef ZICNTR_SUPPORTED
         bins htimedelta = {CSR_HTIMEDELTA};
@@ -178,6 +227,7 @@ covergroup H_cg with function sample(ins_t ins);
         bins hip = {CSR_HIP};
         bins hvip = {CSR_HVIP};
         bins htinst = {CSR_HTINST};
+        bins hgatp = {CSR_HGATP};
         bins vsstatus = {CSR_VSSTATUS};
         bins vsie = {CSR_VSIE};
         bins vstval = {CSR_VSTVAL};
@@ -186,6 +236,7 @@ covergroup H_cg with function sample(ins_t ins);
         bins vsscratch = {CSR_VSSCRATCH};
         bins vsepc = {CSR_VSEPC};
         bins vscause = {CSR_VSCAUSE};
+        bins vsatp = {CSR_VSATP};
         bins hgeip = {CSR_HGEIP};
         `ifdef ZICNTR_SUPPORTED
         bins htimedelta = {CSR_HTIMEDELTA};
@@ -225,6 +276,7 @@ covergroup H_cg with function sample(ins_t ins);
         bins vsscratch = {CSR_VSSCRATCH};
         bins vsepc = {CSR_VSEPC};
         bins vscause = {CSR_VSCAUSE};
+        bins vsatp = {CSR_VSATP};
     }
     guest_s_csrs: coverpoint ins.current.insn[31:20] {
         bins sstatus = {CSR_SSTATUS};
@@ -248,6 +300,7 @@ covergroup H_cg with function sample(ins_t ins);
         bins hip = {CSR_HIP};
         bins hvip = {CSR_HVIP};
         bins htinst = {CSR_HTINST};
+        bins hgatp = {CSR_HGATP};
         bins vsie = {CSR_VSIE};
         bins vstval = {CSR_VSTVAL};
         bins vsip = {CSR_VSIP};
@@ -255,6 +308,7 @@ covergroup H_cg with function sample(ins_t ins);
         bins vsscratch = {CSR_VSSCRATCH};
         bins vsepc = {CSR_VSEPC};
         bins vscause = {CSR_VSCAUSE};
+        bins vsatp = {CSR_VSATP};
         `ifdef ZICNTR_SUPPORTED
         bins htimedelta = {CSR_HTIMEDELTA};
         `endif
@@ -287,12 +341,14 @@ covergroup H_cg with function sample(ins_t ins);
         bins hip[] = {(CSR_HIP * 64)+2};
         bins hvip[] = {(CSR_HVIP * 64)+2, (CSR_HVIP * 64)+6, (CSR_HVIP * 64)+10};
         bins htinst[] = {[(CSR_HTINST * 64)+0:(CSR_HTINST * 64)+`UDB_MXLEN-1]};
+        bins hgatp[] = {(CSR_HGATP * 64)+0, (CSR_HGATP * 64)+1, (CSR_HGATP * 64)+2, (CSR_HGATP * 64)+3, (CSR_HGATP * 64)+4, (CSR_HGATP * 64)+5, (CSR_HGATP * 64)+6, (CSR_HGATP * 64)+7, (CSR_HGATP * 64)+8, (CSR_HGATP * 64)+9, (CSR_HGATP * 64)+10, (CSR_HGATP * 64)+11, (CSR_HGATP * 64)+12, (CSR_HGATP * 64)+13, (CSR_HGATP * 64)+14, (CSR_HGATP * 64)+15, (CSR_HGATP * 64)+16, (CSR_HGATP * 64)+17, (CSR_HGATP * 64)+18, (CSR_HGATP * 64)+19};
         bins vsie[] = {(CSR_VSIE * 64)+1, (CSR_VSIE * 64)+5, (CSR_VSIE * 64)+9};
         bins vstval[] = {[(CSR_VSTVAL * 64)+0:(CSR_VSTVAL * 64)+`UDB_MXLEN-1]};
         bins vsip[] = {(CSR_VSIP * 64)+1};
         bins vstvec[] = {[(CSR_VSTVEC * 64)+2:(CSR_VSTVEC * 64)+`UDB_MXLEN-1]};
         bins vsscratch[] = {[(CSR_VSSCRATCH * 64)+0:(CSR_VSSCRATCH * 64)+`UDB_MXLEN-1]};
         bins vsepc[] = {[(CSR_VSEPC * 64)+0:(CSR_VSEPC * 64)+`UDB_MXLEN-1]};
+        bins vsatp[] = {(CSR_VSATP * 64)+0, (CSR_VSATP * 64)+1, (CSR_VSATP * 64)+2, (CSR_VSATP * 64)+3, (CSR_VSATP * 64)+4, (CSR_VSATP * 64)+5, (CSR_VSATP * 64)+6, (CSR_VSATP * 64)+7, (CSR_VSATP * 64)+8, (CSR_VSATP * 64)+9, (CSR_VSATP * 64)+10, (CSR_VSATP * 64)+11, (CSR_VSATP * 64)+12, (CSR_VSATP * 64)+13, (CSR_VSATP * 64)+14, (CSR_VSATP * 64)+15, (CSR_VSATP * 64)+16, (CSR_VSATP * 64)+17, (CSR_VSATP * 64)+18, (CSR_VSATP * 64)+19};
         bins vscause[] = {(CSR_VSCAUSE*64), (CSR_VSCAUSE*64)+1, (CSR_VSCAUSE*64)+2, (CSR_VSCAUSE*64)+3, (CSR_VSCAUSE*64)+`UDB_MXLEN-1};
         `ifdef ZICNTR_SUPPORTED
         bins htimedelta[] = {[(CSR_HTIMEDELTA*64):(CSR_HTIMEDELTA*64)+`UDB_MXLEN-1]};
@@ -307,9 +363,64 @@ covergroup H_cg with function sample(ins_t ins);
         `endif
         `endif
     }
+    s_and_h_vs_csrs: coverpoint ins.current.insn[31:20] {
+        bins sstatus = {CSR_SSTATUS};
+        bins sie = {CSR_SIE};
+        bins stval = {CSR_STVAL};
+        bins sip = {CSR_SIP};
+        bins stvec = {CSR_STVEC};
+        bins sscratch = {CSR_SSCRATCH};
+        bins sepc = {CSR_SEPC};
+        bins scause = {CSR_SCAUSE};
+        bins satp = {CSR_SATP};
+        bins hstatus = {CSR_HSTATUS};
+        bins hedeleg = {CSR_HEDELEG};
+        bins hideleg = {CSR_HIDELEG};
+        bins hie = {CSR_HIE};
+        bins hcounteren = {CSR_HCOUNTEREN};
+        bins hgeie = {CSR_HGEIE};
+        bins henvcfg = {CSR_HENVCFG};
+        bins htval = {CSR_HTVAL};
+        bins hip = {CSR_HIP};
+        bins hvip = {CSR_HVIP};
+        bins htinst = {CSR_HTINST};
+        bins hgatp = {CSR_HGATP};
+        bins vsstatus = {CSR_VSSTATUS};
+        bins vsie = {CSR_VSIE};
+        bins vstval = {CSR_VSTVAL};
+        bins vsip = {CSR_VSIP};
+        bins vstvec = {CSR_VSTVEC};
+        bins vsscratch = {CSR_VSSCRATCH};
+        bins vsepc = {CSR_VSEPC};
+        bins vscause = {CSR_VSCAUSE};
+        bins vsatp = {CSR_VSATP};
+        bins senvcfg = {CSR_SENVCFG};
+        bins scounteren = {CSR_SCOUNTEREN};
+        bins hgeip = {CSR_HGEIP};
+        `ifdef ZICNTR_SUPPORTED
+        bins htimedelta = {CSR_HTIMEDELTA};
+        `endif
+        `ifdef SSTC_SUPPORTED
+        bins vstimecmp = {CSR_VSTIMECMP};
+        `endif
+        `ifdef UDB_MXLEN_32
+        bins hedelegh = {CSR_HEDELEGH};
+        bins henvcfgh = {CSR_HENVCFGH};
+        `ifdef ZICNTR_SUPPORTED
+        bins htimedeltah = {CSR_HTIMEDELTAH};
+        `endif
+        `ifdef SSTC_SUPPORTED
+        bins vstimecmph = {CSR_VSTIMECMPH};
+        `endif
+        `endif
+    }
     nonreplica_csrs: coverpoint ins.current.insn[31:20] {
         bins senvcfg = {CSR_SENVCFG};
         bins scounteren = {CSR_SCOUNTEREN};
+    }
+    hs_translation_csrs: coverpoint ins.current.insn[31:20] {
+        bins satp = {CSR_SATP};
+        bins hgatp = {CSR_HGATP};
     }
     vscause_csr: coverpoint ins.current.insn[31:20] {
         bins vscause = {CSR_VSCAUSE};
@@ -326,6 +437,22 @@ covergroup H_cg with function sample(ins_t ins);
         `ifdef SSTC_SUPPORTED
         bins vstimecmph = {CSR_VSTIMECMPH};
         `endif
+    }
+    tvm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm")[0] {
+        bins zero = {0};
+        bins one = {1};
+    }
+    vtvm: coverpoint ins.prev.csr[CSR_HSTATUS][20] {
+        bins zero = {0};
+        bins one = {1};
+    }
+    hu: coverpoint ins.prev.csr[CSR_HSTATUS][9] {
+        bins zero = {0};
+        bins one = {1};
+    }
+    spvp: coverpoint ins.prev.csr[CSR_HSTATUS][8] {
+        bins zero = {0};
+        bins one = {1};
     }
     vscause_value: coverpoint ins.current.rs1_val {
         bins exception_code[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,15,20,21,22,23};
@@ -348,6 +475,53 @@ covergroup H_cg with function sample(ins_t ins);
     }
     sd_correct: coverpoint ins.current.csr[CSR_VSSTATUS][`UDB_MXLEN-1] == ((ins.current.csr[CSR_VSSTATUS][14:13] == 3) || (ins.current.csr[CSR_VSSTATUS][10:9] == 3) || (ins.current.csr[CSR_VSSTATUS][16:15] == 3)) {
         bins guest_summary = {1};
+    }
+    hlv_instruction: coverpoint ins.current.insn {
+        wildcard bins hlv_b = {HLV_B};
+        wildcard bins hlv_bu = {HLV_BU};
+        wildcard bins hlv_h = {HLV_H};
+        wildcard bins hlv_hu = {HLV_HU};
+        wildcard bins hlv_w = {HLV_W};
+        `ifdef UDB_MXLEN_64
+        wildcard bins hlv_wu = {HLV_WU};
+        wildcard bins hlv_d = {HLV_D};
+        `endif
+    }
+    hlvx_instruction: coverpoint ins.current.insn {
+        wildcard bins hlvx_hu = {HLVX_HU};
+        wildcard bins hlvx_wu = {HLVX_WU};
+    }
+    hsv_instruction: coverpoint ins.current.insn {
+        wildcard bins hsv_b = {HSV_B};
+        wildcard bins hsv_h = {HSV_H};
+        wildcard bins hsv_w = {HSV_W};
+        `ifdef UDB_MXLEN_64
+        wildcard bins hsv_d = {HSV_D};
+        `endif
+    }
+    hfence_instruction: coverpoint ins.current.insn {
+        wildcard bins hfence_vvma = {HFENCE_VVMA};
+        wildcard bins hfence_gvma = {HFENCE_GVMA};
+    }
+    sfence_instruction: coverpoint ins.current.insn {
+        wildcard bins sfence_vma = {SFENCE_VMA};
+    }
+    translated: coverpoint (ins.prev.csr[CSR_VSATP] != 0) && (ins.prev.csr[CSR_HGATP] != 0) && (ins.current.virt_adr_d != ins.current.phys_adr_d) {
+        bins nonidentity = {1};
+    }
+    store_value: coverpoint {ins.current.rs2_val == 0, ins.current.rs2_val[`UDB_MXLEN-1]} {
+        bins zero = {2'b10};
+        bins positive = {2'b00};
+        bins negative = {2'b01};
+    }
+    source_register: coverpoint ins.current.insn[19:15] {
+        bins allocated = {6,8,9,13,14,15};
+    }
+    destination_register: coverpoint ins.current.insn[11:7] {
+        bins allocated = {6,8,9,13,14,15};
+    }
+    store_register: coverpoint ins.current.insn[24:20] {
+        bins allocated = {6,8,9,13,14,15};
     }
     cp_m_hcsr_access: cross mode_m, all_h_csrs, csr_operation, csr_expected_outcome;
     cp_m_hcsr_walk: cross mode_m, m_walking_field, csr_set_clear, retired;
@@ -377,6 +551,17 @@ covergroup H_cg with function sample(ins_t ins);
     `ifdef UDB_MXLEN_64
     cp_vu_high_half: cross mode_vu, high_half_csrs, csr_operation, trap_seen, illegal_outcome;
     `endif
+    cp_hlv: cross mode_m_hs_u, hlv_instruction, translated, hu, spvp, source_register, destination_register, load_extension, retired {
+        ignore_bins u_hu_zero = binsof(mode_m_hs_u) intersect {0} && binsof(hu.zero);
+    }
+    cp_hlvx: cross mode_m_hs_u, hlvx_instruction, translated, hu, spvp, source_register, destination_register, load_extension, retired {
+        ignore_bins u_hu_zero = binsof(mode_m_hs_u) intersect {0} && binsof(hu.zero);
+    }
+    cp_hsv: cross mode_m_hs_u, hsv_instruction, translated, hu, spvp, source_register, store_register, store_value, retired {
+        ignore_bins u_hu_zero = binsof(mode_m_hs_u) intersect {0} && binsof(hu.zero);
+    }
+    cp_hfence: cross mode_m_hs, hfence_instruction, tvm, vtvm, fence_expected_outcome;
+    cp_sfence: cross mode_m_hs_vs, sfence_instruction, tvm, vtvm, fence_expected_outcome;
 endgroup
 
 function void h_sample(int hart, int issue, ins_t ins);

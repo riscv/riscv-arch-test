@@ -7,7 +7,7 @@
 ##################################
 
 """Shared Zicfilp extension test infrastructure.
-Common code for ZicfilpSm (M-mode), ZicfilpS (S-mode), ZicfilpSU (U+S), ZicfilpU (U-S)
+Common code for ZicfilpSm (M-mode), ZicfilpS (S-mode and U+S), ZicfilpU (U-S)
 test generators.
 """
 
@@ -100,7 +100,7 @@ class XLPEConfig:
     # instruction (not itself a jump target) fails the same check and the
     # fault cascades forward one instruction at a time until the
     # trap-signature buffer overflows. Set for "smode" and "umode", where
-    # this cascade was actually observed (ZicfilpS/ZicfilpSU).
+    # this cascade was actually observed (ZicfilpS).
     clear_live_elp: bool = False
 
 
@@ -1069,14 +1069,14 @@ def emit_mode(
 
     trampoline_section: which section the LPAD-target trampolines land in.
     Each generator picks this for itself -- see the call site in
-    ZicfilpU.py/ZicfilpSU.py/ZicfilpS.py/ZicfilpSm.py for the reasoning
+    ZicfilpU.py/ZicfilpS.py/ZicfilpSm.py for the reasoning
     specific to that mode.
 
     skip_trampoline_fallthrough: emit an unconditional jump around the
     trampoline block below so mode-entry code doesn't fall through into it.
     Without this, execution runs off the end of the mode-entry sequence
     straight into _tgt_lpad_zero's `c.jr x7` with x7 uncontrolled; see the
-    call site in ZicfilpSU.py for why that's unsafe there.
+    call site in ZicfilpS.py for why that's unsafe there.
     """
     xlpe = _get_xlpe_config(mode, xlen)
     pfx = f"{mode}_{satp_mode}_rv{xlen}"

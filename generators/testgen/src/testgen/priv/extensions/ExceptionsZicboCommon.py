@@ -26,9 +26,10 @@ _CBIE_MASK = 0b11 << _CBIE_SHIFT
 _CBCFE_MASK = 1 << 6
 _CBIE_ENABLED_BINS = ["01", "11"]  # 00 makes cbo.inval illegal and 10 is reserved
 
-# Words of the cache block checked one at a time. Blocks larger than this are only
-# checked over their first _MAX_CHECKED_BLOCK bytes.
-_MAX_CHECKED_BLOCK = 64
+# Words of the cache block checked one at a time. scratch is 256 byte aligned and
+# 264 bytes long, so it holds a whole block of up to _MAX_CHECKED_BLOCK bytes plus
+# the first word of the next block.
+_MAX_CHECKED_BLOCK = 256
 _OLD_PATTERN_BASE = 0x5A5A0000
 _BEYOND_PATTERN_BASE = 0x3C3C0000
 
@@ -340,20 +341,6 @@ def cbo_misaligned_helper(
     return lines
 
 
-def _inval_is_real(mode: str, m_cbie: str, s_cbie: str | None) -> bool:
-    """True when cbo.inval invalidates, so a dirty block may read back as either the
-    old or the new data. False when xenvcfg.CBIE turns it into a flush, which makes
-    the new data the only possible result."""
-    if m_cbie == "01":
-        return False
-    return not (mode == "U" and s_cbie == "01")
-
-
-def _block_offsets() -> list[int]:
-    """Byte offsets of the cache-block words the test writes and checks."""
-    return list(range(0, _MAX_CHECKED_BLOCK, 4))
-
-
 def _guarded(off: int, lines: list[str]) -> list[str]:
     """Wrap ``lines`` so they only assemble when the cache block reaches ``off``."""
     if off == 0:
@@ -362,9 +349,12 @@ def _guarded(off: int, lines: list[str]) -> list[str]:
 
 
 def _fill_block(pat_reg: int, addr_reg: int, base: int) -> list[str]:
-    """Write ``base``, ``base+2``, ``base+4`` ... over the words of the cache block."""
+    """Write ``base``, ``base+2``, ``base+4`` ... over the words of the cache block, so
+    every word holds a different value. The step of 2 leaves bit 0 of each word free:
+    filling once from an even ``base`` and again from ``base + 1`` gives each word an
+    old and a new value that differ only in bit 0."""
     lines = [f"LI(x{pat_reg}, {base:#x})"]
-    for off in _block_offsets():
+    for off in range(0, _MAX_CHECKED_BLOCK, 4):
         step = [] if off == 0 else [f"addi x{pat_reg}, x{pat_reg}, 2"]
         lines.extend(_guarded(off, [*step, f"sw   x{pat_reg}, {off}(x{addr_reg})"]))
     return lines
@@ -396,7 +386,9 @@ def _inval_data_case(
     val_reg: int,
 ) -> list[str]:
     """One cbo.inval data check at a single menvcfg.CBIE/senvcfg.CBIE setting."""
-    real_inval = _inval_is_real(mode, m_cbie, s_cbie)
+    # cbo.inval really invalidates, so the block may read back old or new data, unless
+    # an xenvcfg.CBIE of 01 turns it into a flush and makes the new data the only result.
+    real_inval = m_cbie == "11" and not (mode == "U" and s_cbie == "01")
     old_base = _OLD_PATTERN_BASE + (index << 8)
     beyond = _BEYOND_PATTERN_BASE + (index << 8)
     senvcfg_tag = "" if s_cbie is None else f"_senvcfg.cbie{s_cbie}"
@@ -408,10 +400,11 @@ def _inval_data_case(
     if s_cbie is not None:
         lines.extend(_set_cbie("senvcfg", s_cbie, mode, cfg_reg, mask_reg))
 
-    lines.append("# Write the old pattern over the block and clean it out to memory")
+    lines.append(f"# Write the old pattern ({old_base:#x}, +2 per word) and clean it out to memory")
     lines.extend(_fill_block(pat_reg, addr_reg, old_base))
     lines.append(f"cbo.clean   0(x{addr_reg})")
-    lines.append("# Dirty every word of the block with a pattern differing only in bit 0")
+    lines.append(f"# Dirty the block with the new pattern ({old_base + 1:#x}, +2 per word), so")
+    lines.append("# each word's new value differs from its old value only in bit 0")
     lines.extend(_fill_block(pat_reg, addr_reg, old_base + 1))
     lines.extend(
         [
@@ -427,10 +420,10 @@ def _inval_data_case(
     )
 
     if real_inval:
-        lines.append("# Each word reads back the old or the new pattern, so mask off the differing bit")
+        lines.append("# Each word reads back its old or its new value, so mask off bit 0 to accept either")
     else:
-        lines.append("# cbo.inval flushed the block, so each word must read back the new pattern")
-    for off in _block_offsets():
+        lines.append("# cbo.inval flushed the block, so each word must read back its new value exactly")
+    for off in range(0, _MAX_CHECKED_BLOCK, 4):
         check = [f"lw   x{val_reg}, {off}(x{addr_reg})"]
         if real_inval:
             check.append(f"andi x{val_reg}, x{val_reg}, -2")

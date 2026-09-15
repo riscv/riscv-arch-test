@@ -9,7 +9,7 @@ from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
 
-cr_config = InstructionTypeConfig(required_params={"rs1", "rs1val", "rs2", "rs2val"})
+cr_config = InstructionTypeConfig(required_params={"rs1", "rs1val", "rs2", "rs2val"}, optional_params={"rd"})
 
 
 @add_instruction_formatter("CR", cr_config)
@@ -19,6 +19,10 @@ def format_cr_type(
     """Format CR-type instruction."""
     assert params.rs1 is not None and params.rs1val is not None
     assert params.rs2 is not None and params.rs2val is not None
+    # CR encodes the destination in the rs1 field, so a requested rd lands there
+    if params.rd is not None and params.rd != params.rs1:
+        test_data.int_regs.return_register(params.rs1)
+        params.rs1 = params.rd
     # x0 is not allowed as rs2 for c.add and c.mv
     if instr_name in ["c.add", "c.mv"] and params.rs2 == 0:
         test_data.int_regs.return_register(params.rs2)

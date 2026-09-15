@@ -11,7 +11,7 @@ from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
 
-cn_config = InstructionTypeConfig(required_params=set(), imm_bits=6, imm_signed=True)
+cn_config = InstructionTypeConfig(required_params=set(), optional_params={"immval"}, imm_bits=6, imm_signed=True)
 
 
 @add_instruction_formatter("CN", cn_config)

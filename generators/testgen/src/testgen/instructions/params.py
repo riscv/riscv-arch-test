@@ -40,6 +40,32 @@ from testgen.data.random import random_int, random_range
 from testgen.data.state import TestData
 from testgen.formatters import get_instruction_type_config
 
+OPERAND_PARAMS = frozenset(
+    {
+        "rd",
+        "rdval",
+        "rs1",
+        "rs1val",
+        "rs2",
+        "rs2val",
+        "rs3",
+        "rs3val",
+        "fd",
+        "fdval",
+        "fs1",
+        "fs1val",
+        "fs2",
+        "fs2val",
+        "fs3",
+        "fs3val",
+        "temp_reg",
+        "temp_val",
+        "temp_freg",
+        "temp_fval",
+        "immval",
+    }
+)
+
 
 def generate_random_params(
     test_data: TestData,
@@ -80,6 +106,14 @@ def generate_random_params(
             f"Unknown params for instruction type '{instr_type}'. Please add it to the instruction formatter decorator."
         )
     pair_regs = instr_type_config.pair_regs or set()  # Registers that need pairs
+    # A coverpoint that sets an operand the formatter never declared is silently ignored, so reject it.
+    declared = required_params | (instr_type_config.optional_params or set())
+    undeclared = sorted((set(fixed_params) & OPERAND_PARAMS) - declared)
+    if undeclared:
+        raise ValueError(
+            f"Instruction type '{instr_type}' was given {undeclared}, which it does not declare in "
+            f"required_params or optional_params, so the formatter would ignore them."
+        )
 
     # Determine the register range to use (extracted from formatters)
     reg_range_raw = instr_type_config.reg_range if instr_type_config.reg_range is not None else range(32)

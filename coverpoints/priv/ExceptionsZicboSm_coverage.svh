@@ -60,7 +60,6 @@ covergroup ExceptionsZicboSm_cg with function sample(ins_t ins);
             }
         `endif
     `endif
-`
     cbo_instrs: coverpoint ins.current.insn {
         `ifdef ZICBOM_SUPPORTED
             wildcard bins inval  = {CBO_INVAL};
@@ -104,7 +103,7 @@ covergroup ExceptionsZicboSm_cg with function sample(ins_t ins);
                 cp_cbo_access_fault: cross cbo_instrs, illegal_address, adr_misaligned, priv_mode_m, menvcfg_all_enable;
             `else
                 cp_cbo_access_fault: cross cbo_instrs, illegal_address, adr_misaligned, priv_mode_m;
-`            `endif
+            `endif
         `else
             cp_cbo_access_fault: cross cbo_instrs, illegal_address, adr_misaligned, priv_mode_m;
         `endif

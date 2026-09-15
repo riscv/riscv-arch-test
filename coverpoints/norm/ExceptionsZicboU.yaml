@@ -11,7 +11,7 @@ normative_rule_definitions:
     coverpoint: ["ExceptionsZicboU_cg/cp_cbie"]
 
   - name: menvcfg_cbie_cbo-inval_op
-    coverpoint: ["ExceptionsZicboU_cg/cp_cbie"]
+    coverpoint: ["ExceptionsZicboU_cg/{cp_cbie, cp_cbo_inval_data}"]
 
   # A CBO.INVAL instruction executes or raises either an illegal-instruction
   # exception or a virtual-instruction exception based on the state of the

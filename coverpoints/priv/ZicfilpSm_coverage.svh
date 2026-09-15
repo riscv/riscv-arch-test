@@ -119,6 +119,6 @@ covergroup Zicfilp_Sm_cg with function sample(ins_t ins);
    `endif
 endgroup
 
-function void zicfilp_Sm_sample(int hart, int issue, ins_t ins);
+function void zicfilpsm_sample(int hart, int issue, ins_t ins);
     Zicfilp_Sm_cg.sample(ins);
 endfunction

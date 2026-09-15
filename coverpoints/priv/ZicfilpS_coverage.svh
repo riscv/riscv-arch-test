@@ -7,11 +7,13 @@
 // Copyright (C) : 2026 Harvey Mudd College, 10x Engineers, UET Lahore, Habib University
 // SPDX-License-Identifier: Apache-2.0
 //
-// Description: Zicfilp S-mode Coverage
+// Description: Zicfilp S-mode Coverage (U-mode tests use Zicfilpsu_cg)
 //
 ///////////////////////////////////////////////
 
 `define COVER_ZICFILPS
+
+`include "ZicfilpSU_coverage.svh"
 
 covergroup Zicfilp_s_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -79,6 +81,6 @@ covergroup Zicfilp_s_cg with function sample(ins_t ins);
 
 endgroup
 
-function void zicfilp_s_sample(int hart, int issue, ins_t ins);
+function void zicfilps_sample(int hart, int issue, ins_t ins);
     Zicfilp_s_cg.sample(ins);
 endfunction

@@ -11,6 +11,7 @@ from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.edges import FLOAT_EDGES
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
+from testgen.data.ties import TIE_FRM_MODES, tie_edges_for
 from testgen.formatters import format_single_testcase
 from testgen.instructions.params import generate_random_params
 
@@ -67,3 +68,23 @@ def make_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
 def make_fs3_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for fs3 edge values."""
     return _make_fs_edges("fs3", instr_name, instr_type, coverpoint, test_data)
+
+
+@add_coverpoint_generator("cp_fs1_edges_ties")
+def make_fs1_edges_ties(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """Generate tests for fs1 exact-tie values under RNE and RMM."""
+    edges = tie_edges_for(coverpoint)
+
+    test_chunks: list[TestChunk] = []
+    for edge_val in edges:
+        for frm_mode in TIE_FRM_MODES:
+            params = generate_random_params(test_data, instr_type, exclude_regs=[0], fs1val=edge_val, frm=frm_mode)
+            bin_name = f"b{edge_val:#x}_{frm_mode}"
+            desc = (
+                f"{coverpoint} (Test source fs1 value = {test_data.flen_format_str.format(edge_val)}, frm = {frm_mode})"
+            )
+            tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+            test_chunks.append(tc)
+            return_testcase_registers(test_data, params)
+
+    return test_chunks

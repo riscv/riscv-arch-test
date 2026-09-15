@@ -12,6 +12,9 @@
 # - ExceptionsSvZalrsc: misaligned LR under Sv39: Imperas raises load page fault (13, translation
 #   first); Sail rv64-max config checks misaligned LR/SC pre-translation and raises load access
 #   fault (5). No Imperas parameter changes this priority.
+# - ZicfissU/S/Sm/V: not yet verified against Imperas. The suites are new and Imperas cannot run
+#   in public CI, so they are excluded until someone with a licence confirms them. QEMU and
+#   Whisper exclude the same four suites for model bugs of their own.
 #
 ci_enabled: false
-exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,SsstrictV,ExceptionsSvZalrsc,InterruptsSm,InterruptsS,InterruptsSSm,InterruptsU,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,SsstrictV,ExceptionsSvZalrsc,InterruptsSm,InterruptsS,InterruptsSSm,InterruptsU,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,ZicfissU,ZicfissS,ZicfissSm,ZicfissV"

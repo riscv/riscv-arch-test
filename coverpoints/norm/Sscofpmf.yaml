@@ -1,27 +1,65 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
 normative_rule_definitions:
-  # If the Sscofpmf extension is implemented, bits mip.LCOFIP and mie.LCOFIE are the
-  # interrupt-pending and interrupt-enable bits for local-counter-overflow
-  # interrupts. reflects the occurrence of a local counter-overflow overflow
-  # interrupt request resulting from any of the mhpmeventn.OF bits being set.
-  - name: mip_lcofip_op
-    coverpoint: [""]
+  - name: mhpmevent_inh_op
+    coverpoint:
+      [
+        "{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_minh_inhibits_mmode,cp_sinh_inhibits_smode,cp_uinh_inhibits_umode}",
+      ]
 
-  # If the Sscofpmf extension is implemented, bits mip.LCOFIP and mie.LCOFIE are the
-  # interrupt-pending and interrupt-enable bits for local-counter-overflow
-  # interrupts.
-  - name: mie_lcofie_op
-    coverpoint: [""]
+  - name: mhpmevent_of_op
+    coverpoint:
+      ["{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_of_set_on_overflow}"]
 
-  # The mhpmeventnh CSRs are provided only if the Sscofpmf extension is implemented.
+  - name: mhpmevent_of_bit_set
+    coverpoint:
+      ["{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_of_set_on_overflow}"]
+
+  - name: hpmcounter_overflow
+    coverpoint:
+      ["{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_of_set_on_overflow}"]
+
+  - name: count_overflow_interrupt
+    coverpoint:
+      ["{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_of_set_on_overflow}"]
+
+  - name: count_overflow_trigger
+    coverpoint:
+      [
+        "{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_overflow_hw_only}",
+        "{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_lcofip_hw_only}",
+      ]
+
+  - name: scountovf_op
+    coverpoint: ["{SscofpmfSm_cg,SscofpmfS_cg}/{cp_scountovf_shadow}"]
+
+  - name: scountovf_mmode_read_access
+    coverpoint:
+      [
+        "SscofpmfSm_cg/cp_scountovf_mcounteren",
+        "SscofpmfSm_cg/cp_sscofpmf_access",
+      ]
+
+  - name: scountovf_smode_read_access
+    coverpoint:
+      [
+        "SscofpmfS_cg/cp_scountovf_mcounteren",
+        "SscofpmfS_cg/cp_sscofpmf_access",
+      ]
+
+  - name: scountovf_smode_read_access_control
+    coverpoint: ["SscofpmfS_cg/cp_scountovf_mcounteren"]
+
   - name: mhpmeventh_presence
-    coverpoint: ["TODO, also in Ssstrict"]
+    coverpoint: ["SscofpmfSm_cg/cp_sscofpmf_access"]
 
-  # If the Sscofpmf extension is implemented, bits sip.LCOFIP and sie.LCOFIE are the
-  # interrupt-pending and interrupt-enable bits for local-counter-overflow
-  # interrupts. LCOFIP is read-write in sip and reflects the occurrence of a local
-  # counter-overflow overflow interrupt request resulting from any of the
-  # mhpmeventn.OF bits being set. If the Sscofpmf extension is not implemented,
-  # sip.LCOFIP and sie.LCOFIE are read-only zeros.
+  - names: [mie_lcofie_op, mip_lcofip_op, mip_lcofip_acc]
+    coverpoint: ["SscofpmfSm_cg/cp_lcofi_m"]
+
+  - name: sip_lcofip_op
+    coverpoint: ["SscofpmfS_cg/cp_lcofi_sip_s"]
+
   - names:
       [
         sip_lcofip_Sscofpmf_acc,
@@ -29,40 +67,14 @@ normative_rule_definitions:
         sie_lcofip_Sscofpmf_acc,
         sie_lcofip_Sscofpmf_op,
       ]
-    coverpoint: [""]
+    coverpoint: ["SscofpmfS_cg/cp_lcofi_sip_s", "SscofpmfU_cg/cp_lcofi_sip_u"]
 
-  - name: mhpmevent-INH_op
-    coverpoint: [""]
+  - names: [intr_M_mode_pri]
+    coverpoint: ["SscofpmfSm_cg/cp_lcofip_priority_m"]
 
-  - name: mhpmevent-OF_op
-    coverpoint: [""]
+  - names: [sip_priority_bit_order, sie_priority_bit_order]
+    coverpoint: ["SscofpmfS_cg/cp_lcofip_priority_s"]
 
-  - name: hpmcounter_overflow
-    coverpoint: [""]
-
-  - name: count_overflow_interrupt
-    coverpoint: [""]
-
-  - name: count_overflow_trigger
-    coverpoint: [""]
-
-  - name: mhpmevent-OF_bit_Set
-    coverpoint: [""]
-
-  - names: [mip-LCOFIP_op, sip-LCOFIP_op]
-    coverpoint: [""]
-
-  - name: scountovf_op
-    coverpoint: [""]
-
-  - name: scountovf_smode_read_access_control
-    coverpoint: [""]
-
-  - name: scountovf_mmode_read_access
-    coverpoint: [""]
-
-  - name: scountovf_smode_read_access
-    coverpoint: [""]
-
+  # VS-mode is out of scope for these suites: the SscofpmfSm/S/U suites never run in VS-mode.
   - name: scountovf_vsmode_read_access
     coverpoint: [""]

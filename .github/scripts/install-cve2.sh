@@ -9,7 +9,7 @@ set -euo pipefail
 
 INSTALL_DIR="${1:?Usage: install-cve2.sh <install-dir>}"
 CVE2_DV_REPO="https://github.com/openhwgroup/cv32e20-dv.git"
-CVE2_DV_COMMIT="568a5acb80a3551e5b8d21629b5d9680931eb20c"
+CVE2_DV_COMMIT="69c16cbf84249744d5490b8fe48146ef532952a8"
 VERILATOR_VERSION="v5.042"
 
 mkdir -p "$INSTALL_DIR/bin"
@@ -37,10 +37,10 @@ git init "$INSTALL_DIR/cv32e20-dv"
 
 # 3. Verilate the rv32imc config (RTL hash pinned in sim/ExternalRepos.mk).
 make -C "$INSTALL_DIR/cv32e20-dv/sim/core" \
-    verilate \
-    TEST=certification \
-    -j"$(nproc)"
+  verilate \
+  TEST=certification \
+  -j"$(nproc)"
 
 # 4. Install the cv32e20 per-test wrapper.
 install -m 0755 "$INSTALL_DIR/cv32e20-dv/.github/scripts/run-cv32e20.sh" \
-                "$INSTALL_DIR/bin/run-cv32e20.sh"
+  "$INSTALL_DIR/bin/run-cv32e20.sh"

@@ -27,7 +27,9 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv39_global_pte_Umode.S"
+// TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+#define BOOT_TO_MMODE
+
 #define SIGUPD_COUNT 25
 #define TRAP_SIGUPD_COUNT 10
 
@@ -122,7 +124,7 @@ main:
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test1_access1
 
-  CSRR( t0, satp)                                          // Extract ASID (Sv39, ASID is in bits 59:44 of satp)
+  csrr  t0, satp                                          // Extract ASID (Sv39, ASID is in bits 59:44 of satp)
   slli  t0, t0, 4
   srli  t0, t0, 48
   sfence.vma x0, t0                                        // Invalidate TLB entries for the ASID (Global entries remain valid)
@@ -143,7 +145,7 @@ main:
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test2_access1
 
-  CSRR( t0, satp)                                          // Extract ASID (Sv39, ASID is in bits 59:44 of satp)
+  csrr  t0, satp                                          // Extract ASID (Sv39, ASID is in bits 59:44 of satp)
   slli  t0, t0, 4
   srli  t0, t0, 48
   sfence.vma x0, t0                                        // Invalidate TLB entries for the ASID (Global entries remain valid)
@@ -165,7 +167,7 @@ main:
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL0, test3_access1
 
-  CSRR( t0, satp)                                          // Extract ASID (Sv39, ASID is in bits 59:44 of satp)
+  csrr  t0, satp                                          // Extract ASID (Sv39, ASID is in bits 59:44 of satp)
   slli  t0, t0, 4
   srli  t0, t0, 48
   sfence.vma x0, t0                                        // Invalidate TLB entries for the ASID (Global entries remain valid)

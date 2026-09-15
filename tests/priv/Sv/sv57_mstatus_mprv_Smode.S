@@ -23,7 +23,9 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv57_mstatus_mprv_Smode.S"
+// TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+#define BOOT_TO_MMODE
+
 #define SIGUPD_COUNT 20
 #define TRAP_SIGUPD_COUNT 10
 
@@ -70,7 +72,7 @@ RVTEST_BEGIN
   VERIFICATION_RWX \TEST_CASE
 
   LI(   t0, MSTATUS_MPRV)
-  CSRC( mstatus, t0)          // Clear mstatus.MPRV
+  csrc  mstatus, t0          // Clear mstatus.MPRV
 
   // Signature Update
   RVTEST_SIGUPD(x2, x5, x4, a2, \TEST_CASE\()_store, \TEST_CASE\()_store_str)
@@ -81,11 +83,11 @@ RVTEST_BEGIN
 
 .macro SET_REQ_MSTATUS_VAL
   LI(   t0, MSTATUS_MPRV)
-  CSRS( mstatus, t0)
+  csrs  mstatus, t0
   LI(   t0, 0x1800)
-  CSRC( mstatus, t0)
+  csrc  mstatus, t0
   LI(   t0, 0x800)
-  CSRS( mstatus, t0)          // Set to Smode
+  csrs  mstatus, t0          // Set to Smode
 .endm
 
 

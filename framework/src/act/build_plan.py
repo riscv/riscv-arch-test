@@ -12,12 +12,15 @@ import importlib.resources
 from collections import defaultdict
 from pathlib import Path
 
-from act.build_types import BuildTask, PythonAction, SubprocessAction, SymlinkAction
-from act.config import CompilerType, Config, CoverageSimulator, RefModelType, spike_isa_string
+import pyjson5
+
+from act.build_types import COVERAGE_STEP_TIMEOUT_SECONDS, BuildTask, PythonAction, SubprocessAction, SymlinkAction
+from act.config import Config, CoverageSimulator, RefModelType, spike_isa_string
 from act.coverreport import generate_report, merge_summaries
 from act.parse_test_constraints import TestMetadata
 from act.sail_to_rvvi import sailLog2Trace
 from act.sig_modify import process_signature_file
+from act.toolchain import Toolchain
 from act.trap_report import generate_trap_report
 
 # Flags used when generating .elf.objdump files.
@@ -32,32 +35,50 @@ _OBJDUMP_FLAGS_COMMON = ["-x", "-d", "-S", "-M", "no-aliases,numeric"]
 # -s: print a full hex+ASCII dump of every section
 _OBJDUMP_FLAGS_DEBUG = [*_OBJDUMP_FLAGS_COMMON, "-t", "-s"]
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
 
-def _compiler_cmd(config: Config, xlen: int, tests_dir: Path, udb_header_dir: Path) -> list[str]:
-    """Build the full compiler command list including compiler-specific and common flags."""
-    cmd = [str(config.compiler_exe)]
-    if config.compiler_type == CompilerType.CLANG:
-        cmd.extend([f"--target=riscv{xlen}", "-fuse-ld=lld"])
-    cmd.extend(
-        [
-            f"-I{config.dut_include_dir.absolute()}",
-            f"-T{config.linker_script.absolute()}",
-            "-O0",
-            "-g",
-            "-mcmodel=medany",
-            "-nostdlib",
-            f"-I{tests_dir}/env",
-            f"-I{udb_header_dir.absolute()}",
-        ]
+def _sail_platform_base(data: dict[object, object], name: str, path: Path) -> int:
+    platform = data.get("platform")
+    if not isinstance(platform, dict):
+        raise TypeError(f"Sail config {path} is missing the `platform` object.")
+
+    device = platform.get(name)
+    if not isinstance(device, dict):
+        raise TypeError(f"Sail config {path} is missing the `platform.{name}` object.")
+
+    if device.get("supported") is not True:
+        raise ValueError(
+            f"Sail config {path} must set `platform.{name}.supported` to true. "
+            "ACT signature generation requires this Sail device even when the DUT uses a different "
+            "interrupt mechanism or does not provide the same device. Enable the device in the sail "
+            "config and place it in an IO memory region. Select an address that does not map to DUT "
+            "memory, or it may overlap the DUT's own IO memory."
+        )
+
+    base = device.get("base")
+    if not isinstance(base, int):
+        raise TypeError(f"Sail config {path} must set `platform.{name}.base` to an integer.")
+    return base
+
+
+def _sail_platform_defines(sail_config_path: Path) -> tuple[str, ...]:
+    """Build compiler defines for Sail platform devices used by sail_macros.h."""
+    if not sail_config_path.exists():
+        raise FileNotFoundError(f"Sail config file not found: {sail_config_path}")
+
+    config_data = pyjson5.loads(sail_config_path.read_text())
+    if not isinstance(config_data, dict):
+        raise TypeError(f"Sail config {sail_config_path} must contain a JSON object.")
+
+    clint_base = _sail_platform_base(config_data, "clint", sail_config_path)
+    sig_base = _sail_platform_base(config_data, "simple_interrupt_generator", sail_config_path)
+    return (
+        f"-DSAIL_CLINT_BASE_ADDRESS=0x{clint_base:x}",
+        f"-DSAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS=0x{sig_base:x}",
     )
-    if config.compiler_type == CompilerType.GCC:
-        cmd.extend(["-Wl,--no-warn-rwx-segments"])
-    return cmd
 
 
 def _ref_model_sig_cmd(
@@ -98,28 +119,33 @@ def gen_compile_tasks(
     test_name: Path,
     test_metadata: TestMetadata,
     base_dir: Path,
+    env_dir: Path,
     xlen: int,
     config: Config,
-    compiler_cmd: list[str],
+    toolchain: Toolchain,
+    signature_compile_flags: tuple[str, ...] = (),
     compile_inputs: tuple[Path, ...] = (),
+    c_runtime_sources: tuple[Path, ...] = (),
     ref_model_inputs: tuple[Path, ...] = (),
     debug: bool = False,
     fast: bool = False,
 ) -> list[BuildTask]:
     """Generate BuildTasks for the compilation pipeline of a single test.
 
-    Build Pipeline:
+    Signature tests build through the reference-model signature pipeline:
         add.S -> add.sig.elf -> add.sig (ref model) -> add.results (sig_modify) -> add.elf
-        Optional: add.sig.elf.objdump (if debug), add.elf.objdump (if not fast)
+    Tests with NEEDS_SIGNATURE: false compile directly to the final ELF.
 
     Args:
         test_name: Name of the test.
         test_metadata: Metadata for the test.
         base_dir: Base directory for the build.
+        env_dir: Directory that contains shared test-environment headers.
         xlen: XLEN (32 or 64).
         config: Configuration object.
-        compiler_cmd: Pre-built compiler command prefix (from _compiler_cmd).
-        compile_inputs: Shared inputs for compilation (env headers, DUT headers, linker script).
+        toolchain: Toolchain used to resolve compiler ISA flags for this test.
+        compile_inputs: Shared inputs for compilation.
+        c_runtime_sources: Runtime sources compiled into C tests.
         ref_model_inputs: Shared inputs for the reference model (e.g. sail.json for Sail).
         debug: Whether to generate debug output (signature objdump and trace files).
         fast: Whether to disable objdump generation for faster builds.
@@ -136,105 +162,138 @@ def gen_compile_tasks(
     sig_log_file = build_dir / test_name.with_suffix(".sig.log")
     final_elf = elf_dir / test_name.with_suffix(".elf")
 
-    # Metadata — substitute ${XLEN} placeholder used by priv tests
-    march = test_metadata.march.replace("${XLEN}", str(xlen))
-    # Always include zifencei so the trap handler's fence.i can be assembled.
+    compile_prefix = [
+        *toolchain.compile_prefix(xlen),
+        f"-I{config.dut_include_dir.absolute()}",
+        f"-T{config.linker_script.absolute()}",
+        "-O0",
+        "-g",
+        "-mcmodel=medany",
+        "-nostdlib",
+        f"-I{env_dir}",
+        f"-I{base_dir.absolute()}",
+    ]
+
+    # Metadata
+    march_flags = toolchain.march_flags(
+        xlen,
+        test_metadata.march,
+        assembly=not test_metadata.is_c_test,
+        e_ext=test_metadata.e_ext,
+    )
     test_flen = test_metadata.flen
     test_path = test_metadata.test_path
     mabi = f"{'i' if xlen == 32 else ''}lp{xlen}{'e' if test_metadata.e_ext else ''}"
-
-    # 1. sig.elf – compile with -DSIGNATURE
-    sig_elf_cmd = [
-        *compiler_cmd,
-        "-o",
-        str(sig_elf),
-        f"-march={march}",
-        f"-mabi={mabi}",
-        "-DSIGNATURE",
-        f"-DTEST_FLEN={test_flen}",
-        str(test_path),
-    ]
-    tasks.append(
-        BuildTask(
-            outputs=(sig_elf,),
-            extra_inputs=(test_path, *compile_inputs),
-            action=SubprocessAction(cmd=sig_elf_cmd),
-            intermediate=True,
-        )
+    c_compile_flags = (
+        ["-ffreestanding", "-fno-builtin", "-msmall-data-limit=0", "-std=gnu99"] if test_metadata.is_c_test else []
     )
 
-    # 1a. sig.elf.objdump (optional, debug only)
-    if debug and config.objdump_exe is not None:
-        objdump_file = Path(f"{sig_elf}.objdump")
+    # Compilation sources and inputs
+    test_sources = [str(test_path)]
+    if test_metadata.is_c_test:
+        test_sources = [str(source) for source in c_runtime_sources] + test_sources
+    test_inputs = (test_path, *compile_inputs)
+
+    if test_metadata.needs_signature:
+        # 1. sig.elf – compile with -DSIGNATURE
+        sig_elf_cmd = [
+            *compile_prefix,
+            *c_compile_flags,
+            "-o",
+            str(sig_elf),
+            *march_flags,
+            f"-mabi={mabi}",
+            "-DSIGNATURE",
+            *signature_compile_flags,
+            f"-DTEST_FLEN={test_flen}",
+            f'-DTEST_FILE="{test_name.name}"',
+            *test_sources,
+        ]
         tasks.append(
             BuildTask(
-                outputs=(objdump_file,),
+                outputs=(sig_elf,),
+                extra_inputs=test_inputs,
+                action=SubprocessAction(cmd=sig_elf_cmd),
+                intermediate=True,
+            )
+        )
+
+        # 1a. sig.elf.objdump (optional, debug only)
+        if debug and config.objdump_exe is not None:
+            objdump_file = Path(f"{sig_elf}.objdump")
+            tasks.append(
+                BuildTask(
+                    outputs=(objdump_file,),
+                    deps=(sig_elf,),
+                    action=SubprocessAction(
+                        cmd=[str(config.objdump_exe), *_OBJDUMP_FLAGS_DEBUG, str(sig_elf)],
+                        stdout_file=objdump_file,
+                    ),
+                )
+            )
+
+        # 2. sig – run reference model
+        ref_model_cmd = _ref_model_sig_cmd(config, sig_elf, sig_file, sig_trace_file, xlen, debug)
+        ref_model_outputs = (sig_file, sig_trace_file) if debug else (sig_file,)
+        tasks.append(
+            BuildTask(
+                outputs=ref_model_outputs,
                 deps=(sig_elf,),
-                action=SubprocessAction(
-                    cmd=[str(config.objdump_exe), *_OBJDUMP_FLAGS_DEBUG, str(sig_elf)],
-                    stdout_file=objdump_file,
-                ),
+                extra_inputs=ref_model_inputs,
+                action=SubprocessAction(cmd=ref_model_cmd, stdout_file=sig_log_file),
+                intermediate=True,
             )
         )
 
-    # 2. sig – run reference model
-    ref_model_cmd = _ref_model_sig_cmd(config, sig_elf, sig_file, sig_trace_file, xlen, debug)
-    ref_model_outputs = (sig_file, sig_trace_file) if debug else (sig_file,)
-    tasks.append(
-        BuildTask(
-            outputs=ref_model_outputs,
-            deps=(sig_elf,),
-            extra_inputs=ref_model_inputs,
-            action=SubprocessAction(cmd=ref_model_cmd, stdout_file=sig_log_file),
-            intermediate=True,
-        )
-    )
+        # 2a. trap report (optional, debug only)
+        if debug:
+            trap_report_file = Path(f"{sig_file}.trap_report")
+            # Derive nm executable from objdump executable (e.g. riscv64-unknown-elf-objdump -> riscv64-unknown-elf-nm)
+            nm_exe: Path | None = None
+            if config.objdump_exe is not None:
+                objdump_exe = config.objdump_exe
+                candidate = objdump_exe.with_name(objdump_exe.name.replace("objdump", "nm"))
+                if candidate.exists():
+                    nm_exe = candidate
+            tasks.append(
+                BuildTask(
+                    outputs=(trap_report_file,),
+                    deps=(sig_file, sig_elf),
+                    action=PythonAction(fn=generate_trap_report, args=(sig_file, xlen, sig_elf, nm_exe)),
+                )
+            )
 
-    # 2a. trap report (optional, debug only)
-    if debug:
-        trap_report_file = Path(f"{sig_file}.trap_report")
-        # Derive nm executable from objdump executable (e.g. riscv64-unknown-elf-objdump -> riscv64-unknown-elf-nm)
-        nm_exe: Path | None = None
-        if config.objdump_exe is not None:
-            candidate = Path(str(config.objdump_exe).replace("objdump", "nm"))
-            if candidate.exists():
-                nm_exe = candidate
+        # 3. results – process signature file
         tasks.append(
             BuildTask(
-                outputs=(trap_report_file,),
-                deps=(sig_file, sig_elf),
-                action=PythonAction(fn=generate_trap_report, args=(sig_file, xlen, sig_elf, nm_exe)),
+                outputs=(result_file,),
+                deps=(sig_file,),
+                action=PythonAction(fn=process_signature_file, args=(sig_file, xlen)),
+                intermediate=True,
             )
         )
 
-    # 3. results – process signature file
-    tasks.append(
-        BuildTask(
-            outputs=(result_file,),
-            deps=(sig_file,),
-            action=PythonAction(fn=process_signature_file, args=(sig_file, xlen)),
-            intermediate=True,
-        )
-    )
-
+    # Non-signature tests start here
     # 4. final.elf – compile with -DRVTEST_SELFCHECK
     final_elf_cmd = [
-        *compiler_cmd,
+        *compile_prefix,
+        *c_compile_flags,
         "-o",
         str(final_elf),
-        f"-march={march}",
+        *march_flags,
         f"-mabi={mabi}",
         "-DRVTEST_SELFCHECK",
+        *([f'-DSIGNATURE_FILE="{result_file}"'] if test_metadata.needs_signature else ["-DRVTEST_NOSIG"]),
         f"-DXLEN={xlen}",
         f"-DTEST_FLEN={test_flen}",
-        f'-DSIGNATURE_FILE="{result_file}"',
-        str(test_path),
+        f'-DTEST_FILE="{test_name.name}"',
+        *test_sources,
     ]
     tasks.append(
         BuildTask(
             outputs=(final_elf,),
-            extra_inputs=(test_path, *compile_inputs),
-            deps=(result_file,),
+            extra_inputs=test_inputs,
+            deps=(result_file,) if test_metadata.needs_signature else (),
             action=SubprocessAction(cmd=final_elf_cmd),
         )
     )
@@ -291,7 +350,7 @@ def gen_rvvi_tasks(
         tasks.append(
             BuildTask(
                 outputs=(objdump_link,),
-                deps=(elf,),
+                deps=(objdump_orig_file,),
                 action=SymlinkAction(src=objdump_orig_file, dst=objdump_link),
             )
         )
@@ -338,6 +397,7 @@ def gen_coverage_tasks(
     env_header_dir: Path,
     coverage_simulator: CoverageSimulator,
     verbose: bool = False,
+    dry_run: bool = False,
 ) -> list[BuildTask]:
     """Generate BuildTasks for coverage UCDB generation, reports, and summary merging."""
     tasks: list[BuildTask] = []
@@ -377,14 +437,15 @@ def gen_coverage_tasks(
         # Write tracelist file, but only when its contents actually change so its mtime
         # reflects real changes. This lets us include it in extra_inputs below without
         # forcing a coverage rebuild on every run.
-        tracelist_file.parent.mkdir(parents=True, exist_ok=True)
-        tracelist_contents = (
-            f"# Tests for coverage group: {coverage_group}\n"
-            "# Generated automatically by riscv-arch-test act framework\n"
-            + "\n".join(str(trace) for trace in sorted(traces))
-        )
-        if not tracelist_file.exists() or tracelist_file.read_text() != tracelist_contents:
-            tracelist_file.write_text(tracelist_contents)
+        if not dry_run:
+            tracelist_file.parent.mkdir(parents=True, exist_ok=True)
+            tracelist_contents = (
+                f"# Tests for coverage group: {coverage_group}\n"
+                "# Generated automatically by riscv-arch-test act framework\n"
+                + "\n".join(str(trace) for trace in sorted(traces))
+            )
+            if not tracelist_file.exists() or tracelist_file.read_text() != tracelist_contents:
+                tracelist_file.write_text(tracelist_contents)
 
         # Coverage collection task
         coverage_tag = f"{coverage_group.stem.upper()}_COVERAGE"
@@ -424,9 +485,10 @@ def gen_coverage_tasks(
             BuildTask(
                 outputs=(simulator_artifact,),
                 deps=rvvi_deps,
-                extra_inputs=(*coverage_inputs, tracelist_file),
+                extra_inputs=coverage_inputs if dry_run else (*coverage_inputs, tracelist_file),
                 action=SubprocessAction(cmd=coverage_cmd, stdout_file=simulator_log, cwd=coverage_dir),
                 intermediate=True,
+                timeout=COVERAGE_STEP_TIMEOUT_SECONDS,
             )
         )
 
@@ -474,6 +536,7 @@ def generate_build_plan(
     debug: bool = False,
     fast: bool = False,
     verbose: bool = False,
+    dry_run: bool = False,
 ) -> list[BuildTask]:
     """Build the full DAG of tasks for a single config."""
     if coverage_enabled and config.ref_model_type != RefModelType.SAIL:
@@ -490,21 +553,24 @@ def generate_build_plan(
     config_report_dir = config_wkdir / "reports"
 
     coverage_targets: defaultdict[Path, list[Path]] = defaultdict(list)
-    compiler_cmd = _compiler_cmd(config, xlen, tests_dir, config_wkdir)
+    toolchain = Toolchain(config.compiler_exe, config.compiler_type)
 
     # Collect shared file dependencies that affect all compilations.
     # Any change to env headers, DUT headers, or the linker script should trigger recompilation.
-    env_headers = tuple(sorted(p.absolute() for p in (tests_dir / "env").iterdir() if p.is_file()))
+    env_dir = tests_dir / "env"
+    env_files = tuple(sorted(p.absolute() for p in env_dir.iterdir() if p.is_file()))
+    c_runtime_sources = tuple((env_dir / name).absolute() for name in ("c_test_start.S", "c_test_support.c"))
     dut_headers = tuple(sorted(p.absolute() for p in config.dut_include_dir.iterdir() if p.suffix == ".h"))
     udb_headers = tuple(sorted(p.absolute() for p in config_wkdir.iterdir() if p.suffix == ".h"))
-    compile_inputs = (*env_headers, *dut_headers, *udb_headers, config.linker_script.absolute())
+    compile_inputs = (*env_files, *dut_headers, *udb_headers, config.linker_script.absolute())
 
     # Sail config affects reference model output (Spike has no equivalent file).
     ref_model_inputs: tuple[Path, ...] = ()
+    signature_compile_flags: tuple[str, ...] = ()
     if config.ref_model_type == RefModelType.SAIL:
         sail_config = config.dut_include_dir / "sail.json"
-        if sail_config.exists():
-            ref_model_inputs = (sail_config.absolute(),)
+        signature_compile_flags = _sail_platform_defines(sail_config)
+        ref_model_inputs = (sail_config.absolute(),)
 
     for test_name_str, test_metadata in sorted(selected_tests.items()):
         test_name = Path(test_name_str)
@@ -515,10 +581,13 @@ def generate_build_plan(
                 test_name,
                 test_metadata,
                 config_wkdir,
+                env_dir,
                 xlen,
                 config,
-                compiler_cmd,
+                toolchain,
+                signature_compile_flags,
                 compile_inputs,
+                c_runtime_sources,
                 ref_model_inputs,
                 debug,
                 fast,
@@ -554,6 +623,7 @@ def generate_build_plan(
                 tests_dir / "env",
                 coverage_simulator,
                 verbose,
+                dry_run,
             )
         )
 

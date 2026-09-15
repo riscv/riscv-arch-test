@@ -8,13 +8,12 @@
 
 """cp_imm_edges coverpoint generators."""
 
-from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.edges import IMMEDIATE_EDGES
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
-from testgen.formatters.params import generate_random_params
+from testgen.instructions.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_imm_edges")
@@ -38,6 +37,6 @@ def make_cp_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_da
         desc = f"{coverpoint} (imm = {edge_val})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"{edge_val:#x}", coverpoint)
         test_chunks.append(tc)
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
     return test_chunks

@@ -62,10 +62,6 @@ function void save_rvvi_data(bit trap, int hart, int issue, string disass);
     rvviData.v_wb = 0;
     rvviData.csr = 0;
     rvviData.csr_wb = 0;
-    rvviData.m_ext_intr = 0;
-    rvviData.s_ext_intr = 0;
-    rvviData.m_timer_intr = 0;
-    rvviData.m_soft_intr = 0;
     rvviData.lrsc_cancel = 0;
     rvviData.virt_adr_i = 0;
     rvviData.virt_adr_d = 0;
@@ -144,12 +140,6 @@ function void save_rvvi_data(bit trap, int hart, int issue, string disass);
   // Todo: CSR values should use the current values and only update the changed ones
   rvviData.csr = this.rvvi.csr[hart][issue];
   rvviData.csr_wb = this.rvvi.csr_wb[hart][issue];
-
-  // Store interrupt signals from the current trace
-  rvviData.m_ext_intr = this.rvvi.m_ext_intr[hart][issue];
-  rvviData.s_ext_intr = this.rvvi.s_ext_intr[hart][issue];
-  rvviData.m_timer_intr = this.rvvi.m_timer_intr[hart][issue];
-  rvviData.m_soft_intr = this.rvvi.m_soft_intr[hart][issue];
 
   // Store virtual memory signals from the current trace
   rvviData.virt_adr_i = this.rvvi.virt_adr_i[hart][issue];

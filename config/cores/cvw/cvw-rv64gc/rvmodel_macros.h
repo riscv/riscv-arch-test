@@ -99,7 +99,12 @@
 
 ##### Machine Timer #####
 
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
+// Wally's mtime advances one tick per core clock, and the code between arming
+// mtimecmp and reaching the lower privilege mode (three CLINT stores plus
+// RVTEST_GOTO_LOWER_MODE) can take well over 100 cycles on a pipelined core
+// with caches.  With a delay of 100 the timer interrupt fires while still in
+// M-mode with MIE=1, so the trap records MPP=M instead of MPP=U/S.
+#define RVMODEL_TIMER_INT_SOON_DELAY 10000
 
 #define RVMODEL_MTIME_ADDRESS  0x0200BFF8  /* Address of mtime CSR */
 
@@ -142,15 +147,6 @@
   lw _R1, 0(_R2);                                 \
   sw _R1, 0(_R2);                               \
   li _R2, PLIC_ENABLE_ADDRESS;  /* Since SEXT and MEXT interrupt contexts share the same source, PLIC must be disabled for MEXT context so that it can properly trigger SEXT */\
-  sw zero, 0(_R2);
-
-#define RVMODEL_SET_MSW_INT(_R1, _R2) \
-  li _R1, 1; \
-  li _R2, RVMODEL_MSIP_ADDRESS; \
-  sw _R1, 0(_R2);
-
-#define RVMODEL_CLR_MSW_INT(_R1, _R2) \
-  li _R2, RVMODEL_MSIP_ADDRESS; \
   sw zero, 0(_R2);
 
 ##### Supervisor Interrupts #####

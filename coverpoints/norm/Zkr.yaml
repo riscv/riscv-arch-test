@@ -1,32 +1,34 @@
 # Normative rule to coverpoint mappings
 # Generated from riscv-isa-manual normative rule definitions
+#
+# The Zkr seed CSR tests run once per privilege mode: ZkrSm in M-mode, ZkrS in S-mode, ZkrU in U-mode.
 
 normative_rule_definitions:
   # The entropy source extension defines the seed CSR at address 0x015. This CSR
   # provides up to 16 physical entropy bits that can be used to seed cryptographic
   # random bit generators.
   - name: zkr_seed_addr
-    coverpoint: ["Zkr_cg/cp_zkr_seed_csrrw_{M, S, U}"]
+    coverpoint: ["{ZkrSm_cg,ZkrS_cg,ZkrU_cg}/{cp_zkr_seed_csrrw}"]
 
   # Attempts to access seed with a read-only CSR-access instruction (csrrs/csrrc
   # with rs1=x0, or csrrsi/csrrci with uimm=0) raise an illegal-instruction
   # exception; any other CSR-access instruction may access seed.
   - name: seed_ro_illegal
-    coverpoint: ["Zkr_cg/cp_zkr_seed_illegal_csr_op_{M, S, U}"]
+    coverpoint: ["{ZkrSm_cg,ZkrS_cg,ZkrU_cg}/{cp_zkr_seed_illegal_csr_op}"]
 
   # The write value (in rs1 or uimm) must be ignored by implementations.
   - name: seed_write_ignore
-    coverpoint: ["Zkr_cg/cp_zkr_seed_csrrw_{M, S, U}"]
+    coverpoint: ["{ZkrSm_cg,ZkrS_cg,ZkrU_cg}/{cp_zkr_seed_csrrw}"]
 
   # seed is an unprivileged CSR located at address 0x015.
   - name: seed_csr_unpriv
-    coverpoint: ["Zkr_cg/cp_zkr_seed_csrrw_U"]
+    coverpoint: ["ZkrU_cg/cp_zkr_seed_csrrw"]
 
   # seed is also access controlled by execution mode: read/write outside M-mode
   # raises an illegal-instruction exception unless access is explicitly granted
   # via mseccfg.sseed/useed.
   - name: seed_exec_mode_control
-    coverpoint: ["Zkr_cg/cp_zkr_seed_csrrw_{M, S, U}"]
+    coverpoint: ["{ZkrSm_cg,ZkrS_cg,ZkrU_cg}/{cp_zkr_seed_csrrw}"]
 
   # Each returned seed[15:0] entropy value represents unique randomness when
   # OPST=ES16.
@@ -35,7 +37,8 @@ normative_rule_definitions:
 
   # When OPST is not ES16, entropy must be 0.
   - name: seed_entropy_zero_non_es16
-    coverpoint: ["Zkr_cg/cp_zkr_seed_entropy_zero_non_es16"]
+    coverpoint:
+      ["{ZkrSm_cg,ZkrS_cg,ZkrU_cg}/{cp_zkr_seed_entropy_zero_non_es16}"]
 
   # For security reasons, the interface guarantees that secret entropy
   # words are not made available multiple times. Hence polling (reading) must

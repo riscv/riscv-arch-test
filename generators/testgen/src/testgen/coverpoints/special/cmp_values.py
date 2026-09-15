@@ -7,13 +7,13 @@
 
 """Compare register values coverpoint generators (cmp_rd_rs1_val_eq, cmp_rd_rs1_val_lsb, cmp_rd_rs1_val_hw, cmp_rd_rs1_val_w, cmp_rd_rs1_pair_partial_val, cmp_rd_sign_ext)."""
 
-from testgen.asm.helpers import load_int_reg, return_test_regs
+from testgen.asm.helpers import load_int_reg
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.random import random_range
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
-from testgen.formatters.params import generate_random_params
-from testgen.formatters.registry import format_instruction
+from testgen.formatters import format_instruction
+from testgen.instructions.params import generate_random_params
 
 
 def generate_cmp_testcase(
@@ -75,7 +75,7 @@ def generate_cmp_testcase(
     tc = test_data.end_test_chunk()
 
     # Cleanup temporary allocations
-    return_test_regs(test_data, params)
+    return_testcase_registers(test_data, params)
 
     return tc
 

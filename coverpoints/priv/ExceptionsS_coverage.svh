@@ -87,6 +87,13 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
     ebreak: coverpoint ins.current.insn {
         bins ebreak = {EBREAK};
     }
+    `ifdef ZCA_SUPPORTED
+        // 32-bit ebreak at 62 mod 64: the fetch straddles a 64-byte boundary. xtval must still
+        // be zero or the address of the ebreak, never the address of the second half of the fetch.
+        straddle64: coverpoint ins.current.pc_rdata[5:1] {
+            bins straddle64 = {5'b11111};
+        }
+    `endif
     adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0]  {
         // auto fills 000 through 111
     }
@@ -118,31 +125,6 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
     medeleg_illegalinstr_enabled: coverpoint ins.current.csr[CSR_MEDELEG][2] {
         bins enabled = {1};
     }
-    medeleg_b8: coverpoint ins.current.csr[CSR_MEDELEG][8] {
-    }
-    medeleg_walk: coverpoint ins.current.csr[CSR_MEDELEG] {
-        bins zeros                    = {16'b0000_0000_0000_0000};
-        `ifndef ZCA_SUPPORTED
-            bins instrmisaligned_enabled  = {16'b0000_0000_0000_0001};
-        `endif
-        bins instraccessfault_enabled = {16'b0000_0000_0000_0010};
-        bins illegalinstr_enabled     = {16'b0000_0000_0000_0100};
-        bins breakpoint_enabled       = {16'b0000_0000_0000_1000};
-        bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000};
-        bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000};
-        bins storemisaligned_enabled  = {16'b0000_0000_0100_0000};
-        bins storeaccessfault_enabled = {16'b0000_0000_1000_0000};
-        bins ecallu_enabled           = {16'b0000_0001_0000_0000};
-        // Delegating ecall to S mode makes it impossible to escape S mode
-        // bins ecalls_enabled           = {16'b0000_0010_0000_0000};
-        // bit 10 reserved
-        // bit 11 is read only zero
-        bins instrpagefault_enabled   = {16'b0001_0000_0000_0000};
-        bins loadpagefault_enabled    = {16'b0010_0000_0000_0000};
-        // bit 14 reserved
-        bins storepagefault_enabled   = {16'b1000_0000_0000_0000};
-        wildcard bins ones            = {16'b1011_00?1_1111_111?};
-    }
     mtvec_stvec_ne: coverpoint {ins.current.csr[CSR_MTVEC] != ins.current.csr[CSR_STVEC]} {
         bins notequal = {1};
     }
@@ -156,17 +138,14 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
     cp_illegal_instruction_seed:             cross priv_mode_s, csrops, rs1_zero, seed;
     cp_illegal_instruction_csr:              cross priv_mode_s, csrops, csr_0x000;
     cp_breakpoint:                           cross priv_mode_s, ebreak;
+    `ifdef ZCA_SUPPORTED
+        cp_ebreak_straddle64:                cross priv_mode_s, ebreak, straddle64;
+    `endif
     cp_load_address_misaligned:              cross priv_mode_s, loadops, adr_LSBs;
     cp_store_address_misaligned:             cross priv_mode_s, storeops, adr_LSBs;
     cp_ecall_s:                              cross priv_mode_s, ecall;
-    cp_medeleg_msu_instrmisaligned:          cross priv_mode_m_s_u, jalr,     rs1_1_0, offset, medeleg_walk;
-    cp_medeleg_msu_loadmisaligned:           cross priv_mode_m_s_u, loadops,    adr_LSBs,         medeleg_walk;
-    cp_medeleg_msu_storemisaligned:          cross priv_mode_m_s_u, storeops,   adr_LSBs,         medeleg_walk;
-    cp_medeleg_msu_illegalinstruction:       cross priv_mode_m_s_u, illegalops,                   medeleg_walk;
-    cp_medeleg_msu_ecall:                    cross priv_mode_m_s_u, ecall,                        medeleg_walk;
-    cp_medeleg_msu_ebreak:                   cross priv_mode_m_s_u, ebreak,                       medeleg_walk;
     cp_stvec:                                cross priv_mode_s_u, illegalops, medeleg_illegalinstr_enabled, mtvec_stvec_ne; // Testplan was not specific, I chose illegal instruction fault for the delegated exception
-    cp_xstatus_ie:                           cross priv_mode_s_u, ecall, mstatus_MIE, mstatus_SIE, medeleg_b8;
+    cp_xstatus_ie:                           cross priv_mode_s_u, ecall, mstatus_MIE, mstatus_SIE;
 
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
@@ -180,9 +159,6 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
         cp_load_access_fault:                    cross priv_mode_s, loadops, illegal_address;
         cp_store_access_fault:                   cross priv_mode_s, storeops, illegal_address;
         cp_misaligned_priority:                  cross priv_mode_s, sw_lw, illegal_address_misaligned;
-        cp_medeleg_msu_instraccessfault:         cross priv_mode_m_s_u, jalr,       illegal_address,  medeleg_walk;
-        cp_medeleg_msu_loadaccessfault:          cross priv_mode_m_s_u, loadops,    illegal_address,  medeleg_walk;
-        cp_medeleg_msu_storeaccessfault:         cross priv_mode_m_s_u, storeops,   illegal_address,  medeleg_walk;
     `endif
 
 endgroup

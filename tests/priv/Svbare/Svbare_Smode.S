@@ -14,7 +14,9 @@
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "Svbare_Smode.S"
+// TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+#define BOOT_TO_MMODE
+
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 10
 
@@ -54,7 +56,7 @@ RVTEST_BEGIN
 main:
   LI( a2, 0x800)              // Test signature initialization
 
-  CSRW(satp, x0)              // Set satp.MODE = Bare
+  csrw satp, x0              // Set satp.MODE = Bare
 
   satp_bare:
   RVTEST_SIGUPD_CSR_READ(satp, a4, satp_bare, satp_bare_str)

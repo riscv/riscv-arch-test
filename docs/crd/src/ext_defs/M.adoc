@@ -1,8 +1,0 @@
-[[extension:M]]
-=== Extension M
-
-Long Name::
-Multiply
-
-Description::
-Integer multiply and divide instructions

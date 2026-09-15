@@ -18,7 +18,11 @@ normative_rule_definitions:
   # mode if the SPP bit is 0, or supervisor mode if the SPP bit is 1; SPP is then
   # set to 0.
   - names: [sstatus_spp_sz, sstatus_spp_acc, sstatus_spp_op]
-    coverpoint: ["S_sprivinst_cg/cp_sret_s"]
+    coverpoint:
+      [
+        "S_sprivinst_cg/cp_sret_s",
+        "Sm_mprivinst_cg/cp_sret_s (sweep with mstatus.TSR, runs in Sm)",
+      ]
 
   # The SIE bit enables or disables all interrupts in supervisor mode. When SIE is
   # clear, interrupts are not taken while in supervisor mode. When the hart is
@@ -35,7 +39,7 @@ normative_rule_definitions:
   - names: [sstatus_spie_sz, sstatus_spie_acc, sstatus_spie_op]
     coverpoint:
       [
-        "InterruptsS_cg/cp_user_mti, ExceptionsS_cg/cp_medeleg_msu_illegalinstruction, S_sprivinst_cg/cp_sret_s",
+        "InterruptsS_cg/cp_user_mti, ExceptionsSm_cg/cp_medeleg_msu_illegalinstruction, S_sprivinst_cg/cp_sret_s, Sm_mprivinst_cg/cp_sret_s",
       ]
 
   # The UXL field controls the value of XLEN for U-mode, termed UXLEN, which may
@@ -81,7 +85,8 @@ normative_rule_definitions:
   # 4-byte aligned, and MODE settings other than Direct might impose additional
   # alignment constraints on the value in the BASE field.
   - name: stvec_op
-    coverpoint: ["S_scsr_cg/cp_scsrwalk"]
+    coverpoint:
+      ["S_scsr_cg/cp_stvec_vaddr_walk1", "S_scsr_cg/cp_stvec_vaddr_walk0"]
 
   # Note that the CSR contains only bits XLEN-1 through 2 of the address BASE. When
   # used as an address, the lower two bits are filled with zeroes to obtain an
@@ -212,7 +217,8 @@ normative_rule_definitions:
   # writing sepc, implementations may convert an invalid address into some other
   # invalid address that sepc is capable of holding.
   - name: sepc_acc_invalid_addr
-    coverpoint: ["S_scsr_cg/cp_scsr_access/sepc"]
+    coverpoint:
+      ["S_scsr_cg/cp_sepc_vaddr_walk1", "S_scsr_cg/cp_sepc_vaddr_walk0"]
 
   # When a trap is taken into S-mode, sepc is written with the virtual address of
   # the instruction that was interrupted or that encountered the exception.
@@ -324,7 +330,8 @@ normative_rule_definitions:
   # be able to hold all values less than 2N, where N is the smaller of SXLEN and
   # ILEN.
   - name: stval_acc
-    coverpoint: ["S_scsr_cg/cp_scsr_access/stval"]
+    coverpoint:
+      ["S_scsr_cg/cp_stval_vaddr_walk1", "S_scsr_cg/cp_stval_vaddr_walk0"]
 
   # The senvcfg CSR is an SXLEN-bit read/write register, formatted as shown in ,
   # that controls certain characteristics of the U-mode execution environment.
@@ -356,7 +363,7 @@ normative_rule_definitions:
   # although CSRs and instructions are associated with one privilege level, they are
   # also accessible at all higher privilege levels.
   - name: Zicsr_higher_priv
-    coverpoint: ["S_scsr_cg/cp_scsr_from_m", "S_scsr_cg/cp_ucsr_from_s"]
+    coverpoint: ["Sm_mcsr_cg/cp_scsr_from_m", "S_scsr_cg/cp_ucsr_from_s"]
 
   # The top two bits (csr[11:10]) indicate whether the register is read/write
   # (00,01, or 10) or read-only (11).

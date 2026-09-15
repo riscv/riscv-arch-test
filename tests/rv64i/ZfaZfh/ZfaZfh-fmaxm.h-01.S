@@ -15,8 +15,7 @@
 # MARCH: rv64if_zicsr_zifencei_zfa_zfh
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "ZfaZfh-fmaxm.h-01.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 68
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.

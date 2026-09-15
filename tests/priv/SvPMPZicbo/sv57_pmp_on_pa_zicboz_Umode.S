@@ -25,7 +25,6 @@
 # MARCH: rv64i_zicsr_zifencei_zicboz
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv57_pmp_on_pa_zicboz_Umode.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 30
 #define BOOT_TO_MMODE
@@ -63,7 +62,6 @@ RVTEST_BEGIN
 .endm
 
 // PMP Macros
-#define PMP_GLOBAL_RWX        (((PMP_TOR | PMP_X | PMP_W | PMP_R) & 0xFF) << PMP2_CFG_SHIFT)
 #define PMP0CFG_X             (((PMP_NAPOT | PMP_X) & 0xFF) << PMP0_CFG_SHIFT)
 
 
@@ -73,10 +71,7 @@ main:
 //                                                    Setup pmp registers
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  li t2, 0                                        // Set PMP permission for all memory in pmp2cfg0 (TOR)
-  csrw pmpaddr1, t2
-  li t2, -1
-  csrw pmpaddr2, t2
+  RVTEST_PMP_SET_BACKGROUND t2
 
   LA (t2, rvtest_data_1)                          // Configure test region as NAPOT
   srl t2, t2, PMP_SHIFT
@@ -88,12 +83,12 @@ main:
   .endif
 
   or t2, t2, t1
-  CSRW(pmpaddr0, t2)
+  csrw pmpaddr0, t2
 
-  LI (t2, PMP_GLOBAL_RWX | PMP0CFG_X)
+  LI (t2, PMP0CFG_X)
   pmpcfg0_x:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, pmpcfg0_x, pmpcfg0_x_str)
-
+  sfence.vma
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                   Virtual addresses definition for code and test regions
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -121,8 +116,8 @@ main:
   sfence.vma                                                             // Flush TLB
 
   LI(t0, MENVCFG_CBZE)
-  CSRS(menvcfg, t0)                                                      // Allow execution of cbo.zero in S-Mode
-  CSRS(senvcfg, t0)                                                      // Further delegate the permission to U-Mode
+  csrs menvcfg, t0                                                      // Allow execution of cbo.zero in S-Mode
+  csrs senvcfg, t0                                                      // Further delegate the permission to U-Mode
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------

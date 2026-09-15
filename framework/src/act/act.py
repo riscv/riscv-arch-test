@@ -7,8 +7,6 @@
 # Main entry point for RISC-V architecture verification framework
 ##################################
 
-from __future__ import annotations
-
 import os
 import sys
 from pathlib import Path
@@ -130,6 +128,7 @@ def run_act(
                 debug,
                 fast,
                 verbose,
+                dry_run,
             )
         )
 

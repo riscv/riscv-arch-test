@@ -15,8 +15,7 @@
 # MARCH: rv32i_zicntr_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "Zicntr-csrrc-00.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 16
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
@@ -51,8 +50,6 @@ Zicntr_csrrc_cg_cp_cntr_cycle:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Zicntr_csrrc_cg_cp_cntr_cycle, Zicntr_csrrc_cg_cp_cntr_cycle_str)
 
-#ifdef UDB_TIME_CSR_IMPLEMENTED
-
 # Testcase: cp_cntr (time)
 # Loop until time increments, or fail if it does not
   csrrc x14, time, x0 # read time initial value
@@ -67,8 +64,6 @@ Zicntr_csrrc_cg_cp_cntr_time:
   slti x14, x14, 1 # set fail code if difference < 1
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Zicntr_csrrc_cg_cp_cntr_time, Zicntr_csrrc_cg_cp_cntr_time_str)
-
-#endif
 
 # Testcase: cp_cntr (instret)
 # Read two consecutive times to check if counter increments
@@ -104,8 +99,6 @@ Zicntr_csrrc_cg_cp_cntr_cycleh:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Zicntr_csrrc_cg_cp_cntr_cycleh, Zicntr_csrrc_cg_cp_cntr_cycleh_str)
 
-#ifdef UDB_TIME_CSR_IMPLEMENTED
-
 # Testcase: cp_cntr (timeh)
 # Read two consecutive times to check if counter increments
   csrrc x14, timeh, x0
@@ -121,8 +114,6 @@ Zicntr_csrrc_cg_cp_cntr_timeh:
   sub x14, x18, x14 # compute difference
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Zicntr_csrrc_cg_cp_cntr_timeh, Zicntr_csrrc_cg_cp_cntr_timeh_str)
-
-#endif
 
 # Testcase: cp_cntr (instreth)
 # Read two consecutive times to check if counter increments

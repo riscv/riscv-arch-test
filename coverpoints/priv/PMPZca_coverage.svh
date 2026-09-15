@@ -218,7 +218,7 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
     cp_cret_na4: cross priv_mode_m, na4_setup, na4_region, exec_c_instr, addr_adjacent_to_na4_boundary;
   `endif
 
-  cp_misaligned_off: cross priv_mode_m, cfg_consecutive_off, addr_in_consecutive_regions, exec_c_instr;
+  cp_misaligned_off: cross priv_mode_m, cfg_consecutive_off, addr_in_consecutive_regions_napot, exec_c_instr;
 
 endgroup
 

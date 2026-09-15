@@ -18,13 +18,22 @@ _CG = "SmVF_cg"
 _FS_MASK = 3 << 13  # mstatus.FS = bits [14:13]
 _VS_MASK = 3 << 9  # mstatus.VS = bits [10:9]
 
+# vfadd.vv operand patterns as (vs2_reg, vs1_reg, name), covering the 4 vs1_zero x vs2_zero
+# combinations. v1 and v4 hold 1.0; v2 holds 0.
+_VFADD_PATTERNS = [
+    ("v2", "v2", "vs1_0_vs2_0"),  # both zero
+    ("v1", "v2", "vs1_0_vs2_n"),  # vs1=0, vs2!=0
+    ("v2", "v1", "vs1_n_vs2_0"),  # vs1!=0, vs2=0
+    ("v1", "v4", "vs1_n_vs2_n"),  # both nonzero
+]
+
 
 def _set_fs_vs(fs: int, vs: int, temp_reg: int) -> list[str]:
     return [
         f"LI(x{temp_reg}, {_FS_MASK | _VS_MASK})",
-        f"CSRC(mstatus, x{temp_reg})  # clear FS and VS",
+        f"csrc mstatus, x{temp_reg}  # clear FS and VS",
         f"LI(x{temp_reg}, {(fs << 13) | (vs << 9)})",
-        f"CSRS(mstatus, x{temp_reg})  # FS={fs}, VS={vs}",
+        f"csrs mstatus, x{temp_reg}  # FS={fs}, VS={vs}",
     ]
 
 
@@ -106,16 +115,8 @@ def _gen_fs_state_nonaffecting(test_data: TestData, temp_reg: int) -> list[str]:
     lines = [
         comment_banner(coverpoint, "vfadd.vv under FS=Initial/Clean across all 4 vs1_zero × vs2_zero combinations"),
     ]
-    # 4 combinations: (vs1_zero, vs2_zero)
-    # vs1 = v1 (1.0 nonzero) vs v2 (0) ; vs2 likewise
-    pattern_pairs = [
-        ("v2", "v2", "vs1_0_vs2_0"),  # both zero
-        ("v1", "v2", "vs1_n_vs2_0"),  # vs1!=0, vs2=0
-        ("v2", "v1", "vs1_0_vs2_n"),  # vs1=0, vs2!=0
-        ("v1", "v4", "vs1_n_vs2_n"),  # both nonzero
-    ]
     for fs in (1, 2):
-        for vs2_reg, vs1_reg, name in pattern_pairs:
+        for vs2_reg, vs1_reg, name in _VFADD_PATTERNS:
             lines.extend(_set_fs_vs(fs=3, vs=3, temp_reg=temp_reg))
             lines.extend(_vector_setup(temp_reg))
             lines.extend(_load_v_zero_one(temp_reg))
@@ -135,32 +136,27 @@ def _gen_fs_off(test_data: TestData, temp_reg: int) -> list[str]:
             coverpoint, "vfadd.vv with FS=Off (VS=Dirty) -> illegal-instruction trap; cover all vs1/vs2 patterns"
         ),
     ]
-    pattern_pairs = [
-        ("v2", "v2", "vs1_0_vs2_0"),
-        ("v1", "v2", "vs1_n_vs2_0"),
-        ("v2", "v1", "vs1_0_vs2_n"),
-        ("v1", "v4", "vs1_n_vs2_n"),
-    ]
-    for vs2_reg, vs1_reg, name in pattern_pairs:
+    for vs2_reg, vs1_reg, name in _VFADD_PATTERNS:
         lines.extend(_set_fs_vs(fs=3, vs=3, temp_reg=temp_reg))
         lines.extend(_vector_setup(temp_reg))
         lines.extend(_load_v_zero_one(temp_reg))
         lines.extend(_set_fs_vs(fs=0, vs=3, temp_reg=temp_reg))
         lines.append(test_data.add_testcase(f"vfadd_{name}_fs_off", coverpoint, _CG))
         lines.append(f"vfadd.vv v3, {vs2_reg}, {vs1_reg}  # traps: FS=Off")
-        lines.append("nop")
     lines.extend(_set_fs_vs(fs=3, vs=3, temp_reg=temp_reg))
     return lines
 
 
 @add_priv_test_generator(
     "SmVF",
-    required_extensions=["Sm", "I", "M", "V", "F", "Zicsr"],
-    march_extensions=["I", "M", "F", "V", "Zicsr"],
+    required_extensions=["Sm", "M", "V", "F", "Zicsr"],
+    march_extensions=["M", "F", "V"],
     extra_defines=[
         "#define RVTEST_VECTOR",
         "#define RVTEST_SEW 0",
         "#define VDSEW 0",
+        # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+        "#define BOOT_TO_MMODE",
     ],
 )
 def make_smvf(test_data: TestData) -> list[TestChunk]:

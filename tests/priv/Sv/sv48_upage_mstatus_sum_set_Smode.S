@@ -52,7 +52,9 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv48_upage_mstatus_sum_set_Smode.S"
+// TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+#define BOOT_TO_MMODE
+
 #define SIGUPD_COUNT 65
 #define TRAP_SIGUPD_COUNT 160
 
@@ -86,7 +88,7 @@ RVTEST_BEGIN
 
   // Set mstatus.SUM
   LI(t0, MSTATUS_SUM)
-  CSRS(mstatus, t0)
+  csrs mstatus, t0
 
   // Adjust offset of VA to point to test region
   .set VA_SHIFT, (\level*9)+12

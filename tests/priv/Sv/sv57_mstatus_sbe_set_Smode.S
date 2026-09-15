@@ -24,7 +24,9 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv57_mstatus_sbe_set_Smode.S"
+// TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+#define BOOT_TO_MMODE
+
 #define SIGUPD_COUNT 20
 #define TRAP_SIGUPD_COUNT 10
 
@@ -124,7 +126,7 @@ main:
   sfence.vma                                                             // Flush TLB
 
   LI(   t0, MSTATUS_SBE)
-  CSRS( mstatus, t0)                                                     // Set mstatus.SBE (Supervisor Big Endian)
+  csrs  mstatus, t0                                                     // Set mstatus.SBE (Supervisor Big Endian)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------

@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    UV_cg = new();         UV_cg.set_inst_name("obj_UV");
+    UV_vucsr_cg = new();         UV_vucsr_cg.set_inst_name("obj_UV");

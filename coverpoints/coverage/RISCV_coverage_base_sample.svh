@@ -379,6 +379,9 @@
     `ifdef COVER_ZCMOP
         zcmop_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_ZCMP
+        zcmp_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_ZFAD
         zfad_sample(hart, issue, ins);
     `endif

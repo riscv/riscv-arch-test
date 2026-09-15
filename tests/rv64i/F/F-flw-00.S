@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 176
+#define SIGUPD_COUNT 232
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -799,6 +799,262 @@ F_flw_cg_cp_fd_b31:
   RVTEST_SIGUPD_F(x12, x5, x4, f4, f31, F_flw_cg_cp_fd_b31, F_flw_cg_cp_fd_b31_str)
   addi x2, x2, SIG_STRIDE # increment data_ptr
 
+/////////////////////////////////
+// cp_fd_edges
+/////////////////////////////////
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x00000000)
+  fsflagsi 0b00000 # clear all fflags
+  addi x18, x2, 1646 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x0:
+  flw f25, -1646(x18) # perform load (0x00000000)
+  # Check if f25 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f25, F_flw_cg_cp_fd_edges_b0x0, F_flw_cg_cp_fd_edges_b0x0_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x80000000)
+  fsflagsi 0b00000 # clear all fflags
+  addi x20, x2, 1196 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x80000000:
+  flw f20, -1196(x20) # perform load (0x80000000)
+  # Check if f20 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f20, F_flw_cg_cp_fd_edges_b0x80000000, F_flw_cg_cp_fd_edges_b0x80000000_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x3f800000)
+  fsflagsi 0b00000 # clear all fflags
+  addi x20, x2, -47 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x3f800000:
+  flw f3, 47(x20) # perform load (0x3f800000)
+  # Check if f3 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f3, F_flw_cg_cp_fd_edges_b0x3f800000, F_flw_cg_cp_fd_edges_b0x3f800000_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0xbf800000)
+  fsflagsi 0b00000 # clear all fflags
+  addi x8, x2, 1995 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0xbf800000:
+  flw f8, -1995(x8) # perform load (0xbf800000)
+  # Check if f8 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f8, F_flw_cg_cp_fd_edges_b0xbf800000, F_flw_cg_cp_fd_edges_b0xbf800000_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x3fc00000)
+  fsflagsi 0b00000 # clear all fflags
+  addi x24, x2, 1500 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x3fc00000:
+  flw f24, -1500(x24) # perform load (0x3fc00000)
+  # Check if f24 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f24, F_flw_cg_cp_fd_edges_b0x3fc00000, F_flw_cg_cp_fd_edges_b0x3fc00000_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0xbfc00000)
+  fsflagsi 0b00000 # clear all fflags
+  addi x15, x2, 1291 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0xbfc00000:
+  flw f2, -1291(x15) # perform load (0xbfc00000)
+  # Check if f2 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f2, F_flw_cg_cp_fd_edges_b0xbfc00000, F_flw_cg_cp_fd_edges_b0xbfc00000_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x40000000)
+  fsflagsi 0b00000 # clear all fflags
+  addi x9, x2, -947 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x40000000:
+  flw f7, 947(x9) # perform load (0x40000000)
+  # Check if f7 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f7, F_flw_cg_cp_fd_edges_b0x40000000, F_flw_cg_cp_fd_edges_b0x40000000_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0xc0000000)
+  fsflagsi 0b00000 # clear all fflags
+  addi x10, x2, 697 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0xc0000000:
+  flw f18, -697(x10) # perform load (0xc0000000)
+  # Check if f18 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f18, F_flw_cg_cp_fd_edges_b0xc0000000, F_flw_cg_cp_fd_edges_b0xc0000000_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x00800000)
+  fsflagsi 0b00000 # clear all fflags
+  addi x8, x2, 304 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x800000:
+  flw f2, -304(x8) # perform load (0x00800000)
+  # Check if f2 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f2, F_flw_cg_cp_fd_edges_b0x800000, F_flw_cg_cp_fd_edges_b0x800000_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x80800000)
+  fsflagsi 0b00000 # clear all fflags
+  addi x3, x2, -261 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x80800000:
+  flw f9, 261(x3) # perform load (0x80800000)
+  # Check if f9 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f9, F_flw_cg_cp_fd_edges_b0x80800000, F_flw_cg_cp_fd_edges_b0x80800000_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x7f7fffff)
+  fsflagsi 0b00000 # clear all fflags
+  addi x24, x2, -590 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x7f7fffff:
+  flw f14, 590(x24) # perform load (0x7f7fffff)
+  # Check if f14 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f14, F_flw_cg_cp_fd_edges_b0x7f7fffff, F_flw_cg_cp_fd_edges_b0x7f7fffff_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0xff7fffff)
+  fsflagsi 0b00000 # clear all fflags
+  addi x21, x2, 135 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0xff7fffff:
+  flw f18, -135(x21) # perform load (0xff7fffff)
+  # Check if f18 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f18, F_flw_cg_cp_fd_edges_b0xff7fffff, F_flw_cg_cp_fd_edges_b0xff7fffff_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x007fffff)
+  fsflagsi 0b00000 # clear all fflags
+  addi x29, x2, -389 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x7fffff:
+  flw f25, 389(x29) # perform load (0x007fffff)
+  # Check if f25 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f25, F_flw_cg_cp_fd_edges_b0x7fffff, F_flw_cg_cp_fd_edges_b0x7fffff_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x807fffff)
+  fsflagsi 0b00000 # clear all fflags
+  addi x25, x2, 40 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x807fffff:
+  flw f8, -40(x25) # perform load (0x807fffff)
+  # Check if f8 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f8, F_flw_cg_cp_fd_edges_b0x807fffff, F_flw_cg_cp_fd_edges_b0x807fffff_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x00400000)
+  fsflagsi 0b00000 # clear all fflags
+  addi x16, x2, 378 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x400000:
+  flw f27, -378(x16) # perform load (0x00400000)
+  # Check if f27 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f27, F_flw_cg_cp_fd_edges_b0x400000, F_flw_cg_cp_fd_edges_b0x400000_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x80400000)
+  fsflagsi 0b00000 # clear all fflags
+  addi x19, x2, 722 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x80400000:
+  flw f19, -722(x19) # perform load (0x80400000)
+  # Check if f19 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f19, F_flw_cg_cp_fd_edges_b0x80400000, F_flw_cg_cp_fd_edges_b0x80400000_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x00000001)
+  fsflagsi 0b00000 # clear all fflags
+  addi x7, x2, 1312 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x1:
+  flw f12, -1312(x7) # perform load (0x00000001)
+  # Check if f12 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f12, F_flw_cg_cp_fd_edges_b0x1, F_flw_cg_cp_fd_edges_b0x1_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x80000001)
+  fsflagsi 0b00000 # clear all fflags
+  addi x17, x2, -1697 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x80000001:
+  flw f8, 1697(x17) # perform load (0x80000001)
+  # Check if f8 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f8, F_flw_cg_cp_fd_edges_b0x80000001, F_flw_cg_cp_fd_edges_b0x80000001_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x7f800000)
+  fsflagsi 0b00000 # clear all fflags
+  addi x29, x2, 1785 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x7f800000:
+  flw f31, -1785(x29) # perform load (0x7f800000)
+  # Check if f31 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f31, F_flw_cg_cp_fd_edges_b0x7f800000, F_flw_cg_cp_fd_edges_b0x7f800000_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0xff800000)
+  fsflagsi 0b00000 # clear all fflags
+  addi x16, x2, 887 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0xff800000:
+  flw f2, -887(x16) # perform load (0xff800000)
+  # Check if f2 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f2, F_flw_cg_cp_fd_edges_b0xff800000, F_flw_cg_cp_fd_edges_b0xff800000_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x7fc00000)
+  fsflagsi 0b00000 # clear all fflags
+  addi x17, x2, 1660 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x7fc00000:
+  flw f5, -1660(x17) # perform load (0x7fc00000)
+  # Check if f5 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f5, F_flw_cg_cp_fd_edges_b0x7fc00000, F_flw_cg_cp_fd_edges_b0x7fc00000_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x7fffffff)
+  fsflagsi 0b00000 # clear all fflags
+  addi x31, x2, 1938 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x7fffffff:
+  flw f2, -1938(x31) # perform load (0x7fffffff)
+  # Check if f2 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f2, F_flw_cg_cp_fd_edges_b0x7fffffff, F_flw_cg_cp_fd_edges_b0x7fffffff_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0xffffffff)
+  fsflagsi 0b00000 # clear all fflags
+  addi x26, x2, -654 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0xffffffff:
+  flw f8, 654(x26) # perform load (0xffffffff)
+  # Check if f8 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f8, F_flw_cg_cp_fd_edges_b0xffffffff, F_flw_cg_cp_fd_edges_b0xffffffff_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x7f800001)
+  fsflagsi 0b00000 # clear all fflags
+  addi x3, x2, 1039 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x7f800001:
+  flw f21, -1039(x3) # perform load (0x7f800001)
+  # Check if f21 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f21, F_flw_cg_cp_fd_edges_b0x7f800001, F_flw_cg_cp_fd_edges_b0x7f800001_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x7fbfffff)
+  fsflagsi 0b00000 # clear all fflags
+  addi x22, x2, -1190 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x7fbfffff:
+  flw f5, 1190(x22) # perform load (0x7fbfffff)
+  # Check if f5 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f5, F_flw_cg_cp_fd_edges_b0x7fbfffff, F_flw_cg_cp_fd_edges_b0x7fbfffff_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0xffbfffff)
+  fsflagsi 0b00000 # clear all fflags
+  addi x22, x2, 5 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0xffbfffff:
+  flw f28, -5(x22) # perform load (0xffbfffff)
+  # Check if f28 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f28, F_flw_cg_cp_fd_edges_b0xffbfffff, F_flw_cg_cp_fd_edges_b0xffbfffff_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x7ef8654f)
+  fsflagsi 0b00000 # clear all fflags
+  addi x21, x2, 696 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x7ef8654f:
+  flw f31, -696(x21) # perform load (0x7ef8654f)
+  # Check if f31 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f31, F_flw_cg_cp_fd_edges_b0x7ef8654f, F_flw_cg_cp_fd_edges_b0x7ef8654f_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_fd_edges (Test loaded fd value = 0x813d9ab0)
+  fsflagsi 0b00000 # clear all fflags
+  addi x16, x2, -150 # copy data_ptr to rs1 and adjust for offset
+F_flw_cg_cp_fd_edges_b0x813d9ab0:
+  flw f29, 150(x16) # perform load (0x813d9ab0)
+  # Check if f29 contains the expected result. Also checks fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x12, x5, x4, f4, f29, F_flw_cg_cp_fd_edges_b0x813d9ab0, F_flw_cg_cp_fd_edges_b0x813d9ab0_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
   mv x2, x12 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -891,6 +1147,34 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000316e0063
 .dword 0x000000005c3f160c
 .dword 0x0000000048b5f36a
+.dword 0x0000000000000000
+.dword 0x0000000080000000
+.dword 0x000000003f800000
+.dword 0x00000000bf800000
+.dword 0x000000003fc00000
+.dword 0x00000000bfc00000
+.dword 0x0000000040000000
+.dword 0x00000000c0000000
+.dword 0x0000000000800000
+.dword 0x0000000080800000
+.dword 0x000000007f7fffff
+.dword 0x00000000ff7fffff
+.dword 0x00000000007fffff
+.dword 0x00000000807fffff
+.dword 0x0000000000400000
+.dword 0x0000000080400000
+.dword 0x0000000000000001
+.dword 0x0000000080000001
+.dword 0x000000007f800000
+.dword 0x00000000ff800000
+.dword 0x000000007fc00000
+.dword 0x000000007fffffff
+.dword 0x00000000ffffffff
+.dword 0x000000007f800001
+.dword 0x000000007fbfffff
+.dword 0x00000000ffbfffff
+.dword 0x000000007ef8654f
+.dword 0x00000000813d9ab0
 
 // Testcase strings
 F_flw_cg_cp_rs1_nx0_b1_str: .string "\"test: 1; cg: F_flw_cg; cp: cp_rs1_nx0; bin: b1\""
@@ -976,6 +1260,34 @@ F_flw_cg_cp_fd_b28_str: .string "\"test: 80; cg: F_flw_cg; cp: cp_fd; bin: b28\"
 F_flw_cg_cp_fd_b29_str: .string "\"test: 81; cg: F_flw_cg; cp: cp_fd; bin: b29\""
 F_flw_cg_cp_fd_b30_str: .string "\"test: 82; cg: F_flw_cg; cp: cp_fd; bin: b30\""
 F_flw_cg_cp_fd_b31_str: .string "\"test: 83; cg: F_flw_cg; cp: cp_fd; bin: b31\""
+F_flw_cg_cp_fd_edges_b0x0_str: .string "\"test: 84; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x0\""
+F_flw_cg_cp_fd_edges_b0x80000000_str: .string "\"test: 85; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x80000000\""
+F_flw_cg_cp_fd_edges_b0x3f800000_str: .string "\"test: 86; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x3f800000\""
+F_flw_cg_cp_fd_edges_b0xbf800000_str: .string "\"test: 87; cg: F_flw_cg; cp: cp_fd_edges; bin: b0xbf800000\""
+F_flw_cg_cp_fd_edges_b0x3fc00000_str: .string "\"test: 88; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x3fc00000\""
+F_flw_cg_cp_fd_edges_b0xbfc00000_str: .string "\"test: 89; cg: F_flw_cg; cp: cp_fd_edges; bin: b0xbfc00000\""
+F_flw_cg_cp_fd_edges_b0x40000000_str: .string "\"test: 90; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x40000000\""
+F_flw_cg_cp_fd_edges_b0xc0000000_str: .string "\"test: 91; cg: F_flw_cg; cp: cp_fd_edges; bin: b0xc0000000\""
+F_flw_cg_cp_fd_edges_b0x800000_str: .string "\"test: 92; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x800000\""
+F_flw_cg_cp_fd_edges_b0x80800000_str: .string "\"test: 93; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x80800000\""
+F_flw_cg_cp_fd_edges_b0x7f7fffff_str: .string "\"test: 94; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x7f7fffff\""
+F_flw_cg_cp_fd_edges_b0xff7fffff_str: .string "\"test: 95; cg: F_flw_cg; cp: cp_fd_edges; bin: b0xff7fffff\""
+F_flw_cg_cp_fd_edges_b0x7fffff_str: .string "\"test: 96; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x7fffff\""
+F_flw_cg_cp_fd_edges_b0x807fffff_str: .string "\"test: 97; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x807fffff\""
+F_flw_cg_cp_fd_edges_b0x400000_str: .string "\"test: 98; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x400000\""
+F_flw_cg_cp_fd_edges_b0x80400000_str: .string "\"test: 99; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x80400000\""
+F_flw_cg_cp_fd_edges_b0x1_str: .string "\"test: 100; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x1\""
+F_flw_cg_cp_fd_edges_b0x80000001_str: .string "\"test: 101; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x80000001\""
+F_flw_cg_cp_fd_edges_b0x7f800000_str: .string "\"test: 102; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x7f800000\""
+F_flw_cg_cp_fd_edges_b0xff800000_str: .string "\"test: 103; cg: F_flw_cg; cp: cp_fd_edges; bin: b0xff800000\""
+F_flw_cg_cp_fd_edges_b0x7fc00000_str: .string "\"test: 104; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x7fc00000\""
+F_flw_cg_cp_fd_edges_b0x7fffffff_str: .string "\"test: 105; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x7fffffff\""
+F_flw_cg_cp_fd_edges_b0xffffffff_str: .string "\"test: 106; cg: F_flw_cg; cp: cp_fd_edges; bin: b0xffffffff\""
+F_flw_cg_cp_fd_edges_b0x7f800001_str: .string "\"test: 107; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x7f800001\""
+F_flw_cg_cp_fd_edges_b0x7fbfffff_str: .string "\"test: 108; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x7fbfffff\""
+F_flw_cg_cp_fd_edges_b0xffbfffff_str: .string "\"test: 109; cg: F_flw_cg; cp: cp_fd_edges; bin: b0xffbfffff\""
+F_flw_cg_cp_fd_edges_b0x7ef8654f_str: .string "\"test: 110; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x7ef8654f\""
+F_flw_cg_cp_fd_edges_b0x813d9ab0_str: .string "\"test: 111; cg: F_flw_cg; cp: cp_fd_edges; bin: b0x813d9ab0\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

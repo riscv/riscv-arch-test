@@ -82,8 +82,9 @@ def _generate_fcsr_write(test_data: TestData) -> list[str]:
                 "",
                 f"# Testcase: write {i:03b} to fcsr.FRM",
                 f"LI(x{r1}, {i << 5})           # write value {i << 5}",
-                test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
+                test_data.add_testcase(f"b_{i}_fcsr", coverpoint, covergroup),
                 gen_csr_write_sigupd(r1, "fcsr", test_data),
+                test_data.add_testcase(f"b_{i}_frm", coverpoint, covergroup),
                 gen_csr_read_sigupd(r1, ("frm", None), test_data),
             ]
         )
@@ -105,8 +106,9 @@ def _generate_fcsr_write(test_data: TestData) -> list[str]:
                 "",
                 f"# Testcase: write {i:05b} to fcsr.FFLAGS",
                 f"LI(x{r1}, {i})           # write value {i}",
-                test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
+                test_data.add_testcase(f"b_{i}_fcsr", coverpoint, covergroup),
                 gen_csr_write_sigupd(r1, "fcsr", test_data),
+                test_data.add_testcase(f"b_{i}_fflags", coverpoint, covergroup),
                 gen_csr_read_sigupd(r1, ("fflags", None), test_data),
             ]
         )
@@ -128,8 +130,9 @@ def _generate_fcsr_write(test_data: TestData) -> list[str]:
                 "",
                 f"# Testcase: write {i:03b} to frm",
                 f"LI(x{r1}, {i})           # write value {i}",
-                test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
+                test_data.add_testcase(f"b_{i}_frm", coverpoint, covergroup),
                 gen_csr_write_sigupd(r1, "frm", test_data),
+                test_data.add_testcase(f"b_{i}_fcsr", coverpoint, covergroup),
                 gen_csr_read_sigupd(r1, ("fcsr", None), test_data),
             ]
         )
@@ -150,8 +153,9 @@ def _generate_fcsr_write(test_data: TestData) -> list[str]:
                 "",
                 f"# Testcase: write {i:05b} to fflags",
                 f"LI(x{r1}, {i})           # write value {i}",
-                test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
+                test_data.add_testcase(f"b_{i}_fflags", coverpoint, covergroup),
                 gen_csr_write_sigupd(r1, "fflags", test_data),
+                test_data.add_testcase(f"b_{i}_fcsr", coverpoint, covergroup),
                 gen_csr_read_sigupd(r1, ("fcsr", None), test_data),
             ]
         )

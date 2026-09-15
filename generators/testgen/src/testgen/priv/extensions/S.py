@@ -354,47 +354,19 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     tc.code.extend(xtval_value_tests(test_data, "stval", "S_scsr_cg"))
     addr_csr_tests(test_data, test_chunks, S_VADDR_CSRS, "S_scsr_cg", "scsr_addr")
 
-    # cp_csr_satp waived because behavior of other fields is UNSPECIFIED when satp.MODE = Bare
-    # ######################################
-    # coverpoint = "cp_csr_satp"
-    # ######################################
-    # lines.append(
-    #     comment_banner(
-    #         coverpoint,
-    #         "Set and clear each bit individually in satp, excluding satp.mode",
-    #     ),
-    # )
-
-    # walk_reg, mask_reg, check_reg = test_data.int_regs.get_registers(3)
-
-    # lines.extend(
-    #     [
-    #         "# CSR Walk Tests for satp",
-    #         "csrw satp, zero      # set satp to 0 to start with",
-    #         f"LI(x{mask_reg}, -1)     # x{mask_reg} = all 1s for walking bit tests",
-    #         f"srli x{mask_reg}, x{mask_reg}, 4    # change 4 msbs to 0s to exclude satp.mode from RV64 walk tests",
-    #         f"LI(x{walk_reg}, 7)   # 111",
-    #         f"slli x{walk_reg}, x{walk_reg}, 28   # bits 30:28 = 111",
-    #         f"or x{mask_reg}, x{mask_reg}, x{walk_reg}    # x{mask_reg} = all 1s except satp.MODE (bits 63:60 for RV64 or 31 for RV32)",
-    #         f"LI(x{walk_reg}, 1) # initialize walking 1",
-    #     ]
-    # )
-    # for i in range(60):
-    #     lines.extend(
-    #         [
-    #             "",
-    #             f"csrs satp, x{walk_reg}    # set bit {i} in satp",
-    #             test_data.add_testcase(f"bit_{i}_set", coverpoint, covergroup),
-    #             gen_csr_read_sigupd(check_reg, ("satp", None), test_data),
-    #             f"csrc satp, x{walk_reg}    # clear bit {i} in satp",
-    #             test_data.add_testcase(f"bit_{i}_clr", coverpoint, covergroup),
-    #             gen_csr_read_sigupd(check_reg, ("satp", None), test_data),
-    #             f"slli x{walk_reg}, x{walk_reg}, 1   # shift to next bit",
-    #             f"and x{walk_reg}, x{walk_reg}, x{mask_reg}    # mask out mode bits",
-    #         ]
-    #     )
-
-    # test_data.int_regs.return_registers([walk_reg, mask_reg, check_reg])
+    ######################################
+    coverpoint = "cp_satp"
+    ######################################
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.section_header = comment_banner(coverpoint, "Read satp from S-mode (mstatus.TVM boots to 0)")
+    temp_reg = test_data.int_regs.get_register()
+    tc.code.extend(
+        [
+            test_data.add_testcase("satp", coverpoint, covergroup),
+            f"csrr x{temp_reg}, satp # read satp with mstatus.TVM = 0; expect no trap.  Value is WARL and unpredictable so don't sigupd it",
+        ]
+    )
+    test_data.int_regs.return_register(temp_reg)
 
     csr_insufficient_priv_tests(
         test_data,

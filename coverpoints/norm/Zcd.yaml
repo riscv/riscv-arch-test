@@ -3,12 +3,12 @@
 normative_rule_definitions:
   - name: Zc_fp_regs
     # Use a representative coverpoint; applies to others too
-    coverpoint: ["Zcd_c_fld_cg/{cp_fdp}"]
+    coverpoint: ["Zcd_c_fld_cg/{cp_fd_p}"]
   - name: c-fldsp_op
-    coverpoint: ["Zcf_c_fldsp_cg/{cp_rs1p, cp_fdp, cp_imm_mul8sp}"]
+    coverpoint: ["Zcd_c_fldsp_cg/{cp_fd, cp_imm_mul_8sp}"]
   - name: c-fld_op
-    coverpoint: ["Zcf_c_fld_cg/{cp_rs1p, cp_fdp, cp_imm_mul8}"]
+    coverpoint: ["Zcd_c_fld_cg/{cp_rs1_p, cp_fd_p, cp_imm_mul_8}"]
   - name: c-fsd_op
-    coverpoint: ["Zcf_c_fsd_cg/{cp_rs1p, cp_fs2p, cp_imm_mul8}"]
+    coverpoint: ["Zcd_c_fsd_cg/{cp_rs1_p, cp_fs2_p, cp_imm_mul_8}"]
   - name: c-fsdwsp_op
-    coverpoint: ["Zcf_c_fsdwsp_cg/{cp_rs1p, cp_fs2p, cp_imm_mul8sp}"]
+    coverpoint: ["Zcd_c_fsdsp_cg/{cp_fs2, cp_imm_mul_8sp}"]

@@ -225,6 +225,23 @@
 #define NOP                    0x13
 #define DOUBLE_NOP             (0x13<<32)+0x13
 
+// Determine the appropriate CSR to test based on the
+// supported extensions and set boot mode if necessary.
+#if defined(F_SUPPORTED)
+  #define RVTEST_TEST_CSR fflags
+#elif defined(ZVE32X_SUPPORTED)
+  #define RVTEST_TEST_CSR vxsat
+#elif defined(S_SUPPORTED)
+  #define RVTEST_TEST_CSR sepc
+  #define BOOT_TO_SMODE
+#elif defined(ZICNTR_SUPPORTED) && defined(U_SUPPORTED)
+  #define RVTEST_TEST_CSR instret
+  #define RVTEST_READ_ONLY_TEST_CSR
+#else
+  #define RVTEST_TEST_CSR mepc
+  #define BOOT_TO_MMODE
+#endif
+
 // RVTEST_TESTDATA_LOAD_INT(data_ptr, dest_reg) loads an integer value from the
 // test data section into dest_reg and increments the data_ptr pointer by SIG_STRIDE.
 // This macro is used to load integer test values from the .data section.

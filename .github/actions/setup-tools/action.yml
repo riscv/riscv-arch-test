@@ -5,9 +5,25 @@
 # UDB gem cache for jobs that run act/UDB (elfs builds, CI discovery).
 
 name: Set up tools
-description: Set up mise and cache uv packages, optionally caching UDB gems
+description: Set up mise and cache CI tools, uv packages, and UDB gems
 
 inputs:
+  install-architecture-tools:
+    description: Install Sail, GCC, and LLVM
+    required: false
+    default: "false"
+  sail-version:
+    description: Sail RISC-V version
+    required: false
+    default: "0.13.1"
+  riscv-toolchain-version:
+    description: RISC-V GCC toolchain version
+    required: false
+    default: "2026.08.27"
+  llvm-version:
+    description: LLVM version
+    required: false
+    default: "23"
   udb-gems:
     description: Cache UDB gems and configure Bundler's install path (for jobs that run UDB via act)
     required: false
@@ -18,6 +34,126 @@ runs:
   steps:
     - name: Set up mise
       uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
+
+    - name: Prepare architecture tool directories
+      if: inputs.install-architecture-tools == 'true'
+      shell: bash
+      run: |
+        sudo mkdir -p /opt/act4-tools/{sail,gcc,llvm}
+        sudo chown -R "$USER:$USER" /opt/act4-tools
+
+    - name: Cache Sail RISC-V
+      if: inputs.install-architecture-tools == 'true'
+      id: sail-cache
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+      with:
+        path: /opt/act4-tools/sail
+        key: act4-sail-${{ runner.os }}-${{ runner.arch }}-${{ inputs.sail-version }}
+
+    - name: Cache RISC-V GCC
+      if: inputs.install-architecture-tools == 'true'
+      id: gcc-cache
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+      with:
+        path: /opt/act4-tools/gcc
+        key: act4-gcc-${{ runner.os }}-${{ runner.arch }}-${{ inputs.riscv-toolchain-version }}
+
+    - name: Cache LLVM packages
+      if: inputs.install-architecture-tools == 'true'
+      id: llvm-cache
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+      with:
+        path: /opt/act4-tools/llvm
+        key: act4-llvm-${{ runner.os }}-${{ runner.arch }}-${{ inputs.llvm-version }}
+
+    - name: Install sail-riscv model
+      if: inputs.install-architecture-tools == 'true' && steps.sail-cache.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        SAIL_VERSION: ${{ inputs.sail-version }}
+      run: |
+        tool_dir="/opt/act4-tools/sail"
+        archive="$tool_dir/sail-riscv-${SAIL_VERSION}.tar.gz"
+        runner_uname=$(uname)
+        runner_arch=$(arch)
+        curl --fail --location --retry 5 --retry-all-errors --retry-delay 5 \
+          "https://github.com/riscv/sail-riscv/releases/download/${SAIL_VERSION}/sail-riscv-${runner_uname}-${runner_arch}.tar.gz" \
+          --output "$archive"
+        tar xzf "$archive" --directory="$tool_dir" --strip-components=1
+        rm -f "$archive"
+
+    - name: Install RISC-V GCC toolchain
+      if: inputs.install-architecture-tools == 'true' && steps.gcc-cache.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        RISCV_TOOLCHAIN_VERSION: ${{ inputs.riscv-toolchain-version }}
+      run: |
+        tool_dir="/opt/act4-tools/gcc"
+        archive="$tool_dir/riscv64-elf-ubuntu-24.04-gcc-${RISCV_TOOLCHAIN_VERSION}.tar.xz"
+        curl --fail --location --retry 5 --retry-all-errors --retry-delay 5 \
+          "https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${RISCV_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz" \
+          --output "$archive"
+        tar xJf "$archive" --directory="$tool_dir" --strip-components=1
+        rm -f "$archive"
+
+    - name: Install Clang
+      if: inputs.install-architecture-tools == 'true' && steps.llvm-cache.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        LLVM_VERSION: ${{ inputs.llvm-version }}
+      run: |
+        llvm_cache="/opt/act4-tools/llvm"
+        mkdir -p "$llvm_cache/partial"
+        if ! compgen -G "$llvm_cache/*.deb" >/dev/null; then
+          retry() {
+            local max_attempts="$1"
+            shift
+            local attempt=1
+            while ! "$@"; do
+              if [ "$attempt" -ge "$max_attempts" ]; then
+                echo "Command failed after ${attempt} attempts: $*"
+                return 1
+              fi
+              local backoff=$((attempt * 10))
+              echo "Attempt ${attempt} failed: $*"
+              echo "Retrying in ${backoff}s..."
+              sleep "$backoff"
+              attempt=$((attempt + 1))
+            done
+          }
+
+          curl --fail --location --retry 5 --retry-all-errors --retry-delay 5 \
+            https://apt.llvm.org/llvm.sh \
+            --output /tmp/llvm.sh
+          chmod +x /tmp/llvm.sh
+          retry 3 sudo bash /tmp/llvm.sh "$LLVM_VERSION"
+          mapfile -t llvm_packages < <(
+            dpkg-query -W -f='${binary:Package}=${Version}\n' | awk -F= '$2 ~ /~\+\+/ { print }'
+          )
+          (
+            cd "$llvm_cache"
+            retry 3 apt-get download "${llvm_packages[@]}"
+          )
+        fi
+        llvm_root="$llvm_cache/root"
+        mkdir -p "$llvm_root"
+        for package in "$llvm_cache"/*.deb; do
+          dpkg-deb -x "$package" "$llvm_root"
+        done
+        for tool in clang clang++ lld llvm-objdump llvm-as llvm-ar llvm-nm llvm-readelf; do
+          ln -sf "${tool}-${LLVM_VERSION}" "$llvm_root/usr/bin/${tool}"
+        done
+        rm -f "$llvm_cache"/*.deb
+
+    - name: Add architecture tools to PATH
+      if: inputs.install-architecture-tools == 'true'
+      shell: bash
+      run: | # zizmor: ignore[github-env]
+        {
+          echo /opt/act4-tools/sail/bin
+          echo /opt/act4-tools/gcc/bin
+          echo /opt/act4-tools/llvm/root/usr/bin
+        } >> "$GITHUB_PATH"
 
     - name: Cache uv packages
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6

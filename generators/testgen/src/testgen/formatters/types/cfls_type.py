@@ -12,7 +12,7 @@ from testgen.formatters.registry import InstructionTypeConfig, add_instruction_f
 
 cfls_config = InstructionTypeConfig(
     required_params={"fd", "immval", "temp_reg", "temp_val"},
-    reg_range=range(1, 31),  # fd cannot be x0
+    reg_range=range(32),  # f0 is a valid float destination
     imm_bits=9,  # c.ldsp: [0, 504] in multiples of 8, c.lwsp: [0, 252] in multiples of 4
     imm_signed=False,
 )

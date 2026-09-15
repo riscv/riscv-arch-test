@@ -142,26 +142,6 @@
         `cover_info("//      I - Enabled");
         `include "I_coverage_init.svh"
     `endif
-    `ifdef COVER_INTERRUPTSS
-        `cover_info("//      InterruptsS - Enabled");
-        `include "InterruptsS_coverage_init.svh"
-    `endif
-    `ifdef COVER_INTERRUPTSSSM
-        `cover_info("//      InterruptsSSm - Enabled");
-        `include "InterruptsSSm_coverage_init.svh"
-    `endif
-    `ifdef COVER_INTERRUPTSSM
-        `cover_info("//      InterruptsSm - Enabled");
-        `include "InterruptsSm_coverage_init.svh"
-    `endif
-    `ifdef COVER_INTERRUPTSSSTC
-        `cover_info("//      InterruptsSstc - Enabled");
-        `include "InterruptsSstc_coverage_init.svh"
-    `endif
-    `ifdef COVER_INTERRUPTSU
-        `cover_info("//      InterruptsU - Enabled");
-        `include "InterruptsU_coverage_init.svh"
-    `endif
     `ifdef COVER_M
         `cover_info("//      M - Enabled");
         `include "M_coverage_init.svh"
@@ -605,6 +585,10 @@
     `ifdef COVER_ZICNTRS
         `cover_info("//      ZicntrS - Enabled");
         `include "ZicntrS_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZICNTRSM
+        `cover_info("//      ZicntrSm - Enabled");
+        `include "ZicntrSm_coverage_init.svh"
     `endif
     `ifdef COVER_ZICNTRU
         `cover_info("//      ZicntrU - Enabled");

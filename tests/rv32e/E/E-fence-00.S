@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 10
+#define SIGUPD_COUNT 13
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -43,21 +43,50 @@ E_fence_cg_cp_custom_fence_fence_rw_rw:
 E_fence_cg_cp_custom_fence_fence_tso_rw_rw:
   fence.tso
 
+  mv x6, x2 # switch signature pointer register to avoid conflict with test
 # Testcase cp_custom_fence (reserved fence encodings)
-E_fence_cg_cp_custom_fence_reserved_fences:
+E_fence_cg_cp_custom_fence_fence_nonzerors1:
   .word 0x0331000f    # fence with nonzero rs1 behaves normally
-  .word 0x0330008f    # fence with nonzero rd  behaves normally
+
+  LI(x1, 0x5A5A5A5A)
+E_fence_cg_cp_custom_fence_fence_nonzerord:
+  .word 0x0330008f    # fence with nonzero rd behaves normally
+  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x1, E_fence_cg_cp_custom_fence_fence_nonzerord, E_fence_cg_cp_custom_fence_fence_nonzerord_str)
+
+E_fence_cg_cp_custom_fence_fence_fm:
   .word 0x1330000f    # fence with reserved fm behaves as fence with fm = 0000
-  .word 0x8110000f    # fence.TSO with R,R rather than RW, RW behaves as fence
+
+E_fence_cg_cp_custom_fence_fence_tso_r_r:
+  .word 0x8110000f    # fence.TSO with R,R rather than RW behaves as fence
 
 # Testcase cp_custom_fence (hint fence encodings)
-E_fence_cg_cp_custom_fence_hint_fences:
+E_fence_cg_cp_custom_fence_fence_hint0a:
   .word 0x0031000f    # fence with rd = x0, rs1 != x0, fm = 0, pred = 0 is a hint
+
+E_fence_cg_cp_custom_fence_fence_hint0b:
   .word 0x0301000f    # fence with rd = x0, rs1 != x0, fm = 0, succ = 0 is a hint
+
+  LI(x1, 0x5A5A5A5A)
+E_fence_cg_cp_custom_fence_fence_hint1a:
   .word 0x0030008f    # fence with rd != x0, rs1 = x0, fm = 0, pred = 0 is a hint
+  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x1, E_fence_cg_cp_custom_fence_fence_hint1a, E_fence_cg_cp_custom_fence_fence_hint1a_str)
+
+  LI(x1, 0x5A5A5A5A)
+E_fence_cg_cp_custom_fence_fence_hint1b:
   .word 0x0300008f    # fence with rd != x0, rs1 = x0, fm = 0, succ = 0 is a hint
+  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x1, E_fence_cg_cp_custom_fence_fence_hint1b, E_fence_cg_cp_custom_fence_fence_hint1b_str)
+
+E_fence_cg_cp_custom_fence_fence_hint2:
   .word 0x0020000f    # fence with rd = x0, rs1 = x0, fm = 0, pred = 0, succ != 0 is a hint
+
+E_fence_cg_cp_custom_fence_fence_hint3:
   .word 0x0200000f    # fence with rd = x0, rs1 = x0, fm = 0, pred != W, succ = 0 is a hint
+
+
+  mv x2, x6 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -72,8 +101,16 @@ RVTEST_DATA_BEGIN
 E_fence_cg_cp_custom_fence_fence_str: .string "\"test: 1; cg: E_fence_cg; cp: cp_custom_fence; bin: fence\""
 E_fence_cg_cp_custom_fence_fence_rw_rw_str: .string "\"test: 2; cg: E_fence_cg; cp: cp_custom_fence; bin: fence_rw_rw\""
 E_fence_cg_cp_custom_fence_fence_tso_rw_rw_str: .string "\"test: 3; cg: E_fence_cg; cp: cp_custom_fence; bin: fence_tso_rw_rw\""
-E_fence_cg_cp_custom_fence_reserved_fences_str: .string "\"test: 4; cg: E_fence_cg; cp: cp_custom_fence; bin: reserved_fences\""
-E_fence_cg_cp_custom_fence_hint_fences_str: .string "\"test: 5; cg: E_fence_cg; cp: cp_custom_fence; bin: hint_fences\""
+E_fence_cg_cp_custom_fence_fence_nonzerors1_str: .string "\"test: 4; cg: E_fence_cg; cp: cp_custom_fence; bin: fence_nonzerors1\""
+E_fence_cg_cp_custom_fence_fence_nonzerord_str: .string "\"test: 5; cg: E_fence_cg; cp: cp_custom_fence; bin: fence_nonzerord\""
+E_fence_cg_cp_custom_fence_fence_fm_str: .string "\"test: 6; cg: E_fence_cg; cp: cp_custom_fence; bin: fence_fm\""
+E_fence_cg_cp_custom_fence_fence_tso_r_r_str: .string "\"test: 7; cg: E_fence_cg; cp: cp_custom_fence; bin: fence_tso_r_r\""
+E_fence_cg_cp_custom_fence_fence_hint0a_str: .string "\"test: 8; cg: E_fence_cg; cp: cp_custom_fence; bin: fence_hint0a\""
+E_fence_cg_cp_custom_fence_fence_hint0b_str: .string "\"test: 9; cg: E_fence_cg; cp: cp_custom_fence; bin: fence_hint0b\""
+E_fence_cg_cp_custom_fence_fence_hint1a_str: .string "\"test: 10; cg: E_fence_cg; cp: cp_custom_fence; bin: fence_hint1a\""
+E_fence_cg_cp_custom_fence_fence_hint1b_str: .string "\"test: 11; cg: E_fence_cg; cp: cp_custom_fence; bin: fence_hint1b\""
+E_fence_cg_cp_custom_fence_fence_hint2_str: .string "\"test: 12; cg: E_fence_cg; cp: cp_custom_fence; bin: fence_hint2\""
+E_fence_cg_cp_custom_fence_fence_hint3_str: .string "\"test: 13; cg: E_fence_cg; cp: cp_custom_fence; bin: fence_hint3\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

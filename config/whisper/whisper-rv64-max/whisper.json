@@ -46,6 +46,7 @@
   },
 
   "csr": {
+    "time": { "exists": "false" }, // Exercise M-mode emulation of time reads from S-mode and U-mode.
     "vstart": {
       "mask": "0xff",
       "poke_mask": "0xff"

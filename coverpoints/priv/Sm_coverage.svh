@@ -581,11 +581,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     cp_misa_dependencies :      cross priv_mode_m, csrrw, misa, misa_dependencies;
     cp_misa_clear_c :           cross priv_mode_m, csrc, misa_c_0, pc_1;
 
-    `ifdef UDB_TIME_CSR_IMPLEMENTED
-        cp_mtime_write :        cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
-        `ifdef UDB_MXLEN_32
-            cp_mtimeh_write :   cross priv_mode_m, csrr,  timeh_csr; // assumes mtimeh has been written
-        `endif
+    cp_mtime_write :            cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
+    `ifdef UDB_MXLEN_32
+        cp_mtimeh_write :       cross priv_mode_m, csrr,  timeh_csr; // assumes mtimeh has been written
     `endif
 
     `ifdef SM1P13P0_OR_LATER_SUPPORTED
@@ -719,8 +717,15 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             bins sip = {CSR_SIP};
             bins sie = {CSR_SIE};
         }
+        satp : coverpoint ins.current.insn[31:20] {
+            bins satp = {CSR_SATP};
+        }
+        mstatus_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
+        }
 
         cp_scsr_from_m :            cross priv_mode_m, scsrname, csraccesses;
+        cp_satp_from_m :            cross priv_mode_m, csrr, satp, mstatus_tvm;
+        cp_satp_from_s :            cross priv_mode_s, csrr, satp, mstatus_tvm;
         cp_shadow :                 cross priv_mode_m, shadow, csrw_prev, rs1_prev, csrr;
         // sip/sie alias mip/mie only for delegated interrupts
         cp_shadow_deleg :           cross priv_mode_m, shadow_int, csrw_prev, csrr, mideleg_s;

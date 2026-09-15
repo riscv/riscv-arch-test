@@ -61,7 +61,7 @@ normative_rule_definitions:
   # also provided: C.NTL.P1 is encoded as C.ADD x0, x2; C.NTL.PALL is encoded as
   # C.ADD x0, x3; C.NTL.S1 is encoded as C.ADD x0, x4; and C.NTL.ALL is encoded as
   # C.ADD x0, x5.
-  - name: C-NTL-availability
+  - name: C-NTL_availability
     coverpoint:
       [
         "{ZihintntlZca_c_ntl_p1_cg, ZihintntlZca_c_ntl_pall_cg, ZihintntlZca_c_ntl_s1_cg, ZihintntlZca_c_ntl_all_cg}/cp_asm_count",

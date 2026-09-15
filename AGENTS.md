@@ -54,6 +54,7 @@
 
 - Do not hand-edit `framework/src/act/fcov/coverage/RISCV_imported_decode_pkg.svh`; it is generated from `riscv-opcodes`.
 - Unprivileged tests do not install trap handlers and can infinite-loop on traps. Tests that may trap should use the privileged-test style.
+- Register allocation: `IntegerRegisterFile` reserves x2-x5 (sig/data/temp/link), and `generate/priv.py` consumes x0, x1, x7, x10-x12, and x16-x31 before any privileged generator runs. So in priv suites `get_registers()` never returns ra, a0-a2, or t2; the `RVTEST_*_INT_*` routines and `tsbi_call` may clobber ra/a0-a2 freely. Do not add `exclude_regs` for them.
 - In privileged generated assembly, avoid loops; emit repeated code with Python loops so testcase labels/debug strings stay unique.
 - When modifying Python generators, don't add a lot of stuff to docstrings.
 - When changing files, don't leave comments about what was changed or why. Just focus on what it does.
@@ -79,3 +80,4 @@
 - Triage failures in this order: config/UDB mismatch, Sail config mismatch, generated objdump/trace, then DUT behavior.
 - To measure one suite everywhere: `EXTENSIONS=<suite> DEBUG=True make -k sail spike whisper qemu imperas cvw`. `DEBUG=True` keeps a trace per test; `make -k` continues past a failing config. Each failing test's `.log` names the first diverging testcase on its `bin:` line.
 - Ghost outputs: nothing cleans `tests/priv/<suite>/` or `work/<config>/elfs/priv/<suite>/`, so a renamed or retired chunk keeps being built, run, and counted, and `run_tests.py`'s "N tests" includes it. When chunk names change, delete the stale files by name — not by mtime, since unchanged files keep their old timestamps.
+- Tests running on simulators (not RTL) normally finish in a few seconds. If they are taking a long time, inspect the simulation to make sure it is not hung.

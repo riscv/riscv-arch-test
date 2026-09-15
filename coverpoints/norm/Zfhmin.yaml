@@ -9,7 +9,7 @@ normative_rule_definitions:
     # never round
     coverpoint:
       [
-        "Zfhmin_fcvt_h_s_cg/{cp_fs1, cp_fd, cp_fs1_edges, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_NaNBox_S_H}",
+        "Zfhmin_fcvt_h_s_cg/{cp_fs1, cp_fd, cp_fs1_edges, cp_frm_2, cp_csr_fflags_voun, cp_csr_frm, cp_NaNBox_S_H}",
       ]
   - name: fcvt-s-h_op
     # FCVT.S.H or

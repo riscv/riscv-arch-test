@@ -348,8 +348,7 @@
 
     #ifdef RVTEST_VECTOR
         # We need to ensure that VS is set in mstatus here, as VS off is an exceptions test
-        LI (x6, 0x600)
-        csrs mstatus, x6
+        RVTEST_TSBI_CSR_SET(CSR_MSTATUS, 0x600)
         la x6, vecreg_scratch              # vecreg_scratch base address
         vs1r.v v0, (x6)
         addi x6, x6, VLEN_BYTES            # increment by one vector's bytes
@@ -2281,6 +2280,8 @@
         .ascii "\nRVCP-SUMMARY: TEST FAILED - Test File \""
         .ascii TEST_FILE
         .asciz "\"\n"
+    invisible_Minvalid_action_str:
+        .string "RVCP ERROR: Invalid invisible trap action code: "
     begin_debugstr:
         .string "\nRVCP: DEBUG INFORMATION FOLLOWS\n"
     abortstr:

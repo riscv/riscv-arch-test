@@ -14,8 +14,13 @@ r_config = InstructionTypeConfig(required_params={"rd", "rs1", "rs1val", "rs2", 
 r_rd_nx0_config = InstructionTypeConfig(
     required_params={"rd", "rs1", "rs1val", "rs2", "rs2val"}, excluded_regs={"rd": {0}}
 )
+# For instructions whose rs2 = x0 form is an assembler alias (pack/packw -> zext.h).
+r_rs2_nx0_config = InstructionTypeConfig(
+    required_params={"rd", "rs1", "rs1val", "rs2", "rs2val"}, excluded_regs={"rs2": {0}}
+)
 
 
+@add_instruction_formatter("R_RS2_NX0", r_rs2_nx0_config)
 @add_instruction_formatter("R_RD_NX0", r_rd_nx0_config)
 @add_instruction_formatter("R", r_config)
 def format_r_type(

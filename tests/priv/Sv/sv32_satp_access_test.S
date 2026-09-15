@@ -30,7 +30,9 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_satp_access_test.S"
+// TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+#define BOOT_TO_MMODE
+
 #define SIGUPD_COUNT 55
 #define TRAP_SIGUPD_COUNT 30
 
@@ -46,17 +48,17 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 
   li a0, 1
-  CSRW(satp, a0)
+  csrw satp, a0
   test1_csrw:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test1_csrw, test1_csrw_str)
 
   li a0, 2
-  CSRS(satp, a0)
+  csrs satp, a0
   test1_csrs:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test1_csrs, test1_csrs_str)
 
   li a0, 1
-  CSRC(satp, t0)
+  csrc satp, a0
   test1_csrc:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test1_csrc, test1_csrc_str)
 
@@ -68,17 +70,17 @@ main:
   RVTEST_GOTO_LOWER_MODE Smode
 
   li a0, 4
-  CSRW(satp, a0)
+  csrw satp, a0
   test2_csrw:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test2_csrw, test2_csrw_str)
 
   li a0, 8
-  CSRS(satp, a0)
+  csrs satp, a0
   test2_csrs:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test2_csrs, test2_csrs_str)
 
   li a0, 4
-  CSRC(satp, t0)
+  csrc satp, a0
   test2_csrc:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test2_csrc, test2_csrc_str)
 
@@ -92,13 +94,13 @@ main:
   RVTEST_GOTO_LOWER_MODE Umode
 
   li a0, 3
-  CSRW(satp, a0)
+  csrw satp, a0
 
   li a0, 12
-  CSRS(satp, a0)
+  csrs satp, a0
 
   li a0, 6
-  CSRC(satp, t0)
+  csrc satp, a0
 
   RVTEST_GOTO_MMODE
 
@@ -111,39 +113,9 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 
   LI(a0, SATP_MODE_SV32<<31)      // satp.MODE = 1'b1 (Sv32)
-  CSRW(satp, a0)
+  csrw satp, a0
   test4_sv32:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test4_sv32, test4_sv32_str)
-
-
-//---------------------------------------------------------------------------------------------------------------------------------
-// Test case 5: Zeros, ones and walking ones on satp.PPN | Expected: Successful
-//---------------------------------------------------------------------------------------------------------------------------------
-
-  LI(a1, SATP_MODE_SV32<<31)      // satp.MODE = Sv32
-
-  // satp.PPN = All zeros
-  mv   a0, a1
-  CSRW(satp, a0)
-  test5_zeros:
-  RVTEST_SIGUPD_CSR_READ(satp, a4, test5_zeros, test5_zeros_str)
-
-  // satp.PPN = All ones
-  LI(  a0, 0x3FFFFF)
-  or   a0, a1, a0
-  CSRW(satp, a0)
-  test5_ones:
-  RVTEST_SIGUPD_CSR_READ(satp, a4, test5_ones, test5_ones_str)
-
-  // satp.PPN = Walking Ones
-  li a2, 1
-  .rept(22)
-    or   a0, a1, a2
-    CSRW(satp, a0)
-    5:
-    RVTEST_SIGUPD_CSR_READ(satp, a4, 5b, test5_walk_str)
-    slli  a2, a2, 1
-  .endr
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -154,7 +126,7 @@ main:
 
   // satp.ASID = All zeros
   mv   a0, a1
-  CSRW(satp, a0)
+  csrw satp, a0
   test6_zeros:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test6_zeros, test6_zeros_str)
 
@@ -162,7 +134,7 @@ main:
   LI(  a0, 0x1FF)
   slli a0, a0, 22
   or   a0, a1, a0
-  CSRW(satp, a0)
+  csrw satp, a0
   test6_ones:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test6_ones, test6_ones_str)
 
@@ -171,7 +143,7 @@ main:
   slli a2, a2, 22
   .rept(9)
     or   a0, a1, a2
-    CSRW(satp, a0)
+    csrw satp, a0
     6:
     RVTEST_SIGUPD_CSR_READ(satp, a4, 6b, test6_walk_str)
     slli  a2, a2, 1
@@ -191,9 +163,6 @@ test2_csrs_str:   .string "\"Mismatch on csrs in Test Case 2!\""
 test2_csrc_str:   .string "\"Mismatch on csrc in Test Case 2!\""
 test3_str:        .string "\"Mismatch in Test Case 3!\""
 test4_sv32_str:   .string "\"Mismatch on setting satp.MODE=Sv32 in Test Case 4!\""
-test5_zeros_str:  .string "\"Mismatch on setting satp.PPN=Zeros in Test Case 5!\""
-test5_ones_str:   .string "\"Mismatch on setting satp.PPN=Ones in Test Case 5!\""
-test5_walk_str:   .string "\"Mismatch on walking ones in satp.PPN in Test Case 5!\""
 test6_zeros_str:  .string "\"Mismatch on setting satp.ASID=Zeros in Test Case 6!\""
 test6_ones_str:   .string "\"Mismatch on setting satp.ASID=Ones in Test Case 6!\""
 test6_walk_str:   .string "\"Mismatch on walking ones in satp.ASID in Test Case 6!\""

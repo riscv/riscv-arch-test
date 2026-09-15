@@ -1,0 +1,1649 @@
+# Normative rule to coverpoint mappings
+# Generated from the Sdtrig normative rules and SdtrigSm test plan
+
+normative_rule_definitions:
+  # If Sdtrig is implemented, the Trigger Module must support at least one trigger.
+  - name: Sdtrig_num_trigs_ge1
+    coverpoint:
+      [
+        "SdtrigSm_sdtrig_cg/cp_sdtrig_csr_access_common",
+        "SdtrigSm_csr_cg/cp_sdtrig_tselect_trigs",
+      ]
+
+  # Accessing trigger CSRs that are not used by any of the implemented triggers must
+  # result in an illegal instruction exception.
+  - name: Sdtrig_unimp_csr_illegal
+    coverpoint: ["Implementation-specific behavior; not tested in this suite"]
+
+  # M-Mode and Debug Mode accesses to trigger CSRs that are used by any of the
+  # implemented triggers must succeed, regardless of the current type of the
+  # currently selected trigger.
+  - name: Sdtrig_csr_mode
+    coverpoint: ["SdtrigSm_sdtrig_cg/cp_sdtrig_csr_access_common"]
+
+  # Triggers do not fire while in Debug Mode.
+  - name: Sdtrig_no_debug_fires
+    coverpoint: ["Requires Sdext external debug support; not implemented"]
+
+  # Triggers can be configured to take one of several actions when they fire. lists
+  # all options.
+  - name: Sdtrig_actions
+    coverpoint: ["Only action 0 (breakpoint) supported in this suite"]
+
+  # Raise a breakpoint exception. (Used when software wants to use the trigger
+  # module without an external debugger attached.) xepc must contain the virtual
+  # address of the next instruction that must be executed to preserve the program
+  # flow.
+  - name: Sdtrig_action0
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_priv_mode"]
+
+  # Enter Debug Mode. dpc must contain the virtual address of the next instruction
+  # that must be executed to preserve the program flow. This action is only legal
+  # when the trigger's dmode is 1. Since tdata1 is WARL, hardware must prevent it
+  # from containing dmode=0 and action=1. This action can only be supported if Sdext
+  # is implemented on the hart.
+  - name: Sdtrig_action1
+    coverpoint: ["Requires Sdext external debug support; not implemented"]
+
+  # Trace on, described in the trace specification.
+  - name: Sdtrig_action2
+    coverpoint: ["Trace action defined by the separate trace specification"]
+
+  # Trace off, described in the trace specification.
+  - name: Sdtrig_action3
+    coverpoint: ["Trace action defined by the separate trace specification"]
+
+  # Trace notify, described in the trace specification.
+  - name: Sdtrig_action4
+    coverpoint: ["Trace action defined by the separate trace specification"]
+
+  # Reserved for use by the trace specification.
+  - name: Sdtrig_action5_rsv
+    coverpoint: ["Trace action defined by the separate trace specification"]
+
+  # Send a signal to TM external trigger output 0 or 1 (respectively).
+  - name: Sdtrig_action8_9
+    coverpoint:
+      ["Requires tmexttrigger external trigger inputs; implementation specific"]
+
+  # Reserved for future use.
+  - name: Sdtrig_action_rsv
+    coverpoint: ["Reserved encoding for future use; nothing to test"]
+
+  # Priorities in the table are separated by horizontal lines, so e.g. etrigger and
+  # itrigger have the same priority. If this table contradicts the table in the
+  # Privileged Spec, then the latter takes precedence.
+  - name: Sdtrig_priority
+    coverpoint: ["Trigger priority not tested; triggers assumed imprecise"]
+
+  # This table only applies if triggers are precise. Otherwise triggers will fire
+  # some indeterminate time after the event, and the priority is irrelevant.
+  - name: Sdtrig_non_precise_priority
+    coverpoint: ["Trigger priority not tested; triggers assumed imprecise"]
+
+  # When triggers are chained, the priority is the lowest priority of the triggers
+  # in the chain.
+  - name: Sdtrig_chain_priority
+    coverpoint: ["Trigger priority not tested; triggers assumed imprecise"]
+
+  # When multiple triggers in the same priority fire at once, hit (if implemented)
+  # is set for all of them.
+  - name: Sdtrig_multiple_fires
+    coverpoint: ["Trigger priority not tested; triggers assumed imprecise"]
+
+  # If more than one of these triggers has action=0 then tval is updated in
+  # accordance with one of them, but which one is UNSPECIFIED.
+  - name: Sdtrig_tval
+    coverpoint: ["Trigger priority not tested; triggers assumed imprecise"]
+
+  # If one of these triggers has the "enter Debug Mode" action (1) and another
+  # trigger has the "raise a breakpoint exception" action (0), the preferred
+  # behavior is to have both actions take place. It is implementation-dependent
+  # which of the two happens first. This ensures both that the presence of an
+  # external debugger doesn't affect execution and that a trigger set by user code
+  # doesn't affect the external debugger.
+  - name: Sdtrig_debug_breakpoint
+    coverpoint: ["Trigger priority not tested; triggers assumed imprecise"]
+
+  # If this is not implemented, then the hart must enter Debug Mode and ignore the
+  # breakpoint exception.
+  - name: Sdtrig_simul_debug_breakpoint_fallback
+    coverpoint: ["Trigger priority not tested; triggers assumed imprecise"]
+
+  # In the latter case, hit of the trigger whose action is 0 must still be set,
+  # giving a debugger an opportunity to handle this case.
+  - name: Sdtrig_hit_set_on_action0
+    coverpoint: ["Trigger priority not tested; triggers assumed imprecise"]
+
+  # Since triggers that have an action other than 0 or 1 don't affect the execution
+  # of the hart, they are not mentioned in the priority table. Such triggers fire
+  # independently from those that have an action of 0 or 1.
+  - name: Sdtrig_independent_trigs
+    coverpoint: ["Trigger priority not tested; triggers assumed imprecise"]
+
+  # That breakpoint exception can either be taken in M-mode or it can be delegated
+  # to a less privileged mode. However, it is possible for triggers to fire in the
+  # same mode that the resulting exception will be handled in.
+  - name: Sdtrig_breakpoint_delegated
+    coverpoint: ["SdtrigSm_native_triggers_cg/cp_sdtrig_breakpoint_delegate"]
+
+  # lr instructions are loads.
+  - name: Sdtrig_Aext_lr_op
+    coverpoint:
+      ["SdtrigSm_a_cg/cp_sdtrig_lrsc_addr", "SdtrigSm_a_cg/cp_sdtrig_lrsc_data"]
+
+  # Successful sc instructions are stores.
+  - name: Sdtrig_Aext_sc_op
+    coverpoint:
+      ["SdtrigSm_a_cg/cp_sdtrig_lrsc_addr", "SdtrigSm_a_cg/cp_sdtrig_lrsc_data"]
+
+  # It is UNSPECIFIED whether failing sc instructions are stores or not.
+  - name: Sdtrig_Aext_sc_fail
+    coverpoint: ["Behavior is UNSPECIFIED by the specification; not tested"]
+
+  # Each AMO instruction is a load for the read portion of the operation.
+  - name: Sdtrig_AMO_read
+    coverpoint: ["SdtrigSm_a_cg/cp_sdtrig_amo"]
+
+  # The address is always available to trigger on
+  - name: Sdtrig_AMO_read_addr
+    coverpoint: ["SdtrigSm_a_cg/cp_sdtrig_amo"]
+
+  # Each AMO instruction is a store for the write portion of the operation.
+  - name: Sdtrig_AMO_store
+    coverpoint: ["SdtrigSm_a_cg/cp_sdtrig_amo"]
+
+  # The address is always available to trigger on.
+  - name: Sdtrig_AMO_store_addr
+    coverpoint: ["SdtrigSm_a_cg/cp_sdtrig_amo"]
+
+  # Whether data store triggers match on AMOs is UNSPECIFIED.
+  - name: Sdtrig_AMO_store_match
+    coverpoint: ["Behavior is UNSPECIFIED by the specification; not tested"]
+
+  # If the destination register of any load or AMO is zero then it is UNSPECIFIED
+  # whether a data load trigger will match.
+  - name: Sdtrig_load_zero_rd
+    coverpoint: ["Behavior is UNSPECIFIED by the specification; not tested"]
+
+  # Some instructions lead a hart to perform multiple memory accesses. This includes
+  # vector loads and stores, as well as cm.push and cm.pop instructions. The Trigger
+  # Module should match such accesses as if they all happened individually. E.g. a
+  # vector load should be treated as if it performed multiple loads of size SEW
+  # (selected element width), and cm.push should be treated as if it performed
+  # multiple stores of size XLEN.
+  - name: Sdtrig_mult_mem_access
+    coverpoint:
+      [
+        "SdtrigSm_combined_accesses_cg/cp_sdtrig_vector_load_store",
+        "SdtrigSm_combined_accesses_cg/cp_sdtrig_vector_accesses",
+        "SdtrigSm_combined_accesses_cg/cp_sdtrig_cm_pop_push",
+      ]
+
+  # For the purposes of debug triggers, two classes of cache operations must match
+  # as stores: Cache operations that enable software to maintain coherence between
+  # otherwise non-coherent implicit and explicit memory accesses. Cache operations
+  # that perform block writes of constant data.
+  - name: Sdtrig_caches_stores
+    coverpoint:
+      [
+        "SdtrigSm_cache_operations_cg/cp_sdtrig_cache_zicbom",
+        "SdtrigSm_cache_operations_cg/cp_sdtrig_cache_zicboz",
+      ]
+
+  # Only triggers with size=0 and select=0 will match. Since cache operations affect
+  # multiple addresses, there are multiple possible values to compare against.
+  # Implementations must implement one of the following options.
+  - name: Sdtrig_cache_compare
+    coverpoint:
+      [
+        "SdtrigSm_cache_operations_cg/cp_sdtrig_cache_zicbom",
+        "SdtrigSm_cache_operations_cg/cp_sdtrig_cache_zicboz",
+      ]
+
+  # . Every address from the effective address rounded down to the nearest cache
+  # block boundary (inclusive) to the effective address rounded up to the nearest
+  # cache block boundary (exclusive) is a compare value. . The effective address
+  # rounded down to the nearest cache block boundary is a compare value. . The
+  # effective address of the instruction is a compare value.
+  - name: Sdtrig_cache_compare_opts
+    coverpoint: ["Implementation may choose among several options; not tested"]
+
+  # Cache operations encoded as HINTs do not match debug triggers.
+  - name: Sdtrig_cache_hints
+    coverpoint: ["SdtrigSm_cache_operations_cg/cp_sdtrig_cache_zicbop"]
+
+  # cbo.clean, cbo.flush, and cbo.inval match as if they are stores because they
+  # affect consistency.
+  - name: Sdtrig_cache_clears
+    coverpoint: ["SdtrigSm_cache_operations_cg/cp_sdtrig_cache_zicbom"]
+
+  # cbo.zero matches as if it is a store because it performs a block write of
+  # constant data.
+  - name: Sdtrig_cbo_zero
+    coverpoint: ["SdtrigSm_cache_operations_cg/cp_sdtrig_cache_zicboz"]
+
+  # The prefetch instructions don't match at all.
+  - name: Sdtrig_prefetch
+    coverpoint: ["SdtrigSm_cache_operations_cg/cp_sdtrig_cache_zicbop"]
+
+  # For address matches without a mask, tdata2 must be able to hold all valid
+  # addresses in all supported translation modes. That means that after writing any
+  # of these valid addresses, the exact same value XLEN-wide value is read back,
+  # including any high bits. An implementation may be able to optimize the storage
+  # required, depending on the widest addresses it supports.
+  - name: Sdtrig_tdata2_addr_sz1
+    coverpoint: ["SdtrigSm_address_matches_cg/cp_sdtrig_tdata2_translate"]
+
+  # If physical addresses are less than XLEN bits wide, they are zero-extended.
+  - name: Sdtrig_pmem
+    coverpoint: ["SdtrigSm_address_matches_cg/cp_sdtrig_tdata2_translate"]
+
+  # If virtual addresses are less than XLEN bits wide, they are sign-extended.
+  - name: Sdtrig_vmem
+    coverpoint: ["SdtrigSm_address_matches_cg/cp_sdtrig_tdata2_translate"]
+
+  # tdata2 must be implemented with enough bits of storage to represent the full
+  # range of supported physical and virtual address values when read by software and
+  # used by hardware.
+  - name: Sdtrig_csr_tdata2_sz2
+    coverpoint: ["SdtrigSm_address_matches_cg/cp_sdtrig_tdata2_translate"]
+
+  # If tdata2 can hold any invalid addresses, then writes of an invalid address that
+  # can not be represented as-is should be converted to a different invalid address
+  # that can be represented.
+  - name: Sdtrig_csr_tdata2_invalid
+    coverpoint: ["WARL write-any-read-legal behavior not separately tested"]
+
+  # An instruction that performs multiple architectural state changes (e.g.,
+  # register updates and/or memory accesses) might cause a trigger to fire at an
+  # intermediate point in its execution. As a result, architectural state changes up
+  # to that point might have been performed, while subsequent state changes,
+  # starting from the event that activated the trigger, might not have been. The
+  # definition of such an instruction will specify the order in which architectural
+  # state changes take place. Alternatively, it may state that partial execution is
+  # not allowed, implying that a mid-execution trigger must prevent any
+  # architectural state changes from occurring.
+  - name: Sdtrig_multistate_change
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # All tdata registers follow write-any-read-legal semantics.
+  - name: Sdtrig_tdata_warl
+    coverpoint: ["WARL write-any-read-legal behavior not separately tested"]
+
+  # Writes to one tdata register must not modify the contents of other tdata
+  # registers, nor the configuration of any trigger besides the one that is
+  # currently selected.
+  - name: Sdtrig_tdata_write
+    coverpoint: ["SdtrigSm_csr_cg/cp_sdtrig_tdata_write"]
+
+  # To help with this situation, it is guaranteed that writing 0 to tdata1 disables
+  # the trigger, and leaves it in a state where tdata2 and tdata3 can be written
+  # with any value that makes sense for any trigger type supported by this trigger.
+  - name: Sdtrig_disable_trig
+    coverpoint: ["Unpredictable behavior on this access; not tested"]
+
+  # Attempts to access an unimplemented Trigger Module Register raise an illegal
+  # instruction exception.
+  - name: Sdtrig_unimplemented_register
+    coverpoint: ["Unpredictable behavior on this access; not tested"]
+
+  # The Trigger Module registers, except mscontext, scontext, and hcontext, are only
+  # accessible in machine and Debug Mode to prevent untrusted user code from causing
+  # entry into Debug Mode without the OS's permission.
+  - name: Sdtrig_trigger_modes
+    coverpoint: ["SdtrigSm_csr_cg/cp_sdtrig_csr_access"]
+
+  # On systems where XLEN values can differ between modes, this is handled as
+  # follows.
+  - name: Sdtrig_xlen_handling
+    coverpoint: ["XLEN-dependent behavior not tested; single XLEN assumed"]
+
+  # Fields retain their values regardless of XLEN, which only affects where in the
+  # register these fields appear
+  - name: Sdtrig_fields
+    coverpoint: ["XLEN-dependent behavior not tested; single XLEN assumed"]
+
+  # Some fields are wider when XLEN is 64 than when it is 32 (e.g. svalue). The high
+  # bits in such fields retain their value but are not readable when XLEN is 32.
+  - name: Sdtrig_fields_high
+    coverpoint: ["XLEN-dependent behavior not tested; single XLEN assumed"]
+
+  # A modification of a register when XLEN is 32 clears any inaccessible bits in
+  # that register.
+  - name: Sdtrig_xlen_modification
+    coverpoint: ["XLEN-dependent behavior not tested; single XLEN assumed"]
+
+  # This register determines which trigger is accessible through the other Trigger
+  # Module registers.
+  - name: Sdtrig_tselect
+    coverpoint: ["SdtrigSm_csr_cg/cp_sdtrig_tselect_trigs"]
+
+  # The set of accessible triggers must start at 0, and be contiguous.
+  - name: Sdtrig_tselect_access
+    coverpoint: ["SdtrigSm_csr_cg/cp_sdtrig_tselect_trigs"]
+
+  # This register is WARL.
+  - name: Sdtrig_tselect_warl
+    coverpoint: ["WARL write-any-read-legal behavior not separately tested"]
+
+  # This register provides access to the trigger selected by tselect.
+  - name: Sdtrig_tdata1
+    coverpoint: ["SdtrigSm_sdtrig_cg/cp_sdtrig_csr_access_common"]
+
+  # The reset values listed here apply to every underlying trigger.
+  - name: Sdtrig_tdata1_reset
+    coverpoint: ["Reset values not tested in this suite"]
+
+  # Writing 0 to this register must result in a trigger that is disabled.
+  - name: Sdtrig_tdata1_write0
+    coverpoint: ["WARL write-any-read-legal behavior not separately tested"]
+
+  # If this trigger supports multiple types, then the hardware should disable it by
+  # changing type to 15.
+  - name: Sdtrig_tdata1_multiple_types
+    coverpoint: ["WARL write-any-read-legal behavior not separately tested"]
+
+  # The trigger is an address/data match trigger. The remaining bits in this
+  # register act as described in mcontrol.
+  - name: Sdtrig_tdata1_type_mcontrol
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # The trigger is an instruction count trigger. The remaining bits in this register
+  # act as described in icount.
+  - name: Sdtrig_tdata1_type_icount
+    coverpoint:
+      [
+        "SdtrigSm_icount_cg/cp_sdtrig_icount_instr",
+        "SdtrigSm_icount_cg/cp_sdtrig_icount_trap",
+      ]
+
+  # The trigger is an interrupt trigger. The remaining bits in this register act as
+  # described in itrigger.
+  - name: Sdtrig_tdata1_type_itrigger
+    coverpoint: ["SdtrigSm_itrigger_cg/cp_sdtrig_itrigger"]
+
+  # The trigger is an exception trigger. The remaining bits in this register act as
+  # described in etrigger.
+  - name: Sdtrig_tdata1_type_etrigger
+    coverpoint: ["SdtrigSm_etrigger_cg/cp_sdtrig_etrigger"]
+
+  # The trigger is an address/data match trigger. The remaining bits in this
+  # register act as described in mcontrol6.
+  - name: Sdtrig_tdata1_type_mcontrol6
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_priv_mode"]
+
+  # The trigger is a trigger source external to the TM. The remaining bits in this
+  # register act as described in tmexttrigger.
+  - name: Sdtrig_tdata1_type_tmexttrigger
+    coverpoint:
+      ["Tmexttrigger relies on implementation-specific external inputs"]
+
+  # This trigger is disabled.
+  - name: Sdtrig_tdata1_type_disabled
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # In this state, tdata2 and tdata3 can be written with any value that is supported
+  # for any of the types this trigger implements.
+  - name: Sdtrig_tdata1_disabled_write
+    coverpoint: ["WARL write-any-read-legal behavior not separately tested"]
+
+  # Other values are reserved for future use.
+  - name: Sdtrig_tdata1_type_rsv
+    coverpoint: ["Reserved encoding for future use; nothing to test"]
+
+  # If type is 0, then this bit is hard-wired to 0.
+  - name: Sdtrig_tdata1_dmode_type_0
+    coverpoint: ["SdtrigSm_csr_cg/cp_sdtrig_tdata1_mode_hardwired"]
+
+  # Both Debug and M-mode can write the tdata registers at the selected tselect.
+  - name: Sdtrig_tdata1_dmode_0
+    coverpoint: ["Requires Sdext external debug support; not implemented"]
+
+  # Only Debug Mode can write the tdata registers at the selected tselect. Writes
+  # from other modes are ignored.
+  - name: Sdtrig_tdata1_dmode_1
+    coverpoint: ["Requires Sdext external debug support; not implemented"]
+
+  # This bit is only writable from Debug Mode.
+  - name: Sdtrig_tdata1_dmode_writable
+    coverpoint: ["Requires Sdext external debug support; not implemented"]
+
+  # If type is 0, then this field is hard-wired to 0.
+  - name: Sdtrig_tdata1_data
+    coverpoint: ["SdtrigSm_csr_cg/cp_sdtrig_tdata1_mode_hardwired"]
+
+  # This register provides access to the trigger selected by tselect.
+  - name: Sdtrig_tdata2
+    coverpoint: ["SdtrigSm_sdtrig_cg/cp_sdtrig_csr_access_common"]
+
+  # The reset values listed here apply to every underlying trigger.
+  - name: Sdtrig_tdata2_reset
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # If the trigger is disabled, then this register can be written with any value
+  # supported by any of the trigger types supported by this trigger.
+  - name: Sdtrig_tdata2_disabled
+    coverpoint: ["WARL write-any-read-legal behavior not separately tested"]
+
+  # If XLEN is less than DXLEN, writes to this register are sign-extended.
+  - name: Sdtrig_tdata2_sign_extend
+    coverpoint: ["XLEN-dependent behavior not tested; single XLEN assumed"]
+
+  # This register provides access to the trigger selected by tselect.
+  - name: Sdtrig_tdata3
+    coverpoint: ["SdtrigSm_sdtrig_cg/cp_sdtrig_csr_access_common"]
+
+  # The reset values listed here apply to every underlying trigger.
+  - name: Sdtrig_tdata3_reset
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # If the trigger is disabled, then this register can be written with any value
+  # supported by any of the trigger types supported by this trigger.
+  - name: Sdtrig_tdata3_disabled
+    coverpoint: ["WARL write-any-read-legal behavior not separately tested"]
+
+  # If XLEN is less than DXLEN, writes to this register are sign-extended.
+  - name: Sdtrig_tdata3_sign_extend
+    coverpoint: ["XLEN-dependent behavior not tested; single XLEN assumed"]
+
+  # This register provides access to the trigger selected by tselect.
+  - name: Sdtrig_tinfo
+    coverpoint: ["SdtrigSm_sdtrig_cg/cp_sdtrig_csr_access_common"]
+
+  # The reset values listed here apply to every underlying trigger.
+  - name: Sdtrig_tinfo_reset
+    coverpoint: ["Reset values not tested in this suite"]
+
+  # This register is optional if no triggers are implemented, or if type is not
+  # writable and version would be 0. In this case the debugger can read the only
+  # supported type from tdata1.
+  - name: Sdtrig_tinfo_optional
+    coverpoint: ["Only ratified version 1.0 supported; version assumed"]
+
+  # Contains the version of the Sdtrig extension implemented.
+  - name: Sdtrig_tinfo_version
+    coverpoint: ["Only ratified version 1.0 supported; version assumed"]
+
+  # Supports triggers as described in this spec at commit 5a5c078, made on February
+  # 2, 2023.
+  - name: Sdtrig_tinfo_version_0
+    coverpoint: ["Only ratified version 1.0 supported; version assumed"]
+
+  # Supports triggers as described in the ratified version 1.0 of this document.
+  - name: Sdtrig_tinfo_version_1
+    coverpoint: ["Only ratified version 1.0 supported; version assumed"]
+
+  # One bit for each possible type enumerated in tdata1. Bit N corresponds to type
+  # N. If the bit is set, then that type is supported by the currently selected
+  # trigger.
+  - name: Sdtrig_tinfo_support
+    coverpoint: ["SdtrigSm_csr_cg/cp_sdtrig_tinfo_read_only"]
+
+  # If the currently selected trigger doesn't exist, this field contains 1.
+  - name: Sdtrig_tinfo_no_trigger
+    coverpoint: ["WARL tselect; nonexistent-trigger reporting not tested"]
+
+  # This optional register is only accessible in M-mode and Debug Mode and provides
+  # various control bits related to triggers.
+  - name: Sdtrig_trigger_modes_1
+    coverpoint: ["SdtrigSm_sdtrig_cg/cp_sdtrig_csr_access_common"]
+
+  # When any trap into M-mode is taken, mpte is set to the value of mte.
+  - name: Sdtrig_tcontrol_mpte
+    coverpoint: ["SdtrigSm_csr_cg/cp_sdtrig_tcontrol_mtrap"]
+
+  # Triggers with action=0 do not match/fire while the hart is in M-mode.
+  - name: Sdtrig_tcontrol_mte_disabled
+    coverpoint: ["SdtrigSm_csr_cg/cp_sdtrig_tcontrol_enable"]
+
+  # Triggers do match/fire while the hart is in M-mode.
+  - name: Sdtrig_tcontrol_mte_enabled
+    coverpoint: ["SdtrigSm_csr_cg/cp_sdtrig_tcontrol_enable"]
+
+  # When any trap into M-mode is taken, mte is set to 0.
+  - name: Sdtrig_tcontrol_mte
+    coverpoint: ["SdtrigSm_csr_cg/cp_sdtrig_tcontrol_mtrap"]
+
+  # When mret is executed, mte is set to the value of mpte.
+  - name: Sdtrig_tcontrol_mte_mret
+    coverpoint: ["SdtrigSm_csr_cg/cp_sdtrig_tcontrol_mret"]
+
+  # This optional register may be implemented only if the H extension is
+  # implemented. If it is implemented, mcontext must also be implemented.
+  - name: Sdtrig_hcontext_implemented
+    coverpoint: ["Hypervisor extension not implemented, so not testable"]
+
+  # This register is only accessible in HS-Mode, M-mode and Debug Mode.
+  - name: Sdtrig_hcontext_access
+    coverpoint: ["Hypervisor extension not implemented, so not testable"]
+
+  # If Smstateen is implemented, then accessibility of in HS-Mode is controlled by
+  # mstateenzero[57].
+  - name: Sdtrig_hcontext_smstateen
+    coverpoint: ["Hypervisor extension not implemented, so not testable"]
+
+  # This register is an alias of the mcontext register, providing access to the
+  # hcontext field from HS-Mode.
+  - name: Sdtrig_hcontext
+    coverpoint: ["Hypervisor extension not implemented, so not testable"]
+
+  # This optional register is only accessible in S/HS-mode, VS-mode, M-mode and
+  # Debug Mode.
+  - name: Sdtrig_scontext_access
+    coverpoint: ["SdtrigSm_csr_cg/cp_sdtrig_csr_access"]
+
+  # Accessibility of this CSR is controlled by mstateenzero[57] and hstateenzero[57]
+  # in the Smstateen extension.
+  - name: Sdtrig_scontext_accessibility
+    coverpoint: ["State-enable accessibility tested in the Smstateen suite"]
+
+  # Supervisor mode software can write a context number to this register, which can
+  # be used to set triggers that only fire in that specific context.
+  - name: Sdtrig_scontext_data
+    coverpoint: ["SdtrigSm_sdtrig_cg/cp_sdtrig_csr_access_common"]
+
+  # This register must be implemented if hcontext is implemented, and is optional
+  # otherwise.
+  - name: Sdtrig_mcontext_implementation
+    coverpoint: ["Hypervisor extension not implemented, so not testable"]
+
+  # It is only accessible in M-mode and Debug mode.
+  - name: Sdtrig_mcontext_access
+    coverpoint: ["SdtrigSm_csr_cg/cp_sdtrig_mcontext_smode"]
+
+  # M-Mode or HS-Mode (using hcontext) software can write a context number to this
+  # register, which can be used to set triggers that only fire in that specific
+  # context.
+  - name: Sdtrig_mcontext_hcontext_data
+    coverpoint: ["SdtrigSm_sdtrig_cg/cp_sdtrig_csr_access_common"]
+
+  # This optional register is an alias for scontext.
+  - name: Sdtrig_mscontext
+    coverpoint: ["Optional register, not required by Sdtrig 1.0; not tested"]
+
+  # It is only accessible in S/HS-mode, M-mode and Debug Mode.
+  - name: Sdtrig_mscontext_access
+    coverpoint: ["Optional register, not required by Sdtrig 1.0; not tested"]
+
+  # This register provides access to the trigger selected by tselect.
+  - name: Sdtrig_mcontrol
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # The reset values listed here apply to every underlying trigger.
+  - name: Sdtrig_mcontrol_reset
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # This register is accessible as tdata1 when type is 2.
+  - name: Sdtrig_mcontrol_access
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # Specifies the largest naturally aligned powers-of-two (NAPOT) range supported by
+  # the hardware when match is 1. The value is the logarithm base 2 of the number of
+  # bytes in that range. A value of 0 indicates match 1 is not supported. A value of
+  # 63 corresponds to the maximum NAPOT range, which is 2^63^ bytes in size.
+  - name: Sdtrig_mcontrol_maskmax
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # This field only exists when XLEN is at least 64. It contains the 2 high bits of
+  # the access size. The low bits come from sizelo.
+  - name: Sdtrig_mcontrol_sizehi
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # If this bit is implemented then it must become set when this trigger fires and
+  # may become set when this trigger matches. The trigger's user can set or clear it
+  # at any time. It is used to determine which trigger(s) matched. If the bit is not
+  # implemented, it is always 0 and writing it has no effect.
+  - name: Sdtrig_mcontrol_hit
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # There is at least one compare value and it contains the lowest virtual address
+  # of the access.
+  - name: Sdtrig_mcontrol_select_address
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # There is exactly one compare value and it contains the data value loaded or
+  # stored, or the instruction executed. Any bits beyond the size of the data access
+  # will contain 0.
+  - name: Sdtrig_mcontrol_select_data
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # The action for this trigger will be taken just before the instruction that
+  # triggered it is retired, but after all preceding instructions are retired. xepc
+  # or dpc (depending on action) must be set to the virtual address of the
+  # instruction that matched.
+  - name: Sdtrig_mcontrol_timing_before
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # If an instruction matches this trigger and the instruction performs multiple
+  # memory accesses, it is UNSPECIFIED which memory accesses have completed before
+  # the trigger fires.
+  - name: Sdtrig_mcontrol_timing_multi
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # The action for this trigger will be taken after the instruction that triggered
+  # it is retired. It should be taken before the next instruction is retired, but it
+  # is better to implement triggers imprecisely than to not implement them at all.
+  # xepc or dpc (depending on action) must be set to the virtual address of the next
+  # instruction that must be executed to preserve the program flow.
+  - name: Sdtrig_mcontrol_timing_after
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # If a trigger with timing of 0 matches, it is implementation-dependent whether
+  # that prevents a trigger with timing of 1 matching as well.
+  - name: Sdtrig_mcontrol_timing_overlap
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # The trigger will attempt to match against an access of any size. The behavior is
+  # only well-defined if select=0, or if the access size is XLEN.
+  - name: Sdtrig_mcontrol_size_any
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # The trigger will only match against 8-bit memory accesses.
+  - name: Sdtrig_mcontrol_size_8bit
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # The trigger will only match against 16-bit memory accesses or execution of
+  # 16-bit instructions.
+  - name: Sdtrig_mcontrol_size_16bit
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # The trigger will only match against 32-bit memory accesses or execution of
+  # 32-bit instructions.
+  - name: Sdtrig_mcontrol_size_32bit
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # The trigger will only match against execution of 48-bit instructions.
+  - name: Sdtrig_mcontrol_size_48bit
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # The trigger will only match against 64-bit memory accesses or execution of
+  # 64-bit instructions.
+  - name: Sdtrig_mcontrol_size_64bit
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # The trigger will only match against execution of 80-bit instructions.
+  - name: Sdtrig_mcontrol_size_80bit
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # The trigger will only match against execution of 96-bit instructions.
+  - name: Sdtrig_mcontrol_size_96bit
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # The trigger will only match against execution of 112-bit instructions.
+  - name: Sdtrig_mcontrol_size_112bit
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # The trigger will only match against 128-bit memory accesses or execution of
+  # 128-bit instructions.
+  - name: Sdtrig_mcontrol_size_128bit
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # An implementation must support the value of 0, but all other values are
+  # optional.
+  - name: Sdtrig_mcontrol_size_support
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # When this trigger matches, the configured action is taken.
+  - name: Sdtrig_mcontrol_chain_disabled
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # While this trigger does not match, it prevents the trigger with the next index
+  # from matching.
+  - name: Sdtrig_mcontrol_chain_enabled
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # A trigger chain starts on the first trigger with chain=1 after a trigger with
+  # chain=0, or simply on the first trigger if that has chain=1. It ends on the
+  # first trigger after that which has chain=0. This final trigger is part of the
+  # chain. The action on all but the final trigger is ignored. The action on that
+  # final trigger will be taken if and only if all the triggers in the chain match
+  # at the same time.
+  - name: Sdtrig_mcontrol_chain_start
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # Because chain affects the next trigger, hardware must zero it in writes to
+  # mcontrol that set dmode to 0 if the next trigger has dmode of 1.
+  - name: Sdtrig_mcontrol_chain_next
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # In addition hardware should ignore writes to mcontrol that set dmode to 1 if the
+  # previous trigger has both dmode of 0 and chain of 1.
+  - name: Sdtrig_mcontrol_chain_ignore
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # Matches when any compare value equals tdata2.
+  - name: Sdtrig_mcontrol_match_equal
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # Matches when the top M bits of any compare value match the top M bits of tdata2.
+  # M is XLEN-1 minus the index of the least-significant bit containing 0 in tdata2.
+  - name: Sdtrig_mcontrol_match_napot
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # Matches when any compare value is greater than (unsigned) or equal to tdata2.
+  - name: Sdtrig_mcontrol_match_ge
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # Matches when any compare value is less than (unsigned) tdata2.
+  - name: Sdtrig_mcontrol_match_lt
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # Matches when latexmath:[$\fracXLEN2-{1:0}] of any compare value equals
+  # latexmath:[$\fracXLEN2-{1:0}] of tdata2 after latexmath:[$\fracXLEN2-{1:0}] of
+  # the compare value is ANDed with XLEN-1:\fracXLEN2 of tdata2.
+  - name: Sdtrig_mcontrol_match_mask_low
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # Matches when XLEN-1:\fracXLEN2 of any compare value equals
+  # latexmath:[$\fracXLEN2-{1:0}] of tdata2 after XLEN-1:\fracXLEN2 of the compare
+  # value is ANDed with XLEN-1:\fracXLEN2 of tdata2.
+  - name: Sdtrig_mcontrol_match_mask_high
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # Matches when match=0 would not match.
+  - name: Sdtrig_mcontrol_match_not_equal
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # Matches when match=1 would not match.
+  - name: Sdtrig_mcontrol_match_not_napot
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # Matches when match=4 would not match.
+  - name: Sdtrig_mcontrol_match_not_mask_low
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # Matches when match=5 would not match.
+  - name: Sdtrig_mcontrol_match_not_mask_high
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # Other values are reserved for future use.
+  - name: Sdtrig_mcontrol_match_rsv
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # All comparisons only look at the lower XLEN (in the current mode) bits of the
+  # compare values and of tdata2. When select=1 and access size is N, this is
+  # further reduced, and comparisons only look at the lower N bits of the compare
+  # values and of tdata2.
+  - name: Sdtrig_mcontrol_comparisons
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # When set, enable this trigger in M-mode.
+  - name: Sdtrig_mcontrol_m
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # When set, enable this trigger in S/HS-mode. This bit is hard-wired to 0 if the
+  # hart does not support S-mode.
+  - name: Sdtrig_mcontrol_s
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # When set, enable this trigger in U-mode. This bit is hard-wired to 0 if the hart
+  # does not support U-mode.
+  - name: Sdtrig_mcontrol_u
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # When set, the trigger fires on the virtual address or opcode of an instruction
+  # that is executed.
+  - name: Sdtrig_mcontrol_execute
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # When set, the trigger fires on the virtual address or data of any store.
+  - name: Sdtrig_mcontrol_store
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # When set, the trigger fires on the virtual address or data of any load.
+  - name: Sdtrig_mcontrol_load
+    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+
+  # This register provides access to the trigger selected by tselect.
+  - name: Sdtrig_mcontrol6
+    coverpoint: ["SdtrigSm_sdtrig_cg/cp_sdtrig_csr_access_common"]
+
+  # The reset values listed here apply to every underlying trigger.
+  - name: Sdtrig_mcontrol6_reset
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # This register is accessible as tdata1 when type is 6.
+  - name: Sdtrig_mcontrol6_access
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_priv_mode"]
+
+  # Implementing this trigger as described here requires that version is 1 or
+  # higher, which in turn means tinfo must be implemented.
+  - name: Sdtrig_mcontrol6_dependence
+    coverpoint: ["Only ratified version 1.0 supported; version assumed"]
+
+  # A chain of triggers must only fire if every trigger in the chain was matched by
+  # the same instruction.
+  - name: Sdtrig_mcontrol6_chain
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_chain_adr"]
+
+  # The Privileged Spec says that breakpoint exceptions that occur on instruction
+  # fetches, loads, or stores update the tval CSR with either zero or the faulting
+  # virtual address.
+  - name: Sdtrig_mcontrol6_breakpoint
+    coverpoint: ["Covered by Privileged-spec breakpoint and tval testing"]
+
+  # The faulting virtual address for an mcontrol6 trigger with action=0 is the
+  # address being accessed and which caused that trigger to fire.
+  - name: Sdtrig_mcontrol6_faulting_address
+    coverpoint: ["Covered by Privileged-spec breakpoint and tval testing"]
+
+  # If multiple mcontrol6 triggers are chained then the faulting virtual address is
+  # the address which caused any of the chained triggers to fire.
+  - name: Sdtrig_mcontrol6_chained_faulting
+    coverpoint: ["Covered by Privileged-spec breakpoint and tval testing"]
+
+  # All NAPOT ranges between stem:[2^1] and stem:[2^maskmax6] are supported where
+  # stem:[maskmax6 >= 1].
+  - name: Sdtrig_mcontrol6_napot_range
+    coverpoint: ["NAPOT range support is optional; not required here"]
+
+  # If textra32 or textra64 are implemented for this trigger, it only matches when
+  # the conditions set there are satisfied.
+  - name: Sdtrig_mcontrol6_textra
+    coverpoint:
+      [
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_mcontext",
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_scontext",
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_asid",
+      ]
+
+  # If implemented, the TM updates this field every time the trigger fires.
+  - name: Sdtrig_mcontrol6_uncertain
+    coverpoint: ["Optional WARL field (hit/uncertain bits); not tested"]
+
+  # The trigger that fired satisfied the configured conditions, or this bit is not
+  # implemented.
+  - name: Sdtrig_mcontrol6_uncertain_0
+    coverpoint: ["Optional WARL field (hit/uncertain bits); not tested"]
+
+  # The trigger that fired might not have perfectly satisfied the configured
+  # conditions.
+  - name: Sdtrig_mcontrol6_uncertain_1
+    coverpoint: ["Optional WARL field (hit/uncertain bits); not tested"]
+
+  # When set, enable this trigger in VS-mode. This bit is hard-wired to 0 if the
+  # hart does not support virtualization mode.
+  - name: Sdtrig_mcontrol6_vs
+    coverpoint: ["Hypervisor extension not implemented, so not testable"]
+
+  # When set, enable this trigger in VU-mode. This bit is hard-wired to 0 if the
+  # hart does not support virtualization mode.
+  - name: Sdtrig_mcontrol6_vu
+    coverpoint: ["Hypervisor extension not implemented, so not testable"]
+
+  # If they are implemented, hit1 (MSB) and hit0 (LSB) combine into a single 2-bit
+  # field. The TM updates this field when the trigger fires.
+  - name: Sdtrig_mcontrol6_hit0
+    coverpoint: ["Optional WARL field (hit/uncertain bits); not tested"]
+
+  # If either of the bits is not implemented, the unimplemented bits will be
+  # read-only 0.
+  - name: Sdtrig_mcontrol6_hit0_unimplemented
+    coverpoint: ["Optional WARL field (hit/uncertain bits); not tested"]
+
+  # xepc or dpc (depending on action) must be set to the virtual address of the
+  # instruction that matched.
+  - name: Sdtrig_mcontrol6_hit0_1
+    coverpoint: ["Optional WARL field (hit/uncertain bits); not tested"]
+
+  # xepc or dpc (depending on action) must be set to the virtual address of the next
+  # instruction that must be executed to preserve the program flow.
+  - name: Sdtrig_mcontrol6_hit0_2
+    coverpoint: ["Optional WARL field (hit/uncertain bits); not tested"]
+
+  # xepc or dpc (depending on action) must be set to the virtual address of the next
+  # instruction that must be executed to preserve the program flow.
+  - name: Sdtrig_mcontrol6_hit0_3
+    coverpoint: ["Optional WARL field (hit/uncertain bits); not tested"]
+
+  # If the instruction performed multiple memory accesses, all of them have been
+  # completed.
+  - name: Sdtrig_mcontrol6_hit0_multiple_accesses
+    coverpoint: ["Optional WARL field (hit/uncertain bits); not tested"]
+
+  # There is at least one compare value and it contains the lowest virtual address
+  # of the access.
+  - name: Sdtrig_mcontrol6_select_address
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_execute_adr",
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_load_store_adr",
+      ]
+
+  # There is exactly one compare value and it contains the data value loaded or
+  # stored, or the instruction executed. Any bits beyond the size of the data access
+  # will contain 0.
+  - name: Sdtrig_mcontrol6_select_data
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_execute_data",
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_load_store_data",
+      ]
+
+  # The trigger will attempt to match against an access of any size. The behavior is
+  # only well-defined if select=0, or if the access size is XLEN.
+  - name: Sdtrig_mcontrol6_size_any
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_execute_size",
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_load_store_size",
+      ]
+
+  # The trigger will only match against 8-bit memory accesses.
+  - name: Sdtrig_mcontrol6_size_8bit
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_load_store_size",
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_execute_size",
+      ]
+
+  # The trigger will only match against 16-bit memory accesses or execution of
+  # 16-bit instructions.
+  - name: Sdtrig_mcontrol6_size_16bit
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_execute_size",
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_load_store_size",
+      ]
+
+  # The trigger will only match against 32-bit memory accesses or execution of
+  # 32-bit instructions.
+  - name: Sdtrig_mcontrol6_size_32bit
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_execute_size",
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_load_store_size",
+      ]
+
+  # The trigger will only match against execution of 48-bit instructions.
+  - name: Sdtrig_mcontrol6_size_48bit
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_execute_size"]
+
+  # The trigger will only match against 64-bit memory accesses or execution of
+  # 64-bit instructions.
+  - name: Sdtrig_mcontrol6_size_64bit
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_execute_size",
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_load_store_size",
+      ]
+
+  # The trigger will only match against 128-bit memory accesses or execution of
+  # 128-bit instructions.
+  - name: Sdtrig_mcontrol6_size_128bit
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_execute_size",
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_load_store_size",
+      ]
+
+  # An implementation must support the value of 0, but all other values are
+  # optional.
+  - name: Sdtrig_mcontrol6_size_support
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_load_store_size"]
+
+  # When this trigger matches, the configured action is taken.
+  - name: Sdtrig_mcontrol6_chain_disabled
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_chain_adr"]
+
+  # While this trigger does not match, it prevents the trigger with the next index
+  # from matching.
+  - name: Sdtrig_mcontrol6_chain_enabled
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_chain_adr"]
+
+  # A trigger chain starts on the first trigger with chain=1 after a trigger with
+  # chain=0, or simply on the first trigger if that has chain=1. It ends on the
+  # first trigger after that which has chain=0. This final trigger is part of the
+  # chain. The action on all but the final trigger is ignored. The action on that
+  # final trigger will be taken if and only if all the triggers in the chain match
+  # at the same time.
+  - name: Sdtrig_mcontrol6_chain_start
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_chain_adr"]
+
+  # Because chain affects the next trigger, hardware must zero it in writes to
+  # mcontrol6 that set dmode to 0 if the next trigger has dmode of 1.
+  - name: Sdtrig_mcontrol6_chain_next
+    coverpoint: ["Requires Debug Mode writes; needs Sdext support"]
+
+  # In addition hardware should ignore writes to mcontrol6 that set dmode to 1 if
+  # the previous trigger has both dmode of 0 and chain of 1.
+  - name: Sdtrig_mcontrol6_chain_ignore
+    coverpoint: ["Requires Debug Mode writes; needs Sdext support"]
+
+  # Matches when any compare value equals tdata2.
+  - name: Sdtrig_mcontrol6_match_equal
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_match"]
+
+  # Matches when the top M bits of any compare value match the top M bits of tdata2.
+  # M is XLEN-1 minus the index of the least-significant bit containing 0 in tdata2.
+  - name: Sdtrig_mcontrol6_match_napot
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_match_napot"]
+
+  # if bits maskmax6-1:0 are written with all ones then bit maskmax6-1 will be set
+  # to 0 while the values of bits maskmax6-2:0 are UNSPECIFIED.
+  - name: Sdtrig_mcontrol6_match_napot_mask
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_match_napot"]
+
+  # Legal values for tdata2 require M maskmax6 >= XLEN and M > 0. See above for how
+  # to determine maskmax6.
+  - name: Sdtrig_mcontrol6_match_napot_legal
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_match_napot"]
+
+  # Matches when any compare value is greater than (unsigned) or equal to tdata2.
+  - name: Sdtrig_mcontrol6_match_ge
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_match"]
+
+  # Matches when any compare value is less than (unsigned) tdata2.
+  - name: Sdtrig_mcontrol6_match_lt
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_match"]
+
+  # Matches when latexmath:[$\fracXLEN2-{1:0}] of any compare value equals
+  # latexmath:[$\fracXLEN2-{1:0}] of tdata2 after latexmath:[$\fracXLEN2-{1:0}] of
+  # the compare value is ANDed with XLEN-1:\fracXLEN2 of tdata2.
+  - name: Sdtrig_mcontrol6_match_mask_low
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_match_mask"]
+
+  # Matches when XLEN-1:\fracXLEN2 of any compare value equals
+  # latexmath:[$\fracXLEN2-{1:0}] of tdata2 after XLEN-1:\fracXLEN2 of the compare
+  # value is ANDed with XLEN-1:\fracXLEN2 of tdata2.
+  - name: Sdtrig_mcontrol6_match_mask_high
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_match_mask"]
+
+  # Matches when match =0 would not match.
+  - name: Sdtrig_mcontrol6_match_not_equal
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_match"]
+
+  # Matches when match =1 would not match.
+  - name: Sdtrig_mcontrol6_match_not_napot
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_match_napot"]
+
+  # Matches when match =4 would not match.
+  - name: Sdtrig_mcontrol6_match_not_mask_low
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_match_mask"]
+
+  # Matches when match =5 would not match.
+  - name: Sdtrig_mcontrol6_match_not_mask_high
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_match_mask"]
+
+  # Other values are reserved for future use.
+  - name: Sdtrig_mcontrol6_match_rsv
+    coverpoint: ["Reserved encoding for future use; nothing to test"]
+
+  # All comparisons only look at the lower XLEN (in the current mode) bits of the
+  # compare values and of tdata2. When select=1 and access size is N, this is
+  # further reduced, and comparisons only look at the lower N bits of the compare
+  # values and of tdata2.
+  - name: Sdtrig_mcontrol6_comparisons
+    coverpoint: ["XLEN-dependent behavior not tested; single XLEN assumed"]
+
+  # When set, enable this trigger in M-mode.
+  - name: Sdtrig_mcontrol6_m
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_priv_mode"]
+
+  # This trigger will only match if the hardware can perfectly evaluate it.
+  - name: Sdtrig_mcontrol6_uncertainen_disabled
+    coverpoint: ["Optional WARL field (hit/uncertain bits); not tested"]
+
+  # This trigger will match if it's possible that it would match if the Trigger
+  # Module had perfect information about the operations being performed.
+  - name: Sdtrig_mcontrol6_uncertainen_enabled
+    coverpoint: ["Optional WARL field (hit/uncertain bits); not tested"]
+
+  # When set, enable this trigger in S/HS-mode. This bit is hard-wired to 0 if the
+  # hart does not support S-mode.
+  - name: Sdtrig_mcontrol6_s
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_priv_mode"]
+
+  # When set, enable this trigger in U-mode. This bit is hard-wired to 0 if the hart
+  # does not support U-mode.
+  - name: Sdtrig_mcontrol6_u
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_priv_mode"]
+
+  # When set, the trigger fires on the virtual address or opcode of an instruction
+  # that is executed.
+  - name: Sdtrig_mcontrol6_execute
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_execute_adr",
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_execute_data",
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_load_store_adr",
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_load_store_data",
+      ]
+
+  # When set, the trigger fires on the virtual address or data of any store.
+  - name: Sdtrig_mcontrol6_store
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_load_store_adr",
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_load_store_data",
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_execute_adr",
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_execute_data",
+      ]
+
+  # When set, the trigger fires on the virtual address or data of any load.
+  - name: Sdtrig_mcontrol6_load
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_load_store_adr",
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_load_store_data",
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_execute_adr",
+        "SdtrigSm_mcontrol6_cg/cp_sdtrig_mcontrol6_execute_data",
+      ]
+
+  # This register provides access to the trigger selected by tselect.
+  - name: Sdtrig_icount
+    coverpoint: ["SdtrigSm_sdtrig_cg/cp_sdtrig_csr_access_common"]
+
+  # The reset values listed here apply to every underlying trigger.
+  - name: Sdtrig_icount_reset
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # This register is accessible as tdata1 when type is 3.
+  - name: Sdtrig_icount_access
+    coverpoint: ["SdtrigSm_icount_cg/cp_sdtrig_icount_instr"]
+
+  # An instruction retires after having been fetched in a privilege mode where the
+  # trigger is enabled. This explicitly includes all RET instructions from various
+  # modes.
+  - name: Sdtrig_icount_match1
+    coverpoint: ["SdtrigSm_icount_cg/cp_sdtrig_icount_instr"]
+
+  # A trap is taken from a privilege mode where the trigger is enabled. This
+  # explicitly includes traps taken due to interrupts.
+  - name: Sdtrig_icount_match2
+    coverpoint: ["SdtrigSm_icount_cg/cp_sdtrig_icount_trap"]
+
+  # If more than one of the above events occur during a single instruction
+  # execution, the trigger still only matches once for that instruction.
+  - name: Sdtrig_icount_multiple_match
+    coverpoint: ["SdtrigSm_icount_cg/cp_sdtrig_icount_trap"]
+
+  # For use in single step, icount must match for traps where the instruction will
+  # not be reexecuted after the handler, such as illegal instructions that are
+  # emulated by privileged software and the instruction being emulated never
+  # retires.
+  - name: Sdtrig_icount_match_non_reexecuted
+    coverpoint: ["SdtrigSm_icount_cg/cp_sdtrig_icount_trap"]
+
+  # the rule is simply that all traps match.
+  - name: Sdtrig_icount_all_traps_match
+    coverpoint: ["SdtrigSm_icount_cg/cp_sdtrig_icount_trap"]
+
+  # When count is greater than 1 and the trigger matches, then count is decremented
+  # by 1.
+  - name: Sdtrig_icount_match_gt1
+    coverpoint: ["SdtrigSm_icount_cg/cp_sdtrig_icount_instr"]
+
+  # When count is 1 and the trigger matches, then pending becomes set. In addition
+  # count will become 0 unless it is hard-wired to 1.
+  - name: Sdtrig_icount_match_eq1
+    coverpoint: ["SdtrigSm_icount_cg/cp_sdtrig_icount_hardwired"]
+
+  # The only exception to the above is when the instruction the trigger matched on
+  # is a write to the icount trigger. In that case pending might or might not become
+  # set if count was 1. Afterwards count contains the newly written value.
+  - name: Sdtrig_icount_exception
+    coverpoint: ["WARL write-any-read-legal behavior not separately tested"]
+
+  # When count is 0 it stays at 0 until explicitly written.
+  - name: Sdtrig_icount_count_zero
+    coverpoint: ["SdtrigSm_icount_cg/cp_sdtrig_icount_eq0"]
+
+  # When pending is set, the trigger fires just before any further instructions are
+  # executed in a mode where the trigger is enabled. As the trigger fires, pending
+  # is cleared. In addition, if count is hard-wired to 1 then m, s, u, vs, and vu
+  # are all cleared.
+  - name: Sdtrig_icount_pending
+    coverpoint: ["SdtrigSm_icount_cg/cp_sdtrig_icount_instr"]
+
+  # If the trigger fires with action=0 then zero is written to the tval CSR on the
+  # breakpoint trap.
+  - name: Sdtrig_icount_action0
+    coverpoint: ["SdtrigSm_icount_cg/cp_sdtrig_icount_instr"]
+
+  # The intent of pending is to cleanly handle the case where action is 0, m is 0, u
+  # is 1, count is 1, and the U-mode instruction being executed causes a trap into
+  # M-mode. In that case we want the entire M-mode handler to be executed, and the
+  # debug trap to be taken before the next U-mode instruction.
+  - name: Sdtrig_icount_case
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # If textra32 or textra64 are implemented for this trigger, it only matches when
+  # the conditions set there are satisfied.
+  - name: Sdtrig_icount_textra
+    coverpoint:
+      [
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_mcontext",
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_scontext",
+      ]
+
+  # When set, enable this trigger in VS-mode. This bit is hard-wired to 0 if the
+  # hart does not support virtualization mode.
+  - name: Sdtrig_icount_vs
+    coverpoint: ["Hypervisor extension not implemented, so not testable"]
+
+  # When set, enable this trigger in VU-mode. This bit is hard-wired to 0 if the
+  # hart does not support virtualization mode.
+  - name: Sdtrig_icount_vu
+    coverpoint: ["Hypervisor extension not implemented, so not testable"]
+
+  # If this bit is implemented, the hardware sets it when this trigger fires. The
+  # trigger's user can set or clear it at any time. It is used to determine which
+  # trigger(s) fires. If the bit is not implemented, it is always 0 and writing it
+  # has no effect.
+  - name: Sdtrig_icount_hit
+    coverpoint: ["Optional WARL field (hit/uncertain bits); not tested"]
+
+  # When set, enable this trigger in M-mode.
+  - name: Sdtrig_icount_m
+    coverpoint: ["SdtrigSm_icount_cg/cp_sdtrig_icount_instr"]
+
+  # This bit becomes set when count is decremented from 1 to 0. It is cleared when
+  # the trigger fires, which will happen just before executing the next instruction
+  # in one of the enabled modes.
+  - name: Sdtrig_icount_pending_set
+    coverpoint: ["SdtrigSm_icount_cg/cp_sdtrig_icount_instr"]
+
+  # When set, enable this trigger in S/HS-mode. This bit is hard-wired to 0 if the
+  # hart does not support S-mode.
+  - name: Sdtrig_icount_s
+    coverpoint: ["SdtrigSm_icount_cg/cp_sdtrig_icount_instr"]
+
+  # When set, enable this trigger in U-mode. This bit is hard-wired to 0 if the hart
+  # does not support U-mode.
+  - name: Sdtrig_icount_u
+    coverpoint: ["SdtrigSm_icount_cg/cp_sdtrig_icount_instr"]
+
+  # This register provides access to the trigger selected by tselect.
+  - name: Sdtrig_itrigger
+    coverpoint: ["SdtrigSm_sdtrig_cg/cp_sdtrig_csr_access_common"]
+
+  # The reset values listed here apply to every underlying trigger.
+  - name: Sdtrig_itrigger_reset
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # This register is accessible as tdata1 when type is 4.
+  - name: Sdtrig_itrigger_access
+    coverpoint: ["SdtrigSm_itrigger_cg/cp_sdtrig_itrigger"]
+
+  # This trigger can fire when an interrupt trap is taken.
+  - name: Sdtrig_itrigger_fire
+    coverpoint: ["SdtrigSm_itrigger_cg/cp_sdtrig_itrigger"]
+
+  # It can be enabled for individual interrupt numbers by setting the bit
+  # corresponding to the interrupt number in tdata2. The interrupt number is
+  # interpreted in the mode that the trap handler executes in.
+  - name: Sdtrig_itrigger_enable_num
+    coverpoint: ["SdtrigSm_itrigger_cg/cp_sdtrig_itrigger"]
+
+  # In addition the trigger can be enabled for non-maskable interrupts using nmi.
+  - name: Sdtrig_itrigger_enable_nmi
+    coverpoint: ["Non-maskable interrupts not defined by the specifications"]
+
+  # If XLEN is 32, then it is not possible to set a trigger for interrupts with
+  # Exception Code larger than 31.
+  - name: Sdtrig_itrigger_xlen32
+    coverpoint: ["XLEN-dependent behavior not tested; single XLEN assumed"]
+
+  # When the trigger matches, it fires after the trap occurs, just before the first
+  # instruction of the trap handler is executed.
+  - name: Sdtrig_itrigger_timing
+    coverpoint: ["SdtrigSm_itrigger_cg/cp_sdtrig_itrigger"]
+
+  # If action=0, the standard CSRs are updated for taking the breakpoint trap, and
+  # zero is written to the relevant tval CSR.
+  - name: Sdtrig_itrigger_action0
+    coverpoint: ["SdtrigSm_itrigger_cg/cp_sdtrig_itrigger"]
+
+  # If textra32 or textra64 are implemented for this trigger, it only matches when
+  # the conditions set there are satisfied.
+  - name: Sdtrig_itrigger_textra
+    coverpoint:
+      [
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_mcontext",
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_scontext",
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_asid",
+      ]
+
+  # If this bit is implemented, the hardware sets it when this trigger matches. The
+  # trigger's user can set or clear it at any time. It is used to determine which
+  # trigger(s) matched. If the bit is not implemented, it is always 0 and writing it
+  # has no effect.
+  - name: Sdtrig_itrigger_hit
+    coverpoint: ["Optional WARL field (hit/uncertain bits); not tested"]
+
+  # When set, enable this trigger for interrupts that are taken from VS mode. This
+  # bit is hard-wired to 0 if the hart does not support virtualization mode.
+  - name: Sdtrig_itrigger_vs
+    coverpoint: ["Hypervisor extension not implemented, so not testable"]
+
+  # When set, enable this trigger for interrupts that are taken from VU mode. This
+  # bit is hard-wired to 0 if the hart does not support virtualization mode.
+  - name: Sdtrig_itrigger_vu
+    coverpoint: ["Hypervisor extension not implemented, so not testable"]
+
+  # When set, non-maskable interrupts cause this trigger to fire if the trigger is
+  # enabled for the current mode.
+  - name: Sdtrig_itrigger_nmi
+    coverpoint: ["Non-maskable interrupts not defined by the specifications"]
+
+  # When set, enable this trigger for interrupts that are taken from M mode.
+  - name: Sdtrig_itrigger_m
+    coverpoint: ["SdtrigSm_itrigger_cg/cp_sdtrig_itrigger"]
+
+  # When set, enable this trigger for interrupts that are taken from S/HS mode. This
+  # bit is hard-wired to 0 if the hart does not support S-mode.
+  - name: Sdtrig_itrigger_s
+    coverpoint: ["SdtrigSm_itrigger_cg/cp_sdtrig_itrigger"]
+
+  # When set, enable this trigger for interrupts that are taken from U mode. This
+  # bit is hard-wired to 0 if the hart does not support U-mode.
+  - name: Sdtrig_itrigger_u
+    coverpoint: ["SdtrigSm_itrigger_cg/cp_sdtrig_itrigger"]
+
+  # This register provides access to the trigger selected by tselect.
+  - name: Sdtrig_etrigger
+    coverpoint: ["SdtrigSm_sdtrig_cg/cp_sdtrig_csr_access_common"]
+
+  # The reset values listed here apply to every underlying trigger.
+  - name: Sdtrig_etrigger_reset
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # This register is accessible as tdata1 when type is 5.
+  - name: Sdtrig_etrigger_access
+    coverpoint: ["SdtrigSm_etrigger_cg/cp_sdtrig_etrigger"]
+
+  # This trigger may fire on up to XLEN of the Exception Codes defined in mcause
+  # (described in the Privileged Spec, with Interrupt=0).
+  - name: Sdtrig_etrigger_fire
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # Those causes are configured by writing the corresponding bit in tdata2.
+  - name: Sdtrig_etrigger_config
+    coverpoint: ["SdtrigSm_etrigger_cg/cp_sdtrig_etrigger"]
+
+  # If XLEN is 32, then it is not possible to set a trigger on Exception Codes
+  # higher than 31.
+  - name: Sdtrig_etrigger_xlen32
+    coverpoint: ["XLEN-dependent behavior not tested; single XLEN assumed"]
+
+  # When the trigger matches, it fires after the trap occurs, just before the first
+  # instruction of the trap handler is executed.
+  - name: Sdtrig_etrigger_timing
+    coverpoint: ["SdtrigSm_etrigger_cg/cp_sdtrig_etrigger"]
+
+  # If action=0, the standard CSRs are updated for taking the breakpoint trap, and
+  # zero is written to the relevant tval CSR.
+  - name: Sdtrig_etrigger_action0
+    coverpoint: ["SdtrigSm_etrigger_cg/cp_sdtrig_etrigger"]
+
+  # If textra32 or textra64 are implemented for this trigger, it only matches when
+  # the conditions set there are satisfied.
+  - name: Sdtrig_etrigger_textra
+    coverpoint:
+      [
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_mcontext",
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_scontext",
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_asid",
+      ]
+
+  # If this bit is implemented, the hardware sets it when this trigger matches. The
+  # trigger's user can set or clear it at any time. It is used to determine which
+  # trigger(s) matched. If the bit is not implemented, it is always 0 and writing it
+  # has no effect.
+  - name: Sdtrig_etrigger_hit
+    coverpoint: ["Optional WARL field (hit/uncertain bits); not tested"]
+
+  # When set, enable this trigger for exceptions that are taken from VS mode. This
+  # bit is hard-wired to 0 if the hart does not support virtualization mode.
+  - name: Sdtrig_etrigger_vs
+    coverpoint: ["Hypervisor extension not implemented, so not testable"]
+
+  # When set, enable this trigger for exceptions that are taken from VU mode. This
+  # bit is hard-wired to 0 if the hart does not support virtualization mode.
+  - name: Sdtrig_etrigger_vu
+    coverpoint: ["Hypervisor extension not implemented, so not testable"]
+
+  # When set, enable this trigger for exceptions that are taken from M mode.
+  - name: Sdtrig_etrigger_m
+    coverpoint: ["SdtrigSm_etrigger_cg/cp_sdtrig_etrigger"]
+
+  # When set, enable this trigger for exceptions that are taken from S/HS mode. This
+  # bit is hard-wired to 0 if the hart does not support S-mode.
+  - name: Sdtrig_etrigger_s
+    coverpoint: ["SdtrigSm_etrigger_cg/cp_sdtrig_etrigger"]
+
+  # When set, enable this trigger for exceptions that are taken from U mode. This
+  # bit is hard-wired to 0 if the hart does not support U-mode.
+  - name: Sdtrig_etrigger_u
+    coverpoint: ["SdtrigSm_etrigger_cg/cp_sdtrig_etrigger"]
+
+  # This register provides access to the trigger selected by tselect.
+  - name: Sdtrig_tmexttrigger
+    coverpoint:
+      ["External trigger inputs are implementation-specific and unspecified"]
+
+  # The reset values listed here apply to every underlying trigger.
+  - name: Sdtrig_tmexttrigger_reset
+    coverpoint:
+      ["External trigger inputs are implementation-specific and unspecified"]
+
+  # This register is accessible as tdata1 when type is 7.
+  - name: Sdtrig_tmexttrigger_access
+    coverpoint:
+      ["External trigger inputs are implementation-specific and unspecified"]
+
+  # This trigger fires when any selected TM external trigger input signals.
+  - name: Sdtrig_tmexttrigger_fire
+    coverpoint:
+      ["External trigger inputs are implementation-specific and unspecified"]
+
+  # Up to 16 TM external trigger inputs coming from other blocks outside the TM,
+  # (e.g. signaling an hpmcounter overflow) can be selected.
+  - name: Sdtrig_tmexttrigger_inputs
+    coverpoint:
+      ["External trigger inputs are implementation-specific and unspecified"]
+
+  # Hardware may support none or just a few TM external trigger inputs (starting
+  # with TM external trigger input 0 and continuing sequentially).
+  - name: Sdtrig_tmexttrigger_subset
+    coverpoint:
+      ["External trigger inputs are implementation-specific and unspecified"]
+
+  # Unsupported inputs are hardwired to be inactive.
+  - name: Sdtrig_tmexttrigger_unsupported
+    coverpoint:
+      ["External trigger inputs are implementation-specific and unspecified"]
+
+  # If the trigger fires with action=0 then zero is written to the tval CSR on the
+  # breakpoint trap.
+  - name: Sdtrig_tmexttrigger_action0
+    coverpoint:
+      ["External trigger inputs are implementation-specific and unspecified"]
+
+  # This trigger fires asynchronously but it is subject to delegation by medeleg[3]
+  # like the other triggers.
+  - name: Sdtrig_tmexttrigger_async
+    coverpoint:
+      ["External trigger inputs are implementation-specific and unspecified"]
+
+  # The TM external trigger input can signal when the trigger is prevented from
+  # firing due to one of the mechanisms in xref:nativetrigger[].
+  - name: Sdtrig_tmexttrigger_prevented
+    coverpoint:
+      ["External trigger inputs are implementation-specific and unspecified"]
+
+  # An implementation may either ignore the signal altogether when it cannot fire
+  # (dropping the trigger event) or it may hold the action as pending and fire the
+  # trigger once it is legal to do so.
+  - name: Sdtrig_tmexttrigger_pending
+    coverpoint:
+      ["External trigger inputs are implementation-specific and unspecified"]
+
+  # If this bit is implemented, the hardware sets it when this trigger matches. The
+  # trigger's user can set or clear it at any time. It is used to determine which
+  # trigger(s) matched. If the bit is not implemented, it is always 0 and writing it
+  # has no effect.
+  - name: Sdtrig_tmexttrigger_hit
+    coverpoint:
+      ["External trigger inputs are implementation-specific and unspecified"]
+
+  # This optional bit, when set, causes this trigger to fire whenever an attached
+  # interrupt controller signals a trigger.
+  - name: Sdtrig_tmexttrigger_intctl
+    coverpoint:
+      ["External trigger inputs are implementation-specific and unspecified"]
+
+  # Selects any combination of up to 16 TM external trigger inputs that cause this
+  # trigger to fire.
+  - name: Sdtrig_tmexttrigger_select
+    coverpoint:
+      ["External trigger inputs are implementation-specific and unspecified"]
+
+  # This register provides access to the trigger selected by tselect.
+  - name: Sdtrig_textra32
+    coverpoint: ["SdtrigSm_sdtrig_cg/cp_sdtrig_csr_access_common"]
+
+  # The reset values listed here apply to every underlying trigger.
+  - name: Sdtrig_textra32_reset
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # This register is accessible as tdata3 when type is 2, 3, 4, 5, or 6 and XLEN=32.
+  - name: Sdtrig_textra32_access
+    coverpoint:
+      [
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_mcontext",
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_scontext",
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_asid",
+      ]
+
+  # If DXLEN >= 64, then this register provides access to the low bits of each field
+  # defined in textra64. Writes to this register will clear the high bits of the
+  # corresponding fields in textra64.
+  - name: Sdtrig_textra32_dxlen64
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # Byte-granular comparison of scontext to svalue allows scontext to be defined to
+  # include more than one element of comparison.
+  - name: Sdtrig_textra32_byte_granular
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # Byte masking only applies to scontext comparison; i.e when sselect is 1.
+  - name: Sdtrig_textra32_byte_mask_applies
+    coverpoint: ["SdtrigSm_textra_cg/cp_sdtrig_textra_scontext"]
+
+  # Note that sselect and mhselect filtering apply in all modes, including M-mode
+  # and S-mode.
+  - name: Sdtrig_textra32_filter_modes
+    coverpoint:
+      [
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_mcontext_smode",
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_scontext_smode",
+      ]
+
+  # Ignore mhvalue.
+  - name: Sdtrig_textra32_mhselect_ignore
+    coverpoint: ["SdtrigSm_textra_cg/cp_sdtrig_textra_mcontext"]
+
+  # This trigger will only match or fire if the low bits of mcontext/hcontext equal
+  # mhvalue.
+  - name: Sdtrig_textra32_mhselect_mcontext
+    coverpoint:
+      [
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_mcontext",
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_double_context",
+      ]
+
+  # 1, 5 (mcontext_select): This trigger will only match or fire if the low bits of
+  # mcontext/hcontext equal {mhvalue, mhselect[2]}.
+  - name: Sdtrig_textra32_mhselect_mctx_sel
+    coverpoint: ["Hypervisor extension not implemented, so not testable"]
+
+  # 2, 6 (vmid_select): This trigger will only match or fire if VMID in hgatp equals
+  # the lower VMIDMAX (defined in the Privileged Spec) bits of {mhvalue,
+  # mhselect[2]}.
+  - name: Sdtrig_textra32_mhselect_vmid_sel
+    coverpoint: ["Hypervisor extension not implemented, so not testable"]
+
+  # 3, 7 (reserved): Reserved.
+  - name: Sdtrig_textra32_mhselect_rsv
+    coverpoint: ["Reserved encoding for future use; nothing to test"]
+
+  # If the H extension is not supported, the only legal values are 0 and 4.
+  - name: Sdtrig_textra32_mhselect_no_h
+    coverpoint: ["SdtrigSm_textra_cg/cp_sdtrig_textra_mcontext"]
+
+  # When the least significant bit of this field is 1, it causes bits 7:0 in the
+  # comparison to be ignored, when sselect=1. When the next most significant bit of
+  # this field is 1, it causes bits 15:8 to be ignored in the comparison, when
+  # sselect=1.
+  - name: Sdtrig_textra32_sbytemask
+    coverpoint: ["SdtrigSm_textra_cg/cp_sdtrig_textra_mcontext"]
+
+  # This field should be tied to 0 when S-mode is not supported.
+  - name: Sdtrig_textra32_svalue_no_s
+    coverpoint: ["SdtrigSm_textra_cg/cp_sdtrig_smode_fields_hardwired"]
+
+  # Ignore svalue.
+  - name: Sdtrig_textra32_sselect_ignore
+    coverpoint: ["SdtrigSm_textra_cg/cp_sdtrig_textra_scontext"]
+
+  # This trigger will only match or fire if the low bits of scontext equal svalue.
+  - name: Sdtrig_textra32_sselect_scontext
+    coverpoint:
+      [
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_scontext",
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_double_context",
+      ]
+
+  # This trigger will only match or fire if: the mode is VS-mode or VU-mode and ASID
+  # in vsatp equals the lower ASIDMAX (defined in the Privileged Spec) bits of
+  # svalue. in all other modes, ASID in satp equals the lower ASIDMAX (defined in
+  # the Privileged Spec) bits of svalue.
+  - name: Sdtrig_textra32_sselect_asid
+    coverpoint: ["SdtrigSm_textra_cg/cp_sdtrig_textra_asid"]
+
+  # This field should be tied to 0 when S-mode is not supported.
+  - name: Sdtrig_textra32_sselect_no_s
+    coverpoint: ["SdtrigSm_textra_cg/cp_sdtrig_smode_fields_hardwired"]
+
+  # This register provides access to the trigger selected by tselect.
+  - name: Sdtrig_textra64
+    coverpoint: ["SdtrigSm_sdtrig_cg/cp_sdtrig_csr_access_common"]
+
+  # The reset values listed here apply to every underlying trigger.
+  - name: Sdtrig_textra64_reset
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # This register is accessible as tdata3 when type is 2, 3, 4, 5, or 6 and XLEN=64.
+  - name: Sdtrig_textra64_access
+    coverpoint:
+      [
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_mcontext",
+        "SdtrigSm_textra_cg/cp_sdtrig_textra_scontext",
+      ]
+
+  # This register retains its value when XLEN changes.
+  - name: Sdtrig_textra64_retain
+    coverpoint: ["XLEN-dependent behavior not tested; single XLEN assumed"]
+
+  # When XLEN=32 some of the bits can be accessed through textra32.
+  - name: Sdtrig_textra64_xlen32
+    coverpoint: ["XLEN-dependent behavior not tested; single XLEN assumed"]
+
+  # Byte-granular comparison of scontext to svalue in textra64 allows scontext to be
+  # defined to include more than one element of comparison.
+  - name: Sdtrig_textra64_byte_granular
+    coverpoint: ["SdtrigSm_textra_cg/cp_sdtrig_textra_scontext"]
+
+  # Byte masking only applies to scontext comparison; i.e when sselect is 1.
+  - name: Sdtrig_textra64_byte_mask_applies
+    coverpoint: ["SdtrigSm_textra_cg/cp_sdtrig_textra_scontext"]
+
+  # When the least significant bit of this field is 1, it causes bits 7:0 in the
+  # comparison to be ignored, when sselect=1. Likewise, the second bit controls the
+  # comparison of bits 15:8, third bit controls the comparison of bits 23:16, and
+  # fourth bit controls the comparison of bits 31:24.
+  - name: Sdtrig_textra64_sbytemask
+    coverpoint: ["SdtrigSm_textra_cg/cp_sdtrig_textra_scontext"]

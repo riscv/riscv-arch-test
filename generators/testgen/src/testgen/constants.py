@@ -31,7 +31,7 @@ def indent_asm(line: str) -> str:
 # Max testcases per test file before splitting into multiple files. Individual test
 # chunks won't be split, so if one test chunk exceeds this, the file will exceed this limit.
 TESTCASES_PER_FILE = 1000
-TESTCASES_PER_PRIV_FILE = 6000
+TESTCASES_PER_PRIV_FILE = 512
 
 # =============================================================================
 # Extension Configuration
@@ -110,15 +110,6 @@ def get_flen_for_extension(extension: str) -> int:
 # (they are already covered by other tests)
 SKIP_COVERPOINTS = frozenset(
     {
-        # Hazard coverpoints - covered implicitly by register usage patterns
-        "cp_gpr_hazard_rw",
-        "cp_gpr_hazard_w",
-        "cp_gpr_hazard_r",
-        # Sign coverpoints - already covered by edge tests
-        "cp_rd_sign",
-        # Equal value comparisons - already covered by cr_rs1_rs2_edges
-        "cmp_rd_rs1_eqval",
-        "cmp_rd_rs2_eqval",
         # FP flags - covered by edge tests
         "cp_csr_fflags_n",
         "cp_csr_fflags_on",
@@ -129,7 +120,6 @@ SKIP_COVERPOINTS = frozenset(
         "cp_csr_fflags_vn",
         "cp_csr_fflags_von",
         "cp_csr_fflags_voun",
-        "cp_csr_fflags_vun",
         # FP classification - covered elsewhere
         "cp_fclass",
     }

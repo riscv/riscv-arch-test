@@ -13,14 +13,12 @@
 import csv
 import re
 
-from testgen.asm.helpers import return_test_regs
 from testgen.constants import COVERFLOAT_GENERATION_DIR
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
-from testgen.formatters import format_single_testcase
-from testgen.formatters.params import generate_random_params
-from testgen.formatters.registry import get_instr_type_config
+from testgen.formatters import format_single_testcase, get_instruction_type_config
+from testgen.instructions.params import generate_random_params
 
 # IBM testcase data files live alongside this generator inside the testgen package.
 IBM_DATA_DIR = COVERFLOAT_GENERATION_DIR / "processed"
@@ -55,7 +53,7 @@ def make_cp_ibm(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
     common_name = instr_name[: instr_name.find(".")]
     rounding_op = frozenset({"frm"}) if common_name not in NO_ROUNDING_MODE_OPS else frozenset({})
 
-    required_params = get_instr_type_config(instr_type).required_params or set()
+    required_params = get_instruction_type_config(instr_type).required_params or set()
     required_cols = CSV_VALUE_KEYS & required_params | rounding_op
 
     data_file = IBM_DATA_DIR / instr_name / f"{group.upper()}.csv"
@@ -111,6 +109,6 @@ def make_cp_ibm(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
             bin_name = f"{lineno}"
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
             test_chunks.append(tc)
-            return_test_regs(test_data, params)
+            return_testcase_registers(test_data, params)
 
     return test_chunks

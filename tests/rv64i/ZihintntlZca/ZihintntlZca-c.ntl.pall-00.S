@@ -15,8 +15,7 @@
 # MARCH: rv64ic_zicsr_zifencei_zihintntl_zca
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "ZihintntlZca-c.ntl.pall-00.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 10
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.

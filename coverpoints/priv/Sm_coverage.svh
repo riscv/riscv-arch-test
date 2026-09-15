@@ -82,18 +82,28 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
         // exclude reserved and custom fields
         //bins b_0_reserved = {0};
         bins b_1_supervisor_software = {1};
-        bins b_2_vs_software = {2};
+        `ifdef H_SUPPORTED
+            bins b_2_vs_software = {2};
+        `endif
         bins b_3_machine_software = {3};
         //bins b_4_reserved = {4};
         bins b_5_supervisor_timer = {5};
-        bins b_6_vs_timer = {6};
+        `ifdef H_SUPPORTED
+            bins b_6_vs_timer = {6};
+        `endif
         bins b_7_machine_timer = {7};
         //bins b_8_reserved = {8};
         bins b_9_supervisor_external = {9};
-        bins b_10_vs_external = {10};
+        `ifdef H_SUPPORTED
+            bins b_10_vs_external = {10};
+        `endif
         bins b_11_machine_external = {11};
-        bins b_12_supervisor_guest_external = {12};
-        bins b_13_counter_overflow = {13};
+        `ifdef H_SUPPORTED
+            bins b_12_supervisor_guest_external = {12};
+        `endif
+        `ifdef SSCOFPMF_SUPPORTED
+            bins b_13_counter_overflow = {13};
+        `endif
         //bins b_14_reserved = {14};
         //bins b_15_reserved = {15};
     }
@@ -149,6 +159,12 @@ covergroup Sm_mprivinst_cg with function sample(ins_t ins);
     }
     old_mstatus_mpp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
         bins M_mode = {2'b11};
+        `ifdef S_SUPPORTED
+            bins S_mode = {2'b01};
+        `endif
+        `ifdef U_SUPPORTED
+            bins U_mode = {2'b00};
+        `endif
     }
     old_mstatus_spp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spp")[0] {
     }
@@ -164,6 +180,17 @@ covergroup Sm_mprivinst_cg with function sample(ins_t ins);
     cp_mprivinst: cross priv_mode_m, privinstrs;
     cp_mret:      cross priv_mode_m, mret, old_mstatus_mpp, old_mstatus_mprv, old_mstatus_mpie, old_mstatus_mie;
     cp_sret:      cross priv_mode_m, sret, old_mstatus_mprv, old_mstatus_spp, old_mstatus_spie, old_mstatus_sie, old_mstatus_tsr;
+
+    `ifdef S_SUPPORTED
+        // this version needs to be in Sm because it exercises TSR, which would cause a trap loop if illegal instructions are delegated to S-mode
+        old_sstatus_spp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0] {
+        }
+        old_sstatus_spie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spie")[0] {
+        }
+        old_sstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sie")[0] {
+        }
+        cp_sret_s:    cross priv_mode_s, sret, old_sstatus_spp, old_sstatus_spie, old_sstatus_sie, old_mstatus_tsr;
+    `endif
 endgroup
 
 covergroup Sm_mcsr_cg with function sample(ins_t ins);
@@ -186,6 +213,34 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val ==  0); // csrr
     }
 
+     csraccesses_masked : coverpoint ins.current.insn {
+        wildcard bins csrrc_all = {CSRRC} iff (ins.current.rs1_val != 0); // csrc mask
+        wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val == 0); // csrw all zeros
+        wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val != 0); // csrw mask
+        wildcard bins csrrs_all = {CSRRS} iff (ins.current.rs1_val != 0); // csrs mask
+        wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val == 0); // csrr
+    }
+
+    // CSRs whose access tests use masked writes (see csraccesses_masked above)
+    mcsrname_masked : coverpoint ins.current.insn[31:20] {
+        bins mstatus = {CSR_MSTATUS};
+        `ifdef SM1P12P0_OR_LATER_SUPPORTED
+            bins menvcfg = {CSR_MENVCFG};
+        `endif
+        `ifdef MSECCFG_SUPPORTED
+            bins mseccfg = {CSR_MSECCFG};
+        `endif
+        `ifdef UDB_MXLEN_32
+            bins mstatush = {CSR_MSTATUSH};
+            `ifdef SM1P12P0_OR_LATER_SUPPORTED
+                bins menvcfgh = {CSR_MENVCFGH};
+            `endif
+            `ifdef MSECCFG_SUPPORTED
+                bins mseccfgh = {CSR_MSECCFGH};
+            `endif
+        `endif
+    }
+
     // counters keep incrementing, so don't write the maximum value that will roll over
     // tests should check value read back is within some tolerance of value written
     cntraccesses : coverpoint ins.current.insn {
@@ -196,8 +251,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         wildcard bins csrr       = {CSRR}  iff (ins.current.rs1_val ==  0); // csrr
     }
 
-    mcsrname : coverpoint ins.current.insn[31:20] { // excludes read-only CSRs
-        bins mstatus    = {CSR_MSTATUS};
+    mcsrname : coverpoint ins.current.insn[31:20] { // excludes read-only CSRs and the masked-write CSRs (mcsrname_masked)
         bins medeleg    = {CSR_MEDELEG};
         bins mideleg    = {CSR_MIDELEG};
         bins mie        = {CSR_MIE};
@@ -208,7 +262,6 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         // bins mcause     = {CSR_MCAUSE}; // WLRL field; tested with cp_mcause_write_exception and cp_mcause_write_interrupt
         bins mtval      = {CSR_MTVAL};
         bins mip        = {CSR_MIP};
-        bins menvcfg    = {CSR_MENVCFG};
         bins mcountinhibit = {CSR_MCOUNTINHIBIT};
         bins mhpmevent3 = {CSR_MHPMEVENT3};
         bins mhpmevent4 = {CSR_MHPMEVENT4};
@@ -239,16 +292,8 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins mhpmevent29= {CSR_MHPMEVENT29};
         bins mhpmevent30= {CSR_MHPMEVENT30};
         bins mhpmevent31= {CSR_MHPMEVENT31};
-        `ifdef MSECCFG_SUPPORTED
-            bins mseccfg  = {CSR_MSECCFG};
-        `endif
         `ifdef UDB_MXLEN_32
-            bins mstatush = {CSR_MSTATUSH};
-            bins menvcfgh = {CSR_MENVCFGH};
-            `ifdef MSECCFG_SUPPORTED
-                bins mseccfgh = {CSR_MSECCFGH};
-            `endif
-            `ifdef S1P13P0_SUPPORTED
+            `ifdef SM1P13P0_OR_LATER_SUPPORTED
                 bins medelegh = {CSR_MEDELEGH};
             `endif
         `endif
@@ -416,9 +461,113 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins even = {1'b0}; // trivial case of 4-byte alignment
     }
 
+    // mtval must hold 0 and, when the illegal instruction encoding is reported in it, every ILEN-bit value
+    mtval: coverpoint ins.current.insn[31:20] {
+        bins mtval = {CSR_MTVAL};
+    }
+    mtval_zero: coverpoint ins.current.rs1_val {
+        bins zero = {0};
+    }
+    // Real addresses are valid even when address translation is off, so these are not gated on
+    // Sv* support (the walk coverpoints below are). The generator emits the csrw immediately
+    // after `auipc xN, 0`, so the pc value written equals the csrw's pc - 4; the scratch value
+    // is scratch + 0xA8, an offset chosen so no walk, zero, or all-ones pattern shares its low byte.
+    mepc: coverpoint ins.current.insn[31:20] {
+        bins mepc = {CSR_MEPC};
+    }
+    xaddr_pc: coverpoint (ins.current.rs1_val + 4 == ins.current.pc_rdata) {
+        bins pc = {1};
+    }
+    xaddr_scratch: coverpoint (ins.current.rs1_val[7:0] == 8'hA8) {
+        bins scratch = {1};
+    }
+    `ifdef UDB_REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION
+        mtval_ilen_walk1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+            bins b_1[] = { [0:31] };
+        }
+        mtval_ilen_ones: coverpoint ins.current.rs1_val {
+            bins ones = {32'hFFFFFFFF};
+        }
+    `endif
+
+    // Valid virtual address walks: mepc and mtval must hold every canonical virtual address.
+    // Canonical addresses have bits XLEN-1:VALEN-1 equal, so bit VALEN-2 is the msb walked on its own
+    // (31 for Sv32, where VALEN = XLEN).
+    `ifdef SV57_SUPPORTED
+        `define SM_VADDR_WALK_MSB 55
+    `elsif SV48_SUPPORTED
+        `define SM_VADDR_WALK_MSB 46
+    `elsif SV39_SUPPORTED
+        `define SM_VADDR_WALK_MSB 37
+    `elsif SV32_SUPPORTED
+        `define SM_VADDR_WALK_MSB 31
+    `endif
+    `ifdef SM_VADDR_WALK_MSB
+        // mepc: bit 0 is always 0; bit 1 is 0 unless Zca allows 2-byte instruction alignment
+        xepc_vaddr_walk1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+            bins b_1[] = { [0:`SM_VADDR_WALK_MSB] };
+        }
+        xepc_vaddr_walk0: coverpoint $clog2(~(ins.current.rs1_val))
+                              iff ($onehot(~(ins.current.rs1_val))) {
+            bins b_0[] = { [0:`SM_VADDR_WALK_MSB] };
+        }
+        // mtval: any byte address is a valid virtual address
+        mtval_vaddr_walk1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+            bins b_1[] = { [0:`SM_VADDR_WALK_MSB] };
+        }
+        mtval_vaddr_walk0: coverpoint $clog2(~ins.current.rs1_val) iff ($onehot(~ins.current.rs1_val)) {
+            bins b_0[] = { [0:`SM_VADDR_WALK_MSB] };
+        }
+
+        cp_mepc_vaddr_walk1:    cross priv_mode_m, csrrw, mepc, xepc_vaddr_walk1;
+        cp_mepc_vaddr_walk0:    cross priv_mode_m, csrrw, mepc, xepc_vaddr_walk0;
+        cp_mtval_vaddr_walk1:   cross priv_mode_m, csrrw, mtval, mtval_vaddr_walk1;
+        cp_mtval_vaddr_walk0:   cross priv_mode_m, csrrw, mtval, mtval_vaddr_walk0;
+    `endif
+
     cp_mcsr_access:             cross priv_mode_m, mcsrname, csraccesses;
+    cp_mcsr_access_masked:      cross priv_mode_m, mcsrname_masked, csraccesses_masked;
     cp_mcsr_access_ro:          cross priv_mode_m, mcsrname_ro, csraccesses;
-    cp_mcsrwalk :               cross priv_mode_m, mcsrname, csrop, walking_ones;
+    cp_mcsrwalk :               cross priv_mode_m, mcsrname, csrop, walking_ones {
+        // mepc and mtval only have to hold valid virtual addresses; see cp_{mepc,mtval}_vaddr_walk*
+        ignore_bins mepc_not_walked  = binsof(mcsrname.mepc);
+        ignore_bins mtval_not_walked = binsof(mcsrname.mtval);
+    }
+    // Avoid testing WPRI bits and those that don't like being poked.
+    // Keep the lists below in sync with the masks in Sm.py.
+    cp_mcsrwalk_masked :        cross priv_mode_m, mcsrname_masked, csrop, walking_ones {
+        ignore_bins mstatus_not_walked = binsof(mcsrname_masked.mstatus) &&
+            binsof(walking_ones) intersect {0, 2, 4, 6, [25:30], [32:37], 40, [43:62]};
+        `ifdef SM1P12P0_OR_LATER_SUPPORTED
+            ignore_bins menvcfg_not_walked = binsof(mcsrname_masked.menvcfg) &&
+                binsof(walking_ones) intersect {1, [8:31], [34:58]};
+        `endif
+        `ifdef MSECCFG_SUPPORTED
+            ignore_bins mseccfg_not_walked = binsof(mcsrname_masked.mseccfg) &&
+                binsof(walking_ones) intersect {[0:7], [11:31], [34:63]};
+        `endif
+        `ifdef UDB_MXLEN_32
+            ignore_bins mstatush_not_walked = binsof(mcsrname_masked.mstatush) &&
+                binsof(walking_ones) intersect {[0:5], 8, [11:31]};
+            `ifdef SM1P12P0_OR_LATER_SUPPORTED
+                ignore_bins menvcfgh_not_walked = binsof(mcsrname_masked.menvcfgh) &&
+                    binsof(walking_ones) intersect {[2:26]};
+            `endif
+            `ifdef MSECCFG_SUPPORTED
+                ignore_bins mseccfgh_not_walked = binsof(mcsrname_masked.mseccfgh) &&
+                    binsof(walking_ones) intersect {[2:31]};
+            `endif
+        `endif
+    }
+    cp_mtval_zero:              cross priv_mode_m, csrrw, mtval, mtval_zero;
+    cp_mepc_vaddr_pc:           cross priv_mode_m, csrrw, mepc, xaddr_pc;
+    cp_mepc_vaddr_scratch:      cross priv_mode_m, csrrw, mepc, xaddr_scratch;
+    cp_mtval_vaddr_pc:          cross priv_mode_m, csrrw, mtval, xaddr_pc;
+    cp_mtval_vaddr_scratch:     cross priv_mode_m, csrrw, mtval, xaddr_scratch;
+    `ifdef UDB_REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION
+        cp_mtval_ilen_walk1:    cross priv_mode_m, csrrw, mtval, mtval_ilen_walk1;
+        cp_mtval_ilen_ones:     cross priv_mode_m, csrrw, mtval, mtval_ilen_ones;
+    `endif
     cp_csr_insufficient_priv:   cross priv_mode_m, csrr, csr_debug, nonzerord;
     cp_csr_ro:                  cross priv_mode_m, csrrw, csr_ro, rs1_ones;
 
@@ -432,14 +581,12 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     cp_misa_dependencies :      cross priv_mode_m, csrrw, misa, misa_dependencies;
     cp_misa_clear_c :           cross priv_mode_m, csrc, misa_c_0, pc_1;
 
-    `ifdef UDB_TIME_CSR_IMPLEMENTED
-        cp_mtime_write :        cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
-        `ifdef UDB_MXLEN_32
-            cp_mtimeh_write :   cross priv_mode_m, csrr,  timeh_csr; // assumes mtimeh has been written
-        `endif
+    cp_mtime_write :            cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
+    `ifdef UDB_MXLEN_32
+        cp_mtimeh_write :       cross priv_mode_m, csrr,  timeh_csr; // assumes mtimeh has been written
     `endif
 
-    `ifdef S1P13P0_SUPPORTED
+    `ifdef SM1P13P0_OR_LATER_SUPPORTED
         misa_b_bit: coverpoint ins.current.rs1_val[1] {
             bins b_set   = {1'b1};
             bins b_clear = {1'b0};
@@ -463,8 +610,128 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             }
             cp_msip: cross priv_mode_m, sw, msip_address, msip_val;
         `endif // RVMODEL_MSIP_ADDRESS
-    `endif // S1P13P0_SUPPORTED
+    `endif // SM1P13P0_OR_LATER_SUPPORTED
 
+    csrrw_allones: coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW} iff (ins.current.rs1_val == '1);
+    }
+    rs2_ones: coverpoint ins.current.rs2_val {
+        bins allones = {'1};
+    }
+
+    `ifdef UDB_MXLEN_32
+        mcycleh: coverpoint ins.current.insn[31:20] {
+            bins mcycleh = {CSR_MCYCLEH};
+        }
+        minstreth: coverpoint ins.current.insn[31:20] {
+            bins minstreth = {CSR_MINSTRETH};
+        }
+    `endif
+
+    sw: coverpoint ins.current.insn {
+        wildcard bins sw = {SW};
+    }
+    `ifdef UDB_MXLEN_64
+        sd: coverpoint ins.current.insn {
+            wildcard bins sd = {SD};
+        }
+    `endif
+
+    cp_mcycle_wraparound:   cross priv_mode_m, csrrw_allones, mcycle;
+    cp_minstret_wraparound: cross priv_mode_m, csrrw_allones, minstret;
+
+    `ifdef UDB_MXLEN_32
+        cp_mcycleh_wraparound:   cross priv_mode_m, csrrw_allones, mcycleh;
+        cp_minstreth_wraparound: cross priv_mode_m, csrrw_allones, minstreth;
+    `endif
+
+    `ifdef RVMODEL_MTIME_ADDRESS
+        `ifdef UDB_MXLEN_64
+            mtime_address: coverpoint ins.current.rs1_val + ins.current.imm {
+                bins mtime = {`RVMODEL_MTIME_ADDRESS};
+            }
+            cp_mtime_wraparound: cross priv_mode_m, sd, mtime_address, rs2_ones;
+        `else
+            mtime_address: coverpoint ins.current.rs1_val + ins.current.imm {
+                bins mtime = {`RVMODEL_MTIME_ADDRESS};
+            }
+            mtimeh_address: coverpoint ins.current.rs1_val + ins.current.imm {
+                bins mtimeh = {`RVMODEL_MTIME_ADDRESS + 4};
+            }
+            cp_mtime_wraparound:  cross priv_mode_m, sw, mtime_address, rs2_ones;
+            cp_mtimeh_wraparound: cross priv_mode_m, sw, mtimeh_address, rs2_ones;
+        `endif
+    `endif
+
+    // tests of S-mode features that need to be done from M-mode
+    `ifdef S_SUPPORTED
+        scsrname : coverpoint ins.current.insn[31:20] {
+            bins sstatus       = {CSR_SSTATUS};
+            bins sie           = {CSR_SIE};
+            // bins stvec         = {CSR_STVEC}; // warl field has complex write restrictions and is not easy to test
+            bins scounteren    = {CSR_SCOUNTEREN};
+            bins sscratch      = {CSR_SSCRATCH};
+            bins sepc          = {CSR_SEPC};
+            // bins scause        = {CSR_SCAUSE}; // WLRL field; tested with cp_scause_write_*
+            bins stval         = {CSR_STVAL};
+            bins sip           = {CSR_SIP};
+            `ifdef S1P12P0_OR_LATER_SUPPORTED
+              bins senvcfg       = {CSR_SENVCFG};
+            `endif
+        }
+        shadow : coverpoint {ins.prev.insn[31:20], ins.current.insn[31:20]} {
+            bins mstatus_sstatus = { {CSR_MSTATUS, CSR_SSTATUS} };
+            bins mie_sie         = { {CSR_MIE, CSR_SIE} };
+            bins mip_sip         = { {CSR_MIP, CSR_SIP} };
+            bins sstatus_mstatus = { {CSR_SSTATUS, CSR_MSTATUS} };
+            bins sie_mie         = { {CSR_SIE, CSR_MIE} };
+            bins sip_mip         = { {CSR_SIP, CSR_MIP} };
+        }
+        csrw_prev: coverpoint ins.prev.insn {
+            wildcard bins csrw = {CSRW};
+        }
+        rs1_prev: coverpoint ins.prev.rs1_val {
+            bins zero = { 0 };
+            bins nonzero = { [1:$] };
+        }
+        shadow_int : coverpoint {ins.prev.insn[31:20], ins.current.insn[31:20]} {
+            bins mie_sie         = { {CSR_MIE, CSR_SIE} };
+            bins mip_sip         = { {CSR_MIP, CSR_SIP} };
+            bins sie_mie         = { {CSR_SIE, CSR_MIE} };
+            bins sip_mip         = { {CSR_SIP, CSR_MIP} };
+        }
+        // S-level interrupt delegation bits {LCOFI, SEI, STI, SSI}; the VS bits are read-only without H
+        mideleg_s: coverpoint {ins.current.csr[CSR_MIDELEG][13], ins.current.csr[CSR_MIDELEG][9],
+                               ins.current.csr[CSR_MIDELEG][5],  ins.current.csr[CSR_MIDELEG][1]} {
+            bins none = {4'b0000};
+            bins all  = {4'b1111};
+        }
+        mideleg_s_walking: coverpoint {ins.current.csr[CSR_MIDELEG][13], ins.current.csr[CSR_MIDELEG][9],
+                                       ins.current.csr[CSR_MIDELEG][5],  ins.current.csr[CSR_MIDELEG][1]} {
+            bins lcofi = {4'b1000};
+            bins sei   = {4'b0100};
+            bins sti   = {4'b0010};
+            bins ssi   = {4'b0001};
+        }
+        sip_sie: coverpoint ins.current.insn[31:20] {
+            bins sip = {CSR_SIP};
+            bins sie = {CSR_SIE};
+        }
+        satp : coverpoint ins.current.insn[31:20] {
+            bins satp = {CSR_SATP};
+        }
+        mstatus_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
+        }
+
+        cp_scsr_from_m :            cross priv_mode_m, scsrname, csraccesses;
+        cp_satp_from_m :            cross priv_mode_m, csrr, satp, mstatus_tvm;
+        cp_satp_from_s :            cross priv_mode_s, csrr, satp, mstatus_tvm;
+        cp_shadow :                 cross priv_mode_m, shadow, csrw_prev, rs1_prev, csrr;
+        // sip/sie alias mip/mie only for delegated interrupts
+        cp_shadow_deleg :           cross priv_mode_m, shadow_int, csrw_prev, csrr, mideleg_s;
+        // delegate one interrupt at a time and read sip/sie
+        cp_shadow_deleg_walk :      cross priv_mode_m, csrr, sip_sie, mideleg_s_walking;
+    `endif
 
 endgroup
 

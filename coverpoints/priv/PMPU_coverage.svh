@@ -215,7 +215,7 @@ covergroup PMPU_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
 
   // pmpcfg_i.L = 0, pmpcfg_i.A = OFF, pmpcfg_i.XWR = 000, pmpaddr_i = all 1s
   cfg_A_off: coverpoint {ins.current.csr[CSR_PMPCFG0][7:0],ins.current.csr[CSR_PMPADDR0]} {
-    bins region_off = {8'b00000000,{$bits(ins.current.csr[CSR_PMPADDR0][`EFFECTIVE_PMPADDR:0]){1'b1}}};
+    bins region_off = {8'b00000000,{(`EFFECTIVE_PMPADDR + 1){1'b1}}};
   }
 
   // pmpcfg_i.L = 0, pmpcfg_i.A = NAPOT, all legal pmpcfg_i.XWR, pmpaddr_i = `STANDARD_REGION

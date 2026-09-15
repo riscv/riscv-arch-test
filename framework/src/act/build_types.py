@@ -9,12 +9,13 @@
 
 """Build action and task definitions shared by the executor and cache layers."""
 
-from __future__ import annotations
-
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
+BUILD_STEP_TIMEOUT_SECONDS = 300
+COVERAGE_STEP_TIMEOUT_SECONDS = 60 * 60  # Vx coverage can take about 40 minutes, set to None to disable
 
 # ---------------------------------------------------------------------------
 # Actions: the work a task performs
@@ -70,6 +71,7 @@ class BuildTask:
     deps: tuple[Path, ...] = ()  # Primary output paths of predecessor BuildTasks
     label: str | None = None  # Human-readable name for failure messages (defaults to outputs[0].stem)
     intermediate: bool = False  # Only build if needed for another task
+    timeout: int | None = BUILD_STEP_TIMEOUT_SECONDS  # Set the execution timeout (or None for no timeout)
 
     @property
     def name(self) -> str:

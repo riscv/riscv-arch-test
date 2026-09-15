@@ -7,8 +7,6 @@
 # Decode trap signature region and generate a human-readable trap report
 ##################################
 
-from __future__ import annotations
-
 import subprocess
 from bisect import bisect_right
 from dataclasses import dataclass

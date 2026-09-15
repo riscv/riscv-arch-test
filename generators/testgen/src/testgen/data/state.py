@@ -5,12 +5,11 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from __future__ import annotations
-
 import re
 from typing import Literal
 
 from testgen.data.config import TestConfig
+from testgen.data.params import InstructionParams
 from testgen.data.random import random_int
 from testgen.data.registers import FloatRegisterFile, IntegerRegisterFile, VectorRegisterFile
 from testgen.data.test_chunk import TestChunk
@@ -155,6 +154,12 @@ class TestData:
         """Increment the test count by 1."""
         self._test_count += 1
 
+    def new_test_chunk(self, test_chunks: list[TestChunk], split_name: str | None = None) -> TestChunk:
+        """End the current active TestChunk (if any), append it to `test_chunks`, and begin a new active TestChunk."""
+        if self.test_chunk is not None:
+            test_chunks.append(self.end_test_chunk())
+        return self.begin_test_chunk(split_name)
+
     def begin_test_chunk(self, split_name: str | None = None) -> TestChunk:
         """Create and set a new active TestChunk.
 
@@ -252,6 +257,8 @@ class TestData:
                 elements.append(random_int(sew))
 
         assert elements is not None, "Unreachable Case: Bytes is guaranteed to be set at this point"
+        for element in elements:
+            assert element.bit_length() <= sew, f"Element {element:x} is wider than SEW {sew} for label {label}"
 
         if label in self._vector_labels and self._vector_labels[label] != (elements, sew):
             raise ValueError(
@@ -259,3 +266,14 @@ class TestData:
             )
 
         self._vector_labels[label] = (elements, sew)
+
+
+def return_testcase_registers(test_data: TestData, params: InstructionParams) -> None:
+    """Return every register allocated for a testcase to its register file."""
+    test_data.int_regs.return_registers(params.used_int_regs)
+    test_data.float_regs.return_registers(params.used_float_regs)
+    test_data.vec_regs.deallocate_operands()
+    assert len(test_data.vec_regs.reg_list) == 32, (
+        f"Not all vector registers returned: {len(test_data.vec_regs.reg_list)} remaining, they are "
+        f"{test_data.vec_regs.reg_list}"
+    )

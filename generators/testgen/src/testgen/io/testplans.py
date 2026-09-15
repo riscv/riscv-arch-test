@@ -28,8 +28,8 @@ def get_extensions(testplan_dir: Path) -> list[str]:
 def expand_vector_extension(extension: str) -> list[str]:
     """Expands a vector extension by adding SEW suffixes."""
 
-    if not extension.startswith("Vx"):
-        # Only Vx is supported for now
+    if not extension.startswith(("Vx", "Vls")):
+        # Only Vx and Vls are supported for now
         return []
 
     if extension in ["Vx", "Vls", "Zvbb", "Zvkb"]:
@@ -64,6 +64,17 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
         reader = csv.DictReader(csvfile)
         for row in reader:
             instr = row["Instruction"]
+
+            # Check for extra/missing columns
+            extra = row.pop(None, [])
+            if extra:
+                raise ValueError(
+                    f"{testplan_path}:{reader.line_num}: row for {instr!r} has {len(extra)} extra field(s): {extra}"
+                )
+            missing = [key for key, value in row.items() if value is None]
+            if missing:
+                raise ValueError(f"{testplan_path}:{reader.line_num}: row for {instr!r} is missing field(s): {missing}")
+
             try:
                 instr_type = row["Type"]
             except KeyError:
@@ -82,9 +93,8 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                 if key in non_coverpoint_columns:
                     continue
                 if isinstance(value, str) and value != "":
-                    if (
-                        value != "x"
-                    ):  # for special entries, append the entry name (e.g. cp_rd_edges becomes cp_rd_edges_lui)
+                    # for special entries, append the entry name (e.g. cp_rd_edges becomes cp_rd_edges_lui)
+                    if value != "x":
                         key = key + "_" + value
 
                     if key == "cp_ibm":

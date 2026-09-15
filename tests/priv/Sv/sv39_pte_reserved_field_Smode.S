@@ -27,7 +27,9 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv39_pte_reserved_field_Smode.S"
+// TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+#define BOOT_TO_MMODE
+
 #define SIGUPD_COUNT 30
 #define TRAP_SIGUPD_COUNT 100
 
@@ -35,6 +37,8 @@
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
+
+#ifdef S1P12P0_OR_LATER_SUPPORTED
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test RWX permissions
@@ -185,6 +189,8 @@ main:
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
+#endif
+
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 

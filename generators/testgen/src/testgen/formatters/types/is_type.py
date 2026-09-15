@@ -13,8 +13,15 @@ from testgen.formatters.registry import InstructionTypeConfig, add_instruction_f
 is_config = InstructionTypeConfig(
     required_params={"rd", "rs1", "rs1val", "immval"}, imm_bits="xlen_log2", imm_signed=False
 )
+is_rd_nx0_config = InstructionTypeConfig(
+    required_params={"rd", "rs1", "rs1val", "immval"},
+    imm_bits="xlen_log2",
+    imm_signed=False,
+    excluded_regs={"rd": {0}},
+)
 
 
+@add_instruction_formatter("IS_RD_NX0", is_rd_nx0_config)
 @add_instruction_formatter("IS", is_config)
 def format_is_type(
     instr_name: str, test_data: TestData, params: InstructionParams

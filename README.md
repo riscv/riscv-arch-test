@@ -1,6 +1,6 @@
 # RISC-V Architectural Certification Tests
 
-The RISC-V Architectural Certification Tests (ACTs) are a set of assembly language tests designed to certify that a design faithfully implements the RISC-V specification. These are not verification tests and additional verification should be run on all processors.
+The RISC-V Architectural Certification Tests (ACTs) are a set of assembly language tests intended to help test that a design faithfully implements the RISC-V specification. These are not verification tests and additional verification should be run on all processors.
 
 The Architectural Certification Tests are used with the ACT4 Framework, a Makefile and Python based tool that replaces the deprecated riscof tool. The ACT4 Framework generates and compiles self-checking tests in Executable Linkable Format (ELF) for a device under test (DUT) and optionally collects coverage showing that the tests hit the coverpoints that check the normative rules. The user is then responsible for running all of the ELF files on the DUT with the user's own testbench. Each test reports success or failure, and if possible prints error messages to a console.
 
@@ -93,7 +93,7 @@ and the other documented targets work as usual.
 #### 3. RISC-V Compiler (GCC or LLVM)
 
 The ACT framework is compatible with GCC/Binutils or LLVM/Clang. Only the latest release of each is officially supported and tested in CI.
-Currently, that is GCC 15/Binutils 2.44 or LLVM/Clang 21.
+Currently, that is GCC 15/Binutils 2.44 or LLVM/Clang 22.
 
 This guide uses GCC, but if you prefer LLVM you just need to set the path for the compiler appropriately when [creating your config file](#act-framework-configuration-file). See [config/sail/sail-rv64-max-clang/test_config.yaml](./config/sail/sail-rv64-max-clang/test_config.yaml) for an example.
 
@@ -142,12 +142,12 @@ For more information or if you have issues installing the RISC-V toolchain, refe
 
 #### 4. RISC-V Sail Reference Model
 
-The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.12 of the model.
+The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.13.1 of the model.
 
 To install the sail model:
 
 ```bash
-curl --location https://github.com/riscv/sail-riscv/releases/download/0.12/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
+curl --location https://github.com/riscv/sail-riscv/releases/download/0.13.1/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
 ```
 
 > [!NOTE]
@@ -245,6 +245,7 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_DATA_SECTION`
 - `RVMODEL_BOOT` (can be omitted if not needed)
 - `RVMODEL_ACCESS_FAULT_ADDRESS` (can be omitted if DUT does not generate some/all access faults)
+- `RVMODEL_INVISIBLE_TRAP_HANDLER(_PC_REG, _INSTRUCTION_REG, _ACTION_REG, _DEST_REG, _VALUE_REG)` (can be omitted if the DUT does not trap and emulate instructions)
 
 **Timer Macros**: Can be left blank if machine mode is not supported.
 
@@ -256,16 +257,20 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 
 - `RVMODEL_MSIP_ADDRESS` (can be omitted if MSIP is not memory-mapped or not tested)
 
-**Interrupt Macros**: Can be left blank if interrupts are not supported.
+**Interrupt Macros**: Defined if a platform-specific interrupt controller is used to set or clear. MSW and SSW preferably use `msip` and `mip.ssip` rather than a platform-specific controller, but are available to be defined for designs that only support a controller. _M flavors run in machine mode and do not use T-SBI. Others may be invoked from any mode and may need T-SBI if they access memory-mapped I/O that requires machine permissions. If the _M flavor is identical to the regular flavor, it does not need to be defined.
 
 - `RVMODEL_SET_MEXT_INT(_R1, _R2)`
 - `RVMODEL_CLR_MEXT_INT(_R1, _R2)`
+- `RVMODEL_CLR_MEXT_INT_M(_R1, _R2)`
 - `RVMODEL_SET_MSW_INT(_R1, _R2)`
 - `RVMODEL_CLR_MSW_INT(_R1, _R2)`
+- `RVMODEL_CLR_MSW_INT_M(_R1, _R2)`
 - `RVMODEL_SET_SEXT_INT(_R1, _R2)`
 - `RVMODEL_CLR_SEXT_INT(_R1, _R2)`
+- `RVMODEL_CLR_SEXT_INT_M(_R1, _R2)`
 - `RVMODEL_SET_SSW_INT(_R1, _R2)`
 - `RVMODEL_CLR_SSW_INT(_R1, _R2)`
+- `RVMODEL_CLR_SSW_INT_M(_R1, _R2)`
 - `RVMODEL_INTERRUPT_LATENCY`
 
 Complete examples are available for an example DUT ([config/cores/cvw/cvw-rv64gc/rvmodel_macros.h](./config/cores/cvw/cvw-rv64gc/rvmodel_macros.h)) and for the RISC-V Sail reference model ([config/sail/sail-RVA23S64/rvmodel_macros.h](./config/sail/sail-RVA23S64/rvmodel_macros.h)).
@@ -276,16 +281,26 @@ A linker script is needed to place the code and data regions in the appropriate 
 
 - The `ENTRY` point must be `rvtest_entry_point`.
   - DUT-specific boot code can be run using the `RVMODEL_BOOT` macro, which `rvtest_entry_point` will jump to before anything else.
-- There must be a `.text.init` output section that contains the `.text.init` input section (i.e. `.text.init : { *(.text.init) }`).
-- There must be a `.text.rvtest` output section that contains the `.text.rvtest` input sections (i.e. `.text.rvtest : { *(.text.rvtest) *(.text.rvtest.*) }`). This must follow the `.text.init` section.
-- There must be a `.data` output section (i.e. `.data : { *(.data) }`). This should follow the `.text.rvtest` section.
-- There must be a `.text.rvmodel` output section for DUT-specific (RVMODEL) code, with catch-all wildcards for any remaining text sections (i.e. `.text.rvmodel : { *(.text.rvmodel) *(.text.rvmodel.*) *(.text) *(.text.*) }`). This **must** follow the `.data` section so that variable-size model-specific code does not affect the addresses of test data symbols (such as `scratch` and `begin_signature`). This ensures the DUT ELF and the reference-model ELF agree on data addresses.
+- There must be a `.text.init` output section that starts at `TEST_BASE`, contains the `.text.init` input section (i.e. `.text.init TEST_BASE : { *(.text.init) }`).
+- There must be a `.text.rvtest` output section that contains the `.text.rvtest` input sections (i.e. `.text.rvtest . : { *(.text.rvtest) *(.text.rvtest.*) } > ram`). This must follow the `.text.init` section.
+- The linker script should define a `MEMORY` region for the RAM used by the test ELF and place all standard ACT sections in that region.
+  - When assigning sections to a `MEMORY` region with `> ram`, sections that rely on a previous location-counter assignment, alignment, or gap must explicitly use the current location counter as their address (for example, `.data . : { ... } > ram`).
+- There must be `.rodata`, `.data`, and `.bss` output sections. The `.bss` section must define `__bss_start` and `__bss_end` for C test startup.
+- The linker script must define `__stack_bottom` and `__stack_top`, using `__stack_size * __num_harts` bytes of stack space.
+- There must be a `.text.rvmodel` output section for DUT-specific (RVMODEL) code, with catch-all wildcards for any remaining text sections (i.e. `.text.rvmodel . : { *(.text.rvmodel) *(.text.rvmodel.*) *(.text) *(.text.*) } > ram`). This **must** follow the data and stack sections so that variable-size model-specific code does not affect the addresses of test data symbols (such as `scratch` and `begin_signature`). This ensures the DUT ELF and the reference-model ELF agree on data addresses.
 
-For an example linker script that should work for most basic implementations, see [config/cores/cvw/cvw-rv64gc/link.ld](./config/cores/cvw/cvw-rv64gc/link.ld). The first line of the list of `SECTIONS` in the linker script sets the starting address of the ELF (`. = 0x...`) and is the only part of the sample linker script that most users will need to change. Set it to your reset address for simple DUTs. Users with special needs can customize the linker script to start at their own boot code (leaving the `RVMODEL_BOOT` macro blank) and then jump to `rvtest_entry_point`.
+For an example linker script that should work for most basic implementations, see [config/cores/cvw/cvw-rv64gc/link.ld](./config/cores/cvw/cvw-rv64gc/link.ld). Most users should only need to modify the variables at the top of the sample linker script, before the `/* Most users should not need to modify anything below this line. */` comment:
+
+- `RAM_ORIGIN`: starting address of the RAM region used by the ACT ELF.
+- `RAM_LENGTH`: size of that RAM region.
+- `TEST_BASE`: starting address of the ELF, usually the DUT reset vector. For most DUTs this is `RAM_ORIGIN`.
+- `NUM_HARTS`: number of harts the test should initialize stacks for.
+
+`STACK_SIZE` is defined below that comment and defaults to `0x20000` bytes per hart. Users with special needs can customize the lower section layout, change `STACK_SIZE`, or start at their own boot code (leaving the `RVMODEL_BOOT` macro blank) and then jump to `rvtest_entry_point`.
 
 > [!NOTE]
 >
-> If you modify the base address, you also need to modify the RISC-V Sail model memory map under the `memory.regions` key in `sail.json`.
+> If you modify `RAM_ORIGIN` or `RAM_LENGTH`, you also need to modify the RISC-V Sail model memory map under the `memory.regions` key in `sail.json`.
 
 For a detailed description of the test memory layout (section ordering, contents of each section, etc.), see [docs/memory_map.md](./docs/memory_map.md).
 

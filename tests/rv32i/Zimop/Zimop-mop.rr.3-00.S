@@ -15,8 +15,7 @@
 # MARCH: rv32i_zicsr_zifencei_zimop
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "Zimop-mop.rr.3-00.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 258
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.

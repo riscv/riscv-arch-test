@@ -87,7 +87,7 @@ normative_rule_definitions:
     # never round
     coverpoint:
       [
-        "Zfh_fcvt_h_s_cg/{cp_fs1, cp_fd, cp_fs1_edges_frm, cp_frm_2, cp_csr_fflags_voun, cp_csr_frm, cp_NaNBox_S_H}",
+        "Zfh_fcvt_h_s_cg/{cp_fs1, cp_fd, cr_fs1_edges_frm, cp_frm_2, cp_csr_fflags_voun, cp_csr_frm, cp_NaNBox_S_H}",
       ]
   - name: fcvt-h-w_op
     # FCVT.H.W or FCVT.H.L converts a 32-bit or 64-bit signed
@@ -161,7 +161,7 @@ normative_rule_definitions:
     # frm
     coverpoint:
       [
-        "Zfh_fcvt_l_h_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
+        "Zfh_fcvt_l_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
       ]
   - name: fcvt-lu-h_op
     # FCVT.WU.H, FCVT.LU.H, FCVT.H.WU, and FCVT.H.LU variants convert to or
@@ -188,7 +188,7 @@ normative_rule_definitions:
     # frm
     coverpoint:
       [
-        "Zfh_fcvt_lu_h_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
+        "Zfh_fcvt_lu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
       ]
   - name: fcvt-s-h_op
     # FCVT.S.H or
@@ -224,7 +224,7 @@ normative_rule_definitions:
     # frm
     coverpoint:
       [
-        "Zfh_fcvt_w_h_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
+        "Zfh_fcvt_w_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
       ]
   - name: fcvt-wu-h_op
     # FCVT.WU.H, FCVT.LU.H, FCVT.H.WU, and FCVT.H.LU variants convert to or
@@ -249,7 +249,7 @@ normative_rule_definitions:
     # frm
     coverpoint:
       [
-        "Zfh_fcvt_wu_h_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
+        "Zfh_fcvt_wu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
       ]
   - name: fdiv-h_op
     # FDIV.S performs the single-precision floating-point division of rs1 by rs2

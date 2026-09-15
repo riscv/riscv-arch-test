@@ -1,8 +1,0 @@
-[[extension:F]]
-=== Extension F
-
-Long Name::
-Single-Precision Floating-Point
-
-Description::
-Single-precision floating-point instructions and CSRs

@@ -84,6 +84,7 @@ def generate_instr_adr_misaligned_jal_tests(test_data: TestData, covergroup: str
 
     lines = [
         comment_banner(coverpoint, "Instruction Address Misaligned JAL"),
+        ".p2align 2",
         test_data.add_testcase("jal_misaligned", coverpoint, covergroup),
         "jal x0, .+6",
         "# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
@@ -141,7 +142,6 @@ def generate_instr_access_fault_tests(test_data: TestData, covergroup: str) -> l
         f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
         test_data.add_testcase("instr_access_fault", coverpoint, covergroup),
         f"jalr x1, 0(x{addr_reg})",
-        "nop",
         "#endif",
     ]
 
@@ -175,11 +175,9 @@ def generate_illegal_instruction_tests(test_data: TestData, covergroup: str) -> 
         ".p2align 2",
         test_data.add_testcase("illegal_0x00000000", coverpoint, covergroup),
         ".word 0x00000000",
-        "nop",
         ".p2align 2",
         test_data.add_testcase("illegal_0xFFFFFFFF", coverpoint, covergroup),
         ".word 0xFFFFFFFF",
-        "nop",
     ]
     return lines
 
@@ -192,16 +190,12 @@ def generate_illegal_instruction_seed_tests(test_data: TestData, covergroup: str
         comment_banner(coverpoint, "Illegal Instruction Seed"),
         test_data.add_testcase("seed_csrrs", coverpoint, covergroup),
         f"csrrs x{dest_regs[0]}, seed, x0",
-        "nop",
         test_data.add_testcase("seed_csrrc", coverpoint, covergroup),
         f"csrrc x{dest_regs[1]}, seed, x0",
-        "nop",
         test_data.add_testcase("seed_csrrsi", coverpoint, covergroup),
         f"csrrsi x{dest_regs[2]}, seed, 0",
-        "nop",
         test_data.add_testcase("seed_csrrci", coverpoint, covergroup),
         f"csrrci x{dest_regs[3]}, seed, 0",
-        "nop",
     ]
 
     test_data.int_regs.return_registers(dest_regs)
@@ -215,8 +209,28 @@ def generate_breakpoint_tests(test_data: TestData, covergroup: str) -> list[str]
         comment_banner(coverpoint, "Breakpoint"),
         test_data.add_testcase("ebreak", coverpoint, covergroup),
         "ebreak",
-        "nop",
     ]
+
+    # With Zca a 32-bit ebreak can sit at a 2-byte-aligned address, so its fetch may be
+    # split across two fetch groups.  xtval must be zero or the address of the ebreak
+    # itself, never the address of the second half of the fetch.
+    straddle_coverpoint = "cp_ebreak_straddle64"
+    lines.extend(
+        [
+            "",
+            "#ifdef ZCA_SUPPORTED",
+            comment_banner(straddle_coverpoint, "Breakpoint straddling a 64-byte fetch boundary"),
+            "# 32-bit ebreak at 62 mod 64: fetch straddles a 64-byte cache line / fetch boundary",
+            ".p2align 6",
+            "# 31 c.nops = 62 bytes of padding, putting the ebreak at byte 62 of the 64-byte block",
+            "# written as halfwords because Zca is not in every suite's march",
+            *([".half 0x0001"] * 31),
+            test_data.add_testcase("ebreak_straddle64", straddle_coverpoint, covergroup),
+            "ebreak",
+            ".p2align 2  # restore 4-byte alignment for the code that follows",
+            "#endif",
+        ]
+    )
     return lines
 
 
@@ -242,7 +256,6 @@ def add_load_misaligned_test(
         [
             test_data.add_testcase(f"{op}_off{offset}", coverpoint, covergroup),
             f"{op} x{check_reg}, 0(x{addr_reg})",
-            "nop",
             write_sigupd(check_reg, test_data),
         ]
     )
@@ -266,7 +279,6 @@ def add_store_misaligned_test(
         f"addi x{addr_reg}, x{addr_reg}, {offset}",
         test_data.add_testcase(f"{op}_off{offset}", coverpoint, covergroup),
         f"{op} x{data_reg}, 0(x{addr_reg})",
-        "nop",
         # Read back scratch memory to verify store result
         f"LA(x{addr_reg}, scratch)",
         f"lw x{check_reg}, 0(x{addr_reg})",
@@ -355,7 +367,6 @@ def generate_load_access_fault_tests(
             [
                 test_data.add_testcase(f"{op}_fault", coverpoint, covergroup),
                 f"{op} x{check_reg}, 0(x{addr_reg})",
-                "nop",
             ]
         )
         if use_sigupd:
@@ -371,7 +382,6 @@ def generate_load_access_fault_tests(
             [
                 test_data.add_testcase(f"{op}_fault", coverpoint, covergroup),
                 f"{op} x{check_reg}, 0(x{addr_reg})",
-                "nop",
             ]
         )
         if use_sigupd:
@@ -399,7 +409,6 @@ def generate_store_access_fault_tests(test_data: TestData, covergroup: str) -> l
                 f"LI(x{data_reg}, {test_values[op]})",
                 test_data.add_testcase(f"{op}_fault", coverpoint, covergroup),
                 f"{op} x{data_reg}, 0(x{addr_reg})",
-                "nop",
             ]
         )
 
@@ -412,7 +421,6 @@ def generate_store_access_fault_tests(test_data: TestData, covergroup: str) -> l
             f"LI(x{data_reg}, {test_values['sd']})",
             test_data.add_testcase("sd_fault", coverpoint, covergroup),
             f"sd x{data_reg}, 0(x{addr_reg})",
-            "nop",
             "",
             "#endif",
             "#endif",
@@ -447,7 +455,6 @@ def generate_misaligned_priority_load_tests(
                     f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b}) - Access fault Misaligned",
                     test_data.add_testcase(f"{op}{name_infix}off{offset}_priority", coverpoint, covergroup),
                     f"{op} x{check_reg}, 0(x{temp_reg})",
-                    "nop",
                 ]
             )
 
@@ -458,7 +465,6 @@ def generate_misaligned_priority_load_tests(
                     f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b}) - Access fault Misaligned",
                     test_data.add_testcase(f"{op}{name_infix}off{offset}_priority", coverpoint, covergroup),
                     f"{op} x{check_reg}, 0(x{temp_reg})",
-                    "nop",
                 ]
             )
         lines.append("\n#endif\n")
@@ -495,7 +501,6 @@ def generate_misaligned_priority_store_tests(
                     f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b}) - Access fault Misaligned",
                     test_data.add_testcase(f"{op}{name_infix}off{offset}_priority", coverpoint, covergroup),
                     f"{op} x{data_reg}, 0(x{addr_reg})",
-                    "nop",
                 ]
             )
 
@@ -506,7 +511,6 @@ def generate_misaligned_priority_store_tests(
                 f"\n# Testcase: sd with offset {offset} (LSBs: {offset:03b}) - Access fault Misaligned",
                 test_data.add_testcase(f"sd{name_infix}off{offset}_priority", coverpoint, covergroup),
                 f"sd x{data_reg}, 0(x{addr_reg})",
-                "nop",
                 "",
                 "#endif",
                 "",
@@ -538,17 +542,16 @@ def generate_misaligned_priority_fetch_tests(
             f"addi x{addr_reg}, x{addr_reg}, 2",
             test_data.add_testcase(f"{name_prefix}misaligned_existent{name_suffix}", coverpoint, covergroup),
             f"jalr x1, 0(x{addr_reg})",
-            "nop",
             ".p2align 4",
             f"{target_label}:",
-            "nop",
+            "# upper half of addi x0, x2, 0 is 0x0001, a legal c.nop, so a C-capable DUT lands on an instruction",
+            "addi x0, x2, 0",
             "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
             "\n# misaligned fetch - non-existent (fault) address",
             f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             f"addi x{addr_reg}, x{addr_reg}, 2",
             test_data.add_testcase(f"{name_prefix}misaligned_nonexistent{name_suffix}", coverpoint, covergroup),
             f"jalr x1, 0(x{addr_reg})",
-            "nop",
             "#endif",
         ]
     )

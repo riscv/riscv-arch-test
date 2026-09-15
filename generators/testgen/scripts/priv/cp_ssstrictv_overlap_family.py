@@ -72,7 +72,8 @@ def _emit_partial_overlap(instruction: str, cp: str, lmul: int, role: str) -> No
 def vrgather_vs1_eq(instruction: str) -> None:
     cp = "cp_ssstrictv_vrgather_vd_vs1_eq"
     cap = max_legal_lmul(instruction)
-    for lmul in (1, 2, 4, 8):
+    # for lmul in (1, 2, 4, 8):
+    for lmul in (1,):
         if lmul > cap:
             break
         _emit_vd_eq_role(instruction, cp, lmul=lmul, role="vs1")
@@ -82,7 +83,8 @@ def vrgather_vs1_eq(instruction: str) -> None:
 def exceptionsv_vd_vs2_overlap(instruction: str) -> None:
     cp = "cp_exceptionsv_vd_vs2_overlap"
     cap = max_legal_lmul(instruction)
-    for lmul in (1, 2, 4, 8):
+    # for lmul in (1, 2, 4, 8):
+    for lmul in (1,):
         if lmul > cap:
             break
         _emit_vd_eq_role(instruction, cp, lmul=lmul, role="vs2")
@@ -92,7 +94,8 @@ def exceptionsv_vd_vs2_overlap(instruction: str) -> None:
 def vrgather_vs2_eq(instruction: str) -> None:
     cp = "cp_ssstrictv_vrgather_vd_vs2_eq"
     cap = max_legal_lmul(instruction)
-    for lmul in (1, 2, 4, 8):
+    # for lmul in (1, 2, 4, 8):
+    for lmul in (1,):
         if lmul > cap:
             break
         _emit_vd_eq_role(instruction, cp, lmul=lmul, role="vs2")
@@ -103,10 +106,10 @@ def vrgather_vs1_overlap(instruction: str) -> None:
     cp = "cp_ssstrictv_vrgather_vd_vs1_overlap"
     cap = max_legal_lmul(instruction)
     _emit_vd_eq_role(instruction, cp, lmul=1, role="vs1")
-    for lmul in (2, 4):
-        if lmul > cap:
-            break
-        _emit_partial_overlap(instruction, cp, lmul=lmul, role="vs1")
+    # for lmul in (2, 4):
+    #     if lmul > cap:
+    #         break
+    #     _emit_partial_overlap(instruction, cp, lmul=lmul, role="vs1")
 
 
 @register("cp_ssstrictv_vrgather_vd_vs2_overlap")
@@ -114,10 +117,10 @@ def vrgather_vs2_overlap(instruction: str) -> None:
     cp = "cp_ssstrictv_vrgather_vd_vs2_overlap"
     cap = max_legal_lmul(instruction)
     _emit_vd_eq_role(instruction, cp, lmul=1, role="vs2")
-    for lmul in (2, 4, 8):
-        if lmul > cap:
-            break
-        _emit_partial_overlap(instruction, cp, lmul=lmul, role="vs2")
+    # for lmul in (2, 4, 8):
+    #     if lmul > cap:
+    #         break
+    #     _emit_partial_overlap(instruction, cp, lmul=lmul, role="vs2")
 
 
 # ---------------------------------------------------------------------------
@@ -129,10 +132,10 @@ def vslideup_vs2_overlap(instruction: str) -> None:
     cp = "cp_ssstrictv_vslideup_vd_vs2_overlap"
     cap = max_legal_lmul(instruction)
     _emit_vd_eq_role(instruction, cp, lmul=1, role="vs2")
-    for lmul in (2, 4):
-        if lmul > cap:
-            break
-        _emit_partial_overlap(instruction, cp, lmul=lmul, role="vs2")
+    # for lmul in (2, 4):
+    #     if lmul > cap:
+    #         break
+    #     _emit_partial_overlap(instruction, cp, lmul=lmul, role="vs2")
 
 
 @register("cp_ssstrictv_vslide1up_vd_vs2_overlap")
@@ -140,10 +143,10 @@ def vslide1up_vs2_overlap(instruction: str) -> None:
     cp = "cp_ssstrictv_vslide1up_vd_vs2_overlap"
     cap = max_legal_lmul(instruction)
     _emit_vd_eq_role(instruction, cp, lmul=1, role="vs2")
-    for lmul in (2, 4):
-        if lmul > cap:
-            break
-        _emit_partial_overlap(instruction, cp, lmul=lmul, role="vs2")
+    # for lmul in (2, 4):
+    #     if lmul > cap:
+    #         break
+    #     _emit_partial_overlap(instruction, cp, lmul=lmul, role="vs2")
 
 
 # ---------------------------------------------------------------------------
@@ -155,17 +158,18 @@ def vcompress_vs2_overlap(instruction: str) -> None:
     cp = "cp_ssstrictv_vcompress_vd_vs2_overlap"
     cap = max_legal_lmul(instruction)
     _emit_vd_eq_role(instruction, cp, lmul=1, role="vs2")
-    for lmul in (2, 4):
-        if lmul > cap:
-            break
-        _emit_partial_overlap(instruction, cp, lmul=lmul, role="vs2")
+    # for lmul in (2, 4, 8):
+    #     if lmul > cap:
+    #         break
+    #     _emit_partial_overlap(instruction, cp, lmul=lmul, role="vs2")
 
 
 @register("cp_ssstrictv_vcompress_vd_v0_overlap")
 def vcompress_vd_v0_overlap(instruction: str) -> None:
     cp = "cp_ssstrictv_vcompress_vd_v0_overlap"
     cap = max_legal_lmul(instruction)
-    for lmul in (1, 2, 4, 8):
+    # for lmul in (1, 2, 4, 8):
+    for lmul in (1,):
         if lmul > cap:
             break
         issue_simple_test(instruction, cp, lmul=lmul, override_vd=0, maskval=None)

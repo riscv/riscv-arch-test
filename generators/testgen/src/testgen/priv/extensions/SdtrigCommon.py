@@ -224,7 +224,7 @@ def _cause_interrupt(code: int, mode: str, r1: int) -> list[str]:
 
 
 def _clear_interrupt(code: int, mode: str, r1: int, r2: int) -> list[str]:
-    """Emit the ACr_temp3 cleanup sequence for interrupt ``code``."""
+    """Emit the ACt4 cleanup sequence for interrupt ``code``."""
     if code in (1, 5, 9, 13):
         return [f"LI(x{r1}, 0x{1 << code:x}) # clear interrupt {code}", _csr_access(f"csrc mip, x{r1}", mode)]
     if code == 3:
@@ -1738,12 +1738,19 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     covergroup = f"Sdtrig{mode}_itrigger_cg"
     tc = test_data.begin_test_chunk("Itrigger")
     lines: list[str] = tc.code
-    cfg_reg, r_temp, r_temp2, r_temp3 = test_data.int_regs.get_registers(
-        4, exclude_regs=[2], reg_range=list(range(8, 16))
-    )
 
+    # setup registers
+    t1, t2, t3, t4 = test_data.int_regs.get_registers(4, exclude_regs=[2], reg_range=list(range(8, 16)))
+
+    ######################################
     coverpoint = "cp_sdtrig_itrigger"
-
+    ######################################
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "itrigger fires on each interrupt cause in the tdata2 mask",
+        )
+    )
     for origin in ("Sm", "S", "U"):
         codes = INTERRUPT_CODES if origin == "Sm" else LOWER_MODE_INTERRUPT_CODES
         delegations = (0,) if origin == "Sm" else (1,)  # both traps in 0 needs reentrnacy solution
@@ -1762,26 +1769,29 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                                 [
                                     *_global_ie(mode, enable=False),
                                     "csrci mstatus, 0x2 # SIE=0 while the source is prepared",
-                                    *_set_itrigger_delegation(code, delegate, cfg_reg),
+                                    *_set_itrigger_delegation(code, delegate, t1),
                                     *_config_itrigger(
-                                        cfg_reg,
+                                        t1,
                                         trig_num,
                                         1 << code,
                                         mode,
                                         privbits=priv,
                                     ),
-                                    *_cause_interrupt(cause, mode, cfg_reg),
+                                    *_cause_interrupt(
+                                        cause,
+                                        mode,
+                                        t1,
+                                    ),
                                     *_goto_itrigger_origin(origin),
                                     *_global_ie(origin, enable=True),
                                     "nop # allow the pending interrupt to be taken",
                                     *_global_ie(origin, enable=False),
-                                    "RVTEST_TSBI_GOTO_MMODE",
-                                    *_clear_interrupt(cause, mode, cfg_reg, r_temp),
-                                    f"csrr x{cfg_reg}, mtval",
-                                    write_sigupd(cfg_reg, test_data),
-                                    *_read_trigger_hit(cfg_reg, r_temp, trig_num, mode, test_data),
-                                    *_disable_trigger(cfg_reg, trig_num, mode),
-                                    *_set_itrigger_delegation(code, 0, cfg_reg),
+                                    *_clear_interrupt(cause, mode, t1, t2),
+                                    f"csrr x{t1}, mtval",
+                                    write_sigupd(t1, test_data),
+                                    *_read_trigger_hit(t1, t2, trig_num, mode, test_data),
+                                    *_disable_trigger(t1, trig_num, mode),
+                                    *_set_itrigger_delegation(code, 0, t1),
                                 ]
                             )
                     # if code == 13:
@@ -1789,7 +1799,7 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                     # lines.append("#endif")  # UDB_INTERRUPT{code}_SUPPORTED
             # lines.append("#endif")  # UDB_ITRIGGER_TRIGn_AVAILABLE
 
-    test_data.int_regs.return_registers([cfg_reg, r_temp, r_temp2, r_temp3])
+    test_data.int_regs.return_registers([t1, t2, t3, t4])
     return [test_data.end_test_chunk()]
 
 

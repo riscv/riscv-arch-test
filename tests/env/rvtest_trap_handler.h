@@ -1950,6 +1950,7 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x320) // mcountinhibit
         TSBI_CSR_INSTR_TABLE(0xB00) // mcycle
         TSBI_CSR_INSTR_TABLE(0xB02) // minstret
+        TSBI_CSR_INSTR_TABLE(0x343) // mtval
         // TODO: Move the following to the S-mode dispatch when it is implemented
         TSBI_CSR_INSTR_TABLE(0x100) // sstatus
         TSBI_CSR_INSTR_TABLE(0x104) // sie
@@ -2273,6 +2274,15 @@ common_\__MODE__\()excpt_handler:
 // gate silently compiled this skip out and every access-fault test aborted on
 // its first deliberate probe (EPC=0 is outside vmem/code/data -> abort_test).
 vmem_adj_\__MODE__\()epc:
+
+        // For SdtrigSm cross priv test uncomment this
+        // #ifdef SDTRIG_IMPRECISE_XEPC
+        // .ifc \__MODE__ , M
+        //         LI(     T2, CAUSE_BREAKPOINT)
+        //         beq     T5, T2, skp_adj_\__MODE__\()epc
+        // .endif
+        // #endif
+
         #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
                 LI(     T2, RVMODEL_ACCESS_FAULT_ADDRESS)
                 beq     T3, T2, sv_\__MODE__\()epc

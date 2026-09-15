@@ -1326,7 +1326,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             
-            "#if defined(MCOUNTINHIBIT_IMPLEMENTED) && MCOUNTINHIBIT_IMPLEMENTED && defined(COUNTINHIBIT_EN_CY) && COUNTINHIBIT_EN_CY",
+            "#if defined(UDB_MCOUNTINHIBIT_IMPLEMENTED) && defined(UDB_COUNTINHIBIT_EN_0)",
             f"LI(x{r1}, 0b1)        # inhibit mcycle",
             f"csrw mcountinhibit, x{r1}        # inhibit mcycle",
             f"csrr x{r1}, mcycle        # read mcycle",
@@ -1335,7 +1335,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             f"csrr x{r2}, mcycle        # read mcycle again",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be 0",
             write_sigupd(r2, test_data),
-            "#endif // MCOUNTINHIBIT_IMPLEMENTED && COUNTINHIBIT_EN_CY",
+            "#endif",
         ]
     )
 

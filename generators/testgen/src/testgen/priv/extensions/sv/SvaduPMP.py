@@ -17,7 +17,7 @@ from testgen.priv.extensions.pmp import helpers as pmp
 from testgen.priv.extensions.sv.access import add_rwx_test
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import SV_MODES, PteFlags, SvMode, create_page_mapping
-from testgen.priv.registry import register_priv_test_generator
+from testgen.priv.registry import add_priv_test_generator
 
 _VA_DATA = {"sv32": "0x00000000", "sv39": "0x000000000", "sv48": "0x000000000000", "sv57": "0x00000000000000"}
 _AD_CASES = (
@@ -95,12 +95,11 @@ def _make_svadupmp(test_data: TestData, sv: SvMode) -> list[TestChunk]:
 
 
 for sv in SV_MODES:
-    register_priv_test_generator(
+    add_priv_test_generator(
         "SvaduPMP",
-        partial(_make_svadupmp, sv=sv),
         name=f"make_svadupmp_{sv.name}",
         required_extensions=["I", sv.extension, "Svadu", "Sm"],
         march_extensions=_MARCH,
         params=["NUM_PMP_ENTRIES: '>0'"],
         extra_defines=["#define BOOT_TO_MMODE"],
-    )
+    )(partial(_make_svadupmp, sv=sv))

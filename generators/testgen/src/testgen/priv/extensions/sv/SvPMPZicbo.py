@@ -18,7 +18,7 @@ from testgen.priv.extensions.sv.assembly import DATA_REGION_ALIGNED
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import SV_MODES, PteFlags, SvMode, create_page_mapping
 from testgen.priv.extensions.sv.SvPMP import PMP_PTE_VAS
-from testgen.priv.registry import register_priv_test_generator
+from testgen.priv.registry import add_priv_test_generator
 
 _MARCH = ["I", "Zicsr", "Zifencei"]
 _FAMILIES = {
@@ -165,12 +165,11 @@ def _make_svpmpzicbo(test_data: TestData, sv: SvMode, extension: str) -> list[Te
 
 for sv in SV_MODES:
     for extension in _FAMILIES:
-        register_priv_test_generator(
+        add_priv_test_generator(
             "SvPMPZicbo",
-            partial(_make_svpmpzicbo, sv=sv, extension=extension),
             name=f"make_svpmpzicbo_{sv.name}_{extension.lower()}",
             required_extensions=["I", sv.extension, extension, "Sm"],
             march_extensions=_MARCH + [extension],
             params=["NUM_PMP_ENTRIES: '>0'"],
             extra_defines=["#define BOOT_TO_MMODE"],
-        )
+        )(partial(_make_svpmpzicbo, sv=sv, extension=extension))

@@ -22,7 +22,7 @@ from testgen.priv.extensions.sv.page_tables import (
     create_leaf_pte,
     create_page_mapping,
 )
-from testgen.priv.registry import register_priv_test_generator
+from testgen.priv.registry import add_priv_test_generator
 
 _VAS = {
     "sv32": {1: ("0x00400000", "0x00800000", "0x00C00000"), 0: ("0x01001000", "0x01002000", "0x01003000")},
@@ -147,11 +147,10 @@ def _make_svadu(test_data: TestData, sv: SvMode) -> list[TestChunk]:
 
 
 for sv in SV_MODES:
-    register_priv_test_generator(
+    add_priv_test_generator(
         "Svadu",
-        partial(_make_svadu, sv=sv),
         name=f"make_svadu_{sv.name}",
         required_extensions=["I", sv.extension, "Svadu"],
         march_extensions=_MARCH,
         extra_defines=["#define BOOT_TO_MMODE"],
-    )
+    )(partial(_make_svadu, sv=sv))

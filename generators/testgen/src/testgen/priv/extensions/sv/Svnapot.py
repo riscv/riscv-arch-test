@@ -22,7 +22,7 @@ from testgen.priv.extensions.sv.page_tables import (
     create_leaf_pte,
     create_page_mapping,
 )
-from testgen.priv.registry import register_priv_test_generator
+from testgen.priv.registry import add_priv_test_generator
 
 _NAPOT_VA = {"sv39": "0x140200000", "sv48": "0x0280C0410000", "sv57": "0x400280C0410000"}
 _MARCH = ["I", "Zicsr", "Zifencei"]
@@ -128,11 +128,10 @@ def _make_svnapot(test_data: TestData, sv: SvMode) -> list[TestChunk]:
 
 
 for sv in RV64_SV_MODES:
-    register_priv_test_generator(
+    add_priv_test_generator(
         "Svnapot",
-        partial(_make_svnapot, sv=sv),
         name=f"make_svnapot_{sv.name}",
         required_extensions=["I", sv.extension, "Svnapot"],
         march_extensions=_MARCH,
         extra_defines=["#define BOOT_TO_MMODE"],
-    )
+    )(partial(_make_svnapot, sv=sv))

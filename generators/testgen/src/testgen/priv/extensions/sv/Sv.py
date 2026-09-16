@@ -27,7 +27,7 @@ from testgen.priv.extensions.sv.page_tables import (
     create_page_mapping,
     create_page_walk,
 )
-from testgen.priv.registry import add_priv_test_generator, register_priv_test_generator
+from testgen.priv.registry import add_priv_test_generator
 
 
 def _change_pte_to_be(sv: SvMode) -> list[str]:
@@ -1025,24 +1025,22 @@ def _make_sv_sbe(test_data: TestData, sv: SvMode) -> list[TestChunk]:
 
 
 for sv in SV_MODES:
-    register_priv_test_generator(
+    add_priv_test_generator(
         "Sv",
-        partial(_make_sv, sv=sv),
         name=f"make_{sv.name}",
         required_extensions=["I", sv.extension],
         march_extensions=_MARCH,
         extra_defines=["#define BOOT_TO_MMODE"],
-    )
+    )(partial(_make_sv, sv=sv))
 
 for sv in SV_MODES:
-    register_priv_test_generator(
+    add_priv_test_generator(
         "Sv",
-        partial(_make_sv_sbe, sv=sv),
         name=f"make_{sv.name}_sbe",
         required_extensions=["I", sv.extension, "NORUN"],
         march_extensions=_MARCH,
         extra_defines=["#define BOOT_TO_MMODE"],
-    )
+    )(partial(_make_sv_sbe, sv=sv))
 
 
 @add_priv_test_generator(

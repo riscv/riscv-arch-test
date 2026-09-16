@@ -17,7 +17,7 @@ from testgen.priv.extensions.sv.access import add_rwx_test
 from testgen.priv.extensions.sv.assembly import DATA_REGION_ALIGNED
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import SV_MODES, PteFlags, SvMode, create_page_mapping
-from testgen.priv.registry import register_priv_test_generator
+from testgen.priv.registry import add_priv_test_generator
 
 PMP_PTE_VAS = {
     "sv32": ("0x00000000", "0x90000000"),
@@ -150,12 +150,11 @@ def _make_svpmp(test_data: TestData, sv: SvMode) -> list[TestChunk]:
 
 
 for sv in SV_MODES:
-    register_priv_test_generator(
+    add_priv_test_generator(
         "SvPMP",
-        partial(_make_svpmp, sv=sv),
         name=f"make_svpmp_{sv.name}",
         required_extensions=["I", sv.extension, "Sm"],
         march_extensions=_MARCH,
         params=_PARAMS,
         extra_defines=_DEFINES,
-    )
+    )(partial(_make_svpmp, sv=sv))

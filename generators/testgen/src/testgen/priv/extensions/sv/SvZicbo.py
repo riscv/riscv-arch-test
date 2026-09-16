@@ -24,7 +24,7 @@ from testgen.priv.extensions.sv.page_tables import (
     create_page_mapping,
     create_page_walk,
 )
-from testgen.priv.registry import register_priv_test_generator
+from testgen.priv.registry import add_priv_test_generator
 
 _MARCH = ["I", "Zicsr", "Zifencei"]
 
@@ -323,11 +323,10 @@ def _make_svzicbo(test_data: TestData, sv: SvMode, family: str) -> list[TestChun
 for sv in SV_MODES:
     for family in ("zicbom", "zicboz", "zicbop"):
         extension = family.capitalize()
-        register_priv_test_generator(
+        add_priv_test_generator(
             "SvZicbo",
-            partial(_make_svzicbo, sv=sv, family=family),
             name=f"make_svzicbo_{sv.name}_{family}",
             required_extensions=["I", sv.extension, extension],
             march_extensions=_MARCH + [extension],
             extra_defines=["#define BOOT_TO_MMODE"],
-        )
+        )(partial(_make_svzicbo, sv=sv, family=family))

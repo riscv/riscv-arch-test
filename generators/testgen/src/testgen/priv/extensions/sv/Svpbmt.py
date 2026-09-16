@@ -15,7 +15,7 @@ from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.access import add_rwx_test
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import RV64_SV_MODES, PteFlags, SvMode, create_page_mapping
-from testgen.priv.registry import register_priv_test_generator
+from testgen.priv.registry import add_priv_test_generator
 
 _PBMT = (("(1 << 61)", "PBMT=1", False), ("(2 << 61)", "PBMT=2", False), ("(3 << 61)", "PBMT=3", True))
 _MARCH = ["I", "Zicsr", "Zifencei"]
@@ -98,11 +98,10 @@ def _make_svpbmt(test_data: TestData, sv: SvMode) -> list[TestChunk]:
 
 
 for sv in RV64_SV_MODES:
-    register_priv_test_generator(
+    add_priv_test_generator(
         "Svpbmt",
-        partial(_make_svpbmt, sv=sv),
         name=f"make_svpbmt_{sv.name}",
         required_extensions=["I", sv.extension, "Svpbmt"],
         march_extensions=_MARCH,
         extra_defines=["#define BOOT_TO_MMODE"],
-    )
+    )(partial(_make_svpbmt, sv=sv))

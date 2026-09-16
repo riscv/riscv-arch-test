@@ -14,11 +14,11 @@ orc.b,I1,x,x,x,x,,x,orcb,,,,x,,,,
 orn,R,x,x,x,x,x,x,x,x,x,x,x,x,x,,
 rev8,I1,x,x,x,x,,x,x,,,,x,,,,
 rol,R,x,x,x,x,x,x,x,x,x,x,x,x,x,,
-rolw,R,,x,x,x,x,x,x,x,x,x,x,x,x,,
+rolw,R,,x,x,x,x,x,w,w,w,x,x,x,x,,
 ror,R,x,x,x,x,x,x,x,x,x,x,x,x,x,,
 rori,IS,x,x,x,x,,x,x,,,,x,,,x,uimm
-roriw,ISW,,x,x,x,,x,x,,,,x,,,5,uimmw
-rorw,R,,x,x,x,x,x,x,x,x,x,x,x,x,,
+roriw,ISW,,x,x,x,,x,w,,,,x,,,5,uimmw_w
+rorw,R,,x,x,x,x,x,w,w,w,x,x,x,x,,
 sext.b,I1,x,x,x,x,,x,x,,,,x,,,,
 sext.h,I1,x,x,x,x,,x,x,,,,x,,,,
 xnor,R,x,x,x,x,x,x,x,x,x,x,x,x,x,,

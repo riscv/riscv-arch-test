@@ -2101,8 +2101,8 @@ tsbi_instr_not_found:
 tsbi_instr_table:
 
         TSBI_CSR_INSTR_TABLE(0x300) // mstatus
-        //TSBI_CSR_INSTR_TABLE(0x302) // medeleg - shouldn't be changed below M-mode.
-        //TSBI_CSR_INSTR_TABLE(0x303) // mideleg - shouldn't be changed below M-mode.
+      //TSBI_CSR_INSTR_TABLE(0x302) // medeleg - shouldn't be changed below M-mode.
+      //TSBI_CSR_INSTR_TABLE(0x303) // mideleg - shouldn't be changed below M-mode.
         TSBI_CSR_INSTR_TABLE(0x304) // mie
         //TSBI_CSR_INSTR_TABLE(0x305) // mtvec
         TSBI_CSR_INSTR_TABLE(0x306) // mcounteren
@@ -2602,6 +2602,7 @@ clrint_\__MODE__\()tbl:
         .dword  \__MODE__\()clr_Sext_int             // cause  9: S-mode external interrupt
         .dword  \__MODE__\()clr_Vext_int             // cause 10: VS-mode external interrupt
         .dword  \__MODE__\()clr_Mext_int             // cause 11: M-mode external interrupt
+
 #else
   #if defined(S_SUPPORTED)
         .dword  0                                    // cause  0: reserved
@@ -2637,6 +2638,7 @@ clrint_\__MODE__\()tbl:
  .rept NUM_SPECD_INTCAUSES-0xE
         .dword  1                                    // causes 14..23: reserved -> default return
  .endr
+
  .rept UDB_MXLEN-NUM_SPECD_INTCAUSES
         .dword  0                       // impossible, quit test by jumping to  epilogs
  .endr

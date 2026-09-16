@@ -10,6 +10,11 @@
 from dataclasses import dataclass, field
 
 
+def trap_sigupd_count(expected_traps: int = 0) -> int:
+    """Return the trap-signature allocation for the expected trap count."""
+    return ((10 + expected_traps * 6 + 4) // 5) * 5
+
+
 @dataclass
 class TestChunk:
     """A test chunk — an unsplittable group of one or more testcases.

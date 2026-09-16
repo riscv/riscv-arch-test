@@ -10,31 +10,39 @@
 
 from collections.abc import Iterable
 
+from testgen.asm.helpers import comment_banner
+from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.assembly import DATA_REGION
 from testgen.priv.extensions.sv.page_tables import PteFlags, SvMode, create_page_mapping
 
 
-def sv_prologue(
+def begin_sv_test(
+    test_data: TestData,
     sv: SvMode,
     priv_mode: str,
+    split_name: str,
     *,
+    coverpoint: str | None = None,
+    code_prefix: Iterable[str] = (),
     sig_init: str = "LI(a2, 0x800) // Test signature initialization",
     va_defs: tuple[tuple[str, str], ...] | None = None,
     va_code_override: str | None = None,
     pre_va_asm: tuple[str, ...] = (),
     setup_asm: tuple[str, ...] = (),
-) -> list[str]:
-    """Emit the shared Sv virtual-memory setup sequence."""
-    umode = priv_mode == "Umode"
-    top = sv.levels - 1
-    code_perms = PteFlags(user=umode, write=False)
-    address_defs = va_defs if va_defs is not None else (("va_data", sv.data_va),)
-    lines = ["", "main:"]
+) -> TestChunk:
+    """Start an Sv test chunk and emit its banner and common prologue."""
+    chunk = test_data.begin_test_chunk(split_name)
+    chunk.section_header = comment_banner(coverpoint or f"cp_{split_name}")
+    chunk.code.extend([*code_prefix, "", "main:"])
     if sig_init:
-        lines.append(sig_init)
+        chunk.code.append(sig_init)
     if pre_va_asm:
-        lines.extend(["", *pre_va_asm])
-    lines.extend(
+        chunk.code.extend(["", *pre_va_asm])
+
+    top = sv.levels - 1
+    address_defs = va_defs if va_defs is not None else (("va_data", sv.data_va),)
+    chunk.code.extend(
         [
             "",
             "// Virtual addresses for code and test regions",
@@ -51,7 +59,7 @@ def sv_prologue(
                 virtual_address="va_rvtest_code_begin",
                 physical_address="rvtest_code_begin",
                 leaf_level=top,
-                leaf_flags=code_perms,
+                leaf_flags=PteFlags(user=priv_mode == "Umode", write=False),
             ),
             "sfence.vma",
             "",
@@ -64,9 +72,9 @@ def sv_prologue(
         ]
     )
     if setup_asm:
-        lines.extend(["", *setup_asm])
-    lines.append("")
-    return lines
+        chunk.code.extend(["", *setup_asm])
+    chunk.code.append("")
+    return chunk
 
 
 def sv_data(
@@ -103,14 +111,3 @@ def sv_data(
     if page_table_align != 12:
         lines.append(f".p2align {page_table_align}")
     return lines
-
-
-def trap_sigupd_count(faults: int = 0) -> int:
-    """Return the trap signature header and six words per expected trap, rounded to five words."""
-    words = 10 + faults * 6
-    return ((words + 4) // 5) * 5
-
-
-def page_table_label(sv: SvMode, level: int) -> str:
-    """Return the page table that contains a leaf PTE at the specified level."""
-    return "rvtest_Sroot_pg_tbl" if level == sv.levels - 1 else f"rvtest_slvl{level}_pg_tbl"

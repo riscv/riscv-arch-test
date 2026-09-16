@@ -13,25 +13,29 @@ from testgen.data.state import TestData
 from testgen.priv.extensions.sv.page_tables import SvMode
 
 
-def virtual_address(sv: SvMode, va: str, level: int) -> list[str]:
-    if sv.xlen == 32:
-        if level == 1:
-            return [
-                f"LI(a5, ({va} >> 22) << 22)",
-                "LA(a0, rvtest_data_1)",
-                "slli a0, a0, 10",
-                "srli a0, a0, 10",
-                "add a5, a5, a0",
-            ]
-        return [f"LI(a5, {va})"]
+def virtual_address(
+    sv: SvMode,
+    va: str,
+    level: int,
+    *,
+    destination: str = "a5",
+    physical_address: str = "rvtest_data_1",
+    physical_address_is_label: bool = True,
+    merge_sv32_base_page: bool = False,
+    scratch: str = "a0",
+) -> list[str]:
+    """Build a virtual address from its mapped physical-address offset."""
+    if sv.xlen == 32 and level == 0 and not merge_sv32_base_page:
+        return [f"LI({destination}, {va})"]
 
-    shift = level * 9 + 12
+    shift = sv.page_offset_bits(level)
+    load = "LA" if physical_address_is_label else "LI"
     return [
-        f"LI(a5, ({va} >> {shift}) << {shift})",
-        "LA(a0, rvtest_data_1)",
-        f"slli a0, a0, {sv.xlen - shift}",
-        f"srli a0, a0, {sv.xlen - shift}",
-        "add a5, a5, a0",
+        f"LI({destination}, ({va} >> {shift}) << {shift})",
+        f"{load}({scratch}, {physical_address})",
+        f"slli {scratch}, {scratch}, {sv.xlen - shift}",
+        f"srli {scratch}, {scratch}, {sv.xlen - shift}",
+        f"add {destination}, {destination}, {scratch}",
     ]
 
 

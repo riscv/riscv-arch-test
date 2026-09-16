@@ -8,15 +8,16 @@
 
 """Generate PMP checks for translated data and page-table regions."""
 
-from testgen.asm.helpers import comment_banner
+from functools import partial
+
 from testgen.data.state import TestData
-from testgen.data.test_chunk import TestChunk
+from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.pmp import helpers as pmp
 from testgen.priv.extensions.sv.access import add_rwx_test
 from testgen.priv.extensions.sv.assembly import DATA_REGION_ALIGNED
-from testgen.priv.extensions.sv.generate import page_table_label, sv_data, sv_prologue, trap_sigupd_count
-from testgen.priv.extensions.sv.page_tables import SV32, SV39, SV48, SV57, PteFlags, SvMode, create_page_mapping
-from testgen.priv.registry import add_priv_test_generator
+from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
+from testgen.priv.extensions.sv.page_tables import SV_MODES, PteFlags, SvMode, create_page_mapping
+from testgen.priv.registry import register_priv_test_generator
 
 PMP_PTE_VAS = {
     "sv32": ("0x00000000", "0x90000000"),
@@ -45,19 +46,17 @@ def _begin_test(
     va_defs: tuple[tuple[str, str], ...] | None = None,
     va_code_override: str | None = None,
 ) -> TestChunk:
-    chunk = test_data.begin_test_chunk(f"{sv.name}_{topic}_{mode}")
-    chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-    chunk.code.extend(pmp_defines)
-    chunk.code.extend(
-        sv_prologue(
-            sv,
-            mode,
-            va_defs=va_defs,
-            va_code_override=va_code_override,
-            pre_va_asm=pre_va_asm,
-        )
+    split_name = f"{sv.name}_{topic}_{mode}"
+    return begin_sv_test(
+        test_data,
+        sv,
+        mode,
+        split_name,
+        code_prefix=pmp_defines,
+        va_defs=va_defs,
+        va_code_override=va_code_override,
+        pre_va_asm=pre_va_asm,
     )
-    return chunk
 
 
 def _make_pmp_on_pa(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
@@ -112,7 +111,7 @@ def _make_pmp_on_pte(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
     permissions = PteFlags(user=mode == "Umode")
     for number, level in enumerate(sv.levels_desc, start=1):
         top = level == sv.levels - 1
-        chunk.code.extend([*pmp.set_pmpaddr("napot", 0, page_table_label(sv, level)), ""])
+        chunk.code.extend([*pmp.set_pmpaddr("napot", 0, sv.page_table_label(level)), ""])
         if top:
             chunk.code.extend(
                 [
@@ -150,45 +149,13 @@ def _make_svpmp(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     return tests
 
 
-@add_priv_test_generator(
-    "SvPMP",
-    required_extensions=["I", "Sv32", "Sm"],
-    march_extensions=_MARCH,
-    params=_PARAMS,
-    extra_defines=_DEFINES,
-)
-def make_svpmp_sv32(test_data: TestData) -> list[TestChunk]:
-    return _make_svpmp(test_data, SV32)
-
-
-@add_priv_test_generator(
-    "SvPMP",
-    required_extensions=["I", "Sv39", "Sm"],
-    march_extensions=_MARCH,
-    params=_PARAMS,
-    extra_defines=_DEFINES,
-)
-def make_svpmp_sv39(test_data: TestData) -> list[TestChunk]:
-    return _make_svpmp(test_data, SV39)
-
-
-@add_priv_test_generator(
-    "SvPMP",
-    required_extensions=["I", "Sv48", "Sm"],
-    march_extensions=_MARCH,
-    params=_PARAMS,
-    extra_defines=_DEFINES,
-)
-def make_svpmp_sv48(test_data: TestData) -> list[TestChunk]:
-    return _make_svpmp(test_data, SV48)
-
-
-@add_priv_test_generator(
-    "SvPMP",
-    required_extensions=["I", "Sv57", "Sm"],
-    march_extensions=_MARCH,
-    params=_PARAMS,
-    extra_defines=_DEFINES,
-)
-def make_svpmp_sv57(test_data: TestData) -> list[TestChunk]:
-    return _make_svpmp(test_data, SV57)
+for sv in SV_MODES:
+    register_priv_test_generator(
+        "SvPMP",
+        partial(_make_svpmp, sv=sv),
+        name=f"make_svpmp_{sv.name}",
+        required_extensions=["I", sv.extension, "Sm"],
+        march_extensions=_MARCH,
+        params=_PARAMS,
+        extra_defines=_DEFINES,
+    )

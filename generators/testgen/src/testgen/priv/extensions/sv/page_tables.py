@@ -24,6 +24,10 @@ class SvMode:
     page_names: tuple[str, ...]
 
     @property
+    def extension(self) -> str:
+        return self.name.capitalize()
+
+    @property
     def suffix(self) -> str:
         return self.name.upper()
 
@@ -35,18 +39,24 @@ class SvMode:
     def levels_desc(self) -> range:
         return range(self.levels - 1, -1, -1)
 
+    def page_offset_bits(self, level: int) -> int:
+        """Return the untranslated address width for a leaf at ``level``."""
+        _check_level(self, level)
+        return 12 + level * (10 if self.xlen == 32 else 9)
 
-SV32 = SvMode("sv32", 32, 2, "0x90407000", "0x30000000", ("4KB", "4MB"))
-SV39 = SvMode("sv39", 64, 3, "0x140802000", "0x180000000", ("4KB", "2MB", "1GB"))
-SV48 = SvMode("sv48", 64, 4, "0x028500403000", "0x030080000000", ("4KB", "2MB", "1GB", "512GB"))
-SV57 = SvMode(
-    "sv57",
-    64,
-    5,
-    "0x07028500403000",
-    "0x03000080000000",
-    ("4KB", "2MB", "1GB", "512GB", "256TB"),
+    def page_table_label(self, level: int) -> str:
+        """Return the table that contains a leaf PTE at ``level``."""
+        _check_level(self, level)
+        return "rvtest_Sroot_pg_tbl" if level == self.levels - 1 else f"rvtest_slvl{level}_pg_tbl"
+
+
+SV_MODES = (
+    SvMode("sv32", 32, 2, "0x90407000", "0x30000000", ("4KB", "4MB")),
+    SvMode("sv39", 64, 3, "0x140802000", "0x180000000", ("4KB", "2MB", "1GB")),
+    SvMode("sv48", 64, 4, "0x028500403000", "0x030080000000", ("4KB", "2MB", "1GB", "512GB")),
+    SvMode("sv57", 64, 5, "0x07028500403000", "0x03000080000000", ("4KB", "2MB", "1GB", "512GB", "256TB")),
 )
+RV64_SV_MODES = SV_MODES[1:]
 
 
 @dataclass(frozen=True)

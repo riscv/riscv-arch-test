@@ -71,7 +71,7 @@ def _generate_priv_test_entry(
     priv_exclude_regs = [0, 1, 7, 10, 11, 12, *range(16, 32)]
     test_data.int_regs.consume_registers(priv_exclude_regs)
 
-    seed_key = f"{testsuite}-{entry.generator.__name__}-0"
+    seed_key = f"{testsuite}-{entry.generator_name}-0"
     seed(reproducible_hash(seed_key))
 
     # Generate test chunks

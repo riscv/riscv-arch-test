@@ -8,22 +8,21 @@
 
 """Generate 64 KiB NAPOT translation and reserved-encoding tests."""
 
-from testgen.asm.helpers import comment_banner
+from functools import partial
+
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.access import add_rwx_test
 from testgen.priv.extensions.sv.assembly import NAPOT_DATA, NAPOT_RESERVED_DATA
-from testgen.priv.extensions.sv.generate import sv_data, sv_prologue
+from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
-    SV39,
-    SV48,
-    SV57,
+    RV64_SV_MODES,
     PteFlags,
     SvMode,
     create_leaf_pte,
     create_page_mapping,
 )
-from testgen.priv.registry import add_priv_test_generator
+from testgen.priv.registry import register_priv_test_generator
 
 _NAPOT_VA = {"sv39": "0x140200000", "sv48": "0x0280C0410000", "sv57": "0x400280C0410000"}
 _MARCH = ["I", "Zicsr", "Zifencei"]
@@ -35,16 +34,13 @@ def _permissions(umode: bool, ppn_bits: str | None = "(1 << 13)") -> PteFlags:
 
 
 def _begin_test(test_data: TestData, sv: SvMode, mode: str, topic: str) -> TestChunk:
-    chunk = test_data.begin_test_chunk(f"{sv.name}_{topic}_{mode}")
-    chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-    chunk.code.extend(
-        sv_prologue(
-            sv,
-            mode,
-            va_defs=(("va_data", _NAPOT_VA[sv.name]),),
-        )
+    return begin_sv_test(
+        test_data,
+        sv,
+        mode,
+        f"{sv.name}_{topic}_{mode}",
+        va_defs=(("va_data", _NAPOT_VA[sv.name]),),
     )
-    return chunk
 
 
 def _finish_test(test_data: TestData, sv: SvMode, data: str) -> TestChunk:
@@ -131,31 +127,12 @@ def _make_svnapot(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     return tests
 
 
-@add_priv_test_generator(
-    "Svnapot",
-    required_extensions=["I", "Sv39", "Svnapot"],
-    march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
-)
-def make_svnapot_sv39(test_data: TestData) -> list[TestChunk]:
-    return _make_svnapot(test_data, SV39)
-
-
-@add_priv_test_generator(
-    "Svnapot",
-    required_extensions=["I", "Sv48", "Svnapot"],
-    march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
-)
-def make_svnapot_sv48(test_data: TestData) -> list[TestChunk]:
-    return _make_svnapot(test_data, SV48)
-
-
-@add_priv_test_generator(
-    "Svnapot",
-    required_extensions=["I", "Sv57", "Svnapot"],
-    march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
-)
-def make_svnapot_sv57(test_data: TestData) -> list[TestChunk]:
-    return _make_svnapot(test_data, SV57)
+for sv in RV64_SV_MODES:
+    register_priv_test_generator(
+        "Svnapot",
+        partial(_make_svnapot, sv=sv),
+        name=f"make_svnapot_{sv.name}",
+        required_extensions=["I", sv.extension, "Svnapot"],
+        march_extensions=_MARCH,
+        extra_defines=["#define BOOT_TO_MMODE"],
+    )

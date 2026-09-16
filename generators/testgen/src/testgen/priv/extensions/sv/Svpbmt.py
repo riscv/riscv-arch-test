@@ -8,29 +8,27 @@
 
 """Generate Svpbmt leaf and non-leaf PTE tests."""
 
-from testgen.asm.helpers import comment_banner
+from functools import partial
+
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.access import add_rwx_test
-from testgen.priv.extensions.sv.generate import sv_data, sv_prologue
-from testgen.priv.extensions.sv.page_tables import SV39, SV48, SV57, PteFlags, SvMode, create_page_mapping
-from testgen.priv.registry import add_priv_test_generator
+from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
+from testgen.priv.extensions.sv.page_tables import RV64_SV_MODES, PteFlags, SvMode, create_page_mapping
+from testgen.priv.registry import register_priv_test_generator
 
 _PBMT = (("(1 << 61)", "PBMT=1", False), ("(2 << 61)", "PBMT=2", False), ("(3 << 61)", "PBMT=3", True))
 _MARCH = ["I", "Zicsr", "Zifencei"]
 
 
 def _begin_test(test_data: TestData, sv: SvMode, mode: str, topic: str) -> TestChunk:
-    chunk = test_data.begin_test_chunk(f"{sv.name}_{topic}_{mode}")
-    chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-    chunk.code.extend(
-        sv_prologue(
-            sv,
-            mode,
-            setup_asm=("LI(t0, MENVCFG_PBMTE)", "csrs menvcfg, t0"),
-        )
+    return begin_sv_test(
+        test_data,
+        sv,
+        mode,
+        f"{sv.name}_{topic}_{mode}",
+        setup_asm=("LI(t0, MENVCFG_PBMTE)", "csrs menvcfg, t0"),
     )
-    return chunk
 
 
 def _finish_test(test_data: TestData, sv: SvMode) -> TestChunk:
@@ -99,31 +97,12 @@ def _make_svpbmt(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     return tests
 
 
-@add_priv_test_generator(
-    "Svpbmt",
-    required_extensions=["I", "Sv39", "Svpbmt"],
-    march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
-)
-def make_svpbmt_sv39(test_data: TestData) -> list[TestChunk]:
-    return _make_svpbmt(test_data, SV39)
-
-
-@add_priv_test_generator(
-    "Svpbmt",
-    required_extensions=["I", "Sv48", "Svpbmt"],
-    march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
-)
-def make_svpbmt_sv48(test_data: TestData) -> list[TestChunk]:
-    return _make_svpbmt(test_data, SV48)
-
-
-@add_priv_test_generator(
-    "Svpbmt",
-    required_extensions=["I", "Sv57", "Svpbmt"],
-    march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
-)
-def make_svpbmt_sv57(test_data: TestData) -> list[TestChunk]:
-    return _make_svpbmt(test_data, SV57)
+for sv in RV64_SV_MODES:
+    register_priv_test_generator(
+        "Svpbmt",
+        partial(_make_svpbmt, sv=sv),
+        name=f"make_svpbmt_{sv.name}",
+        required_extensions=["I", sv.extension, "Svpbmt"],
+        march_extensions=_MARCH,
+        extra_defines=["#define BOOT_TO_MMODE"],
+    )

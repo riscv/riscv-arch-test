@@ -8,16 +8,17 @@
 
 """Generate cache-block operations against PMP-protected translated regions."""
 
-from testgen.asm.helpers import comment_banner
+from functools import partial
+
 from testgen.data.state import TestData
-from testgen.data.test_chunk import TestChunk
+from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.pmp import helpers as pmp
 from testgen.priv.extensions.sv.access import virtual_address
 from testgen.priv.extensions.sv.assembly import DATA_REGION_ALIGNED
-from testgen.priv.extensions.sv.generate import page_table_label, sv_data, sv_prologue, trap_sigupd_count
-from testgen.priv.extensions.sv.page_tables import SV32, SV39, SV48, SV57, PteFlags, SvMode, create_page_mapping
+from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
+from testgen.priv.extensions.sv.page_tables import SV_MODES, PteFlags, SvMode, create_page_mapping
 from testgen.priv.extensions.sv.SvPMP import PMP_PTE_VAS
-from testgen.priv.registry import add_priv_test_generator
+from testgen.priv.registry import register_priv_test_generator
 
 _MARCH = ["I", "Zicsr", "Zifencei"]
 _FAMILIES = {
@@ -57,22 +58,20 @@ def _begin_test(
     va_defs: tuple[tuple[str, str], ...] | None = None,
     va_code_override: str | None = None,
 ) -> TestChunk:
-    chunk = test_data.begin_test_chunk(f"{sv.name}_{topic}_{extension.lower()}_{mode}")
-    chunk.section_header = comment_banner("cp_pmp_zicbo")
     min_granularity = 5 if topic == "pmp_on_pa" else None
-    chunk.code.extend(pmp.napot_mask_defines(min_granularity))
-    chunk.code.extend(
-        sv_prologue(
-            sv,
-            mode,
-            sig_init="",
-            va_defs=va_defs,
-            va_code_override=va_code_override,
-            pre_va_asm=pre_va_asm,
-            setup_asm=_setup_envcfg(extension, mode),
-        )
+    return begin_sv_test(
+        test_data,
+        sv,
+        mode,
+        f"{sv.name}_{topic}_{extension.lower()}_{mode}",
+        coverpoint="cp_pmp_zicbo",
+        code_prefix=pmp.napot_mask_defines(min_granularity),
+        sig_init="",
+        va_defs=va_defs,
+        va_code_override=va_code_override,
+        pre_va_asm=pre_va_asm,
+        setup_asm=_setup_envcfg(extension, mode),
     )
-    return chunk
 
 
 def _make_on_pa(test_data: TestData, sv: SvMode, mode: str, extension: str) -> TestChunk:
@@ -127,7 +126,7 @@ def _make_on_pte(test_data: TestData, sv: SvMode, mode: str, extension: str) -> 
     faults_per_case = len(_FAMILIES[extension][1])
     for number, level in enumerate(sv.levels_desc, start=1):
         top = level == sv.levels - 1
-        chunk.code.extend([*pmp.set_pmpaddr("napot", 0, page_table_label(sv, level)), ""])
+        chunk.code.extend([*pmp.set_pmpaddr("napot", 0, sv.page_table_label(level)), ""])
         if top:
             chunk.code.extend(
                 [
@@ -164,89 +163,14 @@ def _make_svpmpzicbo(test_data: TestData, sv: SvMode, extension: str) -> list[Te
     return tests
 
 
-@add_priv_test_generator(
-    "SvPMPZicbo",
-    required_extensions=["I", "Sv32", "Zicbom", "Sm"],
-    march_extensions=_MARCH + ["Zicbom"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
-    extra_defines=["#define BOOT_TO_MMODE"],
-)
-def make_svpmpzicbo_sv32_zicbom(test_data: TestData) -> list[TestChunk]:
-    return _make_svpmpzicbo(test_data, SV32, "Zicbom")
-
-
-@add_priv_test_generator(
-    "SvPMPZicbo",
-    required_extensions=["I", "Sv32", "Zicboz", "Sm"],
-    march_extensions=_MARCH + ["Zicboz"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
-    extra_defines=["#define BOOT_TO_MMODE"],
-)
-def make_svpmpzicbo_sv32_zicboz(test_data: TestData) -> list[TestChunk]:
-    return _make_svpmpzicbo(test_data, SV32, "Zicboz")
-
-
-@add_priv_test_generator(
-    "SvPMPZicbo",
-    required_extensions=["I", "Sv39", "Zicbom", "Sm"],
-    march_extensions=_MARCH + ["Zicbom"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
-    extra_defines=["#define BOOT_TO_MMODE"],
-)
-def make_svpmpzicbo_sv39_zicbom(test_data: TestData) -> list[TestChunk]:
-    return _make_svpmpzicbo(test_data, SV39, "Zicbom")
-
-
-@add_priv_test_generator(
-    "SvPMPZicbo",
-    required_extensions=["I", "Sv39", "Zicboz", "Sm"],
-    march_extensions=_MARCH + ["Zicboz"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
-    extra_defines=["#define BOOT_TO_MMODE"],
-)
-def make_svpmpzicbo_sv39_zicboz(test_data: TestData) -> list[TestChunk]:
-    return _make_svpmpzicbo(test_data, SV39, "Zicboz")
-
-
-@add_priv_test_generator(
-    "SvPMPZicbo",
-    required_extensions=["I", "Sv48", "Zicbom", "Sm"],
-    march_extensions=_MARCH + ["Zicbom"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
-    extra_defines=["#define BOOT_TO_MMODE"],
-)
-def make_svpmpzicbo_sv48_zicbom(test_data: TestData) -> list[TestChunk]:
-    return _make_svpmpzicbo(test_data, SV48, "Zicbom")
-
-
-@add_priv_test_generator(
-    "SvPMPZicbo",
-    required_extensions=["I", "Sv48", "Zicboz", "Sm"],
-    march_extensions=_MARCH + ["Zicboz"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
-    extra_defines=["#define BOOT_TO_MMODE"],
-)
-def make_svpmpzicbo_sv48_zicboz(test_data: TestData) -> list[TestChunk]:
-    return _make_svpmpzicbo(test_data, SV48, "Zicboz")
-
-
-@add_priv_test_generator(
-    "SvPMPZicbo",
-    required_extensions=["I", "Sv57", "Zicbom", "Sm"],
-    march_extensions=_MARCH + ["Zicbom"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
-    extra_defines=["#define BOOT_TO_MMODE"],
-)
-def make_svpmpzicbo_sv57_zicbom(test_data: TestData) -> list[TestChunk]:
-    return _make_svpmpzicbo(test_data, SV57, "Zicbom")
-
-
-@add_priv_test_generator(
-    "SvPMPZicbo",
-    required_extensions=["I", "Sv57", "Zicboz", "Sm"],
-    march_extensions=_MARCH + ["Zicboz"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
-    extra_defines=["#define BOOT_TO_MMODE"],
-)
-def make_svpmpzicbo_sv57_zicboz(test_data: TestData) -> list[TestChunk]:
-    return _make_svpmpzicbo(test_data, SV57, "Zicboz")
+for sv in SV_MODES:
+    for extension in _FAMILIES:
+        register_priv_test_generator(
+            "SvPMPZicbo",
+            partial(_make_svpmpzicbo, sv=sv, extension=extension),
+            name=f"make_svpmpzicbo_{sv.name}_{extension.lower()}",
+            required_extensions=["I", sv.extension, extension, "Sm"],
+            march_extensions=_MARCH + [extension],
+            params=["NUM_PMP_ENTRIES: '>0'"],
+            extra_defines=["#define BOOT_TO_MMODE"],
+        )

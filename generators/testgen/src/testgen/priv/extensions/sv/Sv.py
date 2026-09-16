@@ -9,19 +9,17 @@
 """Generate core PTE, satp, and mstatus virtual-memory tests."""
 
 from collections.abc import Mapping
+from functools import partial
 
 from testgen.asm.csr import gen_csr_read_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
-from testgen.data.test_chunk import TestChunk
+from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.sv.access import add_rwx_test
 from testgen.priv.extensions.sv.assembly import VA_ONES_DATA, VA_ZEROS_DATA
-from testgen.priv.extensions.sv.generate import sv_data, sv_prologue, trap_sigupd_count
+from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
-    SV32,
-    SV39,
-    SV48,
-    SV57,
+    SV_MODES,
     PteExpression,
     PteFlags,
     SvMode,
@@ -29,7 +27,7 @@ from testgen.priv.extensions.sv.page_tables import (
     create_page_mapping,
     create_page_walk,
 )
-from testgen.priv.registry import add_priv_test_generator
+from testgen.priv.registry import add_priv_test_generator, register_priv_test_generator
 
 
 def _change_pte_to_be(sv: SvMode) -> list[str]:
@@ -75,23 +73,13 @@ def _mstatus_setup(kind: str) -> tuple[str, ...]:
 def _add_rsw_readback(test_data: TestData, sv: SvMode, level: int, name: str) -> list[str]:
     assert test_data.test_chunk is not None
     offsets = {
-        "sv32": {1: ("rvtest_Sroot_pg_tbl", 64), 0: ("rvtest_slvl0_pg_tbl", 28)},
-        "sv39": {2: ("rvtest_Sroot_pg_tbl", 40), 1: ("rvtest_slvl1_pg_tbl", 32), 0: ("rvtest_slvl0_pg_tbl", 16)},
-        "sv48": {
-            3: ("rvtest_Sroot_pg_tbl", 40),
-            2: ("rvtest_slvl2_pg_tbl", 160),
-            1: ("rvtest_slvl1_pg_tbl", 16),
-            0: ("rvtest_slvl0_pg_tbl", 24),
-        },
-        "sv57": {
-            4: ("rvtest_Sroot_pg_tbl", 56),
-            3: ("rvtest_slvl3_pg_tbl", 40),
-            2: ("rvtest_slvl2_pg_tbl", 160),
-            1: ("rvtest_slvl1_pg_tbl", 16),
-            0: ("rvtest_slvl0_pg_tbl", 24),
-        },
+        "sv32": {1: 64, 0: 28},
+        "sv39": {2: 40, 1: 32, 0: 16},
+        "sv48": {3: 40, 2: 160, 1: 16, 0: 24},
+        "sv57": {4: 56, 3: 40, 2: 160, 1: 16, 0: 24},
     }
-    table, offset = offsets[sv.name][level]
+    table = sv.page_table_label(level)
+    offset = offsets[sv.name][level]
     label = test_data.add_testcase(
         f"{name}_read_pte", f"cp_{test_data.test_chunk.split_name}", test_data.testsuite
     ).removesuffix(":")
@@ -186,9 +174,7 @@ def _emit_access(test_data: TestData, sv: SvMode, level: int, style: str, name: 
 
 def _t_invalid_pte(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     for mode in ("Smode", "Umode"):
-        chunk = test_data.begin_test_chunk(f"{sv.name}_invalid_pte_{mode}")
-        chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-        chunk.code.extend(sv_prologue(sv, mode))
+        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_invalid_pte_{mode}")
         for number, level in enumerate(sv.levels_desc, start=1):
             permissions = PteFlags(user=mode == "Umode", valid=False)
             chunk.code.extend(
@@ -214,14 +200,12 @@ def _t_canonical(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) 
     if sv.name not in _CANONICAL_VA:
         return
     for mode in ("Smode", "Umode"):
-        chunk = test_data.begin_test_chunk(f"{sv.name}_canonical_{mode}")
-        chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-        chunk.code.extend(
-            sv_prologue(
-                sv,
-                mode,
-                va_defs=(("va_data", _CANONICAL_VA[sv.name]),),
-            )
+        chunk = begin_sv_test(
+            test_data,
+            sv,
+            mode,
+            f"{sv.name}_canonical_{mode}",
+            va_defs=(("va_data", _CANONICAL_VA[sv.name]),),
         )
         for number, level in enumerate(sv.levels_desc, start=1):
             permissions = PteFlags(user=mode == "Umode")
@@ -248,9 +232,7 @@ def _t_global_pte(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode)
         else ("  csrr  t0, satp", "  slli  t0, t0, 4", "  srli  t0, t0, 48", "  sfence.vma x0, t0")
     )
     for mode in ("Smode", "Umode"):
-        chunk = test_data.begin_test_chunk(f"{sv.name}_global_pte_{mode}")
-        chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-        chunk.code.extend(sv_prologue(sv, mode))
+        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_global_pte_{mode}")
         for number, level in enumerate(sv.levels_desc, start=1):
             permissions = PteFlags(user=mode == "Umode", global_=True)
             first_name = f"test{number}_access1"
@@ -290,14 +272,12 @@ _MISALIGNED_VA = {
 def _t_misaligned_page(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     levels = tuple(level for level in sv.levels_desc if level > 0)
     for mode in ("Smode", "Umode"):
-        chunk = test_data.begin_test_chunk(f"{sv.name}_misaligned_page_{mode}")
-        chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-        chunk.code.extend(
-            sv_prologue(
-                sv,
-                mode,
-                va_defs=(("va_data", _MISALIGNED_VA[sv.name]),),
-            )
+        chunk = begin_sv_test(
+            test_data,
+            sv,
+            mode,
+            f"{sv.name}_misaligned_page_{mode}",
+            va_defs=(("va_data", _MISALIGNED_VA[sv.name]),),
         )
         for number, level in enumerate(levels, start=1):
             permissions = PteFlags(user=mode == "Umode")
@@ -324,9 +304,7 @@ def _t_misaligned_page(test_data: TestData, test_chunks: list[TestChunk], sv: Sv
 
 def _t_mstatus_mprv(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     for mode in ("Smode", "Umode"):
-        chunk = test_data.begin_test_chunk(f"{sv.name}_mstatus_mprv_{mode}")
-        chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-        chunk.code.extend(sv_prologue(sv, mode))
+        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_mstatus_mprv_{mode}")
         style = "mprv_s" if mode == "Smode" else "mprv_u"
         for number, level in enumerate(sv.levels_desc, start=1):
             permissions = PteFlags(user=mode == "Umode")
@@ -348,9 +326,7 @@ def _t_mstatus_mprv(test_data: TestData, test_chunks: list[TestChunk], sv: SvMod
 
 def _t_mstatus_mxr(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     for mode in ("Smode", "Umode"):
-        chunk = test_data.begin_test_chunk(f"{sv.name}_mstatus_mxr_{mode}")
-        chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-        chunk.code.extend(sv_prologue(sv, mode))
+        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_mstatus_mxr_{mode}")
         number = 0
         faults = 0
         for level in sv.levels_desc:
@@ -399,14 +375,12 @@ def _walk_be(sv: SvMode, level: int) -> list[str]:
 
 def _t_mstatus_sbe(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     for topic, with_sum in (("mstatus_sbe_set", False), ("mstatus_sbe_and_sum_set", True)):
-        chunk = test_data.begin_test_chunk(f"{sv.name}_{topic}_Smode")
-        chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-        chunk.code.extend(
-            sv_prologue(
-                sv,
-                "Smode",
-                setup_asm=_sbe_setup(sv, with_sum),
-            )
+        chunk = begin_sv_test(
+            test_data,
+            sv,
+            "Smode",
+            f"{sv.name}_{topic}_Smode",
+            setup_asm=_sbe_setup(sv, with_sum),
         )
         chunk.code.extend(_change_pte_to_be(sv))
         for number, level in enumerate(sv.levels_desc, start=1):
@@ -440,10 +414,13 @@ def _t_mstatus_sbe(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode
 
 def _t_nleaf_pte_dau(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     for mode in ("Smode", "Umode"):
-        chunk = test_data.begin_test_chunk(f"{sv.name}_nleaf_pte_DAU_{mode}")
-        chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-        chunk.code.extend(["#ifdef S1P12P0_OR_LATER_SUPPORTED", ""])
-        chunk.code.extend(sv_prologue(sv, mode))
+        chunk = begin_sv_test(
+            test_data,
+            sv,
+            mode,
+            f"{sv.name}_nleaf_pte_DAU_{mode}",
+            code_prefix=("#ifdef S1P12P0_OR_LATER_SUPPORTED", ""),
+        )
         number = 0
         for table_level in range(sv.levels - 1, 0, -1):
             for bit in ("PTE_D", "PTE_A", "PTE_U"):
@@ -476,9 +453,7 @@ def _t_nleaf_pte_dau(test_data: TestData, test_chunks: list[TestChunk], sv: SvMo
 
 def _t_nleaf_pte_level0(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     for mode in ("Smode", "Umode"):
-        chunk = test_data.begin_test_chunk(f"{sv.name}_nleaf_pte_level0_{mode}")
-        chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-        chunk.code.extend(sv_prologue(sv, mode))
+        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_nleaf_pte_level0_{mode}")
         permissions = PteFlags(
             user=mode == "Umode",
             read=False,
@@ -513,10 +488,13 @@ def _t_nleaf_pte_level0(test_data: TestData, test_chunks: list[TestChunk], sv: S
 
 def _t_pte_reserved_rwx(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     for mode in ("Smode", "Umode"):
-        chunk = test_data.begin_test_chunk(f"{sv.name}_pte_reserved_rwx_{mode}")
-        chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-        chunk.code.extend(["#ifdef S1P12P0_OR_LATER_SUPPORTED", ""])
-        chunk.code.extend(sv_prologue(sv, mode))
+        chunk = begin_sv_test(
+            test_data,
+            sv,
+            mode,
+            f"{sv.name}_pte_reserved_rwx_{mode}",
+            code_prefix=("#ifdef S1P12P0_OR_LATER_SUPPORTED", ""),
+        )
         number = 0
         for level in sv.levels_desc:
             for read, write, execute, description in (
@@ -553,15 +531,7 @@ def _t_pte_reserved_rwx(test_data: TestData, test_chunks: list[TestChunk], sv: S
 def _t_pte_rsw(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     va_defs = (("va_data", "0x04007000"),) if sv.xlen == 32 else None
     for mode in ("Smode", "Umode"):
-        chunk = test_data.begin_test_chunk(f"{sv.name}_pte_rsw_{mode}")
-        chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-        chunk.code.extend(
-            sv_prologue(
-                sv,
-                mode,
-                va_defs=va_defs,
-            )
-        )
+        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_pte_rsw_{mode}", va_defs=va_defs)
         number = 0
         for level in sv.levels_desc:
             for rsw, description in (
@@ -594,10 +564,13 @@ def _t_pte_reserved_field(test_data: TestData, test_chunks: list[TestChunk], sv:
     if sv.name == "sv32":
         return
     top = sv.levels - 1
-    chunk = test_data.begin_test_chunk(f"{sv.name}_pte_reserved_field_Smode")
-    chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-    chunk.code.extend(["#ifdef S1P12P0_OR_LATER_SUPPORTED", ""])
-    chunk.code.extend(sv_prologue(sv, "Smode"))
+    chunk = begin_sv_test(
+        test_data,
+        sv,
+        "Smode",
+        f"{sv.name}_pte_reserved_field_Smode",
+        code_prefix=("#ifdef S1P12P0_OR_LATER_SUPPORTED", ""),
+    )
     for number, bit in enumerate(range(54, 61), start=1):
         permissions = PteFlags(extra=(f"(1 << {bit})",))
         chunk.code.extend(
@@ -636,15 +609,13 @@ def _t_svpbmt_disabled(test_data: TestData, test_chunks: list[TestChunk], sv: Sv
         else (("(1 << 61)", "PBMT=1"), ("(1 << 62)", "PBMT=2"), ("(1 << 62) | (1 << 61)", "PBMT=3"))
     )
     top = sv.levels - 1
-    chunk = test_data.begin_test_chunk(f"{sv.name}_svpbmt_disabled_Smode")
-    chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-    chunk.code.extend(["#ifdef S1P12P0_OR_LATER_SUPPORTED", ""])
-    chunk.code.extend(
-        sv_prologue(
-            sv,
-            "Smode",
-            setup_asm=setup,
-        )
+    chunk = begin_sv_test(
+        test_data,
+        sv,
+        "Smode",
+        f"{sv.name}_svpbmt_disabled_Smode",
+        code_prefix=("#ifdef S1P12P0_OR_LATER_SUPPORTED", ""),
+        setup_asm=setup,
     )
     for number, (bits, description) in enumerate(pbmt, start=1):
         permissions = PteFlags(extra=(bits,))
@@ -673,15 +644,13 @@ def _t_svnapot_not_supported(test_data: TestData, test_chunks: list[TestChunk], 
         return
     napot_bit = "PTE_N" if sv.name == "sv39" else "(1 << 63)"
     permissions = PteFlags(extra=(napot_bit, "(1 << 13)"))
-    chunk = test_data.begin_test_chunk(f"{sv.name}_svnapot_not_supported_Smode")
-    chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-    chunk.code.extend(["#ifdef S1P12P0_OR_LATER_SUPPORTED", ""])
-    chunk.code.extend(
-        sv_prologue(
-            sv,
-            "Smode",
-            va_defs=(("va_data", _NAPOT_VA[sv.name]),),
-        )
+    chunk = begin_sv_test(
+        test_data,
+        sv,
+        "Smode",
+        f"{sv.name}_svnapot_not_supported_Smode",
+        code_prefix=("#ifdef S1P12P0_OR_LATER_SUPPORTED", ""),
+        va_defs=(("va_data", _NAPOT_VA[sv.name]),),
     )
     chunk.code.extend(
         [
@@ -766,9 +735,7 @@ def _t_page_perm_topics(test_data: TestData, test_chunks: list[TestChunk], sv: S
             ("upage", "Umode", True, s_faults),
             ("spage_access", "Umode", False, 3),
         ):
-            chunk = test_data.begin_test_chunk(f"{sv.name}_{topic}_{mode}")
-            chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-            chunk.code.extend(sv_prologue(sv, mode))
+            chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_{topic}_{mode}")
             faults = _add_page_permission_matrix(
                 test_data,
                 chunk,
@@ -781,9 +748,7 @@ def _t_page_perm_topics(test_data: TestData, test_chunks: list[TestChunk], sv: S
             chunk.trap_sigupd_count = trap_sigupd_count(faults)
             test_chunks.append(test_data.end_test_chunk())
     else:
-        chunk = test_data.begin_test_chunk(f"{sv.name}_spage_access_Umode")
-        chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-        chunk.code.extend(sv_prologue(sv, "Umode"))
+        chunk = begin_sv_test(test_data, sv, "Umode", f"{sv.name}_spage_access_Umode")
         for number, level in enumerate(sv.levels_desc, start=1):
             chunk.code.extend(
                 [
@@ -809,9 +774,7 @@ def _t_page_perm_topics(test_data: TestData, test_chunks: list[TestChunk], sv: S
         ("upage_mstatus_sum_set", sum_set_faults, "sum"),
         ("upage_mstatus_sum_unset", 3, "rwx"),
     ):
-        chunk = test_data.begin_test_chunk(f"{sv.name}_{topic}_Smode")
-        chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-        chunk.code.extend(sv_prologue(sv, "Smode"))
+        chunk = begin_sv_test(test_data, sv, "Smode", f"{sv.name}_{topic}_Smode")
         faults = _add_page_permission_matrix(
             test_data,
             chunk,
@@ -825,9 +788,7 @@ def _t_page_perm_topics(test_data: TestData, test_chunks: list[TestChunk], sv: S
         chunk.trap_sigupd_count = trap_sigupd_count(faults)
         test_chunks.append(test_data.end_test_chunk())
 
-    chunk = test_data.begin_test_chunk(f"{sv.name}_spage_mstatus_sum_set_Smode")
-    chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-    chunk.code.extend(sv_prologue(sv, "Smode"))
+    chunk = begin_sv_test(test_data, sv, "Smode", f"{sv.name}_spage_mstatus_sum_set_Smode")
     number = 0
     faults = 0
     spage_permissions = ((True, True, True, "RWX"), (True, False, False, "R-only"), (False, False, True, "X-only"))
@@ -863,9 +824,7 @@ def _t_upage_mprv(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode)
         ("upage_mprv_set_sum_set", "mprv_sum_set", 0),
         ("upage_mprv_set_sum_unset", "mprv_sum_unset", 2),
     ):
-        chunk = test_data.begin_test_chunk(f"{sv.name}_{topic}_Smode")
-        chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-        chunk.code.extend(sv_prologue(sv, "Smode"))
+        chunk = begin_sv_test(test_data, sv, "Smode", f"{sv.name}_{topic}_Smode")
         sum_state = "set" if faults_per_case == 0 else "unset"
         expected = "No Fault" if faults_per_case == 0 else "Load & Store page fault"
         for number, level in enumerate(sv.levels_desc, start=1):
@@ -929,15 +888,13 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
         else "  li a2, 0x12                 // Test signature initialization"
     )
 
-    chunk = test_data.begin_test_chunk(f"{sv.name}_VA_all_ones_Smode")
-    chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-    chunk.code.extend(
-        sv_prologue(
-            sv,
-            "Smode",
-            sig_init=sig_init,
-            va_defs=(("va_data_rw", all_ones), ("va_data_x", all_ones_code)),
-        )
+    chunk = begin_sv_test(
+        test_data,
+        sv,
+        "Smode",
+        f"{sv.name}_VA_all_ones_Smode",
+        sig_init=sig_init,
+        va_defs=(("va_data_rw", all_ones), ("va_data_x", all_ones_code)),
     )
     _add_va_extreme_test(
         test_data,
@@ -963,15 +920,13 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
     chunk.trap_sigupd_count = 10
     test_chunks.append(test_data.end_test_chunk())
 
-    chunk = test_data.begin_test_chunk(f"{sv.name}_VA_all_zeros_Smode")
-    chunk.section_header = comment_banner(f"cp_{chunk.split_name}")
-    chunk.code.extend(
-        sv_prologue(
-            sv,
-            "Smode",
-            sig_init=sig_init,
-            va_defs=(("va_data", all_zeros),),
-        )
+    chunk = begin_sv_test(
+        test_data,
+        sv,
+        "Smode",
+        f"{sv.name}_VA_all_zeros_Smode",
+        sig_init=sig_init,
+        va_defs=(("va_data", all_zeros),),
     )
     _add_va_extreme_test(
         test_data,
@@ -1063,68 +1018,31 @@ def _make_sv(test_data: TestData, sv: SvMode) -> list[TestChunk]:
 _MARCH = ["I", "Zicsr", "Zifencei"]
 
 
-@add_priv_test_generator(
-    "Sv", required_extensions=["I", "Sv32"], march_extensions=_MARCH, extra_defines=["#define BOOT_TO_MMODE"]
-)
-def make_sv32(test_data: TestData) -> list[TestChunk]:
-    return _make_sv(test_data, SV32)
-
-
-@add_priv_test_generator(
-    "Sv", required_extensions=["I", "Sv39"], march_extensions=_MARCH, extra_defines=["#define BOOT_TO_MMODE"]
-)
-def make_sv39(test_data: TestData) -> list[TestChunk]:
-    return _make_sv(test_data, SV39)
-
-
-@add_priv_test_generator(
-    "Sv", required_extensions=["I", "Sv48"], march_extensions=_MARCH, extra_defines=["#define BOOT_TO_MMODE"]
-)
-def make_sv48(test_data: TestData) -> list[TestChunk]:
-    return _make_sv(test_data, SV48)
-
-
-@add_priv_test_generator(
-    "Sv", required_extensions=["I", "Sv57"], march_extensions=_MARCH, extra_defines=["#define BOOT_TO_MMODE"]
-)
-def make_sv57(test_data: TestData) -> list[TestChunk]:
-    return _make_sv(test_data, SV57)
-
-
-@add_priv_test_generator(
-    "Sv", required_extensions=["I", "Sv32", "NORUN"], march_extensions=_MARCH, extra_defines=["#define BOOT_TO_MMODE"]
-)
-def make_sv32_sbe(test_data: TestData) -> list[TestChunk]:
+def _make_sv_sbe(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
-    _t_mstatus_sbe(test_data, test_chunks, SV32)
+    _t_mstatus_sbe(test_data, test_chunks, sv)
     return test_chunks
 
 
-@add_priv_test_generator(
-    "Sv", required_extensions=["I", "Sv39", "NORUN"], march_extensions=_MARCH, extra_defines=["#define BOOT_TO_MMODE"]
-)
-def make_sv39_sbe(test_data: TestData) -> list[TestChunk]:
-    test_chunks: list[TestChunk] = []
-    _t_mstatus_sbe(test_data, test_chunks, SV39)
-    return test_chunks
+for sv in SV_MODES:
+    register_priv_test_generator(
+        "Sv",
+        partial(_make_sv, sv=sv),
+        name=f"make_{sv.name}",
+        required_extensions=["I", sv.extension],
+        march_extensions=_MARCH,
+        extra_defines=["#define BOOT_TO_MMODE"],
+    )
 
-
-@add_priv_test_generator(
-    "Sv", required_extensions=["I", "Sv48", "NORUN"], march_extensions=_MARCH, extra_defines=["#define BOOT_TO_MMODE"]
-)
-def make_sv48_sbe(test_data: TestData) -> list[TestChunk]:
-    test_chunks: list[TestChunk] = []
-    _t_mstatus_sbe(test_data, test_chunks, SV48)
-    return test_chunks
-
-
-@add_priv_test_generator(
-    "Sv", required_extensions=["I", "Sv57", "NORUN"], march_extensions=_MARCH, extra_defines=["#define BOOT_TO_MMODE"]
-)
-def make_sv57_sbe(test_data: TestData) -> list[TestChunk]:
-    test_chunks: list[TestChunk] = []
-    _t_mstatus_sbe(test_data, test_chunks, SV57)
-    return test_chunks
+for sv in SV_MODES:
+    register_priv_test_generator(
+        "Sv",
+        partial(_make_sv_sbe, sv=sv),
+        name=f"make_{sv.name}_sbe",
+        required_extensions=["I", sv.extension, "NORUN"],
+        march_extensions=_MARCH,
+        extra_defines=["#define BOOT_TO_MMODE"],
+    )
 
 
 @add_priv_test_generator(

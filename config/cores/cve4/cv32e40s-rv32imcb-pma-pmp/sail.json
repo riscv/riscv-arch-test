@@ -147,8 +147,8 @@
       "exceptions": {
         "load_store": { "None": null },
         "vector": { "None": null },
-        "lrsc": { "Some": "AlignmentException" },
-        "amo": { "Some": "AlignmentException" }
+        "lrsc": { "Some": "AccessFault" },
+        "amo": { "Some": "AccessFault" }
       }
     },
     "dtb_address": {
@@ -171,8 +171,8 @@
           "misaligned_exceptions": {
             "load_store": { "None": null },
             "vector": { "None": null },
-            "amo": "AlignmentException",
-            "lrsc": "AlignmentException"
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
           },
           "atomic_support": "AMONone",
           "misaligned_atomicity_granule_size_exp": 0,
@@ -200,8 +200,8 @@
           "misaligned_exceptions": {
             "load_store": { "Some": "AlignmentException" },
             "vector": { "Some": "AlignmentException" },
-            "amo": "AlignmentException",
-            "lrsc": "AlignmentException"
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
           },
           "atomic_support": "AMONone",
           "misaligned_atomicity_granule_size_exp": 0,
@@ -229,8 +229,8 @@
           "misaligned_exceptions": {
             "load_store": { "None": null },
             "vector": { "None": null },
-            "amo": "AlignmentException",
-            "lrsc": "AlignmentException"
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
           },
           "atomic_support": "AMONone",
           "misaligned_atomicity_granule_size_exp": 0,

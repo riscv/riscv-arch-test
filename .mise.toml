@@ -25,7 +25,10 @@ auto = true
 depends = ["uv"]
 sources = [".pre-commit-config.yaml"]
 outputs = [".git/hooks/pre-commit"]
-run = "prek install --prepare-hooks"
+# Retry with --force only if the plain install refuses, which it does when core.hooksPath
+# points outside the repository.  Forcing unconditionally would drop a legacy hook that
+# the plain install preserves and keeps running.
+run = "prek install --prepare-hooks || prek install --force --prepare-hooks"
 
 [tasks.prek]
 description = "Run prek hooks on all files"

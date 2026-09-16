@@ -1,6 +1,6 @@
 {
   // TODO: This config needs to be run against CVA6 (cv32a65x) to confirm most of the settings
-  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.14/sail_riscv_config_schema.json",
+  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.14.1/sail_riscv_config_schema.json",
   "base": {
     "xlen": 32,
     "E": false,

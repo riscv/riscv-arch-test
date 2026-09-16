@@ -218,13 +218,9 @@ def _gen_sew_lmul_vset_i_vli(test_data: TestData, temp_reg: int) -> list[str]:
     lines.append(f"LI(x{rs1_reg}, 1)  # vl = 1")
     for sew_name, _ in _SEW_VALUES:
         for lmul_name, _ in _LMUL_VALUES:
-            # The coverpoint reads SEW/LMUL from ins.prev.insn, so prime it with a matching
-            # vset; ta,ma and a different AVL keep the testcase's own effect observable.
-            lines.append(f"vsetvli x{temp_reg}, x0, {sew_name}, {lmul_name}, ta, ma  # prime prev.insn")
             lines.append(test_data.add_testcase(f"vsetvli_{sew_name}_{lmul_name}", coverpoint, _CG))
             lines.append(f"vsetvli x{temp_reg}, x{rs1_reg}, {sew_name}, {lmul_name}, tu, mu")
             lines.extend(_check_vset(temp_reg, check_reg, test_data))
-            lines.append(f"vsetivli x{temp_reg}, 0, {sew_name}, {lmul_name}, ta, ma  # prime prev.insn")
             lines.append(test_data.add_testcase(f"vsetivli_{sew_name}_{lmul_name}", coverpoint, _CG))
             lines.append(f"vsetivli x{temp_reg}, 1, {sew_name}, {lmul_name}, tu, mu")
             lines.extend(_check_vset(temp_reg, check_reg, test_data))

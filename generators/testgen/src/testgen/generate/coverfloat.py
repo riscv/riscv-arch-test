@@ -25,6 +25,7 @@ def generate_coverfloat(output_dir: Path, jobs: int) -> bool:
     config = cover_float.Config(
         output_dir=output_dir,
         full_coverage_testgen=False,  # This generates too many tests otherwise,
+        no_coverage_generation=True,
         quiet=True,
         silent=False,  # Still display 1 progress bar,
         release=True,

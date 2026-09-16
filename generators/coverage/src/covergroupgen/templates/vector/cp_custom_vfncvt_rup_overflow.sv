@@ -14,7 +14,7 @@
     }
 
     // Overflow flag set after execution (fflags bit 2 = OF)
-    fflags_of: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[2] {
+    fflags_of: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0][2] {
         bins overflow = {1'b1};
     }
 

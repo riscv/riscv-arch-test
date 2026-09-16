@@ -24,11 +24,6 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
     sstateen_walk_csr: coverpoint ins.current.insn[31:20] {
             bins sstateen0 = {CSR_SSTATEEN0};
     }
-    // Ssstateen implies S-mode, so both bins are always reachable.
-    priv_mode_maybes_u: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
-            bins U_mode = {3'b000};
-            bins S_mode = {3'b001};
-    }
 
     `ifdef UDB_MXLEN_64
       csr_walk: coverpoint ins.current.rs1_val {
@@ -97,11 +92,11 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
         }
     `endif
     `ifdef ZFINX_SUPPORTED
-        cp_fcsr_lower: cross priv_mode_maybes_u, misa_F, se0_one, sstateen0_fcsr_bit, csrops, fcsr_lower_mode_csrs {
+        cp_fcsr_lower: cross priv_mode_s_u, misa_F, se0_one, sstateen0_fcsr_bit, csrops, fcsr_lower_mode_csrs {
                 ignore_bins ig1 = binsof(misa_F.F_set)   && binsof(sstateen0_fcsr_bit.fcsr_zero);
                 ignore_bins ig2 = binsof(misa_F.F_clear) && binsof(sstateen0_fcsr_bit.fcsr_zero);
         }
-        cp_fcsr_fp_instrs: cross priv_mode_maybes_u, misa_F, se0_one, sstateen0_fcsr_bit, fp_instrs {
+        cp_fcsr_fp_instrs: cross priv_mode_s_u, misa_F, se0_one, sstateen0_fcsr_bit, fp_instrs {
                 ignore_bins ig1 = binsof(misa_F.F_set)   && binsof(sstateen0_fcsr_bit.fcsr_zero);
                 ignore_bins ig2 = binsof(misa_F.F_clear) && binsof(sstateen0_fcsr_bit.fcsr_zero);
         }
@@ -109,7 +104,7 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
     cp_csr_illegal_accesses: cross priv_mode_u, sstateen_csrs, csrops, se0_one;
     cp_walking_ones:         cross priv_mode_s, sstateen_walk_csr, csrops, csr_walk, se0_one;
     `ifdef ZCMT_SUPPORTED
-        cp_jvt:              cross priv_mode_maybes_u, csrops, jvt_csr, jvt_state, se0_one;
+        cp_jvt:              cross priv_mode_s_u, csrops, jvt_csr, jvt_state, se0_one;
     `endif
 endgroup
 function void ssstateen_sample(int hart, int issue, ins_t ins);

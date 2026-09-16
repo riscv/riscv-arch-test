@@ -21,15 +21,6 @@ from testgen.priv.registry import add_priv_test_generator
 CSR_OPS = ["csrrw", "csrrs", "csrrc", "csrr"]
 
 
-# Mode dispatch for the coverpoints that sample in both S- and U-mode. Each entry is
-# (label, line entering the mode, line returning to S-mode). Ssstateen implies S-mode, and
-# the suite boots there, so the S-mode leg needs no switch at all.
-_LOWER_MODES = [
-    ("smode", "", ""),
-    ("umode", "RVTEST_TSBI_GOTO_UMODE", "RVTEST_TSBI_GOTO_SMODE"),
-]
-
-
 def _write_se0(temp_reg: int, *, enable: bool) -> list[str]:
     """Set (enable=True) or clear (enable=False) SE0 in mstateen0/mstateen0h.
 
@@ -188,8 +179,7 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
 
 # ---------------------------------------------------------------------------
 # cp_jvt
-#   Cross: priv_mode_maybes_u × csrops × jvt_csr × jvt_state × se0_one
-#   priv_mode_maybes_u = S-mode + U-mode.
+#   Cross: priv_mode_s_u × csrops × jvt_csr × jvt_state × se0_one
 # ---------------------------------------------------------------------------
 
 
@@ -208,8 +198,7 @@ def _generate_jvt(test_data: TestData) -> list[str]:
 
     JVT_BIT = 2
 
-    # priv_mode_maybes_u = S-mode + U-mode
-    for mode_label, enter_line, exit_line in _LOWER_MODES:
+    for mode_label in ("smode", "umode"):
         for jvt_state in [0, 1]:
             jvt_action = "csrc" if jvt_state == 0 else "csrs"
             lines.extend(
@@ -229,8 +218,8 @@ def _generate_jvt(test_data: TestData) -> list[str]:
                     f"{jvt_action}(sstateen0, x{temp_reg})  # sstateen0.JVT = {jvt_state}",
                 ]
             )
-            if enter_line:
-                lines.append(enter_line)
+            if mode_label == "umode":
+                lines.append("RVTEST_TSBI_GOTO_UMODE")
             for op in CSR_OPS:
                 insn = f"{op}(x{temp_reg}, jvt)" if op == "csrr" else f"{op}(x{temp_reg}, jvt, x{ones_reg})"
                 lines.extend(
@@ -244,8 +233,8 @@ def _generate_jvt(test_data: TestData) -> list[str]:
                         insn,
                     ]
                 )
-            if exit_line:
-                lines.append(exit_line)
+            if mode_label == "umode":
+                lines.append("RVTEST_TSBI_GOTO_SMODE")
             lines.extend(
                 [
                     f"csrw sstateen0, x{save_sstateen}  # restore sstateen0",
@@ -260,8 +249,7 @@ def _generate_jvt(test_data: TestData) -> list[str]:
 
 # ---------------------------------------------------------------------------
 # cp_fcsr_lower
-#   Cross: priv_mode_maybes_u × misa_F × se0_one × sstateen0_fcsr_bit × csrops × fcsr_lower_mode_csrs
-#   priv_mode_maybes_u = S-mode + U-mode.
+#   Cross: priv_mode_s_u × misa_F × se0_one × sstateen0_fcsr_bit × csrops × fcsr_lower_mode_csrs
 # ---------------------------------------------------------------------------
 
 
@@ -282,7 +270,7 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
 
     for fcsr_bit in [0, 1]:
         fcsr_action = "csrc" if fcsr_bit == 0 else "csrs"
-        for mode_label, enter_line, exit_line in _LOWER_MODES:
+        for mode_label in ("smode", "umode"):
             lines.extend(
                 [
                     "",
@@ -298,8 +286,8 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
                     f"{fcsr_action}(sstateen0, x{temp_reg})  # sstateen0.FCSR = {fcsr_bit}",
                 ]
             )
-            if enter_line:
-                lines.append(enter_line)
+            if mode_label == "umode":
+                lines.append("RVTEST_TSBI_GOTO_UMODE")
             for csr in fp_csrs:
                 for op in CSR_OPS:
                     insn = f"{op}(x{temp_reg}, {csr})" if op == "csrr" else f"{op}(x{temp_reg}, {csr}, x{save_reg})"
@@ -315,8 +303,8 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
                             insn,
                         ]
                     )
-            if exit_line:
-                lines.append(exit_line)
+            if mode_label == "umode":
+                lines.append("RVTEST_TSBI_GOTO_SMODE")
             lines.append(f"csrw sstateen0, x{save_sstateen}  # restore sstateen0")
             lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
 
@@ -326,8 +314,7 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
 
 # ---------------------------------------------------------------------------
 # cp_fcsr_fp_instrs
-#   Cross: priv_mode_maybes_u × misa_F × se0_one × sstateen0_fcsr_bit × fp_instrs
-#   priv_mode_maybes_u = S-mode + U-mode.
+#   Cross: priv_mode_s_u × misa_F × se0_one × sstateen0_fcsr_bit × fp_instrs
 # ---------------------------------------------------------------------------
 
 
@@ -355,7 +342,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
 
     for fcsr_bit in [0, 1]:
         fcsr_action = "csrc" if fcsr_bit == 0 else "csrs"
-        for mode_label, enter_line, exit_line in _LOWER_MODES:
+        for mode_label in ("smode", "umode"):
             lines.extend(
                 [
                     "",
@@ -371,8 +358,8 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
                     f"{fcsr_action}(sstateen0, x{temp_reg1})  # sstateen0.FCSR = {fcsr_bit}",
                 ]
             )
-            if enter_line:
-                lines.append(enter_line)
+            if mode_label == "umode":
+                lines.append("RVTEST_TSBI_GOTO_UMODE")
             for insn, label in fp_instrs:
                 lines.extend(
                     [
@@ -385,8 +372,8 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
                         f"{insn}  # fp instr from {mode_label} fcsr={fcsr_bit}",
                     ]
                 )
-            if exit_line:
-                lines.append(exit_line)
+            if mode_label == "umode":
+                lines.append("RVTEST_TSBI_GOTO_SMODE")
             lines.append(f"csrw sstateen0, x{save_sstateen}  # restore sstateen0")
             lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
 

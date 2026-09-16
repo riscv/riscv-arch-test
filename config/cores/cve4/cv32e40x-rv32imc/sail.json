@@ -168,9 +168,9 @@
         // SCHEMA-REQUIRED: cv32e40x has no V extension.
         "vector": { "None": null },
         // SCHEMA-REQUIRED: A_EXT=A_NONE by default; LR/SC opcodes decode as illegal.
-        "lrsc": { "Some": "AccessFault" },
+        "lrsc": { "Some": "AlignmentException" },
         // SCHEMA-REQUIRED: A_EXT=A_NONE by default; AMO opcodes decode as illegal.
-        "amo": { "Some": "AccessFault" }
+        "amo": { "Some": "AlignmentException" }
       },
       "default_allowed_within_exp": 0,
       "byte_by_byte": false,
@@ -208,8 +208,8 @@
             // SCHEMA-REQUIRED: no V extension.
             "vector": { "None": null },
             // SCHEMA-REQUIRED: no A extension.
-            "amo": "AccessFault",
-            "lrsc": "AccessFault"
+            "amo": "AlignmentException",
+            "lrsc": "AlignmentException"
           },
           "atomic_support": "AMONone",
           "misaligned_atomicity_granule_size_exp": 0,
@@ -247,8 +247,8 @@
             // SCHEMA-REQUIRED: no V extension.
             "vector": { "None": null },
             // SCHEMA-REQUIRED: no A extension.
-            "amo": "AccessFault",
-            "lrsc": "AccessFault"
+            "amo": "AlignmentException",
+            "lrsc": "AlignmentException"
           },
           "atomic_support": "AMONone",
           "misaligned_atomicity_granule_size_exp": 0,

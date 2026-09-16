@@ -197,9 +197,9 @@
             // Regular loads/stores handled in hardware in main memory.
             "load_store": { "None": null },
             "vector": { "None": null },
-            // Misaligned AMO in main memory raises address misaligned (before PMA check).
+            // Misaligned AMO and LR/SC in main memory raise address misaligned (before PMA check).
             "amo": "AlignmentException",
-            "lrsc": "AccessFault"
+            "lrsc": "AlignmentException"
           },
           // A_EXT=A: full AMO (amoswap/amoadd/amoand/amoor/amoxor/amomax/amomin)
           "atomic_support": "AMOArithmetic",
@@ -237,9 +237,9 @@
             // Misaligned regular load/store in I/O raises access fault (codes 5/7).
             "load_store": { "AccessFault": null },
             "vector": { "None": null },
-            // LR/SC or AMO in I/O region raises access fault (PMA atomic attribute not set).
-            "amo": "AccessFault",
-            "lrsc": "AccessFault"
+            // Misaligned LR/SC or AMO in I/O region raises address misaligned.
+            "amo": "AlignmentException",
+            "lrsc": "AlignmentException"
           },
           // No atomic support in I/O regions.
           "atomic_support": "AMONone",

@@ -171,11 +171,11 @@
         "vector": { "None": null },
         // SCHEMA-REQUIRED: cv32e40p has no Zalrsc (A: false, extensions section).
         // LR/SC opcodes decode as illegal instructions. Value has no effect on DUT comparison.
-        "lrsc": { "Some": "AccessFault" },
+        "lrsc": { "Some": "AlignmentException" },
         // SCHEMA-REQUIRED: cv32e40p has no Zaamo/A extension (A: false, extensions section).
         // AMO opcodes decode as illegal instructions.
         // Value has no effect on DUT comparison.
-        "amo": { "Some": "AccessFault" }
+        "amo": { "Some": "AlignmentException" }
       },
       "default_allowed_within_exp": 0,
       "byte_by_byte": false,
@@ -215,8 +215,8 @@
             "vector": { "None": null },
             // SCHEMA-REQUIRED: no A extension. No RTL counterpart.
             // Value has no effect on DUT comparison.
-            "amo": "AccessFault",
-            "lrsc": "AccessFault"
+            "amo": "AlignmentException",
+            "lrsc": "AlignmentException"
           },
           // cv32e40p has no A extension; atomic instructions are not supported.
           "atomic_support": "AMONone",
@@ -259,8 +259,8 @@
             "vector": { "None": null },
             // SCHEMA-REQUIRED: no A extension. No RTL counterpart.
             // Value has no effect on DUT comparison.
-            "amo": "AccessFault",
-            "lrsc": "AccessFault"
+            "amo": "AlignmentException",
+            "lrsc": "AlignmentException"
           },
           // cv32e40p has no A extension; atomic instructions are not supported.
           "atomic_support": "AMONone",

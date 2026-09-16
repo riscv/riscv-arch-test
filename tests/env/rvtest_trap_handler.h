@@ -2275,6 +2275,12 @@ common_\__MODE__\()excpt_handler:
 // gate silently compiled this skip out and every access-fault test aborted on
 // its first deliberate probe (EPC=0 is outside vmem/code/data -> abort_test).
 vmem_adj_\__MODE__\()epc:
+        #ifdef SDTRIG_IMPRECISE_XEPC
+        .ifc \__MODE__ , M
+                LI(     T2, CAUSE_BREAKPOINT)
+                beq     T5, T2, skp_adj_\__MODE__\()epc
+        .endif
+        #endif
         #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
                 LI(     T2, RVMODEL_ACCESS_FAULT_ADDRESS)
                 beq     T3, T2, sv_\__MODE__\()epc

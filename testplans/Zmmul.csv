@@ -3,4 +3,4 @@ mul,R,x,x,x,x,x,x,x,x,x,x,x,x,x
 mulh,R,x,x,x,x,x,x,x,x,x,x,x,x,x
 mulhsu,R,x,x,x,x,x,x,x,x,x,x,x,x,x
 mulhu,R,x,x,x,x,x,x,x,x,x,x,x,x,x
-mulw,R,,x,x,x,x,x,x,x,x,x,x,x,x
+mulw,R,,x,x,x,x,x,w,w,w,x,x,x,x

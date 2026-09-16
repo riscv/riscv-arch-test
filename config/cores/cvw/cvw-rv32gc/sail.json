@@ -581,7 +581,7 @@
       "supported": true
     },
     "Zimop": {
-      "supported": false
+      "supported": true
     },
     "Zmmul": {
       "supported": true
@@ -650,7 +650,7 @@
       "supported": true
     },
     "Zcmop": {
-      "supported": false
+      "supported": true
     },
     "Zba": {
       "supported": true

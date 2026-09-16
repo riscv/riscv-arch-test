@@ -243,7 +243,9 @@
         "amo": {
           "None": null
         },
-        "lrsc": { "Some": "AccessFault" }
+        "lrsc": {
+          "None": null
+        }
       },
       // If multiple memory operations are needed, this controls whether they
       // are done in increasing or decreasing address order. This is architecturally

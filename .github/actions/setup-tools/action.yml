@@ -35,6 +35,12 @@ runs:
     - name: Set up mise
       uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
 
+    - name: Cache prek hook environments
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+      with:
+        path: ~/.cache/prek
+        key: prek-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.mise.toml', '.pre-commit-config.yaml') }}
+
     - name: Prepare architecture tool directories
       if: inputs.install-architecture-tools == 'true'
       shell: bash

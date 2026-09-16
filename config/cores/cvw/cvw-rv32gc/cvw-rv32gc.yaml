@@ -31,6 +31,8 @@ implemented_extensions:
   - { name: Zimop, version: "= 1.0.0" }
   - { name: Zmmul, version: "= 1.0.0" }
   - { name: Zaamo, version: "= 1.0.0" }
+  - { name: Zabha, version: "= 1.0.0" }
+  - { name: Zacas, version: "= 1.0.0" }
   - { name: Zalrsc, version: "= 1.0.0" }
   - { name: Za64rs, version: "= 1.0.0" }
   - { name: Za128rs, version: "= 1.0.0" }

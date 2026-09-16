@@ -361,7 +361,7 @@
             },
             "amo": "AccessFault"
           },
-          "atomic_support": "AMOArithmetic",
+          "atomic_support": "AMOCASD",
           "misaligned_atomicity_granule_size_exp": 0,
           "vector_misaligned_atomicity_granule_size_exp": 0,
           "reservability": "RsrvEventual",
@@ -590,10 +590,10 @@
       "supported": true
     },
     "Zabha": {
-      "supported": false
+      "supported": true
     },
     "Zacas": {
-      "supported": false
+      "supported": true
     },
     "Zalrsc": {
       "supported": true

@@ -24,8 +24,8 @@ covergroup ZfhminD_fcvt_d_h_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_v : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags"),
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -109,8 +109,8 @@ covergroup ZfhminD_fcvt_h_d_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_voun : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags"),
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};

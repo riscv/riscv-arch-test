@@ -223,14 +223,17 @@ def _cause_interrupt(code: int, mode: str, r1: int) -> list[str]:
     raise ValueError(f"unsupported interrupt code {code}")
 
 
-def _clear_interrupt(code: int, mode: str, r1: int, r2: int) -> list[str]:
+def _clear_interrupt(code: int, mode: str, r1: int) -> list[str]:
     """Emit the ACt4 cleanup sequence for interrupt ``code``."""
+    flavor = "M" if mode == "Sm" else mode
     if code in (1, 5, 9, 13):
         return [f"LI(x{r1}, 0x{1 << code:x}) # clear interrupt {code}", _csr_access(f"csrc mip, x{r1}", mode)]
     if code == 3:
-        return ["RVTEST_CLR_MSW_INT"]
+        return [f"RVTEST_CLR_MSW_INT_{flavor}"]
+    if code == 7:
+        return [f"RVTEST_SET_MTIME_INT_{flavor}"]
     if code == 11:
-        return ["RVTEST_CLR_MEXT_INT"]
+        return [f"RVTEST_CLR_MEXT_INT_{flavor}"]
     raise ValueError(f"unsupported interrupt code {code}")
 
 
@@ -1777,16 +1780,13 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                                         mode,
                                         privbits=priv,
                                     ),
-                                    *_cause_interrupt(
-                                        cause,
-                                        mode,
-                                        t1,
-                                    ),
+                                    *_cause_interrupt(cause, mode, t1),
                                     *_goto_itrigger_origin(origin),
                                     *_global_ie(origin, enable=True),
                                     "nop # allow the pending interrupt to be taken",
                                     *_global_ie(origin, enable=False),
-                                    *_clear_interrupt(cause, mode, t1, t2),
+                                    "RVTEST_TSBI_GOTO_MMODE",
+                                    *_clear_interrupt(cause, mode, t1),
                                     f"csrr x{t1}, mtval",
                                     write_sigupd(t1, test_data),
                                     *_read_trigger_hit(t1, t2, trig_num, mode, test_data),

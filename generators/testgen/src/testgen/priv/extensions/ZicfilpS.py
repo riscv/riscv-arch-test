@@ -53,7 +53,7 @@ def _emit_chunk(td: TestData, mode: str, covergroup: str, split_prefix: str, sat
     "ZicfilpS",
     required_extensions=["Zicfilp", "Zicsr", "S", "U"],
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz", "Zca"],
-    extra_defines=["#define BOOT_TO_MMODE", "#define TRAP_SIGUPD_COUNT 40000"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_zicfilp_s(td: TestData) -> list[TestChunk]:
     """Generate S-mode and U-mode tests. One chunk per SATP mode for each."""

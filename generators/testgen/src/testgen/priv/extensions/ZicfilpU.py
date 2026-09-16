@@ -22,15 +22,23 @@ from testgen.priv.registry import add_priv_test_generator
     "ZicfilpU",
     required_extensions=["Zicfilp", "Zicsr", "U"],
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz", "Zca"],
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_zicfilp_u(td: TestData) -> list[TestChunk]:
     """Generate U-mode (No S-mode) tests. Single chunk (bare)."""
     test_chunks: list[TestChunk] = []
 
     def build_u(xlen: int) -> list[str]:
-        # No LPAD fault is reachable without S-mode, so the trampolines stay in .text.
-        return emit_mode(td, "umode_nos", COVERGROUP_U_NS, xlen, "bare", trampoline_section=".text")
+        # LPAD faults are reachable on a real M+U part, so the trampolines live in
+        # .text.rvtest and mode-entry code must not fall through into them.
+        return emit_mode(
+            td,
+            "umode_nos",
+            COVERGROUP_U_NS,
+            xlen,
+            "bare",
+            trampoline_section=".text.rvtest",
+            skip_trampoline_fallthrough=True,
+        )
 
     tc = td.begin_test_chunk(split_name="U_NoS")
     tc.code.extend(both_xlens_bare(build_u))

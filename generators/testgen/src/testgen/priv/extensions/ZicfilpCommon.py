@@ -15,6 +15,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 
 # constants
@@ -61,10 +62,6 @@ MODES = ["bare", "sv39", "sv48", "sv57"]
 MODE_GUARDS = {m: None if m == "bare" else f"{m.upper()}_SUPPORTED" for m in MODES}
 LEVELS_BELOW_ROOT = {"sv39": 2, "sv48": 3, "sv57": 4}
 
-GOTO_MMODE = "RVTEST_GOTO_MMODE"
-GOTO_SMODE = "RVTEST_TSBI_GOTO_SMODE"
-GOTO_UMODE = "RVTEST_TSBI_GOTO_UMODE"
-
 
 @dataclass(frozen=True)
 class XLPEConfig:
@@ -73,9 +70,8 @@ class XLPEConfig:
     name: str  # "MLPE" or "LPE"
     pelp_csr: str  # CSR containing PELP bit ("mstatus", "mstatush", "sstatus")
     pelp_bit: int  # Bit position (12)
+    priv: str = "M"  # privilege the test code runs at: M, S or U
     guard: str = ""  # Conditional compilation guard
-    # pelp_csr is out of reach at the test's privilege level, so read it via T-SBI
-    pelp_needs_elevation: bool = False
     # clear live ELP after reading pelp_csr, so a fault doesn't cascade instruction by instruction
     clear_live_elp: bool = False
 
@@ -85,7 +81,7 @@ def _get_xlpe_config(mode: str, xlen: int) -> XLPEConfig:
     if mode == "mmode":
         pelp_csr = "mstatus" if xlen == 64 else "mstatush"
         pelp_bit = _MSTATUS_MPELP_BIT if xlen == 64 else _MSTATUSH_MPELP_BIT
-        return XLPEConfig("mseccfg", _MSECCFG_MLPE_BIT, "MLPE", pelp_csr=pelp_csr, pelp_bit=pelp_bit)
+        return XLPEConfig("mseccfg", _MSECCFG_MLPE_BIT, "MLPE", pelp_csr=pelp_csr, pelp_bit=pelp_bit, priv="M")
     elif mode == "smode":
         return XLPEConfig(
             "menvcfg",
@@ -93,6 +89,7 @@ def _get_xlpe_config(mode: str, xlen: int) -> XLPEConfig:
             "LPE",
             pelp_csr="sstatus",
             pelp_bit=_SSTATUS_SPELP_BIT,
+            priv="S",
             guard="#ifdef S_SUPPORTED",
             clear_live_elp=True,
         )
@@ -103,8 +100,8 @@ def _get_xlpe_config(mode: str, xlen: int) -> XLPEConfig:
             "LPE",
             pelp_csr="sstatus",
             pelp_bit=_SSTATUS_SPELP_BIT,
+            priv="U",
             guard="#ifdef S_SUPPORTED",
-            pelp_needs_elevation=True,  # sstatus isn't readable from U-mode
             clear_live_elp=True,
         )
     elif mode == "umode_nos":  # U-mode, No S-mode
@@ -115,8 +112,9 @@ def _get_xlpe_config(mode: str, xlen: int) -> XLPEConfig:
             "LPE",
             pelp_csr=pelp_csr,
             pelp_bit=_MSTATUS_MPELP_BIT if xlen == 64 else _MSTATUSH_MPELP_BIT,
+            priv="U",
             guard="#ifndef S_SUPPORTED",
-            pelp_needs_elevation=True,  # mstatus/mstatush isn't readable from U-mode
+            clear_live_elp=True,
         )
     raise ValueError(f"Unknown mode: {mode}")
 
@@ -138,48 +136,29 @@ def _indirect_branch(name: str, rs1: int, rd_is_x7: bool) -> list[str]:
     return [".option push", ".option norvc", f"jalr x{rd}, 0(x{rs1})", ".option pop"]
 
 
-# CSR addresses for the T-SBI CSR-access encodings below.  mseccfg is absent:
-# M-mode tests reach it directly.
-_CSR_ADDR = {
-    "menvcfg": 0x30A,
-    "senvcfg": 0x10A,
-    "mstatus": 0x300,
-    "mstatush": 0x310,
-    "sstatus": 0x100,
-}
+def m_csr(priv: str, instr: str) -> str:
+    """M-mode CSR instruction; a T-SBI call when the test runs below M-mode."""
+    return instr if priv == "M" else tsbi_call(instr)
 
-# Fixed fields of the RVTEST_TSBI_CSR_ACCESS encodings; OR with (csr_addr << 20).
-_TSBI_CSRRS_X0_A1 = 0x5A073  # csrrs x0, <csr>, a1   (set bits)
-_TSBI_CSRRC_X0_A1 = 0x5B073  # csrrc x0, <csr>, a1   (clear bits)
-_TSBI_CSRRS_A0_X0 = 0x02573  # csrrs a0, <csr>, x0   (read, rd=a0 per macro contract)
+
+def s_csr(priv: str, instr: str) -> str:
+    """S-mode CSR instruction; a T-SBI call when the test runs in U-mode."""
+    return instr if priv != "U" else tsbi_call(instr)
+
+
+def _csr_access(xlpe: XLPEConfig, csr: str, instr: str) -> str:
+    """Run instr at the privilege csr needs."""
+    return s_csr(xlpe.priv, instr) if csr.startswith("s") else m_csr(xlpe.priv, instr)
 
 
 def _set_lpe(xlpe: XLPEConfig, reg: int, en: bool) -> list[str]:
-    guard = xlpe.guard
-    lines = []
-    if guard:
-        lines.append(guard)
-    if xlpe.csr == "mseccfg":
-        act = "csrs" if en else "csrc"
-        msk = 1 << xlpe.bit
-        lines += [
-            f"# {xlpe.csr}.{xlpe.name} = {int(en)}",
-            f"LI(x{reg}, {hex(msk)})",
-            f"{act} {xlpe.csr}, x{reg}",
-        ]
-    else:
-        # menvcfg/senvcfg need a higher privilege level than the test runs at
-        msk = 1 << xlpe.bit
-        op = _TSBI_CSRRS_X0_A1 if en else _TSBI_CSRRC_X0_A1
-        encoding = (_CSR_ADDR[xlpe.csr] << 20) | op
-        lines += [
-            f"# {xlpe.csr}.{xlpe.name} = {int(en)}",
-            f"LI(a1, {hex(msk)})",
-            f"RVTEST_TSBI_CSR_ACCESS {hex(encoding)}",
-        ]
-    if guard:
-        lines.append(f"#endif // {guard.split()[-1]}")
-    return lines
+    op = "csrs" if en else "csrc"
+    lines = [
+        f"# {xlpe.csr}.{xlpe.name} = {int(en)}",
+        f"LI(x{reg}, {hex(1 << xlpe.bit)})",
+        _csr_access(xlpe, xlpe.csr, f"{op} {xlpe.csr}, x{reg}"),
+    ]
+    return _guarded(xlpe, lines)
 
 
 def _clear_pelp(xlpe: XLPEConfig) -> list[str]:
@@ -194,53 +173,30 @@ def _clear_pelp(xlpe: XLPEConfig) -> list[str]:
 
 def _read_pelp(xlpe: XLPEConfig, dst: int) -> list[str]:
     """Read xPELP bit into dst."""
-    guard = xlpe.guard
-    lines = []
-    if guard:
-        lines.append(guard)
-    if xlpe.pelp_needs_elevation:
-        # not readable from U-mode; read via T-SBI, which returns in a0
-        encoding = (_CSR_ADDR[xlpe.pelp_csr] << 20) | _TSBI_CSRRS_A0_X0
-        lines += [
-            f"# read {xlpe.pelp_csr} via T-SBI",
-            f"RVTEST_TSBI_CSR_ACCESS {hex(encoding)}",
-            f"mv x{dst}, a0",
-        ]
-    else:
-        lines += [f"csrr x{dst}, {xlpe.pelp_csr}"]
-    lines += [
+    lines = [
+        _csr_access(xlpe, xlpe.pelp_csr, f"csrr x{dst}, {xlpe.pelp_csr}"),
         f"srli x{dst}, x{dst}, {xlpe.pelp_bit}",
         f"andi x{dst}, x{dst}, 1",
+        *_clear_pelp(xlpe),
     ]
-    lines += _clear_pelp(xlpe)
-    if guard:
-        lines.append(f"#endif // {guard.split()[-1]}")
-    return lines
+    return _guarded(xlpe, lines)
 
 
 def _set_pelp(xlpe: XLPEConfig, reg: int) -> list[str]:
     """Set xPELP=1, the state the exception crosses sample alongside mcause and mtval."""
-    guard = xlpe.guard
-    lines = []
-    if guard:
-        lines.append(guard)
-    msk = 1 << xlpe.pelp_bit
-    if xlpe.pelp_needs_elevation:
-        encoding = (_CSR_ADDR[xlpe.pelp_csr] << 20) | _TSBI_CSRRS_X0_A1
-        lines += [
-            f"# {xlpe.pelp_csr}.PELP = 1",
-            f"LI(a1, {hex(msk)})",
-            f"RVTEST_TSBI_CSR_ACCESS {hex(encoding)}",
-        ]
-    else:
-        lines += [
-            f"# {xlpe.pelp_csr}.PELP = 1",
-            f"LI(x{reg}, {hex(msk)})",
-            f"csrs {xlpe.pelp_csr}, x{reg}",
-        ]
-    if guard:
-        lines.append(f"#endif // {guard.split()[-1]}")
-    return lines
+    lines = [
+        f"# {xlpe.pelp_csr}.PELP = 1",
+        f"LI(x{reg}, {hex(1 << xlpe.pelp_bit)})",
+        _csr_access(xlpe, xlpe.pelp_csr, f"csrs {xlpe.pelp_csr}, x{reg}"),
+    ]
+    return _guarded(xlpe, lines)
+
+
+def _guarded(xlpe: XLPEConfig, lines: list[str]) -> list[str]:
+    """Wrap lines in the mode's S_SUPPORTED guard."""
+    if not xlpe.guard:
+        return lines
+    return [xlpe.guard, *lines, f"#endif // {xlpe.guard.split()[-1]}"]
 
 
 def _lpad_encoding(label_20bit: int) -> int:
@@ -413,12 +369,6 @@ def satp_setup(xlen: int, mode: str, grant_umode_access: bool = False) -> list[s
     lines = _grant_umode_code_access(xlen) if grant_umode_access else []
     lines += [f"SATP_SETUP_RV{'64' if xlen == 64 else '32'}({mode})", "sfence.vma"]
     return lines
-
-
-def teardown_vm(has_satp: bool = True) -> list[str]:
-    if not has_satp:
-        return [GOTO_MMODE, ""]
-    return [GOTO_MMODE, "csrwi satp, 0", "sfence.vma", ""]
 
 
 # scenario builders
@@ -781,22 +731,17 @@ def emit_mode(
 
     lines += _data_section()
 
-    # satp and sfence.vma only exist when S-mode does
-    has_satp = mode != "umode_nos"
-    is_translation_mode = satp_mode in ("sv39", "sv48", "sv57")
-    if not has_satp:
-        pass
-    elif mode in ("smode", "umode") and is_translation_mode:
-        lines += _data_slvl_tables(satp_mode)
+    # The coverpoints sample mcause/mtval, so landing-pad faults must be taken
+    # in M-mode rather than delegated.  medeleg is M-mode only and deliberately
+    # outside the T-SBI table, so step up to M to clear it and come back.
+    if mode in ("smode", "umode"):
+        if satp_mode in ("sv39", "sv48", "sv57"):
+            lines += _data_slvl_tables(satp_mode)
+        lines += ["RVTEST_TSBI_GOTO_MMODE", "csrw medeleg, x0", "csrw mideleg, x0"]
         lines += satp_setup(xlen, satp_mode, grant_umode_access=(mode == "umode"))
-    else:
-        lines += satp_setup(xlen, "bare")
+        lines += ["RVTEST_TSBI_GOTO_SMODE" if mode == "smode" else "RVTEST_TSBI_GOTO_UMODE"]
 
-    lines += [GOTO_MMODE]
     lines += _set_lpe(xlpe, 10, True)
-    if mode in ("smode", "umode", "umode_nos"):
-        lines += ["csrw medeleg, x0", "csrw mideleg, x0"]
-        lines += [GOTO_SMODE if mode == "smode" else GOTO_UMODE]
 
     lines += [f"LA(x{REP_NON_LINK}, zicfilp_scratch)"]
 
@@ -822,10 +767,9 @@ def emit_mode(
         lines += _pelp_trap_entry(pfx, td, cg, xlpe, xlen)
         lines += _pelp_trap_return(pfx, td, cg, xlpe, xlen)
 
-    # Disable LPE and clear any armed ELP before teardown ecalls back to M-mode
+    # Disable LPE and clear any armed ELP before the framework tears the test down
     lines += _set_lpe(xlpe, 10, False)
     lines += _clear_pelp(xlpe)
-    lines += teardown_vm(has_satp=has_satp)
     if xlpe.guard:
         lines.append(f"#endif // {xlpe.guard.split()[-1]}")
     return lines

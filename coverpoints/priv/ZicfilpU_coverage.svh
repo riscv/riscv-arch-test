@@ -15,7 +15,7 @@ covergroup Zicfilp_u_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "Zicfilp_coverpoints.svh"
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         elp_before: coverpoint get_csr_val(ins.hart, ins.issue,
                                 `SAMPLE_CURRENT, "mstatus", "mpelp") {
             bins lp_expected    = {1};
@@ -54,7 +54,7 @@ covergroup Zicfilp_u_cg with function sample(ins_t ins);
     cp_zicfilp_lpad_zero_label_bypass: cross priv_mode_u, elp_before, lpad_lpl_zero, x7_label;
 
     cp_zicfilp_lpad_valid_execution: cross priv_mode_u, elp_before, lpad_lpl_nonzero, lpl_match {
-        ignore_bins ig_mismatch = binsof(lpl_match.mismatch);
+        ignore_bins ig_mismatch = binsof(lpl_match) intersect {0};
     }
 
     cp_zicfilp_lpad_missing_instruction_exception: cross priv_mode_u, elp_before, not_lpad, sw_check_exc, xtval_lpad {
@@ -63,7 +63,7 @@ covergroup Zicfilp_u_cg with function sample(ins_t ins);
 
     cp_zicfilp_lpad_label_mismatch: cross priv_mode_u, elp_before, lpad_lpl_nonzero, lpl_match, sw_check_exc, xtval_lpad {
         ignore_bins ig_no_lp = binsof(elp_before.no_lp_expected);
-        ignore_bins ig_match = binsof(lpl_match.match);
+        ignore_bins ig_match = binsof(lpl_match) intersect {1};
     }
 
     cp_zicfilp_lpad_label_match_mismatch: cross priv_mode_u, elp_before, lpad_scenario {

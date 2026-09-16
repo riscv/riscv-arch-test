@@ -100,6 +100,7 @@ _CSR_ALIASES = {
     "senvcfg": 0x10A,
     "satp": 0x180,
     "mstatus": 0x300,
+    "mstatush": 0x310,
     "misa": 0x301,
     "medeleg": 0x302,
     "mideleg": 0x303,

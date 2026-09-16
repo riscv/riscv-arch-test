@@ -3,7 +3,7 @@ revision = 3
 requires-python = ">=3.10"
 
 [options]
-exclude-newer = "2026-07-14T22:42:16.548356485Z"
+exclude-newer = "2026-09-09T18:52:08.767377473Z"
 exclude-newer-span = "P7D"
 
 [manifest]
@@ -70,7 +70,7 @@ wheels = [
 [[package]]
 name = "cover-float"
 version = "0.1.0"
-source = { git = "https://github.com/cover-float/cover-float/#d1a34ccf8e35dad756e42927901422e7ec68430a" }
+source = { git = "https://github.com/cover-float/cover-float/#6545ea67286add71944cf45eee8559cf919766f8" }
 dependencies = [
     { name = "rich" },
     { name = "sympy" },

@@ -127,6 +127,32 @@ covergroup D_fadd_d_cg with function sample(ins_t ins);
         // Cross coverage FS1 (double precision), FS2 (double precision), rounding mode
     }
 
+    cp_fs1_ties_frm_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
+        // FS1 exact-tie values (Double Precision)
+        bins pos0p5   = {64'h3fe0000000000000};
+        bins neg0p5   = {64'hbfe0000000000000};
+        bins pos2p5   = {64'h4004000000000000};
+        bins neg2p5   = {64'hc004000000000000};
+        bins postie   = {64'h4340000000000000};
+        bins negtie   = {64'hc340000000000000};
+    }
+
+    cp_fs2_tie_partner_frm_D : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
+        // FS2 partner that makes the exact result a tie
+        bins pos1     = {64'h3ff0000000000000};
+        bins neg1     = {64'hbff0000000000000};
+    }
+
+    cp_frm_ties_frm_D : coverpoint get_frm(ins.ops[3].val)  iff (ins.trap == 0 )  {
+        // Only RNE and RMM are distinguished by an exact tie
+        bins rne = {rne};
+        bins rmm = {rmm};
+    }
+
+    cr_fs1_fs2_edges_ties_frm_D : cross cp_fs1_ties_frm_D,cp_fs2_tie_partner_frm_D,cp_frm_ties_frm_D  iff (ins.trap == 0 )  {
+        // Cross coverage FS1 exact ties, FS2 tie partner, rounding mode
+    }
+
 endgroup
 // ---------------------
 covergroup D_fadd_s_cg with function sample(ins_t ins);
@@ -597,6 +623,26 @@ covergroup D_fcvt_w_d_cg with function sample(ins_t ins);
         // Cross coverage FS1 (double precision), FRM
     }
 
+    cp_fs1_edges_ties_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
+        // FS1 exact-tie values (Double Precision): the only operands where RMM differs from RNE
+        bins pos0p5   = {64'h3fe0000000000000};
+        bins neg0p5   = {64'hbfe0000000000000};
+        bins pos2p5   = {64'h4004000000000000};
+        bins neg2p5   = {64'hc004000000000000};
+        bins postie   = {64'h4340000000000000};
+        bins negtie   = {64'hc340000000000000};
+    }
+
+    cp_frm_ties_D : coverpoint get_frm(ins.ops[2].val)  iff (ins.trap == 0 )  {
+        // Only RNE and RMM are distinguished by an exact tie
+        bins rne = {rne};
+        bins rmm = {rmm};
+    }
+
+    cr_fs1_edges_ties_frm_D : cross cp_fs1_edges_ties_D,cp_frm_ties_D  iff (ins.trap == 0 )  {
+        // Cross coverage FS1 exact ties, rounding mode
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -688,6 +734,26 @@ covergroup D_fcvt_wu_d_cg with function sample(ins_t ins);
 
     cr_fs1_edges_frm_D : cross cp_fs1_edges_D,cp_frm_2  iff (ins.trap == 0 )  {
         // Cross coverage FS1 (double precision), FRM
+    }
+
+    cp_fs1_edges_ties_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
+        // FS1 exact-tie values (Double Precision): the only operands where RMM differs from RNE
+        bins pos0p5   = {64'h3fe0000000000000};
+        bins neg0p5   = {64'hbfe0000000000000};
+        bins pos2p5   = {64'h4004000000000000};
+        bins neg2p5   = {64'hc004000000000000};
+        bins postie   = {64'h4340000000000000};
+        bins negtie   = {64'hc340000000000000};
+    }
+
+    cp_frm_ties_D : coverpoint get_frm(ins.ops[2].val)  iff (ins.trap == 0 )  {
+        // Only RNE and RMM are distinguished by an exact tie
+        bins rne = {rne};
+        bins rmm = {rmm};
+    }
+
+    cr_fs1_edges_ties_frm_D : cross cp_fs1_edges_ties_D,cp_frm_ties_D  iff (ins.trap == 0 )  {
+        // Cross coverage FS1 exact ties, rounding mode
     }
 
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
@@ -839,6 +905,32 @@ covergroup D_fdiv_d_cg with function sample(ins_t ins);
 
     cr_fs1_fs2_edges_frm_D : cross cp_fs1_edges_D,cp_fs2_edges_D,cp_frm_3  iff (ins.trap == 0 )  {
         // Cross coverage FS1 (double precision), FS2 (double precision), rounding mode
+    }
+
+    cp_fs1_ties_frm_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
+        // FS1 exact-tie values (Double Precision)
+        bins pos0p5   = {64'h3fe0000000000000};
+        bins neg0p5   = {64'hbfe0000000000000};
+        bins pos2p5   = {64'h4004000000000000};
+        bins neg2p5   = {64'hc004000000000000};
+        bins postie   = {64'h4340000000000000};
+        bins negtie   = {64'hc340000000000000};
+    }
+
+    cp_fs2_tie_partner_frm_D : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
+        // FS2 partner that makes the exact result a tie
+        bins pos1     = {64'h3ff0000000000000};
+        bins neg1     = {64'hbff0000000000000};
+    }
+
+    cp_frm_ties_frm_D : coverpoint get_frm(ins.ops[3].val)  iff (ins.trap == 0 )  {
+        // Only RNE and RMM are distinguished by an exact tie
+        bins rne = {rne};
+        bins rmm = {rmm};
+    }
+
+    cr_fs1_fs2_edges_ties_frm_D : cross cp_fs1_ties_frm_D,cp_fs2_tie_partner_frm_D,cp_frm_ties_frm_D  iff (ins.trap == 0 )  {
+        // Cross coverage FS1 exact ties, FS2 tie partner, rounding mode
     }
 
 endgroup
@@ -1470,6 +1562,32 @@ covergroup D_fmadd_d_cg with function sample(ins_t ins);
         // Cross coverage FS1 (double precision), FS2 (double precision), rounding mode
     }
 
+    cp_fs1_ties_frm4_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
+        // FS1 exact-tie values (Double Precision)
+        bins pos0p5   = {64'h3fe0000000000000};
+        bins neg0p5   = {64'hbfe0000000000000};
+        bins pos2p5   = {64'h4004000000000000};
+        bins neg2p5   = {64'hc004000000000000};
+        bins postie   = {64'h4340000000000000};
+        bins negtie   = {64'hc340000000000000};
+    }
+
+    cp_fs2_tie_partner_frm4_D : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
+        // FS2 partner that makes the exact result a tie
+        bins pos1     = {64'h3ff0000000000000};
+        bins neg1     = {64'hbff0000000000000};
+    }
+
+    cp_frm_ties_frm4_D : coverpoint get_frm(ins.ops[4].val)  iff (ins.trap == 0 )  {
+        // Only RNE and RMM are distinguished by an exact tie
+        bins rne = {rne};
+        bins rmm = {rmm};
+    }
+
+    cr_fs1_fs2_edges_ties_frm4_D : cross cp_fs1_ties_frm4_D,cp_fs2_tie_partner_frm4_D,cp_frm_ties_frm4_D  iff (ins.trap == 0 )  {
+        // Cross coverage FS1 exact ties, FS2 tie partner, rounding mode
+    }
+
     cr_fs1_fs3_edges_frm4_D : cross cp_fs1_edges_D,cp_fs3_edges_D,cp_frm_4  iff (ins.trap == 0 )  {
         // Cross coverage FS1 (double precision), FS3 (double precision), rounding mode
     }
@@ -1968,6 +2086,32 @@ covergroup D_fmsub_d_cg with function sample(ins_t ins);
         // Cross coverage FS1 (double precision), FS2 (double precision), rounding mode
     }
 
+    cp_fs1_ties_frm4_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
+        // FS1 exact-tie values (Double Precision)
+        bins pos0p5   = {64'h3fe0000000000000};
+        bins neg0p5   = {64'hbfe0000000000000};
+        bins pos2p5   = {64'h4004000000000000};
+        bins neg2p5   = {64'hc004000000000000};
+        bins postie   = {64'h4340000000000000};
+        bins negtie   = {64'hc340000000000000};
+    }
+
+    cp_fs2_tie_partner_frm4_D : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
+        // FS2 partner that makes the exact result a tie
+        bins pos1     = {64'h3ff0000000000000};
+        bins neg1     = {64'hbff0000000000000};
+    }
+
+    cp_frm_ties_frm4_D : coverpoint get_frm(ins.ops[4].val)  iff (ins.trap == 0 )  {
+        // Only RNE and RMM are distinguished by an exact tie
+        bins rne = {rne};
+        bins rmm = {rmm};
+    }
+
+    cr_fs1_fs2_edges_ties_frm4_D : cross cp_fs1_ties_frm4_D,cp_fs2_tie_partner_frm4_D,cp_frm_ties_frm4_D  iff (ins.trap == 0 )  {
+        // Cross coverage FS1 exact ties, FS2 tie partner, rounding mode
+    }
+
     cr_fs1_fs3_edges_frm4_D : cross cp_fs1_edges_D,cp_fs3_edges_D,cp_frm_4  iff (ins.trap == 0 )  {
         // Cross coverage FS1 (double precision), FS3 (double precision), rounding mode
     }
@@ -2146,6 +2290,32 @@ covergroup D_fmul_d_cg with function sample(ins_t ins);
 
     cr_fs1_fs2_edges_frm_D : cross cp_fs1_edges_D,cp_fs2_edges_D,cp_frm_3  iff (ins.trap == 0 )  {
         // Cross coverage FS1 (double precision), FS2 (double precision), rounding mode
+    }
+
+    cp_fs1_ties_frm_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
+        // FS1 exact-tie values (Double Precision)
+        bins pos0p5   = {64'h3fe0000000000000};
+        bins neg0p5   = {64'hbfe0000000000000};
+        bins pos2p5   = {64'h4004000000000000};
+        bins neg2p5   = {64'hc004000000000000};
+        bins postie   = {64'h4340000000000000};
+        bins negtie   = {64'hc340000000000000};
+    }
+
+    cp_fs2_tie_partner_frm_D : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
+        // FS2 partner that makes the exact result a tie
+        bins pos1     = {64'h3ff0000000000000};
+        bins neg1     = {64'hbff0000000000000};
+    }
+
+    cp_frm_ties_frm_D : coverpoint get_frm(ins.ops[3].val)  iff (ins.trap == 0 )  {
+        // Only RNE and RMM are distinguished by an exact tie
+        bins rne = {rne};
+        bins rmm = {rmm};
+    }
+
+    cr_fs1_fs2_edges_ties_frm_D : cross cp_fs1_ties_frm_D,cp_fs2_tie_partner_frm_D,cp_frm_ties_frm_D  iff (ins.trap == 0 )  {
+        // Cross coverage FS1 exact ties, FS2 tie partner, rounding mode
     }
 
 endgroup
@@ -2375,6 +2545,32 @@ covergroup D_fnmadd_d_cg with function sample(ins_t ins);
         // Cross coverage FS1 (double precision), FS2 (double precision), rounding mode
     }
 
+    cp_fs1_ties_frm4_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
+        // FS1 exact-tie values (Double Precision)
+        bins pos0p5   = {64'h3fe0000000000000};
+        bins neg0p5   = {64'hbfe0000000000000};
+        bins pos2p5   = {64'h4004000000000000};
+        bins neg2p5   = {64'hc004000000000000};
+        bins postie   = {64'h4340000000000000};
+        bins negtie   = {64'hc340000000000000};
+    }
+
+    cp_fs2_tie_partner_frm4_D : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
+        // FS2 partner that makes the exact result a tie
+        bins pos1     = {64'h3ff0000000000000};
+        bins neg1     = {64'hbff0000000000000};
+    }
+
+    cp_frm_ties_frm4_D : coverpoint get_frm(ins.ops[4].val)  iff (ins.trap == 0 )  {
+        // Only RNE and RMM are distinguished by an exact tie
+        bins rne = {rne};
+        bins rmm = {rmm};
+    }
+
+    cr_fs1_fs2_edges_ties_frm4_D : cross cp_fs1_ties_frm4_D,cp_fs2_tie_partner_frm4_D,cp_frm_ties_frm4_D  iff (ins.trap == 0 )  {
+        // Cross coverage FS1 exact ties, FS2 tie partner, rounding mode
+    }
+
     cr_fs1_fs3_edges_frm4_D : cross cp_fs1_edges_D,cp_fs3_edges_D,cp_frm_4  iff (ins.trap == 0 )  {
         // Cross coverage FS1 (double precision), FS3 (double precision), rounding mode
     }
@@ -2591,6 +2787,32 @@ covergroup D_fnmsub_d_cg with function sample(ins_t ins);
 
     cr_fs1_fs2_edges_frm4_D : cross cp_fs1_edges_D,cp_fs2_edges_D,cp_frm_4  iff (ins.trap == 0 )  {
         // Cross coverage FS1 (double precision), FS2 (double precision), rounding mode
+    }
+
+    cp_fs1_ties_frm4_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
+        // FS1 exact-tie values (Double Precision)
+        bins pos0p5   = {64'h3fe0000000000000};
+        bins neg0p5   = {64'hbfe0000000000000};
+        bins pos2p5   = {64'h4004000000000000};
+        bins neg2p5   = {64'hc004000000000000};
+        bins postie   = {64'h4340000000000000};
+        bins negtie   = {64'hc340000000000000};
+    }
+
+    cp_fs2_tie_partner_frm4_D : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
+        // FS2 partner that makes the exact result a tie
+        bins pos1     = {64'h3ff0000000000000};
+        bins neg1     = {64'hbff0000000000000};
+    }
+
+    cp_frm_ties_frm4_D : coverpoint get_frm(ins.ops[4].val)  iff (ins.trap == 0 )  {
+        // Only RNE and RMM are distinguished by an exact tie
+        bins rne = {rne};
+        bins rmm = {rmm};
+    }
+
+    cr_fs1_fs2_edges_ties_frm4_D : cross cp_fs1_ties_frm4_D,cp_fs2_tie_partner_frm4_D,cp_frm_ties_frm4_D  iff (ins.trap == 0 )  {
+        // Cross coverage FS1 exact ties, FS2 tie partner, rounding mode
     }
 
     cr_fs1_fs3_edges_frm4_D : cross cp_fs1_edges_D,cp_fs3_edges_D,cp_frm_4  iff (ins.trap == 0 )  {
@@ -3200,6 +3422,26 @@ covergroup D_fsqrt_d_cg with function sample(ins_t ins);
         bins negrandom        = {64'hA6E895993737426C};
     }
 
+    cp_fs1_edges_ties_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
+        // FS1 exact-tie values (Double Precision): the only operands where RMM differs from RNE
+        bins pos0p5   = {64'h3fe0000000000000};
+        bins neg0p5   = {64'hbfe0000000000000};
+        bins pos2p5   = {64'h4004000000000000};
+        bins neg2p5   = {64'hc004000000000000};
+        bins postie   = {64'h4340000000000000};
+        bins negtie   = {64'hc340000000000000};
+    }
+
+    cp_frm_ties_D : coverpoint get_frm(ins.ops[2].val)  iff (ins.trap == 0 )  {
+        // Only RNE and RMM are distinguished by an exact tie
+        bins rne = {rne};
+        bins rmm = {rmm};
+    }
+
+    cr_fs1_edges_ties_frm_D : cross cp_fs1_edges_ties_D,cp_frm_ties_D  iff (ins.trap == 0 )  {
+        // Cross coverage FS1 exact ties, rounding mode
+    }
+
 endgroup
 // ---------------------
 covergroup D_fsqrt_s_cg with function sample(ins_t ins);
@@ -3340,6 +3582,32 @@ covergroup D_fsub_d_cg with function sample(ins_t ins);
 
     cr_fs1_fs2_edges_frm_D : cross cp_fs1_edges_D,cp_fs2_edges_D,cp_frm_3  iff (ins.trap == 0 )  {
         // Cross coverage FS1 (double precision), FS2 (double precision), rounding mode
+    }
+
+    cp_fs1_ties_frm_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
+        // FS1 exact-tie values (Double Precision)
+        bins pos0p5   = {64'h3fe0000000000000};
+        bins neg0p5   = {64'hbfe0000000000000};
+        bins pos2p5   = {64'h4004000000000000};
+        bins neg2p5   = {64'hc004000000000000};
+        bins postie   = {64'h4340000000000000};
+        bins negtie   = {64'hc340000000000000};
+    }
+
+    cp_fs2_tie_partner_frm_D : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
+        // FS2 partner that makes the exact result a tie
+        bins pos1     = {64'h3ff0000000000000};
+        bins neg1     = {64'hbff0000000000000};
+    }
+
+    cp_frm_ties_frm_D : coverpoint get_frm(ins.ops[3].val)  iff (ins.trap == 0 )  {
+        // Only RNE and RMM are distinguished by an exact tie
+        bins rne = {rne};
+        bins rmm = {rmm};
+    }
+
+    cr_fs1_fs2_edges_ties_frm_D : cross cp_fs1_ties_frm_D,cp_fs2_tie_partner_frm_D,cp_frm_ties_frm_D  iff (ins.trap == 0 )  {
+        // Cross coverage FS1 exact ties, FS2 tie partner, rounding mode
     }
 
 endgroup
@@ -3617,6 +3885,26 @@ covergroup D_fcvt_l_d_cg with function sample(ins_t ins);
         // Cross coverage FS1 (double precision), FRM
     }
 
+    cp_fs1_edges_ties_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
+        // FS1 exact-tie values (Double Precision): the only operands where RMM differs from RNE
+        bins pos0p5   = {64'h3fe0000000000000};
+        bins neg0p5   = {64'hbfe0000000000000};
+        bins pos2p5   = {64'h4004000000000000};
+        bins neg2p5   = {64'hc004000000000000};
+        bins postie   = {64'h4340000000000000};
+        bins negtie   = {64'hc340000000000000};
+    }
+
+    cp_frm_ties_D : coverpoint get_frm(ins.ops[2].val)  iff (ins.trap == 0 )  {
+        // Only RNE and RMM are distinguished by an exact tie
+        bins rne = {rne};
+        bins rmm = {rmm};
+    }
+
+    cr_fs1_edges_ties_frm_D : cross cp_fs1_edges_ties_D,cp_frm_ties_D  iff (ins.trap == 0 )  {
+        // Cross coverage FS1 exact ties, rounding mode
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -3708,6 +3996,26 @@ covergroup D_fcvt_lu_d_cg with function sample(ins_t ins);
 
     cr_fs1_edges_frm_D : cross cp_fs1_edges_D,cp_frm_2  iff (ins.trap == 0 )  {
         // Cross coverage FS1 (double precision), FRM
+    }
+
+    cp_fs1_edges_ties_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
+        // FS1 exact-tie values (Double Precision): the only operands where RMM differs from RNE
+        bins pos0p5   = {64'h3fe0000000000000};
+        bins neg0p5   = {64'hbfe0000000000000};
+        bins pos2p5   = {64'h4004000000000000};
+        bins neg2p5   = {64'hc004000000000000};
+        bins postie   = {64'h4340000000000000};
+        bins negtie   = {64'hc340000000000000};
+    }
+
+    cp_frm_ties_D : coverpoint get_frm(ins.ops[2].val)  iff (ins.trap == 0 )  {
+        // Only RNE and RMM are distinguished by an exact tie
+        bins rne = {rne};
+        bins rmm = {rmm};
+    }
+
+    cr_fs1_edges_ties_frm_D : cross cp_fs1_edges_ties_D,cp_frm_ties_D  iff (ins.trap == 0 )  {
+        // Cross coverage FS1 exact ties, rounding mode
     }
 
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {

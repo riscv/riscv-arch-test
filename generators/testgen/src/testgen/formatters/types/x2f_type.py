@@ -12,6 +12,11 @@ from testgen.formatters.registry import InstructionTypeConfig, add_instruction_f
 
 x2f_config = InstructionTypeConfig(required_params={"fd", "rs1", "rs1val"})
 
+# These converts cannot be impacted by the rounding mode as the result is always exact.
+# So, gcc does not support passing a rounding mode to these instructions.
+# See: https://github.com/riscv-collab/riscv-gnu-toolchain/issues/1522
+NO_ROUNDING_CONVERTS = frozenset({"fcvt.d.w", "fcvt.d.wu"})
+
 
 @add_instruction_formatter("X2F", x2f_config)
 def format_x2f_type(
@@ -20,7 +25,7 @@ def format_x2f_type(
     """Format X2F-type instruction."""
     assert params.rs1 is not None and params.rs1val is not None
     assert params.fd is not None
-    frm = f", {params.frm}" if params.frm is not None else ""
+    frm = f", {params.frm}" if params.frm is not None and instr_name not in NO_ROUNDING_CONVERTS else ""
     setup = [
         load_int_reg("rs1", params.rs1, params.rs1val, test_data),
         "fsflagsi 0b00000 # clear all fflags",

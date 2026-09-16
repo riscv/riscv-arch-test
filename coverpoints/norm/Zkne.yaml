@@ -41,10 +41,10 @@ normative_rule_definitions:
     coverpoint: ["Zkne_aes64esm_cg/{cr_rs1_rs2_edges, cp_sbox}"]
 
   - name: aes64ks1i_enc
-    coverpoint: ["Zkne_aes64ks1i_cg/{cr_rs1_imm_edges, cp_rnum}"]
+    coverpoint: ["Zkne_aes64ks1i_cg/{cr_rs1_imm_edges, cp_rnum, cp_sbox_rs1}"]
 
   - name: aes64ks1i_op
-    coverpoint: ["Zkne_aes64ks1i_cg/{cr_rs1_imm_edges, cp_rnum}"]
+    coverpoint: ["Zkne_aes64ks1i_cg/{cr_rs1_imm_edges, cp_rnum, cp_sbox_rs1}"]
 
   - name: aes64ks2_enc
     coverpoint: ["Zkne_aes64ks2_cg/cr_rs1_rs2_edges"]

@@ -50,13 +50,12 @@ class SvMode:
         return "rvtest_Sroot_pg_tbl" if level == self.levels - 1 else f"rvtest_slvl{level}_pg_tbl"
 
 
-SV_MODES = (
-    SvMode("sv32", 32, 2, "0x90407000", "0x30000000", ("4KB", "4MB")),
-    SvMode("sv39", 64, 3, "0x140802000", "0x180000000", ("4KB", "2MB", "1GB")),
-    SvMode("sv48", 64, 4, "0x028500403000", "0x030080000000", ("4KB", "2MB", "1GB", "512GB")),
-    SvMode("sv57", 64, 5, "0x07028500403000", "0x03000080000000", ("4KB", "2MB", "1GB", "512GB", "256TB")),
-)
-RV64_SV_MODES = SV_MODES[1:]
+SV32 = SvMode("sv32", 32, 2, "0x90407000", "0x30000000", ("4KB", "4MB"))
+SV39 = SvMode("sv39", 64, 3, "0x140802000", "0x180000000", ("4KB", "2MB", "1GB"))
+SV48 = SvMode("sv48", 64, 4, "0x028500403000", "0x030080000000", ("4KB", "2MB", "1GB", "512GB"))
+SV57 = SvMode("sv57", 64, 5, "0x07028500403000", "0x03000080000000", ("4KB", "2MB", "1GB", "512GB", "256TB"))
+SV_MODES = (SV32, SV39, SV48, SV57)
+RV64_SV_MODES = (SV39, SV48, SV57)
 
 
 @dataclass(frozen=True)

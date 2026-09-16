@@ -9,7 +9,6 @@
 """Generate core PTE, satp, and mstatus virtual-memory tests."""
 
 from collections.abc import Mapping
-from functools import partial
 
 from testgen.asm.csr import gen_csr_read_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
@@ -19,7 +18,10 @@ from testgen.priv.extensions.sv.access import add_rwx_test
 from testgen.priv.extensions.sv.assembly import VA_ONES_DATA, VA_ZEROS_DATA
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
-    SV_MODES,
+    SV32,
+    SV39,
+    SV48,
+    SV57,
     PteExpression,
     PteFlags,
     SvMode,
@@ -1024,23 +1026,84 @@ def _make_sv_sbe(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     return test_chunks
 
 
-for sv in SV_MODES:
-    add_priv_test_generator(
-        "Sv",
-        name=f"make_{sv.name}",
-        required_extensions=["I", sv.extension],
-        march_extensions=_MARCH,
-        extra_defines=["#define BOOT_TO_MMODE"],
-    )(partial(_make_sv, sv=sv))
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["I", "Sv32"],
+    march_extensions=_MARCH,
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_sv32(test_data: TestData) -> list[TestChunk]:
+    return _make_sv(test_data, SV32)
 
-for sv in SV_MODES:
-    add_priv_test_generator(
-        "Sv",
-        name=f"make_{sv.name}_sbe",
-        required_extensions=["I", sv.extension, "NORUN"],
-        march_extensions=_MARCH,
-        extra_defines=["#define BOOT_TO_MMODE"],
-    )(partial(_make_sv_sbe, sv=sv))
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["I", "Sv39"],
+    march_extensions=_MARCH,
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_sv39(test_data: TestData) -> list[TestChunk]:
+    return _make_sv(test_data, SV39)
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["I", "Sv48"],
+    march_extensions=_MARCH,
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_sv48(test_data: TestData) -> list[TestChunk]:
+    return _make_sv(test_data, SV48)
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["I", "Sv57"],
+    march_extensions=_MARCH,
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_sv57(test_data: TestData) -> list[TestChunk]:
+    return _make_sv(test_data, SV57)
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["I", "Sv32", "NORUN"],
+    march_extensions=_MARCH,
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_sv32_sbe(test_data: TestData) -> list[TestChunk]:
+    return _make_sv_sbe(test_data, SV32)
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["I", "Sv39", "NORUN"],
+    march_extensions=_MARCH,
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_sv39_sbe(test_data: TestData) -> list[TestChunk]:
+    return _make_sv_sbe(test_data, SV39)
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["I", "Sv48", "NORUN"],
+    march_extensions=_MARCH,
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_sv48_sbe(test_data: TestData) -> list[TestChunk]:
+    return _make_sv_sbe(test_data, SV48)
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["I", "Sv57", "NORUN"],
+    march_extensions=_MARCH,
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_sv57_sbe(test_data: TestData) -> list[TestChunk]:
+    return _make_sv_sbe(test_data, SV57)
 
 
 @add_priv_test_generator(

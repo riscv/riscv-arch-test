@@ -8,15 +8,16 @@
 
 """Generate cache-block operation tests under virtual memory."""
 
-from functools import partial
-
 from testgen.asm.helpers import write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.access import virtual_address
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
-    SV_MODES,
+    SV32,
+    SV39,
+    SV48,
+    SV57,
     PteExpression,
     PteFlags,
     SvMode,
@@ -320,13 +321,121 @@ def _make_svzicbo(test_data: TestData, sv: SvMode, family: str) -> list[TestChun
     return [_make_exceptions(test_data, sv, mode, family) for mode in ("Smode", "Umode")]
 
 
-for sv in SV_MODES:
-    for family in ("zicbom", "zicboz", "zicbop"):
-        extension = family.capitalize()
-        add_priv_test_generator(
-            "SvZicbo",
-            name=f"make_svzicbo_{sv.name}_{family}",
-            required_extensions=["I", sv.extension, extension],
-            march_extensions=_MARCH + [extension],
-            extra_defines=["#define BOOT_TO_MMODE"],
-        )(partial(_make_svzicbo, sv=sv, family=family))
+@add_priv_test_generator(
+    "SvZicbo",
+    required_extensions=["I", "Sv32", "Zicbom"],
+    march_extensions=_MARCH + ["Zicbom"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svzicbo_sv32_zicbom(test_data: TestData) -> list[TestChunk]:
+    return _make_svzicbo(test_data, SV32, "zicbom")
+
+
+@add_priv_test_generator(
+    "SvZicbo",
+    required_extensions=["I", "Sv32", "Zicboz"],
+    march_extensions=_MARCH + ["Zicboz"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svzicbo_sv32_zicboz(test_data: TestData) -> list[TestChunk]:
+    return _make_svzicbo(test_data, SV32, "zicboz")
+
+
+@add_priv_test_generator(
+    "SvZicbo",
+    required_extensions=["I", "Sv32", "Zicbop"],
+    march_extensions=_MARCH + ["Zicbop"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svzicbo_sv32_zicbop(test_data: TestData) -> list[TestChunk]:
+    return _make_svzicbo(test_data, SV32, "zicbop")
+
+
+@add_priv_test_generator(
+    "SvZicbo",
+    required_extensions=["I", "Sv39", "Zicbom"],
+    march_extensions=_MARCH + ["Zicbom"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svzicbo_sv39_zicbom(test_data: TestData) -> list[TestChunk]:
+    return _make_svzicbo(test_data, SV39, "zicbom")
+
+
+@add_priv_test_generator(
+    "SvZicbo",
+    required_extensions=["I", "Sv39", "Zicboz"],
+    march_extensions=_MARCH + ["Zicboz"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svzicbo_sv39_zicboz(test_data: TestData) -> list[TestChunk]:
+    return _make_svzicbo(test_data, SV39, "zicboz")
+
+
+@add_priv_test_generator(
+    "SvZicbo",
+    required_extensions=["I", "Sv39", "Zicbop"],
+    march_extensions=_MARCH + ["Zicbop"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svzicbo_sv39_zicbop(test_data: TestData) -> list[TestChunk]:
+    return _make_svzicbo(test_data, SV39, "zicbop")
+
+
+@add_priv_test_generator(
+    "SvZicbo",
+    required_extensions=["I", "Sv48", "Zicbom"],
+    march_extensions=_MARCH + ["Zicbom"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svzicbo_sv48_zicbom(test_data: TestData) -> list[TestChunk]:
+    return _make_svzicbo(test_data, SV48, "zicbom")
+
+
+@add_priv_test_generator(
+    "SvZicbo",
+    required_extensions=["I", "Sv48", "Zicboz"],
+    march_extensions=_MARCH + ["Zicboz"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svzicbo_sv48_zicboz(test_data: TestData) -> list[TestChunk]:
+    return _make_svzicbo(test_data, SV48, "zicboz")
+
+
+@add_priv_test_generator(
+    "SvZicbo",
+    required_extensions=["I", "Sv48", "Zicbop"],
+    march_extensions=_MARCH + ["Zicbop"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svzicbo_sv48_zicbop(test_data: TestData) -> list[TestChunk]:
+    return _make_svzicbo(test_data, SV48, "zicbop")
+
+
+@add_priv_test_generator(
+    "SvZicbo",
+    required_extensions=["I", "Sv57", "Zicbom"],
+    march_extensions=_MARCH + ["Zicbom"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svzicbo_sv57_zicbom(test_data: TestData) -> list[TestChunk]:
+    return _make_svzicbo(test_data, SV57, "zicbom")
+
+
+@add_priv_test_generator(
+    "SvZicbo",
+    required_extensions=["I", "Sv57", "Zicboz"],
+    march_extensions=_MARCH + ["Zicboz"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svzicbo_sv57_zicboz(test_data: TestData) -> list[TestChunk]:
+    return _make_svzicbo(test_data, SV57, "zicboz")
+
+
+@add_priv_test_generator(
+    "SvZicbo",
+    required_extensions=["I", "Sv57", "Zicbop"],
+    march_extensions=_MARCH + ["Zicbop"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svzicbo_sv57_zicbop(test_data: TestData) -> list[TestChunk]:
+    return _make_svzicbo(test_data, SV57, "zicbop")

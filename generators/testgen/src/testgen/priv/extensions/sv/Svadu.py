@@ -8,15 +8,16 @@
 
 """Generate hardware A/D-bit update tests."""
 
-from functools import partial
-
 from testgen.asm.helpers import write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.access import virtual_address
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
-    SV_MODES,
+    SV32,
+    SV39,
+    SV48,
+    SV57,
     PteFlags,
     SvMode,
     create_leaf_pte,
@@ -146,11 +147,41 @@ def _make_svadu(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     return [_make_svadu_mode(test_data, sv, mode) for mode in ("Smode", "Umode")]
 
 
-for sv in SV_MODES:
-    add_priv_test_generator(
-        "Svadu",
-        name=f"make_svadu_{sv.name}",
-        required_extensions=["I", sv.extension, "Svadu"],
-        march_extensions=_MARCH,
-        extra_defines=["#define BOOT_TO_MMODE"],
-    )(partial(_make_svadu, sv=sv))
+@add_priv_test_generator(
+    "Svadu",
+    required_extensions=["I", "Sv32", "Svadu"],
+    march_extensions=_MARCH,
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svadu_sv32(test_data: TestData) -> list[TestChunk]:
+    return _make_svadu(test_data, SV32)
+
+
+@add_priv_test_generator(
+    "Svadu",
+    required_extensions=["I", "Sv39", "Svadu"],
+    march_extensions=_MARCH,
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svadu_sv39(test_data: TestData) -> list[TestChunk]:
+    return _make_svadu(test_data, SV39)
+
+
+@add_priv_test_generator(
+    "Svadu",
+    required_extensions=["I", "Sv48", "Svadu"],
+    march_extensions=_MARCH,
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svadu_sv48(test_data: TestData) -> list[TestChunk]:
+    return _make_svadu(test_data, SV48)
+
+
+@add_priv_test_generator(
+    "Svadu",
+    required_extensions=["I", "Sv57", "Svadu"],
+    march_extensions=_MARCH,
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svadu_sv57(test_data: TestData) -> list[TestChunk]:
+    return _make_svadu(test_data, SV57)

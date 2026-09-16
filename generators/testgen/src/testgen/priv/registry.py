@@ -41,7 +41,6 @@ class PrivTestRegistryEntry:
     """Metadata for a registered privileged test generator."""
 
     generator: PrivTestGenerator
-    generator_name: str
     extra_defines: list[str] = field(default_factory=list)
     required_extensions: list[str | list[str]] | None = None
     march_extensions: list[str] | None = None
@@ -56,19 +55,36 @@ _PRIV_TEST_GENERATORS: dict[str, list[PrivTestRegistryEntry]] = {}
 def add_priv_test_generator(
     testsuite: str,
     *,
-    name: str | None = None,
     extra_defines: list[str] | None = None,
     required_extensions: list[str | list[str]] | None = None,
     march_extensions: list[str] | None = None,
     params: list[str] | None = None,
     testcases_per_file: int = TESTCASES_PER_PRIV_FILE,
 ) -> Callable[[PrivTestGenerator], PrivTestGenerator]:
-    """Return a decorator that registers one privileged test generator."""
+    """
+    Decorator to register a privileged test generator.
+
+    Multiple generators can register the same testsuite. Their files use the
+    same output directory but retain each generator's metadata (required_extensions, march_extensions, etc.).
+
+    Args:
+        testsuite: Testsuite name (e.g., "ExceptionsSm")
+        extra_defines: List of extra #define statements for the test header.
+                       Trap handlers are added automatically based on extensions.
+        required_extensions: List of RISC-V extensions required for the test (e.g., ["Sm", "Zicsr"]).
+                             Used for generating the march string and header defines.
+        march_extensions: Optional list of extensions to use for the march string.
+                          If None, march is built from required_extensions.
+        params: Optional list of parameter constraints for the test (e.g., ["NUM_PMP_ENTRIES: '>=16'"]).
+                These are included in the test YAML header for test selection.
+        testcases_per_file: Optional max testcases per generated test file for this testsuite.
+                            Defaults to TESTCASES_PER_PRIV_FILE. Individual test chunks are never
+                            split, so a chunk larger than this still produces an oversized file.
+    """
 
     def decorator(func: PrivTestGenerator) -> PrivTestGenerator:
         entry = PrivTestRegistryEntry(
             generator=func,
-            generator_name=name or func.__name__,
             extra_defines=extra_defines or [],
             required_extensions=required_extensions,
             march_extensions=march_extensions,

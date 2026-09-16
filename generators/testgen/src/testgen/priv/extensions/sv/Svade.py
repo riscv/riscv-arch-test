@@ -8,13 +8,11 @@
 
 """Generate Svade A/D-bit page-fault tests."""
 
-from functools import partial
-
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.sv.access import add_rwx_test
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
-from testgen.priv.extensions.sv.page_tables import SV_MODES, PteFlags, SvMode, create_page_mapping
+from testgen.priv.extensions.sv.page_tables import SV32, SV39, SV48, SV57, PteFlags, SvMode, create_page_mapping
 from testgen.priv.registry import add_priv_test_generator
 
 _DA_CASES = (
@@ -70,11 +68,41 @@ def _make_svade(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     return [_make_svade_mode(test_data, sv, mode) for mode in ("Smode", "Umode")]
 
 
-for sv in SV_MODES:
-    add_priv_test_generator(
-        "Svade",
-        name=f"make_svade_{sv.name}",
-        required_extensions=["I", sv.extension, "Svade"],
-        march_extensions=_MARCH,
-        extra_defines=["#define BOOT_TO_MMODE"],
-    )(partial(_make_svade, sv=sv))
+@add_priv_test_generator(
+    "Svade",
+    required_extensions=["I", "Sv32", "Svade"],
+    march_extensions=_MARCH,
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svade_sv32(test_data: TestData) -> list[TestChunk]:
+    return _make_svade(test_data, SV32)
+
+
+@add_priv_test_generator(
+    "Svade",
+    required_extensions=["I", "Sv39", "Svade"],
+    march_extensions=_MARCH,
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svade_sv39(test_data: TestData) -> list[TestChunk]:
+    return _make_svade(test_data, SV39)
+
+
+@add_priv_test_generator(
+    "Svade",
+    required_extensions=["I", "Sv48", "Svade"],
+    march_extensions=_MARCH,
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svade_sv48(test_data: TestData) -> list[TestChunk]:
+    return _make_svade(test_data, SV48)
+
+
+@add_priv_test_generator(
+    "Svade",
+    required_extensions=["I", "Sv57", "Svade"],
+    march_extensions=_MARCH,
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svade_sv57(test_data: TestData) -> list[TestChunk]:
+    return _make_svade(test_data, SV57)

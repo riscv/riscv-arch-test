@@ -522,7 +522,9 @@ def _generate_access_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     )
     csrs = ("tdata1", "tdata2", "tdata3", "tinfo", "tcontrol", "scontext", "mcontext", "hcontext")
 
-    type_reg, save_reg, temp_reg = test_data.int_regs.get_registers(3, exclude_regs=[10, 11])  # exclude a0, a1 because they are used in SBI
+    type_reg, save_reg, temp_reg = test_data.int_regs.get_registers(
+        3, exclude_regs=[10, 11]
+    )  # exclude a0, a1 because they are used in SBI
 
     for trig_num in range(UDB_NUM_TRIGGERS):
         for trig_type in range(16):
@@ -1713,6 +1715,7 @@ INTERRUPT_CODES = (1, 3, 5, 7, 9, 11)  # SSI, MSI, STI, MTI, SEI, MEI
 LOWER_MODE_INTERRUPT_CODES = (1, 5, 9)
 TIMER_INTERRUPT_CODE = 7
 
+
 def _set_itrigger_delegation(code: int, delegate: int, reg: int) -> list[str]:
     """Set mideleg[x] and keep breakpoint exceptions in M-mode."""
     return [
@@ -1722,14 +1725,16 @@ def _set_itrigger_delegation(code: int, delegate: int, reg: int) -> list[str]:
         f"csrc medeleg, x{reg} # keep breakpoint exception in M-mode",
     ]
 
+
 def _goto_itrigger_origin(origin: str) -> list[str]:
     if origin == "Sm":
         return []
     return [f"RVTEST_TSBI_GOTO_{origin}MODE"]
 
+
 def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate the SdtrigSm itrigger M/S/U delegation matrix."""
-    
+
     if mode != "Sm":
         raise ValueError("_generate_itrigger_tests implements the cross-privilege matrix for SdtrigSm only")
 
@@ -1756,7 +1761,7 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             for code in codes:
                 for delegate in delegations:
                     #  lines.append(f"#ifdef UDB_INTERRUPT{code}_SUPPORTED")
-                    #  if code == 13:    # LCOFI not implemeted in existing architecture
+                    #  if code == 13:    # LCOFI not implemented in existing architecture
                     #     lines.append("#ifdef SSCOFPMF_SUPPORTED")
                     for priv in (0, MODE_PRIVBIT[origin]):
                         binname = f"trig_num_{trig_num}_{origin.lower()}_code_{code}_deleg_{delegate}_priv_{priv:05b}"
@@ -1781,7 +1786,8 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                                     *_global_ie(origin, enable=False),
                                     "RVTEST_TSBI_GOTO_MMODE",
                                     *_clear_interrupt(cause, mode, t1, t2),
-                                    f"csrr x{t1}, mtval", write_sigupd(t1, test_data),
+                                    f"csrr x{t1}, mtval",
+                                    write_sigupd(t1, test_data),
                                     *_read_trigger_hit(t1, t2, trig_num, mode, test_data),
                                     *_disable_trigger(t1, trig_num, mode),
                                     *_set_itrigger_delegation(code, 0, t1),
@@ -1789,11 +1795,12 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                             )
                     # if code == 13:
                     # lines.append("#endif")  # SSCOFPMF_SUPPORTED
-                    #lines.append("#endif")  # UDB_INTERRUPT{code}_SUPPORTED
+                    # lines.append("#endif")  # UDB_INTERRUPT{code}_SUPPORTED
             # lines.append("#endif")  # UDB_ITRIGGER_TRIGn_AVAILABLE
 
     test_data.int_regs.return_registers([t1, t2, t3, t4])
     return [test_data.end_test_chunk()]
+
 
 def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate etrigger exception trigger tests."""
@@ -1923,15 +1930,15 @@ def generate_sdtrig_suite(test_data: TestData, mode: str) -> list[TestChunk]:
     """Assemble the full Sdtrig suite for ``mode`` ("Sm"/"S"/"U") as test chunks."""
     test_chunks: list[TestChunk] = []
 
-    #test_chunks.extend(_generate_access_tests(test_data, mode))
-    #test_chunks.extend(_generate_native_triggers_tests(test_data, mode))
+    # test_chunks.extend(_generate_access_tests(test_data, mode))
+    # test_chunks.extend(_generate_native_triggers_tests(test_data, mode))
     # test_chunks.extend(_generate_a_tests(test_data, mode))
     # test_chunks.extend(_generate_combined_accesses_tests(test_data, mode))
     # test_chunks.extend(_generate_cache_operations_tests(test_data, mode))
     # test_chunks.extend(_generate_address_matches_tests(test_data, mode))
     # test_chunks.extend(_generate_csr_tests(test_data, mode))
     # test_chunks.extend(_generate_mcontrol6_tests(test_data, mode))
-   # test_chunks.extend(_generate_icount_tests(test_data, mode))
+    # test_chunks.extend(_generate_icount_tests(test_data, mode))
     test_chunks.extend(_generate_itrigger_tests(test_data, mode))
     # test_chunks.extend(_generate_etrigger_tests(test_data, mode))
     # test_chunks.extend(_generate_textra_tests(test_data, mode))

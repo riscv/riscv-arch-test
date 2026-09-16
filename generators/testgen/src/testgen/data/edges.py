@@ -77,6 +77,9 @@ class IMMEDIATE_EDGES:
     # 5-bit Unsigned Immediates (Vector Instructions)
     imm_5bit_u = (0, 1, 2, 15, 16, 30, 31)
 
+    # 5-bit Zibi immediate edges (the all-zero cimm field encodes -1)
+    imm_5bit_u_n0 = (-1, 1, 2, 3, 4, 8, 16, 30, 31)
+
 
 # ==============================================================================
 # Integer Register Values

@@ -1,12 +1,12 @@
 ##################################
 # priv/extensions/H.py
 #
-# H privileged extension test generator: HS-mode and VS-mode trap handler,
+# H privileged extension test generator: HS, VS and VU-mode trap handler,
 # T-SBI, and two-stage address translation.
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""H extension test generator: the HS/VS trap handler, T-SBI and two-stage translation paths."""
+"""H extension test generator: the HS/VS/VU trap handler, T-SBI and two-stage translation paths."""
 
 from testgen.asm.helpers import write_sigupd
 from testgen.data.state import TestData
@@ -29,10 +29,22 @@ _ALIAS_GIB = 0xC0000000
 _G_PERMS = "(PTE_V | PTE_R | PTE_W | PTE_X | PTE_U | PTE_A | PTE_D)"
 # VS-stage pages belong to the guest supervisor, so PTE_U is clear.
 _VS_PERMS = "(PTE_V | PTE_R | PTE_W | PTE_X | PTE_A | PTE_D)"
+# The same pages as VU-mode sees them.
+_VU_PERMS = "(PTE_V | PTE_R | PTE_W | PTE_X | PTE_U | PTE_A | PTE_D)"
 
 
-def _case(test_data: TestData, bin_name: str, coverpoint: str) -> str:
-    return test_data.add_testcase(bin_name, coverpoint, _CG)
+def _gen_ecall_test(test_data: TestData, check: int, temp: int, bin_name: str) -> list[str]:
+    """RVTEST_TSBI_ECALL_TEST, checking it returns the ecall's own address."""
+    label = test_data.add_testcase(bin_name, "cp_tsbi_ecall", _CG)
+    site = label.rstrip(":") + "_site"
+    return [
+        label,
+        f"{site}:",
+        f"{INDENT}RVTEST_TSBI_ECALL_TEST",
+        f"{INDENT}LA(x{temp}, {site})",
+        f"{INDENT}sub x{check}, a0, x{temp}",
+        write_sigupd(check, test_data),
+    ]
 
 
 def _gen_hs_csr_tests(test_data: TestData, check: int, temp: int) -> list[str]:
@@ -47,12 +59,12 @@ def _gen_hs_csr_tests(test_data: TestData, check: int, temp: int) -> list[str]:
         "// pointer into hgatp.",
         "/////////////////////////////////",
         "",
-        _case(test_data, "bare", "cp_hgatp_mode"),
+        test_data.add_testcase("bare", "cp_hgatp_mode", _CG),
         f"{INDENT}csrr x{check}, hgatp",
         f"{INDENT}srli x{check}, x{check}, MODE_LSB   # hgatp.MODE, whatever XLEN says that is",
         write_sigupd(check, test_data),
         "",
-        _case(test_data, "clear", "cp_hstatus_spv"),
+        test_data.add_testcase("clear", "cp_hstatus_spv", _CG),
         f"{INDENT}csrr x{check}, hstatus",
         f"{INDENT}LI(x{temp}, HSTATUS_SPV)",
         f"{INDENT}and x{check}, x{check}, x{temp}   # SPV must be 0: we have never left HS-mode",
@@ -60,14 +72,14 @@ def _gen_hs_csr_tests(test_data: TestData, check: int, temp: int) -> list[str]:
         "",
         "# hedeleg and hideleg are WARL. Write all ones and record what sticks.",
         f"{INDENT}LI(x{temp}, -1)",
-        _case(test_data, "all_ones", "cp_hedeleg_warl"),
+        test_data.add_testcase("all_ones", "cp_hedeleg_warl", _CG),
         f"{INDENT}csrw hedeleg, x{temp}",
         f"{INDENT}csrr x{check}, hedeleg",
         write_sigupd(check, test_data),
         f"{INDENT}csrw hedeleg, x0",
         "",
         f"{INDENT}LI(x{temp}, -1)",
-        _case(test_data, "all_ones", "cp_hideleg_warl"),
+        test_data.add_testcase("all_ones", "cp_hideleg_warl", _CG),
         f"{INDENT}csrw hideleg, x{temp}",
         f"{INDENT}csrr x{check}, hideleg",
         write_sigupd(check, test_data),
@@ -78,8 +90,6 @@ def _gen_hs_csr_tests(test_data: TestData, check: int, temp: int) -> list[str]:
 
 def _gen_tsbi_from_hs_tests(test_data: TestData, check: int, temp: int) -> list[str]:
     """T-SBI calls made from HS-mode, which reach M-mode as cause 9."""
-    label = _case(test_data, "from_hs", "cp_tsbi_ecall")
-    site = label.rstrip(":") + "_site"
     return [
         "",
         "/////////////////////////////////",
@@ -91,16 +101,11 @@ def _gen_tsbi_from_hs_tests(test_data: TestData, check: int, temp: int) -> list[
         "// loads a0 first.",
         "/////////////////////////////////",
         "",
-        label,
-        f"{site}:",
-        f"{INDENT}RVTEST_TSBI_ECALL_TEST",
-        f"{INDENT}LA(x{temp}, {site})",
-        f"{INDENT}sub x{check}, a0, x{temp}",
-        write_sigupd(check, test_data),
+        *_gen_ecall_test(test_data, check, temp, "from_hs"),
         "",
         "# Read an M-mode CSR from HS-mode through the T-SBI. The handler runs the",
         "# csrr while servicing our ecall, so mstatus.MPP must read back as S.",
-        _case(test_data, "mstatus_mpp_from_hs", "cp_tsbi_csr_read"),
+        test_data.add_testcase("mstatus_mpp_from_hs", "cp_tsbi_csr_read", _CG),
         f"{INDENT}RVTEST_TSBI_CSR_READ(CSR_MSTATUS)",
         f"{INDENT}srli x{check}, a0, MPP_LSB",
         f"{INDENT}andi x{check}, x{check}, 0x3",
@@ -123,7 +128,7 @@ def _gen_hlv_hsv_tests(test_data: TestData, check: int, temp: int) -> list[str]:
         "",
         f"{INDENT}LA(x{temp}, H_guest_scratch)",
         f"{INDENT}LI(x{check}, 0x5AA5)",
-        _case(test_data, "roundtrip", "cp_hlv_hsv"),
+        test_data.add_testcase("roundtrip", "cp_hlv_hsv", _CG),
         "#if __riscv_xlen == 32",
         f"{INDENT}hsv.w x{check}, (x{temp})",
         f"{INDENT}li x{check}, 0",
@@ -139,8 +144,6 @@ def _gen_hlv_hsv_tests(test_data: TestData, check: int, temp: int) -> list[str]:
 
 def _gen_vsmode_tests(test_data: TestData, check: int, temp: int) -> list[str]:
     """Enter VS-mode, trap out of it, and come back through the T-SBI."""
-    vs_ecall = _case(test_data, "from_vs", "cp_tsbi_ecall")
-    vs_site = vs_ecall.rstrip(":") + "_site"
     code = [
         "",
         "/////////////////////////////////",
@@ -156,7 +159,7 @@ def _gen_vsmode_tests(test_data: TestData, check: int, temp: int) -> list[str]:
         "# writes vsstatus. Reading the same bit back in HS-mode below shows the",
         "# two really are different registers.",
         f"{INDENT}LI(x{temp}, SSTATUS_SPP)",
-        _case(test_data, "spp_set", "cp_vsstatus_alias"),
+        test_data.add_testcase("spp_set", "cp_vsstatus_alias", _CG),
         f"{INDENT}csrs sstatus, x{temp}",
         f"{INDENT}csrr x{check}, sstatus",
         f"{INDENT}and x{check}, x{check}, x{temp}",
@@ -166,25 +169,20 @@ def _gen_vsmode_tests(test_data: TestData, check: int, temp: int) -> list[str]:
         "# exception (cause 22). The check register keeps its pre-trap value,",
         "# which is how we know the instruction never completed.",
         f"{INDENT}li x{check}, -1",
-        _case(test_data, "hs_csr_from_vs", "cp_virtual_instruction"),
+        test_data.add_testcase("hs_csr_from_vs", "cp_virtual_instruction", _CG),
         f"{INDENT}csrr x{check}, hgatp",
         write_sigupd(check, test_data),
         "",
         "# An ecall from VS-mode is cause 10. Whether it is delegated to HS-mode",
         "# or taken in M-mode is a WARL property of medeleg, so both handlers have",
         "# to recognise it as a T-SBI call for this to work on every DUT.",
-        vs_ecall,
-        f"{vs_site}:",
-        f"{INDENT}RVTEST_TSBI_ECALL_TEST",
-        f"{INDENT}LA(x{temp}, {vs_site})",
-        f"{INDENT}sub x{check}, a0, x{temp}",
-        write_sigupd(check, test_data),
+        *_gen_ecall_test(test_data, check, temp, "from_vs"),
         "",
         f"{INDENT}RVTEST_TSBI_GOTO_SMODE   # leave the guest",
         "",
         "# Back in HS-mode: sstatus is the real sstatus again, so the SPP bit set",
         "# from inside the guest must not be visible here.",
-        _case(test_data, "spp_not_in_hs", "cp_vsstatus_alias"),
+        test_data.add_testcase("spp_not_in_hs", "cp_vsstatus_alias", _CG),
         f"{INDENT}csrr x{check}, sstatus",
         f"{INDENT}LI(x{temp}, SSTATUS_SPP)",
         f"{INDENT}and x{check}, x{check}, x{temp}",
@@ -192,7 +190,7 @@ def _gen_vsmode_tests(test_data: TestData, check: int, temp: int) -> list[str]:
         "",
         "# GOTO_SMODE had to clear hstatus.SPV to get us out of the guest; had it",
         "# only set sstatus.SPP, the sret would have gone straight back into VS.",
-        _case(test_data, "after_vs_trap", "cp_hstatus_spv"),
+        test_data.add_testcase("after_vs_trap", "cp_hstatus_spv", _CG),
         f"{INDENT}csrr x{check}, hstatus",
         f"{INDENT}LI(x{temp}, HSTATUS_SPV)",
         f"{INDENT}and x{check}, x{check}, x{temp}",
@@ -200,6 +198,54 @@ def _gen_vsmode_tests(test_data: TestData, check: int, temp: int) -> list[str]:
         write_sigupd(check, test_data),
     ]
     return code
+
+
+def _gen_vumode_tests(test_data: TestData, check: int, temp: int) -> list[str]:
+    """Enter VU-mode and reach HS-mode and M-mode through the T-SBI."""
+    return [
+        "",
+        "/////////////////////////////////",
+        "// VU-mode",
+        "//",
+        "// A VU ecall is cause 8, the same as a U-mode one, so HS-mode services it.",
+        "/////////////////////////////////",
+        "",
+        f"{INDENT}RVTEST_TSBI_GOTO_VUMODE",
+        "",
+        "# A supervisor CSR is a virtual instruction exception from VU-mode, not an",
+        "# illegal instruction, which is what shows this really is VU and not U.",
+        f"{INDENT}li x{check}, -1",
+        test_data.add_testcase("s_csr_from_vu", "cp_virtual_instruction", _CG),
+        f"{INDENT}csrr x{check}, sscratch",
+        write_sigupd(check, test_data),
+        "",
+        *_gen_ecall_test(test_data, check, temp, "from_vu"),
+        "",
+        "# An HS-mode CSR, read by the HS handler while it services this call. The trap",
+        "# from VU set hstatus.SPV and cleared SPVP, so this reads back SPV alone.",
+        test_data.add_testcase("hstatus_from_vu", "cp_tsbi_csr_read", _CG),
+        f"{INDENT}RVTEST_TSBI_CSR_READ(CSR_HSTATUS)",
+        f"{INDENT}LI(x{temp}, HSTATUS_SPV | HSTATUS_SPVP)",
+        f"{INDENT}and x{check}, a0, x{temp}",
+        write_sigupd(check, test_data),
+        "",
+        "# An M-mode CSR, which the HS handler forwards to M-mode. M-mode services it",
+        "# for HS-mode's ecall, so mstatus.MPP reads back as S.",
+        test_data.add_testcase("mstatus_mpp_from_vu", "cp_tsbi_csr_read", _CG),
+        f"{INDENT}RVTEST_TSBI_CSR_READ(CSR_MSTATUS)",
+        f"{INDENT}srli x{check}, a0, MPP_LSB",
+        f"{INDENT}andi x{check}, x{check}, 0x3",
+        write_sigupd(check, test_data),
+        "",
+        f"{INDENT}RVTEST_TSBI_GOTO_SMODE   # leave the guest",
+        "",
+        test_data.add_testcase("after_vu_trap", "cp_hstatus_spv", _CG),
+        f"{INDENT}csrr x{check}, hstatus",
+        f"{INDENT}LI(x{temp}, HSTATUS_SPV)",
+        f"{INDENT}and x{check}, x{check}, x{temp}",
+        f"{INDENT}sltu x{check}, x0, x{check}",
+        write_sigupd(check, test_data),
+    ]
 
 
 def _gen_twostage_setup(test_data: TestData, check: int, temp: int) -> list[str]:
@@ -232,12 +278,12 @@ def _gen_twostage_setup(test_data: TestData, check: int, temp: int) -> list[str]
         "# Both stages are live, but HS-mode is unaffected: the G-stage only",
         "# applies with V=1. Record the modes so a mismatch below points at",
         "# hgatp/vsatp rather than at anything the guest did.",
-        _case(test_data, "sv39x4", "cp_hgatp_mode"),
+        test_data.add_testcase("sv39x4", "cp_hgatp_mode", _CG),
         f"{INDENT}csrr x{check}, hgatp",
         f"{INDENT}srli x{check}, x{check}, MODE_LSB",
         write_sigupd(check, test_data),
         "",
-        _case(test_data, "sv39", "cp_vsatp_mode"),
+        test_data.add_testcase("sv39", "cp_vsatp_mode", _CG),
         f"{INDENT}csrr x{check}, vsatp",
         f"{INDENT}srli x{check}, x{check}, MODE_LSB",
         write_sigupd(check, test_data),
@@ -247,7 +293,7 @@ def _gen_twostage_setup(test_data: TestData, check: int, temp: int) -> list[str]
 def _gen_twostage_guest(test_data: TestData, check: int, temp: int, addr: int) -> list[str]:
     """Run the guest under both translation stages and trap it three ways."""
     alias_delta = _ALIAS_GIB - _TEST_GIB
-    ident_label = _case(test_data, "load_store", "cp_twostage_access")
+    ident_label = test_data.add_testcase("load_store", "cp_twostage_access", _CG)
     code = [
         "",
         f"{INDENT}RVTEST_TSBI_GOTO_VSMODE",
@@ -266,7 +312,7 @@ def _gen_twostage_guest(test_data: TestData, check: int, temp: int, addr: int) -
         "# to read this instruction's low halfword to learn its width, which means",
         "# reading at a guest VA.",
         f"{INDENT}li x{check}, -1",
-        _case(test_data, "translated_guest", "cp_virtual_instruction"),
+        test_data.add_testcase("translated_guest", "cp_virtual_instruction", _CG),
         f"{INDENT}csrr x{check}, hgatp",
         write_sigupd(check, test_data),
         "",
@@ -278,7 +324,7 @@ def _gen_twostage_guest(test_data: TestData, check: int, temp: int, addr: int) -
         f"{INDENT}jr x{addr}",
         "1:",
         f"{INDENT}li x{check}, -1",
-        _case(test_data, "non_identity_guest_va", "cp_virtual_instruction"),
+        test_data.add_testcase("non_identity_guest_va", "cp_virtual_instruction", _CG),
         f"{INDENT}csrr x{check}, hgatp",
         f"{INDENT}addi x{check}, x{check}, 2   # reached only if the handler skipped four bytes",
         write_sigupd(check, test_data),
@@ -289,7 +335,7 @@ def _gen_twostage_guest(test_data: TestData, check: int, temp: int, addr: int) -
         "# handler that misreads the width resumes two bytes in, lands on that",
         "# halfword and takes a second trap that shows up in the trap signature.",
         f"{INDENT}li x{check}, -1",
-        _case(test_data, "non_identity_guest_va", "cp_illegal_instruction"),
+        test_data.add_testcase("non_identity_guest_va", "cp_illegal_instruction", _CG),
         f"{INDENT}.word 0x000024F3",
         f"{INDENT}addi x{check}, x{check}, 3",
         write_sigupd(check, test_data),
@@ -305,7 +351,7 @@ def _gen_twostage_guest(test_data: TestData, check: int, temp: int, addr: int) -
         "# and htval takes the faulting guest physical address, shifted right by 2.",
         f"{INDENT}LI(x{addr}, 0x{_HOLE_GIB:08X})",
         f"{INDENT}li x{check}, -1",
-        _case(test_data, "load", "cp_guest_page_fault"),
+        test_data.add_testcase("load", "cp_guest_page_fault", _CG),
         f"{INDENT}LREG x{check}, 0(x{addr})",
         write_sigupd(check, test_data),
         "",
@@ -318,20 +364,64 @@ def _gen_twostage_guest(test_data: TestData, check: int, temp: int, addr: int) -
         "# it is still live, in word 4 of the trap signature entry. What is",
         "# checkable here is the other half of the rule: htval reads as zero after",
         "# a trap whose cause does not define it.",
-        _case(test_data, "zero_after_ecall", "cp_htval"),
+        test_data.add_testcase("zero_after_ecall", "cp_htval", _CG),
         f"{INDENT}csrr x{check}, htval",
         write_sigupd(check, test_data),
+    ]
+    return code
+
+
+def _gen_twostage_vu(test_data: TestData, check: int, temp: int, addr: int) -> list[str]:
+    """Run VU-mode under both translation stages."""
+    return [
         "",
-        "# Turn the guest's translation off again so the epilogs run with a plain",
-        "# machine state, and show hgatp is writable back to Bare.",
+        "/////////////////////////////////",
+        "// Two-stage translation from VU-mode",
+        "//",
+        "// VU-mode can only execute VS-stage pages with PTE_U set, which VS-mode can",
+        "// never execute, so the identity and hole mappings are rewritten here, after",
+        "// the VS-mode tests, rather than shared with them.",
+        "/////////////////////////////////",
+        "",
+        f"{INDENT}VS_PTE_SETUP(sv39, GPA, 0x{_TEST_GIB:08X}, {_VU_PERMS}, 0x{_TEST_GIB:08X}, LEVEL2)",
+        f"{INDENT}VS_PTE_SETUP(sv39, GPA, 0x{_HOLE_GIB:08X}, {_VU_PERMS}, 0x{_HOLE_GIB:08X}, LEVEL2)",
+        f"{INDENT}hfence.vvma",
+        f"{INDENT}RVTEST_TSBI_GOTO_VUMODE",
+        "",
+        f"{INDENT}LA(x{addr}, H_guest_data)",
+        f"{INDENT}LI(x{check}, 0x5678DCBA)",
+        test_data.add_testcase("load_store_vu", "cp_twostage_access", _CG),
+        f"{INDENT}SREG x{check}, 0(x{addr})",
+        f"{INDENT}li x{check}, 0",
+        f"{INDENT}LREG x{check}, 0(x{addr})",
+        write_sigupd(check, test_data),
+        "",
+        "# The HS handler reads this ecall's width through the guest's translation at",
+        "# VU privilege, which only works because the page is a user page.",
+        *_gen_ecall_test(test_data, check, temp, "from_vu_translated"),
+        "",
+        f"{INDENT}LI(x{addr}, 0x{_HOLE_GIB:08X})",
+        f"{INDENT}li x{check}, -1",
+        test_data.add_testcase("load_vu", "cp_guest_page_fault", _CG),
+        f"{INDENT}LREG x{check}, 0(x{addr})",
+        write_sigupd(check, test_data),
+        "",
+        f"{INDENT}RVTEST_TSBI_GOTO_SMODE   # back to HS-mode",
+    ]
+
+
+def _gen_twostage_teardown(test_data: TestData, check: int) -> list[str]:
+    """Turn both stages off again so the epilogs run with a plain machine state."""
+    return [
+        "",
+        "# Show hgatp is writable back to Bare on the way out.",
         f"{INDENT}csrw vsatp, zero",
-        _case(test_data, "back_to_bare", "cp_hgatp_mode"),
+        test_data.add_testcase("back_to_bare", "cp_hgatp_mode", _CG),
         f"{INDENT}csrw hgatp, zero",
         f"{INDENT}csrr x{check}, hgatp",
         f"{INDENT}hfence.gvma",
         write_sigupd(check, test_data),
     ]
-    return code
 
 
 # Invisible trap emulation cannot yet handle traps from VS or VU mode, so
@@ -342,12 +432,12 @@ _PARAMS = ["TIME_CSR_IMPLEMENTED: true"]
 
 @add_priv_test_generator(
     "H",
-    required_extensions=["S", "H"],
+    required_extensions=["H"],
     extra_defines=["#define BOOT_TO_SMODE"],
     params=_PARAMS,
 )
 def make_h(test_data: TestData) -> list[TestChunk]:
-    """Generate the HS-mode and VS-mode trap handler and T-SBI tests."""
+    """Generate the HS, VS and VU-mode trap handler and T-SBI tests."""
     test_chunks: list[TestChunk] = []
 
     check, temp = test_data.int_regs.get_registers(2)
@@ -357,6 +447,7 @@ def make_h(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_gen_tsbi_from_hs_tests(test_data, check, temp))
     tc.code.extend(_gen_hlv_hsv_tests(test_data, check, temp))
     tc.code.extend(_gen_vsmode_tests(test_data, check, temp))
+    tc.code.extend(_gen_vumode_tests(test_data, check, temp))
     tc.raw_data.extend([".p2align 3", "H_guest_scratch:", "  .dword 0"])
     test_chunks.append(test_data.end_test_chunk())
 
@@ -366,7 +457,7 @@ def make_h(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "H",
-    required_extensions=["S", "H"],
+    required_extensions=["H"],
     extra_defines=["#define BOOT_TO_SMODE"],
     params=[*_PARAMS, "MXLEN: 64"],
 )
@@ -379,6 +470,8 @@ def make_h_twostage(test_data: TestData) -> list[TestChunk]:
     tc = test_data.begin_test_chunk("twostage")
     tc.code.extend(_gen_twostage_setup(test_data, check, temp))
     tc.code.extend(_gen_twostage_guest(test_data, check, temp, addr))
+    tc.code.extend(_gen_twostage_vu(test_data, check, temp, addr))
+    tc.code.extend(_gen_twostage_teardown(test_data, check))
     tc.raw_data.extend([".p2align 3", "H_guest_data:", "  .dword 0"])
     test_chunks.append(test_data.end_test_chunk())
 

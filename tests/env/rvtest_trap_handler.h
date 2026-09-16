@@ -446,21 +446,10 @@
 //   RVTEST_TRAP_HANDLER S       — if S_SUPPORTED
 //   RVTEST_TRAP_HANDLER V       — if S_SUPPORTED && H_SUPPORTED
 //
-// ORDER IS LOAD-BEARING. RVTEST_TRAP_SAVEAREA lays the per-mode save areas out
-// in the order this macro emits them, and every cross-area offset in this file
-// is written against M, H, S, V:
-//
-//   sved_hgatp_off  = +1 area (H)   sved_mpp_off = +2 areas (S)
-//   RVTEST_TRAP_EPILOG  reaches its own area at +1 (H), +2 (S), +3 (V)
-//   RVTEST_GOTO_LOWER_MODE reads code_bgn_ptr at +1 (H/U), +2 (S), +3 (VS/VU)
-//   \__MODE__\()trap_sig_sv reaches M's shared trap_sigptr at -1 (H), -2 (S),
-//                            -3 (V) once the -1 area sp bias is included
-//
-// H sits directly above M because the hypervisor CSRs it owns (hgatp, hedeleg)
-// are the M-mode-adjacent half of the S CSR space; S then sits above it so the
-// S prolog runs last and wins the CSRs the two modes genuinely share.
-// Emitting S before H silently points every one of the offsets above at the
-// wrong save area.
+// The order must stay M, H, S, V: the save areas are laid out in this order and
+// the cross-area offsets (sved_hgatp_off, sved_mpp_off, the epilog and
+// GOTO_LOWER_MODE area offsets, trap_sig_sv) assume it. S follows H so the S
+// prolog runs last and owns stvec and sscratch, which the two modes share.
 //
 // Used for PROLOG, HANDLER, EPILOG, and SAVEAREA instantiation.
 // The reverse order (V, S, H, M) is used for the epilogs in RVTEST_CODE_END.
@@ -1146,17 +1135,9 @@ init_\__MODE__\()edeleg:
 //---------- Save and set xSATP (non-M-mode only) ----------
 init_\__MODE__\()satp:
 .ifnc \__MODE__ , M                      // if HS, S or VS mode **FIXME: fixed offset frm trapreg_sv?
-        LA(     T4, rvtest_\__MODE__\()root_pg_tbl)     // point xsatp at this mode's root page table
-        srli T4, T4, 12
-      // MODE is left at Bare. The root page tables are still all-invalid here
-      // (RVTEST_DATA_END only reserves them) and the identity map in
-      // rvtest_identity_map is not built until after the boot chain has already
-      // dropped into S-mode, so enabling translation at this point would fault
-      // on the very next fetch. Tests that want translation enable it
-      // themselves once they have populated a page table.
-        li      T3, 0                             // MODE = Bare
-        or      T4, T4, T3                        // combine MODE bits with PPN
-        csrrw   T4, CSR_XSATP, T4                 // write new xSATP, get old value in T4
+        // Bare with every other field zero: a Bare write with a nonzero PPN has an
+        // UNSPECIFIED effect. Tests that enable translation write the whole CSR.
+        csrrw   T4, CSR_XSATP, x0                 // xSATP = 0, old value in T4
         SREG    T4, xsatp_sv_off(T1)              // save old xSATP in save area
 .endif
 
@@ -1733,15 +1714,15 @@ tsbi_\__MODE__\()goto_vu:
         LI(T4,(1<<(UDB_MXLEN-1))+((1<<12)-1))        // T4 = int_bit + cause[11:0] mask
         and     T4, T4, T5                        // T4 = masked xcause
         addi    T3, T4, -CAUSE_USER_ECALL          // T3 = masked_cause - 8 (U-mode ecall = cause 8)
-        beqz    T3, \__MODE__\()goto_sishere      // U-mode ecall -> T-SBI candidate
+        beqz    T3, \__MODE__\()tsbi_candidate    // U-mode ecall -> T-SBI candidate
   #ifdef H_SUPPORTED
         // A guest's ecall arrives here as cause 10
         // HS-mode is the execution environment for VS and VU
         addi    T3, T4, -CAUSE_VIRTUAL_SUPERVISOR_ECALL  // VS-mode ecall = cause 10
-        beqz    T3, \__MODE__\()goto_sishere      // VS-mode ecall -> T-SBI candidate
+        beqz    T3, \__MODE__\()tsbi_candidate    // VS-mode ecall -> T-SBI candidate
   #endif
         j       \__MODE__\()trapsig_ptr_upd       // not an ecall we service -> normal trap sig recording
-\__MODE__\()goto_sishere:
+\__MODE__\()tsbi_candidate:
         beqz    a0, \__MODE__\()rtn2smode          // a0==0 -> legacy GOTO_SMODE -> rtn2smode handler
 
         //--- T-SBI dispatch: caller's a0 is live in its register ---
@@ -1866,9 +1847,6 @@ tsbi_\__MODE__\()forward_to_m:
         ecall                                      // trap to M-mode with a0/a1 intact
         // For CSR_ACCESS: M-mode executes the CSR op and mrets back here in S-mode with the
         //   result in a0; sret returns to the caller (sepc was bumped past its ecall already).
-        // GOTO_VS/VU no longer come through here: they are serviced locally above, which also
-        //   avoids the sepc problem they used to have (M-mode would mret back into this stub in
-        //   the target virtual mode, and the sret would then use a sepc that is not the caller's).
         sret                                       // sret back to the caller
 
         //--- S-mode forwarding of GOTO_MMODE to M-mode ---
@@ -2052,12 +2030,18 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x602) // hedeleg
         TSBI_CSR_INSTR_TABLE(0x603) // hideleg
         TSBI_CSR_INSTR_TABLE(0x604) // hie
+        TSBI_CSR_INSTR_TABLE(0x605) // htimedelta
         TSBI_CSR_INSTR_TABLE(0x606) // hcounteren
         TSBI_CSR_INSTR_TABLE(0x607) // hgeie
+        TSBI_CSR_INSTR_TABLE(0x608) // hvien
+        TSBI_CSR_INSTR_TABLE(0x609) // hvictl
         TSBI_CSR_INSTR_TABLE(0x60A) // henvcfg
+        TSBI_CSR_INSTR_TABLE(0x60C) // hstateen0
         TSBI_CSR_INSTR_TABLE(0x643) // htval
         TSBI_CSR_INSTR_TABLE(0x644) // hip
         TSBI_CSR_INSTR_TABLE(0x645) // hvip
+        TSBI_CSR_INSTR_TABLE(0x646) // hviprio1
+        TSBI_CSR_INSTR_TABLE(0x647) // hviprio2
         TSBI_CSR_INSTR_TABLE(0x64A) // htinst
         TSBI_CSR_INSTR_TABLE(0xE12) // hgeip
         TSBI_CSR_INSTR_TABLE(0x680) // hgatp
@@ -2072,8 +2056,11 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x280) // vsatp
   #if (UDB_MXLEN==32)
         TSBI_CSR_INSTR_TABLE(0x612) // hedelegh
+        TSBI_CSR_INSTR_TABLE(0x615) // htimedeltah
+        TSBI_CSR_INSTR_TABLE(0x618) // hvienh
         TSBI_CSR_INSTR_TABLE(0x61A) // henvcfgh
-        TSBI_CSR_INSTR_TABLE(0x655) // hvienh
+        TSBI_CSR_INSTR_TABLE(0x61C) // hstateen0h
+        TSBI_CSR_INSTR_TABLE(0x655) // hviph
         TSBI_CSR_INSTR_TABLE(0x656) // hviprio1h
         TSBI_CSR_INSTR_TABLE(0x657) // hviprio2h
   #endif

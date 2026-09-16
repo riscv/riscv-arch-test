@@ -24,8 +24,8 @@ dir = "framework/src/act/data"
 auto = true
 depends = ["uv"]
 sources = [".pre-commit-config.yaml"]
-outputs = [".git/hooks/pre-commit"]
-run = "prek install --prepare-hooks"
+outputs = []
+run = "prek prepare-hooks"
 
 [tasks.prek]
 description = "Run prek hooks on all files"

@@ -1711,13 +1711,12 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     return [test_data.end_test_chunk()]
 
 
-INTERRUPT_CODES = (1, 3, 5, 7, 9, 11)  # SSI, MSI, STI, MTI, SEI, MEI
-LOWER_MODE_INTERRUPT_CODES = (1, 5, 9)
+INTERRUPT_CODES = (1, 3, 5, 7, 9, 11, 13)  # SSI, MSI, STI, MTI, SEI, MEI
+LOWER_MODE_INTERRUPT_CODES = (1, 5, 9, 13)
 TIMER_INTERRUPT_CODE = 7
 
 
 def _set_itrigger_delegation(code: int, delegate: int, reg: int) -> list[str]:
-    """Set mideleg[x] and keep breakpoint exceptions in M-mode."""
     return [
         f"LI(x{reg}, 0x{1 << code:x})",
         f"{'csrs' if delegate else 'csrc'} mideleg, x{reg}",
@@ -1735,9 +1734,6 @@ def _goto_itrigger_origin(origin: str) -> list[str]:
 def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate the SdtrigSm itrigger M/S/U delegation matrix."""
 
-    if mode != "Sm":
-        raise ValueError("_generate_itrigger_tests implements the cross-privilege matrix for SdtrigSm only")
-
     covergroup = f"Sdtrig{mode}_itrigger_cg"
     tc = test_data.begin_test_chunk("Itrigger")
     lines: list[str] = tc.code
@@ -1754,7 +1750,8 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             "itrigger fires on each interrupt cause in the tdata2 mask",
         )
     )
-    for origin in ("Sm", "S", "U"):
+    origins = ("Sm", "S", "U") if mode == "Sm" else (mode,)
+    for origin in origins:
         codes = INTERRUPT_CODES if origin == "Sm" else LOWER_MODE_INTERRUPT_CODES
         delegations = (0,) if origin == "Sm" else (1,)  # both traps in 0 needs reentrnacy solution
         for trig_num in range(UDB_NUM_TRIGGERS):
@@ -1768,11 +1765,12 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                         binname = f"trig_num_{trig_num}_{origin.lower()}_code_{code}_deleg_{delegate}_priv_{priv:05b}"
                         lines.append(_add_tc(test_data, binname, coverpoint, covergroup))
                         for cause in (code,) if code == TIMER_INTERRUPT_CODE else (code, TIMER_INTERRUPT_CODE):
+                            lines.extend(_global_ie(mode, enable=False))
+                            if mode == "Sm":
+                                lines.append("csrci mstatus, 0x2 # SIE=0 while the source is prepared")
+                                lines.extend(_set_itrigger_delegation(code, delegate, t1))
                             lines.extend(
                                 [
-                                    *_global_ie(mode, enable=False),
-                                    "csrci mstatus, 0x2 # SIE=0 while the source is prepared",
-                                    *_set_itrigger_delegation(code, delegate, t1),
                                     *_config_itrigger(
                                         t1,
                                         trig_num,
@@ -1780,20 +1778,27 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                                         mode,
                                         privbits=priv,
                                     ),
-                                    *_cause_interrupt(cause, mode, t1),
+                                    *_cause_interrupt(cause, origin, t1),
                                     *_goto_itrigger_origin(origin),
                                     *_global_ie(origin, enable=True),
                                     "nop # allow the pending interrupt to be taken",
                                     *_global_ie(origin, enable=False),
-                                    "RVTEST_TSBI_GOTO_MMODE",
+                                ]
+                            )
+                            if mode == "Sm":
+                                lines.append("RVTEST_TSBI_GOTO_MMODE")
+                            lines.extend(
+                                [
                                     *_clear_interrupt(cause, mode, t1),
-                                    f"csrr x{t1}, mtval",
+                                    _csr_access(f"csrr x{t1}, mtval", mode),
                                     write_sigupd(t1, test_data),
                                     *_read_trigger_hit(t1, t2, trig_num, mode, test_data),
                                     *_disable_trigger(t1, trig_num, mode),
-                                    *_set_itrigger_delegation(code, 0, t1),
                                 ]
                             )
+                            if mode == "Sm":
+                                lines.extend(_set_itrigger_delegation(code, 0, t1))
+
                     # if code == 13:
                     # lines.append("#endif")  # SSCOFPMF_SUPPORTED
                     # lines.append("#endif")  # UDB_INTERRUPT{code}_SUPPORTED

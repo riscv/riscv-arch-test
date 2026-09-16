@@ -41,10 +41,12 @@ def _load_v_zero_one(temp_reg: int) -> list[str]:
     lines = []
     lines.append(f"LI(x{temp_reg}, 0x3f800000)  # 1.0f")
     lines.append(f"fmv.w.x f1, x{temp_reg}")
+    lines.append(f"vsetvli x{temp_reg}, x0, e32, m1, ta, ma  # vl = VLMAX so the fills cover whole registers")
     lines.append("vfmv.v.f v1, f1   # v1 = 1.0 in each lane")
     lines.append("vmv.v.i v2, 0     # v2 = 0")
     lines.append("vfmv.v.f v4, f1   # v4 = 1.0")
     lines.append("vfmv.v.f v5, f1   # v5 = 1.0")
+    lines.extend(_vector_setup(temp_reg))
     return lines
 
 
@@ -56,7 +58,6 @@ def _gen_fs_state_affecting_register(test_data: TestData, temp_reg: int) -> list
     ]
     for fs in (1, 2):
         lines.extend(_set_fs_vs(fs=3, vs=3, temp_reg=temp_reg))
-        lines.extend(_vector_setup(temp_reg))
         lines.extend(_load_v_zero_one(temp_reg))
         lines.extend(_set_fs_vs(fs=fs, vs=3, temp_reg=temp_reg))
         lines.append(test_data.add_testcase(f"vfmv_f_s_fs{fs}", coverpoint, _CG))
@@ -74,7 +75,6 @@ def _gen_fs_state_affecting_csr(test_data: TestData, temp_reg: int) -> list[str]
     for fs in (1, 2):
         for trial in range(3):
             lines.extend(_set_fs_vs(fs=3, vs=3, temp_reg=temp_reg))
-            lines.extend(_vector_setup(temp_reg))
             lines.extend(_load_v_zero_one(temp_reg))
             lines.append(
                 "csrwi fcsr, 0  # clear fcsr (fflags+frm) under FS=Dirty; clearing fflags alone leaves fcsr stale in some traces"
@@ -88,7 +88,6 @@ def _gen_fs_state_affecting_csr(test_data: TestData, temp_reg: int) -> list[str]
     # Also exercise an exception with vfadd inf-inf and vfmul 0*inf
     for fs in (1, 2):
         lines.extend(_set_fs_vs(fs=3, vs=3, temp_reg=temp_reg))
-        lines.extend(_vector_setup(temp_reg))
         lines.extend(_load_v_zero_one(temp_reg))
         # build +inf in v6 by 1.0/0.0 first under FS=Dirty
         lines.append("vfdiv.vv v6, v1, v2  # v6 = +inf")
@@ -121,7 +120,6 @@ def _gen_fs_state_nonaffecting(test_data: TestData, temp_reg: int) -> list[str]:
     for fs in (1, 2):
         for vs2_reg, vs1_reg, name in pattern_pairs:
             lines.extend(_set_fs_vs(fs=3, vs=3, temp_reg=temp_reg))
-            lines.extend(_vector_setup(temp_reg))
             lines.extend(_load_v_zero_one(temp_reg))
             lines.append("csrwi fcsr, 0  # clear fcsr under FS=Dirty, as the sibling generator does")
             lines.extend(_set_fs_vs(fs=fs, vs=3, temp_reg=temp_reg))
@@ -150,7 +148,6 @@ def _gen_fs_off(test_data: TestData, temp_reg: int) -> list[str]:
     ]
     for vs2_reg, vs1_reg, name in pattern_pairs:
         lines.extend(_set_fs_vs(fs=3, vs=3, temp_reg=temp_reg))
-        lines.extend(_vector_setup(temp_reg))
         lines.extend(_load_v_zero_one(temp_reg))
         lines.extend(_set_fs_vs(fs=0, vs=3, temp_reg=temp_reg))
         lines.append(test_data.add_testcase(f"vfadd_{name}_fs_off", coverpoint, _CG))

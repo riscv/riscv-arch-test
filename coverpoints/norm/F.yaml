@@ -52,7 +52,7 @@ normative_rule_definitions:
     # frm
     coverpoint:
       [
-        "F_fcvt_l_s_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
+        "F_fcvt_l_s_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
       ]
   - name: fcvt-lu-s_op
     # FCVT.WU.S, FCVT.LU.S, FCVT.S.WU,
@@ -80,7 +80,7 @@ normative_rule_definitions:
     # frm
     coverpoint:
       [
-        "F_fcvt_lu_s_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
+        "F_fcvt_lu_s_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
       ]
   - name: fcvt-s-l_op
     # FCVT.S.W or FCVT.S.L converts a 32-bit or 64-bit signed
@@ -210,7 +210,7 @@ normative_rule_definitions:
     # frm
     coverpoint:
       [
-        "F_fcvt_w_s_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
+        "F_fcvt_w_s_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
       ]
   - name: fcvt-wu-s_op
     # FCVT.WU.S, FCVT.LU.S, FCVT.S.WU,
@@ -237,7 +237,7 @@ normative_rule_definitions:
     # frm
     coverpoint:
       [
-        "F_fcvt_wu_s_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
+        "F_fcvt_wu_s_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
       ]
   - name: fdiv-s_op
     # FDIV.S performs the single-precision floating-point division of rs1 by rs2

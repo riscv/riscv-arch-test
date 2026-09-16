@@ -159,36 +159,36 @@ Zca_c_lwsp_cg_cp_rd_nx0_b13:
 
 # Testcase cp_rd_nx0 (Test destination rd = x14)
   mv sp, x1 # move data_ptr to sp
-  addi sp, sp, -88 # adjust base address for load
+  addi sp, sp, -168 # adjust base address for load
 Zca_c_lwsp_cg_cp_rd_nx0_b14:
-  c.lwsp x14, 88(sp) # perform load (0xbdce726a3f5a4211)
+  c.lwsp x14, 168(sp) # perform load (0xbf5a4211e90308d2)
   # Check if x14 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x27, x5, x4, x14, Zca_c_lwsp_cg_cp_rd_nx0_b14, Zca_c_lwsp_cg_cp_rd_nx0_b14_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd_nx0 (Test destination rd = x15)
   mv sp, x1 # move data_ptr to sp
-  addi sp, sp, -52 # adjust base address for load
+  addi sp, sp, -188 # adjust base address for load
 Zca_c_lwsp_cg_cp_rd_nx0_b15:
-  c.lwsp x15, 52(sp) # perform load (0xd3bc90c5c3a5f279)
+  c.lwsp x15, 188(sp) # perform load (0x8b2cfc2e53bc90c5)
   # Check if x15 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x27, x5, x4, x15, Zca_c_lwsp_cg_cp_rd_nx0_b15, Zca_c_lwsp_cg_cp_rd_nx0_b15_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd_nx0 (Test destination rd = x16)
   mv sp, x1 # move data_ptr to sp
-  addi sp, sp, -28 # adjust base address for load
+  addi sp, sp, -224 # adjust base address for load
 Zca_c_lwsp_cg_cp_rd_nx0_b16:
-  c.lwsp x16, 28(sp) # perform load (0xd1540c9c20add5c9)
+  c.lwsp x16, 224(sp) # perform load (0xe9780bd1cddd6d89)
   # Check if x16 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x27, x5, x4, x16, Zca_c_lwsp_cg_cp_rd_nx0_b16, Zca_c_lwsp_cg_cp_rd_nx0_b16_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd_nx0 (Test destination rd = x17)
   mv sp, x1 # move data_ptr to sp
-  addi sp, sp, -248 # adjust base address for load
+  addi sp, sp, -124 # adjust base address for load
 Zca_c_lwsp_cg_cp_rd_nx0_b17:
-  c.lwsp x17, 248(sp) # perform load (0x4ddd6d89b79a9c43)
+  c.lwsp x17, 124(sp) # perform load (0x568ae350b1c1f574)
   # Check if x17 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x27, x5, x4, x17, Zca_c_lwsp_cg_cp_rd_nx0_b17, Zca_c_lwsp_cg_cp_rd_nx0_b17_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
@@ -400,27 +400,27 @@ Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x1c:
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -32 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x20:
-  c.lwsp x8, 32(sp) # perform load (0xaf1cae297ff3af14)
-  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x20, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x20_str)
+  c.lwsp x31, 32(sp) # perform load (0xd3d7487bc4282201)
+  # Check if x31 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x31, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x20, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x20_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=36
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -36 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x24:
-  c.lwsp x9, 36(sp) # perform load (0xb168166ac907e937)
-  # Check if x9 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x9, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x24, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x24_str)
+  c.lwsp x21, 36(sp) # perform load (0xa8446cae2f1cae29)
+  # Check if x21 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x21, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x24, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x24_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=40
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -40 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x28:
-  c.lwsp x2, 40(sp) # perform load (0x98edb9d9e94d5b06)
-  # Check if x2 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x2, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x28, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x28_str)
+  c.lwsp x22, 40(sp) # perform load (0x98edb9d9e94d5b06)
+  # Check if x22 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x22, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x28, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x28_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=44
@@ -481,25 +481,25 @@ Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x40:
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -68 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x44:
-  c.lwsp x12, 68(sp) # perform load (0xf3fa74fdcedc76e8)
-  # Check if x12 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x12, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x44, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x44_str)
+  c.lwsp x31, 68(sp) # perform load (0x4edc76e862cedd7a)
+  # Check if x31 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x31, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x44, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x44_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=72
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -72 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x48:
-  c.lwsp x19, 72(sp) # perform load (0x15ca99d229305694)
-  # Check if x19 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x19, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x48, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x48_str)
+  c.lwsp x6, 72(sp) # perform load (0x298d676417ebd681)
+  # Check if x6 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x6, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x48, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x48_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=76
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -76 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x4c:
-  c.lwsp x21, 76(sp) # perform load (0xb6256a972da059a1)
+  c.lwsp x21, 76(sp) # perform load (0xada059a11cd81425)
   # Check if x21 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x21, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x4c, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x4c_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
@@ -508,349 +508,349 @@ Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x4c:
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -80 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x50:
-  c.lwsp x14, 80(sp) # perform load (0xa96fd7c797640e6e)
-  # Check if x14 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x14, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x50, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x50_str)
+  c.lwsp x8, 80(sp) # perform load (0x17640e6e244c7a09)
+  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x50, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x50_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=84
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -84 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x54:
-  c.lwsp x7, 84(sp) # perform load (0x31b431a1ae1395c4)
-  # Check if x7 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x7, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x54, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x54_str)
+  c.lwsp x16, 84(sp) # perform load (0xcbdc695aab09593d)
+  # Check if x16 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x16, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x54, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x54_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=88
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -88 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x58:
-  c.lwsp x15, 88(sp) # perform load (0x5ed32655db80f34b)
-  # Check if x15 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x15, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x58, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x58_str)
+  c.lwsp x26, 88(sp) # perform load (0x31b431a1ae1395c4)
+  # Check if x26 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x26, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x58, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x58_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=92
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -92 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x5c:
-  c.lwsp x9, 92(sp) # perform load (0x40049a50531b58c7)
-  # Check if x9 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x9, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x5c, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x5c_str)
+  c.lwsp x15, 92(sp) # perform load (0x5ed32655db80f34b)
+  # Check if x15 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x15, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x5c, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x5c_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=96
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -96 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x60:
-  c.lwsp x30, 96(sp) # perform load (0x25587ca8edaed40d)
-  # Check if x30 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x30, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x60, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x60_str)
+  c.lwsp x9, 96(sp) # perform load (0x40049a50531b58c7)
+  # Check if x9 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x9, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x60, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x60_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=100
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -100 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x64:
-  c.lwsp x27, 100(sp) # perform load (0x82eb3de44dbf254c)
-  # Check if x27 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x27, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x64, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x64_str)
+  c.lwsp x30, 100(sp) # perform load (0x25587ca8edaed40d)
+  # Check if x30 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x30, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x64, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x64_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=104
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -104 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x68:
-  c.lwsp x7, 104(sp) # perform load (0x3be4f34c9bc0db1b)
-  # Check if x7 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x7, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x68, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x68_str)
+  c.lwsp x27, 104(sp) # perform load (0x0e2a4020b70c3b5e)
+  # Check if x27 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x27, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x68, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x68_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=108
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -108 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x6c:
-  c.lwsp x2, 108(sp) # perform load (0x4a0a9926b25842ad)
-  # Check if x2 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x2, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x6c, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x6c_str)
+  c.lwsp x30, 108(sp) # perform load (0x82eb3de44dbf254c)
+  # Check if x30 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x30, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x6c, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x6c_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=112
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -112 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x70:
-  c.lwsp x10, 112(sp) # perform load (0x028f00d46d552934)
-  # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x10, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x70, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x70_str)
+  c.lwsp x7, 112(sp) # perform load (0x3be4f34c9bc0db1b)
+  # Check if x7 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x7, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x70, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x70_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=116
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -116 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x74:
-  c.lwsp x19, 116(sp) # perform load (0xb312c4a849c6d17a)
-  # Check if x19 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x19, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x74, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x74_str)
+  c.lwsp x2, 116(sp) # perform load (0x4a0a9926b25842ad)
+  # Check if x2 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x2, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x74, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x74_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=120
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -120 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x78:
-  c.lwsp x2, 120(sp) # perform load (0xd8c868d0e5ec5d87)
-  # Check if x2 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x2, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x78, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x78_str)
+  c.lwsp x10, 120(sp) # perform load (0x028f00d46d552934)
+  # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x10, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x78, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x78_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=124
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -124 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x7c:
-  c.lwsp x9, 124(sp) # perform load (0x301df2b7584f3ee0)
-  # Check if x9 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x9, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x7c, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x7c_str)
+  c.lwsp x19, 124(sp) # perform load (0xb312c4a849c6d17a)
+  # Check if x19 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x19, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x7c, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x7c_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=128
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -128 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x80:
-  c.lwsp x8, 128(sp) # perform load (0xe3f74b4f66169e43)
-  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x80, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x80_str)
+  c.lwsp x2, 128(sp) # perform load (0xd8c868d0e5ec5d87)
+  # Check if x2 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x2, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x80, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x80_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=132
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -132 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x84:
-  c.lwsp x16, 132(sp) # perform load (0xbca95738eae63906)
-  # Check if x16 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x16, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x84, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x84_str)
+  c.lwsp x9, 132(sp) # perform load (0x301df2b7584f3ee0)
+  # Check if x9 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x9, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x84, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x84_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=136
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -136 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x88:
-  c.lwsp x23, 136(sp) # perform load (0x38d306b37e6dbfd4)
-  # Check if x23 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x23, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x88, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x88_str)
+  c.lwsp x31, 136(sp) # perform load (0xe6169e43b17fded6)
+  # Check if x31 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x31, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x88, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x88_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=140
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -140 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x8c:
-  c.lwsp x27, 140(sp) # perform load (0x1a836368feefdc23)
-  # Check if x27 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x27, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x8c, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x8c_str)
+  c.lwsp x9, 140(sp) # perform load (0x6ae63906835d0912)
+  # Check if x9 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x9, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x8c, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x8c_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=144
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -144 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x90:
-  c.lwsp x16, 144(sp) # perform load (0x5b84d59c9203aeaf)
-  # Check if x16 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x16, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x90, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x90_str)
+  c.lwsp x13, 144(sp) # perform load (0x32b5957c4ec5203f)
+  # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x13, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x90, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x90_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=148
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -148 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x94:
-  c.lwsp x8, 148(sp) # perform load (0xaea16e96fc613e25)
-  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x94, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x94_str)
+  c.lwsp x24, 148(sp) # perform load (0xf2e18b3ddb84d59c)
+  # Check if x24 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x24, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x94, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x94_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=152
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -152 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x98:
-  c.lwsp x13, 152(sp) # perform load (0xcf77db427a720f62)
-  # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x13, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x98, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x98_str)
+  c.lwsp x31, 152(sp) # perform load (0xaea16e96fc613e25)
+  # Check if x31 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x31, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x98, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x98_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=156
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -156 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x9c:
-  c.lwsp x15, 156(sp) # perform load (0xf1929dbed33ae7be)
-  # Check if x15 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x15, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x9c, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x9c_str)
+  c.lwsp x13, 156(sp) # perform load (0xcf77db427a720f62)
+  # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x13, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x9c, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0x9c_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=160
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -160 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xa0:
-  c.lwsp x8, 160(sp) # perform load (0xbca4b5ceacbd897a)
-  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xa0, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xa0_str)
+  c.lwsp x15, 160(sp) # perform load (0xf1929dbed33ae7be)
+  # Check if x15 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x15, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xa0, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xa0_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=164
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -164 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xa4:
-  c.lwsp x16, 164(sp) # perform load (0x8d50d3dbecc45c95)
-  # Check if x16 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x16, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xa4, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xa4_str)
+  c.lwsp x8, 164(sp) # perform load (0xbca4b5ceacbd897a)
+  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xa4, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xa4_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=168
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -168 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xa8:
-  c.lwsp x10, 168(sp) # perform load (0x35098311b94fe3a6)
-  # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x10, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xa8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xa8_str)
+  c.lwsp x16, 168(sp) # perform load (0x8d50d3dbecc45c95)
+  # Check if x16 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x16, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xa8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xa8_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=172
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -172 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xac:
-  c.lwsp x15, 172(sp) # perform load (0x6652bfcca8cfcfda)
-  # Check if x15 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x15, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xac, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xac_str)
+  c.lwsp x10, 172(sp) # perform load (0x35098311b94fe3a6)
+  # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x10, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xac, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xac_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=176
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -176 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xb0:
-  c.lwsp x21, 176(sp) # perform load (0x034154ff2c2b6adc)
-  # Check if x21 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x21, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xb0, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xb0_str)
+  c.lwsp x15, 176(sp) # perform load (0x6652bfcca8cfcfda)
+  # Check if x15 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x15, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xb0, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xb0_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=180
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -180 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xb4:
-  c.lwsp x29, 180(sp) # perform load (0x58deb24bf05edc66)
-  # Check if x29 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x29, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xb4, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xb4_str)
+  c.lwsp x21, 180(sp) # perform load (0x034154ff2c2b6adc)
+  # Check if x21 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x21, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xb4, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xb4_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=184
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -184 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xb8:
-  c.lwsp x7, 184(sp) # perform load (0x5e1096a88fe5f19b)
-  # Check if x7 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x7, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xb8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xb8_str)
+  c.lwsp x29, 184(sp) # perform load (0x58deb24bf05edc66)
+  # Check if x29 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x29, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xb8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xb8_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=188
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -188 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xbc:
-  c.lwsp x8, 188(sp) # perform load (0x5e13a1c4f2eea947)
-  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xbc, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xbc_str)
+  c.lwsp x7, 188(sp) # perform load (0x5e1096a88fe5f19b)
+  # Check if x7 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x7, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xbc, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xbc_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=192
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -192 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xc0:
-  c.lwsp x27, 192(sp) # perform load (0xf8b1ab2467371470)
-  # Check if x27 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x27, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xc0, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xc0_str)
+  c.lwsp x8, 192(sp) # perform load (0x5e13a1c4f2eea947)
+  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xc0, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xc0_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=196
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -196 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xc4:
-  c.lwsp x3, 196(sp) # perform load (0x691dca865b5a1566)
-  # Check if x3 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x3, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xc4, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xc4_str)
+  c.lwsp x27, 196(sp) # perform load (0xf8b1ab2467371470)
+  # Check if x27 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x27, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xc4, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xc4_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=200
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -200 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xc8:
-  c.lwsp x18, 200(sp) # perform load (0xfda9e83978551780)
-  # Check if x18 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x18, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xc8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xc8_str)
+  c.lwsp x3, 200(sp) # perform load (0x691dca865b5a1566)
+  # Check if x3 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x3, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xc8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xc8_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=204
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -204 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xcc:
-  c.lwsp x12, 204(sp) # perform load (0x5e0db5f2494024df)
-  # Check if x12 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x12, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xcc, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xcc_str)
+  c.lwsp x18, 204(sp) # perform load (0xfda9e83978551780)
+  # Check if x18 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x18, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xcc, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xcc_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=208
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -208 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xd0:
-  c.lwsp x10, 208(sp) # perform load (0x8d9cbe551af0a176)
-  # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x10, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xd0, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xd0_str)
+  c.lwsp x12, 208(sp) # perform load (0x5e0db5f2494024df)
+  # Check if x12 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x12, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xd0, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xd0_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=212
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -212 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xd4:
-  c.lwsp x24, 212(sp) # perform load (0xddd9d46c6b3ba686)
-  # Check if x24 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x24, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xd4, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xd4_str)
+  c.lwsp x10, 212(sp) # perform load (0x8d9cbe551af0a176)
+  # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x10, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xd4, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xd4_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=216
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -216 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xd8:
-  c.lwsp x28, 216(sp) # perform load (0x6cff05f4471f466e)
-  # Check if x28 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x28, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xd8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xd8_str)
+  c.lwsp x24, 216(sp) # perform load (0xddd9d46c6b3ba686)
+  # Check if x24 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x24, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xd8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xd8_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=220
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -220 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xdc:
-  c.lwsp x8, 220(sp) # perform load (0x5c3285f1b465cfc7)
-  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xdc, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xdc_str)
+  c.lwsp x28, 220(sp) # perform load (0x6cff05f4471f466e)
+  # Check if x28 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x28, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xdc, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xdc_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=224
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -224 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xe0:
-  c.lwsp x13, 224(sp) # perform load (0x4e135a2dd1a9235d)
-  # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x13, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xe0, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xe0_str)
+  c.lwsp x8, 224(sp) # perform load (0x5c3285f1b465cfc7)
+  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xe0, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xe0_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=228
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -228 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xe4:
-  c.lwsp x21, 228(sp) # perform load (0x240d4654d7d49243)
-  # Check if x21 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x21, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xe4, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xe4_str)
+  c.lwsp x31, 228(sp) # perform load (0x9f1bd751cc3667f4)
+  # Check if x31 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x31, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xe4, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xe4_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=232
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -232 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xe8:
-  c.lwsp x6, 232(sp) # perform load (0xd3a8220afbbd3470)
+  c.lwsp x6, 232(sp) # perform load (0x240d4654d7d49243)
   # Check if x6 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x6, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xe8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xe8_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
@@ -859,45 +859,45 @@ Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xe8:
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -236 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xec:
-  c.lwsp x26, 236(sp) # perform load (0x8467edc6ad732d79)
-  # Check if x26 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x26, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xec, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xec_str)
+  c.lwsp x6, 236(sp) # perform load (0xd3a8220afbbd3470)
+  # Check if x6 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x6, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xec, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xec_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=240
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -240 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xf0:
-  c.lwsp x20, 240(sp) # perform load (0xcb645ce00bd21d6e)
-  # Check if x20 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x20, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xf0, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xf0_str)
+  c.lwsp x26, 240(sp) # perform load (0x8467edc6ad732d79)
+  # Check if x26 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x26, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xf0, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xf0_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=244
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -244 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xf4:
-  c.lwsp x18, 244(sp) # perform load (0x481805026f50a0f8)
-  # Check if x18 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x18, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xf4, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xf4_str)
+  c.lwsp x20, 244(sp) # perform load (0xcb645ce00bd21d6e)
+  # Check if x20 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x20, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xf4, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xf4_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=248
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -248 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xf8:
-  c.lwsp x28, 248(sp) # perform load (0x8b0236541400a891)
-  # Check if x28 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x28, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xf8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xf8_str)
+  c.lwsp x18, 248(sp) # perform load (0x481805026f50a0f8)
+  # Check if x18 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x18, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xf8, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xf8_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=252
   mv sp, x1 # move data_ptr to sp
   addi sp, sp, -252 # adjust base address for load
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xfc:
-  c.lwsp x15, 252(sp) # perform load (0x2313d8d6fd2f2c38)
-  # Check if x15 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x15, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xfc, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xfc_str)
+  c.lwsp x28, 252(sp) # perform load (0x8b0236541400a891)
+  # Check if x28 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x28, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xfc, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xfc_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
   mv x2, x11 # restore signature pointer to default register for teardown
@@ -922,10 +922,10 @@ RVTEST_DATA_BEGIN
 .dword 0x38c4c96ea863e883
 .dword 0xf55336015daf6e31
 .dword 0x34112b22b5496321
-.dword 0xbdce726a3f5a4211
-.dword 0xd3bc90c5c3a5f279
-.dword 0xd1540c9c20add5c9
-.dword 0x4ddd6d89b79a9c43
+.dword 0xbf5a4211e90308d2
+.dword 0x8b2cfc2e53bc90c5
+.dword 0xe9780bd1cddd6d89
+.dword 0x568ae350b1c1f574
 .dword 0xd03981d0301f80fd
 .dword 0x4c6bd35bf65174a4
 .dword 0xe6ff110947c416cb
@@ -948,8 +948,8 @@ RVTEST_DATA_BEGIN
 .dword 0x1e0e11fea3b11597
 .dword 0x6d7c5a1cea0b154c
 .dword 0x3624e24f3e4c6364
-.dword 0xaf1cae297ff3af14
-.dword 0xb168166ac907e937
+.dword 0xd3d7487bc4282201
+.dword 0xa8446cae2f1cae29
 .dword 0x98edb9d9e94d5b06
 .dword 0x8eca0a288ead11be
 .dword 0xb8c5a9641607e87c
@@ -957,14 +957,16 @@ RVTEST_DATA_BEGIN
 .dword 0x19bd346da9741118
 .dword 0xa2b70c8a09449a9b
 .dword 0x5e9819a017a564a9
-.dword 0xf3fa74fdcedc76e8
-.dword 0x15ca99d229305694
-.dword 0xb6256a972da059a1
-.dword 0xa96fd7c797640e6e
+.dword 0x4edc76e862cedd7a
+.dword 0x298d676417ebd681
+.dword 0xada059a11cd81425
+.dword 0x17640e6e244c7a09
+.dword 0xcbdc695aab09593d
 .dword 0x31b431a1ae1395c4
 .dword 0x5ed32655db80f34b
 .dword 0x40049a50531b58c7
 .dword 0x25587ca8edaed40d
+.dword 0x0e2a4020b70c3b5e
 .dword 0x82eb3de44dbf254c
 .dword 0x3be4f34c9bc0db1b
 .dword 0x4a0a9926b25842ad
@@ -972,11 +974,10 @@ RVTEST_DATA_BEGIN
 .dword 0xb312c4a849c6d17a
 .dword 0xd8c868d0e5ec5d87
 .dword 0x301df2b7584f3ee0
-.dword 0xe3f74b4f66169e43
-.dword 0xbca95738eae63906
-.dword 0x38d306b37e6dbfd4
-.dword 0x1a836368feefdc23
-.dword 0x5b84d59c9203aeaf
+.dword 0xe6169e43b17fded6
+.dword 0x6ae63906835d0912
+.dword 0x32b5957c4ec5203f
+.dword 0xf2e18b3ddb84d59c
 .dword 0xaea16e96fc613e25
 .dword 0xcf77db427a720f62
 .dword 0xf1929dbed33ae7be
@@ -996,14 +997,13 @@ RVTEST_DATA_BEGIN
 .dword 0xddd9d46c6b3ba686
 .dword 0x6cff05f4471f466e
 .dword 0x5c3285f1b465cfc7
-.dword 0x4e135a2dd1a9235d
+.dword 0x9f1bd751cc3667f4
 .dword 0x240d4654d7d49243
 .dword 0xd3a8220afbbd3470
 .dword 0x8467edc6ad732d79
 .dword 0xcb645ce00bd21d6e
 .dword 0x481805026f50a0f8
 .dword 0x8b0236541400a891
-.dword 0x2313d8d6fd2f2c38
 
 // Testcase strings
 Zca_c_lwsp_cg_cp_rd_nx0_b1_str: .string "\"test: 1; cg: Zca_c.lwsp_cg; cp: cp_rd_nx0; bin: b1\""

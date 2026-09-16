@@ -348,8 +348,7 @@
 
     #ifdef RVTEST_VECTOR
         # We need to ensure that VS is set in mstatus here, as VS off is an exceptions test
-        LI (x6, 0x600)
-        csrs mstatus, x6
+        RVTEST_TSBI_CSR_SET(CSR_MSTATUS, 0x600)
         la x6, vecreg_scratch              # vecreg_scratch base address
         vs1r.v v0, (x6)
         addi x6, x6, VLEN_BYTES            # increment by one vector's bytes
@@ -547,11 +546,11 @@
         andi x6, x6, 31                   # FP register number (rs2 of FSREG)
         sw x6, 260(DEFAULT_TEMP_REG)      # record failing_reg
 
-        # Load bad FP value from scratch memory (written by FSREG in the sigupd macro)
+        # Load the bad FP value from the temporary memory written by FSREG.
         # Use FP_LREG so we read exactly the CONFIG_FLEN bits FSREG stored,
         # zero-extending on RV64+F-only where fsw wrote fewer bytes than LREG reads.
         # See tests/env/utils.h for an explanation of CONFIG_FLEN and TEST_FLEN.
-        la x6, scratch
+        la x6, fp_sigupd_temp
         FP_LREG x7, 0(x6)
         SREG x7, 272(DEFAULT_TEMP_REG)    # failing_value (lower/only)
     #if CONFIG_FLEN > UDB_MXLEN
@@ -2281,6 +2280,8 @@
         .ascii "\nRVCP-SUMMARY: TEST FAILED - Test File \""
         .ascii TEST_FILE
         .asciz "\"\n"
+    invisible_Minvalid_action_str:
+        .string "RVCP ERROR: Invalid invisible trap action code: "
     begin_debugstr:
         .string "\nRVCP: DEBUG INFORMATION FOLLOWS\n"
     abortstr:

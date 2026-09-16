@@ -6,15 +6,10 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Zicfilp S-mode privileged extension test generator.
+"""Zicfilp S-mode and U-mode test generator for an S-capable part.
 
-S-mode tests use menvcfg.LPE and sstatus.SPELP. U-mode tests run on the same
-S-capable part, controlled by senvcfg.LPE and sstatus.SPELP.
-
-Covergroups: Zicfilp_s_cg (S-mode), Zicfilpsu_cg (U-mode)
+S-mode uses menvcfg.LPE, U-mode senvcfg.LPE; both use sstatus.SPELP.
 """
-
-from __future__ import annotations
 
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -33,14 +28,8 @@ def _emit_chunk(td: TestData, mode: str, covergroup: str, split_prefix: str, sat
     guard = MODE_GUARDS[satp_mode]
 
     def build(xlen: int) -> list[str]:
-        # trampoline_section=".text.rvtest": the LPAD exception is reachable in
-        # both modes, so a real fault can land on the trampolines and must be
-        # recorded rather than treated as unrecognized.
-        #
-        # skip_trampoline_fallthrough=True: without it, mode-entry code falls
-        # straight through into _tgt_lpad_zero's `c.jr x7` with x7
-        # uncontrolled, landing back on the mode-switch ecall and looping
-        # until TRAP_SIGUPD_COUNT overflows.
+        # LPAD faults are reachable here, so the trampolines live in .text.rvtest
+        # and mode-entry code must not fall through into _tgt_lpad_zero.
         return emit_mode(
             td,
             mode,

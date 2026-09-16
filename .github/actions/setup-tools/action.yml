@@ -15,7 +15,7 @@ inputs:
   sail-version:
     description: Sail RISC-V version
     required: false
-    default: "0.13.1"
+    default: "0.14.1"
   riscv-toolchain-version:
     description: RISC-V GCC toolchain version
     required: false

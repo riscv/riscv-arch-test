@@ -30,7 +30,6 @@ def _generate_ssu64xl_tests(test_data: TestData) -> list[str]:
 
     lines.extend(
         [
-            "RVTEST_GOTO_LOWER_MODE Smode",
             f"csrr x{orig_reg}, sstatus",
             f"csrr x{uxl_reg}, sstatus",
             f"LI(x{val_reg}, {~(3 << 32) & 0xFFFFFFFFFFFFFFFF})",  # mask clears bits 33:32
@@ -41,25 +40,14 @@ def _generate_ssu64xl_tests(test_data: TestData) -> list[str]:
             test_data.add_testcase("uxl_is_10", coverpoint, covergroup),
             f"csrr x{uxl_reg}, sstatus",
             write_sigupd(uxl_reg, test_data),
-        ]
-    )
-
-    lines.extend(
-        [
-            "RVTEST_GOTO_MMODE",
-            "RVTEST_GOTO_LOWER_MODE Umode",
+            "",
+            "RVTEST_TSBI_GOTO_UMODE",
             test_data.add_testcase("uxlen64_gpr_bit63", coverpoint, covergroup),
             load_int_reg("64b_value", check_reg, 0xFEDCBA9876543210, test_data),
             write_sigupd(check_reg, test_data),
-        ]
-    )
-
-    lines.extend(
-        [
-            "RVTEST_GOTO_MMODE",
-            "RVTEST_GOTO_LOWER_MODE Smode",
+            "",
+            "RVTEST_TSBI_GOTO_SMODE",
             f"csrw sstatus, x{orig_reg}",
-            "RVTEST_GOTO_MMODE",
         ]
     )
 
@@ -71,8 +59,7 @@ def _generate_ssu64xl_tests(test_data: TestData) -> list[str]:
     "Ssu64xl",
     required_extensions=["S", "Ssu64xl"],
     march_extensions=["S"],
-    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
-    extra_defines=["#define BOOT_TO_MMODE"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_ssu64xl(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []

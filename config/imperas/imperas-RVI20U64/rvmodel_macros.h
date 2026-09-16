@@ -94,7 +94,7 @@
 // Interrupt latency configuration
 #define RVMODEL_INTERRUPT_LATENCY 10
 
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
+#define RVMODEL_TIMER_INT_SOON_DELAY 1000
 
 #define RVMODEL_MEXT_ADDRESS  0x80000000  /* Address of a memory mapped machine external interrupt generator */
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)        \

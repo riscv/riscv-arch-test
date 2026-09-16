@@ -60,42 +60,12 @@ EXTENSION_PARAM_MAP = {
 # FLEN Mapping
 # =============================================================================
 
-# Extensions requiring 128-bit FLEN (Q extension)
-FLEN_128_EXTENSIONS = frozenset(
-    {
-        "Q",
-        "ZfaQ",
-        "ZfhQ",
-    }
-)
 
-# Extensions requiring 64-bit FLEN (D extension)
-FLEN_64_EXTENSIONS = frozenset(
-    {
-        "D",
-        "ZfhD",
-        "ZfhminD",
-        "ZfaD",
-        "ZfaZfhD",
-        "Zcd",
-    }
-)
-
-# All other extensions default to 32-bit FLEN
-
-
-def get_flen_for_extension(extension: str) -> int:
-    """Get the required FLEN for a given extension.
-
-    Args:
-        extension: The extension name (e.g., 'F', 'D', 'Q')
-
-    Returns:
-        The FLEN value (32, 64, or 128)
-    """
-    if extension in FLEN_128_EXTENSIONS:
+def get_flen_for_extensions(extensions: list[str]) -> int:
+    """Get the required FLEN for canonical extension components."""
+    if "Q" in extensions:
         return 128
-    if extension in FLEN_64_EXTENSIONS:
+    if "D" in extensions:
         return 64
     return 32
 
@@ -108,15 +78,6 @@ def get_flen_for_extension(extension: str) -> int:
 # (they are already covered by other tests)
 SKIP_COVERPOINTS = frozenset(
     {
-        # Hazard coverpoints - covered implicitly by register usage patterns
-        "cp_gpr_hazard_rw",
-        "cp_gpr_hazard_w",
-        "cp_gpr_hazard_r",
-        # Sign coverpoints - already covered by edge tests
-        "cp_rd_sign",
-        # Equal value comparisons - already covered by cr_rs1_rs2_edges
-        "cmp_rd_rs1_eqval",
-        "cmp_rd_rs2_eqval",
         # FP flags - covered by edge tests
         "cp_csr_fflags_n",
         "cp_csr_fflags_on",
@@ -127,7 +88,6 @@ SKIP_COVERPOINTS = frozenset(
         "cp_csr_fflags_vn",
         "cp_csr_fflags_von",
         "cp_csr_fflags_voun",
-        "cp_csr_fflags_vun",
         # FP classification - covered elsewhere
         "cp_fclass",
     }

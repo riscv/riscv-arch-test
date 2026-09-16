@@ -13,48 +13,28 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.PrivCommon import (
+    S_CSR_SENVCFG,
+    S_CSRS,
+    S_SSTATUS_MASK,
+    addr_csr_tests,
+    csr_insufficient_priv_tests,
+    csr_ro_write_tests,
+    priv_inst_trap_tests,
+    xtval_value_tests,
+)
 from testgen.priv.registry import add_priv_test_generator
 
-# Standard S-mode CSRs, shared with the Sm suite (cp_scsr_from_m)
-# Format: (CSR Name, Mask).  Mask specifies a set of bits to check
-
-# Create bit masks.  WPRI fields should be 0 to ignore reads.
-
-# sstatus bit mask
-S_SSTATUS_MASK = (
-    (1 << 1)  # SIE:  Supervisor Interrupt Enable
-    | (1 << 5)  # SPIE: Supervisor Previous Interrupt Enable
-    | (0 << 6)  # UBE not yet supported by Sail; test in Endian
-    | (1 << 8)  # SPP:  Supervisor Previous Privilege
-    | (3 << 9)  # VS:   Vector Status
-    | (3 << 13)  # FS:   Floating-Point Status
-    | (3 << 15)  # XS:   Custom Extension Status
-    | (1 << 18)  # SUM:  Supervisor User Memory Access
-    | (1 << 19)  # MXR:  Make eXecutable Readable
-    | (1 << 23)  # SPELP: Supervisor Previous Expect Landing Pad
-    | (0 << 24)  # SDT: not yet supported by Sail; TODO change to 1 when Ssdbltrp implemented
-    | (1 << 31)  # SD for RV32 (probably shouldn't be tested for RV64, but seems to work ok)
-    | (0 << 32)  # UXL:  User-Mode XLEN not changeable in Sail yet; should be tested in Xlen suite
-    | (1 << 63)  # SD for RV64
-)
-
-S_CSRS = [
-    ("sstatus", S_SSTATUS_MASK),
-    # cp_scause is tested separately. WLRL fields can't be managed with masks.
-    # stvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
-    ("stvec", 0b10),
-    ("scounteren", None),
-    ("sscratch", None),
-    ("sip", 0xFFFF),  # only test standard non-reserved portion
-    ("sie", 0xFFFF),  # only test standard non-reserved portion
-]
-# skip walking 1s on this because valid virtual addresses is not described adequately
-S_CSRS_NOWALK = [
-    ("sepc", None),  # only has to be able to hold all valid virtual addresses
-    ("stval", None),  # only has to be able to hold all valid virtual addresses and 0
-]
+# Address CSRs that must hold every valid virtual address: {csr: (held-low mask, {bit: gate define})}.
+# stvec carries the address in BASE with MODE = Direct, so its two low bits are held at 0;
+# sepc attempt to write all bits, but bit 0 is always 0, and bit 1 is always zero unless ZCA_SUPPORTED
+# stval holds any byte address.
+S_VADDR_CSRS = {
+    "stvec": (0b11, {}),
+    "sepc": (0b00, {}),
+    "stval": (0b00, {}),
+}
 # senvcfg CBIE/PMM reserved values are handled with warl_fields in the walk test below
-S_CSR_SENVCFG = ("senvcfg", None)
 
 
 def _generate_scause_tests(test_data: TestData) -> list[str]:
@@ -221,45 +201,6 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
-    """Generate ecall and ebreak and mret and sfence.vma tests."""
-    ######################################
-    covergroup = "S_sprivinst_cg"
-    coverpoint = "cp_sprivinst"
-    ######################################
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "Executing ecall and ebreak and mret should cause an exception",
-        ),
-        "",
-        # ecall test
-        "# Testcase: ecall instruction",
-        test_data.add_testcase("ecall", coverpoint, covergroup),
-        "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
-        "# ecall returns xepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
-        write_sigupd(10, test_data),
-        "",
-        # ebreak test
-        "# Testcase: ebreak instruction",
-        test_data.add_testcase("ebreak", coverpoint, covergroup),
-        "ebreak              # test ebreak instruction",
-        "",
-        # mret test
-        "# Testcase: mret instruction",
-        test_data.add_testcase("mret", coverpoint, covergroup),
-        "mret                # test mret instruction",
-        "",
-        # sfence.vma test
-        "# Testcase: sfence.vma instruction",
-        test_data.add_testcase("sfence_vma", coverpoint, covergroup),
-        "sfence.vma          # test sfence.vma instruction",
-    ]
-
-    return lines
-
-
 def _generate_srets_tests(test_data: TestData) -> list[str]:
     """Generate sret from S-mode with spp, spie, sie sweep (no TSR: that needs M-mode and lives in Sm)."""
     ######################################
@@ -348,7 +289,7 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
         "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all S-mode CSRs",
     )
 
-    for csr in S_CSRS + S_CSRS_NOWALK:
+    for csr in S_CSRS:
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
 
@@ -389,6 +330,8 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     )
 
     for csr in S_CSRS:
+        if csr[0] in S_VADDR_CSRS:
+            continue  # skip the virtual-address CSRs; they are walked in addr_csr_tests
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
 
@@ -402,98 +345,44 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     tc.code.extend(csr_walk_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint, warl_fields=warl_fields))
     tc.code.extend(["", "#endif"])
 
-    # cp_csr_satp waived because behavior of other fields is UNSPECIFIED when satp.MODE = Bare
-    # ######################################
-    # coverpoint = "cp_csr_satp"
-    # ######################################
-    # lines.append(
-    #     comment_banner(
-    #         coverpoint,
-    #         "Set and clear each bit individually in satp, excluding satp.mode",
-    #     ),
-    # )
-
-    # walk_reg, mask_reg, check_reg = test_data.int_regs.get_registers(3)
-
-    # lines.extend(
-    #     [
-    #         "# CSR Walk Tests for satp",
-    #         "csrw satp, zero      # set satp to 0 to start with",
-    #         f"LI(x{mask_reg}, -1)     # x{mask_reg} = all 1s for walking bit tests",
-    #         f"srli x{mask_reg}, x{mask_reg}, 4    # change 4 msbs to 0s to exclude satp.mode from RV64 walk tests",
-    #         f"LI(x{walk_reg}, 7)   # 111",
-    #         f"slli x{walk_reg}, x{walk_reg}, 28   # bits 30:28 = 111",
-    #         f"or x{mask_reg}, x{mask_reg}, x{walk_reg}    # x{mask_reg} = all 1s except satp.MODE (bits 63:60 for RV64 or 31 for RV32)",
-    #         f"LI(x{walk_reg}, 1) # initialize walking 1",
-    #     ]
-    # )
-    # for i in range(60):
-    #     lines.extend(
-    #         [
-    #             "",
-    #             f"csrs satp, x{walk_reg}    # set bit {i} in satp",
-    #             test_data.add_testcase(f"bit_{i}_set", coverpoint, covergroup),
-    #             gen_csr_read_sigupd(check_reg, ("satp", None), test_data),
-    #             f"csrc satp, x{walk_reg}    # clear bit {i} in satp",
-    #             test_data.add_testcase(f"bit_{i}_clr", coverpoint, covergroup),
-    #             gen_csr_read_sigupd(check_reg, ("satp", None), test_data),
-    #             f"slli x{walk_reg}, x{walk_reg}, 1   # shift to next bit",
-    #             f"and x{walk_reg}, x{walk_reg}, x{mask_reg}    # mask out mode bits",
-    #         ]
-    #     )
-
-    # test_data.int_regs.return_registers([walk_reg, mask_reg, check_reg])
-
-    ######################################
-    coverpoint = "cp_csr_insufficient_priv"
-    ######################################
-
-    tc = test_data.new_test_chunk(test_chunks, "scsr_insufficient_priv")
+    tc = test_data.new_test_chunk(test_chunks, "scsr_addr")
     tc.section_header = comment_banner(
-        coverpoint,
+        "cp_stval_{zero,ilen_walk1,ilen_ones}",
+        "Write 0 to stval, and every ILEN-bit value as a walking 1 and all 32 1s when the illegal\n"
+        "instruction encoding is reported in stval",
+    )
+    tc.code.extend(xtval_value_tests(test_data, "stval", "S_scsr_cg"))
+    addr_csr_tests(test_data, test_chunks, S_VADDR_CSRS, "S_scsr_cg", "scsr_addr")
+
+    ######################################
+    coverpoint = "cp_satp"
+    ######################################
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.section_header = comment_banner(coverpoint, "Read satp from S-mode (mstatus.TVM boots to 0)")
+    temp_reg = test_data.int_regs.get_register()
+    tc.code.extend(
+        [
+            test_data.add_testcase("satp", coverpoint, covergroup),
+            f"csrr x{temp_reg}, satp # read satp with mstatus.TVM = 0; expect no trap.  Value is WARL and unpredictable so don't sigupd it",
+        ]
+    )
+    test_data.int_regs.return_register(temp_reg)
+
+    csr_insufficient_priv_tests(
+        test_data,
+        test_chunks,
+        covergroup,
+        [
+            range(0x300, 0x400),
+            range(0x700, 0x7AA),  # exclude 0x7AA mscontext, which is accessible from S-mode
+            range(0x7AB, 0x800),
+            range(0xB00, 0xC00),
+            range(0xF00, 0x1000),
+        ],
+        "scsr_insufficient_priv",
         "Attempt to read debug and machine mode registers.  Should throw illegal instruction",
     )
-
-    for csr in (
-        list(range(0x300, 0x400))
-        + list(range(0x700, 0x7AA))  # exclude 0x7AA mscontext, which is accessible from S-mode
-        + list(range(0x7AB, 0x800))
-        + list(range(0xB00, 0xC00))
-        + list(range(0xF00, 0x1000))
-    ):
-        tc = test_data.new_test_chunk(test_chunks, "scsr_insufficient_priv")
-        tc.code.extend(
-            [
-                "",
-                f"# Testcase: attempt to access CSR 0x{csr:03x}",
-                test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"csrr t0, 0x{csr:03x}    # attempt to read higher-privilege CSR {csr:03x}; should get illegal instruction",
-            ]
-        )
-
-    ######################################
-    coverpoint = "cp_csr_ro"
-    ######################################
-
-    tc = test_data.new_test_chunk(test_chunks, "scsr_ro")
-    tc.section_header = comment_banner(
-        coverpoint,
-        "Attempt to write read-only CSRs.  Should throw illegal instruction",
-    )
-
-    for csr in range(0xC00, 0xF00):
-        tc = test_data.new_test_chunk(test_chunks)
-        r1 = test_data.int_regs.get_register()
-        tc.code.extend(
-            [
-                "",
-                f"# Testcase: attempt to access CSR 0x{csr:03x}",
-                test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"LI(x{r1}, -1)          # x{r1} = all 1s",
-                f"csrw 0x{csr:03x}, x{r1}    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
-            ]
-        )
-        test_data.int_regs.return_register(r1)
+    csr_ro_write_tests(test_data, test_chunks, covergroup, [range(0xC00, 0xF00)], "scsr_ro")
 
 
 @add_priv_test_generator(
@@ -509,7 +398,15 @@ def make_s(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_srets_tests(test_data))
     tc.code.extend(_generate_scause_tests(test_data))
     tc.code.extend(_generate_sstatus_sd_tests(test_data))
-    tc.code.extend(_generate_priv_inst_tests(test_data))
+    tc.code.extend(
+        priv_inst_trap_tests(
+            test_data,
+            "S_sprivinst_cg",
+            "cp_sprivinst",
+            "Executing ecall and ebreak and mret should cause an exception",
+            ["ebreak", "mret", "sfence.vma"],
+        )
+    )
 
     _generate_scsr_tests(test_data, test_chunks)
     test_chunks.append(test_data.end_test_chunk())

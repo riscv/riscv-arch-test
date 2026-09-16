@@ -1,5 +1,6 @@
 # check_defines.h
 # Ensures all RVMODEL macros are defined
+# Define _M flavors of RVMODEL_CLR_<type>_INT_M to match non-M if not defined by user
 # Jordan Carlin jcarlin@hmc.edu December 2025
 # SPDX-License-Identifier: BSD-3-Clause
 
@@ -22,6 +23,14 @@
 #endif
 
 ########## rvmodel_macros.h CHECKS ##########
+#if defined(RVMODEL_INVISIBLE_TRAP_HANDLER) || defined(RVTEST_EMULATE_TIME_CSR)
+  #define RVTEST_INVISIBLE_TRAP_HANDLER
+#endif
+
+#if defined(RVTEST_INVISIBLE_TRAP_HANDLER) && defined(H_SUPPORTED)
+  #error "Invisible trap emulation does not support traps from VS or VU mode yet."
+#endif
+
 #ifndef RVMODEL_DATA_SECTION
   #error "RVMODEL_DATA_SECTION not defined. Make sure to define it in rvmodel_macros.h."
 #endif
@@ -46,6 +55,12 @@
 ##### MTIME #####
 // If RVMODEL_MTIME_ADDRESS is not defined, no machine timer interrupts are tested
 
+#ifdef RVTEST_EMULATE_TIME_CSR
+  #ifndef RVMODEL_MTIME_ADDRESS
+    #error "RVMODEL_MTIME_ADDRESS is required to emulate the time CSR"
+  #endif
+#endif
+
 #ifdef RVMODEL_MTIME_ADDRESS
   // If RVMODEL_MTIME_ADDRESS is defined, these other MTIME-related macros must also be defined
   // because the tests will need them to cause timer interrupts and test timer functionality.
@@ -68,6 +83,9 @@
 #endif
 
 ##### Machine Interrupts #####
+// TODO: Gate which interrupts macros need to be defined by whether they are supported
+
+// Only external must be defined because software may be handled through MSIP and timer through MTIME
 #ifndef RVMODEL_SET_MEXT_INT
   #error "RVMODEL_SET_MEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
 #endif
@@ -76,29 +94,52 @@
   #error "RVMODEL_CLR_MEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
 #endif
 
-#ifndef RVMODEL_SET_MSW_INT
-  #error "RVMODEL_SET_MSW_INT not defined. Make sure to define it in rvmodel_macros.h."
+#ifndef RVMODEL_CLR_MEXT_INT_M
+  #ifdef RVMODEL_CLR_MEXT_INT
+    #define RVMODEL_CLR_MEXT_INT_M RVMODEL_CLR_MEXT_INT
+  #endif
 #endif
 
-#ifndef RVMODEL_CLR_MSW_INT
-  #error "RVMODEL_CLR_MSW_INT not defined. Make sure to define it in rvmodel_macros.h."
+#ifndef RVMODEL_MSIP_ADDRESS
+  #ifndef RVMODEL_SET_MSW_INT
+    #error "Neither RVMODEL_MSIP_ADDRESS nor RVMODEL_SET_MSW_INT is defined. Define one of them in rvmodel_macros.h."
+  #endif
+
+  #ifndef RVMODEL_CLR_MSW_INT
+    #error "RVMODEL_CLR_MSW_INT not defined. Make sure to define it in rvmodel_macros.h."
+  #endif
+
+  #ifndef RVMODEL_CLR_MSW_INT_M
+    #ifdef RVMODEL_CLR_MSW_INT
+      #define RVMODEL_CLR_MSW_INT_M RVMODEL_CLR_MSW_INT
+    #endif
+  #endif
 #endif
 
 ##### Supervisor Interrupts #####
-#ifndef RVMODEL_SET_SEXT_INT
-  #error "RVMODEL_SET_SEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
-#endif
+#ifdef S_SUPPORTED
+  #ifndef RVMODEL_SET_SEXT_INT
+    #error "RVMODEL_SET_SEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
+  #endif
 
-#ifndef RVMODEL_CLR_SEXT_INT
-  #error "RVMODEL_CLR_SEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
-#endif
+  #ifndef RVMODEL_CLR_SEXT_INT
+    #error "RVMODEL_CLR_SEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
+  #endif
 
-#ifndef RVMODEL_SET_SSW_INT
-  #error "RVMODEL_SET_SSW_INT not defined. Make sure to define it in rvmodel_macros.h."
-#endif
+  #ifndef RVMODEL_CLR_SEXT_INT_M
+    #ifdef RVMODEL_CLR_SEXT_INT
+      #define RVMODEL_CLR_SEXT_INT_M RVMODEL_CLR_SEXT_INT
+    #endif
+  #endif
 
-#ifndef RVMODEL_CLR_SSW_INT
-  #error "RVMODEL_CLR_SSW_INT not defined. Make sure to define it in rvmodel_macros.h."
+  // RVMODEL_SET_SSW_INT / RVMODEL_CLR_SSW_INT are optional: platforms without a supervisor
+  // software interrupt controller leave them undefined and the trap handler uses mip.SSIP.
+
+  #ifndef RVMODEL_CLR_SSW_INT_M
+    #ifdef RVMODEL_CLR_SSW_INT
+      #define RVMODEL_CLR_SSW_INT_M RVMODEL_CLR_SSW_INT
+    #endif
+  #endif
 #endif
 
 ##### Configuration Limitations #####

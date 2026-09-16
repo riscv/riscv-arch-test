@@ -21,7 +21,7 @@ from testgen.priv.registry import add_priv_test_generator
 @add_priv_test_generator(
     "ZicfilpU",
     required_extensions=["Zicfilp", "Zicsr", "U"],
-    march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz", "Zca"],
+    march_extensions=["Zca"],
 )
 def make_zicfilp_u(td: TestData) -> list[TestChunk]:
     """Generate U-mode (No S-mode) tests. Single chunk (bare)."""

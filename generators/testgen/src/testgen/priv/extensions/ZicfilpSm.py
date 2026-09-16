@@ -21,7 +21,7 @@ from testgen.priv.registry import add_priv_test_generator
 @add_priv_test_generator(
     "ZicfilpSm",
     required_extensions=["Zicfilp", "Zicsr"],
-    march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz", "Zca"],
+    march_extensions=["Zca"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_zicfilp_m(td: TestData) -> list[TestChunk]:

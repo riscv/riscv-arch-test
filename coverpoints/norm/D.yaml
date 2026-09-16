@@ -2,7 +2,7 @@
 
 normative_rule_definitions:
   - name: D_fpr_regs
-    coverpoint: ["D_fadd_d_cg/{cp_fs1_fs2_edges_frm_D}"] # one of many possible
+    coverpoint: ["D_fadd_d_cg/{cr_fs1_fs2_edges_frm_D}"] # one of many possible
   - names: ["fsd_atomic_align, fld_atomic_align"]
     coverpoint: ["UNCHECKED"]
   - name: fsd_bits_maintained
@@ -183,7 +183,7 @@ normative_rule_definitions:
     # frm
     coverpoint:
       [
-        "D_fcvt_l_d_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm_D, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
+        "D_fcvt_l_d_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_D, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
       ]
   - name: fcvt-lu-d_op
     # FCVT.WU.D, FCVT.LU.D, FCVT.D.WU, and FCVT.D.LU variants convert to
@@ -209,7 +209,7 @@ normative_rule_definitions:
     # frm
     coverpoint:
       [
-        "D_fcvt_lu_d_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm_D, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
+        "D_fcvt_lu_d_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_D, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
       ]
   - name: fcvt-s-d_op
     # The double-precision to single-precision and single-precision to
@@ -222,7 +222,7 @@ normative_rule_definitions:
     # never round
     coverpoint:
       [
-        "D_fcvt_s_d_cg/{cp_fs1, cp_fd, cp_fs1_edges_frm_D, cp_frm_2, cp_csr_fflags_voun, cp_csr_frm, cp_NaNBox_D_S}",
+        "D_fcvt_s_d_cg/{cp_fs1, cp_fd, cr_fs1_edges_frm_D, cp_frm_2, cp_csr_fflags_voun, cp_csr_frm, cp_NaNBox_D_S}",
       ]
   - name: fcvt-w-d_op
     # FCVT.W.D or
@@ -249,7 +249,7 @@ normative_rule_definitions:
     # frm
     coverpoint:
       [
-        "D_fcvt_w_d_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm_D, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
+        "D_fcvt_w_d_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_D, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
       ]
   - name: fcvt-wu-d_op
     # FCVT.WU.D, FCVT.LU.D, FCVT.D.WU, and FCVT.D.LU variants convert to
@@ -274,7 +274,7 @@ normative_rule_definitions:
     # frm
     coverpoint:
       [
-        "D_fcvt_wu_d_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm_D, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
+        "D_fcvt_wu_d_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_D, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
       ]
   - name: fdiv-d_op
     # FDIV.S performs the single-precision floating-point division of rs1 by rs2

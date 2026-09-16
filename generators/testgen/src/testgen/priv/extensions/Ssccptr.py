@@ -14,13 +14,12 @@ the HPTW can read PTEs from main memory for a valid VA->PA translation.
 
 Test strategy
 -------------
-  1. In M-mode, set up a minimal identity-mapped page table for the
+  1. In S-mode, set up a minimal identity-mapped page table for the
      code+data region using a superpage entry so the trap handler
      remains reachable under VM.
-  2. Enable VM (satp) and drop to S-mode.
+  2. Enable VM (satp).
   3. Run a single lw from scratch through the virtual address space.
      A successful load proves the HPTW read PTEs from main memory.
-  4. Return to M-mode and disable VM.
 
 Page-table infrastructure
 -------------------------
@@ -103,7 +102,7 @@ def _generate_ssccptr_lw(test_data: TestData) -> list[str]:
     Generate a single lw under virtual memory to prove HPTW reads PTEs
     from main memory.
 
-    Registers are allocated AFTER page-table setup and SATP/GOTO macros
+    Registers are allocated AFTER page-table setup and the SATP macro
     to avoid clobbering registers used by those macros internally.
     The SATP setup is guarded by __riscv_xlen; everything else is generic.
 
@@ -114,7 +113,6 @@ def _generate_ssccptr_lw(test_data: TestData) -> list[str]:
     lines = _setup_identity_map(test_data)
     lines.extend(
         [
-            "RVTEST_GOTO_LOWER_MODE Smode",
             "#if __riscv_xlen == 64",
             "SATP_SETUP_RV64(sv39)",
             "#else",
@@ -149,8 +147,7 @@ def _generate_ssccptr_lw(test_data: TestData) -> list[str]:
     "Ssccptr",
     required_extensions=["S", "Ssccptr"],
     march_extensions=["S"],
-    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
-    extra_defines=["#define BOOT_TO_MMODE"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def _generate_ssccptr_main(test_data: TestData) -> list[TestChunk]:
     """Generate all Ssccptr tests running in S-mode."""

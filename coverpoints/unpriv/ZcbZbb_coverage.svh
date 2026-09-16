@@ -53,7 +53,7 @@ covergroup ZcbZbb_c_sext_b_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
@@ -100,7 +100,7 @@ covergroup ZcbZbb_c_sext_h_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
@@ -147,7 +147,7 @@ covergroup ZcbZbb_c_zext_h_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 

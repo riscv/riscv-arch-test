@@ -6,11 +6,9 @@
 #   Should be fixed in Sail 0.14
 # Smstateen Sail does not yet support 1P13 bit
 # ExceptionsSvZalrsc: Whisper reports page faults where Sail expects access faults.
-# Vx excluded because of https://github.com/tenstorrent/whisper/issues/35
 # Sdtrig* not yet implemented in Sail
 ci_enabled: true
-# TODO: Remove SsstrictV when sail SsstrictV is implemented
-exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,ExceptionsSvZalrsc,SsstrictV,Smstateen,Vx8,Vx16,Vx32,Vx64,SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,ExceptionsSvZalrsc,Smstateen,SdtrigSm,SdtrigS,SdtrigU"
 exclude_configs:
   - whisper-rv32-max-spike-ref
   - whisper-rv64-max-spike-ref

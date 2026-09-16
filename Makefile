@@ -128,7 +128,6 @@ help:
 	  'coverage'            'Build with coverage instrumentation for $$(COVERAGE_CONFIG_FILES)' \
 	  'regression'          'Clean, run coverage, then every config with a run_cmd.txt' \
 	  'clean'               'Remove build artifacts (preserves extensions.txt and .validated)' \
-	  'clean-tests'         'Remove generated test sources'
 	@printf '\n\033[1mGenerators:\033[0m\n'
 	@printf '  \033[36m%-20s\033[0m %s\n' \
 	  'testgen'             'Run testgen only' \
@@ -220,12 +219,6 @@ tests: covergroupgen testgen
 
 .PHONY: vector-tests
 vector-tests: covergroupgen vector-testgen
-
-.PHONY: clean-tests
-clean-tests:
-	rm -rf $(SRCDIR64) $(SRCDIR32) $(SRCDIR64E) $(SRCDIR32E)
-	rm -rf $(UNPRIV_COVERPOINTS_DIR) $(COVERAGE_HELPERS_DIR)
-	rm -rf $(STAMP_DIR)
 
 
 

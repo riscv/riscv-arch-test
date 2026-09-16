@@ -141,8 +141,8 @@
 // On an F-only DUT with TEST_FLEN=64, CONFIG_FLEN is 32 so we take the single-
 // store path. Each slot is still SIG_STRIDE (=TEST_FLEN/8) bytes wide, leaving
 // 4 bytes of unused padding — harmless because the .fill reservation driven by
-// SIGUPD_COUNT is already an upper bound. The scratch load uses FP_LREG so only
-// the CONFIG_FLEN bits actually written by FSREG are read back.
+// SIGUPD_COUNT is already an upper bound. The temporary-memory load uses FP_LREG
+// so only the CONFIG_FLEN bits written by FSREG are read back.
 // See tests/env/utils.h for an explanation of CONFIG_FLEN and TEST_FLEN.
 //
 //  _SIG_PTR - Base register for signature region
@@ -164,7 +164,7 @@
     #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _INST_PTR, _STR_PTR)  \
       .option push                                           ;\
       .option norvc                                          ;\
-      LA(_LINK_REG, scratch)                                 ;\
+      LA(_LINK_REG, fp_sigupd_temp)                          ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       LREG _LINK_REG, 0(_LINK_REG)                           ;\
       LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
@@ -173,7 +173,7 @@
       RVTEST_WORD_PTR _INST_PTR                              ;\
       RVTEST_WORD_PTR _STR_PTR                               ;\
       1:                                                     ;\
-      LA(_LINK_REG, scratch)                                 ;\
+      LA(_LINK_REG, fp_sigupd_temp)                          ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       LREG _LINK_REG, REGWIDTH(_LINK_REG)                    ;\
       LREG _TEMP_REG, SIG_STRIDE(_SIG_PTR)                   ;\
@@ -189,7 +189,7 @@
     #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _INST_PTR, _STR_PTR)  \
       .option push                                           ;\
       .option norvc                                          ;\
-      LA(_LINK_REG, scratch)                                 ;\
+      LA(_LINK_REG, fp_sigupd_temp)                          ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       LREG _LINK_REG, 0(_LINK_REG)                           ;\
       SREG _LINK_REG, 0(_SIG_PTR)                            ;\
@@ -198,7 +198,7 @@
       RVTEST_WORD_PTR _INST_PTR                              ;\
       RVTEST_WORD_PTR _STR_PTR                               ;\
       1:                                                     ;\
-      LA(_LINK_REG, scratch)                                 ;\
+      LA(_LINK_REG, fp_sigupd_temp)                          ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       LREG _LINK_REG, REGWIDTH(_LINK_REG)                    ;\
       SREG _LINK_REG, SIG_STRIDE(_SIG_PTR)                   ;\
@@ -216,7 +216,7 @@
     #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _INST_PTR, _STR_PTR)  \
       .option push                                           ;\
       .option norvc                                          ;\
-      LA(_LINK_REG, scratch)                                 ;\
+      LA(_LINK_REG, fp_sigupd_temp)                          ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       FP_LREG _LINK_REG, 0(_LINK_REG)                        ;\
       LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
@@ -232,7 +232,7 @@
     #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _INST_PTR, _STR_PTR)  \
       .option push                                           ;\
       .option norvc                                          ;\
-      LA(_LINK_REG, scratch)                                 ;\
+      LA(_LINK_REG, fp_sigupd_temp)                          ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       FP_LREG _LINK_REG, 0(_LINK_REG)                        ;\
       SREG _LINK_REG, 0(_SIG_PTR)                            ;\
@@ -907,11 +907,19 @@
 #endif
 
 #if UDB_MXLEN==64
+  #define FINAL_SIG_OFFSET_CANARY_VALUE \
+      0x4B8E2D17A6C0F953
+  #define FINAL_SIG_OFFSET_CANARY \
+      .dword FINAL_SIG_OFFSET_CANARY_VALUE
   #define FINAL_TRAP_OFFSET_CANARY_VALUE \
       0x7A110FF5C0DEF00D
   #define FINAL_TRAP_OFFSET_CANARY \
       .dword FINAL_TRAP_OFFSET_CANARY_VALUE
 #else
+  #define FINAL_SIG_OFFSET_CANARY_VALUE \
+      0x4B8E2D17
+  #define FINAL_SIG_OFFSET_CANARY \
+      .word FINAL_SIG_OFFSET_CANARY_VALUE
   #define FINAL_TRAP_OFFSET_CANARY_VALUE \
       0x7A110FF5
   #define FINAL_TRAP_OFFSET_CANARY \

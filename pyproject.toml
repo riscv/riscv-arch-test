@@ -3,7 +3,7 @@
 # Jordan Carlin jcarlin@hmc.edu October 2025
 # SPDX-License-Identifier: Apache-2.0
 [dependency-groups]
-dev = [ "pyright==1.1.411", "ruff==0.16.4" ]
+dev = [ "pyright==1.1.411", "ruff==0.16.6" ]
 
 [tool.uv]
 exclude-newer = "7 days"
@@ -29,7 +29,6 @@ lint.extend-select = [
 lint.ignore = [
   "N", # Naming requirements
 ]
-lint.preview = true
 
 ##### PYPROJECT-FMT CONFIG #####
 [tool.pyproject-fmt]

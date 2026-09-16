@@ -505,11 +505,14 @@ It is also included below with many additional comments added to explain how it 
 # including reg_range, imm_bits, imm_signed, etc.
 r_config = InstructionTypeConfig(required_params={"rd", "rs1", "rs1val", "rs2", "rs2val"})
 
+
 # All instruction formatters use the add_instruction_formatter decorator to specify
 # what instruction type it applies to and what configuration object to use.
 @add_instruction_formatter("R", r_config)
 # Instruction formatters all use the standard signature described above
-def format_r_type(instr_name: str, test_data: TestData, params: InstructionParams) -> tuple[list[str], list[str], list[str]]:
+def format_r_type(
+    instr_name: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
     """Format R-type instruction."""
     # The assert statements are used to satisfy the type checker and help ensure
     # none of the necessary params are left out of the required_params above.

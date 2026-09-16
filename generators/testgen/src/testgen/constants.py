@@ -78,16 +78,6 @@ def get_flen_for_extensions(extensions: list[str]) -> int:
 # (they are already covered by other tests)
 SKIP_COVERPOINTS = frozenset(
     {
-        # FP flags - covered by edge tests
-        "cp_csr_fflags_n",
-        "cp_csr_fflags_on",
-        "cp_csr_fflags_v",
-        "cp_csr_fflags_vd",
-        "cp_csr_fflags_vdon",
-        "cp_csr_fflags_vdoun",
-        "cp_csr_fflags_vn",
-        "cp_csr_fflags_von",
-        "cp_csr_fflags_voun",
         # FP classification - covered elsewhere
         "cp_fclass",
     }

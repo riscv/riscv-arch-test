@@ -117,13 +117,17 @@ See Ssnpm for normative rules.
 
 ==== Zicfilp Landing Pads
 
-In Privileged section because it has both unpriv and privileged behaviors.
+In Privileged section because it has both unpriv and privileged behaviors.  The landing pad tests run once per
+privilege mode: ZicfilpSm in M-mode, ZicfilpS in S-mode, and ZicfilpU in U-mode.  ZicfilpSm also covers
+MPELP on trap entry into M-mode and ELP on MRET, which require M-mode control of medeleg, mstatus.MPP, and mstatus.MPELP.
 
 [[t-Zicfilp-coverpoints]]
 .Zicfilp Coverpoints
 //,===
 //include::{testplansdir}/Zicfilp.adoc[]
 //,===
+
+include::norm/Zicfilp_norm_rules.adoc[]
 
 ==== Zicfiss Shadow Stack
 

@@ -310,7 +310,8 @@ def _etrigger_codes_to_test(mode: str, cross_priv: bool = False) -> tuple[int, .
 
     # Normal SdtrigSm/S/U tests use the same exception codes.
     if mode in ("Sm", "S", "U"):
-        return (1, 2, 3, 4, 5, 6, 7, 9, 11, 13, 15)
+        ecall_code = {"Sm": 11, "S": 9, "U": 8}[mode]
+        return (1, 2, 3, 4, 5, 6, 7, ecall_code, 13, 15)
 
     raise ValueError(f"Unsupported mode: {mode}")
 
@@ -2022,6 +2023,9 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     if any(code in _PAGE_FAULT_CODES for code in codes_to_test):
         lines.extend(_generate_page_table_data_section())
 
+    # Exception value CSR for the current privilege mode.
+    tval_csr = "mtval" if mode == "Sm" else "stval"
+
     for trig_num in range(UDB_NUM_TRIGGERS):
         lines.append(f"\n#ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED{trig_num}")
         for code in codes_to_test:
@@ -2058,7 +2062,7 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                         lines.extend(_page_fault_teardown())
                     lines.extend(
                         [
-                            _csr_access(f"csrr x{data_reg}, mtval # 0 iff matched", mode),
+                            f"csrr x{data_reg}, {tval_csr} # 0 iff matched",
                             write_sigupd(data_reg, test_data),
                         ]
                     )

@@ -138,8 +138,7 @@ COPY generators/testgen/src/testgen/__init__.py /act4/generators/testgen/src/tes
 # Pre-download all Python dependencies so `uv sync` is a no-op at runtime.
 RUN cd /act4 \
   && mise install \
-  && mise exec -- bundle install \
-  && mise exec -- uv sync
+  && mise deps --skip prek
 
 # Fix permissions so that any user can use it
 RUN chmod -R 777 /act4 /home/shared

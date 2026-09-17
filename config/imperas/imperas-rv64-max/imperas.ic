@@ -13,8 +13,7 @@
 --override iss/cpu0/simulateexceptions=T
 --override iss/cpu0/defaultsemihost=F
 
-# Guest external interrupts.  A nonzero GEILEN hardwires mideleg[12] and implements mie/mip[12],
-# so the Imperas, Sail and UDB configurations all declare the same value and agree on those bits.
+# Guest external interrupts.
 --override cpu*/GEILEN=6
 
 # Bit manipulation

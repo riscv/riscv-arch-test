@@ -2102,8 +2102,7 @@
         .fill 2, 4, 0
     # The four saved_x* slots hold the trapping mode's xEPC/xCAUSE/xTVAL/xSTATUS,
     # snapshotted by the trap handler before trap signature word 0
-    # (rvtest_trap_handler.h).  Each slot is 8 bytes in both XLENs, so the
-    # handler's stores must step by 8, not by REGWIDTH.
+    # (rvtest_trap_handler.h). Each slot is 8 bytes, regardless of XLEN.
     saved_xepc:
         .fill 2, 4, 0
     saved_xcause:

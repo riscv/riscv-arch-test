@@ -11,9 +11,6 @@ implemented_extensions:
   - { name: C, version: "= 2.0" }
   - { name: D, version: "= 2.2.0" }
   - { name: F, version: "= 2.2.0" }
-  # H and its Sh* profile extensions are omitted: the Imperas RV32GCK and RV32GCV
-  # variants do not implement the hypervisor extension, so it traps on the H CSRs
-  # and on hfence.vvma/hfence.gvma that this config would otherwise claim.
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
   - { name: Q, version: "= 2.2.0" }
@@ -23,7 +20,6 @@ implemented_extensions:
   - { name: Sm, version: "= 1.13.0" }
   - { name: Smaia, version: "= 1.0.0" }
   - { name: Smcdeleg, version: "= 1.0.0" }
-  # - { name: Smcntrpmf, version: "= 1.0.0" } # Imperas does not implement this extension
   - { name: Smcsrind, version: "= 1.0.0" }
   - { name: Smctr, version: "= 1.0.0" }
   - { name: Smdbltrp, version: "= 1.0.0" }
@@ -38,7 +34,6 @@ implemented_extensions:
   - { name: Sscsrind, version: "= 1.0.0" }
   - { name: Ssctr, version: "= 1.0.0" }
   # - { name: Ssdbltrp, version: "= 1.0.0" } # Imperas exposes mtval2 (0x34b) with this enabled and H absent
-  # - { name: Ssqosid, version: "= 1.0.0" } # Imperas does not implement this extension
   - { name: Ssstateen, version: "= 1.0.0" }
   - { name: Ssstrict, version: "= 1.0.0" }
   - { name: Sstc, version: "= 1.0.0" }

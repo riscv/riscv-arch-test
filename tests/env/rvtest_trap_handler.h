@@ -2602,7 +2602,6 @@ clrint_\__MODE__\()tbl:
         .dword  \__MODE__\()clr_Sext_int             // cause  9: S-mode external interrupt
         .dword  \__MODE__\()clr_Vext_int             // cause 10: VS-mode external interrupt
         .dword  \__MODE__\()clr_Mext_int             // cause 11: M-mode external interrupt
-
 #else
   #if defined(S_SUPPORTED)
         .dword  0                                    // cause  0: reserved
@@ -2638,7 +2637,6 @@ clrint_\__MODE__\()tbl:
  .rept NUM_SPECD_INTCAUSES-0xE
         .dword  1                                    // causes 14..23: reserved -> default return
  .endr
-
  .rept UDB_MXLEN-NUM_SPECD_INTCAUSES
         .dword  0                       // impossible, quit test by jumping to  epilogs
  .endr

@@ -2280,7 +2280,18 @@ vmem_adj_\__MODE__\()epc:
         #ifdef SDTRIG_IMPRECISE_XEPC
         .ifc \__MODE__ , M
                 LI(     T2, CAUSE_BREAKPOINT)
-                beq     T5, T2, skp_adj_\__MODE__\()epc
+                bne     T5, T2, no_skp_adj_\__MODE__\()epc   # not a breakpoint -> always adjust
+                csrr    T2, tdata1              # tselect still selects the trigger under test
+                #if __riscv_xlen == 64
+                srli    T2, T2, 60
+                #else
+                srli    T2, T2, 28
+                #endif
+                LI(     T6, 4)                  # type 4 = itrigger
+                beq     T2, T6, skp_adj_\__MODE__\()epc
+                LI(     T6, 5)                  # type 5 = etrigger
+                beq     T2, T6, skp_adj_\__MODE__\()epc
+        no_skp_adj_\__MODE__\()epc:
         .endif
         #endif
         #ifdef RVMODEL_ACCESS_FAULT_ADDRESS

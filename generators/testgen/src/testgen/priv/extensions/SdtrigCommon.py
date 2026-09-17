@@ -1744,9 +1744,10 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
         )
     )
     origins = ("Sm", "S", "U") if mode == "Sm" else (mode,)
+    x_tval = "mtval" if mode == "Sm" else "stval"
     for origin in origins:
         codes = INTERRUPT_CODES if origin == "Sm" else LOWER_MODE_INTERRUPT_CODES
-        delegations = (0,) if origin == "Sm" else (1, 0)  # both traps in 0 needs reentrnacy solution
+        delegations = (0,) if origin == "Sm" else (1,)  # both traps in 0 needs reentrnacy solution
         for trig_num in range(UDB_NUM_TRIGGERS):
             # lines.append(f"#ifdef UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE")   # uncomment once udb add these macros
             for code in codes:
@@ -1783,7 +1784,7 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                             lines.extend(
                                 [
                                     *_clear_interrupt(cause, mode, t1),
-                                    _csr_access(f"csrr x{t1}, mtval", mode),
+                                    f"csrr x{t1}, {x_tval}",
                                     write_sigupd(t1, test_data),
                                     *_read_trigger_hit(t1, t2, trig_num, mode, test_data),
                                     *_disable_trigger(t1, trig_num, mode),

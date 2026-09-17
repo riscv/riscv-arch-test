@@ -856,7 +856,7 @@
       "supported_pmlen_16": true
     },
     "Smcntrpmf": {
-      "supported": true
+      "supported": false
     },
     "Svbare": {
       "supported": true,
@@ -885,7 +885,7 @@
       "SE0_readonly_zero": false
     },
     "Ssqosid": {
-      "supported": true,
+      "supported": false,
       // These lengths should be between 1 and 12, inclusive.
       // If Ssqosid is not supported, this should be left as 1
       // (or any other legal value).

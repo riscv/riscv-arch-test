@@ -231,7 +231,7 @@ def _clear_interrupt(code: int, mode: str, r1: int) -> list[str]:
     if code == 3:
         return [f"RVTEST_CLR_MSW_INT_{flavor}"]
     if code == 7:
-        return [f"RVTEST_SET_MTIME_INT_{flavor}"]
+        return [f"RVTEST_CLR_MTIME_INT_{flavor}"]
     if code == 11:
         return [f"RVTEST_CLR_MEXT_INT_{flavor}"]
     raise ValueError(f"unsupported interrupt code {code}")
@@ -241,25 +241,18 @@ def _read_trigger_hit(reg: int, temp_reg: int, trig_num: int, mode: str, test_da
     """Read and sign tdata1.hit before disabling the trigger when it is implemented."""
     return [
         "#ifdef UDB_SDTRIG_HIT_IMPLEMENTED",
-        _load_reg(reg, trig_num),
+        _load_reg(temp_reg, trig_num),
         _csr_access(f"csrw tselect, x{reg}", mode),
-        _csr_access(f"csrr x{reg}, tdata1", mode),
+        _csr_access(f"csrr x{temp_reg}, tdata1", mode),
         "#if __riscv_xlen == 64",
-        f"LI(x{temp_reg}, 0x10000000000000) # tdata1.hit",
+        f"srli x{temp_reg}, x{temp_reg}, 58 # tdata1.hit",
         "#else",
-        f"LI(x{temp_reg}, 0x1000000) # tdata1.hit",
+        f"srli x{temp_reg}, x{temp_reg}, 26 # tdata.hit",
         "#endif",
-        f"and x{reg}, x{reg}, x{temp_reg}",
-        write_sigupd(reg, test_data),
+        f"andi x{temp_reg}, x{temp_reg}, 1",
+        write_sigupd(temp_reg, test_data),
         "#endif // UDB_SDTRIG_HIT_IMPLEMENTED",
     ]
-
-
-def _read_itrigger_mtval(reg: int, mode: str, test_data: TestData) -> list[str]:
-    """Read mtval after an Sm itrigger event, before inspecting tdata1.hit."""
-    if mode != "Sm":
-        return []
-    return [f"csrr x{reg}, mtval", write_sigupd(reg, test_data)]
 
 
 def _config_mcontrol6(
@@ -1753,14 +1746,14 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     origins = ("Sm", "S", "U") if mode == "Sm" else (mode,)
     for origin in origins:
         codes = INTERRUPT_CODES if origin == "Sm" else LOWER_MODE_INTERRUPT_CODES
-        delegations = (0,) if origin == "Sm" else (1,)  # both traps in 0 needs reentrnacy solution
+        delegations = (0,) if origin == "Sm" else (1, 0)  # both traps in 0 needs reentrnacy solution
         for trig_num in range(UDB_NUM_TRIGGERS):
             # lines.append(f"#ifdef UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE")   # uncomment once udb add these macros
             for code in codes:
                 for delegate in delegations:
                     #  lines.append(f"#ifdef UDB_INTERRUPT{code}_SUPPORTED")
-                    #  if code == 13:    # LCOFI not implemented in existing architecture
-                    #     lines.append("#ifdef SSCOFPMF_SUPPORTED")
+                    if code == 13:  # LCOFI not implemented in existing architecture
+                        lines.append("#ifdef SSCOFPMF_SUPPORTED")
                     for priv in (0, MODE_PRIVBIT[origin]):
                         binname = f"trig_num_{trig_num}_{origin.lower()}_code_{code}_deleg_{delegate}_priv_{priv:05b}"
                         lines.append(_add_tc(test_data, binname, coverpoint, covergroup))
@@ -1799,8 +1792,8 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                             if mode == "Sm":
                                 lines.extend(_set_itrigger_delegation(code, 0, t1))
 
-                    # if code == 13:
-                    # lines.append("#endif")  # SSCOFPMF_SUPPORTED
+                    if code == 13:
+                        lines.append("#endif")  # SSCOFPMF_SUPPORTED
                     # lines.append("#endif")  # UDB_INTERRUPT{code}_SUPPORTED
             # lines.append("#endif")  # UDB_ITRIGGER_TRIGn_AVAILABLE
 

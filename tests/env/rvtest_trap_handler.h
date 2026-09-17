@@ -1936,8 +1936,8 @@ tsbi_instr_not_found:
 tsbi_instr_table:
 
         TSBI_CSR_INSTR_TABLE(0x300) // mstatus
-      //TSBI_CSR_INSTR_TABLE(0x302) // medeleg - shouldn't be changed below M-mode.
-      //TSBI_CSR_INSTR_TABLE(0x303) // mideleg - shouldn't be changed below M-mode.
+        //TSBI_CSR_INSTR_TABLE(0x302) // medeleg - shouldn't be changed below M-mode.
+        //TSBI_CSR_INSTR_TABLE(0x303) // mideleg - shouldn't be changed below M-mode.
         TSBI_CSR_INSTR_TABLE(0x304) // mie
         //TSBI_CSR_INSTR_TABLE(0x305) // mtvec
         TSBI_CSR_INSTR_TABLE(0x306) // mcounteren
@@ -2528,8 +2528,11 @@ clrint_\__MODE__\()tbl:
 #endif
 
 #if defined(SSCOFPMF_SUPPORTED)
-.dword  1                                    // cause 12: reserved -> default return
+        .dword  1                                    // cause 12: reserved -> default return
         .dword  \__MODE__\()clr_LCOFI_int            // cause 13: Local Counter Overflow Interrupt
+#else
+        .dword  1                                    // cause 12: reserved -> default return
+        .dword  1                                    // cause 13: SSCOFPMF not supported -> default return
 #endif
 
  .rept NUM_SPECD_INTCAUSES-14

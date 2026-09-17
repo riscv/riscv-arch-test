@@ -296,17 +296,21 @@ def _set_medeleg(reg: int, code: int, enable: bool) -> list[str]:
     ]
 
 
-def _etrigger_codes_to_test(mode: str) -> tuple[int, ...]:
+def _etrigger_codes_to_test(mode: str, cross_priv: bool = False) -> tuple[int, ...]:
     """Return exception codes that can be raised from ``mode``."""
 
-    if mode == "Sm":
-        return (1, 2, 3, 4, 5, 6, 7, 9, 11, 13, 15)  # 0 and 12 are currently excluded from Sm
+    if cross_priv:
+        if mode == "S":
+            return (1, 2, 5, 7, 9, 12, 13, 15)
 
-    if mode == "S":
-        return (1, 2, 5, 7, 9, 12, 13, 15)  # These are the exception codes that give faults and provide triggers
+        if mode == "U":
+            return (1, 2, 5, 7, 8, 13, 15)  # Exception 12 is failing on spike excluded for now
 
-    if mode == "U":
-        return (1, 2, 5, 7, 8, 13, 15)  # 12 is currently excluded because it is failing on spike
+        raise ValueError(f"Unsupported target mode: {mode}")
+
+    # Normal SdtrigSm/S/U tests use the same exception codes.
+    if mode in ("Sm", "S", "U"):
+        return (1, 2, 3, 4, 5, 6, 7, 9, 11, 13, 15)
 
     raise ValueError(f"Unsupported mode: {mode}")
 
@@ -1999,7 +2003,7 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     cfg_reg, data_reg, temp_reg = test_data.int_regs.get_registers(
         3, exclude_regs=[2, 10, 11], reg_range=list(range(8, 16))
     )
-    lines.extend(_global_ie(mode, True))
+    # lines.extend(_global_ie(mode, True))
 
     ######################################
     coverpoint = "cp_sdtrig_etrigger"
@@ -2063,7 +2067,7 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
         lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.append(f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED{trig_num}")
 
-    lines.extend(_global_ie(mode, False))
+    # lines.extend(_global_ie(mode, False))
     test_data.int_regs.return_registers([cfg_reg, data_reg, temp_reg])
     return [test_data.end_test_chunk()]
 
@@ -2080,7 +2084,7 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
     cfg_reg, data_reg, temp_reg = test_data.int_regs.get_registers(
         3, exclude_regs=[2, 10, 11], reg_range=list(range(8, 16))
     )
-    lines.extend(_global_ie("Sm", True))
+    # lines.extend(_global_ie("Sm", True))
 
     ######################################
     coverpoint = "cp_sdtrig_etrigger_cross_priv"
@@ -2094,7 +2098,7 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
         )
     )
 
-    codes_to_test = _etrigger_codes_to_test(target_mode)
+    codes_to_test = _etrigger_codes_to_test(target_mode, cross_priv=True)
     goto_target = "RVTEST_TSBI_GOTO_SMODE" if target_mode == "S" else "RVTEST_TSBI_GOTO_UMODE"
 
     if any(code in _PAGE_FAULT_CODES for code in codes_to_test):
@@ -2122,11 +2126,7 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
                             [
                                 _add_tc(test_data, binname, coverpoint, covergroup),
                                 *_config_etrigger(cfg_reg, trig_num, 1 << code, "Sm", privbits=privbits),
-                                *(
-                                    _set_medeleg(temp_reg, raised_code, bool(medeleg_en))
-                                    if not (code in (8, 9) and raised_code == 2)
-                                    else []
-                                ),
+                                *(_set_medeleg(temp_reg, raised_code, bool(medeleg_en)) if raised_code == code else []),
                                 *_set_medeleg(temp_reg, 3, False),  # Trigger -> Breakpoint handled in M-mode
                                 goto_target,
                             ]
@@ -2141,11 +2141,7 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
                                 "RVTEST_GOTO_DELEGATED_MMODE" if code in (8, 9) else "RVTEST_TSBI_GOTO_MMODE",
                                 _csr_access(f"csrr x{data_reg}, mtval # 0 iff matched", "Sm"),
                                 write_sigupd(data_reg, test_data),
-                                *(
-                                    _set_medeleg(temp_reg, raised_code, False)
-                                    if not (code in (8, 9) and raised_code == 2)
-                                    else []
-                                ),
+                                *(_set_medeleg(temp_reg, raised_code, False) if raised_code == code else []),
                             ]
                         )
                         lines.extend(_check_etrigger_hit(cfg_reg, data_reg, trig_num, "Sm", test_data))
@@ -2153,7 +2149,7 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
         lines.extend(_disable_trigger(temp_reg, trig_num, "Sm"))
         lines.append(f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED{trig_num}")
 
-    lines.extend(_global_ie("Sm", False))
+    # lines.extend(_global_ie("Sm", False))
     test_data.int_regs.return_registers([cfg_reg, data_reg, temp_reg])
     return [test_data.end_test_chunk()]
 

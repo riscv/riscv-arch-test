@@ -13,9 +13,9 @@
 --override iss/cpu0/simulateexceptions=T
 --override iss/cpu0/defaultsemihost=F
 
-# Guest external interrupts.  Sail hardwires mideleg[12] and implements mie/mip[12] because its
-# config sets geilen 63; match it so the models agree on the hypervisor interrupt bits.
---override cpu*/GEILEN=63
+# Guest external interrupts.  A nonzero GEILEN hardwires mideleg[12] and implements mie/mip[12],
+# so the Imperas, Sail and UDB configurations all declare the same value and agree on those bits.
+--override cpu*/GEILEN=6
 
 # Bit manipulation
 --override cpu*/add_Extensions=B

@@ -12,10 +12,6 @@
 //              Verifies that misaligned loads, stores, and AMOs that do not cross a
 //              naturally aligned 16-byte boundary do not raise a misaligned fault.
 //
-//              Per-instruction offset ranges are restricted to [0, 16 - size] so that
-//              only accesses that genuinely fit within one 16-byte window are expected.
-//              Offset bins that would cause the access to cross the boundary are excluded.
-//
 //              Access-size -> valid offset range:
 //                1-byte  (lb, lbu, sb, amo*.b)            : offsets [0:15]
 //                2-byte  (lh, lhu, sh, flh, fsh, amo*.h)  : offsets [0:14]
@@ -34,249 +30,168 @@ covergroup Zama16b_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    // ---- 1-byte loads: offsets [0:15] ----
-    cp_lb_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? LB) {
+    // ================================================================
+    // 1-byte accesses (lb, lbu, sb, amo*.b): offsets [0:15]
+    // ================================================================
+    insn_1byte: coverpoint ins.current.insn {
+        type_option.weight = 0;
+        wildcard bins lb  = {LB};
+        wildcard bins lbu = {LBU};
+        wildcard bins sb  = {SB};
+        `ifdef ZAAMO_SUPPORTED
+            `ifdef ZABHA_SUPPORTED
+                wildcard bins amoswap_b = {AMOSWAP_B};
+                wildcard bins amoadd_b  = {AMOADD_B};
+                wildcard bins amoand_b  = {AMOAND_B};
+                wildcard bins amoor_b   = {AMOOR_B};
+                wildcard bins amoxor_b  = {AMOXOR_B};
+                wildcard bins amomax_b  = {AMOMAX_B};
+                wildcard bins amomaxu_b = {AMOMAXU_B};
+                wildcard bins amomin_b  = {AMOMIN_B};
+                wildcard bins amominu_b = {AMOMINU_B};
+            `endif // ZABHA_SUPPORTED
+        `endif // ZAAMO_SUPPORTED
+    }
+    offset_1byte: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) {
+        type_option.weight = 0;
         bins offsets[] = {[0:15]};
     }
-    cp_lbu_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? LBU) {
-        bins offsets[] = {[0:15]};
-    }
+    cp_zama16b_1byte: cross insn_1byte, offset_1byte;
 
-    // ---- 2-byte loads: offsets [0:14] ----
-    cp_lh_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? LH) {
+    // ================================================================
+    // 2-byte accesses (lh, lhu, sh, flh, fsh, amo*.h): offsets [0:14]
+    // ================================================================
+    insn_2byte: coverpoint ins.current.insn {
+        type_option.weight = 0;
+        wildcard bins lh  = {LH};
+        wildcard bins lhu = {LHU};
+        wildcard bins sh  = {SH};
+        `ifdef ZFH_SUPPORTED
+            wildcard bins flh = {FLH};
+            wildcard bins fsh = {FSH};
+        `endif // ZFH_SUPPORTED
+        `ifdef ZAAMO_SUPPORTED
+            `ifdef ZABHA_SUPPORTED
+                wildcard bins amoswap_h = {AMOSWAP_H};
+                wildcard bins amoadd_h  = {AMOADD_H};
+                wildcard bins amoand_h  = {AMOAND_H};
+                wildcard bins amoor_h   = {AMOOR_H};
+                wildcard bins amoxor_h  = {AMOXOR_H};
+                wildcard bins amomax_h  = {AMOMAX_H};
+                wildcard bins amomaxu_h = {AMOMAXU_H};
+                wildcard bins amomin_h  = {AMOMIN_H};
+                wildcard bins amominu_h = {AMOMINU_H};
+            `endif // ZABHA_SUPPORTED
+        `endif // ZAAMO_SUPPORTED
+    }
+    offset_2byte: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) {
+        type_option.weight = 0;
         bins offsets[] = {[0:14]};
     }
-    cp_lhu_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? LHU) {
-        bins offsets[] = {[0:14]};
-    }
-    `ifdef ZFH_SUPPORTED
-        cp_flh_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? FLH) {
-            bins offsets[] = {[0:14]};
-        }
-    `endif
-
-    // ---- 4-byte loads: offsets [0:12] ----
-    cp_lw_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? LW) {
-        bins offsets[] = {[0:12]};
-    }
-    `ifdef UDB_MXLEN_64
-        cp_lwu_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? LWU) {
-            bins offsets[] = {[0:12]};
-        }
-    `endif
-    `ifdef F_SUPPORTED
-        cp_flw_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? FLW) {
-            bins offsets[] = {[0:12]};
-        }
-    `endif
-
-    // ---- 8-byte loads: offsets [0:8] ----
-    `ifdef UDB_MXLEN_64
-        cp_ld_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? LD) {
-            bins offsets[] = {[0:8]};
-        }
-    `endif
-    `ifdef D_SUPPORTED
-        cp_fld_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? FLD) {
-            bins offsets[] = {[0:8]};
-        }
-    `endif
-
-    // ---- 16-byte loads: offsets [0:0] ----
-    `ifdef Q_SUPPORTED
-        cp_flq_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? FLQ) {
-            bins offsets[] = {[0:0]};
-        }
-    `endif
+    cp_zama16b_2byte: cross insn_2byte, offset_2byte;
 
     // ================================================================
-    // cp_zama16b_store
+    // 4-byte accesses (lw, lwu, sw, flw, fsw, amo*.w, amocas.w): offsets [0:12]
     // ================================================================
-
-    // ---- 1-byte stores: offsets [0:15] ----
-    cp_sb_store: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? SB) {
-        bins offsets[] = {[0:15]};
-    }
-
-    // ---- 2-byte stores: offsets [0:14] ----
-    cp_sh_store: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? SH) {
-        bins offsets[] = {[0:14]};
-    }
-    `ifdef ZFH_SUPPORTED
-        cp_fsh_store: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? FSH) {
-            bins offsets[] = {[0:14]};
-        }
-    `endif
-
-    // ---- 4-byte stores: offsets [0:12] ----
-    cp_sw_store: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? SW) {
-        bins offsets[] = {[0:12]};
-    }
-    `ifdef F_SUPPORTED
-        cp_fsw_store: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? FSW) {
-            bins offsets[] = {[0:12]};
-        }
-    `endif
-
-    // ---- 8-byte stores: offsets [0:8] ----
-    `ifdef UDB_MXLEN_64
-        cp_sd_store: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? SD) {
-            bins offsets[] = {[0:8]};
-        }
-    `endif
-    `ifdef D_SUPPORTED
-        cp_fsd_store: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? FSD) {
-            bins offsets[] = {[0:8]};
-        }
-    `endif
-
-    // ---- 16-byte stores: offsets [0:0] ----
-    `ifdef Q_SUPPORTED
-        cp_fsq_store: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? FSQ) {
-            bins offsets[] = {[0:0]};
-        }
-    `endif
-
-    // ================================================================
-    // cp_zama16b_amo
-    // ================================================================
-    `ifdef ZAAMO_SUPPORTED
-        // ---- 1-byte AMOs (Zabha): offsets [0:15] ----
-        `ifdef ZABHA_SUPPORTED
-            cp_amoswap_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOSWAP_B) {
-                bins offsets[] = {[0:15]};
-            }
-            cp_amoadd_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOADD_B) {
-                bins offsets[] = {[0:15]};
-            }
-            cp_amoand_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOAND_B) {
-                bins offsets[] = {[0:15]};
-            }
-            cp_amoor_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOOR_B) {
-                bins offsets[] = {[0:15]};
-            }
-            cp_amoxor_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOXOR_B) {
-                bins offsets[] = {[0:15]};
-            }
-            cp_amomax_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAX_B) {
-                bins offsets[] = {[0:15]};
-            }
-            cp_amomaxu_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAXU_B) {
-                bins offsets[] = {[0:15]};
-            }
-            cp_amomin_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMIN_B) {
-                bins offsets[] = {[0:15]};
-            }
-            cp_amominu_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMINU_B) {
-                bins offsets[] = {[0:15]};
-            }
-
-            // ---- 2-byte AMOs (Zabha): offsets [0:14] ----
-            cp_amoswap_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOSWAP_H) {
-                bins offsets[] = {[0:14]};
-            }
-            cp_amoadd_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOADD_H) {
-                bins offsets[] = {[0:14]};
-            }
-            cp_amoand_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOAND_H) {
-                bins offsets[] = {[0:14]};
-            }
-            cp_amoor_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOOR_H) {
-                bins offsets[] = {[0:14]};
-            }
-            cp_amoxor_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOXOR_H) {
-                bins offsets[] = {[0:14]};
-            }
-            cp_amomax_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAX_H) {
-                bins offsets[] = {[0:14]};
-            }
-            cp_amomaxu_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAXU_H) {
-                bins offsets[] = {[0:14]};
-            }
-            cp_amomin_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMIN_H) {
-                bins offsets[] = {[0:14]};
-            }
-            cp_amominu_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMINU_H) {
-                bins offsets[] = {[0:14]};
-            }
-        `endif // ZABHA_SUPPORTED
-
-        // ---- 4-byte AMOs: offsets [0:12] ----
-        cp_amoswap_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOSWAP_W) {
-            bins offsets[] = {[0:12]};
-        }
-        cp_amoadd_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOADD_W) {
-            bins offsets[] = {[0:12]};
-        }
-        cp_amoand_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOAND_W) {
-            bins offsets[] = {[0:12]};
-        }
-        cp_amoor_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOOR_W) {
-            bins offsets[] = {[0:12]};
-        }
-        cp_amoxor_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOXOR_W) {
-            bins offsets[] = {[0:12]};
-        }
-        cp_amomax_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAX_W) {
-            bins offsets[] = {[0:12]};
-        }
-        cp_amomaxu_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAXU_W) {
-            bins offsets[] = {[0:12]};
-        }
-        cp_amomin_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMIN_W) {
-            bins offsets[] = {[0:12]};
-        }
-        cp_amominu_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMINU_W) {
-            bins offsets[] = {[0:12]};
-        }
-        `ifdef ZACAS_SUPPORTED
-            cp_amocas_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOCAS_W) {
-                bins offsets[] = {[0:12]};
-            }
-        `endif // ZACAS_SUPPORTED
-
-        // ---- 8-byte AMOs (RV64): offsets [0:8] ----
+    insn_4byte: coverpoint ins.current.insn {
+        type_option.weight = 0;
+        wildcard bins lw = {LW};
+        wildcard bins sw = {SW};
         `ifdef UDB_MXLEN_64
-            cp_amoswap_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOSWAP_D) {
-                bins offsets[] = {[0:8]};
-            }
-            cp_amoadd_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOADD_D) {
-                bins offsets[] = {[0:8]};
-            }
-            cp_amoand_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOAND_D) {
-                bins offsets[] = {[0:8]};
-            }
-            cp_amoor_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOOR_D) {
-                bins offsets[] = {[0:8]};
-            }
-            cp_amoxor_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOXOR_D) {
-                bins offsets[] = {[0:8]};
-            }
-            cp_amomax_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAX_D) {
-                bins offsets[] = {[0:8]};
-            }
-            cp_amomaxu_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAXU_D) {
-                bins offsets[] = {[0:8]};
-            }
-            cp_amomin_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMIN_D) {
-                bins offsets[] = {[0:8]};
-            }
-            cp_amominu_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMINU_D) {
-                bins offsets[] = {[0:8]};
-            }
+            wildcard bins lwu = {LWU};
+        `endif // UDB_MXLEN_64
+        `ifdef F_SUPPORTED
+            wildcard bins flw = {FLW};
+            wildcard bins fsw = {FSW};
+        `endif // F_SUPPORTED
+        `ifdef ZAAMO_SUPPORTED
+            wildcard bins amoswap_w = {AMOSWAP_W};
+            wildcard bins amoadd_w  = {AMOADD_W};
+            wildcard bins amoand_w  = {AMOAND_W};
+            wildcard bins amoor_w   = {AMOOR_W};
+            wildcard bins amoxor_w  = {AMOXOR_W};
+            wildcard bins amomax_w  = {AMOMAX_W};
+            wildcard bins amomaxu_w = {AMOMAXU_W};
+            wildcard bins amomin_w  = {AMOMIN_W};
+            wildcard bins amominu_w = {AMOMINU_W};
             `ifdef ZACAS_SUPPORTED
-                // ---- 8-byte AMO CAS (Zacas, RV64): offsets [0:8] ----
-                cp_amocas_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOCAS_D) {
-                    bins offsets[] = {[0:8]};
+                wildcard bins amocas_w = {AMOCAS_W};
+            `endif // ZACAS_SUPPORTED
+        `endif // ZAAMO_SUPPORTED
+    }
+    offset_4byte: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) {
+        type_option.weight = 0;
+        bins offsets[] = {[0:12]};
+    }
+    cp_zama16b_4byte: cross insn_4byte, offset_4byte;
+
+    // ================================================================
+    // 8-byte accesses (ld, sd, fld, fsd, amo*.d, amocas.d): offsets [0:8]
+    // ================================================================
+    insn_8byte: coverpoint ins.current.insn {
+        type_option.weight = 0;
+        `ifdef UDB_MXLEN_64
+            wildcard bins ld = {LD};
+            wildcard bins sd = {SD};
+        `endif // UDB_MXLEN_64
+        `ifdef D_SUPPORTED
+            wildcard bins fld = {FLD};
+            wildcard bins fsd = {FSD};
+        `endif // D_SUPPORTED
+        `ifdef ZAAMO_SUPPORTED
+            `ifdef UDB_MXLEN_64
+                wildcard bins amoswap_d = {AMOSWAP_D};
+                wildcard bins amoadd_d  = {AMOADD_D};
+                wildcard bins amoand_d  = {AMOAND_D};
+                wildcard bins amoor_d   = {AMOOR_D};
+                wildcard bins amoxor_d  = {AMOXOR_D};
+                wildcard bins amomax_d  = {AMOMAX_D};
+                wildcard bins amomaxu_d = {AMOMAXU_D};
+                wildcard bins amomin_d  = {AMOMIN_D};
+                wildcard bins amominu_d = {AMOMINU_D};
+                `ifdef ZACAS_SUPPORTED
+                    wildcard bins amocas_d = {AMOCAS_D};
+                `endif // ZACAS_SUPPORTED
+            `endif // UDB_MXLEN_64
+        `endif // ZAAMO_SUPPORTED
+    }
+    offset_8byte: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) {
+        type_option.weight = 0;
+        bins offsets[] = {[0:8]};
+    }
+    cp_zama16b_8byte: cross insn_8byte, offset_8byte;
+
+    // ================================================================
+    // 16-byte accesses (flq, fsq, amocas.q): offset [0:0]
+    // ================================================================
+    `ifdef Q_SUPPORTED
+        insn_16byte_fp: coverpoint ins.current.insn {
+            type_option.weight = 0;
+            wildcard bins flq = {FLQ};
+            wildcard bins fsq = {FSQ};
+        }
+        offset_16byte_fp: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) {
+            type_option.weight = 0;
+            bins offsets[] = {[0:0]};
+        }
+        cp_zama16b_16byte_fp: cross insn_16byte_fp, offset_16byte_fp;
+    `endif // Q_SUPPORTED
+
+    `ifdef ZAAMO_SUPPORTED
+        `ifdef ZACAS_SUPPORTED
+            `ifdef UDB_MXLEN_64
+                insn_16byte_cas: coverpoint ins.current.insn {
+                    type_option.weight = 0;
+                    wildcard bins amocas_q = {AMOCAS_Q};
                 }
-                // ---- 16-byte AMO CAS (Zacas, RV64): offset [0:0] ----
-                cp_amocas_q_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOCAS_Q) {
+                offset_16byte_cas: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) {
+                    type_option.weight = 0;
                     bins offsets[] = {[0:0]};
                 }
-            `endif // ZACAS_SUPPORTED
-        `endif // UDB_MXLEN_64
+                cp_zama16b_16byte_cas: cross insn_16byte_cas, offset_16byte_cas;
+            `endif // UDB_MXLEN_64
+        `endif // ZACAS_SUPPORTED
     `endif // ZAAMO_SUPPORTED
-
 
 endgroup
 

@@ -41,6 +41,10 @@ _PAGE_FAULT_CODES = (12, 13, 15)
 _MSTATUS_MPP_MASK = 0x1800
 _MSTATUS_MPRV = 0x20000
 
+# xEPC is not a readable instruction address for these -- if an etrigger converts
+# one into a breakpoint, the handler must not probe *xEPC. See SDTRIG_BP_FETCH.
+_FETCH_EXCODES = (0, 1, 12)
+
 # maps mcause exception code -> short mnemonic used in binnames / ifdef names
 ETRIGGER_EXCODE_NAMES = {
     0: "iaf",
@@ -96,7 +100,8 @@ UDB_DEFINES = [
     *[f"#define UDB_EXCEPTION_{name.upper()}_SUPPORTED" for name in ETRIGGER_EXCODE_NAMES.values()],
     "#define UDB_SDTRIG_HIT_IMPLEMENTED",
     # Sims that do not follow Suggested Trigger Timing in spec or fires several cycles after will mismatch MEPC in trap handler
-    "#define SDTRIG_IMPRECISE_XEPC",
+    # "#define SDTRIG_IMPRECISE_XEPC", # Remove if traphandler changes are correct
+    "#define SDTRIG_TRIGGER_BP_HANDLING",  # replaces SDTRIG_IMPRECISE_XEPC
 ]
 
 XSL_UDB_NAMES = ("LOAD", "STORE", "EXECUTE")  # mcontrol6 xsl bits 0, 1, 2
@@ -294,6 +299,15 @@ def _set_medeleg(reg: int, code: int, enable: bool) -> list[str]:
         f"LI(x{reg}, 0x{1 << code:x})",
         f"{op} medeleg, x{reg} # medeleg[{code}]={int(enable)}",
     ]
+
+
+def _sdtrig_bp_arm(raised_code: int) -> str | None:
+    """a1 token to arm before an instruction that might become a trigger
+    breakpoint, or None for raised_code==3: a real ebreak must take the
+    ordinary (untokened) path, never the imprecise one."""
+    if raised_code == 3:
+        return None
+    return "SDTRIG_BP_FETCH" if raised_code in _FETCH_EXCODES else "SDTRIG_BP_SKIP"
 
 
 def _etrigger_codes_to_test(mode: str, cross_priv: bool = False) -> tuple[int, ...]:
@@ -2045,8 +2059,11 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                             *_config_etrigger(cfg_reg, trig_num, 1 << code, mode, privbits=privbits),
                         ]
                     )
+                    bp_token = _sdtrig_bp_arm(raised_code)
                     if is_pf:
                         lines.extend(_page_fault_setup(raised_code))
+                    if bp_token:
+                        lines.append(f"LI(a1, {bp_token}) # sdtrig: resume rule if this becomes a trigger breakpoint")
                     lines.extend(
                         [
                             *_cause_exception(
@@ -2058,6 +2075,8 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                             ),
                         ]
                     )
+                    if bp_token:
+                        lines.append("LI(a1, SDTRIG_BP_NONE) # sdtrig: disarm")
                     if is_pf:
                         lines.extend(_page_fault_teardown())
                     lines.extend(
@@ -2135,9 +2154,16 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
                                 goto_target,
                             ]
                         )
+                        bp_token = _sdtrig_bp_arm(raised_code)
                         if is_pf:
                             lines.extend(_page_fault_setup(raised_code))
+                        if bp_token:
+                            lines.append(
+                                f"LI(a1, {bp_token}) # sdtrig: resume rule if this becomes a trigger breakpoint"
+                            )
                         lines.extend(_cause_exception(raised_code, target_mode, data_reg, temp_reg))
+                        if bp_token:
+                            lines.append("LI(a1, SDTRIG_BP_NONE) # sdtrig: disarm")
                         if is_pf:
                             lines.extend(_page_fault_teardown())
                         lines.extend(
@@ -2264,8 +2290,8 @@ def generate_sdtrig_suite(test_data: TestData, mode: str) -> list[TestChunk]:
     test_chunks.extend(_generate_icount_tests(test_data, mode))
     test_chunks.extend(_generate_itrigger_tests(test_data, mode))
     test_chunks.extend(_generate_etrigger_tests(test_data, mode))
-    # if mode == "Sm":
-    #     test_chunks.extend(etrigger_cross_priv_delegate_test(test_data, "S"))
-    #     test_chunks.extend(etrigger_cross_priv_delegate_test(test_data, "U"))
+    if mode == "Sm":
+        test_chunks.extend(etrigger_cross_priv_delegate_test(test_data, "S"))
+        test_chunks.extend(etrigger_cross_priv_delegate_test(test_data, "U"))
     # test_chunks.extend(_generate_textra_tests(test_data, mode))
     return test_chunks

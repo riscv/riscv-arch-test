@@ -218,6 +218,16 @@
 
 #define TSBI_RESERVED_RET   (-1)                 // return value for unrecognized operations
 
+// SDTRIG trigger-breakpoint EPC handling.
+// a1 is never a handler temporary and is not restored by resto_Xrtn, so it
+// survives untouched from the point the test arms it to the point the
+// handler consumes it (one-shot -- consumed on the very next breakpoint).
+#define SDTRIG_BP_NONE  0   // default / real ebreak: handle as an ordinary breakpoint
+#define SDTRIG_BP_SKIP  1   // armed exception is non-fetch: xEPC is a valid, fetchable
+                            // instruction -- only skip the word-2 (xEPC) self-check
+#define SDTRIG_BP_FETCH 2   // armed exception is fetch-type (iaf/ipf/misaligned-fetch):
+                            // xEPC is not fetchable -- resume at ra, skip the probe entirely
+
 #ifndef _VA_SZ_
   #if UDB_MXLEN==32
     #define _VA_SZ_ 32                           // RV32: 32-bit virtual address
@@ -2170,6 +2180,25 @@ sv_\__MODE__\()cause:
 //==============================================================================
 
 common_\__MODE__\()excpt_handler:
+
+#ifdef SDTRIG_TRIGGER_BP_HANDLING
+        li      T2, CAUSE_BREAKPOINT
+        bne     T5, T2, sdtrig_\__MODE__\()bp_done   // not a breakpoint -> ordinary path
+        li      T2, SDTRIG_BP_FETCH
+        beq     a1, T2, sdtrig_\__MODE__\()bp_fetch
+        li      T2, SDTRIG_BP_SKIP
+        bne     a1, T2, sdtrig_\__MODE__\()bp_done   // a1==NONE (incl. real ebreak) -> ordinary path
+        li      a1, SDTRIG_BP_NONE                    // consume: one-shot
+        j       skpsv_\__MODE__\()epc                 // skip word-2 self-check only; EPC is
+                                                        // valid, so the normal width probe below
+                                                        // still runs and still advances it
+sdtrig_\__MODE__\()bp_fetch:
+        li      a1, SDTRIG_BP_NONE                    // consume: one-shot
+        csrw    CSR_XEPC, ra                           // same resume point _cause_exception's
+                                                        // jalr already set up for the fetch codes
+        j       skp_adj_\__MODE__\()epc                // skip word-2 AND the *xEPC probe
+sdtrig_\__MODE__\()bp_done:
+#endif
         csrr    T3, CSR_XEPC                         // T3 = xEPC (faulting instruction address)
         mv      T4, sp                               // T4 = this mode's save area (for relocation lookup)
 
@@ -2275,11 +2304,22 @@ common_\__MODE__\()excpt_handler:
 // its first deliberate probe (EPC=0 is outside vmem/code/data -> abort_test).
 vmem_adj_\__MODE__\()epc:
 
-        // For SdtrigSm cross priv test uncomment this
+        // FTODO: Remove this code section if the trap handler changes done are fine
         // #ifdef SDTRIG_IMPRECISE_XEPC
         // .ifc \__MODE__ , M
         //         LI(     T2, CAUSE_BREAKPOINT)
-        //         beq     T5, T2, skp_adj_\__MODE__\()epc
+        //         bne     T5, T2, no_skp_adj_\__MODE__\()epc   # not a breakpoint -> always adjust
+        //         csrr    T2, tdata1              # tselect still selects the trigger under test
+        //         #if __riscv_xlen == 64
+        //         srli    T2, T2, 60
+        //         #else
+        //         srli    T2, T2, 28
+        //         #endif
+        //         LI(     T6, 4)                  # type 4 = itrigger
+        //         beq     T2, T6, skp_adj_\__MODE__\()epc
+        //         LI(     T6, 5)                  # type 5 = etrigger
+        //         beq     T2, T6, skp_adj_\__MODE__\()epc
+        // no_skp_adj_\__MODE__\()epc:
         // .endif
         // #endif
 
@@ -2314,11 +2354,12 @@ adj_\__MODE__\()epc:
         sub     T3, T3, T2                            // T3 = EPC - segment_begin (relocated offset)
 
 sv_\__MODE__\()epc:
-#ifdef SDTRIG_IMPRECISE_XEPC
-        csrr    T2, CSR_XCAUSE                        // breakpoint-trigger epc differs across DUTs (trigger fires
-        LI(     T6, CAUSE_BREAKPOINT)                 //   at a slightly different instr) -> don't record xEPC for
-        beq     T2, T6, skpsv_\__MODE__\()epc         //   mcause==3, else self-check mismatches on word 2
-#endif
+// Remove this code section if the trap handler changes done are fine
+// #ifdef SDTRIG_IMPRECISE_XEPC
+//         csrr    T2, CSR_XCAUSE                        // breakpoint-trigger epc differs across DUTs (trigger fires
+//         LI(     T6, CAUSE_BREAKPOINT)                 //   at a slightly different instr) -> don't record xEPC for
+//         beq     T2, T6, skpsv_\__MODE__\()epc         //   mcause==3, else self-check mismatches on word 2
+// #endif
         TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()epc, sv_\__MODE__\()epc_str) // write word 2: xEPC
 skpsv_\__MODE__\()epc:
         csrr    T3, CSR_XEPC                          // re-read xEPC (T3 was modified by relocation)

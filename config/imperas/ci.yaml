@@ -4,7 +4,6 @@
 # Imperas is proprietary and cannot run in public CI.
 
 # These exclusions don't affect CI because it doesn't run, but they help tracking incomplete features
-# - Sm: Sail does not yet support hypervisor
 # - SsstrictSm/S/U: Sail does not yet implement hypervisor instructions/CSRs, #1880 (Sail 0.14)
 # - InterruptsSm/S/SSm/U: Imperas does not implement external interrupts
 # - Smstateen: Sail does not implement all state yet to match
@@ -14,4 +13,4 @@
 #   fault (5). No Imperas parameter changes this priority.
 #
 ci_enabled: false
-exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,SsstrictV,ExceptionsSvZalrsc,InterruptsSm,InterruptsS,InterruptsSSm,InterruptsU,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,ExceptionsSvZalrsc,InterruptsSm,InterruptsS,InterruptsSSm,InterruptsU,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU"

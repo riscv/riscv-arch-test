@@ -158,11 +158,10 @@
 #endif
 
 // Integer-width load matching FSREG's store width, zero-extended to UDB_MXLEN.
-// Used to read back an FP value from scratch memory after FSREG stored it.
+// Used to read back an FP value after FSREG stores it.
 // When CONFIG_FLEN < UDB_MXLEN (e.g. F-only on RV64: fsw writes 4 bytes but ld
-// would read 8), using LREG would pull in whatever bytes happened to sit
-// above the stored value. FP_LREG loads exactly the bytes FSREG wrote so
-// the loaded value is deterministic regardless of prior scratch contents.
+// would read 8), using LREG would read bytes beyond the stored value. FP_LREG
+// loads exactly the bytes FSREG writes.
 #if UDB_MXLEN == 64 && CONFIG_FLEN == 32
   #define FP_LREG lwu
 #else
@@ -224,6 +223,23 @@
 #define PMP15_CFG_SHIFT        PMP_CFG_SHIFT(15)
 #define NOP                    0x13
 #define DOUBLE_NOP             (0x13<<32)+0x13
+
+// Determine the appropriate CSR to test based on the
+// supported extensions and set boot mode if necessary.
+#if defined(F_SUPPORTED)
+  #define RVTEST_TEST_CSR fflags
+#elif defined(ZVE32X_SUPPORTED)
+  #define RVTEST_TEST_CSR vxsat
+#elif defined(S_SUPPORTED)
+  #define RVTEST_TEST_CSR sepc
+  #define BOOT_TO_SMODE
+#elif defined(ZICNTR_SUPPORTED) && defined(U_SUPPORTED)
+  #define RVTEST_TEST_CSR instret
+  #define RVTEST_READ_ONLY_TEST_CSR
+#else
+  #define RVTEST_TEST_CSR mepc
+  #define BOOT_TO_MMODE
+#endif
 
 // RVTEST_TESTDATA_LOAD_INT(data_ptr, dest_reg) loads an integer value from the
 // test data section into dest_reg and increments the data_ptr pointer by SIG_STRIDE.

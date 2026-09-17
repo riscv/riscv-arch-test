@@ -1376,7 +1376,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             test_data.add_testcase("", coverpoint, covergroup),
             f"csrr x{r2}, time        # read time",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be small",
-            f"slti x{r2}, x{r2}, 100          # signature is 1 if difference < 100",
+            f"sltiu x{r2}, x{r2}, 100          # signature is 1 only if time is within 100 above the written value",
             write_sigupd(r2, test_data),
             "",
             "#if __riscv_xlen == 32",

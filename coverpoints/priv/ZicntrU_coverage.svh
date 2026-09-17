@@ -17,8 +17,9 @@ covergroup ZicntrU_cg with function sample(ins_t ins);
     // Counter access in user mode
 
     // building blocks for the main coverpoints
-    csrr: coverpoint ins.current.insn  {
+    csraccess: coverpoint ins.current.insn  {
         wildcard bins csrr = {CSRR};
+        wildcard bins csrw = {CSRW};
     }
     mcounteren_zeros: coverpoint ins.current.csr[CSR_MCOUNTEREN]{
         bins zeros = {32'b0};
@@ -169,7 +170,7 @@ covergroup ZicntrU_cg with function sample(ins_t ins);
     }
 
     // main coverpoints
-    cp_mcounteren_access_u: cross csrr, counters_mcounteren, priv_mode_u;
+    cp_mcounteren_access_u: cross csraccess, counters_mcounteren, priv_mode_u;
     cp_mcounter_inc_inaccessible: cross mcounteren_zeros, priv_mode_u;
 endgroup
 

@@ -6,7 +6,6 @@
 ##################################
 
 from testgen.asm.helpers import comment_banner, write_sigupd
-from testgen.asm.interrupts import clr_mtimer_int, set_mtimer_int
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.SscofpmfCommon import generate_sscofpmf_suite, prime_counter_overflow
@@ -109,7 +108,7 @@ def _generate_lcofip_priority_sm_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_lcofip_priority_m"
     ######################################
 
-    r_mtime, r_mtimecmp, r_val, r_temp, r_temp2, r_addr = test_data.int_regs.get_registers(6, exclude_regs=[0, 31])
+    r_val, r_temp, r_temp2, r_addr = test_data.int_regs.get_registers(4, exclude_regs=[0, 31])
 
     lines = [
         comment_banner(
@@ -152,14 +151,7 @@ def _generate_lcofip_priority_sm_tests(test_data: TestData) -> list[str]:
             lines.append("RVTEST_SET_MEXT_INT_M")
 
         elif other_int == "mtip":
-            lines.extend(
-                set_mtimer_int(
-                    r_mtime,
-                    r_mtimecmp,
-                    r_temp,
-                    r_temp2,
-                )
-            )
+            lines.append("RVTEST_SET_MTIME_INT_M")
 
         elif other_int == "msip":
             lines.append("RVTEST_SET_MSW_INT_M")
@@ -195,12 +187,7 @@ def _generate_lcofip_priority_sm_tests(test_data: TestData) -> list[str]:
             lines.append("RVTEST_CLR_MEXT_INT_M")
 
         elif other_int == "mtip":
-            lines.extend(
-                clr_mtimer_int(
-                    r_temp,
-                    r_mtimecmp,
-                )
-            )
+            lines.append("RVTEST_CLR_MTIME_INT_M")
 
         elif other_int == "msip":
             lines.append("RVTEST_CLR_MSW_INT_M")
@@ -223,7 +210,7 @@ def _generate_lcofip_priority_sm_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-    test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_val, r_temp, r_temp2, r_addr])
+    test_data.int_regs.return_registers([r_val, r_temp, r_temp2, r_addr])
 
     return lines
 

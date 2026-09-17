@@ -1950,8 +1950,8 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x344) // mip
         TSBI_CSR_INSTR_TABLE(0x747) // mseccfg
         TSBI_CSR_INSTR_TABLE(0x320) // mcountinhibit
-        TSBI_CSR_INSTR_TABLE(0xB00) // mcycle
-        TSBI_CSR_INSTR_TABLE(0xB02) // minstret
+        //TSBI_CSR_INSTR_TABLE(0xB00) // mcycle - shouldn't be changed below M-mode
+        //TSBI_CSR_INSTR_TABLE(0xB02) // minstret - shouldn't be changed below M-mode
         // TODO: Move the following to the S-mode dispatch when it is implemented
         TSBI_CSR_INSTR_TABLE(0x100) // sstatus
         TSBI_CSR_INSTR_TABLE(0x104) // sie

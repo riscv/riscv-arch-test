@@ -240,7 +240,7 @@ def _clear_interrupt(code: int, mode: str, r1: int) -> list[str]:
 def _read_trigger_hit(reg: int, temp_reg: int, trig_num: int, mode: str, test_data: TestData) -> list[str]:
     """Read and sign tdata1.hit before disabling the trigger when it is implemented."""
     return [
-        "#ifdef UDB_SDTRIG_HIT_IMPLEMENTED",
+        # "#ifdef UDB_SDTRIG_HIT_IMPLEMENTED",
         _load_reg(temp_reg, trig_num),
         _csr_access(f"csrw tselect, x{reg}", mode),
         _csr_access(f"csrr x{temp_reg}, tdata1", mode),
@@ -251,7 +251,7 @@ def _read_trigger_hit(reg: int, temp_reg: int, trig_num: int, mode: str, test_da
         "#endif",
         f"andi x{temp_reg}, x{temp_reg}, 1",
         write_sigupd(temp_reg, test_data),
-        "#endif // UDB_SDTRIG_HIT_IMPLEMENTED",
+        # "#endif // UDB_SDTRIG_HIT_IMPLEMENTED",
     ]
 
 
@@ -467,6 +467,19 @@ def _fire_supported_triggers(trig_num: int, mode: str, cfg_reg: int, addr_reg: i
     )
 
     # # itrigger: mask SSIP, fire by making it pending
+    #  lines.extend(
+    #   [
+    #       f"#ifdef UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE",
+    #       *_config_itrigger(cfg_reg, trig_num, 1 << 1, mode),
+    #       *_cause_interrupt(1, mode, cfg_reg),
+    #       "nop # spacer",
+    #       *_disable_trigger(cfg_reg, trig_num, mode),
+    #       f"#endif // UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE",
+    #   ]
+    # )
+
+    # etrigger: watch ecall-from-<mode>, fire with an ecall
+    # ecall_cause = {"M": 11, "S": 9, "U": 8}.get(mode[0], 11)
     # lines.extend(
     #     [
     #         f"#ifdef UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE",
@@ -1747,9 +1760,9 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     x_tval = "mtval" if mode == "Sm" else "stval"
     for origin in origins:
         codes = INTERRUPT_CODES if origin == "Sm" else LOWER_MODE_INTERRUPT_CODES
-        delegations = (0,) if origin == "Sm" else (1,)  # both traps in 0 needs reentrnacy solution
+        delegations = (0,) if origin == "Sm" else (1, 0)  # both traps in 0 needs re-entrance solution
         for trig_num in range(UDB_NUM_TRIGGERS):
-            # lines.append(f"#ifdef UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE")   # uncomment once udb add these macros
+            # lines.append(f"#ifdef UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE")   # uncomment once udb add these parameters
             for code in codes:
                 for delegate in delegations:
                     #  lines.append(f"#ifdef UDB_INTERRUPT{code}_SUPPORTED")

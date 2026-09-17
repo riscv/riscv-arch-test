@@ -238,7 +238,9 @@
         "amo": {
           "None": null
         },
-        "lrsc": { "Some": "AccessFault" }
+        // The ISS runs with unaligned_low_pri=T, so a misaligned LR/SC faults only after
+        // address translation; the per-region lrsc PMA below raises the access fault.
+        "lrsc": { "None": null }
       },
       // If multiple memory operations are needed, this controls whether they
       // are done in increasing or decreasing address order. This is architecturally

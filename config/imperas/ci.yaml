@@ -9,9 +9,9 @@
 #   overlap constraints, so it executes reserved widening encodings such as
 #   vwmaccu.vv v14, v9, v15, v0.t instead of raising an illegal instruction:
 #   https://solvnetplus.synopsys.com/s/case/500WQ0000230O4P/imperas-treats-vwmaccuvv-v14-v9-v15-v0t-as-legal
-#   SsstrictSm additionally walks M-mode CSRs that the two models disagree on: Imperas has no
-#   Ssqosid (srmcfg) or Smcntrpmf (mcyclecfg/mcyclecfgh) although these configs declare them,
-#   and on rv64-max Imperas implements hcontext (0x6a8) while Sail does not.
+#   SsstrictSm additionally walks M-mode CSRs the two models disagree on: Imperas implements
+#   mtval2 (0x34b) on the rv32 configs and hcontext (0x6a8) on rv64-max, although neither
+#   config enables the extension that defines them, so Sail traps on both and Imperas does not.
 # - InterruptsSm/S/SSm/U: Imperas does not implement external interrupts
 # - Smstateen: Sail does not implement all state yet to match
 # - ExceptionsVx: https://solvnetplus.synopsys.com/s/case/500WQ000023l1CPYAY/vmvnrrv-does-not-raise-an-illegalinstruction-exception-when-vtypevill-1

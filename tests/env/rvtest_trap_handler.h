@@ -2816,11 +2816,11 @@ rtn_fm_mmode:
         LA(x7, saved_xepc)                                 ;\
         SREG x9, 0(x7)                                     ;\
         csrr x9, _CAUSE                                    ;\
-        SREG x9, REGWIDTH(x7)                              ;\
+        SREG x9, 8(x7)                                     ;\
         csrr x9, _TVAL                                     ;\
-        SREG x9, 2*REGWIDTH(x7)                            ;\
+        SREG x9, 16(x7)                                    ;\
         csrr x9, _STATUS                                   ;\
-        SREG x9, 3*REGWIDTH(x7)                            ;\
+        SREG x9, 24(x7)                                    ;\
         mv x6, a0                                          ;\
         mv x4, a1                                          ;\
         jal x7, failedtest_trap_x7_x9                      ;\

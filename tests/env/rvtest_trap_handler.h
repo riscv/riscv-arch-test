@@ -415,8 +415,8 @@
 // Called as: INSTANTIATE_MODE_MACRO RVTEST_TRAP_HANDLER
 // This expands to:
 //   RVTEST_TRAP_HANDLER M       — always (M-mode always exists)
-//   RVTEST_TRAP_HANDLER S       — if S_SUPPORTED
 //   RVTEST_TRAP_HANDLER H       — if S_SUPPORTED && H_SUPPORTED
+//   RVTEST_TRAP_HANDLER S       — if S_SUPPORTED
 //   RVTEST_TRAP_HANDLER V       — if S_SUPPORTED && H_SUPPORTED
 //
 // Used for PROLOG, HANDLER, EPILOG, and SAVEAREA instantiation.
@@ -425,9 +425,11 @@
 .macro INSTANTIATE_MODE_MACRO MACRO_NAME
   \MACRO_NAME M                                  // always instantiate M-mode version
   #ifdef S_SUPPORTED
-    \MACRO_NAME S                                // instantiate S-mode version if supported
     #ifdef H_SUPPORTED
       \MACRO_NAME H                              // instantiate HS-mode version if hypervisor supported
+    #endif
+    \MACRO_NAME S                                // instantiate S-mode version if supported
+    #ifdef H_SUPPORTED
       \MACRO_NAME V                              // instantiate VS-mode version if hypervisor supported
     #endif
   #endif

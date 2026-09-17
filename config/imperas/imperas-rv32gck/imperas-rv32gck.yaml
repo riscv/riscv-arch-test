@@ -37,7 +37,7 @@ implemented_extensions:
   - { name: Sscounterenw, version: "= 1.0.0" }
   - { name: Sscsrind, version: "= 1.0.0" }
   - { name: Ssctr, version: "= 1.0.0" }
-  - { name: Ssdbltrp, version: "= 1.0.0" }
+  # - { name: Ssdbltrp, version: "= 1.0.0" } # Imperas exposes mtval2 (0x34b) with this enabled and H absent
   # - { name: Ssqosid, version: "= 1.0.0" } # Imperas does not implement this extension
   - { name: Ssstateen, version: "= 1.0.0" }
   - { name: Ssstrict, version: "= 1.0.0" }

@@ -5,8 +5,11 @@
 # SsstrictSm, SsstrictS, SsstrictU, unknown
 # Smstateen Sail does not yet support 1P13 bit
 # Sdtrig* not yet implemented in Sail
+# Sscofpmf* will be added back in CI once Sail increments HPM counters
+#   (https://github.com/riscv/sail-riscv/issues/1733); whisper counts events, so every
+#   result that depends on a real overflow diverges from the Sail reference.
 ci_enabled: true
-exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,Smstateen,SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,ExceptionsSvZalrsc,Smstateen,SdtrigSm,SdtrigS,SdtrigU,SscofpmfSm,SscofpmfS,SscofpmfU"
 exclude_configs:
   - whisper-rv32-max-spike-ref
   - whisper-rv64-max-spike-ref

@@ -4,7 +4,6 @@
 # Imperas is proprietary and cannot run in public CI.
 
 # These exclusions don't affect CI because it doesn't run, but they help tracking incomplete features
-# - Sm: Sail does not yet support hypervisor
 # - SsstrictSm/S/U: on the vector configs, Imperas does not enforce the vector register-group
 #   overlap constraints, so it executes reserved widening encodings such as
 #   vwmaccu.vv v14, v9, v15, v0.t instead of raising an illegal instruction:
@@ -16,4 +15,4 @@
 # - ExceptionsVx: https://solvnetplus.synopsys.com/s/case/500WQ000023l1CPYAY/vmvnrrv-does-not-raise-an-illegalinstruction-exception-when-vtypevill-1
 #
 ci_enabled: false
-exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,SsstrictV,InterruptsSm,InterruptsS,InterruptsSSm,InterruptsU,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,InterruptsSm,InterruptsS,InterruptsSSm,InterruptsU,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU"

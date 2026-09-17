@@ -498,6 +498,6 @@ params:
   HSTATEEN_CONTEXT_TYPE: rw
   MCONTEXT_AVAILABLE: true
   # Pointer masking params
-  PMLEN: 17
+  PMLEN: 16
   # Zawrs params
   ZAWRS_NTO_IS_NOP: true

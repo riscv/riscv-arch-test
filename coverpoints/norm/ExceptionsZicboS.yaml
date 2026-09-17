@@ -8,7 +8,7 @@ normative_rule_definitions:
   - name: menvcfg_cbie_op
     coverpoint: ["ExceptionsZicboS_cg/cp_cbie"]
   - name: menvcfg_cbie_cbo-inval_op
-    coverpoint: ["ExceptionsZicboS_cg/cp_cbie"]
+    coverpoint: ["ExceptionsZicboS_cg/{cp_cbie, cp_cbo_inval_data}"]
 
   # The Zicbom extension adds the CBCFE (Cache Block Clean and Flush instruction
   # Enable) field to senvcfg to control execution of the CBO.CLEAN and CBO.FLUSH
@@ -26,14 +26,14 @@ normative_rule_definitions:
   # only if execution of the instruction is enabled for use in S-mode and CBIE is
   # set to 01b or 11b; otherwise, an illegal-instruction exception is raised.
   - name: senvcfg_cbie
-    coverpoint: ["ExceptionsZicboS_cg/cp_cbie"]
+    coverpoint: ["ExceptionsZicboS_cg/{cp_cbie, cp_cbo_inval_data}"]
 
   # If CBO.INVAL is enabled in S-mode to perform a flush operation, then when the
   # instruction is enabled in U-mode it performs a flush operation, even if CBIE is
   # set to 11b. Otherwise, the instruction behaves as follows, depending on the CBIE
   # encoding:
   - name: cbo-inval_s-mode_op
-    coverpoint: ["ExceptionsZicboS_cg/cp_cbie"]
+    coverpoint: ["ExceptionsZicboS_cg/{cp_cbie, cp_cbo_inval_data}"]
 
   # The Zicboz extension adds the CBZE (Cache Block Zero instruction enable) field
   # to senvcfg. The CBZE field controls execution of the cache block zero

@@ -2280,8 +2280,8 @@ vmem_adj_\__MODE__\()epc:
         #ifdef SDTRIG_IMPRECISE_XEPC
         .ifc \__MODE__ , M
                 LI(     T2, CAUSE_BREAKPOINT)
-                bne     T5, T2, no_skp_adj_\__MODE__\()epc   # not a breakpoint -> always adjust
-                csrr    T2, tdata1              # tselect still selects the trigger under test
+                bne     T5, T2, no_skp_adj_\__MODE__\()epc   # not a breakpoint always adjust
+                csrr    T2, tdata1              # tselect selects the trigger under test
                 #if __riscv_xlen == 64
                 srli    T2, T2, 60
                 #else
@@ -2507,7 +2507,6 @@ clrint_\__MODE__\()tbl:
         .dword  \__MODE__\()clr_Sext_int             // cause  9: S-mode external interrupt
         .dword  \__MODE__\()clr_Vext_int             // cause 10: VS-mode external interrupt
         .dword  \__MODE__\()clr_Mext_int             // cause 11: M-mode external interrupt
-
 #else
   #if defined(S_SUPPORTED)
         .dword  0                                    // cause  0: reserved
@@ -2549,7 +2548,6 @@ clrint_\__MODE__\()tbl:
  .rept NUM_SPECD_INTCAUSES-14
         .dword  1                                    // causes 14..23: reserved -> default return
  .endr
-
  .rept UDB_MXLEN-NUM_SPECD_INTCAUSES
         .dword  0                       // impossible, quit test by jumping to  epilogs
  .endr

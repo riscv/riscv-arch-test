@@ -60,7 +60,6 @@ UDB_DEFINES = [
     "#define UDB_SDTRIG_U_AVAILABLE",
     "#define UDB_SDTRIG_VS_AVAILABLE",
     "#define UDB_SDTRIG_VU_AVAILABLE",
-    "#define UDB_SDTRIG_HIT_IMPLEMENTED",
     # Sims that do not follow Suggested Trigger Timing in spec or fires several cycles after will mismatch MEPC in trap handler
     "#define SDTRIG_IMPRECISE_XEPC",
 ]
@@ -476,7 +475,6 @@ def _fire_supported_triggers(trig_num: int, mode: str, cfg_reg: int, addr_reg: i
     #       *_disable_trigger(cfg_reg, trig_num, mode),
     #       f"#endif // UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE",
     #   ]
-    # )
 
     # etrigger: watch ecall-from-<mode>, fire with an ecall
     # ecall_cause = {"M": 11, "S": 9, "U": 8}.get(mode[0], 11)
@@ -1738,7 +1736,7 @@ def _goto_itrigger_origin(origin: str) -> list[str]:
 
 
 def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
-    """Generate the SdtrigSm itrigger M/S/U delegation matrix."""
+    """Generate itrigger interrupt trigger tests."""
 
     covergroup = f"Sdtrig{mode}_itrigger_cg"
     tc = test_data.begin_test_chunk("Itrigger")
@@ -1812,6 +1810,7 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             # lines.append("#endif")  # UDB_ITRIGGER_TRIGn_AVAILABLE
 
     test_data.int_regs.return_registers([t1, t2, t3, t4])
+
     return [test_data.end_test_chunk()]
 
 
@@ -1942,16 +1941,15 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
 def generate_sdtrig_suite(test_data: TestData, mode: str) -> list[TestChunk]:
     """Assemble the full Sdtrig suite for ``mode`` ("Sm"/"S"/"U") as test chunks."""
     test_chunks: list[TestChunk] = []
-
-    # test_chunks.extend(_generate_access_tests(test_data, mode))
-    # test_chunks.extend(_generate_native_triggers_tests(test_data, mode))
+    test_chunks.extend(_generate_access_tests(test_data, mode))
+    test_chunks.extend(_generate_native_triggers_tests(test_data, mode))
     # test_chunks.extend(_generate_a_tests(test_data, mode))
     # test_chunks.extend(_generate_combined_accesses_tests(test_data, mode))
     # test_chunks.extend(_generate_cache_operations_tests(test_data, mode))
     # test_chunks.extend(_generate_address_matches_tests(test_data, mode))
     # test_chunks.extend(_generate_csr_tests(test_data, mode))
-    # test_chunks.extend(_generate_mcontrol6_tests(test_data, mode))
-    # test_chunks.extend(_generate_icount_tests(test_data, mode))
+    test_chunks.extend(_generate_mcontrol6_tests(test_data, mode))
+    test_chunks.extend(_generate_icount_tests(test_data, mode))
     test_chunks.extend(_generate_itrigger_tests(test_data, mode))
     # test_chunks.extend(_generate_etrigger_tests(test_data, mode))
     # test_chunks.extend(_generate_textra_tests(test_data, mode))

@@ -20,21 +20,36 @@ Counteren = Literal["ones", "zeros"]
 _COUNTERS = ["cycle", "time", "instret"]
 
 
-def _read_counter(read_reg: int, i: int) -> list[str]:
-    """Read counter i (and its high half on RV32)."""
+def _access_counter(
+    test_data: TestData, covergroup: str, coverpoint: str, bin_prefix: str, read_reg: int, i: int
+) -> list[str]:
+    """Read counter i and attempt to write it, low half and high half on RV32.
+
+    The read traps or not according to mcounteren and scounteren; the write always raises an illegal
+    instruction, because the unprivileged counters are read-only CSRs.
+    """
+
+    def access(name: str, suffix: str) -> list[str]:
+        return [
+            test_data.add_testcase(f"{bin_prefix}_read{suffix}", coverpoint, covergroup),
+            f"csrr x{read_reg}, {name}",
+            test_data.add_testcase(f"{bin_prefix}_write{suffix}", coverpoint, covergroup),
+            f"csrw {name}, zero  # read-only CSR: illegal instruction whatever the counterens hold",
+        ]
+
     if i < 3:
         name = _COUNTERS[i]
         return [
-            f"csrr x{read_reg}, {name}",
+            *access(name, ""),
             "#if __riscv_xlen == 32",
-            f"csrr x{read_reg}, {name}h",
+            *access(f"{name}h", "h"),
             "#endif",
         ]
     return [
         "#ifdef ZIHPM_SUPPORTED",
-        f"csrr x{read_reg}, hpmcounter{i}",
+        *access(f"hpmcounter{i}", ""),
         "#if __riscv_xlen == 32",
-        f"csrr x{read_reg}, hpmcounter{i}h",
+        *access(f"hpmcounter{i}h", "h"),
         "#endif",
         "#endif",
     ]
@@ -90,19 +105,17 @@ def counteren_walk_tests(
     lines.append(f"LI(x{walk_reg}, 1)")
     for i in range(32):
         lines += [
-            test_data.add_testcase(f"{tag}walking_1_{i}", coverpoint, covergroup),
             *(_write_counteren(csr, f"x{walk_reg}", mode, "set only the current bit") for csr in csrs),
-            *_read_counter(read_reg, i),
+            *_access_counter(test_data, covergroup, coverpoint, f"{tag}walking_1_{i}", read_reg, i),
             f"slli x{walk_reg}, x{walk_reg}, 1",
         ]
 
     lines.append(f"LI(x{walk_reg}, 1)")
     for i in range(32):
         lines += [
-            test_data.add_testcase(f"{tag}walking_0_{i}", coverpoint, covergroup),
             f"not x{inv_reg}, x{walk_reg}  # all bits but the current one",
             *(_write_counteren(csr, f"x{inv_reg}", mode, "clear only the current bit") for csr in csrs),
-            *_read_counter(read_reg, i),
+            *_access_counter(test_data, covergroup, coverpoint, f"{tag}walking_0_{i}", read_reg, i),
             f"slli x{walk_reg}, x{walk_reg}, 1",
         ]
     test_data.int_regs.return_registers([read_reg, ones_reg, walk_reg, inv_reg])

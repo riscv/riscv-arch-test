@@ -1,0 +1,36 @@
+# Mapping of normative rules to coverpoints for a test suite
+normative_rule_definitions:
+  #The _Svade_ extension: when a virtual page is accessed and the A bit is
+  #clear, or is written and the D bit is clear, a page-fault exception is
+  #raised.#
+  - name: svade_access_ad_bit_clear
+    coverpoint:
+      [
+        "Svade_cg/{Abit_unset_exec_s,Abit_unset_exec_u,Abit_unset_read_s,Abit_unset_read_u,Abit_unset_write_s,Abit_unset_write_u,Dbit_unset_write_s,Dbit_unset_write_u}",
+      ]
+
+  #If the Svadu extension is implemented, the ADUE bit controls whether hardware
+  #updating of PTE A/D bits is enabled for S-mode and G-stage address translations.
+  #When ADUE=1, hardware updating of PTE A/D bits is enabled during S-mode
+  #address translation, and the implementation behaves as though the Svade
+  #extension were not implemented for S-mode address translation.
+  #When the hypervisor extension is implemented, if ADUE=1, hardware updating of
+  #PTE A/D bits is enabled during G-stage address translation, and the
+  #implementation behaves as though the Svade extension were not implemented for
+  #G-stage address translation.
+  #When ADUE=0, the implementation behaves as though Svade were implemented for
+  #S-mode and G-stage address translation.#
+  - name: menvcfg_adue_op
+    coverpoint:
+      [
+        "Svade_cg/{Abit_unset_exec_s,Abit_unset_exec_u,Abit_unset_read_s,Abit_unset_read_u,Abit_unset_write_s,Abit_unset_write_u,Dbit_unset_write_s,Dbit_unset_write_u}",
+      ]
+
+  - name: fetch_page_fault_no_x
+    coverpoint: ["Svade_cg/ins_page_fault"]
+
+  - name: load_page_fault_no_r
+    coverpoint: ["Svade_cg/load_page_fault"]
+
+  - name: store_page_fault_no_w
+    coverpoint: ["Svade_cg/store_page_fault"]

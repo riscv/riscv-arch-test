@@ -1942,6 +1942,8 @@ tsbi_instr_table:
         //TSBI_CSR_INSTR_TABLE(0x305) // mtvec
         TSBI_CSR_INSTR_TABLE(0x306) // mcounteren
         TSBI_CSR_INSTR_TABLE(0x30A) // menvcfg
+        TSBI_CSR_INSTR_TABLE(0x30C) // mstateen0
+        TSBI_CSR_INSTR_TABLE(0x31C) // mstateen0h
         #if (UDB_MXLEN==32)
         TSBI_CSR_INSTR_TABLE(0x31A) // menvcfgh
         #endif

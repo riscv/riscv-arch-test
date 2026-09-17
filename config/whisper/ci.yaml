@@ -2,11 +2,11 @@
 # Jordan Carlin jcarlin@hmc.edu April 2026
 # CI configuration for Whisper simulator
 
-# SsstrictSm, SsstrictS, SsstrictU, unknown
+# SsstrictSm, unknown
 # Smstateen Sail does not yet support 1P13 bit
 # Sdtrig* not yet implemented in Sail
 ci_enabled: true
-exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,Smstateen,SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions: "SsstrictSm,Smstateen,SdtrigSm,SdtrigS,SdtrigU"
 exclude_configs:
   - whisper-rv32-max-spike-ref
   - whisper-rv64-max-spike-ref

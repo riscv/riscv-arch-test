@@ -69,7 +69,7 @@
 
 # More extensions
 --override cpu*/Smdbltrp=T
---override cpu*/Ssdbltrp=T
+--override cpu*/Ssdbltrp=F # Imperas exposes mtval2 (0x34b) when Ssdbltrp is enabled, but H is absent
 --override cpu*/Zicfilp=T
 --override cpu*/Zicfiss=T
 --override cpu*/d_requires_f=T

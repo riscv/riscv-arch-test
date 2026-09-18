@@ -191,7 +191,7 @@ normative_rule_definitions:
   - name: mepc_op
     coverpoint:
       [
-        "ExceptionsSm/{cp_instr_adr_misaligned_branch, cp_instr_access_fault, cp_illegal_instruction, cp_breakpoint, cp_load_address_misaligned, cp_load_access_fault, cp_store_address_misaligned, cp_store_access_fault, cp_ecall_m}",
+        "ExceptionsSm_cg/{cp_instr_adr_misaligned_branch, cp_instr_access_fault, cp_illegal_instruction, cp_breakpoint, cp_load_address_misaligned, cp_load_access_fault, cp_store_address_misaligned, cp_store_access_fault, cp_ecall_m}",
       ]
 
   # When a trap is taken into M-mode, mcause is written with a code indicating the

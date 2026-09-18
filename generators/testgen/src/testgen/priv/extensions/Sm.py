@@ -575,8 +575,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (0 << 34)  # SXL:  Supervisor-Mode XLEN  not supported by Sail.  Test in xlen suite.
         | (0 << 36)  # SBE not supported by Sail; test in Endian
         | (0 << 37)  # MBE not supported by Sail; test in Endian
-        | (0 << 38)  # GVA not supported by Sail; TODO change to 1 when H is implemented
-        | (0 << 39)  # MPV not supported by Sail; TODO change to 1 when H is implemented
+        | (1 << 38)
+        | (1 << 39)
         | (1 << 41)  # MPELP: Machine Previous Expect Landing Pad
         | (0 << 42)  # MDT:   not yet supported by Sail; TODO change to 1 when Smdbltrp implemented
         | (1 << 63)  # SD for RV64
@@ -1376,7 +1376,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             test_data.add_testcase("", coverpoint, covergroup),
             f"csrr x{r2}, time        # read time",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be small",
-            f"slti x{r2}, x{r2}, 100          # signature is 1 if difference < 100",
+            f"sltiu x{r2}, x{r2}, 100          # signature is 1 only if time is within 100 above the written value",
             write_sigupd(r2, test_data),
             "",
             "#if __riscv_xlen == 32",

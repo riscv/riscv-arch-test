@@ -14,22 +14,13 @@ from testgen.priv.extensions.pmp.helpers import (
     LOCKED_LXWR_CASES,
     lxwr_walk_body,
     make_exec_region,
+    napot_mask_defines,
 )
 from testgen.priv.extensions.pmp.probes import (
     gen_cbo,
     gen_prefetch,
 )
 from testgen.priv.registry import add_priv_test_generator
-
-_PAGE_MASK_DEFINES = [
-    "#if UDB_PMP_GRANULARITY > 12",
-    "#define PMPZICBO_REGION_SHIFT  UDB_PMP_GRANULARITY",
-    "#else",
-    "#define PMPZICBO_REGION_SHIFT  12",
-    "#endif",
-    "#define PMP_MASK                   ~((1 << (PMPZICBO_REGION_SHIFT - 3))-1)",
-    "#define PMP_REGION_SIZE            ((1 << (PMPZICBO_REGION_SHIFT - 3)) - 1)",
-]
 
 _ENABLE_CBO = ["LI(t0, 0xF0)", "csrrs zero, menvcfg, t0"]
 _PAGE_REGION = make_exec_region(("1024", "nop"), pad=None)
@@ -57,7 +48,7 @@ def make_pmpzicbo_cbo(test_data: TestData) -> list[TestChunk]:
                 "cp_cbo",
                 first=number,
                 extra_setup=_ENABLE_CBO,
-                napot_mask=_PAGE_MASK_DEFINES,
+                napot_mask=napot_mask_defines(12),
             )
         )
         chunk.raw_data.extend(_PAGE_REGION)
@@ -84,7 +75,7 @@ def make_pmpzicbo_prefetch(test_data: TestData) -> list[TestChunk]:
             gen_prefetch,
             "cp_prefetch",
             extra_setup=_ENABLE_CBO,
-            napot_mask=_PAGE_MASK_DEFINES,
+            napot_mask=napot_mask_defines(12),
         )
     )
     chunk.raw_data.extend(_PAGE_REGION)

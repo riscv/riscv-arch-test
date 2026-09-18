@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 286
+#define SIGUPD_COUNT 288
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -1038,6 +1038,19 @@ Zfbfmin_fcvt_s_bf16_cg_cmp_fd_fs1_b31:
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, Zfbfmin_fcvt_s_bf16_cg_cmp_fd_fs1_b31, Zfbfmin_fcvt_s_bf16_cg_cmp_fd_fs1_b31_str)
 
 /////////////////////////////////
+// cp_csr_fflags_v
+/////////////////////////////////
+
+# Testcase cp_csr_fflags_v (fflags = 10000)
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f27) # load fs1: f27 = 0xdc57
+  fsflagsi 0b00000 # clear all fflags
+  csrsi fcsr, 0b10000 # set fflags
+Zfbfmin_fcvt_s_bf16_cg_cp_csr_fflags_v_b10000:
+  fcvt.s.bf16 f13, f27 # perform operation
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, Zfbfmin_fcvt_s_bf16_cg_cp_csr_fflags_v_b10000, Zfbfmin_fcvt_s_bf16_cg_cp_csr_fflags_v_b10000_str)
+
+/////////////////////////////////
 // cp_fs1_badNB_S_H
 /////////////////////////////////
 
@@ -1284,6 +1297,7 @@ RVTEST_DATA_BEGIN
 .word 0x396868c5
 .word 0x5faccf4b
 .word 0xa98b546b
+.word 0x079bdc57
 .word 0x00000000
 .word 0xfffe8000
 .word 0x7fff3c00
@@ -1424,20 +1438,21 @@ Zfbfmin_fcvt_s_bf16_cg_cmp_fd_fs1_b28_str: .string "\"test: 121; cg: Zfbfmin_fcv
 Zfbfmin_fcvt_s_bf16_cg_cmp_fd_fs1_b29_str: .string "\"test: 122; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cmp_fd_fs1; bin: b29\""
 Zfbfmin_fcvt_s_bf16_cg_cmp_fd_fs1_b30_str: .string "\"test: 123; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cmp_fd_fs1; bin: b30\""
 Zfbfmin_fcvt_s_bf16_cg_cmp_fd_fs1_b31_str: .string "\"test: 124; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cmp_fd_fs1; bin: b31\""
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0x0_str: .string "\"test: 125; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0x0\""
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0xfffe8000_str: .string "\"test: 126; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0xfffe8000\""
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0x7fff3c00_str: .string "\"test: 127; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0x7fff3c00\""
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0xbeefbc00_str: .string "\"test: 128; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0xbeefbc00\""
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0xfeff0400_str: .string "\"test: 129; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0xfeff0400\""
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0xfff8400_str: .string "\"test: 130; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0xfff8400\""
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0xefff7bff_str: .string "\"test: 131; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0xefff7bff\""
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0xc0defbff_str: .string "\"test: 132; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0xc0defbff\""
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0x4f1a7c00_str: .string "\"test: 133; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0x4f1a7c00\""
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0xffffc00_str: .string "\"test: 134; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0xffffc00\""
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0xffef7e00_str: .string "\"test: 135; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0xffef7e00\""
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0xfeef7fff_str: .string "\"test: 136; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0xfeef7fff\""
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0xa1b27c01_str: .string "\"test: 137; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0xa1b27c01\""
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0x4fd77dff_str: .string "\"test: 138; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0x4fd77dff\""
+Zfbfmin_fcvt_s_bf16_cg_cp_csr_fflags_v_b10000_str: .string "\"test: 125; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_csr_fflags_v; bin: b10000\""
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0x0_str: .string "\"test: 126; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0x0\""
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0xfffe8000_str: .string "\"test: 127; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0xfffe8000\""
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0x7fff3c00_str: .string "\"test: 128; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0x7fff3c00\""
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0xbeefbc00_str: .string "\"test: 129; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0xbeefbc00\""
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0xfeff0400_str: .string "\"test: 130; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0xfeff0400\""
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0xfff8400_str: .string "\"test: 131; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0xfff8400\""
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0xefff7bff_str: .string "\"test: 132; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0xefff7bff\""
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0xc0defbff_str: .string "\"test: 133; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0xc0defbff\""
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0x4f1a7c00_str: .string "\"test: 134; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0x4f1a7c00\""
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0xffffc00_str: .string "\"test: 135; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0xffffc00\""
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0xffef7e00_str: .string "\"test: 136; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0xffef7e00\""
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0xfeef7fff_str: .string "\"test: 137; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0xfeef7fff\""
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0xa1b27c01_str: .string "\"test: 138; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0xa1b27c01\""
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_badNB_S_H_b0x4fd77dff_str: .string "\"test: 139; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_badNB_S_H; bin: b0x4fd77dff\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

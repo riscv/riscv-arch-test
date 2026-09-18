@@ -39,7 +39,7 @@ repos:
   # Ruff Python linter
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: 321478e58f4938179c6b86e4ddfa923d1547a49b # frozen: v0.16.6
+    rev: e8f7d69b957a30acb2c875078d5fd012de24b64c # frozen: v0.16.7
     hooks:
       # Run the linter.
       - id: ruff-check
@@ -115,7 +115,7 @@ repos:
 
   # Validate Renovate configuration
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: c13d0969095f9fe07df5d8502df705a33e032b86 # frozen: 44.59.1
+    rev: b5bb9192f38158b3b06f0abe855a09fa929b263f # frozen: 44.67.1
     hooks:
       - id: renovate-config-validator
 

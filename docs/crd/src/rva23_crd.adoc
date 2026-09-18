@@ -28,18 +28,32 @@ a| * Do not test traps into M-mode except ecall from S-mode.
 | August 6, 2026
 | 0.3
 a| * Removed "custom M-mode"; made clarifications.
+| September 18, 2026
+| 0.4
+a| * Editorial and technical review.
 
 |===
+
+== Related Specifications
+
+* https://docs.riscv.org/reference/rva23/v1.0/[RVA23 Profile Specification] - Version 1.0
+* https://docs.riscv.org/reference/isa/unpriv/unpriv-index.html[Unprivileged ISA Specification] - Latest version TBD
+* https://docs.riscv.org/reference/isa/priv/priv-index.html[Privileged ISA Specification] - Privileged architecture version 1.13
+* https://github.com/riscv/riscv-arch-test/releases[Certification Test Plan (CTP)] - Latest version TBD
+* https://github.com/riscv/riscv-arch-test[RISC-V ACT Readme] - Latest version TBD
+* Customer Documentation - TBD
 
 == Introduction
 
 This document describes the test requirements for a processor to be eligible for a RVA23 certificate.
 
-RVA23 processor certification requires compliance with the https://riscv.github.io/riscv-isa-manual/snapshot/spec/#_rva23_profiles[RVA23S64 and RVA23U64 Profiles]. As described in these profile specifications,
+RVA23 processor certification requires compliance with the RVA23S64 and RVA23U64 Profiles.
+As described in these profile specifications,
 compliance requires that the RV64I base instruction set and all mandatory extensions of the profile must be
 implemented. Furthermore, any optional extensions as specified in the profile may be implemented. Any optional portions
 of the base ISA and these extensions may be implemented, but if they are
-implemented, they must be implemented in their entirety.
+implemented, they must be implemented in their entirety.  The base instruction set and extensions are
+defined in the Unprivileged and Privileged ISA specifications.
 
 There is no prohibition against implementing other RISC-V ratified base ISAs or
 extensions, custom extensions, or even non-conforming extensions as
@@ -58,46 +72,20 @@ run the appropriate https://github.com/riscv/riscv-arch-test[RISC-V ACTs] to hel
 Application-processor families, including RVA23, purposefully do not include a
 machine-mode (M-mode) profile as there is no
 intention that M-mode code be portable. Therefore, RVA23 Certification does
-not test M-mode instructions or CSRs. Any required interaction with M-mode is
-abstracted away by a Test Supervisor Binary Interface (T-SBI) and a Test
-Supervisor Execution Environment (T-SEE), which are analogous to the RISC-V
-Supervisor Binary Interface and OpenSBI software respectively;
-however, they are developed specifically for certification. The T-SEE is also
-responsible for invoking the implementation's
-boot code as well as setting up the initial M-mode-controlled environment for
-the certification tests. This includes putting the processor into an
-initial state.
+not test M-mode instructions or CSRs.
 
-All certification tests run under the T-SEE.
+RVA23 certification tests operate within a Test Supervisor Execution Environment (T-SEE) that consists of M-mode code including boot code and a machine-mode trap handler. Certification tests come with a reference T-SEE. Just like with OpenSBI, implementers may modify the reference to handle implementation-specific boot code or to accommodate non-portable M-mode unable to run the reference trap handler.
 
-As part of the certification test collateral, a reference implementation of
-the T-SEE is provided along with a full
-specification of the T-SBI. Just like with OpenSBI,
-it is up to the designer to modify the T-SEE, as necessary, for their
-implementation. The T-SBI specification is especially useful
-for those who have created an M-mode that differs substantially from M-mode 1.13
+The Test Supervisor Binary Interface (T-SBI) is a set of calls that allow the lower-privilege tests to request services from the T-SEE, such as accessing protected memory and modifying machine-mode CSRs.  For example, the T-SBI supports RVA23's requirements to make `ecall` to the SEE from S-mode and to provide a means to select PMLEN for Sspm.
+
+The T-SBI interface is especially useful
+for those who have created a customized M-mode that differs substantially from M-mode 1.13
 as defined in the RISC-V Privileged Architecture.
 
 When the T-SEE receives a trap to M-mode, it invokes the appropriate handler.
 When it is necessary to execute M-mode instructions or access an M-mode
 CSR in order to properly set up the environment for lower privilege tests, a
-T-SBI-defined call is made by placing commands in registers and performing an `ecall`.
-
-This `ecall`'s trap handler executes the
-necessary M-mode code needed to complete the requested action. One such need for a
-T-SBI call is necessary to fulfill a requirement of RVA23's defined Sspm
-extension which requires an execution environment to provide a means to select
-PMLEN. Another need is for the tests to be able to request that specific traps are
-delegated away from M-mode.
-
-NOTE: There is no requirement that any traps can be delegated. But if they can
-be, the T-SEE must provide a means to request that they are and a means to
-determine which requested traps have been delegated.
-
-=== Related Specifications
-
-* https://docs.riscv.org/reference/isa/unpriv/unpriv-index.html[Unprivileged ISA Specification] - Latest version
-* https://docs.riscv.org/reference/isa/priv/priv-index.html[Privileged ISA Specification] - Latest version
+T-SBI-defined call is made by placing commands in registers and performing an `ecall`, as specified in the Abstraction Layer section of the CTP.
 
 === M-Mode Trap Handler Requirements
 
@@ -109,21 +97,12 @@ and do not test M-mode interrupts (MEI/MTI/MSI).  Exceptions are:
 * Any trap cause that should be handled invisibly by the firmware must also not be delegated.
 * Hardware might not support delegating certain traps to S-mode.
 
-Invisible traps are traps to emulate a function in firmware that is not implemented in hardware.  An example of an invisible trap is to fix a `fdiv` instruction that malfunctions for certain input values.
-If a system requires invisible traps to produce correct RVA23 behavior, the designer must provide custom firmware to handle these traps, and the certification tests rely on this firmware.  For example, `fdiv` would throw an illegal instruction exception, and this exception would not be delegated to S-mode.  The designer would have to provide a M-mode trap handler that inspects illegal instruction exceptions and determines if the instruction is an `fdiv`.  If so, it invisibly fixes any problem and returns.  Otherwise, the M-mode handler places trap information into `sstatus`,`sepc`/`scause`/`stval` and invokes the S-mode trap handler to handle other illegal instructions.
-
-The M-mode trap handler performs the following functions:
-
-. Check if the trap is a T-SBI call and if so, perform the requested T-SBI function and return from the `ecall`.
-. Call custom firmware, if any exists, to handle invisible traps.  The custom firmware will save registers relative to `sp`, inspect machine state to see if the trap is an invisible trap, and if so, perform the function, clean up, and return to the appropriate place (perhaps the instruction after the one that trapped, or an S-mode handler if the custom firmware expects S-mode to receive the trap next).  If the trap is not an invisible trap, the custom firmware will return to the next step of the M-mode trap handler.
-. For traps that are not delegated in hardware but typically end up in an S-mode
-handler (sometimes after some checks in the M-mode handler), set up `sstatus`, `sepc`, `scause`, `stval` with values coming from the
-machine-mode trap CSRs, and return to the S-mode trap handler to effectively
-delegate to S-mode.
+The M-mode trap handler requirements to support invisible traps and undelegable traps are defined in the Abstraction Layer section of the CTP.
 
 === T-SBI Control of M-mode CSRs
-The T-SBI specifies calls that enable the RISC-V certification test
-environment to achieve the same effect as accessing any M-mode CSR — as
+
+The T-SBI specifies calls that enable the RISC-V T-SEE
+to achieve the same effect as accessing any M-mode CSR — as
 defined in the M-mode ISA 1.13 specification — that can affect the behavior
 of lower-privilege modes or provide essential information, even if the DUT does not implement that CSR.
 
@@ -134,22 +113,18 @@ are:
 [cols="1,5"]
 |===
 | CSR | Notes
-| `mstatus` | TSR, TW, TVM
+| `mstatus` | TW
 | `mcounteren` | All fields not hardwired to 0 must be controllable to allow testing of counter access from lower privilege modes.
 | `mcountinhibit` | All fields not hardwired to 0 must be controllable to allow testing of counter behavior from lower privilege modes.
 | `mip` | Interrupts are controlled with RVMODEL macros.  SEIP, STIP, and SSIP may be controlled with T-SBI accesses to `mip`.
 | `menvcfg` | STCE, PBMTE, ADUE, PMM, CBZE, CBCFE, CBIE, SSE, LPE may be
 controllable to allow testing of the behavior of lower privilege modes with
 these features enabled and disabled. Note that ADUE may be read-only zero
-because Svadu is optional, and that PMM may only be able to hold PMLEN=0 and 7
+because Svadu is optional, and that PMM may only be able to hold at least PMLEN=0 and 7
 per the RVA23 profile. CBIE must be able to hold 00 and at least one of 01
 and/or 11. CDE, DTE are out of scope because they do not relate to RVA23 features.
-| `mhpmevent*` | May need to be writable to trigger Sscofpmf LCOFI
-| `mhpmcounter*` | May need to be writable to trigger Sscofpmf LCOFI
-
-All
-writable fields must be controllable to allow testing of the behavior of lower
-privilege modes when certain features are disabled.
+| `mhpmevent*` | Must be writable to trigger Sscofpmf LCOFI
+| `mhpmcounter*` | Must be writable to trigger Sscofpmf LCOFI
 | `mseccfg` | SSEED and USEED must be controllable if Zkr is supported;
 otherwise they are read-only zero.  PMM, MLPE, RLB, MMWP, MML are out of scope
  because they do not relate to RVA23 features.
@@ -162,7 +137,7 @@ fields are out of scope because they do not relate to RVA23 features.
 | `mtime` | Must be readable to find the current time to set timer interrupts.
 |===
 
-The Certification Test Environment does not need to access the equivalent of the following M-mode CSRs/fields:
+The T-SEE does not need to access the equivalent of the following M-mode CSRs/fields:
 
 [options=header]
 [cols="1,5"]
@@ -173,7 +148,7 @@ The Certification Test Environment does not need to access the equivalent of the
 GVA is accessible from `hstatus` and not tested from `mstatus`.  MPV does not
 affect the behavior of lower privilege modes and therefore does not need to be
 dynamically changed. Additionally the fields XS, SDT, MBE, SBE, UBE, SXL, and UXL
-are out of scope for RVA23.
+are out of scope for RVA23.  *** TSR, TVM
 | `mie` | SEIE, STIE, SSIE, LCOFIE, and SGEIE are controlled from `sie` or `hie`.
 | `misa` | Not tested because required RVA23 features are not turned off during testing.
 | `mvendorid` | Does not affect the behavior of lower privilege modes.
@@ -191,15 +166,32 @@ are out of scope for RVA23.
 | `minstret` | Not tested.
 | `mtimecmp` | MTI is not tested.
 | `msip` | MSI is not tested.
-| PMP CSRs | PMP restrictions on access are indistinguishable below M-mode from a PMA that imposes similar restrictions.
+| PMP CSRs | Boot code must configure PMP to provide access to main memory.
+PMP restrictions on access are indistinguishable below M-mode from a PMA that imposes similar restrictions.
 |===
 
 === Interrupts
-All supervisor interrupts (SEI, STI, SSI, and LCOFI) are tested.
-Hypervisor interrupts VSEI, VSTI, VSSI, and SGEI are also tested.
-Machine interrupts are not tested because they are not in the RVA23 profile.
 
-LCOFI is mandatory because it is part of the Sscofpmf extension, which is required by the profile. STI and VSTI are mandatory because Sstc is a required part of the profile. The other supervisor interrupts (SEI, SSI) are individually optional per the supervisor specification: "Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented."  SGEI is optional because GEILEN can be 0.  The other hypervisor interrupts (VSEI, VSSI) are vague in the specification but are treated as optional because their supervisor counterparts are optional.
+A design must implement all of the following mandatory interrupts to be eligible for RVA23 certification.  Optional
+interrupts may be implemented, and must conform to the specification if they are implemented.  Machine-mode
+interrupts are not in the profile and are not tested.
+
+[options=header]
+[cols="1,5"]
+|===
+| Interrupt | Tested | Mandatory/Optional | Basis
+| SEI | Yes | Optional | "Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented."
+| STI | Yes | Mandatory | Sstc is a mandatory part of the profile.
+| SSI | Yes | Optional | "Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented."
+| LCOFI | Yes | Mandatory | Sscofpmf is a mandatory part of the profile.
+| VSEI | Yes | Optional | Same as SEI
+| VSTI | Yes | Mandatory | Sstc is a mandatory part of the profile.
+| VSSI | Yes | Optional | Same as SSI
+| SGEI | Yes | Optional | GEILEN can be 0, in which case SGEI is not implemented.
+| MEI | No | No | Machine-mode interrupts are not in the RVA23 profile.
+| MTI | No | No | Machine-mode interrupts are not in the RVA23 profile.
+| MSI | No | No | Machine-mode interrupts are not in the RVA23 profile.
+|===
 
 === Developer Requirements
 

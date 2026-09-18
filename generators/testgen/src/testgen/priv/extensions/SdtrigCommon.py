@@ -60,6 +60,9 @@ UDB_DEFINES = [
     "#define UDB_SDTRIG_U_AVAILABLE",
     "#define UDB_SDTRIG_VS_AVAILABLE",
     "#define UDB_SDTRIG_VU_AVAILABLE",
+    # ICOUNT params
+    *[f"#define UDB_ICOUNT_TRIG{n}_AVAILABLE" for n in range(UDB_NUM_TRIGGERS)],
+    "//#define UDB_ICOUNT_HARDWIRED_1",
     # Sims that do not follow Suggested Trigger Timing in spec or fires several cycles after will mismatch MEPC in trap handler
     "#define SDTRIG_IMPRECISE_XEPC",
 ]
@@ -87,6 +90,28 @@ INSTR_IFDEFS = {
     "lh": [],
     "lhu": [],
     "lw": [],
+    "lr.w": [],
+    "sc.w": [],
+    "amoswap.w": [],
+    "amoadd.w": [],
+    "amoand.w": [],
+    "amoor.w": [],
+    "amoxor.w": [],
+    "amomax.w": [],
+    "amomaxu.w": [],
+    "amomin.w": [],
+    "amominu.w": [],
+    "lr.d": ["#if __riscv_xlen == 64"],
+    "sc.d": ["#if __riscv_xlen == 64"],
+    "amoswap.d": ["#if __riscv_xlen == 64"],
+    "amoadd.d": ["#if __riscv_xlen == 64"],
+    "amoand.d": ["#if __riscv_xlen == 64"],
+    "amoor.d": ["#if __riscv_xlen == 64"],
+    "amoxor.d": ["#if __riscv_xlen == 64"],
+    "amomax.d": ["#if __riscv_xlen == 64"],
+    "amomaxu.d": ["#if __riscv_xlen == 64"],
+    "amomin.d": ["#if __riscv_xlen == 64"],
+    "amominu.d": ["#if __riscv_xlen == 64"],
     "sd": ["#if __riscv_xlen == 64"],
     "lwu": ["#if __riscv_xlen == 64"],
     "ld": ["#if __riscv_xlen == 64"],
@@ -118,6 +143,18 @@ INSTR_IFDEFS = {
     "c.fsdsp": ["#ifdef ZCD_SUPPORTED"],
     "c.fldsp": ["#ifdef ZCD_SUPPORTED"],
 }
+
+ZAAMO_OPS = (
+    "amoswap",
+    "amoadd",
+    "amoand",
+    "amoor",
+    "amoxor",
+    "amomax",
+    "amomaxu",
+    "amomin",
+    "amominu",
+)
 
 
 def _add_tc(test_data: TestData, binname: str, coverpoint: str, covergroup: str) -> str:
@@ -555,13 +592,19 @@ def _generate_native_triggers_tests(test_data: TestData, mode: str) -> list[Test
 def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate A-extension load/store/AMO matching tests."""
     covergroup = f"Sdtrig{mode}_a_cg"
+    seed(reproducible_hash(covergroup))
     tc = test_data.begin_test_chunk("AExt")
     lines: list[str] = tc.code
 
     # setup registers
-    sp_reg, addr_reg, data_reg, temp_reg = test_data.int_regs.get_registers(
+    dest_reg, addr_reg, data_reg, temp_reg = test_data.int_regs.get_registers(
         4, exclude_regs=[2], reg_range=list(range(8, 16))
     )
+    lines.extend(_global_ie(mode, True))
+
+    # both halves nonzero so the value stays distinct from the tdata2=0 case once LI trims it to XLEN
+    dataval = random_int(32, signed=False, nonzero=True) << 32 | random_int(32, signed=False, nonzero=True)
+    perms = (0b100, 0b010, 0b001)  # exec / store / load
 
     ######################################
     coverpoint = "cp_sdtrig_lrsc_addr"
@@ -570,37 +613,46 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines.append(
         comment_banner(
             coverpoint,
-            "mcontrol6 address match on lr/sc access address",
+            "lr is a load, sc is a store: breakpoint when the access address matches tdata2",
         )
     )
-    # for trig_num in range(UDB_NUM_TRIGGERS):
-    #     for tdata2 in ("scratch", 0):
-    #         for perm in range(4):
-    #             binname = f"trig_num_{trig_num}_tdata2_{tdata2}_perm_{perm:03b}"
-    #             lines.extend(
-    #                 [
-    #                     _add_tc(test_data, binname, coverpoint, covergroup),
-    #                     f"LA(x{addr_reg}, scratch) # x{addr_reg} = &scratch",
-    #                     f"LI(x{data_reg}, {random_int(32, signed=False)})",
-    #                     f"sw x{data_reg}, 0(x{addr_reg})",
-    #                     *_config_mcontrol6(temp_reg, trig_num, tdata2, mode, xsl=perm, select=0),
-
-    #                     *_arch_guard(f"lr.w x{data_reg}, (x{addr_reg}) # fire if addr==tdata2 and xsl has load bit", ["zalrsc"]),
-    #                     "nop # spacer",
-    #                     *_arch_guard(f"sc.w x{temp_reg}, x{data_reg}, (x{addr_reg}) # fire if addr==tdata2 and xsl has store bit", ["zalrsc"]),
-    #                     "nop # spacer",
-
-    #                     "#if __riscv_xlen == 64",
-    #                     *_arch_guard(f"lr.d x{data_reg}, (x{addr_reg}) # fire if addr==tdata2 and xsl has load bit", ["zalrsc"]),
-    #                     "nop # spacer",
-    #                     *_arch_guard(f"sc.d x{temp_reg}, x{data_reg}, (x{addr_reg}) # fire if addr==tdata2 and xsl has store bit", ["zalrsc"]),
-    #                     "nop # spacer",
-    #                     "#endif",
-
-    #                     *_disable_trigger(temp_reg, trig_num, mode)
-    #                 ]
-    #             )
-    lines.append("#endif")
+    for trig_num in range(UDB_NUM_TRIGGERS):
+        lines.append(f"\n#ifdef UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num}")
+        for tdata2 in ("scratch", 0):
+            for perm in perms:  # perm_xsl
+                lines.extend(_xsl_ifdefs(perm))
+                for width in ("w", "d"):
+                    lines.extend(_ifdef_guard(f"lr.{width}"))
+                    binname = f"trig_num_{trig_num}_td2_{tdata2}_lr_{width}_perm_{perm:03b}"
+                    lines.extend(
+                        [
+                            _add_tc(test_data, binname, coverpoint, covergroup),
+                            f"LA(x{addr_reg}, scratch) # access address",
+                            _load_reg(data_reg, dataval),
+                            *_config_mcontrol6(temp_reg, trig_num, tdata2, mode, xsl=perm, select=0),
+                            *_arch_guard(
+                                f"lr.{width} x{dest_reg}, (x{addr_reg}) # load, fires on address match",
+                                ["zalrsc"],
+                            ),
+                            "nop # landing pad",
+                        ]
+                    )
+                    binname = f"trig_num_{trig_num}_td2_{tdata2}_sc_{width}_perm_{perm:03b}"
+                    lines.extend(
+                        [
+                            _add_tc(test_data, binname, coverpoint, covergroup),
+                            *_arch_guard(
+                                f"sc.{width} x{temp_reg}, x{data_reg}, (x{addr_reg}) # store, fires on address match",
+                                ["zalrsc"],
+                            ),
+                            "nop # landing pad",
+                        ]
+                    )
+                    lines.extend(_ifdef_guard(f"lr.{width}", closing=True))
+                lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_AVAILABLE"] * len(_xsl_ifdefs(perm)))
+        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
+        lines.append(f"#endif // UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num}")
+    lines.append("#endif // ZALRSC_SUPPORTED")
 
     ######################################
     coverpoint = "cp_sdtrig_lrsc_data"
@@ -609,20 +661,54 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines.append(
         comment_banner(
             coverpoint,
-            "mcontrol6 data match on lr/sc value",
+            "lr is a load, sc is a store: breakpoint when the accessed value matches tdata2",
         )
     )
+    lines.extend(
+        [
+            f"LA(x{addr_reg}, scratch) # access address",
+            _load_reg(data_reg, dataval),
+            f"SREG x{data_reg}, 0(x{addr_reg}) # seed the watched value, no trigger armed yet",
+        ]
+    )
     for trig_num in range(UDB_NUM_TRIGGERS):
-        for addrval in ("marker", "zero"):
-            for insn in ("lr_w", "sc_w", "lr_d", "sc_d"):
-                for perm in range(4):
-                    binname = f"trig_num_{trig_num}_data_{addrval}_{insn}_perm_{perm:03b}"
+        lines.append(f"\n#ifdef UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num}")
+        for td2_name, td2_base in (("dataval", dataval), ("zero", 0)):
+            for perm in perms:  # perm_xsl
+                lines.extend(_xsl_ifdefs(perm))
+                for width in ("w", "d"):
+                    tdata2 = td2_base & 0xFFFFFFFF if width == "w" else td2_base
+                    lines.extend(_ifdef_guard(f"lr.{width}"))
+                    binname = f"trig_num_{trig_num}_td2_{td2_name}_lr_{width}_perm_{perm:03b}"
                     lines.extend(
                         [
                             _add_tc(test_data, binname, coverpoint, covergroup),
+                            f"LA(x{addr_reg}, scratch) # access address",
+                            _load_reg(data_reg, dataval),
+                            *_config_mcontrol6(temp_reg, trig_num, tdata2, mode, xsl=perm, select=1),
+                            *_arch_guard(
+                                f"lr.{width} x{dest_reg}, (x{addr_reg}) # load, fires on data match",
+                                ["zalrsc"],
+                            ),
+                            "nop # landing pad",
                         ]
                     )
-    lines.append("#endif")
+                    binname = f"trig_num_{trig_num}_td2_{td2_name}_sc_{width}_perm_{perm:03b}"
+                    lines.extend(
+                        [
+                            _add_tc(test_data, binname, coverpoint, covergroup),
+                            *_arch_guard(
+                                f"sc.{width} x{temp_reg}, x{data_reg}, (x{addr_reg}) # store, fires on data match",
+                                ["zalrsc"],
+                            ),
+                            "nop # landing pad",
+                        ]
+                    )
+                    lines.extend(_ifdef_guard(f"lr.{width}", closing=True))
+                lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_AVAILABLE"] * len(_xsl_ifdefs(perm)))
+        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
+        lines.append(f"#endif // UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num}")
+    lines.append("#endif // ZALRSC_SUPPORTED")
 
     ######################################
     coverpoint = "cp_sdtrig_amo"
@@ -631,22 +717,39 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines.append(
         comment_banner(
             coverpoint,
-            "mcontrol6 address match on AMO read and write portions",
+            "amo reads then writes: breakpoint when either half's address matches tdata2",
         )
     )
     for trig_num in range(UDB_NUM_TRIGGERS):
-        for addrval in ("marker", "zero"):
-            for insn in ("amoswap_w", "amoswap_d"):
-                for perm in range(4):
-                    binname = f"trig_num_{trig_num}_addr_{addrval}_{insn}_perm_{perm:03b}"
-                    lines.extend(
-                        [
-                            _add_tc(test_data, binname, coverpoint, covergroup),
-                        ]
-                    )
-    lines.append("#endif")
+        lines.append(f"\n#ifdef UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num}")
+        for tdata2 in ("scratch", 0):
+            for perm in perms:  # perm_xsl
+                lines.extend(_xsl_ifdefs(perm))
+                for width in ("w", "d"):
+                    for op in ZAAMO_OPS:
+                        insn = f"{op}.{width}"
+                        lines.extend(_ifdef_guard(insn))
+                        binname = f"trig_num_{trig_num}_td2_{tdata2}_{op}_{width}_perm_{perm:03b}"
+                        lines.extend(
+                            [
+                                _add_tc(test_data, binname, coverpoint, covergroup),
+                                f"LA(x{addr_reg}, scratch) # access address",
+                                _load_reg(data_reg, dataval),
+                                *_config_mcontrol6(temp_reg, trig_num, tdata2, mode, xsl=perm, select=0),
+                                *_arch_guard(
+                                    f"{insn} x{dest_reg}, x{data_reg}, (x{addr_reg}) # load and store, fires on address match",
+                                    ["zaamo"],
+                                ),
+                                "nop # landing pad",
+                            ]
+                        )
+                        lines.extend(_ifdef_guard(insn, closing=True))
+                lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_AVAILABLE"] * len(_xsl_ifdefs(perm)))
+        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
+        lines.append(f"#endif // UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num}")
+    lines.append("#endif // ZAAMO_SUPPORTED")
 
-    test_data.int_regs.return_registers([sp_reg, addr_reg, data_reg, temp_reg])
+    test_data.int_regs.return_registers([dest_reg, addr_reg, data_reg, temp_reg])
 
     return [test_data.end_test_chunk()]
 
@@ -1552,7 +1655,8 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
 
 def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate icount instruction-count trigger tests."""
-    # covergroup = f"Sdtrig{mode}_icount_cg"
+    covergroup = f"Sdtrig{mode}_icount_cg"
+    seed(reproducible_hash(covergroup))
     tc = test_data.begin_test_chunk("Icount")
     lines: list[str] = tc.code
 
@@ -1560,6 +1664,7 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     sp_reg, addr_reg, data_reg, temp_reg = test_data.int_regs.get_registers(
         4, exclude_regs=[2], reg_range=list(range(8, 16))
     )  # exclude a0, a1 because they are used in SBI
+    lines.extend(_global_ie(mode, True))
 
     ######################################
     coverpoint = "cp_sdtrig_icount_hardwired"
@@ -1570,22 +1675,25 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             "icount priv/action hard-wired field behavior",
         )
     )
-    # lines.append("#ifdef UDB_ICOUNT_HARDWIRED_1")
-    # for trig_num in range(UDB_NUM_TRIGGERS):
-    #     lines.append(f"#ifdef UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
-    #     binname = f"trig_num_{trig_num}"
-    #     lines.extend(
-    #         [
-    #             _add_tc(test_data, binname, coverpoint, covergroup),
-    #             *_config_icount(temp_reg, trig_num, 1, mode, privbits=0b11111),
-    #             "nop # decrement count",
-    #             _csr_access(f"csrr x{data_reg}, tdata1 # read back hardwired fields", mode),
-    #             *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "icount hit bit (bit 24)"),
-    #             *_disable_trigger(temp_reg, trig_num, mode)
-    #         ]
-    #     )
-    #     lines.append(f"#endif // UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
-    # lines.append("#endif")
+
+    lines.append("#ifdef UDB_ICOUNT_HARDWIRED_1")
+    for trig_num in range(UDB_NUM_TRIGGERS):
+        lines.append(f"#ifdef UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
+        binname = f"trig_num_{trig_num}"
+        lines.extend(
+            [
+                _add_tc(test_data, binname, coverpoint, covergroup),
+                *_config_icount(temp_reg, trig_num, 1, mode, privbits=MODE_PRIVBIT[mode]),
+                "nop # decrement count, pending becomes set",
+                "nop # fire trigger",
+                "nop # landing pad",
+                _csr_access(f"csrr x{data_reg}, tdata1 # read back hardwired fields", mode),
+                *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "icount hit bit (bit 24)"),
+                *_disable_trigger(temp_reg, trig_num, mode),
+            ]
+        )
+        lines.append(f"#endif // UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
+    lines.append("#endif")
 
     ######################################
     coverpoint = "cp_sdtrig_icount_instr"
@@ -1596,50 +1704,74 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             "icount fires after count instructions",
         )
     )
-    # for trig_num in range(UDB_NUM_TRIGGERS):
-    #     lines.append(f"#ifdef UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
-    #     for priv_en in (0, 1):  # trigger disabled/enabled in the current mode
-    #         privbits = MODE_PRIVBIT[mode] if priv_en else 0
-    #         binname = f"trig_num_{trig_num}_priv_{priv_en}"
-    #         lines.extend(
-    #             [
-    #                 _add_tc(test_data, binname, coverpoint, covergroup),
-    #                 *_config_icount(temp_reg, trig_num, 9, mode, privbits=privbits),
-    #                 *["nop # decrement count"] * 9,
-    #                 "nop # spacer",
-    #                 _csr_access(f"csrr x{data_reg}, tdata1 # read back hardwired fields", mode),
-    #                 *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "icount hit bit (bit 24)"),
-    #                 *_disable_trigger(temp_reg, trig_num, mode),
-    #             ]
-    #         )
-    #     lines.append(f"#endif // UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
+    lines.append("#ifndef UDB_ICOUNT_HARDWIRED_1")
+    for trig_num in range(UDB_NUM_TRIGGERS):
+        lines.append(f"#ifdef UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
+        for priv_en in (0, 1):  # test enabled/not enabled in current mode
+            privbits = MODE_PRIVBIT[mode] if priv_en else 0
+            binname = f"trig_num_{trig_num}_priv_{priv_en}"
+            lines.extend(
+                [
+                    _add_tc(test_data, binname, coverpoint, covergroup),
+                    *_config_icount(temp_reg, trig_num, 9, mode, privbits=privbits),
+                    *["nop # decrement count"] * 9,
+                    "nop # fire trigger",
+                    "nop # landing pad",
+                    _csr_access(f"csrr x{data_reg}, tdata1 # read back count/pending after firing", mode),
+                    *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "icount hit bit (bit 24)"),
+                    *_disable_trigger(temp_reg, trig_num, mode),
+                ]
+            )
+        lines.append(f"#endif // UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
+    lines.append("#endif // !UDB_ICOUNT_HARDWIRED_1")
 
-    ######################################
-    coverpoint = "cp_sdtrig_icount_trap"
-    ######################################
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "icount count decrement across a trap",
-        )
-    )
-    # for trig_num in range(UDB_NUM_TRIGGERS):
-    #     lines.append(f"#ifdef UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
-    #     for priv_en in (0, 1):  # trigger disabled/enabled in the current mode
-    #         privbits = MODE_PRIVBIT[mode] if priv_en else 0
-    #         binname = f"trig_num_{trig_num}_priv_{priv_en}"
-    #         lines.extend(
-    #             [
-    #                 _add_tc(test_data, binname, coverpoint, covergroup),
-    #                 *_config_icount(temp_reg, trig_num, 1, mode, privbits=privbits),
-    #                 ".word 0x00000000",
-    #                 "nop # spacer",
-    #                 _csr_access(f"csrr x{data_reg}, tdata1 # read back hardwired fields", mode),
-    #                 *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "icount hit bit (bit 24)"),
-    #                 *_disable_trigger(temp_reg, trig_num, mode),
-    #             ]
-    #         )
-    #     lines.append(f"#endif // UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
+    # ######################################
+    # coverpoint = "cp_sdtrig_icount_trap"
+    # ######################################
+    # lines.append(
+    #     comment_banner(
+    #         coverpoint,
+    #         "icount count decrement across a trap",
+    #     )
+    # )
+    # if mode != "U":
+    #     # U traps into S (medeleg delegates illegal instruction), where the trigger is not enabled.
+    #     # Sm traps M->M and S traps S->S, both landing in a mode where the trigger is still enabled,
+    #     # so the breakpoint would fire inside a trap handler that is not reentrant.
+    #     lines.extend(
+    #         [
+    #             f"# Not generated for {mode}: the trap is handled in a mode where the trigger is also",
+    #             "# enabled, so the breakpoint would fire inside a trap handler that is not reentrant.",
+    #         ]
+    #     )
+    # else:
+    #     for trig_num in range(UDB_NUM_TRIGGERS):
+    #         lines.append(f"#ifdef UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
+    #         for count in (1, 2):  # matches still owed after the trap fires
+    #             if count > 1:
+    #                 lines.append("#ifndef UDB_ICOUNT_HARDWIRED_1")
+    #             for priv_en in (0, 1):  # trigger disabled/enabled in the current mode
+    #                 privbits = MODE_PRIVBIT[mode] if priv_en else 0
+    #                 binname = f"trig_num_{trig_num}_count_{count}_priv_{priv_en}"
+    #                 lines.extend(
+    #                     [
+    #                         _add_tc(test_data, binname, coverpoint, covergroup),
+    #                         f"li x{data_reg}, 0 # marker sum, zeroed before arming so it costs no matches",
+    #                         *_config_icount(temp_reg, trig_num, count, mode, privbits=privbits),
+    #                         f"csrr x{temp_reg}, 0x300 # illegal from {mode}: the trap matches, the instruction never retires",
+    #                         f"addi x{data_reg}, x{data_reg}, 1 # the marker the trigger fires on is skipped",
+    #                         f"addi x{data_reg}, x{data_reg}, 2 # so the sum names the fire position",
+    #                         f"addi x{data_reg}, x{data_reg}, 4 # 7 never fired, 6 fired on the 1st, 5 on the 2nd, 3 on the 3rd",
+    #                         "nop # landing pad",
+    #                         write_sigupd(data_reg, test_data),
+    #                         _csr_access(f"csrr x{data_reg}, tdata1 # count and pending after the trap", mode),
+    #                         *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "icount hit bit (bit 24)"),
+    #                         *_disable_trigger(temp_reg, trig_num, mode),
+    #                     ]
+    #                 )
+    #             if count > 1:
+    #                 lines.append("#endif // !UDB_ICOUNT_HARDWIRED_1")
+    #         lines.append(f"#endif // UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
 
     ######################################
     coverpoint = "cp_sdtrig_icount_eq0"
@@ -1650,22 +1782,27 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             "icount pending bit when count reaches 0",
         )
     )
-    # for trig_num in range(UDB_NUM_TRIGGERS):
-    #     lines.append(f"#ifdef UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
-    #     for pending in (0, 1):  # tdata1[8]
-    #         binname = f"trig_num_{trig_num}_pending_{pending}"
-    #         lines.extend(
-    #             [
-    #                 _add_tc(test_data, binname, coverpoint, covergroup),
-    #                 *_config_icount(temp_reg, trig_num, 0, mode, pending=pending),
-    #                 "nop # Fires trigger when pending = 1",
-    #                 *["nop # count must stay zero"] * 9,
-    #                 _csr_access(f"csrr x{data_reg}, tdata1 # read back hardwired fields", mode),
-    #                 *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "icount hit bit (bit 24)"),
-    #                 *_disable_trigger(temp_reg, trig_num, mode),
-    #             ]
-    #         )
-    #     lines.append(f"#endif // UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
+    lines.append("#ifndef UDB_ICOUNT_HARDWIRED_1")
+    for trig_num in range(UDB_NUM_TRIGGERS):
+        lines.append(f"#ifdef UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
+        for pending in (0, 1):  # tdata1[8]
+            binname = f"trig_num_{trig_num}_pending_{pending}"
+            lines.extend(
+                [
+                    _add_tc(test_data, binname, coverpoint, covergroup),
+                    f"li x{data_reg}, 0 # marker, zeroed before arming so it costs no matches",
+                    *_config_icount(temp_reg, trig_num, 0, mode, pending=pending),
+                    f"addi x{data_reg}, x{data_reg}, 1 # pending=1 fires before this and skips it, so 0; pending=0 leaves 1",
+                    "nop # landing pad",
+                    write_sigupd(data_reg, test_data),
+                    *["nop # count stays 0, so nothing matches again"] * 8,
+                    _csr_access(f"csrr x{data_reg}, tdata1 # count still 0, pending cleared", mode),
+                    *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "icount hit bit (bit 24)"),
+                    *_disable_trigger(temp_reg, trig_num, mode),
+                ]
+            )
+        lines.append(f"#endif // UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
+    lines.append("#endif // !UDB_ICOUNT_HARDWIRED_1")
 
     test_data.int_regs.return_registers([sp_reg, addr_reg, data_reg, temp_reg])
     return [test_data.end_test_chunk()]
@@ -1839,7 +1976,7 @@ def generate_sdtrig_suite(test_data: TestData, mode: str) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     test_chunks.extend(_generate_access_tests(test_data, mode))
     test_chunks.extend(_generate_native_triggers_tests(test_data, mode))
-    # test_chunks.extend(_generate_a_tests(test_data, mode))
+    test_chunks.extend(_generate_a_tests(test_data, mode))
     # test_chunks.extend(_generate_combined_accesses_tests(test_data, mode))
     # test_chunks.extend(_generate_cache_operations_tests(test_data, mode))
     # test_chunks.extend(_generate_address_matches_tests(test_data, mode))

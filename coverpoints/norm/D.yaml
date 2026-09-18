@@ -8,7 +8,7 @@ normative_rule_definitions:
   - name: fsd_bits_maintained
     coverpoint: ["TODO"]
   - name: fld_bits_maintained
-    coverpoint: ["TODO"]
+    coverpoint: ["D_fld_cg/cp_fd_edges_D"]
   - name: fmv-x-d_op_bits_preserved
     coverpoint: [""]
   - name: fmv-d-x_op_bits_preserved

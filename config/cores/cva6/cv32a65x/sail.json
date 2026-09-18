@@ -1,5 +1,4 @@
 {
-  // TODO: This config needs to be run against CVA6 (cv32a65x) to confirm most of the settings
   "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.14.1/sail_riscv_config_schema.json",
   "base": {
     "xlen": 32,
@@ -8,8 +7,7 @@
     "writable_fiom": true,
     "writable_hpm_counters": {
       "len": 32,
-      // Only HPM counter 1 and 2 are active
-      "value": "0x0000_0005"
+      "value": "0x0000_0000"
     },
     "scounteren_writable_bits": {
       "len": 32,
@@ -26,7 +24,7 @@
     "mtvec": {
       "direct": {
         "supported": true,
-        "base_alignment": 2
+        "base_alignment": 8
       },
       "vectored": {
         "supported": false,
@@ -105,7 +103,7 @@
     "vmidlen": 7,
     "pmp": {
       "grain": 0,
-      // CV32A65X Configuration doesn't support PMP, so `count` and `usable_count` are both 0.
+      // UDB yaml uses 0 (no PMPSm in this config). RTL has NrPMPEntries=8, PMPNapotEn=0.
       "count": 0,
       "usable_count": 0,
       "tor_supported": false,
@@ -318,7 +316,7 @@
     },
     "interrupts": {
       "machine": {
-        "software": { "supported": true },
+        "software": { "supported": false },
         "external": { "supported": true },
         "timer": { "supported": true }
       }
@@ -329,8 +327,8 @@
       "size": 786432
     },
     "simple_interrupt_generator": {
-      "supported": false,
-      "base": 0
+      "supported": true,
+      "base": 201326592
     },
     "clock_frequency": 1000000000,
     "instructions_per_tick": 2,
@@ -458,7 +456,7 @@
       "supported": true
     },
     "Zifencei": {
-      "supported": false
+      "supported": true
     },
     "Zihintntl": {
       "supported": false

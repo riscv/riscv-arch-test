@@ -147,8 +147,9 @@ The T-SEE does not need to access the equivalent of the following M-mode CSRs/fi
 `sstatus` and should not be tested through `mstatus` for RVA23 certification.
 GVA is accessible from `hstatus` and not tested from `mstatus`.  MPV does not
 affect the behavior of lower privilege modes and therefore does not need to be
-dynamically changed. Additionally the fields XS, SDT, MBE, SBE, UBE, SXL, and UXL
-are out of scope for RVA23.  *** TSR, TVM
+dynamically changed. XS, SDT, MBE, SBE, UBE, SXL, and UXL
+are out of scope for RVA23.  TSR and TVM need to trap into M-mode to serve much
+purpose.
 | `mie` | SEIE, STIE, SSIE, LCOFIE, and SGEIE are controlled from `sie` or `hie`.
 | `misa` | Not tested because required RVA23 features are not turned off during testing.
 | `mvendorid` | Does not affect the behavior of lower privilege modes.

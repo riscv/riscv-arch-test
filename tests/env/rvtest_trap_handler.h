@@ -218,15 +218,26 @@
 
 #define TSBI_RESERVED_RET   (-1)                 // return value for unrecognized operations
 
-// SDTRIG trigger-breakpoint EPC handling.
-// a1 is never a handler temporary and is not restored by resto_Xrtn, so it
-// survives untouched from the point the test arms it to the point the
-// handler consumes it (one-shot -- consumed on the very next breakpoint).
-#define SDTRIG_BP_NONE  0   // default / real ebreak: handle as an ordinary breakpoint
-#define SDTRIG_BP_SKIP  1   // armed exception is non-fetch: xEPC is a valid, fetchable
-                            // instruction -- only skip the word-2 (xEPC) self-check
-#define SDTRIG_BP_FETCH 2   // armed exception is fetch-type (iaf/ipf/misaligned-fetch):
-                            // xEPC is not fetchable -- resume at ra, skip the probe entirely
+//==============================================================================
+// SDTRIG TRIGGER-BREAKPOINT CONTRACT (a1)
+//
+// A Sdtrig trigger (etrigger or itrigger) with action=0 REPLACES the original
+// exception with a breakpoint (xcause=3, xtval=0), while xEPC is left wherever
+// the original exception left it. The handler's fetch-fault case (resume at
+// ra instead of probing *xEPC) is selected by xcause, so the trigger erases
+// the only clue it had: a trigger breakpoint on a fetch-type cause leaves
+// xEPC unfetchable, and the normal width probe (lhu 0(xEPC)) would fault
+// inside the handler.
+//
+// The test knows which exception it is about to raise, so it leaves a1 as a
+// note for the handler: SKIP (xEPC is fine, just don't record it) or FETCH
+// (xEPC is garbage, resume at ra). The handler CONSUMES the note (a1 = NONE
+// on return), so it applies to the very next breakpoint only -- a second or
+// re-entrant breakpoint sees NONE and is treated as an ordinary one.
+//==============================================================================
+#define SDTRIG_BP_NONE   0   // no note, or already consumed -> ordinary breakpoint path
+#define SDTRIG_BP_SKIP   1   // xEPC is a real, fetchable instruction -> keep the advance, drop word 2
+#define SDTRIG_BP_FETCH  2   // xEPC is unfetchable -> resume at ra, skip the probe entirely
 
 #ifndef _VA_SZ_
   #if UDB_MXLEN==32
@@ -2182,25 +2193,24 @@ sv_\__MODE__\()cause:
 common_\__MODE__\()excpt_handler:
 
 #ifdef SDTRIG_TRIGGER_BP_HANDLING
+        // Sdtrig: check for a trigger-converted breakpoint before EPC relocation
+        // (the VA paths below jump straight to sv_Xepc). See SDTRIG_BP_* above.
         li      T2, CAUSE_BREAKPOINT
-        bne     T5, T2, sdtrig_\__MODE__\()bp_done   // not a breakpoint -> ordinary path
+        bne     T5, T2, sdtrig_\__MODE__\()bp_done    // not a breakpoint
         li      T2, SDTRIG_BP_FETCH
         beq     a1, T2, sdtrig_\__MODE__\()bp_fetch
         li      T2, SDTRIG_BP_SKIP
-        bne     a1, T2, sdtrig_\__MODE__\()bp_done   // a1==NONE (incl. real ebreak) -> ordinary path
-        li      a1, SDTRIG_BP_NONE                    // consume: one-shot
-        j       skpsv_\__MODE__\()epc                 // skip word-2 self-check only; EPC is
-                                                        // valid, so the normal width probe below
-                                                        // still runs and still advances it
+        bne     a1, T2, sdtrig_\__MODE__\()bp_done    // a1==NONE -> ordinary breakpoint
+        li      a1, SDTRIG_BP_NONE                    // consume
+        j       skpsv_\__MODE__\()epc                 // keep the advance, drop word 2 only
 sdtrig_\__MODE__\()bp_fetch:
-        li      a1, SDTRIG_BP_NONE                    // consume: one-shot
-        csrw    CSR_XEPC, ra                           // same resume point _cause_exception's
-                                                        // jalr already set up for the fetch codes
-        j       skp_adj_\__MODE__\()epc                // skip word-2 AND the *xEPC probe
+        li      a1, SDTRIG_BP_NONE                    // consume
+        csrw    CSR_XEPC, ra                          // resume at the jalr's link
+        j       skp_adj_\__MODE__\()epc               // xEPC unreadable -- skip the probe too
 sdtrig_\__MODE__\()bp_done:
 #endif
-        csrr    T3, CSR_XEPC                         // T3 = xEPC (faulting instruction address)
-        mv      T4, sp                               // T4 = this mode's save area (for relocation lookup)
+        csrr    T3, CSR_XEPC                          // T3 = xEPC (faulting instruction address)
+        mv      T4, sp                                // T4 = this mode's save area (for relocation lookup)
 
 // --- EPC relocation logic ---
 // Determines whether xEPC needs to be offset-adjusted based on the trapping

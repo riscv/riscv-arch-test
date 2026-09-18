@@ -41,8 +41,7 @@ _PAGE_FAULT_CODES = (12, 13, 15)
 _MSTATUS_MPP_MASK = 0x1800
 _MSTATUS_MPRV = 0x20000
 
-# xEPC is not a readable instruction address for these -- if an etrigger converts
-# one into a breakpoint, the handler must not probe *xEPC. See SDTRIG_BP_FETCH.
+# Fetch-type codes: a trigger bp here leaves xEPC unfetchable.
 _FETCH_EXCODES = (0, 1, 12)
 
 # maps mcause exception code -> short mnemonic used in binnames / ifdef names
@@ -302,9 +301,7 @@ def _set_medeleg(reg: int, code: int, enable: bool) -> list[str]:
 
 
 def _sdtrig_bp_arm(raised_code: int) -> str | None:
-    """a1 token to arm before an instruction that might become a trigger
-    breakpoint, or None for raised_code==3: a real ebreak must take the
-    ordinary (untokened) path, never the imprecise one."""
+    """a1 token for the handler; None for code 3 (a real ebreak needs no note)."""
     if raised_code == 3:
         return None
     return "SDTRIG_BP_FETCH" if raised_code in _FETCH_EXCODES else "SDTRIG_BP_SKIP"
@@ -2018,7 +2015,6 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     cfg_reg, data_reg, temp_reg = test_data.int_regs.get_registers(
         3, exclude_regs=[2, 10, 11], reg_range=list(range(8, 16))
     )
-    # lines.extend(_global_ie(mode, True))
 
     ######################################
     coverpoint = "cp_sdtrig_etrigger"
@@ -2063,7 +2059,7 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                     if is_pf:
                         lines.extend(_page_fault_setup(raised_code))
                     if bp_token:
-                        lines.append(f"LI(a1, {bp_token}) # sdtrig: resume rule if this becomes a trigger breakpoint")
+                        lines.append(f"LI(a1, {bp_token}) # sdtrig: note for the handler if this becomes a bp")
                     lines.extend(
                         [
                             *_cause_exception(
@@ -2076,7 +2072,7 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                         ]
                     )
                     if bp_token:
-                        lines.append("LI(a1, SDTRIG_BP_NONE) # sdtrig: disarm")
+                        lines.append("LI(a1, SDTRIG_BP_NONE) # sdtrig: clear the note")
                     if is_pf:
                         lines.extend(_page_fault_teardown())
                     lines.extend(
@@ -2090,7 +2086,6 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
         lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.append(f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED{trig_num}")
 
-    # lines.extend(_global_ie(mode, False))
     test_data.int_regs.return_registers([cfg_reg, data_reg, temp_reg])
     return [test_data.end_test_chunk()]
 
@@ -2107,7 +2102,6 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
     cfg_reg, data_reg, temp_reg = test_data.int_regs.get_registers(
         3, exclude_regs=[2, 10, 11], reg_range=list(range(8, 16))
     )
-    # lines.extend(_global_ie("Sm", True))
 
     ######################################
     coverpoint = "cp_sdtrig_etrigger_cross_priv"
@@ -2158,12 +2152,10 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
                         if is_pf:
                             lines.extend(_page_fault_setup(raised_code))
                         if bp_token:
-                            lines.append(
-                                f"LI(a1, {bp_token}) # sdtrig: resume rule if this becomes a trigger breakpoint"
-                            )
+                            lines.append(f"LI(a1, {bp_token}) # sdtrig: note for the handler if this becomes a bp")
                         lines.extend(_cause_exception(raised_code, target_mode, data_reg, temp_reg))
                         if bp_token:
-                            lines.append("LI(a1, SDTRIG_BP_NONE) # sdtrig: disarm")
+                            lines.append("LI(a1, SDTRIG_BP_NONE) # sdtrig: clear the notessss")
                         if is_pf:
                             lines.extend(_page_fault_teardown())
                         lines.extend(
@@ -2179,7 +2171,6 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
         lines.extend(_disable_trigger(temp_reg, trig_num, "Sm"))
         lines.append(f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED{trig_num}")
 
-    # lines.extend(_global_ie("Sm", False))
     test_data.int_regs.return_registers([cfg_reg, data_reg, temp_reg])
     return [test_data.end_test_chunk()]
 

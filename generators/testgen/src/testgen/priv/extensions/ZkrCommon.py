@@ -133,14 +133,17 @@ def gen_seed_illegal_csr_op_tests(test_data: TestData, covergroup: str, mode: st
 
 
 def gen_seed_entropy_zero_non_es16_tests(test_data: TestData, covergroup: str, mode: str) -> list[str]:
-    """Read seed twice in a row using csrrw.
+    """Read seed twice in a row using csrrw, 100 times.
     Fail on OPST == DEAD. If OPST is WAIT/BIST, fail when entropy bits are nonzero.
     Always SIGUPD 0xB0BA on success so the scorecard does not depend on OPST.
     """
     coverpoint = "cp_zkr_seed_entropy_zero_non_es16"
 
+    loop_count = 100
+
     read_reg, opst_reg, entropy_reg, cmp_reg = test_data.int_regs.get_registers(4)
     save_reg = test_data.int_regs.get_register()
+    loop_reg = test_data.int_regs.get_register()
 
     sseed_useed_enabled = (1 << 9) | (1 << 8)
     lines = [
@@ -154,6 +157,8 @@ def gen_seed_entropy_zero_non_es16_tests(test_data: TestData, covergroup: str, m
             ],
         ),
         test_data.add_testcase(f"{mode}_es16", coverpoint, covergroup),
+        f"LI(x{loop_reg}, {loop_count})",
+        ".Lzkr_seed_entropy_loop:",
         f"csrrw x{read_reg}, seed, zero",
         f"csrrw x{read_reg}, seed, zero",
         "# OPST bits",
@@ -170,6 +175,8 @@ def gen_seed_entropy_zero_non_es16_tests(test_data: TestData, covergroup: str, m
         "# WAIT/BIST: entropy must be 0 (spec seed_entropy_zero_non_es16)",
         f"bnez x{entropy_reg}, .Lzkr_seed_entropy_leak",
         ".Lzkr_seed_entropy_ok:",
+        f"addi x{loop_reg}, x{loop_reg}, -1",
+        f"bnez x{loop_reg}, .Lzkr_seed_entropy_loop",
         "# Same success token for ES16 and for WAIT/BIST with entropy 0",
         f"LI(x{cmp_reg}, 0xB0BA)",
         write_sigupd(cmp_reg, test_data),
@@ -186,5 +193,5 @@ def gen_seed_entropy_zero_non_es16_tests(test_data: TestData, covergroup: str, m
         *_gate(mode, [_mseccfg(mode, f"csrw mseccfg, x{save_reg}")]),
     ]
 
-    test_data.int_regs.return_registers([read_reg, opst_reg, entropy_reg, cmp_reg, save_reg])
+    test_data.int_regs.return_registers([read_reg, opst_reg, entropy_reg, cmp_reg, save_reg, loop_reg])
     return lines

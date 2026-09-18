@@ -71,6 +71,7 @@ class InstructionTypeConfig:
 
     Attributes:
         required_params: Set of parameters required for this instruction type (rs1, rdval, immval, etc.).
+        optional_params: Parameters a coverpoint may set that this type uses but never fills in randomly.
         reg_range: Iterable of valid register numbers for this instruction type.
         imm_bits: Number of bits for immediates. Can also be "xlen", "xlen_log2", "flen", or "flen_log2".
         imm_range: Explicit (min, max) range for immediate values. Mutually exclusive with imm_bits.
@@ -83,6 +84,7 @@ class InstructionTypeConfig:
     """
 
     required_params: set[str] | None = None
+    optional_params: set[str] | None = None
     reg_range: Iterable[int] | None = None
     imm_bits: int | Literal["xlen", "xlen_log2", "flen", "flen_log2"] | None = None
     imm_range: tuple[int, int] | None = None  # Explicit (min, max) range

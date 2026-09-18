@@ -36,6 +36,7 @@ RVTEST_BEGIN
 # Testcase cp_rs1_nx0 (Test source rs1 = x1, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x3, x20) # load value in memory: x20 = 0x00000000000000cd
   RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs2: x21 = 0x0000000000000098
+  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rd compare value: x29 = 0x00000000000000cd
   LA(x1, scratch) # load base address into rs1
   SREG x20, 0(x1) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b1_equal:
@@ -49,6 +50,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b1_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x1, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x3, x21) # load value in memory: x21 = 0x000000000000002d
   RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs2: x13 = 0x00000000000000dd
+  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load rd compare value: x6 = 0x000000000000009c
   LA(x1, scratch) # load base address into rs1
   SREG x21, 0(x1) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b1_not_equal:
@@ -63,6 +65,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b1_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x2, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x3, x28) # load value in memory: x28 = 0x0000000000000002
   RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs2: x21 = 0x0000000000000061
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rd compare value: x11 = 0x0000000000000002
   LA(x2, scratch) # load base address into rs1
   SREG x28, 0(x2) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b2_equal:
@@ -76,6 +79,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b2_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x2, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x3, x19) # load value in memory: x19 = 0x000000000000009b
   RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs2: x29 = 0x00000000000000c9
+  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rd compare value: x21 = 0x0000000000000016
   LA(x2, scratch) # load base address into rs1
   SREG x19, 0(x2) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b2_not_equal:
@@ -90,6 +94,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b2_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x3, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x14) # load value in memory: x14 = 0x0000000000000043
   RVTEST_TESTDATA_LOAD_INT(x15, x25) # load rs2: x25 = 0x0000000000000078
+  RVTEST_TESTDATA_LOAD_INT(x15, x26) # load rd compare value: x26 = 0x0000000000000043
   LA(x3, scratch) # load base address into rs1
   SREG x14, 0(x3) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b3_equal:
@@ -103,6 +108,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b3_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x3, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x23) # load value in memory: x23 = 0x0000000000000093
   RVTEST_TESTDATA_LOAD_INT(x15, x22) # load rs2: x22 = 0x000000000000008c
+  RVTEST_TESTDATA_LOAD_INT(x15, x18) # load rd compare value: x18 = 0x00000000000000fe
   LA(x3, scratch) # load base address into rs1
   SREG x23, 0(x3) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b3_not_equal:
@@ -118,6 +124,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b3_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x4, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x21) # load value in memory: x21 = 0x00000000000000f7
   RVTEST_TESTDATA_LOAD_INT(x15, x10) # load rs2: x10 = 0x00000000000000d3
+  RVTEST_TESTDATA_LOAD_INT(x15, x29) # load rd compare value: x29 = 0x00000000000000f7
   LA(x4, scratch) # load base address into rs1
   SREG x21, 0(x4) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b4_equal:
@@ -131,6 +138,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b4_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x4, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x11) # load value in memory: x11 = 0x00000000000000c3
   RVTEST_TESTDATA_LOAD_INT(x15, x10) # load rs2: x10 = 0x00000000000000c3
+  RVTEST_TESTDATA_LOAD_INT(x15, x30) # load rd compare value: x30 = 0x00000000000000dc
   LA(x4, scratch) # load base address into rs1
   SREG x11, 0(x4) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b4_not_equal:
@@ -144,6 +152,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b4_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x5, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x6) # load value in memory: x6 = 0x0000000000000047
   RVTEST_TESTDATA_LOAD_INT(x15, x22) # load rs2: x22 = 0x0000000000000069
+  RVTEST_TESTDATA_LOAD_INT(x15, x1) # load rd compare value: x1 = 0x0000000000000047
   LA(x5, scratch) # load base address into rs1
   SREG x6, 0(x5) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b5_equal:
@@ -157,6 +166,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b5_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x5, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x30) # load value in memory: x30 = 0x00000000000000df
   RVTEST_TESTDATA_LOAD_INT(x15, x27) # load rs2: x27 = 0x000000000000008e
+  RVTEST_TESTDATA_LOAD_INT(x15, x19) # load rd compare value: x19 = 0x0000000000000070
   LA(x5, scratch) # load base address into rs1
   SREG x30, 0(x5) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b5_not_equal:
@@ -170,6 +180,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b5_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x6, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x11) # load value in memory: x11 = 0x0000000000000027
   RVTEST_TESTDATA_LOAD_INT(x15, x29) # load rs2: x29 = 0x00000000000000a0
+  RVTEST_TESTDATA_LOAD_INT(x15, x0) # load rd compare value: x0 = 0x0000000000000027
   LA(x6, scratch) # load base address into rs1
   SREG x11, 0(x6) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b6_equal:
@@ -183,6 +194,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b6_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x6, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x24) # load value in memory: x24 = 0x00000000000000bc
   RVTEST_TESTDATA_LOAD_INT(x15, x8) # load rs2: x8 = 0x00000000000000f8
+  RVTEST_TESTDATA_LOAD_INT(x15, x2) # load rd compare value: x2 = 0x0000000000000065
   LA(x6, scratch) # load base address into rs1
   SREG x24, 0(x6) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b6_not_equal:
@@ -196,6 +208,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b6_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x7, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x31) # load value in memory: x31 = 0x00000000000000bc
   RVTEST_TESTDATA_LOAD_INT(x15, x3) # load rs2: x3 = 0x0000000000000052
+  RVTEST_TESTDATA_LOAD_INT(x15, x5) # load rd compare value: x5 = 0x00000000000000bc
   LA(x7, scratch) # load base address into rs1
   SREG x31, 0(x7) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b7_equal:
@@ -209,6 +222,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b7_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x7, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x16) # load value in memory: x16 = 0x00000000000000f0
   RVTEST_TESTDATA_LOAD_INT(x15, x11) # load rs2: x11 = 0x0000000000000054
+  RVTEST_TESTDATA_LOAD_INT(x15, x2) # load rd compare value: x2 = 0x0000000000000003
   LA(x7, scratch) # load base address into rs1
   SREG x16, 0(x7) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b7_not_equal:
@@ -222,6 +236,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b7_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x8, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x25) # load value in memory: x25 = 0x00000000000000c5
   RVTEST_TESTDATA_LOAD_INT(x15, x23) # load rs2: x23 = 0x0000000000000097
+  RVTEST_TESTDATA_LOAD_INT(x15, x30) # load rd compare value: x30 = 0x00000000000000c5
   LA(x8, scratch) # load base address into rs1
   SREG x25, 0(x8) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b8_equal:
@@ -235,6 +250,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b8_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x8, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x16) # load value in memory: x16 = 0x000000000000007c
   RVTEST_TESTDATA_LOAD_INT(x15, x4) # load rs2: x4 = 0x00000000000000c4
+  RVTEST_TESTDATA_LOAD_INT(x15, x30) # load rd compare value: x30 = 0x0000000000000037
   LA(x8, scratch) # load base address into rs1
   SREG x16, 0(x8) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b8_not_equal:
@@ -248,6 +264,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b8_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x9, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x25) # load value in memory: x25 = 0x000000000000000a
   RVTEST_TESTDATA_LOAD_INT(x15, x24) # load rs2: x24 = 0x00000000000000d2
+  RVTEST_TESTDATA_LOAD_INT(x15, x7) # load rd compare value: x7 = 0x000000000000000a
   LA(x9, scratch) # load base address into rs1
   SREG x25, 0(x9) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b9_equal:
@@ -261,6 +278,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b9_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x9, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x8) # load value in memory: x8 = 0x00000000000000e7
   RVTEST_TESTDATA_LOAD_INT(x15, x28) # load rs2: x28 = 0x0000000000000059
+  RVTEST_TESTDATA_LOAD_INT(x15, x6) # load rd compare value: x6 = 0x00000000000000a5
   LA(x9, scratch) # load base address into rs1
   SREG x8, 0(x9) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b9_not_equal:
@@ -274,6 +292,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b9_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x10, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x27) # load value in memory: x27 = 0x00000000000000c4
   RVTEST_TESTDATA_LOAD_INT(x15, x31) # load rs2: x31 = 0x00000000000000eb
+  RVTEST_TESTDATA_LOAD_INT(x15, x16) # load rd compare value: x16 = 0x00000000000000c4
   LA(x10, scratch) # load base address into rs1
   SREG x27, 0(x10) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b10_equal:
@@ -287,6 +306,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b10_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x10, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x16) # load value in memory: x16 = 0x0000000000000064
   RVTEST_TESTDATA_LOAD_INT(x15, x22) # load rs2: x22 = 0x000000000000007e
+  RVTEST_TESTDATA_LOAD_INT(x15, x29) # load rd compare value: x29 = 0x0000000000000045
   LA(x10, scratch) # load base address into rs1
   SREG x16, 0(x10) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b10_not_equal:
@@ -300,6 +320,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b10_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x11, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x19) # load value in memory: x19 = 0x000000000000005f
   RVTEST_TESTDATA_LOAD_INT(x15, x1) # load rs2: x1 = 0x000000000000007b
+  RVTEST_TESTDATA_LOAD_INT(x15, x8) # load rd compare value: x8 = 0x000000000000005f
   LA(x11, scratch) # load base address into rs1
   SREG x19, 0(x11) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b11_equal:
@@ -313,6 +334,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b11_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x11, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x19) # load value in memory: x19 = 0x0000000000000089
   RVTEST_TESTDATA_LOAD_INT(x15, x2) # load rs2: x2 = 0x000000000000008d
+  RVTEST_TESTDATA_LOAD_INT(x15, x27) # load rd compare value: x27 = 0x00000000000000b6
   LA(x11, scratch) # load base address into rs1
   SREG x19, 0(x11) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b11_not_equal:
@@ -326,6 +348,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b11_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x12, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x17) # load value in memory: x17 = 0x0000000000000051
   RVTEST_TESTDATA_LOAD_INT(x15, x10) # load rs2: x10 = 0x000000000000004d
+  RVTEST_TESTDATA_LOAD_INT(x15, x0) # load rd compare value: x0 = 0x0000000000000051
   LA(x12, scratch) # load base address into rs1
   SREG x17, 0(x12) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b12_equal:
@@ -339,6 +362,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b12_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x12, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x21) # load value in memory: x21 = 0x00000000000000b7
   RVTEST_TESTDATA_LOAD_INT(x15, x9) # load rs2: x9 = 0x00000000000000a6
+  RVTEST_TESTDATA_LOAD_INT(x15, x3) # load rd compare value: x3 = 0x000000000000009e
   LA(x12, scratch) # load base address into rs1
   SREG x21, 0(x12) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b12_not_equal:
@@ -354,6 +378,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b12_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x13, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x18) # load value in memory: x18 = 0x00000000000000ae
   RVTEST_TESTDATA_LOAD_INT(x15, x9) # load rs2: x9 = 0x00000000000000e7
+  RVTEST_TESTDATA_LOAD_INT(x15, x29) # load rd compare value: x29 = 0x00000000000000ae
   LA(x13, scratch) # load base address into rs1
   SREG x18, 0(x13) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b13_equal:
@@ -367,6 +392,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b13_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x13, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x23) # load value in memory: x23 = 0x000000000000004a
   RVTEST_TESTDATA_LOAD_INT(x15, x24) # load rs2: x24 = 0x000000000000004e
+  RVTEST_TESTDATA_LOAD_INT(x15, x29) # load rd compare value: x29 = 0x00000000000000b8
   LA(x13, scratch) # load base address into rs1
   SREG x23, 0(x13) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b13_not_equal:
@@ -380,6 +406,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b13_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x14, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x18) # load value in memory: x18 = 0x0000000000000070
   RVTEST_TESTDATA_LOAD_INT(x15, x12) # load rs2: x12 = 0x00000000000000f2
+  RVTEST_TESTDATA_LOAD_INT(x15, x3) # load rd compare value: x3 = 0x0000000000000070
   LA(x14, scratch) # load base address into rs1
   SREG x18, 0(x14) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b14_equal:
@@ -393,6 +420,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b14_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x14, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x15, x5) # load value in memory: x5 = 0x00000000000000dd
   RVTEST_TESTDATA_LOAD_INT(x15, x1) # load rs2: x1 = 0x00000000000000e7
+  RVTEST_TESTDATA_LOAD_INT(x15, x25) # load rd compare value: x25 = 0x00000000000000c9
   LA(x14, scratch) # load base address into rs1
   SREG x5, 0(x14) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b14_not_equal:
@@ -407,6 +435,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b14_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x15, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x23, x21) # load value in memory: x21 = 0x0000000000000095
   RVTEST_TESTDATA_LOAD_INT(x23, x25) # load rs2: x25 = 0x000000000000009b
+  RVTEST_TESTDATA_LOAD_INT(x23, x22) # load rd compare value: x22 = 0x0000000000000095
   LA(x15, scratch) # load base address into rs1
   SREG x21, 0(x15) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b15_equal:
@@ -420,6 +449,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b15_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x15, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x23, x11) # load value in memory: x11 = 0x0000000000000064
   RVTEST_TESTDATA_LOAD_INT(x23, x10) # load rs2: x10 = 0x00000000000000da
+  RVTEST_TESTDATA_LOAD_INT(x23, x25) # load rd compare value: x25 = 0x0000000000000086
   LA(x15, scratch) # load base address into rs1
   SREG x11, 0(x15) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b15_not_equal:
@@ -433,6 +463,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b15_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x16, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x23, x18) # load value in memory: x18 = 0x000000000000007d
   RVTEST_TESTDATA_LOAD_INT(x23, x12) # load rs2: x12 = 0x0000000000000056
+  RVTEST_TESTDATA_LOAD_INT(x23, x30) # load rd compare value: x30 = 0x000000000000007d
   LA(x16, scratch) # load base address into rs1
   SREG x18, 0(x16) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b16_equal:
@@ -446,6 +477,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b16_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x16, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x23, x18) # load value in memory: x18 = 0x00000000000000ab
   RVTEST_TESTDATA_LOAD_INT(x23, x4) # load rs2: x4 = 0x00000000000000dc
+  RVTEST_TESTDATA_LOAD_INT(x23, x3) # load rd compare value: x3 = 0x0000000000000056
   LA(x16, scratch) # load base address into rs1
   SREG x18, 0(x16) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b16_not_equal:
@@ -459,6 +491,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b16_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x17, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x23, x30) # load value in memory: x30 = 0x000000000000005f
   RVTEST_TESTDATA_LOAD_INT(x23, x28) # load rs2: x28 = 0x000000000000009d
+  RVTEST_TESTDATA_LOAD_INT(x23, x1) # load rd compare value: x1 = 0x000000000000005f
   LA(x17, scratch) # load base address into rs1
   SREG x30, 0(x17) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b17_equal:
@@ -472,6 +505,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b17_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x17, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x23, x15) # load value in memory: x15 = 0x0000000000000074
   RVTEST_TESTDATA_LOAD_INT(x23, x27) # load rs2: x27 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x23, x5) # load rd compare value: x5 = 0x0000000000000041
   LA(x17, scratch) # load base address into rs1
   SREG x15, 0(x17) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b17_not_equal:
@@ -485,6 +519,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b17_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x18, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x23, x13) # load value in memory: x13 = 0x0000000000000031
   RVTEST_TESTDATA_LOAD_INT(x23, x21) # load rs2: x21 = 0x0000000000000065
+  RVTEST_TESTDATA_LOAD_INT(x23, x10) # load rd compare value: x10 = 0x0000000000000031
   LA(x18, scratch) # load base address into rs1
   SREG x13, 0(x18) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b18_equal:
@@ -498,6 +533,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b18_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x18, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x23, x12) # load value in memory: x12 = 0x000000000000005f
   RVTEST_TESTDATA_LOAD_INT(x23, x13) # load rs2: x13 = 0x0000000000000037
+  RVTEST_TESTDATA_LOAD_INT(x23, x21) # load rd compare value: x21 = 0x0000000000000079
   LA(x18, scratch) # load base address into rs1
   SREG x12, 0(x18) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b18_not_equal:
@@ -511,6 +547,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b18_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x19, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x23, x27) # load value in memory: x27 = 0x000000000000007a
   RVTEST_TESTDATA_LOAD_INT(x23, x14) # load rs2: x14 = 0x0000000000000003
+  RVTEST_TESTDATA_LOAD_INT(x23, x13) # load rd compare value: x13 = 0x000000000000007a
   LA(x19, scratch) # load base address into rs1
   SREG x27, 0(x19) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b19_equal:
@@ -524,6 +561,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b19_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x19, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x23, x29) # load value in memory: x29 = 0x000000000000002c
   RVTEST_TESTDATA_LOAD_INT(x23, x1) # load rs2: x1 = 0x00000000000000bf
+  RVTEST_TESTDATA_LOAD_INT(x23, x26) # load rd compare value: x26 = 0x00000000000000e5
   LA(x19, scratch) # load base address into rs1
   SREG x29, 0(x19) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b19_not_equal:
@@ -538,6 +576,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b19_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x20, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x23, x4) # load value in memory: x4 = 0x000000000000005b
   RVTEST_TESTDATA_LOAD_INT(x23, x15) # load rs2: x15 = 0x00000000000000ec
+  RVTEST_TESTDATA_LOAD_INT(x23, x13) # load rd compare value: x13 = 0x000000000000005b
   LA(x20, scratch) # load base address into rs1
   SREG x4, 0(x20) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b20_equal:
@@ -551,6 +590,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b20_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x20, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x23, x26) # load value in memory: x26 = 0x00000000000000eb
   RVTEST_TESTDATA_LOAD_INT(x23, x14) # load rs2: x14 = 0x00000000000000c2
+  RVTEST_TESTDATA_LOAD_INT(x23, x24) # load rd compare value: x24 = 0x0000000000000038
   LA(x20, scratch) # load base address into rs1
   SREG x26, 0(x20) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b20_not_equal:
@@ -564,6 +604,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b20_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x21, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x23, x27) # load value in memory: x27 = 0x000000000000001e
   RVTEST_TESTDATA_LOAD_INT(x23, x1) # load rs2: x1 = 0x000000000000006a
+  RVTEST_TESTDATA_LOAD_INT(x23, x24) # load rd compare value: x24 = 0x000000000000001e
   LA(x21, scratch) # load base address into rs1
   SREG x27, 0(x21) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b21_equal:
@@ -577,6 +618,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b21_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x21, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x23, x16) # load value in memory: x16 = 0x000000000000007d
   RVTEST_TESTDATA_LOAD_INT(x23, x9) # load rs2: x9 = 0x000000000000004d
+  RVTEST_TESTDATA_LOAD_INT(x23, x1) # load rd compare value: x1 = 0x0000000000000034
   LA(x21, scratch) # load base address into rs1
   SREG x16, 0(x21) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b21_not_equal:
@@ -591,6 +633,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b21_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x22, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x23, x31) # load value in memory: x31 = 0x0000000000000052
   RVTEST_TESTDATA_LOAD_INT(x23, x5) # load rs2: x5 = 0x0000000000000058
+  RVTEST_TESTDATA_LOAD_INT(x23, x4) # load rd compare value: x4 = 0x0000000000000052
   LA(x22, scratch) # load base address into rs1
   SREG x31, 0(x22) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b22_equal:
@@ -604,6 +647,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b22_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x22, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x23, x21) # load value in memory: x21 = 0x0000000000000061
   RVTEST_TESTDATA_LOAD_INT(x23, x11) # load rs2: x11 = 0x00000000000000a4
+  RVTEST_TESTDATA_LOAD_INT(x23, x31) # load rd compare value: x31 = 0x00000000000000c8
   LA(x22, scratch) # load base address into rs1
   SREG x21, 0(x22) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b22_not_equal:
@@ -618,6 +662,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b22_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x23, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x20) # load value in memory: x20 = 0x000000000000000b
   RVTEST_TESTDATA_LOAD_INT(x17, x3) # load rs2: x3 = 0x000000000000007e
+  RVTEST_TESTDATA_LOAD_INT(x17, x11) # load rd compare value: x11 = 0x000000000000000b
   LA(x23, scratch) # load base address into rs1
   SREG x20, 0(x23) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b23_equal:
@@ -631,6 +676,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b23_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x23, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x13) # load value in memory: x13 = 0x0000000000000077
   RVTEST_TESTDATA_LOAD_INT(x17, x19) # load rs2: x19 = 0x00000000000000be
+  RVTEST_TESTDATA_LOAD_INT(x17, x6) # load rd compare value: x6 = 0x000000000000008f
   LA(x23, scratch) # load base address into rs1
   SREG x13, 0(x23) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b23_not_equal:
@@ -644,6 +690,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b23_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x24, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x13) # load value in memory: x13 = 0x0000000000000032
   RVTEST_TESTDATA_LOAD_INT(x17, x26) # load rs2: x26 = 0x000000000000008d
+  RVTEST_TESTDATA_LOAD_INT(x17, x29) # load rd compare value: x29 = 0x0000000000000032
   LA(x24, scratch) # load base address into rs1
   SREG x13, 0(x24) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b24_equal:
@@ -657,6 +704,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b24_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x24, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x29) # load value in memory: x29 = 0x000000000000008e
   RVTEST_TESTDATA_LOAD_INT(x17, x4) # load rs2: x4 = 0x000000000000006a
+  RVTEST_TESTDATA_LOAD_INT(x17, x25) # load rd compare value: x25 = 0x00000000000000c3
   LA(x24, scratch) # load base address into rs1
   SREG x29, 0(x24) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b24_not_equal:
@@ -670,6 +718,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b24_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x25, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x13) # load value in memory: x13 = 0x0000000000000073
   RVTEST_TESTDATA_LOAD_INT(x17, x2) # load rs2: x2 = 0x00000000000000c3
+  RVTEST_TESTDATA_LOAD_INT(x17, x18) # load rd compare value: x18 = 0x0000000000000073
   LA(x25, scratch) # load base address into rs1
   SREG x13, 0(x25) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b25_equal:
@@ -683,6 +732,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b25_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x25, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x9) # load value in memory: x9 = 0x00000000000000fc
   RVTEST_TESTDATA_LOAD_INT(x17, x23) # load rs2: x23 = 0x0000000000000093
+  RVTEST_TESTDATA_LOAD_INT(x17, x5) # load rd compare value: x5 = 0x0000000000000008
   LA(x25, scratch) # load base address into rs1
   SREG x9, 0(x25) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b25_not_equal:
@@ -696,6 +746,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b25_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x26, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x21) # load value in memory: x21 = 0x0000000000000064
   RVTEST_TESTDATA_LOAD_INT(x17, x29) # load rs2: x29 = 0x00000000000000d6
+  RVTEST_TESTDATA_LOAD_INT(x17, x14) # load rd compare value: x14 = 0x0000000000000064
   LA(x26, scratch) # load base address into rs1
   SREG x21, 0(x26) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b26_equal:
@@ -709,6 +760,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b26_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x26, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x28) # load value in memory: x28 = 0x000000000000002d
   RVTEST_TESTDATA_LOAD_INT(x17, x14) # load rs2: x14 = 0x00000000000000ee
+  RVTEST_TESTDATA_LOAD_INT(x17, x24) # load rd compare value: x24 = 0x00000000000000ac
   LA(x26, scratch) # load base address into rs1
   SREG x28, 0(x26) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b26_not_equal:
@@ -723,6 +775,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b26_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x27, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x25) # load value in memory: x25 = 0x000000000000003b
   RVTEST_TESTDATA_LOAD_INT(x17, x18) # load rs2: x18 = 0x00000000000000d4
+  RVTEST_TESTDATA_LOAD_INT(x17, x16) # load rd compare value: x16 = 0x000000000000003b
   LA(x27, scratch) # load base address into rs1
   SREG x25, 0(x27) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b27_equal:
@@ -736,6 +789,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b27_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x27, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x22) # load value in memory: x22 = 0x00000000000000fb
   RVTEST_TESTDATA_LOAD_INT(x17, x30) # load rs2: x30 = 0x000000000000003e
+  RVTEST_TESTDATA_LOAD_INT(x17, x2) # load rd compare value: x2 = 0x000000000000006e
   LA(x27, scratch) # load base address into rs1
   SREG x22, 0(x27) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b27_not_equal:
@@ -749,6 +803,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b27_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x28, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x14) # load value in memory: x14 = 0x0000000000000032
   RVTEST_TESTDATA_LOAD_INT(x17, x15) # load rs2: x15 = 0x00000000000000c0
+  RVTEST_TESTDATA_LOAD_INT(x17, x10) # load rd compare value: x10 = 0x0000000000000032
   LA(x28, scratch) # load base address into rs1
   SREG x14, 0(x28) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b28_equal:
@@ -762,6 +817,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b28_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x28, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x12) # load value in memory: x12 = 0x000000000000006c
   RVTEST_TESTDATA_LOAD_INT(x17, x20) # load rs2: x20 = 0x0000000000000053
+  RVTEST_TESTDATA_LOAD_INT(x17, x18) # load rd compare value: x18 = 0x0000000000000081
   LA(x28, scratch) # load base address into rs1
   SREG x12, 0(x28) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b28_not_equal:
@@ -775,6 +831,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b28_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x29, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x27) # load value in memory: x27 = 0x000000000000008b
   RVTEST_TESTDATA_LOAD_INT(x17, x28) # load rs2: x28 = 0x0000000000000080
+  RVTEST_TESTDATA_LOAD_INT(x17, x10) # load rd compare value: x10 = 0x000000000000008b
   LA(x29, scratch) # load base address into rs1
   SREG x27, 0(x29) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b29_equal:
@@ -788,6 +845,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b29_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x29, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x3) # load value in memory: x3 = 0x00000000000000ec
   RVTEST_TESTDATA_LOAD_INT(x17, x11) # load rs2: x11 = 0x0000000000000047
+  RVTEST_TESTDATA_LOAD_INT(x17, x23) # load rd compare value: x23 = 0x0000000000000031
   LA(x29, scratch) # load base address into rs1
   SREG x3, 0(x29) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b29_not_equal:
@@ -801,6 +859,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b29_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x30, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x31) # load value in memory: x31 = 0x0000000000000078
   RVTEST_TESTDATA_LOAD_INT(x17, x0) # load rs2: x0 = 0x00000000000000e3
+  RVTEST_TESTDATA_LOAD_INT(x17, x18) # load rd compare value: x18 = 0x0000000000000078
   LA(x30, scratch) # load base address into rs1
   SREG x31, 0(x30) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b30_equal:
@@ -814,6 +873,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b30_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x30, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x19) # load value in memory: x19 = 0x000000000000005c
   RVTEST_TESTDATA_LOAD_INT(x17, x29) # load rs2: x29 = 0x0000000000000090
+  RVTEST_TESTDATA_LOAD_INT(x17, x4) # load rd compare value: x4 = 0x00000000000000a5
   LA(x30, scratch) # load base address into rs1
   SREG x19, 0(x30) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b30_not_equal:
@@ -827,6 +887,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b30_not_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x31, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x4) # load value in memory: x4 = 0x00000000000000df
   RVTEST_TESTDATA_LOAD_INT(x17, x5) # load rs2: x5 = 0x0000000000000039
+  RVTEST_TESTDATA_LOAD_INT(x17, x22) # load rd compare value: x22 = 0x00000000000000df
   LA(x31, scratch) # load base address into rs1
   SREG x4, 0(x31) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b31_equal:
@@ -840,6 +901,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b31_equal:
 # Testcase cp_rs1_nx0 (Test source rs1 = x31, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x1) # load value in memory: x1 = 0x0000000000000089
   RVTEST_TESTDATA_LOAD_INT(x17, x26) # load rs2: x26 = 0x00000000000000d0
+  RVTEST_TESTDATA_LOAD_INT(x17, x0) # load rd compare value: x0 = 0x000000000000009f
   LA(x31, scratch) # load base address into rs1
   SREG x1, 0(x31) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b31_not_equal:
@@ -857,6 +919,7 @@ ZacasZabha_amocas_b_cg_cp_rs1_nx0_b31_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x0, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x16) # load value in memory: x16 = 0x00000000000000b3
   RVTEST_TESTDATA_LOAD_INT(x17, x0) # load rs2: x0 = 0x00000000000000a4
+  RVTEST_TESTDATA_LOAD_INT(x17, x15) # load rd compare value: x15 = 0x00000000000000b3
   LA(x13, scratch) # load base address into rs1
   SREG x16, 0(x13) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b0_equal:
@@ -870,6 +933,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b0_equal:
 # Testcase cp_rs2 (Test source rs2 = x0, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x12) # load value in memory: x12 = 0x0000000000000005
   RVTEST_TESTDATA_LOAD_INT(x17, x0) # load rs2: x0 = 0x00000000000000f6
+  RVTEST_TESTDATA_LOAD_INT(x17, x13) # load rd compare value: x13 = 0x00000000000000c5
   LA(x1, scratch) # load base address into rs1
   SREG x12, 0(x1) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b0_not_equal:
@@ -883,6 +947,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b0_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x1, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x15) # load value in memory: x15 = 0x0000000000000015
   RVTEST_TESTDATA_LOAD_INT(x17, x1) # load rs2: x1 = 0x0000000000000033
+  RVTEST_TESTDATA_LOAD_INT(x17, x4) # load rd compare value: x4 = 0x0000000000000015
   LA(x25, scratch) # load base address into rs1
   SREG x15, 0(x25) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b1_equal:
@@ -896,6 +961,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b1_equal:
 # Testcase cp_rs2 (Test source rs2 = x1, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x10) # load value in memory: x10 = 0x0000000000000023
   RVTEST_TESTDATA_LOAD_INT(x17, x1) # load rs2: x1 = 0x000000000000002f
+  RVTEST_TESTDATA_LOAD_INT(x17, x0) # load rd compare value: x0 = 0x000000000000003a
   LA(x26, scratch) # load base address into rs1
   SREG x10, 0(x26) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b1_not_equal:
@@ -909,6 +975,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b1_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x2, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x30) # load value in memory: x30 = 0x0000000000000030
   RVTEST_TESTDATA_LOAD_INT(x17, x2) # load rs2: x2 = 0x000000000000009d
+  RVTEST_TESTDATA_LOAD_INT(x17, x28) # load rd compare value: x28 = 0x0000000000000030
   LA(x11, scratch) # load base address into rs1
   SREG x30, 0(x11) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b2_equal:
@@ -922,6 +989,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b2_equal:
 # Testcase cp_rs2 (Test source rs2 = x2, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x10) # load value in memory: x10 = 0x0000000000000097
   RVTEST_TESTDATA_LOAD_INT(x17, x2) # load rs2: x2 = 0x0000000000000072
+  RVTEST_TESTDATA_LOAD_INT(x17, x0) # load rd compare value: x0 = 0x000000000000002c
   LA(x31, scratch) # load base address into rs1
   SREG x10, 0(x31) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b2_not_equal:
@@ -935,6 +1003,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b2_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x3, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x22) # load value in memory: x22 = 0x0000000000000052
   RVTEST_TESTDATA_LOAD_INT(x17, x3) # load rs2: x3 = 0x0000000000000060
+  RVTEST_TESTDATA_LOAD_INT(x17, x21) # load rd compare value: x21 = 0x0000000000000052
   LA(x11, scratch) # load base address into rs1
   SREG x22, 0(x11) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b3_equal:
@@ -948,6 +1017,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b3_equal:
 # Testcase cp_rs2 (Test source rs2 = x3, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x5) # load value in memory: x5 = 0x0000000000000067
   RVTEST_TESTDATA_LOAD_INT(x17, x3) # load rs2: x3 = 0x0000000000000077
+  RVTEST_TESTDATA_LOAD_INT(x17, x9) # load rd compare value: x9 = 0x0000000000000089
   LA(x1, scratch) # load base address into rs1
   SREG x5, 0(x1) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b3_not_equal:
@@ -961,6 +1031,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b3_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x4, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x9) # load value in memory: x9 = 0x00000000000000cf
   RVTEST_TESTDATA_LOAD_INT(x17, x4) # load rs2: x4 = 0x0000000000000003
+  RVTEST_TESTDATA_LOAD_INT(x17, x19) # load rd compare value: x19 = 0x00000000000000cf
   LA(x15, scratch) # load base address into rs1
   SREG x9, 0(x15) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b4_equal:
@@ -974,6 +1045,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b4_equal:
 # Testcase cp_rs2 (Test source rs2 = x4, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x26) # load value in memory: x26 = 0x0000000000000031
   RVTEST_TESTDATA_LOAD_INT(x17, x4) # load rs2: x4 = 0x0000000000000065
+  RVTEST_TESTDATA_LOAD_INT(x17, x30) # load rd compare value: x30 = 0x00000000000000f9
   LA(x20, scratch) # load base address into rs1
   SREG x26, 0(x20) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b4_not_equal:
@@ -987,6 +1059,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b4_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x5, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x21) # load value in memory: x21 = 0x00000000000000c8
   RVTEST_TESTDATA_LOAD_INT(x17, x5) # load rs2: x5 = 0x0000000000000098
+  RVTEST_TESTDATA_LOAD_INT(x17, x29) # load rd compare value: x29 = 0x00000000000000c8
   LA(x20, scratch) # load base address into rs1
   SREG x21, 0(x20) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b5_equal:
@@ -1000,6 +1073,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b5_equal:
 # Testcase cp_rs2 (Test source rs2 = x5, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x18) # load value in memory: x18 = 0x00000000000000fc
   RVTEST_TESTDATA_LOAD_INT(x17, x5) # load rs2: x5 = 0x0000000000000075
+  RVTEST_TESTDATA_LOAD_INT(x17, x9) # load rd compare value: x9 = 0x0000000000000027
   LA(x11, scratch) # load base address into rs1
   SREG x18, 0(x11) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b5_not_equal:
@@ -1014,6 +1088,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b5_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x6, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x19) # load value in memory: x19 = 0x0000000000000040
   RVTEST_TESTDATA_LOAD_INT(x17, x6) # load rs2: x6 = 0x0000000000000089
+  RVTEST_TESTDATA_LOAD_INT(x17, x3) # load rd compare value: x3 = 0x0000000000000040
   LA(x11, scratch) # load base address into rs1
   SREG x19, 0(x11) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b6_equal:
@@ -1027,6 +1102,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b6_equal:
 # Testcase cp_rs2 (Test source rs2 = x6, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x31) # load value in memory: x31 = 0x0000000000000090
   RVTEST_TESTDATA_LOAD_INT(x17, x6) # load rs2: x6 = 0x00000000000000ea
+  RVTEST_TESTDATA_LOAD_INT(x17, x22) # load rd compare value: x22 = 0x000000000000002f
   LA(x13, scratch) # load base address into rs1
   SREG x31, 0(x13) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b6_not_equal:
@@ -1042,6 +1118,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b6_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x7, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x31) # load value in memory: x31 = 0x00000000000000f8
   RVTEST_TESTDATA_LOAD_INT(x17, x7) # load rs2: x7 = 0x00000000000000fe
+  RVTEST_TESTDATA_LOAD_INT(x17, x29) # load rd compare value: x29 = 0x00000000000000f8
   LA(x14, scratch) # load base address into rs1
   SREG x31, 0(x14) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b7_equal:
@@ -1055,6 +1132,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b7_equal:
 # Testcase cp_rs2 (Test source rs2 = x7, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x22) # load value in memory: x22 = 0x0000000000000009
   RVTEST_TESTDATA_LOAD_INT(x17, x7) # load rs2: x7 = 0x00000000000000ec
+  RVTEST_TESTDATA_LOAD_INT(x17, x1) # load rd compare value: x1 = 0x0000000000000075
   LA(x30, scratch) # load base address into rs1
   SREG x22, 0(x30) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b7_not_equal:
@@ -1068,6 +1146,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b7_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x8, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x1) # load value in memory: x1 = 0x00000000000000dd
   RVTEST_TESTDATA_LOAD_INT(x17, x8) # load rs2: x8 = 0x000000000000003e
+  RVTEST_TESTDATA_LOAD_INT(x17, x29) # load rd compare value: x29 = 0x00000000000000dd
   LA(x28, scratch) # load base address into rs1
   SREG x1, 0(x28) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b8_equal:
@@ -1081,6 +1160,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b8_equal:
 # Testcase cp_rs2 (Test source rs2 = x8, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x14) # load value in memory: x14 = 0x0000000000000039
   RVTEST_TESTDATA_LOAD_INT(x17, x8) # load rs2: x8 = 0x0000000000000073
+  RVTEST_TESTDATA_LOAD_INT(x17, x7) # load rd compare value: x7 = 0x00000000000000f0
   LA(x22, scratch) # load base address into rs1
   SREG x14, 0(x22) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b8_not_equal:
@@ -1094,6 +1174,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b8_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x9, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x3) # load value in memory: x3 = 0x00000000000000e5
   RVTEST_TESTDATA_LOAD_INT(x17, x9) # load rs2: x9 = 0x0000000000000054
+  RVTEST_TESTDATA_LOAD_INT(x17, x1) # load rd compare value: x1 = 0x00000000000000e5
   LA(x18, scratch) # load base address into rs1
   SREG x3, 0(x18) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b9_equal:
@@ -1107,6 +1188,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b9_equal:
 # Testcase cp_rs2 (Test source rs2 = x9, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x28) # load value in memory: x28 = 0x0000000000000070
   RVTEST_TESTDATA_LOAD_INT(x17, x9) # load rs2: x9 = 0x000000000000003d
+  RVTEST_TESTDATA_LOAD_INT(x17, x20) # load rd compare value: x20 = 0x00000000000000d4
   LA(x29, scratch) # load base address into rs1
   SREG x28, 0(x29) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b9_not_equal:
@@ -1120,6 +1202,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b9_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x10, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x29) # load value in memory: x29 = 0x0000000000000052
   RVTEST_TESTDATA_LOAD_INT(x17, x10) # load rs2: x10 = 0x0000000000000035
+  RVTEST_TESTDATA_LOAD_INT(x17, x2) # load rd compare value: x2 = 0x0000000000000052
   LA(x14, scratch) # load base address into rs1
   SREG x29, 0(x14) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b10_equal:
@@ -1133,6 +1216,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b10_equal:
 # Testcase cp_rs2 (Test source rs2 = x10, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x15) # load value in memory: x15 = 0x00000000000000fb
   RVTEST_TESTDATA_LOAD_INT(x17, x10) # load rs2: x10 = 0x00000000000000fc
+  RVTEST_TESTDATA_LOAD_INT(x17, x6) # load rd compare value: x6 = 0x000000000000006b
   LA(x21, scratch) # load base address into rs1
   SREG x15, 0(x21) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b10_not_equal:
@@ -1146,6 +1230,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b10_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x11, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x14) # load value in memory: x14 = 0x00000000000000d9
   RVTEST_TESTDATA_LOAD_INT(x17, x11) # load rs2: x11 = 0x00000000000000eb
+  RVTEST_TESTDATA_LOAD_INT(x17, x7) # load rd compare value: x7 = 0x00000000000000d9
   LA(x29, scratch) # load base address into rs1
   SREG x14, 0(x29) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b11_equal:
@@ -1159,6 +1244,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b11_equal:
 # Testcase cp_rs2 (Test source rs2 = x11, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x6) # load value in memory: x6 = 0x00000000000000b3
   RVTEST_TESTDATA_LOAD_INT(x17, x11) # load rs2: x11 = 0x00000000000000e5
+  RVTEST_TESTDATA_LOAD_INT(x17, x20) # load rd compare value: x20 = 0x00000000000000fd
   LA(x30, scratch) # load base address into rs1
   SREG x6, 0(x30) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b11_not_equal:
@@ -1172,6 +1258,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b11_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x12, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x16) # load value in memory: x16 = 0x0000000000000068
   RVTEST_TESTDATA_LOAD_INT(x17, x12) # load rs2: x12 = 0x00000000000000c6
+  RVTEST_TESTDATA_LOAD_INT(x17, x21) # load rd compare value: x21 = 0x0000000000000068
   LA(x30, scratch) # load base address into rs1
   SREG x16, 0(x30) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b12_equal:
@@ -1185,6 +1272,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b12_equal:
 # Testcase cp_rs2 (Test source rs2 = x12, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x22) # load value in memory: x22 = 0x000000000000004f
   RVTEST_TESTDATA_LOAD_INT(x17, x12) # load rs2: x12 = 0x0000000000000065
+  RVTEST_TESTDATA_LOAD_INT(x17, x27) # load rd compare value: x27 = 0x0000000000000023
   LA(x14, scratch) # load base address into rs1
   SREG x22, 0(x14) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b12_not_equal:
@@ -1198,6 +1286,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b12_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x13, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x14) # load value in memory: x14 = 0x00000000000000b2
   RVTEST_TESTDATA_LOAD_INT(x17, x13) # load rs2: x13 = 0x00000000000000f8
+  RVTEST_TESTDATA_LOAD_INT(x17, x18) # load rd compare value: x18 = 0x00000000000000b2
   LA(x7, scratch) # load base address into rs1
   SREG x14, 0(x7) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b13_equal:
@@ -1211,6 +1300,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b13_equal:
 # Testcase cp_rs2 (Test source rs2 = x13, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x18) # load value in memory: x18 = 0x0000000000000003
   RVTEST_TESTDATA_LOAD_INT(x17, x13) # load rs2: x13 = 0x00000000000000f4
+  RVTEST_TESTDATA_LOAD_INT(x17, x24) # load rd compare value: x24 = 0x00000000000000b7
   LA(x2, scratch) # load base address into rs1
   SREG x18, 0(x2) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b13_not_equal:
@@ -1224,6 +1314,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b13_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x14, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x12) # load value in memory: x12 = 0x0000000000000040
   RVTEST_TESTDATA_LOAD_INT(x17, x14) # load rs2: x14 = 0x0000000000000052
+  RVTEST_TESTDATA_LOAD_INT(x17, x22) # load rd compare value: x22 = 0x0000000000000040
   LA(x7, scratch) # load base address into rs1
   SREG x12, 0(x7) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b14_equal:
@@ -1237,6 +1328,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b14_equal:
 # Testcase cp_rs2 (Test source rs2 = x14, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x16) # load value in memory: x16 = 0x00000000000000b9
   RVTEST_TESTDATA_LOAD_INT(x17, x14) # load rs2: x14 = 0x0000000000000074
+  RVTEST_TESTDATA_LOAD_INT(x17, x11) # load rd compare value: x11 = 0x0000000000000035
   LA(x3, scratch) # load base address into rs1
   SREG x16, 0(x3) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b14_not_equal:
@@ -1250,6 +1342,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b14_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x15, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x8) # load value in memory: x8 = 0x0000000000000067
   RVTEST_TESTDATA_LOAD_INT(x17, x15) # load rs2: x15 = 0x00000000000000bd
+  RVTEST_TESTDATA_LOAD_INT(x17, x24) # load rd compare value: x24 = 0x0000000000000067
   LA(x13, scratch) # load base address into rs1
   SREG x8, 0(x13) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b15_equal:
@@ -1263,6 +1356,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b15_equal:
 # Testcase cp_rs2 (Test source rs2 = x15, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x6) # load value in memory: x6 = 0x000000000000009c
   RVTEST_TESTDATA_LOAD_INT(x17, x15) # load rs2: x15 = 0x00000000000000b4
+  RVTEST_TESTDATA_LOAD_INT(x17, x12) # load rd compare value: x12 = 0x0000000000000058
   LA(x18, scratch) # load base address into rs1
   SREG x6, 0(x18) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b15_not_equal:
@@ -1276,6 +1370,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b15_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x16, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x15) # load value in memory: x15 = 0x0000000000000049
   RVTEST_TESTDATA_LOAD_INT(x17, x16) # load rs2: x16 = 0x0000000000000050
+  RVTEST_TESTDATA_LOAD_INT(x17, x14) # load rd compare value: x14 = 0x0000000000000049
   LA(x25, scratch) # load base address into rs1
   SREG x15, 0(x25) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b16_equal:
@@ -1289,6 +1384,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b16_equal:
 # Testcase cp_rs2 (Test source rs2 = x16, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x17, x21) # load value in memory: x21 = 0x000000000000009a
   RVTEST_TESTDATA_LOAD_INT(x17, x16) # load rs2: x16 = 0x0000000000000025
+  RVTEST_TESTDATA_LOAD_INT(x17, x24) # load rd compare value: x24 = 0x000000000000005a
   LA(x30, scratch) # load base address into rs1
   SREG x21, 0(x30) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b16_not_equal:
@@ -1303,6 +1399,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b16_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x17, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x24, x12) # load value in memory: x12 = 0x00000000000000a2
   RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0x00000000000000c3
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rd compare value: x6 = 0x00000000000000a2
   LA(x7, scratch) # load base address into rs1
   SREG x12, 0(x7) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b17_equal:
@@ -1316,6 +1413,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b17_equal:
 # Testcase cp_rs2 (Test source rs2 = x17, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x24, x16) # load value in memory: x16 = 0x00000000000000d1
   RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0x000000000000004c
+  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rd compare value: x26 = 0x00000000000000af
   LA(x6, scratch) # load base address into rs1
   SREG x16, 0(x6) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b17_not_equal:
@@ -1329,6 +1427,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b17_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x18, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x24, x8) # load value in memory: x8 = 0x000000000000003d
   RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0x0000000000000063
+  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rd compare value: x31 = 0x000000000000003d
   LA(x6, scratch) # load base address into rs1
   SREG x8, 0(x6) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b18_equal:
@@ -1342,6 +1441,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b18_equal:
 # Testcase cp_rs2 (Test source rs2 = x18, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x24, x8) # load value in memory: x8 = 0x000000000000009c
   RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0x0000000000000090
+  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rd compare value: x25 = 0x000000000000002b
   LA(x12, scratch) # load base address into rs1
   SREG x8, 0(x12) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b18_not_equal:
@@ -1355,6 +1455,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b18_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x19, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x24, x11) # load value in memory: x11 = 0x0000000000000002
   RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs2: x19 = 0x00000000000000c3
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rd compare value: x13 = 0x0000000000000002
   LA(x25, scratch) # load base address into rs1
   SREG x11, 0(x25) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b19_equal:
@@ -1368,6 +1469,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b19_equal:
 # Testcase cp_rs2 (Test source rs2 = x19, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x24, x20) # load value in memory: x20 = 0x00000000000000ee
   RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs2: x19 = 0x00000000000000f6
+  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rd compare value: x25 = 0x00000000000000fb
   LA(x31, scratch) # load base address into rs1
   SREG x20, 0(x31) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b19_not_equal:
@@ -1381,6 +1483,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b19_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x20, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x24, x3) # load value in memory: x3 = 0x0000000000000083
   RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x0000000000000065
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rd compare value: x30 = 0x0000000000000083
   LA(x15, scratch) # load base address into rs1
   SREG x3, 0(x15) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b20_equal:
@@ -1394,6 +1497,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b20_equal:
 # Testcase cp_rs2 (Test source rs2 = x20, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x24, x21) # load value in memory: x21 = 0x0000000000000093
   RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x00000000000000c7
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rd compare value: x16 = 0x000000000000001c
   LA(x3, scratch) # load base address into rs1
   SREG x21, 0(x3) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b20_not_equal:
@@ -1407,6 +1511,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b20_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x21, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x24, x1) # load value in memory: x1 = 0x0000000000000075
   RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x000000000000001c
+  RVTEST_TESTDATA_LOAD_INT(x24, x7) # load rd compare value: x7 = 0x0000000000000075
   LA(x25, scratch) # load base address into rs1
   SREG x1, 0(x25) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b21_equal:
@@ -1420,6 +1525,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b21_equal:
 # Testcase cp_rs2 (Test source rs2 = x21, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x24, x8) # load value in memory: x8 = 0x0000000000000013
   RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x00000000000000e5
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rd compare value: x13 = 0x0000000000000027
   LA(x25, scratch) # load base address into rs1
   SREG x8, 0(x25) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b21_not_equal:
@@ -1433,6 +1539,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b21_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x22, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x24, x15) # load value in memory: x15 = 0x000000000000002f
   RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0x0000000000000059
+  RVTEST_TESTDATA_LOAD_INT(x24, x7) # load rd compare value: x7 = 0x000000000000002f
   LA(x10, scratch) # load base address into rs1
   SREG x15, 0(x10) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b22_equal:
@@ -1446,6 +1553,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b22_equal:
 # Testcase cp_rs2 (Test source rs2 = x22, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x24, x14) # load value in memory: x14 = 0x000000000000004b
   RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0x000000000000003a
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rd compare value: x11 = 0x000000000000006f
   LA(x21, scratch) # load base address into rs1
   SREG x14, 0(x21) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b22_not_equal:
@@ -1460,6 +1568,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b22_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x23, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x24, x6) # load value in memory: x6 = 0x00000000000000f8
   RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0x0000000000000061
+  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rd compare value: x2 = 0x00000000000000f8
   LA(x12, scratch) # load base address into rs1
   SREG x6, 0(x12) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b23_equal:
@@ -1473,6 +1582,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b23_equal:
 # Testcase cp_rs2 (Test source rs2 = x23, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x24, x8) # load value in memory: x8 = 0x00000000000000d9
   RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0x000000000000004a
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rd compare value: x21 = 0x000000000000000e
   LA(x22, scratch) # load base address into rs1
   SREG x8, 0(x22) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b23_not_equal:
@@ -1487,6 +1597,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b23_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x24, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x10) # load value in memory: x10 = 0x00000000000000b9
   RVTEST_TESTDATA_LOAD_INT(x12, x24) # load rs2: x24 = 0x0000000000000085
+  RVTEST_TESTDATA_LOAD_INT(x12, x18) # load rd compare value: x18 = 0x00000000000000b9
   LA(x6, scratch) # load base address into rs1
   SREG x10, 0(x6) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b24_equal:
@@ -1500,6 +1611,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b24_equal:
 # Testcase cp_rs2 (Test source rs2 = x24, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x17) # load value in memory: x17 = 0x00000000000000c5
   RVTEST_TESTDATA_LOAD_INT(x12, x24) # load rs2: x24 = 0x0000000000000011
+  RVTEST_TESTDATA_LOAD_INT(x12, x16) # load rd compare value: x16 = 0x0000000000000029
   LA(x27, scratch) # load base address into rs1
   SREG x17, 0(x27) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b24_not_equal:
@@ -1513,6 +1625,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b24_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x25, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x31) # load value in memory: x31 = 0x0000000000000086
   RVTEST_TESTDATA_LOAD_INT(x12, x25) # load rs2: x25 = 0x000000000000006e
+  RVTEST_TESTDATA_LOAD_INT(x12, x21) # load rd compare value: x21 = 0x0000000000000086
   LA(x29, scratch) # load base address into rs1
   SREG x31, 0(x29) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b25_equal:
@@ -1526,6 +1639,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b25_equal:
 # Testcase cp_rs2 (Test source rs2 = x25, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x1) # load value in memory: x1 = 0x00000000000000ce
   RVTEST_TESTDATA_LOAD_INT(x12, x25) # load rs2: x25 = 0x0000000000000005
+  RVTEST_TESTDATA_LOAD_INT(x12, x13) # load rd compare value: x13 = 0x0000000000000041
   LA(x18, scratch) # load base address into rs1
   SREG x1, 0(x18) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b25_not_equal:
@@ -1540,6 +1654,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b25_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x26, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x24) # load value in memory: x24 = 0x00000000000000bd
   RVTEST_TESTDATA_LOAD_INT(x12, x26) # load rs2: x26 = 0x000000000000000a
+  RVTEST_TESTDATA_LOAD_INT(x12, x31) # load rd compare value: x31 = 0x00000000000000bd
   LA(x29, scratch) # load base address into rs1
   SREG x24, 0(x29) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b26_equal:
@@ -1553,6 +1668,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b26_equal:
 # Testcase cp_rs2 (Test source rs2 = x26, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x1) # load value in memory: x1 = 0x0000000000000049
   RVTEST_TESTDATA_LOAD_INT(x12, x26) # load rs2: x26 = 0x00000000000000be
+  RVTEST_TESTDATA_LOAD_INT(x12, x15) # load rd compare value: x15 = 0x0000000000000067
   LA(x25, scratch) # load base address into rs1
   SREG x1, 0(x25) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b26_not_equal:
@@ -1566,6 +1682,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b26_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x27, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x17) # load value in memory: x17 = 0x000000000000009b
   RVTEST_TESTDATA_LOAD_INT(x12, x27) # load rs2: x27 = 0x000000000000009e
+  RVTEST_TESTDATA_LOAD_INT(x12, x22) # load rd compare value: x22 = 0x000000000000009b
   LA(x13, scratch) # load base address into rs1
   SREG x17, 0(x13) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b27_equal:
@@ -1579,6 +1696,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b27_equal:
 # Testcase cp_rs2 (Test source rs2 = x27, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x3) # load value in memory: x3 = 0x0000000000000044
   RVTEST_TESTDATA_LOAD_INT(x12, x27) # load rs2: x27 = 0x00000000000000e3
+  RVTEST_TESTDATA_LOAD_INT(x12, x7) # load rd compare value: x7 = 0x0000000000000018
   LA(x21, scratch) # load base address into rs1
   SREG x3, 0(x21) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b27_not_equal:
@@ -1592,6 +1710,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b27_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x28, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x13) # load value in memory: x13 = 0x0000000000000061
   RVTEST_TESTDATA_LOAD_INT(x12, x28) # load rs2: x28 = 0x00000000000000af
+  RVTEST_TESTDATA_LOAD_INT(x12, x6) # load rd compare value: x6 = 0x0000000000000061
   LA(x8, scratch) # load base address into rs1
   SREG x13, 0(x8) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b28_equal:
@@ -1605,6 +1724,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b28_equal:
 # Testcase cp_rs2 (Test source rs2 = x28, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x18) # load value in memory: x18 = 0x0000000000000092
   RVTEST_TESTDATA_LOAD_INT(x12, x28) # load rs2: x28 = 0x00000000000000ae
+  RVTEST_TESTDATA_LOAD_INT(x12, x27) # load rd compare value: x27 = 0x00000000000000b7
   LA(x6, scratch) # load base address into rs1
   SREG x18, 0(x6) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b28_not_equal:
@@ -1618,6 +1738,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b28_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x29, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x24) # load value in memory: x24 = 0x00000000000000f1
   RVTEST_TESTDATA_LOAD_INT(x12, x29) # load rs2: x29 = 0x00000000000000d0
+  RVTEST_TESTDATA_LOAD_INT(x12, x15) # load rd compare value: x15 = 0x00000000000000f1
   LA(x31, scratch) # load base address into rs1
   SREG x24, 0(x31) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b29_equal:
@@ -1631,6 +1752,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b29_equal:
 # Testcase cp_rs2 (Test source rs2 = x29, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x23) # load value in memory: x23 = 0x00000000000000a5
   RVTEST_TESTDATA_LOAD_INT(x12, x29) # load rs2: x29 = 0x0000000000000021
+  RVTEST_TESTDATA_LOAD_INT(x12, x9) # load rd compare value: x9 = 0x0000000000000087
   LA(x8, scratch) # load base address into rs1
   SREG x23, 0(x8) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b29_not_equal:
@@ -1645,6 +1767,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b29_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x30, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x13) # load value in memory: x13 = 0x0000000000000018
   RVTEST_TESTDATA_LOAD_INT(x12, x30) # load rs2: x30 = 0x00000000000000e1
+  RVTEST_TESTDATA_LOAD_INT(x12, x9) # load rd compare value: x9 = 0x0000000000000018
   LA(x27, scratch) # load base address into rs1
   SREG x13, 0(x27) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b30_equal:
@@ -1658,6 +1781,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b30_equal:
 # Testcase cp_rs2 (Test source rs2 = x30, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x21) # load value in memory: x21 = 0x00000000000000a8
   RVTEST_TESTDATA_LOAD_INT(x12, x30) # load rs2: x30 = 0x0000000000000023
+  RVTEST_TESTDATA_LOAD_INT(x12, x15) # load rd compare value: x15 = 0x00000000000000d4
   LA(x11, scratch) # load base address into rs1
   SREG x21, 0(x11) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b30_not_equal:
@@ -1671,6 +1795,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b30_not_equal:
 # Testcase cp_rs2 (Test source rs2 = x31, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x3) # load value in memory: x3 = 0x00000000000000b9
   RVTEST_TESTDATA_LOAD_INT(x12, x31) # load rs2: x31 = 0x00000000000000fa
+  RVTEST_TESTDATA_LOAD_INT(x12, x10) # load rd compare value: x10 = 0x00000000000000b9
   LA(x27, scratch) # load base address into rs1
   SREG x3, 0(x27) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b31_equal:
@@ -1684,6 +1809,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b31_equal:
 # Testcase cp_rs2 (Test source rs2 = x31, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x15) # load value in memory: x15 = 0x0000000000000020
   RVTEST_TESTDATA_LOAD_INT(x12, x31) # load rs2: x31 = 0x00000000000000a5
+  RVTEST_TESTDATA_LOAD_INT(x12, x7) # load rd compare value: x7 = 0x00000000000000b2
   LA(x26, scratch) # load base address into rs1
   SREG x15, 0(x26) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rs2_b31_not_equal:
@@ -1701,6 +1827,7 @@ ZacasZabha_amocas_b_cg_cp_rs2_b31_not_equal:
 # Testcase cp_rd (Test destination rd = x0, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x10) # load value in memory: x10 = 0x0000000000000001
   RVTEST_TESTDATA_LOAD_INT(x12, x27) # load rs2: x27 = 0x00000000000000a3
+  RVTEST_TESTDATA_LOAD_INT(x12, x0) # load rd compare value: x0 = 0x0000000000000001
   LA(x28, scratch) # load base address into rs1
   SREG x10, 0(x28) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b0_equal:
@@ -1714,6 +1841,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b0_equal:
 # Testcase cp_rd (Test destination rd = x0, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x31) # load value in memory: x31 = 0x000000000000005c
   RVTEST_TESTDATA_LOAD_INT(x12, x9) # load rs2: x9 = 0x00000000000000cb
+  RVTEST_TESTDATA_LOAD_INT(x12, x0) # load rd compare value: x0 = 0x0000000000000044
   LA(x19, scratch) # load base address into rs1
   SREG x31, 0(x19) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b0_not_equal:
@@ -1727,6 +1855,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b0_not_equal:
 # Testcase cp_rd (Test destination rd = x1, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x19) # load value in memory: x19 = 0x0000000000000021
   RVTEST_TESTDATA_LOAD_INT(x12, x17) # load rs2: x17 = 0x00000000000000c5
+  RVTEST_TESTDATA_LOAD_INT(x12, x1) # load rd compare value: x1 = 0x0000000000000021
   LA(x8, scratch) # load base address into rs1
   SREG x19, 0(x8) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b1_equal:
@@ -1740,6 +1869,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b1_equal:
 # Testcase cp_rd (Test destination rd = x1, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x3) # load value in memory: x3 = 0x000000000000004a
   RVTEST_TESTDATA_LOAD_INT(x12, x28) # load rs2: x28 = 0x0000000000000013
+  RVTEST_TESTDATA_LOAD_INT(x12, x1) # load rd compare value: x1 = 0x000000000000007f
   LA(x29, scratch) # load base address into rs1
   SREG x3, 0(x29) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b1_not_equal:
@@ -1753,6 +1883,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b1_not_equal:
 # Testcase cp_rd (Test destination rd = x2, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x3) # load value in memory: x3 = 0x0000000000000065
   RVTEST_TESTDATA_LOAD_INT(x12, x7) # load rs2: x7 = 0x00000000000000ee
+  RVTEST_TESTDATA_LOAD_INT(x12, x2) # load rd compare value: x2 = 0x0000000000000065
   LA(x15, scratch) # load base address into rs1
   SREG x3, 0(x15) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b2_equal:
@@ -1766,6 +1897,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b2_equal:
 # Testcase cp_rd (Test destination rd = x2, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x1) # load value in memory: x1 = 0x00000000000000e8
   RVTEST_TESTDATA_LOAD_INT(x12, x16) # load rs2: x16 = 0x0000000000000095
+  RVTEST_TESTDATA_LOAD_INT(x12, x2) # load rd compare value: x2 = 0x0000000000000058
   LA(x31, scratch) # load base address into rs1
   SREG x1, 0(x31) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b2_not_equal:
@@ -1779,6 +1911,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b2_not_equal:
 # Testcase cp_rd (Test destination rd = x3, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x21) # load value in memory: x21 = 0x00000000000000b1
   RVTEST_TESTDATA_LOAD_INT(x12, x31) # load rs2: x31 = 0x00000000000000ee
+  RVTEST_TESTDATA_LOAD_INT(x12, x3) # load rd compare value: x3 = 0x00000000000000b1
   LA(x30, scratch) # load base address into rs1
   SREG x21, 0(x30) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b3_equal:
@@ -1792,6 +1925,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b3_equal:
 # Testcase cp_rd (Test destination rd = x3, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x18) # load value in memory: x18 = 0x00000000000000e0
   RVTEST_TESTDATA_LOAD_INT(x12, x8) # load rs2: x8 = 0x0000000000000053
+  RVTEST_TESTDATA_LOAD_INT(x12, x3) # load rd compare value: x3 = 0x0000000000000080
   LA(x9, scratch) # load base address into rs1
   SREG x18, 0(x9) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b3_not_equal:
@@ -1807,6 +1941,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b3_not_equal:
 # Testcase cp_rd (Test destination rd = x4, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x1) # load value in memory: x1 = 0x000000000000000b
   RVTEST_TESTDATA_LOAD_INT(x12, x10) # load rs2: x10 = 0x0000000000000089
+  RVTEST_TESTDATA_LOAD_INT(x12, x4) # load rd compare value: x4 = 0x000000000000000b
   LA(x3, scratch) # load base address into rs1
   SREG x1, 0(x3) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b4_equal:
@@ -1820,6 +1955,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b4_equal:
 # Testcase cp_rd (Test destination rd = x4, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x19) # load value in memory: x19 = 0x00000000000000d0
   RVTEST_TESTDATA_LOAD_INT(x12, x13) # load rs2: x13 = 0x0000000000000056
+  RVTEST_TESTDATA_LOAD_INT(x12, x4) # load rd compare value: x4 = 0x00000000000000ae
   LA(x24, scratch) # load base address into rs1
   SREG x19, 0(x24) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b4_not_equal:
@@ -1833,6 +1969,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b4_not_equal:
 # Testcase cp_rd (Test destination rd = x5, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x4) # load value in memory: x4 = 0x0000000000000030
   RVTEST_TESTDATA_LOAD_INT(x12, x0) # load rs2: x0 = 0x00000000000000d8
+  RVTEST_TESTDATA_LOAD_INT(x12, x5) # load rd compare value: x5 = 0x0000000000000030
   LA(x31, scratch) # load base address into rs1
   SREG x4, 0(x31) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b5_equal:
@@ -1846,6 +1983,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b5_equal:
 # Testcase cp_rd (Test destination rd = x5, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x21) # load value in memory: x21 = 0x000000000000004b
   RVTEST_TESTDATA_LOAD_INT(x12, x29) # load rs2: x29 = 0x0000000000000035
+  RVTEST_TESTDATA_LOAD_INT(x12, x5) # load rd compare value: x5 = 0x0000000000000015
   LA(x13, scratch) # load base address into rs1
   SREG x21, 0(x13) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b5_not_equal:
@@ -1860,6 +1998,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b5_not_equal:
 # Testcase cp_rd (Test destination rd = x6, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x22) # load value in memory: x22 = 0x000000000000005f
   RVTEST_TESTDATA_LOAD_INT(x12, x21) # load rs2: x21 = 0x000000000000006e
+  RVTEST_TESTDATA_LOAD_INT(x12, x6) # load rd compare value: x6 = 0x000000000000005f
   LA(x27, scratch) # load base address into rs1
   SREG x22, 0(x27) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b6_equal:
@@ -1873,6 +2012,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b6_equal:
 # Testcase cp_rd (Test destination rd = x6, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x28) # load value in memory: x28 = 0x0000000000000056
   RVTEST_TESTDATA_LOAD_INT(x12, x29) # load rs2: x29 = 0x0000000000000050
+  RVTEST_TESTDATA_LOAD_INT(x12, x6) # load rd compare value: x6 = 0x00000000000000ab
   LA(x19, scratch) # load base address into rs1
   SREG x28, 0(x19) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b6_not_equal:
@@ -1888,6 +2028,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b6_not_equal:
 # Testcase cp_rd (Test destination rd = x7, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x29) # load value in memory: x29 = 0x00000000000000cf
   RVTEST_TESTDATA_LOAD_INT(x12, x1) # load rs2: x1 = 0x000000000000006a
+  RVTEST_TESTDATA_LOAD_INT(x12, x7) # load rd compare value: x7 = 0x00000000000000cf
   LA(x4, scratch) # load base address into rs1
   SREG x29, 0(x4) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b7_equal:
@@ -1901,6 +2042,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b7_equal:
 # Testcase cp_rd (Test destination rd = x7, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x24) # load value in memory: x24 = 0x000000000000006f
   RVTEST_TESTDATA_LOAD_INT(x12, x19) # load rs2: x19 = 0x000000000000004a
+  RVTEST_TESTDATA_LOAD_INT(x12, x7) # load rd compare value: x7 = 0x000000000000006c
   LA(x15, scratch) # load base address into rs1
   SREG x24, 0(x15) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b7_not_equal:
@@ -1914,6 +2056,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b7_not_equal:
 # Testcase cp_rd (Test destination rd = x8, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x30) # load value in memory: x30 = 0x00000000000000bc
   RVTEST_TESTDATA_LOAD_INT(x12, x29) # load rs2: x29 = 0x0000000000000008
+  RVTEST_TESTDATA_LOAD_INT(x12, x8) # load rd compare value: x8 = 0x00000000000000bc
   LA(x2, scratch) # load base address into rs1
   SREG x30, 0(x2) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b8_equal:
@@ -1927,6 +2070,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b8_equal:
 # Testcase cp_rd (Test destination rd = x8, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x31) # load value in memory: x31 = 0x00000000000000b7
   RVTEST_TESTDATA_LOAD_INT(x12, x15) # load rs2: x15 = 0x0000000000000078
+  RVTEST_TESTDATA_LOAD_INT(x12, x8) # load rd compare value: x8 = 0x0000000000000058
   LA(x7, scratch) # load base address into rs1
   SREG x31, 0(x7) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b8_not_equal:
@@ -1940,6 +2084,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b8_not_equal:
 # Testcase cp_rd (Test destination rd = x9, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x7) # load value in memory: x7 = 0x0000000000000031
   RVTEST_TESTDATA_LOAD_INT(x12, x6) # load rs2: x6 = 0x0000000000000055
+  RVTEST_TESTDATA_LOAD_INT(x12, x9) # load rd compare value: x9 = 0x0000000000000031
   LA(x1, scratch) # load base address into rs1
   SREG x7, 0(x1) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b9_equal:
@@ -1953,6 +2098,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b9_equal:
 # Testcase cp_rd (Test destination rd = x9, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x29) # load value in memory: x29 = 0x0000000000000035
   RVTEST_TESTDATA_LOAD_INT(x12, x15) # load rs2: x15 = 0x0000000000000012
+  RVTEST_TESTDATA_LOAD_INT(x12, x9) # load rd compare value: x9 = 0x00000000000000a7
   LA(x5, scratch) # load base address into rs1
   SREG x29, 0(x5) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b9_not_equal:
@@ -1966,6 +2112,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b9_not_equal:
 # Testcase cp_rd (Test destination rd = x10, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x20) # load value in memory: x20 = 0x0000000000000048
   RVTEST_TESTDATA_LOAD_INT(x12, x1) # load rs2: x1 = 0x00000000000000ce
+  RVTEST_TESTDATA_LOAD_INT(x12, x10) # load rd compare value: x10 = 0x0000000000000048
   LA(x21, scratch) # load base address into rs1
   SREG x20, 0(x21) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b10_equal:
@@ -1979,6 +2126,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b10_equal:
 # Testcase cp_rd (Test destination rd = x10, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x20) # load value in memory: x20 = 0x00000000000000c2
   RVTEST_TESTDATA_LOAD_INT(x12, x18) # load rs2: x18 = 0x00000000000000a4
+  RVTEST_TESTDATA_LOAD_INT(x12, x10) # load rd compare value: x10 = 0x00000000000000c4
   LA(x25, scratch) # load base address into rs1
   SREG x20, 0(x25) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b10_not_equal:
@@ -1992,6 +2140,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b10_not_equal:
 # Testcase cp_rd (Test destination rd = x11, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x10) # load value in memory: x10 = 0x0000000000000062
   RVTEST_TESTDATA_LOAD_INT(x12, x27) # load rs2: x27 = 0x000000000000000e
+  RVTEST_TESTDATA_LOAD_INT(x12, x11) # load rd compare value: x11 = 0x0000000000000062
   LA(x30, scratch) # load base address into rs1
   SREG x10, 0(x30) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b11_equal:
@@ -2005,6 +2154,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b11_equal:
 # Testcase cp_rd (Test destination rd = x11, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x12, x17) # load value in memory: x17 = 0x0000000000000020
   RVTEST_TESTDATA_LOAD_INT(x12, x29) # load rs2: x29 = 0x000000000000009f
+  RVTEST_TESTDATA_LOAD_INT(x12, x11) # load rd compare value: x11 = 0x00000000000000f4
   LA(x1, scratch) # load base address into rs1
   SREG x17, 0(x1) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b11_not_equal:
@@ -2019,6 +2169,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b11_not_equal:
 # Testcase cp_rd (Test destination rd = x12, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x29) # load value in memory: x29 = 0x0000000000000008
   RVTEST_TESTDATA_LOAD_INT(x27, x3) # load rs2: x3 = 0x0000000000000021
+  RVTEST_TESTDATA_LOAD_INT(x27, x12) # load rd compare value: x12 = 0x0000000000000008
   LA(x22, scratch) # load base address into rs1
   SREG x29, 0(x22) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b12_equal:
@@ -2032,6 +2183,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b12_equal:
 # Testcase cp_rd (Test destination rd = x12, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x1) # load value in memory: x1 = 0x0000000000000020
   RVTEST_TESTDATA_LOAD_INT(x27, x10) # load rs2: x10 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x12) # load rd compare value: x12 = 0x00000000000000e4
   LA(x28, scratch) # load base address into rs1
   SREG x1, 0(x28) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b12_not_equal:
@@ -2047,6 +2199,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b12_not_equal:
 # Testcase cp_rd (Test destination rd = x13, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x18) # load value in memory: x18 = 0x000000000000009d
   RVTEST_TESTDATA_LOAD_INT(x27, x2) # load rs2: x2 = 0x0000000000000046
+  RVTEST_TESTDATA_LOAD_INT(x27, x13) # load rd compare value: x13 = 0x000000000000009d
   LA(x29, scratch) # load base address into rs1
   SREG x18, 0(x29) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b13_equal:
@@ -2060,6 +2213,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b13_equal:
 # Testcase cp_rd (Test destination rd = x13, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x6) # load value in memory: x6 = 0x0000000000000097
   RVTEST_TESTDATA_LOAD_INT(x27, x21) # load rs2: x21 = 0x00000000000000f0
+  RVTEST_TESTDATA_LOAD_INT(x27, x13) # load rd compare value: x13 = 0x00000000000000ad
   LA(x3, scratch) # load base address into rs1
   SREG x6, 0(x3) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b13_not_equal:
@@ -2073,6 +2227,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b13_not_equal:
 # Testcase cp_rd (Test destination rd = x14, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x15) # load value in memory: x15 = 0x0000000000000041
   RVTEST_TESTDATA_LOAD_INT(x27, x23) # load rs2: x23 = 0x0000000000000010
+  RVTEST_TESTDATA_LOAD_INT(x27, x14) # load rd compare value: x14 = 0x0000000000000041
   LA(x29, scratch) # load base address into rs1
   SREG x15, 0(x29) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b14_equal:
@@ -2086,6 +2241,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b14_equal:
 # Testcase cp_rd (Test destination rd = x14, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x11) # load value in memory: x11 = 0x00000000000000ce
   RVTEST_TESTDATA_LOAD_INT(x27, x5) # load rs2: x5 = 0x000000000000002f
+  RVTEST_TESTDATA_LOAD_INT(x27, x14) # load rd compare value: x14 = 0x0000000000000012
   LA(x15, scratch) # load base address into rs1
   SREG x11, 0(x15) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b14_not_equal:
@@ -2099,6 +2255,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b14_not_equal:
 # Testcase cp_rd (Test destination rd = x15, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x10) # load value in memory: x10 = 0x0000000000000099
   RVTEST_TESTDATA_LOAD_INT(x27, x5) # load rs2: x5 = 0x0000000000000018
+  RVTEST_TESTDATA_LOAD_INT(x27, x15) # load rd compare value: x15 = 0x0000000000000099
   LA(x14, scratch) # load base address into rs1
   SREG x10, 0(x14) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b15_equal:
@@ -2112,6 +2269,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b15_equal:
 # Testcase cp_rd (Test destination rd = x15, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x23) # load value in memory: x23 = 0x00000000000000b3
   RVTEST_TESTDATA_LOAD_INT(x27, x22) # load rs2: x22 = 0x0000000000000013
+  RVTEST_TESTDATA_LOAD_INT(x27, x15) # load rd compare value: x15 = 0x0000000000000043
   LA(x30, scratch) # load base address into rs1
   SREG x23, 0(x30) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b15_not_equal:
@@ -2125,6 +2283,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b15_not_equal:
 # Testcase cp_rd (Test destination rd = x16, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x24) # load value in memory: x24 = 0x000000000000001b
   RVTEST_TESTDATA_LOAD_INT(x27, x11) # load rs2: x11 = 0x00000000000000a5
+  RVTEST_TESTDATA_LOAD_INT(x27, x16) # load rd compare value: x16 = 0x000000000000001b
   LA(x5, scratch) # load base address into rs1
   SREG x24, 0(x5) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b16_equal:
@@ -2138,6 +2297,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b16_equal:
 # Testcase cp_rd (Test destination rd = x16, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x15) # load value in memory: x15 = 0x0000000000000035
   RVTEST_TESTDATA_LOAD_INT(x27, x4) # load rs2: x4 = 0x0000000000000067
+  RVTEST_TESTDATA_LOAD_INT(x27, x16) # load rd compare value: x16 = 0x0000000000000023
   LA(x23, scratch) # load base address into rs1
   SREG x15, 0(x23) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b16_not_equal:
@@ -2151,6 +2311,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b16_not_equal:
 # Testcase cp_rd (Test destination rd = x17, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x1) # load value in memory: x1 = 0x00000000000000fa
   RVTEST_TESTDATA_LOAD_INT(x27, x16) # load rs2: x16 = 0x00000000000000d5
+  RVTEST_TESTDATA_LOAD_INT(x27, x17) # load rd compare value: x17 = 0x00000000000000fa
   LA(x6, scratch) # load base address into rs1
   SREG x1, 0(x6) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b17_equal:
@@ -2164,6 +2325,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b17_equal:
 # Testcase cp_rd (Test destination rd = x17, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x13) # load value in memory: x13 = 0x00000000000000a8
   RVTEST_TESTDATA_LOAD_INT(x27, x5) # load rs2: x5 = 0x00000000000000ad
+  RVTEST_TESTDATA_LOAD_INT(x27, x17) # load rd compare value: x17 = 0x0000000000000068
   LA(x21, scratch) # load base address into rs1
   SREG x13, 0(x21) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b17_not_equal:
@@ -2177,6 +2339,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b17_not_equal:
 # Testcase cp_rd (Test destination rd = x18, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x14) # load value in memory: x14 = 0x00000000000000d5
   RVTEST_TESTDATA_LOAD_INT(x27, x16) # load rs2: x16 = 0x0000000000000051
+  RVTEST_TESTDATA_LOAD_INT(x27, x18) # load rd compare value: x18 = 0x00000000000000d5
   LA(x13, scratch) # load base address into rs1
   SREG x14, 0(x13) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b18_equal:
@@ -2190,6 +2353,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b18_equal:
 # Testcase cp_rd (Test destination rd = x18, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x5) # load value in memory: x5 = 0x00000000000000b5
   RVTEST_TESTDATA_LOAD_INT(x27, x16) # load rs2: x16 = 0x00000000000000fe
+  RVTEST_TESTDATA_LOAD_INT(x27, x18) # load rd compare value: x18 = 0x00000000000000bd
   LA(x3, scratch) # load base address into rs1
   SREG x5, 0(x3) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b18_not_equal:
@@ -2203,6 +2367,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b18_not_equal:
 # Testcase cp_rd (Test destination rd = x19, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x14) # load value in memory: x14 = 0x0000000000000000
   RVTEST_TESTDATA_LOAD_INT(x27, x1) # load rs2: x1 = 0x000000000000002a
+  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load rd compare value: x19 = 0x0000000000000000
   LA(x12, scratch) # load base address into rs1
   SREG x14, 0(x12) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b19_equal:
@@ -2216,6 +2381,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b19_equal:
 # Testcase cp_rd (Test destination rd = x19, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x4) # load value in memory: x4 = 0x0000000000000000
   RVTEST_TESTDATA_LOAD_INT(x27, x2) # load rs2: x2 = 0x00000000000000ca
+  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load rd compare value: x19 = 0x0000000000000048
   LA(x13, scratch) # load base address into rs1
   SREG x4, 0(x13) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b19_not_equal:
@@ -2229,6 +2395,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b19_not_equal:
 # Testcase cp_rd (Test destination rd = x20, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x28) # load value in memory: x28 = 0x0000000000000000
   RVTEST_TESTDATA_LOAD_INT(x27, x11) # load rs2: x11 = 0x000000000000005f
+  RVTEST_TESTDATA_LOAD_INT(x27, x20) # load rd compare value: x20 = 0x0000000000000000
   LA(x30, scratch) # load base address into rs1
   SREG x28, 0(x30) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b20_equal:
@@ -2242,6 +2409,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b20_equal:
 # Testcase cp_rd (Test destination rd = x20, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x23) # load value in memory: x23 = 0x000000000000009f
   RVTEST_TESTDATA_LOAD_INT(x27, x10) # load rs2: x10 = 0x0000000000000041
+  RVTEST_TESTDATA_LOAD_INT(x27, x20) # load rd compare value: x20 = 0x00000000000000f2
   LA(x9, scratch) # load base address into rs1
   SREG x23, 0(x9) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b20_not_equal:
@@ -2255,6 +2423,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b20_not_equal:
 # Testcase cp_rd (Test destination rd = x21, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x23) # load value in memory: x23 = 0x0000000000000099
   RVTEST_TESTDATA_LOAD_INT(x27, x9) # load rs2: x9 = 0x000000000000003f
+  RVTEST_TESTDATA_LOAD_INT(x27, x21) # load rd compare value: x21 = 0x0000000000000099
   LA(x13, scratch) # load base address into rs1
   SREG x23, 0(x13) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b21_equal:
@@ -2268,6 +2437,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b21_equal:
 # Testcase cp_rd (Test destination rd = x21, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x20) # load value in memory: x20 = 0x00000000000000f5
   RVTEST_TESTDATA_LOAD_INT(x27, x13) # load rs2: x13 = 0x0000000000000047
+  RVTEST_TESTDATA_LOAD_INT(x27, x21) # load rd compare value: x21 = 0x0000000000000063
   LA(x11, scratch) # load base address into rs1
   SREG x20, 0(x11) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b21_not_equal:
@@ -2281,6 +2451,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b21_not_equal:
 # Testcase cp_rd (Test destination rd = x22, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x6) # load value in memory: x6 = 0x000000000000005c
   RVTEST_TESTDATA_LOAD_INT(x27, x15) # load rs2: x15 = 0x0000000000000056
+  RVTEST_TESTDATA_LOAD_INT(x27, x22) # load rd compare value: x22 = 0x000000000000005c
   LA(x10, scratch) # load base address into rs1
   SREG x6, 0(x10) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b22_equal:
@@ -2294,6 +2465,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b22_equal:
 # Testcase cp_rd (Test destination rd = x22, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x5) # load value in memory: x5 = 0x0000000000000037
   RVTEST_TESTDATA_LOAD_INT(x27, x17) # load rs2: x17 = 0x00000000000000a0
+  RVTEST_TESTDATA_LOAD_INT(x27, x22) # load rd compare value: x22 = 0x000000000000003e
   LA(x29, scratch) # load base address into rs1
   SREG x5, 0(x29) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b22_not_equal:
@@ -2307,6 +2479,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b22_not_equal:
 # Testcase cp_rd (Test destination rd = x23, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x16) # load value in memory: x16 = 0x00000000000000f8
   RVTEST_TESTDATA_LOAD_INT(x27, x25) # load rs2: x25 = 0x0000000000000070
+  RVTEST_TESTDATA_LOAD_INT(x27, x23) # load rd compare value: x23 = 0x00000000000000f8
   LA(x4, scratch) # load base address into rs1
   SREG x16, 0(x4) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b23_equal:
@@ -2320,6 +2493,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b23_equal:
 # Testcase cp_rd (Test destination rd = x23, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x12) # load value in memory: x12 = 0x0000000000000004
   RVTEST_TESTDATA_LOAD_INT(x27, x2) # load rs2: x2 = 0x0000000000000059
+  RVTEST_TESTDATA_LOAD_INT(x27, x23) # load rd compare value: x23 = 0x0000000000000083
   LA(x31, scratch) # load base address into rs1
   SREG x12, 0(x31) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b23_not_equal:
@@ -2333,6 +2507,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b23_not_equal:
 # Testcase cp_rd (Test destination rd = x24, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x11) # load value in memory: x11 = 0x00000000000000a6
   RVTEST_TESTDATA_LOAD_INT(x27, x4) # load rs2: x4 = 0x00000000000000dc
+  RVTEST_TESTDATA_LOAD_INT(x27, x24) # load rd compare value: x24 = 0x00000000000000a6
   LA(x6, scratch) # load base address into rs1
   SREG x11, 0(x6) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b24_equal:
@@ -2346,6 +2521,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b24_equal:
 # Testcase cp_rd (Test destination rd = x24, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x30) # load value in memory: x30 = 0x00000000000000b5
   RVTEST_TESTDATA_LOAD_INT(x27, x3) # load rs2: x3 = 0x0000000000000069
+  RVTEST_TESTDATA_LOAD_INT(x27, x24) # load rd compare value: x24 = 0x00000000000000d7
   LA(x14, scratch) # load base address into rs1
   SREG x30, 0(x14) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b24_not_equal:
@@ -2359,6 +2535,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b24_not_equal:
 # Testcase cp_rd (Test destination rd = x25, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x1) # load value in memory: x1 = 0x0000000000000059
   RVTEST_TESTDATA_LOAD_INT(x27, x21) # load rs2: x21 = 0x00000000000000d9
+  RVTEST_TESTDATA_LOAD_INT(x27, x25) # load rd compare value: x25 = 0x0000000000000059
   LA(x5, scratch) # load base address into rs1
   SREG x1, 0(x5) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b25_equal:
@@ -2372,6 +2549,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b25_equal:
 # Testcase cp_rd (Test destination rd = x25, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x10) # load value in memory: x10 = 0x000000000000007e
   RVTEST_TESTDATA_LOAD_INT(x27, x12) # load rs2: x12 = 0x00000000000000f9
+  RVTEST_TESTDATA_LOAD_INT(x27, x25) # load rd compare value: x25 = 0x00000000000000b4
   LA(x9, scratch) # load base address into rs1
   SREG x10, 0(x9) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b25_not_equal:
@@ -2386,6 +2564,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b25_not_equal:
 # Testcase cp_rd (Test destination rd = x26, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x1) # load value in memory: x1 = 0x0000000000000001
   RVTEST_TESTDATA_LOAD_INT(x27, x12) # load rs2: x12 = 0x00000000000000d0
+  RVTEST_TESTDATA_LOAD_INT(x27, x26) # load rd compare value: x26 = 0x0000000000000001
   LA(x19, scratch) # load base address into rs1
   SREG x1, 0(x19) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b26_equal:
@@ -2399,6 +2578,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b26_equal:
 # Testcase cp_rd (Test destination rd = x26, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x27, x14) # load value in memory: x14 = 0x0000000000000027
   RVTEST_TESTDATA_LOAD_INT(x27, x16) # load rs2: x16 = 0x00000000000000ad
+  RVTEST_TESTDATA_LOAD_INT(x27, x26) # load rd compare value: x26 = 0x0000000000000016
   LA(x25, scratch) # load base address into rs1
   SREG x14, 0(x25) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b26_not_equal:
@@ -2413,6 +2593,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b26_not_equal:
 # Testcase cp_rd (Test destination rd = x27, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x26, x10) # load value in memory: x10 = 0x00000000000000f9
   RVTEST_TESTDATA_LOAD_INT(x26, x9) # load rs2: x9 = 0x000000000000005c
+  RVTEST_TESTDATA_LOAD_INT(x26, x27) # load rd compare value: x27 = 0x00000000000000f9
   LA(x17, scratch) # load base address into rs1
   SREG x10, 0(x17) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b27_equal:
@@ -2426,6 +2607,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b27_equal:
 # Testcase cp_rd (Test destination rd = x27, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x26, x23) # load value in memory: x23 = 0x0000000000000055
   RVTEST_TESTDATA_LOAD_INT(x26, x14) # load rs2: x14 = 0x00000000000000eb
+  RVTEST_TESTDATA_LOAD_INT(x26, x27) # load rd compare value: x27 = 0x0000000000000092
   LA(x3, scratch) # load base address into rs1
   SREG x23, 0(x3) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b27_not_equal:
@@ -2439,6 +2621,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b27_not_equal:
 # Testcase cp_rd (Test destination rd = x28, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x26, x11) # load value in memory: x11 = 0x00000000000000a9
   RVTEST_TESTDATA_LOAD_INT(x26, x23) # load rs2: x23 = 0x00000000000000ae
+  RVTEST_TESTDATA_LOAD_INT(x26, x28) # load rd compare value: x28 = 0x00000000000000a9
   LA(x5, scratch) # load base address into rs1
   SREG x11, 0(x5) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b28_equal:
@@ -2452,6 +2635,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b28_equal:
 # Testcase cp_rd (Test destination rd = x28, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x26, x21) # load value in memory: x21 = 0x000000000000007e
   RVTEST_TESTDATA_LOAD_INT(x26, x19) # load rs2: x19 = 0x0000000000000091
+  RVTEST_TESTDATA_LOAD_INT(x26, x28) # load rd compare value: x28 = 0x0000000000000097
   LA(x4, scratch) # load base address into rs1
   SREG x21, 0(x4) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b28_not_equal:
@@ -2465,6 +2649,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b28_not_equal:
 # Testcase cp_rd (Test destination rd = x29, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x26, x5) # load value in memory: x5 = 0x0000000000000024
   RVTEST_TESTDATA_LOAD_INT(x26, x21) # load rs2: x21 = 0x00000000000000cb
+  RVTEST_TESTDATA_LOAD_INT(x26, x29) # load rd compare value: x29 = 0x0000000000000024
   LA(x31, scratch) # load base address into rs1
   SREG x5, 0(x31) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b29_equal:
@@ -2478,6 +2663,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b29_equal:
 # Testcase cp_rd (Test destination rd = x29, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x26, x15) # load value in memory: x15 = 0x0000000000000057
   RVTEST_TESTDATA_LOAD_INT(x26, x27) # load rs2: x27 = 0x00000000000000d7
+  RVTEST_TESTDATA_LOAD_INT(x26, x29) # load rd compare value: x29 = 0x0000000000000021
   LA(x17, scratch) # load base address into rs1
   SREG x15, 0(x17) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b29_not_equal:
@@ -2491,6 +2677,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b29_not_equal:
 # Testcase cp_rd (Test destination rd = x30, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x26, x3) # load value in memory: x3 = 0x00000000000000ee
   RVTEST_TESTDATA_LOAD_INT(x26, x21) # load rs2: x21 = 0x00000000000000b6
+  RVTEST_TESTDATA_LOAD_INT(x26, x30) # load rd compare value: x30 = 0x00000000000000ee
   LA(x12, scratch) # load base address into rs1
   SREG x3, 0(x12) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b30_equal:
@@ -2504,6 +2691,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b30_equal:
 # Testcase cp_rd (Test destination rd = x30, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x26, x14) # load value in memory: x14 = 0x0000000000000065
   RVTEST_TESTDATA_LOAD_INT(x26, x13) # load rs2: x13 = 0x00000000000000b6
+  RVTEST_TESTDATA_LOAD_INT(x26, x30) # load rd compare value: x30 = 0x00000000000000ab
   LA(x5, scratch) # load base address into rs1
   SREG x14, 0(x5) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b30_not_equal:
@@ -2517,6 +2705,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b30_not_equal:
 # Testcase cp_rd (Test destination rd = x31, matching (rd_val == mem_val))
   RVTEST_TESTDATA_LOAD_INT(x26, x27) # load value in memory: x27 = 0x00000000000000ca
   RVTEST_TESTDATA_LOAD_INT(x26, x28) # load rs2: x28 = 0x0000000000000047
+  RVTEST_TESTDATA_LOAD_INT(x26, x31) # load rd compare value: x31 = 0x00000000000000ca
   LA(x21, scratch) # load base address into rs1
   SREG x27, 0(x21) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b31_equal:
@@ -2530,6 +2719,7 @@ ZacasZabha_amocas_b_cg_cp_rd_b31_equal:
 # Testcase cp_rd (Test destination rd = x31, non-matching (rd_val != mem_val))
   RVTEST_TESTDATA_LOAD_INT(x26, x15) # load value in memory: x15 = 0x000000000000001e
   RVTEST_TESTDATA_LOAD_INT(x26, x30) # load rs2: x30 = 0x00000000000000c9
+  RVTEST_TESTDATA_LOAD_INT(x26, x31) # load rd compare value: x31 = 0x00000000000000d2
   LA(x6, scratch) # load base address into rs1
   SREG x15, 0(x6) # store value into memory at address in rs1
 ZacasZabha_amocas_b_cg_cp_rd_b31_not_equal:
@@ -4613,384 +4803,574 @@ RVTEST_DATA_BEGIN
 // Test data
 .dword 0x00000000000000cd
 .dword 0x0000000000000098
+.dword 0x00000000000000cd
 .dword 0x000000000000002d
 .dword 0x00000000000000dd
+.dword 0x000000000000009c
 .dword 0x0000000000000002
 .dword 0x0000000000000061
+.dword 0x0000000000000002
 .dword 0x000000000000009b
 .dword 0x00000000000000c9
+.dword 0x0000000000000016
 .dword 0x0000000000000043
 .dword 0x0000000000000078
+.dword 0x0000000000000043
 .dword 0x0000000000000093
 .dword 0x000000000000008c
+.dword 0x00000000000000fe
 .dword 0x00000000000000f7
 .dword 0x00000000000000d3
+.dword 0x00000000000000f7
 .dword 0x00000000000000c3
 .dword 0x00000000000000c3
+.dword 0x00000000000000dc
 .dword 0x0000000000000047
 .dword 0x0000000000000069
+.dword 0x0000000000000047
 .dword 0x00000000000000df
 .dword 0x000000000000008e
+.dword 0x0000000000000070
 .dword 0x0000000000000027
 .dword 0x00000000000000a0
+.dword 0x0000000000000027
 .dword 0x00000000000000bc
 .dword 0x00000000000000f8
+.dword 0x0000000000000065
 .dword 0x00000000000000bc
 .dword 0x0000000000000052
+.dword 0x00000000000000bc
 .dword 0x00000000000000f0
 .dword 0x0000000000000054
+.dword 0x0000000000000003
 .dword 0x00000000000000c5
 .dword 0x0000000000000097
+.dword 0x00000000000000c5
 .dword 0x000000000000007c
 .dword 0x00000000000000c4
+.dword 0x0000000000000037
 .dword 0x000000000000000a
 .dword 0x00000000000000d2
+.dword 0x000000000000000a
 .dword 0x00000000000000e7
 .dword 0x0000000000000059
+.dword 0x00000000000000a5
 .dword 0x00000000000000c4
 .dword 0x00000000000000eb
+.dword 0x00000000000000c4
 .dword 0x0000000000000064
 .dword 0x000000000000007e
+.dword 0x0000000000000045
 .dword 0x000000000000005f
 .dword 0x000000000000007b
+.dword 0x000000000000005f
 .dword 0x0000000000000089
 .dword 0x000000000000008d
+.dword 0x00000000000000b6
 .dword 0x0000000000000051
 .dword 0x000000000000004d
+.dword 0x0000000000000051
 .dword 0x00000000000000b7
 .dword 0x00000000000000a6
+.dword 0x000000000000009e
 .dword 0x00000000000000ae
 .dword 0x00000000000000e7
+.dword 0x00000000000000ae
 .dword 0x000000000000004a
 .dword 0x000000000000004e
+.dword 0x00000000000000b8
 .dword 0x0000000000000070
 .dword 0x00000000000000f2
+.dword 0x0000000000000070
 .dword 0x00000000000000dd
 .dword 0x00000000000000e7
+.dword 0x00000000000000c9
 .dword 0x0000000000000095
 .dword 0x000000000000009b
+.dword 0x0000000000000095
 .dword 0x0000000000000064
 .dword 0x00000000000000da
+.dword 0x0000000000000086
 .dword 0x000000000000007d
 .dword 0x0000000000000056
+.dword 0x000000000000007d
 .dword 0x00000000000000ab
 .dword 0x00000000000000dc
+.dword 0x0000000000000056
 .dword 0x000000000000005f
 .dword 0x000000000000009d
+.dword 0x000000000000005f
 .dword 0x0000000000000074
 .dword 0x0000000000000000
+.dword 0x0000000000000041
 .dword 0x0000000000000031
 .dword 0x0000000000000065
+.dword 0x0000000000000031
 .dword 0x000000000000005f
 .dword 0x0000000000000037
+.dword 0x0000000000000079
 .dword 0x000000000000007a
 .dword 0x0000000000000003
+.dword 0x000000000000007a
 .dword 0x000000000000002c
 .dword 0x00000000000000bf
+.dword 0x00000000000000e5
 .dword 0x000000000000005b
 .dword 0x00000000000000ec
+.dword 0x000000000000005b
 .dword 0x00000000000000eb
 .dword 0x00000000000000c2
+.dword 0x0000000000000038
 .dword 0x000000000000001e
 .dword 0x000000000000006a
+.dword 0x000000000000001e
 .dword 0x000000000000007d
 .dword 0x000000000000004d
+.dword 0x0000000000000034
 .dword 0x0000000000000052
 .dword 0x0000000000000058
+.dword 0x0000000000000052
 .dword 0x0000000000000061
 .dword 0x00000000000000a4
+.dword 0x00000000000000c8
 .dword 0x000000000000000b
 .dword 0x000000000000007e
+.dword 0x000000000000000b
 .dword 0x0000000000000077
 .dword 0x00000000000000be
+.dword 0x000000000000008f
 .dword 0x0000000000000032
 .dword 0x000000000000008d
+.dword 0x0000000000000032
 .dword 0x000000000000008e
 .dword 0x000000000000006a
+.dword 0x00000000000000c3
 .dword 0x0000000000000073
 .dword 0x00000000000000c3
+.dword 0x0000000000000073
 .dword 0x00000000000000fc
 .dword 0x0000000000000093
+.dword 0x0000000000000008
 .dword 0x0000000000000064
 .dword 0x00000000000000d6
+.dword 0x0000000000000064
 .dword 0x000000000000002d
 .dword 0x00000000000000ee
+.dword 0x00000000000000ac
 .dword 0x000000000000003b
 .dword 0x00000000000000d4
+.dword 0x000000000000003b
 .dword 0x00000000000000fb
 .dword 0x000000000000003e
+.dword 0x000000000000006e
 .dword 0x0000000000000032
 .dword 0x00000000000000c0
+.dword 0x0000000000000032
 .dword 0x000000000000006c
 .dword 0x0000000000000053
+.dword 0x0000000000000081
 .dword 0x000000000000008b
 .dword 0x0000000000000080
+.dword 0x000000000000008b
 .dword 0x00000000000000ec
 .dword 0x0000000000000047
+.dword 0x0000000000000031
 .dword 0x0000000000000078
 .dword 0x00000000000000e3
+.dword 0x0000000000000078
 .dword 0x000000000000005c
 .dword 0x0000000000000090
+.dword 0x00000000000000a5
 .dword 0x00000000000000df
 .dword 0x0000000000000039
+.dword 0x00000000000000df
 .dword 0x0000000000000089
 .dword 0x00000000000000d0
+.dword 0x000000000000009f
 .dword 0x00000000000000b3
 .dword 0x00000000000000a4
+.dword 0x00000000000000b3
 .dword 0x0000000000000005
 .dword 0x00000000000000f6
+.dword 0x00000000000000c5
 .dword 0x0000000000000015
 .dword 0x0000000000000033
+.dword 0x0000000000000015
 .dword 0x0000000000000023
 .dword 0x000000000000002f
+.dword 0x000000000000003a
 .dword 0x0000000000000030
 .dword 0x000000000000009d
+.dword 0x0000000000000030
 .dword 0x0000000000000097
 .dword 0x0000000000000072
+.dword 0x000000000000002c
 .dword 0x0000000000000052
 .dword 0x0000000000000060
+.dword 0x0000000000000052
 .dword 0x0000000000000067
 .dword 0x0000000000000077
+.dword 0x0000000000000089
 .dword 0x00000000000000cf
 .dword 0x0000000000000003
+.dword 0x00000000000000cf
 .dword 0x0000000000000031
 .dword 0x0000000000000065
+.dword 0x00000000000000f9
 .dword 0x00000000000000c8
 .dword 0x0000000000000098
+.dword 0x00000000000000c8
 .dword 0x00000000000000fc
 .dword 0x0000000000000075
+.dword 0x0000000000000027
 .dword 0x0000000000000040
 .dword 0x0000000000000089
+.dword 0x0000000000000040
 .dword 0x0000000000000090
 .dword 0x00000000000000ea
+.dword 0x000000000000002f
 .dword 0x00000000000000f8
 .dword 0x00000000000000fe
+.dword 0x00000000000000f8
 .dword 0x0000000000000009
 .dword 0x00000000000000ec
+.dword 0x0000000000000075
 .dword 0x00000000000000dd
 .dword 0x000000000000003e
+.dword 0x00000000000000dd
 .dword 0x0000000000000039
 .dword 0x0000000000000073
+.dword 0x00000000000000f0
 .dword 0x00000000000000e5
 .dword 0x0000000000000054
+.dword 0x00000000000000e5
 .dword 0x0000000000000070
 .dword 0x000000000000003d
+.dword 0x00000000000000d4
 .dword 0x0000000000000052
 .dword 0x0000000000000035
+.dword 0x0000000000000052
 .dword 0x00000000000000fb
 .dword 0x00000000000000fc
+.dword 0x000000000000006b
 .dword 0x00000000000000d9
 .dword 0x00000000000000eb
+.dword 0x00000000000000d9
 .dword 0x00000000000000b3
 .dword 0x00000000000000e5
+.dword 0x00000000000000fd
 .dword 0x0000000000000068
 .dword 0x00000000000000c6
+.dword 0x0000000000000068
 .dword 0x000000000000004f
 .dword 0x0000000000000065
+.dword 0x0000000000000023
 .dword 0x00000000000000b2
 .dword 0x00000000000000f8
+.dword 0x00000000000000b2
 .dword 0x0000000000000003
 .dword 0x00000000000000f4
+.dword 0x00000000000000b7
 .dword 0x0000000000000040
 .dword 0x0000000000000052
+.dword 0x0000000000000040
 .dword 0x00000000000000b9
 .dword 0x0000000000000074
+.dword 0x0000000000000035
 .dword 0x0000000000000067
 .dword 0x00000000000000bd
+.dword 0x0000000000000067
 .dword 0x000000000000009c
 .dword 0x00000000000000b4
+.dword 0x0000000000000058
 .dword 0x0000000000000049
 .dword 0x0000000000000050
+.dword 0x0000000000000049
 .dword 0x000000000000009a
 .dword 0x0000000000000025
+.dword 0x000000000000005a
 .dword 0x00000000000000a2
 .dword 0x00000000000000c3
+.dword 0x00000000000000a2
 .dword 0x00000000000000d1
 .dword 0x000000000000004c
+.dword 0x00000000000000af
 .dword 0x000000000000003d
 .dword 0x0000000000000063
+.dword 0x000000000000003d
 .dword 0x000000000000009c
 .dword 0x0000000000000090
+.dword 0x000000000000002b
 .dword 0x0000000000000002
 .dword 0x00000000000000c3
+.dword 0x0000000000000002
 .dword 0x00000000000000ee
 .dword 0x00000000000000f6
+.dword 0x00000000000000fb
 .dword 0x0000000000000083
 .dword 0x0000000000000065
+.dword 0x0000000000000083
 .dword 0x0000000000000093
 .dword 0x00000000000000c7
+.dword 0x000000000000001c
 .dword 0x0000000000000075
 .dword 0x000000000000001c
+.dword 0x0000000000000075
 .dword 0x0000000000000013
 .dword 0x00000000000000e5
+.dword 0x0000000000000027
 .dword 0x000000000000002f
 .dword 0x0000000000000059
+.dword 0x000000000000002f
 .dword 0x000000000000004b
 .dword 0x000000000000003a
+.dword 0x000000000000006f
 .dword 0x00000000000000f8
 .dword 0x0000000000000061
+.dword 0x00000000000000f8
 .dword 0x00000000000000d9
 .dword 0x000000000000004a
+.dword 0x000000000000000e
 .dword 0x00000000000000b9
 .dword 0x0000000000000085
+.dword 0x00000000000000b9
 .dword 0x00000000000000c5
 .dword 0x0000000000000011
+.dword 0x0000000000000029
 .dword 0x0000000000000086
 .dword 0x000000000000006e
+.dword 0x0000000000000086
 .dword 0x00000000000000ce
 .dword 0x0000000000000005
+.dword 0x0000000000000041
 .dword 0x00000000000000bd
 .dword 0x000000000000000a
+.dword 0x00000000000000bd
 .dword 0x0000000000000049
 .dword 0x00000000000000be
+.dword 0x0000000000000067
 .dword 0x000000000000009b
 .dword 0x000000000000009e
+.dword 0x000000000000009b
 .dword 0x0000000000000044
 .dword 0x00000000000000e3
+.dword 0x0000000000000018
 .dword 0x0000000000000061
 .dword 0x00000000000000af
+.dword 0x0000000000000061
 .dword 0x0000000000000092
 .dword 0x00000000000000ae
+.dword 0x00000000000000b7
 .dword 0x00000000000000f1
 .dword 0x00000000000000d0
+.dword 0x00000000000000f1
 .dword 0x00000000000000a5
 .dword 0x0000000000000021
+.dword 0x0000000000000087
 .dword 0x0000000000000018
 .dword 0x00000000000000e1
+.dword 0x0000000000000018
 .dword 0x00000000000000a8
 .dword 0x0000000000000023
+.dword 0x00000000000000d4
 .dword 0x00000000000000b9
 .dword 0x00000000000000fa
+.dword 0x00000000000000b9
 .dword 0x0000000000000020
 .dword 0x00000000000000a5
+.dword 0x00000000000000b2
 .dword 0x0000000000000001
 .dword 0x00000000000000a3
+.dword 0x0000000000000001
 .dword 0x000000000000005c
 .dword 0x00000000000000cb
+.dword 0x0000000000000044
 .dword 0x0000000000000021
 .dword 0x00000000000000c5
+.dword 0x0000000000000021
 .dword 0x000000000000004a
 .dword 0x0000000000000013
+.dword 0x000000000000007f
 .dword 0x0000000000000065
 .dword 0x00000000000000ee
+.dword 0x0000000000000065
 .dword 0x00000000000000e8
 .dword 0x0000000000000095
+.dword 0x0000000000000058
 .dword 0x00000000000000b1
 .dword 0x00000000000000ee
+.dword 0x00000000000000b1
 .dword 0x00000000000000e0
 .dword 0x0000000000000053
+.dword 0x0000000000000080
 .dword 0x000000000000000b
 .dword 0x0000000000000089
+.dword 0x000000000000000b
 .dword 0x00000000000000d0
 .dword 0x0000000000000056
+.dword 0x00000000000000ae
 .dword 0x0000000000000030
 .dword 0x00000000000000d8
+.dword 0x0000000000000030
 .dword 0x000000000000004b
 .dword 0x0000000000000035
+.dword 0x0000000000000015
 .dword 0x000000000000005f
 .dword 0x000000000000006e
+.dword 0x000000000000005f
 .dword 0x0000000000000056
 .dword 0x0000000000000050
+.dword 0x00000000000000ab
 .dword 0x00000000000000cf
 .dword 0x000000000000006a
+.dword 0x00000000000000cf
 .dword 0x000000000000006f
 .dword 0x000000000000004a
+.dword 0x000000000000006c
 .dword 0x00000000000000bc
 .dword 0x0000000000000008
+.dword 0x00000000000000bc
 .dword 0x00000000000000b7
 .dword 0x0000000000000078
+.dword 0x0000000000000058
 .dword 0x0000000000000031
 .dword 0x0000000000000055
+.dword 0x0000000000000031
 .dword 0x0000000000000035
 .dword 0x0000000000000012
+.dword 0x00000000000000a7
 .dword 0x0000000000000048
 .dword 0x00000000000000ce
+.dword 0x0000000000000048
 .dword 0x00000000000000c2
 .dword 0x00000000000000a4
+.dword 0x00000000000000c4
 .dword 0x0000000000000062
 .dword 0x000000000000000e
+.dword 0x0000000000000062
 .dword 0x0000000000000020
 .dword 0x000000000000009f
+.dword 0x00000000000000f4
 .dword 0x0000000000000008
 .dword 0x0000000000000021
+.dword 0x0000000000000008
 .dword 0x0000000000000020
 .dword 0x0000000000000000
+.dword 0x00000000000000e4
 .dword 0x000000000000009d
 .dword 0x0000000000000046
+.dword 0x000000000000009d
 .dword 0x0000000000000097
 .dword 0x00000000000000f0
+.dword 0x00000000000000ad
 .dword 0x0000000000000041
 .dword 0x0000000000000010
+.dword 0x0000000000000041
 .dword 0x00000000000000ce
 .dword 0x000000000000002f
+.dword 0x0000000000000012
 .dword 0x0000000000000099
 .dword 0x0000000000000018
+.dword 0x0000000000000099
 .dword 0x00000000000000b3
 .dword 0x0000000000000013
+.dword 0x0000000000000043
 .dword 0x000000000000001b
 .dword 0x00000000000000a5
+.dword 0x000000000000001b
 .dword 0x0000000000000035
 .dword 0x0000000000000067
+.dword 0x0000000000000023
 .dword 0x00000000000000fa
 .dword 0x00000000000000d5
+.dword 0x00000000000000fa
 .dword 0x00000000000000a8
 .dword 0x00000000000000ad
+.dword 0x0000000000000068
 .dword 0x00000000000000d5
 .dword 0x0000000000000051
+.dword 0x00000000000000d5
 .dword 0x00000000000000b5
 .dword 0x00000000000000fe
+.dword 0x00000000000000bd
 .dword 0x0000000000000000
 .dword 0x000000000000002a
 .dword 0x0000000000000000
+.dword 0x0000000000000000
 .dword 0x00000000000000ca
+.dword 0x0000000000000048
 .dword 0x0000000000000000
 .dword 0x000000000000005f
+.dword 0x0000000000000000
 .dword 0x000000000000009f
 .dword 0x0000000000000041
+.dword 0x00000000000000f2
 .dword 0x0000000000000099
 .dword 0x000000000000003f
+.dword 0x0000000000000099
 .dword 0x00000000000000f5
 .dword 0x0000000000000047
+.dword 0x0000000000000063
 .dword 0x000000000000005c
 .dword 0x0000000000000056
+.dword 0x000000000000005c
 .dword 0x0000000000000037
 .dword 0x00000000000000a0
+.dword 0x000000000000003e
 .dword 0x00000000000000f8
 .dword 0x0000000000000070
+.dword 0x00000000000000f8
 .dword 0x0000000000000004
 .dword 0x0000000000000059
+.dword 0x0000000000000083
 .dword 0x00000000000000a6
 .dword 0x00000000000000dc
+.dword 0x00000000000000a6
 .dword 0x00000000000000b5
 .dword 0x0000000000000069
+.dword 0x00000000000000d7
 .dword 0x0000000000000059
 .dword 0x00000000000000d9
+.dword 0x0000000000000059
 .dword 0x000000000000007e
 .dword 0x00000000000000f9
+.dword 0x00000000000000b4
 .dword 0x0000000000000001
 .dword 0x00000000000000d0
+.dword 0x0000000000000001
 .dword 0x0000000000000027
 .dword 0x00000000000000ad
+.dword 0x0000000000000016
 .dword 0x00000000000000f9
 .dword 0x000000000000005c
+.dword 0x00000000000000f9
 .dword 0x0000000000000055
 .dword 0x00000000000000eb
+.dword 0x0000000000000092
 .dword 0x00000000000000a9
 .dword 0x00000000000000ae
+.dword 0x00000000000000a9
 .dword 0x000000000000007e
 .dword 0x0000000000000091
+.dword 0x0000000000000097
 .dword 0x0000000000000024
 .dword 0x00000000000000cb
+.dword 0x0000000000000024
 .dword 0x0000000000000057
 .dword 0x00000000000000d7
+.dword 0x0000000000000021
 .dword 0x00000000000000ee
 .dword 0x00000000000000b6
+.dword 0x00000000000000ee
 .dword 0x0000000000000065
 .dword 0x00000000000000b6
+.dword 0x00000000000000ab
 .dword 0x00000000000000ca
 .dword 0x0000000000000047
+.dword 0x00000000000000ca
 .dword 0x000000000000001e
 .dword 0x00000000000000c9
+.dword 0x00000000000000d2
 .dword 0xf03ad6f1de507620
 .dword 0x0000000000000000
 .dword 0x531a29487c091525

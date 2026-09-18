@@ -9,7 +9,11 @@ from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
 
-cjr_config = InstructionTypeConfig(required_params={"rs1", "temp_reg", "temp_val"}, reg_range=range(1, 32))
+cjr_config = InstructionTypeConfig(
+    required_params={"rs1", "temp_reg", "temp_val"},
+    optional_params={"rd"},  # the link register is fixed by the encoding, not drawn
+    reg_range=range(1, 32),
+)
 
 
 @add_instruction_formatter("CJR", cjr_config)

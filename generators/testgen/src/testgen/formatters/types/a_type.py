@@ -10,7 +10,10 @@ from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
 
-a_config = InstructionTypeConfig(required_params={"rd", "rs1", "rs1val", "rs2", "rs2val", "temp_reg"})
+a_config = InstructionTypeConfig(
+    required_params={"rd", "rs1", "rs1val", "rs2", "rs2val", "temp_reg"},
+    optional_params={"rdval"},
+)
 
 
 @add_instruction_formatter("A", a_config)
@@ -30,6 +33,11 @@ def format_a_type(
     setup = [
         load_int_reg("value in memory", params.temp_reg, params.rs1val, test_data),
         load_int_reg("rs2", params.rs2, params.rs2val, test_data),
+    ]
+    if params.rdval is not None:
+        # amocas compares rd against memory, so rd has to hold the comparand
+        setup.append(load_int_reg("rd compare value", params.rd, params.rdval, test_data))
+    setup += [
         f"LA(x{params.rs1}, scratch) # load base address into rs1",
         f"SREG x{params.temp_reg}, 0(x{params.rs1}) # store value into memory at address in rs1",
     ]

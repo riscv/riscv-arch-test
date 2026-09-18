@@ -12,7 +12,7 @@
 //   Debug Trigger coverpoints common to SdtrigSm, SdtrigS, SdtrigU
 //
 ///////////////////////////////////////////
-`ifndef
+`ifndef UDB_NUM_TRIGGERS
     `define UDB_NUM_TRIGGERS 2
 `endif
 
@@ -20,3 +20,9 @@ triggernum: coverpoint ins.current.csr[CSR_TSELECT] {
     type_option.weight = 0;
     bins all_triggers[] = {[0:`UDB_NUM_TRIGGERS-1]};
 }
+csrr: coverpoint ins.current.insn{
+        wildcard bins csrr = {CSRR};
+    }
+csrw: coverpoint ins.current.insn{
+        wildcard bins csrw = {CSRW};
+    }

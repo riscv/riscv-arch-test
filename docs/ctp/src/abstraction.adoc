@@ -138,7 +138,7 @@ If a macro needs machine mode privileges to perform its function but might be ca
 
 Because profiles such as RVA23 do not require portable M-mode, the test suites go through weird and wonderful gymnastics to avoid directly using M-mode for supervisor and user-level features. This is described further in the RVA23 Certification Requirement Document. Thus, tests are divided into machine and non-machine tests.
 
-Machine test suites are suffixed with Sm.  They boot to M-mode and test M-mode features as defined in the privileged ISA manual. They can freely switch privilege modes within tests, such as to check traps from a lower privilege mode into M-mode.  Examples include Sm, InterruptsSm, ExceptionsSm, PMPZca, and Smstateen. Machine test suites are not part of the certification tests for RVA23 or other profiles that do not require M-mode.
+Machine test suites are usually but not always suffixed with Sm.  They boot to M-mode and test M-mode features as defined in the privileged ISA manual. They can freely switch privilege modes within tests, such as to check traps from a lower privilege mode into M-mode.  Examples include Sm, InterruptsSm, ExceptionsSm, PMPZca, and Smstateen. Machine test suites are not part of the certification tests for RVA23 or other profiles that do not require M-mode.
 
 Non-machine tests boot to S or U mode.  They only access M-mode features via the T-SBI.  They can switch privilege modes within tests, but never enter M-mode except via T-SBI calls that manipulate state and return to the calling mode.  They expect all other traps to be delegated to supervisor level (or below) if supervisor exists.
 

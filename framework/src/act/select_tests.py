@@ -11,6 +11,7 @@ import re
 from collections.abc import Sequence
 from pathlib import Path
 
+from act.certificate_tests import get_certificate_test_suites
 from act.config import Config, load_config
 from act.parse_test_constraints import ExtensionRequirement, TestMetadata
 from act.parse_udb_config import get_config_params, get_implemented_extensions, prepare_dut_outputs
@@ -114,8 +115,19 @@ def select_tests(
     return selected_tests
 
 
+def filter_tests_by_certificate(test_dict: dict[str, TestMetadata], certificate: str) -> dict[str, TestMetadata]:
+    """Select tests in suites that apply to a certificate."""
+    certificate_test_suites = get_certificate_test_suites(certificate)
+    return {
+        test_name: test_metadata
+        for test_name, test_metadata in test_dict.items()
+        if Path(test_name).parent.name in certificate_test_suites
+    }
+
+
 def prepare_configs_and_select_tests(
     config_files: Sequence[Path],
+    certificate: str | None,
     full_test_dict: dict[str, TestMetadata],
     workdir: Path,
     *,
@@ -132,6 +144,7 @@ def prepare_configs_and_select_tests(
 
     Args:
         config_files: ACT test config files to load.
+        certificate: Certificate that limits selected tests to its test suites.
         full_test_dict: Candidate tests, usually from ``generate_test_dict``.
         workdir: Directory for generated UDB outputs (one subdir per config).
         jobs: Parallelism for DUT output generation.
@@ -150,5 +163,7 @@ def prepare_configs_and_select_tests(
         selected_tests = select_tests(
             full_test_dict, implemented_extensions, config_params, include_priv_tests=config.include_priv_tests
         )
+        if certificate:
+            selected_tests = filter_tests_by_certificate(selected_tests, certificate)
         results.append((config, config_params, selected_tests))
     return results

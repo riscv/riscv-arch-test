@@ -10,7 +10,7 @@ from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
 
-csr_config = InstructionTypeConfig(required_params={"rd", "rs1", "rs1val", "rs2", "rs2val"})
+csr_config = InstructionTypeConfig(required_params={"rd", "rs1", "rs1val", "temp_reg", "temp_val"})
 
 
 def zicsr_access(instr_name: str, rd: int, rs1: int) -> str:
@@ -40,14 +40,14 @@ def format_csr_type(
 ) -> tuple[list[str], list[str], list[str]]:
     """Format CSR-type instruction."""
     assert params.rs1 is not None and params.rs1val is not None
-    assert params.rs2 is not None and params.rs2val is not None
+    assert params.temp_reg is not None and params.temp_val is not None
     assert params.rd is not None
     setup = [
         load_int_reg("rs1", params.rs1, params.rs1val, test_data),
-        load_int_reg("temp reg", params.rs2, params.rs2val, test_data),
+        load_int_reg("temp reg", params.temp_reg, params.temp_val, test_data),
         "// Initialize CSR with random value",
         "// Pick most suitable CSR to test based on supported extensions",
-        zicsr_access("csrrw", 0, params.rs2),
+        zicsr_access("csrrw", 0, params.temp_reg),
     ]
     test = [
         "// perform operation",
@@ -56,7 +56,7 @@ def format_csr_type(
     check = [
         write_sigupd(params.rd, test_data, "int"),
         "// read back CSR to check updated value",
-        zicsr_access("csrrs", params.rs2, 0),
-        write_sigupd(params.rs2, test_data, "int"),
+        zicsr_access("csrrs", params.temp_reg, 0),
+        write_sigupd(params.temp_reg, test_data, "int"),
     ]
     return (setup, test, check)

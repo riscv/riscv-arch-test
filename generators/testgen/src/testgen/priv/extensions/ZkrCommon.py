@@ -81,14 +81,14 @@ def gen_seed_csrrw_tests(test_data: TestData, covergroup: str, mode: str) -> lis
 
 
 def gen_seed_illegal_csr_op_tests(test_data: TestData, covergroup: str, mode: str) -> list[str]:
-    """Read-only CSR ops on seed cause an illegal instruction in this suite's mode."""
+    """CSR ops on seed in this suite's mode; only the read-only forms cause an illegal instruction."""
     coverpoint = "cp_zkr_seed_illegal_csr_op"
 
     dest_reg, mseccfg_reg, rs1_reg, save_reg = test_data.int_regs.get_registers(4)
 
     sseed_useed_enabled = (1 << 9) | (1 << 8)
     lines = [
-        comment_banner(coverpoint, f"CSR read ops on seed cause illegal instruction in {mode}-mode"),
+        comment_banner(coverpoint, f"CSR ops on seed in {mode}-mode; only the read-only forms trap"),
         *_gate(
             mode,
             [
@@ -104,10 +104,10 @@ def gen_seed_illegal_csr_op_tests(test_data: TestData, covergroup: str, mode: st
     csr_ops: list[tuple[str, bool]] = [
         ("csrrs", False),
         ("csrrc", False),
-        ("csrrwi", True),
+        ("csrrwi", True),  # not a read of seed, so it does not trap
         ("csrrsi", True),
         ("csrrci", True),
-        ("csrrw", False),
+        ("csrrw", False),  # not a read of seed, so it does not trap
     ]
 
     for op, is_imm in csr_ops:

@@ -575,8 +575,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (0 << 34)  # SXL:  Supervisor-Mode XLEN  not supported by Sail.  Test in xlen suite.
         | (0 << 36)  # SBE not supported by Sail; test in Endian
         | (0 << 37)  # MBE not supported by Sail; test in Endian
-        | (0 << 38)  # GVA not supported by Sail; TODO change to 1 when H is implemented
-        | (0 << 39)  # MPV not supported by Sail; TODO change to 1 when H is implemented
+        | (1 << 38)
+        | (1 << 39)
         | (1 << 41)  # MPELP: Machine Previous Expect Landing Pad
         | (0 << 42)  # MDT:   not yet supported by Sail; TODO change to 1 when Smdbltrp implemented
         | (1 << 63)  # SD for RV64

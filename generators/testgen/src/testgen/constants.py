@@ -60,42 +60,12 @@ EXTENSION_PARAM_MAP = {
 # FLEN Mapping
 # =============================================================================
 
-# Extensions requiring 128-bit FLEN (Q extension)
-FLEN_128_EXTENSIONS = frozenset(
-    {
-        "Q",
-        "ZfaQ",
-        "ZfhQ",
-    }
-)
 
-# Extensions requiring 64-bit FLEN (D extension)
-FLEN_64_EXTENSIONS = frozenset(
-    {
-        "D",
-        "ZfhD",
-        "ZfhminD",
-        "ZfaD",
-        "ZfaZfhD",
-        "Zcd",
-    }
-)
-
-# All other extensions default to 32-bit FLEN
-
-
-def get_flen_for_extension(extension: str) -> int:
-    """Get the required FLEN for a given extension.
-
-    Args:
-        extension: The extension name (e.g., 'F', 'D', 'Q')
-
-    Returns:
-        The FLEN value (32, 64, or 128)
-    """
-    if extension in FLEN_128_EXTENSIONS:
+def get_flen_for_extensions(extensions: list[str]) -> int:
+    """Get the required FLEN for canonical extension components."""
+    if "Q" in extensions:
         return 128
-    if extension in FLEN_64_EXTENSIONS:
+    if "D" in extensions:
         return 64
     return 32
 
@@ -108,16 +78,6 @@ def get_flen_for_extension(extension: str) -> int:
 # (they are already covered by other tests)
 SKIP_COVERPOINTS = frozenset(
     {
-        # FP flags - covered by edge tests
-        "cp_csr_fflags_n",
-        "cp_csr_fflags_on",
-        "cp_csr_fflags_v",
-        "cp_csr_fflags_vd",
-        "cp_csr_fflags_vdon",
-        "cp_csr_fflags_vdoun",
-        "cp_csr_fflags_vn",
-        "cp_csr_fflags_von",
-        "cp_csr_fflags_voun",
         # FP classification - covered elsewhere
         "cp_fclass",
     }

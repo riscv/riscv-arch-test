@@ -126,6 +126,7 @@ jobs:
             const needsAuthor = "status: needs-author";
             const needsReview = "status: needs-review";
             const approved = "status: approved";
+            const automaticStatuses = new Set([needsAuthor, needsReview, approved]);
             const fixInPr = "status: fix-in-pr";
             const { owner, repo } = context.repo;
             const repositoryName = `${owner}/${repo}`;
@@ -235,11 +236,13 @@ jobs:
                 labels.add("dependencies");
               }
 
-              if (labels.size > 0) {
+              const existingLabels = new Set((await getLabels(pull_number)).map(({ name }) => name));
+              const labelsToAdd = [...labels].filter((label) => !existingLabels.has(label));
+              if (labelsToAdd.length > 0) {
                 await github.rest.issues.addLabels({
                   ...context.repo,
                   issue_number: pull_number,
-                  labels: [...labels],
+                  labels: labelsToAdd,
                 });
               }
             }
@@ -333,15 +336,14 @@ jobs:
               const labels = await getLabels(pullRequest.number);
               const statusLabels = labels.map(({ name }) => name).filter((name) => name.startsWith(statusPrefix));
               const reviewStatus = await reviewStatusOnHead(pullRequest);
-              if (reviewStatus.needsAuthor) {
+              const canUpdateStatus = statusLabels.every((status) => automaticStatuses.has(status));
+              if (reviewStatus.needsAuthor && canUpdateStatus) {
                 await setStatus(pullRequest.number, needsAuthor);
-              } else if (reviewStatus.changesRequested) {
-                await setStatus(pullRequest.number, needsReview);
-              } else if (reviewStatus.approved) {
-                await setStatus(pullRequest.number, approved);
               } else if (statusLabels.includes(needsAuthor) && (await hasCommitSinceNeedsAuthor(pullRequest))) {
                 await setStatus(pullRequest.number, needsReview);
-              } else if (statusLabels.length === 0 || statusLabels.includes(approved)) {
+              } else if (reviewStatus.approved && canUpdateStatus) {
+                await setStatus(pullRequest.number, approved);
+              } else if (statusLabels.length === 0) {
                 await setStatus(pullRequest.number, needsReview);
               }
 

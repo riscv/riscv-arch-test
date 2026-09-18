@@ -789,6 +789,11 @@
     .dword 0xDEAD001FFFE0BEEF, 0xDEAD0020FFDFBEEF
     .dword 0xDEAD0021FFDEBEEF
 
+  // Temporary memory for RVTEST_SIGUPD_F.
+  .p2align 4
+  fp_sigupd_temp:
+    .dword 0xDEADF001FFFEBEEF, 0xDEADF002FFFDBEEF
+
   // Global counter of the number of traps taken, incremented by every mode's
   // trap handler. Lives in .data (NOT the signature region) so it does not
   // participate in signature self-checking. Readable from any privilege mode

@@ -21,7 +21,7 @@
 # Global ARGs - declared before any FROM so they are overridable across all stages.
 # Each stage that uses them must redeclare them with a bare ARG (no default) to bring them into scope.
 ARG RISCV_TOOLCHAIN_PREFIX=/opt/riscv
-ARG SAIL_VERSION=0.13.1
+ARG SAIL_VERSION=0.14.1
 ARG RISCV_TOOLCHAIN_VERSION=2026.08.27
 
 # Stage 1: build riscv-gnu-toolchain
@@ -138,8 +138,7 @@ COPY generators/testgen/src/testgen/__init__.py /act4/generators/testgen/src/tes
 # Pre-download all Python dependencies so `uv sync` is a no-op at runtime.
 RUN cd /act4 \
   && mise install \
-  && mise exec -- bundle install \
-  && mise exec -- uv sync
+  && mise deps --skip prek
 
 # Fix permissions so that any user can use it
 RUN chmod -R 777 /act4 /home/shared

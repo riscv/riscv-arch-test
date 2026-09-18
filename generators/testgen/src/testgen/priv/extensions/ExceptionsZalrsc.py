@@ -53,8 +53,6 @@ def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
     addr_reg, data_reg, rd_reg, temp_reg, base_reg, check_reg = test_data.int_regs.get_registers(6)
 
     lines = [comment_banner(coverpoint)]
-    # illegal sc.w does not get coverage as SAIL stores content in by bytes instead of giving exceptions
-    # Sail issue: https://github.com/riscv/sail-riscv/issues/1574
 
     for offset in range(8):
         lines.extend(

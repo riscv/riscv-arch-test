@@ -1942,14 +1942,16 @@ tsbi_instr_table:
         //TSBI_CSR_INSTR_TABLE(0x305) // mtvec
         TSBI_CSR_INSTR_TABLE(0x306) // mcounteren
         TSBI_CSR_INSTR_TABLE(0x30A) // menvcfg
+        TSBI_CSR_INSTR_TABLE(0x30C) // mstateen0
+        TSBI_CSR_INSTR_TABLE(0x31C) // mstateen0h
         #if (UDB_MXLEN==32)
         TSBI_CSR_INSTR_TABLE(0x31A) // menvcfgh
         #endif
         TSBI_CSR_INSTR_TABLE(0x344) // mip
         TSBI_CSR_INSTR_TABLE(0x747) // mseccfg
         TSBI_CSR_INSTR_TABLE(0x320) // mcountinhibit
-        TSBI_CSR_INSTR_TABLE(0xB00) // mcycle
-        TSBI_CSR_INSTR_TABLE(0xB02) // minstret
+        //TSBI_CSR_INSTR_TABLE(0xB00) // mcycle - shouldn't be changed below M-mode
+        //TSBI_CSR_INSTR_TABLE(0xB02) // minstret - shouldn't be changed below M-mode
         // TODO: Move the following to the S-mode dispatch when it is implemented
         TSBI_CSR_INSTR_TABLE(0x100) // sstatus
         TSBI_CSR_INSTR_TABLE(0x104) // sie
@@ -2814,11 +2816,11 @@ rtn_fm_mmode:
         LA(x7, saved_xepc)                                 ;\
         SREG x9, 0(x7)                                     ;\
         csrr x9, _CAUSE                                    ;\
-        SREG x9, REGWIDTH(x7)                              ;\
+        SREG x9, 8(x7)                                     ;\
         csrr x9, _TVAL                                     ;\
-        SREG x9, 2*REGWIDTH(x7)                            ;\
+        SREG x9, 16(x7)                                    ;\
         csrr x9, _STATUS                                   ;\
-        SREG x9, 3*REGWIDTH(x7)                            ;\
+        SREG x9, 24(x7)                                    ;\
         mv x6, a0                                          ;\
         mv x4, a1                                          ;\
         jal x7, failedtest_trap_x7_x9                      ;\

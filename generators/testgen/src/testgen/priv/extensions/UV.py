@@ -70,7 +70,6 @@ def _gen_uvcsrwalk(test_data: TestData) -> list[str]:
     required_extensions=["Sm", "U", "I", "M", "V", "Zicsr"],
     march_extensions=["I", "M", "V", "Zicsr"],
     extra_defines=[
-        "#define RVTEST_VECTOR",
         "#define RVTEST_SEW 0",
         "#define VDSEW 0",
     ],

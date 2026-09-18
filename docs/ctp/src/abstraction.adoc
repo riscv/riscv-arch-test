@@ -247,8 +247,6 @@ TODO
 
 testgen/src/testgen/io/templates.py format_params needs to accept STANDARD_SM_SUPPORTED parameter when available.  How to deal with UDB? (Released in UDB 4/29/26).
 
-remove mention of RVTEST_VECTOR  from vector code
-
 DONE: replace rvtest_mtrap_routine with STANDARD_SM_SUPPORTED or many places it gets deleted
     replace rvtest_strap_routine with S_SUPPORTED if needed
     replace rvtest_htrap_routine with H_SUPPORTED if needed

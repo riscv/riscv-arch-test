@@ -158,7 +158,6 @@ def _gen_fs_off(test_data: TestData, temp_reg: int) -> list[str]:
     required_extensions=["Sm", "I", "M", "V", "F", "Zicsr"],
     march_extensions=["I", "M", "F", "V", "Zicsr"],
     extra_defines=[
-        "#define RVTEST_VECTOR",
         "#define RVTEST_SEW 0",
         "#define VDSEW 0",
     ],

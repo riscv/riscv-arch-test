@@ -16,7 +16,7 @@
 #include "signature.h"
 #include "rvtest_macros.h"
 #include "rvtest_pmp_macros.h"
-#ifdef RVTEST_VECTOR
+#ifdef ZVL32B_SUPPORTED
   #include "rvtest_macros_vector.h"
 #endif
 #ifdef RVTEST_HYPERVISOR

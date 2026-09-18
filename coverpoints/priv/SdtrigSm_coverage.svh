@@ -33,9 +33,6 @@ covergroup SdtrigSm_trig_module_reg_cg with function sample(ins_t ins);
         bins tdata2 = {CSR_TDATA2};
         bins tdata3 = {CSR_TDATA3};
     }
-    csr_tdata1: coverpoint ins.current.insn[31:20] {
-        bins tdata1 = {CSR_TDATA1};
-    }
     csr_tinfo: coverpoint ins.current.insn[31:20] {
         bins tinfo = {CSR_TINFO};
     }
@@ -76,21 +73,9 @@ covergroup SdtrigSm_mcontrol6_cg with function sample(ins_t ins);
     triggernum_chain: coverpoint ins.current.csr[CSR_TSELECT] {
         bins chained_pair[] = {[1:`UDB_NUM_TRIGGERS-1]};
     }
-    tdata1_type_mcontrol6: coverpoint ins.current.csr[CSR_TDATA1][XLEN-1:XLEN-4] {
-        bins mcontrol6 = {4'd6};
-    }
     tdata1_m: coverpoint ins.current.csr[CSR_TDATA1][6] {
         bins disabled = {1'b0};
         bins enabled  = {1'b1};
-    }
-    tdata1_select_adr: coverpoint ins.current.csr[CSR_TDATA1][21] {
-        bins adr = {1'b0};
-    }
-    tdata1_select_data: coverpoint ins.current.csr[CSR_TDATA1][21] {
-        bins data = {1'b1};
-    }
-    tdata1_xsl: coverpoint ins.current.csr[CSR_TDATA1][2:0] {
-        bins xsl[] = {[0:7]};
     }
     tdata1_xsl_store: coverpoint ins.current.csr[CSR_TDATA1][2:0] {
         bins store = {3'b010};
@@ -100,9 +85,6 @@ covergroup SdtrigSm_mcontrol6_cg with function sample(ins_t ins);
     }
     tdata1_xsl_all: coverpoint ins.current.csr[CSR_TDATA1][2:0] {
         bins execute_store_load = {3'b111};
-    }
-    tdata1_size: coverpoint ins.current.csr[CSR_TDATA1][18:16] {
-        bins size[] = {[0:6]};
     }
     tdata1_match_cmp: coverpoint ins.current.csr[CSR_TDATA1][10:7] {
         bins equal     = {4'd0};
@@ -127,20 +109,12 @@ covergroup SdtrigSm_mcontrol6_cg with function sample(ins_t ins);
         bins pc   = {1'b1};
         bins zero = {1'b0} iff (ins.current.csr[CSR_TDATA2] == '0);
     }
-    tdata2_adr: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.mem_addr) {
-        bins scratch = {1'b1};
-        bins zero    = {1'b0} iff (ins.current.csr[CSR_TDATA2] == '0);
-    }
     tdata2_adr_match: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.mem_addr) {
         bins match = {1'b1};
     }
     tdata2_nop: coverpoint ins.current.csr[CSR_TDATA2] {
         bins nop  = {NOP};
         bins zero = {'0};
-    }
-    tdata2_data: coverpoint (ins.current.csr[CSR_TDATA2][31:0] == (ins.current.has_rd ? ins.current.rd_val[31:0] : ins.current.rs2_val[31:0])) {
-        bins data = {1'b1};
-        bins zero = {1'b0} iff (ins.current.csr[CSR_TDATA2] == '0);
     }
     tdata2_nop_c_nop: coverpoint ins.current.csr[CSR_TDATA2] {
         bins nop   = {NOP};
@@ -177,9 +151,6 @@ covergroup SdtrigSm_mcontrol6_cg with function sample(ins_t ins);
     store_offset: coverpoint ins.current.imm {
         bins scratch        = {0};
         bins scratch_plus_8 = {8};
-    }
-    nop: coverpoint ins.current.insn {
-        bins nop = {NOP};
     }
     nop_instr: coverpoint ins.current.insn {
         bins nop = {NOP};

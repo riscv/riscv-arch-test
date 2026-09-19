@@ -495,6 +495,9 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "mbe" : val = (val >> 37) & 64'h1;
 `endif
       "mie" : val = (val >> 3) & 'h1;
+`ifdef UDB_MXLEN_64
+      "mpelp" : val = (val >> 41) & 64'h1;
+`endif
       "mpie" : val = (val >> 7) & 'h1;
       "mpp" : val = (val >> 11) & 'h3;
       "mprv" : val = (val >> 17) & 'h1;
@@ -512,6 +515,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "sd" : val = (val >> 63) & 64'h1;
 `endif
       "sie" : val = (val >> 1) & 'h1;
+      "spelp" : val = (val >> 23) & 'h1;
       "spie" : val = (val >> 5) & 'h1;
       "spp" : val = (val >> 8) & 'h1;
       "sum" : val = (val >> 18) & 'h1;
@@ -537,6 +541,9 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `endif
 `ifdef UDB_MXLEN_32
       "mbe" : val = (val >> 5) & 32'h1;
+`endif
+`ifdef UDB_MXLEN_32
+      "mpelp" : val = (val >> 9) & 32'h1;
 `endif
 `ifdef UDB_MXLEN_32
       "mpv" : val = (val >> 7) & 32'h1;
@@ -824,6 +831,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "sd" : val = (val >> 63) & 64'h1;
 `endif
       "sie" : val = (val >> 1) & 'h1;
+      "spelp" : val = (val >> 23) & 'h1;
       "spie" : val = (val >> 5) & 'h1;
       "spp" : val = (val >> 8) & 'h1;
       "sum" : val = (val >> 18) & 'h1;
@@ -962,6 +970,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "sd" : val = (val >> 63) & 64'h1;
 `endif
       "sie" : val = (val >> 1) & 'h1;
+      "spelp" : val = (val >> 23) & 'h1;
       "spie" : val = (val >> 5) & 'h1;
       "spp" : val = (val >> 8) & 'h1;
       "sum" : val = (val >> 18) & 'h1;

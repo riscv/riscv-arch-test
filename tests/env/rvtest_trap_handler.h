@@ -2099,7 +2099,8 @@ tsbi_instr_table:
 //   bits 10: 6 = vector number (compressed from 12*N to 5 bits)
 //   bit    11 = xIE[cause] (interrupt enable for this cause)
 //   bit    12 = xIP[cause] (interrupt pending for this cause)
-//   bits 30:13 = xstatus[17:0] (filtered: XS,FS,VS cleared)
+//   bits 30:13 = xstatus[17:0] (filtered: XS,FS,VS and WPRI bits 4,2,0 cleared)
+//              = GVA/MPV/SPVP in place of xstatus[16:14] on M-mode and HS-mode traps
 
 sv_\__MODE__\()vect:
         LREG    T3, xtvec_new_off(sp)              // T3 = actual trampoline table address
@@ -2127,20 +2128,20 @@ sv_\__MODE__\()vect:
         or      T6, T6, T4                          // merge xIP bit
 
         1:
-        csrr    T2, CSR_XSTATUS                 // deposit xstatus(17:0) into [30:13)
-        slli    T2, T2, UDB_MXLEN-17
-        srli    T2, T2, UDB_MXLEN-17-13
-        LI(     T3, 0x219FE5)                   // clear 16:13 (XS,FS) 10:9 (VS) and unused bits 4,2,0
+        csrr    T2, CSR_XSTATUS                 // T2 = xstatus, kept for the GVA/MPV/SPVP overlay below
+        LI(     T3, 0x1E615)                    // clear 16:13 (XS,FS) 10:9 (VS) and unused bits 4,2,0
         xori    T3, T3, -1
-        and     T3, T2, T3
+        and     T3, T2, T3                      // filter xstatus before depositing it
+        slli    T3, T3, UDB_MXLEN-18            // deposit xstatus(17:0) into [30:13]
+        srli    T3, T3, UDB_MXLEN-18-13
         or      T3, T6, T3                      // merge with other bits
 
-//if  MMode and RV32 move mstatush[ 7: 6] into bit 15:14
-//if  MMode and RV64 move mstatus [39:38] into bit 15:14
-//if HSMode          move hstatus [ 8: 6] into bit 16:14
+//if  MMode and RV32 move mstatush[ 7: 6] into xstatus bits 15:14
+//if  MMode and RV64 move mstatus [39:38] into xstatus bits 15:14
+//if HSMode          move hstatus [ 8: 6] into xstatus bits 16:14
 .ifc \__MODE__ , M
   #if (UDB_MXLEN==64)
-        srli    T4, T4, UDB_MXLEN-32                 // align to mstatush
+        srli    T4, T2, UDB_MXLEN-32                 // align mstatus[63:32] to mstatush
   #else
         #ifdef SM1P12P0_OR_LATER_SUPPORTED
           csrr    T4, CSR_MSTATUSH
@@ -2151,10 +2152,12 @@ sv_\__MODE__\()vect:
 .else
   .ifc \__MODE__ , H
         csrr    T4, CSR_HSTATUS                      // HS-mode: read hstatus for SPVP, MPV, GVA
+  .else
+        li      T4, 0                                // S/VS-mode: no GVA/MPV/SPVP to report
   .endif
 .endif
-        andi    T4, T4, 0x1C0                        // extract bits 8:6 (SPVP?, MPV, GVA)
-        slli    T4, T4, 14-6                         // position at bits 16:14
+        andi    T4, T4, 0x1C0                        // extract bits 8:6 (SPVP, MPV, GVA)
+        slli    T4, T4, 13+14-6                      // position at word 0 bits 29:27 (xstatus 16:14)
         or      T3, T3, T4                           // merge into word 0
         TRAP_SIGUPD(T4, T3, 0, sv_\__MODE__\()vect, sv_\__MODE__\()vect_str) // write word 0 to trap sig
 

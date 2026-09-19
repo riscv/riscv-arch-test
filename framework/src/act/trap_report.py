@@ -290,8 +290,8 @@ def _decode_xstatus(status_bits: int) -> str:
     The trap handler packs mstatus[17:0] into bits [30:13] of word0, then applies
     a mask to clear xstatus bits 16:13 (XS,FS) 10:9 (VS) and unused bits 4,2,0.
     For M-mode traps, mstatus[39:38]/mstatush[7:6] (GVA, MPV) are OR'd into
-    word0 bits [15:14]. For H-mode traps, hstatus[8:6] (SPVP, SPV, GVA) are OR'd
-    into word0 bits [16:14].
+    word0 bits [28:27] (xstatus 15:14). For H-mode traps, hstatus[8:6] (SPVP, SPV,
+    GVA) are OR'd into word0 bits [29:27] (xstatus 16:14).
     """
     # Skip WPRI bit 0
     sie = (status_bits >> 1) & 1

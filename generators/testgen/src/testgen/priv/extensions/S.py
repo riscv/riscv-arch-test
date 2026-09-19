@@ -403,7 +403,8 @@ def make_s(test_data: TestData) -> list[TestChunk]:
             test_data,
             "S_sprivinst_cg",
             "cp_sprivinst",
-            "Executing ecall and ebreak and mret should cause an exception",
+            "Executing ecall and ebreak and mret should cause an exception\n"
+            "sfence.vma is permitted with mstatus.TVM=0 and executes with no trap",
             ["ebreak", "mret", "sfence.vma"],
         )
     )

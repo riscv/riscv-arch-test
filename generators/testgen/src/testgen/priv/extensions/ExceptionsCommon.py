@@ -210,6 +210,27 @@ def generate_breakpoint_tests(test_data: TestData, covergroup: str) -> list[str]
         test_data.add_testcase("ebreak", coverpoint, covergroup),
         "ebreak",
     ]
+
+    # With Zca a 32-bit ebreak can sit at a 2-byte-aligned address, so its fetch may be
+    # split across two fetch groups.  xtval must be zero or the address of the ebreak
+    # itself, never the address of the second half of the fetch.
+    straddle_coverpoint = "cp_ebreak_straddle64"
+    lines.extend(
+        [
+            "",
+            "#ifdef ZCA_SUPPORTED",
+            comment_banner(straddle_coverpoint, "Breakpoint straddling a 64-byte fetch boundary"),
+            "# 32-bit ebreak at 62 mod 64: fetch straddles a 64-byte cache line / fetch boundary",
+            ".p2align 6",
+            "# 31 c.nops = 62 bytes of padding, putting the ebreak at byte 62 of the 64-byte block",
+            "# written as halfwords because Zca is not in every suite's march",
+            *([".half 0x0001"] * 31),
+            test_data.add_testcase("ebreak_straddle64", straddle_coverpoint, covergroup),
+            "ebreak",
+            ".p2align 2  # restore 4-byte alignment for the code that follows",
+            "#endif",
+        ]
+    )
     return lines
 
 

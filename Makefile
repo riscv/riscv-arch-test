@@ -11,10 +11,12 @@ COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/
 
 # EXTENSIONS is a comma-separated list of extensions to generate tests for. Leave blank to generate for all tests.
 # EXCLUDE_EXTENSIONS overrides EXTENSIONS to exclude particular extensions from test generation. Applies as a negative filter after EXTENSIONS.
+# CERTIFICATE limits the selected tests to those relevant to the specified certificate.
 # Default exclusion reasons:
 #  - Sm: Insufficient WARL configuration options.
 EXTENSIONS  ?=
 EXCLUDE_EXTENSIONS ?= SdtrigSm,SdtrigS,SdtrigU
+CERTIFICATE ?=
 
 # DEBUG, FAST, VERBOSE, and CLEAN_INTERMEDIATES are runtime options for controlling build output. DEBUG is mutually exclusive with FAST and CLEAN_INTERMEDIATES.
 # Set to True to enable, or leave blank to disable.
@@ -147,6 +149,7 @@ help:
 	  'CONFIG_FILES'        'Configs for the default elfs target' \
 	  'EXTENSIONS'          'Comma-separated extensions to generate (default: all)' \
 	  'EXCLUDE_EXTENSIONS'  'Comma-separated extensions to skip' \
+	  'CERTIFICATE'         'Only select tests for the specified certificate' \
 	  'JOBS'                'Parallel build jobs (0 = auto, also honors -j)' \
 	  'DEBUG'               'Emit objdump/trace/trap reports (slower)' \
 	  'FAST'                'Skip objdump for faster ELF builds' \
@@ -158,6 +161,7 @@ help:
 	@printf '  make spike-rv64-max                  # build & run a single config\n'
 	@printf '  make tests EXTENSIONS=I,M            # generate just I and M tests\n'
 	@printf '  make EXCLUDE_EXTENSIONS=ExceptionsSm # skip an extension\n'
+	@printf '  make CERTIFICATE=RVA23               # build RVA23 tests only\n'
 	@printf '  make coverage                        # coverage build\n'
 
 
@@ -171,6 +175,7 @@ elfs: tests
 		--test-dir $(TESTDIR) \
 		--jobs $(JOBS) \
 		$(if $(EXTENSIONS),--extensions $(EXTENSIONS)) \
+		$(if $(CERTIFICATE),--certificate $(CERTIFICATE)) \
 		$(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) \
 		$(if $(DEBUG),--debug) \
 		$(if $(FAST),--fast) \

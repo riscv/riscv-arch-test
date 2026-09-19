@@ -4,5 +4,5 @@ fli.h,FLI,x,x,D_H,,
 fltq.h,FC,x,x,,D_H,D_H
 fmaxm.h,FR,x,x,D_H,D_H,D_H
 fminm.h,FR,x,x,D_H,D_H,D_H
-fround.h,FI,x,x,D_H,S_H,
+fround.h,FI,x,x,D_H,D_H,
 froundnx.h,FI,x,x,D_H,D_H,

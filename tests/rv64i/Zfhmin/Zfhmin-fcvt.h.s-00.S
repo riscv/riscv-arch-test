@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 282
+#define SIGUPD_COUNT 284
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -1092,6 +1092,19 @@ Zfhmin_fcvt_h_s_cg_cp_frm_2_brup:
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, Zfhmin_fcvt_h_s_cg_cp_frm_2_brup, Zfhmin_fcvt_h_s_cg_cp_frm_2_brup_str)
 
 /////////////////////////////////
+// cp_csr_fflags_voun
+/////////////////////////////////
+
+# Testcase cp_csr_fflags_voun (fflags = 10111)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0xb9516a92
+  fsflagsi 0b00000 # clear all fflags
+  csrsi fcsr, 0b10111 # set fflags
+Zfhmin_fcvt_h_s_cg_cp_csr_fflags_voun_b10111:
+  fcvt.h.s f1, f26 # perform operation
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, Zfhmin_fcvt_h_s_cg_cp_csr_fflags_voun_b10111, Zfhmin_fcvt_h_s_cg_cp_csr_fflags_voun_b10111_str)
+
+/////////////////////////////////
 // cp_csr_frm
 /////////////////////////////////
 
@@ -1294,6 +1307,7 @@ RVTEST_DATA_BEGIN
 .dword 0xffffffffe3ebc511
 .dword 0xffffffffe192ccd5
 .dword 0xffffffffcd2a71a9
+.dword 0xffffffffb9516a92
 .dword 0xffffffffdcb797d8
 .dword 0x0000000002314df2
 .dword 0x000000006af54ccb
@@ -1432,12 +1446,13 @@ Zfhmin_fcvt_h_s_cg_cp_frm_2_brmm_str: .string "\"test: 127; cg: Zfhmin_fcvt.h.s_
 Zfhmin_fcvt_h_s_cg_cp_frm_2_brne_str: .string "\"test: 128; cg: Zfhmin_fcvt.h.s_cg; cp: cp_frm_2; bin: brne\""
 Zfhmin_fcvt_h_s_cg_cp_frm_2_brtz_str: .string "\"test: 129; cg: Zfhmin_fcvt.h.s_cg; cp: cp_frm_2; bin: brtz\""
 Zfhmin_fcvt_h_s_cg_cp_frm_2_brup_str: .string "\"test: 130; cg: Zfhmin_fcvt.h.s_cg; cp: cp_frm_2; bin: brup\""
-Zfhmin_fcvt_h_s_cg_cp_csr_frm_rne_str: .string "\"test: 131; cg: Zfhmin_fcvt.h.s_cg; cp: cp_csr_frm; bin: rne\""
-Zfhmin_fcvt_h_s_cg_cp_csr_frm_rtz_str: .string "\"test: 132; cg: Zfhmin_fcvt.h.s_cg; cp: cp_csr_frm; bin: rtz\""
-Zfhmin_fcvt_h_s_cg_cp_csr_frm_rdn_str: .string "\"test: 133; cg: Zfhmin_fcvt.h.s_cg; cp: cp_csr_frm; bin: rdn\""
-Zfhmin_fcvt_h_s_cg_cp_csr_frm_rup_str: .string "\"test: 134; cg: Zfhmin_fcvt.h.s_cg; cp: cp_csr_frm; bin: rup\""
-Zfhmin_fcvt_h_s_cg_cp_csr_frm_rmm_str: .string "\"test: 135; cg: Zfhmin_fcvt.h.s_cg; cp: cp_csr_frm; bin: rmm\""
-Zfhmin_fcvt_h_s_cg_cp_NaNBox_S_H_NaNBox_str: .string "\"test: 136; cg: Zfhmin_fcvt.h.s_cg; cp: cp_NaNBox_S_H; bin: NaNBox\""
+Zfhmin_fcvt_h_s_cg_cp_csr_fflags_voun_b10111_str: .string "\"test: 131; cg: Zfhmin_fcvt.h.s_cg; cp: cp_csr_fflags_voun; bin: b10111\""
+Zfhmin_fcvt_h_s_cg_cp_csr_frm_rne_str: .string "\"test: 132; cg: Zfhmin_fcvt.h.s_cg; cp: cp_csr_frm; bin: rne\""
+Zfhmin_fcvt_h_s_cg_cp_csr_frm_rtz_str: .string "\"test: 133; cg: Zfhmin_fcvt.h.s_cg; cp: cp_csr_frm; bin: rtz\""
+Zfhmin_fcvt_h_s_cg_cp_csr_frm_rdn_str: .string "\"test: 134; cg: Zfhmin_fcvt.h.s_cg; cp: cp_csr_frm; bin: rdn\""
+Zfhmin_fcvt_h_s_cg_cp_csr_frm_rup_str: .string "\"test: 135; cg: Zfhmin_fcvt.h.s_cg; cp: cp_csr_frm; bin: rup\""
+Zfhmin_fcvt_h_s_cg_cp_csr_frm_rmm_str: .string "\"test: 136; cg: Zfhmin_fcvt.h.s_cg; cp: cp_csr_frm; bin: rmm\""
+Zfhmin_fcvt_h_s_cg_cp_NaNBox_S_H_NaNBox_str: .string "\"test: 137; cg: Zfhmin_fcvt.h.s_cg; cp: cp_NaNBox_S_H; bin: NaNBox\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

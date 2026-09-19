@@ -78,6 +78,10 @@ def write_test_file(
     vector_data_labels = [label for tc in test_chunks for label in tc.vector_labels]
     data_strings = [s for tc in test_chunks for s in tc.data_strings]
     sigupd_count = SIGUPD_MARGIN + sum(tc.sigupd_count for tc in test_chunks)
+    trap_sigupd_count = sum(tc.trap_sigupd_count for tc in test_chunks)
+    extra_defines = list(extra_defines or [])
+    if trap_sigupd_count:
+        extra_defines.append(f"#define TRAP_SIGUPD_COUNT {trap_sigupd_count}")
 
     # Construct filename and paths
     if instr_name is not None:

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 
 # UDB Architecture Configuration for the CV32E40X v0.10.0 with A and B extensions.
-# Manual: https://github.com/openhwgroup/cv32e40x/tree/main/docs/user_manual
+# Manual: https://github.com/openhwfoundation/cv32e40x/tree/main/docs/user_manual
 # Parameters: RV32=RV32I, M_EXT=M, A_EXT=A, B_EXT=ZBA_ZBB_ZBC_ZBS, X_EXT=0,
 #             NUM_MHPMCOUNTERS=1, PMA_NUM_REGIONS=0.
 ---

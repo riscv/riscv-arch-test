@@ -59,6 +59,7 @@ class VectorTypeConfig:
     scalar_regs: set[str] = field(default_factory=set)
     widened_regs: set[str] = field(default_factory=set)
     random_element_generator: Callable[[int, int], list[int]] | None = None
+    egs: int = 1
 
 
 @dataclass

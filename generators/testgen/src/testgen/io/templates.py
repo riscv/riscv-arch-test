@@ -140,7 +140,7 @@ def canonicalize_extensions(
             # Our tests run some vector tests with the test SEW as a suffix. These suffixes are not part of
             # extension names, so they need to be dropped from the extensions list
             no_sew_suffix = re.sub(r"\d+$", "", testsuite)
-            if no_sew_suffix in ext_components:
+            if no_sew_suffix in ext_components and no_sew_suffix in ["Vx", "Vf", "Vls"]:
                 ext_components.remove(no_sew_suffix)
 
     if any(ext.startswith(("V", "Zv")) for ext in ext_components):
@@ -172,10 +172,7 @@ def get_vector_base_extension(testsuite: str, instr_name: str, xlen: int, sew: i
         "Vf64": ["Zve64d"],
     }
 
-    if testsuite not in vector_map:
-        return
-
-    mapped = vector_map[testsuite]
+    mapped = vector_map[testsuite] if testsuite in vector_map else [f"Zve{max(sew, 32)}x"]
 
     for zve_ext in ["Zve64x", "Zve64f", "Zve64d"]:
         # All Zve* extensions support all vector load and store instructions (31.1.7. Vector Loads and Stores),

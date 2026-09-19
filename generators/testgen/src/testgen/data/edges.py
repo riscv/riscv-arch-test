@@ -487,6 +487,16 @@ class VECTOR_EDGES:
         "vs_edge_f_sNaN_payload1",
     )
 
+    v_crypto_edges = (
+        "zero",
+        "ones",
+        "walkeven",
+        "walkodd",
+        "random",
+    )
+
+    v_aes_edges = tuple(f"aes_subbytes_{i}" for i in range(16))
+
     f32: ClassVar = {
         "pos0": 0x00000000,  # 0
         "neg0": 0x80000000,  # -0
@@ -633,6 +643,14 @@ class VECTOR_EDGES:
                         conflict = True
                         break
             return random_val
+        aes_match = re.match(r"aes_subbytes_(\d+)", edge)
+        if aes_match:
+            index = int(aes_match.group(1))
+            val = 0
+            i = index * 16
+            for j in range(16):
+                val += (i + j) << (j * 8)
+            return val
         raise ValueError(f"Unknown edge: {edge}")
 
 

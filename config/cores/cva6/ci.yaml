@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for CVA6 ACT configs (cv32a65x, …)
+
+ci_enabled: true
+# Tune as failures are triaged (parallel Verilator OOM is a runtime concern, not CI yaml).
+# Sm excluded: RTL SoftwareInterruptEn=0 (no MSIP); matches CVA6 riscv-config msip implemented:false.
+# PMPSm and MEXT Sm subtests require Sm; triage separately when TB enables UART MSIP.
+exclude_extensions: "Sm,PMPSm"
+apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler"
+install_script: ".github/scripts/install-cva6.sh"
+setup_script: ".github/scripts/setup-cva6.sh"

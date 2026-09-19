@@ -30,12 +30,13 @@ def begin_sv_test(
     va_code_override: str | None = None,
     pre_va_asm: tuple[str, ...] = (),
     setup_asm: tuple[str, ...] = (),
+    driver_mode: str | None = None,
 ) -> TestChunk:
     """Start an Sv test chunk and emit its banner and common prologue."""
     chunk = test_data.begin_test_chunk(split_name)
     chunk.section_header = comment_banner(coverpoint or f"cp_{split_name}")
     chunk.code.extend([*code_prefix, "", "main:"])
-    if sig_init:
+    if sig_init and driver_mode is None:
         chunk.code.append(sig_init)
     if pre_va_asm:
         chunk.code.extend(["", *pre_va_asm])
@@ -64,7 +65,7 @@ def begin_sv_test(
             "sfence.vma",
             "",
             "// Set up the code-region save area.",
-            "csrr a0, mscratch",
+            "csrr a0, mscratch" if driver_mode is None else "LA(a0, Mtramptbl_sv)",
             f"SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL{top})",
             "",
             f"{sv.satp_setup} // Enable address translation.",
@@ -73,8 +74,45 @@ def begin_sv_test(
     )
     if setup_asm:
         chunk.code.extend(["", *setup_asm])
+    if sig_init and driver_mode is not None:
+        chunk.code.extend(["", sig_init])
     chunk.code.append("")
     return chunk
+
+
+def keep_image_mapped(sv: SvMode) -> list[str]:
+    """Map the test image as a gigapage below the root.
+
+    On Sv48/Sv57 the boot identity map is root PTE 0, so a test VA in the same
+    root slot (VA 0) would unmap the running code without this path.
+    """
+    lines = ["// Keep the identity-mapped test image reachable through the level 2 table."]
+    for level in range(sv.levels - 2, 1, -1):
+        shift = sv.page_offset_bits(level)
+        lines.extend(
+            [
+                "LA(t0, rvtest_code_begin)",
+                f"srli t1, t0, {shift}",
+                "andi t1, t1, 0x1FF",
+                "slli t1, t1, 3",
+                f"LA(a0, rvtest_slvl{level}_pg_tbl)",
+                "add a0, a0, t1",
+            ]
+        )
+        if level > 2:
+            lines.extend(
+                [f"LA(t0, rvtest_slvl{level - 1}_pg_tbl)", "srli t0, t0, 12", "slli t0, t0, 10", "ori t0, t0, PTE_V"]
+            )
+        else:
+            lines.extend(
+                [
+                    f"srli t0, t0, {shift}",
+                    f"slli t0, t0, {shift - 2}",
+                    "ori t0, t0, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V",
+                ]
+            )
+        lines.append("sd t0, 0(a0)")
+    return lines
 
 
 def sv_data(

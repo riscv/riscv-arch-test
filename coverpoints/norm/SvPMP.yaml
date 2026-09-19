@@ -1,0 +1,19 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  # PMP checks are also applied to page-table accesses for virtual-address translation,
+  # for which the effective privilege mode is S.
+  - names: [pmp_check_pagetable_access, pmp_with_paging]
+    coverpoint: ["SvPMP_cg/pmp0_pte_{noread,nowrite,noexec}_{s,u}"]
+
+  # when the PMP settings are modified, M-mode software must synchronize the PMP
+  # settings with the virtual memory system and any PMP or address-translation caches.
+  # This is accomplished by executing an SFENCE.VMA instruction with rs1=x0 and rs2=x0,
+  # after the PMP CSRs are written.
+  - name: pmp_sfence_required
+    coverpoint: ["SvPMP_cg/pmp0_pte_{noread,nowrite,noexec}_{s,u}"]
+
+  # When page-based virtual memory is enabled, mtval is written with the faulting
+  # virtual address, even for physical-memory access-fault exceptions.
+  - name: mtval_vaddr_not_paddr
+    coverpoint: ["SvPMP_cg/pmp0_PA_{noread,nowrite,noexec}_{s,u}", "mtval is checked by the trap signature"]

@@ -18,7 +18,7 @@
 #define SIGUPD_COUNT 70
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 #define TRAP_SIGUPD_COUNT 10
 
 // Include framework macros
@@ -35,7 +35,6 @@ RVTEST_BEGIN
 
 
 main:
-  LI(a2, 0x800) // Test signature initialization
 
 // Virtual addresses for code and test regions
 
@@ -50,11 +49,13 @@ main:
   sfence.vma
 
 // Set up the code-region save area.
-  csrr a0, mscratch
+  LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL4)
 
   SATP_SETUP_RV64(sv57) // Enable address translation.
   sfence.vma
+
+  LI(a2, 0x800) // Test signature initialization
 
 
 // 256TB page at level 4
@@ -68,7 +69,6 @@ main:
   slli a0, a0, 16
   srli a0, a0, 16
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -85,8 +85,6 @@ Sv_cp_sv57_pte_rsw_Smode_test1_load:
 Sv_cp_sv57_pte_rsw_Smode_test1_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_pte_rsw_Smode_test1_store, Sv_cp_sv57_pte_rsw_Smode_test1_store_str)
@@ -112,7 +110,6 @@ Sv_cp_sv57_pte_rsw_Smode_test1_read_pte:
   slli a0, a0, 16
   srli a0, a0, 16
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -129,8 +126,6 @@ Sv_cp_sv57_pte_rsw_Smode_test2_load:
 Sv_cp_sv57_pte_rsw_Smode_test2_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_pte_rsw_Smode_test2_store, Sv_cp_sv57_pte_rsw_Smode_test2_store_str)
@@ -156,7 +151,6 @@ Sv_cp_sv57_pte_rsw_Smode_test2_read_pte:
   slli a0, a0, 16
   srli a0, a0, 16
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -173,8 +167,6 @@ Sv_cp_sv57_pte_rsw_Smode_test3_load:
 Sv_cp_sv57_pte_rsw_Smode_test3_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_pte_rsw_Smode_test3_store, Sv_cp_sv57_pte_rsw_Smode_test3_store_str)
@@ -201,7 +193,6 @@ Sv_cp_sv57_pte_rsw_Smode_test3_read_pte:
   slli a0, a0, 25
   srli a0, a0, 25
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -218,8 +209,6 @@ Sv_cp_sv57_pte_rsw_Smode_test4_load:
 Sv_cp_sv57_pte_rsw_Smode_test4_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_pte_rsw_Smode_test4_store, Sv_cp_sv57_pte_rsw_Smode_test4_store_str)
@@ -246,7 +235,6 @@ Sv_cp_sv57_pte_rsw_Smode_test4_read_pte:
   slli a0, a0, 25
   srli a0, a0, 25
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -263,8 +251,6 @@ Sv_cp_sv57_pte_rsw_Smode_test5_load:
 Sv_cp_sv57_pte_rsw_Smode_test5_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_pte_rsw_Smode_test5_store, Sv_cp_sv57_pte_rsw_Smode_test5_store_str)
@@ -291,7 +277,6 @@ Sv_cp_sv57_pte_rsw_Smode_test5_read_pte:
   slli a0, a0, 25
   srli a0, a0, 25
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -308,8 +293,6 @@ Sv_cp_sv57_pte_rsw_Smode_test6_load:
 Sv_cp_sv57_pte_rsw_Smode_test6_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_pte_rsw_Smode_test6_store, Sv_cp_sv57_pte_rsw_Smode_test6_store_str)
@@ -337,7 +320,6 @@ Sv_cp_sv57_pte_rsw_Smode_test6_read_pte:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -354,8 +336,6 @@ Sv_cp_sv57_pte_rsw_Smode_test7_load:
 Sv_cp_sv57_pte_rsw_Smode_test7_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_pte_rsw_Smode_test7_store, Sv_cp_sv57_pte_rsw_Smode_test7_store_str)
@@ -383,7 +363,6 @@ Sv_cp_sv57_pte_rsw_Smode_test7_read_pte:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -400,8 +379,6 @@ Sv_cp_sv57_pte_rsw_Smode_test8_load:
 Sv_cp_sv57_pte_rsw_Smode_test8_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_pte_rsw_Smode_test8_store, Sv_cp_sv57_pte_rsw_Smode_test8_store_str)
@@ -429,7 +406,6 @@ Sv_cp_sv57_pte_rsw_Smode_test8_read_pte:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -446,8 +422,6 @@ Sv_cp_sv57_pte_rsw_Smode_test9_load:
 Sv_cp_sv57_pte_rsw_Smode_test9_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_pte_rsw_Smode_test9_store, Sv_cp_sv57_pte_rsw_Smode_test9_store_str)
@@ -476,7 +450,6 @@ Sv_cp_sv57_pte_rsw_Smode_test9_read_pte:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -493,8 +466,6 @@ Sv_cp_sv57_pte_rsw_Smode_test10_load:
 Sv_cp_sv57_pte_rsw_Smode_test10_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_pte_rsw_Smode_test10_store, Sv_cp_sv57_pte_rsw_Smode_test10_store_str)
@@ -523,7 +494,6 @@ Sv_cp_sv57_pte_rsw_Smode_test10_read_pte:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -540,8 +510,6 @@ Sv_cp_sv57_pte_rsw_Smode_test11_load:
 Sv_cp_sv57_pte_rsw_Smode_test11_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_pte_rsw_Smode_test11_store, Sv_cp_sv57_pte_rsw_Smode_test11_store_str)
@@ -570,7 +538,6 @@ Sv_cp_sv57_pte_rsw_Smode_test11_read_pte:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -587,8 +554,6 @@ Sv_cp_sv57_pte_rsw_Smode_test12_load:
 Sv_cp_sv57_pte_rsw_Smode_test12_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_pte_rsw_Smode_test12_store, Sv_cp_sv57_pte_rsw_Smode_test12_store_str)
@@ -618,7 +583,6 @@ Sv_cp_sv57_pte_rsw_Smode_test12_read_pte:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -635,8 +599,6 @@ Sv_cp_sv57_pte_rsw_Smode_test13_load:
 Sv_cp_sv57_pte_rsw_Smode_test13_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_pte_rsw_Smode_test13_store, Sv_cp_sv57_pte_rsw_Smode_test13_store_str)
@@ -666,7 +628,6 @@ Sv_cp_sv57_pte_rsw_Smode_test13_read_pte:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -683,8 +644,6 @@ Sv_cp_sv57_pte_rsw_Smode_test14_load:
 Sv_cp_sv57_pte_rsw_Smode_test14_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_pte_rsw_Smode_test14_store, Sv_cp_sv57_pte_rsw_Smode_test14_store_str)
@@ -714,7 +673,6 @@ Sv_cp_sv57_pte_rsw_Smode_test14_read_pte:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -731,8 +689,6 @@ Sv_cp_sv57_pte_rsw_Smode_test15_load:
 Sv_cp_sv57_pte_rsw_Smode_test15_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_pte_rsw_Smode_test15_store, Sv_cp_sv57_pte_rsw_Smode_test15_store_str)
@@ -783,66 +739,66 @@ rvtest_slvl3_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_cp_sv57_pte_rsw_Smode_test1_store_str: .string "\"test: 373; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test1_store\""
-Sv_cp_sv57_pte_rsw_Smode_test1_load_str: .string "\"test: 374; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test1_load\""
-Sv_cp_sv57_pte_rsw_Smode_test1_exec_str: .string "\"test: 375; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test1_exec\""
-Sv_cp_sv57_pte_rsw_Smode_test1_read_pte_str: .string "\"test: 376; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test1_read_pte\""
-Sv_cp_sv57_pte_rsw_Smode_test2_store_str: .string "\"test: 377; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test2_store\""
-Sv_cp_sv57_pte_rsw_Smode_test2_load_str: .string "\"test: 378; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test2_load\""
-Sv_cp_sv57_pte_rsw_Smode_test2_exec_str: .string "\"test: 379; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test2_exec\""
-Sv_cp_sv57_pte_rsw_Smode_test2_read_pte_str: .string "\"test: 380; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test2_read_pte\""
-Sv_cp_sv57_pte_rsw_Smode_test3_store_str: .string "\"test: 381; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test3_store\""
-Sv_cp_sv57_pte_rsw_Smode_test3_load_str: .string "\"test: 382; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test3_load\""
-Sv_cp_sv57_pte_rsw_Smode_test3_exec_str: .string "\"test: 383; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test3_exec\""
-Sv_cp_sv57_pte_rsw_Smode_test3_read_pte_str: .string "\"test: 384; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test3_read_pte\""
-Sv_cp_sv57_pte_rsw_Smode_test4_store_str: .string "\"test: 385; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test4_store\""
-Sv_cp_sv57_pte_rsw_Smode_test4_load_str: .string "\"test: 386; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test4_load\""
-Sv_cp_sv57_pte_rsw_Smode_test4_exec_str: .string "\"test: 387; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test4_exec\""
-Sv_cp_sv57_pte_rsw_Smode_test4_read_pte_str: .string "\"test: 388; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test4_read_pte\""
-Sv_cp_sv57_pte_rsw_Smode_test5_store_str: .string "\"test: 389; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test5_store\""
-Sv_cp_sv57_pte_rsw_Smode_test5_load_str: .string "\"test: 390; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test5_load\""
-Sv_cp_sv57_pte_rsw_Smode_test5_exec_str: .string "\"test: 391; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test5_exec\""
-Sv_cp_sv57_pte_rsw_Smode_test5_read_pte_str: .string "\"test: 392; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test5_read_pte\""
-Sv_cp_sv57_pte_rsw_Smode_test6_store_str: .string "\"test: 393; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test6_store\""
-Sv_cp_sv57_pte_rsw_Smode_test6_load_str: .string "\"test: 394; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test6_load\""
-Sv_cp_sv57_pte_rsw_Smode_test6_exec_str: .string "\"test: 395; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test6_exec\""
-Sv_cp_sv57_pte_rsw_Smode_test6_read_pte_str: .string "\"test: 396; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test6_read_pte\""
-Sv_cp_sv57_pte_rsw_Smode_test7_store_str: .string "\"test: 397; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test7_store\""
-Sv_cp_sv57_pte_rsw_Smode_test7_load_str: .string "\"test: 398; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test7_load\""
-Sv_cp_sv57_pte_rsw_Smode_test7_exec_str: .string "\"test: 399; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test7_exec\""
-Sv_cp_sv57_pte_rsw_Smode_test7_read_pte_str: .string "\"test: 400; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test7_read_pte\""
-Sv_cp_sv57_pte_rsw_Smode_test8_store_str: .string "\"test: 401; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test8_store\""
-Sv_cp_sv57_pte_rsw_Smode_test8_load_str: .string "\"test: 402; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test8_load\""
-Sv_cp_sv57_pte_rsw_Smode_test8_exec_str: .string "\"test: 403; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test8_exec\""
-Sv_cp_sv57_pte_rsw_Smode_test8_read_pte_str: .string "\"test: 404; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test8_read_pte\""
-Sv_cp_sv57_pte_rsw_Smode_test9_store_str: .string "\"test: 405; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test9_store\""
-Sv_cp_sv57_pte_rsw_Smode_test9_load_str: .string "\"test: 406; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test9_load\""
-Sv_cp_sv57_pte_rsw_Smode_test9_exec_str: .string "\"test: 407; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test9_exec\""
-Sv_cp_sv57_pte_rsw_Smode_test9_read_pte_str: .string "\"test: 408; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test9_read_pte\""
-Sv_cp_sv57_pte_rsw_Smode_test10_store_str: .string "\"test: 409; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test10_store\""
-Sv_cp_sv57_pte_rsw_Smode_test10_load_str: .string "\"test: 410; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test10_load\""
-Sv_cp_sv57_pte_rsw_Smode_test10_exec_str: .string "\"test: 411; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test10_exec\""
-Sv_cp_sv57_pte_rsw_Smode_test10_read_pte_str: .string "\"test: 412; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test10_read_pte\""
-Sv_cp_sv57_pte_rsw_Smode_test11_store_str: .string "\"test: 413; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test11_store\""
-Sv_cp_sv57_pte_rsw_Smode_test11_load_str: .string "\"test: 414; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test11_load\""
-Sv_cp_sv57_pte_rsw_Smode_test11_exec_str: .string "\"test: 415; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test11_exec\""
-Sv_cp_sv57_pte_rsw_Smode_test11_read_pte_str: .string "\"test: 416; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test11_read_pte\""
-Sv_cp_sv57_pte_rsw_Smode_test12_store_str: .string "\"test: 417; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test12_store\""
-Sv_cp_sv57_pte_rsw_Smode_test12_load_str: .string "\"test: 418; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test12_load\""
-Sv_cp_sv57_pte_rsw_Smode_test12_exec_str: .string "\"test: 419; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test12_exec\""
-Sv_cp_sv57_pte_rsw_Smode_test12_read_pte_str: .string "\"test: 420; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test12_read_pte\""
-Sv_cp_sv57_pte_rsw_Smode_test13_store_str: .string "\"test: 421; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test13_store\""
-Sv_cp_sv57_pte_rsw_Smode_test13_load_str: .string "\"test: 422; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test13_load\""
-Sv_cp_sv57_pte_rsw_Smode_test13_exec_str: .string "\"test: 423; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test13_exec\""
-Sv_cp_sv57_pte_rsw_Smode_test13_read_pte_str: .string "\"test: 424; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test13_read_pte\""
-Sv_cp_sv57_pte_rsw_Smode_test14_store_str: .string "\"test: 425; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test14_store\""
-Sv_cp_sv57_pte_rsw_Smode_test14_load_str: .string "\"test: 426; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test14_load\""
-Sv_cp_sv57_pte_rsw_Smode_test14_exec_str: .string "\"test: 427; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test14_exec\""
-Sv_cp_sv57_pte_rsw_Smode_test14_read_pte_str: .string "\"test: 428; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test14_read_pte\""
-Sv_cp_sv57_pte_rsw_Smode_test15_store_str: .string "\"test: 429; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test15_store\""
-Sv_cp_sv57_pte_rsw_Smode_test15_load_str: .string "\"test: 430; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test15_load\""
-Sv_cp_sv57_pte_rsw_Smode_test15_exec_str: .string "\"test: 431; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test15_exec\""
-Sv_cp_sv57_pte_rsw_Smode_test15_read_pte_str: .string "\"test: 432; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test15_read_pte\""
+Sv_cp_sv57_pte_rsw_Smode_test1_store_str: .string "\"test: 343; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test1_store\""
+Sv_cp_sv57_pte_rsw_Smode_test1_load_str: .string "\"test: 344; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test1_load\""
+Sv_cp_sv57_pte_rsw_Smode_test1_exec_str: .string "\"test: 345; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test1_exec\""
+Sv_cp_sv57_pte_rsw_Smode_test1_read_pte_str: .string "\"test: 346; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test1_read_pte\""
+Sv_cp_sv57_pte_rsw_Smode_test2_store_str: .string "\"test: 347; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test2_store\""
+Sv_cp_sv57_pte_rsw_Smode_test2_load_str: .string "\"test: 348; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test2_load\""
+Sv_cp_sv57_pte_rsw_Smode_test2_exec_str: .string "\"test: 349; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test2_exec\""
+Sv_cp_sv57_pte_rsw_Smode_test2_read_pte_str: .string "\"test: 350; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test2_read_pte\""
+Sv_cp_sv57_pte_rsw_Smode_test3_store_str: .string "\"test: 351; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test3_store\""
+Sv_cp_sv57_pte_rsw_Smode_test3_load_str: .string "\"test: 352; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test3_load\""
+Sv_cp_sv57_pte_rsw_Smode_test3_exec_str: .string "\"test: 353; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test3_exec\""
+Sv_cp_sv57_pte_rsw_Smode_test3_read_pte_str: .string "\"test: 354; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test3_read_pte\""
+Sv_cp_sv57_pte_rsw_Smode_test4_store_str: .string "\"test: 355; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test4_store\""
+Sv_cp_sv57_pte_rsw_Smode_test4_load_str: .string "\"test: 356; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test4_load\""
+Sv_cp_sv57_pte_rsw_Smode_test4_exec_str: .string "\"test: 357; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test4_exec\""
+Sv_cp_sv57_pte_rsw_Smode_test4_read_pte_str: .string "\"test: 358; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test4_read_pte\""
+Sv_cp_sv57_pte_rsw_Smode_test5_store_str: .string "\"test: 359; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test5_store\""
+Sv_cp_sv57_pte_rsw_Smode_test5_load_str: .string "\"test: 360; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test5_load\""
+Sv_cp_sv57_pte_rsw_Smode_test5_exec_str: .string "\"test: 361; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test5_exec\""
+Sv_cp_sv57_pte_rsw_Smode_test5_read_pte_str: .string "\"test: 362; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test5_read_pte\""
+Sv_cp_sv57_pte_rsw_Smode_test6_store_str: .string "\"test: 363; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test6_store\""
+Sv_cp_sv57_pte_rsw_Smode_test6_load_str: .string "\"test: 364; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test6_load\""
+Sv_cp_sv57_pte_rsw_Smode_test6_exec_str: .string "\"test: 365; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test6_exec\""
+Sv_cp_sv57_pte_rsw_Smode_test6_read_pte_str: .string "\"test: 366; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test6_read_pte\""
+Sv_cp_sv57_pte_rsw_Smode_test7_store_str: .string "\"test: 367; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test7_store\""
+Sv_cp_sv57_pte_rsw_Smode_test7_load_str: .string "\"test: 368; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test7_load\""
+Sv_cp_sv57_pte_rsw_Smode_test7_exec_str: .string "\"test: 369; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test7_exec\""
+Sv_cp_sv57_pte_rsw_Smode_test7_read_pte_str: .string "\"test: 370; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test7_read_pte\""
+Sv_cp_sv57_pte_rsw_Smode_test8_store_str: .string "\"test: 371; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test8_store\""
+Sv_cp_sv57_pte_rsw_Smode_test8_load_str: .string "\"test: 372; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test8_load\""
+Sv_cp_sv57_pte_rsw_Smode_test8_exec_str: .string "\"test: 373; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test8_exec\""
+Sv_cp_sv57_pte_rsw_Smode_test8_read_pte_str: .string "\"test: 374; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test8_read_pte\""
+Sv_cp_sv57_pte_rsw_Smode_test9_store_str: .string "\"test: 375; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test9_store\""
+Sv_cp_sv57_pte_rsw_Smode_test9_load_str: .string "\"test: 376; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test9_load\""
+Sv_cp_sv57_pte_rsw_Smode_test9_exec_str: .string "\"test: 377; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test9_exec\""
+Sv_cp_sv57_pte_rsw_Smode_test9_read_pte_str: .string "\"test: 378; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test9_read_pte\""
+Sv_cp_sv57_pte_rsw_Smode_test10_store_str: .string "\"test: 379; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test10_store\""
+Sv_cp_sv57_pte_rsw_Smode_test10_load_str: .string "\"test: 380; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test10_load\""
+Sv_cp_sv57_pte_rsw_Smode_test10_exec_str: .string "\"test: 381; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test10_exec\""
+Sv_cp_sv57_pte_rsw_Smode_test10_read_pte_str: .string "\"test: 382; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test10_read_pte\""
+Sv_cp_sv57_pte_rsw_Smode_test11_store_str: .string "\"test: 383; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test11_store\""
+Sv_cp_sv57_pte_rsw_Smode_test11_load_str: .string "\"test: 384; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test11_load\""
+Sv_cp_sv57_pte_rsw_Smode_test11_exec_str: .string "\"test: 385; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test11_exec\""
+Sv_cp_sv57_pte_rsw_Smode_test11_read_pte_str: .string "\"test: 386; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test11_read_pte\""
+Sv_cp_sv57_pte_rsw_Smode_test12_store_str: .string "\"test: 387; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test12_store\""
+Sv_cp_sv57_pte_rsw_Smode_test12_load_str: .string "\"test: 388; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test12_load\""
+Sv_cp_sv57_pte_rsw_Smode_test12_exec_str: .string "\"test: 389; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test12_exec\""
+Sv_cp_sv57_pte_rsw_Smode_test12_read_pte_str: .string "\"test: 390; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test12_read_pte\""
+Sv_cp_sv57_pte_rsw_Smode_test13_store_str: .string "\"test: 391; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test13_store\""
+Sv_cp_sv57_pte_rsw_Smode_test13_load_str: .string "\"test: 392; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test13_load\""
+Sv_cp_sv57_pte_rsw_Smode_test13_exec_str: .string "\"test: 393; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test13_exec\""
+Sv_cp_sv57_pte_rsw_Smode_test13_read_pte_str: .string "\"test: 394; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test13_read_pte\""
+Sv_cp_sv57_pte_rsw_Smode_test14_store_str: .string "\"test: 395; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test14_store\""
+Sv_cp_sv57_pte_rsw_Smode_test14_load_str: .string "\"test: 396; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test14_load\""
+Sv_cp_sv57_pte_rsw_Smode_test14_exec_str: .string "\"test: 397; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test14_exec\""
+Sv_cp_sv57_pte_rsw_Smode_test14_read_pte_str: .string "\"test: 398; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test14_read_pte\""
+Sv_cp_sv57_pte_rsw_Smode_test15_store_str: .string "\"test: 399; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test15_store\""
+Sv_cp_sv57_pte_rsw_Smode_test15_load_str: .string "\"test: 400; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test15_load\""
+Sv_cp_sv57_pte_rsw_Smode_test15_exec_str: .string "\"test: 401; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test15_exec\""
+Sv_cp_sv57_pte_rsw_Smode_test15_read_pte_str: .string "\"test: 402; cg: Sv; cp: cp_sv57_pte_rsw_Smode; bin: test15_read_pte\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

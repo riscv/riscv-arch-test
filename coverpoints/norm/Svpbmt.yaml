@@ -1,54 +1,47 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # The Svpbmt extension depends on the Sv39 extension
   - name: Svpbmt_depends_Sv39
-    coverpoint: [""]
+    coverpoint: ["Svpbmt_cg/leaf_PTE_pbmt_{exec,read,write}_{s,u}"]
 
-  - name: Svpbmt_impl_may_override_pmas
-    coverpoint: [""]
-
+  # Until their use is defined by a standard extension, they must be cleared by software
+  # for forward compatibility, or else a page-fault exception is raised.
   - name: Svpbmt_nonleaf_pte_pbmt_must_be_zero
-    coverpoint: [""]
+    coverpoint: ["Svpbmt_cg/nonleaf_PTE_pbmt_{exec,read,write}_{s,u}"]
 
+  # Until this value is defined by a standard extension, using this reserved value in a
+  # leaf PTE raises a page-fault exception.
   - name: Svpbmt_leaf_pte_pbmt_reserved_3_fault
-    coverpoint: [""]
+    coverpoint: ["Svpbmt_cg/leaf_PTE_pbmt_reserved_enc_{exec,read,write}_{s,u}"]
 
-  - name: Svpbmt_obeys_mem_ordering
-    coverpoint: [""]
+  # The PBMTE bit controls whether the Svpbmt extension is available for use in S-mode
+  # and G-stage address translation (i.e., for page tables pointed to by satp or hgatp).
+  # When PBMTE=1, Svpbmt is available for S-mode and G-stage address translation. When
+  # PBMTE=0, the implementation behaves as though Svpbmt were not implemented.
+  - name: menvcfg_pbmte_op
+    coverpoint: ["Svpbmt_cg/PBMTE_set", "Sv_add_feature_cg/cp_svpbmt_{read,write,exec}_fault"]
 
-  - name: Svpbmt_io_pma_nc_pbmt_obey_rvwmo
-    coverpoint: [""]
+  # After changing menvcfg.PBMTE, executing an SFENCE.VMA instruction with rs1=x0 and
+  # rs2=x0 suffices to synchronize address-translation caches with respect to the
+  # altered interpretation of page-table entries' PBMT fields.
+  - name: menvcfg_pbmte_fence
+    coverpoint: ["Svpbmt_cg/PBMTE_set"]
 
-  - name: Svpbmt_io_pma_nc_pbmt_treated_as_io_and_memory
-    coverpoint: [""]
+  # If Svpbmt is not implemented, PBMTE is read-only zero.
+  - name: menvcfg_pbmte_rdonly0
+    coverpoint: ["Not tested: needs an implementation without Svpbmt"]
 
-  - name: Svpbmt_memory_pma_io_pbmt_strong_io_ordering
-    coverpoint: [""]
+  # Implementations may override additional PMAs not explicitly listed in <<pbmt>>.
+  - name: Svpbmt_impl_may_override_pmas
+    coverpoint: ["Not tested: implementation-defined PMA overrides"]
 
-  - name: Svpbmt_memory_pma_io_pbmt_treated_as_io_and_memory
-    coverpoint: [""]
+  # memory accesses to such pages obey the memory ordering rules of the final effective
+  # attribute,
+  - names: [Svpbmt_obeys_mem_ordering, Svpbmt_io_pma_nc_pbmt_obey_rvwmo, Svpbmt_io_pma_nc_pbmt_treated_as_io_and_memory, Svpbmt_memory_pma_io_pbmt_strong_io_ordering, Svpbmt_memory_pma_io_pbmt_treated_as_io_and_memory, Svpbmt_aliasing_attribute, Svpbmt_noncacheable_aliasing_no_coherence_loss, Svpbmt_noncacheable_aliasing_may_weaken_ordering, Svpbmt_noncacheable_aliasing_fence_prevents_ordering_loss, Svpbmt_cacheable_aliasing_may_cause_coherence_loss, Svpbmt_cacheable_aliasing_fence_flush_fence_required]
+    coverpoint: ["Not tested: memory ordering, cacheability and coherence are not observable in single-hart signature tests"]
 
-  - name: Svpbmt_aliasing_attribute
-    coverpoint: [""]
-
-  - name: Svpbmt_noncacheable_aliasing_no_coherence_loss
-    coverpoint: [""]
-
-  - name: Svpbmt_noncacheable_aliasing_may_weaken_ordering
-    coverpoint: [""]
-
-  # Svpbmt_noncacheable_aliasing_fence_prevents_ordering_loss
-  - name: Svpbmt_noncacheable_aliasing_fence_prevents_ordering_loss
-    coverpoint: [""]
-
-  - name: Svpbmt_cacheable_aliasing_may_cause_coherence_loss
-    coverpoint: [""]
-
-  - name: Svpbmt_cacheable_aliasing_fence_flush_fence_required
-    coverpoint: [""]
-
-  - name: Svpbmt_hgatp_stage_override_rule
-    coverpoint: [""]
-
-  - name: Svpbmt_vsatp_stage_override_rule
-    coverpoint: [""]
+  # if hgatp.MODE is not equal to zero, non-zero G-stage PTE PBMT bits override the
+  # attributes in the PMA to produce an intermediate set of attributes.
+  - names: [Svpbmt_hgatp_stage_override_rule, Svpbmt_vsatp_stage_override_rule, menvcfg_pbmte_henvcfg_pbmte_rdonly0]
+    coverpoint: ["TODO: test in hypervisor tests"]

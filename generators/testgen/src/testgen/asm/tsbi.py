@@ -109,6 +109,7 @@ _CSR_ALIASES = {
     "mscratch": 0x340,
     "mepc": 0x341,
     "mcause": 0x342,
+    "mtval": 0x343,
     "mip": 0x344,
     "menvcfg": 0x30A,
     "mseccfg": 0x747,

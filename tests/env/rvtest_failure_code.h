@@ -2358,6 +2358,10 @@
         .string "\"Mismatch in mtval2 value! Trap was being handled in M-Mode.\"";
     sv_Mtinst_str:
         .string "\"Mismatch in mtinst value! Trap was being handled in M-Mode.\"";
+    sv_Htval2_str:
+        .string "\"Mismatch in htval value! Trap was being handled in HS-Mode.\"";
+    sv_Htinst_str:
+        .string "\"Mismatch in htinst value! Trap was being handled in HS-Mode.\"";
     sv_Mip_str:
         .string "\"Mismatch in mip value! Trap was being handled in M-Mode.\"";
     sv_Sip_str:

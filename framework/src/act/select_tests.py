@@ -16,7 +16,7 @@ from act.config import Config, load_config
 from act.parse_test_constraints import ExtensionRequirement, TestMetadata
 from act.parse_udb_config import get_config_params, get_implemented_extensions, prepare_dut_outputs
 
-PRIV_EXTENSIONS = {"Sm", "S", "U"}
+PRIV_EXTENSIONS = {"Sm", "S", "U", "H"}
 
 # Type alias
 ConfigParamValue = int | bool | str | list[int | str | bool]

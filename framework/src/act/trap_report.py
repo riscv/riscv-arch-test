@@ -284,14 +284,15 @@ def _format_hex(value: int, xlen: int) -> str:
     return f"0x{value:0{width}x}"
 
 
-def _decode_xstatus(status_bits: int) -> str:
+def _decode_xstatus(status_bits: int, mode: str) -> str:
     """Decode the encoded xstatus field stored in signature word0 bits 30:13.
 
     The trap handler packs mstatus[17:0] into bits [30:13] of word0, then applies
     a mask to clear xstatus bits 16:13 (XS,FS) 10:9 (VS) and unused bits 4,2,0.
     For M-mode traps, mstatus[39:38]/mstatush[7:6] (GVA, MPV) are OR'd into
     word0 bits [28:27] (xstatus 15:14). For H-mode traps, hstatus[8:6] (SPVP, SPV,
-    GVA) are OR'd into word0 bits [29:27] (xstatus 16:14).
+    GVA) are OR'd into word0 bits [29:27] (xstatus 16:14).  Bit 15 is therefore MPV on
+    an M-mode entry and SPV on an HS-mode one; ``mode`` is the entry's MODE_NAMES string.
     """
     # Skip WPRI bit 0
     sie = (status_bits >> 1) & 1
@@ -309,13 +310,14 @@ def _decode_xstatus(status_bits: int) -> str:
     mprv = (status_bits >> 17) & 1
     # Overlaid bits
     gva = (status_bits >> 14) & 1
-    mpv = (status_bits >> 15) & 1
+    xpv = (status_bits >> 15) & 1
     spvp = (status_bits >> 16) & 1
+    xpv_name = "MPV" if mode == "M" else "SPV"
 
     return (
         f"SIE={sie}, MIE={mie}, SPIE={spie}, MPIE={mpie}, "
         f"SPP={spp}, MPP={mpp} ({MPP_NAMES.get(mpp, '?')}), MPRV={mprv}, "
-        f"GVA={gva}, MPV={mpv}, SPVP={spvp}"
+        f"GVA={gva}, {xpv_name}={xpv}, SPVP={spvp}"
     )
 
 
@@ -348,7 +350,7 @@ def _format_trap_report(entries: list[TrapEntry], test_name: str, xlen: int) -> 
         if entry.mtinst is not None:
             lines.append(f"  MTINST:  {_format_hex(entry.mtinst, xlen)}")
 
-        lines.append(f"  Status:  {_decode_xstatus(entry.xstatus_bits)}")
+        lines.append(f"  Status:  {_decode_xstatus(entry.xstatus_bits, entry.mode)}")
         lines.append(f"  XIE[cause]: {int(entry.xie_bit)}  XIP[cause]: {int(entry.xip_bit)}")
 
     lines.append("")

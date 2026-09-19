@@ -1,0 +1,6 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  # If the Svadu extension is implemented, the menvcfg.ADUE field is writable.
+  - names: [Svadu_hw_update_a_d_bits, pmp_check_pagetable_access]
+    coverpoint: ["SvaduPMP_cg/Abit_unset_pmpW_unset_{exec,read,write}_{s,u}", "SvaduPMP_cg/Dbit_unset_pmpW_unset_write_{s,u}"]

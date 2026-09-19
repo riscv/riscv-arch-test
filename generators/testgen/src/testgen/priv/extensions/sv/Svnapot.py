@@ -13,6 +13,7 @@ from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.access import add_rwx_test
 from testgen.priv.extensions.sv.assembly import NAPOT_DATA, NAPOT_RESERVED_DATA
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
+from testgen.priv.extensions.sv.modes import BOOT_SMODE
 from testgen.priv.extensions.sv.page_tables import (
     SV39,
     SV48,
@@ -40,6 +41,7 @@ def _begin_test(test_data: TestData, sv: SvMode, mode: str, topic: str) -> TestC
         mode,
         f"{sv.name}_{topic}_{mode}",
         va_defs=(("va_data", _NAPOT_VA[sv.name]),),
+        driver_mode="Smode",
     )
 
 
@@ -80,6 +82,7 @@ def _make_napot(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     0,
                     f"test1_access{access}",
                     direct_address=True,
+                    driver_mode="Smode",
                 ),
                 "",
             ]
@@ -100,7 +103,7 @@ def _make_reserved(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                 *create_page_mapping(sv, leaf_level=level, leaf_flags=_permissions(umode, ppn_bits=None)),
                 "sfence.vma",
                 "",
-                *add_rwx_test(test_data, sv, mode, "va_data", level, f"test{number}"),
+                *add_rwx_test(test_data, sv, mode, "va_data", level, f"test{number}", driver_mode="Smode"),
                 "",
             ]
         )
@@ -112,7 +115,7 @@ def _make_reserved(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                 *create_page_mapping(sv, leaf_level=0, leaf_flags=_permissions(umode, ppn_bits=encoding)),
                 "sfence.vma",
                 "",
-                *add_rwx_test(test_data, sv, mode, "va_data", 0, f"test{number}"),
+                *add_rwx_test(test_data, sv, mode, "va_data", 0, f"test{number}", driver_mode="Smode"),
                 "",
             ]
         )
@@ -131,7 +134,7 @@ def _make_svnapot(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     "Svnapot",
     required_extensions=["I", "Sv39", "Svnapot"],
     march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
+    extra_defines=[BOOT_SMODE],
 )
 def make_svnapot_sv39(test_data: TestData) -> list[TestChunk]:
     return _make_svnapot(test_data, SV39)
@@ -141,7 +144,7 @@ def make_svnapot_sv39(test_data: TestData) -> list[TestChunk]:
     "Svnapot",
     required_extensions=["I", "Sv48", "Svnapot"],
     march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
+    extra_defines=[BOOT_SMODE],
 )
 def make_svnapot_sv48(test_data: TestData) -> list[TestChunk]:
     return _make_svnapot(test_data, SV48)
@@ -151,7 +154,7 @@ def make_svnapot_sv48(test_data: TestData) -> list[TestChunk]:
     "Svnapot",
     required_extensions=["I", "Sv57", "Svnapot"],
     march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
+    extra_defines=[BOOT_SMODE],
 )
 def make_svnapot_sv57(test_data: TestData) -> list[TestChunk]:
     return _make_svnapot(test_data, SV57)

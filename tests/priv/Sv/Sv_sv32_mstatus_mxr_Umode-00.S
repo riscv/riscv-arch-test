@@ -18,7 +18,7 @@
 #define SIGUPD_COUNT 22
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 #define TRAP_SIGUPD_COUNT 50
 
 // Include framework macros
@@ -35,7 +35,6 @@ RVTEST_BEGIN
 
 
 main:
-  LI(a2, 0x800) // Test signature initialization
 
 // Virtual addresses for code and test regions
 
@@ -50,11 +49,13 @@ main:
   sfence.vma
 
 // Set up the code-region save area.
-  csrr a0, mscratch
+  LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL1)
 
   SATP_SETUP_SV32 // Enable address translation.
   sfence.vma
+
+  LI(a2, 0x800) // Test signature initialization
 
 
 // 4MB page at level 1
@@ -63,14 +64,14 @@ main:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL1)
   sfence.vma
   LI(   t0, MSTATUS_MXR)
-  csrc  mstatus, t0
+  csrc  sstatus, t0
 
   LI(a5, (va_data >> 22) << 22)
   LA(a0, rvtest_data_1)
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -88,7 +89,7 @@ Sv_cp_sv32_mstatus_mxr_Umode_test1_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_mstatus_mxr_Umode_test1_store, Sv_cp_sv32_mstatus_mxr_Umode_test1_store_str)
@@ -104,14 +105,14 @@ Sv_cp_sv32_mstatus_mxr_Umode_test1_exec:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL1)
   sfence.vma
   LI(   t0, MSTATUS_MXR)
-  csrs  mstatus, t0
+  csrs  sstatus, t0
 
   LI(a5, (va_data >> 22) << 22)
   LA(a0, rvtest_data_1)
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -129,7 +130,7 @@ Sv_cp_sv32_mstatus_mxr_Umode_test2_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_mstatus_mxr_Umode_test2_store, Sv_cp_sv32_mstatus_mxr_Umode_test2_store_str)
@@ -146,10 +147,10 @@ Sv_cp_sv32_mstatus_mxr_Umode_test2_exec:
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL0)
   sfence.vma
   LI(   t0, MSTATUS_MXR)
-  csrc  mstatus, t0
+  csrc  sstatus, t0
 
   LI(a5, va_data)
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -167,7 +168,7 @@ Sv_cp_sv32_mstatus_mxr_Umode_test3_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_mstatus_mxr_Umode_test3_store, Sv_cp_sv32_mstatus_mxr_Umode_test3_store_str)
@@ -184,10 +185,10 @@ Sv_cp_sv32_mstatus_mxr_Umode_test3_exec:
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL0)
   sfence.vma
   LI(   t0, MSTATUS_MXR)
-  csrs  mstatus, t0
+  csrs  sstatus, t0
 
   LI(a5, va_data)
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -205,7 +206,7 @@ Sv_cp_sv32_mstatus_mxr_Umode_test4_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_mstatus_mxr_Umode_test4_store, Sv_cp_sv32_mstatus_mxr_Umode_test4_store_str)
@@ -242,18 +243,18 @@ rvtest_slvl0_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_cp_sv32_mstatus_mxr_Umode_test1_store_str: .string "\"test: 67; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test1_store\""
-Sv_cp_sv32_mstatus_mxr_Umode_test1_load_str: .string "\"test: 68; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test1_load\""
-Sv_cp_sv32_mstatus_mxr_Umode_test1_exec_str: .string "\"test: 69; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test1_exec\""
-Sv_cp_sv32_mstatus_mxr_Umode_test2_store_str: .string "\"test: 70; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test2_store\""
-Sv_cp_sv32_mstatus_mxr_Umode_test2_load_str: .string "\"test: 71; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test2_load\""
-Sv_cp_sv32_mstatus_mxr_Umode_test2_exec_str: .string "\"test: 72; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test2_exec\""
-Sv_cp_sv32_mstatus_mxr_Umode_test3_store_str: .string "\"test: 73; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test3_store\""
-Sv_cp_sv32_mstatus_mxr_Umode_test3_load_str: .string "\"test: 74; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test3_load\""
-Sv_cp_sv32_mstatus_mxr_Umode_test3_exec_str: .string "\"test: 75; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test3_exec\""
-Sv_cp_sv32_mstatus_mxr_Umode_test4_store_str: .string "\"test: 76; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test4_store\""
-Sv_cp_sv32_mstatus_mxr_Umode_test4_load_str: .string "\"test: 77; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test4_load\""
-Sv_cp_sv32_mstatus_mxr_Umode_test4_exec_str: .string "\"test: 78; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test4_exec\""
+Sv_cp_sv32_mstatus_mxr_Umode_test1_store_str: .string "\"test: 55; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test1_store\""
+Sv_cp_sv32_mstatus_mxr_Umode_test1_load_str: .string "\"test: 56; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test1_load\""
+Sv_cp_sv32_mstatus_mxr_Umode_test1_exec_str: .string "\"test: 57; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test1_exec\""
+Sv_cp_sv32_mstatus_mxr_Umode_test2_store_str: .string "\"test: 58; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test2_store\""
+Sv_cp_sv32_mstatus_mxr_Umode_test2_load_str: .string "\"test: 59; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test2_load\""
+Sv_cp_sv32_mstatus_mxr_Umode_test2_exec_str: .string "\"test: 60; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test2_exec\""
+Sv_cp_sv32_mstatus_mxr_Umode_test3_store_str: .string "\"test: 61; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test3_store\""
+Sv_cp_sv32_mstatus_mxr_Umode_test3_load_str: .string "\"test: 62; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test3_load\""
+Sv_cp_sv32_mstatus_mxr_Umode_test3_exec_str: .string "\"test: 63; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test3_exec\""
+Sv_cp_sv32_mstatus_mxr_Umode_test4_store_str: .string "\"test: 64; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test4_store\""
+Sv_cp_sv32_mstatus_mxr_Umode_test4_load_str: .string "\"test: 65; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test4_load\""
+Sv_cp_sv32_mstatus_mxr_Umode_test4_exec_str: .string "\"test: 66; cg: Sv; cp: cp_sv32_mstatus_mxr_Umode; bin: test4_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

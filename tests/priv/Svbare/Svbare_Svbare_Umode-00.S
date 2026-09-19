@@ -18,7 +18,7 @@
 #define SIGUPD_COUNT 14
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 #define TRAP_SIGUPD_COUNT 10
 
 // Include framework macros
@@ -33,7 +33,7 @@ main:
 Svbare_cg_cp_satp_satp_bare:
   # Read satp into x14 and check against expected.
   RVTEST_SIGUPD_CSR_READ(satp, x14, Svbare_cg_cp_satp_satp_bare, Svbare_cg_cp_satp_satp_bare_str)
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   LA(a5, rvtest_data_1)
   addi a2, a2, 16
 Svbare_cg_cp_bare_access_test1_store:
@@ -45,7 +45,7 @@ Svbare_cg_cp_bare_access_test1_load:
 Svbare_cg_cp_bare_access_test1_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svbare_cg_cp_bare_access_test1_store, Svbare_cg_cp_bare_access_test1_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

@@ -18,7 +18,7 @@
 #define SIGUPD_COUNT 70
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 #define TRAP_SIGUPD_COUNT 220
 
 // Include framework macros
@@ -35,7 +35,6 @@ RVTEST_BEGIN
 
 
 main:
-  LI(a2, 0x800) // Test signature initialization
 
 // Virtual addresses for code and test regions
 
@@ -50,14 +49,24 @@ main:
   sfence.vma
 
 // Set up the code-region save area.
-  csrr a0, mscratch
+  LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL4)
 
   SATP_SETUP_RV64(sv57) // Enable address translation.
   sfence.vma
 
   LI(t0, MENVCFG_ADUE)
-  csrc menvcfg, t0 // Enable Svade
+  # T-SBI call to execute instruction: csrc menvcfg, t0
+  # Copy rs1 (x5) to a1 for T-SBI call
+  mv a1, x5
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, t0
+  ecall # T-SBI call to execute instruction at suitable privilege level
+
+  LI(a2, 0x800) // Test signature initialization
 
 
 // 256TB page at level 4
@@ -71,7 +80,7 @@ main:
   slli a0, a0, 16
   srli a0, a0, 16
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -89,7 +98,7 @@ Svade_cp_sv57_Svade_Umode_test1_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test1_store, Svade_cp_sv57_Svade_Umode_test1_store_str)
@@ -107,7 +116,7 @@ Svade_cp_sv57_Svade_Umode_test1_exec:
   slli a0, a0, 16
   srli a0, a0, 16
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -125,7 +134,7 @@ Svade_cp_sv57_Svade_Umode_test2_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test2_store, Svade_cp_sv57_Svade_Umode_test2_store_str)
@@ -143,7 +152,7 @@ Svade_cp_sv57_Svade_Umode_test2_exec:
   slli a0, a0, 16
   srli a0, a0, 16
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -161,7 +170,7 @@ Svade_cp_sv57_Svade_Umode_test3_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test3_store, Svade_cp_sv57_Svade_Umode_test3_store_str)
@@ -179,7 +188,7 @@ Svade_cp_sv57_Svade_Umode_test3_exec:
   slli a0, a0, 16
   srli a0, a0, 16
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -197,7 +206,7 @@ Svade_cp_sv57_Svade_Umode_test4_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test4_store, Svade_cp_sv57_Svade_Umode_test4_store_str)
@@ -219,7 +228,7 @@ Svade_cp_sv57_Svade_Umode_test4_exec:
   slli a0, a0, 25
   srli a0, a0, 25
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -237,7 +246,7 @@ Svade_cp_sv57_Svade_Umode_test5_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test5_store, Svade_cp_sv57_Svade_Umode_test5_store_str)
@@ -256,7 +265,7 @@ Svade_cp_sv57_Svade_Umode_test5_exec:
   slli a0, a0, 25
   srli a0, a0, 25
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -274,7 +283,7 @@ Svade_cp_sv57_Svade_Umode_test6_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test6_store, Svade_cp_sv57_Svade_Umode_test6_store_str)
@@ -293,7 +302,7 @@ Svade_cp_sv57_Svade_Umode_test6_exec:
   slli a0, a0, 25
   srli a0, a0, 25
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -311,7 +320,7 @@ Svade_cp_sv57_Svade_Umode_test7_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test7_store, Svade_cp_sv57_Svade_Umode_test7_store_str)
@@ -330,7 +339,7 @@ Svade_cp_sv57_Svade_Umode_test7_exec:
   slli a0, a0, 25
   srli a0, a0, 25
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -348,7 +357,7 @@ Svade_cp_sv57_Svade_Umode_test8_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test8_store, Svade_cp_sv57_Svade_Umode_test8_store_str)
@@ -371,7 +380,7 @@ Svade_cp_sv57_Svade_Umode_test8_exec:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -389,7 +398,7 @@ Svade_cp_sv57_Svade_Umode_test9_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test9_store, Svade_cp_sv57_Svade_Umode_test9_store_str)
@@ -409,7 +418,7 @@ Svade_cp_sv57_Svade_Umode_test9_exec:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -427,7 +436,7 @@ Svade_cp_sv57_Svade_Umode_test10_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test10_store, Svade_cp_sv57_Svade_Umode_test10_store_str)
@@ -447,7 +456,7 @@ Svade_cp_sv57_Svade_Umode_test10_exec:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -465,7 +474,7 @@ Svade_cp_sv57_Svade_Umode_test11_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test11_store, Svade_cp_sv57_Svade_Umode_test11_store_str)
@@ -485,7 +494,7 @@ Svade_cp_sv57_Svade_Umode_test11_exec:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -503,7 +512,7 @@ Svade_cp_sv57_Svade_Umode_test12_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test12_store, Svade_cp_sv57_Svade_Umode_test12_store_str)
@@ -527,7 +536,7 @@ Svade_cp_sv57_Svade_Umode_test12_exec:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -545,7 +554,7 @@ Svade_cp_sv57_Svade_Umode_test13_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test13_store, Svade_cp_sv57_Svade_Umode_test13_store_str)
@@ -566,7 +575,7 @@ Svade_cp_sv57_Svade_Umode_test13_exec:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -584,7 +593,7 @@ Svade_cp_sv57_Svade_Umode_test14_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test14_store, Svade_cp_sv57_Svade_Umode_test14_store_str)
@@ -605,7 +614,7 @@ Svade_cp_sv57_Svade_Umode_test14_exec:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -623,7 +632,7 @@ Svade_cp_sv57_Svade_Umode_test15_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test15_store, Svade_cp_sv57_Svade_Umode_test15_store_str)
@@ -644,7 +653,7 @@ Svade_cp_sv57_Svade_Umode_test15_exec:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -662,7 +671,7 @@ Svade_cp_sv57_Svade_Umode_test16_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test16_store, Svade_cp_sv57_Svade_Umode_test16_store_str)
@@ -687,7 +696,7 @@ Svade_cp_sv57_Svade_Umode_test16_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -705,7 +714,7 @@ Svade_cp_sv57_Svade_Umode_test17_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test17_store, Svade_cp_sv57_Svade_Umode_test17_store_str)
@@ -727,7 +736,7 @@ Svade_cp_sv57_Svade_Umode_test17_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -745,7 +754,7 @@ Svade_cp_sv57_Svade_Umode_test18_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test18_store, Svade_cp_sv57_Svade_Umode_test18_store_str)
@@ -767,7 +776,7 @@ Svade_cp_sv57_Svade_Umode_test18_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -785,7 +794,7 @@ Svade_cp_sv57_Svade_Umode_test19_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test19_store, Svade_cp_sv57_Svade_Umode_test19_store_str)
@@ -807,7 +816,7 @@ Svade_cp_sv57_Svade_Umode_test19_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -825,7 +834,7 @@ Svade_cp_sv57_Svade_Umode_test20_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test20_store, Svade_cp_sv57_Svade_Umode_test20_store_str)

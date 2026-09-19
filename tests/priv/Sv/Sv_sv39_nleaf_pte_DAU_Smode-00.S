@@ -18,7 +18,7 @@
 #define SIGUPD_COUNT 28
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 #define TRAP_SIGUPD_COUNT 120
 
 // Include framework macros
@@ -37,7 +37,6 @@ RVTEST_BEGIN
 
 
 main:
-  LI(a2, 0x800) // Test signature initialization
 
 // Virtual addresses for code and test regions
 
@@ -52,11 +51,13 @@ main:
   sfence.vma
 
 // Set up the code-region save area.
-  csrr a0, mscratch
+  LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL2)
 
   SATP_SETUP_RV64(sv39) // Enable address translation.
   sfence.vma
+
+  LI(a2, 0x800) // Test signature initialization
 
 
 // 4KB page at level 0
@@ -72,7 +73,6 @@ main:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -89,8 +89,6 @@ Sv_cp_sv39_nleaf_pte_DAU_Smode_test1_load:
 Sv_cp_sv39_nleaf_pte_DAU_Smode_test1_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv39_nleaf_pte_DAU_Smode_test1_store, Sv_cp_sv39_nleaf_pte_DAU_Smode_test1_store_str)
@@ -113,7 +111,6 @@ Sv_cp_sv39_nleaf_pte_DAU_Smode_test1_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -130,8 +127,6 @@ Sv_cp_sv39_nleaf_pte_DAU_Smode_test2_load:
 Sv_cp_sv39_nleaf_pte_DAU_Smode_test2_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv39_nleaf_pte_DAU_Smode_test2_store, Sv_cp_sv39_nleaf_pte_DAU_Smode_test2_store_str)
@@ -154,7 +149,6 @@ Sv_cp_sv39_nleaf_pte_DAU_Smode_test2_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -171,8 +165,6 @@ Sv_cp_sv39_nleaf_pte_DAU_Smode_test3_load:
 Sv_cp_sv39_nleaf_pte_DAU_Smode_test3_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv39_nleaf_pte_DAU_Smode_test3_store, Sv_cp_sv39_nleaf_pte_DAU_Smode_test3_store_str)
@@ -195,7 +187,6 @@ Sv_cp_sv39_nleaf_pte_DAU_Smode_test3_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -212,8 +203,6 @@ Sv_cp_sv39_nleaf_pte_DAU_Smode_test4_load:
 Sv_cp_sv39_nleaf_pte_DAU_Smode_test4_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv39_nleaf_pte_DAU_Smode_test4_store, Sv_cp_sv39_nleaf_pte_DAU_Smode_test4_store_str)
@@ -236,7 +225,6 @@ Sv_cp_sv39_nleaf_pte_DAU_Smode_test4_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -253,8 +241,6 @@ Sv_cp_sv39_nleaf_pte_DAU_Smode_test5_load:
 Sv_cp_sv39_nleaf_pte_DAU_Smode_test5_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv39_nleaf_pte_DAU_Smode_test5_store, Sv_cp_sv39_nleaf_pte_DAU_Smode_test5_store_str)
@@ -277,7 +263,6 @@ Sv_cp_sv39_nleaf_pte_DAU_Smode_test5_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -294,8 +279,6 @@ Sv_cp_sv39_nleaf_pte_DAU_Smode_test6_load:
 Sv_cp_sv39_nleaf_pte_DAU_Smode_test6_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv39_nleaf_pte_DAU_Smode_test6_store, Sv_cp_sv39_nleaf_pte_DAU_Smode_test6_store_str)
@@ -336,24 +319,24 @@ rvtest_slvl1_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_cp_sv39_nleaf_pte_DAU_Smode_test1_store_str: .string "\"test: 139; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test1_store\""
-Sv_cp_sv39_nleaf_pte_DAU_Smode_test1_load_str: .string "\"test: 140; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test1_load\""
-Sv_cp_sv39_nleaf_pte_DAU_Smode_test1_exec_str: .string "\"test: 141; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test1_exec\""
-Sv_cp_sv39_nleaf_pte_DAU_Smode_test2_store_str: .string "\"test: 142; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test2_store\""
-Sv_cp_sv39_nleaf_pte_DAU_Smode_test2_load_str: .string "\"test: 143; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test2_load\""
-Sv_cp_sv39_nleaf_pte_DAU_Smode_test2_exec_str: .string "\"test: 144; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test2_exec\""
-Sv_cp_sv39_nleaf_pte_DAU_Smode_test3_store_str: .string "\"test: 145; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test3_store\""
-Sv_cp_sv39_nleaf_pte_DAU_Smode_test3_load_str: .string "\"test: 146; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test3_load\""
-Sv_cp_sv39_nleaf_pte_DAU_Smode_test3_exec_str: .string "\"test: 147; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test3_exec\""
-Sv_cp_sv39_nleaf_pte_DAU_Smode_test4_store_str: .string "\"test: 148; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test4_store\""
-Sv_cp_sv39_nleaf_pte_DAU_Smode_test4_load_str: .string "\"test: 149; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test4_load\""
-Sv_cp_sv39_nleaf_pte_DAU_Smode_test4_exec_str: .string "\"test: 150; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test4_exec\""
-Sv_cp_sv39_nleaf_pte_DAU_Smode_test5_store_str: .string "\"test: 151; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test5_store\""
-Sv_cp_sv39_nleaf_pte_DAU_Smode_test5_load_str: .string "\"test: 152; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test5_load\""
-Sv_cp_sv39_nleaf_pte_DAU_Smode_test5_exec_str: .string "\"test: 153; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test5_exec\""
-Sv_cp_sv39_nleaf_pte_DAU_Smode_test6_store_str: .string "\"test: 154; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test6_store\""
-Sv_cp_sv39_nleaf_pte_DAU_Smode_test6_load_str: .string "\"test: 155; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test6_load\""
-Sv_cp_sv39_nleaf_pte_DAU_Smode_test6_exec_str: .string "\"test: 156; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test6_exec\""
+Sv_cp_sv39_nleaf_pte_DAU_Smode_test1_store_str: .string "\"test: 121; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test1_store\""
+Sv_cp_sv39_nleaf_pte_DAU_Smode_test1_load_str: .string "\"test: 122; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test1_load\""
+Sv_cp_sv39_nleaf_pte_DAU_Smode_test1_exec_str: .string "\"test: 123; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test1_exec\""
+Sv_cp_sv39_nleaf_pte_DAU_Smode_test2_store_str: .string "\"test: 124; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test2_store\""
+Sv_cp_sv39_nleaf_pte_DAU_Smode_test2_load_str: .string "\"test: 125; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test2_load\""
+Sv_cp_sv39_nleaf_pte_DAU_Smode_test2_exec_str: .string "\"test: 126; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test2_exec\""
+Sv_cp_sv39_nleaf_pte_DAU_Smode_test3_store_str: .string "\"test: 127; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test3_store\""
+Sv_cp_sv39_nleaf_pte_DAU_Smode_test3_load_str: .string "\"test: 128; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test3_load\""
+Sv_cp_sv39_nleaf_pte_DAU_Smode_test3_exec_str: .string "\"test: 129; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test3_exec\""
+Sv_cp_sv39_nleaf_pte_DAU_Smode_test4_store_str: .string "\"test: 130; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test4_store\""
+Sv_cp_sv39_nleaf_pte_DAU_Smode_test4_load_str: .string "\"test: 131; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test4_load\""
+Sv_cp_sv39_nleaf_pte_DAU_Smode_test4_exec_str: .string "\"test: 132; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test4_exec\""
+Sv_cp_sv39_nleaf_pte_DAU_Smode_test5_store_str: .string "\"test: 133; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test5_store\""
+Sv_cp_sv39_nleaf_pte_DAU_Smode_test5_load_str: .string "\"test: 134; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test5_load\""
+Sv_cp_sv39_nleaf_pte_DAU_Smode_test5_exec_str: .string "\"test: 135; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test5_exec\""
+Sv_cp_sv39_nleaf_pte_DAU_Smode_test6_store_str: .string "\"test: 136; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test6_store\""
+Sv_cp_sv39_nleaf_pte_DAU_Smode_test6_load_str: .string "\"test: 137; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test6_load\""
+Sv_cp_sv39_nleaf_pte_DAU_Smode_test6_exec_str: .string "\"test: 138; cg: Sv; cp: cp_sv39_nleaf_pte_DAU_Smode; bin: test6_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

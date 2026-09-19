@@ -18,7 +18,7 @@
 #define SIGUPD_COUNT 10
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 #define TRAP_SIGUPD_COUNT 10
 
 // Include framework macros
@@ -49,14 +49,22 @@ main:
   sfence.vma
 
 // Set up the code-region save area.
-  csrr a0, mscratch
+  LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL2)
 
   SATP_SETUP_RV64(sv39) // Enable address translation.
   sfence.vma
 
   LI(t0, MENVCFG_CBZE)
-  csrs menvcfg, t0
+  # T-SBI call to execute instruction: csrs menvcfg, t0
+  # Copy rs1 (x5) to a1 for T-SBI call
+  mv a1, x5
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, t0
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrs senvcfg, t0
 
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
@@ -67,7 +75,7 @@ main:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
 SvZicbo_cg_cp_prefetch_test1_prefetch_i:
   prefetch.i 0(a5)
   nop
@@ -77,7 +85,7 @@ SvZicbo_cg_cp_prefetch_test1_prefetch_r:
 SvZicbo_cg_cp_prefetch_test1_prefetch_w:
   prefetch.w 0(a5)
   nop
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
@@ -88,7 +96,7 @@ SvZicbo_cg_cp_prefetch_test1_prefetch_w:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
 SvZicbo_cg_cp_prefetch_test2_prefetch_i:
   prefetch.i 0(a5)
   nop
@@ -98,7 +106,7 @@ SvZicbo_cg_cp_prefetch_test2_prefetch_r:
 SvZicbo_cg_cp_prefetch_test2_prefetch_w:
   prefetch.w 0(a5)
   nop
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
@@ -110,7 +118,7 @@ SvZicbo_cg_cp_prefetch_test2_prefetch_w:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
 SvZicbo_cg_cp_prefetch_test3_prefetch_i:
   prefetch.i 0(a5)
   nop
@@ -120,7 +128,7 @@ SvZicbo_cg_cp_prefetch_test3_prefetch_r:
 SvZicbo_cg_cp_prefetch_test3_prefetch_w:
   prefetch.w 0(a5)
   nop
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test

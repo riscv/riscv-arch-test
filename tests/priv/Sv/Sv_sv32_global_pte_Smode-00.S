@@ -18,7 +18,7 @@
 #define SIGUPD_COUNT 22
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 #define TRAP_SIGUPD_COUNT 10
 
 // Include framework macros
@@ -35,7 +35,6 @@ RVTEST_BEGIN
 
 
 main:
-  LI(a2, 0x800) // Test signature initialization
 
 // Virtual addresses for code and test regions
 
@@ -50,11 +49,13 @@ main:
   sfence.vma
 
 // Set up the code-region save area.
-  csrr a0, mscratch
+  LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL1)
 
   SATP_SETUP_SV32 // Enable address translation.
   sfence.vma
+
+  LI(a2, 0x800) // Test signature initialization
 
 
 // 4MB page at level 1
@@ -68,7 +69,6 @@ main:
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -85,8 +85,6 @@ Sv_cp_sv32_global_pte_Smode_test1_access1_load:
 Sv_cp_sv32_global_pte_Smode_test1_access1_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_global_pte_Smode_test1_access1_store, Sv_cp_sv32_global_pte_Smode_test1_access1_store_str)
@@ -106,7 +104,6 @@ Sv_cp_sv32_global_pte_Smode_test1_access1_exec:
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -124,8 +121,6 @@ Sv_cp_sv32_global_pte_Smode_test1_access2_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
-
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_global_pte_Smode_test1_access2_store, Sv_cp_sv32_global_pte_Smode_test1_access2_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -142,7 +137,6 @@ Sv_cp_sv32_global_pte_Smode_test1_access2_exec:
   sfence.vma
 
   LI(a5, va_data)
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -160,8 +154,6 @@ Sv_cp_sv32_global_pte_Smode_test2_access1_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
-
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_global_pte_Smode_test2_access1_store, Sv_cp_sv32_global_pte_Smode_test2_access1_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -176,7 +168,6 @@ Sv_cp_sv32_global_pte_Smode_test2_access1_exec:
   sfence.vma x0, t0
 
   LI(a5, va_data)
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 
 // Store
@@ -193,8 +184,6 @@ Sv_cp_sv32_global_pte_Smode_test2_access2_load:
 Sv_cp_sv32_global_pte_Smode_test2_access2_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_global_pte_Smode_test2_access2_store, Sv_cp_sv32_global_pte_Smode_test2_access2_store_str)

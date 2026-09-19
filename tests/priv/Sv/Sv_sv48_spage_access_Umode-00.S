@@ -18,7 +18,7 @@
 #define SIGUPD_COUNT 22
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 #define TRAP_SIGUPD_COUNT 85
 
 // Include framework macros
@@ -35,7 +35,6 @@ RVTEST_BEGIN
 
 
 main:
-  LI(a2, 0x800) // Test signature initialization
 
 // Virtual addresses for code and test regions
 
@@ -50,11 +49,13 @@ main:
   sfence.vma
 
 // Set up the code-region save area.
-  csrr a0, mscratch
+  LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL3)
 
   SATP_SETUP_RV64(sv48) // Enable address translation.
   sfence.vma
+
+  LI(a2, 0x800) // Test signature initialization
 
 
 // 512GB page at level 3
@@ -68,7 +69,7 @@ main:
   slli a0, a0, 25
   srli a0, a0, 25
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -86,7 +87,7 @@ Sv_cp_sv48_spage_access_Umode_test1_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_spage_access_Umode_test1_store, Sv_cp_sv48_spage_access_Umode_test1_store_str)
@@ -108,7 +109,7 @@ Sv_cp_sv48_spage_access_Umode_test1_exec:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -126,7 +127,7 @@ Sv_cp_sv48_spage_access_Umode_test2_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_spage_access_Umode_test2_store, Sv_cp_sv48_spage_access_Umode_test2_store_str)
@@ -149,7 +150,7 @@ Sv_cp_sv48_spage_access_Umode_test2_exec:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -167,7 +168,7 @@ Sv_cp_sv48_spage_access_Umode_test3_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_spage_access_Umode_test3_store, Sv_cp_sv48_spage_access_Umode_test3_store_str)
@@ -191,7 +192,7 @@ Sv_cp_sv48_spage_access_Umode_test3_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -209,7 +210,7 @@ Sv_cp_sv48_spage_access_Umode_test4_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_spage_access_Umode_test4_store, Sv_cp_sv48_spage_access_Umode_test4_store_str)
@@ -252,18 +253,18 @@ rvtest_slvl2_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_cp_sv48_spage_access_Umode_test1_store_str: .string "\"test: 424; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test1_store\""
-Sv_cp_sv48_spage_access_Umode_test1_load_str: .string "\"test: 425; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test1_load\""
-Sv_cp_sv48_spage_access_Umode_test1_exec_str: .string "\"test: 426; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test1_exec\""
-Sv_cp_sv48_spage_access_Umode_test2_store_str: .string "\"test: 427; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test2_store\""
-Sv_cp_sv48_spage_access_Umode_test2_load_str: .string "\"test: 428; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test2_load\""
-Sv_cp_sv48_spage_access_Umode_test2_exec_str: .string "\"test: 429; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test2_exec\""
-Sv_cp_sv48_spage_access_Umode_test3_store_str: .string "\"test: 430; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test3_store\""
-Sv_cp_sv48_spage_access_Umode_test3_load_str: .string "\"test: 431; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test3_load\""
-Sv_cp_sv48_spage_access_Umode_test3_exec_str: .string "\"test: 432; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test3_exec\""
-Sv_cp_sv48_spage_access_Umode_test4_store_str: .string "\"test: 433; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test4_store\""
-Sv_cp_sv48_spage_access_Umode_test4_load_str: .string "\"test: 434; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test4_load\""
-Sv_cp_sv48_spage_access_Umode_test4_exec_str: .string "\"test: 435; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test4_exec\""
+Sv_cp_sv48_spage_access_Umode_test1_store_str: .string "\"test: 400; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test1_store\""
+Sv_cp_sv48_spage_access_Umode_test1_load_str: .string "\"test: 401; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test1_load\""
+Sv_cp_sv48_spage_access_Umode_test1_exec_str: .string "\"test: 402; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test1_exec\""
+Sv_cp_sv48_spage_access_Umode_test2_store_str: .string "\"test: 403; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test2_store\""
+Sv_cp_sv48_spage_access_Umode_test2_load_str: .string "\"test: 404; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test2_load\""
+Sv_cp_sv48_spage_access_Umode_test2_exec_str: .string "\"test: 405; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test2_exec\""
+Sv_cp_sv48_spage_access_Umode_test3_store_str: .string "\"test: 406; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test3_store\""
+Sv_cp_sv48_spage_access_Umode_test3_load_str: .string "\"test: 407; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test3_load\""
+Sv_cp_sv48_spage_access_Umode_test3_exec_str: .string "\"test: 408; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test3_exec\""
+Sv_cp_sv48_spage_access_Umode_test4_store_str: .string "\"test: 409; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test4_store\""
+Sv_cp_sv48_spage_access_Umode_test4_load_str: .string "\"test: 410; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test4_load\""
+Sv_cp_sv48_spage_access_Umode_test4_exec_str: .string "\"test: 411; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test4_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

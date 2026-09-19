@@ -18,7 +18,7 @@
 #define SIGUPD_COUNT 28
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 #define TRAP_SIGUPD_COUNT 120
 
 // Include framework macros
@@ -37,7 +37,6 @@ RVTEST_BEGIN
 
 
 main:
-  LI(a2, 0x800) // Test signature initialization
 
 // Virtual addresses for code and test regions
 
@@ -52,11 +51,13 @@ main:
   sfence.vma
 
 // Set up the code-region save area.
-  csrr a0, mscratch
+  LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL2)
 
   SATP_SETUP_RV64(sv39) // Enable address translation.
   sfence.vma
+
+  LI(a2, 0x800) // Test signature initialization
 
 
 // 1GB page at level 2
@@ -70,7 +71,7 @@ main:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -88,7 +89,7 @@ Sv_cp_sv39_pte_reserved_rwx_Umode_test1_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv39_pte_reserved_rwx_Umode_test1_store, Sv_cp_sv39_pte_reserved_rwx_Umode_test1_store_str)
@@ -109,7 +110,7 @@ Sv_cp_sv39_pte_reserved_rwx_Umode_test1_exec:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -127,7 +128,7 @@ Sv_cp_sv39_pte_reserved_rwx_Umode_test2_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv39_pte_reserved_rwx_Umode_test2_store, Sv_cp_sv39_pte_reserved_rwx_Umode_test2_store_str)
@@ -149,7 +150,7 @@ Sv_cp_sv39_pte_reserved_rwx_Umode_test2_exec:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -167,7 +168,7 @@ Sv_cp_sv39_pte_reserved_rwx_Umode_test3_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv39_pte_reserved_rwx_Umode_test3_store, Sv_cp_sv39_pte_reserved_rwx_Umode_test3_store_str)
@@ -189,7 +190,7 @@ Sv_cp_sv39_pte_reserved_rwx_Umode_test3_exec:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -207,7 +208,7 @@ Sv_cp_sv39_pte_reserved_rwx_Umode_test4_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv39_pte_reserved_rwx_Umode_test4_store, Sv_cp_sv39_pte_reserved_rwx_Umode_test4_store_str)
@@ -230,7 +231,7 @@ Sv_cp_sv39_pte_reserved_rwx_Umode_test4_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -248,7 +249,7 @@ Sv_cp_sv39_pte_reserved_rwx_Umode_test5_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv39_pte_reserved_rwx_Umode_test5_store, Sv_cp_sv39_pte_reserved_rwx_Umode_test5_store_str)
@@ -271,7 +272,7 @@ Sv_cp_sv39_pte_reserved_rwx_Umode_test5_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -289,7 +290,7 @@ Sv_cp_sv39_pte_reserved_rwx_Umode_test6_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv39_pte_reserved_rwx_Umode_test6_store, Sv_cp_sv39_pte_reserved_rwx_Umode_test6_store_str)
@@ -330,24 +331,24 @@ rvtest_slvl1_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_cp_sv39_pte_reserved_rwx_Umode_test1_store_str: .string "\"test: 199; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test1_store\""
-Sv_cp_sv39_pte_reserved_rwx_Umode_test1_load_str: .string "\"test: 200; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test1_load\""
-Sv_cp_sv39_pte_reserved_rwx_Umode_test1_exec_str: .string "\"test: 201; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test1_exec\""
-Sv_cp_sv39_pte_reserved_rwx_Umode_test2_store_str: .string "\"test: 202; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test2_store\""
-Sv_cp_sv39_pte_reserved_rwx_Umode_test2_load_str: .string "\"test: 203; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test2_load\""
-Sv_cp_sv39_pte_reserved_rwx_Umode_test2_exec_str: .string "\"test: 204; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test2_exec\""
-Sv_cp_sv39_pte_reserved_rwx_Umode_test3_store_str: .string "\"test: 205; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test3_store\""
-Sv_cp_sv39_pte_reserved_rwx_Umode_test3_load_str: .string "\"test: 206; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test3_load\""
-Sv_cp_sv39_pte_reserved_rwx_Umode_test3_exec_str: .string "\"test: 207; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test3_exec\""
-Sv_cp_sv39_pte_reserved_rwx_Umode_test4_store_str: .string "\"test: 208; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test4_store\""
-Sv_cp_sv39_pte_reserved_rwx_Umode_test4_load_str: .string "\"test: 209; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test4_load\""
-Sv_cp_sv39_pte_reserved_rwx_Umode_test4_exec_str: .string "\"test: 210; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test4_exec\""
-Sv_cp_sv39_pte_reserved_rwx_Umode_test5_store_str: .string "\"test: 211; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test5_store\""
-Sv_cp_sv39_pte_reserved_rwx_Umode_test5_load_str: .string "\"test: 212; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test5_load\""
-Sv_cp_sv39_pte_reserved_rwx_Umode_test5_exec_str: .string "\"test: 213; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test5_exec\""
-Sv_cp_sv39_pte_reserved_rwx_Umode_test6_store_str: .string "\"test: 214; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test6_store\""
-Sv_cp_sv39_pte_reserved_rwx_Umode_test6_load_str: .string "\"test: 215; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test6_load\""
-Sv_cp_sv39_pte_reserved_rwx_Umode_test6_exec_str: .string "\"test: 216; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test6_exec\""
+Sv_cp_sv39_pte_reserved_rwx_Umode_test1_store_str: .string "\"test: 181; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test1_store\""
+Sv_cp_sv39_pte_reserved_rwx_Umode_test1_load_str: .string "\"test: 182; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test1_load\""
+Sv_cp_sv39_pte_reserved_rwx_Umode_test1_exec_str: .string "\"test: 183; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test1_exec\""
+Sv_cp_sv39_pte_reserved_rwx_Umode_test2_store_str: .string "\"test: 184; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test2_store\""
+Sv_cp_sv39_pte_reserved_rwx_Umode_test2_load_str: .string "\"test: 185; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test2_load\""
+Sv_cp_sv39_pte_reserved_rwx_Umode_test2_exec_str: .string "\"test: 186; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test2_exec\""
+Sv_cp_sv39_pte_reserved_rwx_Umode_test3_store_str: .string "\"test: 187; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test3_store\""
+Sv_cp_sv39_pte_reserved_rwx_Umode_test3_load_str: .string "\"test: 188; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test3_load\""
+Sv_cp_sv39_pte_reserved_rwx_Umode_test3_exec_str: .string "\"test: 189; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test3_exec\""
+Sv_cp_sv39_pte_reserved_rwx_Umode_test4_store_str: .string "\"test: 190; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test4_store\""
+Sv_cp_sv39_pte_reserved_rwx_Umode_test4_load_str: .string "\"test: 191; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test4_load\""
+Sv_cp_sv39_pte_reserved_rwx_Umode_test4_exec_str: .string "\"test: 192; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test4_exec\""
+Sv_cp_sv39_pte_reserved_rwx_Umode_test5_store_str: .string "\"test: 193; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test5_store\""
+Sv_cp_sv39_pte_reserved_rwx_Umode_test5_load_str: .string "\"test: 194; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test5_load\""
+Sv_cp_sv39_pte_reserved_rwx_Umode_test5_exec_str: .string "\"test: 195; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test5_exec\""
+Sv_cp_sv39_pte_reserved_rwx_Umode_test6_store_str: .string "\"test: 196; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test6_store\""
+Sv_cp_sv39_pte_reserved_rwx_Umode_test6_load_str: .string "\"test: 197; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test6_load\""
+Sv_cp_sv39_pte_reserved_rwx_Umode_test6_exec_str: .string "\"test: 198; cg: Sv; cp: cp_sv39_pte_reserved_rwx_Umode; bin: test6_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

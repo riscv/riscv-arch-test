@@ -953,26 +953,6 @@
         csrw medeleg, zero  // don't delegate exceptions (until S-mode handler is set up)
       #endif
 
-      // Initialize every mode's trap CSRs to known values. Their reset values are
-      // UNSPECIFIED, and a test may read one before its first trap into that mode.
-      csrw mepc, zero
-      csrw mtval, zero
-      csrw mcause, zero
-      #ifdef S_SUPPORTED
-        csrw sepc, zero
-        csrw stval, zero
-        csrw scause, zero
-        #ifdef H_SUPPORTED
-          csrw mtval2, zero
-          csrw mtinst, zero
-          csrw htval, zero
-          csrw htinst, zero
-          csrw vsepc, zero
-          csrw vstval, zero
-          csrw vscause, zero
-        #endif
-      #endif
-
       // Set up trap handlers for all modes
       // S and H-mode setup could be deferred to RVTEST_BOOT_TO_SMODE, but that is upsetting the linker
       // and there is no harm setting up all the trap handlers here
@@ -988,6 +968,28 @@
         RVTEST_TRAP_PROLOG S
         #ifdef H_SUPPORTED
           RVTEST_TRAP_PROLOG V
+        #endif
+      #endif
+
+      // Initialize every mode's trap CSRs to known values. Their reset values are
+      // UNSPECIFIED, and a test may read one before its first trap into that mode.
+      // This follows the prologs so that a CSR the hart lacks traps into the M-mode
+      // handler instead of looping on an uninitialized mtvec.
+      csrw mepc, zero
+      csrw mtval, zero
+      csrw mcause, zero
+      #ifdef S_SUPPORTED
+        csrw sepc, zero
+        csrw stval, zero
+        csrw scause, zero
+        #ifdef H_SUPPORTED
+          csrw mtval2, zero
+          csrw mtinst, zero
+          csrw htval, zero
+          csrw htinst, zero
+          csrw vsepc, zero
+          csrw vstval, zero
+          csrw vscause, zero
         #endif
       #endif
 

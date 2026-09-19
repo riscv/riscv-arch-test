@@ -46,11 +46,12 @@ def make_svinval(test_data: TestData) -> list[TestChunk]:
     chunk.code.extend(
         [
             "main:",
-            "RVTEST_GOTO_LOWER_MODE Smode",
             *_add_operations(test_data, 1),
+            "RVTEST_GOTO_LOWER_MODE Smode",
+            *_add_operations(test_data, 2),
             "RVTEST_GOTO_MMODE",
             "RVTEST_GOTO_LOWER_MODE Umode",
-            *_add_operations(test_data, 2),
+            *_add_operations(test_data, 3),
             "RVTEST_GOTO_MMODE",
         ]
     )

@@ -2,7 +2,7 @@
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn[14:12]) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }

@@ -216,6 +216,7 @@ def csr_walk_test(
     walk_zeros: bool = True,
     warl_fields: list[tuple] | None = None,
     maskedwrites: bool = False,
+    gated_mask_bits: list[tuple[str, int]] | None = None,
 ) -> list[str]:
     """
     Generate a CSR walking-ones test: set and (optionally) clear each bit individually.
@@ -241,6 +242,9 @@ def csr_walk_test(
             bits and instead check that the field holds a legal (non-reserved) value; all
             other iterations check the field exactly as usual (see _warl_reserved_check).
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
+        gated_mask_bits: Optional list of (gate_define, bits). Each entry adds bits to the mask
+            only when gate_define is #defined for the config, so bits owned by an optional
+            extension are walked and checked where the extension exists and left alone elsewhere.
     """
     assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
     csr_name, mask = csr
@@ -328,6 +332,18 @@ def csr_walk_test(
     ]
     if mask is not None:
         lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
+        for gate, bits in gated_mask_bits or []:
+            assert mask is not None and bits & mask == 0, f"gated bits {bits:#x} overlap the {csr_name} mask"
+            lines.extend(
+                [
+                    f"#ifdef {gate}",
+                    *(["#if __riscv_xlen == 64"] if bits >> 32 else []),
+                    f"LI(x{temp_reg}, {bits})",
+                    f"or x{mask_reg}, x{mask_reg}, x{temp_reg}    # add bits owned by {gate} ({bits:#x})",
+                    *(["#endif"] if bits >> 32 else []),
+                    f"#endif // {gate}",
+                ]
+            )
     if walk_zeros:
         lines.append(f"LI(x{temp_reg}, -1)             # x{temp_reg} = all 1s")
 

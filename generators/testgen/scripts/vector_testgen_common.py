@@ -2295,6 +2295,9 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
       avlReg = pickScalarScratch(scalar_registers_used)
       scalar_registers_used.append(avlReg)
 
+      vtypeScratch = pickScalarScratch(scalar_registers_used)
+      scalar_registers_used.append(vtypeScratch)
+
       if   sew == 8  : sew_aligned = -1#"0x1F"
       elif sew == 16 : sew_aligned = -2#"0x1E"
       elif sew == 32 : sew_aligned = -4#"0x1C"
@@ -2307,7 +2310,10 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
       writeLine(f"csrr x{avlReg}, vl",                                          "# save vl register for after load")
       writeLine(f"vsetvl x{vlmaxReg}, x0, x{vtypeReg}",                         "# set vl to vlmax")
       writeLine(f"add x{vlmaxReg}, x{vlmaxReg}, x{vlmaxReg}",                   "# save vlmax * 2")
-      writeLine(f"vsetvli x0, x{avlReg}, e{eew}, m{getLmulFlag(vs2_emul)}, tu, mu", "# setting sew to vs2 eew")
+      # vl = VLMAX at the index EEW so every index slot of the register group is clamped, not just
+      # the active ones: the coverage model reads the whole register when it decides whether the
+      # indices are in range.
+      writeLine(f"vsetvli x{vtypeScratch}, x0, e{eew}, m{getLmulFlag(vs2_emul)}, tu, mu", "# setting sew to vs2 eew, vl = VLMAX")
       # spec zero-extends index elements to XLEN; use unsigned remainder so
       # offsets stay non-negative in [0, 2*vlmax) and never alias to huge addrs.
       writeLine(f"vremu.vx v{register}, v{register}, x{vlmaxReg}",              "# ensure all values are within [0, 2*vlmax)")

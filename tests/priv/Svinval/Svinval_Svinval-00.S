@@ -28,7 +28,6 @@
 RVTEST_BEGIN
 
 main:
-  RVTEST_GOTO_LOWER_MODE Smode
 Svinval_cg_cp_svinval_test1_sfence_w_inval:
   sfence.w.inval
   nop
@@ -45,8 +44,7 @@ Svinval_cg_cp_svinval_test1_sfence_vma:
   sfence.vma x0, x0
   nop
 
-  RVTEST_GOTO_MMODE
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_GOTO_LOWER_MODE Smode
 Svinval_cg_cp_svinval_test2_sfence_w_inval:
   sfence.w.inval
   nop
@@ -60,6 +58,24 @@ Svinval_cg_cp_svinval_test2_sfence_inval_ir:
   nop
 
 Svinval_cg_cp_svinval_test2_sfence_vma:
+  sfence.vma x0, x0
+  nop
+
+  RVTEST_GOTO_MMODE
+  RVTEST_GOTO_LOWER_MODE Umode
+Svinval_cg_cp_svinval_test3_sfence_w_inval:
+  sfence.w.inval
+  nop
+
+Svinval_cg_cp_svinval_test3_sinval_vma:
+  sinval.vma x0, x0
+  nop
+
+Svinval_cg_cp_svinval_test3_sfence_inval_ir:
+  sfence.inval.ir
+  nop
+
+Svinval_cg_cp_svinval_test3_sfence_vma:
   sfence.vma x0, x0
   nop
 
@@ -83,6 +99,10 @@ Svinval_cg_cp_svinval_test2_sfence_w_inval_str: .string "\"test: 5; cg: Svinval_
 Svinval_cg_cp_svinval_test2_sinval_vma_str: .string "\"test: 6; cg: Svinval_cg; cp: cp_svinval; bin: test2_sinval_vma\""
 Svinval_cg_cp_svinval_test2_sfence_inval_ir_str: .string "\"test: 7; cg: Svinval_cg; cp: cp_svinval; bin: test2_sfence_inval_ir\""
 Svinval_cg_cp_svinval_test2_sfence_vma_str: .string "\"test: 8; cg: Svinval_cg; cp: cp_svinval; bin: test2_sfence_vma\""
+Svinval_cg_cp_svinval_test3_sfence_w_inval_str: .string "\"test: 9; cg: Svinval_cg; cp: cp_svinval; bin: test3_sfence_w_inval\""
+Svinval_cg_cp_svinval_test3_sinval_vma_str: .string "\"test: 10; cg: Svinval_cg; cp: cp_svinval; bin: test3_sinval_vma\""
+Svinval_cg_cp_svinval_test3_sfence_inval_ir_str: .string "\"test: 11; cg: Svinval_cg; cp: cp_svinval; bin: test3_sfence_inval_ir\""
+Svinval_cg_cp_svinval_test3_sfence_vma_str: .string "\"test: 12; cg: Svinval_cg; cp: cp_svinval; bin: test3_sfence_vma\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

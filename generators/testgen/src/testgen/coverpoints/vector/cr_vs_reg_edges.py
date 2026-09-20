@@ -10,11 +10,16 @@
 import re
 
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.coverpoints.vector.helpers import make_and_register_edge_label
+from testgen.coverpoints.vector.helpers import (
+    crypto_edge_names,
+    make_and_register_crypto_edge_label,
+    make_and_register_edge_label,
+)
 from testgen.data.edges import IMMEDIATE_EDGES, VECTOR_EDGES, get_general_edges
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase, get_instruction_type_config
+from testgen.instructions.vector import parse_vector_instruction_info
 from testgen.instructions.vector_params import generate_random_vector_params
 
 _KNOWN_REGS = ["vs3", "vs2", "vs1", "vd"]
@@ -22,7 +27,7 @@ _KNOWN_REGS = ["vs3", "vs2", "vs1", "vd"]
 
 def _parse_cross_regs(coverpoint: str) -> tuple[str, str]:
     """Parse 'cr_vs2_vs1_edges' -> ('vs2', 'vs1')."""
-    match_pair = re.search(r"cr_(vs\d)_(vs\d)_edges", coverpoint)
+    match_pair = re.search(r"cr_(vs[123]|vd)_(vs[123]|vd)_edges", coverpoint)
     if not match_pair:
         raise ValueError(f"Cannot parse register pair from coverpoint: {coverpoint}")
 
@@ -68,15 +73,22 @@ def make_cross_edges(instr_name: str, instr_type: str, coverpoint: str, test_dat
         suffix1 = "f"
         suffix2 = "f_emul2"
         edges1 = edges2 = VECTOR_EDGES.vf_edges
-    elif coverpoint.endswith("egs"):
-        raise ValueError("Vector Crypto Edges are not yet implemented")
+    elif "egs" in coverpoint:
+        suffix1 = suffix2 = coverpoint[coverpoint.index("egs") :]
+        edges1 = edges2 = crypto_edge_names(suffix1)
 
     test_chunks = []
     for r1_edge in edges1:
-        r1_label = make_and_register_edge_label(r1_name, r1_edge, suffix1, test_data)
+        if suffix1.startswith("egs"):
+            r1_label = make_and_register_crypto_edge_label(r1_name, r1_edge, suffix1, test_data)
+        else:
+            r1_label = make_and_register_edge_label(r1_name, r1_edge, suffix1, test_data)
 
         for r2_edge in edges2:
-            r2_label = make_and_register_edge_label(r2_name, r2_edge, suffix2, test_data)
+            if suffix2.startswith("egs"):
+                r2_label = make_and_register_crypto_edge_label(r2_name, r2_edge, suffix2, test_data)
+            else:
+                r2_label = make_and_register_edge_label(r2_name, r2_edge, suffix2, test_data)
 
             params = generate_random_vector_params(
                 test_data,
@@ -86,6 +98,8 @@ def make_cross_edges(instr_name: str, instr_type: str, coverpoint: str, test_dat
                 additional_no_overlap={(r1_name, r2_name)},
                 masked=False,
                 suite="base",
+                vl=parse_vector_instruction_info(instr_name, instr_type).element_group_size,
+                egs=parse_vector_instruction_info(instr_name, instr_type).element_group_size,
                 **{f"{r1_name}_val_pointer": r1_label, f"{r2_name}_val_pointer": r2_label},
             )
 

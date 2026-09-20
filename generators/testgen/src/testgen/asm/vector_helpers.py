@@ -8,6 +8,7 @@
 
 from collections import defaultdict
 from dataclasses import dataclass
+import math
 from typing import Literal
 
 from testgen.constants import VLEN_MAX
@@ -553,7 +554,17 @@ def generate_random_vl(params: InstructionParams, test_data: TestData) -> tuple[
     )
 
     if params.egs != 1 and params.egs is not None:
-        raise NotImplementedError("Handle egs != 1 vl=random")
+        shift = int(math.log2(params.egs))
+        if 1 << shift != params.egs:
+            raise ValueError(f"element group size must be a power of two, got {params.egs}")
+        code.extend(
+            [
+                f"srli x{params.temp_reg}, x{params.temp_reg}, {shift}",
+                f"remu x{temp_reg}, x{temp_reg}, x{params.temp_reg}",
+                f"addi x{temp_reg}, x{temp_reg}, 1",
+                f"slli x{temp_reg}, x{temp_reg}, {shift}",
+            ]
+        )
     else:
         code.append(f"ori x{temp_reg}, x{temp_reg}, 0x2")
 

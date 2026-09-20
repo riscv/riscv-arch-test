@@ -37,6 +37,8 @@ class VectorInstructionInfo:
     index_eew: int | None
     vext_multiplier: float | None
     whole_registers: int | None
+    element_group_size: int
+    widened_regs: set[str]
 
     def get_size_multiplier(self, register: str, sew: int, widened_regs: set[str]) -> int | float:
         """Return a register's size multiplier relative to SEW."""
@@ -46,7 +48,7 @@ class VectorInstructionInfo:
             return self.index_eew / sew
         if self.load_store_eew and register in ["vs3", "vd"]:
             return self.load_store_eew / sew
-        if register in widened_regs:
+        if register in widened_regs or register in self.widened_regs:
             return 2
         return 1
 
@@ -79,6 +81,21 @@ def parse_vector_instruction_info(instruction: str, instruction_type: str) -> Ve
 
     whole_register_match = re.search(r"v[ls](\d)r", instruction)
     whole_registers = int(whole_register_match.group(1)) if whole_register_match else None
+    egs_match = re.search(r"_EGS(\d+)$", instruction_type)
+    element_group_size = int(egs_match.group(1)) if egs_match else 1
+
+    inferred_widened_regs: set[str] = set()
+    if instruction_type in {"FWVF", "FWVF_ACC", "FWVV", "FWVV_ACC"}:
+        inferred_widened_regs.add("vd")
+    elif instruction_type in {"FWWFM", "FWWVM"}:
+        inferred_widened_regs.update({"vd", "vs2"})
+    elif instruction_type == "FWVWSR":
+        inferred_widened_regs.update({"vd", "vs1"})
+    elif instruction_type == "FVV":
+        if instruction.startswith("vfw"):
+            inferred_widened_regs.add("vd")
+        elif instruction.startswith("vfn"):
+            inferred_widened_regs.add("vs2")
 
     return VectorInstructionInfo(
         segments=segments,
@@ -86,6 +103,8 @@ def parse_vector_instruction_info(instruction: str, instruction_type: str) -> Ve
         index_eew=index_eew,
         vext_multiplier=vext_multiplier,
         whole_registers=whole_registers,
+        element_group_size=element_group_size,
+        widened_regs=inferred_widened_regs,
     )
 
 

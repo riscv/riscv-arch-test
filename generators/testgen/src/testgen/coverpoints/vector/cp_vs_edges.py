@@ -8,7 +8,11 @@
 
 from testgen.asm.vector_helpers import get_lmul_flag
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.coverpoints.vector.helpers import make_and_register_edge_label
+from testgen.coverpoints.vector.helpers import (
+    crypto_edge_names,
+    make_and_register_crypto_edge_label,
+    make_and_register_edge_label,
+)
 from testgen.data.edges import VECTOR_EDGES
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
@@ -25,8 +29,6 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
     """
     Generate edge values in any vector register. Supports integer, load-store, and fp edges.
     """
-
-    # TODO: EGS4
 
     assert test_data.config.sew is not None, "SEW must be set for vector tests"
     sew = test_data.config.sew
@@ -54,11 +56,16 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
         elif suffix == "eew1":
             vl = 8
         elif suffix.startswith("egs"):
-            raise NotImplementedError("Crypto Edges are not yet Supported")
+            edges = crypto_edge_names(suffix)
+            egs = parse_vector_instruction_info(instr_name, instr_type).element_group_size
+            vl = egs
 
     test_chunks = []
     for edge in edges:
-        label = make_and_register_edge_label(register, edge, suffix, test_data)
+        if suffix.startswith("egs"):
+            label = make_and_register_crypto_edge_label(register, edge, suffix, test_data)
+        else:
+            label = make_and_register_edge_label(register, edge, suffix, test_data)
 
         presets = {f"{register}_val_pointer": label}
 
@@ -71,6 +78,7 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             additional_no_overlap=additional_no_overlap,
             masked=False,
             suite="base",
+            egs=parse_vector_instruction_info(instr_name, instr_type).element_group_size,
             **presets,
         )
 

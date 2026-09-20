@@ -79,8 +79,7 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
         upper_bound = int(lte_match.group(1)) + 1
 
     egs_match = re.search(r"egs(\d)", suffix)
-    if egs_match is not None:
-        raise NotImplementedError("Handle EGS")
+    egs = int(egs_match.group(1)) if egs_match is not None else 1
 
     test_chunks = []
     lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
@@ -100,7 +99,7 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
             test_data.config.sew,
             instr_type_config.vector_data.scalar_regs,
             instr_type_config.vector_data.mask_regs,
-            instr_type_config.vector_data.widened_regs,
+            instr_type_config.vector_data.widened_regs | info.widened_regs,
         ):
             continue
 
@@ -114,6 +113,8 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
             additional_no_overlap=set(),
             suite="base",
             masked=False,
+            egs=egs,
+            vl=egs,
             **presets,
         )
 
@@ -146,8 +147,7 @@ def make_three_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_d
         lower_bound = 1
 
     egs_match = re.search(r"egs(\d)", suffix)
-    if egs_match is not None:
-        raise NotImplementedError("Handle EGS")
+    egs = int(egs_match.group(1)) if egs_match is not None else 1
 
     test_chunks = []
     lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
@@ -165,6 +165,8 @@ def make_three_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_d
             additional_no_overlap=set(),
             suite="base",
             masked=False,
+            egs=egs,
+            vl=egs,
             **presets,
         )
 

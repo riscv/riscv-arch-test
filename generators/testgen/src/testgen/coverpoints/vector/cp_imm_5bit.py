@@ -10,7 +10,7 @@ from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
-from testgen.instructions.vector import parse_vector_instruction_info
+from testgen.instructions.vector import get_element_group_lmul, parse_vector_instruction_info
 from testgen.instructions.vector_params import generate_random_vector_params
 
 
@@ -24,7 +24,7 @@ def make_imm_5bit(instr_name: str, instr_type: str, coverpoint: str, test_data: 
 
     egs = parse_vector_instruction_info(instr_name, instr_type).element_group_size
     vl = egs
-    lmul = 1
+    lmul = get_element_group_lmul(egs)
 
     test_chunks = []
     for imm in imm_vals:

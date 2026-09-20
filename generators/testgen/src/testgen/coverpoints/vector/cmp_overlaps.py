@@ -8,11 +8,16 @@
 import re
 
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.helpers import guard_element_group_vlen
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase, get_instruction_type_config
-from testgen.instructions.vector import get_base_lmul, parse_vector_instruction_info
+from testgen.instructions.vector import (
+    get_base_lmul,
+    get_element_group_register_lmul,
+    parse_vector_instruction_info,
+)
 from testgen.instructions.vector_params import (
     generate_random_vector_params,
     get_overlap_constraints,
@@ -82,10 +87,11 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
     egs = int(egs_match.group(1)) if egs_match is not None else 1
 
     test_chunks = []
-    lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
+    base_lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
 
     no_overlap = get_overlap_constraints(info, instr_type_config, False, test_data.config.sew)
     for v in range(lower_bound, upper_bound, emul):
+        lmul = get_element_group_register_lmul(v, egs) if egs != 1 else base_lmul
         presets = {v1: v, v2: v}
 
         # For certain overlaps with load/store instructions, the overlap can depend on SEW, so we do an overlap
@@ -95,7 +101,7 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
             temp_params,
             info,
             no_overlap,
-            1,  # lmul
+            lmul,
             test_data.config.sew,
             instr_type_config.vector_data.scalar_regs,
             instr_type_config.vector_data.mask_regs,
@@ -109,7 +115,7 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
             test_data,
             instr_name,
             instr_type,
-            lmul=1,
+            lmul=lmul,
             additional_no_overlap=set(),
             suite="base",
             masked=False,
@@ -122,6 +128,7 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
         bin_name = f"cp_{v1}_{v2}_b{v}"
 
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+        guard_element_group_vlen(tc, test_data.config.sew, egs, lmul)
 
         test_chunks.append(tc)
         return_testcase_registers(test_data, params)
@@ -150,9 +157,10 @@ def make_three_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_d
     egs = int(egs_match.group(1)) if egs_match is not None else 1
 
     test_chunks = []
-    lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
+    base_lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
 
     for v in range(lower_bound, upper_bound, emul):
+        lmul = get_element_group_register_lmul(v, egs) if egs != 1 else base_lmul
         presets = {v1: v, v2: v, v3: v}
         test_data.vec_regs.allocate_operand(v1, v, int(max(lmul, 1)))
         test_data.vec_regs.allocate_operand(v2, v, int(max(lmul, 1)), suppress_overlap=True)
@@ -161,7 +169,7 @@ def make_three_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_d
             test_data,
             instr_name,
             instr_type,
-            lmul=1,
+            lmul=lmul,
             additional_no_overlap=set(),
             suite="base",
             masked=False,
@@ -174,6 +182,7 @@ def make_three_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_d
         bin_name = f"cp_{v1}_{v2}_{v3}_b{v}"
 
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+        guard_element_group_vlen(tc, test_data.config.sew, egs, lmul)
 
         test_chunks.append(tc)
         return_testcase_registers(test_data, params)

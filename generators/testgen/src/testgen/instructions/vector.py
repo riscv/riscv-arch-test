@@ -135,3 +135,19 @@ def get_base_lmul(instruction: str, instr_type: str, sew: int) -> float | int:
         return sew / info.load_store_eew
 
     return 1
+
+
+def get_element_group_lmul(element_group_size: int, base_lmul: float = 1) -> float:
+    """Return an LMUL that can hold one element group for every legal VLEN."""
+    if element_group_size < 1 or element_group_size > 8 or element_group_size & (element_group_size - 1):
+        raise ValueError(f"element group size must be a power of two from 1 through 8, got {element_group_size}")
+    return max(base_lmul, element_group_size)
+
+
+def get_element_group_register_lmul(register: int, element_group_size: int) -> int:
+    """Return the largest element-group LMUL aligned to a fixed register."""
+    maximum_lmul = int(get_element_group_lmul(element_group_size))
+    for lmul in (8, 4, 2, 1):
+        if lmul <= maximum_lmul and register % lmul == 0:
+            return lmul
+    raise ValueError(f"unable to select LMUL for v{register} with element group size {element_group_size}")

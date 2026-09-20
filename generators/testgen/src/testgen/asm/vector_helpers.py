@@ -6,9 +6,9 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
+import math
 from collections import defaultdict
 from dataclasses import dataclass
-import math
 from typing import Literal
 
 from testgen.constants import VLEN_MAX
@@ -560,9 +560,14 @@ def generate_random_vl(params: InstructionParams, test_data: TestData) -> tuple[
         code.extend(
             [
                 f"srli x{params.temp_reg}, x{params.temp_reg}, {shift}",
+                f"beqz x{params.temp_reg}, 1f",
                 f"remu x{temp_reg}, x{temp_reg}, x{params.temp_reg}",
                 f"addi x{temp_reg}, x{temp_reg}, 1",
                 f"slli x{temp_reg}, x{temp_reg}, {shift}",
+                "j 2f",
+                "1:",
+                f"mv x{temp_reg}, x0",
+                "2:",
             ]
         )
     else:

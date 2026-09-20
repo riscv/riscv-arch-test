@@ -9,6 +9,7 @@ import math
 import re
 
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.helpers import guard_element_group_vlen
 from testgen.data.params import PresetMask
 from testgen.data.random import random_range
 from testgen.data.state import TestData, return_testcase_registers
@@ -101,6 +102,7 @@ def make_vl_lmul(instr_name: str, instr_type: str, coverpoint: str, test_data: T
             bin_name = f"cp_vl_lmul_vl_{vl}_lmul_{lmul}"
 
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+            guard_element_group_vlen(tc, sew, egs, lmul)
 
             test_chunks.append(tc)
             return_testcase_registers(test_data, params)

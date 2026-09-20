@@ -19,7 +19,7 @@ from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
 from testgen.instructions.vector import parse_vector_instruction_info
 
-vmvr_config = InstructionTypeConfig(required_params={"vd", "vs2"}, vector_data=VectorTypeConfig())
+vmvr_config = InstructionTypeConfig(required_params={"vd", "vs2"}, vector_data=VectorTypeConfig(maskable=False))
 vext_config = InstructionTypeConfig(
     required_params={"vd", "vs2"},
     vector_data=VectorTypeConfig(overlap_constraints={("vd_bottom", "vs2")}),

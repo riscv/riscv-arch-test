@@ -30,36 +30,28 @@ RVTEST_BEGIN
 main:
 Svinval_cg_cp_svinval_test1_sfence_w_inval:
   sfence.w.inval
-  nop
 
 Svinval_cg_cp_svinval_test1_sinval_vma:
   sinval.vma x0, x0
-  nop
 
 Svinval_cg_cp_svinval_test1_sfence_inval_ir:
   sfence.inval.ir
-  nop
 
 Svinval_cg_cp_svinval_test1_sfence_vma:
   sfence.vma x0, x0
-  nop
 
   RVTEST_TSBI_GOTO_UMODE
 Svinval_cg_cp_svinval_test2_sfence_w_inval:
   sfence.w.inval
-  nop
 
 Svinval_cg_cp_svinval_test2_sinval_vma:
   sinval.vma x0, x0
-  nop
 
 Svinval_cg_cp_svinval_test2_sfence_inval_ir:
   sfence.inval.ir
-  nop
 
 Svinval_cg_cp_svinval_test2_sfence_vma:
   sfence.vma x0, x0
-  nop
 
   RVTEST_TSBI_GOTO_SMODE
 

@@ -43,7 +43,6 @@ RVTEST_BEGIN
 #define PMP_MASK        ~PMP_REGION_SIZE
 
 main:
-  LI(a2, 0x800) // Test signature initialization
 
   RVTEST_PMP_SET_BACKGROUND x4
 
@@ -68,12 +67,14 @@ main:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL3)
   sfence.vma
 
-// Set up the code-region save area.
-  csrr a0, mscratch
+// Register the alias so the T-SBI GOTO macros can move an excursion into it.
+  LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL3)
 
   SATP_SETUP_RV64(sv48) // Enable address translation.
   sfence.vma
+
+  LI(a2, 0x800) // Test signature initialization
 
   LI(x4, (((PMP_R | PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(1)))
 SvPMP_cp_pmpcfg_pmpcfg0_rx:

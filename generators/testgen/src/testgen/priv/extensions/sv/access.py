@@ -8,10 +8,17 @@
 
 """Generate direct virtual-memory access sequences."""
 
+from collections.abc import Sequence
+
 from testgen.asm.helpers import write_sigupd
 from testgen.data.state import TestData
-from testgen.priv.extensions.sv.modes import enter_mode, leave_mode
 from testgen.priv.extensions.sv.page_tables import SvMode
+
+_GOTO = {
+    "Mmode": "RVTEST_TSBI_GOTO_MMODE",
+    "Smode": "RVTEST_TSBI_GOTO_SMODE",
+    "Umode": "RVTEST_TSBI_GOTO_UMODE",
+}
 
 
 def virtual_address(
@@ -40,14 +47,29 @@ def virtual_address(
     ]
 
 
-def lower_mode_entry(mode: str, driver_mode: str | None) -> list[str]:
-    """Enter the mode under test; driver_mode None selects the legacy M-mode macros."""
-    return [f"RVTEST_GOTO_LOWER_MODE {mode}"] if driver_mode is None else enter_mode(mode, driver_mode)
+def enter_mode(mode: str, driver_mode: str) -> list[str]:
+    """Switch from the mode the test booted to into the mode under test."""
+    return [] if mode == driver_mode else [_GOTO[mode]]
 
 
-def lower_mode_exit(mode: str, driver_mode: str | None) -> list[str]:
-    """Return to the driver mode after lower_mode_entry."""
-    return ["RVTEST_GOTO_MMODE"] if driver_mode is None else leave_mode(mode, driver_mode)
+def leave_mode(mode: str, driver_mode: str) -> list[str]:
+    """Return to the boot mode after enter_mode."""
+    return [] if mode == driver_mode else [_GOTO[driver_mode]]
+
+
+def legacy_enter_mode(mode: str) -> list[str]:
+    """Mode entry for the SvPMP suites, which still boot to M-mode and use the pre-T-SBI macros.
+
+    Unlike the T-SBI macros, RVTEST_GOTO_LOWER_MODE also moves the caller into the code
+    alias, which those suites rely on because their test VAs overwrite the root slot that
+    maps the test image.
+    """
+    return [f"RVTEST_GOTO_LOWER_MODE {mode}"]
+
+
+def legacy_leave_mode() -> list[str]:
+    """Return to M-mode after legacy_enter_mode."""
+    return ["RVTEST_GOTO_MMODE"]
 
 
 def add_rwx_test(
@@ -59,13 +81,13 @@ def add_rwx_test(
     name: str,
     *,
     direct_address: bool = False,
-    enter_lower_mode: bool = True,
+    enter: Sequence[str] = (),
+    leave: Sequence[str] = (),
     setup: tuple[str, ...] = (),
     cleanup: tuple[str, ...] = (),
     reset_setup_after_store: bool = False,
     physical_fetch: bool = False,
     include_exec: bool = True,
-    driver_mode: str | None = None,
 ) -> list[str]:
     """Add native records and code for one virtual-memory access test."""
     assert test_data.test_chunk is not None
@@ -78,7 +100,7 @@ def add_rwx_test(
     lines = [
         *([f"LI(a5, {va})"] if direct_address else virtual_address(sv, va, level)),
         *setup,
-        *(lower_mode_entry(mode, driver_mode) if enter_lower_mode else []),
+        *enter,
         "addi a2, a2, 16",
         "",
         "// Store",
@@ -103,10 +125,8 @@ def add_rwx_test(
                 "nop",
             ]
         )
-    if enter_lower_mode:
-        back = lower_mode_exit(mode, driver_mode)
-        if back:
-            lines.extend(["", *back])
+    if leave:
+        lines.extend(["", *leave])
     if cleanup:
         lines.extend(["", *cleanup])
     lines.extend(

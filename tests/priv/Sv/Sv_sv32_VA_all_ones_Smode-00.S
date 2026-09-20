@@ -49,7 +49,7 @@ main:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL1)
   sfence.vma
 
-// Set up the code-region save area.
+// Register the alias so the T-SBI GOTO macros can move an excursion into it.
   LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL1)
 

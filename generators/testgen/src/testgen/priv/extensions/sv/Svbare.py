@@ -13,10 +13,7 @@ from testgen.asm.helpers import write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.assembly import DATA_REGION
-from testgen.priv.extensions.sv.modes import BOOT_SMODE
 from testgen.priv.registry import add_priv_test_generator
-
-_MARCH = ["I", "Zicsr", "Zifencei"]
 
 
 def bare_rwx(test_data: TestData, name: str, *, enter: tuple[str, ...] = (), leave: tuple[str, ...] = ()) -> list[str]:
@@ -65,9 +62,8 @@ def begin_bare_test(test_data: TestData, split_name: str) -> TestChunk:
 
 @add_priv_test_generator(
     "Svbare",
-    required_extensions=["I", "S"],
-    march_extensions=_MARCH,
-    extra_defines=[BOOT_SMODE],
+    required_extensions=["S"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svbare_smode(test_data: TestData) -> list[TestChunk]:
     chunk = begin_bare_test(test_data, "Svbare_Smode")
@@ -77,9 +73,8 @@ def make_svbare_smode(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "Svbare",
-    required_extensions=["I", "S"],
-    march_extensions=_MARCH,
-    extra_defines=[BOOT_SMODE],
+    required_extensions=["S"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svbare_umode(test_data: TestData) -> list[TestChunk]:
     chunk = begin_bare_test(test_data, "Svbare_Umode")

@@ -1,6 +1,7 @@
 ///////////////////////////////////////////
 //
 // RISC-V Architectural Functional Coverage Covergroups
+// Written: Umer Shahid umer@riscv.org September 2026
 //
 // Copyright (C) 2024 Harvey Mudd College, 10x Engineers, UET Lahore, Habib University
 //
@@ -27,8 +28,7 @@ covergroup SvinvalSm_cg with function sample(ins_t ins);
         bins set  = {1};
     }
     cr_svinival : cross cp_instr, cp_priv, cp_tvm {
-        // each instruction executed in M mode with each TVM, and in S and U mode with TVM set
-        ignore_bins lower_tvm_zero = (binsof(cp_priv.S_mode) || binsof(cp_priv.U_mode)) && binsof(cp_tvm.zero);
+        // each instruction executed in every mode with mstatus.TVM clear and set
     }
  endgroup
 

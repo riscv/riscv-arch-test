@@ -1,8 +1,8 @@
 ##################################
 # priv/extensions/sv/SvbareSm.py
 #
-# SvbareSm suite: M-mode MPRV accesses with satp.MODE=Bare.
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SvbareSm suite: Bare-mode MPRV accesses, which need M-mode.
+# umer@riscv.org September 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
@@ -11,18 +11,14 @@
 from testgen.asm.csr import gen_csr_read_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.sv.modes import BOOT_MMODE
 from testgen.priv.extensions.sv.Svbare import bare_rwx, begin_bare_test
 from testgen.priv.registry import add_priv_test_generator
-
-_MARCH = ["I", "Zicsr", "Zifencei"]
 
 
 @add_priv_test_generator(
     "SvbareSm",
-    required_extensions=["I", "Sm", "S"],
-    march_extensions=_MARCH,
-    extra_defines=[BOOT_MMODE],
+    required_extensions=["Sm", "S"],
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svbaresm_mprv(test_data: TestData) -> list[TestChunk]:
     chunk = begin_bare_test(test_data, "Svbare_mstatus_mprv")

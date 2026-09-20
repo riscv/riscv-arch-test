@@ -10,7 +10,6 @@
 
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.sv.modes import BOOT_SMODE
 from testgen.priv.registry import add_priv_test_generator
 
 _OPERATIONS = (
@@ -19,7 +18,6 @@ _OPERATIONS = (
     ("sfence_inval_ir", "sfence.inval.ir"),
     ("sfence_vma", "sfence.vma x0, x0"),
 )
-MARCH = ["I", "Zicsr", "Zifencei", "Svinval"]
 
 
 def add_operations(test_data: TestData, number: int) -> list[str]:
@@ -29,7 +27,6 @@ def add_operations(test_data: TestData, number: int) -> list[str]:
             [
                 test_data.add_testcase(f"test{number}_{name}", "cp_svinval", f"{test_data.testsuite}_cg"),
                 instruction,
-                "nop",
                 "",
             ]
         )
@@ -39,8 +36,7 @@ def add_operations(test_data: TestData, number: int) -> list[str]:
 @add_priv_test_generator(
     "Svinval",
     required_extensions=["S", "Svinval"],
-    march_extensions=MARCH,
-    extra_defines=[BOOT_SMODE],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svinval(test_data: TestData) -> list[TestChunk]:
     chunk = test_data.begin_test_chunk("Svinval")

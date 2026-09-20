@@ -15,10 +15,9 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
-from testgen.priv.extensions.sv.access import add_rwx_test, lower_mode_entry, lower_mode_exit
+from testgen.priv.extensions.sv.access import add_rwx_test, enter_mode, leave_mode
 from testgen.priv.extensions.sv.assembly import VA_ONES_DATA, VA_ZEROS_DATA
 from testgen.priv.extensions.sv.generate import begin_sv_test, keep_image_mapped, sv_data
-from testgen.priv.extensions.sv.modes import BOOT_SMODE
 from testgen.priv.extensions.sv.page_tables import (
     SV32,
     SV39,
@@ -92,7 +91,7 @@ def _add_rsw_readback(test_data: TestData, sv: SvMode, level: int, name: str) ->
 
 
 def _extreme_access(
-    test_data: TestData, sv: SvMode, name: str, va: str, mode: str, style: str, driver_mode: str | None
+    test_data: TestData, sv: SvMode, name: str, va: str, mode: str, style: str, driver_mode: str
 ) -> list[str]:
     assert test_data.test_chunk is not None
     coverpoint = f"cp_{test_data.test_chunk.split_name}"
@@ -101,7 +100,7 @@ def _extreme_access(
         operation: test_data.add_testcase(f"{name}_{operation}", coverpoint, test_data.testsuite).removesuffix(":")
         for operation in operations
     }
-    lines = [*lower_mode_entry(mode, driver_mode), f"LI(a5, {va})"]
+    lines = [*enter_mode(mode, driver_mode), f"LI(a5, {va})"]
     if style.startswith("rw"):
         instruction = "sw" if style == "rw_word" else "sb"
         load = "lw" if style == "rw_word" else "lbu"
@@ -114,7 +113,7 @@ def _extreme_access(
                 f"{labels['load']}:",
                 f"{load} a3, 0(a5)",
                 "nop",
-                *lower_mode_exit(mode, driver_mode),
+                *leave_mode(mode, driver_mode),
                 write_sigupd(12, test_data, label=labels["store"]),
                 write_sigupd(13, test_data, label=labels["load"]),
             ]
@@ -125,7 +124,7 @@ def _extreme_access(
                 f"{labels['exec']}:",
                 "jalr ra, a5, 0",
                 "nop",
-                *lower_mode_exit(mode, driver_mode),
+                *leave_mode(mode, driver_mode),
                 write_sigupd(14, test_data, label=labels["exec"]),
             ]
         )
@@ -140,7 +139,7 @@ def emit_access(
     name: str,
     va: str,
     mode: str,
-    driver_mode: str | None = DRIVER,
+    driver_mode: str = DRIVER,
 ) -> list[str]:
     if style in ("rw_byte", "rw_word", "x_only"):
         return _extreme_access(test_data, sv, name, va, mode, style, driver_mode)
@@ -178,19 +177,19 @@ def emit_access(
         level,
         name,
         direct_address=direct_address,
-        enter_lower_mode=enter_lower_mode,
+        enter=enter_mode(mode, driver_mode) if enter_lower_mode else (),
+        leave=leave_mode(mode, driver_mode) if enter_lower_mode else (),
         setup=setup,
         cleanup=cleanup,
         reset_setup_after_store=reset_setup_after_store,
         physical_fetch=physical_fetch,
         include_exec=include_exec,
-        driver_mode=driver_mode,
     ) + (_add_rsw_readback(test_data, sv, level, name) if style == "rsw" else [])
 
 
 def _t_invalid_pte(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     for mode in ("Smode", "Umode"):
-        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_invalid_pte_{mode}", driver_mode=DRIVER)
+        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_invalid_pte_{mode}")
         for number, level in enumerate(sv.levels_desc, start=1):
             permissions = PteFlags(user=mode == "Umode", valid=False)
             chunk.code.extend(
@@ -222,7 +221,6 @@ def _t_canonical(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) 
             mode,
             f"{sv.name}_canonical_{mode}",
             va_defs=(("va_data", _CANONICAL_VA[sv.name]),),
-            driver_mode=DRIVER,
         )
         for number, level in enumerate(sv.levels_desc, start=1):
             permissions = PteFlags(user=mode == "Umode")
@@ -249,7 +247,7 @@ def _t_global_pte(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode)
         else ("  csrr  t0, satp", "  slli  t0, t0, 4", "  srli  t0, t0, 48", "  sfence.vma x0, t0")
     )
     for mode in ("Smode", "Umode"):
-        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_global_pte_{mode}", driver_mode=DRIVER)
+        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_global_pte_{mode}")
         for number, level in enumerate(sv.levels_desc, start=1):
             permissions = PteFlags(user=mode == "Umode", global_=True)
             first_name = f"test{number}_access1"
@@ -295,7 +293,6 @@ def _t_misaligned_page(test_data: TestData, test_chunks: list[TestChunk], sv: Sv
             mode,
             f"{sv.name}_misaligned_page_{mode}",
             va_defs=(("va_data", _MISALIGNED_VA[sv.name]),),
-            driver_mode=DRIVER,
         )
         for number, level in enumerate(levels, start=1):
             permissions = PteFlags(user=mode == "Umode")
@@ -322,7 +319,7 @@ def _t_misaligned_page(test_data: TestData, test_chunks: list[TestChunk], sv: Sv
 
 def _t_mstatus_mxr(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     for mode in ("Smode", "Umode"):
-        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_mstatus_mxr_{mode}", driver_mode=DRIVER)
+        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_mstatus_mxr_{mode}")
         number = 0
         faults = 0
         for level in sv.levels_desc:
@@ -362,7 +359,6 @@ def _t_nleaf_pte_dau(test_data: TestData, test_chunks: list[TestChunk], sv: SvMo
             mode,
             f"{sv.name}_nleaf_pte_DAU_{mode}",
             code_prefix=("#ifdef S1P12P0_OR_LATER_SUPPORTED", ""),
-            driver_mode=DRIVER,
         )
         number = 0
         for table_level in range(sv.levels - 1, 0, -1):
@@ -396,7 +392,7 @@ def _t_nleaf_pte_dau(test_data: TestData, test_chunks: list[TestChunk], sv: SvMo
 
 def _t_nleaf_pte_level0(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     for mode in ("Smode", "Umode"):
-        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_nleaf_pte_level0_{mode}", driver_mode=DRIVER)
+        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_nleaf_pte_level0_{mode}")
         permissions = PteFlags(
             user=mode == "Umode",
             read=False,
@@ -437,7 +433,6 @@ def _t_pte_reserved_rwx(test_data: TestData, test_chunks: list[TestChunk], sv: S
             mode,
             f"{sv.name}_pte_reserved_rwx_{mode}",
             code_prefix=("#ifdef S1P12P0_OR_LATER_SUPPORTED", ""),
-            driver_mode=DRIVER,
         )
         number = 0
         for level in sv.levels_desc:
@@ -475,7 +470,7 @@ def _t_pte_reserved_rwx(test_data: TestData, test_chunks: list[TestChunk], sv: S
 def _t_pte_rsw(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     va_defs = (("va_data", "0x04007000"),) if sv.xlen == 32 else None
     for mode in ("Smode", "Umode"):
-        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_pte_rsw_{mode}", va_defs=va_defs, driver_mode=DRIVER)
+        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_pte_rsw_{mode}", va_defs=va_defs)
         number = 0
         for level in sv.levels_desc:
             for rsw, description in (
@@ -514,7 +509,6 @@ def _t_pte_reserved_field(test_data: TestData, test_chunks: list[TestChunk], sv:
         "Smode",
         f"{sv.name}_pte_reserved_field_Smode",
         code_prefix=("#ifdef S1P12P0_OR_LATER_SUPPORTED", ""),
-        driver_mode=DRIVER,
     )
     for number, bit in enumerate(range(54, 61), start=1):
         permissions = PteFlags(extra=(f"(1 << {bit})",))
@@ -561,7 +555,6 @@ def _t_svpbmt_disabled(test_data: TestData, test_chunks: list[TestChunk], sv: Sv
         f"{sv.name}_svpbmt_disabled_Smode",
         code_prefix=("#ifdef S1P12P0_OR_LATER_SUPPORTED", ""),
         setup_asm=setup,
-        driver_mode=DRIVER,
     )
     for number, (bits, description) in enumerate(pbmt, start=1):
         permissions = PteFlags(extra=(bits,))
@@ -597,7 +590,6 @@ def _t_svnapot_not_supported(test_data: TestData, test_chunks: list[TestChunk], 
         f"{sv.name}_svnapot_not_supported_Smode",
         code_prefix=("#ifdef S1P12P0_OR_LATER_SUPPORTED", ""),
         va_defs=(("va_data", _NAPOT_VA[sv.name]),),
-        driver_mode=DRIVER,
     )
     chunk.code.extend(
         [
@@ -682,7 +674,7 @@ def _t_page_perm_topics(test_data: TestData, test_chunks: list[TestChunk], sv: S
             ("upage", "Umode", True, s_faults),
             ("spage_access", "Umode", False, 3),
         ):
-            chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_{topic}_{mode}", driver_mode=DRIVER)
+            chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_{topic}_{mode}")
             faults = _add_page_permission_matrix(
                 test_data,
                 chunk,
@@ -695,7 +687,7 @@ def _t_page_perm_topics(test_data: TestData, test_chunks: list[TestChunk], sv: S
             chunk.trap_sigupd_count = trap_sigupd_count(faults)
             test_chunks.append(test_data.end_test_chunk())
     else:
-        chunk = begin_sv_test(test_data, sv, "Umode", f"{sv.name}_spage_access_Umode", driver_mode=DRIVER)
+        chunk = begin_sv_test(test_data, sv, "Umode", f"{sv.name}_spage_access_Umode")
         for number, level in enumerate(sv.levels_desc, start=1):
             chunk.code.extend(
                 [
@@ -721,7 +713,7 @@ def _t_page_perm_topics(test_data: TestData, test_chunks: list[TestChunk], sv: S
         ("upage_mstatus_sum_set", sum_set_faults, "sum"),
         ("upage_mstatus_sum_unset", 3, "rwx"),
     ):
-        chunk = begin_sv_test(test_data, sv, "Smode", f"{sv.name}_{topic}_Smode", driver_mode=DRIVER)
+        chunk = begin_sv_test(test_data, sv, "Smode", f"{sv.name}_{topic}_Smode")
         faults = _add_page_permission_matrix(
             test_data,
             chunk,
@@ -735,7 +727,7 @@ def _t_page_perm_topics(test_data: TestData, test_chunks: list[TestChunk], sv: S
         chunk.trap_sigupd_count = trap_sigupd_count(faults)
         test_chunks.append(test_data.end_test_chunk())
 
-    chunk = begin_sv_test(test_data, sv, "Smode", f"{sv.name}_spage_mstatus_sum_set_Smode", driver_mode=DRIVER)
+    chunk = begin_sv_test(test_data, sv, "Smode", f"{sv.name}_spage_mstatus_sum_set_Smode")
     number = 0
     faults = 0
     spage_permissions = ((True, True, True, "RWX"), (True, False, False, "R-only"), (False, False, True, "X-only"))
@@ -813,7 +805,6 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
         f"{sv.name}_VA_all_ones_Smode",
         sig_init=sig_init,
         va_defs=(("va_data_rw", all_ones), ("va_data_x", all_ones_code)),
-        driver_mode=DRIVER,
     )
     _add_va_extreme_test(
         test_data,
@@ -846,7 +837,6 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
         f"{sv.name}_VA_all_zeros_Smode",
         sig_init=sig_init,
         va_defs=(("va_data", all_zeros),),
-        driver_mode=DRIVER,
     )
     if sv.levels > 3:
         chunk.code.extend(keep_image_mapped(sv))
@@ -954,14 +944,10 @@ def _make_sv(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     return test_chunks
 
 
-_MARCH = ["I", "Zicsr", "Zifencei"]
-
-
 @add_priv_test_generator(
     "Sv",
-    required_extensions=["I", "Sv32"],
-    march_extensions=_MARCH,
-    extra_defines=[BOOT_SMODE],
+    required_extensions=["Sv32"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_sv32(test_data: TestData) -> list[TestChunk]:
     return _make_sv(test_data, SV32)
@@ -969,9 +955,8 @@ def make_sv32(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "Sv",
-    required_extensions=["I", "Sv39"],
-    march_extensions=_MARCH,
-    extra_defines=[BOOT_SMODE],
+    required_extensions=["Sv39"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_sv39(test_data: TestData) -> list[TestChunk]:
     return _make_sv(test_data, SV39)
@@ -979,9 +964,8 @@ def make_sv39(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "Sv",
-    required_extensions=["I", "Sv48"],
-    march_extensions=_MARCH,
-    extra_defines=[BOOT_SMODE],
+    required_extensions=["Sv48"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_sv48(test_data: TestData) -> list[TestChunk]:
     return _make_sv(test_data, SV48)
@@ -989,9 +973,8 @@ def make_sv48(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "Sv",
-    required_extensions=["I", "Sv57"],
-    march_extensions=_MARCH,
-    extra_defines=[BOOT_SMODE],
+    required_extensions=["Sv57"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_sv57(test_data: TestData) -> list[TestChunk]:
     return _make_sv(test_data, SV57)

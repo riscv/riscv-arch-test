@@ -6,4 +6,7 @@ normative_rule_definitions:
   # eventually become visible within a bounded timeframe to subsequent implicit accesses
   # by that hart to such PTEs.
   - name: Svvptc_explicit_stores_update_valid_bit
-    coverpoint: ["Not tested: bounded-time visibility is not observable in signature tests"]
+    coverpoint:
+      [
+        "Not tested: bounded-time visibility is not observable in signature tests",
+      ]

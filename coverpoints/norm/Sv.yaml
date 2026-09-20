@@ -16,7 +16,11 @@ normative_rule_definitions:
   # nor when executing in U-mode. Note that S-mode can never execute instructions from
   # user pages, regardless of the state of SUM.
   - names: [sstatus_sum_sz, sstatus_sum_acc, sstatus_sum_op]
-    coverpoint: ["Sv_vm_permissions_cg/cp_upage_smode_sumunset_{noexec,noread,nowrite}_s", "Sv_vm_permissions_cg/cp_upage_smode_sumset_{noexec,read,write}_s"]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/cp_upage_smode_sumunset_{noexec,noread,nowrite}_s",
+        "Sv_vm_permissions_cg/cp_upage_smode_sumset_{noexec,read,write}_s",
+      ]
 
   # The satp CSR is an SXLEN-bit read/write register, formatted as shown in  for
   # SXLEN=32 and  for SXLEN=64, which controls supervisor-mode address translation and
@@ -26,7 +30,11 @@ normative_rule_definitions:
   # space basis; and the MODE field, which selects the current address-translation
   # scheme. Further details on the access to this register are described in .
   - names: [satp_sz, satp_acc, satp_op, satp_mode]
-    coverpoint: ["Sv_satp_cg/{cp_access_s,cp_access_u,satp_asid_PPN}", "SvSm_satp_cg/cp_access_m"]
+    coverpoint:
+      [
+        "Sv_satp_cg/{cp_access_s,cp_access_u,satp_asid_PPN}",
+        "SvSm_satp_cg/cp_access_m",
+      ]
 
   # shows the encodings of the MODE field when SXLEN=32 and SXLEN=64. When MODE=Bare,
   # supervisor virtual addresses are equal to supervisor physical addresses, and there
@@ -55,7 +63,8 @@ normative_rule_definitions:
   # written with an unsupported MODE, the entire write has no effect; no fields in satp
   # are modified.
   - name: satp_mode_op_unsupported
-    coverpoint: ["TODO: write an unsupported satp.MODE and check that satp is unchanged"]
+    coverpoint:
+      ["TODO: write an unsupported satp.MODE and check that satp is unchanged"]
 
   # The number of ASID bits is UNSPECIFIED and may be zero. The number of implemented
   # ASID bits, termed ASIDLEN, may be determined by writing one to every bit position in
@@ -70,7 +79,12 @@ normative_rule_definitions:
   # U-mode. Executions of the address-translation algorithm may only begin using a given
   # value of satp when satp is active.
   - name: satp_op_active
-    coverpoint: ["Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}", "Sv_vm_permissions_cg/cp_upage_umode_{read,write,exec}_u", "SvSm_mstatus_mprv_cg/cp_mprv_{load,store}"]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+        "Sv_vm_permissions_cg/cp_upage_umode_{read,write,exec}_u",
+        "SvSm_mstatus_mprv_cg/cp_mprv_{load,store}",
+      ]
 
   # Note that writing satp does not imply any ordering constraints between page-table
   # updates and subsequent address translations, nor does it imply any invalidation of
@@ -142,7 +156,10 @@ normative_rule_definitions:
   # If the value held in rs1 is not a valid virtual address, then the SFENCE.VMA
   # instruction has no effect. No exception is raised in this case.
   - name: sfence_vma_invalid_va
-    coverpoint: ["TODO: SFENCE.VMA with an invalid virtual address in rs1 is not exercised"]
+    coverpoint:
+      [
+        "TODO: SFENCE.VMA with an invalid virtual address in rs1 is not exercised",
+      ]
 
   # When rs2≠x0, bits SXLEN-1:ASIDMAX of the value held in rs2 are reserved for future
   # standard use. Until their use is defined by a standard extension, they should be
@@ -164,7 +181,10 @@ normative_rule_definitions:
   # implicit loads also need not otherwise obey normal program order semantics with
   # respect to prior loads or stores to the same address.
   - name: sfence_vma_ordering_semantics
-    coverpoint: ["Not tested: which stale translation an implicit read returns is implementation-dependent"]
+    coverpoint:
+      [
+        "Not tested: which stale translation an implicit read returns is implementation-dependent",
+      ]
 
   # Implementations must only perform implicit reads of the translation data structures
   # pointed to by the current contents of the satp register or a subsequent valid (V=1)
@@ -172,7 +192,10 @@ normative_rule_definitions:
   # accesses that are generated as a result of instruction execution, not those that are
   # performed speculatively.
   - name: sfence_vma_implicit_access
-    coverpoint: ["Sv_vm_permissions_cg/{cp_PTE_inv_read_s_d,cp_PTE_nonleaf_lvl0_s_d_read}"]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_PTE_inv_read_s_d,cp_PTE_nonleaf_lvl0_s_d_read}",
+      ]
 
   # Changes to the sstatus fields SUM and MXR take effect immediately, without the need
   # to execute an SFENCE.VMA instruction.
@@ -182,11 +205,13 @@ normative_rule_definitions:
   # Changing satp.MODE from Bare to other modes and vice versa also takes effect
   # immediately, without the need to execute an SFENCE.VMA instruction.
   - name: sfence_vma_mode_effect
-    coverpoint: ["Not tested: every test executes SFENCE.VMA after writing satp"]
+    coverpoint:
+      ["Not tested: every test executes SFENCE.VMA after writing satp"]
 
   # Likewise, changes to satp.ASID take effect immediately.
   - name: sfence_vma_asid_effect
-    coverpoint: ["Not tested: every test executes SFENCE.VMA after writing satp"]
+    coverpoint:
+      ["Not tested: every test executes SFENCE.VMA after writing satp"]
 
   # If a hart employs an address-translation cache, that cache must appear to be private
   # to that hart. In particular, the meaning of an ASID is local to a hart; software may
@@ -197,23 +222,45 @@ normative_rule_definitions:
   # Attempting to fetch an instruction from a page that does not have execute
   # permissions raises a fetch page-fault exception.
   - name: fetch_page_fault_no_x
-    coverpoint: ["Sv_vm_permissions_cg/{cp_spage_noexec_s_i,cp_spage_rwx_s_i_noexec,cp_upage_umode_noexec_u}"]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_noexec_s_i,cp_spage_rwx_s_i_noexec,cp_upage_umode_noexec_u}",
+      ]
 
   # Attempting to execute a load, load-reserved, or cache-block management instruction
   # whose effective address lies within a page without read permissions raises a load
   # page-fault exception.
   - name: load_page_fault_no_r
-    coverpoint: ["Sv_vm_permissions_cg/{cp_spage_noread_s_d,cp_spage_rwx_s_d_noread,cp_upage_umode_noread_u}"]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_noread_s_d,cp_spage_rwx_s_d_noread,cp_upage_umode_noread_u}",
+      ]
 
   # Attempting to execute a store, store-conditional, AMO, or cache-block zero
   # instruction instruction whose effective address lies within a page without write
   # permissions raises a store page-fault exception.
   - name: store_page_fault_no_w
-    coverpoint: ["Sv_vm_permissions_cg/{cp_spage_nowrite_s_d,cp_spage_rwx_s_d_nowrite,cp_upage_umode_nowrite_u}"]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_nowrite_s_d,cp_spage_rwx_s_d_nowrite,cp_upage_umode_nowrite_u}",
+      ]
 
   # simple paged virtual-memory system for SXLEN=64
-  - names: [Sv39_sxlen, Sv39_va_sz, Sv39_vpn_sz, satp_ppn_sv39_sz, Sv39_levels, Sv39_page_offset_sz, Sv39_LEVELS, Sv39_PTESIZE]
-    coverpoint: ["Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}"]
+  - names:
+      [
+        Sv39_sxlen,
+        Sv39_va_sz,
+        Sv39_vpn_sz,
+        satp_ppn_sv39_sz,
+        Sv39_levels,
+        Sv39_page_offset_sz,
+        Sv39_LEVELS,
+        Sv39_PTESIZE,
+      ]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+      ]
 
   # must have bits 63–39 all equal to bit 38, or else a page-fault exception will occur
   - name: Sv39_va_signext
@@ -221,7 +268,11 @@ normative_rule_definitions:
 
   # Any level of PTE may be a leaf PTE
   - names: [Sv39_leaf_any_level, Sv39_page_sizes]
-    coverpoint: ["Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}", "Sv_vm_permissions_cg/PageType_{i,d}"]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+        "Sv_vm_permissions_cg/PageType_{i,d}",
+      ]
 
   # must be virtually and physically aligned to a boundary equal to its size
   - names: [Sv39_superpage_align, Sv39_superpage_align_fault]
@@ -229,7 +280,10 @@ normative_rule_definitions:
 
   # 2^9^ page table entries (PTEs)
   - names: [Sv39_pte_count, Sv39_pte_sz, Sv39_pt_sz, Sv39_pt_align]
-    coverpoint: ["Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}"]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+      ]
 
   # If Svnapot is not implemented, bit 63 remains reserved and must be zeroed by
   # software for forward compatibility, or else a page-fault exception is raised
@@ -247,8 +301,21 @@ normative_rule_definitions:
     coverpoint: ["Sv_add_feature_cg/cp_reserved_{read,write,exec}_fault"]
 
   # SXLEN=64
-  - names: [Sv48_sxlen, Sv48_va_sz, Sv48_vpn_sz, satp_ppn_sv48_sz, Sv48_levels, Sv48_page_offset_sz, Sv48_LEVELS, Sv48_PTESIZE]
-    coverpoint: ["Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}"]
+  - names:
+      [
+        Sv48_sxlen,
+        Sv48_va_sz,
+        Sv48_vpn_sz,
+        satp_ppn_sv48_sz,
+        Sv48_levels,
+        Sv48_page_offset_sz,
+        Sv48_LEVELS,
+        Sv48_PTESIZE,
+      ]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+      ]
 
   # must have bits 63–48 all equal to bit 47, or else a page-fault exception will occur
   - name: Sv48_va_signext
@@ -256,7 +323,11 @@ normative_rule_definitions:
 
   # Any level of PTE may be a leaf PTE
   - names: [Sv48_leaf_any_level, Sv48_page_sizes]
-    coverpoint: ["Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}", "Sv_vm_permissions_cg/PageType_{i,d}"]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+        "Sv_vm_permissions_cg/PageType_{i,d}",
+      ]
 
   # must be virtually and physically aligned to a boundary equal to its size
   - names: [Sv48_superpage_align, Sv48_superpage_align_fault]
@@ -264,11 +335,25 @@ normative_rule_definitions:
 
   # Implementations that support Sv48 must also support Sv39
   - name: Sv48_requires_Sv39
-    coverpoint: ["Not tested: extension dependency checked by the UDB configuration"]
+    coverpoint:
+      ["Not tested: extension dependency checked by the UDB configuration"]
 
   # RV64 systems
-  - names: [Sv57_sxlen, Sv57_va_sz, Sv57_vpn_sz, satp_ppn_sv57_sz, Sv57_levels, Sv57_page_offset_sz, Sv57_LEVELS, Sv57_PTESIZE]
-    coverpoint: ["Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}"]
+  - names:
+      [
+        Sv57_sxlen,
+        Sv57_va_sz,
+        Sv57_vpn_sz,
+        satp_ppn_sv57_sz,
+        Sv57_levels,
+        Sv57_page_offset_sz,
+        Sv57_LEVELS,
+        Sv57_PTESIZE,
+      ]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+      ]
 
   # must have bits 63–57 all equal to bit 56, or else a page-fault exception will occur
   - name: Sv57_va_signext
@@ -276,7 +361,11 @@ normative_rule_definitions:
 
   # Any level of PTE may be a leaf PTE
   - names: [Sv57_leaf_any_level, Sv57_page_sizes]
-    coverpoint: ["Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}", "Sv_vm_permissions_cg/PageType_{i,d}"]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+        "Sv_vm_permissions_cg/PageType_{i,d}",
+      ]
 
   # must be virtually and physically aligned to a boundary equal to its size
   - names: [Sv57_superpage_align, Sv57_superpage_align_fault]
@@ -284,13 +373,18 @@ normative_rule_definitions:
 
   # Implementations that support Sv57 must also support Sv48
   - name: Sv57_requires_Sv48
-    coverpoint: ["Not tested: extension dependency checked by the UDB configuration"]
+    coverpoint:
+      ["Not tested: extension dependency checked by the UDB configuration"]
 
   # If stval is written with a nonzero value when a breakpoint, address-misaligned,
   # access-fault, page-fault, or hardware-error exception occurs on an instruction
   # fetch, load, or store, then stval will contain the faulting virtual address.
   - name: stval_op_faulting_addr
-    coverpoint: ["Sv_vm_permissions_cg/{load_page_fault,store_page_fault,ins_page_fault}", "stval is checked by the trap signature"]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{load_page_fault,store_page_fault,ins_page_fault}",
+        "stval is checked by the trap signature",
+      ]
 
   # The csr::[mxr] and csr::[sum] mechanisms only affect the interpretation of
   # permissions encoded in page-table entries. In particular, they have no impact on

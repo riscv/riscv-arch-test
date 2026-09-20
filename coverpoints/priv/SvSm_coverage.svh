@@ -1,6 +1,7 @@
 ///////////////////////////////////////////
 //
 // RISC-V Architectural Functional Coverage Covergroups
+// Written: Umer Shahid umer@riscv.org September 2026
 //
 // Copyright (C) 2024 Harvey Mudd College, 10x Engineers, UET Lahore, Habib University
 //
@@ -16,6 +17,7 @@ covergroup SvSm_satp_cg with function sample(ins_t ins);
 
     tvm_mstatus: coverpoint ins.current.csr[CSR_MSTATUS][20]{
         bins zero = {0};
+        bins set  = {1};
     }
 
     Mcause: coverpoint ins.current.csr[CSR_MCAUSE][31:0] {

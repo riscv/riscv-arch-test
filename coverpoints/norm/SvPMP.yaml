@@ -16,4 +16,8 @@ normative_rule_definitions:
   # When page-based virtual memory is enabled, mtval is written with the faulting
   # virtual address, even for physical-memory access-fault exceptions.
   - name: mtval_vaddr_not_paddr
-    coverpoint: ["SvPMP_cg/pmp0_PA_{noread,nowrite,noexec}_{s,u}", "mtval is checked by the trap signature"]
+    coverpoint:
+      [
+        "SvPMP_cg/pmp0_PA_{noread,nowrite,noexec}_{s,u}",
+        "mtval is checked by the trap signature",
+      ]

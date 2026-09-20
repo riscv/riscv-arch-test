@@ -20,7 +20,11 @@ normative_rule_definitions:
   # When PBMTE=1, Svpbmt is available for S-mode and G-stage address translation. When
   # PBMTE=0, the implementation behaves as though Svpbmt were not implemented.
   - name: menvcfg_pbmte_op
-    coverpoint: ["Svpbmt_cg/PBMTE_set", "Sv_add_feature_cg/cp_svpbmt_{read,write,exec}_fault"]
+    coverpoint:
+      [
+        "Svpbmt_cg/PBMTE_set",
+        "Sv_add_feature_cg/cp_svpbmt_{read,write,exec}_fault",
+      ]
 
   # After changing menvcfg.PBMTE, executing an SFENCE.VMA instruction with rs1=x0 and
   # rs2=x0 suffices to synchronize address-translation caches with respect to the
@@ -38,10 +42,31 @@ normative_rule_definitions:
 
   # memory accesses to such pages obey the memory ordering rules of the final effective
   # attribute,
-  - names: [Svpbmt_obeys_mem_ordering, Svpbmt_io_pma_nc_pbmt_obey_rvwmo, Svpbmt_io_pma_nc_pbmt_treated_as_io_and_memory, Svpbmt_memory_pma_io_pbmt_strong_io_ordering, Svpbmt_memory_pma_io_pbmt_treated_as_io_and_memory, Svpbmt_aliasing_attribute, Svpbmt_noncacheable_aliasing_no_coherence_loss, Svpbmt_noncacheable_aliasing_may_weaken_ordering, Svpbmt_noncacheable_aliasing_fence_prevents_ordering_loss, Svpbmt_cacheable_aliasing_may_cause_coherence_loss, Svpbmt_cacheable_aliasing_fence_flush_fence_required]
-    coverpoint: ["Not tested: memory ordering, cacheability and coherence are not observable in single-hart signature tests"]
+  - names:
+      [
+        Svpbmt_obeys_mem_ordering,
+        Svpbmt_io_pma_nc_pbmt_obey_rvwmo,
+        Svpbmt_io_pma_nc_pbmt_treated_as_io_and_memory,
+        Svpbmt_memory_pma_io_pbmt_strong_io_ordering,
+        Svpbmt_memory_pma_io_pbmt_treated_as_io_and_memory,
+        Svpbmt_aliasing_attribute,
+        Svpbmt_noncacheable_aliasing_no_coherence_loss,
+        Svpbmt_noncacheable_aliasing_may_weaken_ordering,
+        Svpbmt_noncacheable_aliasing_fence_prevents_ordering_loss,
+        Svpbmt_cacheable_aliasing_may_cause_coherence_loss,
+        Svpbmt_cacheable_aliasing_fence_flush_fence_required,
+      ]
+    coverpoint:
+      [
+        "Not tested: memory ordering, cacheability and coherence are not observable in single-hart signature tests",
+      ]
 
   # if hgatp.MODE is not equal to zero, non-zero G-stage PTE PBMT bits override the
   # attributes in the PMA to produce an intermediate set of attributes.
-  - names: [Svpbmt_hgatp_stage_override_rule, Svpbmt_vsatp_stage_override_rule, menvcfg_pbmte_henvcfg_pbmte_rdonly0]
+  - names:
+      [
+        Svpbmt_hgatp_stage_override_rule,
+        Svpbmt_vsatp_stage_override_rule,
+        menvcfg_pbmte_henvcfg_pbmte_rdonly0,
+      ]
     coverpoint: ["TODO: test in hypervisor tests"]

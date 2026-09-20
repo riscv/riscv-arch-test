@@ -11,7 +11,7 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'Sv57', 'Svnapot']
 # # # no param constraints
-# MARCH: rv${XLEN}i_zicsr_zifencei
+# MARCH: rv${XLEN}i_zicsr_zifencei_svnapot
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
@@ -47,7 +47,7 @@ main:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL4)
   sfence.vma
 
-// Set up the code-region save area.
+// Register the alias so the T-SBI GOTO macros can move an excursion into it.
   LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL4)
 

@@ -26,7 +26,11 @@ normative_rule_definitions:
   # When csr::[sum]=0, S-mode memory accesses to pages that are accessible by U-mode
   # (U=1 in <<sv32pte>>) will fault. When csr::[sum]=1, these accesses are permitted.
   - names: [mstatus_sum_op, mstatus_sum_op_mprv_mpp]
-    coverpoint: ["SvSm_mstatus_mprv_cg/cp_mprv_upage_smode_sumunset_{noread,nowrite,noexec}", "SvSm_mstatus_mprv_cg/cp_mprv_upage_smode_sumset_{exec,read,write}"]
+    coverpoint:
+      [
+        "SvSm_mstatus_mprv_cg/cp_mprv_upage_smode_sumunset_{noread,nowrite,noexec}",
+        "SvSm_mstatus_mprv_cg/cp_mprv_upage_smode_sumset_{exec,read,write}",
+      ]
 
   # The csr::[tvm] (Trap Virtual Memory) bit is a WARL field that supports intercepting
   # supervisor virtual-memory management operations. When csr::[tvm]=1, attempts to read
@@ -36,16 +40,25 @@ normative_rule_definitions:
   # 0 when S-mode is not supported or if csr:satp[mode] is read-only 0; otherwise, it
   # must be writable.
   - names: [mstatus_tvm_op, MSTATUS_TVM_WARL]
-    coverpoint: ["SvSm_mstatus_mprv_cg/cp_tvm_exception_s", "SvinvalSm_cg/cr_svinival"]
+    coverpoint:
+      ["SvSm_mstatus_mprv_cg/cp_tvm_exception_s", "SvinvalSm_cg/cr_svinival"]
 
   # The csr::[mbe], csr::[sbe], and csr::[ube] bits in csr:mstatus[] and csr:mstatush[]
   # are WARL fields that control the endianness of memory accesses other than
   # instruction fetches. Each may be read/write or read-only.
   - names: [MSTATUS_SBE_WARL, MSTATUSH_SBE_WARL, mstatus_sbe_implicit]
-    coverpoint: ["SvSm_mstatus_mprv_cg/cp_mstatus_sbe_{read,write}", "NORUN: needs big-endian implicit page-table accesses"]
+    coverpoint:
+      [
+        "SvSm_mstatus_mprv_cg/cp_mstatus_sbe_{read,write}",
+        "NORUN: needs big-endian implicit page-table accesses",
+      ]
 
   # If mtval is written with a nonzero value when a breakpoint, address-misaligned,
   # access-fault, page-fault, or hardware-error exception occurs on an instruction
   # fetch, load, or store, then mtval will contain the faulting virtual address.
   - name: mtval_vaddr_wr1
-    coverpoint: ["SvSm_mstatus_mprv_cg/{load_page_fault,store_page_fault}", "mtval is checked by the trap signature"]
+    coverpoint:
+      [
+        "SvSm_mstatus_mprv_cg/{load_page_fault,store_page_fault}",
+        "mtval is checked by the trap signature",
+      ]

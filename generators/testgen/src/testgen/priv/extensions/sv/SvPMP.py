@@ -11,7 +11,7 @@
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.pmp import helpers as pmp
-from testgen.priv.extensions.sv.access import add_rwx_test
+from testgen.priv.extensions.sv.access import add_rwx_test, legacy_enter_mode, legacy_leave_mode
 from testgen.priv.extensions.sv.assembly import DATA_REGION_ALIGNED
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import SV32, SV39, SV48, SV57, PteFlags, SvMode, create_page_mapping
@@ -28,7 +28,6 @@ _PA_CFGS = (
     (pmp.cfg_byte("0011", "napot", pmp.cfg_shift(1)), "pmpcfg0_rw", 1),
     (pmp.cfg_byte("0100", "napot", pmp.cfg_shift(1)), "pmpcfg0_x", 2),
 )
-_MARCH = ["I", "Zicsr", "Zifencei"]
 _PARAMS = ["NUM_PMP_ENTRIES: '>0'"]
 _DEFINES = ["#define BOOT_TO_MMODE"]
 
@@ -85,7 +84,16 @@ def _make_pmp_on_pa(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                     "sfence.vma",
                     "",
-                    *add_rwx_test(test_data, sv, mode, "va_data", level, f"test{number}"),
+                    *add_rwx_test(
+                        test_data,
+                        sv,
+                        mode,
+                        "va_data",
+                        level,
+                        f"test{number}",
+                        enter=legacy_enter_mode(mode),
+                        leave=legacy_leave_mode(),
+                    ),
                     "",
                 ]
             )
@@ -129,7 +137,16 @@ def _make_pmp_on_pte(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                 *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                 "sfence.vma",
                 "",
-                *add_rwx_test(test_data, sv, mode, "va_data", level, f"test{number}"),
+                *add_rwx_test(
+                    test_data,
+                    sv,
+                    mode,
+                    "va_data",
+                    level,
+                    f"test{number}",
+                    enter=legacy_enter_mode(mode),
+                    leave=legacy_leave_mode(),
+                ),
             ]
         )
         if top:
@@ -149,8 +166,7 @@ def _make_svpmp(test_data: TestData, sv: SvMode) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvPMP",
-    required_extensions=["I", "Sv32", "Sm"],
-    march_extensions=_MARCH,
+    required_extensions=["Sv32", "Sm"],
     params=_PARAMS,
     extra_defines=_DEFINES,
 )
@@ -160,8 +176,7 @@ def make_svpmp_sv32(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvPMP",
-    required_extensions=["I", "Sv39", "Sm"],
-    march_extensions=_MARCH,
+    required_extensions=["Sv39", "Sm"],
     params=_PARAMS,
     extra_defines=_DEFINES,
 )
@@ -171,8 +186,7 @@ def make_svpmp_sv39(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvPMP",
-    required_extensions=["I", "Sv48", "Sm"],
-    march_extensions=_MARCH,
+    required_extensions=["Sv48", "Sm"],
     params=_PARAMS,
     extra_defines=_DEFINES,
 )
@@ -182,8 +196,7 @@ def make_svpmp_sv48(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvPMP",
-    required_extensions=["I", "Sv57", "Sm"],
-    march_extensions=_MARCH,
+    required_extensions=["Sv57", "Sm"],
     params=_PARAMS,
     extra_defines=_DEFINES,
 )

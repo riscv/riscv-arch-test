@@ -19,7 +19,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_MMODE
-#define TRAP_SIGUPD_COUNT 50
+#define TRAP_SIGUPD_COUNT 80
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -28,76 +28,88 @@
 RVTEST_BEGIN
 
 main:
+SvinvalSm_cg_cp_svinval_test1_sfence_w_inval:
+  sfence.w.inval
+
+SvinvalSm_cg_cp_svinval_test1_sinval_vma:
+  sinval.vma x0, x0
+
+SvinvalSm_cg_cp_svinval_test1_sfence_inval_ir:
+  sfence.inval.ir
+
+SvinvalSm_cg_cp_svinval_test1_sfence_vma:
+  sfence.vma x0, x0
+
+  RVTEST_TSBI_GOTO_SMODE
+SvinvalSm_cg_cp_svinval_test2_sfence_w_inval:
+  sfence.w.inval
+
+SvinvalSm_cg_cp_svinval_test2_sinval_vma:
+  sinval.vma x0, x0
+
+SvinvalSm_cg_cp_svinval_test2_sfence_inval_ir:
+  sfence.inval.ir
+
+SvinvalSm_cg_cp_svinval_test2_sfence_vma:
+  sfence.vma x0, x0
+
+  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_UMODE
+SvinvalSm_cg_cp_svinval_test3_sfence_w_inval:
+  sfence.w.inval
+
+SvinvalSm_cg_cp_svinval_test3_sinval_vma:
+  sinval.vma x0, x0
+
+SvinvalSm_cg_cp_svinval_test3_sfence_inval_ir:
+  sfence.inval.ir
+
+SvinvalSm_cg_cp_svinval_test3_sfence_vma:
+  sfence.vma x0, x0
+
+  RVTEST_TSBI_GOTO_MMODE
   LI(a0, MSTATUS_TVM)
   csrs mstatus, a0
 SvinvalSm_cg_cp_svinval_tvm_tvm:
   RVTEST_SIGUPD_CSR_READ(mstatus, a4, SvinvalSm_cg_cp_svinval_tvm_tvm, SvinvalSm_cg_cp_svinval_tvm_tvm_str)
-SvinvalSm_cg_cp_svinval_test1_sfence_w_inval:
-  sfence.w.inval
-  nop
-
-SvinvalSm_cg_cp_svinval_test1_sinval_vma:
-  sinval.vma x0, x0
-  nop
-
-SvinvalSm_cg_cp_svinval_test1_sfence_inval_ir:
-  sfence.inval.ir
-  nop
-
-SvinvalSm_cg_cp_svinval_test1_sfence_vma:
-  sfence.vma x0, x0
-  nop
-
-SvinvalSm_cg_cp_svinval_test2_sfence_w_inval:
-  sfence.w.inval
-  nop
-
-SvinvalSm_cg_cp_svinval_test2_sinval_vma:
-  sinval.vma x0, x0
-  nop
-
-SvinvalSm_cg_cp_svinval_test2_sfence_inval_ir:
-  sfence.inval.ir
-  nop
-
-SvinvalSm_cg_cp_svinval_test2_sfence_vma:
-  sfence.vma x0, x0
-  nop
-
-  RVTEST_TSBI_GOTO_SMODE
-SvinvalSm_cg_cp_svinval_test3_sfence_w_inval:
-  sfence.w.inval
-  nop
-
-SvinvalSm_cg_cp_svinval_test3_sinval_vma:
-  sinval.vma x0, x0
-  nop
-
-SvinvalSm_cg_cp_svinval_test3_sfence_inval_ir:
-  sfence.inval.ir
-  nop
-
-SvinvalSm_cg_cp_svinval_test3_sfence_vma:
-  sfence.vma x0, x0
-  nop
-
-  RVTEST_TSBI_GOTO_MMODE
-  RVTEST_TSBI_GOTO_UMODE
 SvinvalSm_cg_cp_svinval_test4_sfence_w_inval:
   sfence.w.inval
-  nop
 
 SvinvalSm_cg_cp_svinval_test4_sinval_vma:
   sinval.vma x0, x0
-  nop
 
 SvinvalSm_cg_cp_svinval_test4_sfence_inval_ir:
   sfence.inval.ir
-  nop
 
 SvinvalSm_cg_cp_svinval_test4_sfence_vma:
   sfence.vma x0, x0
-  nop
+
+  RVTEST_TSBI_GOTO_SMODE
+SvinvalSm_cg_cp_svinval_test5_sfence_w_inval:
+  sfence.w.inval
+
+SvinvalSm_cg_cp_svinval_test5_sinval_vma:
+  sinval.vma x0, x0
+
+SvinvalSm_cg_cp_svinval_test5_sfence_inval_ir:
+  sfence.inval.ir
+
+SvinvalSm_cg_cp_svinval_test5_sfence_vma:
+  sfence.vma x0, x0
+
+  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_UMODE
+SvinvalSm_cg_cp_svinval_test6_sfence_w_inval:
+  sfence.w.inval
+
+SvinvalSm_cg_cp_svinval_test6_sinval_vma:
+  sinval.vma x0, x0
+
+SvinvalSm_cg_cp_svinval_test6_sfence_inval_ir:
+  sfence.inval.ir
+
+SvinvalSm_cg_cp_svinval_test6_sfence_vma:
+  sfence.vma x0, x0
 
   RVTEST_TSBI_GOTO_MMODE
 
@@ -128,6 +140,14 @@ SvinvalSm_cg_cp_svinval_test4_sfence_w_inval_str: .string "\"test: 14; cg: Svinv
 SvinvalSm_cg_cp_svinval_test4_sinval_vma_str: .string "\"test: 15; cg: SvinvalSm_cg; cp: cp_svinval; bin: test4_sinval_vma\""
 SvinvalSm_cg_cp_svinval_test4_sfence_inval_ir_str: .string "\"test: 16; cg: SvinvalSm_cg; cp: cp_svinval; bin: test4_sfence_inval_ir\""
 SvinvalSm_cg_cp_svinval_test4_sfence_vma_str: .string "\"test: 17; cg: SvinvalSm_cg; cp: cp_svinval; bin: test4_sfence_vma\""
+SvinvalSm_cg_cp_svinval_test5_sfence_w_inval_str: .string "\"test: 18; cg: SvinvalSm_cg; cp: cp_svinval; bin: test5_sfence_w_inval\""
+SvinvalSm_cg_cp_svinval_test5_sinval_vma_str: .string "\"test: 19; cg: SvinvalSm_cg; cp: cp_svinval; bin: test5_sinval_vma\""
+SvinvalSm_cg_cp_svinval_test5_sfence_inval_ir_str: .string "\"test: 20; cg: SvinvalSm_cg; cp: cp_svinval; bin: test5_sfence_inval_ir\""
+SvinvalSm_cg_cp_svinval_test5_sfence_vma_str: .string "\"test: 21; cg: SvinvalSm_cg; cp: cp_svinval; bin: test5_sfence_vma\""
+SvinvalSm_cg_cp_svinval_test6_sfence_w_inval_str: .string "\"test: 22; cg: SvinvalSm_cg; cp: cp_svinval; bin: test6_sfence_w_inval\""
+SvinvalSm_cg_cp_svinval_test6_sinval_vma_str: .string "\"test: 23; cg: SvinvalSm_cg; cp: cp_svinval; bin: test6_sinval_vma\""
+SvinvalSm_cg_cp_svinval_test6_sfence_inval_ir_str: .string "\"test: 24; cg: SvinvalSm_cg; cp: cp_svinval; bin: test6_sfence_inval_ir\""
+SvinvalSm_cg_cp_svinval_test6_sfence_vma_str: .string "\"test: 25; cg: SvinvalSm_cg; cp: cp_svinval; bin: test6_sfence_vma\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

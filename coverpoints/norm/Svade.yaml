@@ -4,12 +4,20 @@ normative_rule_definitions:
   # The Svade extension: when a virtual page is accessed and the A bit is clear, or is
   # written and the D bit is clear, a page-fault exception is raised.
   - name: svade_access_ad_bit_clear
-    coverpoint: ["Svade_cg/Abit_unset_{exec,read,write}_{s,u}", "Svade_cg/Dbit_unset_write_{s,u}"]
+    coverpoint:
+      [
+        "Svade_cg/Abit_unset_{exec,read,write}_{s,u}",
+        "Svade_cg/Dbit_unset_write_{s,u}",
+      ]
 
   # When hardware updating of A/D bits is disabled, the Svade extension, which mandates
   # exceptions when A/D bits need be set, instead takes effect.
   - name: Svadu_disabled_hw_update_falls_back_to_svade
-    coverpoint: ["Svade_cg/Abit_unset_{exec,read,write}_{s,u}", "Svade_cg/Dbit_unset_write_{s,u}"]
+    coverpoint:
+      [
+        "Svade_cg/Abit_unset_{exec,read,write}_{s,u}",
+        "Svade_cg/Dbit_unset_write_{s,u}",
+      ]
 
   # If the Svadu extension is implemented, the ADUE bit controls whether hardware
   # updating of PTE A/D bits is enabled for S-mode and G-stage address translations.

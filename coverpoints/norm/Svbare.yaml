@@ -10,7 +10,10 @@ normative_rule_definitions:
   # on the value that the remaining fields assume and an UNSPECIFIED effect on address
   # translation and protection behavior.
   - name: satp_mode_op
-    coverpoint: ["Svbare_cg/{satp_bare,cp_satp_bare_load,cp_satp_bare_store,cp_satp_bare_exec}"]
+    coverpoint:
+      [
+        "Svbare_cg/{satp_bare,cp_satp_bare_load,cp_satp_bare_store,cp_satp_bare_exec}",
+      ]
 
   # If an implementation supports the Svbare extension, then the satp register's MODE
   # field must be capable of holding the value Bare.
@@ -20,4 +23,7 @@ normative_rule_definitions:
   # For implementations that make satp.MODE read-only zero (always Bare), attempts to
   # execute an SFENCE.VMA instruction might raise an illegal-instruction exception.
   - name: SATP_MODE_ROZ_SFENCE_ILLEGAL
-    coverpoint: ["Not tested: needs satp.MODE read-only zero (UDB TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY)"]
+    coverpoint:
+      [
+        "Not tested: needs satp.MODE read-only zero (UDB TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY)",
+      ]

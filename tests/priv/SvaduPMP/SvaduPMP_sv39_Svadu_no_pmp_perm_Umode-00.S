@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Sv39', 'Svadu', 'Sm']
 # params:
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv${XLEN}i_zicsr_zifencei
+# MARCH: rv${XLEN}i_zicsr_zifencei_svadu
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
@@ -37,7 +37,6 @@ RVTEST_BEGIN
 #define PMP_MASK        ~PMP_REGION_SIZE
 
 main:
-  LI(a2, 0x800) // Test signature initialization
 
   RVTEST_PMP_SET_BACKGROUND x4
 
@@ -53,8 +52,8 @@ main:
   SUPERPAGE_PTE_SETUP_SV39(rvtest_code_begin, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL2)
   sfence.vma
 
-// Set up the code-region save area.
-  csrr a0, mscratch
+// Register the alias so the T-SBI GOTO macros can move an excursion into it.
+  LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL2)
 
   SATP_SETUP_RV64(sv39) // Enable address translation.
@@ -62,6 +61,8 @@ main:
 
   LI(t0, MENVCFG_ADUE)
   csrs menvcfg, t0
+
+  LI(a2, 0x800) // Test signature initialization
 
   LA(x5, rvtest_Sroot_pg_tbl)
   srl x5, x5, PMP_SHIFT

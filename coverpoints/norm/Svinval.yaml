@@ -10,7 +10,11 @@ normative_rule_definitions:
   # executed by the current hart are ordered before subsequent implicit references by
   # that hart to the memory-management data structures.
   - name: Svinval_sfence_w_inval_orders_before_sinval_vma
-    coverpoint: ["Svinval_cg/cr_svinival", "ordering is not observable in single-hart signature tests"]
+    coverpoint:
+      [
+        "Svinval_cg/cr_svinival",
+        "ordering is not observable in single-hart signature tests",
+      ]
 
   # the values of rs1 and rs2 for the SFENCE.VMA are the same as those used in the
   # SINVAL.VMA,
@@ -19,8 +23,13 @@ normative_rule_definitions:
 
   # reads and writes prior to the SFENCE.W.INVAL are considered to be those prior to the
   # SFENCE.VMA,
-  - names: [Svinval_sequence_reads_writes_before, Svinval_sequence_reads_writes_after]
-    coverpoint: ["Not tested: ordering is not observable in single-hart signature tests"]
+  - names:
+      [
+        Svinval_sequence_reads_writes_before,
+        Svinval_sequence_reads_writes_after,
+      ]
+    coverpoint:
+      ["Not tested: ordering is not observable in single-hart signature tests"]
 
   # In particular, an attempt to execute any of these instructions in U-mode always
   # raises an illegal-instruction exception.
@@ -34,10 +43,25 @@ normative_rule_definitions:
   # SFENCE.W.INVAL and SFENCE.INVAL.IR are unaffected by the mstatus.TVM and
   # hstatus.VTVM fields and hence are always permitted in S-mode and VS-mode.
   - name: Svinval_sfence_w_inval_inval_s_vs_mode
-    coverpoint: ["Svinval_cg/cr_svinival", "SvinvalSm_cg/cr_svinival", "TODO: test in hypervisor tests"]
+    coverpoint:
+      [
+        "Svinval_cg/cr_svinival",
+        "SvinvalSm_cg/cr_svinival",
+        "TODO: test in hypervisor tests",
+      ]
 
   # These have the same semantics as SINVAL.VMA, except that they combine with
   # SFENCE.W.INVAL and SFENCE.INVAL.IR to replace HFENCE.VVMA and HFENCE.GVMA,
   # respectively, instead of SFENCE.VMA.
-  - names: [Svinval_hinval_vvma_gvma, Svinval_hinval_gvma_uses_vmid, Svinval_virtual_instruction_vu_vs, Svinval_virtual_instruction_vtvms, Svinval_sfence_w_inval_inval_vu_mode]
-    coverpoint: ["TODO: test in hypervisor tests (SvinvalH_cg/cr_svinivalH has no tests yet)"]
+  - names:
+      [
+        Svinval_hinval_vvma_gvma,
+        Svinval_hinval_gvma_uses_vmid,
+        Svinval_virtual_instruction_vu_vs,
+        Svinval_virtual_instruction_vtvms,
+        Svinval_sfence_w_inval_inval_vu_mode,
+      ]
+    coverpoint:
+      [
+        "TODO: test in hypervisor tests (SvinvalH_cg/cr_svinivalH has no tests yet)",
+      ]

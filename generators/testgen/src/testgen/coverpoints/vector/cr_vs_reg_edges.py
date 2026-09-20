@@ -43,9 +43,7 @@ def _parse_cross_regs(coverpoint: str) -> tuple[str, str]:
     return r1, r2
 
 
-def _make_sm4_cross_edges(
-    instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
-) -> list[TestChunk]:
+def _make_sm4_cross_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     test_chunks = []
     for vs2_edge in crypto_edge_names("egs4"):
         vs2_value = crypto_edge_value(vs2_edge, 128)

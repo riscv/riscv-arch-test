@@ -31,9 +31,7 @@ def make_imm_5bit(instr_name: str, instr_type: str, coverpoint: str, test_data: 
         desc = f"{coverpoint} (Test imm={imm})"
         bin_name = f"imm{imm}"
 
-        params = generate_random_vector_params(
-            test_data, instr_name, instr_type, lmul=lmul, vl=vl, egs=egs, immval=imm
-        )
+        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, vl=vl, egs=egs, immval=imm)
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
 
         test_chunks.append(tc)

@@ -124,9 +124,7 @@ def make_and_register_vsm4r_subbyte_operands(
     return vs2_label, vd_label
 
 
-def make_and_register_crypto_edge_label(
-    reg_name: str, edge_name: str, suffix: str, test_data: TestData
-) -> str:
+def make_and_register_crypto_edge_label(reg_name: str, edge_name: str, suffix: str, test_data: TestData) -> str:
     """Register one EGS-wide vector-crypto edge as SEW-sized elements."""
     assert test_data.config.sew is not None
     sew = test_data.config.sew

@@ -45,9 +45,7 @@ def make_vs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     for v in range(lower_limit, upper_limit, emul):
         lmul = get_element_group_register_lmul(v, egs) if egs != 1 else base_lmul
         test_data.vec_regs.allocate_operand("vs2", v, int(max(lmul, 1)))
-        params = generate_random_vector_params(
-            test_data, instr_name, instr_type, lmul=lmul, egs=egs, vl=egs, vs2=v
-        )
+        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, egs=egs, vl=egs, vs2=v)
 
         desc = f"cp_vs2 (Test source vs2 = v{v})"
         bin_name = f"cp_vs2_b{v}"
@@ -85,9 +83,7 @@ def make_vs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     for v in range(lower_limit, upper_limit, emul):
         lmul = get_element_group_register_lmul(v, egs) if egs != 1 else base_lmul
         test_data.vec_regs.allocate_operand("vs1", v, int(max(lmul, 1)))
-        params = generate_random_vector_params(
-            test_data, instr_name, instr_type, lmul=lmul, egs=egs, vl=egs, vs1=v
-        )
+        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, egs=egs, vl=egs, vs1=v)
 
         desc = f"cp_vs1 (Test source vs1 = v{v})"
         bin_name = f"cp_vs1_b{v}"
@@ -127,9 +123,7 @@ def make_vs3(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     for v in range(lower_limit, upper_limit, emul):
         lmul = get_element_group_register_lmul(v, egs) if egs != 1 else base_lmul
         test_data.vec_regs.allocate_operand("vs3", v, int(max(lmul, 1)))
-        params = generate_random_vector_params(
-            test_data, instr_name, instr_type, lmul=lmul, egs=egs, vl=egs, vs3=v
-        )
+        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, egs=egs, vl=egs, vs3=v)
 
         desc = "cp_vd (Test destination vs3 = v" + str(v) + ")"
         bin_name = f"cp_vd_b{v}"

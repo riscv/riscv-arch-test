@@ -37,9 +37,12 @@ def make_svinvalsm_tvm(test_data: TestData) -> list[TestChunk]:
                     f"RVTEST_SIGUPD_CSR_READ(mstatus, a4, {tvm_label}, {tvm_label}_str)",
                 ]
             )
+        previous = DRIVER
         for mode in ("Mmode", "Smode", "Umode"):
             number += 1
-            code.extend([*enter_mode(mode, DRIVER), *add_operations(test_data, number), *leave_mode(mode, DRIVER)])
+            code.extend([*enter_mode(mode, previous), *add_operations(test_data, number)])
+            previous = mode
+        code.extend(leave_mode(previous, DRIVER))
     chunk.code.extend(code)
     chunk.sigupd_count = 1
     chunk.trap_sigupd_count = 80

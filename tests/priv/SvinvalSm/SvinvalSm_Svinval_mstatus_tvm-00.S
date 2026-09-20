@@ -53,7 +53,6 @@ SvinvalSm_cg_cp_svinval_test2_sfence_inval_ir:
 SvinvalSm_cg_cp_svinval_test2_sfence_vma:
   sfence.vma x0, x0
 
-  RVTEST_TSBI_GOTO_MMODE
   RVTEST_TSBI_GOTO_UMODE
 SvinvalSm_cg_cp_svinval_test3_sfence_w_inval:
   sfence.w.inval
@@ -97,7 +96,6 @@ SvinvalSm_cg_cp_svinval_test5_sfence_inval_ir:
 SvinvalSm_cg_cp_svinval_test5_sfence_vma:
   sfence.vma x0, x0
 
-  RVTEST_TSBI_GOTO_MMODE
   RVTEST_TSBI_GOTO_UMODE
 SvinvalSm_cg_cp_svinval_test6_sfence_w_inval:
   sfence.w.inval

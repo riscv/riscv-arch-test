@@ -238,7 +238,9 @@
         "amo": {
           "None": null
         },
-        "lrsc": { "Some": "AccessFault" }
+        // The ISS runs with unaligned_low_pri=T, so a misaligned LR/SC faults only after
+        // address translation; the per-region lrsc PMA below raises the access fault.
+        "lrsc": { "None": null }
       },
       // If multiple memory operations are needed, this controls whether they
       // are done in increasing or decreasing address order. This is architecturally
@@ -555,7 +557,7 @@
 
     "H": {
       "supported": true,
-      "geilen": 63,
+      "geilen": 6,
       "guest_page_fault_writes_htval": true,
       "hgatp_modes": {
         "Sv32x4": false,
@@ -856,7 +858,7 @@
       "supported_pmlen_16": true
     },
     "Smcntrpmf": {
-      "supported": true
+      "supported": false
     },
     "Svbare": {
       "supported": true,
@@ -885,7 +887,7 @@
       "SE0_readonly_zero": false
     },
     "Ssqosid": {
-      "supported": true,
+      "supported": false,
       // These lengths should be between 1 and 12, inclusive.
       // If Ssqosid is not supported, this should be left as 1
       // (or any other legal value).

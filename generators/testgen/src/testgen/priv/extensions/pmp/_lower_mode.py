@@ -14,13 +14,13 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.pmp.helpers import (
     LOCKED_LXWR_CASES,
-    NAPOT_MASK_DEFINES,
     REGION_BLOBS,
     TOR_ENTRIES,
     UNLOCKED_LXWR_CASES,
     cfg_byte,
     cfg_shift,
     lxwr_walk_body,
+    napot_mask_defines,
     set_pmpaddr,
     set_pmpcfg,
     zero_pmp_regs,
@@ -146,7 +146,7 @@ def _make_mprv_chunk(test_data: TestData, mode: Mode, part: int) -> TestChunk:
         "#define MPP        (3 << 11)",
         f"#define MPP_LOWER  {mode.mpp}",
         "#define REGIONSTART TEST_FOR_EXECUTION",
-        *NAPOT_MASK_DEFINES,
+        *napot_mask_defines(),
         "",
         "RVTEST_PMP_SET_BACKGROUND x4",
         "",

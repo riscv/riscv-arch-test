@@ -2,7 +2,7 @@
 # Jordan Carlin jcarlin@hmc.edu April 2026
 # CI configuration for Whisper simulator
 
-# SsstrictSm, SsstrictS, SsstrictU, unknown
+# SsstrictSm, unknown
 # Smstateen Sail does not yet support 1P13 bit
 # Sdtrig* not yet implemented in Sail
 # Sscofpmf* will be added back in CI once Sail increments HPM counters

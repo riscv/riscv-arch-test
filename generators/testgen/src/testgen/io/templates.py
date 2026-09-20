@@ -12,7 +12,7 @@ import importlib.resources
 import re
 from pathlib import Path
 
-from testgen.constants import EXTENSION_PARAM_MAP
+from testgen.constants import EXPERIMENTAL_EXTENSIONS, EXTENSION_PARAM_MAP
 from testgen.data.config import TestConfig
 
 
@@ -67,6 +67,8 @@ def insert_header_template(
         all_extensions = flat_ext_components
         march = generate_march_string(all_extensions, xlen)
     all_defines = [*(extra_defines or []), *generate_defines_from_extensions(all_extensions)]
+    if not EXPERIMENTAL_EXTENSIONS.isdisjoint(all_extensions):
+        all_defines.append("#define RVTEST_EXPERIMENTAL")
     # Replace placeholders
     template = (
         template.replace("@TEST_PATH@", f"{test_file}")

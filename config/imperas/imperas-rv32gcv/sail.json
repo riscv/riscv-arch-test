@@ -554,7 +554,7 @@
     },
 
     "H": {
-      "supported": true,
+      "supported": false,
       "geilen": 31,
       "guest_page_fault_writes_htval": true,
       "hgatp_modes": {
@@ -571,13 +571,13 @@
       }
     },
 
-    "Sha": { "supported": true },
-    "Shcounterenw": { "supported": true },
-    "Shgatpa": { "supported": true },
-    "Shtvala": { "supported": true },
-    "Shvsatpa": { "supported": true },
-    "Shvstvala": { "supported": true },
-    "Shvstvecd": { "supported": true },
+    "Sha": { "supported": false },
+    "Shcounterenw": { "supported": false },
+    "Shgatpa": { "supported": false },
+    "Shtvala": { "supported": false },
+    "Shvsatpa": { "supported": false },
+    "Shvstvala": { "supported": false },
+    "Shvstvecd": { "supported": false },
     "Sstvecd": { "supported": true },
     "Svukte": { "supported": false },
     "Zilx": { "supported": false },
@@ -768,7 +768,7 @@
       "supported": false
     },
     "Zvabd": {
-      "supported": true
+      "supported": false
     },
     "Zvfbfmin": {
       "supported": true
@@ -783,34 +783,34 @@
       "supported": true
     },
     "Zvbb": {
-      "supported": true
+      "supported": false
     },
     "Zvbc": {
-      "supported": true
+      "supported": false
     },
     "Zvkb": {
-      "supported": true
+      "supported": false
     },
     "Zvkg": {
-      "supported": true
+      "supported": false
     },
     "Zvkned": {
-      "supported": true
+      "supported": false
     },
     "Zvknha": {
-      "supported": true
+      "supported": false
     },
     "Zvknhb": {
-      "supported": true
+      "supported": false
     },
     "Zvksed": {
-      "supported": true
+      "supported": false
     },
     "Zvksh": {
-      "supported": true
+      "supported": false
     },
     "Zvkt": {
-      "supported": true
+      "supported": false
     },
     "Ssccptr": {
       "supported": true
@@ -860,7 +860,7 @@
       "supported_pmlen_16": true
     },
     "Smcntrpmf": {
-      "supported": true
+      "supported": false
     },
     "Svbare": {
       "supported": true,
@@ -889,7 +889,7 @@
       "SE0_readonly_zero": false
     },
     "Ssqosid": {
-      "supported": true,
+      "supported": false,
       // These lengths should be between 1 and 12, inclusive.
       // If Ssqosid is not supported, this should be left as 1
       // (or any other legal value).

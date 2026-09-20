@@ -191,6 +191,20 @@ def csr_case(
         if csr.name not in ("hgeip", "htinst"):
             readback = "v" + csr.name if mode == "vs" and csr.name in S_CSRS else csr.name
             case.read(case.r, readback)
+            # WARL forces hgatp PPN[1:0] and vsepc bit 0 to read zero; a config
+            # declaring that divergence ignorable masks the readback bits.
+            if csr.name == "hgatp":
+                case.emit(
+                    "#if defined(UDB_IGNORE_INVALID_HGATP_PPN_LOW_BITS_READBACK)",
+                    f"andi x{case.r}, x{case.r}, ~0x3",
+                    "#endif",
+                )
+            elif csr.name == "vsepc":
+                case.emit(
+                    "#if defined(UDB_IGNORE_INVALID_VSEPC_BIT0_READBACK)",
+                    f"andi x{case.r}, x{case.r}, ~0x1",
+                    "#endif",
+                )
             case.signature(case.r)
     return finish_case(case)
 

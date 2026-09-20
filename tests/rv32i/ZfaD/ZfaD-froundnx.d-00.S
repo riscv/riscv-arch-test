@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 559
+#define SIGUPD_COUNT 562
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -1092,6 +1092,19 @@ ZfaD_froundnx_d_cg_cp_frm_2_brup:
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, ZfaD_froundnx_d_cg_cp_frm_2_brup, ZfaD_froundnx_d_cg_cp_frm_2_brup_str)
 
 /////////////////////////////////
+// cp_csr_fflags_vn
+/////////////////////////////////
+
+# Testcase cp_csr_fflags_vn (fflags = 10001)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0x30d0d41256444d12
+  fsflagsi 0b00000 # clear all fflags
+  csrsi fcsr, 0b10001 # set fflags
+ZfaD_froundnx_d_cg_cp_csr_fflags_vn_b10001:
+  froundnx.d f11, f5 # perform operation
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, ZfaD_froundnx_d_cg_cp_csr_fflags_vn_b10001, ZfaD_froundnx_d_cg_cp_csr_fflags_vn_b10001_str)
+
+/////////////////////////////////
 // cp_csr_frm
 /////////////////////////////////
 
@@ -1674,6 +1687,7 @@ RVTEST_DATA_BEGIN
 .dword 0x8c7b25d26d2e20df
 .dword 0xb4842147e5f05a83
 .dword 0x70c583ac6ec5fdf6
+.dword 0x30d0d41256444d12
 .dword 0xf5d6b4a299f99785
 .dword 0x100f96f6a640322b
 .dword 0xea643dfc4258f5c8
@@ -1859,59 +1873,60 @@ ZfaD_froundnx_d_cg_cp_frm_2_brmm_str: .string "\"test: 127; cg: ZfaD_froundnx.d_
 ZfaD_froundnx_d_cg_cp_frm_2_brne_str: .string "\"test: 128; cg: ZfaD_froundnx.d_cg; cp: cp_frm_2; bin: brne\""
 ZfaD_froundnx_d_cg_cp_frm_2_brtz_str: .string "\"test: 129; cg: ZfaD_froundnx.d_cg; cp: cp_frm_2; bin: brtz\""
 ZfaD_froundnx_d_cg_cp_frm_2_brup_str: .string "\"test: 130; cg: ZfaD_froundnx.d_cg; cp: cp_frm_2; bin: brup\""
-ZfaD_froundnx_d_cg_cp_csr_frm_rne_str: .string "\"test: 131; cg: ZfaD_froundnx.d_cg; cp: cp_csr_frm; bin: rne\""
-ZfaD_froundnx_d_cg_cp_csr_frm_rtz_str: .string "\"test: 132; cg: ZfaD_froundnx.d_cg; cp: cp_csr_frm; bin: rtz\""
-ZfaD_froundnx_d_cg_cp_csr_frm_rdn_str: .string "\"test: 133; cg: ZfaD_froundnx.d_cg; cp: cp_csr_frm; bin: rdn\""
-ZfaD_froundnx_d_cg_cp_csr_frm_rup_str: .string "\"test: 134; cg: ZfaD_froundnx.d_cg; cp: cp_csr_frm; bin: rup\""
-ZfaD_froundnx_d_cg_cp_csr_frm_rmm_str: .string "\"test: 135; cg: ZfaD_froundnx.d_cg; cp: cp_csr_frm; bin: rmm\""
-ZfaD_froundnx_d_cg_cp_ibm_b1_2_str: .string "\"test: 136; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 2\""
-ZfaD_froundnx_d_cg_cp_ibm_b1_3_str: .string "\"test: 137; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 3\""
-ZfaD_froundnx_d_cg_cp_ibm_b1_4_str: .string "\"test: 138; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 4\""
-ZfaD_froundnx_d_cg_cp_ibm_b1_5_str: .string "\"test: 139; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 5\""
-ZfaD_froundnx_d_cg_cp_ibm_b1_6_str: .string "\"test: 140; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 6\""
-ZfaD_froundnx_d_cg_cp_ibm_b1_7_str: .string "\"test: 141; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 7\""
-ZfaD_froundnx_d_cg_cp_ibm_b1_8_str: .string "\"test: 142; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 8\""
-ZfaD_froundnx_d_cg_cp_ibm_b1_9_str: .string "\"test: 143; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 9\""
-ZfaD_froundnx_d_cg_cp_ibm_b1_10_str: .string "\"test: 144; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 10\""
-ZfaD_froundnx_d_cg_cp_ibm_b1_11_str: .string "\"test: 145; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 11\""
-ZfaD_froundnx_d_cg_cp_ibm_b1_12_str: .string "\"test: 146; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 12\""
-ZfaD_froundnx_d_cg_cp_ibm_b1_13_str: .string "\"test: 147; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 13\""
-ZfaD_froundnx_d_cg_cp_ibm_b1_14_str: .string "\"test: 148; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 14\""
-ZfaD_froundnx_d_cg_cp_ibm_b1_15_str: .string "\"test: 149; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 15\""
-ZfaD_froundnx_d_cg_cp_ibm_b1_16_str: .string "\"test: 150; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 16\""
-ZfaD_froundnx_d_cg_cp_ibm_b1_17_str: .string "\"test: 151; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 17\""
-ZfaD_froundnx_d_cg_cp_ibm_b1_18_str: .string "\"test: 152; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 18\""
-ZfaD_froundnx_d_cg_cp_ibm_b1_19_str: .string "\"test: 153; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 19\""
-ZfaD_froundnx_d_cg_cp_ibm_b1_20_str: .string "\"test: 154; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 20\""
-ZfaD_froundnx_d_cg_cp_ibm_b1_21_str: .string "\"test: 155; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 21\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_2_str: .string "\"test: 156; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 2\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_3_str: .string "\"test: 157; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 3\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_4_str: .string "\"test: 158; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 4\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_5_str: .string "\"test: 159; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 5\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_6_str: .string "\"test: 160; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 6\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_7_str: .string "\"test: 161; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 7\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_8_str: .string "\"test: 162; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 8\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_9_str: .string "\"test: 163; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 9\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_10_str: .string "\"test: 164; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 10\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_11_str: .string "\"test: 165; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 11\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_12_str: .string "\"test: 166; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 12\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_13_str: .string "\"test: 167; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 13\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_14_str: .string "\"test: 168; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 14\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_15_str: .string "\"test: 169; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 15\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_16_str: .string "\"test: 170; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 16\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_17_str: .string "\"test: 171; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 17\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_18_str: .string "\"test: 172; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 18\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_19_str: .string "\"test: 173; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 19\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_20_str: .string "\"test: 174; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 20\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_21_str: .string "\"test: 175; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 21\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_22_str: .string "\"test: 176; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 22\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_23_str: .string "\"test: 177; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 23\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_24_str: .string "\"test: 178; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 24\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_25_str: .string "\"test: 179; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 25\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_26_str: .string "\"test: 180; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 26\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_27_str: .string "\"test: 181; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 27\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_28_str: .string "\"test: 182; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 28\""
-ZfaD_froundnx_d_cg_cp_ibm_b28_29_str: .string "\"test: 183; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 29\""
+ZfaD_froundnx_d_cg_cp_csr_fflags_vn_b10001_str: .string "\"test: 131; cg: ZfaD_froundnx.d_cg; cp: cp_csr_fflags_vn; bin: b10001\""
+ZfaD_froundnx_d_cg_cp_csr_frm_rne_str: .string "\"test: 132; cg: ZfaD_froundnx.d_cg; cp: cp_csr_frm; bin: rne\""
+ZfaD_froundnx_d_cg_cp_csr_frm_rtz_str: .string "\"test: 133; cg: ZfaD_froundnx.d_cg; cp: cp_csr_frm; bin: rtz\""
+ZfaD_froundnx_d_cg_cp_csr_frm_rdn_str: .string "\"test: 134; cg: ZfaD_froundnx.d_cg; cp: cp_csr_frm; bin: rdn\""
+ZfaD_froundnx_d_cg_cp_csr_frm_rup_str: .string "\"test: 135; cg: ZfaD_froundnx.d_cg; cp: cp_csr_frm; bin: rup\""
+ZfaD_froundnx_d_cg_cp_csr_frm_rmm_str: .string "\"test: 136; cg: ZfaD_froundnx.d_cg; cp: cp_csr_frm; bin: rmm\""
+ZfaD_froundnx_d_cg_cp_ibm_b1_2_str: .string "\"test: 137; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 2\""
+ZfaD_froundnx_d_cg_cp_ibm_b1_3_str: .string "\"test: 138; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 3\""
+ZfaD_froundnx_d_cg_cp_ibm_b1_4_str: .string "\"test: 139; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 4\""
+ZfaD_froundnx_d_cg_cp_ibm_b1_5_str: .string "\"test: 140; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 5\""
+ZfaD_froundnx_d_cg_cp_ibm_b1_6_str: .string "\"test: 141; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 6\""
+ZfaD_froundnx_d_cg_cp_ibm_b1_7_str: .string "\"test: 142; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 7\""
+ZfaD_froundnx_d_cg_cp_ibm_b1_8_str: .string "\"test: 143; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 8\""
+ZfaD_froundnx_d_cg_cp_ibm_b1_9_str: .string "\"test: 144; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 9\""
+ZfaD_froundnx_d_cg_cp_ibm_b1_10_str: .string "\"test: 145; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 10\""
+ZfaD_froundnx_d_cg_cp_ibm_b1_11_str: .string "\"test: 146; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 11\""
+ZfaD_froundnx_d_cg_cp_ibm_b1_12_str: .string "\"test: 147; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 12\""
+ZfaD_froundnx_d_cg_cp_ibm_b1_13_str: .string "\"test: 148; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 13\""
+ZfaD_froundnx_d_cg_cp_ibm_b1_14_str: .string "\"test: 149; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 14\""
+ZfaD_froundnx_d_cg_cp_ibm_b1_15_str: .string "\"test: 150; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 15\""
+ZfaD_froundnx_d_cg_cp_ibm_b1_16_str: .string "\"test: 151; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 16\""
+ZfaD_froundnx_d_cg_cp_ibm_b1_17_str: .string "\"test: 152; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 17\""
+ZfaD_froundnx_d_cg_cp_ibm_b1_18_str: .string "\"test: 153; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 18\""
+ZfaD_froundnx_d_cg_cp_ibm_b1_19_str: .string "\"test: 154; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 19\""
+ZfaD_froundnx_d_cg_cp_ibm_b1_20_str: .string "\"test: 155; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 20\""
+ZfaD_froundnx_d_cg_cp_ibm_b1_21_str: .string "\"test: 156; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b1; bin: 21\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_2_str: .string "\"test: 157; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 2\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_3_str: .string "\"test: 158; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 3\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_4_str: .string "\"test: 159; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 4\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_5_str: .string "\"test: 160; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 5\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_6_str: .string "\"test: 161; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 6\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_7_str: .string "\"test: 162; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 7\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_8_str: .string "\"test: 163; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 8\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_9_str: .string "\"test: 164; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 9\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_10_str: .string "\"test: 165; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 10\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_11_str: .string "\"test: 166; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 11\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_12_str: .string "\"test: 167; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 12\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_13_str: .string "\"test: 168; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 13\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_14_str: .string "\"test: 169; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 14\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_15_str: .string "\"test: 170; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 15\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_16_str: .string "\"test: 171; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 16\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_17_str: .string "\"test: 172; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 17\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_18_str: .string "\"test: 173; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 18\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_19_str: .string "\"test: 174; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 19\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_20_str: .string "\"test: 175; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 20\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_21_str: .string "\"test: 176; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 21\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_22_str: .string "\"test: 177; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 22\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_23_str: .string "\"test: 178; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 23\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_24_str: .string "\"test: 179; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 24\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_25_str: .string "\"test: 180; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 25\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_26_str: .string "\"test: 181; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 26\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_27_str: .string "\"test: 182; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 27\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_28_str: .string "\"test: 183; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 28\""
+ZfaD_froundnx_d_cg_cp_ibm_b28_29_str: .string "\"test: 184; cg: ZfaD_froundnx.d_cg; cp: cp_ibm_b28; bin: 29\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

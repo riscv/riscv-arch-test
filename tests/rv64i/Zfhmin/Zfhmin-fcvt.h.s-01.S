@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 54
+#define SIGUPD_COUNT 56
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -26,6 +26,14 @@
 
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
+
+# Testcase cp_ibm_b8 (B8.csv:273 Test source fs1val = 0xc3542ffe fs2val = 0x00000000 fdval = 0x0000daa1 fflags = 0x00000001, frm = rmm)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0xc3542ffe
+  fsflagsi 0b00000 # clear all fflags
+Zfhmin_fcvt_h_s_cg_cp_ibm_b8_273:
+  fcvt.h.s f19, f9, rmm # perform operation
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, Zfhmin_fcvt_h_s_cg_cp_ibm_b8_273, Zfhmin_fcvt_h_s_cg_cp_ibm_b8_273_str)
 
 # Testcase cp_ibm_b8 (B8.csv:274 Test source fs1val = 0xc38f2fff fs2val = 0x00000000 fdval = 0x0000dc79 fflags = 0x00000001, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xc38f2fff
@@ -214,6 +222,7 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test data
+.dword 0x00000000c3542ffe
 .dword 0x00000000c38f2fff
 .dword 0x00000000c747b001
 .dword 0x00000000c4afb002
@@ -238,28 +247,29 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000ffdfdf20
 
 // Testcase strings
-Zfhmin_fcvt_h_s_cg_cp_ibm_b8_274_str: .string "\"test: 1001; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b8; bin: 274\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b8_275_str: .string "\"test: 1002; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b8; bin: 275\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b8_276_str: .string "\"test: 1003; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b8; bin: 276\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b8_277_str: .string "\"test: 1004; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b8; bin: 277\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b8_278_str: .string "\"test: 1005; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b8; bin: 278\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b8_279_str: .string "\"test: 1006; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b8; bin: 279\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b8_280_str: .string "\"test: 1007; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b8; bin: 280\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b8_281_str: .string "\"test: 1008; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b8; bin: 281\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b27_2_str: .string "\"test: 1009; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 2\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b27_3_str: .string "\"test: 1010; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 3\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b27_4_str: .string "\"test: 1011; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 4\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b27_5_str: .string "\"test: 1012; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 5\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b27_6_str: .string "\"test: 1013; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 6\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b27_7_str: .string "\"test: 1014; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 7\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b27_8_str: .string "\"test: 1015; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 8\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b27_9_str: .string "\"test: 1016; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 9\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b27_10_str: .string "\"test: 1017; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 10\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b27_11_str: .string "\"test: 1018; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 11\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b27_12_str: .string "\"test: 1019; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 12\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b27_13_str: .string "\"test: 1020; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 13\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b27_14_str: .string "\"test: 1021; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 14\""
-Zfhmin_fcvt_h_s_cg_cp_ibm_b27_15_str: .string "\"test: 1022; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 15\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b8_273_str: .string "\"test: 1001; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b8; bin: 273\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b8_274_str: .string "\"test: 1002; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b8; bin: 274\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b8_275_str: .string "\"test: 1003; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b8; bin: 275\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b8_276_str: .string "\"test: 1004; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b8; bin: 276\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b8_277_str: .string "\"test: 1005; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b8; bin: 277\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b8_278_str: .string "\"test: 1006; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b8; bin: 278\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b8_279_str: .string "\"test: 1007; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b8; bin: 279\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b8_280_str: .string "\"test: 1008; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b8; bin: 280\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b8_281_str: .string "\"test: 1009; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b8; bin: 281\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b27_2_str: .string "\"test: 1010; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 2\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b27_3_str: .string "\"test: 1011; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 3\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b27_4_str: .string "\"test: 1012; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 4\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b27_5_str: .string "\"test: 1013; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 5\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b27_6_str: .string "\"test: 1014; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 6\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b27_7_str: .string "\"test: 1015; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 7\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b27_8_str: .string "\"test: 1016; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 8\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b27_9_str: .string "\"test: 1017; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 9\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b27_10_str: .string "\"test: 1018; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 10\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b27_11_str: .string "\"test: 1019; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 11\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b27_12_str: .string "\"test: 1020; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 12\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b27_13_str: .string "\"test: 1021; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 13\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b27_14_str: .string "\"test: 1022; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 14\""
+Zfhmin_fcvt_h_s_cg_cp_ibm_b27_15_str: .string "\"test: 1023; cg: Zfhmin_fcvt.h.s_cg; cp: cp_ibm_b27; bin: 15\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

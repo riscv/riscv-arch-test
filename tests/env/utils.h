@@ -158,11 +158,10 @@
 #endif
 
 // Integer-width load matching FSREG's store width, zero-extended to UDB_MXLEN.
-// Used to read back an FP value from scratch memory after FSREG stored it.
+// Used to read back an FP value after FSREG stores it.
 // When CONFIG_FLEN < UDB_MXLEN (e.g. F-only on RV64: fsw writes 4 bytes but ld
-// would read 8), using LREG would pull in whatever bytes happened to sit
-// above the stored value. FP_LREG loads exactly the bytes FSREG wrote so
-// the loaded value is deterministic regardless of prior scratch contents.
+// would read 8), using LREG would read bytes beyond the stored value. FP_LREG
+// loads exactly the bytes FSREG writes.
 #if UDB_MXLEN == 64 && CONFIG_FLEN == 32
   #define FP_LREG lwu
 #else

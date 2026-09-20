@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 406
+#define SIGUPD_COUNT 408
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -1092,6 +1092,19 @@ ZfaZfh_froundnx_h_cg_cp_frm_2_brup:
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, ZfaZfh_froundnx_h_cg_cp_frm_2_brup, ZfaZfh_froundnx_h_cg_cp_frm_2_brup_str)
 
 /////////////////////////////////
+// cp_csr_fflags_vn
+/////////////////////////////////
+
+# Testcase cp_csr_fflags_vn (fflags = 10001)
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f11) # load fs1: f11 = 0x3559
+  fsflagsi 0b00000 # clear all fflags
+  csrsi fcsr, 0b10001 # set fflags
+ZfaZfh_froundnx_h_cg_cp_csr_fflags_vn_b10001:
+  froundnx.h f27, f11 # perform operation
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, ZfaZfh_froundnx_h_cg_cp_csr_fflags_vn_b10001, ZfaZfh_froundnx_h_cg_cp_csr_fflags_vn_b10001_str)
+
+/////////////////////////////////
 // cp_csr_frm
 /////////////////////////////////
 
@@ -1802,6 +1815,7 @@ RVTEST_DATA_BEGIN
 .dword 0x000000006fb3de22
 .dword 0xffffffff9024cabb
 .dword 0x000000000778d4cd
+.dword 0xffffffffd5c43559
 .dword 0xffffffff8b4c4157
 .dword 0x000000000308f536
 .dword 0x0000000004b23bb6
@@ -2002,74 +2016,75 @@ ZfaZfh_froundnx_h_cg_cp_frm_2_brmm_str: .string "\"test: 127; cg: ZfaZfh_froundn
 ZfaZfh_froundnx_h_cg_cp_frm_2_brne_str: .string "\"test: 128; cg: ZfaZfh_froundnx.h_cg; cp: cp_frm_2; bin: brne\""
 ZfaZfh_froundnx_h_cg_cp_frm_2_brtz_str: .string "\"test: 129; cg: ZfaZfh_froundnx.h_cg; cp: cp_frm_2; bin: brtz\""
 ZfaZfh_froundnx_h_cg_cp_frm_2_brup_str: .string "\"test: 130; cg: ZfaZfh_froundnx.h_cg; cp: cp_frm_2; bin: brup\""
-ZfaZfh_froundnx_h_cg_cp_csr_frm_rne_str: .string "\"test: 131; cg: ZfaZfh_froundnx.h_cg; cp: cp_csr_frm; bin: rne\""
-ZfaZfh_froundnx_h_cg_cp_csr_frm_rtz_str: .string "\"test: 132; cg: ZfaZfh_froundnx.h_cg; cp: cp_csr_frm; bin: rtz\""
-ZfaZfh_froundnx_h_cg_cp_csr_frm_rdn_str: .string "\"test: 133; cg: ZfaZfh_froundnx.h_cg; cp: cp_csr_frm; bin: rdn\""
-ZfaZfh_froundnx_h_cg_cp_csr_frm_rup_str: .string "\"test: 134; cg: ZfaZfh_froundnx.h_cg; cp: cp_csr_frm; bin: rup\""
-ZfaZfh_froundnx_h_cg_cp_csr_frm_rmm_str: .string "\"test: 135; cg: ZfaZfh_froundnx.h_cg; cp: cp_csr_frm; bin: rmm\""
-ZfaZfh_froundnx_h_cg_cp_NaNBox_S_H_NaNBox_str: .string "\"test: 136; cg: ZfaZfh_froundnx.h_cg; cp: cp_NaNBox_S_H; bin: NaNBox\""
-ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0x0_str: .string "\"test: 137; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0x0\""
-ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0xfffe8000_str: .string "\"test: 138; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0xfffe8000\""
-ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0x7fff3c00_str: .string "\"test: 139; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0x7fff3c00\""
-ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0xbeefbc00_str: .string "\"test: 140; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0xbeefbc00\""
-ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0xfeff0400_str: .string "\"test: 141; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0xfeff0400\""
-ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0xfff8400_str: .string "\"test: 142; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0xfff8400\""
-ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0xefff7bff_str: .string "\"test: 143; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0xefff7bff\""
-ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0xc0defbff_str: .string "\"test: 144; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0xc0defbff\""
-ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0x4f1a7c00_str: .string "\"test: 145; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0x4f1a7c00\""
-ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0xffffc00_str: .string "\"test: 146; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0xffffc00\""
-ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0xffef7e00_str: .string "\"test: 147; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0xffef7e00\""
-ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0xfeef7fff_str: .string "\"test: 148; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0xfeef7fff\""
-ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0xa1b27c01_str: .string "\"test: 149; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0xa1b27c01\""
-ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0x4fd77dff_str: .string "\"test: 150; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0x4fd77dff\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b1_2_str: .string "\"test: 151; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 2\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b1_3_str: .string "\"test: 152; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 3\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b1_4_str: .string "\"test: 153; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 4\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b1_5_str: .string "\"test: 154; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 5\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b1_6_str: .string "\"test: 155; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 6\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b1_7_str: .string "\"test: 156; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 7\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b1_8_str: .string "\"test: 157; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 8\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b1_9_str: .string "\"test: 158; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 9\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b1_10_str: .string "\"test: 159; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 10\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b1_11_str: .string "\"test: 160; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 11\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b1_12_str: .string "\"test: 161; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 12\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b1_13_str: .string "\"test: 162; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 13\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b1_14_str: .string "\"test: 163; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 14\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b1_15_str: .string "\"test: 164; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 15\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b1_16_str: .string "\"test: 165; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 16\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b1_17_str: .string "\"test: 166; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 17\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b1_18_str: .string "\"test: 167; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 18\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b1_19_str: .string "\"test: 168; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 19\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b1_20_str: .string "\"test: 169; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 20\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b1_21_str: .string "\"test: 170; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 21\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_2_str: .string "\"test: 171; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 2\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_3_str: .string "\"test: 172; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 3\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_4_str: .string "\"test: 173; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 4\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_5_str: .string "\"test: 174; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 5\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_6_str: .string "\"test: 175; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 6\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_7_str: .string "\"test: 176; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 7\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_8_str: .string "\"test: 177; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 8\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_9_str: .string "\"test: 178; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 9\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_10_str: .string "\"test: 179; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 10\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_11_str: .string "\"test: 180; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 11\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_12_str: .string "\"test: 181; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 12\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_13_str: .string "\"test: 182; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 13\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_14_str: .string "\"test: 183; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 14\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_15_str: .string "\"test: 184; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 15\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_16_str: .string "\"test: 185; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 16\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_17_str: .string "\"test: 186; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 17\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_18_str: .string "\"test: 187; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 18\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_19_str: .string "\"test: 188; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 19\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_20_str: .string "\"test: 189; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 20\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_21_str: .string "\"test: 190; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 21\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_22_str: .string "\"test: 191; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 22\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_23_str: .string "\"test: 192; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 23\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_24_str: .string "\"test: 193; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 24\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_25_str: .string "\"test: 194; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 25\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_26_str: .string "\"test: 195; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 26\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_27_str: .string "\"test: 196; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 27\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_28_str: .string "\"test: 197; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 28\""
-ZfaZfh_froundnx_h_cg_cp_ibm_b28_29_str: .string "\"test: 198; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 29\""
+ZfaZfh_froundnx_h_cg_cp_csr_fflags_vn_b10001_str: .string "\"test: 131; cg: ZfaZfh_froundnx.h_cg; cp: cp_csr_fflags_vn; bin: b10001\""
+ZfaZfh_froundnx_h_cg_cp_csr_frm_rne_str: .string "\"test: 132; cg: ZfaZfh_froundnx.h_cg; cp: cp_csr_frm; bin: rne\""
+ZfaZfh_froundnx_h_cg_cp_csr_frm_rtz_str: .string "\"test: 133; cg: ZfaZfh_froundnx.h_cg; cp: cp_csr_frm; bin: rtz\""
+ZfaZfh_froundnx_h_cg_cp_csr_frm_rdn_str: .string "\"test: 134; cg: ZfaZfh_froundnx.h_cg; cp: cp_csr_frm; bin: rdn\""
+ZfaZfh_froundnx_h_cg_cp_csr_frm_rup_str: .string "\"test: 135; cg: ZfaZfh_froundnx.h_cg; cp: cp_csr_frm; bin: rup\""
+ZfaZfh_froundnx_h_cg_cp_csr_frm_rmm_str: .string "\"test: 136; cg: ZfaZfh_froundnx.h_cg; cp: cp_csr_frm; bin: rmm\""
+ZfaZfh_froundnx_h_cg_cp_NaNBox_S_H_NaNBox_str: .string "\"test: 137; cg: ZfaZfh_froundnx.h_cg; cp: cp_NaNBox_S_H; bin: NaNBox\""
+ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0x0_str: .string "\"test: 138; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0x0\""
+ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0xfffe8000_str: .string "\"test: 139; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0xfffe8000\""
+ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0x7fff3c00_str: .string "\"test: 140; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0x7fff3c00\""
+ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0xbeefbc00_str: .string "\"test: 141; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0xbeefbc00\""
+ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0xfeff0400_str: .string "\"test: 142; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0xfeff0400\""
+ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0xfff8400_str: .string "\"test: 143; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0xfff8400\""
+ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0xefff7bff_str: .string "\"test: 144; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0xefff7bff\""
+ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0xc0defbff_str: .string "\"test: 145; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0xc0defbff\""
+ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0x4f1a7c00_str: .string "\"test: 146; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0x4f1a7c00\""
+ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0xffffc00_str: .string "\"test: 147; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0xffffc00\""
+ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0xffef7e00_str: .string "\"test: 148; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0xffef7e00\""
+ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0xfeef7fff_str: .string "\"test: 149; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0xfeef7fff\""
+ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0xa1b27c01_str: .string "\"test: 150; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0xa1b27c01\""
+ZfaZfh_froundnx_h_cg_cp_fs1_badNB_S_H_b0x4fd77dff_str: .string "\"test: 151; cg: ZfaZfh_froundnx.h_cg; cp: cp_fs1_badNB_S_H; bin: b0x4fd77dff\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b1_2_str: .string "\"test: 152; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 2\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b1_3_str: .string "\"test: 153; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 3\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b1_4_str: .string "\"test: 154; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 4\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b1_5_str: .string "\"test: 155; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 5\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b1_6_str: .string "\"test: 156; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 6\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b1_7_str: .string "\"test: 157; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 7\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b1_8_str: .string "\"test: 158; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 8\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b1_9_str: .string "\"test: 159; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 9\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b1_10_str: .string "\"test: 160; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 10\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b1_11_str: .string "\"test: 161; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 11\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b1_12_str: .string "\"test: 162; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 12\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b1_13_str: .string "\"test: 163; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 13\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b1_14_str: .string "\"test: 164; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 14\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b1_15_str: .string "\"test: 165; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 15\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b1_16_str: .string "\"test: 166; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 16\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b1_17_str: .string "\"test: 167; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 17\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b1_18_str: .string "\"test: 168; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 18\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b1_19_str: .string "\"test: 169; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 19\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b1_20_str: .string "\"test: 170; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 20\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b1_21_str: .string "\"test: 171; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b1; bin: 21\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_2_str: .string "\"test: 172; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 2\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_3_str: .string "\"test: 173; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 3\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_4_str: .string "\"test: 174; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 4\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_5_str: .string "\"test: 175; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 5\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_6_str: .string "\"test: 176; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 6\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_7_str: .string "\"test: 177; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 7\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_8_str: .string "\"test: 178; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 8\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_9_str: .string "\"test: 179; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 9\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_10_str: .string "\"test: 180; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 10\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_11_str: .string "\"test: 181; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 11\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_12_str: .string "\"test: 182; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 12\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_13_str: .string "\"test: 183; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 13\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_14_str: .string "\"test: 184; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 14\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_15_str: .string "\"test: 185; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 15\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_16_str: .string "\"test: 186; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 16\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_17_str: .string "\"test: 187; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 17\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_18_str: .string "\"test: 188; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 18\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_19_str: .string "\"test: 189; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 19\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_20_str: .string "\"test: 190; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 20\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_21_str: .string "\"test: 191; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 21\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_22_str: .string "\"test: 192; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 22\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_23_str: .string "\"test: 193; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 23\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_24_str: .string "\"test: 194; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 24\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_25_str: .string "\"test: 195; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 25\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_26_str: .string "\"test: 196; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 26\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_27_str: .string "\"test: 197; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 27\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_28_str: .string "\"test: 198; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 28\""
+ZfaZfh_froundnx_h_cg_cp_ibm_b28_29_str: .string "\"test: 199; cg: ZfaZfh_froundnx.h_cg; cp: cp_ibm_b28; bin: 29\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

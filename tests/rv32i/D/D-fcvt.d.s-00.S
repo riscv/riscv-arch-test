@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 484
+#define SIGUPD_COUNT 487
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -1038,6 +1038,19 @@ D_fcvt_d_s_cg_cmp_fd_fs1_b31:
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, D_fcvt_d_s_cg_cmp_fd_fs1_b31, D_fcvt_d_s_cg_cmp_fd_fs1_b31_str)
 
 /////////////////////////////////
+// cp_csr_fflags_v
+/////////////////////////////////
+
+# Testcase cp_csr_fflags_v (fflags = 10000)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0xc05d2bc1
+  fsflagsi 0b00000 # clear all fflags
+  csrsi fcsr, 0b10000 # set fflags
+D_fcvt_d_s_cg_cp_csr_fflags_v_b10000:
+  fcvt.d.s f7, f8 # perform operation
+  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fcvt_d_s_cg_cp_csr_fflags_v_b10000, D_fcvt_d_s_cg_cp_csr_fflags_v_b10000_str)
+
+/////////////////////////////////
 // cp_fs1_badNB_D_S
 /////////////////////////////////
 
@@ -1448,6 +1461,7 @@ RVTEST_DATA_BEGIN
 .dword 0x21bacb129f41948c
 .dword 0xcdef468b8190416a
 .dword 0x5e2cf2882d0d1420
+.dword 0xadbfb2bbc05d2bc1
 .dword 0xffffefff00000000
 .dword 0xaaaaaaaa80000000
 .dword 0x000000003f800000
@@ -1608,40 +1622,41 @@ D_fcvt_d_s_cg_cmp_fd_fs1_b28_str: .string "\"test: 121; cg: D_fcvt.d.s_cg; cp: c
 D_fcvt_d_s_cg_cmp_fd_fs1_b29_str: .string "\"test: 122; cg: D_fcvt.d.s_cg; cp: cmp_fd_fs1; bin: b29\""
 D_fcvt_d_s_cg_cmp_fd_fs1_b30_str: .string "\"test: 123; cg: D_fcvt.d.s_cg; cp: cmp_fd_fs1; bin: b30\""
 D_fcvt_d_s_cg_cmp_fd_fs1_b31_str: .string "\"test: 124; cg: D_fcvt.d.s_cg; cp: cmp_fd_fs1; bin: b31\""
-D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xffffefff00000000_str: .string "\"test: 125; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xffffefff00000000\""
-D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xaaaaaaaa80000000_str: .string "\"test: 126; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xaaaaaaaa80000000\""
-D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0x3f800000_str: .string "\"test: 127; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0x3f800000\""
-D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xdeadbeefbf800000_str: .string "\"test: 128; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xdeadbeefbf800000\""
-D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xa1b2c3d400800000_str: .string "\"test: 129; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xa1b2c3d400800000\""
-D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xffffffef80800000_str: .string "\"test: 130; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xffffffef80800000\""
-D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xfeffffef7f7fffff_str: .string "\"test: 131; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xfeffffef7f7fffff\""
-D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0x7e7e7e7eff7fffff_str: .string "\"test: 132; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0x7e7e7e7eff7fffff\""
-D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0x7fffffff7f800000_str: .string "\"test: 133; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0x7fffffff7f800000\""
-D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xfffffffeff800000_str: .string "\"test: 134; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xfffffffeff800000\""
-D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xfeedbee57fc00000_str: .string "\"test: 135; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xfeedbee57fc00000\""
-D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xffc0deff7fffffff_str: .string "\"test: 136; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xffc0deff7fffffff\""
-D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xfeffffff7f800001_str: .string "\"test: 137; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xfeffffff7f800001\""
-D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xfffffeff7fbfffff_str: .string "\"test: 138; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xfffffeff7fbfffff\""
-D_fcvt_d_s_cg_cp_ibm_b1_2_str: .string "\"test: 139; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 2\""
-D_fcvt_d_s_cg_cp_ibm_b1_3_str: .string "\"test: 140; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 3\""
-D_fcvt_d_s_cg_cp_ibm_b1_4_str: .string "\"test: 141; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 4\""
-D_fcvt_d_s_cg_cp_ibm_b1_5_str: .string "\"test: 142; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 5\""
-D_fcvt_d_s_cg_cp_ibm_b1_6_str: .string "\"test: 143; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 6\""
-D_fcvt_d_s_cg_cp_ibm_b1_7_str: .string "\"test: 144; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 7\""
-D_fcvt_d_s_cg_cp_ibm_b1_8_str: .string "\"test: 145; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 8\""
-D_fcvt_d_s_cg_cp_ibm_b1_9_str: .string "\"test: 146; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 9\""
-D_fcvt_d_s_cg_cp_ibm_b1_10_str: .string "\"test: 147; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 10\""
-D_fcvt_d_s_cg_cp_ibm_b1_11_str: .string "\"test: 148; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 11\""
-D_fcvt_d_s_cg_cp_ibm_b1_12_str: .string "\"test: 149; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 12\""
-D_fcvt_d_s_cg_cp_ibm_b1_13_str: .string "\"test: 150; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 13\""
-D_fcvt_d_s_cg_cp_ibm_b1_14_str: .string "\"test: 151; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 14\""
-D_fcvt_d_s_cg_cp_ibm_b1_15_str: .string "\"test: 152; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 15\""
-D_fcvt_d_s_cg_cp_ibm_b1_16_str: .string "\"test: 153; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 16\""
-D_fcvt_d_s_cg_cp_ibm_b1_17_str: .string "\"test: 154; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 17\""
-D_fcvt_d_s_cg_cp_ibm_b1_18_str: .string "\"test: 155; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 18\""
-D_fcvt_d_s_cg_cp_ibm_b1_19_str: .string "\"test: 156; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 19\""
-D_fcvt_d_s_cg_cp_ibm_b1_20_str: .string "\"test: 157; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 20\""
-D_fcvt_d_s_cg_cp_ibm_b1_21_str: .string "\"test: 158; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 21\""
+D_fcvt_d_s_cg_cp_csr_fflags_v_b10000_str: .string "\"test: 125; cg: D_fcvt.d.s_cg; cp: cp_csr_fflags_v; bin: b10000\""
+D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xffffefff00000000_str: .string "\"test: 126; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xffffefff00000000\""
+D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xaaaaaaaa80000000_str: .string "\"test: 127; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xaaaaaaaa80000000\""
+D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0x3f800000_str: .string "\"test: 128; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0x3f800000\""
+D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xdeadbeefbf800000_str: .string "\"test: 129; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xdeadbeefbf800000\""
+D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xa1b2c3d400800000_str: .string "\"test: 130; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xa1b2c3d400800000\""
+D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xffffffef80800000_str: .string "\"test: 131; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xffffffef80800000\""
+D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xfeffffef7f7fffff_str: .string "\"test: 132; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xfeffffef7f7fffff\""
+D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0x7e7e7e7eff7fffff_str: .string "\"test: 133; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0x7e7e7e7eff7fffff\""
+D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0x7fffffff7f800000_str: .string "\"test: 134; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0x7fffffff7f800000\""
+D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xfffffffeff800000_str: .string "\"test: 135; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xfffffffeff800000\""
+D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xfeedbee57fc00000_str: .string "\"test: 136; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xfeedbee57fc00000\""
+D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xffc0deff7fffffff_str: .string "\"test: 137; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xffc0deff7fffffff\""
+D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xfeffffff7f800001_str: .string "\"test: 138; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xfeffffff7f800001\""
+D_fcvt_d_s_cg_cp_fs1_badNB_D_S_b0xfffffeff7fbfffff_str: .string "\"test: 139; cg: D_fcvt.d.s_cg; cp: cp_fs1_badNB_D_S; bin: b0xfffffeff7fbfffff\""
+D_fcvt_d_s_cg_cp_ibm_b1_2_str: .string "\"test: 140; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 2\""
+D_fcvt_d_s_cg_cp_ibm_b1_3_str: .string "\"test: 141; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 3\""
+D_fcvt_d_s_cg_cp_ibm_b1_4_str: .string "\"test: 142; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 4\""
+D_fcvt_d_s_cg_cp_ibm_b1_5_str: .string "\"test: 143; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 5\""
+D_fcvt_d_s_cg_cp_ibm_b1_6_str: .string "\"test: 144; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 6\""
+D_fcvt_d_s_cg_cp_ibm_b1_7_str: .string "\"test: 145; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 7\""
+D_fcvt_d_s_cg_cp_ibm_b1_8_str: .string "\"test: 146; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 8\""
+D_fcvt_d_s_cg_cp_ibm_b1_9_str: .string "\"test: 147; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 9\""
+D_fcvt_d_s_cg_cp_ibm_b1_10_str: .string "\"test: 148; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 10\""
+D_fcvt_d_s_cg_cp_ibm_b1_11_str: .string "\"test: 149; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 11\""
+D_fcvt_d_s_cg_cp_ibm_b1_12_str: .string "\"test: 150; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 12\""
+D_fcvt_d_s_cg_cp_ibm_b1_13_str: .string "\"test: 151; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 13\""
+D_fcvt_d_s_cg_cp_ibm_b1_14_str: .string "\"test: 152; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 14\""
+D_fcvt_d_s_cg_cp_ibm_b1_15_str: .string "\"test: 153; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 15\""
+D_fcvt_d_s_cg_cp_ibm_b1_16_str: .string "\"test: 154; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 16\""
+D_fcvt_d_s_cg_cp_ibm_b1_17_str: .string "\"test: 155; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 17\""
+D_fcvt_d_s_cg_cp_ibm_b1_18_str: .string "\"test: 156; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 18\""
+D_fcvt_d_s_cg_cp_ibm_b1_19_str: .string "\"test: 157; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 19\""
+D_fcvt_d_s_cg_cp_ibm_b1_20_str: .string "\"test: 158; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 20\""
+D_fcvt_d_s_cg_cp_ibm_b1_21_str: .string "\"test: 159; cg: D_fcvt.d.s_cg; cp: cp_ibm_b1; bin: 21\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

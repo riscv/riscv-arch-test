@@ -400,8 +400,6 @@ def generate_random_vector_params(
     if masked and not instr_type_config.vector_data.maskable:
         raise ValueError(f"vector instruction type {instr_type} is not maskable")
     info = parse_vector_instruction_info(instruction, instr_type)
-    if preset_params.egs is None:
-        preset_params.egs = instr_type_config.vector_data.egs
 
     no_overlap = get_overlap_constraints(info, instr_type_config, masked, sew)
     if additional_no_overlap is not None:

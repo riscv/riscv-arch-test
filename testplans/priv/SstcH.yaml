@@ -1,0 +1,64 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SstcH
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1537373133#gid=1537373133
+coverpoints:
+  - heading: In M-Mode
+  - name: cp_vstip
+    goal: OR of vstimecmp and hvip
+    description: Cross of menvcfg.STCE = {0/1}, henvcfg = {0/1}, hvip.VSTIP = {0/1}, htimedelta = 0, vstimecmp = {0, 2^30}.  Check hip.VSTIP.  For RV32, htimedeltah and vstimecmph = 0. Note that this assumes 0 < time << 2^29 when the test is run.
+    expectation: If both STCE = 1 and vstimecmp = 0, hip.VSTIP = 1.  Else hip.VSTIP = hvip.VSTIP.
+  - name: cp_htimedelta
+    goal: htimedelta affects vstimecmp
+    description: menvcfg.STCE = 1, henvcfg.STCE = 1, hvip.VSTIP = 0, htimedelta = {0, 2^30, 2^60, 2^-30, 2^-60}, vstimecmp = {0, 2^29, 2^31, 2^61, -2^29, -2^31, -2^61}.  Check hip.VSTIP.  For RV32, htimedletah and vstimecmph are involved.
+    expectation: hip.VSTIP = (htimedelta >= vstimecmp)
+  - name: cp_m_vstimecmp_accessible
+    goal: TM and STCE control access depending on priv level
+    description: With cross of menvcfg.STCE = {0/1}, henvcfg.STCE = {0/1} mcounteren.TM = {0/1}, hcounteren.TM = {0/1} read vstimecmp.  For RV32, also vstimecmph
+    expectation: success
+    bins: 2 mSTCE *2 hSTCE * 2 mTM * 2hTM * up to 2 regs
+  - name: cp_m_vstimecmp_accesses
+    goal: All types of access
+    description: With cross of menvcfg.STCE = 1, henvcfg.STCE = 0 mcounteren.TM = 0, hcounteren.TM =0, read/write (0s,1s)/set/clear vstimecmp.  For RV32, also vstimecmph
+    expectation: sucess
+    bins: 5 accesses * up to 2 regs
+  - heading: In HS-Mode
+  - name: cp_walk_vstimecmp
+    goal: SSTC CSRs accessible
+    description: Walking 1s and 0s in vstimecmp.  Also vstimecmph for RV32.
+    expectation: Writable
+    bins: '64'
+  - name: cp_hs_vstimecmp_accessible
+    goal: TM and STCE control access depending on priv level
+    description: With cross of menvcfg.STCE = {0/1}, henvcfg.STCE = {0/1} mcounteren.TM = {0/1}, hcounteren.TM = {0/1} read vstimecmp.  For RV32, also vstimecmph
+    expectation: illegal instruction if menvcfg.STCE = 0 or mcounteren.TM = 0
+    bins: 2 mSTCE *2 hSTCE * 2 mTM * 2hTM * up to 2 regs
+  - name: cp_hs_vstimecmp_accesses
+    goal: All types of access
+    description: With cross of menvcfg.STCE = 1, henvcfg.STCE = 0 mcounteren.TM = 1, hcounteren.TM = 0, read/write (0s,1s)/set/clear vstimecmp.  For RV32, also vstimecmph
+    expectation: sucess
+    bins: 5 accesses * up to 2 regs
+  - heading: In VS-Mode
+  - name: cp_vs_stimecmp_accessible
+    goal: TM and STCE control access depending on priv level
+    description: Put different values in stimecmp and vstimecmp. With cross of menvcfg.STCE = {0/1}, henvcfg.STCE = {0/1} mcounteren.TM = {0/1}, hcounteren.TM = {0/1} read stimecmp (not vstimecmp).  For RV32, also stimecmph
+    expectation: trap if menvcfg.STCE = 0 or mcounteren.TM = 0.  virtual instruction trap if menvcfg.STCE = mcounteren.TM = 1 but henvcfg.STCE = 0 or hcounteren.TM = 0
+    bins: 2 mSTCE *2 hSTCE * 2 mTM * 2hTM * up to 2 regs
+  - name: cp_vs_stimecmp_accesses
+    goal: All types of access
+    description: Put random value in stimecmp/h before entering VS-mode. With cross of menvcfg.STCE = 1, henvcfg.STCE = 1 mcounteren.TM = 1, hcounteren.TM = 1, read/write (0s,1s)/set/clear stimecmp.  For RV32, also stimecmph.  Check from M-mode that these are reflected in vstimecmp/vstimecmph but not stimecmp/h.
+    expectation: Changes should show up in vstimecmp/h
+    bins: 5 accesses * up to 2 regs
+  - name: cp_vs_vstimecmp_inaccessible
+    description: With menvcfg.STCE=1, henvcft.STCE=1, mcounteren.TM = 1, hcounteren.TM = 1, read vstimecmp.  For RV32, also vstimecmph
+    expectation: Illegal instruction trap
+    bins: '2'
+  - heading: In VU-Mode
+  - name: cp_vu_timecmp_inaccessible
+    description: With menvcfg.STCE=1, henvcfg.STCE=1, mcounteren.TM = 1, hcounteren.TM = 1, read stimecmp, vstimecmp.  For RV32, also stimecmph, vstimecmph
+    expectation: Illegal instruction trap
+    bins: '4'
+  - heading: In U-Mode
+  - name: cp_u_timecmp_inaccessible
+    description: With menvcfg.STCE=1, henvcft.STCE=1, mcounteren.TM = 1, hcounteren.TM = 1, read stimecmp, vstimecmp.  For RV32, also stimecmph, vstimecmph
+    expectation: Illegal instruction trap
+    bins: '4'

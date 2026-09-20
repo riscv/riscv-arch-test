@@ -3,13 +3,13 @@
 
 ==== Sm1p13 Machine Mode 1.13
 
-include::{privtestplansdir}/Sm1p13.adoc[]
+include::{testplansdir}/priv/Sm1p13.adoc[]
 
 include::norm/Sm1p13_norm_rules.adoc[]
 
 ==== Smstateen Machine State Enable
 
-include::{privtestplansdir}/Smstateen.adoc[]
+include::{testplansdir}/priv/Smstateen.adoc[]
 
 include::norm/Smstateen_norm_rules.adoc[]
 

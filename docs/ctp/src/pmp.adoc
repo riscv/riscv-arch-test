@@ -3,44 +3,44 @@
 
 ==== PMPSm
 
-include::{privtestplansdir}/PMPSm.adoc[]
+include::{testplansdir}/priv/PMPSm.adoc[]
 
 include::norm/PMPSm_norm_rules.adoc[]
 
 
 ==== PMPS
 
-include::{privtestplansdir}/PMPS.adoc[]
+include::{testplansdir}/priv/PMPS.adoc[]
 
 
 ==== PMPU
 
-include::{privtestplansdir}/PMPU.adoc[]
+include::{testplansdir}/priv/PMPU.adoc[]
 
 include::norm/PMPU_norm_rules.adoc[]
 
 ==== PMPF
 
-include::{privtestplansdir}/PMPF.adoc[]
+include::{testplansdir}/priv/PMPF.adoc[]
 
 
 ==== PMPZca
 
-include::{privtestplansdir}/PMPZca.adoc[]
+include::{testplansdir}/priv/PMPZca.adoc[]
 
 
 
 ==== PMPZicbo
 
-include::{privtestplansdir}/PMPZicbo.adoc[]
+include::{testplansdir}/priv/PMPZicbo.adoc[]
 
 include::norm/PMPZicbo_norm_rules.adoc[]
 
 ==== PMPZaamo
 
-include::{privtestplansdir}/PMPZaamo.adoc[]
+include::{testplansdir}/priv/PMPZaamo.adoc[]
 
 
 ==== PMPZalrsc
 
-include::{privtestplansdir}/PMPZalrsc.adoc[]
+include::{testplansdir}/priv/PMPZalrsc.adoc[]

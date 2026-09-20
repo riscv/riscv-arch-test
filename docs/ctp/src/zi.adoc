@@ -203,12 +203,12 @@ include::norm/Zicbop_norm_rules.adoc[]
 
 ==== Za64rs Max 64B Reservation Set
 
-include::{privtestplansdir}/Za64rs.adoc[]
+include::{testplansdir}/priv/Za64rs.adoc[]
 
 include::norm/Za64rs_norm_rules.adoc[]
 
 ==== Zic64bZicboz 64B Cache Block Zero
 
-include::{privtestplansdir}/Zic64bZicboz.adoc[]
+include::{testplansdir}/priv/Zic64bZicboz.adoc[]
 
 include::norm/Zic64b_norm_rules.adoc[]

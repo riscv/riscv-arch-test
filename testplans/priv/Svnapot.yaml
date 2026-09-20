@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Svnapot
+source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1095239691#gid=1095239691
+coverpoints:
+  - name: Svnapot_legal_enc
+    description: |-
+      Configure a single NAPOT PTE to map a 64KB contiguous region of memory (assuming 4KB base page size)
+      Set up the PTE with N=1
+      Set up the pte.ppn[i] = x xxxx 1000 where i =0
+      Set up the pte.napot_bits = 4
+      Access various virtual addresses within the 64KB region.
+    check: Check against RM
+    status: To be Done
+    coverage: Uncovered
+    notes: 'feature: NAPOT PTE Configuration and Translation'
+  - name: Svnapot_reserved_enc
+    description: |-
+      Configure a single NAPOT PTE to map a 64KB contiguous region of memory (assuming 4KB base page size)
+      Set up the PTE with N=1
+      Set up the pte.ppn[i] =  xxx1/xx1x/x1xx/0xxx where i =0
+      or
+      Set up the pte.ppn[i] =  xxxx where i >= 1
+      Set up the pte.napot_bits  = x
+      Access various virtual addresses within the 64KB region.
+      *where x is any number
+    check: Check against RM
+    status: To be Done
+    coverage: Uncovered
+    notes: 'feature: Reserved Encoding'
+  - name: nap.3
+    description: |-
+      Set up a page table with a combination of NAPOT and nonNAPOT PTEs.
+      Configure a NAPOT PTE for a 64KB region by PTE with N=1 and pte.ppn valid bits
+      Configure nonNAPOT PTEs for other regions.
+      Access virtual addresses corresponding to both NAPOT and nonNAPOT regions.
+    check: Check against RM
+    status: To be Done
+    coverage: Uncovered
+    notes: 'feature: Mixed NAPOT and NonNAPOT'
+  - name: nap.4
+    description: |-
+      The system can cache these translated addresses. cache correctly stores and retrieves translations for NAPOT PTEs and avoiding repeated PTE lookups for each address within the NAPOT region.
+      Configure a NAPOT PTE for a 64KB region.
+      Access multiple virtual addresses within the NAPOT region
+      Reaccess the same virtual addresses and
+    check: Check against RM
+    status: To be Done
+    coverage: Uncovered
+    notes: 'feature: AddressTranslation Cache Validation'
+  - heading: '*** If hypervisor is supported, also VS and VU modes, and think about 2-stage translation.'

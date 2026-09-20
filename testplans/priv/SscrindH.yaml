@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SscrindH
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=886109861#gid=886109861
+notes: |
+  Develop this after baseline indirect CSR tests
+coverpoints: []

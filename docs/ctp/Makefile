@@ -73,7 +73,6 @@ ifneq ($(SKIP_DOCKER),true)
             -v ${PWD}/$(GENERATED_DIR):/build/generated:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -v ${PWD}/../common:/common:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -v ${PWD}/../docs-resources:/docs-resources:ro${DOCKER_EXTRA_VOL_SUFFIX} \
-            -v ${PWD}/../../testplans:/testplans:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -w /build \
             $(DOCKER_USER_ARG) \
             ${DOCKER_IMG} \
@@ -89,7 +88,6 @@ WORKDIR_SETUP = \
     mkdir -p $@.workdir/src && \
     ln -sfn $(patsubst %,../../../%,$(wildcard src/*.adoc src/*.yml src/docinfo.html)) $@.workdir/src/ && \
     ln -sfn ../../../$(GENERATED_DIR)/testplans ../../../$(GENERATED_DIR)/norm ../../../$(GENERATED_DIR)/param $@.workdir/src/ && \
-    ln -sfn ../../../../../testplans/priv $@.workdir/src/privtestplans && \
     ln -sfn ../../common ../../docs-resources $@.workdir/
 WORKDIR_TEARDOWN = mv $@.workdir/$@ $@
 else
@@ -98,7 +96,6 @@ WORKDIR_SETUP = \
     mkdir -p $@.workdir/src && \
     ln -sfn $(patsubst %,../../../%,$(wildcard src/*.adoc src/*.yml src/docinfo.html)) $@.workdir/src/ && \
     ln -sfn ../../../$(GENERATED_DIR)/testplans ../../../$(GENERATED_DIR)/norm ../../../$(GENERATED_DIR)/param $@.workdir/src/ && \
-    ln -sfn ../../../../../testplans/priv $@.workdir/src/privtestplans && \
     ln -sfn ../../common ../../docs-resources $@.workdir/
 
 WORKDIR_TEARDOWN = \
@@ -166,13 +163,14 @@ $(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS) testplans normrules
 # transposing them to one instruction per column, separating
 # into at most 12 instructions per table, and trimming unused
 # coverpoints
-TESTPLANS := $(wildcard $(REPO_ROOT)/testplans/*)
+TESTPLANS := $(wildcard $(REPO_ROOT)/testplans/* $(REPO_ROOT)/testplans/priv/*.yaml $(REPO_ROOT)/coverpoints/norm/*.yaml)
 testplans: $(TESTPLANS)
 	@echo "Generating test plan tables..."
 	@if [ -d $(REPO_ROOT)/testplans ]; then \
 		rm -rf $(GENERATED_DIR)/testplans; \
 		$(PYTHON_RUNNER) $(REPO_ROOT)/generators/ctp/transpose_csv.py $(REPO_ROOT)/testplans $(GENERATED_DIR)/testplans 12; \
 		$(PYTHON_RUNNER) $(REPO_ROOT)/generators/ctp/transpose_csv.py $(REPO_ROOT)/testplans/priv $(GENERATED_DIR)/testplans/priv 12; \
+		$(PYTHON_RUNNER) $(REPO_ROOT)/generators/ctp/generate_priv_testplans.py --plans $(REPO_ROOT)/testplans/priv --norm $(REPO_ROOT)/coverpoints/norm --coverage $(REPO_ROOT)/coverpoints/priv --out $(GENERATED_DIR)/testplans/priv; \
 	else \
 		echo "No test plans directory found in source."; \
 	fi

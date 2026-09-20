@@ -5,7 +5,7 @@
 
 The UDB configuration file determines whether to run tests for Sv32, or for Sv39 and possibly Sv48 and Sv57.
 
-include::{privtestplansdir}/Sv.adoc[]
+include::{testplansdir}/priv/Sv.adoc[]
 
 include::norm/Sv_norm_rules.adoc[]
 
@@ -14,27 +14,33 @@ include::norm/Sv_norm_rules.adoc[]
 * REPORT_VA_IN_{MTVAL/STVAL}ON_{INSTRUCTION/LOAD/STORE_AMO}PAGE_FAULT affects result in {MTVAL,STVAL} during page-fault exceptions, such as coverpoints TODO
 * TODO other coverpoints at least SATP_MODE_BARE, TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY
 
+==== SvSm Machine-Mode Virtual Memory
+
+These tests boot to M-mode and exercise `satp`, `mstatus.TVM`, and `mstatus.MPRV` translation from machine mode.
+
+include::{testplansdir}/priv/SvSm.adoc[]
+
 ==== Svbare Virtual Memory Off
 
-include::{privtestplansdir}/Svbare.adoc[]
+include::{testplansdir}/priv/Svbare.adoc[]
 
 include::norm/Svbare_norm_rules.adoc[]
 
 
 ==== SvPMP VirtMem + PMP
 
-include::{privtestplansdir}/SvPMP.adoc[]
+include::{testplansdir}/priv/SvPMP.adoc[]
 
 ==== SvZicbo VirtMem + CBOM/CBOZ
 
-include::{privtestplansdir}/SvZicbo.adoc[]
+include::{testplansdir}/priv/SvZicbo.adoc[]
 
 include::norm/SvZicbo_norm_rules.adoc[]
 
 
 ==== SvPMPZicbo VirtMem + PMP + CBOM/CBOZ
 
-include::{privtestplansdir}/SvPMPZicbo.adoc[]
+include::{testplansdir}/priv/SvPMPZicbo.adoc[]
 
 include::norm/SvPMPZicbo_norm_rules.adoc[]
 
@@ -43,24 +49,28 @@ include::norm/SvPMPZicbo_norm_rules.adoc[]
 
 The Svinval extension defines instructions to update memory management tables for virtual memory and optionally for PMP. Their effect is system-dependent, so these tests simply check that the instructions run.
 
-include::{privtestplansdir}/Svinval.adoc[]
+include::{testplansdir}/priv/Svinval.adoc[]
 
 ==== Svade A/D Bit Page Fault Exception
 
-include::{privtestplansdir}/Svade.adoc[]
+include::{testplansdir}/priv/Svade.adoc[]
 
 ==== Svadu A/D Bit Hardware Update
 
-include::{privtestplansdir}/Svadu.adoc[]
+include::{testplansdir}/priv/Svadu.adoc[]
 
 ==== Svadu A/D Bit Hardware Update + PMP
 
-include::{privtestplansdir}/SvaduPMP.adoc[]
+include::{testplansdir}/priv/SvaduPMP.adoc[]
 
 ==== Svpbmt Page-Based Memory Types
 
-include::{privtestplansdir}/Svpbmt.adoc[]
+include::{testplansdir}/priv/Svpbmt.adoc[]
 
 ==== Svnapot Naturally-Aligned Power-of-Two Page Sizes
 
-include::{privtestplansdir}/Svnapot.adoc[]
+include::{testplansdir}/priv/Svnapot.adoc[]
+
+==== Svukte User Kernel Translation Enable
+
+include::{testplansdir}/priv/Svukte.adoc[]

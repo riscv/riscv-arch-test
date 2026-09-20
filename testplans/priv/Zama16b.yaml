@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Zama16b
+source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=907997467#gid=907997467
+coverpoints:
+  - name: cp_zama16b_load
+    goal: Misaligned accesses are atomic
+    description: |-
+      For each op in {lw, lh, lhu, lb, lbu} + {ld, lwu for RV64} + {flw for F, fld for D, flq for Q, flh for Zfh}:
+      Pick base address as multiple of 16
+      Issue instruction with offsets of [0, 16-size]
+    expectation: No misaligned load fault
+    bins: Up to 11 ops * 16 offsets
+    rules:
+      - Misaligned loads, stores, and AMOs to main memory regions that do not cross a naturally aligned 16-byte boundary are atomic.
+  - name: cp_zama16b_store
+    goal: Misaligned accesses are atomic
+    description: |-
+      For each op in {sw, sh, sb} + {sd for RV64} + {fsw for F, fsd for D, fsq for Q, fsh for Zfh}:
+      Pick base address as multiple of 16
+      Issue instruction with offsets of [0, 16-size]
+    expectation: No misaligned store fault
+    bins: Up to 9 ops * 16 offsets
+    rules:
+      - Misaligned loads, stores, and AMOs to main memory regions that do not cross a naturally aligned 16-byte boundary are atomic.
+  - name: cp_zama16b_amo
+    goal: Misaligned accesses are atomic
+    description: |-
+      For each op in {amoswap.w, amoadd.w, amoand.w, amoor.w, amoxor.w, amomax.w, amomaxu.w, amomin.w amominu.w} + {.d flavors for RV64} + {b and h flavors for Zabha} + {amocas.w, d, q if supported}:
+      Pick address as multiple of 16 + offset of [0, 16-size]
+      Issue instruction
+    expectation: No misaligned store/AMO fault
+    bins: Up to 39 ops * 12 offsets
+    rules:
+      - Misaligned loads, stores, and AMOs to main memory regions that do not cross a naturally aligned 16-byte boundary are atomic.
+  - heading: 'Note:'
+  - heading: This test only checks for no misaligned fault.  Multimaster testing will be required to verify atomicity.

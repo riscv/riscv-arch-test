@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Ssccptr
+source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=16223482#gid=16223482
+coverpoints:
+  - name: cp_ssccptr
+    goal: Main memory supports HPTW read
+    description: With Sv active, access virtual memory with page table stored in main memory
+    expectation: Success
+    bins: '1'
+    rules:
+      - Main memory regions with both the cacheability and coherence PMAs must support hardware page-table reads.
+  - heading: 'Note: this is already covered in Sv'

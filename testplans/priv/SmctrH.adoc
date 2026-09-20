@@ -1,7 +1,0 @@
-// SmctrH Coverpoints.  Converted from the "SmctrH" tab of the Hypervisor test plan spreadsheet
-// (https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=858128446#gid=858128446) on 2026-09-19.
-
-[[t-SmctrH-coverpoints]]
-No smctrh coverpoints have been defined yet.
-
-* Develop this after baseline control transfer record tests

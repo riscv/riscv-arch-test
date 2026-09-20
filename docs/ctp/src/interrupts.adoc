@@ -7,7 +7,7 @@ Interrupt tests are organized according to the privilege mode or extension suppo
 
 These tests are run on any configuration with machine mode that supports interrupts.
 
-include::{privtestplansdir}/InterruptsSm.adoc[]
+include::{testplansdir}/priv/InterruptsSm.adoc[]
 
 include::norm/InterruptsSm_norm_rules.adoc[]
 
@@ -25,7 +25,7 @@ TODO: mip.MSIP update time
 
 These tests are run on any configuration with supervisor mode that supports interrupts. They boot to S-mode and also run in U-mode (and VS/VU-mode when the H extension is supported); `mideleg` keeps its boot value with all supervisor-level interrupts delegated.
 
-include::{privtestplansdir}/InterruptsS.adoc[]
+include::{testplansdir}/priv/InterruptsS.adoc[]
 
 include::norm/InterruptsS_norm_rules.adoc[]
 
@@ -33,7 +33,7 @@ include::norm/InterruptsS_norm_rules.adoc[]
 
 These tests are run on any configuration with machine mode when the Sstc supervisor timer compare extension is supported.
 
-include::{privtestplansdir}/SstcSm.adoc[]
+include::{testplansdir}/priv/SstcSm.adoc[]
 
 include::norm/SstcSm_norm_rules.adoc[]
 
@@ -41,7 +41,7 @@ include::norm/SstcSm_norm_rules.adoc[]
 
 These tests are run on any configuration with supervisor mode when the Sstc supervisor timer compare extension is supported.
 
-include::{privtestplansdir}/SstcS.adoc[]
+include::{testplansdir}/priv/SstcS.adoc[]
 
 include::norm/SstcS_norm_rules.adoc[]
 

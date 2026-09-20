@@ -1,0 +1,89 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: ZicfissSm
+source: https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?gid=568706494#gid=568706494
+coverpoints:
+  - heading: "General Test Environment (M-mode control plane):\n- Same base environment as ZicfissU. These coverpoints execute in M-mode or manipulate M-mode state (menvcfg) before dropping to a lower mode.\n- Use of Zicfiss in M-mode is not supported; M-mode coverpoints here test the *gating* and the M-mode SSAMOSWAP fault."
+  - name: cp_ssamoswap_mmode_fault_zicfiss
+    goal: Verify SSAMOSWAP.W/.D always raises a store/AMO access-fault when the effective privilege mode is M
+    description: |-
+      Execute SSAMOSWAP.W and SSAMOSWAP.D from M-mode against a valid, aligned, writable SS page. Repeat with menvcfg.SSE=1 and menvcfg.SSE=0, and with satp.MODE both Bare and non-Bare, to confirm the fault is unconditional.
+      Also exercise the effective-privilege path: M-mode with mstatus.MPRV=1 and MPP=U.
+    expectation: |-
+      Store/AMO access-fault raised whenever the EFFECTIVE privilege mode is M, independent of menvcfg.SSE and satp.MODE.
+      Note MPRV: with mstatus.MPRV=1 and MPP < M the effective privilege mode is no longer M, so this rule does not apply and the access may succeed. MPRV is therefore left 0 here and is not a coverage axis.
+      Memory and rd are unchanged.
+    bins: instr {SSAMOSWAP.W, SSAMOSWAP.D} x menvcfg.SSE {0,1} x satp.MODE {Bare, Sv}
+    id: ssmp_ssamoswap
+    rules:
+      - '[norm:ssmp_ssamoswap]'
+  - name: cp_menvcfg_sse_gating_zicfiss
+    goal: Verify menvcfg.SSE is the top of the enable chain for both ssp CSR access and the SS page encoding
+    description: |-
+      From M-mode set menvcfg.SSE=0, then:
+      (a) drop to S/HS-mode and attempt ssp CSR read and write;
+      (b) with a PTE encoded xwr=010, attempt access from S-mode and U-mode.
+      Repeat both with menvcfg.SSE=1 as the positive control.
+      Also confirm menvcfg.SSE is writable and reads back as written.
+      M-mode leg (explicit): read and write ssp from M-mode with menvcfg.SSE=0 and with menvcfg.SSE=1, using csrrw/csrrs/csrrc and the immediate forms.
+    expectation: |-
+      menvcfg.SSE=0: ssp CSR access from any mode < M raises an illegal-instruction exception, regardless of senvcfg/henvcfg.
+      menvcfg.SSE=0: the xwr=010 PTE encoding remains RESERVED, so access raises a page-fault rather than being treated as an SS page.
+      menvcfg.SSE=1: ssp accessible from S/HS, and xwr=010 is recognised as an SS page.
+      From M-mode the ssp CSR is accessible for BOTH values of menvcfg.SSE. [norm:zicfiss_m_menvcfg_sse] is scoped to 'privilege mode less than M', so menvcfg.SSE does not gate M-mode itself. An implementation that raises illegal-instruction on ssp access from M when menvcfg.SSE=0 is wrong.
+      Note this is CSR accessibility only -- use of the Zicfiss shadow stack in M-mode is not supported, and the SS instructions behave as MOPs there (cp_ss_instr_inactive_zicfiss).
+    bins: mode {M, S/HS} x menvcfg.SSE {0,1} x csr_op {csrrw, csrrs, csrrc, csrrwi, csrrsi, csrrci} x target {ssp read, ssp write, pte_xwr_010_access} x result {ok at M always, ok at S iff menvcfg.SSE=1, illegal_instruction, page_fault}
+    id: zicfiss_m_menvcfg_sse zicfiss_ssp_csr ssmp_menvcfg_sse
+    rules:
+      - '[norm:zicfiss_m_menvcfg_sse] [norm:zicfiss_ssp_csr] [norm:ssmp_menvcfg_sse]'
+  - name: cp_envcfg_sse_rdonly0_zicfiss
+    goal: Verify the SSE enable chain forces the lower-level SSE fields to read-only zero
+    description: |-
+      Leg A: from M-mode set menvcfg.SSE=0, then attempt to write 1 to senvcfg.SSE (from S-mode) and to henvcfg.SSE (from HS-mode). Read both back.
+      Leg B: menvcfg.SSE=1, henvcfg.SSE=0, V=1. Attempt to write 1 to senvcfg.SSE and read back.
+      Positive control per leg: with the parent field set to 1 the child is writable and reads back 1.
+    expectation: |-
+      Leg A: with menvcfg.SSE=0, both henvcfg.SSE and senvcfg.SSE are read-only zero -- the write is discarded and the field reads 0. No exception: these are WARL fields, not an illegal access.
+      Leg B: with henvcfg.SSE=0 and V=1, senvcfg.SSE is read-only zero.
+      This is what makes the (menvcfg.SSE=0, senvcfg.SSE=1) combination unreachable elsewhere.
+    bins: parent {menvcfg.SSE, henvcfg.SSE} x child {senvcfg.SSE, henvcfg.SSE} x parent_val {0,1} x written {0,1} x readback {0, written}
+    id: menvcfg_sse_rdonly0 henvcfg_sse_op
+    rules:
+      - '[norm:menvcfg_sse_rdonly0] [norm:henvcfg_sse_op]'
+  - name: cp_ss_pmp_permissions_zicfiss
+    goal: Verify PMP permission requirements for shadow stack instructions, and that a PMP fault outranks the software-check exception
+    description: |-
+      Reprogram PMP entry 0 to cover the shadow stack page and entry 1 to grant RWX over all memory (the lowest matching entry wins), then drop to S-mode and execute each SS instruction against the page.
+      Leg A -- permission matrix: sweep pmp0cfg R/W over {--, R-, -W, RW} and run SSPUSH, C.SSPUSH, SSPOPCHK, C.SSPOPCHK, SSAMOSWAP.W/D against each.
+      Leg B -- priority: with PMP denying the page, set the link register so the value would ALSO mismatch, then execute SSPOPCHK. Both faults are live and only one may be reported.
+      Restore the boot-time allow-all PMP configuration afterwards.
+    expectation: |-
+      Leg A: shadow stack instructions require PMP READ-WRITE permission on the accessed memory. Anything less raises a store/AMO access-fault (cause=7).
+      The asymmetry worth testing: SSPOPCHK and C.SSPOPCHK only READ, yet they still require PMP W. This is the opposite of the PTE dirty-bit behaviour, where SSPOPCHK does NOT require D (cp_ss_page_ad_bits_zicfiss on ZicfissU). An implementation that reuses its PTE logic for the PMP check will get exactly one of these two wrong.
+      Leg B: the PMP access-fault (cause=7) is reported, NOT the software-check exception (cause=18). ssp is unchanged.
+      SPEC NOTE: the PMP read-write requirement is stated in priv/cfi.adoc ("The PMP checks are extended to require read-write permission for memory accessed by shadow stack instructions") but carries NO norm: tag, so it cannot be referenced by ID. Raised as an upstream tagging gap.
+    bins: instr {SSPUSH x1, C.SSPUSH x1, SSPOPCHK x1, C.SSPOPCHK x5, SSAMOSWAP.W, SSAMOSWAP.D} x pmp0cfg {--, R-, -W, RW} x mismatch_also_present {no, yes} x reported_cause {none, 7, not 18}
+    id: 'sspop_exception (PMP read-write requirement: priv/cfi.adoc, untagged)'
+    rules:
+      - '[norm:sspop_exception]'
+  - name: cp_ss_instr_inactive_zicfiss
+    goal: Verify SS instructions act as MOPs, touching no memory and raising nothing, whenever Zicfiss is inactive
+    description: |-
+      MOVED here from ZicfissU: setting up every inactive state requires M-mode writes to menvcfg/senvcfg, and at M-mode the behaviour is unconditional.
+      SCOPE: the MOP-encoded instructions -- SSPUSH x1/x5, C.SSPUSH x1, SSPOPCHK x1/x5, C.SSPOPCHK x5, SSRDP. SSAMOSWAP is NOT in this set: it is AMO-encoded and traps instead (cp_ssamoswap_sse_gating_zicfiss on ZicfissU, and the M-mode case in cp_ssamoswap_mmode_fault_zicfiss on this sheet).
+      Leg A -- M-mode, unconditional: use of Zicfiss in M-mode is not supported, so these instructions act as MOPs at M for BOTH values of menvcfg.SSE.
+      Leg B -- lower modes, gated: drive the inactive states from M and execute in S/U -- menvcfg.SSE=0, and menvcfg.SSE=1 with senvcfg.SSE=0.
+      STRONG FORM, applied to both legs: repeat every instruction with a HOSTILE ssp -- misaligned, pointing at an unmapped page, and pointing at memory whose value would mismatch the link register.
+    expectation: |-
+      No exception of ANY kind, and no memory access at all. ssp unchanged, shadow stack memory unchanged, rd unchanged except SSRDP which writes 0.
+      The hostile-ssp variants are what actually prove it: an implementation that still performs the access and discards the result passes the benign case and fails these. A misaligned or unmapped ssp must NOT fault, and a mismatching value must NOT raise a software check, because no access and no comparison should happen.
+      SSRDP reading 0 is the documented way software detects whether Zicfiss is active.
+    bins: leg {M-mode unconditional, lower-mode gated} x instr {SSPUSH x1, SSPUSH x5, C.SSPUSH x1, SSPOPCHK x1, SSPOPCHK x5, C.SSPOPCHK x5, SSRDP} x gate {menvcfg.SSE, senvcfg.SSE} = {00, 10, 11} x ssp_state {valid, misaligned, unmapped, value_mismatch} x {no trap, no memory access, ssp unchanged, rd==0 for SSRDP}
+    id: zicfiss_enc menvcfg_sse_op_lead-in menvcfg_sse_op_list senvcfg_sse_Zicfilp
+    rules:
+      - '[norm:zicfiss_enc] [norm:menvcfg_sse_op_lead-in] [norm:menvcfg_sse_op_list] [norm:senvcfg_sse_Zicfilp]'
+  - goal: 'Folded into cp_menvcfg_sse_gating_zicfiss: the M-mode leg is now explicit -- ssp is accessible from M for BOTH menvcfg.SSE values, since [norm:zicfiss_m_menvcfg_sse] is scoped to privilege < M.'
+    description: Verify access to ssp from M-mode with menvcfg.SSE=0/1
+  - goal: MOVED here from ZicfissU as cp_ss_instr_inactive_zicfiss, with an M-mode unconditional leg added and the hostile-ssp strong form applied to both legs.
+    description: SSPUSH/SSPOPCHK/SSRDP act as MOP (SSRDP -> 0) and do not touch memory or rais exceptions even if ssp is misaligned or unmapped or the values mismatch
+  - goal: No separate suite needed -- PMP can only be programmed from M-mode, so this sheet is already the right home. The existing PMP row is widened into cp_ss_pmp_permissions_zicfiss, sweeping pmp0cfg R/W and covering the SSPOPCHK-needs-W asymmetry as well as the fault-priority case.
+    description: Should we add a PMPZicfiss suite exercising PMP access to a shadow stack page, including that RW permission is needed for shadow stack instructions SSPOPCHK and SSPUSH.

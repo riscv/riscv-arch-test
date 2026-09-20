@@ -9,19 +9,19 @@ The Hypervisor Extension adds an H coverage file containing new Hypervisor instr
 
 ==== H Hypervisor CSRs and Instructions
 
-include::{privtestplansdir}/H.adoc[]
+include::{testplansdir}/priv/H.adoc[]
 
 ==== ExceptionsH Hypervisor Exceptions
 
-include::{privtestplansdir}/ExceptionsH.adoc[]
+include::{testplansdir}/priv/ExceptionsH.adoc[]
 
 ==== ExceptionsHV Hypervisor Vector Exceptions
 
-include::{privtestplansdir}/ExceptionsHV.adoc[]
+include::{testplansdir}/priv/ExceptionsHV.adoc[]
 
 ==== InterruptsH Hypervisor Interrupts
 
-include::{privtestplansdir}/InterruptsH.adoc[]
+include::{testplansdir}/priv/InterruptsH.adoc[]
 
 ==== HV Hypervisor Vector CSRs
 
@@ -34,11 +34,11 @@ include::{privtestplansdir}/InterruptsH.adoc[]
 
 ==== EndianH Hypervisor Endianness
 
-include::{privtestplansdir}/EndianH.adoc[]
+include::{testplansdir}/priv/EndianH.adoc[]
 
 ==== ZicntrH Hypervisor Counters
 
-include::{privtestplansdir}/ZicntrH.adoc[]
+include::{testplansdir}/priv/ZicntrH.adoc[]
 
 [NOTE]
 ====
@@ -47,94 +47,94 @@ ZicntrH exercises hcounteren for all 32 counters, so no separate ZihpmH suite is
 
 ==== PMPH Hypervisor Physical Memory Protection
 
-include::{privtestplansdir}/PMPH.adoc[]
+include::{testplansdir}/priv/PMPH.adoc[]
 
 ==== SvH Hypervisor 2-Stage Virtual Memory
 
-include::{privtestplansdir}/SvH.adoc[]
+include::{testplansdir}/priv/SvH.adoc[]
 
 ==== SvHZicbo Hypervisor VirtMem + Cache Block Operations
 
-include::{privtestplansdir}/SvHZicbo.adoc[]
+include::{testplansdir}/priv/SvHZicbo.adoc[]
 
 ==== Shcounterenw Writable Counter Enables
 
-include::{privtestplansdir}/Shcounterenw.adoc[]
+include::{testplansdir}/priv/Shcounterenw.adoc[]
 
 ==== Shvsatpa Virtual Memory Modes Supported
 
-include::{privtestplansdir}/Shvsatpa.adoc[]
+include::{testplansdir}/priv/Shvsatpa.adoc[]
 
 ==== Shgatpa Virtual Memory x4 Modes Supported
 
-include::{privtestplansdir}/Shgatpa.adoc[]
+include::{testplansdir}/priv/Shgatpa.adoc[]
 
 ==== Shvstvecd VS-Mode Direct Vectors
 
-include::{privtestplansdir}/Shvstvecd.adoc[]
+include::{testplansdir}/priv/Shvstvecd.adoc[]
 
 ==== Shvstvala VS-Mode Trap Address
 
-include::{privtestplansdir}/Shvstvala.adoc[]
+include::{testplansdir}/priv/Shvstvala.adoc[]
 
 ==== Shtvala HS-Mode Trap Address
 
-include::{privtestplansdir}/Shtvala.adoc[]
+include::{testplansdir}/priv/Shtvala.adoc[]
 
 ==== Shlcofideleg Hypervisor Counter Overflow Delegation
 
-include::{privtestplansdir}/Shlcofideleg.adoc[]
+include::{testplansdir}/priv/Shlcofideleg.adoc[]
 
 ==== ZkrH Hypervisor Entropy Register
 
-include::{privtestplansdir}/ZkrH.adoc[]
+include::{testplansdir}/priv/ZkrH.adoc[]
 
 ==== SstcH Hypervisor Timer Compare
 
-include::{privtestplansdir}/SstcH.adoc[]
+include::{testplansdir}/priv/SstcH.adoc[]
 
 ==== SsstateenH Hypervisor State Enable
 
-include::{privtestplansdir}/SsstateenH.adoc[]
+include::{testplansdir}/priv/SsstateenH.adoc[]
 
 ==== SscrindH Hypervisor Indirect CSR Access
 
 Hypervisor indirect CSR access.
 
-include::{privtestplansdir}/SscrindH.adoc[]
+include::{testplansdir}/priv/SscrindH.adoc[]
 
 ==== SscfgH Hypervisor Counter Delegation
 
-include::{privtestplansdir}/SscfgH.adoc[]
+include::{testplansdir}/priv/SscfgH.adoc[]
 
 ==== SmctrH Hypervisor Control Transfer Records
 
-include::{privtestplansdir}/SmctrH.adoc[]
+include::{testplansdir}/priv/SmctrH.adoc[]
 
 ==== SvinvalH Hypervisor Memory Management Table Invalidation
 
-include::{privtestplansdir}/SvinvalH.adoc[]
+include::{testplansdir}/priv/SvinvalH.adoc[]
 
 ==== SvaduH Hypervisor Hardware Page Table A/D Updates
 
-include::{privtestplansdir}/SvaduH.adoc[]
+include::{testplansdir}/priv/SvaduH.adoc[]
 
 ==== ZicfilpH Hypervisor Landing Pads
 
-include::{privtestplansdir}/ZicfilpH.adoc[]
+include::{testplansdir}/priv/ZicfilpH.adoc[]
 
 ==== ZicfissH Hypervisor Shadow Stack
 
-include::{privtestplansdir}/ZicfissH.adoc[]
+include::{testplansdir}/priv/ZicfissH.adoc[]
 
 ==== SsdbltrpH Hypervisor Double Trap
 
-include::{privtestplansdir}/SsdbltrpH.adoc[]
+include::{testplansdir}/priv/SsdbltrpH.adoc[]
 
 ==== SsnpmH Hypervisor Pointer Masking
 
-include::{privtestplansdir}/SsnpmH.adoc[]
+include::{testplansdir}/priv/SsnpmH.adoc[]
 
 ==== SmnpmH Hypervisor Pointer Masking
 
-include::{privtestplansdir}/SmnpmH.adoc[]
+include::{testplansdir}/priv/SmnpmH.adoc[]

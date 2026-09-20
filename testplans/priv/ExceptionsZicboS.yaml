@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: ExceptionsZicboS
+source: https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=927893239#gid=927893239
+description: |
+  Tests done in supervisor and user mode.  Configure menvcfg via T-SBI.
+coverpoints:
+  - name: cp_cbie
+    goal: cbo.inval
+    description: |-
+      If ZICBOM_SUPPORTED & SM1P12P0_OR_LATER_SUPPORTED:
+      Execute cbo.inval in {supervisor/user} mode with {menvcfg x senvcfg}.cbie = {00/01/11 x 00/01/11}
+    expectation: Trap when prohibited
+    bins: 2 modes * 3 menvcfg * 3 senvcfg
+  - name: cp_cbcfe
+    goal: cbo.flushclean
+    description: |-
+      If ZICBOM_SUPPORTED & SM1P12P0_OR_LATER_SUPPORTED:
+      Execute cbo.{clean, flush} in {supervisor/user} mode with {menvcfg x senvcfg}.cbcfe = {0/1 x 0/1}
+    expectation: Trap when prohibited
+    bins: 2 instr * 2 modes * 2 menvcfg * 2 senvcfg
+  - name: cp_cbze
+    goal: cbo.zero
+    description: |-
+      If ZICBOZ_SUPPORTED & SM1P12P0_OR_LATER_SUPPORTED:
+      Execute cbo.zero in {supervisor/user} mode with {menvcfg x senvcfg}.cbze = {0/1 x 0/1}
+    expectation: Trap when prohibited
+    bins: 2 modes * 2 menvcfg * 2 senvcfg
+  - name: cp_cbo_access_fault
+    goal: Access fault
+    description: |-
+      For each supported cbo op {inval, clean, flush, zero, prefetch.{i/w/r}}
+      Execute op to RVMODEL_ACCESS_FAULT_ADDRESS with menvcfg and senvcfg enabled
+    expectation: |-
+      CBO: Store access fault
+      Prefetch: no access fault
+    bins: 7 instr * 2 modes
+  - name: cp_cbo_address_misaligned
+    goal: No misaligned fault
+    description: |-
+      For each supported cbo op {inval, clean, flush, zero, prefetch.{i/w/r}}
+      Execute op to valid address + 1 with menvcfg and senvcfg enabled
+    expectation: No misaligned faults
+    bins: 7 instr * 2 modes

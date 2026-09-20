@@ -1,0 +1,175 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SvHZicbo
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=2005939128#gid=2005939128
+notes: |
+  *** also includes hypervisor instructions, CSRs related to hypervisor
+coverpoints:
+  - heading: Be sure hgatp WARL fields are exercised in VM tests.
+  - name: vs_invalid_pte_cbo
+    goal: Verify CBO faulting when VS-stage PTE.V=0
+    description: |-
+      Environment: vsatp.mode={Sv32,Sv39,Sv48,Sv57}, PMP permits SPA.
+      Test Case: Set PTE.V=0, PTE.R=1, PTE.W=1. Execute CBO from VS and VU.
+    expectation: Store/AMO page fault at VS-stage.
+    bins: satp.mode × {VS,VU}
+  - name: g_invalid_pte_cbo
+    goal: Verify CBO faulting when G-stage PTE.V=0
+    description: |-
+      Environment: Valid VS mapping, invalid G PTE.V=0.
+      Test Case: Issue CBO to GVA.
+    expectation: Store/AMO page fault at G-stage.
+    bins: hgatp.mode × {VS,VU}
+  - name: reserved_rwx_vs
+    goal: Detect reserved RWX encoding at VS-stage
+    description: |-
+      Env: Leaf PTE with W=1,R=0.
+      Test Case: Execute CBO on GVA.
+    expectation: Page fault at VS-stage.
+    bins: '{VS,VU} × Levels'
+  - name: reserved_rwx_g
+    goal: Detect reserved RWX encoding at G-stage
+    description: |-
+      Env: Leaf G PTE with W=1,R=0.
+      Test Case: Execute CBO on GVA.
+    expectation: Page fault at G-stage.
+    bins: '{VS,VU} × Levels'
+  - name: nonleaf_vs
+    goal: Detect CBO on VS non-leaf PTE at L0
+    description: |-
+      Env: Level0 PTE with RWX=0.
+      Test Case: Execute CBO.
+    expectation: Page fault.
+    bins: '{VS,VU} × satp.mode'
+  - name: nonleaf_g
+    goal: Detect CBO on G non-leaf PTE at L0
+    description: |-
+      Env: G-stage level0 PTE with RWX=0.
+      Test Case: Execute CBO.
+    expectation: Page fault.
+    bins: '{VS,VU} × hgatp.mode'
+  - name: sum_effect_vs
+    goal: Verify SUM effects in VS-stage
+    description: |-
+      Env: PTE.U=1, SUM={0,1}.
+      Test Case: Issue CBO in VS-mode.
+    expectation: SUM=0 → page fault; SUM=1 → no fault.
+    bins: SUM={0,1}
+  - name: hu_effect_cbo
+    goal: Verify hstatus.HU allows U-mode CBO
+    description: |-
+      Env: hstatus.HU={0,1}.
+      Test Case: From U-mode issue CBO.
+    expectation: HU=1 → CBO permitted; HU=0 → illegal.
+    bins: HU={0,1}
+  - name: vs_access_bit
+    goal: Verify PTE.A handling in VS-stage for CBO
+    description: |-
+      Env: Leaf VS PTE.A=0. sfence.vma before.
+      Test Case: Execute CBO.
+    expectation: Page fault if Svade implemented.
+    bins: '{VS,VU} × satp.mode'
+  - name: g_access_bit
+    goal: Verify PTE.A handling in G-stage for CBO
+    description: |-
+      Env: Leaf G PTE.A=0.
+      Test Case: Execute CBO.
+    expectation: Page fault if Svade implemented.
+    bins: hgatp.mode
+  - name: vs_dirty_bit
+    goal: Verify PTE.D handling in VS-stage for CBO
+    description: |-
+      Env: Leaf VS PTE.D=0.
+      Test Case: Execute CBO.
+    expectation: No fault; CBO succeeds.
+    bins: '{VS,VU}'
+  - name: g_dirty_bit
+    goal: Verify PTE.D handling in G-stage for CBO
+    description: |-
+      Env: Leaf G PTE.D=0.
+      Test Case: Execute CBO.
+    expectation: No fault; CBO succeeds.
+    bins: hgatp.mode
+  - name: misaligned_superpage_vs
+    goal: Detect misaligned VS superpage with CBO
+    description: |-
+      Env: Leaf VS PTE with misaligned PPN.
+      Test Case: Execute CBO.
+    expectation: Page fault.
+    bins: '{levels L1–L4}'
+  - name: misaligned_superpage_g
+    goal: Detect misaligned G superpage with CBO
+    description: |-
+      Env: Leaf G PTE with misaligned PPN.
+      Test Case: Execute CBO.
+    expectation: Page fault.
+    bins: '{levels L1–L4}'
+  - name: leaf_invalid_pa_vs
+    goal: Detect invalid PA in VS PTE
+    description: |-
+      Env: VS leaf points to non-existent GPA.
+      Test Case: Execute CBO.
+    expectation: Store access fault.
+    bins: '{VS,VU}'
+  - name: leaf_invalid_pa_g
+    goal: Detect invalid PA in G PTE
+    description: |-
+      Env: G leaf points to non-existent SPA.
+      Test Case: Execute CBO.
+    expectation: Store access fault.
+    bins: hgatp.mode
+  - name: nonleaf_invalid_pa_vs
+    goal: Detect invalid PA in VS non-leaf
+    description: |-
+      Env: Non-leaf VS PTE invalid pointer.
+      Test Case: Execute CBO.
+    expectation: Store access fault.
+    bins: satp.mode
+  - name: nonleaf_invalid_pa_g
+    goal: Detect invalid PA in G non-leaf
+    description: |-
+      Env: Non-leaf G PTE invalid pointer.
+      Test Case: Execute CBO.
+    expectation: Store access fault.
+    bins: hgatp.mode
+  - name: dau_bits_vs
+    goal: Verify DAU bits set in VS non-leaf PTE
+    description: |-
+      Env: Non-leaf VS PTE with D/A/U set.
+      Test Case: Execute CBO.
+    expectation: Store/AMO page fault.
+    bins: '{D,A,U}'
+  - name: dau_bits_g
+    goal: Verify DAU bits set in G non-leaf PTE
+    description: |-
+      Env: Non-leaf G PTE with D/A/U set.
+      Test Case: Execute CBO.
+    expectation: Store/AMO page fault.
+    bins: '{D,A,U}'
+  - name: aliasing_vs_g
+    goal: Check aliasing across 2-stage
+    description: |-
+      Env: Map two GVAs to same SPA via VS+G.
+      Test Case: CBO on GVA1, probe via GVA2.
+    expectation: Both aliases affected.
+    bins: '{cbo.clean,cbo.flush,cbo.inval}'
+  - name: hfence_interaction
+    goal: Verify HFENCE with CBO
+    description: |-
+      Env: Modify VS/G tables; omit/insert HFENCE.VVMA/GVMA.
+      Test Case: Issue CBO post-modification.
+    expectation: Without HFENCE, stale ops; with HFENCE, correct.
+    bins: '{with fence, without fence}'
+  - name: vmid_reuse_cbo
+    goal: Check VMID reuse without flush
+    description: |-
+      Env: Run CBO under VMID1, reuse VMID for new mappings.
+      Test Case: Probe caches.
+    expectation: Without HFENCE, stale; with HFENCE, correct.
+    bins: '{reuse, fresh}'
+  - name: pmp_deny_spa
+    goal: PMP denies SPA for CBO
+    description: |-
+      Env: GPA valid, but PMP denies SPA.
+      Test Case: Execute CBO.
+    expectation: Store access fault.
+    bins: PMP deny bit

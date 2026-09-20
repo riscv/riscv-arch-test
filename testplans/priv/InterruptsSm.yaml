@@ -1,0 +1,180 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: InterruptsSm
+source: https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=0#gid=0
+description: |
+  Tests if Sm exists (not run for RVA23 certification)
+  Boot to MMODE, run tests in each supported priv mode of <M,S,U,VS,VU>
+  Reference model needs to know if each of the 10 types of interrupts are supported
+  menvcfg.STCE = 0 unless otherwise stated
+  mideleg = 0s unless otherwise stated.
+  mtvec.MODE uses boot value
+  RVTEST_SET_MTI_INT writes mtimecmp = 0 (with tsbi if necessary)
+  Define ways to cause all of the interrupts that are standard as much as possible, only need RV macros for special stuff
+setup:
+  columns:
+    - Sm
+    - S
+    - U
+    - VS
+    - VU
+  steps:
+    - step: setup_interrupts_sm
+      Sm: |-
+        write mstatus.MIE = {0/1}, SIE = {0/1}
+        write mideleg = {0s/1s}
+        write mie = 1s
+        write mtvec.MODE = {00, 01} if each supported
+      S: Same as Sm
+      U: Same as Sm
+      VS: '***'
+      VU: '***'
+    - step: trigger_interrupts <type>
+      Sm: |-
+        RVTEST_SET_<type>_INT_<priv>
+        RVTEST_IDLE_FOR_INTERRUPT to wait for interrupt
+        RVTEST_CLR_<type>_INT_<priv>
+      S: Same as Sm but with priv = S
+      U: Same as S but with priv = U
+    - step: Coverpoint
+      Sm: |-
+        mideleg<typ> = {0,  1 if UDB_<TYPE>_DELEGATION_SUPPORTED}
+        mie<type> = 1 if UDB_<TYPE>_SUPPORTED}
+        mstatus.MIE = {0/1}, SIE = 1 if S_SUPPORTED
+      S: Same as Sm
+      U: Same as S
+    - step: Expectation
+      Sm: <type> pending if UDB_<TYPE>_SUPPORTED and mideleg = 0, trap if MIE=1
+      S: <type> pending if UDB_<TYPE>_SUPPORTED, trap if SIE = 1
+      U: pending and trap if UDB_<TYPE>_SUPPORTED
+coverpoints:
+  - name: cp_trigger
+    goal: Assert each interrupt
+    description: |-
+      For <type> = {LCOFI, MTI, MSI, MEI, STI, SSI, SEI, VSTI, VSEI, VSSI}
+      setup_interrupts_sm
+      trigger_interrupts_<type>
+    expectation: |-
+      supported interrupts will fire if
+      - not delegted to a lower priv mode than the current mode
+      - enabled by MIE if running in M mode and not delegated
+    bins: 10 int * 5 priv * 2 MIE * 2 SIE * 2 vecMODE * 2 mideleg
+    rules:
+      - mstatus_mie_op
+      - mstatus_sie_op
+      - mstatus_xie_intr_en_dis
+      - mstatus_xpie_op
+      - mstatus_xpp_op
+      - mstatus_xpie_trap_op
+      - mstatus_xie_trap_op
+  - name: cp_trigger_reg
+    description: Same as cp_trigger, but use mip.SEIP, mip.SSIP, and sip.SSIP rather than macros.
+    expectation: same as above
+    bins: 3 int * 5 priv * 2 MIE * 2 SIE * 2 vecMODE * 2 mideleg
+  - name: cp_trigger_sti_sstc
+    goal: STI with SSTC
+    description: |-
+      if SSTC_SUPPORTED:
+      setup_interrupts_sm
+      write menvcfg.STCE = {0/1}
+      trigger_interrupts_SSTC
+    expectation: |-
+      STI should trigger if
+      STCE = 1
+      - when mideleg = 0, MIE = 1, running in M mode,
+      anytime running in non M mode,
+    bins: 5 priv * 2 STCE * 2 MIE * 2 SIE * 2 vecMODE * 2 mideleg
+  - name: cp_enable
+    goal: Enables control interrupts
+    description: |-
+      mideleg = 0 (if S_SUPPORTED)
+      write mstatus.MIE = 1
+      For <type> in <types above>:
+      mie = {1 in type, 1s everywhere except type}
+      RVTEST_SET_<type>_INT
+      RVTEST_IDLE_FOR_INT
+      RVTEST_CLR_<type>_INT
+    expectation: Interrupt if mie and mip match
+    bins: 10 int * 5 priv * 2 mie
+  - name: cp_priority_mip
+    goal: Priority of pending interrupts
+    description: |-
+      mideleg = 0 (if S_SUPPORTED)
+      write mstatus.MIE = 1
+      write mie = 0s
+      RVTEST_SET_<type>_INT (10 choose 2) pairs of mip.<TYPE1, TYPE2>
+      write mie = 1s
+      RVTEST_IDLE_FOR_INT
+      RVTEST_CLR_<type>_INT for both
+    expectation: if supported - higher priority interrupt will fire
+    bins: 45 int * 5 priv
+  - name: cp_priority_mie
+    goal: Priority of enabled interrupts
+    description: |-
+      mideleg = 0 (if S_SUPPORTED)
+      write mstatus.MIE = 1
+      write mie = 0s
+      RVTEST_SET_<type>_INT for all 10 types
+      write mie with two ones for all (10 choose 2) pairs
+      RVTEST_IDLE_FOR_INT
+      RVTEST_CLR_<type>_INT for all
+    expectation: if supported - higher priority enabled interrupt will fire
+    bins: 45 int * 5 priv
+  - name: cp_priority_mideleg
+    goal: Priority of delegated interrupts
+    description: |-
+      if S_SUPPORTED:
+      write mstatus.MIE = 1
+      write mie = 0s
+      RVTEST_SET_<type>_INT (10 choose 2) pairs of mip.<TYPE1, TYPE2>
+      mideleg = 0s except {1 in TYPE1, 1 in TYPE2} (one at a time)
+      write mie = 1s
+      RVTEST_IDLE_FOR_INT
+      RVTEST_CLR_<type>_INT for both
+    expectation: if supported - undelegated interrupt takes priority
+    bins: 21 int * 2 mideleg * 5 priv
+  - name: cp_wfi
+    goal: WFI waits until timer interrupt
+    description: |-
+      Only test if machine timer interrupts are supported
+      Do not test in U mode if S_SUPPORTED
+      mideleg = 0 (if S_SUPPORTED)
+      write mstatus.TW = 0 (also 1 in M-mode)
+      write mstatus.MIE = {0/1}
+      write mie.MTIE = 1
+      RVTEST_SET_MTI_SOON to set MTIMECMP = TIME + RVMODEL_TIMER_INT_SOON_DELAY
+      do {
+        WFI instruction
+      } until MTI has fired (see Zawrs)
+      RVTEST_CLR_MTI_INT
+    expectation: Wait for timer interrupt.  MIE, SIE and TW should not affect results.
+    bins: 4priv * 2 MIE + M mode * 2 MIE * 2 TW
+    rules:
+      - mstatus_tw_op
+  - name: cp_wfi_timeout
+    goal: WFI waits until timeout
+    description: |-
+      Only applies to modes < M
+      write mstatus.TW = 1 (also 0 in U-mode if S_SUPPORTED)
+      write mstatus.MIE = {0/1}
+      write mie.MTIE = {0/1}
+      WFI instruction
+    expectation: 'Note: may need sufficient Sail parameter to determine if we get illegal instruction or if WFI just retires.  Or may need to accept both behaviors.'
+    bins: 4 priv * 2 MIE * 2 MTIE
+    rules:
+      - mstatus_tw_op
+      - mstatus_tw_umode_op
+      - MSTATUS_TW_TIME_LIMIT
+      - MSTATUS_TW_ALWAYS_ILLEGAL
+  - name: cp_write_stip_sstc
+    goal: test STIP writability when SSTC supported
+    description: |-
+      if SSTC_SUPPORTED:
+      In M mode
+      mideleg = 0
+      mie = 0s
+      Write menvcfg.STCE = 1
+      Write stimecmp = 0s/1s x mip.STIP = {0/1}
+      Read back STIP & sigupd
+      Clear STIP through stimecmp
+    expectation: mip.STIP is controlled by stimecmp, ignores writes.
+    bins: 2 stimecmp x 2 STIP

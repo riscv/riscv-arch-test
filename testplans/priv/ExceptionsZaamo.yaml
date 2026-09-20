@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: ExceptionsZaamo
+source: https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=2143559149#gid=2143559149
+coverpoints:
+  - name: cp_amo_address_misaligned
+    goal: AMO Misaligned
+    description: |-
+      Misaligned amoswap.w, amoadd.w, amoxor.w, amoand.w, amoor.w, amomin.w, amomax.w, amominu.w, amomaxu.w.  RV64: also .d.  Zabha: also .h, .b.
+
+      Use all offsets up to MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE+1.  This inherently tests Zama16b if it is supported.
+    expectation: May produce misaligned or access fault or may succeed
+    bins: up to (9*4) instr * 32 lsbs
+  - name: cp_amo_access_fault
+    goal: AMO Access Fault
+    description: 'Access fault on amoswap.w, amoadd.w, amoxor.w, amoand.w, amoor.w, amomin.w, amomax.w, amominu.w, amomaxu.w.  RV64: also .d.  Zabha: also .h, .b.'
+    expectation: Access Fault.
+    bins: up to (9*4) instr

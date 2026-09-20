@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: UV
+source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1488477674#gid=1488477674
+coverpoints:
+  - name: cp_vucsrwalk
+    goal: CSR access
+    description: 'Set and clear each bit of each writable CSR to exercise bitfields: vxrm, vxsat, vcsr. vstart'
+  - name: cp_vucsraccess
+    goal: CSR access
+    description: 'csr read, write all 1s, write all 0s, set all 1s, clear all 1s, write back inital value of each register: vxrm, vxsat, vcsr, vstart, vtype, vlenb, vl'
+    expectation: vtype, vlenb, vl are read-only and will throw illegal instruction if written
+  - heading: See also SmV in Vector spreadsheet
+  - heading: Attempt these tests in user mode unless otherwise specified

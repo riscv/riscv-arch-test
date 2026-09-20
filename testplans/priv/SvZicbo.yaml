@@ -1,0 +1,316 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SvZicbo
+source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=45572429#gid=45572429
+coverpoints:
+  - name: PTE_inv_cbo
+    goal: In-Valid Permission of PTE
+    description: |-
+      If PTE does not have Valid (pte.V=0) permission, then accessing it would raise store page fault exception.
+
+      Test in supervisor and user privilege mode for PTE at all levels
+      Test Environment:
+       Set satp.mode=sv32, sv39, sv48 & sv57
+       All PMP permissions on targated pages
+
+      Test Cases:
+      Set PTE.V = 0
+       Set PTE.W=1 & PTE.R=1 and test the write access on cache block.
+
+      Note:
+       For testing of leaf PTE at level0, set all the pte perimssions at other levels to 0 except PTE.V, so that non-leaf level points to level0
+      Set pte.U=0 when test in Supervisor mode and Set pte.U=1 when testing in user mode
+    expectation: store/AMO page fault raised
+    check: Check against RM
+    status: Done
+    coverage: Uncovered
+    notes: 'feature: Exceptions'
+  - name: PTE_res_rwx_cbo
+    goal: Reserved RWX permission encodings of PTE
+    description: |-
+      If PTE has reserved RWX encodings (pte.w=1 & pte.r=0), then accessing it would raise page fault exception.
+
+      Test in supervisor and user mode for leaf PTE at all levels
+      Test Environemnt
+      Set satp.mode=sv32, sv39, sv48, & sv57
+      All PMP permissions on targated pages
+      Valid leaf PTE
+
+      Test Cases:
+       Set PTE.W=1 & PTE.R=0 and test the write access on cache block.
+
+      Note:
+       For testing at level0, set all the pte perimssions at other levels to 0 except PTE.V, so that non-leaf level points to level0
+      Set pte.U=0 when test in Supervisor mode and Set PTE.U=1 when testing in user mode
+    expectation: store/AMO page fault raised
+    check: Check against RM
+    status: Done
+    coverage: Uncovered
+  - name: PTE_nonleaf_lvl0_cbo
+    goal: Non-leaf PTE permission at level 0.
+    description: |-
+      If PTE at level0 has non-leaf RWX permissions (pte.x=0 & pte.r=0), then accessing it would raise page fault exception.
+
+      Test in supervisor and user privilege mode for level0 PTE.
+      Test Environment:
+      Set satp.mode=sv32, sv39, sv48 & sv57
+      All PMP permissions on targated pages
+      Valid leaf PTE at level0, with no invalid RWX encoding
+
+      Test Cases:
+      Set PTE.X=0 & PTE.R=0 & PTE.W=0 and test the write access on cache block.
+
+      Note:
+       For testing at level0, set all the pte perimssions at other levels to 0 except PTE.V, so that non-leaf level points to level0
+      Set pte.U=0 when test in Supervisor mode and Set pte.U=1 when testing in user mode
+    expectation: store/AMO page fault raised
+    check: Check against RM
+    status: Done
+    coverage: Uncovered
+  - name: PTE_r_set_w_unset_zicbom_s
+    goal: Execute Zicbom instructions on S-mode pages with R=1 & W=0 in S-mode with s/mstatus.SUM set & unset
+    description: |-
+      If PTE belongs to supervisor mode i.e. its U permission bit is clear (pte.u = 0), then accessing that PTE in supervisor mode should be successful if the corresponding R or W permission of PTE is granted. Otherwise raise store page fault exception.
+
+      When PTE has all PMP permissions, PTE has non-reserved W encoding, pte.u=0 and pte.v=1, then test the following in supervisor privilege mode for all level of PTE.
+
+       Test zicbom access for PTE.R=1 & PTE.W=0 with s/mstatus.SUM = 1 on cache block
+       Test zicbom access for PTE.R=1 & PTE.W=0 with s/mstatus.SUM = 0 on cache block
+
+      * For testing at level0, set all the pte perimssions at higher level to 0 except pte.v, so that non-leaf level points to level0
+    expectation: No fault expected
+    check: Check against RM
+    status: Done
+    coverage: Uncovered
+  - name: PTE_r_set_w_unset_zicbom_u
+    goal: Execute Zicbom instructions on U pages with R=1 & W=0 in U-mode
+    description: |-
+      If PTE belongs to user mode i.e. its U permission bit is set (pte.u = 1), then accessing that PTE in user mode should be successful if the corresponding R or W permission of PTE is granted. Otherwise raise store page fault exception.
+
+      When PTE has all PMP permissions, PTE has non-reserved W encoding, pte.u=1 and pte.v=1, then test the following in user privilege mode for all level of PTE.
+
+       Test zicbom access for PTE.R=1 & PTE.W=0  on cache block
+
+      * For testing at level0, set all the pte perimssions at higher level to 0 except pte.v, so that non-leaf level points to level0
+    expectation: No fault expected
+    check: Check against RM
+    status: Done
+    coverage: Uncovered
+  - name: PTE_rw_unset_zicbom
+    goal: Test Zicbom access for PTE.R=0 & PTE.W=0 in S & U modes
+    description: |-
+      If PTE belongs to supervisor mode i.e. its U permission bit is clear (pte.u = 0), then accessing that PTE in supervisor mode should be successful if the corresponding R or W permission of PTE is granted. Otherwise raise store page fault exception.
+
+      Test Environment:
+      Test in supervisor and user privilege mode for PTE at all levels
+       Set satp.mode=sv32, sv39, sv48 & sv57
+       All PMP permissions on targated pages
+
+      Test zicbom access for PTE.R=0 & PTE.W=0 on cache block
+
+      * For testing at level0, set all the pte perimssions at higher level to 0 except pte.v, so that non-leaf level points to level0.
+    expectation: store/AMO page fault raised
+    check: Check against RM
+    status: Done
+    coverage: Uncovered
+  - name: PTE_w_unset_zicboz
+    goal: Test Zicboz access for PTE.W=0 in S & U modes
+    description: |-
+      If PTE belongs to supervisor mode i.e. its U permission bit is clear (pte.u = 0), then accessing that PTE in supervisor mode should be successful if the corresponding R or W permission of PTE is granted. Otherwise raise store page fault exception.
+
+      Test Environment:
+      Test in supervisor and user privilege mode for PTE at all levels
+       Set satp.mode=sv32, sv39, sv48 & sv57
+       All PMP permissions on targated pages
+
+      Test zicboz access for PTE.W=0 on cache block
+
+      * For testing at level0, set all the pte perimssions at higher level to 0 except pte.v, so that non-leaf level points to level0.
+    expectation: store/AMO page fault raised
+    check: Check against RM
+    status: Done
+    coverage: Uncovered
+  - name: spage_rwx_cbo_u
+    goal: CBO access on S-mode pages in U-mode
+    description: |-
+      If PTE belongs to supervisor mode i.e. its U permission bit is clear (pte.u = 0), then accessing that PTE in supervisor mode should be successful if the corresponding W permission of PTE is granted. Otherwise raise store page fault exception.
+
+      Test in user privilege mode for leaf PTE on all levels
+      Test Environment:
+      Set satp.mode=sv32, 39, 48 & 57
+      All PMP permissions on targated pages if PMP is enabled if PMP is enabled
+      Valid leaf PTE, with no invalid RWX encoding
+
+      Test Cases:
+       Set PTE.U=0 and test the execution of cbo instructions in U-mode
+
+      Note:
+       For testing at level0, set all the pte perimssions at higher levels to 0 except PTE.V, so that non-leaf level points to level0.
+      For write access set PTE.W=1 and PTE.R=1
+    expectation: store/AMO page fault raised
+    check: Check against RM
+    status: Done
+    coverage: Uncovered
+  - name: upage_sumunset_cbo_s
+    goal: CBO access on U-mode pages in S-mode with s/mstatus.SUM unset
+    description: |-
+      If PTE belongs to user mode i.e. its U permission bit is set (pte.u = 1) and m/sstatus.SUM = 0, then accessing that PTE in supervisor mode would raise page fault exception.
+
+      Test in supervisor privilege mode for leaf PTE on all levels
+      Test Environment:
+       Set satp.mode=sv32, 39, 48 and 57
+       All PMP permissions on targated pages if PMP is enabled
+       Valid leaf PTE, with no invalid RWX encoding
+
+      Test Cases:
+       Set PTE.U=1 & s/mstatus.SUM = 0 and execute cbo instructions in S-mode
+
+      Note:
+       For testing at level0, set all the pte perimssions at higher levels to 0 except PTE.V, so that non-leaf level points to level0.
+      For write access set PTE.W=1 and PTE.R=1
+    expectation: store/AMO page fault raised
+    check: Check against RM
+    status: Done
+    coverage: Uncovered
+  - name: Abit_unset_cbo
+    goal: Access bit implementation for CBO instructions
+    description: |-
+      If implementation does not sets the pte.A on accessing the PTE, and PTE has pte.A=0, then accessing it would raise page fault exception.
+
+       Set satp.mode=sv32, 39, 48 and 57
+      Test in supervisor and user privilege mode for PTE at all levels
+       All PMP permissions on targated pages if PMP is enabled
+       Valid leaf PTE, with no invalid RWX encoding
+
+      Test Cases:
+       Set PTE.R=1 and PTE.W=1 & PTE.A=0 and execute CBO instructions
+
+      Note:
+       For testing at level0, set all the pte perimssions at higher levels to 0 except PTE.v, so that non-leaf level points to level0.
+       Set PTE.U=0 when test in Supervisor mode and Set pte.U=1 when testing in user mode.
+    expectation: store/AMO page fault raised If Svade is implemented
+    check: Check against RM
+    status: Done
+    coverage: Uncovered
+  - name: Dbit_unset_zicbom
+    goal: Dirty bit Implementation for Zicbom instructions
+    description: |-
+      A Zicbom instruction does not check the dirty bit and neither raises an exception nor sets the bit
+
+      Test Environment:
+      Test in supervisor and user privilege mode for leaf PTE on all levels.
+       Set satp.mode=sv32, 39, 48 and 57.
+       All PMP permissions on targated pages if PMP is enabled
+      PTE.V = 1, PTE.A = 1, with no invalid RWX encoding
+
+      Test Case:
+       Set PTE.R= 1, PTE.W=1, PTE.A=1 & PTE.D=0 and execute Zicbom instructions
+
+      Note:
+       For testing at level0, set all the pte perimssions at higher levels to 0 except PTE.V, so that non-leaf level points to level0.
+      Set PTE.U=0 when test in Supervisor mode and Set pte.U=1 when testing in user mode.
+    expectation: No fault expected
+    check: Check against RM
+    status: Done
+    coverage: Uncovered
+  - name: Dbit_unset_zicboz
+    goal: Dirty bit Implementation for Zicboz instructions
+    description: |-
+      A Zicboz instruction checks the dirty bit and may raise an exception and set the bit as required
+
+      Test Environment:
+      Test in supervisor and user privilege mode for leaf PTE on all levels.
+       Set satp.mode=sv32, 39, 48 and 57.
+       All PMP permissions on targated pages if PMP is enabled
+      PTE.V = 1, PTE.A = 1, with no invalid RWX encoding
+
+      Test Case:
+       Set PTE.R= 1, PTE.W=1, PTE.A=1 & PTE.D=0 and execute Zicboz instruction
+
+      Note:
+       For testing at level0, set all the pte perimssions at higher levels to 0 except PTE.V, so that non-leaf level points to level0.
+      Set PTE.U=0 when test in Supervisor mode and Set pte.U=1 when testing in user mode.
+    expectation: store/AMO page fault raised
+    check: Check against RM
+    status: Done
+    coverage: Uncovered
+  - name: misaligned_page_cbo
+    goal: Misaligned Superpage
+    description: |-
+      If PTE at level-i is leaf PTE (superpage) and its pte.ppn[i-1:0]!=0, then it is a misaligned superpage and accessing that PTE would raise page fault exception of the corresponding access type.
+
+      Test Environment:
+      Test in supervisor and user privilege mode.
+      Set satp.mode = sv32, 39, 48, and 57
+       All PMP permissions on targated pages if PMP is enabled
+       Valid leaf PTE, with no invalid RWX encoding.
+
+      Test Cases:
+      For leaf PTE at level4 set pte.ppn[3:0] != 0 and test for write access. (For sv57) on cache block
+      For leaf PTE at level3 set pte.ppn[2:0] != 0 and test for write access. (For sv48 & 57) on cache block
+       For leaf PTE at level2 set pte.ppn[1:0] != 0 and test for write access. (For sv39, 48 & 57) on cache block
+       For leaf PTE at level1 set pte.ppn[0] != 0 and test for write access. (For sv32, 39, 48 & 57) on cache block
+
+      Note:
+       Set pte.U=0 when test in Supervisor mode and Set pte.U=1 when testing in user mode.
+    expectation: store/AMO page fault raised
+    check: Check against RM
+    status: Done
+    coverage: Uncovered
+  - name: leaf_PTE_to_nonexistant_pa_cbo
+    goal: Leaf PTE points to invalid Physical Address
+    description: |-
+      If PTE points to a non existant physical address, it will raise a store access fault when CBO instructions are executed.
+
+      Test Environment:
+      Test in supervisor and user privilege mode on all levels.
+      Set satp.mode = sv32, 39, 48, and 57
+       All PMP permissions on targated pages if PMP is enabled
+       Valid leaf PTE, with no invalid RWX encoding.
+
+      Test Cases:
+      Execute CBO instructions using VA with leaf PTE pointing to non existant PA
+
+      Note:
+       For testing at level0, set all the pte perimssions at higher levels to 0 except PTE.V, so that non-leaf level points to level0.
+    expectation: store access fault raised
+    check: Check against RM
+    status: Done
+    coverage: Uncovered
+  - name: nonleaf_PTE_to_nonexistant_pa_cbo
+    goal: Non-leaf PTE points to invalid Physical Address
+    description: |-
+      If a non-leaf PTE points to a non existant physical address, it will raise a store access fault during the page table walk.
+
+      Test in supervisor and user privilege mode.
+      Test Environment:
+      Set satp.mode = sv32, 39, 48, and 57
+       All PMP permissions on targated pages if PMP is enabled
+       Valid leaf PTE, with no invalid RWX encoding.
+
+      Test Cases:
+      Execute CBO instructions using VA with non leaf PTE pointing to non existant PA instead of the next page table.
+
+      Note:
+       For testing at level0, set all the pte perimssions at higher levels to 0 except PTE.V, so that non-leaf level points to level0.
+    expectation: store access fault raised
+    check: Check against RM
+    status: Done
+    coverage: Uncovered
+  - name: PTE_nonleaf_DAU_cbo
+    goal: Set DAU bits for Non-leaf PTE
+    description: |-
+      If a non-leaf PTE has D, A or U bits set, it will result in a store page fault.
+      Test in supervisor and user privilege mode for all levels.
+      Test Environment:
+      Set satp.mode = sv32, 39, 48, and 57
+       All PMP permissions on targated pages if PMP is enabled
+       Valid leaf PTE, with no invalid RWX encoding.
+
+      Test Cases:
+      Execute CBO instructions using VA with non leaf PTE having D bit set.
+      Execute CBO instructions using VA with non leaf PTE having A bit set.
+      Execute CBO instructions using VA with non leaf PTE having U bit set.
+    expectation: store/AMO page fault raised
+    check: Check against RM
+    status: Done
+    coverage: Uncovered

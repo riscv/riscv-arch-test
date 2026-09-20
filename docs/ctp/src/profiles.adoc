@@ -134,6 +134,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |PMPZalrsc|LR/SC PMP|<<t-PMPZalrsc-coverpoints>>|||x|x|x
 |Svbare|No Virtual Memory|<<t-Svbare-coverpoints>>|||x|x|x
 |Sv|Sv32/39/48/57 Virtual Memory|<<t-Sv-coverpoints>>|||x|x|x
+|SvSm|Machine-Mode Virtual Memory|<<t-SvSm-coverpoints>>|||x|x|x
 |Svinval|TLB Invalidation|<<t-Svinval-coverpoints>>|||x|x|x
 |SvPMP|VM + PMP|<<t-SvPMP-coverpoints>>|||x|x|x
 |SvZicbo|VM + CBOM/CBOZ|<<t-SvZicbo-coverpoints>>|||x|x|x
@@ -143,6 +144,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |SvaduPMP|Page Table Update + PMP|<<t-SvaduPMP-coverpoints>>||||o|o
 |Svpbmt|Page-based Memory Types|<<t-Svpbmt-coverpoints>>|||x|x|x
 |Svnapot|Naturally Aligned Pages|<<t-Svnapot-coverpoints>>|||o|x|x
+|Svukte|User Kernel Translation Enable|<<t-Svukte-coverpoints>>|||o|o|o
 |Sscofpmf|Counter Filtering|<<t-Sscofpmf-coverpoints>>|||o|x|x
 |Ssstateen|Supervisor State Enable|<<t-Ssstateen-coverpoints>>|||o||x
 |Ssu64xl|64-bit UXL|<<t-Ssu64xl-coverpoints>>|||o|x|x

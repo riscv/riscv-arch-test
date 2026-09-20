@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Shcounterenw
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=359491363#gid=359491363
+coverpoints:
+  - heading: Following tests are done in HS-mode
+  - name: cp_shcounterenw
+    goal: which hcounteren bits are writable
+    description: Write a 0 and a -1 to hcounteren.
+    expectation: |-
+      0 writes 32 bits of 0
+      -1 writes 1s to every bit with a non-read-only-zero hpmcounter, matching ref model
+    bins: '2'
+    rules:
+      - For any hpmcounter that is not read-only zero, the corresponding bit in hcounteren must be writable.
+  - heading: check that hcounteren works with mcounteren and scounteren to control access to counters from lower privilege modes.

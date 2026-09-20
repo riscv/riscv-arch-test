@@ -22,7 +22,7 @@ Attempt to issue all flavors of 32-bit instructions in the standard and reserved
 
 According to the RVA23 profile spec, the illegal instruction should be cause a trap to the supervisor trap handler.  However, delegation is the business of the firmware, not the hardware.  These tests only check that a trap occurs and matches the reference model.
 
-include::{privtestplansdir}/SsstrictS.adoc[]
+include::{testplansdir}/priv/SsstrictS.adoc[]
 include::norm/SsstrictS_norm_rules.adoc[]
 
 ==== SsstrictU

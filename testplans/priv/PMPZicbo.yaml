@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: PMPZicbo
+source: https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1958410505#gid=1958410505
+coverpoints:
+  - heading: "See PMPM for general information.\nTests run in M mode.\nmenvcfg.CBIE, CBCFE, CBZE = 1\nNote: if PMP is not the same for all physical addresses in block, behavior is unspecified and hence misaligned cbos are untested."
+  - name: cp_cbo
+    goal: |-
+      A cache-block zero instruction is permitted to access the specified cache block whenever a store instruction is permitted to access the corresponding physical address...
+      A cache-block management instruction is permitted to access the specified cache block whenever a load instruction or store instruction is permitted to access the corresponding physical address. ... If access to the cache block is not permitted ... raises a store access fault exception"
+    description: |-
+      Check that WR bits control access for cbo.*.
+      Attempt all {cbo.zero, cbo.flush, cbo.clean, cbo.inval} with pmpcfg_i.L=1, pmpcfg_i.WR = {00/01/11}, pmpcfg_i.X=0 at start of 4 KB region plenty long to encompass a cache line.
+      cbo.zero: observe store access faults for W=0 regions
+      others: observe store access fault for R=0 regions
+    bins: 3 WR * 4 instructions
+  - name: cp_prefetch
+    goal: If access to the cache block is not permitted, a cache-block prefetch instruction does not raise any exceptions and shall not access any caches or memory.
+    description: |-
+      Check that XWR bits control access for prefetch.
+      Attempt {prefetch.i/w/r} with pmpcfg_i.L=1, legal pmpcfg_i.XWR, at start of 4 KB region plenty long to encompass a cache line.
+      No exceptions should be raised.
+    bins: 6 XWR * (3 ops)

@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Ss1p13
+source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=108970394#gid=108970394
+coverpoints:
+  - name: cp_sxlen_ge_uxlen
+    goal: sxlen > uxlen
+    description: From S-mode, attempt to set sstatus.UXL = (1, 2)
+    expectation: Can't write 2 unless SXL is also 2 (64 b)
+    bins: '2'
+    rules:
+      - If S-mode is implemented, the set of legal values that the UXL field may assume excludes those that would cause UXLEN to be greater than SXLEN.
+  - name: |-
+      NOTE : Already covered in cp_scause_write_exception
+
+      cp_scause
+    goal: scause accepts sofware-check and hardware error
+    description: Write scause = 18, 19, read back
+    expectation: Match ref model
+    bins: '2'
+  - heading: 'NOTE : Tests and coverage files are under the S.py and S_coverage.svh respectvely wth the guard of  `ifdef SS1P13_SUPPORTED'

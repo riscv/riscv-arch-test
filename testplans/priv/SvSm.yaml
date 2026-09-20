@@ -1,0 +1,142 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SvSm
+source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=669910453#gid=669910453
+coverpoints:
+  - heading: "General Test Environment (SvSm):\n- Sm suite: boots to M-mode (BOOT_TO_MMODE) because each coverpoint needs M-mode state (mstatus.MPRV/MPP, mstatus.TVM, mstatus.SBE or an M-mode CSR access). Mode changes use RVTEST_TSBI_GOTO_*.\n- These coverpoints were split out of Sv. Faults taken in M-mode are sampled from mcause.\n- Run for every supported translation mode: Sv32 on RV32; Sv39, Sv48 and Sv57 on RV64, as selected by the UDB configuration.\n- Split from Sv: the M-mode half of cp_access_m_s (now cp_access_m) and all of Sv_mstatus_mprv_cg."
+  - name: cp_access_m
+    goal: Verify satp is readable and writable from M-mode with csrrw, csrrs and csrrc
+    description: 'Sv32 and Sv39 configurations, M-mode: csrrw satp with 1, csrrs with 2, csrrc with 1, reading satp back after each.'
+    expectation: No exception; each read returns the value produced by the write.
+    bins: |-
+      cp_ins x Mcause x tvm_mstatus x mode {M-mode}
+      = 3 bins on RV64, 3 on RV32
+    id: satp_sz satp_acc satp_op satp_mode
+    rules:
+      - '[norm:satp_sz] [norm:satp_acc] [norm:satp_op] [norm:satp_mode]'
+  - name: cp_tvm_exception_s
+    goal: Verify mstatus.TVM=1 makes satp accesses and SFENCE.VMA illegal in S-mode
+    description: 'M-mode: set mstatus.TVM, read mstatus back and write satp = 0. Switch to S-mode with RVTEST_TSBI_GOTO_SMODE, execute csrw, csrs and csrc on satp and sfence.vma, then return with RVTEST_TSBI_GOTO_MMODE.'
+    expectation: Illegal-instruction exception (mcause = 2) for each instruction.
+    bins: |-
+      tvm_mstatus x Mcause x cp_ins x mode {S-mode}
+      = 4 bins on RV64, 4 on RV32
+    id: mstatus_tvm_op MSTATUS_TVM_WARL
+    rules:
+      - '[norm:mstatus_tvm_op] [norm:MSTATUS_TVM_WARL]'
+  - name: cp_mprv_load
+    goal: Verify MPRV=1 translates M-mode loads as if in the MPP mode
+    description: 'M-mode: map va_data at every page-table level (4 KiB page and each superpage size of the Sv mode) (supervisor page for MPP=S, user page for MPP=U). Set mstatus.MPRV=1 with MPP=S, then MPP=U, and load (lw) through va_data. Clear MPRV afterwards.'
+    expectation: No fault; the load is translated through va_data.
+    bins: |-
+      mprv_mstatus x mpp_mstatus x read_acc x satp_mode x mode {M-mode}
+      = 6 bins on RV64, 2 on RV32
+    id: satp_op_active mstatus_mprv_ldst_op
+    rules:
+      - '[norm:satp_op_active] [norm:mstatus_mprv_ldst_op]'
+  - name: cp_mprv_store
+    goal: Verify MPRV=1 translates M-mode stores as if in the MPP mode
+    description: 'M-mode: map va_data at every page-table level (4 KiB page and each superpage size of the Sv mode) (supervisor page for MPP=S, user page for MPP=U). Set mstatus.MPRV=1 with MPP=S, then MPP=U, and store (sw) through va_data. Clear MPRV afterwards.'
+    expectation: No fault; the store is translated through va_data.
+    bins: |-
+      mprv_mstatus x mpp_mstatus x write_acc x satp_mode x mode {M-mode}
+      = 6 bins on RV64, 2 on RV32
+    id: satp_op_active mstatus_mprv_ldst_op
+    rules:
+      - '[norm:satp_op_active] [norm:mstatus_mprv_ldst_op]'
+  - name: cp_mprv_ins
+    goal: Verify MPRV=1 does not translate M-mode instruction fetches
+    description: 'M-mode with mstatus.MPRV=1 and MPP=S, then MPP=U: jump (jalr) to the physical address of the test page.'
+    expectation: The fetch uses the physical address and does not fault.
+    bins: |-
+      mprv_mstatus x mpp_mstatus x exec_acc x satp_mode x mode {M-mode}
+      = 6 bins on RV64, 2 on RV32
+    id: mstatus_mprv_inst_xlat_op
+    rules:
+      - '[norm:mstatus_mprv_inst_xlat_op]'
+  - name: PTE_upage_i
+    goal: Verify a user leaf PTE is observed on the instruction side during the MPRV tests
+    description: Sampled when an instruction fetch walks a user leaf PTE (U=1) during the MPRV/SUM tests.
+    expectation: A valid user leaf PTE (U=1) is seen by the fetch.
+    bins: |-
+      PTE_upage_i {leaflvl_u}
+      = 1 bins on RV64, 1 on RV32
+  - name: cp_mprv_upage_smode_sumunset_noread
+    goal: Verify an M-mode load with MPRV=1, MPP=S to a user page faults when mstatus.SUM=0
+    description: 'M-mode with MPRV=1, MPP=S and mstatus.SUM=0: user leaf PTE (U=1) at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data.'
+    expectation: Load page fault (mcause = 13); mtval = faulting virtual address.
+    bins: |-
+      mprv_mstatus x mpp_mstatus x read_acc x PTE_upage_d x PageType_d x load_page_fault x sum_sstatus x mode {M-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: mstatus_sum_op mstatus_sum_op_mprv_mpp mtval_vaddr_wr1
+    rules:
+      - '[norm:mstatus_sum_op] [norm:mstatus_sum_op_mprv_mpp] [norm:mtval_vaddr_wr1]'
+  - name: cp_mprv_upage_smode_sumunset_nowrite
+    goal: Verify an M-mode store with MPRV=1, MPP=S to a user page faults when mstatus.SUM=0
+    description: 'M-mode with MPRV=1, MPP=S and mstatus.SUM=0: user leaf PTE (U=1) at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data.'
+    expectation: Store/AMO page fault (mcause = 15); mtval = faulting virtual address.
+    bins: |-
+      mprv_mstatus x mpp_mstatus x write_acc x PTE_upage_d x PageType_d x store_page_fault x sum_sstatus x mode {M-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: mstatus_sum_op mstatus_sum_op_mprv_mpp mtval_vaddr_wr1
+    rules:
+      - '[norm:mstatus_sum_op] [norm:mstatus_sum_op_mprv_mpp] [norm:mtval_vaddr_wr1]'
+  - name: cp_mprv_upage_smode_sumunset_noexec
+    goal: Verify MPRV=1, MPP=S with mstatus.SUM=0 does not affect M-mode instruction fetch
+    description: 'M-mode with MPRV=1, MPP=S and SUM=0, user page (U=1) mapped at va_data: jump (jalr) to the physical address of the page.'
+    expectation: 'No fault: instruction fetch ignores MPRV.'
+    bins: |-
+      mprv_mstatus x mpp_mstatus x exec_acc x PageType_i x sum_sstatus x mode {M-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: mstatus_sum_op mstatus_sum_op_mprv_mpp
+    rules:
+      - '[norm:mstatus_sum_op] [norm:mstatus_sum_op_mprv_mpp]'
+  - name: cp_mprv_upage_smode_sumset_exec
+    goal: Verify MPRV=1, MPP=S with mstatus.SUM=1 does not affect M-mode instruction fetch
+    description: 'M-mode with MPRV=1, MPP=S and SUM=1, user page (U=1) mapped at va_data: jump (jalr) to the physical address of the page.'
+    expectation: 'No fault: instruction fetch ignores MPRV.'
+    bins: |-
+      mprv_mstatus x mpp_mstatus x exec_acc x PageType_i x sum_sstatus x mode {M-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: mstatus_sum_op mstatus_sum_op_mprv_mpp
+    rules:
+      - '[norm:mstatus_sum_op] [norm:mstatus_sum_op_mprv_mpp]'
+  - name: cp_mprv_upage_smode_sumset_read
+    goal: Verify an M-mode load with MPRV=1, MPP=S to a user page succeeds when mstatus.SUM=1
+    description: 'M-mode with MPRV=1, MPP=S and mstatus.SUM=1: user leaf PTE (U=1) at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data.'
+    expectation: No fault.
+    bins: |-
+      mprv_mstatus x mpp_mstatus x read_acc x PTE_upage_d x PageType_d x sum_sstatus x mode {M-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: mstatus_sum_op mstatus_sum_op_mprv_mpp
+    rules:
+      - '[norm:mstatus_sum_op] [norm:mstatus_sum_op_mprv_mpp]'
+  - name: cp_mprv_upage_smode_sumset_write
+    goal: Verify an M-mode store with MPRV=1, MPP=S to a user page succeeds when mstatus.SUM=1
+    description: 'M-mode with MPRV=1, MPP=S and mstatus.SUM=1: user leaf PTE (U=1) at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data.'
+    expectation: No fault.
+    bins: |-
+      mprv_mstatus x mpp_mstatus x write_acc x PTE_upage_d x PageType_d x sum_sstatus x mode {M-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: mstatus_sum_op mstatus_sum_op_mprv_mpp
+    rules:
+      - '[norm:mstatus_sum_op] [norm:mstatus_sum_op_mprv_mpp]'
+  - name: cp_mstatus_sbe_read
+    goal: Verify page-table walks use big-endian PTEs when mstatus.SBE=1 (load)
+    description: NORUN until a big-endian configuration exists. M-mode sets mstatus.SBE (mstatush.SBE on RV32) and writes the walk, leaf and identity-map PTEs big-endian, at every page-table level (4 KiB page and each superpage size of the Sv mode). S-mode then does the load through va_data (also with SUM=1 on a user page).
+    expectation: No fault; the walk interprets the big-endian PTEs.
+    bins: |-
+      read_acc x PTE_sbe_d x PageType_d x sbe_mstatus
+      = 28 bins on RV64, 8 on RV32
+    id: MSTATUS_SBE_WARL MSTATUSH_SBE_WARL mstatus_sbe_implicit
+    rules:
+      - '[norm:MSTATUS_SBE_WARL] [norm:MSTATUSH_SBE_WARL] [norm:mstatus_sbe_implicit]'
+  - name: cp_mstatus_sbe_write
+    goal: Verify page-table walks use big-endian PTEs when mstatus.SBE=1 (store)
+    description: NORUN until a big-endian configuration exists. M-mode sets mstatus.SBE (mstatush.SBE on RV32) and writes the walk, leaf and identity-map PTEs big-endian, at every page-table level (4 KiB page and each superpage size of the Sv mode). S-mode then does the store through va_data (also with SUM=1 on a user page).
+    expectation: No fault; the walk interprets the big-endian PTEs.
+    bins: |-
+      write_acc x PTE_sbe_d x PageType_d x sbe_mstatus
+      = 28 bins on RV64, 8 on RV32
+    id: MSTATUS_SBE_WARL MSTATUSH_SBE_WARL mstatus_sbe_implicit
+    rules:
+      - '[norm:MSTATUS_SBE_WARL] [norm:MSTATUSH_SBE_WARL] [norm:mstatus_sbe_implicit]'

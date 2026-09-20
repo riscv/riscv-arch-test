@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Privileged test plan",
+  "description": "One privileged test suite: its coverpoints and the prose around them. Rendered into the CTP by generators/ctp/generate_priv_testplans.py.",
+  "type": "object",
+  "required": [
+    "suite",
+    "coverpoints"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "suite": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_]+$",
+      "description": "Suite name, e.g. InterruptsSm; must match the covergroup <suite>_cg and coverpoints/norm/<suite>.yaml."
+    },
+    "title": {
+      "type": "string",
+      "description": "Table caption; defaults to '<suite> Coverpoints'."
+    },
+    "source": {
+      "type": "string",
+      "description": "Where this plan came from (URL of the spreadsheet tab it was converted from)."
+    },
+    "description": {
+      "type": "string",
+      "description": "AsciiDoc prose placed before the tables."
+    },
+    "setup": {
+      "type": "object",
+      "description": "Optional per-privilege-mode setup table.",
+      "required": [
+        "columns",
+        "steps"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "step"
+            ],
+            "properties": {
+              "step": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "string",
+      "description": "AsciiDoc prose placed between the setup table and the coverpoints."
+    },
+    "coverpoints": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "heading"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "heading": {
+                "type": "string",
+                "description": "A full-width group heading row."
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Coverpoint name (cp_...); several names may be listed on separate lines when one row covers several coverpoints."
+              },
+              "goal": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "expectation": {
+                "type": "string"
+              },
+              "bins": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "rules": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Normative rules not already mapped to this coverpoint in coverpoints/norm/<suite>.yaml."
+              },
+              "check": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              },
+              "coverage": {
+                "type": "string"
+              },
+              "notes": {
+                "type": "string"
+              }
+            },
+            "description": "A coverpoint row; rows without a name carry review notes about a coverpoint that was folded into another."
+          }
+        ]
+      }
+    }
+  }
+}

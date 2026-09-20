@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: ExceptionsZc
+source: https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=538759067#gid=538759067
+coverpoints:
+  - name: cp_breakpoint
+    goal: Compressed breakpoint
+    description: c.ebreak
+    expectation: Breakpoint exception
+    bins: '1'
+  - name: cp_load_address_misaligned
+    goal: Compressed loads with misaligned addresses
+    description: |-
+      Attempt c.lw, c.lwsp, c.ld, c.ldsp  with every combination of three lsbs:000-111.
+      If Zcb supported, also c.lbu,c.lh, c.lhu
+      If Zcf supported, also c.flw, c.flwsp
+      If Zcd supported, also c.fld, c.fldsp
+    expectation: If misaligned not supported, accesses that are not naturally aligned will throw load misaligned fault.
+    bins: up to 11 instructions * 8 addresses
+  - name: cp_load_access_fault
+    goal: Compressed loads to nonexistent address
+    description: Attempt instructions above from an illegal address (parameterized)
+    expectation: Load access fault
+    bins: up to 11 instructions
+  - name: cp_store_address_misaligned
+    goal: Compressed stores with misaligned addresses
+    description: |-
+      Attempt c.sw, c.swsp,  c.sd,c.sdsp with every combination of three lsbs: 000-111
+      If Zcb supported, also c.sb, c.sh
+      If Zcf supported, also c.fsw, c.fswsp
+      If Zcd supported, also c.fsd, c.fsdsp
+    expectation: If misaligned not supported, accesses that are not naturally aligned will throw store misaligned fault.
+    bins: up to 10 instructions * 8 addresses
+  - name: cp_store_access_fault
+    goal: Compressed stores to nonexistent address
+    description: Attempt instructions above to an illegal address (parameterized)
+    expectation: Store access fault
+    bins: up to 10 instructions
+  - name: cp_illegal_instruction
+    goal: CompressedIllegal Instruction
+    description: c.illegal (0x0000)
+    expectation: Illegal instruction fault.
+    bins: '1'

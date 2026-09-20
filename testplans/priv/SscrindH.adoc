@@ -1,7 +1,0 @@
-// SscrindH Coverpoints.  Converted from the "SscrindH" tab of the Hypervisor test plan spreadsheet
-// (https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=886109861#gid=886109861) on 2026-09-19.
-
-[[t-SscrindH-coverpoints]]
-No sscrindh coverpoints have been defined yet.
-
-* Develop this after baseline indirect CSR tests

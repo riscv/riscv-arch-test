@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Svbare
+source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1237201823#gid=1237201823
+coverpoints:
+  - name: cp_satp_bare
+    goal: satp.mode = BARE works in S and U modes
+    description: read, write, execute address with satp.MODE = BARE in S and U modes
+    expectation: Access physical memory
+    bins: 3 access * 2 modes
+  - name: cp_satp_bare_mprv
+    goal: satp.mode = BARE works  in M-mode with MPRV
+    description: Read, write, execute address with satp.mode=BARE in M-mode with mstatus.MPRV=1 and mstatus.mpp = U and S
+    expectation: Access physical memory
+    bins: 3 access * 2 modes

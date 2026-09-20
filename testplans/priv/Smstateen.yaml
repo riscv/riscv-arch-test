@@ -1,0 +1,150 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Smstateen
+source: https://docs.google.com/spreadsheets/d/1zm67nLKLn_tszDTzJQ9BIMOB7wuiskcuj3Mql4TOciA/edit?gid=1207083655#gid=1207083655
+coverpoints:
+  - name: cp_mstateen_reset_val
+    goal: On reset all mstateen CSRs' bits are initialized to zeros.
+    description: As first test after reset, read mstateen0-3.  For RV32, also read msstateen0-3h
+    expectation: '0'
+    bins: 4-8 CSRs
+    rules:
+      - mstateen_zero_initialization
+  - name: cp_walking_ones
+    goal: Bits are accessible
+    description: |-
+      Write mstateen0-3 with walking ones & walking zero, and read each back.
+      For RV32, also write msstateen0-3h.
+    expectation: Access successful
+    bins: 4-8 CSRs * 128-64 walking ones/zero
+    rules:
+      - smstateen_mmode_rv64_csrs
+      - smstateen_rv32_upper_bits_csrs
+      - stateen_warl_access
+      - stateen_warl_access
+      - stateen_unimplemented_state_roz
+      - stateen-reserved_roz
+  - name: cp_csr_illegal_accesses
+    goal: Each stateen CSR allows read/write access from its own and higher privilege modes and denies read/writeaccess from lower privilege modes
+    description: |-
+      In Umode, write mstateen0-3 with all ones, and read it back.
+      For RV32, also write msstateen0-3h
+    expectation: Illegal instruction
+    bins: 4-8CSRs
+    rules:
+      - stateen_op
+      - smstateen_illegal_state_access
+  - name: cp_fcsr_ro_zero
+    goal: Test if fcsr bit is read-only zero when misa.F=1
+    description: Write 1 to mstateen0.FCSR and read back
+    expectation: Expect 0 if misa.F = 1
+    bins: '1'
+    rules:
+      - mstateen0-fcsr_roz
+  - name: cp_fcsr
+    goal: fcsr controls access to fcsr when misa.F = 0
+    description: |-
+      If Zfinx is supported:
+      with misa.F = 0 and mstateen0.fcsr, read and write fcsr
+    rules:
+      - stateen0-fcsr_op
+  - name: cp_jvt
+    goal: jvt controls access
+    description: |-
+      If Zcmt is supported:
+      With msstaten0.JVT = {0,1}, read and write jvt   from the M, S if supported, else U
+    expectation: Always successful
+    rules:
+      - stateen0-jvt_op
+  - name: cp_envcfg
+    goal: envcfg controls access to senvcfg
+    description: With mstateen0.envcfg = {0,1}, read and write sevncfg from  M, S if supported, else U
+    expectation: Always successful
+    bins: 2 states x 2 accesses
+    rules:
+      - mstateen0-envcfg_op
+  - name: cp_csrind
+    goal: csrind controls access
+    description: |-
+      If Sscsrind supported:
+      With mstateen0.CSRIND = {0, 1}, read and write siselect.  And with siselect having some value TBD, write and read sireg,
+      sireg2, sireg3, sireg4, sireg5, sireg6.  M, S if supported, else U
+    expectation: Always successful
+    bins: 2 states x 2 accesses x 6 regs
+    rules:
+      - mstateen0-csrind_op
+  - name: cp_aia
+    goal: aia controls access
+    description: |-
+      If Ssaia supported:
+      With msstateen.AIA = {0,1}, read and write all state introduced by Ssaia. M, S if supported, else U
+    expectation: Always successful
+    bins: 2 states x 2 accesses x ? regs
+    rules:
+      - mstateen0-aia_op
+  - name: cp_imsic
+    goal: ismic controls access
+    description: |-
+      If IMSIC supported:
+      With msstateen.IMSIC = {0,1}, read and write all state introduced by IMSIC (stopei?).  M, S if supported, else U
+    expectation: Always successful
+    bins: 2 states x 2 accesses x ? regs
+    rules:
+      - mstateen0-imsic_op
+  - name: cp_context
+    goal: sdtrig controls access
+    description: |-
+      If Sdtrig supported:
+      With msstateen.CONTEXT = {0,1}, read and write scontext  form M, S if supported, else U
+    expectation: Always successful
+    bins: 2 states x 2 accesses
+    rules:
+      - mstateen0-context_op
+  - name: cp_p1p13
+    goal: hedelegh controls access
+    description: |-
+      If Sm1p13 and Hypervisor supported:
+      With msstateen.P1P13 = {0,1}, read and write hedelegh
+    expectation: Always successful
+    bins: 2 states x 2 accesses
+    rules:
+      - mstateen0-p1p13_op
+  - name: cp_srmcfg
+    goal: srmcfg controls access
+    description: |-
+      If Ssqosid supported:
+      With msstateen.SRMCFG = {0,1}, read and write srmcfg  from M, S if supported, else U
+    expectation: Always successful
+    bins: 2 states x 2 accesses
+    rules:
+      - mstateen0-srmcfg_op
+  - name: cp_ctr
+    goal: ctr controls access
+    description: |-
+      If Sctr supported:
+      With msstateen.CTR = {0,1}, read and write sctrl, sctrdepth, sctrstatus  from M, S if supported, else U
+    expectation: Always successful
+    bins: 2 states x 2 accesses x 3 regs
+    rules:
+      - mstateen_ctr1
+      - mstateen_ctr0
+  - name: cp_fcsr_lower
+    goal: fcsr controls access to fcsr when misa.F = 0
+    description: |-
+      If Zfinx is supported:
+      with misa.F = 0 and mstateen0.fcsr, read and write fcsr, frm, fflags from the next lower mode (S if supported, else U).
+      Also try executing fadd.s, flw, fcvt.w.s, fcvt.s.w, fmv.x.w, fmv.w.x, fclass.s. M, S if supported, else U
+    expectation: Illegal instruction if 0, else successful
+    rules:
+      - stateen0-fcsr0_misa-f0_illegal_fpu_instr
+  - name: |-
+      cp_mstateen0_se0_one_controls_sstateen0
+      cp_mstateen0_se0_zero_controls_sstateen0
+    goal: mstateen.SE0 controls access to sstateen0
+    description: For mstateen0.SE0 = {0,1} write and read back sstateen0.
+    expectation: Access fault if 0, success if 1.
+    bins: 2 SE0*2R/W
+    rules:
+      - mstateen-bit-63_op
+      - mstateen0-se0_op
+  - heading: 'Note: All of these tests are performed in M-mode unless otherwise noted.'
+  - heading: 'Note: Smstateen implies U-mode (otherwise there is no need for this extension)'

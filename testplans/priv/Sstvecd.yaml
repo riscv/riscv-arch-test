@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Sstvecd
+source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=435052299#gid=435052299
+coverpoints:
+  - name: cp_stvec_mode
+    goal: Check stvec.MODE can hold 0 and stvec.BASE can hold any valid address
+    description: In S-mode with virtual memory disabled, write stvec.MODE = direct and walking 1s to stvec.BASE.
+    expectation: Match reference model
+    bins: 2*XLEN-4
+    rules:
+      - stvec.MODE must be capable of holding the value 0 (Direct). When stvec.MODE=Direct , stvec.BASE must be capable of holding any valid four-byte-aligned address.

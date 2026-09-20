@@ -1,0 +1,72 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Smmpm
+source: https://docs.google.com/spreadsheets/d/15yJhyhBB5X9cq4SDQ-YCPzo2oPQnDBh5wEIZhi0-9Ps/edit?gid=645084995#gid=645084995
+notes: |
+  Smmpm is a machine-level extension that provides pointer masking for M-mode.
+  Exactly same coverpoints as Ssnpm except delete cp_pmm_uxl_clear, add the following, and run in M-mode:
+  - all addresses are physical, all tests run in Bare/ M-mode .
+  the JALR cross is kept separate from MXR and not guarded by S_SUPPORTED , since implicit fetch must be verified as never masked regardless of whether S-mode (and hence MXR) is implemented.
+coverpoints:
+  - heading: '- For cp_hardware_csr_* , traps are being handeled in M mode and mtval will be checked.'
+  - name: cp_pm_mprv
+    goal: Verify pointer masking works correctly when M-mode accesses memory as U-mode or S-mode via MPRV.
+    description: |-
+      MPRV affect pointer masking as well, causing the pointer masking settings of the effective privilege mode to be applied.
+
+      Test Environment:
+      If U supported:
+       In M-mode set mstatus.MPRV=1
+       Place known value_old in scratch. Let a' = scratch (upper bits = 0x0000). For VA with upper bits = 1: mapped to a separate page from scratch.
+      Page tables configured for valid mappings under satp.MODE ∈ {Bare, Sv39}.
+      For each mstatus.MXR in {0, 1}: if S_SUPPORTED (MXR is read-only zero if S mode is not supported)
+      For each mseccfg.PMM in {00, 10, 11}:
+      For each menvcfg.PMM in {00, 10, 11}:
+      For each senvcfg.PMM in {00, 10, 11} if S_SUPPORTED:
+      For each MPP in {M, U, S ( if S_SUPPORTED}:
+      For each satp.MODE in {Bare, Sv39}  ( if S_SUPPORTED}:  (This case not included for MPP=M)
+      For each A_upper_bits in {0x0000, 0x0001, 0x0200}:
+      Set A = A' with upper bits replaced by A_upper_bits
+      For read (lw): read directly from A in M-mode with MPRV=1, sigupd(value), record any traps.
+      For write (sw): write unique known value_new to A in M-mode with MPRV=1, read back from scratch (A'), sigupd(value), record any traps.
+    bins: 2 MXR * 3 mseccfg * 3 menvcfg * 3 senvcfg * 3 MPP * 2 satp.MODE * 3 addresses
+    rules:
+      - pm_mprv_spvp
+  - name: cp_pm_csr_software_access
+    goal: Ensure pointer masking is not applied to software CSR reads and writes
+    description: |-
+      Pointer masking is not applied to software CSR reads and writes.
+
+      Test Environment:
+       In M-mode, set mseccfg.PMM={10(PMLEN=7),11(PMLEN=16)}.
+      Write XLEN test patterns with upper PMLEN bits set to RW CSRs {mepc,  mscratch} , using {csrrw, csrrs, csrrc, csrrwi}. Read back the same CSR using CSR read instructions then compare written and read values.
+    expectation: |-
+      No masking applied; read-back value matches written value (subject to WARL constraints).
+      The implemented WARL width of CSRs is unaffected by pointer masking
+    bins: 2 PMM * 4 (csrrw / csrrc / 4csrrs /csrrwi) * 1 mode (M ) * 3 csr
+    rules:
+      - pm_no_csr_sw
+      - pm_warl_unaffected
+  - name: cp_pmm_sxl_clear
+    goal: Setting mstatus.SXL=01 (RV32) clears menvcfg.PMM bits
+    description: |-
+      IF S_SUPPORTED
+      When mstatus.SXL is set to 01 (indicating S-mode is RV32), the pointer masking configuration bits in menvcfg.PMM must be cleared automatically by hardware.
+       Test Environment:
+       In M-mode, write menvcfg.PMM={10 (PMLEN=7), 11 (PMLEN=16)} and confirm the written value is retained by reading back menvcfg.PMM. Then set mstatus.SXL=01 (RV32). Read back menvcfg.PMM and verify it has been cleared to 00.
+    expectation: 'When mstatus.SXL is set to 01: menvcfg.PMM is cleared to 00 regardless of its previously written value.'
+    bins: 2 PMM values (10, 11) × 1 SXL  × 1 mode (S)
+    rules:
+      - pm_uxl_clear
+      - pmlen_illegal_warl
+  - name: cp_pmm_uxl_clear
+    goal: Setting mstatus.UXL=01 (RV32) clears menvcfg.PMM bits
+    description: |-
+      IF U_SUPPORTED and not S_SUPPORTED
+      When mstatus.UXL is set to 01 (indicating U-mode is RV32), the pointer masking configuration bits in menvcfg.PMM must be cleared automatically by hardware.
+       Test Environment:
+       In M-mode, write menvcfg.PMM={10 (PMLEN=7), 11 (PMLEN=16)} and confirm the written value is retained by reading back menvcfg.PMM. Then set mstatus.UXL=01 (RV32). Read back menvcfg.PMM and verify it has been cleared to 00.
+    expectation: 'When mstatus.SXL is set to 01: menvcfg.PMM is cleared to 00 regardless of its previously written value.'
+    bins: 2 PMM values (10, 11) × 1 SXL  × 1 mode (S)
+    rules:
+      - pm_uxl_clear
+      - pmlen_illegal_warl

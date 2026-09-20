@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Ssstateen
+source: https://docs.google.com/spreadsheets/d/1zm67nLKLn_tszDTzJQ9BIMOB7wuiskcuj3Mql4TOciA/edit?gid=246484261#gid=246484261
+coverpoints:
+  - name: cp_walking_ones
+    goal: Bits are accessible
+    description: Write msstateen0-3[31:0] (first) and then sstateen0-3 with walking ones & walking zero, and read each back.
+    expectation: If msstateen = 0, read back 0.  If mssstateen = 1, read back value written. Note that writing msstateen = 1s won't actually set most of the bits to 1.
+    bins: 2 msstateen * 4 CSRs * 64 walking ones/zero
+    rules:
+      - smstateen_mmode_rv64_csrs
+      - stateen_warl_access
+      - sstateen_ro1_bits
+      - sstateen_bit_correspondence
+  - name: cp_csr_illegal_accesses
+    goal: Test that each stateen CSR allows read/write access from its own and higher privilege modes and denies read/write access from lower privilege modes
+    description: |-
+      In Mmode , write sstateen0-3 with all ones and read back.
+          In Umode , write sstateen0-3 with all ones and read back.
+      In S-mode, write msstateen0-3 and read back.  Trap.
+      If RV32 also write and read msstateen0-3h from S-mode.
+    expectation: |-
+      All accesses will be successful in Mmode.
+      Illegal instruction exceptions will raise in
+      Umode and S-mode.
+    bins: 2mode * 4CSRs * 1value * 2 R/W
+    rules:
+      - stateen_op
+      - smstateen_illegal_state_access
+      - sstateen_user_access_control
+  - name: cp_envcfg
+    goal: envcfg controls access to senvcfg
+    description: With mstateen0.ENVCFG = {0,1}, read and write sevncfg
+    expectation: Illegal instruction if 0, else successful
+    bins: 2 states x 2 accesses
+    rules:
+      - mstateen0-envcfg_op
+  - name: cp_fcsr_lower
+    goal: fcsr controls access to fcsr when misa.F = 0
+    description: |-
+      If Zfinx is supported:
+      with misa.F = 0 and sstateen0.fcsr, read and write fcsr, frm, fflags from U mode. Also try executing fadd.s, flw, fcvt.w.s, fcvt.s.w, fmv.x.w, fmv.w.x, fclass.s.
+    expectation: Illegal instruction if 0, else successful
+    bins: 2 states x 2 accesses
+    rules:
+      - stateen0-fcsr0_misa-f0_illegal_fpu_instr
+  - name: cp_jvt_lower
+    goal: jvt controls access
+    description: |-
+      If Zcmt is supported:
+      With sstaten0.JVT = {0,1}, read and write jvt  from U mode
+    expectation: Illegal instruction if 0, else successful
+    bins: 2 states x 2 accesses
+    rules:
+      - stateen0-jvt_op
+      - sstateen_user_access_control
+  - heading: 'Note: All of these tests are performed in S-mode unless otherwise noted.'
+  - heading: 'Note: mstateen0.SE0 must be 1 (else sstateen0 is inaccessible).'

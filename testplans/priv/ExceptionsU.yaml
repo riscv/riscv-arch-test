@@ -1,0 +1,93 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: ExceptionsU
+source: https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=593261374#gid=593261374
+coverpoints:
+  - name: cp_instr_adr_misaligned_branch
+    goal: Instruction Address Misaligned
+    description: |-
+      Branch taken to an address that is an odd multiple of 2
+      PC[1] = 0 and imm[1]=1
+    expectation: Only throws an exception if C is not supported.
+    bins: 6 branches
+  - name: cp_instr_adr_misaligned_branch_nottaken
+    goal: Instruction Address Misaligned
+    description: Branch not taken to an address that is an odd multiple of 2
+    expectation: No exception
+    bins: 6 branches
+  - name: cp_instr_adr_misaligned_jal
+    goal: Instruction Address Misaligned
+    description: |-
+      jal to an address that is an odd multiple of 2
+      PC[1] = 0 and imm[1]=1
+    expectation: Instruction at multiple of 4.  Offset is an odd multiple of 2.
+    bins: '1'
+  - name: cp_instr_adr_misaligned_jalr
+    goal: Instruction Address Misaligned
+    description: |-
+      jalr to an address that is an odd multiple of 2 and odd multiple of 2 + 1.
+      Every combination of rs1_val[1:0] and offset[1:0]
+    expectation: Only throws an exception if C is not supported.
+    bins: 4 rs1[1:0] * 4 offset[1:0]
+  - name: cp_instr_access_fault
+    goal: Instruction Access Fault
+    description: Jump to access fault address
+    expectation: Instruction access fault is raised (trap and mcause)
+    bins: '1'
+  - name: cp_illegal_instruction
+    goal: Illegal Instruction
+    description: Executing instruction 0x00000000 and 0xFFFFFFFF
+    expectation: throws an illegal instruction exception (trap and mcause)
+    bins: 2 instr
+  - name: cp_illegal_instruction_seed
+    goal: Illegal Read-only access to a CSR
+    description: |-
+      csrrs x*, seed, x0 throws illegal instruction, as do
+      csrrc x*, seed, x0
+      csrrsi x*, seed, 0
+      csrrci x*, seed, 0
+    expectation: illegal instruction exception
+    bins: 4 csr ops
+    rules:
+      - '*** move to Zkr'
+  - name: cp_breakpoint
+    goal: Breakpoint
+    description: |-
+      ebreak throws breakpoint exception
+      also test when straddling 64B boundary
+    expectation: throws breakpoint exception (trap and mcause)
+    bins: '1'
+  - name: cp_load_address_misaligned
+    goal: Load Misaligned
+    description: 'Attempt lh, lhu, lw, lwu, ld with every combination of three address lsbs: 000 - 111'
+    expectation: Might not cause exception
+    bins: 7 ops * 8 lsbs
+  - name: cp_load_access_fault
+    goal: Load Access Fault
+    description: Attempt lb, lbu, lh, lhu, lw, lwu, ld from an illegal address (parameterized)
+    expectation: load access fault
+    bins: 7 ops
+  - name: cp_store_address_misaligned
+    goal: Store Misaligned
+    description: 'Attempt sh, sw, sd with every combination of three lsbs: 000-111'
+    expectation: Might not cause exception
+    bins: 4 ops * 8 lsbs
+  - name: cp_store_access_fault
+    goal: Store Access Fault
+    description: Attempt sb, sh, sw, sd from an illegal address (parameterized)
+    expectation: store access fault
+    bins: 4 ops
+  - name: cp_ecall_u
+    goal: ecall
+    description: ecall from user mode
+    expectation: throws ecall user exception (trap and mcause)
+    bins: '1'
+  - name: cp_misaligned_priority
+    goal: Priority of exceptions
+    description: Attempt lw and sw and fetch from memory location causing access fault and misaligned
+    expectation: priority may vary.
+    bins: 3 ops
+  - name: cp_mstatus_ie
+    goal: Interrupt Enables
+    description: ecall to machine cross mie = {0/1}
+    expectation: mpie gets xie, mie gets 0
+    bins: 2 mie

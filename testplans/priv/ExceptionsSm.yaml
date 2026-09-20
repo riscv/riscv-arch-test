@@ -1,0 +1,127 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: ExceptionsSm
+source: https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=1987812700#gid=1987812700
+description: |
+  exceptionsm covergroup
+coverpoints:
+  - name: cp_instr_adr_misaligned_branch
+    goal: Instruction Address Misaligned
+    description: |-
+      Branch taken to an address that is an odd multiple of 2
+      PC[1] = 0 and imm[1]=1
+    expectation: Instruction Misaligned Exception if C is not supported
+    bins: 6 branches
+    rules:
+      - taken_cti_misaligned_exc
+  - name: cp_instr_adr_misaligned_branch_nottaken
+    goal: Instruction Address Misaligned
+    description: Each type of branch not taken to an address that is an odd multiple of 2
+    expectation: No exception
+    bins: 6 branches
+    rules:
+      - cond_br_no_ia_misaligned_exc_not_taken
+  - name: cp_instr_adr_misaligned_jal
+    goal: Instruction Address Misaligned
+    description: |-
+      jal to an address that is an odd multiple of 2
+      PC[1] = 0 and imm[1]=1
+      Instruction at multiple of 4.  Offset is an odd multiple of 2.
+    expectation: Instruction Misaligned Exception if C is not supported
+    bins: '1'
+  - name: cp_instr_adr_misaligned_jalr
+    goal: Instruction Address Misaligned
+    description: |-
+      jalr to an address that is an odd multiple of 2 and odd multiple of 2 + 1.
+      Every combination of rs1_val[1:0] and offset[1:0]
+    expectation: Instruction Misaligned Exception if C is not supported
+    bins: 4 rs1[1:0] * 4 offset[1:0]
+  - name: cp_instr_access_fault
+    goal: Instruction Access Fault
+    description: Fetch instruction from unimplemented memory
+    expectation: Instruction Access Fault
+    bins: '1'
+  - name: cp_illegal_instruction
+    goal: Illegal Instruction
+    description: Executing instruction 0x00000000 and 0xFFFFFFFF throws an illegal instruction exception.
+    expectation: Illegal Instruction Exception
+    bins: 2 instr
+  - name: cp_illegal_instruction_seed
+    goal: Illegal Read-only access to a CSR
+    description: |-
+      csrrs x*, seed, x0 throws illegal instruction in machine mode, as do
+      csrrc x*, seed, x0
+      csrrsi x*, seed, 0
+      csrrci x*, seed, 0
+    expectation: Illegal Instruction Exception
+    bins: 4 csr ops
+  - name: cp_breakpoint
+    goal: Breakpoint
+    description: |-
+      ebreak throws breakpoint exception
+      also test when straddling 64B boundary
+    expectation: Breakpoint Exception
+    bins: '1'
+  - name: cp_load_address_misaligned
+    goal: Load Misaligned
+    description: 'Attempt lb, lbu, lh, lhu, lw, lwu, ld with every combination of three address lsbs: 000 - 111'
+    expectation: Possible Load Misaligned Instruction
+    bins: 7 ops * 8 lsbs
+  - name: cp_load_access_fault
+    goal: Load Access Fault
+    description: Attempt lb, lbu, lh, lhu, lw, lwu, ld from an illegal address (parameterized). Also exercised in PMP, VM.
+    expectation: Load Access Fault
+    bins: 7 ops
+  - name: cp_store_address_misaligned
+    goal: Store Misaligned
+    description: 'Attempt sb, sh, sw, (sd) with every combination of three lsbs: 000-111'
+    expectation: Possible Store Misaligned Instruction
+    bins: 4 ops * 8 lsbs
+  - name: cp_store_access_fault
+    goal: Store Access Fault
+    description: Attempt sb, sh, sw, sd from an illegal address (parameterized). Also exercised in PMP, VM.
+    expectation: Store Acccess Fault
+    bins: 4 ops
+  - name: cp_ecall_m
+    goal: ecall
+    description: ecall from machine mode
+    expectation: Ecall from M Exception
+    bins: '1'
+  - name: cp_misaligned_priority_load
+    goal: Priority of exceptions
+    description: Attempt lb, lbu, lh, lhu, lw, (lwu, ld) from memory location causing  access fault and misaligned. Also exercised in PMP, VM.
+    expectation: Highest priority exception should be taken.
+    bins: 7 ops * 8 lsbs
+  - name: cp_misaligned_priority_store
+    goal: Priority of exceptions
+    description: Attempt sb, sh, sw (sd) from memory location causing  access fault and misaligned}. Also exercised in PMP, VM.
+    expectation: Highest priority exception should be taken.
+    bins: 4 ops * 8 lsbs
+  - name: cp_misaligned_priority_fetch
+    goal: Priority of exceptions
+    description: Attempt fetch from memory location causing  access fault and misaligned}. Also exercised in PMP, VM.
+    expectation: Highest priority exception should be taken.
+    bins: '***'
+    rules:
+      - '*** missing from ExceptionsM. Split other Exceptions* test plans by type of cp_misaligned_priority as well'
+  - name: cp_mstatus_ie
+    goal: Interrupt Enables
+    description: ecall with mstatus.MIE = {0/1}
+    expectation: mpie gets mie, mie gets 0
+    bins: 2 MIE
+  - name: cp_xstatus_ie
+    goal: Interrupt Enables
+    description: |-
+      if S_SUPPORTED:
+      ecall cross {mode = user/supervisor, medeleg[8] = {0/1}, mstatus.mie = {0/1}, mstatus.sie = {0/1}}
+    expectation: xpie gets xie, xie gets 0
+    bins: 3 modes * 2 medleg * 2 mie * 2 sie
+  - name: cp_medeleg_msu
+    goal: Delegation to supervisor mode
+    description: |-
+      If S_SUPPORTED:
+      Attempt instruction/load/store access fault, instruction/load/store misaligned fault, illegal instruction, ebreak, ecall, crossed with privilege mode S/U/M crossed with medeleg = [ {1011_0001_1111_1111}, {0}, and 12 different walking 1s]
+    expectation: Should delegate from user/supervisor but not machine when a 1 is in the appropriate column.   Note medeleg[11] is hardwired to 0 because ecall from M cannot be delegated, and medeleg[9] is 0 because delegating an ecall from supervisor mode makes it impossible to get back to machine mode.
+    bins: 9 ops * 3 modes * 14 medeleg
+  - heading: 'Notes: xepc, xcause, xtval, xtvec, mstatus.xpp are inherently tested with exceptions taking place'
+  - heading: 'Note: load/store misaligned, access fault, page fault for Zaamo, Zalrsc, Zicbo* are exercised in PMA, PMP, VM'
+  - heading: menvcfg.STCE = 0 causes access to stimecmp outside of M mode to illegal instruction

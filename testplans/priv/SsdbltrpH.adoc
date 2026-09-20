@@ -1,7 +1,0 @@
-// SsdbltrpH Coverpoints.  Converted from the "SsdbltrpH" tab of the Hypervisor test plan spreadsheet
-// (https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1156592509#gid=1156592509) on 2026-09-19.
-
-[[t-SsdbltrpH-coverpoints]]
-No ssdbltrph coverpoints have been defined yet.
-
-* *** develop after Ssdbltrp

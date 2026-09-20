@@ -3,13 +3,13 @@
 
 ==== Sscofpmf Counter filtering
 
-include::{privtestplansdir}/Sscofpmf.adoc[]
+include::{testplansdir}/priv/Sscofpmf.adoc[]
 
 include::norm/Sscofpmf_norm_rules.adoc[]
 
 ==== Ssstateen Supervisor State Enable
 
-include::{privtestplansdir}/Ssstateen.adoc[]
+include::{testplansdir}/priv/Ssstateen.adoc[]
 
 The same normative rules apply to Ssstateen as to Smstateen (see <<t-Smstateen-normative-rules>>).
 
@@ -17,57 +17,57 @@ The same normative rules apply to Ssstateen as to Smstateen (see <<t-Smstateen-n
 
 RV64 only
 
-include::{privtestplansdir}/Ssu64xl.adoc[]
+include::{testplansdir}/priv/Ssu64xl.adoc[]
 
 include::norm/Ssu64xl_norm_rules.adoc[]
 
 ==== Sscounterenw Writable Counter Enables
 
-include::{privtestplansdir}/Sscounterenw.adoc[]
+include::{testplansdir}/priv/Sscounterenw.adoc[]
 
 include::norm/Sscounterenw_norm_rules.adoc[]
 
 ==== Sstvecd Direct Trap Vector
 
-include::{privtestplansdir}/Sstvecd.adoc[]
+include::{testplansdir}/priv/Sstvecd.adoc[]
 
 include::norm/Sstvecd_norm_rules.adoc[]
 
 ==== Sstvala Trap Address
 
-include::{privtestplansdir}/Sstvala.adoc[]
+include::{testplansdir}/priv/Sstvala.adoc[]
 
 include::norm/Sstvala_norm_rules.adoc[]
 
 ==== Ssccptr Page Table Reads
 
-include::{privtestplansdir}/Ssccptr.adoc[]
+include::{testplansdir}/priv/Ssccptr.adoc[]
 
 include::norm/Ssccptr_norm_rules.adoc[]
 
 
 ==== Ss1p13 Supervisor Mode 1.13
 
-include::{privtestplansdir}/Ss1p13.adoc[]
+include::{testplansdir}/priv/Ss1p13.adoc[]
 
 include::norm/Ss1p13_norm_rules.adoc[]
 
 ==== Ssnpm Pointer Masking
 
-include::{privtestplansdir}/Ssnpm.adoc[]
+include::{testplansdir}/priv/Ssnpm.adoc[]
 
 include::norm/Zpm_norm_rules.adoc[]
 
 ==== Smnpm Pointer Masking
 
-include::{privtestplansdir}/SmnpmS.adoc[]
-include::{privtestplansdir}/SmnpmU.adoc[]
+include::{testplansdir}/priv/SmnpmS.adoc[]
+include::{testplansdir}/priv/SmnpmU.adoc[]
 
 See Ssnpm for normative rules.
 
 ==== Smmpm Pointer Masking
 
-include::{privtestplansdir}/Smmpm.adoc[]
+include::{testplansdir}/priv/Smmpm.adoc[]
 
 See Ssnpm for normative rules.
 
@@ -75,19 +75,19 @@ See Ssnpm for normative rules.
 
 In Privileged section because it has both unpriv and privileged behaviors.  The common coverpoints are defined once and re-executed by the ZicfilpU, ZicfilpSm and ZicfilpS suites in their privilege mode; each of those suites adds the coverpoints for its mode's `xPELP` handling.  ZicfilpH covers VS/VU-mode (see <<t-ZicfilpH-coverpoints>>).
 
-include::{privtestplansdir}/Zicfilp_common_reference.adoc[]
+include::{testplansdir}/priv/Zicfilp_common_reference.adoc[]
 
 ===== ZicfilpU User-Mode Landing Pads
 
-include::{privtestplansdir}/ZicfilpU.adoc[]
+include::{testplansdir}/priv/ZicfilpU.adoc[]
 
 ===== ZicfilpSm Machine-Mode Landing Pads
 
-include::{privtestplansdir}/ZicfilpSm.adoc[]
+include::{testplansdir}/priv/ZicfilpSm.adoc[]
 
 ===== ZicfilpS Supervisor-Mode Landing Pads
 
-include::{privtestplansdir}/ZicfilpS.adoc[]
+include::{testplansdir}/priv/ZicfilpS.adoc[]
 
 ==== Zicfiss Shadow Stack
 
@@ -95,26 +95,26 @@ In Privileged section because it has both unpriv and privileged behaviors.  Zicf
 
 ===== ZicfissU User-Mode Shadow Stack
 
-include::{privtestplansdir}/ZicfissU.adoc[]
+include::{testplansdir}/priv/ZicfissU.adoc[]
 
 ===== ZicfissS Supervisor-Mode Shadow Stack
 
-include::{privtestplansdir}/ZicfissS.adoc[]
+include::{testplansdir}/priv/ZicfissS.adoc[]
 
 ===== ZicfissSm Machine-Mode Shadow Stack
 
-include::{privtestplansdir}/ZicfissSm.adoc[]
+include::{testplansdir}/priv/ZicfissSm.adoc[]
 
 ==== Zawrs Wait on Reservation Set
 
 Waits until timer interrupt or timeout on a single hart that cannot modify the reservation set.  Tests behave differently in
 different privilege modes, so a suite is defined for each.
 
-include::{privtestplansdir}/ZawrsSm.adoc[]
+include::{testplansdir}/priv/ZawrsSm.adoc[]
 
-include::{privtestplansdir}/ZawrsS.adoc[]
+include::{testplansdir}/priv/ZawrsS.adoc[]
 
-include::{privtestplansdir}/ZawrsU.adoc[]
+include::{testplansdir}/priv/ZawrsU.adoc[]
 
 include::norm/ZawrsSm_norm_rules.adoc[]
 
@@ -130,7 +130,7 @@ Note that these tests can have race conditions of timeouts, timer interrupts, an
 
 Misaligned atomics are supported by the Misaligned Atomicity Granularity.  They are also exercised via ExceptionsZaamo.
 
-include::{privtestplansdir}/Zama16b.adoc[]
+include::{testplansdir}/priv/Zama16b.adoc[]
 
 include::norm/Zama16b_norm_rules.adoc[]
 
@@ -140,7 +140,7 @@ Located here because it is part of RVA23 and can function without the rest of th
 The suite is divided into SdtrigSm, SdtrigS, and SdtrigU suites that are essentially identical, but are run on different privilege levels and thus produce different results for coverpoints such as reading debug registers or triggering in certain modes.
 Only SdtrigSm is listed here but the others are the same and also cover the same normative rules.
 
-include::{privtestplansdir}/SdtrigSm.adoc[]
+include::{testplansdir}/priv/SdtrigSm.adoc[]
 
 include::norm/SdtrigSm_norm_rules.adoc[]
 

@@ -3,28 +3,28 @@
 
 ==== EndianSm Machine-Mode Endianness
 
-include::{privtestplansdir}/EndianSm.adoc[]
+include::{testplansdir}/priv/EndianSm.adoc[]
 
 ==== EndianS Supervisor-Mode Endianness
 
-include::{privtestplansdir}/EndianS.adoc[]
+include::{testplansdir}/priv/EndianS.adoc[]
 
 ==== EndianU User-Mode Endianness
 
-include::{privtestplansdir}/EndianU.adoc[]
+include::{testplansdir}/priv/EndianU.adoc[]
 
 ==== EndianZaamo Endianness for AMOs
 
-include::{privtestplansdir}/EndianZaamo.adoc[]
+include::{testplansdir}/priv/EndianZaamo.adoc[]
 
 ==== EndianZalrsc Endianness for LR/SC
 
-include::{privtestplansdir}/EndianZalrsc.adoc[]
+include::{testplansdir}/priv/EndianZalrsc.adoc[]
 
 ==== EndianF Endianness for Floats
 
-include::{privtestplansdir}/EndianF.adoc[]
+include::{testplansdir}/priv/EndianF.adoc[]
 
 ==== EndianZca Endianness for Compressed Instructions
 
-include::{privtestplansdir}/EndianZca.adoc[]
+include::{testplansdir}/priv/EndianZca.adoc[]

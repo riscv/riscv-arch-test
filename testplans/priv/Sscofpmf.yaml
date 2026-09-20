@@ -1,0 +1,192 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Sscofpmf
+source: https://docs.google.com/spreadsheets/d/13ibIsAhJpQBXcL1Y5F7sddysLPFpaCr8_oDyQV_Boqw/edit?gid=0#gid=0
+coverpoints:
+  - heading: To test Sscofpf, the user must give values to the following RVMODEL macros.  If any are undefined and SSCOFPMF_SUPPORTED, error.
+  - name: RVMODEL_MHPMCOUNTER
+    goal: Name of a hpmcounter CSR to test (e.g. mhpmcounter3)
+  - name: RVMODEL_MHPMEVENT
+    goal: Name of a event CSR to test (e.g. mhpmevent3)
+  - name: RVMODEL_MHPMEVENT_VAL
+    goal: Value to put in the event CSR to make it count.
+  - name: RVMODEL_MHPMEVENT_CODE
+    goal: Code that increments the event counter (shouldn't trash certain registers), should be able to run in all privilege modes
+  - heading: These values need to be different in sail_macros.h to support how Sail will do this (https://github.com/riscv/sail-riscv/issues/1733)
+  - heading: Only one of the HPM counters is tested because the spec does not require multiple counters supported even when Zihpm is active.
+  - heading: Tests are performed in Sm/S/U for SscofpmfSm/S/U suites
+  - heading: Use T-SBI calls where necessary to access machine mode CSRs from lower privilege modes.
+  - name: cp_xinh_inhibits_xmode
+    goal: xINH bit inhibits counting in {M/S/U}-mode
+    description: |-
+      For SscofpmfSm/S/U:
+      RVMODEL_MHPMEVENT[55:0] = RVMODEL_MHPMEVENT_VAL
+      RVMODEL_MHPMEVENT[62:58] = 32 combinations (exclude unsupported modes)
+      RVMODEL_MHPMEVENT[63] = 0 (OF = 0)
+      RVMODEL_MHPMCOUNTER = 0
+      Run RVMODEL_MHPMEVENT_CODE to try to count
+      Read RVMODEL_MHPMCOUNTER and check if nonzero
+
+      Note that these macros, counters, and events might be different between Sail and the DUT, so do not check values direclty, only check if nonzero.
+    expectation: RVMODEL_HPMCOUNTER becomes nonzero iff xinh = 0
+    bins: |-
+      2^5 combinations
+
+      NOTE: Unable to test this matches Sail until Sail supports hpm counter incrementing.
+    rules:
+      - norm:mhpmevent_inh_op
+  - name: cp_of_set_on_overflow
+    goal: |-
+      OF bit is set when hpmcounter
+      overflows
+    description: |-
+      For SscofpmfSm/S/U:
+      RVMODEL_MHPMEVENT[55:0] = RVMODEL_MHPMEVENT_VAL
+      RVMODEL_MHPMEVENT[62:58] = {00000, 11100, 10000, 01000,00100}
+       (M/S/U guaranteed to exist)
+      RVMODEL_MHPMEVENT[63] = 0/1 (OF = 0/1)
+      sip (for S or for U if S_SUPPORTED) or mip = 0 (clear LCOFIE)
+      sip (for S or for U if S_SUPPORTED) or mie = 0 (disable interrupts)
+      RVMODEL_MHPMCOUNTER = all 1s (includes mhpmcounterh for RV32; needs #def to specify this name)
+      Run RVMODEL_MHPMEVENT_CODE to count at least twice
+      Read RVMODEL_MHPMEVENT[63] (OF)
+      Read RVMODEL_MHPMCOUNTER and check that it is not all 0s or all 1s
+      Wait for RVMODEL_INTERRUPT_LATENCY
+      Read sip.LCOFIP (for S or for U if S_SUPPORTED) or mip.LCOFIP
+    expectation: |-
+      OF becomes 1
+      RVMODEL_MHPMCOUNTER should not be all 0s or all 1s
+      mip.LCOFIP should be 1 iff OF was initially 0
+    bins: |-
+      2 OF
+
+      NOTE: Unable to test this matches Sail until Sail supports hpm counter incrementing.
+    rules:
+      - norm:mhpmevent_of_op,
+      - norm:mhpmevent_of_bit_set
+      - norm:hpmcounter_overflow
+      - norm:count_overflow_interrupt
+      - norm:LCOFIP_op
+  - name: cp_overflow_hw_only
+    goal: |-
+      Counter overflow interrupt triggered by hardware
+      counter increments, not software writes
+    description: |-
+      For SscofpmfSm/S/U:
+      RVMODEL_MHPMEVENT = 0
+      sip (for S or for U if S_SUPPORTED) or mip = 0 (clear LCOFIE)
+      sie (for S or for U if S_SUPPORTED) or mie = 0 (disable interrupts)
+      Write RVMODEL_MHPMCOUNTER = all 1s
+      Read RVMODEL_MHPMEVENT[63] (OF)
+      Write RVMODEL_MHPMCOUNTER = all 0s
+      Read RVMODEL_MHPMEVENT[63] (OF)
+    expectation: OF stays 0
+    bins: 2 modes
+    rules:
+      - norm:count_overflow_trigger
+  - name: cp_lcofip_hw_only
+    goal: counter oveflow only results form hardware increments of counter registers.
+    description: |-
+      For SscofpmfSm/S/U:
+      Set RVMODEL_MHPMCOUNTER[63] (OF)
+      Wait for RVMODEL_INTERRUPT_LATENCY
+      Read sip.LCOFIP (for S or for U if S_SUPPORTED) or mip.LCOFIP
+      Clear RVMODEL_MHPMCOUNTER[63] (OF)
+      Wait for RVMODEL_INTERRUPT_LATENCY
+      Read sip.LCOFIP (for S or for U if S_SUPPORTED) or mip.LCOFIP
+    expectation: mip.LCOFIP remains 0
+    bins: '1'
+    rules:
+      - norm:LCOFIP_op
+  - name: cp_scountovf_shadow
+    goal: scountovf shadows OF bits of mhpmenvent3:31
+    description: |-
+      For SscofpmfSm/S, if (S_SUPPORTED):
+      mcounteren = all 1s
+      Write patterns to mhpmevent3...31.OF: all 0s, all 1s, walking 1s.
+      Read scountovf
+    expectation: scountovf should match 1s in OF fields
+    bins: '31'
+    rules:
+      - norm:scountovf_op
+  - name: cp_scountovf_mcounteren
+    goal: scountovf masked by mcounteren
+    description: |-
+      For SscofpmfSm/S, if (S_SUPPORTED):
+      Write 1s, even/odd checkerboard to all mhpmevent3...31.OF
+      Write patterns to mcounteren: all 0s, all 1s, walking 1s
+      Read scountovf
+    expectation: |-
+      In M-mode, scountovf  = value written (except bits 2:0 are always 0)
+      in S-mode, scountovf =value written & mcounteren (except bits 2:0 are always 0)
+    bins: 3 OF * 31 mcounteren
+    rules:
+      - norm:scountovf_mmode_read_access
+      - norm:scountovf_smode_read_access
+  - name: cp_sscofpmf_access
+    goal: Access hpm CSRs
+    description: |-
+      For SscofpmfSm/S:
+      Attempt to read, write 1s, write 0s, set, clear
+          if S_SUPPORTED: scountovf
+          if RV32: from M: mhpmeventh3...31
+    expectation: |-
+      scountovf should trap on write
+      Other accesses should succeed
+    bins: 5 accesses * 31 CSRs
+    rules:
+      - norm:scountovf_mmode_read_access
+      - norm:scountovf_smode_read_access
+      - norm:mhpmeventh_presence
+  - name: cp_lcofi_m
+    goal: Interrupt pending and enable
+    description: |-
+      For SscofpmfSm:
+      mstatus.MIE = 1, mstatus.SIE = 1, mip.LCOFIP = {0/1} x mie.LCOFIE = {0/1}, mideleg.LCOFI = {0/1} from each of Sm mode
+    expectation: Trap to M mode if enabled and pending
+    bins: 2 pending * 2 enabled * 2 deleg
+    rules:
+      - norm:mip_lcofip_mie_lcofie_op
+      - norm:mip_lcofip_acc
+      - norm:sip_sie_Sscofpmf
+  - name: cp_lcofi_sip_s
+    goal: Interrupt from sip.LCOFIP
+    description: |-
+      For SscofpmfS:
+      sstatus.SIE=1, mideleg.LCOFI = 1, sie.LCOFIE = {0/1}, sip.LCOFIP = {0/1} from S mode
+    expectation: Trap to S if enabled and pending
+    bins: 2 pending * 2 enabled
+    rules:
+      - norm:sip_sie_Sscofpmf
+  - name: cp_lcofi_sip_u
+    goal: Interrupt from sip.LCOFIP
+    description: |-
+      For SscofpmfU:
+      If S_SUPPORTED, sip.LCOFIP = {0/1} x sie.LCOFIE = {0/1}
+      else mip.LCOFIP = {0/1} x mip.LCOFIP = {0/1}
+    expectation: |-
+      Trap to S if S_SUPPORTED if enabled and pending
+      else trap to M if enabled and pending
+    bins: 2 pending * 2 enabled
+    rules:
+      - norm:sip_sie_Sscofpmf
+  - name: |-
+      cp_lcofip_priority_m
+      cp_lcofip_priority_s
+    goal: Priority of LCOFI interrupt
+    description: |-
+      xinh = 00000
+      For SscofpmfSm:
+          mstatus.MIE = 1
+          mie = all 0s.
+          mip = 1 in LCOFIP and {MEIP, MTIP, MSIP, none}
+          mie = all 1s
+      else for SscofpmfS:
+         sstatus.SIE = 1
+         sie = 0s
+         sip = 1 in LCOFIP and {SEIP, STIP, SSIP, none}
+         sie = all 1s
+    expectation: Highest prioirty interrupt fires.  LCOFIP only fires if none of the others are pending because it is lowest priority.
+    bins: 7 interrupts
+    rules:
+      - norm:intr_M_mode_pri
+      - norm:sip_sie_priority_bit_order

@@ -1,0 +1,80 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: ZicfilpSm
+source: https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?gid=2113591295#gid=2113591295
+description: |
+  In this sheet, all Zicfilp tests from the Zicfilp_Common sheet are 
+  executed in Machine Mode (M-mode).
+
+  Environment:
+  - Zicfilp extension enabled, Zicsr enabled.
+  - Landing Pad Enabled (LPE) controlled by mseccfg.MLPE.
+  - Tests execute in M-mode.
+
+  Execution Notes:
+  - All indirect branch instructions (JALR, C.JALR, C.JR) are exercised 
+    as in the Common sheet.
+  - LPAD behavior, label matching, immediate encoding, and software-check 
+    exceptions are tested as per normative rules defined in the spec.
+  - ELP state is observed via mstatus.MPELP (RV64) or mstatush.MPELP (RV32).
+  - This sheet additionally covers M-mode specific trap entry and return 
+    coverpoints not present in other sheets:
+      cp_elp_state_preservation_zicflip
+      cp_pelp_trap_entry_m_zicfilp
+      cp_pelp_trap_entry_m_guarded_zicfilp
+      cp_pelp_trap_return_m_zicfilp
+  - All other assumptions, instruction types, and execution conditions 
+    are identical to the Zicfilp_Common sheet.
+
+  Excluded (Debug testplan — separate file):
+  - cp_elp_state_preservation_debug_zicfilp
+  - cp_pelp_debug_mode_zicflip
+  - cp_pelp_debug_mode_r_zicflip
+
+  Excluded (Redundant — standard ISA traps already cover these):
+  - cp_lpad_misaligned_address_exception_zicfilp
+  - cp_lpad_alignment_exception_zicflip
+coverpoints:
+  - name: cp_elp_state_preservation_zicfilp
+    goal: Verify M-mode trap saves and restores previous ELP using MPELP
+    description: |-
+      Test Environment:
+      xLPE=1 in the origin mode and medeleg=0. Execute an indirect branch in S- or U-mode (rs1 != {x1,x5,x7}) to a non-LPAD instruction: the software-check exception is taken in M-mode with ELP=LP_EXPECTED.
+      An ECALL cannot be used for the LP_EXPECTED case, because an ECALL at the target of an ELP-setting branch raises the software-check exception first. The ECALL back to M-mode covers the ELP=NO_LP_EXPECTED case.
+    expectation: Trap is delivered to M-mode. Previous ELP value (LP_EXPECTED) is saved in mstatus.MPELP. After executing MRET, ELP is restored to LP_EXPECTED in the returning privilege mode
+    bins: Origin mode (U/S) × Trap target (M-mode) × ELP states
+    id: cfi_mstatus-mpelp_op
+    rules:
+      - '[norm:mstatus-mpelp_op]'
+  - name: cp_pelp_trap_entry_m_zicfilp
+    goal: Verify xPELP and ELP on trap entry to M-mode
+    description: |-
+      Test Environment:
+      mseccfg.MLPE=1. Execute an indirect branch in M-mode with rs1 != {x1,x5,x7} to a non-LPAD instruction, so the software-check exception is taken with ELP=LP_EXPECTED.
+      Execute an ECALL in M-mode for the ELP=NO_LP_EXPECTED case.
+    expectation: 'On trap entry: mstatus.MPELP = LP_EXPECTED and ELP = NO_LP_EXPECTED.'
+    bins: Trap target mode (M) × Initial ELP state
+    id: Zicfilp_pelp_trap
+    rules:
+      - '[norm:Zicfilp_pelp_trap]'
+  - name: cp_pelp_trap_entry_m_guarded_zicfilp
+    goal: Verify xPELP and ELP on trap entry from software-guarded branch
+    description: |-
+      Test Environment:
+      Execute software-guarded indirect branch in any privilege mode to set ELP=NO_LP_EXPECTED,
+      then trigger ECALL trap into M-mode. Verify mstatus.MPELP and ELP behavior.
+    expectation: 'On trap entry: mstatus.MPELP = NO_LP_EXPECTED and ELP remains NO_LP_EXPECTED.'
+    bins: Trap target mode × Initial ELP state (NO_LP_EXPECTED)
+    id: Zicfilp_pelp_trap
+    rules:
+      - '[norm:Zicfilp_pelp_trap]'
+  - name: cp_pelp_trap_return_m_zicfilp
+    goal: Verify behavior of return from trap via MRET
+    description: |-
+      Test Environment:
+      In M-mode set mstatus.MPP to M, S or U, set mstatus.MPELP (mstatush.MPELP on RV32) to 0 or 1, set mepc to a non-LPAD instruction, and execute MRET.
+      Test both values of the xLPE of the mode being returned to (mseccfg.MLPE for M, menvcfg.LPE for S, senvcfg.LPE for U).
+    expectation: On MRET, ELP is set to MPELP if the xLPE of the mode being returned to is 1, otherwise NO_LP_EXPECTED. MPELP is set to NO_LP_EXPECTED.
+    bins: 3 target modes (M/S/U) x 2 xLPE x 2 MPELP = 12
+    id: Zicfilp_pelp_trap_return
+    rules:
+      - '[norm:Zicfilp_pelp_trap_return]'

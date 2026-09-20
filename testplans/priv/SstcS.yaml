@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SstcS
+source: https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=618999433#gid=618999433
+notes: |
+  * for RV32, also access stimcmph
+  Boot to S-mode.  Run S and U-mode tests.
+coverpoints:
+  - heading: In supervisor mode
+  - name: cp_supervisor_tm
+    goal: Access stimecmp
+    description: Read stimecmp with mcounteren.TM = {0/1} for RV32, also access stimcmph
+    expectation: stimecmp only readable in supervisor mode if mcounteren.TM = 1
+    check: Check against RM
+    status: To be Done
+    coverage: Uncovered
+  - name: cp_supervisor_stce
+    goal: Access stimecmp
+    description: Read stimecmp with menvcfg.stce (menvcfgh in RV32) = {0/1} for RV32, also access stimcmph
+    expectation: stimecmp only readable in supervisor mode if menvcfg.STCE = 1
+    check: Check against RM
+    status: To be Done
+    coverage: Uncovered
+  - heading: In user mode
+  - name: cp_user_tm
+    goal: Access stimecmp
+    description: Read stimecmp with mcounteren.TM = {0/1} * scounteren.TM = {0/1} (if S_SUPPORTED) for RV32, also access stimcmph
+    expectation: stimecmp nevereadable in user mode
+    check: Check against RM
+    status: To be Done
+    coverage: Uncovered
+  - name: cp_user_stce
+    goal: Access stimecmp
+    description: Read stimecmp with menvcfg.stce (menvcfgh in RV32) = {0/1} for RV32, also access stimcmph
+    expectation: stimecmp never readable in user mode (too little privilege)
+    check: Check against RM
+    status: To be Done
+    coverage: Uncovered

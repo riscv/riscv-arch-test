@@ -16,7 +16,7 @@ include::norm/MisalignV_norm_rules.adoc[]
 
 SsstrictV tests that reserved vector encodings trap when Ssstrict is implemented.  It includes a comprehensive set of reserved overlapping register constraints.  It also tests miscellaneous reserved conditions such as widening to unsupported SEWs, register groups not aligned to a multiple of LMUL, reserved mask overlaps, and constraints on `vsetvl*` operands.
 
-include::{privtestplansdir}/SsstrictV.adoc[]
+include::{testplansdir}/priv/SsstrictV.adoc[]
 
 include::norm/SsstrictV_norm_rules.adoc[]
 
@@ -51,7 +51,7 @@ include::norm/ExceptionsVls_norm_rules.adoc[]
 
 Machine-mode access to vector CSRs.
 
-include::{privtestplansdir}/SmV.adoc[]
+include::{testplansdir}/priv/SmV.adoc[]
 
 include::norm/SmV_norm_rules.adoc[]
 
@@ -61,7 +61,7 @@ TODO: Many of these tests should be replicated in UV.
 
 Machine-mode access to vector floating-point CSRs.
 
-include::{privtestplansdir}/SmVF.adoc[]
+include::{testplansdir}/priv/SmVF.adoc[]
 
 include::norm/SmVF_norm_rules.adoc[]
 
@@ -71,6 +71,6 @@ TODO: Many of these tests should be replicated in UV.
 
 User-mode access to vector CSRs.
 
-include::{privtestplansdir}/UV.adoc[]
+include::{testplansdir}/priv/UV.adoc[]
 
 include::norm/UV_norm_rules.adoc[]

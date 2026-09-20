@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: EndianSm
+source: https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=220856688#gid=220856688
+coverpoints:
+  - name: cp_mstatus_mbe_endianness
+    goal: Read from memory in an endian fashion
+    description: For each endianness, sd 0x0102030405060708 to scratch, and also write all subwords with sw, sh, sb. For each endianness (independent), ld, lw, lwu, lh, lhu, lb, lbu it back.  In RV32, use mstatush and don't need the doubles.
+    notes: |-
+      restore endianness to normal afterward
+      MBE
+      when mstatus.MPRV=0

@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: ExceptionsZalrsc
+source: https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=891200072#gid=891200072
+coverpoints:
+  - name: cp_load_address_misaligned
+    goal: Load Misaligned
+    description: Misaligned lr.w, lr.d (8 bins for bottom 3 bits of address)
+    bins: 8 lsbs * 2 instr
+  - name: cp_load_access_fault
+    goal: Load Access Fault
+    description: Access fault of lr.w, lr.d
+    expectation: Access fault
+    bins: 2 instructions
+  - name: cp_load_access_misaligned_priority
+    goal: Load with both faults
+    description: Access fault of lr.w and lr.d with misaligned address
+    bins: 2 instr
+  - name: cp_store_address_misaligned
+    goal: Store Misaligned
+    description: Misaligned sc.w, sc.d cross match lr address  (8 bins for bottom 3 bits of address) cross rd having an initial value > 1
+    expectation: Faulting sc should not change rd
+    bins: 8 lsbs * 2 instr
+  - name: cp_store_access_fault
+    goal: Store Access Fault
+    description: Access fault of sc.w, sc.d cross match lr address cross rd having an initial value > 1
+    expectation: Faulting sc should not change rd
+    bins: 2 instr
+  - name: cp_store_access_misaligned_priority
+    goal: Store with both faults
+    description: Access fault and missalign of sc.w and sc.d cross match lr address cross rd having an initial value > 1
+    expectation: Faulting sc should not change rd
+    bins: 2 instr

@@ -561,13 +561,19 @@ def generate_random_vl(params: InstructionParams, test_data: TestData) -> tuple[
             [
                 f"srli x{params.temp_reg}, x{params.temp_reg}, {shift}",
                 f"beqz x{params.temp_reg}, 1f",
+                f"addi x{params.temp_reg}, x{params.temp_reg}, -2",
+                f"bge x0, x{params.temp_reg}, 2f",
                 f"remu x{temp_reg}, x{temp_reg}, x{params.temp_reg}",
-                f"addi x{temp_reg}, x{temp_reg}, 1",
+                f"addi x{temp_reg}, x{temp_reg}, 2",
+                "j 3f",
+                "2:",
+                f"addi x{temp_reg}, x0, 1",
+                "3:",
                 f"slli x{temp_reg}, x{temp_reg}, {shift}",
-                "j 2f",
+                "j 4f",
                 "1:",
                 f"mv x{temp_reg}, x0",
-                "2:",
+                "4:",
             ]
         )
     else:

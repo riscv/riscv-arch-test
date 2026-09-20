@@ -70,9 +70,6 @@ def make_vl_lmul(instr_name: str, instr_type: str, coverpoint: str, test_data: T
     lmul_exponents = list(range(min_lmul, max_lmul + 1))
     vl_options = ["vlmax", egs, "random"]
 
-    if egs != 1:
-        lmul_exponents = [exponent for exponent in lmul_exponents if exponent >= 0]
-
     test_chunks = []
     for l in lmul_exponents:
         lmul = 2.0**l

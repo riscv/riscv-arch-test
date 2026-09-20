@@ -112,8 +112,25 @@ def make_cross_edges(instr_name: str, instr_type: str, coverpoint: str, test_dat
         suffix2 = "f_emul2"
         edges1 = edges2 = VECTOR_EDGES.vf_edges
     elif "egs" in coverpoint:
-        suffix1 = suffix2 = coverpoint[coverpoint.index("egs") :]
-        edges1 = edges2 = crypto_edge_names(suffix1)
+        crypto_suffix = coverpoint[coverpoint.index("egs") :]
+        egs_match = re.match(r"egs\d+", crypto_suffix)
+        if egs_match is None:
+            raise ValueError(f"Cannot parse EGS suffix from coverpoint: {coverpoint}")
+        base_suffix = egs_match.group(0)
+
+        if crypto_suffix.endswith("_subbytes_vs2"):
+            if r1_name != "vs2":
+                raise ValueError(f"subbytes_vs2 requires vs2 as the first cross operand: {coverpoint}")
+            suffix1 = f"{base_suffix}_subbytes"
+            suffix2 = base_suffix
+        elif "_subbytes" in crypto_suffix:
+            suffix1 = base_suffix
+            suffix2 = crypto_suffix
+        else:
+            suffix1 = suffix2 = base_suffix
+
+        edges1 = crypto_edge_names(suffix1)
+        edges2 = crypto_edge_names(suffix2)
 
     lmul = get_element_group_lmul(info.element_group_size)
 

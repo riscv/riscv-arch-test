@@ -2193,10 +2193,18 @@ sv_\__MODE__\()cause:
 common_\__MODE__\()excpt_handler:
 
 #ifdef SDTRIG_TRIGGER_BP_HANDLING
-        // Sdtrig: check for a trigger-converted breakpoint before EPC relocation
-        // (the VA paths below jump straight to sv_Xepc). See SDTRIG_BP_* above.
+        // Sdtrig: trigger-generated breakpoints; must run before EPC relocation (VA paths skip it)
         li      T2, CAUSE_BREAKPOINT
         bne     T5, T2, sdtrig_\__MODE__\()bp_done    // not a breakpoint
+  .ifc \__MODE__ , M
+        csrr    T2, tdata1                  // tselect still selects the trigger under test
+        srli    T2, T2, UDB_MXLEN-4         // tdata1.type
+        li      T6, 4                       // 4 = itrigger: xEPC is the original handler's entry, return untouched
+        beq     T2, T6, skp_adj_\__MODE__\()epc
+        li      T6, 5                       // 5 = etrigger; any other type is an ordinary breakpoint
+        bne     T2, T6, sdtrig_\__MODE__\()bp_done
+  .endif
+        // etrigger bp: original cause is lost, so use the test's a1 note (SDTRIG_BP_*)
         li      T2, SDTRIG_BP_FETCH
         beq     a1, T2, sdtrig_\__MODE__\()bp_fetch
         li      T2, SDTRIG_BP_SKIP
@@ -2313,26 +2321,6 @@ sdtrig_\__MODE__\()bp_done:
 // gate silently compiled this skip out and every access-fault test aborted on
 // its first deliberate probe (EPC=0 is outside vmem/code/data -> abort_test).
 vmem_adj_\__MODE__\()epc:
-
-        // FTODO: Remove this code section if the trap handler changes done are fine
-        // #ifdef SDTRIG_IMPRECISE_XEPC
-        // .ifc \__MODE__ , M
-        //         LI(     T2, CAUSE_BREAKPOINT)
-        //         bne     T5, T2, no_skp_adj_\__MODE__\()epc   # not a breakpoint -> always adjust
-        //         csrr    T2, tdata1              # tselect still selects the trigger under test
-        //         #if __riscv_xlen == 64
-        //         srli    T2, T2, 60
-        //         #else
-        //         srli    T2, T2, 28
-        //         #endif
-        //         LI(     T6, 4)                  # type 4 = itrigger
-        //         beq     T2, T6, skp_adj_\__MODE__\()epc
-        //         LI(     T6, 5)                  # type 5 = etrigger
-        //         beq     T2, T6, skp_adj_\__MODE__\()epc
-        // no_skp_adj_\__MODE__\()epc:
-        // .endif
-        // #endif
-
         #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
                 LI(     T2, RVMODEL_ACCESS_FAULT_ADDRESS)
                 beq     T3, T2, sv_\__MODE__\()epc

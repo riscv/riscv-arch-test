@@ -101,15 +101,11 @@
     #ifdef STANDARD_SM_SUPPORTED
       RVTEST_TSBI_GOTO_MMODE
       #ifdef S_SUPPORTED
-        // Exact reverse of the prolog order (M, H, S, V) so the modes that
-        // share the S CSR space unwind in the order they were nested.
+        // Exact reverse of the prolog order (M, S, V).
         #ifdef H_SUPPORTED
           RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code
         #endif
         RVTEST_TRAP_EPILOG S          // actual s-mode prolog/epilog/handler code
-        #ifdef H_SUPPORTED
-          RVTEST_TRAP_EPILOG H        // actual h-mode prolog/epilog/handler code
-        #endif
       #endif
       RVTEST_TRAP_EPILOG M            // actual m-mode prolog/epilog/handler code
     #endif
@@ -958,13 +954,9 @@
       // and there is no harm setting up all the trap handlers here
       RVTEST_TRAP_PROLOG M
       #ifdef S_SUPPORTED
-        // Order matches INSTANTIATE_MODE_MACRO: M, H, S, V. S must run after H
-        // because HS-mode has no trap CSRs of its own — stvec, sscratch, sepc
-        // and scause ARE the S-mode ones — so whichever prolog runs last owns
-        // them.
-        #ifdef H_SUPPORTED
-          RVTEST_TRAP_PROLOG H
-        #endif
+        // Order matches INSTANTIATE_MODE_MACRO: M, S, V. There is no HS-mode
+        // prolog: HS uses the S-mode trap CSRs, so the S prolog covers both and
+        // also saves hedeleg and hgatp when H is supported.
         RVTEST_TRAP_PROLOG S
         #ifdef H_SUPPORTED
           RVTEST_TRAP_PROLOG V
@@ -1377,7 +1369,7 @@
 
       // Delegate nothing to VS-mode by default: a guest trap goes to HS-mode,
       // where the framework's trap handler is, unless a test opts in by writing
-      // hedeleg/hideleg itself. hedeleg is also cleared by RVTEST_TRAP_PROLOG H,
+      // hedeleg/hideleg itself. hedeleg is also cleared by RVTEST_TRAP_PROLOG S,
       // which saves the incoming value; this keeps hideleg consistent with it.
       csrw hideleg, zero
       csrw hvip, zero     // no guest-visible interrupts pending at boot
@@ -1386,7 +1378,7 @@
       // The remaining interrupt CSRs need no write. hie is a view of mie and hip a
       // view of mip (VSSIP aliases hvip.VSSIP), both cleared in RVTEST_BOOT_TO_MMODE;
       // vsie and vsip are views of hie and hip through hideleg, which is zero; and
-      // hgatp is zeroed by RVTEST_TRAP_PROLOG H along with the other xSATPs.
+      // hgatp is zeroed by RVTEST_TRAP_PROLOG S along with the other xSATPs.
 
       // Make counters readable from VS/VU. hcounteren gates guest counter
       // access the same way mcounteren gates HS-mode's, so leaving it at 0

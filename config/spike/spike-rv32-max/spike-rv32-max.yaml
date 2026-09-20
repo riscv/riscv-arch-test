@@ -26,7 +26,6 @@ implemented_extensions:
   - { name: Shvstvala, version: "= 1.0.0" }
   - { name: Shvstvecd, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.13.0" }
-  - { name: Smaia, version: "= 1.0.0" }
   - { name: Smcdeleg, version: "= 1.0.0" }
   - { name: Smcntrpmf, version: "= 1.0.0" }
   - { name: Smcsrind, version: "= 1.0.0" }
@@ -34,7 +33,6 @@ implemented_extensions:
   - { name: Smepmp, version: "= 1.0.0" }
   # - { name: Smrnmi, version: "= 1.0.0" } # spike does not support Smrnmi
   - { name: Smstateen, version: "= 1.0.0" }
-  - { name: Ssaia, version: "= 1.0.0" }
   - { name: Ssccfg, version: "= 1.0.0" }
   - { name: Ssccptr, version: "= 1.0.0" }
   - { name: Sscofpmf, version: "= 1.0.0" }
@@ -430,7 +428,7 @@ params:
   VSTVEC_MODES: [0, 1]
   HSTATEEN_ENVCFG_TYPE: rw
   IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
-  NUM_EXTERNAL_GUEST_INTERRUPTS: 31
+  NUM_EXTERNAL_GUEST_INTERRUPTS: 0
   REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION: true
   REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION: true
   REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT: true
@@ -529,11 +527,6 @@ params:
   # Csrind params
   HSTATEEN_CSRIND_TYPE: rw
   MSTATEEN_CSRIND_TYPE: rw
-  # AIA params
-  HSTATEEN_AIA_TYPE: rw
-  MSTATEEN_AIA_TYPE: rw
-  MSTATEEN_IMSIC_TYPE: rw
-  HSTATEEN_IMSIC_TYPE: rw
   # Smctr params
   MCTRCTL_CORSWAPINH_IMPLEMENTED: true
   MCTRCTL_CUSTOM_IMPLEMENTED: false

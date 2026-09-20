@@ -1,0 +1,7 @@
+// Shlcofideleg Coverpoints.  Converted from the "Shlcofideleg" tab of the Hypervisor test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=820648507#gid=820648507) on 2026-09-19.
+
+[[t-Shlcofideleg-coverpoints]]
+No shlcofideleg coverpoints have been defined yet.
+
+* Develop this after baseline overflow delegation tests

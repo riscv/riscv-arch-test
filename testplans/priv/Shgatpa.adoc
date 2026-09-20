@@ -1,0 +1,20 @@
+// Shgatpa Coverpoints.  Converted from the "Shgatpa" tab of the Hypervisor test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=262220701#gid=262220701) on 2026-09-19.
+
+[[t-Shgatpa-coverpoints]]
+.Shgatpa Coverpoints
+[cols="2,1,2,2,1,3", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Expectation | Bins | Normative Rule
+
+6+| Following tests are done in M-mode
+
+| cp_shgatpa
+| Check all values writable to hgatp.mode
+| RV32: write hgatp.mode = 0/1 +
+RV64: write hgatp.mode = 0, 8, 9, 10
+| Matches reference model, which should accept same values as satp.mode
+| 2 or 4
+| For each supported virtual memory scheme SvNN supported in satp, the corresponding hgatp SvNNx4 mode must be supported. The hgatp mode Bare must also be supported.
+
+|===

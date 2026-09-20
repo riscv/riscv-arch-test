@@ -1,0 +1,296 @@
+// InterruptsH Coverpoints.  Converted from the "InterruptsH-NC" tab of the Hypervisor test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=552831967#gid=552831967) on 2026-09-19.
+
+[[t-InterruptsH-coverpoints]]
+.InterruptsH Coverpoints
+[cols="2,1,3,2,2", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Expectation | Bins
+
+5+| Record all trap information including xstatus
+
+5+| add to CTP an assumption that all interrupts are implemented
+
+5+| Following tests are done in M-mode
+
+| cp_mideleg
+| hypervisor bits of mideleg are read-only 1
+| Write 0 to mideleg and read it back.
+| Bits 10, 6, 2 are 1s.  If GEILEN > 0, bit 12 is also 1.
+| 1
+
+| cp_mie
+| mie.VS*IE bits are alias of hie
+| With hie = 0x444, read mie.
+| 0x444
+| 1
+
+| cp_mip
+| mip.VS*IP bits are alias of hip
+| With hvip = 0x444, read mip and hip. Note that hip depends on hvip.
+| 0x444
+| 1
+
+| cp_nohint_m
+| VS*I never causes machine-mode interrupt
+| mstatus.MIE=1, hideleg = 0, mie = 0x444, mip = 0x444
+| No interrupt occurs because these are always delegated to HS or VS
+| 1
+
+5+| Following tests are done in M-mode if GILEN > 0
+
+| cp_mie_gilen
+| mie.SGEIE is alias of hie
+| With hie = 0x1444, read mie.
+| 0x1444
+| 1
+
+| cp_mip_gilen
+| mip.SGEIP is alias of hip
+| Set hgeip nonzero and read mip
+| 0x1000
+| 1
+
+5+| Following tests are done in M-mode if GILEN = 0
+
+| cp_mie_gilen
+| mie.SGEIE is read-only zero if GILEN = 0
+| Write hie = 0x1000, read mie
+| 0x0000
+| 1 + +
+A bit in hie shall be writable if the corresponding interrupt can ever become pending in hip. Bits of hie that are not writable shall be read-only zero.
+
+5+| Following tests are done in HS-mode
+
+| cp_trigger_vsei
+| trigger HS-mode VSEI
+| With sstatus.SIE={0/1}, hideleg.VSEI = {0/1}, hie.VSEIE = {0/1}, write hvip.VSEIP
+| hip.VSEIP rises. if SIE=1 & hideleg = 0 & hie = 1, interrupt to HS-mode with cause 10
+| 2 * 2 * 2
+
+| cp_trigger_vsti
+| trigger HS-mode VSTI
+| With sstatus.SIE={0/1}, hideleg.VSTI = {0/1}, hie.VSTIE = {0/1}, write hvip.VSTIP
+| hip.VSTIP rises. if SIE=1 & hideleg = 0 & hie = 1, interrupt to HS-mode with cause 6
+| 2 * 2 * 2
+
+| cp_trigger_vssi
+| trigger HS-mode VSSI
+| With sstatus.SIE={0/1}, hideleg.VSSI = {0/1}, hie.VSSIE = {0/1}, write hvip.VSSIP
+| hip.VSSIP rises. if SIE=1 & hideleg = 0 & hie = 1, interrupt to HS-mode with cause 2
+| 2 * 2 * 2
+
+| cp_hip_write
+| only hip.vssip is writable, and aliases to hvip
+| Write hip=0xFFFF and hip = 0x0000.  Read back hvip and hip.
+| 0x0004 and 0x0000 in both hip and hvip.
+| 1
+
+| cp_priority_en_vsi
+| trigger highest priority enabled VSI
+| With sstatus.SIE=1, hideleg = 0, 2^3 combinations of hie.VS*IE, write 2^3 combinations of hvip.VS*IP
+| Highest priority enabled interrupt to HS-mode
+| 8 * 8
+
+| cp_priority_deleg_vsi
+| trigger highest priority undelegated VSI
+| With sstatus.SIE = 1, hie=0x444, 2^3 combinations of hideleg, write 2^3 combinations of hvip.VS*IP
+| Highest priority undelegated interrupt to HS-mode
+| 8 * 8
+
+| cp_priority_s
+| VS*I has lower priority than any S*I
+| With sstatus.SIE = 1, hvip = 0x444, hideleg = 0, hie = 0x444, sie = 1s, sip = {SEIP, STIP, SSIP, none}
+| Take highest priority interrupt (supervisor, if any asserted, else VSEI)
+| 4
+
+| cp_hie
+| hie.VS*IE bits are alias of mie
+| With mie = 0x444, 2^3 combinations of hideleg, read hie and vsie
+| hie = 0x444; vsie = 1s in delegated bits
+| 8
+
+| cp_hip
+| hip.VS*IP bits are alias of mip
+| With mip = 0x444, 2^3 combinations of hideleg, read hip and visp
+| hip = 0x444; visp = 1s in delegated bits
+| 8
+
+| cp_hideleg
+| hideleg bits 10, 6, 2 are writable
+| Write 0xFFFF to hideleg, read back
+| 0x444
+| 1
+
+| cp_vsie
+| vsie is alias of hie when delegated
+| With 2^3 combinations of hideleg and 2^3 combinations of hie, read vsie
+| vsie bits = 1 if hideleg and hie bits = 1 (shifted)
+| 8 * 8
+
+| cp_vsip
+| vsip is alias of hip when delegated
+| With 2^3 combinations of hideleg and 2^3 combinations of hip, read vsip
+| vsip bits = 1 if hideleg and hip bits = 1 (shifted)
+| 8 * 8
+
+| cp_vsie_from_hie
+| hie is alias of vsie when delegated
+| With 2^3 combinations of hideleg, write 0xFFFF to vsie, read hie
+| delegated bits show up as 1 in hie (shifted)
+| 8
+
+5+| Following tests are done in HS-mode if GILEN > 0
+
+| cp_hie_gilen
+| hie.SGEIE is alias of mie
+| With mie = 0x1444, read hie
+| 0x1444
+| 1
+
+| cp_priority_sgei
+| SGEI has higher priority than VS*I
+| With sstatus.SIE=1, hvip = 0x444, sgeip & sgeie != 0, hideleg = 0, hei = 0x1444
+| interrupt to HS-mode with cause 12
+| 1
+
+| cp_priority_sgei_s
+| SGEI has lower priroity than any S*I
+| With sstatus.SIE = 1, hvip = 0x444, hideleg = 0, hie = 0x1444, sie = 1s, sip = {SEIP, STIP, SSIP, none}
+| Take highest priority interrupt (supervisor, if any are asserted)
+| 4
+
+| cp_trigger_sgei
+| trigger HS-mode SGEI
+| With sstatus.SIE={0/1}, sgeip & sgeie != 0, hie.SGEIE = {0/1}
+| hip.SGEIP =1.  if  SIE=1 & hie = 1, interrupt to HS-mode with cause 12
+| 2 * 2
+
+| cp_hgeie
+| hgeie enables SGEI
+| With sstatus.SIE = 0, for i in 1...GILEN, with hgeip = {0, 1 in i, 1s in all writable bits}, hgeie = 1 in bit i
+| hip.SEGIP = 1 if hgeip & hgeie != 0
+| GLEN * 3
+
+| cp_trigger_vsei_hgeip
+| trigger HS-mode VSEI with HGEIP
+| With sstatus.SIE = 0, hvip = 0, hideleg = 0, hie = 0, for i in 1...GLEN: hgeip = {0, 1 in i, 1 in all writable bits except i}, hgeie[i] = {0/1}, hstatus.VGEIN = i
+| hip.VSEIP = hgeip[i] independent of hgeie
+| GLEN * 2
+
+| cp_hgeip0
+| no VSEI selected when VGEIN=0
+| With statatus.SIE=0, hvip = 0, hideleg=0, hie = 0, hgeip = hgeie = 1s in all writable bits, hstatus.VGEIN = 0
+| hip.SEGIP = 0, hip.VSEIP = 0
+| 1
+
+5+| Following tests are done in VS-mode
+
+| cp_hideleg_hip_vs
+|
+| Set up 2^3 combinations of hideleg, 2^3 combinations of hip, hie = 0x444.  Change to VS-mode with vsstatus.SIE = 1
+| Take highest priority interrupt to HS or VS.  VS shifts to SEI/STI/SSI.
+| 8 * 8
+
+| cp_hideleg_hie_vs
+|
+| Set up 2^3 combinations of hideleg, 2^3 combinations of hie, hip = 0x444.  Change to VS-mode with vsstatus.SIE = 1
+| Take highest priority interrupt to HS or VS.  VS shifts to SEI/STI/SSI.
+| 8 * 8
+
+| cp_hip_hie_vs
+|
+| Set up 2^3 combinations of hip, 2^3 combinations of hie, hideleg = 0x444.  Change to VS-mode with vsstatus.SIE = 1
+| Take highest priority interrupt to HS or VS.  VS shifts to SEI/STI/SSI.
+| 8 * 8
+
+| cp_sie_vs
+|
+| hideleg = hip = hie = 0x444.  Change to VS-mode with vsstatus.SIE = {0/1}
+| Take SEI if SIE=1
+| 2
+
+| cp_mideleg_mip_vs
+|
+| With mstatus.MIE=0, mideleg = {0/1s}, mip = {MEIP/MTIP/MSIP/SEI/STI/SSI}, mie = 1s, change to VS-mode with vsstatus.SIE=1
+| Take interrupt to M or HS
+| 2 * 6
+
+| cp_mtinst
+| mtinst = 0 on interrupt
+| with mtinst randomized, mideleg = 0, exercise each interrupt.
+| mtinst = 0
+| 10 interrupts
+
+| cp_htinst
+| htinst = 0 on interrupt
+| with htinst randomized, mideleg = 1, hideleg = 0 exercise each interrupt.
+| htinst = 0
+| 10 interrupts
+
+5+| Following tests are done in VU-mode
+
+| cp_hideleg_hip_vu
+|
+| Set up 2^3 combinations of hideleg, 2^3 combinations of hip, hie = 0x444.  Change to VU-mode.
+| Take highest priority interrupt to HS or VS.  VS shifts to SEI/STI/SSI.
+| 8 * 8
+
+| cp_hideleg_hie_vu
+|
+| Set up 2^3 combinations of hideleg, 2^3 combinations of hie, hip = 0x444. Change to VU-mode.
+| Take highest priority interrupt to HS or VS.  VS shifts to SEI/STI/SSI.
+| 8 * 8
+
+| cp_hip_hie_vu
+|
+| Set up 2^3 combinations of hip, 2^3 combinations of hie, hideleg = 0x444.  Change to VU-mode.
+| Take highest priority interrupt to HS or VS.  VS shifts to SEI/STI/SSI.
+| 8 * 8
+
+| cp_mideleg_mip_vu
+|
+| With mstatus.MIE=0, mideleg = {0/1s}, mip = {MEIP/MTIP/MSIP/SEI/STI/SSI}, mie = 1s, change to VU-mode
+| Take interrupt to M or HS
+| 2 * 6
+
+5+| Following tests are done in U-mode
+
+| cp_vsint_disabled_u
+| VS-mode interrupts are globally disabled in U-mode
+| hideleg = hip = hie = 0x444.  Change to U-mode.
+| Nothing
+| 1
+
+5+| Four hie/hip bits aliased to mie/mip
+
+5+| Generating hip.VSEIP with hvip
+
+5+| Generating hip.VSEIP with hgeip
+
+5+| Generating hip.VSTIP with hivip.vstip
+
+| Generating hip.VSTIP with vstimecmp and htimedelta (Sstc supported)
+|
+| See SstcH
+|
+|
+
+|===
+
+[NOTE]
+====
+* generating hip.VSSIP with hvip.VSSIP
+* generating hip.VSSIP by writing it directly
+* priority of interrupts
+* Generating hip.SGEIP with one or more of hgeip & hgeie
+* When hideleg is set, hip and hie bit is aliased to vsip and vsie *** mideleg required too?
+* Delegated interrupts replace supervisor interrupts (test both)
+* Priority of interrupts
+* Interrupts not taken in higher mode?
+* Delegated interrupts are read-only zero in sie/sip.  Undelegated read-only zero in hip/hie
+* delegated interrupts are masked at the delegator privilege level
+* interrupts to S mode take priority over interrupts to lower priv mode
+* However, interrupts directed to HS-level continue to be indicated in
+* the HS-level sip register, not in vsip, when V=1.
+====

@@ -1,0 +1,17 @@
+// Zic64bZicboz Coverpoints.  Converted from the "Zic64bZicboz" tab of the Priv test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1677990180#gid=1677990180) on 2026-09-19.
+
+[[t-Zic64bZicboz-coverpoints]]
+.Zic64bZicboz Coverpoints
+[cols="2,1,3,2,1,2", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Expectation | Bins | Normative Rule
+
+| cp_zic64b
+| Cache block zeros
+| For each offset in range of [0, 64]: Write all 1s to 128 consecutive bytes, then do cbo with offset from 64-bit aligned base.  Read back words at offsets of 0, 60, 64, 124 from base.
+| Match ref model. Only 64 bytes written. When offset is 64, they are in the second block.
+| 65
+| Cache blocks must be 64 bytes in size, naturally aligned in the address space.
+
+|===

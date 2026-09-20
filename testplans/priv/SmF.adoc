@@ -1,0 +1,27 @@
+// SmF Coverpoints.  Converted from the "SmF" tab of the Priv test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=29805079#gid=29805079) on 2026-09-19.
+
+[[t-SmF-coverpoints]]
+.SmF Coverpoints
+[cols="2,1,2,1", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Normative Rule
+
+| cp_fcsr_access
+| Writing to the CSR field +
+(WARL)
+| Write 0s and 1s to fcsr, frm, fflags cross with mstatus.FS init/clean/dirty
+|
+
+| cp_mstatus_FS_transition
+| Writing to the CSR field +
+(WARL)
+| Each different type of floating-point instruction crossed with four values of FS
+| check FS becomes dirty where appropriate
+
+|===
+
+[NOTE]
+====
+* Tests run in M mode
+====

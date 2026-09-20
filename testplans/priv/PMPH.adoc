@@ -1,0 +1,260 @@
+// PMPH Coverpoints.  Converted from the "PMPH-US" tab of the Hypervisor test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=161540329#gid=161540329) on 2026-09-19.
+
+[[t-PMPH-coverpoints]]
+.PMPH Coverpoints
+[cols="2,2,6,2,2,1,1", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Expectation | Bins | ID | Normative Rule
+
+7+| This test plan verifies correct enforcement of PMP in systems implementing the RISC-V Hypervisor extension. It ensures that PMP permissions are applied consistently across all relevant privilege modes (M, HS, VS, and VU), including accesses performed through hypervisor-specific load and store instructions and under one-stage and two-stage address translation. +
+The test environment assumes a configurable number of writable PMP entries (PMP_writable_regs), typically 16, and tests are parameterized to allow execution on implementations with fewer writable regions. To reduce runtime, tests are executed with PMP_writable_regs = 16 where supported. The lowest-priority writable PMP region (region PMP_writable_regs−1, typically region 15) is always configured as a background region covering the entire physical address space, using NAPOT addressing with RWX permissions and the L bit set, and with the address register programmed to all ones. Functional coverage is written for PMP_writable_regs−1 regions, while tests are executed assuming PMP_writable_regs regions, ensuring full coverage even when the highest region is reserved as background. +
+Unless otherwise specified, tests execute in M-mode while configuring PMP state, and then transition into HS-mode, VS-mode, or VU-mode to observe PMP enforcement. Standard PMP regions are configured using NAPOT addressing with a size of max(g, 8) bytes, placed beyond the program code and not overlapping other standard regions. A default TOR region is aligned to the PMP grain size g and placed beyond the end of the program, with a size of exactly g. PMP grain size is derived from the platform parameter G, where g = 2^(G+2). +
+The pmpcfg_i field refers to the 8-bit configuration for region i, located in pmpcfg[i/4] on RV32 or pmpcfg[2*(i/8)] on RV64. Instruction fetch accesses are generated using jal and jalr. Read accesses include {lb, lbu, lh, lhu, lw, lwu, ld}, and write accesses include {sb, sh, sw, sd}. For RV32 systems, instructions lwu, ld, and sd are excluded. Legal PMP permission encodings tested are {000, 001, 011, 100, 101, 110}, with the W=1, R=0 combination treated as reserved and unpredictable. +
+For tests involving address translation, valid VS-stage and G-stage page tables are configured as required. Proper privilege mode transitions between HS, VS, and VU are explicitly performed to validate correct enforcement in virtualized contexts. +
+After modifying PMP CSRs, synchronization is performed to ensure consistent behavior. Since PMP permissions are not cached in translation structures, PMP changes are expected to take effect immediately; however, when PMP changes are combined with updates to translation structures, appropriate fencing is used. SFENCE.VMA is issued after VS-stage page table updates, and HFENCE.GVMA with rs1 = x0 and rs2 = x0 is issued after G-stage updates. On systems where satp.MODE is read-only zero, SFENCE.VMA may raise an illegal instruction exception; such traps are expected and may be ignored for test purposes. Memory barriers are used where required to ensure proper ordering of configuration changes relative to memory operations.
+
+| cp_pmp_hs_mode_access
+| Verify PMP applies in HS-mode
+| HS-mode executes {lw, sw, jalr} to PMP-protected region
+| Access allowed iff PMP permits on final PA
+| {R,W,X} × {allow/deny}
+| pmp_hs_access_v0
+| norm:pmp_check_priv_modes +
+norm:pmp_with_paging
+
+| cp_pmp_vs_mode_access
+| Verify PMP applies in VS-mode
+|
+| Access allowed iff PMP permits on final PA
+| {R,W,X} × {allow/deny}
+| pmp_vs_access_v0
+| norm:pmp_check_priv_modes, norm:pmp_with_paging
+
+| cp_pmp_vu_mode_access
+| Verify PMP applies in VU-mode
+| VS-mode access via VS-stage or 2-stage translation
+| Access allowed iff PMP permits on final PA
+| {R,W,X} × {allow/deny}
+| pmp_vu_access_v0
+| norm:pmp_check_priv_modes +
+norm:pmp_with_paging
+
+| cp_pmp_hlv_read
+| Verify HLV obeys PMP.R
+| HS-mode executes HLV* into PMP.R=0 region
+| Load access fault
+| {HLVB,HLVH,HLVW,HLVD}
+| pmp_hlv_r_v0
+| norm:pmp_load_fault, norm:pmp_rwx_check
+
+| cp_pmp_hsv_write
+| Verify HSV obeys PMP.W
+| HS-mode executes HSV into PMP.W=0 region
+| Store access fault
+| {HSV}
+| pmp_hsv_w_v0
+| norm:pmp_store_fault
+
+| cp_pmp_hlvx_x_only
+| Ensure HLVX does not bypass X-only PMP
+| PMP region X=1, R=W=0; HS executes HLVX
+| Load access fault
+| {X-only}
+| pmp_hlvx_xonly_v0
+| norm:pmp_load_fault, norm:pmp_rwx_check
+
+| cp_pmp_hlvx_r_allowed
+| Verify HLVX works when PMP.R=1
+| PMP region R=1; HS executes HLVX
+| Load succeeds
+| {R=1}
+| pmp_hlvx_r_v0
+| norm:pmp_rwx_check
+
+| cp_pmp_after_gstage
+| Verify PMP checked after G-stage
+| G-stage translation succeeds, PMP denies
+| Access fault (not page fault)
+| {allow/deny}
+| pmp_gstage_order_v0
+| norm:pmp_with_paging
+
+| cp_pmp_after_vsstage
+| Verify PMP checked after VS-stage
+| VS-stage translation succeeds, PMP denies
+| Access fault
+| {deny}
+| pmp_vsstage_order_v0
+| norm:pmp_with_paging
+
+| cp_pmp_pf_priority
+| Verify page fault precedes PMP
+| VS or G-stage translation fault
+| Page fault raised
+| {VS,G}
+| pmp_pf_prio_v0
+| norm:pmp_with_paging
+
+| cp_pmp_exec_fault_h
+| PMP exec violation in virtualized mode
+| VS/HS instruction fetch denied by PMP
+| Instruction access fault
+| {HS,VS}
+| pmp_exec_fault_h_v0
+| norm:pmp_exec_fault
+
+| cp_pmp_precise_trap_h
+| PMP faults are precise
+| Faulting instruction does not retire
+| PC points to faulting insn
+| {all types}
+| pmp_precise_v0
+| norm:pmp_violation_precise_trap
+
+| cp_pmp_hfence_translation
+| HFENCE required only for G-stage
+| Change hgatp/PT + PMP
+| Translation changes visible only after HFENCE
+| {before/after}
+| pmp_hfence_v0
+| norm:pmp_with_paging
+
+| cp_pmp_block
+| Check PMP and PMPH enforcement
+| Execute {hlv*, hsv*, hlvx*} targeting addresses disallowed by PMP/PMPH config
+| Should raise Load/Store Access Fault
+| instr × priv_mode × pmp_cfg_case
+|
+|
+
+| pmp_twostage_interaction
+| Verify PMP interaction with two-stage translation
+| Test Setup: Configure G-stage page tables with various GPA to SPA mappings. Set up PMP regions covering different SPA ranges with varying permissions (R/W/X combinations). Execute memory operations from VS/VU modes that trigger two-stage translation. +
+Test Execution: 1) Perform loads/stores/fetches from VS-mode with addresses that map through G-stage to SPA addresses covered by different PMP regions. 2) Verify PMP checks occur on final SPA, not intermediate GPA. 3) Test with PMP regions using NAPOT, TOR, and NA4 addressing modes. 4) Use standard regions of max(g,8) bytes for NAPOT configurations. 5) Test with bottom region (PMP_writable_regs-1) configured as background with NAPOT, RWX, L=1, pmpaddr=All_ones. Synchronization: Issue HFENCE.GVMA after PMP configuration changes.
+| PMP should apply to final supervisor physical addresses regardless of virtualization mode
+| PMP configurations (R/W/X/A/L) × translation results (success/fail) × privilege modes (HS/VS/VU)
+|
+|
+
+| pmp_gstage_pagetable_access
+| Verify PMP protection of G-stage page tables
+| Test Setup: Configure PMP regions to selectively protect/allow access to G-stage page table memory locations. Map G-stage page tables at known physical addresses and configure PMP regions to cover these addresses with varying permissions. +
+Test Execution: 1) Configure PMP to deny read access to L0 G-stage page table memory, attempt VS-mode memory access requiring page table walk. 2) Configure PMP to deny write access to page table locations, attempt operations that would modify G-stage page tables. 3) Test all page table levels (L0/L1/L2/L3) with different PMP protection patterns. 4) Use TOR regions to precisely cover page table boundaries. 5) Test with PMP grain size g considerations for page table alignment. Verification: Confirm appropriate guest page faults or access faults occur when PMP denies page table access.
+| PMP should protect G-stage page table accesses and cause appropriate faults
+| PMP settings (deny/allow) × page table access patterns (read/write) × page table levels (L0/L1/L2/L3)
+|
+|
+
+| pmp_hypervisor_priority
+| Verify PMP vs hypervisor exception priority
+| Test Setup: Create scenarios where both PMP violations and guest page faults can occur simultaneously. Configure G-stage page tables with invalid entries and PMP regions that would also deny access. +
+Test Execution: 1) Configure invalid G-stage PTE and PMP region denying access to same SPA range, perform memory access from VS-mode. 2) Test priority with different fault combinations: PMP read fault + guest page fault, PMP write fault + guest store page fault, PMP execute fault + guest instruction page fault. 3) Test with different privilege levels (VS vs VU mode) to verify consistent priority ordering. 4) Verify mcause/scause values reflect correct exception priority. Exception Handling: Ensure proper trap delegation configuration to test fault routing.
+| PMP exceptions should have higher priority than virtualization exceptions
+| Exception combinations (PMP fault + guest page fault) × access types (read/write/execute) × privilege levels
+|
+|
+
+| pmp_gpa_spa_mapping
+| Verify PMP application to guest physical addresses
+| Test Setup: Configure G-stage page tables with various GPA to SPA mappings including identity, offset, and scattered mappings. Set up PMP regions covering specific SPA ranges. +
+Test Execution: 1) Create GPA ranges that map to SPA ranges with different PMP protections. 2) From VS-mode, access GPAs that map to PMP-protected SPAs, verify PMP checks SPA not GPA. 3) Test with overlapping GPA ranges mapping to same SPA region with PMP protection. 4) Test invalid G-stage translation scenarios where PMP should not be reached. 5) Use TOR regions for precise SPA boundary testing. Address Validation: Verify address translation completion before PMP evaluation.
+| PMP should check supervisor physical addresses, not guest physical addresses
+| GPA ranges × SPA mappings × PMP rule coverage × translation validity
+|
+|
+
+| pmp_atomic_operations
+| Verify PMP with atomic operations in virtualized environment
+| Test Setup: Configure atomic memory regions accessible through two-stage translation with various PMP protections. Set up alignment-sensitive test addresses. +
+Test Execution: 1) Test atomic memory operations (AMO.{ADD,XOR,OR,AND,MIN,MAX,MINU,MAXU}.{W,D}) through two-stage translation to PMP-protected memory. +
+2) Test load-reserved/store-conditional (LR.{W,D}/SC.{W,D}) sequences with PMP boundaries in HS-mode with G-stage translation enabled. +
+4) Verify atomic operations fail atomically when PMP denies access.
+| Atomic Operation will give guest page fault if PTE permissions are violated, else access fault if PMP permissions fail
+| Atomic operation types (AMO/LR/SC) × PMP permissions × virtualization modes × address alignment
+|
+|
+
+| pmp_instruction_fetch
+| Verify PMP execute permissions with virtualized instruction fetch
+| Test Setup: Place executable code at various SPA locations with different PMP execute permissions. Configure G-stage translation to map VS-mode code regions to these SPAs. +
+Test Execution: 1) Execute code from VS-mode where instructions are mapped to SPA with PMP X=1, verify successful execution. 2) Execute code from VS-mode where instructions map to SPA with PMP X=0, verify instruction access fault. 3) Test fetch instructions (jal, jalr) crossing PMP region boundaries. 4) Test with pmpcfg_i.L=1 and various legal XWR combinations focusing on X bit behavior. 5) Place test code in standard regions starting after main program code. Exception Handling: Verify instruction access faults properly trap and provide correct fault addresses.
+| Execute permissions should be enforced on final physical addresses
+| Instruction fetch scenarios × execute permissions (granted/denied) × translation stages × privilege transitions
+|
+|
+
+| pmp_interrupt_handling
+| Verify PMP during interrupt/exception handling in virtualized modes
+| Test Setup: Configure interrupt delegation (mideleg/sideleg) for VS-mode interrupt handling. Set up interrupt handlers at various SPA locations with different PMP protections. +
+Test Execution: 1) Configure VS-mode interrupt handlers in memory regions with PMP restrictions, test interrupt delivery and handler execution. 2) Test external, timer, and software interrupts with handlers requiring different PMP permissions (R/W/X). 3) Test interrupt handler code crossing PMP region boundaries. 4) Test nested interrupt scenarios with multiple PMP region transitions. 5) Verify interrupt handler memory accesses (stack operations, context save/restore) respect PMP boundaries. Handler Placement: Ensure interrupt handlers are in executable regions with appropriate PMP permissions.
+| Interrupt handlers should respect PMP boundaries after address translation
+| Interrupt types (external/timer/software) × handler locations × PMP rule coverage × virtualization modes
+|
+|
+
+| pmp_nested_virtualization
+| Verify PMP with nested virtualization scenarios
+| Test Setup: Configure nested hypervisor environment (if supported by implementation). Set up multiple levels of address translation with PMP enforcement at appropriate levels. +
+Test Execution: 1) Test PMP enforcement through multiple levels of address translation (Guest→Host→Physical). 2) Verify PMP applies consistently regardless of virtualization nesting depth. 3) Test privilege mode transitions across nesting levels with PMP enforcement. 4) Test address translation chains with PMP checks at final physical address. 5) Verify exception handling and delegation through nested virtualization with PMP interactions. Nesting Support: Adapt tests based on implementation-specific nested virtualization capabilities.
+| PMP should apply consistently across all virtualization levels
+| Nesting levels × PMP configurations × address translation chains × privilege mode combinations
+|
+|
+
+| pmp_memory_ordering
+| Verify memory ordering constraints with PMP in virtualized environment
+| Test Setup: Configure memory regions with different PMP permissions accessible via two-stage translation. Create memory operation sequences that can test ordering semantics across PMP faults. +
+Test Execution: 1) Create sequences of memory operations where some operations encounter PMP faults, verify memory ordering preserved for operations before fault. 2) Test acquire/release semantics (fence instructions) with PMP boundaries in virtualized environment. 3) Test memory ordering across PMP region boundaries with mixed cached/uncached regions. 4) Verify speculative execution doesn't violate PMP permissions or affect memory ordering. 5) Test DMA and other non-CPU memory operations with PMP ordering requirements. Ordering Models: Test both TSO and weak memory ordering implementations where applicable.
+| Memory ordering should be preserved even when PMP violations occur
+| Memory operation sequences × PMP fault locations × ordering constraints × virtualization modes
+|
+|
+
+| pmp_fault_delegation
+| Verify fault delegation with PMP in virtualized environment
+| Test Setup: Configure trap delegation registers (medeleg/sedeleg, hideleg/hedeleg) for various fault types. Set up scenarios where PMP faults can occur in different privilege modes. +
+Test Execution: 1) Configure PMP faults to be delegated to S-mode, test fault handling from VS-mode PMP violations. 2) Test fault delegation priority between PMP faults and virtualization faults. 3) Test fault information accuracy (mtval/stval/htval) for PMP faults in virtualized environment. 4) Verify correct trap routing based on delegation settings and current privilege mode. 5) Test nested fault scenarios with multiple delegation levels. Fault Information: Verify fault cause codes and addresses correctly reflect PMP vs virtualization fault sources.
+| PMP faults should be delegated according to virtualization and delegation settings
+| Fault types × delegation configurations × virtualization modes × trap handling
+|
+|
+
+| pmp_edge_cases
+| Verify PMP edge cases in virtualized environment
+| Test Setup: Configure PMP regions at critical address boundaries (address space limits, wraparound conditions). Set up two-stage translation with edge case address mappings. +
+Test Execution: 1) Test PMP regions at maximum physical address boundaries with two-stage translation. 2) Test address wraparound conditions in GPA→SPA mapping with PMP enforcement. 3) Test misaligned PMP regions with grain size restrictions in virtualized environment. 4) Test maximum number of PMP regions (PMP_writable_regs) with overlapping virtualization mappings. 5) Test zero-sized and minimum-sized PMP regions with two-stage address translation. Boundary Testing: Focus on off-by-one conditions and alignment edge cases specific to combined PMP and virtualization.
+| System should handle edge cases gracefully without undefined behavior
+| Edge conditions (address boundaries/wrap-around/alignment) × PMP configurations × virtualization states
+|
+|
+
+|===
+
+[NOTE]
+====
+* Test Configuration Notes
+* hypervisor loads and stores depend on PMP
+* hlvx does not override PMP execute-only
+* PMP intgeraction with fences G and VS-stage
+* General Setup for All Tests:
+* Use PMP_writable_regs = 16 for test runtime optimization
+* Configure bottom region (region 15 or PMP_writable_regs-1) as background: pmpcfg_n.A=NAPOT, RWX permissions, pmpcfg_n.L=1, pmpaddr_n=All_ones
+* Execute in M-mode unless specified otherwise
+* Standard regions use NAPOT of max(g,8) bytes, placed beyond code without overlapping other standard regions
+* Default TOR regions aligned to grain size g, starting beyond program end, size g
+* After PMP CSR writes, issue sfence.vma or hfence.gvma for synchronization
+* Handle sfence.vma illegal instruction traps on systems with satp.MODE read-only zero
+* Legal pmpcfg.XWR combinations: {000, 001, 011, 100, 101, 110} (W=1,R=0 is reserved)
+* Grain size g = 2^(G+2) where G is the PMP grain size parameter
+* For RV32 systems, exclude lwu, ld, sd instructions from testing
+* Address Translation Setup:
+* Configure valid G-stage page tables for two-stage translation testing
+* Use appropriate VMID and ASID values for TLB management tests
+* Set up hgatp register for G-stage translation control
+* Configure proper privilege mode transitions between HS, VS, and VU modes
+* Synchronization Requirements:
+* Issue HFENCE.GVMA with rs1=x0, rs2=x0 after PMP changes affecting translation structures
+* Use appropriate memory barriers for cache coherency testing
+* Ensure proper ordering of configuration changes relative to memory operations
+====

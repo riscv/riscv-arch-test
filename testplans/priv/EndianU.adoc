@@ -1,0 +1,27 @@
+// EndianU Coverpoints.  Converted from the "EndianU" tab of the Endian test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=0#gid=0) on 2026-09-19.
+
+[[t-EndianU-coverpoints]]
+.EndianU Coverpoints
+[cols="2,1,4,1", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Test Hints
+
+| cp_mstatus_ube_endianness_*
+| Read from memory in an endian fashion
+| Run in user mode. For each endianness, sd 0x0102030405060708 to scratch, and also write all subwords with sw, sh, sb. For each endianness (independent), ld, lw, lwu, lh, lhu, lb, lbu it back.  In RV32, don't need the doubles.
+| restore endianness to normal afterward + +
+UBE
+
+| cp_mstatus_mprv_ube_endianness_*
+| Read from memory in an endian fashion
+| Run in machine mode. Each endianness is a cross-product of MPRV = 0/1, MPP = 00/11, MBE = 0/1, UBE = 0/1 (16 bins).  Run test in machine mode. For each endianness, sd 0x0102030405060708 to scratch, and also write all subwords with sw, sh, sb. For each endianness (independent), ld, lw, lwu, lh, lhu, lb, lbu it back.  In RV32, don't need the doubles.
+| restore endianness to normal afterward + +
+MPRV
+
+|===
+
+[NOTE]
+====
+* UXL is not always modifiable, so there is no way to write coverpoints for different values
+====

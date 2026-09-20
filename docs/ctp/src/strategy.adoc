@@ -64,6 +64,7 @@ Unimplemented opcodes (except in the custom space) and instructions accessing no
 [[t-behavior-normative-rules]]
 .I Normative Rules Regarding Behaviors
 [cols="1, 4" options=header]
+[%autowidth]
 |===
 |Spec Section|Normative Rule
 |Unpriv 1.7|The term UNSPECIFIED refers to a behavior or value that is intentionally unconstrained.
@@ -90,6 +91,7 @@ Instructions and CSRs in the custom encoding space are never tested because the 
 [[t-bitfield-normative-rules]]
 .I Normative Rules Regarding Bitfields
 [cols="1, 4" options=header]
+[%autowidth]
 |===
 |Spec Section|Normative Rule
 |Privileged 2.3|Some whole read/write fields are reserved for future use. Software should ignore the values read from

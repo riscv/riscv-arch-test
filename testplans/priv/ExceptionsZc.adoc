@@ -1,0 +1,52 @@
+// ExceptionsZc Coverpoints.  Converted from the "ExceptionsZc" tab of the Exceptions test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=538759067#gid=538759067) on 2026-09-19.
+
+[[t-ExceptionsZc-coverpoints]]
+.ExceptionsZc Coverpoints
+[cols="2,1,3,2,1", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Expectation | Bins
+
+| cp_breakpoint
+| Compressed breakpoint
+| c.ebreak
+| Breakpoint exception
+| 1
+
+| cp_load_address_misaligned
+| Compressed loads with misaligned addresses
+| Attempt c.lw, c.lwsp, c.ld, c.ldsp  with every combination of three lsbs:000-111. +
+If Zcb supported, also c.lbu,c.lh, c.lhu +
+If Zcf supported, also c.flw, c.flwsp +
+If Zcd supported, also c.fld, c.fldsp
+| If misaligned not supported, accesses that are not naturally aligned will throw load misaligned fault.
+| up to 11 instructions * 8 addresses
+
+| cp_load_access_fault
+| Compressed loads to nonexistent address
+| Attempt instructions above from an illegal address (parameterized)
+| Load access fault
+| up to 11 instructions
+
+| cp_store_address_misaligned
+| Compressed stores with misaligned addresses
+| Attempt c.sw, c.swsp,  c.sd,c.sdsp with every combination of three lsbs: 000-111 +
+If Zcb supported, also c.sb, c.sh +
+If Zcf supported, also c.fsw, c.fswsp +
+If Zcd supported, also c.fsd, c.fsdsp
+| If misaligned not supported, accesses that are not naturally aligned will throw store misaligned fault.
+| up to 10 instructions * 8 addresses
+
+| cp_store_access_fault
+| Compressed stores to nonexistent address
+| Attempt instructions above to an illegal address (parameterized)
+| Store access fault
+| up to 10 instructions
+
+| cp_illegal_instruction
+| CompressedIllegal Instruction
+| c.illegal (0x0000)
+| Illegal instruction fault.
+| 1
+
+|===

@@ -1,0 +1,9 @@
+// PMPS Coverpoints.  Converted from the "PMPS" tab of the PMP test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1908943019#gid=1908943019) on 2026-09-19.
+
+[[t-PMPS-coverpoints]]
+No pmps coverpoints have been defined yet.
+
+* See PMPM for general information. +
+  Tests configure PMP in M-mode, and then run in S-mode unless otherwise stated
+* Repeat all tests from PMPU, but with S-mode replacing U-mode.  For cp_mprv, mstatus.MPP=01.

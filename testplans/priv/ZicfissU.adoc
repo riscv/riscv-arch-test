@@ -1,0 +1,351 @@
+// ZicfissU Coverpoints.  Converted from the "ZicfissU" tab of the cfi test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?gid=542351736#gid=542351736) on 2026-09-19.
+
+General Test Environment (applies to every coverpoint on this sheet -- do not repeat per row): +
+- Zicfiss, Zicsr, Zimop, Zaamo implemented. +
+- Zcmop implemented unless stated (required for C.SSPUSH / C.SSPOPCHK); gate compressed variants with ZCA_SUPPORTED. +
+- S-mode implemented (Zicfiss in U-mode requires it). +
+- Enable chain: menvcfg.SSE=1 and senvcfg.SSE=1 unless the coverpoint states otherwise. +
+- Virtual memory ON (satp.MODE != Bare); shadow stack lives on a page with pte.xwr=010 (R=0,W=1,X=0). +
+- All tests on this sheet execute in U-mode (BOOT_TO_UMODE). +
+- ssp is XLEN-aligned unless the coverpoint states otherwise. No higher-priority exception injected unless stated. +
+- SSPUSH/SSPOPCHK are architecturally defined only for x1 and x5 (C.SSPUSH x1, C.SSPOPCHK x5). +
+- XLEN is NOT iterated inside a coverpoint: RV32 and RV64 are separate build configs.
+
+[[t-ZicfissU-coverpoints]]
+.ZicfissU Coverpoints
+[cols="2,3,7,7,3,2,3", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Expectation | Bins | ID | Normative Rule
+
+| cp_ssp_access_zicfiss
+| Verify ssp CSR address, width, access type, and read-only-zero low bits
+| Standard CSR access idiom on ssp (0x011): read original; write all-ones; write all-zeros; set all bits; clear all bits; write walking-ones; write walking-zeros; restore original. After each write, read back and check. +
+Bits [1:0] must read back zero regardless of what was written.
+| CSR address 0x011 decodes to ssp and is URW-accessible from U-mode. +
+Only XLEN low-order bits are retained; no high CSR exists (ssp is always XLEN wide). +
+ssp[1:0] read back as 0 after any write. All other writable bits update as written. +
+ssp[2] is ALSO read-only zero when UXLEN and SXLEN can never be 32, so the test sweeps ssp[2:0] and compares the read-back against the reference model rather than asserting a fixed value.
+| csr_op {csrrw, csrrs, csrrc, csrrwi, csrrsi, csrrci} x write_pattern {all1, all0, walking1, walking0} x ssp[2:0] readback (vs reference model)
+| ssp_op ssp_addr ssp_sz ssp-field_1_0
+| [norm:ssp_op] [norm:ssp_addr] [norm:ssp_sz] [norm:ssp-field_1_0]
+
+| cp_sspush_zicfiss
+| Verify shadow stack push: store to (ssp - XLEN/8), then decrement, for all three push encodings
+| For each of SSPUSH x1 (mop.rr.7), SSPUSH x5 (mop.rr.7), C.SSPUSH x1 (c.mop.1, requires Zcmop/ZCA_SUPPORTED): +
+set ssp to a writable XLEN-aligned SS page address, set the link register to a known value, execute the push, then read back ssp and the memory word at (ssp_old - XLEN/8).
+| No exception on valid execution. +
+ssp decremented by XLEN/8, and only if the store completed successfully. +
+Memory at (ssp_old - XLEN/8) holds the pushed link-register value. +
+Store width is implicitly XLEN and base is implicitly ssp.
+| instr {SSPUSH x1, SSPUSH x5, C.SSPUSH x1} x pushed_value {all0, all1, pattern} x ssp_delta {-XLEN/8}
+| ss_push sspush_c-sspush_instr sspush_c-sspush_decrement zicfiss_sspush_enc zicfiss_c-sspush_enc zicfiss_enc
+| [norm:ss_push] [norm:sspush_c-sspush_instr] [norm:sspush_c-sspush_decrement] [norm:zicfiss_sspush_enc] [norm:zicfiss_c-sspush_enc] [norm:zicfiss_enc]
+
+| cp_sspopchk_match_zicfiss
+| Verify successful shadow stack pop: XLEN load from ssp, value matches link register, ssp increments
+| For each of SSPOPCHK x1 (mop.r.28), SSPOPCHK x5 (mop.r.28), C.SSPOPCHK x5 (c.mop.5): +
+preload the SS memory at ssp with a known XLEN value, load the same value into the link register, execute the pop, then check the register, ssp, and that no trap was taken.
+| Value is loaded from the address in ssp with implicit base=ssp and implicit width=XLEN. +
+Loaded value matches the link register, so no software-check exception is raised. +
+ssp_new = ssp_old + XLEN/8, incremented only because the load completed and no software-check was raised.
+| instr {SSPOPCHK x1, SSPOPCHK x5, C.SSPOPCHK x5} x popped_value {all0, all1, pattern} x ssp_delta {+XLEN/8}
+| ss_pop sspopchk_shadow_return_pop sspopchk-c_load_op sspop_increment zicfiss_sspopchk_enc zicfiss_c-sspopchk_enc
+| [norm:ss_pop] [norm:sspopchk_shadow_return_pop] [norm:sspopchk-c_load_op] [norm:sspop_increment] [norm:zicfiss_sspopchk_enc] [norm:zicfiss_c-sspopchk_enc]
+
+| cp_sspopchk_mismatch_zicfiss
+| Verify software-check exception when the popped value does not match the link register
+| For each of SSPOPCHK x1, SSPOPCHK x5, C.SSPOPCHK x5: place value A on the shadow stack (directly, or via SSPUSH then corrupt the register, or via SSAMOSWAP to corrupt the memory copy), set the link register to B != A, execute the pop. +
+Vary how the mismatch is created so both the 'register corrupted' and 'shadow memory corrupted' directions are hit. +
+Edge cases: also mismatch in exactly one bit — bit 0 and bit XLEN-1 — so a comparator that ignores either end of the word is caught.
+| Software-check exception raised: cause=18, xtval = shadow stack fault (code=3). +
+ssp is NOT incremented -- it holds its pre-instruction value at the trap. +
+Link register and shadow stack memory are unmodified.
+| instr {SSPOPCHK x1, SSPOPCHK x5, C.SSPOPCHK x5} x mismatch_source {reg_corrupted, mem_corrupted_via_ssamoswap} x mismatch_width {whole_word, bit0_only, bitXLEN-1_only} x {cause==18, xtval==3, ssp unchanged}
+| sspop_exception sspop_increment sspopchk_shadow_return_pop zicfiss_stack_compare
+| [norm:sspop_exception] [norm:sspop_increment] [norm:sspopchk_shadow_return_pop] [norm:zicfiss_stack_compare]
+
+| cp_sspopchk_fault_priority_zicfiss
+| Verify a load/store/AMO access-fault on the pop takes priority over the software-check exception
+| Point ssp at memory whose access will fault, and simultaneously set the link register so a value mismatch would also be detected. Execute SSPOPCHK. +
+An UNMAPPED page yields a store/AMO PAGE-fault (15). To get a store/AMO ACCESS-fault (7) the page must be mapped to RVMODEL_ACCESS_FAULT_ADDRESS, guarded by #ifdef. +
+PMP-denied regions can only be programmed from M-mode, so that variant lives on the ZicfissSm sheet as cp_sspopchk_fault_priority_pmp_zicfiss.
+| The memory fault is reported, not the software-check exception. +
+Unmapped page: store/AMO page-fault (cause=15). RVMODEL_ACCESS_FAULT_ADDRESS: store/AMO access-fault (cause=7). Either way the fault code is remapped to the store/AMO flavour. +
+ssp is unchanged.
+| fault_source {unmapped -> cause 15, RVMODEL_ACCESS_FAULT_ADDRESS -> cause 7} x mismatch_also_present {yes} x reported_cause {not 18}
+| sspop_exception
+| [norm:sspop_exception]
+
+| cp_ss_call_return_zicfiss
+| Verify the architectural non-leaf function prologue/epilogue round trip across nested call depth
+| Build a nested call chain of non-leaf functions. In each prologue: store the link register to the regular stack and SSPUSH it to the shadow stack. In each epilogue: load the link register from the regular stack, SSPOPCHK it against the shadow stack, then return. Exercise x1 and x5 as the link register and depth > 1 so ssp walks several slots.
+| Matched push/pop pairs at every depth: no exception, control returns correctly through the whole chain. +
+ssp returns to its original value once the outermost function returns. +
+A deliberately subverted return address on the regular stack is caught by the epilogue compare (software-check, cause=18, xtval=3).
+| link_reg {x1, x5} x return_addr {intact, subverted}. Call depth is exercised (1..3) but is not architecturally observable, so it is not a coverage axis.
+| zicfiss_link_reg_func_enter zicfiss_link_reg_func_return zicfiss_stack_compare
+| [norm:zicfiss_link_reg_func_enter] [norm:zicfiss_link_reg_func_return] [norm:zicfiss_stack_compare]
+
+| cp_ssrdp_zicfiss
+| Verify SSRDP moves ssp into rd, and reads 0 when Zicfiss is inactive
+| TC group 1: set ssp to a known value V, execute SSRDP rd, check rd == V. +
+TC group 2: SSPUSH x1, then SSRDP rd; check rd == ssp after the push (i.e. V - XLEN/8). Repeat after SSPOPCHK. +
+TC group 3: with the extension deactivated for this mode (xSSE=0), execute SSRDP rd.
+| TC1/TC2: rd holds the current ssp; no exception. +
+TC3: rd = 0. SSRDP is encoded in mop.r.28, so when Zicfiss is inactive it reverts to Zimop behaviour and writes 0 to rd -- this is the documented way software detects whether Zicfiss is active. NO exception is raised.
+| ssp_value {known V, after push, after pop} x xSSE {1, 0} x rd result {ssp, 0}
+| ssrdp_read zicfiss_ssrdp_enc zicfiss_enc
+| [norm:ssrdp_read] [norm:zicfiss_ssrdp_enc] [norm:zicfiss_enc]
+
+| cp_ssamoswap_zicfiss
+| Verify SSAMOSWAP.W / SSAMOSWAP.D atomic swap semantics including RV64 sign-extension and narrow store
+| RV32: SSAMOSWAP.W rd, rs2, (rs1) on a 4-byte-aligned SS address. +
+RV64: SSAMOSWAP.D rd, rs2, (rs1) on an 8-byte-aligned SS address (full 64-bit swap). +
+RV64: SSAMOSWAP.W rd, rs2, (rs1) on a 4-byte-aligned SS address, with the loaded word's MSB = 0 and MSB = 1, and with rs2 carrying non-zero bits in [63:32]. +
+Ordering bits: exercise all four {aq, rl} combinations -- 00, 01, 10, 11 -- on both widths. +
+Register edges: rd = x0 and rd != x0; rs2 = x0 and rs2 != x0; and rd == rs1 (the address register is also the destination).
+| rd receives the value previously in memory; memory receives rs2. The pair is atomic. +
+RV64 SSAMOSWAP.W: rd is the SIGN-EXTENDED 32-bit loaded value (MSB=1 => upper 32 bits all ones), and only rs2[31:0] is stored -- rs2[63:32] is ignored. +
+RV32 SSAMOSWAP.W: plain 32-bit swap. No exception on a valid aligned SS address. +
+aq/rl do not change the architectural result of a single-hart swap, but all four encodings must decode and execute. +
+rd = x0 discards the loaded value, the memory write still happens. rs2 = x0 stores zero. rd == rs1 must return the loaded value in rd after the address has been consumed.
+| instr {SSAMOSWAP.W, SSAMOSWAP.D} x xlen_config {RV32, RV64} x loaded_msb {0, 1} x rs2_upper {zero, nonzero} x {aq,rl} {00, 01, 10, 11} x reg_edge {rd=x0, rs2=x0, rd==rs1, all distinct non-x0}
+| rv32_ssamoswap-w_op rv64_ssamoswap-w_op zicfiss_atomic_swap
+| [norm:rv32_ssamoswap-w_op] [norm:rv64_ssamoswap-w_op] [norm:zicfiss_atomic_swap]
+
+| cp_ss_address_alignment_zicfiss
+| Verify alignment requirements for SSAMOSWAP (natural alignment) and for ssp (XLEN alignment)
+| Leg A -- SSAMOSWAP: sweep the low 3 bits of the rs1 address across all 8 values for SSAMOSWAP.W (RV32/RV64) and SSAMOSWAP.D (RV64). Compare behaviour against the reference model. +
+Leg B -- ssp: sweep the low 3 bits of ssp across all 8 values and execute SSPUSH x1, C.SSPUSH x1, SSPOPCHK x1, C.SSPOPCHK x5.
+| Leg A: naturally aligned (W: addr[1:0]==00; D: addr[2:0]==000) completes normally. Otherwise the same exception options as A-extension AMOs apply -- reported cause must match the reference model. +
+Leg B: if ssp is not XLEN-aligned, SSPUSH/C.SSPUSH/SSPOPCHK/C.SSPOPCHK raise a store/AMO access-fault (cause=7). ssp and memory are unchanged.
+| leg {ssamoswap, ssp} x instr {SSAMOSWAP.W, SSAMOSWAP.D, SSPUSH x1, C.SSPUSH x1, SSPOPCHK x1, C.SSPOPCHK x5} x addr[2:0] {000..111}
+| ssamoswap_address ssp_xlen_aligned
+| [norm:ssamoswap_address] [norm:ssp_xlen_aligned]
+
+| cp_ss_instr_target_page_zicfiss
+| Verify the fault type an SS instruction takes for every class of target page / translation state
+| Cross every SS memory instruction against every class of target: SS page (xwr=010), read-only page (xwr=001), read-write page (xwr=011), execute page (xwr=100), unmapped page, and satp.MODE=Bare. Execute and capture the reported cause. +
+Sweep ALL EIGHT pte.xwr encodings (000, 001, 010, 011, 100, 101, 110, 111), not just the architecturally valid ones -- 000 is a pointer rather than a leaf, and 110/111 are reserved. +
+Cross each with mstatus.MXR = 0 and 1, since MXR is exactly the bit that governs whether an R=0 page is readable and the SS page is R=0 by construction. +
+Cross each with the page's U bit = 0 and 1.
+| [Threaded comment] Your version of Excel allows you to read this threaded comment; however, any edits to it will get removed if the file is opened in a newer version of Excel. Learn more: https://go.microsoft.com/fwlink/?linkid=870924 Comment: I thin xwr=110 should cause a store page fault, not access fault.  SS page: succeeds. +
+Read-only page (xwr=001): store/AMO PAGE-fault, cause=15. +
+Any other non-SS, non-read-only page: store/AMO ACCESS-fault, cause=7. +
+Unmapped: store/AMO page-fault, cause=15. Non-idempotent memory: store/AMO access-fault, cause=7. +
+satp.MODE=Bare with effective privilege < M: store/AMO access-fault, cause=7. +
+In every faulting case the cause is remapped to the STORE/AMO flavour regardless of whether the instruction's original access was a load or a store, and ssp is unchanged. +
+Reserved PTE encodings (e.g. xwr=110) are invalid to the page walker, so they raise a store/AMO PAGE-fault during translation rather than the access-fault that applies to valid non-SS encodings. +
+Reserved encodings (110, 111) and the non-leaf encoding (000) fail the walk itself, so they raise a store/AMO PAGE-fault during translation rather than the access-fault that applies to valid non-SS leaf encodings. +
+U=0 accessed from U-mode, and U=1 accessed from S-mode without SUM, fault on the permission check before any Zicfiss-specific rule applies.
+| instr {SSPUSH x1, SSPUSH x5, C.SSPUSH x1, SSPOPCHK x1, SSPOPCHK x5, C.SSPOPCHK x5, SSAMOSWAP.W, SSAMOSWAP.D} x pte.xwr {000..111} x MXR {0,1} x pte.U {0,1} x translation {Sv, satp.MODE=Bare} x cause {none, 7, 15}
+| ssmp_ss_page_illegeal_access ssmp_ss_read_only_page ss_fault_exception_code ssmp_ss_idempotent_memory satp_mode_bare
+| [norm:ssmp_ss_page_illegeal_access] [norm:ssmp_ss_read_only_page] [norm:ss_fault_exception_code] [norm:ssmp_ss_idempotent_memory] [norm:satp_mode_bare]
+
+| cp_ss_page_access_zicfiss
+| Verify which accessor types may touch an SS page and which fault
+| With a page mapped as an SS page (xwr=010), attempt access from every accessor class: +
+(a) SS store instructions: SSPUSH x1/x5, C.SSPUSH x1, SSAMOSWAP.W/.D +
+(b) ordinary stores: SB, SH, SW, SD +
+(c) ordinary AMOs: AMOSWAP, AMOADD, ... +
+(d) cache-block ops: CBO.ZERO, CBO.CLEAN, CBO.FLUSH, CBO.INVAL +
+(e) instruction fetch with PC in the SS page +
+(f) implicit access: place a page-table entry in the SS page and force a walk +
+(g) ordinary loads: LB, LH, LW, LD +
+Precondition for leg (d): menvcfg/senvcfg CBIE, CBCFE and CBZE must be enabled, otherwise the cache-block op traps on its own gating instead of on the SS page. +
+Leg (f) is best-effort: it is not established that a page-table walk through an SS page is reachable in this environment. +
+Additional accessor classes: +
+(h) LR/SC to the SS page (requires Zalrsc). +
+(i) AMOCAS to the SS page (requires Zacas). +
+(j) if V is implemented, vector loads and stores to the SS page, including strided and indexed accesses that BEGIN on a different page and run into the SS page. +
+Leg (g), the ordinary-load leg, is additionally crossed with mstatus.MXR = 0 and 1: the SS page is R=0, so MXR is what decides whether a plain load may read it.
+| (a) succeeds -- these are the only instructions permitted to write an SS page. +
+(b),(c),(d) store/AMO access-fault (cause=7), NOT a page-fault. +
+(e),(f) access-fault appropriate to the access type (instruction access-fault for fetch). +
+(g) succeeds -- the shadow stack is readable by any instruction that only loads. +
+(h),(i) store/AMO access-fault -- LR/SC and AMOCAS are not in the set permitted to write an SS page. +
+(j) vector stores fault; vector loads follow the ordinary-load rule. An access that starts on an adjacent page must still fault on the element that lands in the SS page. +
+(g) the ordinary load succeeds for BOTH MXR values -- the shadow stack is readable by any instruction that only loads, so this must not depend on MXR.
+| accessor {ss_store, ordinary_store, ordinary_amo, lr_sc, amocas, cbo, ifetch, implicit_walk, ordinary_load, vector_load, vector_store} x MXR {0,1} x result {ok, af}
+| ssmp_ss_page_access_fault ssmp_ss_cache_block_access_fault ssmp_ss_implicit_access_fault ssmp_ss_load
+| [norm:ssmp_ss_page_access_fault] [norm:ssmp_ss_cache_block_access_fault] [norm:ssmp_ss_implicit_access_fault] [norm:ssmp_ss_load]
+
+| cp_ssp_csr_gating_u_zicfiss
+| Verify ssp CSR accessibility from U-mode across the menvcfg.SSE / senvcfg.SSE enable chain
+| From U-mode, attempt both a read and a write of ssp for each of the four (menvcfg.SSE, senvcfg.SSE) combinations. +
+Also exercise the toggle direction: enable, use the shadow stack, then clear senvcfg.SSE and re-attempt the ssp access.
+| (menvcfg.SSE=1, senvcfg.SSE=1): access allowed, correct value read/written. +
+(menvcfg.SSE=0, *): illegal-instruction exception -- menvcfg gating wins regardless of senvcfg. +
+(menvcfg.SSE=1, senvcfg.SSE=0): illegal-instruction exception. +
+Toggling SSE off does not corrupt shadow stack memory or the retained ssp value. +
+(menvcfg.SSE=0, senvcfg.SSE=1) is architecturally UNREACHABLE: menvcfg.SSE=0 forces senvcfg.SSE read-only zero. The test still attempts it and the coverpoint marks it illegal_bins, so an implementation that allows the combination is flagged.
+| menvcfg.SSE {0,1} x senvcfg.SSE {0,1} (m0s1 illegal/unreachable) x csr_op {read, write} x result {ok, illegal_instruction}
+| zicfiss_ssp_csr zicfiss_m_menvcfg_sse zicfiss_u_senvcfg_sse zicfiss_sse_access
+| [norm:zicfiss_ssp_csr] [norm:zicfiss_m_menvcfg_sse] [norm:zicfiss_u_senvcfg_sse] [norm:zicfiss_sse_access]
+
+| cp_ss_instr_inactive_zicfiss
+| Verify MOP-encoded SS instructions revert to Zimop/Zcmop no-op behaviour when Zicfiss is not active
+| SCOPE: the MOP-encoded instructions only -- SSPUSH x1, SSPUSH x5, C.SSPUSH x1, SSPOPCHK x1, SSPOPCHK x5, C.SSPOPCHK x5, SSRDP. SSAMOSWAP is NOT in this set: it is AMO-encoded and traps instead (see cp_ssamoswap_sse_gating_zicfiss). +
+Deactivate from both directions: menvcfg.SSE=0 (32-bit revert to Zimop, 16-bit to Zcmop), and menvcfg.SSE=1 with senvcfg.SSE=0. Preload ssp and the shadow stack memory and check both after. +
+STRONG FORM: repeat every instruction with a HOSTILE ssp -- misaligned, pointing at an unmapped page, and pointing at memory whose value would mismatch the link register. A no-op must remain a no-op in all three cases. +
+Sweep all four {menvcfg.SSE, senvcfg.SSE} combinations. Note (menvcfg=0, senvcfg=1) is unreachable because menvcfg.SSE=0 forces senvcfg.SSE read-only zero; it is attempted anyway.
+| NO exception is raised -- these revert to their Zimop/Zcmop-defined behaviour, which writes 0 to rd and has no other architectural effect. +
+ssp unchanged. Shadow stack memory unchanged. SSRDP rd = 0. +
+This is the compatibility guarantee: a Zicfiss-built program still runs, just without backward-edge CFI. +
+The hostile-ssp variants are the real proof of the guarantee: an implementation that still performs the access and discards the result passes the benign case but fails these. No exception of any kind, no memory access, ssp unchanged, rd unchanged except SSRDP writing 0.
+| instr {SSPUSH x1, SSPUSH x5, C.SSPUSH x1, SSPOPCHK x1, SSPOPCHK x5, C.SSPOPCHK x5, SSRDP} x gate {menvcfg.SSE, senvcfg.SSE} = {00, 10, 11} x ssp_state {valid, misaligned, unmapped, value_mismatch} x {no trap, no memory access, ssp unchanged, rd==0 for SSRDP}
+| zicfiss_enc menvcfg_sse_op_lead-in menvcfg_sse_op_list senvcfg_sse_Zicfilp
+| [norm:zicfiss_enc] [norm:menvcfg_sse_op_lead-in] [norm:menvcfg_sse_op_list] [norm:senvcfg_sse_Zicfilp]
+
+| cp_ssamoswap_sse_gating_zicfiss
+| Verify SSAMOSWAP.W/D raises an illegal-instruction exception when the SSE enable chain is off (V=0)
+| SSAMOSWAP is encoded in the AMO major opcode, NOT in the Zimop/Zcmop MOP space, so it does not silently no-op when Zicfiss is deactivated -- it traps. Execute SSAMOSWAP.W and SSAMOSWAP.D against a valid aligned SS address for: +
+(a) menvcfg.SSE=0, from S-mode and U-mode (any privilege mode less than M); +
+(b) menvcfg.SSE=1, senvcfg.SSE=0, from U-mode. +
+Positive control: both set -- the instruction completes (see cp_ssamoswap_zicfiss).
+| (a) illegal-instruction exception in every privilege mode less than M. +
+(b) illegal-instruction exception in U-mode. +
+Memory, rd and ssp unchanged. +
+Contrast with cp_ss_instr_inactive_zicfiss: the MOP-encoded SS instructions no-op under exactly these conditions, while SSAMOSWAP traps.
+| instr {SSAMOSWAP.W, SSAMOSWAP.D} x gate {menvcfg.SSE=0, (menvcfg.SSE=1 & senvcfg.SSE=0)} x mode {S, U} x result {illegal_instruction}
+| menvcfg_sse_op_lead-in menvcfg_sse_op_list senvcfg_sse_Zicfilp
+| [norm:menvcfg_sse_op_lead-in] [norm:menvcfg_sse_op_list] [norm:senvcfg_sse_Zicfilp]
+
+| cp_ss_page_crossing_zicfiss
+| Verify shadow stack accesses that straddle a page boundary fault on the invalid side
+| SSPUSH decrements ssp BEFORE storing, so a push with ssp at the very bottom of a page writes into the PRECEDING page. SSPOPCHK reads at ssp and then increments, so it reads from the page ssp is already on. +
+Case A: ssp = base of a valid SS page, so ssp-XLEN/8 lies on a page that is NOT a valid shadow stack page (unmapped, or mapped with a non-SS encoding). Execute SSPUSH x1 / C.SSPUSH x1. +
+Case B: ssp points at a page that is NOT a valid shadow stack page while ssp-XLEN/8 IS on a valid SS page. Execute SSPUSH (should succeed, it writes to the valid side) and SSPOPCHK (should fault, it reads the invalid side). +
+Repeat both cases with the adjacent page unmapped, mapped read-only, and mapped read/write.
+| The fault is determined by the page actually accessed, not by the page ssp names. +
+Case A: SSPUSH faults on the preceding page -- store/AMO access-fault (cause=7) for a non-SS valid encoding, store/AMO page-fault (cause=15) if unmapped or read-only. ssp is NOT decremented, since the decrement is conditional on the store completing. +
+Case B: SSPUSH succeeds and ssp is decremented onto the valid page; the subsequent SSPOPCHK reads the invalid side and faults, leaving ssp unchanged. +
+In every faulting case the cause carries the store/AMO flavour.
+| case {A: ssp at page base, B: ssp on invalid page} x instr {SSPUSH x1, C.SSPUSH x1, SSPOPCHK x1, C.SSPOPCHK x5} x adjacent_page {unmapped, read_only, read_write} x cause {none, 7, 15} x ssp {unchanged, decremented}
+| ss_push sspush_c-sspush_decrement sspop_increment ssmp_ss_page_illegeal_access ssmp_ss_read_only_page ss_fault_exception_code
+| [norm:ss_push] [norm:sspush_c-sspush_decrement] [norm:sspop_increment] [norm:ssmp_ss_page_illegeal_access] [norm:ssmp_ss_read_only_page] [norm:ss_fault_exception_code]
+
+| cp_ss_page_ad_bits_zicfiss
+| Verify PTE Accessed/Dirty bit handling on a shadow stack page, including the write/read asymmetry
+| Sweep all four {A, D} combinations on the shadow stack page's leaf PTE and execute each SS instruction against it. +
+The write-vs-read asymmetry is the point: SSPUSH, C.SSPUSH and SSAMOSWAP write the page and so require D=1, while SSPOPCHK and C.SSPOPCHK only read and so do not. +
+If Svadu is implemented, repeat with hardware A/D updating enabled (menvcfg.ADUE=1).
+| A=0: every SS access faults, read or write, because the page has not been marked accessed. +
+D=0: SSPUSH / C.SSPUSH / SSAMOSWAP fault (they write); SSPOPCHK / C.SSPOPCHK succeed (they only read). +
+A=1, D=1: all SS instructions succeed. +
+Faults carry the store/AMO flavour per the SS fault-code remapping. +
+With Svadu implemented and ADUE=1 the hardware sets A and D itself, so NO fault occurs in any of the above combinations and the PTE is observed updated afterwards.
+| instr {SSPUSH x1, C.SSPUSH x1, SSAMOSWAP.W, SSAMOSWAP.D, SSPOPCHK x1, C.SSPOPCHK x5} x {A,D} {00, 01, 10, 11} x svadu {absent, ADUE=0, ADUE=1} x cause {none, 7, 15}
+| ss_fault_exception_code ssmp_ss_page_access_fault ssmp_ss_load
+| [norm:ss_fault_exception_code] [norm:ssmp_ss_page_access_fault] [norm:ssmp_ss_load]
+
+| cp_ss_non_idempotent_zicfiss
+| Verify SS instructions fault when the shadow stack page is non-idempotent (Svpbmt)
+| Requires Svpbmt. Map the shadow stack page with pte.PBMT = IO, which makes the memory non-idempotent, and execute each SS instruction that accesses memory against it. +
+Positive control: the same page mapped with PBMT = PMA (or NC) behaves normally. +
+Guard the whole coverpoint with #ifdef SVPBMT_SUPPORTED -- without Svpbmt there is no portable way to identify a non-idempotent location, and the rule is then untestable rather than failing.
+| Every SS instruction that accesses non-idempotent memory raises a store/AMO access-fault (cause=7). +
+The reason is restartability: SSPOPCHK performs a load and then a comparison, and if the comparison faults and the handler restarts the instruction the load runs twice -- which is unsafe on non-idempotent memory. +
+Positive control with PBMT=PMA: no fault.
+| instr {SSPUSH x1, C.SSPUSH x1, SSPOPCHK x1, C.SSPOPCHK x5, SSAMOSWAP.W, SSAMOSWAP.D} x pte.PBMT {PMA, NC, IO} x cause {none, 7}
+| ssmp_ss_idempotent_memory
+| [norm:ssmp_ss_idempotent_memory]
+
+|
+| Folded into cp_ss_instr_inactive_zicfiss (gate sweep) and cp_ssamoswap_sse_gating_zicfiss (the trapping half). Other privilege modes are the corresponding rows on the ZicfissS / ZicfissSm / ZicfissH sheets.
+| Test all Zifiss instructions with each combination of {menvcfg.SSE/senvcfg.SSE} = 0, 1 in every priv mode. Check all state is unaffected if xSSE=0. Some throw illegal or virtual instructions
+|
+|
+|
+|
+
+|
+| PROMOTED to its own coverpoint: cp_ss_page_crossing_zicfiss.
+| Test ssp pointing to the bottom of a page such that ssp-XLEN/8 is not on a valid shadow stack page, and also such that ssp is not on a valid shadow stack pages but ssp-XLEN/8 is valid.
+|
+|
+|
+|
+
+|
+| Folded into cp_ss_instr_target_page_zicfiss: pte.xwr now sweeps all 8 encodings and is crossed with MXR = 0/1.
+| For cp_ss_instr_target_page_zicfiss, test all 8 XWR with MXR=0/1.
+|
+|
+|
+|
+
+|
+| Folded into cp_ssamoswap_zicfiss: {aq,rl} = 00/01/10/11 added as a bin axis.
+| Exercise all 4 values of aq and rl in SSAMOSWP.
+|
+|
+|
+|
+
+|
+| Folded into cp_ss_page_access_zicfiss as accessor leg (j), including strided/indexed accesses beginning on an adjacent page.
+| If V supported, try V accesses to SS page, including scattered loads and stores starting on a different page.
+|
+|
+|
+|
+
+|
+| Folded into cp_ss_page_access_zicfiss as accessor legs (h) and (i). Needs Zalrsc and Zacas in the suite's required_extensions.
+| LRSC and AMOCAS to SS page.
+|
+|
+|
+|
+
+|
+| Folded into cp_ss_instr_target_page_zicfiss as a pte.U = 0/1 axis.
+| Test U bit of shadow stack page = 0/1
+|
+|
+|
+|
+
+|
+| Folded into cp_ss_instr_inactive_zicfiss as the STRONG FORM: the same instructions repeated with a misaligned, unmapped, or mismatching ssp.
+| When xSSE, SSPUSH/SSPOPCHK must do no memory access and raise nothing even if ssp is misaligned, unmapped, or values mismach.
+|
+|
+|
+|
+
+|
+| PROMOTED to its own coverpoint: cp_ss_page_ad_bits_zicfiss, including the Svadu/ADUE variant.
+| Test all combinations of A and D bits on the SS page, that fault occurs if D=0 for SSPUSH/SSAMOSWAP but not SSPOPCHK, if A=0 for all accesses. If Svadu supported, check no faults.
+|
+|
+|
+|
+
+|
+| PROMOTED to its own coverpoint: cp_ss_non_idempotent_zicfiss. This also restores [norm:ssmp_ss_idempotent_memory], which had been written off as untestable.
+| If Svpbmt is supported, test a page mapped to I/O that makes it non-idempotent and thus fault on SS instructions.
+|
+|
+|
+|
+
+|
+| Folded into cp_ss_page_access_zicfiss: the ordinary-load leg (g) is now crossed with MXR = 0/1 and must succeed for both.
+| Test ordinary load from SS page succeeds even though R=0, for both MXR=0/1.
+|
+|
+|
+|
+
+|
+| Folded into cp_ssamoswap_zicfiss as a register-edge axis: rd=x0, rs2=x0, rd==rs1, and all-distinct.
+| Consider testing SSAMOSWAP with rd, rs2 = x0/non x0 and rd==rs1 edges.
+|
+|
+|
+|
+
+|===

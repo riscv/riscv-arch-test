@@ -1,0 +1,17 @@
+// EndianZaamo Coverpoints.  Converted from the "EndianZaamo" tab of the Endian test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=470611865#gid=470611865) on 2026-09-19.
+
+[[t-EndianZaamo-coverpoints]]
+.EndianZaamo Coverpoints
+[cols="2,1,2,2", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Test Hints
+
+| cp_endianness_amo
+| Read from memory in an endian fashion
+| Write 0x0102030405060708 to scratch.  For each endianness, amoadd.w a different value to scratch.  For RV64, also amoadd.d
+| restore endianness to normal afterward + +
+MBE +
+when mstatus.MPRV=0
+
+|===

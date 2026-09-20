@@ -3,21 +3,13 @@
 
 ==== Sscofpmf Counter filtering
 
-[[t-Sscofpmf-coverpoints]]
-.Sscofpmf Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/13ibIsAhJpQBXcL1Y5F7sddysLPFpaCr8_oDyQV_Boqw/edit?gid=0#gid=0[Google Sheet Testplan]
-,===
+include::{privtestplansdir}/Sscofpmf.adoc[]
 
 include::norm/Sscofpmf_norm_rules.adoc[]
 
 ==== Ssstateen Supervisor State Enable
 
-[[t-Ssstateen-coverpoints]]
-.Ssstateen Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1zm67nLKLn_tszDTzJQ9BIMOB7wuiskcuj3Mql4TOciA/edit?gid=1207083655#gid=1207083655[Google Sheet Testplan]
-,===
+include::{privtestplansdir}/Ssstateen.adoc[]
 
 The same normative rules apply to Ssstateen as to Smstateen (see <<t-Smstateen-normative-rules>>).
 
@@ -25,138 +17,104 @@ The same normative rules apply to Ssstateen as to Smstateen (see <<t-Smstateen-n
 
 RV64 only
 
-[[t-Ssu64xl-coverpoints]]
-.Ssu64xl Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=108970394#gid=108970394[Google Sheet Testplan]
-,===
+include::{privtestplansdir}/Ssu64xl.adoc[]
 
 include::norm/Ssu64xl_norm_rules.adoc[]
 
 ==== Sscounterenw Writable Counter Enables
 
-[[t-Sscounterenw-coverpoints]]
-.Sscounterenw Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=316102369#gid=316102369[Google Sheet Testplan]
-,===
+include::{privtestplansdir}/Sscounterenw.adoc[]
 
 include::norm/Sscounterenw_norm_rules.adoc[]
 
 ==== Sstvecd Direct Trap Vector
 
-[[t-Sstvecd-coverpoints]]
-.Sstvecd Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=435052299#gid=435052299[Google Sheet Testplan]
-,===
+include::{privtestplansdir}/Sstvecd.adoc[]
 
 include::norm/Sstvecd_norm_rules.adoc[]
 
 ==== Sstvala Trap Address
 
-[[t-Sstvala-coverpoints]]
-.Sstvala Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=691634508#gid=691634508[Google Sheet Testplan]
-,===
+include::{privtestplansdir}/Sstvala.adoc[]
 
 include::norm/Sstvala_norm_rules.adoc[]
 
 ==== Ssccptr Page Table Reads
 
-[[t-Ssccptr-coverpoints]]
-.Ssccptr Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=16223482#gid=16223482[Google Sheet Testplan]
-,===
+include::{privtestplansdir}/Ssccptr.adoc[]
 
 include::norm/Ssccptr_norm_rules.adoc[]
 
 
 ==== Ss1p13 Supervisor Mode 1.13
 
-[[t-Ss1p13-coverpoints]]
-.Ss1p13 Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=108970394#gid=108970394[Google Sheet Testplan]
-,===
+include::{privtestplansdir}/Ss1p13.adoc[]
 
 include::norm/Ss1p13_norm_rules.adoc[]
 
 ==== Ssnpm Pointer Masking
 
-[[t-Ssnpm-coverpoints]]
-.Ssnpm Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/15yJhyhBB5X9cq4SDQ-YCPzo2oPQnDBh5wEIZhi0-9Ps/edit?gid=0#gid=0[Google Sheet Testplan]
-,===
+include::{privtestplansdir}/Ssnpm.adoc[]
 
 include::norm/Zpm_norm_rules.adoc[]
 
 ==== Smnpm Pointer Masking
 
-[[t-Smnpm-coverpoints]]
-.Smnpm Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/15yJhyhBB5X9cq4SDQ-YCPzo2oPQnDBh5wEIZhi0-9Ps/edit?gid=720514871#gid=720514871[Google Sheet Testplan for S mode]
-https://docs.google.com/spreadsheets/d/15yJhyhBB5X9cq4SDQ-YCPzo2oPQnDBh5wEIZhi0-9Ps/edit?gid=165573130#gid=165573130[Google Sheet Testplan for no S mode]
-,===
+include::{privtestplansdir}/SmnpmS.adoc[]
+include::{privtestplansdir}/SmnpmU.adoc[]
 
 See Ssnpm for normative rules.
 
 ==== Smmpm Pointer Masking
 
-[[t-Smmpm-coverpoints]]
-.Smmpm Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/15yJhyhBB5X9cq4SDQ-YCPzo2oPQnDBh5wEIZhi0-9Ps/edit?gid=645084995#gid=645084995[Google Sheet Testplan]
-,===
+include::{privtestplansdir}/Smmpm.adoc[]
 
 See Ssnpm for normative rules.
 
 ==== Zicfilp Landing Pads
 
-In Privileged section because it has both unpriv and privileged behaviors.
+In Privileged section because it has both unpriv and privileged behaviors.  The common coverpoints are defined once and re-executed by the ZicfilpU, ZicfilpSm and ZicfilpS suites in their privilege mode; each of those suites adds the coverpoints for its mode's `xPELP` handling.  ZicfilpH covers VS/VU-mode (see <<t-ZicfilpH-coverpoints>>).
 
-[[t-Zicfilp-coverpoints]]
-.Zicfilp Coverpoints
-//,===
-//include::{testplansdir}/Zicfilp.adoc[]
-//,===
+include::{privtestplansdir}/Zicfilp_common_reference.adoc[]
+
+===== ZicfilpU User-Mode Landing Pads
+
+include::{privtestplansdir}/ZicfilpU.adoc[]
+
+===== ZicfilpSm Machine-Mode Landing Pads
+
+include::{privtestplansdir}/ZicfilpSm.adoc[]
+
+===== ZicfilpS Supervisor-Mode Landing Pads
+
+include::{privtestplansdir}/ZicfilpS.adoc[]
 
 ==== Zicfiss Shadow Stack
 
-In Privileged section because it has both unpriv and privileged behaviors.
+In Privileged section because it has both unpriv and privileged behaviors.  ZicfissU holds the instruction-behavior coverpoints, which ZicfissS and ZicfissH re-run in their own modes; ZicfissS and ZicfissSm add the supervisor and machine gating coverpoints.  ZicfissH covers VS/VU-mode (see <<t-ZicfissH-coverpoints>>).
 
-[[t-Zicfiss-coverpoints]]
-.Zicfiss Coverpoints
-//,===
-//include::{testplansdir}/Zicfiss.adoc[]
-//,===
+===== ZicfissU User-Mode Shadow Stack
+
+include::{privtestplansdir}/ZicfissU.adoc[]
+
+===== ZicfissS Supervisor-Mode Shadow Stack
+
+include::{privtestplansdir}/ZicfissS.adoc[]
+
+===== ZicfissSm Machine-Mode Shadow Stack
+
+include::{privtestplansdir}/ZicfissSm.adoc[]
 
 ==== Zawrs Wait on Reservation Set
 
 Waits until timer interrupt or timeout on a single hart that cannot modify the reservation set.  Tests behave differently in
 different privilege modes, so a suite is defined for each.
 
-[[t-ZawrsSm-coverpoints]]
-.ZawrsSm Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=1449589527#gid=1449589527[Google Sheet Testplan]
-,===
+include::{privtestplansdir}/ZawrsSm.adoc[]
 
-[[t-ZawrsS-coverpoints]]
-.ZawrsS Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=0#gid=0[Google Sheet Testplan]
-,===
+include::{privtestplansdir}/ZawrsS.adoc[]
 
-[[t-ZawrsU-coverpoints]]
-.ZawrsU Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=1437737576#gid=1437737576[Google Sheet Testplan]
-,===
+include::{privtestplansdir}/ZawrsU.adoc[]
 
 include::norm/ZawrsSm_norm_rules.adoc[]
 
@@ -172,11 +130,7 @@ Note that these tests can have race conditions of timeouts, timer interrupts, an
 
 Misaligned atomics are supported by the Misaligned Atomicity Granularity.  They are also exercised via ExceptionsZaamo.
 
-[[t-Zama16b-coverpoints]]
-.Zama16b Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=907997467#gid=907997467[Google Sheet Testplan]
-,===
+include::{privtestplansdir}/Zama16b.adoc[]
 
 include::norm/Zama16b_norm_rules.adoc[]
 
@@ -186,11 +140,7 @@ Located here because it is part of RVA23 and can function without the rest of th
 The suite is divided into SdtrigSm, SdtrigS, and SdtrigU suites that are essentially identical, but are run on different privilege levels and thus produce different results for coverpoints such as reading debug registers or triggering in certain modes.
 Only SdtrigSm is listed here but the others are the same and also cover the same normative rules.
 
-[[t-SdtrigSm-coverpoints]]
-.SdtrigSm Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1OhdhcQ/edit?gid=1209377334#gid=1209377334[Google Sheet Testplan]
-,===
+include::{privtestplansdir}/SdtrigSm.adoc[]
 
 include::norm/SdtrigSm_norm_rules.adoc[]
 

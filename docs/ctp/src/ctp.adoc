@@ -2,6 +2,7 @@
 = RISC-V Certification Test Plan
 :description: Certification Test Plan
 :testplansdir: testplans
+:privtestplansdir: privtestplans
 include::../../common/adoc_common.adoc[]
 
 _Contributors to all versions of the spec in alphabetical order_

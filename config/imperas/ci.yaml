@@ -10,9 +10,9 @@
 #   https://solvnetplus.synopsys.com/s/case/500WQ0000230O4P/imperas-treats-vwmaccuvv-v14-v9-v15-v0t-as-legal
 #   SsstrictSm additionally trips on hcontext (0x6a8) on rv64-max, which Imperas implements
 #   and Sail does not. The rv32 configs pass SsstrictS/U entirely, and rv32gck passes all three.
-# - InterruptsSm/S/SSm/U: Imperas does not implement external interrupts
+# - InterruptsSm/S: Imperas does not implement external interrupts
 # - Smstateen: Sail does not implement all state yet to match
 # - ExceptionsVx: https://solvnetplus.synopsys.com/s/case/500WQ000023l1CPYAY/vmvnrrv-does-not-raise-an-illegalinstruction-exception-when-vtypevill-1
 #
 ci_enabled: false
-exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,InterruptsSm,InterruptsS,InterruptsSSm,InterruptsU,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,InterruptsSm,InterruptsS,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU"

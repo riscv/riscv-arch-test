@@ -1,0 +1,17 @@
+// EndianSm Coverpoints.  Converted from the "EndianSm" tab of the Endian test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=220856688#gid=220856688) on 2026-09-19.
+
+[[t-EndianSm-coverpoints]]
+.EndianSm Coverpoints
+[cols="2,1,3,2", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Test Hints
+
+| cp_mstatus_mbe_endianness
+| Read from memory in an endian fashion
+| For each endianness, sd 0x0102030405060708 to scratch, and also write all subwords with sw, sh, sb. For each endianness (independent), ld, lw, lwu, lh, lhu, lb, lbu it back.  In RV32, use mstatush and don't need the doubles.
+| restore endianness to normal afterward + +
+MBE +
+when mstatus.MPRV=0
+
+|===

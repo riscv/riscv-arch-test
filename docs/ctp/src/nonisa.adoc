@@ -4,6 +4,12 @@
 
 This chapter contains test plans for ratified RISC-V standards outside the Unprivileged and Privileged ISA specifications.
 
+[page-layout=landscape]
+<<<
+
 include::debug.adoc[]
 include::aia.adoc[]
 include::iommu.adoc[]
+
+[page-layout=portrait]
+<<<

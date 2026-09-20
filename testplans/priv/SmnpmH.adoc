@@ -1,0 +1,7 @@
+// SmnpmH Coverpoints.  Converted from the "SmnpmH" tab of the Hypervisor test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1162472491#gid=1162472491) on 2026-09-19.
+
+[[t-SmnpmH-coverpoints]]
+No smnpmh coverpoints have been defined yet.
+
+* Develop this after baseline pointer masking tests

@@ -112,8 +112,8 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |ExceptionsSvZaamo|Virt Mem AMO Exceptions|<<t-ExceptionsSvZaamo-coverpoints>>|||x|x|x
 |InterruptsSm|Machine Interrupts|<<t-InterruptsSm-coverpoints>>||x|x|x|x
 |InterruptsS|Supervisor Interrupts|<<t-InterruptsS-coverpoints>>|||x|x|x
-|InterruptsU|User Interrupts|<<t-InterruptsU-coverpoints>>|||x|x|x
-|InterruptsSstc|Supervisor Timer Compare|<<t-InterruptsSstc-coverpoints>>|||x|x|x
+|SstcSm|Machine Supervisor Timer Compare|<<t-SstcSm-coverpoints>>|||x|x|x
+|SstcS|Supervisor Timer Compare|<<t-SstcS-coverpoints>>|||x|x|x
 |ZicntrS|Supervisor Counters|<<t-ZicntrS-coverpoints>>|||x|x|x
 |ZicntrU|User Counters|<<t-ZicntrU-coverpoints>>|||x|x|x
 |Zihpm|Hardware Performance Monitors|<<t-Zihpm-coverpoints>>|o|x|x|x|x
@@ -225,8 +225,12 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zabha|Subword Atomics|<<t-Zabha-coverpoints>>||||o|o
 |ZacasZabha|Subword CAS|<<t-ZacasZabha-coverpoints>>||||o|o
 |Zama16b|Main memory PMA supports misaligned atomics within 16-byte regions|<<t-ExceptionsZaamo-coverpoints>>|||||x
-|Zicfilp|Landing Pads|<<t-Zicfilp-coverpoints>>||||o|o
-|Zicfiss|Shadow Stack|<<t-Zicfiss-coverpoints>>||||o|o
+|ZicfilpU|User Landing Pads|<<t-ZicfilpU-coverpoints>>||||o|o
+|ZicfilpSm|Machine Landing Pads|<<t-ZicfilpSm-coverpoints>>||||o|o
+|ZicfilpS|Supervisor Landing Pads|<<t-ZicfilpS-coverpoints>>||||o|o
+|ZicfissU|User Shadow Stack|<<t-ZicfissU-coverpoints>>||||o|o
+|ZicfissS|Supervisor Shadow Stack|<<t-ZicfissS-coverpoints>>||||o|o
+|ZicfissSm|Machine Shadow Stack|<<t-ZicfissSm-coverpoints>>||||o|o
 |Zfbfmin|BF16 Convert|<<t-Zfbfmin-coverpoints>>||||o|o
 |Zimop|Maybe-Ops|<<t-Zimop-coverpoints>>||||x|x
 |Zcmop|Compressed Maybe-Ops|<<t-Zcmop-coverpoints>>||||x|x

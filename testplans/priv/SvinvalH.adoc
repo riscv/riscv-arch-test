@@ -1,0 +1,16 @@
+// SvinvalH Coverpoints.  Converted from the "SvinvalH-JG" tab of the Hypervisor test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=292965592#gid=292965592) on 2026-09-19.
+
+[[t-SvinvalH-coverpoints]]
+.SvinvalH Coverpoints
+[cols="2,1,3,2,1", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Expectation | Bins
+
+| cp_svinval
+| Svinval instructions trap appropriately.
+| Test all Svinval instructions { sfence.w.inval, sfence.inval.ir, sinval.vma, hinval.vvma, hinval.gvma} in each privilege mode {M/HS/VS/U/VU} with TVM = {0/1} and VTVM = {0/1}
+| Instruction executes or throws illegal instruction trap.  Doesn't try to check that anything is actually invalidated.
+| 5 instructions x 5 privilege modes x 2 TVM * 2 VTVM
+
+|===

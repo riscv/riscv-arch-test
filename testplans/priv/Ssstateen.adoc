@@ -1,0 +1,64 @@
+// Ssstateen Coverpoints.  Converted from the "Ssstateen" tab of the Stateen test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1zm67nLKLn_tszDTzJQ9BIMOB7wuiskcuj3Mql4TOciA/edit?gid=246484261#gid=246484261) on 2026-09-19.
+
+[[t-Ssstateen-coverpoints]]
+.Ssstateen Coverpoints
+[cols="2,2,3,2,1,2", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Expectation | Bins | Normative Rules
+
+| cp_walking_ones
+| Bits are accessible
+| Write msstateen0-3[31:0] (first) and then sstateen0-3 with walking ones & walking zero, and read each back.
+| If msstateen = 0, read back 0.  If mssstateen = 1, read back value written. Note that writing msstateen = 1s won't actually set most of the bits to 1.
+| 2 msstateen * 4 CSRs * 64 walking ones/zero
+| smstateen_mmode_rv64_csrs +
+stateen_warl_access +
+sstateen_ro1_bits +
+sstateen_bit_correspondence
+
+| cp_csr_illegal_accesses
+| Test that each stateen CSR allows read/write access from its own and higher privilege modes and denies read/write access from lower privilege modes
+| In Mmode , write sstateen0-3 with all ones and read back. +
+In Umode , write sstateen0-3 with all ones and read back. +
+In S-mode, write msstateen0-3 and read back.  Trap. +
+If RV32 also write and read msstateen0-3h from S-mode.
+| All accesses will be successful in Mmode. +
+Illegal instruction exceptions will raise in +
+Umode and S-mode.
+| 2mode * 4CSRs * 1value * 2 R/W
+| stateen_op +
+smstateen_illegal_state_access +
+sstateen_user_access_control
+
+| cp_envcfg
+| envcfg controls access to senvcfg
+| With mstateen0.ENVCFG = {0,1}, read and write sevncfg
+| Illegal instruction if 0, else successful
+| 2 states x 2 accesses
+| mstateen0-envcfg_op
+
+| cp_fcsr_lower
+| fcsr controls access to fcsr when misa.F = 0
+| If Zfinx is supported: +
+with misa.F = 0 and sstateen0.fcsr, read and write fcsr, frm, fflags from U mode. Also try executing fadd.s, flw, fcvt.w.s, fcvt.s.w, fmv.x.w, fmv.w.x, fclass.s.
+| Illegal instruction if 0, else successful
+| 2 states x 2 accesses
+| stateen0-fcsr0_misa-f0_illegal_fpu_instr
+
+| cp_jvt_lower
+| jvt controls access
+| If Zcmt is supported: +
+With sstaten0.JVT = {0,1}, read and write jvt  from U mode
+| Illegal instruction if 0, else successful
+| 2 states x 2 accesses
+| stateen0-jvt_op +
+sstateen_user_access_control
+
+|===
+
+[NOTE]
+====
+* Note: All of these tests are performed in S-mode unless otherwise noted.
+* Note: mstateen0.SE0 must be 1 (else sstateen0 is inaccessible).
+====

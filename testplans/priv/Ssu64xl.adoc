@@ -1,0 +1,17 @@
+// Ssu64xl Coverpoints.  Converted from the "Ssu64xl" tab of the Priv test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=75338461#gid=75338461) on 2026-09-19.
+
+[[t-Ssu64xl-coverpoints]]
+.Ssu64xl Coverpoints
+[cols="2,1,2,1,1,2", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Expectation | Bins | Normative Rule
+
+| cp_ssu64xl
+| UXLEN = 64 supported
+| With sstatus.UXL = 2, in U-mode, set bit 63 of a GPR and read back
+| bit 63 is set
+| 1
+| sstatus.UXL must be capable of holding the value 2 (i.e., UXLEN=64 must be supported)
+
+|===

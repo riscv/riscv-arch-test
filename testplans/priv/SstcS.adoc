@@ -1,0 +1,51 @@
+// SstcS Coverpoints.  Converted from the "SstcS" tab of the Interrupts2 test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=618999433#gid=618999433) on 2026-09-19.
+
+[[t-SstcS-coverpoints]]
+.SstcS Coverpoints
+[cols="2,1,2,2,1,1,1", options=header]
+|===
+| Coverpoint | Sub Feature | Feature Description | Additional Feature info | Pass/Fail Criteria +
+(checker) | Functional Coverage | Feature covered
+
+7+| * for RV32, also access stimcmph
+
+7+| Boot to S-mode.  Run S and U-mode tests.
+
+7+| In supervisor mode
+
+| cp_supervisor_tm
+| Access stimecmp
+| Read stimecmp with mcounteren.TM = {0/1} for RV32, also access stimcmph
+| stimecmp only readable in supervisor mode if mcounteren.TM = 1
+| Check against RM
+| To be Done
+| Uncovered
+
+| cp_supervisor_stce
+| Access stimecmp
+| Read stimecmp with menvcfg.stce (menvcfgh in RV32) = {0/1} for RV32, also access stimcmph
+| stimecmp only readable in supervisor mode if menvcfg.STCE = 1
+| Check against RM
+| To be Done
+| Uncovered
+
+7+| In user mode
+
+| cp_user_tm
+| Access stimecmp
+| Read stimecmp with mcounteren.TM = {0/1} * scounteren.TM = {0/1} (if S_SUPPORTED) for RV32, also access stimcmph
+| stimecmp nevereadable in user mode
+| Check against RM
+| To be Done
+| Uncovered
+
+| cp_user_stce
+| Access stimecmp
+| Read stimecmp with menvcfg.stce (menvcfgh in RV32) = {0/1} for RV32, also access stimcmph
+| stimecmp never readable in user mode (too little privilege)
+| Check against RM
+| To be Done
+| Uncovered
+
+|===

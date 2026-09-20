@@ -1,0 +1,33 @@
+// Shtvala Coverpoints.  Converted from the "Shtvala" tab of the Hypervisor test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1365004927#gid=1365004927) on 2026-09-19.
+
+[[t-Shtvala-coverpoints]]
+.Shtvala Coverpoints
+[cols="2,1,1,1,2", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Expectation | Bins
+
+5+| Following tests are done in from VU and VS-modes into HS-mode
+
+5+| Initialize htval to some random value before each test
+
+| cp_load_guest_page_fault
+| Fault writes GPA >> 2 to htval
+| Cause load guest-page fault
+| htval written with GPA
+| 1 + +
+htval must be written with the faulting guest physical address in all circumstances permitted by the ISA
+
+| cp_store_guest_page_fault
+| Fault writes GPA >> 2 to htval
+| Cause store guest-page fault
+| htval written with GPA
+| 1
+
+| cp_instr_guest_page_fault
+| Fault writes GPA >> 2 to htval
+| Cause fetch guest-page fault
+| htval written with GPA
+| 1
+
+|===

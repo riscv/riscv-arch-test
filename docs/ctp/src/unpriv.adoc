@@ -1,4 +1,7 @@
 
+[page-layout=landscape]
+<<<
+
 [appendix]
 == Unprivileged Test Plan
 
@@ -102,6 +105,7 @@ Notes:
 [[t-integer-edge-definitions]]
 .Integer Edge Case Definitions
 [options=header]
+[%autowidth]
 |===
 |Bin|RV32|RV64
 |zero    |`00000000000000000000000000000000`|`0000000000000000000000000000000000000000000000000000000000000000`
@@ -153,6 +157,7 @@ Notes:
 [[t-fp-edge-definitions]]
 .Floating-Point Edge Case Definitions
 [options=header]
+[%autowidth]
 |===
 |Bin|Half|Float|Double
 |pos0|`0000`|`00000000`|`0000000000000000`
@@ -202,6 +207,7 @@ The categories of SPI and SCI are given in <<t-secondary-producer-instruction-ca
 [[t-secondary-producer-instruction-categories]]
 .Secondary Producer Instruction Categories
 [options=header]
+[%autowidth]
 |===
 |Category|ALU|Complex|Memory|Control|CSR (Zicsr)|Mult (Zmmul/M)|Float (F)|VectorInt (Zve32x + Zvl64b)|VectorFloat (Zve32f+Zvl64b)
 |Int (rd)|auipc, li|sll, cpop (Zbb), clmul (Zbc), sha256sig0 (Zknh)|lw, amoswap.w (Zaamo)|jal|csrr|mul, div|fcvt.w.s, fmv.x.w, fclass.s, feq.s|vmv.x.s|
@@ -215,6 +221,7 @@ The categories of SPI and SCI are given in <<t-secondary-producer-instruction-ca
 [[t-secondary-consumer-instruction-categories]]
 .Secondary Consumer Instruction Categories
 [options=header]
+[%autowidth]
 |===
 |Category|ALU|Complex|Memory|Control|CSR (Zicsr)|Mult (Zmmul/M)|Float (F)|VectorInt (Zve32x + Zvl64b)|VectorFloat (Zve32f+Zvl64b)
 |Int|add (rs1/2), addi (rs1)|srl, sh1add (Zba), binv (Zbs), aes32dsmi (Zknd32), aes64dsm (Zknd32)|sw (rs2), amoswap.w (rs2, Zaamo)|beq (rs1/2)|csrw (rs1)|mul (rs1/2), div (rs1/2)|fcvt.s.w (rs1), fmv.w.x (rs1)|vadd.vx (rs1), vmv.v.x (rs1)|
@@ -230,6 +237,7 @@ The types of hazards exercised are given in <<t-hazard-types>>. Not all IUT have
 [[t-hazard-types]]
 .Hazard Types
 [options=header]
+[%autowidth]
 |===
 |Type|IUT First|IUT Second
 |RAW|IUT dest -> SCI source|SPI dest -> IUT source
@@ -315,3 +323,6 @@ include::v.adoc[]
 include::unprivmisc23.adoc[]
 include::unprivmisc.adoc[]
 include::e.adoc[]
+
+[page-layout=portrait]
+<<<

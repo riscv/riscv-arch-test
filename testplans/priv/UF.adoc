@@ -1,0 +1,23 @@
+// UF Coverpoints.  Converted from the "UF" tab of the Priv test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=242878857#gid=242878857) on 2026-09-19.
+
+[[t-UF-coverpoints]]
+.UF Coverpoints
+[cols="2,1,2", options=header]
+|===
+| Coverpoint | Goal | Feature Description
+
+| cp_ufcsr_access
+| CSR access
+| csr read, write all 1s, write all 0s, set all 1s, clear all 1s, write back inital value of each register below
+
+| cp_ufcsrwalk
+| CSR access
+| Set and clear each bit of each writable CSR to exercise bitfields: fcsr, frm, fflags
+
+|===
+
+[NOTE]
+====
+* Attempt these tests in user mode unless otherwise specified
+====

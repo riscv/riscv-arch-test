@@ -1,0 +1,23 @@
+// Za64rs Coverpoints.  Converted from the "Za64rs" tab of the Priv test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=910803819#gid=910803819) on 2026-09-19.
+
+[[t-Za64rs-coverpoints]]
+.Za64rs Coverpoints
+[cols="2,1,2,2,1,2", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Expectation | Bins | Normative Rule
+
+| cp_za64rs
+| reservation set size
+| For each offset in [0, 64] that is a multiple of 4, lr.w from base address that a multiple of 64 and then sc.w to an addresss with that offset from base
+| sc success code in rd matches reference model, succeeeding for small offsets and failing for large offsets (definitely for 64, optionally smaller)
+| 17
+| Reservation sets are contiguous, naturally aligned, and a maximum of 64 bytes.
+
+|===
+
+[NOTE]
+====
+* Note:
+* Can borrow tests from sc.w unprivileged test
+====

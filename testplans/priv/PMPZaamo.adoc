@@ -1,0 +1,23 @@
+// PMPZaamo Coverpoints.  Converted from the "PMPZaamo" tab of the PMP test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=343093009#gid=343093009) on 2026-09-19.
+
+[[t-PMPZaamo-coverpoints]]
+.PMPZaamo Coverpoints
+[cols="2,2,3,1", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Bins
+
+4+| See PMPM for general information. +
+Tests run in M mode. +
+In this suite, amo = amoswap.w, amoadd.w, amoxor.w, amoadd.w, amoor.w, amomin.w, amomax.w, amominu.w, amomaxu.w +
+In RV64, add .d flavors +
+Some loads/stores throw illegal instruction trap if not supported
+
+| cp_cfg_RW
+| The R, W, ...bits, when set, indicate that the PMP entry permits read, write
+| Check that WR bits control write/read access for every type of amo. +
+Attempt all accesses with pmpcfg_i.L=1, all legal pmpcfg_i.XWR +
+Observe proper access faults for restricted read/write regions
+| 6 XWR * (9/16 AMOs)
+
+|===

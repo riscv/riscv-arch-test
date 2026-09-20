@@ -1,0 +1,30 @@
+// Ss1p13 Coverpoints.  Converted from the "Ss1p13" tab of the Priv test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=108970394#gid=108970394) on 2026-09-19.
+
+[[t-Ss1p13-coverpoints]]
+.Ss1p13 Coverpoints
+[cols="2,1,1,1,1,2", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Expectation | Bins | Normative Rule
+
+| cp_sxlen_ge_uxlen
+| sxlen > uxlen
+| From S-mode, attempt to set sstatus.UXL = (1, 2)
+| Can't write 2 unless SXL is also 2 (64 b)
+| 2
+| If S-mode is implemented, the set of legal values that the UXL field may assume excludes those that would cause UXLEN to be greater than SXLEN.
+
+| NOTE : Already covered in cp_scause_write_exception +
+cp_scause
+| scause accepts sofware-check and hardware error
+| Write scause = 18, 19, read back
+| Match ref model
+| 2
+|
+
+|===
+
+[NOTE]
+====
+* NOTE : Tests and coverage files are under the S.py and S_coverage.svh respectvely wth the guard of  `ifdef SS1P13_SUPPORTED
+====

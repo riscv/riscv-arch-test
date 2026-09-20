@@ -18,6 +18,7 @@ Modified coverpoints for Zc* are summarized in <<t-Zc-modified-coverpoints>>.  A
 [[t-Zc-modified-coverpoints]]
 .Zc Modified Coverpoints
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Modified Coverpoint|Bins|Definition
 |cp_asm_count_nop|1|Number of times the canonical `c.nop` form is executed in the test with imm == 0, must be greater than 0.

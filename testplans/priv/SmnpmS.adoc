@@ -1,0 +1,37 @@
+// Smnpm Coverpoints (S mode).  Converted from the "SmnpmS" tab of the Pointer Masking test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/15yJhyhBB5X9cq4SDQ-YCPzo2oPQnDBh5wEIZhi0-9Ps/edit?gid=720514871#gid=720514871) on 2026-09-19.
+
+[[t-SmnpmS-coverpoints]]
+.Smnpm Coverpoints (S mode)
+[cols="2,2,4,2,2,1", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Expectation | Bins | Normative Rule
+
+6+| Smnpm is a machine level extension which  enables pointer maksing for lower priviledge level S mode (if implemented ) or otherwise U-mode via menvcfg.
+
+6+| In this sheet , test plan is for S-mode  implementation (SmnpmS)
+
+6+| Similar to Ssnpm except:
+
+6+| Run the same coverpoints as Ssnpm in S-mode except
+
+6+| - MXR bit is sampled from mstatus csr
+
+6+| - remove cp_pmm_uxl_clear
+
+6+| - add the following cp_pm_csr_software_access_* coverpoints
+
+| cp_pm_csr_software_access
+| Ensure pointer masking is not applied to software CSR reads and writes
+| Pointer masking is not applied to software CSR reads and writes. +
+Test Environment: +
+In M-mode , set menvcfg.PMM={10(PMLEN=7),11(PMLEN=16)} +
+switch to S-mode; +
+Write XLEN test patterns with upper PMLEN bits set to RW CSRs {sepc, stvec, sscratch} using {csrrw}. Read back the same CSR using CSR read instructions then compare written and read values.
+| No masking applied; read-back value matches written value (subject to WARL constraints). +
+The implemented WARL width of CSRs is unaffected by pointer masking
+| 2 PMM * 4 CSR ops * 1 mode (S) * 3 CSR * satp supported modes (Bare, Sv39, Sv48, Sv57)
+| pm_no_csr_sw +
+pm_warl_unaffected
+
+|===

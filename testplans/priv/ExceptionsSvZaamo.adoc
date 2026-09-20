@@ -1,0 +1,50 @@
+// ExceptionsSvZaamo Coverpoints.  Converted from the "ExceptionsSvZaamo" tab of the Exceptions test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=1747092954#gid=1747092954) on 2026-09-19.
+
+This testplan is for systems supporting supervisor mode and virtual memory.
+
+Also requires Zaamo
+
+The following coverpoints should be exercised in machine mode.
+
+[[t-ExceptionsSvZaamo-coverpoints]]
+.ExceptionsSvZaamo Coverpoints
+[cols="2,1,2,2", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Test Hints
+
+| cp_misaligned_priority_m
+| Priority of exceptions
+| Attempt amoadd.w from memory location causing {access fault and page fault}, {page fault and misaligned}, {access fault, page fault, misaligned}
+| M-mode needs MPRV to S or U mode to be able to cause access fault.
+
+| cp_medeleg_m
+| Machine mode exception not affected by medeleg
+| Attempt amoadd.w causing page faults crossed crossed with medeleg = [ {1011_0011_1111_1111}, {0}, and 13 different walking 1s]
+| medeleg should not affect machine mode exceptions
+
+4+| The following coverpoints should be exercised in supervisor mode
+
+| cp_misaligned_priority_s
+| Priority of exceptions
+| Attempt amoadd.w from memory location causing {access fault and page fault}, {page fault and misaligned}, {access fault, page fault, misaligned}
+|
+
+| cp_medeleg_s
+| Delegation to supervisor mode
+| Attempt amoadd.w causing page faults crossed crossed with medeleg = [ {1011_0011_1111_1111}, {0}, and 13 different walking 1s]
+| Should delegate when a 1 is in the appropriate column.
+
+4+| The following coverpoints should be exercised in user mode
+
+| cp_misaligned_priority_u
+| Priority of exceptions
+| Attempt amoadd.w from memory location causing {access fault and page fault}, {page fault and misaligned}, {access fault, page fault, misaligned}
+|
+
+| cp_medeleg_u
+| Delegation to supervisor mode
+| Attempt amoadd.w causing page faults crossed crossed with medeleg = [ {1011_0011_1111_1111}, {0}, and 13 different walking 1s]
+| Should delegate when a 1 is in the appropriate column.
+
+|===

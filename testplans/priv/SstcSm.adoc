@@ -1,0 +1,31 @@
+// SstcSm Coverpoints.  Converted from the "SstcSm" tab of the Interrupts2 test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=2013711018#gid=2013711018) on 2026-09-19.
+
+[[t-SstcSm-coverpoints]]
+.SstcSm Coverpoints
+[cols="2,1,2,1,1,1,1", options=header]
+|===
+| Coverpoint | Sub Feature | Feature Description | Additional Feature info | Pass/Fail Criteria +
+(checker) | Functional Coverage | Feature covered
+
+7+| * for RV32, also access stimcmph
+
+7+| In machine mode
+
+| cp_machine_tm
+| Access stimecmp
+| Read stimecmp with mcounteren.TM = {0/1} * for RV32, also access stimcmph
+| stimecmp always readable in machine mode
+| Check against RM
+| To be Done
+| Uncovered
+
+| cp_machine_stce
+| Access stimecmp
+| Read stimecmp with menvcfg.stce (menvcfgh in RV32) = {0/1} * for RV32, also access stimcmph
+| stimecmp always readable in machine mode
+| Check against RM
+| To be Done
+| Uncovered
+
+|===

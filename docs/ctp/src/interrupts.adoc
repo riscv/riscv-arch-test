@@ -1,17 +1,13 @@
 
 === Interrupts
 
-Interrupt tests are organized according to the privilege mode or extension supported.
+Interrupt tests are organized according to the privilege mode or extension supported.  InterruptsSm boots to M-mode and exercises interrupts in every supported privilege mode; InterruptsS boots to S-mode and exercises only the interrupts visible to supervisor software.  The Sstc tests check access to the `stimecmp` register; the timer interrupts that `stimecmp` generates are covered by the `cp_trigger_sti_sstc` and `cp_write_stip_sstc` coverpoints of the Interrupts tests.
 
 ==== InterruptsSm Machine-Mode Interrupts
 
 These tests are run on any configuration with machine mode that supports interrupts.
 
-[[t-InterruptsSm-coverpoints]]
-.InterruptsSm Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=399538825#gid=399538825[Google Sheet Testplan]
-,===
+include::{privtestplansdir}/InterruptsSm.adoc[]
 
 include::norm/InterruptsSm_norm_rules.adoc[]
 
@@ -27,52 +23,26 @@ TODO: mip.MSIP update time
 
 ==== InterruptsS Supervisor-Mode Interrupts
 
-These tests are run on any configuration with supervisor mode that supports interrupts. Note that they include tests in other modes, such as interrupts from user mode delegated to supervisor mode.
+These tests are run on any configuration with supervisor mode that supports interrupts. They boot to S-mode and also run in U-mode (and VS/VU-mode when the H extension is supported); `mideleg` keeps its boot value with all supervisor-level interrupts delegated.
 
-[[t-InterruptsS-coverpoints]]
-.InterruptsS Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=664673151#gid=664673151[Google Sheet Testplan]
-,===
-
+include::{privtestplansdir}/InterruptsS.adoc[]
 
 include::norm/InterruptsS_norm_rules.adoc[]
 
-==== InterruptsSSm Supervisor-Mode Interrupts (runs in Machine mode)
+==== SstcSm Machine-Mode Supervisor Timer Compare
 
-These tests are run on any configuration with supervisor mode and standard machine mode that supports interrupts. Note that the test runs in M mode, testing features that only exist if S mode is supported.
+These tests are run on any configuration with machine mode when the Sstc supervisor timer compare extension is supported.
 
-[[t-InterruptsSSm-coverpoints]]
-.InterruptsSSm Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=1129427901#gid=1129427901[Google Sheet Testplan]
-,===
+include::{privtestplansdir}/SstcSm.adoc[]
 
+include::norm/SstcSm_norm_rules.adoc[]
 
-include::norm/InterruptsSSm_norm_rules.adoc[]
+==== SstcS Supervisor-Mode Supervisor Timer Compare
 
-==== InterruptsU User-Mode Interrupts
+These tests are run on any configuration with supervisor mode when the Sstc supervisor timer compare extension is supported.
 
-These tests are run on any configuration with user mode that supports interrupts.
+include::{privtestplansdir}/SstcS.adoc[]
 
-[[t-InterruptsU-coverpoints]]
-.InterruptsU Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=1458360883#gid=1458360883[Google Sheet Testplan]
-,===
-
-include::norm/InterruptsU_norm_rules.adoc[]
-
-==== InterruptsSstc Supervisor Timer Compare Interrupts
-
-These tests are run when the Sstc supervisor timer compare extension is supported.
-
-[[t-InterruptsSstc-coverpoints]]
-.InterruptsSstc Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=347804969#gid=347804969[Google Sheet Testplan]
-,===
-
-include::norm/InterruptsSstc_norm_rules.adoc[]
+include::norm/SstcS_norm_rules.adoc[]
 
 TODO: beef up testing stimecmp values, behavior near wraparound

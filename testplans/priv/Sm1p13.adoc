@@ -1,0 +1,63 @@
+// Sm1p13 Coverpoints.  Converted from the "Sm1p13" tab of the Priv test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=294808438#gid=294808438) on 2026-09-19.
+
+[[t-Sm1p13-coverpoints]]
+.Sm1p13 Coverpoints
+[cols="2,1,3,1,1", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Expectation | Bins
+
+| cp_medelegh
+|
+| RV32 only: +
+Write all 1s to medelegh and read back.
+| Match ref model
+| 1 + +
+Sm_mcsr_cg/cp_mcsr_access
+
+| cp_mxlen_ro +
+Note : Allready covered in cp_misa_mxl
+| misa.MXL is read only
+| Write all U,S,M values of misa.MXL and read back
+| Read back M-mode
+| 3 + +
+Sm_mcsr_cg/cp_misa_mxl
+
+| cp_misa_b +
+cp_misa_v
+| misa.B and misa.V are correct
+| read, set, and clear, readback misa.B and misa.V
+|
+| 5 + +
+Sm_mcsr_cg/{cp_misa_b, cp_misa.v}
+
+| cp_mcause +
+Note : Already covered in cp_mcause_write_exception/
+| mcause accepts sofware-check and hardware error
+| Write mcause = 18, 19, read back
+| Match ref model
+| 2 + +
+Sm_mcause_cg/cp_mcause_write_exception
+
+| cp_msip
+| msip write is reflected in mip.MSIP
+| Write {all 1s, all 0s} to memory-mapped msip register if it exists.  Read back.  Wait and then read mip.MSIP. +
+RVMODEL_MSIP_ADDRESS is undefined if msip does not exist (such as when mip.MSIP is read-only zero).
+| Match ref model
+| 2 + +
+Sm_mcsr_cg/cp_msip
+
+|===
+
+[NOTE]
+====
+* Notes:
+* NOTE : It's tests and coverage files are under the S.py and S_coverage.svh respectvely wth the guard of  `ifdef SM1P13_SUPPORTED
+* LCOFI tested in Sscofpmf test plan
+* VS-mode counter overflow tested in Shlcofideleg
+* Hints with MXLEN > XLEN not tested
+* Hardware errors tested with Smrnmi
+* Software-check exceptions tested with Zicfilp and Zicfiss
+* hedelegh tested with hypervisor
+* cp_misaligned_atomicity_granule_pma is tested with Zama16b
+====

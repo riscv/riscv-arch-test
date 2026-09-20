@@ -1,0 +1,156 @@
+// InterruptsS Coverpoints.  Converted from the "InterruptsS" tab of the Interrupts2 test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=1560685057#gid=1560685057) on 2026-09-19.
+
+Tests run if S exists (and don't use MTI/MSI/MEI that are outside supervisor-mode spec)
+
+Boot to SMODE, run tests in each supported priv mode of <S,U,VS,VU>
+
+Reference model needs to know if each of the types of interrupts are supported
+
+.InterruptsS Test Setup
+[cols="2,3,3,3,3", options=header]
+|===
+| Step | S | U | VS | VU
+
+| setup_interrupts_s
+| mideleg boots with all non-M interrupts delegated +
+write sstatus.SIE= {0/1} +
+write sie = 1s +
+write stvec.MODE = {00, 01} if each supported
+| Same as S
+| ***
+| ***
+
+| trigger_interrupts <type>
+| RVTEST_SET_<type>_INT +
+RVTEST_IDLE_FOR_INTERRUPT to wait for interrupt +
+RVTEST_CLR_<type>_INT
+| Same as but with priv = U
+|
+|
+
+| Coverpoint
+| mideleg<typ> = 1 if UDB_<TYPE>_DELEGATION_SUPPORTED +
+sie<type> = 1 if UDB_<TYPE>_SUPPORTED +
+sstatus.SIE = {0/1}
+| Same as S
+|
+|
+
+| Expectation
+| <type> pending if UDB_<TYPE>_SUPPORTED, trap if SIE = 1
+| pending and trap if UDB_<TYPE>_SUPPORTED
+|
+|
+
+|===
+
+menvcfg.STCE = 0 unless otherwise stated
+
+mideleg boots with 1s below M-mode and does not change
+
+stvec.MODE uses boot value
+
+RVTEST_SET_MTI_INT writes mtimecmp = 0 (with tsbi if necessary)
+
+Define ways to cause all of the interrupts that are standard as much as possible, only need RV macros for special stuff
+
+[[t-InterruptsS-coverpoints]]
+.InterruptsS Coverpoints
+[cols="2,1,3,2,1,1", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Expectation | Bins | Normative Rule
+
+| cp_trigger
+| Assert each interrupt
+| For <type> = {LCOFI, STI, SSI, SEI, VSTI, VSEI, VSSI} +
+setup_interrupts_s +
+trigger_interrupts_<type>
+| in S mode, supported interrupt will fire if SIE = 1 +
+SIE should not affect result in lower modes
+| 4 priv * 7 int * 2 SIE * 2 vecMODE
+| mstatus_xie_intr_en_dis +
+mstatus_xpie_op
+
+| cp_trigger_reg
+|
+| Same as cp_trigger, but use mip.SEIP, mip.SSIP, and sip.SSIP rather than macros.
+| same as above
+| 4 priv * 3 int * 2 SIE * 2 vecMODE
+|
+
+| cp_trigger_sti_sstc
+| STI with SSTC
+| if SSTC_SUPPORTED: +
+setup_interrupts_s +
+write menvcfg.STCE = {0/1} +
+trigger_interrupts_SSTC
+| STI trigger if +
+in S mode, all 3 enables are true +
+in lower mode, STCE and STIE are true (SIE does not matter)
+| 4 priv * 2 STCE * 2 SIE * 2 vecMODE
+|
+
+| cp_enable
+| Enables control interrupts
+| write sstatus.SIE = 1 +
+For <type> in <types above>: +
+sie = {1 in type, 1s everywhere except type} +
+RVTEST_SET_<type>_INT +
+RVTEST_IDLE_FOR_INT +
+RVTEST_CLR_<type>_INT
+| Interrupt if sie and sip match
+| 4 priv * 2 sie * 7 int
+|
+
+| cp_priority_sip
+| Priority of pending interrupts
+| write sstatus.SIE = 1 +
+write sie = 0s +
+RVTEST_SET_<type>_INT (7 choose 2) pairs of sip.<TYPE1, TYPE2> +
+write sie = 1s +
+RVTEST_IDLE_FOR_INT +
+RVTEST_CLR_<type>_INT for both
+| highest priority pending interrupt will fire
+| 21 int * 4 priv
+|
+
+| cp_priority_sie
+| Priority of enabled interrupts
+| write sstatus.SIE = 1 +
+write sie = 0s +
+RVTEST_SET_<type>_INT for all 7 types +
+write sie with two ones for all (7 choose 2) pairs +
+RVTEST_IDLE_FOR_INT +
+RVTEST_CLR_<type>_INT for all
+| highest priority enabled interrupt will fire
+| 21 int * 4 priv
+|
+
+| cp_wfi
+| WFI waits until timer interrupt
+| Do not test in U mode. +
+if SSTC_SUPPORTED: +
+write mstatus.TW = 0 +
+write sstatus.SIE = {0/1} +
+write sie.STIE = 1 +
+RVTEST_SET_SSTC_INT_SOON +
+do { +
+WFI instruction +
+} until STI has fired (see Zawrs) +
+RVTEST_CLR_SSTC_INT
+| Wait for timer interrupt.  MIE and SIE not affect results.
+| 4 priv * 2 SIE
+|
+
+| cp_wfi_timeout
+| WFI waits until timeout
+| write mstatus.TW = 1 (also 0 in U-mode if S_SUPPORTED) +
+write sie.STIE = {0/1} +
+write sstatus.SIE = {0/1} +
+WFI instruction
+|
+|
+|
+
+|===

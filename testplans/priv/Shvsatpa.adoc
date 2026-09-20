@@ -1,0 +1,20 @@
+// Shvsatpa Coverpoints.  Converted from the "Shvsatpa" tab of the Hypervisor test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1777147736#gid=1777147736) on 2026-09-19.
+
+[[t-Shvsatpa-coverpoints]]
+.Shvsatpa Coverpoints
+[cols="2,1,2,2,1,2", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Expectation | Bins | Normative Rule
+
+6+| Following tests are done in M-mode
+
+| cp_shvsatpa
+| Check all values writable to vsatp.mode
+| RV32: write vsatp.mode = 0/1 +
+RV64: write vsatp.mode = 0, 8, 9, 10
+| Matches reference model, which should accept same values as satp.mode
+| 2 or 4
+| All translation modes supported in satp must be supported in vsatp.
+
+|===

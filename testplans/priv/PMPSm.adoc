@@ -1,0 +1,520 @@
+// PMPSm Coverpoints.  Converted from the "PMPSm" tab of the PMP test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1474055416#gid=1474055416) on 2026-09-19.
+
+[[t-PMPSm-coverpoints]]
+.PMPSm Coverpoints
+[cols="2,2,2,5,2,2,2,3", options=header]
+|===
+| Coverpoint | Comments on Test Results. | Goal | Feature Description | Expectation | Bins | ID | Normative Rule
+
+8+| Let the bottom PMP_writable_regs PMP regions be writable (PMP_writable_regs is typically 16 (I believe this is changing to (PMP_writable_regs-1)), but could be smaller if some regions are hardwired) +
+Test with max PMP_writable_regs of  16 to reduce reuntime. +
+For all PMP tests, the lowest priority writable region (i.e, region-15 or region-63 or PMP_writable_regs-1) will always cover the background area with pmpcfg_n.A=NAPOT, RWX Permission. pmpcfg_n.L={1} and pmpaddr_n=All_ones. +
+Write coverpoints for (PMP_writable_regs-1) regions, but tests for PMP_writable_regs regions, and get full coverage when PMP_writable_regs=(PMP_writable_regs-1) +
+In M mode unless otherwise specified +
+pmpcfg_i refers to the 8-bit configuration for region i, which is pmpcfg register i/4 or 2*(i/8) +
+Fetch refers to jalr and jal to an address +
+Reads refer to {lb, lbu, lh, lhu, lw, lwu, ld} +
+Writes refer to {sb, sh, sw, sd} +
+Legal pmpcfg.XWR = {000, 001, 011, 100, 101, 110} - W=1,R=0 is reserved and unpredictable. +
+Coverpoints and tests are informed of G specifying PMP grain size g = 2^(G+2). +
+If region is "standard", it is a NAPOT of max(g,8) bytes beyond code not overlapping other standard regions. +
+"Default TOR region" is aligned to g starting beyond end of program, and of size g. +
+After any PMP csr writes, issue sfence.vma to synchronize page table.  On systems with satp.MODE = read only zero, sfence.vma may throw illegal instruction trap, which can be ignored. +
+All tests on this page executed in M-mode.
+
+8+| TEST ALL BITS OF pmpcfg
+
+| cp_cfg_X
+|
+| X alone determines execute access.
+| Fetch instruction with pmpcfg_i.L=1, all legal pmpcfg_i.XWR
+| Instr access faults for restricted execution regions.
+| 6 XWR
+| pmp_exec_fault
+| The ...X bits, when set, indicate that the PMP entry permits ... instruction execution
+
+| cp_cfg_X0_all
+|
+| X=0 bit works in every region.
+| Fetch instructions in each PMP region with L=1, pmpcfg.X = 0, standard regions.
+| Access faults for restricted execution regions.
+| (PMP_writable_regs-1)  regions
+| pmp_exec_fault +
+pmp_l_bit_m_mode_enforcement
+| The ...X bits, when set, indicate that the PMP entry permits ... instruction execution
+
+| cp_cfg_X1_all
+|
+| X=1 bit works in every region.
+| Fetch instructions in each PMP region with L=1, pmpcfg.X = 1, standard regions starting after code. Exclude lwu, ld, sd in RV32
+| No faults.
+| (PMP_writable_regs-1)  regions
+| pmp_cfg_permissions +
+pmp_l_bit_m_mode_enforcement
+| The ...X bits, when set, indicate that the PMP entry permits ... instruction execution
+
+| cp_cfg_RW
+|
+| WR bits control write/read access for every type of load and store.
+| Attempt all types of reads and writes with pmpcfg_i.L=1, all legal pmpcfg_i.XWR
+| Access faults for restricted execution regions.
+| 6 XWR * (7 loads + 4 stores)
+| pmp_cfg_permissions +
+pmp_exec_fault +
+pmp_rwx_check
+| The R, W, ...bits, when set, indicate that the PMP entry permits read, write
+
+| cp_cfg_RW00_all
+|
+| WR=00 works in every region.
+| Attempt all types of reads and writes in each standard PMP region with L=1, pmpcfg.XWR = ?00. Exclude lwu, ld, sd in RV32
+| Access faults for restricted execution regions.
+| (PMP_writable_regs-1) regions * (7 loads + 4 stores)
+| pmp_cfg_permissions +
+pmp_exec_fault +
+pmp_rwx_check
+| The R, W, ...bits, when set, indicate that the PMP entry permits read, write
+
+| cp_cfg_RW10_all
+|
+| WR=01 works in every region.
+| Attempt all types of reads and writes in each standard PMP region with L=1, pmpcfg.XWR = ?01. Exclude lwu, ld, sd in RV32
+| Access faults for restricted execution regions.
+| (PMP_writable_regs-1)  regions * (7 loads + 4 stores)
+| pmp_cfg_permissions +
+pmp_exec_fault +
+pmp_rwx_check
+| The R, W, ...bits, when set, indicate that the PMP entry permits read, write
+
+| cp_cfg_RW11_all
+|
+| WR=11 works in every region.
+| Attempt all types of reads and writes in each standard PMP region with L=1, pmpcfg.XWR = ?11 +
+No access faults. Exclude lwu, ld, sd in RV32
+| No faults.
+| (PMP_writable_regs-1) regions * (7 loads + 4 stores)
+| pmp_cfg_permissions +
+pmp_rwx_check
+| The R, W, ...bits, when set, indicate that the PMP entry permits read, write
+
+| cp_cfg_L_access_all
+|
+|
+| Check that XWR doesn't affect M-mode acess when L=0 +
+Set up (PMP_writable_regs-1) standard PMP regions, with pmp.L = 0, pmp.A=NAPOT, pmp.XWR = 0 +
+{jalr, lw, sw} in each PMP region +
+Access should always succeed because L=0 doesn't enforce permissions.
+|
+| (PMP_writable_regs-1) regions * (1 fetch + 1 load + 1 store)
+| pmp_rwx_check
+| When the L bit is clear, any M-mode access matching the PMP entry will succeed
+
+| cp_cfg_L_modify
+|
+|
+| Check that pmpcfg and pmpaddr are unwritable when L = 1. +
+With pmpcfg_i.L ={0/1}, pmpcfg_i.A = {OFF/TOR/NAPOT}, pmpcfg_i.XWR = 111, pmpaddr_i = 0x100, attempt to change pmpcfg_i to 000000000, and to change pmpaddr_i to 0s, and read these back. +
+When L = 1, should be unchanged because of lock.  When L = 0, changeable. Skip NA4 because it doesn't exist if G>0.
+|
+| 2 L * 3 A * 2 changes
+| pmp_l_bit_function +
+pmp_l_bit_m_mode_enforcement
+| If PMP entry i is locked, writes to pmpicfg and pmpaddri are ignored.
+
+| cp_cfg_L_modify_TOR
+|
+|
+| Check that pmpcfg and pmpaddr of previous region are unwritable when L = 1. +
+With pmpcfg_i.L ={0/1}, pmpcfg_i.A = {OFF/TOR/NAPOT}, pmpcfg_i.XWR = 111, pmpaddr_i = 0x100, pmpcfg_i-1.L =0 attempt to change pmpcfg_i-1 to 00000111, and to change pmpaddr_i-1 to 1s and read these back. +
+pmpaddr_i-1 should be unchanged because of lock if pmpcfg_i.A = TOR, otherwise change. pmpcfg_i-1 is changable independent of pmpcfg_i.A. Skip NA4 because it doesn't exist if G>0
+|
+| 2 L * 3 A * 2 changes
+| pmp_l_bit_write_protection +
+pmp_l_bit_m_mode_enforcement
+| Additionally, if PMP entry i is locked and pmpicfg.A is set to TOR, writes to pmpaddri-1 are ignored.
+
+8+| TEST all address-matching modes
+
+| cp_cfg_A_all
+| .log shows A is selected to NA4 even G>=1.  Need to have a look where G=4 is configured.
+|
+| Check that A is writable in each region. +
+For each standard region, attempt to write pmpcfg.A={OFF, TOR, NA4, NAPOT} with pmpcfg.L=0, pmpcfg.RWX = 000, then read back.  Only able to write NA4 if grain G = 0.  Other pmpcfg bits are writable.
+|
+| (PMP_writable_regs-1) regions * 4 A
+| pmp_na4_select_restriction +
+pmp_a_field_encoding
+| Figure 34 shows pmpcfg bits 4:3 are A.  When G >= 1, the NA4 mode is not selectable.
+
+| cp_cfg_A_off_all
+|
+|
+| Check that A=OFF never matches for each region. +
+For each standard region with pmpcfg.L = 1, pmpcfg.A = OFF, pmpcfg.XWR = 000.  Fetch, read, write from that region.  Should succeed because region is off even though inaccessible.
+|
+| (PMP_writable_regs-1) regions
+| pmp_a_field_off +
+pmp_a_field_encoding +
+pmp_access_fault_exception
+| A 0 OFF Null region (disabled)
+
+| cp_cfg_A_napot_all
+|
+|
+| Check A=NAPOT works in each region. +
+With pmpcfg.L = 1, pmpcfg.A=NAPOT, pmpcfg.XWR=000, standard regions: make lw at that address, address - 4, and just beyond top of the region (reflecting granularity).  Observe proper access faults for restricted regions, and all accesses beyond the region should succeed.
+|
+| (PMP_writable_regs-1) regions * 3 addresses
+| pmp_napot_encoding_low_bits +
+pmp_a_field_encoding +
+pmp_access_fault_exception
+| NAPOT ranges make use of the low-order bits of the asscoiated address registers to encode the size of the range.
+
+| cp_cfg_A_napot
+|
+|
+| Check XWR controls accesses in matching NAPOT region. +
+For a standard region with pmpcfg_i.L = 1, pmpcfg_i.A=NAPOT, all legal pmpcfg_i.XWR: make {lw, sw, jalr} at that start of region, start - 4, start + 4, highest word in region, just beyond top of the region.  Observe proper access faults for restricted regions, and accesses beyond the region should succeed.
+|
+| 6 XWR * 3 types of access * 5 addresses
+| pmp_napot_encoding_low_bits
+| NAPOT ranges make use of the low-order bits of the asscoiated address registers to encode the size of the range.
+
+| cp_cfg_A_na4_all
+|
+|
+| Check A = NA4 works in each region. +
+G=0 Only +
+Repeat cp_cfg_A_napot_all with pmpcfg_i.A = NA4 at addresses pmpaddr and pmpaddr+4 and pmpaddr-4.  Should fail at pmpaddr and pass in background on the others.
+|
+| (PMP_writable_regs-1) regions * 3 addresses
+| pmp_a_field_napot_na4
+| NA4: Naturally-aligned four-byte region.
+
+| cp_cfg_A_na4
+|
+|
+| Check XWR controls accesses in matching NA4 region. +
+G=0 Only +
+With pmpcfg_i.L = 1, pmpcfg_i.A=NA4, all legal pmpcfg_i.XWR, reasonable address in pmpaddr: make {lw, sw, jalr} at that address, that address + 4, just beyond top of the region.  Observe proper access faults for restricted regions, and accesses beyond the region should succeed.
+|
+| 6 XWR * 3 types of access * 3 addresses
+| pmp_a_field_napot_na4
+| NA4: Naturally-aligned four-byte region.
+
+| cp_cfg_A tor_all
+|
+|
+| Check A = TOR works in each region. +
+Preconfigure all (PMP_writable_regs-1) PMP regions in with pmpcfg.L = 1, pmpcfg.A = TOR, pmpcfg.XWR=00(i%2), starting with default TOR region and moving up by g*i (each region getting larger by g).  Attempt lw at at start of region.  Odd regions should allow lw, and all others should trap.
+|
+| (PMP_writable_regs-1) regions
+| pmp_a_field_tor
+| If TOR is selected, the associated address register forms the top of the address range, and the preceding PMP address register forms the bottom of the address range.
+
+| cp_cfg_A_tor
+|
+|
+| Check XWR controls accesses in matching TOR region. +
+With pmpcfg_i.L =1, pmpcfg_i.A = TOR, all legal pmpcfg_i.XWR, default TOR region, address-g in pmpaddr_i-1: {lw, sw, jalr} address, address-4, address-g, address-g-4.  Observe proper access faults for restricted regions.
+|
+| 6 XWR * 3 types of accesses * 4 addresses
+| pmp_a_field_tor
+| If TOR is selected, the associated address register forms the top of the address range, and the preceding PMP address register forms the bottom of the address range.
+
+| cp_cfg_A_tor0
+|
+|
+| Check region 0 extends from 0 to pmpaddr0 in TOR mode. Dropping the background region. +
+With pmpcfg0.L=1, pmpcfg0.A=TOR, pmpcfg0.XWR=111, default TOR region: {lw, sw, jalr} to {0, pmpaddr0-4, pmpaddr0}.
+|
+| 3 types of access * 3 addresses
+| pmp_a_field_tor
+| If PMP entry 0's A field is set to TOR, zero is used for the lower bound, and so it matches any address y < pmpaddr_0.
+
+| cp_cfg_A_tor_bot
+|
+|
+| Check region 1 extends from pmpaddr0 to pmpaddr1 in TOR mode. +
+With pmpcfg1.L=1, pmpcfg1.A = TOR, pmpcfg1.XWR=101, default TOR region, pmpcfg0.L = {0/1}, pmpcfg0.A = OFF, pmpcfg0.XWR = 000, pmpaddr0 = pmpaddr1-g, {lw, sw, jalr} some address {pmpadr0 - 4, pmpadr0, pmpadr1-4, pmpadr1}.  Access faults for addreses in region.  Value of pmpcfg0 doesn't affect results.
+|
+| 2 L * 3 types of access *4 addresses
+| pmp_a_field_tor
+| If PMP entry i's A field is set to TOR, the entry matches any address y such that pmpaddr_i-1 <= y < pmpaddri.
+
+| cp_cfg_A_tor_nonoverlap
+|
+|
+| Check no match when pmpaddr0 >= pmpaddr1. +
+With pmpcfg1.L = 1, pmpcfg1.A = TOR, pmpcfg1.XWR = 000, pmpaddr1 = default TOR region, pmpcfg0.L =0, pmpcfg0.A = OFF, pmpcfg1.XWR = 000, pmpaddr0 = {pmpaddr1, pmpaddr1 + g, all 1s}: {lw, sw, jalr} to pmpaddr1, pmpaddr1+4, pmpaddr1-4.  No access fault because pmpaddr0 >= pmpaddr1.
+|
+| 3 pmpaddr0 * 3 types of access * 3 addresses
+| pmp_a_field_tor
+| If pmpaddr_i-1 >= pmpaddr_i and pmpcfg_i.A = TOR, then PMP entry i matches no addresses.
+
+8+| Priority
+
+| cp_priority
+|
+|
+| Test that first matching region has priority for determining XWR. Set up 7 even/odd pairs of TOR regions, where each pair starts (even) at the standard location and has pair i has size i*g (in odd reg) so the regions partially overlap.  Set the even pmpcfg to 0 (OFF). Set the odd pmpcfg to TOR and cycle through the 6 legal XWR values for each  pair.   Make {lw, sw, jalr} to each of (PMP_writable_regs-1) addresses at end of each region. Access fault if the relevant (highest priority) region prohibits access.
+|
+| 7 regions * 3 types of access
+| pmp_entry_priority
+| The lowest-numbered PMP entry that matches any byte of an access determines whether that access succeeds or fails.
+
+| cp_priority_off
+|
+|
+| Test that an OFF region does not match, and the first matching region takes priority. +
+pmpcfg0.L = 1, pmpcfg0.A = OFF, pmpcfg0.XWR = 000, pmpaddr0 = all 0s +
+pmpcfg1.L = 1, pmpcfg1.A = TOR, pmpcfg1.XWR = 101, pmpaddr1 = all 1s +
+pmpcfg2.L = 1, pmpcfg2.A = OFF, pmpcfg2.XWR = 000, pmpaddr2 = all 0s +
+pmpcfg3.L = 1, pmpcfg3.A = TOR, pmpcfg3.XWR = 111, pmpaddr3 = all 1s +
+{lw, sw, jalr} to some address at end of program.  Should succeed on X and R but not W because it hits region 1
+|
+| 3 types of accesses
+| pmp_a_field_off +
+pmp_entry_priority
+| OFF: Null region (disabled)
+
+| cp_none
+|
+|
+| M-mode access succeeds when all PMP are off. +
+With all pmpcfg, pmpaddr = 0 (including background top PMP entry), check that M-mode {lw, sw, jalr} work to some address.
+|
+| 3 types of access
+| pmp_no_entry_match
+| If no PMP entry matches an M-mode access, the access succeeds.
+
+8+| Grains
+
+| cp_grain
+|
+|
+| Check low bits read as 0/1s depending on grain and address-matching mode +
+G > 0 ONLY +
+Set up pmpcfg0.L = 0, pmpcfg.A = {OFF/NAPOT}, write pmpaddr0 = {all 0s / all 1s / checkerboard}.  Change pmpcfg.A to {OFF/TOR/NAPOT} and read back pmpaddr0. Bottom G-1 bits always read as 1s in NAPOT. Bottom G bits read as 0s in TOR/OFF.
+|
+| 2 initial A * 3 pmpaddr0 * 3 new A
+| pmp_napot_addr_read_mask +
+pmp_tor_addr_read_mask +
+pmp_addr_retention_on_mode_change
+| When G >= 2 and ... mode is NAPOT, then bits pmpaddr_i[G-2:0] read as all ones. When G >= 1 and ... mode is OFF or TOR, then bits pmpaddr_i[G-1:0] read as all zeros.
+
+| cp_grain_check
+|
+|
+| Check granularity matches expectations. +
+Write 0 to pmpcfg0, all 1s to pmpaddr0, read back pmpaddr0. +
+Index of least-significant bit set should be G.
+|
+| 1
+| pmp_region_granularity_g
+|
+
+8+| Register Access
+
+| cp_pmpaddr_walk
+|
+|
+| Test pmpaddr access. +
+No background region. Write all 1s, walking 1s, all 0s to all defined pmpaddr CSRs and read back values. +
+Top 10 bits should be WARL0 in RV64.  All bits writable in RV32
+|
+| (PMP_writable_regs) * (32/64 bits)
+| pmp_addr_warl
+| Fig 33 indicates that pmpaddr bits 63:54 are WARL 0. + +
+Removed because pmpaddr is WARL and can legally hold a subset of addresses
+
+| cp_pmpaddr_upper_zero +
+RV64 Only
+|
+|
+| Top 10 bits of pmpaddr should be WARL0. +
+Write all ones to top 10 bits, read back, should read as zero
+|
+| (PMP_writable_regs)
+| pmp_addr_warl
+| Fig 33 indicates that pmpaddr bits 63:54 are WARL 0.
+
+| cp_pmpcfg_walk
+|
+|
+| Test pmpcfg access. +
+Write walking 1s from lsb to msb (XLEN-1) to pmpcfg CSRs 0, 2 and read back values. Write 0 to pmpcfg 1, 3 and read back values.  If 64 CSRs are supported, do same with 4, 6, 8, 10, 12, 14; and 5, 7, 9, 11, 13, 15. +
+Even registers should read back value except 1s get stuck in lock bit as they walk past, and WARL 0 field ignores write. Odd registers should throw illegal instruction when XLEN = 64.
+|
+| 2 or 8 even CSRs * 32/64 bits + 2 or 8 odd CSRs
+| pmp_cfg_rv64_illegal +
+pmp_rwx_warl +
+pmp_entry_structure
+| For RV64, the odd-numbered configuration registers...are illegal. Figure 34 shows pmpcfg bits 6:5 are WARL 0. Locked PMP entries remain locked until the hart is reset.
+
+8+| RV64 G = 0 ONLY
+
+| cp_na4_boundary
+|
+|
+| Check doubleword access crossing NA4 boundary fails. +
+RV64 G=0 Only: +
+With pmpcfg_i.L=1, pmpcfg_i.A=NA4, pmpcfg_i.XWR=111, pmpaddr_i = {upper/lower half of doubleword} +
+Perform {ld, sd} on doubleword. +
+Should access fault because doubleword access crosses boundary of word
+|
+| 2 pmpaddr * 2 types of access
+| pmp_full_match_required +
+pmp_cfg_rv64_layout +
+pmp_access_fault_exception
+| The matching PMP entry must match all bytes of an access, or the access fails, irrespective of the L, R, W, and X bits.
+
+| cp_tor_boundary
+|
+|
+| Check doubleword access crossing TOR 4-byte region fails. +
+RV64 G=0 Only: +
+With pmpcfg_i.L=1, pmpcfg_i.A=TOR, pmpcfg_i.XWR=111, pmpaddr_i = {upper/lower half of doubleword}, pmpcfg_i-1.A = OFF, pmpcfg_i-1.XWR=111, pmpaddr_i-1 = pmpaddr_i - 4: +
+Perform {ld, sd} on doubleword. +
+Should access fault because doubleword access crosses boundary of word or pass if access is split in two.
+|
+| 2 pmpaddr * 2 types of access
+| pmp_full_match_required +
+pmp_cfg_rv64_layout +
+pmp_access_fault_exception
+| The matching PMP entry must match all bytes of an access, or the access fails, irrespective of the L, R, W, and X bits.
+
+| cp_tor_doubleregionfail
+|
+|
+| Check doubleword access hitting two separate TOR 4-byte regions fails +
+RV64 G=0 Only: +
+With pmpcfg_i-1.A=OFF, XWR = 111, pmpaddr_i-1 = start of doubleword +
+pmpcfg_i.A=TOR, XWR = 111, pmpaddr_i = start of doubleword +4 +
+pmpcfg_i+1.A=TOR, XWR = 111, pmpaddr_i+1 = start of doubleword+8 +
+Should access fault because doubleword is split over two regions, or pass if access is split in two
+|
+|
+| pmp_full_match_required +
+pmp_cfg_rv64_layout +
+pmp_access_fault_exception
+|
+
+8+| PMP64 Only
+
+| cp_pmp64
+|
+|
+| Test Upper (64-PMP_writable_regs) PMP registers affect load/store access.  Just basic checks since bottom PMP_writable_regs have been tested thoroughly. +
+64 PMP Regions Only +
+With pmpcfg.L=1, pmpcfg.XWR = 101, attempt to lw and sw to each standard region.  Read should succeed and write should fail, proving PMP15-62 are usable.
+|
+| (64-PMP_writable_regs) regions * 2 types of access
+| pmp_entry_count +
+pmp_cfg_rv64_illegal +
+pmp_load_fault +
+pmp_store_fault
+| Up to 64 PMP entries are supported.
+
+8+| add check of default region
+
+8+| add check of different types of region in combination
+
+8+| Misaligned
+
+| cp_misaligned_na4_wrap
+|
+|
+| Check doubleword starting before and ending after na4 region fails. +
+RV64 G=0 Only: +
+With pmpcfg_i.L={0/1}, pmpcfg_i.A=NA4, pmpcfg_i.XWR=111 +
+Perform {ld, sd} on doubleword that starts 2 bytes before region and ends 2-bytes after +
+Should misaligned or access fault because doubleword access crosses boundary of word
+| depends on Zicclsm and misaligned vs. access fault priority
+| 2 operations * 2 locks
+| pmp_entry_priority +
+pmp_misaligned_access_behavior +
+pmp_access_fault_exception
+| The lowest-numbered PMP entry that matches any byte of an access determines whether that access succeeds or fails.  The matching PMP entry must match all bytes of an access, or the access fails...
+
+| cp_misaligned_tor_wrap
+|
+|
+| Check doubleword starting before and ending after 4-byte TOR region fails. +
+RV64 G=0 Only: +
+With pmpcfg_i.L={0/1}, pmpcfg_i.A=TOR, pmpcfg_i.XWR=111, 4-byte region +
+Perform {ld, sd} on doubleword that starts 2 bytes before region and ends 2-bytes after +
+Should misaligned or access fault because doubleword access crosses boundary of word
+| depends on Zicclsm and misaligned vs. access fault priority
+| 2 operations * 2 locks
+| pmp_entry_priority +
+pmp_misaligned_access_behavior +
+pmp_access_fault_exception
+| The lowest-numbered PMP entry that matches any byte of an access determines whether that access succeeds or fails.  The matching PMP entry must match all bytes of an access, or the access fails...
+
+| cp_misaligned_napot
+|
+|
+| Check that misaligned read/write that cross a NAPOT PMP boundary fail. +
+Set up standard NAPOT region with L = {0/1}, XWR = 111 +
+Attempt misaligned lw, lh, lhu, sw, sh stradding each offset partially in start and end of region. +
+RV64 also ld, lwu, sd +
+Observe misaligned or load/store access fault on accesses straddling region boundaries, or succeed if it is split into multiple accesses.
+| depends on Zicclsm and misaligned vs. access fault priority
+| ~(3 lw + 3 sw + 1 lh + 1 lhu + 1 sh) alignment * 2 ends * 2 locks
+| pmp_entry_priority +
+pmp_misaligned_access_behavior +
+pmp_access_fault_exception
+| The lowest-numbered PMP entry that matches any byte of an access determines whether that access succeeds or fails.  The matching PMP entry must match all bytes of an access, or the access fails...
+
+| cp_misaligned_na4
+|
+|
+| Check that misaligned read/write that cross a NA4 PMP boundary fail. +
+G=0 only: +
+Set up standard NA4 region with L = {0/1}, XWR = 111 +
+Attempt misaligned lw, lh, lhu, sw, sh stradding each offset partially in start and end of region. +
+Observe misaligned or load/store access fault on accesses straddling region boundaries.
+| depends on Zicclsm and misaligned vs. access fault priority
+| (3 lw + 3 sw + 1 lh + 1 lhu + 1 sh) alignment * 2 ends * 2 locks
+| pmp_entry_priority +
+pmp_misaligned_access_behavior +
+pmp_access_fault_exception
+| The lowest-numbered PMP entry that matches any byte of an access determines whether that access succeeds or fails.  The matching PMP entry must match all bytes of an access, or the access fails...
+
+| cp_misaligned_tor
+|
+|
+| Check that misaligned read/write that cross a TOR PMP boundary fail. +
+Set up grain-sized TOR region with L = {0/1}, XWR = 111 +
+Attempt misaligned lw, lh, lhu, sw, sh stradding each offset partially in start and end of region. +
+RV64 also ld, lwu, sd +
+Observe misaligned or load/store access fault on accesses straddling region boundaries, or succeed if it is split into multiple accesses.
+| depends on Zicclsm and misaligned vs. access fault priority
+| ~(3 lw + 3 sw + 1 lh + 1 lhu + 1 sh) alignment * 2 ends * 2 locks
+| pmp_entry_priority +
+pmp_misaligned_access_behavior +
+pmp_access_fault_exception
+| The lowest-numbered PMP entry that matches any byte of an access determines whether that access succeeds or fails.  The matching PMP entry must match all bytes of an access, or the access fails...
+
+| cp_misaligned_off
+|
+|
+| Check that misaligned read/write that cross an OFF PMP boundary succeed. +
+Set up standard OFF region with L = {0/1}, XWR = 111 +
+Attempt misaligned lw, lh, lhu, sw, sh stradding each offset partially in start and end of region. +
+Observe misaligned or success on access straddling region boundaries because they only match background region.
+| depends on Zicclsm and misaligned vs. access fault priority
+| ~(3 lw + 3 sw + 1 lh + 1 lhu + 1 sh) alignment * 2 ends * 2 locks
+| pmp_a_field_off +
+pmp_misaligned_access_behavior
+| Off: Null region (disabled)
+
+|===
+
+[NOTE]
+====
+* Note: there is another difficult case of a misaligned instruction or data access spanning a 4K page boundary, translating into physical addresses on two disjoint physical pages, one of which is not in the PMP region.  This should be tested in VM_PMP. *** Umer has AR to add
+* *** add mstatus.MXR to cp_cfg_RW
+====

@@ -1,0 +1,294 @@
+// H Coverpoints.  Converted from the "H - US" tab of the Hypervisor test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=262865576#gid=262865576) on 2026-09-19.
+
+[[t-H-coverpoints]]
+.H Coverpoints
+[cols="2,2,3,2,1,5", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Expectation | Bins | Normative Rule
+
+6+| Definitions: +
+Machine H-Extension CSRs: mtval2, mtinst +
+HS H-Extension CSRs: hstatus, hedeleg, hideleg, hie, hcounteren, hgeie, henvcfg, htval, hip, hvip, htinst, hgatp, hgeip (+ htimedelta for Zicntr) (+ hedelegh, htimedeltah, henvcfgh for RV32) +
+VS H-Extension CSRs: vsstatus, vsie, vstval,  vsip, vstvec, vsscratch, vsepc, vscause, vsatp (+ vstimecmp for SSTC, vstimecmph with RV32) +
+h H-extension CSRS (RV64 only): hedelegh, htimedeltah, henvcfgh, vstimecmph +
+S CSRs with VS replicas: sstatus, sie, stvec, sscratch, sepc, scause, stval, sip, satp +
+S CSRs without VS replicas: scounteren, senvcfg, scountinhibit
+
+6+| Note: *** trap handler should also record hstatus, m/s status in signature
+
+6+| Tests executed in M-mode (H_mcsr_cg)
+
+| cp_hcsr_access
+| All H-extension CSRs are able to read, write, set, and clear
+| Write all 1s and all 0s, then set all bits, then clear all bits, then read each {Machine/HS/VS} H-Extension CSR.
+| All registers are accessible. hgeip is read-only.
+| 5 * (2 + 14-17 + 9-11)
+| norm:csr:mtval2:reg, norm:csr:mtinst:reg, norm:csr:hstatus:reg, norm:csr:hedeleg:reg, norm:csr:hideleg:reg, norm:csr:hie:reg, norm:csr:htimedelta:reg, norm:csr:hcounteren:reg; norm:csr:hgeie:reg, norm:csr:henvcfg:reg, norm:csr:htval:reg, norm:csr:hip:reg, norm:csr:hvip:reg, norm:csr:htinst:reg, norm:csr:hgatp:reg, norm:csr:hgeip:reg, norm:csr:hedelegh:reg, norm:csr:htimedeltah:reg, norm:csr:henvcfgh:reg, norm:csr:vsstatus:reg, norm:csrsvsip_vsie:reg, norm:csr:vstval:reg, norm:csr:vstvec:reg, norm:csr:vsscratch:reg, norm:csr:vsepc:reg, norm:csr:vscause:reg, norm:csr:vsatp:reg, norm:ext:H:vscsrs-m-hs-perm, norm:ext:Zicsr:higher-priv, norm:ext:Zicsr:rw + +
+*** also capture 2.7 >xlen,2 "accessible at higher priv levels"
+
+| cp_hcsrwalk
+| Exercise each bit of H-extension CSRs
+| Set and clear each bit of each Machine H-Extension CSR.
+| All registers are accessible.  Some fields are WARL and will not change.
+| 64*2*(2 + 13-16 + 8-10)
+| norm:csr:mtval2:reg, norm:csr:mtinst:reg + +
+*** make sure each bit of hstatus, vsstatus are tested elsehwere
+
+| cp_replica
+| Writing to S/VS-mode CSRs doesn't affect replica
+| Write different random values into S-mode CSRs and their VS-mode replicas.  Read back
+| Each CSR should have value written.
+| 9
+| norm:ext:H:vscsrs-v0
+
+| cp_mtvala
+| mtval must not be read-only zero
+| Write 1s to mtval
+| nonzero
+| 1
+| norm:csr:mtval:h-nrz + +
+CSR `mtval` must not be read-only zero
+
+6+| Tests executed in HS-mode (H_hscsr_cg)
+
+| cp_hcsr_access
+| All H-extension CSRs are able to read, write, set, and clear
+| Write all 1s and all 0s, then set all bits, then clear all bits, then read each {HS/VS} H-Extension CSR.
+| All registers are accessible. hgeip is read-only.
+| 5 * (14-17 + 9-11)
+| norm:csr:hstatus:reg, norm:csr:hedeleg:reg, norm:csr:hideleg:reg, norm:csr:hie:reg, norm:csr:htimedelta:reg, norm:csr:hcounteren:reg; norm:csr:hgeie:reg, norm:csr:henvcfg:reg, norm:csr:htval:reg, norm:csr:hip:reg, norm:csr:hvip:reg, norm:csr:htinst:reg, norm:csr:hgatp:reg, norm:csr:hgeip:reg, norm:csr:hedelegh:reg, norm:csr:htimedeltah:reg, norm:csr:henvcfgh:reg, norm:csr:vsstatus:reg, norm:csrsvsip_vsie:reg, norm:csr:vstval:reg, norm:csr:vstvec:reg, norm:csr:vsscratch:reg, norm:csr:vsepc:reg, norm:csr:vscause:reg, norm:csr:vsatp:reg
+
+| cp_hcsrwalk
+| Exercise each bit of H-extension CSRs
+| Set and clear each bit of each {HS/VS} H-Extension CSR. Exclude hstatus, vsstatus because of WPRI bits.
+| All registers are accessible.  Some fields are WARL and will not change.
+| 64 * 2 * (13-16 + 8-10)
+| norm:csr:hedeleg:reg, norm:csr:hideleg:reg, norm:csr:hie:reg, norm:csr:htimedelta:reg, norm:csr:hcounteren:reg; norm:csr:hgeie:reg, norm:csr:henvcfg:reg, norm:csr:htval:reg, norm:csr:hip:reg, norm:csr:hvip:reg, norm:csr:htinst:reg, norm:csr:hgatp:reg, norm:csr:hgeip:reg, norm:csr:hedelegh:reg, norm:csr:htimedeltah:reg, norm:csr:henvcfgh:reg, norm:csrsvsip_vsie:reg, norm:csr:vstval:reg, norm:csr:vstvec:reg, norm:csr:vsscratch:reg, norm:csr:vsepc:reg, norm:csr:vscause:reg, norm:csr:vsatp:reg + +
+The ...X bits, when set, indicate that the PMP entry permits ... instruction execution
+
+| cp_hcsr_inaccessible
+| M-mode H-extension registers are inaccessible from HS-mode
+| csrrw, csrrs, csrrc, csrr each Machine H-Extension CSR
+| Illegal instruction fault
+| 5 * 2
+| norm:ext:Zicsr:insufficient-privlege
+
+| cp_replica
+| In HS, writing to S/VS-mode CSRs doesn't affect replica
+| In M-mode, write different random values into S-mode CSRs and their VS-mode replicas.  Switch to HS-mode and read, write random, and readback S and VS CSRs. Switch back to M-mode and read back both the S-mode CSRs and VS replicas.
+| Each CSR should have value written.
+| 9
+| norm:ext:H:vscsrs-v0
+
+| cp_hstatus_vgein
+| VGEIN can hold values between 0 and GEILEN
+| Write {0, 1, GEILEN-1, GEILEN, GEILEN+1, 63} to hstatus.VGEIN
+| Only write legal values
+| 6
+| norm:csrfld:hstatus:vgein:op
+
+| cp_vscause_write
+| vscause WLRL fields writable
+| Write values +
+(WLRL)
+| with interrupt = 1: 0-15 +
+with interrupt = 0: 0-64
+| 81
+|
+
+| cp_tvm
+| TVM traps access to satp and hgatp
+| With mstatus.TVM = {0/1} read and write satp and hgatp
+| Illegal instruction fault if TVM = 1
+| 2 TVM * 2 accesses * 2 regs
+|
+
+6+| *** check if any other bitfields need special cases, including hstatus, vsstatus
+
+6+| Tests executed in VS-mode (H_vscsr_cg)
+
+| cp_hcsr_inaccessible
+| M-mode H-extension registers are inaccessible from VS-mode
+| csrrw, csrrs, csrrc, csrr each Machine H-Extension CSR
+| Illegal instruction fault
+| 5 * 2
+| norm:ext:Zicsr:insufficient-privlege
+
+| cp_hcsr_virtualinstructionfault
+| HS and VS registers cause virtual instruction fault from VS-mode
+| csrrw, csrrc, csrrs, csrr each {HS/VS} H-Extension CSR
+| Virtual instruction fault
+| 5 * (13-16 + 8-10)
+| norm:ext:H:csrs-hs-not-vs +
+norm:ext:H:vscsrs-vs-perm + +
+"When V=1, an attempt to read or write a VS CSR directly by its own separate CSR address causes a virtual-instruction exception."
+
+| cp_illegalupper
+| In RV64, h half of CSRs are illegal.
+| RV64 ONLY: csrrw, csrrs, csrrc, csrr  each h H-extension CSR
+| Illegal instruction fault +
+*** may need to remove vstimecmp from all cp_illegalupper coverpoints if not implemented
+| 5 * 4
+| "When XLEN>32, an attempt to access a high-half CSR always raises an illegal-instruction exception." + +
+*** should this be every h register, not just these, and at lesat the unpriv counters?
+
+| cp_replica
+| In VS, writing to S-mode CSRs affects replica instead
+| In M-mode, write different random values into S-mode CSRs and their VS-mode replicas.  Switch to VS-mode and write and readback S CSRs. Switch back to M-mode and read back both the S-mode CSRs and VS replicas.
+| VS replica should have changed but S CSR does not change.
+| 9
+| norm:ext:H:vscsrs-v0 + +
+"When V=1, the VS CSRs substitute for the corresponding supervisor CSRs, taking over all functions of the usual supervisor CSRs except as specified otherwise. Instructions that normally read or modify a supervisor CSR shall instead access the corresponding VS CSR."
+
+| cp_nonreplica
+| In VS, accessing nonreplicated S-mode CSRs behaves normally
+| csrrw, csrrc, csrrs, csrr each S CSR without VS replica
+| Normal access
+| 5 * 3
+| norm:ext:H:scsrs-nomatch
+
+| cp_vsstatus_sd_write
+| vstatus.SD affected by vstatus.FS/VS
+| Write 1 and 0 to SD with FS/VS all 0.  Write cross-product of all bits of vsstatus.SD/ FS/ VS.
+| vsstatus.SD = 1 if FS or VS are nonzero
+| 2 * 4 * 4
+|
+
+| cp_tvm
+| VTVM traps access to satp
+| With mstatus.TVM = {0/1} cross hstatus.VTVM = {0/1} read and write satp
+| Virtual instruction fault if VTVM = 1. TVM does not affect VS-mode.
+| 2 TVM * 2 VTVM * 2 accesses
+|
+
+6+| Tests executed in U-mode (H_ucsr_cg)
+
+| cp_hcsr_inaccessible
+| All H-extenion CSRs are inaccessible from U-mode
+| csrrw, csrrc, csrrs, csrr each {Machine/HS/VS} H-Extension CSR
+| Illegal instruction fault
+| 5 * (2 + 14-17 + 9-11)
+| norm:ext:Zicsr:insufficient-privlege
+
+| cp_illegalupper
+| In RV64, h half of CSRs are illegal.
+| RV64 ONLY: csrrw, csrrs, csrrc, csrr  each h H-extension CSR
+| Illegal instruction fault
+| 5 * 4
+| norm:ext:Zicsr:insufficient-privlege + +
+***
+
+| cp_scsr
+| Illegal instruction fault on U access to supervisor CSRs
+| csrrw, csrrc, csrrs, csrr each S CSRs {with/without VS replicas}*** this should get tested in ZicsrS, along with other illegal instruction faults for CSRs of too much priv
+| Illegal instruction fault
+| 5 * (9 + 3)
+| norm:ext:Zicsr:insufficient-privlege
+
+6+| Tests executed in VU-mode (H_vucsr_cg)
+
+| cp_hcsr_inaccessible
+| M-mode H-extension registers are inaccessible from VS-mode
+| csrrw, csrrs, csrrc, csrr each {Machine/HS/VS} H-Extension and {Machine/Supervisor} CSR
+| Illegal instruction fault
+| 5 * (2 + 14-17 + 9-11)
+| norm:ext:Zicsr:insufficient-privlege
+
+| cp_illegalupper
+| In RV64, h half of CSRs are illegal.
+| RV64 ONLY: csrrw, csrrs, csrrc, csrr  each h H-extension CSR
+| Illegal instruction fault
+| 5 * 4
+| norm:ext:Zicsr:insufficient-privlege
+
+| cp_scsr
+| Virtual instruction fault on VU access to hypervisor CSRs
+| csrrw, csrrc, csrrs, csrr each {HS/VS/S} CSRs {with/without VS replicas}
+| Virtual instruction fault or illegal instruction
+| 5 * (9 + 3)
+| norm:ext:H:vscsrs-vs-perm +
+norm:ext:Zicsr:insufficient-privlege
+
+6+| Seems Zicsr* should write all 0s and all 1s to each standard CSR and read the CSR.  Applies to all Zicsr* tabs. *** maybe already done?
+
+6+| Instructions (H_inst_cg)
+
+| cp_hlv
+| Basic load
+| Set up non-identity G and VS-stage page tables. In {M, HS, U (with hstatus.HU = 1)}: Write a random value to scratch. hlv.b, hlv.bu, hlv.h,  hlv.hu, hlv.w from scratch.  For rv64, also test hlv.wu, hlv.d.  Random source and destination registers.
+| Read and sign/zero extend
+| 3 modes * 7 instr
+|
+
+| cp_hlvx
+| Basic load
+| Set up non-identity G and VS-stage page tables. In {M, HS, U (with hstatus.HU = 1): Write a random value to scratch. hlvx.hu, hlvx.wu from scratch.  Random source and destination registers.
+| Read and sign/zero extend
+| 3 modes * 2 instr
+|
+
+| cp_hsv
+| Basic store
+| Set up non-identity G and VS-stage page tables. In {M, HS, U (with hstatus.HU = 1): Write a random value to scratch. hsv.b, hsv.h, hsv.w to scratch.  For rv64, also test hsv.d.  Random source and destination registers and values.
+| Read and sign/zero extend
+| 3 modes * 4 instr
+|
+
+| cp_hfence
+| Basic fence
+| Execute hfence.vvma, hfence.gvma in {M, HS mode} cross with mstatus.TVM = {0,1} and with hstatus.VTVM = {0,1}
+| Only exception for HFENCE.GVMA in HS-mode with mstatus.TVM=1
+| 2 modes * 2 instr * 2 TVM * 2 VTVM
+|
+
+| cp_sfence
+| Basic fence
+| Execute sfence.vma in {M, HS, VS mode} cross with mstatus.TVM = {0,1} and with hstatus.VTVM = {0,1}
+| Only exception in HS mode when TVM = 1 or in VS-mode when VTMV = 1
+| 3 modes * 2 TVM * 2 VTVM
+|
+
+| cp_mret_m
+| mret uses MPV
+| Execute mret in machine mode with cross-product of mstatus.MPP / MPV / MPIE.
+| Goes to appropriate mode
+| 2 MPP * 2 MPV * 2 MPIE
+|
+
+| cp_mret_illegal
+| mret unavailable below M mode
+| Execute mret in {HS, VS, VU} modes.
+| Illegal instruction
+| 3 modes
+|
+
+| cp_sret_illegal
+| sret unavailable in VU mode
+| Execute sret in VU mode.
+| Virtual instruction
+| 1 mode
+|
+
+| cp_sret_m
+| sret from M mode
+| Execute sret in machine mode with cross-product of mstatus.SPP / SPV / SPIE.
+| Goes to appropriate mode
+| 2 SPP * 2 SPV * 2 SPIE
+|
+
+| cp_sret_hs
+| sret from HS mode
+| Execute sret in HS-mode with cross-product of sstatus.SPP / SPIE  / hstatus.SPV. Check sstatus.SPP, SIE, SPIE, hstatus.SPV.
+| Goes to appropriate mode
+| 2 SPP * 2 SPIE * 2 SPV
+|
+
+| cp_sret_vs
+| sret from VS mode
+| Execute sret in VS-mod ewith cross-product of sstatus.SPP / SPIE  / hstatus.VTSR. Check sstatus.SPP, SIE, SPIE.
+| Goes to appropriate mode, or virtual-instruction exception if VTSR=1.
+| 2 SPP * 2 SPIE * 2 VTSR
+|
+
+|===

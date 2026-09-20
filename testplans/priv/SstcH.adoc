@@ -1,0 +1,92 @@
+// SstcH Coverpoints.  Converted from the "SstcH" tab of the Hypervisor test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1537373133#gid=1537373133) on 2026-09-19.
+
+[[t-SstcH-coverpoints]]
+.SstcH Coverpoints
+[cols="2,1,3,2,1", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Expectation | Bins
+
+5+| In M-Mode
+
+| cp_vstip
+| OR of vstimecmp and hvip
+| Cross of menvcfg.STCE = {0/1}, henvcfg = {0/1}, hvip.VSTIP = {0/1}, htimedelta = 0, vstimecmp = {0, 2^30}.  Check hip.VSTIP.  For RV32, htimedeltah and vstimecmph = 0. Note that this assumes 0 < time &#60;&#60; 2^29 when the test is run.
+| If both STCE = 1 and vstimecmp = 0, hip.VSTIP = 1.  Else hip.VSTIP = hvip.VSTIP.
+|
+
+| cp_htimedelta
+| htimedelta affects vstimecmp
+| menvcfg.STCE = 1, henvcfg.STCE = 1, hvip.VSTIP = 0, htimedelta = {0, 2^30, 2^60, 2^-30, 2^-60}, vstimecmp = {0, 2^29, 2^31, 2^61, -2^29, -2^31, -2^61}.  Check hip.VSTIP.  For RV32, htimedletah and vstimecmph are involved.
+| hip.VSTIP = (htimedelta >= vstimecmp)
+|
+
+| cp_m_vstimecmp_accessible
+| TM and STCE control access depending on priv level
+| With cross of menvcfg.STCE = {0/1}, henvcfg.STCE = {0/1} mcounteren.TM = {0/1}, hcounteren.TM = {0/1} read vstimecmp.  For RV32, also vstimecmph
+| success
+| 2 mSTCE *2 hSTCE * 2 mTM * 2hTM * up to 2 regs
+
+| cp_m_vstimecmp_accesses
+| All types of access
+| With cross of menvcfg.STCE = 1, henvcfg.STCE = 0 mcounteren.TM = 0, hcounteren.TM =0, read/write (0s,1s)/set/clear vstimecmp.  For RV32, also vstimecmph
+| sucess
+| 5 accesses * up to 2 regs
+
+5+| In HS-Mode
+
+| cp_walk_vstimecmp
+| SSTC CSRs accessible
+| Walking 1s and 0s in vstimecmp.  Also vstimecmph for RV32.
+| Writable
+| 64
+
+| cp_hs_vstimecmp_accessible
+| TM and STCE control access depending on priv level
+| With cross of menvcfg.STCE = {0/1}, henvcfg.STCE = {0/1} mcounteren.TM = {0/1}, hcounteren.TM = {0/1} read vstimecmp.  For RV32, also vstimecmph
+| illegal instruction if menvcfg.STCE = 0 or mcounteren.TM = 0
+| 2 mSTCE *2 hSTCE * 2 mTM * 2hTM * up to 2 regs
+
+| cp_hs_vstimecmp_accesses
+| All types of access
+| With cross of menvcfg.STCE = 1, henvcfg.STCE = 0 mcounteren.TM = 1, hcounteren.TM = 0, read/write (0s,1s)/set/clear vstimecmp.  For RV32, also vstimecmph
+| sucess
+| 5 accesses * up to 2 regs
+
+5+| In VS-Mode
+
+| cp_vs_stimecmp_accessible
+| TM and STCE control access depending on priv level
+| Put different values in stimecmp and vstimecmp. With cross of menvcfg.STCE = {0/1}, henvcfg.STCE = {0/1} mcounteren.TM = {0/1}, hcounteren.TM = {0/1} read stimecmp (not vstimecmp).  For RV32, also stimecmph
+| trap if menvcfg.STCE = 0 or mcounteren.TM = 0.  virtual instruction trap if menvcfg.STCE = mcounteren.TM = 1 but henvcfg.STCE = 0 or hcounteren.TM = 0
+| 2 mSTCE *2 hSTCE * 2 mTM * 2hTM * up to 2 regs
+
+| cp_vs_stimecmp_accesses
+| All types of access
+| Put random value in stimecmp/h before entering VS-mode. With cross of menvcfg.STCE = 1, henvcfg.STCE = 1 mcounteren.TM = 1, hcounteren.TM = 1, read/write (0s,1s)/set/clear stimecmp.  For RV32, also stimecmph.  Check from M-mode that these are reflected in vstimecmp/vstimecmph but not stimecmp/h.
+| Changes should show up in vstimecmp/h
+| 5 accesses * up to 2 regs
+
+| cp_vs_vstimecmp_inaccessible
+|
+| With menvcfg.STCE=1, henvcft.STCE=1, mcounteren.TM = 1, hcounteren.TM = 1, read vstimecmp.  For RV32, also vstimecmph
+| Illegal instruction trap
+| 2
+
+5+| In VU-Mode
+
+| cp_vu_timecmp_inaccessible
+|
+| With menvcfg.STCE=1, henvcfg.STCE=1, mcounteren.TM = 1, hcounteren.TM = 1, read stimecmp, vstimecmp.  For RV32, also stimecmph, vstimecmph
+| Illegal instruction trap
+| 4
+
+5+| In U-Mode
+
+| cp_u_timecmp_inaccessible
+|
+| With menvcfg.STCE=1, henvcft.STCE=1, mcounteren.TM = 1, hcounteren.TM = 1, read stimecmp, vstimecmp.  For RV32, also stimecmph, vstimecmph
+| Illegal instruction trap
+| 4
+
+|===

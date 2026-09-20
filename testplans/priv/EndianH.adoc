@@ -1,0 +1,46 @@
+// EndianH Coverpoints.  Converted from the "EndianH-JG" tab of the Hypervisor test plan spreadsheet
+// (https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=923631685#gid=923631685) on 2026-09-19.
+
+[[t-EndianH-coverpoints]]
+.EndianH Coverpoints
+[cols="2,1,1,2,4,1,1", options=header]
+|===
+| Coverpoint | Goal | Feature Description | Expectation | Bins | ID | Normative Rule
+
+| cp_hstatus_vsbe_endianness
+| endianvs
+| VSBE
+| Read from memory in an endian fashion in supervisor mode.
+| Run test in VS mode. For each endianness given by hstatus.VSBE, sd 0x0102030405060708 to scratch, and also write all subwords with sw, sh, sb. For each endianness (independent), ld, lw, lwu, lh, lhu, lb, lbu it back. In RV32, don't need the doubles.
+| restore endianness to normal afterward
+| Check against RM + +
+To be Done + +
+Uncovered
+
+| cp_mstatus_mprv_vsbe_endianness
+| endianvs
+| MPRV, MBE, VSBE
+| Read from memory in an endian fashion based on MBE and VSBE depending on MPRV.
+| Run test in machine mode. Each endianness is a cross-product of MPRV = 0/1, MPP = 01/11, MPV=0/1, MBE = 0/1, VSBE = 0/1 (32 bins).  For each endianness, sd 0x0102030405060708 to scratch, and also write all subwords with sw, sh, sb. For each endianness (independent), ld, lw, lwu, lh, lhu, lb, lbu it back. In RV32, don't need the doubles.
+| restore endianness to normal afterward
+| Check against RM + +
+To be Done + +
+Uncovered
+
+| cp_vsstatus_ube_endianness
+| endianvs
+| UBE
+| Read from memory in an endian fashion
+| Run test in VU mode. For each endianness given in vsstatus.UBE, sd 0x0102030405060708 to scratch, and also write all subwords with sw, sh, sb. For each endianness (independent), ld, lw, lwu, lh, lhu, lb, lbu it back.  In RV32, don't need the doubles.
+| restore endianness to normal afterward
+| Check against RM + +
+To be Done + +
+Uncovered
+
+|===
+
+[NOTE]
+====
+* Note: some implementations may make UBE a read-only copy of hstatus.VSBE, or VSBE a read-only copy of sstatus.SBE, or SBE and MBE might not be writable. +
+  Only run Endian tests if fields are writable.
+====

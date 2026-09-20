@@ -63,9 +63,6 @@ def generate_unpriv_extension_tests(
         assert match is not None, f"Unable to Parse Vector Extension {testsuite} into a Testplan and SEW Pair"
 
         testplan = match.group(1)
-        if testplan == "Zvbc":  # Special case where the testplan gets the SEW suffix
-            testplan = testsuite
-
         sew = _detect_sew(testsuite)
     else:
         testplan = testsuite

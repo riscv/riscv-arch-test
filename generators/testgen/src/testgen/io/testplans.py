@@ -29,7 +29,7 @@ def expand_vector_extension(extension: str) -> list[str]:
     """Expands a vector extension by adding SEW suffixes."""
 
     if not extension.startswith(("Vx", "Vls", "Zvbb", "Zvbc", "Zvk")):
-        # Only Vx and Vls are supported for now
+        # Only Vx, Vls, and Vector Crypto are supported for now
         return []
 
     if extension in ["Vx", "Vls", "Zvbb", "Zvkb"]:

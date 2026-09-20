@@ -542,9 +542,16 @@ def make_nist_sha(instr_name: str, instr_type: str, coverpoint: str, test_data: 
         test_chunks: list[TestChunk] = []
         for i, values in enumerate(hash_round_values):
             a, b, c, d, e, f, g, h = values
-            vd = [c, d, g, h]
-            vs2 = [a, b, e, f]
-            vs1 = [(schedule[j] + k[j]) & (2**sew - 1) for j in range(i, i + 4)]
+            # Sail semantics have the MSB --> LSB, our semantics go LSB --> MSB
+            # let {a @ b @ e @ f} : bits(4*SEW) = get_velem(vs2, 4*SEW, i);
+            vs2 = [f, e, b, a]
+            # let {c @ d @ g @ h} : bits(4*SEW) = get_velem(vd, 4*SEW, i);
+            vd = [h, g, d, c]
+
+            # vsha2cl requires the relevant schedule words in the low two bits, and vsha2ch requires them
+            # in the high bits. There is no other difference between the operations
+            schedule_range = range(i, i + 4) if instr_name == "vsha2cl.vv" else range(i - 2, i + 2)
+            vs1 = [(schedule[j] + k[j]) & (2**sew - 1) if j >= 0 else 0 for j in schedule_range]
 
             vd_val_ptr = f"custom_nist_sha_{i}_vd"
             vs2_val_ptr = f"custom_nist_sha_{i}_vs2"
@@ -633,14 +640,16 @@ def extract_data(row: dict[str, str]) -> dict[str, int]:
     elif A == "":
         for i in range(1, 5):
             data[f"X{i}"] = int(row[f"X{i}"], 16)
-            data[f"C{i}"] = get_128_bits(row["C"], i - 1)
+            # This data is presented with the first 128 bits (MSB) being the first C value
+            data[f"C{i}"] = get_128_bits(C, 4 - i)
     else:
         A_padding = 64 - len(A)
         A = A + "0" * A_padding
+        # This data is presented with the first 128 bits (MSB) being the first A/C value
         for i in range(1, 3):
-            data[f"A{i}"] = get_128_bits(A, i - 1)
+            data[f"A{i}"] = get_128_bits(A, 2 - i)
         for i in range(1, 5):
-            data[f"C{i}"] = get_128_bits(row["C"], i - 1)
+            data[f"C{i}"] = get_128_bits(C, 4 - i)
         for i in range(1, 7):
             data[f"X{i}"] = int(row[f"X{i}"], 16)
 
@@ -808,13 +817,13 @@ def emit(
     desc: str,
 ) -> TestChunk:
     if instr_name == "vghsh.vv":
-        vd_val_ptr = handle_label(vd_val, present_labels, test_data)
-        vs1_val_ptr = handle_label(vs1_val, present_labels, test_data)
+        vd_val_ptr = handle_label(vd_val, present_labels, test_data, f"{desc}_vd")
+        vs1_val_ptr = handle_label(vs1_val, present_labels, test_data, f"{desc}_vs1")
     else:
-        vd_val_ptr = handle_label(vd_val ^ vs1_val, present_labels, test_data)
+        vd_val_ptr = handle_label(vd_val ^ vs1_val, present_labels, test_data, f"{desc}_vd")
         vs1_val_ptr = ""  # Make the type checker happy
 
-    vs2_val_ptr = handle_label(vs2_val, present_labels, test_data)
+    vs2_val_ptr = handle_label(vs2_val, present_labels, test_data, f"{desc}_vs2")
 
     pretty_desc = "NIST GCM Example " + desc.replace("_", " ")
 
@@ -846,22 +855,16 @@ def emit(
     return tc
 
 
-nist_count = 0
-
-
-def handle_label(val: int, present_labels: dict[int, str], test_data: TestData) -> str:
-    global nist_count
-
+def handle_label(val: int, present_labels: dict[int, str], test_data: TestData, label: str) -> str:
     if val in present_labels:
         return present_labels[val]
     else:
-        nist_count += 1
-        ptr = f"nist_case_constant_{nist_count}"
+        # The NIST data comes as (MSB --> LSB) a0a1..a127 representing a0+a1x+...+a127x^127
+        # The RISC-V representation of this data places a byte containing a0...a7 in the lowest address
+        # in the order (MSB --> LSB) a0 --> a7
+        single_byte_values = [(val >> (8 * i)) & 0xFF for i in range(128 // 8)][::-1]
 
-        mask = (1 << 32) - 1
-        values = [(val >> (32 * i)) & mask for i in range(4)]
+        test_data.register_vector_data(label, 8, elements=single_byte_values)
+        present_labels[val] = label
 
-        test_data.register_vector_data(ptr, 32, elements=values)
-        present_labels[val] = ptr
-
-        return ptr
+        return label

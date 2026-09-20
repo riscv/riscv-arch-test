@@ -3,7 +3,7 @@ revision = 3
 requires-python = ">=3.10"
 
 [options]
-exclude-newer = "2026-09-09T18:52:08.767377473Z"
+exclude-newer = "2026-09-13T21:42:20.438879584Z"
 exclude-newer-span = "P7D"
 
 [manifest]
@@ -70,7 +70,7 @@ wheels = [
 [[package]]
 name = "cover-float"
 version = "0.1.0"
-source = { git = "https://github.com/cover-float/cover-float/#6545ea67286add71944cf45eee8559cf919766f8" }
+source = { git = "https://github.com/cover-float/cover-float/#dc65128e2e82c3ea80cce1ddfc3974a6338dc3c8" }
 dependencies = [
     { name = "rich" },
     { name = "sympy" },
@@ -504,23 +504,17 @@ name = "testgen"
 version = "0.5.0"
 source = { editable = "generators/testgen" }
 dependencies = [
+    { name = "cover-float" },
     { name = "rich" },
     { name = "typer" },
 ]
 
-[package.dev-dependencies]
-cover-float = [
-    { name = "cover-float" },
-]
-
 [package.metadata]
 requires-dist = [
+    { name = "cover-float", git = "https://github.com/cover-float/cover-float/" },
     { name = "rich", specifier = ">=14.3.4" },
     { name = "typer", specifier = ">=0.23.1" },
 ]
-
-[package.metadata.requires-dev]
-cover-float = [{ name = "cover-float", git = "https://github.com/cover-float/cover-float/" }]
 
 [[package]]
 name = "typer"

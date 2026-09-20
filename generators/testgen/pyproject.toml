@@ -21,13 +21,8 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
 ]
-dependencies = [ "rich>=14.3.4", "typer>=0.23.1" ]
+dependencies = [ "cover-float", "rich>=14.3.4", "typer>=0.23.1" ]
 scripts.testgen = "testgen.cli:main"
 
-[dependency-groups]
-cover-float = [
-    "cover-float",
-]
-
-[tool.uv.sources]
-cover-float = { git = "https://github.com/cover-float/cover-float/" }
+[tool.uv]
+sources.cover-float = { git = "https://github.com/cover-float/cover-float/" }

@@ -61,9 +61,6 @@ JOBS ?= $(or $(patsubst -j%,%,$(filter -j%,$(MAKEFLAGS))),0)
 # Suppress "make[1]: Entering/Leaving directory ..." from recursive sub-makes
 MAKEFLAGS += --no-print-directory
 
-# Use this flag to enable the generation of floating-point tests from the cover-float test suite
-COVER_FLOAT ?=
-
 ########## Directories ##########
 TESTDIR        := tests
 SRCDIR64       := $(TESTDIR)/rv64i
@@ -96,16 +93,10 @@ $(STAMP_DIR):
 MISE := $(shell command -v mise 2> /dev/null)
 UV   := $(shell command -v uv 2> /dev/null)
 
-ifneq ($(COVER_FLOAT),)
-  UV_FLAGS := --group cover-float
-else
-  UV_FLAGS :=
-endif
-
 ifneq ($(MISE),)
-  UV_RUN := $(MISE) exec -- uv run $(UV_FLAGS)
+  UV_RUN := $(MISE) exec -- uv run
 else ifneq ($(UV),)
-  UV_RUN := $(UV) run $(UV_FLAGS)
+  UV_RUN := $(UV) run
 else ifneq ($(VIRTUAL_ENV),)
   # Activated venv without uv/mise: require the three CLIs on PATH.
   MISSING_CLIS := $(strip $(foreach c,act testgen covergroupgen,\

@@ -26,6 +26,7 @@ __pycache__
 
 # Work directories
 work/
+generators/testgen/.coverfloat-work
 
 # vector tests
 tests/rv32i/V*

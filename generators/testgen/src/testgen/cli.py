@@ -128,7 +128,9 @@ def generate_all_tests(
                 if E_ext and testsuite not in E_EXTENSION_TESTS:
                     continue
                 is_vector = testsuite.startswith(("V", "Zv"))
-                tasks.append(UnprivTask(xlen, E_ext, testsuite, testplan_dir, output_test_dir, is_vector, with_cover_float))
+                tasks.append(
+                    UnprivTask(xlen, E_ext, testsuite, testplan_dir, output_test_dir, is_vector, with_cover_float)
+                )
 
     tasks.extend(PrivTask(testsuite, output_test_dir) for testsuite in sorted(priv_ext_list))
 

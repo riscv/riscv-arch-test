@@ -70,8 +70,6 @@ def make_vtype_agnostic(instr_name: str, instr_type: str, coverpoint: str, test_
     min_lmul = min(get_legal_lmuls(sew))
 
     if egs != 1:
-        # The minlmul for a crypto instruction must assume SEW=32, so lmul >= egs
-        # We have to do this because it is chosen at random
         min_lmul = max(min_lmul, math.ceil(math.log2(egs)))
 
     lmul_exponents = list(range(min_lmul, max_lmul + 1))

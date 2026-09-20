@@ -12,7 +12,7 @@ import importlib.resources
 import re
 from pathlib import Path
 
-from testgen.constants import EXTENSION_PARAM_MAP
+from testgen.constants import EXPERIMENTAL_EXTENSIONS, EXTENSION_PARAM_MAP
 from testgen.data.config import TestConfig
 
 
@@ -71,6 +71,8 @@ def insert_header_template(
     # in march_extensions just needs the assembler to accept H CSR names.
     if "H" in flat_ext_components:
         all_defines.append("#define RVTEST_HYPERVISOR")
+    if not EXPERIMENTAL_EXTENSIONS.isdisjoint(all_extensions):
+        all_defines.append("#define RVTEST_EXPERIMENTAL")
     # Replace placeholders
     template = (
         template.replace("@TEST_PATH@", f"{test_file}")

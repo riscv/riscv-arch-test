@@ -1952,6 +1952,8 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x320) // mcountinhibit
         //TSBI_CSR_INSTR_TABLE(0xB00) // mcycle - shouldn't be changed below M-mode
         //TSBI_CSR_INSTR_TABLE(0xB02) // minstret - shouldn't be changed below M-mode
+        TSBI_CSR_INSTR_TABLE(0x343) // mtval
+
         // TODO: Move the following to the S-mode dispatch when it is implemented
         TSBI_CSR_INSTR_TABLE(0x100) // sstatus
         TSBI_CSR_INSTR_TABLE(0x104) // sie
@@ -2275,6 +2277,23 @@ common_\__MODE__\()excpt_handler:
 // gate silently compiled this skip out and every access-fault test aborted on
 // its first deliberate probe (EPC=0 is outside vmem/code/data -> abort_test).
 vmem_adj_\__MODE__\()epc:
+        #ifdef SDTRIG_IMPRECISE_XEPC
+        .ifc \__MODE__ , M
+                LI(     T2, CAUSE_BREAKPOINT)
+                bne     T5, T2, no_skp_adj_\__MODE__\()epc   # not a breakpoint always adjust
+                csrr    T2, tdata1              # tselect selects the trigger under test
+                #if __riscv_xlen == 64
+                srli    T2, T2, 60
+                #else
+                srli    T2, T2, 28
+                #endif
+                LI(     T6, 4)                  # type 4 = itrigger
+                beq     T2, T6, skp_adj_\__MODE__\()epc
+                LI(     T6, 5)                  # type 5 = etrigger
+                beq     T2, T6, skp_adj_\__MODE__\()epc
+        no_skp_adj_\__MODE__\()epc:
+        .endif
+        #endif
         #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
                 LI(     T2, RVMODEL_ACCESS_FAULT_ADDRESS)
                 beq     T3, T2, sv_\__MODE__\()epc
@@ -2518,8 +2537,16 @@ clrint_\__MODE__\()tbl:
   #endif
 #endif
 
- .rept NUM_SPECD_INTCAUSES-0xC
-        .dword  1                                    // causes 12..23: reserved -> default return
+#if defined(SSCOFPMF_SUPPORTED)
+        .dword  1                                    // cause 12: reserved -> default return
+        .dword  \__MODE__\()clr_LCOFI_int            // cause 13: Local Counter Overflow Interrupt
+#else
+        .dword  1                                    // cause 12: reserved -> default return
+        .dword  1                                    // cause 13: SSCOFPMF not supported -> default return
+#endif
+
+ .rept NUM_SPECD_INTCAUSES-14
+        .dword  1                                    // causes 14..23: reserved -> default return
  .endr
  .rept UDB_MXLEN-NUM_SPECD_INTCAUSES
         .dword  0                       // impossible, quit test by jumping to  epilogs
@@ -2661,6 +2688,12 @@ excpt_\__MODE__\()hndlr_tbl:
         RVMODEL_CLR_VEXT_INT
         la      T2, resto_\__MODE__\()rtn
         jr      T2
+
+#ifdef SSCOFPMF_SUPPORTED
+\__MODE__\()clr_LCOFI_int:
+        CLR_INT_ENTER
+        CLR_INT_RETURN \__MODE__
+#endif
 
 .popsection                                          // end of .text.rvmodel section
 

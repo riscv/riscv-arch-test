@@ -36,7 +36,7 @@ from testgen.priv.registry import add_priv_test_generator
 def legal_mask(csr: str) -> str:
     """Restrict WLRL values and translation MODE while preserving useful WARL tests."""
     if csr in ("satp", "vsatp", "hgatp"):
-        return "0xfffff"  # Bare, small PPN field: never changes instruction translation.
+        return "0xfffff"  # PPN stimulus; the caller supplies a valid translation mode.
     fixed = {
         "hedeleg": 0xB1FF,
         "hedelegh": 0,
@@ -69,7 +69,26 @@ def legal_mask(csr: str) -> str:
     return "-1"
 
 
-def csr_instruction(case: Case, csr: str, op: str, value: str | int | None = None) -> str:
+def translation_modes(csr: str) -> tuple[tuple[str, int, int], ...]:
+    """Native DUT capabilities for an inactive translation root."""
+    suffix = "X4_TRANSLATION" if csr == "hgatp" else "_VSMODE_TRANSLATION"
+    return tuple(
+        (f"UDB_SV{width}{suffix}", mode, shift)
+        for width, mode, shift in ((32, 1, 31), (39, 8, 60), (48, 9, 60), (57, 10, 60))
+    )
+
+
+def prepare_translation_root(case: Case, csr: str) -> None:
+    """Test PPN fields with paging selected while V=0 and MPRV=0."""
+    for index, (gate, mode, shift) in enumerate(translation_modes(csr)):
+        case.emit(f"#{'if' if index == 0 else 'elif'} defined({gate})", f"LI(x{case.t}, ({mode} << {shift}))")
+        case.write(csr, case.t)
+    case.emit("#else")
+    case.write(csr, "zero")
+    case.emit("#endif")
+
+
+def csr_instruction(case: Case, csr: str, op: str, value: str | int | None = None, *, paged_root: bool = False) -> str:
     """Exact CSR operation under test; capture rd and defer signature to M."""
     # Numeric encodings permit intentional accesses to RV32-only CSRs on RV64.
     csr_operand = f"CSR_{csr.upper()}" if csr in ("hedelegh", "henvcfgh", "htimedeltah", "vstimecmph") else csr
@@ -77,6 +96,9 @@ def csr_instruction(case: Case, csr: str, op: str, value: str | int | None = Non
         return f"csrrs x{case.r}, {csr_operand}, zero"
     operand = "0" if op == "write_zero" else legal_mask(csr) if value is None else str(value)
     case.emit(f"LI(x{case.b}, {operand})")
+    if paged_root:
+        gates = " || ".join(f"defined({gate})" for gate, _, _ in translation_modes(csr))
+        case.emit(f"#if !({gates})", f"LI(x{case.b}, 0)", "#endif")
     saved_csr = "v" + csr if case.mode == "vs" and csr in S_CSRS else csr
     if op.startswith("write") and saved_csr in case.saved:
         # Writes preserve WPRI/untested fields from an independent old-value
@@ -85,8 +107,12 @@ def csr_instruction(case: Case, csr: str, op: str, value: str | int | None = Non
             f"LI(x{case.t}, {legal_mask(csr)})",
             f"and x{case.b}, x{case.b}, x{case.t}",
             f"not x{case.t}, x{case.t}",
-            f"LA(x{case.p}, {case.base})",
-            f"LREG x{case.a}, {case.saved.index(saved_csr) * 8}(x{case.p})",
+        )
+        if paged_root:
+            case.read(case.a, csr)
+        else:
+            case.emit(f"LA(x{case.p}, {case.base})", f"LREG x{case.a}, {case.saved.index(saved_csr) * 8}(x{case.p})")
+        case.emit(
             f"and x{case.a}, x{case.a}, x{case.t}",
             f"or x{case.b}, x{case.b}, x{case.a}",
         )
@@ -128,15 +154,41 @@ def csr_case(
     case.field("mstatus", 1 << 20, tvm << 20)
     if "hstatus" in case.saved:
         case.field("hstatus", 1 << 20, vtvm << 20)
+    paged_root = expected == 0 and csr.name in ("hgatp", "vsatp")
+    if paged_root:
+        prepare_translation_root(case, csr.name)
+    if expected == 0 and csr.name == "htinst":
+        case.read(case.a, "htinst")
+        case.store_slot(case.a, 10)
     # HS/VS test controls must be set before mode entry. Operand preparation is
     # privilege independent and does not overwrite the mode helper's saved state.
     case.enter()
-    inst = csr_instruction(case, csr.name, op, value)
+    inst = csr_instruction(case, csr.name, op, value, paged_root=paged_root)
     case.instruction(inst)
     case.recover(expected)
     if expected == 0:
-        case.signature(case.r)
-        if csr.name != "hgeip":
+        if csr.name == "htinst":
+            # WARL readback may legally differ between implementations. Verify
+            # the returned old value and that a legal readback is reproducible.
+            case.load_slot(case.a, 10)
+            case.emit(f"xor x{case.r}, x{case.r}, x{case.a}")
+            case.expect(case.r, 0)
+            case.signature(case.r)
+            case.read(case.a, "htinst")
+            if op == "write_zero":
+                case.expect(case.a, 0)
+            if op == "read":
+                case.load_slot(case.b, 10)
+                case.emit(f"xor x{case.r}, x{case.a}, x{case.b}")
+                case.expect(case.r, 0)
+            case.write("htinst", case.a)
+            case.read(case.r, "htinst")
+            case.emit(f"xor x{case.r}, x{case.r}, x{case.a}")
+            case.expect(case.r, 0)
+            case.signature(case.r)
+        else:
+            case.signature(case.r)
+        if csr.name not in ("hgeip", "htinst"):
             readback = "v" + csr.name if mode == "vs" and csr.name in S_CSRS else csr.name
             case.read(case.r, readback)
             case.signature(case.r)
@@ -185,13 +237,15 @@ def walk_tests(td: TestData, cp: str, mode: str) -> Iterator[TestChunk]:
         for bit in range(csr.access_bits or 64):
             if csr.name in masks and not (masks[csr.name] & (1 << bit)):
                 continue
-            # Bare translation roots use legal non-MODE bits. Other WARL masks
+            # Inactive translation roots use non-MODE bits. Other WARL masks
             # can coerce individual bits and their readbacks are recorded.
             if csr.name in ("vsatp", "hgatp") and bit >= 20:
                 continue
             if csr.name == "vstvec" and bit < 2:
                 continue
             guard = csr.guard
+            if csr.name in ("hgatp", "vsatp"):
+                guard = " || ".join(f"defined({gate})" for gate, _, _ in translation_modes(csr.name))
             if csr.name == "hgeie":
                 if bit == 0:
                     continue
@@ -227,7 +281,10 @@ def replica_tests(td: TestData, cp: str, mode: str) -> Iterator[TestChunk]:
             case.read(case.r, peer)
             case.store_slot(case.r, 5)
             case.enter()
-            case.instruction(csr_instruction(case, csr, op))
+            # Replica isolation can be checked in Bare with the legal zero
+            # encoding, including when this root controls current execution.
+            operand = 0 if csr in ("satp", "vsatp") else None
+            case.instruction(csr_instruction(case, csr, op, operand))
             case.recover(0)
             case.read(case.r, peer)
             case.load_slot(case.b, 5)

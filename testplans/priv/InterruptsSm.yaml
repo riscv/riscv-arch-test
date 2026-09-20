@@ -26,8 +26,8 @@ setup:
         write mtvec.MODE = {00, 01} if each supported
       S: Same as Sm
       U: Same as Sm
-      VS: '***'
-      VU: '***'
+      VS: "***"
+      VU: "***"
     - step: trigger_interrupts <type>
       Sm: |-
         RVTEST_SET_<type>_INT_<priv>
@@ -158,7 +158,7 @@ coverpoints:
       write mstatus.MIE = {0/1}
       write mie.MTIE = {0/1}
       WFI instruction
-    expectation: 'Note: may need sufficient Sail parameter to determine if we get illegal instruction or if WFI just retires.  Or may need to accept both behaviors.'
+    expectation: "Note: may need sufficient Sail parameter to determine if we get illegal instruction or if WFI just retires.  Or may need to accept both behaviors."
     bins: 4 priv * 2 MIE * 2 MTIE
     rules:
       - mstatus_tw_op

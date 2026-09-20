@@ -22,7 +22,7 @@ coverpoints:
       jal to an address that is an odd multiple of 2
       PC[1] = 0 and imm[1]=1
     expectation: Instruction at multiple of 4.  Offset is an odd multiple of 2.
-    bins: '1'
+    bins: "1"
   - name: cp_instr_adr_misaligned_jalr
     goal: Instruction Address Misaligned
     description: |-
@@ -34,7 +34,7 @@ coverpoints:
     goal: Instruction Access Fault
     description: Fetch instruction from unimplemented memory
     expectation: Access fault
-    bins: '1'
+    bins: "1"
   - name: cp_illegal_instruction
     goal: Illegal Instruction
     description: Executing instruction 0x00000000 and 0xFFFFFFFF
@@ -50,17 +50,17 @@ coverpoints:
     expectation: Illegal instruction exception
     bins: 4 csr ops
     rules:
-      - '*** this could be reserved and should be moved to an Zkr spreadsheet for all priv modes'
+      - "*** this could be reserved and should be moved to an Zkr spreadsheet for all priv modes"
   - name: cp_breakpoint
     goal: Breakpoint
     description: |-
       ebreak throws breakpoint exception
       also test when straddling 64B boundary
     expectation: throws breakpoint exception (trap and mcause)
-    bins: '1'
+    bins: "1"
   - name: cp_load_address_misaligned
     goal: Load Misaligned
-    description: 'Attempt lh, lhu, lw, lwu, ld with every combination of three address lsbs: 000 - 111'
+    description: "Attempt lh, lhu, lw, lwu, ld with every combination of three address lsbs: 000 - 111"
     expectation: Might not cause exception
     bins: 7 ops * 8 lsbs
   - name: cp_load_access_fault
@@ -70,7 +70,7 @@ coverpoints:
     bins: 7 ops
   - name: cp_store_address_misaligned
     goal: Store Misaligned
-    description: 'Attempt sh, sw, sd with every combination of three lsbs: 000-111'
+    description: "Attempt sh, sw, sd with every combination of three lsbs: 000-111"
     expectation: Might not cause exception
     bins: 4 ops * 8 lsbs
   - name: cp_store_access_fault
@@ -82,7 +82,7 @@ coverpoints:
     goal: ecall
     description: ecall from supervisor mode throws ecall supervisor exception (trap and mcause)
     expectation: ecall to M-mode (should not be delegated to S-mode because there would be no path to M-mode)
-    bins: '1'
+    bins: "1"
   - name: cp_misaligned_priority
     goal: Priority of exceptions
     description: Attempt lw and sw and fetch from memory location causing  access fault and misaligned
@@ -97,5 +97,5 @@ coverpoints:
     description: ecall cross {mode = user/supervisor, mstatus.mie = {0/1}, mstatus.sie = {0/1}}
     expectation: xpie gets xie, xie gets 0
     bins: 3 modes * 2 medleg * 2 mie * 2 sie
-  - heading: 'Note: instruction/load/store fault pages are being tested in ExceptionsSv'
-  - heading: 'Note: tests that differ from ExceptionsSm are cp_medeleg_mu and cp_stvec.  Also, cp_misaligned_priority is not split here.'
+  - heading: "Note: instruction/load/store fault pages are being tested in ExceptionsSv"
+  - heading: "Note: tests that differ from ExceptionsSm are cp_medeleg_mu and cp_stvec.  Also, cp_misaligned_priority is not split here."

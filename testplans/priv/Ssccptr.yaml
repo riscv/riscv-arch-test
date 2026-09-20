@@ -6,7 +6,7 @@ coverpoints:
     goal: Main memory supports HPTW read
     description: With Sv active, access virtual memory with page table stored in main memory
     expectation: Success
-    bins: '1'
+    bins: "1"
     rules:
       - Main memory regions with both the cacheability and coherence PMAs must support hardware page-table reads.
-  - heading: 'Note: this is already covered in Sv'
+  - heading: "Note: this is already covered in Sv"

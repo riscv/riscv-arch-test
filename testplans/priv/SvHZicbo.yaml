@@ -25,28 +25,28 @@ coverpoints:
       Env: Leaf PTE with W=1,R=0.
       Test Case: Execute CBO on GVA.
     expectation: Page fault at VS-stage.
-    bins: '{VS,VU} × Levels'
+    bins: "{VS,VU} × Levels"
   - name: reserved_rwx_g
     goal: Detect reserved RWX encoding at G-stage
     description: |-
       Env: Leaf G PTE with W=1,R=0.
       Test Case: Execute CBO on GVA.
     expectation: Page fault at G-stage.
-    bins: '{VS,VU} × Levels'
+    bins: "{VS,VU} × Levels"
   - name: nonleaf_vs
     goal: Detect CBO on VS non-leaf PTE at L0
     description: |-
       Env: Level0 PTE with RWX=0.
       Test Case: Execute CBO.
     expectation: Page fault.
-    bins: '{VS,VU} × satp.mode'
+    bins: "{VS,VU} × satp.mode"
   - name: nonleaf_g
     goal: Detect CBO on G non-leaf PTE at L0
     description: |-
       Env: G-stage level0 PTE with RWX=0.
       Test Case: Execute CBO.
     expectation: Page fault.
-    bins: '{VS,VU} × hgatp.mode'
+    bins: "{VS,VU} × hgatp.mode"
   - name: sum_effect_vs
     goal: Verify SUM effects in VS-stage
     description: |-
@@ -67,7 +67,7 @@ coverpoints:
       Env: Leaf VS PTE.A=0. sfence.vma before.
       Test Case: Execute CBO.
     expectation: Page fault if Svade implemented.
-    bins: '{VS,VU} × satp.mode'
+    bins: "{VS,VU} × satp.mode"
   - name: g_access_bit
     goal: Verify PTE.A handling in G-stage for CBO
     description: |-
@@ -81,7 +81,7 @@ coverpoints:
       Env: Leaf VS PTE.D=0.
       Test Case: Execute CBO.
     expectation: No fault; CBO succeeds.
-    bins: '{VS,VU}'
+    bins: "{VS,VU}"
   - name: g_dirty_bit
     goal: Verify PTE.D handling in G-stage for CBO
     description: |-
@@ -95,21 +95,21 @@ coverpoints:
       Env: Leaf VS PTE with misaligned PPN.
       Test Case: Execute CBO.
     expectation: Page fault.
-    bins: '{levels L1–L4}'
+    bins: "{levels L1–L4}"
   - name: misaligned_superpage_g
     goal: Detect misaligned G superpage with CBO
     description: |-
       Env: Leaf G PTE with misaligned PPN.
       Test Case: Execute CBO.
     expectation: Page fault.
-    bins: '{levels L1–L4}'
+    bins: "{levels L1–L4}"
   - name: leaf_invalid_pa_vs
     goal: Detect invalid PA in VS PTE
     description: |-
       Env: VS leaf points to non-existent GPA.
       Test Case: Execute CBO.
     expectation: Store access fault.
-    bins: '{VS,VU}'
+    bins: "{VS,VU}"
   - name: leaf_invalid_pa_g
     goal: Detect invalid PA in G PTE
     description: |-
@@ -137,35 +137,35 @@ coverpoints:
       Env: Non-leaf VS PTE with D/A/U set.
       Test Case: Execute CBO.
     expectation: Store/AMO page fault.
-    bins: '{D,A,U}'
+    bins: "{D,A,U}"
   - name: dau_bits_g
     goal: Verify DAU bits set in G non-leaf PTE
     description: |-
       Env: Non-leaf G PTE with D/A/U set.
       Test Case: Execute CBO.
     expectation: Store/AMO page fault.
-    bins: '{D,A,U}'
+    bins: "{D,A,U}"
   - name: aliasing_vs_g
     goal: Check aliasing across 2-stage
     description: |-
       Env: Map two GVAs to same SPA via VS+G.
       Test Case: CBO on GVA1, probe via GVA2.
     expectation: Both aliases affected.
-    bins: '{cbo.clean,cbo.flush,cbo.inval}'
+    bins: "{cbo.clean,cbo.flush,cbo.inval}"
   - name: hfence_interaction
     goal: Verify HFENCE with CBO
     description: |-
       Env: Modify VS/G tables; omit/insert HFENCE.VVMA/GVMA.
       Test Case: Issue CBO post-modification.
     expectation: Without HFENCE, stale ops; with HFENCE, correct.
-    bins: '{with fence, without fence}'
+    bins: "{with fence, without fence}"
   - name: vmid_reuse_cbo
     goal: Check VMID reuse without flush
     description: |-
       Env: Run CBO under VMID1, reuse VMID for new mappings.
       Test Case: Probe caches.
     expectation: Without HFENCE, stale; with HFENCE, correct.
-    bins: '{reuse, fresh}'
+    bins: "{reuse, fresh}"
   - name: pmp_deny_spa
     goal: PMP denies SPA for CBO
     description: |-

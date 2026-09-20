@@ -14,12 +14,14 @@ normative_rule_definitions:
   # delegate the corresponding trap, when occurring in S-mode or U-mode, to the
   # S-mode trap handler.
   - name: mideleg_op
-    coverpoint: ["InterruptsS_cg/cp_trigger", "InterruptsSm_cg/cp_priority_mideleg"]
+    coverpoint:
+      ["InterruptsS_cg/cp_trigger", "InterruptsSm_cg/cp_priority_mideleg"]
 
   # mideleg holds trap delegation bits for individual interrupts, with the layout of
   # bits matching those in the mip register
   - name: mideleg_enc
-    coverpoint: ["InterruptsS_cg/cp_trigger", "InterruptsSm_cg/cp_priority_mideleg"]
+    coverpoint:
+      ["InterruptsS_cg/cp_trigger", "InterruptsSm_cg/cp_priority_mideleg"]
 
   # Global interrupt-enable bits, MIE and SIE, are provided for M-mode and S-mode
   # respectively. When a hart is executing in privilege mode x, interrupts are
@@ -70,7 +72,12 @@ normative_rule_definitions:
   # corresponds with bit i in both mip and mie. Bits 15:0 are allocated to standard
   # interrupt causes only, while bits 16 and above are designated for platform use.
   - name: mip_enc
-    coverpoint: ["InterruptsS_cg/cp_enable", "InterruptsS_cg/cp_priority_sip", "InterruptsS_cg/cp_priority_sie"]
+    coverpoint:
+      [
+        "InterruptsS_cg/cp_enable",
+        "InterruptsS_cg/cp_priority_sip",
+        "InterruptsS_cg/cp_priority_sie",
+      ]
 
   # When bit i in mip is writable, a pending interrupt i can be cleared by writing 0
   # to this bit.
@@ -125,7 +132,8 @@ normative_rule_definitions:
   # in M-mode. By contrast, if mideleg[5] is clear, STIs can be taken in any mode
   # and regardless of current mode will transfer control to M-mode.
   - name: trap_del_intr_priv_lvl
-    coverpoint: ["InterruptsSm_cg/cp_trigger", "InterruptsSm_cg/cp_priority_mideleg"]
+    coverpoint:
+      ["InterruptsSm_cg/cp_trigger", "InterruptsSm_cg/cp_priority_mideleg"]
 
   # If supervisor mode is implemented, bits mip.SEIP and mie.SEIE are the
   # interrupt-pending and interrupt-enable bits for supervisor-level external
@@ -192,7 +200,10 @@ normative_rule_definitions:
   # SSIP is writable in mip may also be set to 1 by a platform-specific interrupt
   # controller.
   - name: mip_ssip_intr_ctrl
-    coverpoint: ["InterruptsS_cg/cp_trigger_reg, Platform specific interrupt controller not tested"]
+    coverpoint:
+      [
+        "InterruptsS_cg/cp_trigger_reg, Platform specific interrupt controller not tested",
+      ]
 
   # The SPP bit indicates the privilege level at which a hart was executing before
   # entering supervisor mode. When a trap is taken, SPP is set to 0 if the trap

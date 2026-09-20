@@ -3,12 +3,12 @@ suite: S
 source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=335048477#gid=335048477
 coverpoints:
   - name: cp_scsr_access
-    description: csr read, write all 1s, write all 0s, set all 1s, clear all 1s, write back inital value of each register below
+    description: csr read, write all 1s, write all 0s, set all 1s, clear all 1s, write back initial value of each register below
     rules:
       - csrrs and csrrc to each bit
   - name: cp_scsrwalk
     goal: Walking 1s of legal supervisor CSRs
-    description: 'Set and clear each bit of each writable S-mode CSR to exercise bitfields: sstatus, scause, sie, stvec, scounteren, senvcfg, sscratch, sip, excluding bit 33 of senvcfg as it results in an invalid PMM field.  sepc and stval are not tested because it is hard to express what values are legal.'
+    description: "Set and clear each bit of each writable S-mode CSR to exercise bitfields: sstatus, scause, sie, stvec, scounteren, senvcfg, sscratch, sip, excluding bit 33 of senvcfg as it results in an invalid PMM field.  sepc and stval are not tested because it is hard to express what values are legal."
     rules:
       - Illegal Instruction
   - name: cp_csr_ro
@@ -51,4 +51,4 @@ coverpoints:
     rules:
       - sepc should be pointing two instructions ahead.
   - heading: SXL tested with EndianS
-  - heading: '*** if other supervisor extensions are supported, ifdef them in to run in M-mode, such as sstc to test access to stimecmp.'
+  - heading: "*** if other supervisor extensions are supported, ifdef them in to run in M-mode, such as sstc to test access to stimecmp."

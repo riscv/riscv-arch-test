@@ -41,7 +41,7 @@ coverpoints:
       If hstatus.HUKTE=1, accesses should fail
       If hstatus.HUKTE=0, accesses should not fail
     bins: 3 non-bare VSATP modes (each) * 2 HUKTE values
-  - name: '*'
+  - name: "*"
     goal: Test non-Svukte-qualified accesses
     description: Accesses that do not have effective U-mode, are using Bare address translation, or the other qualifying criteria are not Svukte-qualified
     expectation: Non-qualified accesses should succeed

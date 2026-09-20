@@ -9,15 +9,15 @@ coverpoints:
     bins: 3 modes * 4 mseccfg = 12 bins
   - name: cp_zkr_seed_illegal_csr_op
     goal: Non-CSRRW CSR instructions on seed cause illegal instruction
-    description: 'For each op in {CSRRS, CSRRC, CSRRW, CSRRWI, CSRRSI, CSRRCI} crossed with rs1/imm in {0/1} crossed with {mode = M, S (sseed=1), U (useed=1)} for supported modes: attempt the instruction on the seed CSR.'
+    description: "For each op in {CSRRS, CSRRC, CSRRW, CSRRWI, CSRRSI, CSRRCI} crossed with rs1/imm in {0/1} crossed with {mode = M, S (sseed=1), U (useed=1)} for supported modes: attempt the instruction on the seed CSR."
     expectation: An illegal instruction exception is raised for every effective read (CSRRS/C with x0 or imm 0), regardless of privilege mode or access control settings.
     bins: 6 ops * 2 rs1 * 3 modes = 30 bins
   - name: cp_zkr_seed_entropy_zero_non_es16
-    goal: '# When OPST is not ES16, entropy must be 0.'
+    goal: "# When OPST is not ES16, entropy must be 0."
     description: |-
       Execute csrrw rd, seed, rs1
       Execute csrrw rd, seed, rs1 again
       check that if OPST is not ES16, sigupd entropy
       if OPST is ES16, sigupd 0x0BADBEEF
     expectation: entropy is 0 if OPST is not ES16
-    bins: '1'
+    bins: "1"

@@ -8,12 +8,12 @@ coverpoints:
     bins: Illegal instruction if mstatus.VS = 00 or ((mode = VS or VU) and vsstatus.VS = 00).  Otherwise, vadd.vv sets mstatus.VS to 11, and also sets vsstatus.VS to 11 if mode = VS or VU.
     id: 4 * 4 * 5
     rules:
-      - 'When V=1, both vsstatus.VS and mstatus.VS are in effect: attempts to execute any vector instruction, or to access the vector CSRs, raise an illegal-instruction exception when either field is set to Off. Modifying the vector'
+      - "When V=1, both vsstatus.VS and mstatus.VS are in effect: attempts to execute any vector instruction, or to access the vector CSRs, raise an illegal-instruction exception when either field is set to Off. Modifying the vector"
       - state when V=1 causes both fields to be set to 3 (Dirty).
   - name: cp_misa_V
     description: vector instructions don't work when misa.V = 0
     expectation: Set misa.V to 0.  Attempt vadd.vv.
     bins: Illegal instruction if V is not hardwired to 1
-    id: '1'
+    id: "1"
     rules:
       - ins.prev = csrw misa x0; ins.current = vadd.v

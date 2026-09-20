@@ -5,7 +5,7 @@ coverpoints:
   - name: cp_mstateen_reset_val
     goal: On reset all mstateen CSRs' bits are initialized to zeros.
     description: As first test after reset, read mstateen0-3.  For RV32, also read msstateen0-3h
-    expectation: '0'
+    expectation: "0"
     bins: 4-8 CSRs
     rules:
       - mstateen_zero_initialization
@@ -37,7 +37,7 @@ coverpoints:
     goal: Test if fcsr bit is read-only zero when misa.F=1
     description: Write 1 to mstateen0.FCSR and read back
     expectation: Expect 0 if misa.F = 1
-    bins: '1'
+    bins: "1"
     rules:
       - mstateen0-fcsr_roz
   - name: cp_fcsr
@@ -146,5 +146,5 @@ coverpoints:
     rules:
       - mstateen-bit-63_op
       - mstateen0-se0_op
-  - heading: 'Note: All of these tests are performed in M-mode unless otherwise noted.'
-  - heading: 'Note: Smstateen implies U-mode (otherwise there is no need for this extension)'
+  - heading: "Note: All of these tests are performed in M-mode unless otherwise noted."
+  - heading: "Note: Smstateen implies U-mode (otherwise there is no need for this extension)"

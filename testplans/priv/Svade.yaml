@@ -15,7 +15,7 @@ coverpoints:
        Execute sfence.vma before accessign the PTE.
 
       Test Cases:
-       Set PTE.R=1  & pte.a=0 and test the read acces.
+       Set PTE.R=1  & pte.a=0 and test the read access.
        Set PTE.W=1&PTE.R=1 & pte.a=0 and test the write access.
        Set PTE.X=1  & pte.a=0 and test the execute access.
 

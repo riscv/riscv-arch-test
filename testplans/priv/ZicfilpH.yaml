@@ -13,4 +13,4 @@ coverpoints:
     bins: Origin mode (VS-mode) × Trap target (VS-mode) × ELP state
     id: sstatus-spelp_op
     rules:
-      - '[norm:sstatus-spelp_op]'
+      - "[norm:sstatus-spelp_op]"

@@ -38,12 +38,12 @@ coverpoints:
       test written: yes
       spec: When mstatus.VS is set to Initial or Clean, executing any instruction that changes vector state, including the vector CSRs, will change mstatus.VS to Dirty.
   - description: Analogous to the way in which the floating-point unit is handled, the mstatus.VS field may exist even if misa.V is clear.
-    notes: 'feature (coverpoint written): Untestable'
+    notes: "feature (coverpoint written): Untestable"
   - name: cp_mstatus_vs_off_arithmetic
     goal: Confirm that when when misa.V is 1 and mstatus.VS is off, an arithmetic vector instruction raises an illegal instruction exception
     description: Set misa.V to 1 and mstatus.VS = {00} and run a .vv vector instruction
     expectation: illegal instruction exception
-    bins: '1'
+    bins: "1"
     notes: |-
       test written: yes, confirm sig
       spec: Attempts to execute any vector instruction, or to access the vector CSRs, raise an illegal-instruction exception when mstatus.VS is set to Off.
@@ -51,7 +51,7 @@ coverpoints:
     goal: Confirm that when when misa.V is 1 and mstatus.VS is off, an csr vector instruction raises an illegal instruction exception
     description: Set misa.V to 1 and mstatus.VS = {00} and run a vsetvli
     expectation: illegal instruction exception
-    bins: '1'
+    bins: "1"
     notes: |-
       test written: yes, confirm sig
       spec: Attempts to execute any vector instruction, or to access the vector CSRs, raise an illegal-instruction exception when mstatus.VS is set to Off.
@@ -59,12 +59,12 @@ coverpoints:
     goal: Attempt to write the misa.V field in the misa csr to Confirm correct behavior
     description: Conduct a CSR clear to the misa.V field
     expectation: Modified or trap depending on implementation
-    bins: '1'
+    bins: "1"
     notes: |-
       test written: yes
       spec: Implementations may have a writable misa.V field. Analogous to the way in which the floating-point unit is handled, the mstatus.VS field may exist even if misa.V is clear.
   - description: For implementations with a writable misa.V field, the vsstatus.VS field may exist even if misa.V is clear.
-    notes: 'feature (coverpoint written): Untestable'
+    notes: "feature (coverpoint written): Untestable"
   - heading: Vset{i}vl{i}
   - name: cp_sew_lmul_vset_i_vli
     goal: Confirm that all combinations of lmul crossed with sew correctly set the vtype register in accordance with the vill field
@@ -91,7 +91,7 @@ coverpoints:
     goal: Confirm on the supported values of lmul are recognized as legal
     description: Use vsetivli rd, 1, sew={supported}, vlmul={supported(mf8/mf4/mf2/)m1/m2/m4/m8}, tu, mu to attempt to set all values of lmul
     expectation: Expect vill is set for all values of lmul that aren't legal, otherwise the correct lmul is set
-    bins: '0'
+    bins: "0"
     notes: |-
       feature (coverpoint written): Covered by coverpoint above
       spec: Implementations must support LMUL integer values of 1, 2, 4, and 8....Implementations must provide fractional LMUL settings that allow the narrowest supported type to occupy a fraction of a vector register corresponding to the ratio of the narrowest supported type’s width to that of the largest supported type’s width
@@ -99,7 +99,7 @@ coverpoints:
     goal: Check all values of sew to Confirm only correctly supported values are recognized as legal
     description: Use vsetivli rd, 1, sew={e8/e16/e32/e64}, vlmul={m1}, tu, mu to attempt to set all values of lmul
     expectation: Expect vill will be set when an attempted unsupported sew values are attempted to be written, otherwise vtype will contain supported sew
-    bins: '0'
+    bins: "0"
     notes: |-
       feature (coverpoint written): Covered by coverpoint above
       spec: Implementations must support LMUL integer values of 1, 2, 4, and 8....Implementations must provide fractional LMUL settings that allow the narrowest supported type to occupy a fraction of a vector register corresponding to the ratio of the narrowest supported type’s width to that of the largest supported type’s width
@@ -143,12 +143,12 @@ coverpoints:
 
       sew must be supported and rs2[XLEN-2:8] zero to verify the configuration is illegal due to the vill bit being set
     expectation: vill bit should be set
-    notes: 'spec: A vtype value with vill set is treated as an unsupported configuration.'
+    notes: "spec: A vtype value with vill set is treated as an unsupported configuration."
   - name: cp_vset_vill
     goal: Confirm that writing 1 to vill clears other bits of vtype
     description: Set rs1 nonzero, rs1 = 1 in XLEN-1, 11 in 7:6 (vma/vta). vsetvl rd, rs1, rs2 and vtype.vill = {0}
     expectation: vtype.vill becomes 1 and other bits become 0
-    bins: '1'
+    bins: "1"
     notes: |-
       feature (coverpoint written): covered by coverpoint above
       spec: When the vill bit is set, the other XLEN-1 bits in vtype shall be zero.
@@ -156,7 +156,7 @@ coverpoints:
     goal: Confirm that if an unsupported configuration is set, that vl is set to zero
     description: Run vsetvl with rs1 non-zero and rs2 vill bit set and vl =! 0
     expectation: vl should be set to zero
-    bins: '1'
+    bins: "1"
     notes: |-
       test written: yes
       spec: If the vtype value is not supported by the implementation, then the vill bit is set in vtype, the remaining bits in vtype are set to zero, and the vl register is also set to zero.
@@ -189,7 +189,7 @@ coverpoints:
 
       vlmax must not change for the instruction to not be reserved.
     expectation: vl is unchanged
-    bins: '1'
+    bins: "1"
     notes: |-
       test written: yes
       spec: When rs1=x0 and rd=x0, the instruction operates as if the current vector length in vl is used as the AVL, and the resulting value is written to vl, but not to a destination register. This form can only be used when VLMAX and hence vl is not actually changed by the new SEW/LMUL ratio.
@@ -200,7 +200,7 @@ coverpoints:
 
       vlmax must not change for the instruction to not be reserved.
     expectation: vl is unchanged
-    bins: '1'
+    bins: "1"
     notes: |-
       test written: yes
       spec: When rs1=x0 and rd=x0, the instruction operates as if the current vector length in vl is used as the AVL, and the resulting value is written to vl, but not to a destination register. This form can only be used when VLMAX and hence vl is not actually changed by the new SEW/LMUL ratio.
@@ -209,7 +209,7 @@ coverpoints:
     goal: Confirm that vsetvl{i} instructions follow vl requirements when avl is zero
     description: Run vsetvli and vsetvl with rs1 = 0
     expectation: vl = 0
-    bins: '1'
+    bins: "1"
     notes: |-
       test written: yes
       spec: The vset{i}vl{i} instructions first set VLMAX according to their vtype argument, then set vl obeying the following constraints:
@@ -219,7 +219,7 @@ coverpoints:
     goal: Confirm that vsetvl{i} instructions follow avl requirements when equal to vlmax
     description: Run vsetvli and vsetvl with rs1 = vlmax
     expectation: vl = avl
-    bins: '1'
+    bins: "1"
     notes: |-
       test written: yes
       spec: The vset{i}vl{i} instructions first set VLMAX according to their vtype argument, then set vl obeying the following constraints:
@@ -229,7 +229,7 @@ coverpoints:
     goal: Confirm that vsetvl{i} instructions follow avl requirements when greater than vlmax and less than equal to 2*vlmax (if avl is less than 2* vlmax)
     description: Run vsetvli and vsetvl with vlmax < rs1 < 2 *vlmax
     expectation: ceil(AVL / 2) ≤ vl ≤ VLMAX
-    bins: '1'
+    bins: "1"
     notes: |-
       test written: yes, is a chance that sig don't match
       spec: The vset{i}vl{i} instructions first set VLMAX according to their vtype argument, then set vl obeying the following constraints:
@@ -239,7 +239,7 @@ coverpoints:
     goal: Confirm that vsetvl{i} instructions follow avl requirements when greater than 2 * vlmax (when avl is greater than equal to 2 * vlmax)
     description: Run vsetvli and vsetvl with rs1 ≥ 2 *vlmax
     expectation: vl = VLMAX
-    bins: '1'
+    bins: "1"
     notes: |-
       test written: yes
       spec: The vset{i}vl{i} instructions first set VLMAX according to their vtype argument, then set vl obeying the following constraints:
@@ -249,7 +249,7 @@ coverpoints:
     goal: Confirm that vsetvl{i} instructions follow avl requirements when greater than 2 * vlmax (when avl is greater than equal to 2 * vlmax)
     description: Run vsetvli and vsetvl with rs1 ≥ 2 *vlmax
     expectation: vl = VLMAX
-    bins: '1'
+    bins: "1"
     notes: |-
       test written: yes
       spec: The vset{i}vl{i} instructions first set VLMAX according to their vtype argument, then set vl obeying the following constraints:
@@ -268,19 +268,19 @@ coverpoints:
     goal: Confirm that the vstart CSR only has enough writeable bits to hold the largest element index (2^16-1)
     description: conduct a csr write with rs1 = 2^16 on the vstart register
     expectation: Not defined in spec, either vstart takes the bottom bits or sets to vlmax-1
-    bins: '1'
+    bins: "1"
     notes: |-
       test written: yes
       spec: The vstart CSR is defined to have only enough writable bits to hold the largest element index (one less than the maximum VLMAX). Try to write a number greater than what is legal
   - name: cp_sew_illegal
     description: Cannot set SEW < 8, all set SEW must be powers of 2 (can accomplish this by looping and setting sew of 2x until vill bit is set and then confirm that vill bit is set whenever setting a non power of 2 sew in that range)
-    notes: 'feature (coverpoint written): cant be tested'
+    notes: "feature (coverpoint written): can't be tested"
   - name: cp_vl_walking1s_sew_lmul
     goal: Confirm that all vl CSR bit fields are correctly set for all combinations of sew and lmul (thus all VLMAX)
     description: |-
       Running the vsetvli instruction, cross all sew = {8/16/32/64} lmul = {f8, f4,f2, 1, 2, 4, 8} with rs1 ={XLEN 1-hot values}
 
-      This is done by conducting a vsetivli everytime followed by a walking one csr write to ensure the target sew and lmul were attempted to be written
+      This is done by conducting a vsetivli every time followed by a walking one csr write to ensure the target sew and lmul were attempted to be written
     expectation: vl register will be set in accordance with vlmax
     bins: 4sew * 7 lmul * XLEN 1-hot values
   - name: cp_vlen_illegal
@@ -288,6 +288,6 @@ coverpoints:
     expectation: |-
       vsetvli rs1={0, 1, 2, 3, 4, 7, 8, 9, 16, 32, 64... 2^16}
       corners: (rs1 - 1)
-    notes: 'feature (coverpoint written): covered by csr writing tests'
+    notes: "feature (coverpoint written): covered by csr writing tests"
   - description: The vector extension must have a consistent state at reset. In particular, vtype and vl must have values that can be read and then restored with a single vsetvl instruction. (make sure reset is called)
-    notes: 'feature (coverpoint written): untestable'
+    notes: "feature (coverpoint written): untestable"

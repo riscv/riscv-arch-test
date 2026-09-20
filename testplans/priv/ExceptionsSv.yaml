@@ -24,7 +24,7 @@ coverpoints:
   - heading: The following coverpoints should be exercised in supervisor mode
   - name: cp_instr_page_fault_s
     goal: Instruction Page Fault
-    description: jump to address that causes instruciton page fault
+    description: jump to address that causes instruction page fault
   - name: cp_load_page_fault_s
     goal: Load Page Fault
     description: load from address that causes load page fault
@@ -65,7 +65,7 @@ coverpoints:
   - heading: The following coverpoints should be exercised in user mode
   - name: cp_instr_page_fault_u
     goal: Instruction Page Fault
-    description: jump to address that causes instruciton page fault
+    description: jump to address that causes instruction page fault
   - name: cp_load_page_fault_u
     goal: Load Page Fault
     description: load from address that causes load page fault

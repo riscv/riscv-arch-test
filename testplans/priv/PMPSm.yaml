@@ -97,7 +97,7 @@ coverpoints:
       - The R, W, ...bits, when set, indicate that the PMP entry permits read, write
   - name: cp_cfg_L_access_all
     description: |-
-      Check that XWR doesn't affect M-mode acess when L=0
+      Check that XWR doesn't affect M-mode access when L=0
       Set up (PMP_writable_regs-1) standard PMP regions, with pmp.L = 0, pmp.A=NAPOT, pmp.XWR = 0
       {jalr, lw, sw} in each PMP region
       Access should always succeed because L=0 doesn't enforce permissions.
@@ -121,7 +121,7 @@ coverpoints:
     description: |-
       Check that pmpcfg and pmpaddr of previous region are unwritable when L = 1.
       With pmpcfg_i.L ={0/1}, pmpcfg_i.A = {OFF/TOR/NAPOT}, pmpcfg_i.XWR = 111, pmpaddr_i = 0x100, pmpcfg_i-1.L =0 attempt to change pmpcfg_i-1 to 00000111, and to change pmpaddr_i-1 to 1s and read these back.
-      pmpaddr_i-1 should be unchanged because of lock if pmpcfg_i.A = TOR, otherwise change. pmpcfg_i-1 is changable independent of pmpcfg_i.A. Skip NA4 because it doesn't exist if G>0
+      pmpaddr_i-1 should be unchanged because of lock if pmpcfg_i.A = TOR, otherwise change. pmpcfg_i-1 is changeable independent of pmpcfg_i.A. Skip NA4 because it doesn't exist if G>0
     bins: 2 L * 3 A * 2 changes
     id: |-
       pmp_l_bit_write_protection
@@ -141,7 +141,7 @@ coverpoints:
       pmp_a_field_encoding
     rules:
       - Figure 34 shows pmpcfg bits 4:3 are A.  When G >= 1, the NA4 mode is not selectable.
-    notes: 'comments on test results: .log shows A is selected to NA4 even G>=1.  Need to have a look where G=4 is configured.'
+    notes: "comments on test results: .log shows A is selected to NA4 even G>=1.  Need to have a look where G=4 is configured."
   - name: cp_cfg_A_off_all
     description: |-
       Check that A=OFF never matches for each region.
@@ -184,7 +184,7 @@ coverpoints:
     bins: (PMP_writable_regs-1) regions * 3 addresses
     id: pmp_a_field_napot_na4
     rules:
-      - 'NA4: Naturally-aligned four-byte region.'
+      - "NA4: Naturally-aligned four-byte region."
   - name: cp_cfg_A_na4
     description: |-
       Check XWR controls accesses in matching NA4 region.
@@ -193,7 +193,7 @@ coverpoints:
     bins: 6 XWR * 3 types of access * 3 addresses
     id: pmp_a_field_napot_na4
     rules:
-      - 'NA4: Naturally-aligned four-byte region.'
+      - "NA4: Naturally-aligned four-byte region."
   - name: cp_cfg_A tor_all
     description: |-
       Check A = TOR works in each region.
@@ -221,7 +221,7 @@ coverpoints:
   - name: cp_cfg_A_tor_bot
     description: |-
       Check region 1 extends from pmpaddr0 to pmpaddr1 in TOR mode.
-      With pmpcfg1.L=1, pmpcfg1.A = TOR, pmpcfg1.XWR=101, default TOR region, pmpcfg0.L = {0/1}, pmpcfg0.A = OFF, pmpcfg0.XWR = 000, pmpaddr0 = pmpaddr1-g, {lw, sw, jalr} some address {pmpadr0 - 4, pmpadr0, pmpadr1-4, pmpadr1}.  Access faults for addreses in region.  Value of pmpcfg0 doesn't affect results.
+      With pmpcfg1.L=1, pmpcfg1.A = TOR, pmpcfg1.XWR=101, default TOR region, pmpcfg0.L = {0/1}, pmpcfg0.A = OFF, pmpcfg0.XWR = 000, pmpaddr0 = pmpaddr1-g, {lw, sw, jalr} some address {pmpadr0 - 4, pmpadr0, pmpadr1-4, pmpadr1}.  Access faults for addresses in region.  Value of pmpcfg0 doesn't affect results.
     bins: 2 L * 3 types of access *4 addresses
     id: pmp_a_field_tor
     rules:
@@ -255,7 +255,7 @@ coverpoints:
 
       pmp_entry_priority
     rules:
-      - 'OFF: Null region (disabled)'
+      - "OFF: Null region (disabled)"
   - name: cp_none
     description: |-
       M-mode access succeeds when all PMP are off.
@@ -284,7 +284,7 @@ coverpoints:
       Check granularity matches expectations.
       Write 0 to pmpcfg0, all 1s to pmpaddr0, read back pmpaddr0.
       Index of least-significant bit set should be G.
-    bins: '1'
+    bins: "1"
     id: pmp_region_granularity_g
   - heading: Register Access
   - name: cp_pmpaddr_walk
@@ -486,6 +486,6 @@ coverpoints:
 
       pmp_misaligned_access_behavior
     rules:
-      - 'Off: Null region (disabled)'
-  - heading: 'Note: there is another difficult case of a misaligned instruction or data access spanning a 4K page boundary, translating into physical addresses on two disjoint physical pages, one of which is not in the PMP region.  This should be tested in VM_PMP. *** Umer has AR to add'
-  - heading: '*** add mstatus.MXR to cp_cfg_RW'
+      - "Off: Null region (disabled)"
+  - heading: "Note: there is another difficult case of a misaligned instruction or data access spanning a 4K page boundary, translating into physical addresses on two disjoint physical pages, one of which is not in the PMP region.  This should be tested in VM_PMP. *** Umer has AR to add"
+  - heading: "*** add mstatus.MXR to cp_cfg_RW"

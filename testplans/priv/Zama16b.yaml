@@ -32,5 +32,5 @@ coverpoints:
     bins: Up to 39 ops * 12 offsets
     rules:
       - Misaligned loads, stores, and AMOs to main memory regions that do not cross a naturally aligned 16-byte boundary are atomic.
-  - heading: 'Note:'
+  - heading: "Note:"
   - heading: This test only checks for no misaligned fault.  Multimaster testing will be required to verify atomicity.

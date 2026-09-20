@@ -26,7 +26,7 @@ coverpoints:
       Run RVMODEL_MHPMEVENT_CODE to try to count
       Read RVMODEL_MHPMCOUNTER and check if nonzero
 
-      Note that these macros, counters, and events might be different between Sail and the DUT, so do not check values direclty, only check if nonzero.
+      Note that these macros, counters, and events might be different between Sail and the DUT, so do not check values directly, only check if nonzero.
     expectation: RVMODEL_HPMCOUNTER becomes nonzero iff xinh = 0
     bins: |-
       2^5 combinations
@@ -84,7 +84,7 @@ coverpoints:
     rules:
       - norm:count_overflow_trigger
   - name: cp_lcofip_hw_only
-    goal: counter oveflow only results form hardware increments of counter registers.
+    goal: counter overflow only results form hardware increments of counter registers.
     description: |-
       For SscofpmfSm/S/U:
       Set RVMODEL_MHPMCOUNTER[63] (OF)
@@ -94,7 +94,7 @@ coverpoints:
       Wait for RVMODEL_INTERRUPT_LATENCY
       Read sip.LCOFIP (for S or for U if S_SUPPORTED) or mip.LCOFIP
     expectation: mip.LCOFIP remains 0
-    bins: '1'
+    bins: "1"
     rules:
       - norm:LCOFIP_op
   - name: cp_scountovf_shadow
@@ -105,7 +105,7 @@ coverpoints:
       Write patterns to mhpmevent3...31.OF: all 0s, all 1s, walking 1s.
       Read scountovf
     expectation: scountovf should match 1s in OF fields
-    bins: '31'
+    bins: "31"
     rules:
       - norm:scountovf_op
   - name: cp_scountovf_mcounteren
@@ -185,7 +185,7 @@ coverpoints:
          sie = 0s
          sip = 1 in LCOFIP and {SEIP, STIP, SSIP, none}
          sie = all 1s
-    expectation: Highest prioirty interrupt fires.  LCOFIP only fires if none of the others are pending because it is lowest priority.
+    expectation: Highest priority interrupt fires.  LCOFIP only fires if none of the others are pending because it is lowest priority.
     bins: 7 interrupts
     rules:
       - norm:intr_M_mode_pri

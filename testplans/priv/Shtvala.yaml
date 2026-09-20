@@ -9,16 +9,16 @@ coverpoints:
     goal: Fault writes GPA >> 2 to htval
     description: Cause load guest-page fault
     expectation: htval written with GPA
-    bins: '1'
+    bins: "1"
     rules:
       - htval must be written with the faulting guest physical address in all circumstances permitted by the ISA
   - name: cp_store_guest_page_fault
     goal: Fault writes GPA >> 2 to htval
     description: Cause store guest-page fault
     expectation: htval written with GPA
-    bins: '1'
+    bins: "1"
   - name: cp_instr_guest_page_fault
     goal: Fault writes GPA >> 2 to htval
     description: Cause fetch guest-page fault
     expectation: htval written with GPA
-    bins: '1'
+    bins: "1"

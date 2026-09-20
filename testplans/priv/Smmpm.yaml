@@ -7,7 +7,7 @@ notes: |
   - all addresses are physical, all tests run in Bare/ M-mode .
   the JALR cross is kept separate from MXR and not guarded by S_SUPPORTED , since implicit fetch must be verified as never masked regardless of whether S-mode (and hence MXR) is implemented.
 coverpoints:
-  - heading: '- For cp_hardware_csr_* , traps are being handeled in M mode and mtval will be checked.'
+  - heading: "- For cp_hardware_csr_* , traps are being handled in M mode and mtval will be checked."
   - name: cp_pm_mprv
     goal: Verify pointer masking works correctly when M-mode accesses memory as U-mode or S-mode via MPRV.
     description: |-
@@ -53,7 +53,7 @@ coverpoints:
       When mstatus.SXL is set to 01 (indicating S-mode is RV32), the pointer masking configuration bits in menvcfg.PMM must be cleared automatically by hardware.
        Test Environment:
        In M-mode, write menvcfg.PMM={10 (PMLEN=7), 11 (PMLEN=16)} and confirm the written value is retained by reading back menvcfg.PMM. Then set mstatus.SXL=01 (RV32). Read back menvcfg.PMM and verify it has been cleared to 00.
-    expectation: 'When mstatus.SXL is set to 01: menvcfg.PMM is cleared to 00 regardless of its previously written value.'
+    expectation: "When mstatus.SXL is set to 01: menvcfg.PMM is cleared to 00 regardless of its previously written value."
     bins: 2 PMM values (10, 11) × 1 SXL  × 1 mode (S)
     rules:
       - pm_uxl_clear
@@ -65,7 +65,7 @@ coverpoints:
       When mstatus.UXL is set to 01 (indicating U-mode is RV32), the pointer masking configuration bits in menvcfg.PMM must be cleared automatically by hardware.
        Test Environment:
        In M-mode, write menvcfg.PMM={10 (PMLEN=7), 11 (PMLEN=16)} and confirm the written value is retained by reading back menvcfg.PMM. Then set mstatus.UXL=01 (RV32). Read back menvcfg.PMM and verify it has been cleared to 00.
-    expectation: 'When mstatus.SXL is set to 01: menvcfg.PMM is cleared to 00 regardless of its previously written value.'
+    expectation: "When mstatus.SXL is set to 01: menvcfg.PMM is cleared to 00 regardless of its previously written value."
     bins: 2 PMM values (10, 11) × 1 SXL  × 1 mode (S)
     rules:
       - pm_uxl_clear

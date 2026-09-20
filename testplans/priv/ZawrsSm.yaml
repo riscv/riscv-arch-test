@@ -40,15 +40,15 @@ coverpoints:
     rules:
       - Zawrs_exec_resume_rules
       - LA(t0, zawrs_resume_trap_handler)
-      - 'csrrw t0, mtvec, t0 # save old trap vector'
-      - '1: wrs.nto  # keep doing nto until timeout'
+      - "csrrw t0, mtvec, t0 # save old trap vector"
+      - "1: wrs.nto  # keep doing nto until timeout"
       - if MIE=0 and mip.MTIP, exit with success
       - j 1b
-      - 'zawrs_resume_trap_handler:'
+      - "zawrs_resume_trap_handler:"
       - csrr t1, mcause
       - SIGUPD t1
-      - 'csrw stvec, t0 # restore trap handler'
-      - 'done:'
+      - "csrw stvec, t0 # restore trap handler"
+      - "done:"
   - name: cp_wrs_no_mie
     goal: WRS does not stop when mie = 0 for pending interrupt
     description: |-
@@ -60,6 +60,6 @@ coverpoints:
       execute WRS.STO in M mode
     expectation: WRS does not stop when interrupt pending
     bins: 1 bin
-  - heading: 'Can not be tested with single core:'
+  - heading: "Can not be tested with single core:"
   - name: norm
     status: Zawrs_wrs-nto_stall_exec

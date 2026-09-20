@@ -122,7 +122,7 @@ coverpoints:
 
       pmp_access_fault_exception
   - name: cp_misaligned_off
-    goal: 'Off: Null region (disabled)'
+    goal: "Off: Null region (disabled)"
     description: |-
       Check that misaligned 32-bit fetches that cross a OFF PMP boundary still succeed.
       Set up a 3 standard consecutive OFF PMP regions with L=1, XWR=111.

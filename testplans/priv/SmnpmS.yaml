@@ -3,14 +3,14 @@ suite: SmnpmS
 title: Smnpm Coverpoints (S mode)
 source: https://docs.google.com/spreadsheets/d/15yJhyhBB5X9cq4SDQ-YCPzo2oPQnDBh5wEIZhi0-9Ps/edit?gid=720514871#gid=720514871
 notes: |
-  Smnpm is a machine level extension which  enables pointer maksing for lower priviledge level S mode (if implemented ) or otherwise U-mode via menvcfg.
+  Smnpm is a machine level extension which  enables pointer maksing for lower privilege level S mode (if implemented ) or otherwise U-mode via menvcfg.
   In this sheet , test plan is for S-mode  implementation (SmnpmS)
   Similar to Ssnpm except:
   Run the same coverpoints as Ssnpm in S-mode except
   - MXR bit is sampled from mstatus csr
   - remove cp_pmm_uxl_clear
 coverpoints:
-  - heading: '- add the following cp_pm_csr_software_access_* coverpoints'
+  - heading: "- add the following cp_pm_csr_software_access_* coverpoints"
   - name: cp_pm_csr_software_access
     goal: Ensure pointer masking is not applied to software CSR reads and writes
     description: |-

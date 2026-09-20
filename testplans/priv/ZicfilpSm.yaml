@@ -2,7 +2,7 @@
 suite: ZicfilpSm
 source: https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?gid=2113591295#gid=2113591295
 description: |
-  In this sheet, all Zicfilp tests from the Zicfilp_Common sheet are 
+  In this sheet, all Zicfilp tests from the Zicfilp_Common sheet are
   executed in Machine Mode (M-mode).
 
   Environment:
@@ -11,18 +11,18 @@ description: |
   - Tests execute in M-mode.
 
   Execution Notes:
-  - All indirect branch instructions (JALR, C.JALR, C.JR) are exercised 
+  - All indirect branch instructions (JALR, C.JALR, C.JR) are exercised
     as in the Common sheet.
-  - LPAD behavior, label matching, immediate encoding, and software-check 
+  - LPAD behavior, label matching, immediate encoding, and software-check
     exceptions are tested as per normative rules defined in the spec.
   - ELP state is observed via mstatus.MPELP (RV64) or mstatush.MPELP (RV32).
-  - This sheet additionally covers M-mode specific trap entry and return 
+  - This sheet additionally covers M-mode specific trap entry and return
     coverpoints not present in other sheets:
       cp_elp_state_preservation_zicflip
       cp_pelp_trap_entry_m_zicfilp
       cp_pelp_trap_entry_m_guarded_zicfilp
       cp_pelp_trap_return_m_zicfilp
-  - All other assumptions, instruction types, and execution conditions 
+  - All other assumptions, instruction types, and execution conditions
     are identical to the Zicfilp_Common sheet.
 
   Excluded (Debug testplan — separate file):
@@ -44,29 +44,29 @@ coverpoints:
     bins: Origin mode (U/S) × Trap target (M-mode) × ELP states
     id: cfi_mstatus-mpelp_op
     rules:
-      - '[norm:mstatus-mpelp_op]'
+      - "[norm:mstatus-mpelp_op]"
   - name: cp_pelp_trap_entry_m_zicfilp
     goal: Verify xPELP and ELP on trap entry to M-mode
     description: |-
       Test Environment:
       mseccfg.MLPE=1. Execute an indirect branch in M-mode with rs1 != {x1,x5,x7} to a non-LPAD instruction, so the software-check exception is taken with ELP=LP_EXPECTED.
       Execute an ECALL in M-mode for the ELP=NO_LP_EXPECTED case.
-    expectation: 'On trap entry: mstatus.MPELP = LP_EXPECTED and ELP = NO_LP_EXPECTED.'
+    expectation: "On trap entry: mstatus.MPELP = LP_EXPECTED and ELP = NO_LP_EXPECTED."
     bins: Trap target mode (M) × Initial ELP state
     id: Zicfilp_pelp_trap
     rules:
-      - '[norm:Zicfilp_pelp_trap]'
+      - "[norm:Zicfilp_pelp_trap]"
   - name: cp_pelp_trap_entry_m_guarded_zicfilp
     goal: Verify xPELP and ELP on trap entry from software-guarded branch
     description: |-
       Test Environment:
       Execute software-guarded indirect branch in any privilege mode to set ELP=NO_LP_EXPECTED,
       then trigger ECALL trap into M-mode. Verify mstatus.MPELP and ELP behavior.
-    expectation: 'On trap entry: mstatus.MPELP = NO_LP_EXPECTED and ELP remains NO_LP_EXPECTED.'
+    expectation: "On trap entry: mstatus.MPELP = NO_LP_EXPECTED and ELP remains NO_LP_EXPECTED."
     bins: Trap target mode × Initial ELP state (NO_LP_EXPECTED)
     id: Zicfilp_pelp_trap
     rules:
-      - '[norm:Zicfilp_pelp_trap]'
+      - "[norm:Zicfilp_pelp_trap]"
   - name: cp_pelp_trap_return_m_zicfilp
     goal: Verify behavior of return from trap via MRET
     description: |-
@@ -77,4 +77,4 @@ coverpoints:
     bins: 3 target modes (M/S/U) x 2 xLPE x 2 MPELP = 12
     id: Zicfilp_pelp_trap_return
     rules:
-      - '[norm:Zicfilp_pelp_trap_return]'
+      - "[norm:Zicfilp_pelp_trap_return]"

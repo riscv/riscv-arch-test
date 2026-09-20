@@ -20,7 +20,7 @@ coverpoints:
       RV64 Only:
       Test Case: For x = {0...15} In HS-mode: First write vsatp with {Bare, Sv39}.  Then write vsatp.MODE field = {x} and read back.
     expectation: write to vsatp with an unsupported MODE value is either ignored as it is for satp, or the fields of vsatp are treated as WARL in the normal way.
-    bins: '{16 x} * 2 starting modes'
+    bins: "{16 x} * 2 starting modes"
     id: vsatp_mode_unsupported_v0_param
     notes: |-
       reviewed: y
@@ -31,7 +31,7 @@ coverpoints:
       RV64 Only:
       Test Case: For x = {0...15} In VS-mode: First write satp with {Bare, Sv39}.  Then write satp.MODE field = {x} and read back.
     expectation: write to satp with an unsupported MODE value is ignored, so the old value is preserved
-    bins: '{16 x} * 2 starting modes'
+    bins: "{16 x} * 2 starting modes"
     id: vsatp_mode_unsupported_v1
     notes: |-
       reviewed: y
@@ -43,7 +43,7 @@ coverpoints:
       Test Case: Write all-zeros, all legal ones, and legal walking-ones to vsatp.PPN.
       Note: satp-ppn_sz_param defines # of legal bits
     expectation: PPN field retains patterns (at least for legal PPNs).
-    bins: '{0s,1s,22 or 44 PPN walknig 1s}'
+    bins: "{0s,1s,22 or 44 PPN walknig 1s}"
     id: vsatp-ppn_sz_param
     notes: |-
       reviewed: y
@@ -54,7 +54,7 @@ coverpoints:
       Environment: Set vsatp.MODE vsatp.MODE Sv32 or Sv39.
       Test Case: Write 1s to all ASID bits, read back to determine implemented ASIDLEN.
     expectation: Only implemented bits writable; readback equals ASIDLEN.
-    bins: '1'
+    bins: "1"
     id: vsatp-asidlen
     notes: |-
       reviewed: y
@@ -65,7 +65,7 @@ coverpoints:
       Environment: While in M-mode, set MPRV=1, mstatus.MPP={S,U}, mstatus.MPV=1, vsatp.MODE = Sv32 or Sv39, hgatp.MODE=BARE, satp.MODE=BARE, page table with no read/write permission.
       Test Case: Do load/store from M-mode. Instruction fetches unaffected, only data accesses translated (and throwing page fault).
     expectation: Data accesses translated via VS page tables, causing fault; instructions bypass and don't fault.
-    bins: '{read,write} × {MPP=S,U}'
+    bins: "{read,write} × {MPP=S,U}"
     id: |-
       mstatus_mprv_hypervisor, add tag to machine.adoc Instruction address-translation and protection are unaffected by the
       setting of MPRV.
@@ -78,7 +78,7 @@ coverpoints:
       Environment: Valid PTE.U=1. Set vsstatus.SUM={0,1}, mode=VS.
       Test Case: From VS, do read/write/exec. Test at leaf PTE with valid perms.
     expectation: Page fault raised for all access types for SUM=0. Read/write succeed; exec raises page fault for SUM=1.
-    bins: '{read,write,exec}x{SUM=0,1}'
+    bins: "{read,write,exec}x{SUM=0,1}"
     id: norm:H_vscsrs_sub, add tag to supervisor instruction.adoc related to status.SUM & PTE.U
     notes: |-
       reviewed: y
@@ -89,9 +89,9 @@ coverpoints:
       Environment: Valid PTE.U=1. Set vsstatus.SUM=1, mode=VS.
       Test Case: From VS, do read/write/exec. Test at leaf PTE with valid perms.
     expectation: Read/write succeed; exec raises page fault.
-    bins: '{read,write,exec}'
+    bins: "{read,write,exec}"
     id: H_vscsrs_sub, add tag to supervisor instruction.adoc related to status.SUM & PTE.U
-    notes: 'reviewed: y'
+    notes: "reviewed: y"
   - name: cp_vsatp_endianess
     goal: SBE endianness
     description: |-
@@ -100,7 +100,7 @@ coverpoints:
 
       Notes: Ensure SFENCE.VMA after endian change.
     expectation: RW succeeds; endian swap affects data ordering.
-    bins: '{SBE=0,SBE=1} × {read,write}'
+    bins: "{SBE=0,SBE=1} × {read,write}"
     id: hstatus-vsbe_op
     notes: |-
       reviewed: y
@@ -111,7 +111,7 @@ coverpoints:
       Environment: Construct valid PTE with RSW set to {00,01,10,11}.
       Test Case: Write/read PTE.
     expectation: RSW reads as written
-    bins: '{00,01,10,11}'
+    bins: "{00,01,10,11}"
     id: H_vscsrs_sub, add tag to the supervisor instruction.adoc related to RSW set of PTE
     notes: |-
       reviewed: y
@@ -122,7 +122,7 @@ coverpoints:
       Environment: PTE.V=0, vsatp.MODE={Sv32 orSv39}.
       Test Case: Try read/write/exec VA.
     expectation: Page fault on all access types.
-    bins: '{read,write,exec}'
+    bins: "{read,write,exec}"
     id: H_vscsrs_sub, add tag to the supervisor instruction.adoc related to PTE.V
     notes: |-
       reviewed: y
@@ -133,7 +133,7 @@ coverpoints:
       Environment: PTE at L0 with RWX=0.
       Test Case: read/write/exec VA.
     expectation: Page fault.
-    bins: '{read,write,exec}'
+    bins: "{read,write,exec}"
     id: H_vscsrs_sub, add tag to the supervisor instruction.adoc related to non-leaf L0 PTE
     notes: |-
       reviewed: y
@@ -144,7 +144,7 @@ coverpoints:
       Environment: PTE.U=0. vsstatus.SUM=0. RWX = {001, 011, 100, 101, 111} vsatp.MODE={Sv32 orSv39}
       Test Case: Do RWX accesses.
     expectation: Allowed if perms; else page fault.
-    bins: '{read,write,exec} * 5 RWX'
+    bins: "{read,write,exec} * 5 RWX"
     id: H_vscsrs_sub, add tag to supervisor instruction.adoc related to status.SUM & PTE.U
     notes: |-
       reviewed: y
@@ -155,7 +155,7 @@ coverpoints:
       Environment: RWX = {001, 111} PTE.U = {0/1}.  vsatp.MODE={Sv32 or Sv39}.
       Test Case: Do {read, write, exec} in {VS, VU}-mode with vsstatus.MXR={0,1}, vsstatus.SUM={0,1}
     expectation: Depends on case
-    bins: '{read, write, exec} * 2 RWX * 2 U * 2 SUM * 2 MXR * 2 modes'
+    bins: "{read, write, exec} * 2 RWX * 2 U * 2 SUM * 2 MXR * 2 modes"
     id: vsstatus-mxr_vm
     rules:
       - The vsstatus field MXR, which makes execute-only pages readable by explicit loads, only overrides VS-stage page protection. Setting MXR at VS-level does not override guest-physical page protections.
@@ -168,7 +168,7 @@ coverpoints:
       Environment: If  RV64 & !SVPBMT_SUPPORTED, PTE[62:61] = {0...3}
       Test Case: Access page
     expectation: Page fault if nonzero, else normal.
-    bins: '{read,write,exec} * 4 PTE[62:61]'
+    bins: "{read,write,exec} * 4 PTE[62:61]"
     notes: |-
       reviewed: y
       coverpoint done: ✅ Done
@@ -178,7 +178,7 @@ coverpoints:
       Environment: RV64 & PTE[60:54]: Walking 1s, all 1s, all 0s
       Test Case: Access page
     expectation: Page fault if nonzero, else normal.
-    bins: '{read,write,exec} * 9 values'
+    bins: "{read,write,exec} * 9 values"
     id: H_vscsrs_sub, add tag to the supervisor instruction.adoc related to RSW set of PTE
     notes: |-
       reviewed: y
@@ -213,7 +213,7 @@ coverpoints:
       Environment: Set hgatp.MODE Sv32x4 or Sv39x4.
       Test Case: Write 1s to all VMID bits.
     expectation: Only implemented bits writable
-    bins: '{RV32: 7, RV64:14}'
+    bins: "{RV32: 7, RV64:14}"
     id: hgatp-vmid_param
     notes: |-
       reviewed: y
@@ -224,7 +224,7 @@ coverpoints:
       Environment: Set mstatus.TVM={0,1} in HS.
       Test Case: Attempt to write hgatp.
     expectation: Access to hgatp from HS cause illegal-instruction trap when TVM=1.
-    bins: '{TVM=0,1}'
+    bins: "{TVM=0,1}"
     id: hgatp_tvm_illegal
     notes: |-
       reviewed: y
@@ -252,7 +252,7 @@ coverpoints:
       Sv57x4: guest page fault if GPA bits 63:50 are nonzero
     bins: up to 3 modes x (63-37) bits GPA
     id: H_vm_gpatrans
-    notes: 'reviewed: y'
+    notes: "reviewed: y"
   - name: cp_hgatp_perm_checks
     goal: G-stage permissions enforcement
     description: |-
@@ -270,7 +270,7 @@ coverpoints:
       Environment: Set G-stage PTE.G i(bit not used by Sv*x4).
       Test Case: Access GPA mapped by this PTE. It must be ignored by hardware..
     expectation: Normal.
-    bins: '{read,write,exec}'
+    bins: "{read,write,exec}"
     id: H_vm_gpa_g
     notes: |-
       reviewed: y
@@ -281,8 +281,8 @@ coverpoints:
       Environment: If  RV64 & !SVPBMT_SUPPORTED, G-stage PTE[62:61] = {0...3}
       Test Case: Access page
     expectation: Guest page fault if nonzero, else normal.
-    bins: '{read,write,exec} * 4 PTE[62:61]'
-    id: '*** US add rule'
+    bins: "{read,write,exec} * 4 PTE[62:61]"
+    id: "*** US add rule"
     notes: |-
       reviewed: y
       coverpoint done: ✅ Done
@@ -292,7 +292,7 @@ coverpoints:
       Environment: RV64 & G-stage PTE[60:54]: Walking 1s, all 1s, all 0s
       Test Case: Access page
     expectation: Guest page fault if nonzero, else normal.
-    bins: '{read,write,exec} * 9 values'
+    bins: "{read,write,exec} * 9 values"
     id: H_vm_gpatrans, add tag to the supervisor instruction.ado related to PTE.RSV bits
     notes: |-
       reviewed: y
@@ -303,7 +303,7 @@ coverpoints:
       Environment: Construct valid G-stage PTE with RSW set to {00,01,10,11}.
       Test Case: Access page
     expectation: Normal.
-    bins: '{read,write,exec} * 4 PTE[9:8]'
+    bins: "{read,write,exec} * 4 PTE[9:8]"
     id: H_vm_gpatrans, add tag to the supervisor instruction.adoc related to RSW set of PTE
     notes: |-
       reviewed: y
@@ -314,7 +314,7 @@ coverpoints:
       Environment: G-stage PTE.V=0, hgatp.MODE={Sv32x4 or Sv39x4}.
       Test Case: Try read/write/exec VA.
     expectation: Guest page fault on all access types.
-    bins: '{read,write,exec}'
+    bins: "{read,write,exec}"
     id: H_vm_gpatrans, add tag to the supervisor instruction.adoc related to PTE.V
     notes: |-
       reviewed: y
@@ -325,7 +325,7 @@ coverpoints:
       Environment: PTE at L0 with RWX=0.
       Test Case: read/write/exec VA.
     expectation: Guest page fault.
-    bins: '{read,write,exec}'
+    bins: "{read,write,exec}"
     id: H_vm_gpatrans, add tag to the supervisor instruction.adoc related to non-leaf L0 PTE
     notes: |-
       reviewed: y
@@ -336,16 +336,16 @@ coverpoints:
       Environment: Create G-stage superpage PTE with PPN low bits != 0 at given level.
       Test Case: Access mapped GPA.
     expectation: Page fault raised for misaligned superpage.
-    bins: '{level-specific tests per mode}'
+    bins: "{level-specific tests per mode}"
     id: H_vm_gpatrans, add tag to the supervisor instruction.adoc related to misaligned superpage
-    notes: 'reviewed: y'
+    notes: "reviewed: y"
   - name: cp_hgatp_vmid_scoping
     goal: implemented VMID length
     description: |-
       Environment: Set hgatp.MODE to Sv32 or Sv39.
       Test Case: Write 1s to all VMID bits, read back to determine implemented VMIDLEN.
     expectation: Only implemented bits writable; readback equals VMIDLEN.
-    bins: '1'
+    bins: "1"
     id: hgatp-vmid_param
     notes: |-
       reviewed: y
@@ -357,9 +357,9 @@ coverpoints:
 
       Test Case: Attempt to set hgatp.PPN such that root page table is only {4 KiB, 16KiB} aligned. Perform guest address translation to trigger G-stage walk.
     expectation: When root page table is not 16 KiB aligned, translation fails with guest page fault.
-    bins: '{mode = 1 for HXLEN=32, 3 for HXLEN=64} × {4KiB aligned, 16 KiB aligned}'
+    bins: "{mode = 1 for HXLEN=32, 3 for HXLEN=64} × {4KiB aligned, 16 KiB aligned}"
     id: hgatp-mode_x4, hgatp-mode_sv32x4, hgatp-mode_sv39x4, hgatp-mode_sv48x4, hgatp-mode_sv57x4
-    notes: 'reviewed: y'
+    notes: "reviewed: y"
   - name: cp_hgatp_u_mode_access
     goal: Verify that all G-stage memory accesses are treated as U-mode accesses, including those made from VS-mode
     description: |-
@@ -367,7 +367,7 @@ coverpoints:
 
       Test Case: From VS-mode, makel access (e.g., load, store, and instruction fetch) that requires walking through this G-stage page table.
     expectation: Since G-stage accesses are treated as U-mode, a guest-page fault should occur due to lack of user access permission, even though access was from VS-mode.
-    bins: '{access_type = inst_fetch, load, store} × {U-bit = 0, 1}'
+    bins: "{access_type = inst_fetch, load, store} × {U-bit = 0, 1}"
     id: H_vm_gpapriv
     notes: |-
       reviewed: y
@@ -381,7 +381,7 @@ coverpoints:
       If Svade is supported and menvcfg.adue = 1, then the G-stage PTE should set A=1 because it is implicitly accessed.  If the VS-stage PTE had A=D=00, then those bits are set to 1, which causes an implicit write, which sets D=1 in the G-stage PTE.
 
       If Svade is not supported, then a {load/store/fetch} guest page fault occurs to update the G-stage PTE A/D bits.  The type of fault depends on the original access.  If VS-stage AD=00, there is also a regular page fault to update the VS-stage PTE A/D bits.
-    bins: '{implicit_access = read, write} × {A/D bits before/after}'
+    bins: "{implicit_access = read, write} × {A/D bits before/after}"
     id: H_vm_gpapriv
     notes: |-
       reviewed: y
@@ -393,7 +393,7 @@ coverpoints:
 
       Test Case: Monitor the trap cause reported to HS-mode.
     expectation: Even though all G-stage accesses are treated as U-mode, the trap cause (e.g., instruction guest page fault, load guest page fault, store/AMO guest page fault) must match the original access type.
-    bins: '{access_type = inst_fetch, load, store} × {permission_fault}'
+    bins: "{access_type = inst_fetch, load, store} × {permission_fault}"
     id: H_vm_gpapriv
   - name: cp_vsatp_perm_checks
     goal: VS-stage permissions enforcement
@@ -439,22 +439,22 @@ coverpoints:
 
       Test Case:  Access arbitrary virtual addresses (GVAs). Compare the physical address used by memory access (SPA) with the original VA.
     expectation: VA must be treated as SPA directly with no translation applied. No page walks or faults must occur.
-    bins: '{vsatp.MODE = Bare, hgatp.MODE = Bare}'
+    bins: "{vsatp.MODE = Bare, hgatp.MODE = Bare}"
     id: hgatp-mode_x4, hgatp-mode_sv32x4, hgatp-mode_sv39x4, hgatp-mode_sv48x4, hgatp-mode_sv57x4
-  - name: '***'
+  - name: "***"
     description: With virtualization enabled and two-stage translation active (hgatp.MODE = Sv32x4/Sv39x4), current privilege is {HS/VS/U/VU}. Suitable VS and G-Stage page tables with all combinations of {RWX = 111/000 and U = 1/0}.  Perform read, write, execute.
-    expectation: '***'
+    expectation: "***"
     bins: 3 Access types * 4 priv modes * 2 SUM x 4 VS permissions x 4 G permissions = 384
   - name: mprv_sum_effect_hs_two_stage
     goal: effect of mstatus.MPRV with MPP=HS on accesses to user pages (two-stage on)
     description: With virtualization enabled and two-stage translation active (hgatp.MODE = Sv32x4/Sv39x4), set mstatus.MPRV=1, mstatus.{MPP,MPV}={M, HS, VS, U, VU}, current privilege is M. Suitable VS and G-Stage page tables with all combinations of {RWX = 111/000 and U = 1/0}.  Perform read, write, execute.
-    expectation: 'For data accesses: when sstatus.SUM=0, HS data access to a U page must fault with page fault of the corresponding type (load page fault for load; store/AMO page fault for store). When sstatus.SUM=1, data access succeeds subject to normal PTE permissions. Instruction fetch is unaffected by MPRV/SUM (fetch uses current mode translation); executing test code does not require setting guest code PTEs. Trap PC (mepc) points to faulting instruction; cause (mcause) matches access type. ***update'
+    expectation: "For data accesses: when sstatus.SUM=0, HS data access to a U page must fault with page fault of the corresponding type (load page fault for load; store/AMO page fault for store). When sstatus.SUM=1, data access succeeds subject to normal PTE permissions. Instruction fetch is unaffected by MPRV/SUM (fetch uses current mode translation); executing test code does not require setting guest code PTEs. Trap PC (mepc) points to faulting instruction; cause (mcause) matches access type. ***update"
     bins: 3 Access type × 5 MPP/MPV × 2 SUM × 4 VS permissions x 4 G-stage permissions = 480
     id: H_vm_gpatrans
   - name: VM_permission_invalid
     goal: that invalid permission in a guest PTE (pte.V=0) during 2-stage translation triggers correct page fault exceptions for instruction fetch, load, and store/AMO accesses across privilege modes.*** update
     description: With two-stage transnslation active, in each of {HS, VS, U, VU}, with each pages size {kilo/mega/giga} in VS and G stages, with leaf page V={0/1} in each stage, perform {read/write/execute}.
-    expectation: 'The following guest page faults must be raised depending on access type: - Instruction page fault for execute. - Load page fault for read. - Store/AMO page fault for write. Trap information: mtval must contain the faulting guest virtual address; scause must report the correct exception cause. ***update'
+    expectation: "The following guest page faults must be raised depending on access type: - Instruction page fault for execute. - Load page fault for read. - Store/AMO page fault for write. Trap information: mtval must contain the faulting guest virtual address; scause must report the correct exception cause. ***update"
     bins: 4 Privilege Mode × 3 Access Type × 2 HS-stage valid x 2 VS-stage valid x 3 VS page sizes x 3 G page sizes = 432
     id: H_vm_gpatrans
   - name: RWX access on Umode pages in Umode
@@ -508,9 +508,9 @@ coverpoints:
       PTE.U=0 with access from Supervisor/HS/VS
 
       PTE.U=1 with access from U/VU
-  - heading: '*** hgatp misaligned super pages and 16KB  (US)'
-  - heading: '*** tests exercising successful translation with any bits of the GPA (including 33:32 for Sv32x4)'
-  - heading: '*** need some tests involving translation through both G and VS-stage'
-  - heading: '*** tests with cross-product of either G or VS denying'
-  - heading: '*** add cases exercising SV48 and SV57'
-  - heading: '*** add case of access from M-mode with MPRV=0 doing no translation'
+  - heading: "*** hgatp misaligned super pages and 16KB  (US)"
+  - heading: "*** tests exercising successful translation with any bits of the GPA (including 33:32 for Sv32x4)"
+  - heading: "*** need some tests involving translation through both G and VS-stage"
+  - heading: "*** tests with cross-product of either G or VS denying"
+  - heading: "*** add cases exercising SV48 and SV57"
+  - heading: "*** add case of access from M-mode with MPRV=0 doing no translation"

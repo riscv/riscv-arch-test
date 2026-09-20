@@ -55,7 +55,7 @@ coverpoints:
       mie=all 0s to disable interrupts
       execute WRS.NTO in U mode
     expectation: WRS causes illegal instruction exception when timed out if TW = 1
-    bins: '1'
+    bins: "1"
     rules:
       - Zawrs_priv_illegal_instr_excp
   - name: cp_wrs_no_mie

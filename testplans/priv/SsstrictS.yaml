@@ -6,7 +6,7 @@ description: |
 coverpoints:
   - name: cp_csrr
     goal: CSR Accesses
-    description: 'Read all 4096 CSRs from S-mode (CSRR with rd≠x0). Skips: satp (0x180, would enable virtual memory), custom S/H CSRs (0x5C0-0x5FF, 0x6C0-0x6FF, 0x9C0-0x9FF, 0xAC0-0xAFF, 0xDC0-0xDFF, 0xEC0-0xEFF).'
+    description: "Read all 4096 CSRs from S-mode (CSRR with rd≠x0). Skips: satp (0x180, would enable virtual memory), custom S/H CSRs (0x5C0-0x5FF, 0x6C0-0x6FF, 0x9C0-0x9FF, 0xAC0-0xAFF, 0xDC0-0xDFF, 0xEC0-0xEFF)."
     expectation: S-mode CSRs return values; M-mode/H-mode/debug CSRs raise illegal-instruction from S-mode.
     bins: One bin per CSR 0x000–0xFFF (excluding skips), executed from S-mode
     notes: |-
@@ -17,18 +17,18 @@ coverpoints:
     goal: CSR Accesses
     description: Write all-zeros and all-ones to every CSR from S-mode. Skips satp and same custom CSRs as cp_csrr.
     expectation: S-mode writable CSRs accept writes; read-only or higher-privilege CSRs trap.
-    bins: 'Two bins per CSR: write 0 and write all-ones'
+    bins: "Two bins per CSR: write 0 and write all-ones"
     notes: Same as SsstrictSm but with mode switch to S-mode first.
   - name: cp_csrcs
     goal: CSR Accesses
     description: Set and clear all bits of every CSR from S-mode using CSRRS/CSRRC with rs1=all-ones.
     expectation: Same as cp_csrw_corners.
-    bins: 'Two bins per CSR: CSRRS all-ones and CSRRC all-ones from S-mode'
+    bins: "Two bins per CSR: CSRRS all-ones and CSRRC all-ones from S-mode"
     notes: CSRRS/CSRRC with x=−1 from S-mode.
   - name: cp_shadow_m
     goal: Shadow CSR verification (M-mode write)
     description: Write all-ones and all-zeros to mstatus, mie, mip from M-mode, verifying the S-mode shadow registers (sstatus, sie, sip) reflect the correct subset of bits. Also write all-ones/zeros to sstatus, sie, sip from S-mode and verify the M-mode shadows reflect the changes.
-    expectation: 'mstatus↔sstatus, mie↔sie, mip↔sip are consistent: bits shared between the views have the same value; sstatus-only bits do not appear in mstatus and vice versa.'
+    expectation: "mstatus↔sstatus, mie↔sie, mip↔sip are consistent: bits shared between the views have the same value; sstatus-only bits do not appear in mstatus and vice versa."
     bins: |-
       6 bins: {mstatus, mie, mip} × {write 0, write 1s} from M-mode
       6 bins: {sstatus, sie, sip} × {write 0, write 1s} from S-mode
@@ -48,16 +48,16 @@ coverpoints:
     description: Same compressed quadrant sweep (00/01/10) as SsstrictSm but from S-mode.
     expectation: Same as SsstrictSm — each reserved encoding traps.
     bins: Same as SsstrictSm cp_illegal_compressed_instruction but S-mode context
-    notes: 'Switch to S-mode before #include of SsstrictInstrCompressed-Tests.h.'
+    notes: "Switch to S-mode before #include of SsstrictInstrCompressed-Tests.h."
   - name: cp_upperreg
     goal: Instructions using x16-x31 from S-mode
     description: Same upper-register sweep as SsstrictSm but executed in S-mode. Tests that E-extension illegal-instruction behavior is consistent across privilege modes.
-    expectation: 'If RV32E/RV64E: trap on x16-x31 access. If standard I: succeed. F regs always succeed.'
+    expectation: "If RV32E/RV64E: trap on x16-x31 access. If standard I: succeed. F regs always succeed."
     bins: Same bins as SsstrictSm cp_upperreg, S-mode context
     notes: Switch to S-mode first. Raw .word encodings for upper register positions.
   - name: cp_misa_ext_disable
     goal: Extension bits
-    description: 'Same extension disable sweep as SsstrictSm but: disable misa bit from M-mode, switch to S-mode, execute instruction, switch back, re-enable. Extensions: A, B, C, D, F, H, I, M, Q, U, V (S-mode cannot disable S itself). U-mode entry with U=0 should trap.'
+    description: "Same extension disable sweep as SsstrictSm but: disable misa bit from M-mode, switch to S-mode, execute instruction, switch back, re-enable. Extensions: A, B, C, D, F, H, I, M, Q, U, V (S-mode cannot disable S itself). U-mode entry with U=0 should trap."
     expectation: Each instruction executed in S-mode with misa bit cleared raises illegal-instruction. Entering U-mode with misa.U=0 should fail.
     bins: One bin per extension per {M-mode-disable → S-mode-execute}
     notes: |-
@@ -67,6 +67,6 @@ coverpoints:
     goal: Reserved FP rounding modes from S-mode
     description: Same as SsstrictSm cp_reserved_frm but executed from S-mode. Verify reserved FRM behavior is consistent across privilege levels.
     expectation: Same as SsstrictSm — FRM 5/6 reserved, mode 7 with DYN FRM=5/6/7 raises FP exception.
-    bins: '8 bins: FRM ∈ {0..7} with FADD.S in S-mode'
+    bins: "8 bins: FRM ∈ {0..7} with FADD.S in S-mode"
     notes: Switch to S-mode, then csrwi frm,N / fadd.s f0,f1,f2 for N=0..7.
   - heading: Note that satp is already tested in VM, so it is safe to exclude here

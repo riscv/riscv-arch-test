@@ -76,7 +76,7 @@ coverpoints:
 
       pmp_access_fault_exception
   - name: cp_cfg_A_na4
-    goal: 'NA4: Naturally-aligned four-byte region.'
+    goal: "NA4: Naturally-aligned four-byte region."
     description: |-
       Check XWR controls accesses in matching NA4 region.
       G=0 Only

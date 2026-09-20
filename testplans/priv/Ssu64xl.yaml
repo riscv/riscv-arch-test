@@ -6,6 +6,6 @@ coverpoints:
     goal: UXLEN = 64 supported
     description: With sstatus.UXL = 2, in U-mode, set bit 63 of a GPR and read back
     expectation: bit 63 is set
-    bins: '1'
+    bins: "1"
     rules:
       - sstatus.UXL must be capable of holding the value 2 (i.e., UXLEN=64 must be supported)

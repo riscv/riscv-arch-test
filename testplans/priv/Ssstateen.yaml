@@ -54,5 +54,5 @@ coverpoints:
     rules:
       - stateen0-jvt_op
       - sstateen_user_access_control
-  - heading: 'Note: All of these tests are performed in S-mode unless otherwise noted.'
-  - heading: 'Note: mstateen0.SE0 must be 1 (else sstateen0 is inaccessible).'
+  - heading: "Note: All of these tests are performed in S-mode unless otherwise noted."
+  - heading: "Note: mstateen0.SE0 must be 1 (else sstateen0 is inaccessible)."

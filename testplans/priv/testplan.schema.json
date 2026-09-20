@@ -3,10 +3,7 @@
   "title": "Privileged test plan",
   "description": "One privileged test suite: its coverpoints and the prose around them. Rendered into the CTP by generators/ctp/generate_priv_testplans.py.",
   "type": "object",
-  "required": [
-    "suite",
-    "coverpoints"
-  ],
+  "required": ["suite", "coverpoints"],
   "additionalProperties": false,
   "properties": {
     "suite": {
@@ -29,10 +26,7 @@
     "setup": {
       "type": "object",
       "description": "Optional per-privilege-mode setup table.",
-      "required": [
-        "columns",
-        "steps"
-      ],
+      "required": ["columns", "steps"],
       "additionalProperties": false,
       "properties": {
         "columns": {
@@ -46,9 +40,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": [
-              "step"
-            ],
+            "required": ["step"],
             "properties": {
               "step": {
                 "type": "string"
@@ -71,9 +63,7 @@
         "oneOf": [
           {
             "type": "object",
-            "required": [
-              "heading"
-            ],
+            "required": ["heading"],
             "additionalProperties": false,
             "properties": {
               "heading": {

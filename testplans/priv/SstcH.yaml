@@ -19,14 +19,14 @@ coverpoints:
   - name: cp_m_vstimecmp_accesses
     goal: All types of access
     description: With cross of menvcfg.STCE = 1, henvcfg.STCE = 0 mcounteren.TM = 0, hcounteren.TM =0, read/write (0s,1s)/set/clear vstimecmp.  For RV32, also vstimecmph
-    expectation: sucess
+    expectation: success
     bins: 5 accesses * up to 2 regs
   - heading: In HS-Mode
   - name: cp_walk_vstimecmp
     goal: SSTC CSRs accessible
     description: Walking 1s and 0s in vstimecmp.  Also vstimecmph for RV32.
     expectation: Writable
-    bins: '64'
+    bins: "64"
   - name: cp_hs_vstimecmp_accessible
     goal: TM and STCE control access depending on priv level
     description: With cross of menvcfg.STCE = {0/1}, henvcfg.STCE = {0/1} mcounteren.TM = {0/1}, hcounteren.TM = {0/1} read vstimecmp.  For RV32, also vstimecmph
@@ -35,7 +35,7 @@ coverpoints:
   - name: cp_hs_vstimecmp_accesses
     goal: All types of access
     description: With cross of menvcfg.STCE = 1, henvcfg.STCE = 0 mcounteren.TM = 1, hcounteren.TM = 0, read/write (0s,1s)/set/clear vstimecmp.  For RV32, also vstimecmph
-    expectation: sucess
+    expectation: success
     bins: 5 accesses * up to 2 regs
   - heading: In VS-Mode
   - name: cp_vs_stimecmp_accessible
@@ -51,14 +51,14 @@ coverpoints:
   - name: cp_vs_vstimecmp_inaccessible
     description: With menvcfg.STCE=1, henvcft.STCE=1, mcounteren.TM = 1, hcounteren.TM = 1, read vstimecmp.  For RV32, also vstimecmph
     expectation: Illegal instruction trap
-    bins: '2'
+    bins: "2"
   - heading: In VU-Mode
   - name: cp_vu_timecmp_inaccessible
     description: With menvcfg.STCE=1, henvcfg.STCE=1, mcounteren.TM = 1, hcounteren.TM = 1, read stimecmp, vstimecmp.  For RV32, also stimecmph, vstimecmph
     expectation: Illegal instruction trap
-    bins: '4'
+    bins: "4"
   - heading: In U-Mode
   - name: cp_u_timecmp_inaccessible
     description: With menvcfg.STCE=1, henvcft.STCE=1, mcounteren.TM = 1, hcounteren.TM = 1, read stimecmp, vstimecmp.  For RV32, also stimecmph, vstimecmph
     expectation: Illegal instruction trap
-    bins: '4'
+    bins: "4"

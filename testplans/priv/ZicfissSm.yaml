@@ -15,7 +15,7 @@ coverpoints:
     bins: instr {SSAMOSWAP.W, SSAMOSWAP.D} x menvcfg.SSE {0,1} x satp.MODE {Bare, Sv}
     id: ssmp_ssamoswap
     rules:
-      - '[norm:ssmp_ssamoswap]'
+      - "[norm:ssmp_ssamoswap]"
   - name: cp_menvcfg_sse_gating_zicfiss
     goal: Verify menvcfg.SSE is the top of the enable chain for both ssp CSR access and the SS page encoding
     description: |-
@@ -34,7 +34,7 @@ coverpoints:
     bins: mode {M, S/HS} x menvcfg.SSE {0,1} x csr_op {csrrw, csrrs, csrrc, csrrwi, csrrsi, csrrci} x target {ssp read, ssp write, pte_xwr_010_access} x result {ok at M always, ok at S iff menvcfg.SSE=1, illegal_instruction, page_fault}
     id: zicfiss_m_menvcfg_sse zicfiss_ssp_csr ssmp_menvcfg_sse
     rules:
-      - '[norm:zicfiss_m_menvcfg_sse] [norm:zicfiss_ssp_csr] [norm:ssmp_menvcfg_sse]'
+      - "[norm:zicfiss_m_menvcfg_sse] [norm:zicfiss_ssp_csr] [norm:ssmp_menvcfg_sse]"
   - name: cp_envcfg_sse_rdonly0_zicfiss
     goal: Verify the SSE enable chain forces the lower-level SSE fields to read-only zero
     description: |-
@@ -48,7 +48,7 @@ coverpoints:
     bins: parent {menvcfg.SSE, henvcfg.SSE} x child {senvcfg.SSE, henvcfg.SSE} x parent_val {0,1} x written {0,1} x readback {0, written}
     id: menvcfg_sse_rdonly0 henvcfg_sse_op
     rules:
-      - '[norm:menvcfg_sse_rdonly0] [norm:henvcfg_sse_op]'
+      - "[norm:menvcfg_sse_rdonly0] [norm:henvcfg_sse_op]"
   - name: cp_ss_pmp_permissions_zicfiss
     goal: Verify PMP permission requirements for shadow stack instructions, and that a PMP fault outranks the software-check exception
     description: |-
@@ -62,9 +62,9 @@ coverpoints:
       Leg B: the PMP access-fault (cause=7) is reported, NOT the software-check exception (cause=18). ssp is unchanged.
       SPEC NOTE: the PMP read-write requirement is stated in priv/cfi.adoc ("The PMP checks are extended to require read-write permission for memory accessed by shadow stack instructions") but carries NO norm: tag, so it cannot be referenced by ID. Raised as an upstream tagging gap.
     bins: instr {SSPUSH x1, C.SSPUSH x1, SSPOPCHK x1, C.SSPOPCHK x5, SSAMOSWAP.W, SSAMOSWAP.D} x pmp0cfg {--, R-, -W, RW} x mismatch_also_present {no, yes} x reported_cause {none, 7, not 18}
-    id: 'sspop_exception (PMP read-write requirement: priv/cfi.adoc, untagged)'
+    id: "sspop_exception (PMP read-write requirement: priv/cfi.adoc, untagged)"
     rules:
-      - '[norm:sspop_exception]'
+      - "[norm:sspop_exception]"
   - name: cp_ss_instr_inactive_zicfiss
     goal: Verify SS instructions act as MOPs, touching no memory and raising nothing, whenever Zicfiss is inactive
     description: |-
@@ -80,8 +80,8 @@ coverpoints:
     bins: leg {M-mode unconditional, lower-mode gated} x instr {SSPUSH x1, SSPUSH x5, C.SSPUSH x1, SSPOPCHK x1, SSPOPCHK x5, C.SSPOPCHK x5, SSRDP} x gate {menvcfg.SSE, senvcfg.SSE} = {00, 10, 11} x ssp_state {valid, misaligned, unmapped, value_mismatch} x {no trap, no memory access, ssp unchanged, rd==0 for SSRDP}
     id: zicfiss_enc menvcfg_sse_op_lead-in menvcfg_sse_op_list senvcfg_sse_Zicfilp
     rules:
-      - '[norm:zicfiss_enc] [norm:menvcfg_sse_op_lead-in] [norm:menvcfg_sse_op_list] [norm:senvcfg_sse_Zicfilp]'
-  - goal: 'Folded into cp_menvcfg_sse_gating_zicfiss: the M-mode leg is now explicit -- ssp is accessible from M for BOTH menvcfg.SSE values, since [norm:zicfiss_m_menvcfg_sse] is scoped to privilege < M.'
+      - "[norm:zicfiss_enc] [norm:menvcfg_sse_op_lead-in] [norm:menvcfg_sse_op_list] [norm:senvcfg_sse_Zicfilp]"
+  - goal: "Folded into cp_menvcfg_sse_gating_zicfiss: the M-mode leg is now explicit -- ssp is accessible from M for BOTH menvcfg.SSE values, since [norm:zicfiss_m_menvcfg_sse] is scoped to privilege < M."
     description: Verify access to ssp from M-mode with menvcfg.SSE=0/1
   - goal: MOVED here from ZicfissU as cp_ss_instr_inactive_zicfiss, with an M-mode unconditional leg added and the hostile-ssp strong form applied to both legs.
     description: SSPUSH/SSPOPCHK/SSRDP act as MOP (SSRDP -> 0) and do not touch memory or rais exceptions even if ssp is misaligned or unmapped or the values mismatch

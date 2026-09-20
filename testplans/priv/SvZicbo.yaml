@@ -23,14 +23,14 @@ coverpoints:
     check: Check against RM
     status: Done
     coverage: Uncovered
-    notes: 'feature: Exceptions'
+    notes: "feature: Exceptions"
   - name: PTE_res_rwx_cbo
     goal: Reserved RWX permission encodings of PTE
     description: |-
       If PTE has reserved RWX encodings (pte.w=1 & pte.r=0), then accessing it would raise page fault exception.
 
       Test in supervisor and user mode for leaf PTE at all levels
-      Test Environemnt
+      Test Environment
       Set satp.mode=sv32, sv39, sv48, & sv57
       All PMP permissions on targated pages
       Valid leaf PTE
@@ -259,7 +259,7 @@ coverpoints:
   - name: leaf_PTE_to_nonexistant_pa_cbo
     goal: Leaf PTE points to invalid Physical Address
     description: |-
-      If PTE points to a non existant physical address, it will raise a store access fault when CBO instructions are executed.
+      If PTE points to a non existent physical address, it will raise a store access fault when CBO instructions are executed.
 
       Test Environment:
       Test in supervisor and user privilege mode on all levels.
@@ -268,7 +268,7 @@ coverpoints:
        Valid leaf PTE, with no invalid RWX encoding.
 
       Test Cases:
-      Execute CBO instructions using VA with leaf PTE pointing to non existant PA
+      Execute CBO instructions using VA with leaf PTE pointing to non existent PA
 
       Note:
        For testing at level0, set all the pte perimssions at higher levels to 0 except PTE.V, so that non-leaf level points to level0.
@@ -279,7 +279,7 @@ coverpoints:
   - name: nonleaf_PTE_to_nonexistant_pa_cbo
     goal: Non-leaf PTE points to invalid Physical Address
     description: |-
-      If a non-leaf PTE points to a non existant physical address, it will raise a store access fault during the page table walk.
+      If a non-leaf PTE points to a non existent physical address, it will raise a store access fault during the page table walk.
 
       Test in supervisor and user privilege mode.
       Test Environment:
@@ -288,7 +288,7 @@ coverpoints:
        Valid leaf PTE, with no invalid RWX encoding.
 
       Test Cases:
-      Execute CBO instructions using VA with non leaf PTE pointing to non existant PA instead of the next page table.
+      Execute CBO instructions using VA with non leaf PTE pointing to non existent PA instead of the next page table.
 
       Note:
        For testing at level0, set all the pte perimssions at higher levels to 0 except PTE.V, so that non-leaf level points to level0.

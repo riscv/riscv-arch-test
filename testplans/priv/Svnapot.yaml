@@ -12,7 +12,7 @@ coverpoints:
     check: Check against RM
     status: To be Done
     coverage: Uncovered
-    notes: 'feature: NAPOT PTE Configuration and Translation'
+    notes: "feature: NAPOT PTE Configuration and Translation"
   - name: Svnapot_reserved_enc
     description: |-
       Configure a single NAPOT PTE to map a 64KB contiguous region of memory (assuming 4KB base page size)
@@ -26,7 +26,7 @@ coverpoints:
     check: Check against RM
     status: To be Done
     coverage: Uncovered
-    notes: 'feature: Reserved Encoding'
+    notes: "feature: Reserved Encoding"
   - name: nap.3
     description: |-
       Set up a page table with a combination of NAPOT and nonNAPOT PTEs.
@@ -36,7 +36,7 @@ coverpoints:
     check: Check against RM
     status: To be Done
     coverage: Uncovered
-    notes: 'feature: Mixed NAPOT and NonNAPOT'
+    notes: "feature: Mixed NAPOT and NonNAPOT"
   - name: nap.4
     description: |-
       The system can cache these translated addresses. cache correctly stores and retrieves translations for NAPOT PTEs and avoiding repeated PTE lookups for each address within the NAPOT region.
@@ -46,5 +46,5 @@ coverpoints:
     check: Check against RM
     status: To be Done
     coverage: Uncovered
-    notes: 'feature: AddressTranslation Cache Validation'
-  - heading: '*** If hypervisor is supported, also VS and VU modes, and think about 2-stage translation.'
+    notes: "feature: AddressTranslation Cache Validation"
+  - heading: "*** If hypervisor is supported, also VS and VU modes, and think about 2-stage translation."

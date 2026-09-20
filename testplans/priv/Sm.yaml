@@ -4,21 +4,21 @@ source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73
 coverpoints:
   - name: cp_mcsr_access
     goal: Access to all M-mode CSRs
-    description: csr read, write all 1s, write all 0s, set all 1s, clear all 1s, write back inital value of each register below plus read-only mvendorid, marchid, mimpid, mhartid, mconfigptr
+    description: csr read, write all 1s, write all 0s, set all 1s, clear all 1s, write back initial value of each register below plus read-only mvendorid, marchid, mimpid, mhartid, mconfigptr
     expectation: Traps on writes to read-only registers.  Otherwise writable bits match reference model.
     bins: (14+5) regs * 6 ops
     rules:
       - mcause (WLRL), mstatus/h (WPRI), menvcfg/h (WPRI), mseccfg/h (WPRI) could be weird/hard to model
   - name: cp_mcsrwalk
     goal: Walking 1s and 0s in each writeable M-mode CSR
-    description: 'Set and clear each bit of each writable M-mode CSR to exercise bitfields: mstatus, medeleg, mideleg, mie, mtvec, mcounteren, mscratch, mepc, mcause, mtval, mip, menvcfg, mseccfg.  For RV32 also mstatush, medelegh, menvcfgh, mseccfgh, mcountinhibit, mhpmevent31:3..  misa is fussy to model and is tested in cp_misa* instead..'
+    description: "Set and clear each bit of each writable M-mode CSR to exercise bitfields: mstatus, medeleg, mideleg, mie, mtvec, mcounteren, mscratch, mepc, mcause, mtval, mip, menvcfg, mseccfg.  For RV32 also mstatush, medelegh, menvcfgh, mseccfgh, mcountinhibit, mhpmevent31:3..  misa is fussy to model and is tested in cp_misa* instead.."
     expectation: Writable bits match reference model.
     bins: 14 regs * (64 set + 64 clear)
   - name: cp_misa_mxl
     goal: misa.MXL
     description: Attempt to write all four values to misa.MXL, clear, set..  Read back
     expectation: matches MXLEN and does not change
-    bins: '7'
+    bins: "7"
     rules:
       - Other MISA bits are unpredictable and thus not tested.
   - name: cp_misa_dependencies
@@ -31,16 +31,16 @@ coverpoints:
       Attempt to write H = 1, S = 0.  H should read 0 if S = 0
       Attempt to write H = 1, S = 1, U = 0.  H should read 0 if U = 0
     expectation: See tests
-    bins: '7'
+    bins: "7"
   - name: cp_misa_clear_c
     description: Attempt to clear C when subsequent instruction is not a multiple of 2.  C should not change.
     expectation: C should not change
-    bins: '1'
+    bins: "1"
   - name: cp_csrr_insufficient_priv
     goal: Debug registers should be inaccessible from M-mode
     description: Read Debug CSRS 7B0-7BF
     expectation: Illegal Instruction
-    bins: '16'
+    bins: "16"
   - name: cp_csrw_readonly
     goal: Read-only registers should trap when written
     description: Write read-only CSRs (C00-FFF)
@@ -61,7 +61,7 @@ coverpoints:
     goal: mcountinhibit prevents counting
     description: With mcountinhibit[2/0] = {0, 1}, read mcycle and minstret multiple times and check whether they increment.
     expectation: Count when not inhibited, remain constant when inhibited
-    bins: '2'
+    bins: "2"
   - name: cp_mcause_write
     goal: Legal values can be written to mcause
     description: |-
@@ -78,7 +78,7 @@ coverpoints:
     goal: ecall and ebreak cause traps
     description: Execute ecall and ebreak in machine mode
     expectation: ecall and breakpoint exceptions
-    bins: '2'
+    bins: "2"
   - name: cp_mret
     goal: mret returns and affects status bits
     description: Execute mret in machine mode with cross-product of values written to mstatus.MPP/ MPRV/ MPIE/MIE.  Return to machine mode and MIE = 1 after each mret.
@@ -95,7 +95,7 @@ coverpoints:
     rules:
       - sepc should be pointing two instructions ahead.
   - name: cp_scsr_from_m
-    description: 'If S supported, read/write/set/clear each S-mode CSR: sstatus, scause, sie, stvec, scounteren, senvcfg, sscratch, sip, excluding bit 33 of senvcfg as it results in an invalid PMM field.  sepc and stval are not tested because it is hard to express what values are legal.'
+    description: "If S supported, read/write/set/clear each S-mode CSR: sstatus, scause, sie, stvec, scounteren, senvcfg, sscratch, sip, excluding bit 33 of senvcfg as it results in an invalid PMM field.  sepc and stval are not tested because it is hard to express what values are legal."
   - name: cp_satp_from_m
     description: If S is supported, read satp with mstatus.TVM=0/1
     expectation: shouldn't trap on either TVM.  Value is not predictable.

@@ -99,18 +99,29 @@ normative_rule_definitions:
   # corresponds with bit i in both mip and mie. Bits 15:0 are allocated to standard
   # interrupt causes only, while bits 16 and above are designated for platform use.
   - names: [mip_enc, mie_enc]
-    coverpoint: ["InterruptsSm_cg/cp_enable", "InterruptsSm_cg/cp_priority_mip", "InterruptsSm_cg/cp_priority_mie"]
+    coverpoint:
+      [
+        "InterruptsSm_cg/cp_enable",
+        "InterruptsSm_cg/cp_priority_mip",
+        "InterruptsSm_cg/cp_priority_mie",
+      ]
 
   # The standard portions (bits 15:0) of the mip and mie registers are formatted as
   # shown in &lt;&lt;norm:mip_std_enc_img&gt;&gt; and
   # &lt;&lt;norm:mie_std_enc_img&gt;&gt; respectively.
   - names: [mip_std_enc, mie_std_enc]
-    coverpoint: ["InterruptsSm_cg/cp_enable", "InterruptsSm_cg/cp_priority_mip", "InterruptsSm_cg/cp_priority_mie"]
+    coverpoint:
+      [
+        "InterruptsSm_cg/cp_enable",
+        "InterruptsSm_cg/cp_priority_mip",
+        "InterruptsSm_cg/cp_priority_mie",
+      ]
 
   # mideleg holds trap delegation bits for individual interrupts, with the layout of
   # bits matching those in the mip register
   - name: mideleg_enc
-    coverpoint: ["InterruptsSm_cg/cp_trigger", "InterruptsSm_cg/cp_priority_mideleg"]
+    coverpoint:
+      ["InterruptsSm_cg/cp_trigger", "InterruptsSm_cg/cp_priority_mideleg"]
 
   # If interrupt i can become pending but bit i in mip is read-only, the
   # implementation must provide some other mechanism for clearing the pending
@@ -212,7 +223,11 @@ normative_rule_definitions:
   # implemented, STIP is read-only in mip reflects the supervisor-level timer
   # interrupt signal resulting from stimecmp.
   - name: mip_stip_stimecmp_op
-    coverpoint: ["InterruptsSm_cg/cp_trigger_sti_sstc", "InterruptsSm_cg/cp_write_stip_sstc"]
+    coverpoint:
+      [
+        "InterruptsSm_cg/cp_trigger_sti_sstc",
+        "InterruptsSm_cg/cp_write_stip_sstc",
+      ]
 
   # If the stimecmp (supervisor-mode timer compare) register is implemented, STIP is
   # read-only in mip
@@ -222,7 +237,11 @@ normative_rule_definitions:
   # This timer interrupt signal is cleared by writing stimecmp with a value greater
   # than the current time value.
   - name: mip_stip_stimecmp_clr
-    coverpoint: ["InterruptsSm_cg/cp_trigger_sti_sstc", "InterruptsSm_cg/cp_write_stip_sstc"]
+    coverpoint:
+      [
+        "InterruptsSm_cg/cp_trigger_sti_sstc",
+        "InterruptsSm_cg/cp_write_stip_sstc",
+      ]
 
   # SSIP is writable in mip
   - name: mip_ssip_acc
@@ -237,7 +256,10 @@ normative_rule_definitions:
   # SSIP is writable in mip may also be set to 1 by a platform-specific interrupt
   # controller.
   - name: mip_ssip_intr_ctrl
-    coverpoint: ["InterruptsSm_cg/cp_trigger_reg, Platform specific interrupt controller not tested"]
+    coverpoint:
+      [
+        "InterruptsSm_cg/cp_trigger_reg, Platform specific interrupt controller not tested",
+      ]
 
   # An interrupt i will trap to M-mode (causing the privilege mode to change to
   # M-mode) if all of the following are true: (a) either the current privilege mode
@@ -271,7 +293,8 @@ normative_rule_definitions:
   # Multiple simultaneous interrupts destined for M-mode are handled in the
   # following decreasing priority order: MEI, MSI, MTI, SEI, SSI, STI, LCOFI.
   - name: intr_M_mode_pri
-    coverpoint: ["InterruptsSm_cg/cp_priority_mip", "InterruptsSm_cg/cp_priority_mie"]
+    coverpoint:
+      ["InterruptsSm_cg/cp_priority_mip", "InterruptsSm_cg/cp_priority_mie"]
 
   # Delegated interrupts result in the interrupt being masked at the delegator
   # privilege level. For example, if the supervisor timer interrupt (STI) is
@@ -279,4 +302,5 @@ normative_rule_definitions:
   # in M-mode. By contrast, if mideleg[5] is clear, STIs can be taken in any mode
   # and regardless of current mode will transfer control to M-mode.
   - name: trap_del_intr_priv_lvl
-    coverpoint: ["InterruptsSm_cg/cp_trigger", "InterruptsSm_cg/cp_priority_mideleg"]
+    coverpoint:
+      ["InterruptsSm_cg/cp_trigger", "InterruptsSm_cg/cp_priority_mideleg"]

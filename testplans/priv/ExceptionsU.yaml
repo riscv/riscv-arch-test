@@ -20,7 +20,7 @@ coverpoints:
       jal to an address that is an odd multiple of 2
       PC[1] = 0 and imm[1]=1
     expectation: Instruction at multiple of 4.  Offset is an odd multiple of 2.
-    bins: '1'
+    bins: "1"
   - name: cp_instr_adr_misaligned_jalr
     goal: Instruction Address Misaligned
     description: |-
@@ -32,7 +32,7 @@ coverpoints:
     goal: Instruction Access Fault
     description: Jump to access fault address
     expectation: Instruction access fault is raised (trap and mcause)
-    bins: '1'
+    bins: "1"
   - name: cp_illegal_instruction
     goal: Illegal Instruction
     description: Executing instruction 0x00000000 and 0xFFFFFFFF
@@ -48,17 +48,17 @@ coverpoints:
     expectation: illegal instruction exception
     bins: 4 csr ops
     rules:
-      - '*** move to Zkr'
+      - "*** move to Zkr"
   - name: cp_breakpoint
     goal: Breakpoint
     description: |-
       ebreak throws breakpoint exception
       also test when straddling 64B boundary
     expectation: throws breakpoint exception (trap and mcause)
-    bins: '1'
+    bins: "1"
   - name: cp_load_address_misaligned
     goal: Load Misaligned
-    description: 'Attempt lh, lhu, lw, lwu, ld with every combination of three address lsbs: 000 - 111'
+    description: "Attempt lh, lhu, lw, lwu, ld with every combination of three address lsbs: 000 - 111"
     expectation: Might not cause exception
     bins: 7 ops * 8 lsbs
   - name: cp_load_access_fault
@@ -68,7 +68,7 @@ coverpoints:
     bins: 7 ops
   - name: cp_store_address_misaligned
     goal: Store Misaligned
-    description: 'Attempt sh, sw, sd with every combination of three lsbs: 000-111'
+    description: "Attempt sh, sw, sd with every combination of three lsbs: 000-111"
     expectation: Might not cause exception
     bins: 4 ops * 8 lsbs
   - name: cp_store_access_fault
@@ -80,7 +80,7 @@ coverpoints:
     goal: ecall
     description: ecall from user mode
     expectation: throws ecall user exception (trap and mcause)
-    bins: '1'
+    bins: "1"
   - name: cp_misaligned_priority
     goal: Priority of exceptions
     description: Attempt lw and sw and fetch from memory location causing access fault and misaligned

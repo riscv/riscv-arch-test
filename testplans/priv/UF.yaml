@@ -4,8 +4,8 @@ source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73
 coverpoints:
   - name: cp_ufcsr_access
     goal: CSR access
-    description: csr read, write all 1s, write all 0s, set all 1s, clear all 1s, write back inital value of each register below
+    description: csr read, write all 1s, write all 0s, set all 1s, clear all 1s, write back initial value of each register below
   - name: cp_ufcsrwalk
     goal: CSR access
-    description: 'Set and clear each bit of each writable CSR to exercise bitfields: fcsr, frm, fflags'
+    description: "Set and clear each bit of each writable CSR to exercise bitfields: fcsr, frm, fflags"
   - heading: Attempt these tests in user mode unless otherwise specified

@@ -45,16 +45,16 @@ coverpoints:
     rules:
       - Zawrs_exec_resume_rules
       - LA(t0, zawrs_resume_trap_handler)
-      - 'csrrw t0, stvec, t0 # save old trap vector'
-      - '1: wrs.nto  # keep doing nto until timeout'
+      - "csrrw t0, stvec, t0 # save old trap vector"
+      - "1: wrs.nto  # keep doing nto until timeout"
       - if in S mode version of test with SIE=0 and sip.STIP, exit with success
       - j 1b
-      - 'zawrs_resume_trap_handler:'
+      - "zawrs_resume_trap_handler:"
       - csrr t1, scause
       - SIGUPD t1
-      - 'csrw stvec, t0 # restore trap handler'
-      - 'done:'
-      - '*** need to use mtvec and mcause if S not supported'
+      - "csrw stvec, t0 # restore trap handler"
+      - "done:"
+      - "*** need to use mtvec and mcause if S not supported"
   - name: cp_wrs_nto_timeout
     goal: WRS.NTO timeout when TW = 1
     description: |-
@@ -65,26 +65,26 @@ coverpoints:
       mie=all 0s to disable interrupts
       execute WRS.NTO in S mode
     expectation: WRS causes illegal instruction exception when timed out if TW = 1
-    bins: '1'
+    bins: "1"
     rules:
       - Zawrs_priv_illegal_instr_excp
       - will retire or timeout with illegal instruction
-      - '*** need to use mtvec and mcause if S not supported'
-      - '*** make sure of delegation if S is supported (part of boot code)'
-      - '#ifdef UDB_ZAWRS_NTO_IS_NOP'
+      - "*** need to use mtvec and mcause if S not supported"
+      - "*** make sure of delegation if S is supported (part of boot code)"
+      - "#ifdef UDB_ZAWRS_NTO_IS_NOP"
       - wrs.nto
-      - '#else'
+      - "#else"
       - LA(t0, zawrs_trap_handler)
-      - 'csrrw t0, stvec, t0 # save old trap vector'
-      - '1: wrs.nto  # keep doing nto until timeout'
+      - "csrrw t0, stvec, t0 # save old trap vector"
+      - "1: wrs.nto  # keep doing nto until timeout"
       - j 1b
-      - 'zawrs_trap_handler:'
+      - "zawrs_trap_handler:"
       - csrr t1, scause
       - SIGUPD t1
-      - 'csrw stvec, t0 # restore trap handler'
-      - 'done:'
-      - '#endif'
-      - 'Sail: Zawrs.nto.is_nop, Zawrs.sto.is_nop'
+      - "csrw stvec, t0 # restore trap handler"
+      - "done:"
+      - "#endif"
+      - "Sail: Zawrs.nto.is_nop, Zawrs.sto.is_nop"
   - name: cp_wrs_nto_timeout_h
     goal: WRS.NTO timeout causing virtual instruction exception in H mode
     description: |-
@@ -115,12 +115,12 @@ coverpoints:
     bins: 2 bins
     rules:
       - same as above
-  - name: 'Can not be tested with single core:'
-    description: 'Untested things:'
+  - name: "Can not be tested with single core:"
+    description: "Untested things:"
   - name: norm
     description: Since the timeout limit can be different across platforms, cannot test WRS.STO with a timer interrupt soon
     status: Zawrs_wrs-nto_stall_exec
-  - heading: 'spec:'
+  - heading: "spec:"
   - heading: As implementations are free to implement WFI as a NOP, software must explicitly check for
   - heading: any relevant pending but disabled interrupts in the code following an WFI, and should loop
   - heading: back to the WFI if no suitable interrupt was detected. The mip or sip registers can be

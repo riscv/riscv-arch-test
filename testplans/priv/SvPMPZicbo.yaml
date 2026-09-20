@@ -14,12 +14,12 @@ coverpoints:
       There should not be any page fault condition
 
       Test Cases:
-       Remove {r,w} PMP permission of translated Physical Address in pmpcfg and acess it using Zicbom & Zicboz instructions.
+       Remove {r,w} PMP permission of translated Physical Address in pmpcfg and access it using Zicbom & Zicboz instructions.
     expectation: store/AMO access fault raised
     check: Check against RM
     status: Done
     coverage: Uncovered
-    notes: 'feature: Exception in VM'
+    notes: "feature: Exception in VM"
   - name: pmp.2
     goal: PMP permissions on PTE
     description: |-

@@ -8,7 +8,7 @@ coverpoints:
       Abit_unset_pmpW_unset_write
     goal: Verify that PMP permissions are checked during hardware update of PTE.A
     description: |-
-      With menfcfg.ADUE = {0/1}: Check that page tables are accesssed with S permission during hardware page table hardware A bit update.
+      With menfcfg.ADUE = {0/1}: Check that page tables are accessed with S permission during hardware page table hardware A bit update.
       Set up VM page table with PMP.W=0 pointing to page in default region.
       Leaf page tables have full access, AD = 00
       With satp pointing to each top-level page table, {lw/sw/jalr} to some virtual address.
@@ -22,7 +22,7 @@ coverpoints:
   - name: Dbit_unset_pmpW_unset_write
     goal: Verify that PMP permissions are checked during hardware update of PTE.D
     description: |-
-      With menfcfg.ADUE = {0/1}: Check that page tables are accesssed with S permission during hardware page table hardware D bit update.
+      With menfcfg.ADUE = {0/1}: Check that page tables are accessed with S permission during hardware page table hardware D bit update.
       Set up VM page table with PMP.W=0 pointing to page in default region.
       Leaf page tables have full access, AD = 10
       With satp pointing to each top-level page table, {sw} to some virtual address.

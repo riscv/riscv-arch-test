@@ -11,9 +11,9 @@ coverpoints:
       - Reading back counter is part of test program but not coverpoint
   - name: cp_delta
     goal: htimedelta does not affect time in M mode
-    description: 'With htimedelta = {0, 2^30, 2^60, -2^30, -2^60}, read time.   In RV32, this also involves htimedeltah and timeh. Note: do not check time direclty against reference model, which might tick differently.  Only look at the range of values.'
+    description: "With htimedelta = {0, 2^30, 2^60, -2^30, -2^60}, read time.   In RV32, this also involves htimedeltah and timeh. Note: do not check time directly against reference model, which might tick differently.  Only look at the range of values."
     expectation: 0 < time < 2^30 in all circumstances
-    bins: '5'
+    bins: "5"
     id: norm:csr:htimedleta:delta
   - heading: in HS mode
   - name: cp_scounteren_access_hs
@@ -24,9 +24,9 @@ coverpoints:
       - Reading back counter is part of test program but not coverpoint
   - name: cp_delta
     goal: htimedelta does not affect time in HS mode
-    description: 'With htimedelta = {0, 2^30, 2^60, -2^30, -2^60}, read time.   In RV32, this also involves htimedeltah and timeh. Note: do not check time direclty against reference model, which might tick differently.  Only look at the range of values.'
+    description: "With htimedelta = {0, 2^30, 2^60, -2^30, -2^60}, read time.   In RV32, this also involves htimedeltah and timeh. Note: do not check time directly against reference model, which might tick differently.  Only look at the range of values."
     expectation: 0 < time < 2^30 in all circumstances
-    bins: '5'
+    bins: "5"
   - heading: in VS mode
   - name: cp_mcounteren_access_vs
     goal: vscounters
@@ -42,14 +42,14 @@ coverpoints:
       - Reading back counter is part of test program but not coverpoint
   - name: cp_delta
     goal: htimedelta affects time in VS mode
-    description: 'With htimedelta = {0, 2^30, 2^60, -2^30, -2^60}, read time.   In RV32, this also involves htimedeltah and timeh. Note: do not check time direclty against reference model, which might tick differently.  Only look at the range of values.'
+    description: "With htimedelta = {0, 2^30, 2^60, -2^30, -2^60}, read time.   In RV32, this also involves htimedeltah and timeh. Note: do not check time directly against reference model, which might tick differently.  Only look at the range of values."
     expectation: |-
       0: 0 < time < 2^30
       2^30: 2^30 < time < 2^60
       2^60: 2^60 < time ^ 2^61
       -2^30: -2^30 < time < 0
       -2^60: -2^60 < time < 2^-59
-    bins: '5'
+    bins: "5"
   - heading: in U mode
   - name: cp_scounteren_access_u
     goal: vscounters
@@ -59,29 +59,29 @@ coverpoints:
       - Reading back counter is part of test program but not coverpoint
   - name: cp_delta
     goal: htimedelta does not affect time in U mode
-    description: 'With htimedelta = {0, 2^30, 2^60, -2^30, -2^60}, read time.   In RV32, this also involves htimedeltah and timeh. Note: do not check time direclty against reference model, which might tick differently.  Only look at the range of values.'
+    description: "With htimedelta = {0, 2^30, 2^60, -2^30, -2^60}, read time.   In RV32, this also involves htimedeltah and timeh. Note: do not check time directly against reference model, which might tick differently.  Only look at the range of values."
     expectation: 0 < time < 2^30 in all circumstances
-    bins: '5'
+    bins: "5"
   - heading: in VU mode
   - name: cp_hcounteren_access_vu
     goal: vscounters
-    description: Write walking 1s and 0s to hcounteren with mcounteren = scounteren = all 1s.  Read from corresopnding counter and counterh in VU-mode (should fail when 0)
+    description: Write walking 1s and 0s to hcounteren with mcounteren = scounteren = all 1s.  Read from corresponding counter and counterh in VU-mode (should fail when 0)
     expectation: fails when 0
     rules:
       - Reading back counter is part of test program but not coverpoint
   - name: cp_scounteren_access_vu
     goal: vscounters
-    description: Write walking 1s and 0s to scounteren with mcounteren = hcounteren = all 1s.  Read from corresopnding counter and counterh in VU-mode (should fail when 0)
+    description: Write walking 1s and 0s to scounteren with mcounteren = hcounteren = all 1s.  Read from corresponding counter and counterh in VU-mode (should fail when 0)
     expectation: fails when 0
   - name: cp_delta
     goal: htimedelta affects time in VU mode
-    description: 'With htimedelta = {0, 2^30, 2^60, -2^30, -2^60}, read time.   In RV32, this also involves htimedeltah and timeh. Note: do not check time direclty against reference model, which might tick differently.  Only look at the range of values.'
+    description: "With htimedelta = {0, 2^30, 2^60, -2^30, -2^60}, read time.   In RV32, this also involves htimedeltah and timeh. Note: do not check time directly against reference model, which might tick differently.  Only look at the range of values."
     expectation: |-
       0: 0 < time < 2^30
       2^30: 2^30 < time < 2^60
       2^60: 2^60 < time ^ 2^61
       -2^30: -2^30 < time < 0
       -2^60: -2^60 < time < 2^-59
-    bins: '5'
+    bins: "5"
   - heading: "NOTE: xcounteren are WARL and some bits could be read-only zero.  Currently, the coverpoints won't be hit.  What should we do about this?"
-  - heading: '*** move everything related to htimedelta from ZicsrH to here'
+  - heading: "*** move everything related to htimedelta from ZicsrH to here"

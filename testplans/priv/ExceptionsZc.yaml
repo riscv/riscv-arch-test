@@ -6,7 +6,7 @@ coverpoints:
     goal: Compressed breakpoint
     description: c.ebreak
     expectation: Breakpoint exception
-    bins: '1'
+    bins: "1"
   - name: cp_load_address_misaligned
     goal: Compressed loads with misaligned addresses
     description: |-
@@ -39,4 +39,4 @@ coverpoints:
     goal: CompressedIllegal Instruction
     description: c.illegal (0x0000)
     expectation: Illegal instruction fault.
-    bins: '1'
+    bins: "1"

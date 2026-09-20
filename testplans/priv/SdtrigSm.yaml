@@ -12,7 +12,7 @@ notes: |
   Do not test trigger types 1 (SiFive legacy), 2 (Deprecated mcontrol), 7 (tmexttrig), 12-14 (custom)
   Reset Values not tested
 
-  Unless otherwise specified, test mcontrol6 with tdata1.select=match=size=chain=0 
+  Unless otherwise specified, test mcontrol6 with tdata1.select=match=size=chain=0
   tdata1.m/s/u/vs/vu = 1/0/0/0/0
   tdata1.XSL = 1/1/1
   tdata3 = 0
@@ -43,8 +43,8 @@ coverpoints:
     rules:
       - Sdtrig_csr_mode
       - Sdtrig_num_trigs_ge1
-    notes: 'comments on test results: No exceptions. Tcontrol, mscontext, hcontext not implemented on spike'
-  - heading: 'Note: Use CSRW/CSRR to access registers in all modes'
+    notes: "comments on test results: No exceptions. Tcontrol, mscontext, hcontext not implemented on spike"
+  - heading: "Note: Use CSRW/CSRR to access registers in all modes"
   - heading: Native Triggers
   - name: cp_breakpoint_delegate
     goal: Breakpoints caused by triggers can be delegated
@@ -184,7 +184,7 @@ coverpoints:
       Repeat for each of UDB_NUM_TRIGGERS if UDB_SDTRIG_MCONTROL6_SUPPORTED[i]:
       tselect = i
     rules:
-      - 'For all: Sdtrig_caches_stores'
+      - "For all: Sdtrig_caches_stores"
   - name: cp_cache_zicbom
     goal: cbo.clean, cbo.flush, and cbo.inval match as if they are stores
     description: |-
@@ -253,7 +253,7 @@ coverpoints:
       - Sdtrig_vmem
   - heading: Trigger Module Registers
   - name: cp_tdata_write
-    goal: 'Writes to one tdata register must not modify the contents of other tdata registers. Note: type 15 allow any supported value to be written to tdata2/3'
+    goal: "Writes to one tdata register must not modify the contents of other tdata registers. Note: type 15 allow any supported value to be written to tdata2/3"
     description: |-
       For each of UDB_NUM_TRIGGERS in tselect
       tdata1.type = 15
@@ -265,7 +265,7 @@ coverpoints:
     expectation: |-
       No exceptions
       Writing one tdata register does not change another
-    bins: '3'
+    bins: "3"
     rules:
       - Sdtrig_tdata_write
     notes: |-
@@ -382,7 +382,7 @@ coverpoints:
       write tdata2 and tdata3 as necessary
       tdata3 = 0 unless otherwise specified (textra = 0, controls context matching)
       tdata1.type = 6 (mcontrol6)
-      tdata1.dmode = 0 (M-mode accessable)
+      tdata1.dmode = 0 (M-mode accessible)
       tdata1.action = 0 (breakpoint)
       tdata1.uncertainen = 0 (exact match)
       unless otherwise specified:
@@ -403,7 +403,7 @@ coverpoints:
     bins: 2 priv bits
     rules:
       - Sdtrig_mcontrol6_m
-    notes: 'comments on test results: Exceptions when m.1'
+    notes: "comments on test results: Exceptions when m.1"
   - name: cp_mcontrol6_execute_adr
     description: |-
       tdata2 = {PC address of nop/0}
@@ -417,7 +417,7 @@ coverpoints:
       - Sdtrig_mcontrol6_execute
       - Sdtrig_mcontrol6_store
       - Sdtrig_mcontrol6_load
-    notes: 'comments on test results: Exceptions on triggers when execute = 1'
+    notes: "comments on test results: Exceptions on triggers when execute = 1"
   - name: cp_mcontrol6_load_store_adr
     description: |-
       tdata2 = {scratch/0}
@@ -433,7 +433,7 @@ coverpoints:
       - Sdtrig_mcontrol6_execute
       - Sdtrig_mcontrol6_store
       - Sdtrig_mcontrol6_load
-    notes: 'comments on test results: Exceptions when XSL = 2 or 1 when tdata2 = scratch'
+    notes: "comments on test results: Exceptions when XSL = 2 or 1 when tdata2 = scratch"
   - name: cp_mcontrol6_execute_data
     description: |-
       tdata2 = {nop opcode/0}
@@ -447,7 +447,7 @@ coverpoints:
       - Sdtrig_mcontrol6_execute
       - Sdtrig_mcontrol6_store
       - Sdtrig_mcontrol6_load
-    notes: 'comments on test results: Exceptions when tdata2 = nopcode, and execute = 1'
+    notes: "comments on test results: Exceptions when tdata2 = nopcode, and execute = 1"
   - name: cp_mcontrol6_load_store_data
     description: |-
       tdata2 = {0x12345678/0}
@@ -463,7 +463,7 @@ coverpoints:
       - Sdtrig_mcontrol6_execute
       - Sdtrig_mcontrol6_store
       - Sdtrig_mcontrol6_load
-    notes: 'comments on test results: Exceptions when td2 = 0x12345678, and XSL = 1/2/3'
+    notes: "comments on test results: Exceptions when td2 = 0x12345678, and XSL = 1/2/3"
   - name: cp_mcontrol6_execute_size
     description: |-
       tdata2 = {nop opcode/c.nop opcode}
@@ -482,7 +482,7 @@ coverpoints:
       - Sdtrig_mcontrol6_size_48bit
       - Sdtrig_mcontrol6_size_64bit
       - Sdtrig_mcontrol6_size_128bit
-    notes: 'comments on test results: Exceptions when td2 = op, size = 0. Note: warls size to zero'
+    notes: "comments on test results: Exceptions when td2 = op, size = 0. Note: warls size to zero"
   - name: cp_mcontrol6_load_store_size
     goal: Q  not tested currently
     description: |-
@@ -496,8 +496,8 @@ coverpoints:
       if (D_SUPPORTED, also perform {fld/fsd}
       if (ZFH_SUPPORTED, also perform {flh/fsh}
       if Q_SUPPORTED also perform {flq/fsq}
-      if ZCA_SUPPORTED, also perfom c.{lw/sw/lwsp/swsp}
-      if ZCA_SUPPORTED and RV64, also perfom c.{ld/sd/ldsp/sdsp}
+      if ZCA_SUPPORTED, also perform c.{lw/sw/lwsp/swsp}
+      if ZCA_SUPPORTED and RV64, also perform c.{ld/sd/ldsp/sdsp}
       if ZCB_SUPPORTED, also perform c.{lbu/lh/lhu/sb/sh}
       if ZCF_SUPPORTEDand RV32, also perform c.{flw/flwsp/fsw/fswsp}
       if ZCD_SUPPORTED and RV64, also perform c.{fld/fldsp/fsd/fsdsp}
@@ -572,7 +572,7 @@ coverpoints:
       write tdata2 and tdata3 as necessary
       tdata3 = 0 unless otherwise specified (textra = 0, controls context matching)
       tdata1.type = 6 (mcontrol6)
-      tdata1.dmode = 0 (M-mode accessable)
+      tdata1.dmode = 0 (M-mode accessible)
       tdata1.action = 0 (breakpoint)
       tdata1.uncertainen = 0 (exact match)
       unless otherwise specified:
@@ -600,8 +600,8 @@ coverpoints:
     bins: 2 store values * 2 addresses
     rules:
       - Sdtrig_mcontrol6_chain_start
-    notes: 'comments on test results: Be careful of order when setting up chain, enable chain last'
-  - heading: 'Notes:'
+    notes: "comments on test results: Be careful of order when setting up chain, enable chain last"
+  - heading: "Notes:"
   - heading: uncertain and uncertainen not tested because optional and unpredictable
   - heading: vs, vu deferred to SdtrigH
   - heading: hit not tested because optional and implementation-dependent
@@ -613,7 +613,7 @@ coverpoints:
       tdata1 = 0
       tdata3 = 0 unless otherwise specified (textra = 0, controls context matching)
       tdata1.type = 3 (icount)
-      tdata1.dmode = 0 (M-mode accessable)
+      tdata1.dmode = 0 (M-mode accessible)
       tdata1.action = 0 (breakpoint)
       unless otherwise specified:
       tdata1.m/s/u/vs/vu = (1 for current mode, e.g. 1 in m)
@@ -628,7 +628,7 @@ coverpoints:
     expectation: |-
       breakpoint exception occurs,
       m,s,u,vs,vu are cleared, pending is cleared
-    bins: '1'
+    bins: "1"
     rules:
       - Sdtrig_icount_match_eq1
   - name: cp_icount_instr
@@ -652,7 +652,7 @@ coverpoints:
       tdata1.count = 1
        perform illegal instruction trap in mmode, CSRR tdata1.count
     expectation: Count decreases when a trap is taken from a privilege mode where the trigger is enabled
-    bins: '1'
+    bins: "1"
     rules:
       - Sdtrig_icount_match2
       - Sdtrig_icount_multiple_match
@@ -677,7 +677,7 @@ coverpoints:
       tdata1 = 0
       tdata3 = 0 unless otherwise specified (textra = 0, controls context matching)
       tdata1.type = 4 (itrigger)
-      tdata1.dmode = 0 (M-mode accessable)
+      tdata1.dmode = 0 (M-mode accessible)
       tdata1.action = 0 (breakpoint)
       unless otherwise specified:
       tdata1.m/s/u/vs/vu = (1 for current mode, e.g. 1 in m)
@@ -713,7 +713,7 @@ coverpoints:
       tdata1 = 0
       tdata3 = 0 unless otherwise specified (textra, controls context matching)
       tdata1.type = 5 (etrigger)
-      tdata1.dmode = 0 (M-mode accessable)
+      tdata1.dmode = 0 (M-mode accessible)
       tdata1.action = 0 (breakpoint)
       unless otherwise specified:
       tdata1.m/s/u/vs/vu = (1 for current mode, e.g. 1 in m)
@@ -747,7 +747,7 @@ coverpoints:
       Repeat for each of UDB_NUM_TRIGGERS if UDB_TDATA3_EXISTS[i]:
       tselect = i
       tdata1 = 0
-      tdata1.dmode = 0 (M-mode accessable)
+      tdata1.dmode = 0 (M-mode accessible)
       tdata1.action = 0 (breakpoint)
       unless otherwise specified:
       tdata3.mhselect = 0
@@ -929,7 +929,7 @@ coverpoints:
     expectation: |-
       svalue tied 0 if S-mode not supported
       sselect tied 0 if S-mode not supported
-    bins: '1'
+    bins: "1"
     rules:
       - Sdtrig_textra32_svalue_no_s
       - Sdtrig_textra32_sselect_no_s

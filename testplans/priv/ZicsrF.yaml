@@ -6,7 +6,7 @@ coverpoints:
     goal: |-
       Writing to the CSR field
       (WARL)
-    description: 'csr read, write all 1s, write all 0s, set all 1s, clear all 1s, write back inital value of each register: fcsr, fflags, frm'
+    description: "csr read, write all 1s, write all 0s, set all 1s, clear all 1s, write back initial value of each register: fcsr, fflags, frm"
   - name: cp_fcsr_frm_write
     goal: |-
       Writing to the CSR field
@@ -36,7 +36,7 @@ coverpoints:
     goal: |-
       Writing to the CSR field
       (WARL)
-    description: 'Reset fflags to 0, then execute following instructions: 1/0 (DivZero), 1/3 (Inexact), largest + largest (overflow), smallest * smallest (underflow), infinity - infinity (invalid)'
+    description: "Reset fflags to 0, then execute following instructions: 1/0 (DivZero), 1/3 (Inexact), largest + largest (overflow), smallest * smallest (underflow), infinity - infinity (invalid)"
   - name: cp_underflow_after_rounding
     description: |-
       Test each of the following floating-point operations does not set the underflow flag, even though it would if underflow were detected before rounding.  Note that these test cases are obtained from TestFloat.

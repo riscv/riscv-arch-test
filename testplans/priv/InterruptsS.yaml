@@ -24,8 +24,8 @@ setup:
         write sie = 1s
         write stvec.MODE = {00, 01} if each supported
       U: Same as S
-      VS: '***'
-      VU: '***'
+      VS: "***"
+      VU: "***"
     - step: trigger_interrupts <type>
       S: |-
         RVTEST_SET_<type>_INT

@@ -5,9 +5,9 @@ coverpoints:
   - description: |-
       A supervisor-level extension that provides pointer masking for the next lower privilege
       mode (U-mode) by enabling senvcfg.PMM bits. Pointer masking applies for RV64 only.
-    notes: 'todo: ADD UDB parameters of PMLEN7_SUPPORTED and PMLEN16_SUPPORTED'
+    notes: "todo: ADD UDB parameters of PMLEN7_SUPPORTED and PMLEN16_SUPPORTED"
   - heading: "For all test entries in this sheet, the following address patterns are used to exercise pointer masking behavior:\n\nBase addresses (A bits 63:48):  \n0x0000 unaffected by pointer masking\n0x0001 bit 48 masked if PMLEN=16 but not 7\n0x0100 bit 56 masked if PMLEN = 16 but not 7\n0x0200 bit 57 masked if PMLEN = 16 or 7\n0x8000 bit 63 masked if PMLEN = 16 or 7\n0xFFFF bits 63:48 are masked if PMLEN = 16, only partially if PMLEN=7\n0xFE00 bits 63:57 are masked if PMLEN = 16 or 7\n0xFF00  bits 63:56 are masked if PMLEN=16, only partially if PMLEN=7\n\nMasked address :\nFor PMLEN= 16 ( PMM=11)\nBare mode (PA): {0x0000} → upper bits forced to zero\nSv39 / Sv48/Sv57 (VA): {0x0000, 0xFFFF} → upper bits follow sign bit (XLEN-PMLEN-1 = 64-16-1 = 47 bit )\n\nFor PMLEN= 7 (PMM= 10): \nBare mode (PA): {0x00 / 7'b0} → upper bits forced to zero\nSv39 / Sv48Sv57 (VA): {7'b0, 0x7F} → upper bits follow sign bit ( XLEN-PMLEN-1 = 64 - 7 -1 = 56 bit )\n\nAll virtual A_masked addresses map to physical addresses with upper bits = 0x0000. \nThe lower bits of the address being tested point to a scratch memory location that can safely be read and written.\nVirtual addresses with leading 0s are identity mapped to the same physical address.\nVirtual addresses with leading 1s are mapped to another scratch memory location containing a different data value so that it can be distinguished whether the upper bits are handled correctly."
-  - heading: "Why do  we need a different page than scratch to map the VA with leading 1s? \n\nA' = scratch page (upper bits = 0x0000), pre-loaded with value_old, identity-mapped with VA with leading 0s(VA == PA). \n\nVAs with leading 1s are explicitly PTE-mapped to a separate  page pre-loaded with value_different. This separation is necessary because if both VAs mapped to the same PA, a read would return value_old regardless of whether masking actually occurred;  the page table itself would resolve both addresses to scratch, making it impossible to tell if the hardware masked the upper bits or simply followed the mapping. \n\nWith a seperate page holding a distinct value, the outcome is unambiguous: returning value_old proves the upper bits were stripped and scratch was reached via masking; returning value_different proves the upper bits were used as-is and other different page was accessed instead.\n\nNOTE : We will take sv tests as reference to setup PTE to map VA with leading ones to a dedicated physical region."
+  - heading: "Why do  we need a different page than scratch to map the VA with leading 1s? \n\nA' = scratch page (upper bits = 0x0000), pre-loaded with value_old, identity-mapped with VA with leading 0s(VA == PA). \n\nVAs with leading 1s are explicitly PTE-mapped to a separate  page pre-loaded with value_different. This separation is necessary because if both VAs mapped to the same PA, a read would return value_old regardless of whether masking actually occurred;  the page table itself would resolve both addresses to scratch, making it impossible to tell if the hardware masked the upper bits or simply followed the mapping. \n\nWith a separate page holding a distinct value, the outcome is unambiguous: returning value_old proves the upper bits were stripped and scratch was reached via masking; returning value_different proves the upper bits were used as-is and other different page was accessed instead.\n\nNOTE : We will take sv tests as reference to setup PTE to map VA with leading ones to a dedicated physical region."
   - name: cp_pmlen_masking
     goal: Verify that upper PMLEN bits are ignored for every memory-accessing instruction when pointer masking is enabled
     description: |-
@@ -44,8 +44,8 @@ coverpoints:
       (VECTOR OPS): If ZVL32b/RVV 1.0,  Reads: {vleXX.v, vlseXX.v, vluxeiXX.v, vloxeiXX.v, vlsegNfXX.v, vl1r.v, vleXXff.v} from A, sigupd. Writes: {vseXX.v, vsseXX.v, vsuxeiXX.v, vsoxeiXX.v, vssegNfXX.v, vs1r.v} to A, read back from scratch sigupd(value) +  record any traps.
 
       (SHADOW STACK : Zicfiss): Writes/AMOs: SSPUSH/C.SSPUSH at A, then SSPOPCHK/C.SSPOPCHK from scratch to verify. SSAMOSWAP.W/D at A, read back from scratch.
-    expectation: 'When PMM=10/11: all 8 A patterns whose upper bits fall within PMLEN resolve to scratch , reads return known value_old, write readbacks return known value_new. When PMM=00: masking disabled : only A=0x0000 resolves to scratch; all other patterns either access a different location (returning old/unrelated value) or cause a trap.'
-    bins: '3 PMM × 8 address variants × 1 mode (U) × satp supported modes (Bare, Sv39, Sv48, Sv57) × [Base: 4r×4w] + [RV64A if implemented: 9 AMO variants × 2 widths] + [Zacas if implemented: 3] + [Zabha if implemented: 9 AMO variants × 2 widths] + [FP if implemented: per F/D/Q] + [Zca if implemented: 4r×4w regular + 4r×4w SP-relative] + [Zcd if implemented: 1r×1w SP-relative] + [RVV if implemented: vector load/store variants] + [Zicfiss if implemented: SSPUSH, SSPOPCHK, SSAMOSWAP.W/D] + [Zicbom if implemented: CBO.CLEAN, CBO.FLUSH, CBO.INVAL] + [Zicboz if implemented: CBO.ZERO] + [Zicbop if implemented: PREFETCH.R, PREFETCH.W, PREFETCH.I]'
+    expectation: "When PMM=10/11: all 8 A patterns whose upper bits fall within PMLEN resolve to scratch , reads return known value_old, write readbacks return known value_new. When PMM=00: masking disabled : only A=0x0000 resolves to scratch; all other patterns either access a different location (returning old/unrelated value) or cause a trap."
+    bins: "3 PMM × 8 address variants × 1 mode (U) × satp supported modes (Bare, Sv39, Sv48, Sv57) × [Base: 4r×4w] + [RV64A if implemented: 9 AMO variants × 2 widths] + [Zacas if implemented: 3] + [Zabha if implemented: 9 AMO variants × 2 widths] + [FP if implemented: per F/D/Q] + [Zca if implemented: 4r×4w regular + 4r×4w SP-relative] + [Zcd if implemented: 1r×1w SP-relative] + [RVV if implemented: vector load/store variants] + [Zicfiss if implemented: SSPUSH, SSPOPCHK, SSAMOSWAP.W/D] + [Zicbom if implemented: CBO.CLEAN, CBO.FLUSH, CBO.INVAL] + [Zicboz if implemented: CBO.ZERO] + [Zicbop if implemented: PREFETCH.R, PREFETCH.W, PREFETCH.I]"
     rules:
       - pm_ignore_upper_bits
       - pm_deterministic_effect
@@ -56,7 +56,7 @@ coverpoints:
       - pm_apply_explicit
       - pm_cpu_only
       - pm_mode_only_dependency
-      - 'UPDATED WITH CTP :'
+      - "UPDATED WITH CTP :"
       - pm_rv64_only
       - pmlen_supported_values
       - pmlen_mode_depend
@@ -79,7 +79,7 @@ coverpoints:
       For each A_upper_bits in {0x0000, 0x0001, 0x0100, 0x0200, 0x8000, 0xFFFF, 0xFE00, 0xFF00}:
       Set A = A' with upper bits replaced by A_upper_bits
 
-      For MXR Scenerio : Perform sw to A and then read back using scratch (A') , signupd + record traps under satp.MODE ∈ {Bare, Sv39, Sv48, Sv57}.
+      For MXR Scenario : Perform sw to A and then read back using scratch (A') , signupd + record traps under satp.MODE ∈ {Bare, Sv39, Sv48, Sv57}.
 
       For JALR : Place valid executable instructions at A' , execute jalr to A, sigupd result, record any traps. Since pointer masking never applies to instruction fetch, A is always sent raw to PMP/MMU regardless of PMM or MXR.
     expectation: |-
@@ -132,7 +132,7 @@ coverpoints:
       When sstatus.UXL is set to 01 (indicating U-mode is RV32), the pointer masking configuration bits in senvcfg.PMM must be cleared automatically by hardware.
        Test Environment:
       In S-mode, write senvcfg.PMM={10(PMLEN=7), 11(PMLEN=16)} and confirm the written value is retained by reading back senvcfg.PMM. Then set sstatus.UXL=01 (RV32). Read back senvcfg.PMM and verify it has been cleared to 00 (if UXL is writable).
-    expectation: 'When sstatus.UXL is set to 01: senvcfg.PMM is cleared to 00 regardless of its previously written value.'
+    expectation: "When sstatus.UXL is set to 01: senvcfg.PMM is cleared to 00 regardless of its previously written value."
     bins: 2 PMM values (10, 11) × 1 UXL  × 1 mode (U)
     rules:
       - pm_uxl_clear

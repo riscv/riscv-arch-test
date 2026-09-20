@@ -200,8 +200,16 @@ def main() -> None:
         text, warnings = render(plan, rules.get(suite, {}), known, coverage_names(a.coverage, suite), f)
         (a.out / f"{suite}.adoc").write_text(text, encoding="utf-8")
         all_warnings += warnings
+    # one line per suite and kind, so the build log stays readable
+    grouped: dict[tuple[str, str], list[str]] = defaultdict(list)
     for w in all_warnings:
-        print(f"warning: {w}", file=sys.stderr)
+        suite, _, rest = w.partition(":")
+        kind = "coverpoints not in" if "is not a coverpoint" in rest else "normative rules not in"
+        item = rest.split(" ")[1] if kind.startswith("coverpoints") else rest.split("normative rule ")[1].split(" ")[0]
+        grouped[(suite.split("/")[0], kind)].append(item)
+    for (suite, kind), items in sorted(grouped.items()):
+        target = f"{suite}_coverage.svh" if kind.startswith("coverpoints") else "norm-rules.json"
+        print(f"warning: {suite}: {len(items)} {kind} {target}: {', '.join(sorted(set(items)))}", file=sys.stderr)
 
 
 if __name__ == "__main__":

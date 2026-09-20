@@ -27,7 +27,7 @@ coverpoints:
       PC[1] = 0 and imm[1]=1
       Instruction at multiple of 4.  Offset is an odd multiple of 2.
     expectation: Instruction Misaligned Exception if C is not supported
-    bins: '1'
+    bins: "1"
   - name: cp_instr_adr_misaligned_jalr
     goal: Instruction Address Misaligned
     description: |-
@@ -39,7 +39,7 @@ coverpoints:
     goal: Instruction Access Fault
     description: Fetch instruction from unimplemented memory
     expectation: Instruction Access Fault
-    bins: '1'
+    bins: "1"
   - name: cp_illegal_instruction
     goal: Illegal Instruction
     description: Executing instruction 0x00000000 and 0xFFFFFFFF throws an illegal instruction exception.
@@ -60,10 +60,10 @@ coverpoints:
       ebreak throws breakpoint exception
       also test when straddling 64B boundary
     expectation: Breakpoint Exception
-    bins: '1'
+    bins: "1"
   - name: cp_load_address_misaligned
     goal: Load Misaligned
-    description: 'Attempt lb, lbu, lh, lhu, lw, lwu, ld with every combination of three address lsbs: 000 - 111'
+    description: "Attempt lb, lbu, lh, lhu, lw, lwu, ld with every combination of three address lsbs: 000 - 111"
     expectation: Possible Load Misaligned Instruction
     bins: 7 ops * 8 lsbs
   - name: cp_load_access_fault
@@ -73,19 +73,19 @@ coverpoints:
     bins: 7 ops
   - name: cp_store_address_misaligned
     goal: Store Misaligned
-    description: 'Attempt sb, sh, sw, (sd) with every combination of three lsbs: 000-111'
+    description: "Attempt sb, sh, sw, (sd) with every combination of three lsbs: 000-111"
     expectation: Possible Store Misaligned Instruction
     bins: 4 ops * 8 lsbs
   - name: cp_store_access_fault
     goal: Store Access Fault
     description: Attempt sb, sh, sw, sd from an illegal address (parameterized). Also exercised in PMP, VM.
-    expectation: Store Acccess Fault
+    expectation: Store Access Fault
     bins: 4 ops
   - name: cp_ecall_m
     goal: ecall
     description: ecall from machine mode
     expectation: Ecall from M Exception
-    bins: '1'
+    bins: "1"
   - name: cp_misaligned_priority_load
     goal: Priority of exceptions
     description: Attempt lb, lbu, lh, lhu, lw, (lwu, ld) from memory location causing  access fault and misaligned. Also exercised in PMP, VM.
@@ -100,9 +100,9 @@ coverpoints:
     goal: Priority of exceptions
     description: Attempt fetch from memory location causing  access fault and misaligned}. Also exercised in PMP, VM.
     expectation: Highest priority exception should be taken.
-    bins: '***'
+    bins: "***"
     rules:
-      - '*** missing from ExceptionsM. Split other Exceptions* test plans by type of cp_misaligned_priority as well'
+      - "*** missing from ExceptionsM. Split other Exceptions* test plans by type of cp_misaligned_priority as well"
   - name: cp_mstatus_ie
     goal: Interrupt Enables
     description: ecall with mstatus.MIE = {0/1}
@@ -122,6 +122,6 @@ coverpoints:
       Attempt instruction/load/store access fault, instruction/load/store misaligned fault, illegal instruction, ebreak, ecall, crossed with privilege mode S/U/M crossed with medeleg = [ {1011_0001_1111_1111}, {0}, and 12 different walking 1s]
     expectation: Should delegate from user/supervisor but not machine when a 1 is in the appropriate column.   Note medeleg[11] is hardwired to 0 because ecall from M cannot be delegated, and medeleg[9] is 0 because delegating an ecall from supervisor mode makes it impossible to get back to machine mode.
     bins: 9 ops * 3 modes * 14 medeleg
-  - heading: 'Notes: xepc, xcause, xtval, xtvec, mstatus.xpp are inherently tested with exceptions taking place'
-  - heading: 'Note: load/store misaligned, access fault, page fault for Zaamo, Zalrsc, Zicbo* are exercised in PMA, PMP, VM'
+  - heading: "Notes: xepc, xcause, xtval, xtvec, mstatus.xpp are inherently tested with exceptions taking place"
+  - heading: "Note: load/store misaligned, access fault, page fault for Zaamo, Zalrsc, Zicbo* are exercised in PMA, PMP, VM"
   - heading: menvcfg.STCE = 0 causes access to stimecmp outside of M mode to illegal instruction

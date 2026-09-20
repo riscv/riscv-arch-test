@@ -7,7 +7,7 @@ coverpoints:
     goal: Verify PMP applies in HS-mode
     description: HS-mode executes {lw, sw, jalr} to PMP-protected region
     expectation: Access allowed iff PMP permits on final PA
-    bins: '{R,W,X} × {allow/deny}'
+    bins: "{R,W,X} × {allow/deny}"
     id: pmp_hs_access_v0
     rules:
       - norm:pmp_check_priv_modes
@@ -15,7 +15,7 @@ coverpoints:
   - name: cp_pmp_vs_mode_access
     goal: Verify PMP applies in VS-mode
     expectation: Access allowed iff PMP permits on final PA
-    bins: '{R,W,X} × {allow/deny}'
+    bins: "{R,W,X} × {allow/deny}"
     id: pmp_vs_access_v0
     rules:
       - norm:pmp_check_priv_modes, norm:pmp_with_paging
@@ -23,7 +23,7 @@ coverpoints:
     goal: Verify PMP applies in VU-mode
     description: VS-mode access via VS-stage or 2-stage translation
     expectation: Access allowed iff PMP permits on final PA
-    bins: '{R,W,X} × {allow/deny}'
+    bins: "{R,W,X} × {allow/deny}"
     id: pmp_vu_access_v0
     rules:
       - norm:pmp_check_priv_modes
@@ -32,7 +32,7 @@ coverpoints:
     goal: Verify HLV obeys PMP.R
     description: HS-mode executes HLV* into PMP.R=0 region
     expectation: Load access fault
-    bins: '{HLVB,HLVH,HLVW,HLVD}'
+    bins: "{HLVB,HLVH,HLVW,HLVD}"
     id: pmp_hlv_r_v0
     rules:
       - norm:pmp_load_fault, norm:pmp_rwx_check
@@ -40,7 +40,7 @@ coverpoints:
     goal: Verify HSV obeys PMP.W
     description: HS-mode executes HSV into PMP.W=0 region
     expectation: Store access fault
-    bins: '{HSV}'
+    bins: "{HSV}"
     id: pmp_hsv_w_v0
     rules:
       - norm:pmp_store_fault
@@ -48,7 +48,7 @@ coverpoints:
     goal: Ensure HLVX does not bypass X-only PMP
     description: PMP region X=1, R=W=0; HS executes HLVX
     expectation: Load access fault
-    bins: '{X-only}'
+    bins: "{X-only}"
     id: pmp_hlvx_xonly_v0
     rules:
       - norm:pmp_load_fault, norm:pmp_rwx_check
@@ -56,7 +56,7 @@ coverpoints:
     goal: Verify HLVX works when PMP.R=1
     description: PMP region R=1; HS executes HLVX
     expectation: Load succeeds
-    bins: '{R=1}'
+    bins: "{R=1}"
     id: pmp_hlvx_r_v0
     rules:
       - norm:pmp_rwx_check
@@ -64,7 +64,7 @@ coverpoints:
     goal: Verify PMP checked after G-stage
     description: G-stage translation succeeds, PMP denies
     expectation: Access fault (not page fault)
-    bins: '{allow/deny}'
+    bins: "{allow/deny}"
     id: pmp_gstage_order_v0
     rules:
       - norm:pmp_with_paging
@@ -72,7 +72,7 @@ coverpoints:
     goal: Verify PMP checked after VS-stage
     description: VS-stage translation succeeds, PMP denies
     expectation: Access fault
-    bins: '{deny}'
+    bins: "{deny}"
     id: pmp_vsstage_order_v0
     rules:
       - norm:pmp_with_paging
@@ -80,7 +80,7 @@ coverpoints:
     goal: Verify page fault precedes PMP
     description: VS or G-stage translation fault
     expectation: Page fault raised
-    bins: '{VS,G}'
+    bins: "{VS,G}"
     id: pmp_pf_prio_v0
     rules:
       - norm:pmp_with_paging
@@ -88,7 +88,7 @@ coverpoints:
     goal: PMP exec violation in virtualized mode
     description: VS/HS instruction fetch denied by PMP
     expectation: Instruction access fault
-    bins: '{HS,VS}'
+    bins: "{HS,VS}"
     id: pmp_exec_fault_h_v0
     rules:
       - norm:pmp_exec_fault
@@ -96,7 +96,7 @@ coverpoints:
     goal: PMP faults are precise
     description: Faulting instruction does not retire
     expectation: PC points to faulting insn
-    bins: '{all types}'
+    bins: "{all types}"
     id: pmp_precise_v0
     rules:
       - norm:pmp_violation_precise_trap
@@ -104,7 +104,7 @@ coverpoints:
     goal: HFENCE required only for G-stage
     description: Change hgatp/PT + PMP
     expectation: Translation changes visible only after HFENCE
-    bins: '{before/after}'
+    bins: "{before/after}"
     id: pmp_hfence_v0
     rules:
       - norm:pmp_with_paging
@@ -207,23 +207,23 @@ coverpoints:
   - heading: hypervisor loads and stores depend on PMP
   - heading: hlvx does not override PMP execute-only
   - heading: PMP intgeraction with fences G and VS-stage
-  - heading: 'General Setup for All Tests:'
+  - heading: "General Setup for All Tests:"
   - heading: Use PMP_writable_regs = 16 for test runtime optimization
-  - heading: 'Configure bottom region (region 15 or PMP_writable_regs-1) as background: pmpcfg_n.A=NAPOT, RWX permissions, pmpcfg_n.L=1, pmpaddr_n=All_ones'
+  - heading: "Configure bottom region (region 15 or PMP_writable_regs-1) as background: pmpcfg_n.A=NAPOT, RWX permissions, pmpcfg_n.L=1, pmpaddr_n=All_ones"
   - heading: Execute in M-mode unless specified otherwise
   - heading: Standard regions use NAPOT of max(g,8) bytes, placed beyond code without overlapping other standard regions
   - heading: Default TOR regions aligned to grain size g, starting beyond program end, size g
   - heading: After PMP CSR writes, issue sfence.vma or hfence.gvma for synchronization
   - heading: Handle sfence.vma illegal instruction traps on systems with satp.MODE read-only zero
-  - heading: 'Legal pmpcfg.XWR combinations: {000, 001, 011, 100, 101, 110} (W=1,R=0 is reserved)'
+  - heading: "Legal pmpcfg.XWR combinations: {000, 001, 011, 100, 101, 110} (W=1,R=0 is reserved)"
   - heading: Grain size g = 2^(G+2) where G is the PMP grain size parameter
   - heading: For RV32 systems, exclude lwu, ld, sd instructions from testing
-  - heading: 'Address Translation Setup:'
+  - heading: "Address Translation Setup:"
   - heading: Configure valid G-stage page tables for two-stage translation testing
   - heading: Use appropriate VMID and ASID values for TLB management tests
   - heading: Set up hgatp register for G-stage translation control
   - heading: Configure proper privilege mode transitions between HS, VS, and VU modes
-  - heading: 'Synchronization Requirements:'
+  - heading: "Synchronization Requirements:"
   - heading: Issue HFENCE.GVMA with rs1=x0, rs2=x0 after PMP changes affecting translation structures
   - heading: Use appropriate memory barriers for cache coherency testing
   - heading: Ensure proper ordering of configuration changes relative to memory operations

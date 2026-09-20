@@ -19,7 +19,7 @@ coverpoints:
     bins: menvcfg.SSE {0,1} x senvcfg.SSE {0,1} x csr_op {read, write} x result {ok, illegal_instruction}
     id: zicfiss_sse_access zicfiss_ssp_csr zicfiss_m_menvcfg_sse
     rules:
-      - '[norm:zicfiss_sse_access] [norm:zicfiss_ssp_csr] [norm:zicfiss_m_menvcfg_sse]'
+      - "[norm:zicfiss_sse_access] [norm:zicfiss_ssp_csr] [norm:zicfiss_m_menvcfg_sse]"
   - name: cp_ss_page_enc_zicfiss
     goal: Verify the pte.xwr=010 encoding is recognised as an SS page, and is reserved when SSE is off
     description: |-
@@ -31,7 +31,7 @@ coverpoints:
     bins: menvcfg.SSE {0,1} x mode {S, U} x access {ss_store, ordinary_load} x result {ok, page_fault}
     id: ss_page_enc ssmp_menvcfg_sse
     rules:
-      - '[norm:ss_page_enc] [norm:ssmp_menvcfg_sse]'
+      - "[norm:ss_page_enc] [norm:ssmp_menvcfg_sse]"
   - name: cp_ss_page_perm_priority_zicfiss
     goal: Verify U, SUM and MXR permission checks on a shadow stack page, and that they outrank the SS access-fault rule
     description: |-
@@ -50,7 +50,7 @@ coverpoints:
     bins: pte.U {0,1} x sstatus.SUM {0,1} x sstatus.MXR {0,1} x accessor {SS instr, ordinary load, ordinary store} x cause {none, page-fault from U/SUM, 7, 15} x priority {translation check wins}
     id: ssmp_ss_load ssmp_ss_page_access_fault ssmp_ss_page_illegeal_access ss_fault_exception_code
     rules:
-      - '[norm:ssmp_ss_load] [norm:ssmp_ss_page_access_fault] [norm:ssmp_ss_page_illegeal_access] [norm:ss_fault_exception_code]'
+      - "[norm:ssmp_ss_load] [norm:ssmp_ss_page_access_fault] [norm:ssmp_ss_page_illegeal_access] [norm:ss_fault_exception_code]"
   - name: cp_senvcfg_sse_rdonly0_s_zicfiss
     goal: Verify senvcfg.SSE reads back 0 from S-mode whenever menvcfg.SSE is 0
     description: |-
@@ -65,7 +65,7 @@ coverpoints:
     bins: menvcfg.SSE {0,1} x csr_op {csrw, csrs, csrrw} x written {0,1} x senvcfg.SSE readback {0 when menvcfg.SSE=0, written when menvcfg.SSE=1}
     id: menvcfg_sse_rdonly0
     rules:
-      - '[norm:menvcfg_sse_rdonly0]'
+      - "[norm:menvcfg_sse_rdonly0]"
   - name: (reused) ZicfissU instruction coverpoints, re-run from S-mode
     goal: Re-run the ZicfissU coverpoints with the hart booted in S-mode instead of U-mode
     description: |-
@@ -95,7 +95,7 @@ coverpoints:
     id: (inherits the ID list of each reused coverpoint)
     rules:
       - (inherits the normative rules of each reused coverpoint)
-  - goal: 'PROMOTED to its own coverpoint: cp_ss_page_perm_priority_zicfiss, including the explicit priority claim that the translation-level U/SUM/MXR check resolves before any Zicfiss-specific rule.'
+  - goal: "PROMOTED to its own coverpoint: cp_ss_page_perm_priority_zicfiss, including the explicit priority claim that the translation-level U/SUM/MXR check resolves before any Zicfiss-specific rule."
     description: Test U, SUM, MXR bits of shadow stack page, including that these have priority over the SS access fault rule.
-  - goal: 'PROMOTED to its own coverpoint: cp_senvcfg_sse_rdonly0_s_zicfiss -- writes senvcfg.SSE from S-mode and reads back 0 while menvcfg.SSE=0. The M-mode counterpart is cp_envcfg_sse_rdonly0_zicfiss on ZicfissSm.'
+  - goal: "PROMOTED to its own coverpoint: cp_senvcfg_sse_rdonly0_s_zicfiss -- writes senvcfg.SSE from S-mode and reads back 0 while menvcfg.SSE=0. The M-mode counterpart is cp_envcfg_sse_rdonly0_zicfiss on ZicfissSm."
     description: Write m0s1 to xenvcfg.SSE and read back and make sure s shows up 0.

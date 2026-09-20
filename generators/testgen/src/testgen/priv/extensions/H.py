@@ -32,6 +32,14 @@ _VS_PERMS = "(PTE_V | PTE_R | PTE_W | PTE_X | PTE_A | PTE_D)"
 # The same pages as VU-mode sees them.
 _VU_PERMS = "(PTE_V | PTE_R | PTE_W | PTE_X | PTE_U | PTE_A | PTE_D)"
 
+# Bits the hypervisor spec requires to read as zero. hedeleg: environment call
+# from HS/VS/M (9, 10, 11), double trap (16) and the guest-page faults and
+# virtual instruction exception (20-23), which are only ever taken in HS-mode.
+# hideleg: the S-level interrupts (1, 5, 9) and SGEI (12); only the VS-level
+# interrupts 2, 6 and 10 are writable.
+_HEDELEG_RO_ZERO = hex(sum(1 << b for b in (9, 10, 11, 16, 20, 21, 22, 23)))
+_HIDELEG_RO_ZERO = hex(sum(1 << b for b in (1, 5, 9, 12)))
+
 
 def _gen_ecall_test(test_data: TestData, check: int, temp: int, bin_name: str) -> list[str]:
     """RVTEST_TSBI_ECALL_TEST, checking it returns the ecall's own address."""
@@ -70,18 +78,25 @@ def _gen_hs_csr_tests(test_data: TestData, check: int, temp: int) -> list[str]:
         f"{INDENT}and x{check}, x{check}, x{temp}   # SPV must be 0: we have never left HS-mode",
         write_sigupd(check, test_data),
         "",
-        "# hedeleg and hideleg are WARL. Write all ones and record what sticks.",
+        "# hedeleg and hideleg are WARL, and which of the remaining bits an",
+        "# implementation makes writable is its own choice, so only the bits the",
+        "# spec requires to read as zero are checked. Writing all ones and masking",
+        "# to those bits must leave zero.",
         f"{INDENT}LI(x{temp}, -1)",
-        test_data.add_testcase("all_ones", "cp_hedeleg_warl", _CG),
+        test_data.add_testcase("ro_zero_bits", "cp_hedeleg_warl", _CG),
         f"{INDENT}csrw hedeleg, x{temp}",
         f"{INDENT}csrr x{check}, hedeleg",
+        f"{INDENT}LI(x{temp}, {_HEDELEG_RO_ZERO})",
+        f"{INDENT}and x{check}, x{check}, x{temp}",
         write_sigupd(check, test_data),
         f"{INDENT}csrw hedeleg, x0",
         "",
         f"{INDENT}LI(x{temp}, -1)",
-        test_data.add_testcase("all_ones", "cp_hideleg_warl", _CG),
+        test_data.add_testcase("ro_zero_bits", "cp_hideleg_warl", _CG),
         f"{INDENT}csrw hideleg, x{temp}",
         f"{INDENT}csrr x{check}, hideleg",
+        f"{INDENT}LI(x{temp}, {_HIDELEG_RO_ZERO})",
+        f"{INDENT}and x{check}, x{check}, x{temp}",
         write_sigupd(check, test_data),
         f"{INDENT}csrw hideleg, x0",
     ]

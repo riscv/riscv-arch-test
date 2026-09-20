@@ -2119,24 +2119,25 @@ tsbi_instr_table:
         li      T2, 3*REGWIDTH                    // cause < timer -> SW or timer int (3 words)
         j       \__MODE__\()trap_sig_sv            // go to pointer update
 
-\__MODE__\()xcpt_sig_sv:                          // exception: check for hypervisor (6-word entry)
-// An exception entry carries two extra words on a hypervisor build: the second
-// trap value (mtval2 / htval, the faulting guest physical address) and the
-// trap instruction (mtinst / htinst). M decides at run time from misa.H, which
-// a test can clear
+\__MODE__\()xcpt_sig_sv:                          // exception: check for hypervisor (5-word entry)
+// An exception entry carries one extra word on a hypervisor build: the second
+// trap value (mtval2 / htval, the faulting guest physical address). M decides at
+// run time from misa.H, which a test can clear. xtinst is deliberately not
+// recorded: its value is implementation-defined (UDB TINST_VALUE_ON_*), so a
+// legal DUT may disagree with the reference model.
 .ifc \__MODE__ , M
 #ifdef H_SUPPORTED
         csrr    T1, CSR_MISA
         slli    T1, T1, UDB_MXLEN-8             // shift H bit into msb
         bgez    T1, \__MODE__\()trap_sig_sv     // no hypervisor mode, keep std width
-        li      T2, 6*REGWIDTH                  // Hmode implemented &  Mmode trap, override preinc to be 6*regsz
+        li      T2, 5*REGWIDTH                  // Hmode implemented &  Mmode trap, override preinc to be 5*regsz
 #endif
 .else
   .ifc \__MODE__ , V
-        // VS-mode has no second trap value: htval and htinst belong to HS.
+        // VS-mode has no second trap value: htval belongs to HS.
   .else
 #ifdef H_SUPPORTED
-        li      T2, 6*REGWIDTH                    // S/HS on a hypervisor build: 6-word exception entries
+        li      T2, 5*REGWIDTH                    // S/HS on a hypervisor build: 5-word exception entries
 #endif
   .endif
 .endif
@@ -2207,6 +2208,8 @@ tsbi_instr_table:
 //   bit    11 = xIE[cause] (interrupt enable for this cause)
 //   bit    12 = xIP[cause] (interrupt pending for this cause)
 //   bits 30:13 = xstatus[17:0] (filtered: XS,FS,VS cleared)
+//   bits 16:14 = hstatus[8:6] (SPVP, SPV, GVA) in the S/HS handler on a
+//                hypervisor build; bits 15:14 = GVA and MPV in M-mode
 
 sv_\__MODE__\()vect:
         LREG    T3, xtvec_new_off(sp)              // T3 = actual trampoline table address
@@ -2247,6 +2250,9 @@ sv_\__MODE__\()vect:
 //if HSMode          move hstatus [ 8: 6] into bit 16:14
 .ifc \__MODE__ , M
   #if (UDB_MXLEN==64)
+    #ifdef H_SUPPORTED
+        csrr    T4, CSR_MSTATUS
+    #endif
         srli    T4, T4, UDB_MXLEN-32                 // align to mstatush
   #else
         #ifdef SM1P12P0_OR_LATER_SUPPORTED
@@ -2256,8 +2262,15 @@ sv_\__MODE__\()vect:
         #endif
   #endif
 .else
-  .ifc \__MODE__ , H
-        csrr    T4, CSR_HSTATUS                      // HS-mode: read hstatus for SPVP, MPV, GVA
+  .ifc \__MODE__ , V
+        li      T4, 0                                // VS-mode cannot read hstatus
+  .else
+  #ifdef H_SUPPORTED
+        // S and HS share one handler (the S prolog owns stvec), and a guest's
+        // trap lands in it, so both read hstatus: SPV and SPVP say whether the
+        // trap came from VS or VU, GVA whether xtval holds a guest address.
+        csrr    T4, CSR_HSTATUS
+  #endif
   .endif
 .endif
         andi    T4, T4, 0x1C0                        // extract bits 8:6 (SPVP?, MPV, GVA)
@@ -2511,12 +2524,12 @@ sv_\__MODE__\()tval:
 
 skp_\__MODE__\()tval:
 
-// --- Hypervisor-specific fields: second trap value and trap instruction (words 4-5) ---
-// These must match the entry width chosen in \__MODE__\()xcpt_sig_sv above:
-// reserving six words and writing four leaves two words of the trap signature
+// --- Hypervisor-specific field: second trap value (word 4) ---
+// This must match the entry width chosen in \__MODE__\()xcpt_sig_sv above:
+// reserving five words and writing four leaves one word of the trap signature
 // unwritten, which reads back as the fill pattern and mismatches.
   .ifc \__MODE__ , M
-        csrr    T3, CSR_MISA            // skip mtval2, mtinst save if hypervisor is enabled (misa[7] (H)-1)
+        csrr    T3, CSR_MISA            // skip mtval2 save if hypervisor is not enabled (misa[7] (H)-1)
         slli    T3, T3, UDB_MXLEN-7-1
         bgez    T3, 1f
 
@@ -2524,24 +2537,17 @@ skp_\__MODE__\()tval:
         sv_\__MODE__\()Mtval2:
         csrr    T3, CSR_MTVAL2
         TRAP_SIGUPD(T4, T3, 4, sv_\__MODE__\()Mtval2, sv_Mtval2_str) // write word 4: mtval2
-        sv_\__MODE__\()Mtinst:
-        csrr    T3, CSR_MTINST
-        TRAP_SIGUPD(T4, T3, 5, sv_\__MODE__\()Mtinst, sv_Mtinst_str) // write word 5: mtinst
       #endif
   .else
     .ifnc \__MODE__ , V
       #ifdef H_SUPPORTED
-        // HS-mode is where a guest's traps land, so htval (the faulting guest
-        // physical address, shifted right by 2) and htinst are the fields that
-        // say what the guest was doing. Both read as zero for a trap that did
-        // not come from a guest, which is what makes the fixed six-word entry
-        // safe for ordinary S-mode traps.
+        // HS-mode is where a guest's traps land, so htval holds the faulting
+        // guest physical address, shifted right by 2. It reads as zero for a
+        // trap that did not come from a guest, which is what makes the fixed
+        // five-word entry safe for ordinary S-mode traps.
         sv_\__MODE__\()Htval2:
         csrr    T3, CSR_HTVAL
         TRAP_SIGUPD(T4, T3, 4, sv_\__MODE__\()Htval2, sv_Htval2_str) // write word 4: htval
-        sv_\__MODE__\()Htinst:
-        csrr    T3, CSR_HTINST
-        TRAP_SIGUPD(T4, T3, 5, sv_\__MODE__\()Htinst, sv_Htinst_str) // write word 5: htinst
       #endif
     .endif
   .endif

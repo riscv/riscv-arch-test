@@ -1,7 +1,7 @@
 
 === Exceptions
 
-Exception tests are organized according to the privilege mode or extension supported.  For example, a configuration with Machine, Supervisor, User, and Floating-Point supported should run ExceptionsSm, ExceptionsS, ExceptionsU, and ExceptionsF.
+Exception tests are organized according to the privilege mode or extension supported.  For example, a configuration with Machine, Supervisor, User, and Floating-Point supported should run <<t-ExceptionsSm-coverpoints,ExceptionsSm>>, <<t-ExceptionsS-coverpoints,ExceptionsS>>, <<t-ExceptionsU-coverpoints,ExceptionsU>>, and <<t-ExceptionsF-coverpoints,ExceptionsF>>.
 Note that vector exceptions are in <<Vector Privileged Test Suites>>.
 
 ==== ExceptionsSm Machine-Mode Exceptions

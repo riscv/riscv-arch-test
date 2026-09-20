@@ -3,7 +3,7 @@
 
 The vector coverpoints are intended to be flexible to support the full V extension, the Zve* embedded vector extensions, and arbitrary mixes of supported vector length (VLEN), element lengths (SEW~MIN~, ELEN), and floating-point precisions.
 
-The vector extension is huge.  The testplan is partitioned into three unprivileged portions discussed here, and two privileged portions (ExceptionsV, SsstrictV) discussed in XREF.
+The vector extension is huge.  The testplan is partitioned into three unprivileged portions discussed here, and two privileged portions (ExceptionsV, <<t-SsstrictV-coverpoints,SsstrictV>>) discussed in <<Vector Privileged Test Suites>>.
 
 The full V extension supports all selected element widths SEW={8, 16, 32, 64}.  The vector coverage files and tests are organized by SEW.  Thus, a DUT could handle any contiguous subset of SEW from SEW~MIN~ to ELEN.  For example, a DUT with SEW~MIN~=16 and ELEN=32 would support SEW={16, 32}.
 

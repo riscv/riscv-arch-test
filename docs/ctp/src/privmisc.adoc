@@ -20,6 +20,9 @@ include::norm/Smstateen_norm_rules.adoc[]
 //,===
 //include::{testplansdir}/Smcsrind.adoc[]
 //,===
+No test plan yet.
+
+include::norm/Smcsrind_norm_rules.adoc[]
 
 ==== Sscsrind Supervisor-Mode Indirect CSR Access
 
@@ -44,6 +47,9 @@ include::norm/Smstateen_norm_rules.adoc[]
 //,===
 //include::{testplansdir}/Smrnmi.adoc[]
 //,===
+No test plan yet.
+
+include::norm/Smrnmi_norm_rules.adoc[]
 
 ==== Ssrnmi Supervisor-Mode Resumable Non-Maskable Interrupts
 
@@ -68,6 +74,9 @@ include::norm/Smstateen_norm_rules.adoc[]
 //,===
 //include::{testplansdir}/Smcdeleg.adoc[]
 //,===
+No test plan yet.
+
+include::norm/Smcdeleg_norm_rules.adoc[]
 
 ==== Ssccfg Counter Delegation
 
@@ -84,6 +93,9 @@ include::norm/Smstateen_norm_rules.adoc[]
 //,===
 //include::{testplansdir}/Smdbltrp.adoc[]
 //,===
+No test plan yet.
+
+include::norm/Smdbltrp_norm_rules.adoc[]
 
 ==== Ssdbltrp Supervisor Double Traps
 
@@ -92,6 +104,9 @@ include::norm/Smstateen_norm_rules.adoc[]
 //,===
 //include::{testplansdir}/Ssdbltrp.adoc[]
 //,===
+No test plan yet.
+
+include::norm/Ssdbltrp_norm_rules.adoc[]
 
 ==== Smctr Control Transfer Records
 
@@ -108,6 +123,9 @@ include::norm/Smstateen_norm_rules.adoc[]
 //,===
 //include::{testplansdir}/Ssqosid.adoc[]
 //,===
+No test plan yet.
+
+include::norm/Ssqosid_norm_rules.adoc[]
 
 TODO: This text is here to prevent Asciidoctor from rendering strangely after an empty table.
 Delete it when table is populated.

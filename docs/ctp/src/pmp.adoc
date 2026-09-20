@@ -12,6 +12,8 @@ include::norm/PMPSm_norm_rules.adoc[]
 
 include::{testplansdir}/priv/PMPS.adoc[]
 
+include::norm/PMPS_norm_rules.adoc[]
+
 
 ==== PMPU
 
@@ -23,10 +25,14 @@ include::norm/PMPU_norm_rules.adoc[]
 
 include::{testplansdir}/priv/PMPF.adoc[]
 
+include::norm/PMPF_norm_rules.adoc[]
+
 
 ==== PMPZca
 
 include::{testplansdir}/priv/PMPZca.adoc[]
+
+include::norm/PMPZca_norm_rules.adoc[]
 
 
 
@@ -40,7 +46,11 @@ include::norm/PMPZicbo_norm_rules.adoc[]
 
 include::{testplansdir}/priv/PMPZaamo.adoc[]
 
+include::norm/PMPZaamo_norm_rules.adoc[]
+
 
 ==== PMPZalrsc
 
 include::{testplansdir}/priv/PMPZalrsc.adoc[]
+
+include::norm/PMPZalrsc_norm_rules.adoc[]

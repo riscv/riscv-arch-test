@@ -56,6 +56,8 @@ include::norm/Ss1p13_norm_rules.adoc[]
 
 include::{testplansdir}/priv/Ssnpm.adoc[]
 
+include::norm/Ssnpm_norm_rules.adoc[]
+
 include::norm/Zpm_norm_rules.adoc[]
 
 ==== Smnpm Pointer Masking
@@ -63,13 +65,13 @@ include::norm/Zpm_norm_rules.adoc[]
 include::{testplansdir}/priv/SmnpmS.adoc[]
 include::{testplansdir}/priv/SmnpmU.adoc[]
 
-See Ssnpm for normative rules.
+See <<t-Ssnpm-normative-rules>> for normative rules.
 
 ==== Smmpm Pointer Masking
 
 include::{testplansdir}/priv/Smmpm.adoc[]
 
-See Ssnpm for normative rules.
+See <<t-Ssnpm-normative-rules>> for normative rules.
 
 ==== Zicfilp Landing Pads
 
@@ -89,6 +91,8 @@ include::{testplansdir}/priv/ZicfilpSm.adoc[]
 
 include::{testplansdir}/priv/ZicfilpS.adoc[]
 
+include::norm/Zicfilp_norm_rules.adoc[]
+
 ==== Zicfiss Shadow Stack
 
 In Privileged section because it has both unpriv and privileged behaviors.  ZicfissU holds the instruction-behavior coverpoints, which ZicfissS and ZicfissH re-run in their own modes; ZicfissS and ZicfissSm add the supervisor and machine gating coverpoints.  ZicfissH covers VS/VU-mode (see <<t-ZicfissH-coverpoints>>).
@@ -104,6 +108,8 @@ include::{testplansdir}/priv/ZicfissS.adoc[]
 ===== ZicfissSm Machine-Mode Shadow Stack
 
 include::{testplansdir}/priv/ZicfissSm.adoc[]
+
+include::norm/Zicfiss_norm_rules.adoc[]
 
 ==== Zawrs Wait on Reservation Set
 

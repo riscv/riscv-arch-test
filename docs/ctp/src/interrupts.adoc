@@ -1,7 +1,7 @@
 
 === Interrupts
 
-Interrupt tests are organized according to the privilege mode or extension supported.  InterruptsSm boots to M-mode and exercises interrupts in every supported privilege mode; InterruptsS boots to S-mode and exercises only the interrupts visible to supervisor software.  The Sstc tests check access to the `stimecmp` register; the timer interrupts that `stimecmp` generates are covered by the `cp_trigger_sti_sstc` and `cp_write_stip_sstc` coverpoints of the Interrupts tests.
+Interrupt tests are organized according to the privilege mode or extension supported.  <<t-InterruptsSm-coverpoints,InterruptsSm>> boots to M-mode and exercises interrupts in every supported privilege mode; <<t-InterruptsS-coverpoints,InterruptsS>> boots to S-mode and exercises only the interrupts visible to supervisor software.  The Sstc tests check access to the `stimecmp` register; the timer interrupts that `stimecmp` generates are covered by the `cp_trigger_sti_sstc` and `cp_write_stip_sstc` coverpoints of the Interrupts tests.
 
 ==== InterruptsSm Machine-Mode Interrupts
 

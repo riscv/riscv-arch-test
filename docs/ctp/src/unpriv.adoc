@@ -12,7 +12,7 @@ It is defined with spreadsheets in comma-separated value (CSV) format.
 
 === Unprivileged Tests
 
-Every bin in every coverpoint is associated with a specific test footnote:[cp_asm_count is an exception, just counting the number of times the instruction was executed]. Unprivileged tests sweep some feature under test (such as the destination register rd) while randomizing all applicable register IDs and source values (including values to be loaded from memory).  For example, the unprivileged test for the cp_rd coverpoint of the add instruction contains 32 add instructions, using the 32 different choices of rd.  The rs1 and rs2 register numbers and values are selected randomly. <<Appendix A: Examples>> gives examples of unprivileged coverpoints and tests meeting these requirements and the coverpoints of <<t-I-coverpoints>> for the `add` instruction.  Each test is self-checking, checking the destination register value against one provided by a reference model.  Certain tests also test other state such as stores or floating-point flags, as described in those sections.
+Every bin in every coverpoint is associated with a specific test footnote:[cp_asm_count is an exception, just counting the number of times the instruction was executed]. Unprivileged tests sweep some feature under test (such as the destination register rd) while randomizing all applicable register IDs and source values (including values to be loaded from memory).  For example, the unprivileged test for the cp_rd coverpoint of the add instruction contains 32 add instructions, using the 32 different choices of rd.  The rs1 and rs2 register numbers and values are selected randomly. <<Examples>> gives examples of unprivileged coverpoints and tests meeting these requirements and the coverpoints of <<t-I-coverpoints>> for the `add` instruction.  Each test is self-checking, checking the destination register value against one provided by a reference model.  Certain tests also test other state such as stores or floating-point flags, as described in those sections.
 
 [NOTE]
 ====
@@ -312,16 +312,27 @@ Hazard coverpoints are named cp_hazard_{hazard_type}_{IUT source/dest}_{to/from}
 The number of hazard bins for a typical R-type integer IUT is ((2 sources) * (2 hazard types) + (1 destination) * (4 hazard types)) * (8 categories) * (2 delays) = 128 bins.
 
 include::i.adoc[]
+
 include::m.adoc[]
+
 include::c.adoc[]
+
 include::a.adoc[]
+
 include::f.adoc[]
+
 include::b.adoc[]
+
 include::k.adoc[]
+
 include::zi.adoc[]
+
 include::v.adoc[]
+
 include::unprivmisc23.adoc[]
+
 include::unprivmisc.adoc[]
+
 include::e.adoc[]
 
 [page-layout=portrait]

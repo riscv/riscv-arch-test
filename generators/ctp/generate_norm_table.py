@@ -439,6 +439,15 @@ def expand_isa_manual_macros(text: str) -> str:
     return _ISA_MANUAL_MACRO_RE.sub(expand, text)
 
 
+# Cross-references inside rule text point at ISA-manual anchors that do not exist in the CTP, and
+# asciidoctor resolves even the entity-escaped form, so render them as their link text (or the anchor name).
+_XREF_RE = re.compile(r"(?:&lt;|<){2}([^,&<>]+?)(?:,([^&<>]+?))?(?:&gt;|>){2}")
+
+
+def plain_xrefs(text: str) -> str:
+    return _XREF_RE.sub(lambda m: (m.group(2) or m.group(1)).strip(), text)
+
+
 def truncate_rule_text(text: str) -> str:
     """Return rule text without truncation."""
     return text
@@ -655,6 +664,7 @@ def main() -> None:
             # that reference pre-rendered math from the ISA manual build.
             # These images don't exist in the CTP build context.
             disp = re.sub(r"image:[^\[]*\[[^\]]*\]", "[math expression]", disp)
+            disp = plain_xrefs(disp)
             # Replace any vertical bar '|' with the HTML entity '&#124;'
             # instead of truncating. This preserves more of the text while
             # preventing Asciidoc table column parsing from being broken by
@@ -727,6 +737,7 @@ def main() -> None:
             raw_text = extract_rule_text(tags) or ""
             text = " ".join(str(raw_text).split())
             text = expand_isa_manual_macros(text)
+            text = plain_xrefs(text)
             # Replace any literal '|' characters with the HTML entity
             # to avoid breaking Asciidoc table parsing.
             if "|" in text:

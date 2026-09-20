@@ -5,13 +5,19 @@
 
 include::{testplansdir}/priv/EndianSm.adoc[]
 
+include::norm/EndianSm_norm_rules.adoc[]
+
 ==== EndianS Supervisor-Mode Endianness
 
 include::{testplansdir}/priv/EndianS.adoc[]
 
+include::norm/EndianS_norm_rules.adoc[]
+
 ==== EndianU User-Mode Endianness
 
 include::{testplansdir}/priv/EndianU.adoc[]
+
+include::norm/EndianU_norm_rules.adoc[]
 
 ==== EndianZaamo Endianness for AMOs
 

@@ -51,6 +51,8 @@ The Svinval extension defines instructions to update memory management tables fo
 
 include::{testplansdir}/priv/Svinval.adoc[]
 
+include::norm/Svinval_norm_rules.adoc[]
+
 ==== Svade A/D Bit Page Fault Exception
 
 include::{testplansdir}/priv/Svade.adoc[]
@@ -58,6 +60,8 @@ include::{testplansdir}/priv/Svade.adoc[]
 ==== Svadu A/D Bit Hardware Update
 
 include::{testplansdir}/priv/Svadu.adoc[]
+
+include::norm/Svadu_norm_rules.adoc[]
 
 ==== Svadu A/D Bit Hardware Update + PMP
 
@@ -67,9 +71,13 @@ include::{testplansdir}/priv/SvaduPMP.adoc[]
 
 include::{testplansdir}/priv/Svpbmt.adoc[]
 
+include::norm/Svpbmt_norm_rules.adoc[]
+
 ==== Svnapot Naturally-Aligned Power-of-Two Page Sizes
 
 include::{testplansdir}/priv/Svnapot.adoc[]
+
+include::norm/Svnapot_norm_rules.adoc[]
 
 ==== Svukte User Kernel Translation Enable
 

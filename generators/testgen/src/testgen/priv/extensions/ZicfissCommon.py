@@ -60,33 +60,33 @@ VA_UNMAPPED_RV32 = 0xC0400000
 PTE_SS = "PTE_D | PTE_A | PTE_W | PTE_V"  # xwr = 010, the SS page encoding
 PTE_RW = "PTE_D | PTE_A | PTE_R | PTE_W | PTE_V"  # xwr = 011
 PTE_RO = "PTE_D | PTE_A | PTE_R | PTE_V"  # xwr = 001
+# Every pte.xwr encoding. 000 at the last level is a pointer where a leaf is required, and
+# 110 is reserved; both fail the walk.
+XWR_PERMS = {
+    "000": "PTE_V",
+    "001": PTE_RO,
+    "010": PTE_SS,
+    "011": PTE_RW,
+    "100": "PTE_D | PTE_A | PTE_X | PTE_V",
+    "101": "PTE_D | PTE_A | PTE_X | PTE_R | PTE_V",
+    "110": "PTE_D | PTE_A | PTE_X | PTE_W | PTE_V",
+    "111": "PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V",
+}
+
+# SSAMOSWAP follows the A-extension alignment rules, but the reference models differ on whether a
+# misaligned SSAMOSWAP that stays inside one misaligned atomicity granule executes, as an AMO, or
+# faults. The alignment sweep starts 8 bytes into a 16-byte granule so that every misaligned access
+# crosses it and must fault. SSAMOSWAP.W with addr[2:0] of 1-3 cannot cross, so it is left out.
+SSAMOSWAP_SWEEP_BASE = 0x408
+
+
+def ssamoswap_sweep_offsets(width: str) -> list[int]:
+    """addr[2:0] values swept for SSAMOSWAP.W (``w``) or SSAMOSWAP.D (``d``)."""
+    return [0, 4, 5, 6, 7] if width == "w" else list(range(8))
+
 
 # menvcfg/senvcfg/henvcfg SSE field is bit 3.
 SSE_BIT = 3
-
-# Guard for testcases that perform a translated access through a leaf PTE with the
-# shadow stack encoding (pte.xwr=010).
-#
-# sail-riscv 0.13.1 aborts with "Assertion failed: sys/vmem_pte.sail:148.24-148.25"
-# when its page-table walker resolves such a PTE, so those testcases cannot currently
-# have a reference signature generated. Everything else in the Zicfiss suites — the
-# ssp CSR, the enable-chain gating, the Zimop-revert behaviour, and SS instructions
-# aimed at non-SS pages — is unaffected and runs today.
-#
-# The guard is deliberately NOT defined anywhere in-tree. Define it (or delete the
-# guard entirely) once the reference model handles the SS page encoding. See
-# sail-zicfiss-bug/BUG_REPORT.md for a standalone reproducer.
-SS_PAGE_GUARD = "ZICFISS_SS_PAGE_REF_MODEL_OK"
-
-
-def guard_ss_page(lines: list[str], *, reason: str) -> list[str]:
-    """Wrap a block that performs a translated access through an SS page (pte.xwr=010)."""
-    return [
-        f"#ifdef {SS_PAGE_GUARD}  // blocked on sail-riscv vmem_pte.sail:148 — {reason}",
-        *lines,
-        f"#endif  // {SS_PAGE_GUARD}",
-    ]
-
 
 GOTO_UMODE = "RVTEST_TSBI_GOTO_UMODE  # enter U-mode"
 GOTO_SMODE = "RVTEST_TSBI_GOTO_SMODE  # enter S-mode"
@@ -130,11 +130,11 @@ def priv_csr(instr: str, mode: str) -> str:
 
 
 def ss_insn(mnemonic: str, *, compressed: bool = False) -> list[str]:
-    """Emit one SS instruction, pinning its encoding width.
+    """Emit one instruction, pinning its encoding width.
 
-    The assembler will happily compress ``sspush x1`` / ``sspopchk x5``, which would
-    leave the 32-bit covergroup bins unreachable. Wrap the uncompressed forms in
-    ``.option norvc`` and spell the compressed forms explicitly.
+    The assembler will happily compress ``sspush x1`` / ``sspopchk x5``, or an ordinary
+    ``lw``/``sd`` on x8-x15, which would leave the 32-bit covergroup bins unreachable. Wrap
+    the uncompressed forms in ``.option norvc`` and spell the compressed forms explicitly.
     """
     if compressed:
         return [f"{mnemonic}"]

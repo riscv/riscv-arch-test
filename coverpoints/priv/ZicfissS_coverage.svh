@@ -23,6 +23,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZICFISSS
+
+// ssp[2] is writable only when UXLEN or SXLEN can be 32
+`ifdef UDB_UXLEN_32
+    `define ZICFISS_SSP_BIT2_WRITABLE
+`elsif UDB_SXLEN_32
+    `define ZICFISS_SSP_BIT2_WRITABLE
+`endif
+
 covergroup ZicfissS_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -89,35 +97,38 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
         bins sse_off = {1'b0};
         bins sse_on  = {1'b1};
     }
-    // menvcfg.SSE=0 forces senvcfg.SSE read-only zero, so {menvcfg=0, senvcfg=1} is
-    // architecturally unreachable.
+    // menvcfg.SSE=0 forces senvcfg.SSE read-only zero, which the trace does not re-log, so
+    // senvcfg.SSE is sampled as its effective value.
     s_sse_state: coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1),
-                             (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1)} {
+                             ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1 &&
+                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))} {
         bins men0_sen0 = {2'b00};
         bins men1_sen0 = {2'b10};
         bins men1_sen1 = {2'b11};
-        illegal_bins men0_sen1 = {2'b01};
     }
 
     // ── Page / alignment building blocks ──────────────────────────────────
-    pte_xwr: coverpoint ins.current.pte_d[3:1] {
-        bins ss_page    = {3'b010};
-        bins read_only  = {3'b001};
-        bins read_write = {3'b011};
-        bins exec_read  = {3'b101};
-        bins exec_only  = {3'b100};
+    // pte.xwr of the PTE the walk ended on. 000 at the last level is a pointer where a
+    // leaf is required and 110 is reserved, so both fail the walk itself.
+    pte_xwr: coverpoint ins.current.pte_d[3:1] iff (ins.current.pte_d[0]) {
+        bins non_leaf        = {3'b000};
+        bins read_only       = {3'b001};
+        bins ss_page         = {3'b010};
+        bins read_write      = {3'b011};
+        bins exec_only       = {3'b100};
+        bins exec_read       = {3'b101};
+        bins rsvd_wx         = {3'b110};
+        bins read_write_exec = {3'b111};
     }
     pte_ss_page: coverpoint ins.current.pte_d[3:1] {
         bins ss_page = {3'b010};
     }
-    // pte_d is not carried by the Sail->RVVI converter; use the address instead.
-    ss_target_page: coverpoint ins.prev.csr[CSR_SSP][13:12] {
-        bins ss_page = {2'd0};
-        bins rw_page = {2'd1};
-        bins ro_page = {2'd2};
-    }
+    // ssp[1:0] are read-only zero, and so is ssp[2] unless UXLEN or SXLEN can be 32.
     ssp_LSBs: coverpoint ins.prev.csr[CSR_SSP][2:0] {
-        // auto fills 000 through 111
+        bins aligned_8 = {3'b000};
+        `ifdef ZICFISS_SSP_BIT2_WRITABLE
+            bins aligned_4 = {3'b100};
+        `endif
     }
     ssamoswap_adr_LSBs: coverpoint ins.current.rs1_val[2:0] {
         // auto fills 000 through 111
@@ -189,8 +200,11 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
     // S-specific gating: menvcfg.SSE gates, senvcfg.SSE must not.
     cp_ssp_csr_gating_s:           cross priv_mode_s, csrops, ssp_csr, s_sse_state;
 
-    // SS page encoding is recognised only when menvcfg.SSE=1.
-    cp_ss_page_enc:                cross priv_mode_s, ss_mem_instr, pte_ss_page, menvcfg_sse;
+    // SS page encoding is recognised only when menvcfg.SSE=1. With menvcfg.SSE=0 the SS
+    // instructions are inert MOPs and never reach the page.
+    cp_ss_page_enc:                cross priv_mode_s, ss_mem_instr, pte_ss_page, menvcfg_sse {
+        ignore_bins inert_when_sse_off = binsof(menvcfg_sse.sse_off);
+    }
     cp_ss_page_enc_load:           cross priv_mode_s, ordinary_loadops, pte_ss_page, menvcfg_sse;
     cp_ss_page_enc_store:          cross priv_mode_s, ordinary_storeops, pte_ss_page, menvcfg_sse;
 
@@ -207,13 +221,19 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
     cp_ssamoswap_s:                cross priv_mode_s, ssamoswap_instr, pte_ss_page;
     cp_ss_address_alignment_ssp_s: cross priv_mode_s, ss_push_instr, ssp_LSBs;
     cp_ss_address_alignment_pop_s: cross priv_mode_s, ss_pop_instr, ssp_LSBs;
-    cp_ss_address_alignment_swap_s: cross priv_mode_s, ssamoswap_instr, ssamoswap_adr_LSBs;
-    cp_ss_instr_target_page_s:     cross priv_mode_s, ss_mem_instr, ss_target_page;
+    cp_ss_address_alignment_swap_s: cross priv_mode_s, ssamoswap_instr, ssamoswap_adr_LSBs {
+        // A misaligned SSAMOSWAP.W at addr[2:0] of 1-3 stays inside one misaligned atomicity
+        // granule, where the reference models differ on whether it executes or faults. Untested.
+        ignore_bins w_within_granule =
+            binsof(ssamoswap_instr.ssamoswap_w) && binsof(ssamoswap_adr_LSBs) intersect {[3'd1:3'd3]};
+    }
+    cp_ss_instr_target_page_s:     cross priv_mode_s, ss_mem_instr, pte_xwr;
 
     // The U/SUM/MXR permission check resolves before any shadow stack rule, so where
     // the two disagree the translation fault is what gets reported.
     cp_ss_page_perm_priority:      cross priv_mode_s, ss_mem_instr, pte_u, sstatus_sum, sstatus_mxr;
     cp_ss_page_perm_priority_load: cross priv_mode_s, ordinary_loadops, pte_u, sstatus_sum, sstatus_mxr;
+    cp_ss_page_perm_priority_store: cross priv_mode_s, ordinary_storeops, pte_u, sstatus_sum, sstatus_mxr;
 
     // senvcfg.SSE reads back 0 from S-mode whenever menvcfg.SSE is 0.
     cp_senvcfg_sse_rdonly0_s:      cross priv_mode_s, csr_write_ops, senvcfg_csr, menvcfg_sse,
@@ -222,6 +242,15 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
         // architecturally impossible in that half of the cross.
         ignore_bins rdonly0_cannot_read_one =
             binsof(menvcfg_sse.sse_off) && binsof(senvcfg_sse_readback.reads_one);
+        // With menvcfg.SSE=1 the field is writable: csrrw reads back what it wrote, and
+        // csrrs of a 1 reads back 1.
+        ignore_bins csrrw_reads_back_written =
+            binsof(csr_write_ops.csrrw) && binsof(menvcfg_sse.sse_on) &&
+            ((binsof(sse_bit_written.wrote_zero) && binsof(senvcfg_sse_readback.reads_one)) ||
+             (binsof(sse_bit_written.wrote_one) && binsof(senvcfg_sse_readback.reads_zero)));
+        ignore_bins csrrs_set_reads_one =
+            binsof(csr_write_ops.csrrs) && binsof(menvcfg_sse.sse_on) &&
+            binsof(sse_bit_written.wrote_one) && binsof(senvcfg_sse_readback.reads_zero);
     }
 
 endgroup

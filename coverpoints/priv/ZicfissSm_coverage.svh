@@ -66,24 +66,30 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
             wildcard bins c_sspopchk_x5 = {C_SSPOPCHK_X5};
         `endif
     }
-    // ssp alignment, used to prove an inactive instruction stays inert even when ssp
-    // would otherwise fault.
-    ssp_LSBs: coverpoint ins.prev.csr[CSR_SSP][2:0] {
+    // ssp on the shadow stack page, or on the unmapped page an active access would fault on.
+    ssp_state: coverpoint ins.prev.csr[CSR_SSP] {
+        `ifdef UDB_MXLEN_64
+            bins ss_page  = {[64'h140300000:64'h140300FFF]};
+            bins unmapped = {64'h140400000};
+        `else
+            bins ss_page  = {[32'hC0300000:32'hC0300FFF]};
+            bins unmapped = {32'hC0400000};
+        `endif
     }
-    // menvcfg.SSE x senvcfg.SSE. {0,1} is unreachable: menvcfg.SSE=0 forces
-    // senvcfg.SSE read-only zero.
+    // menvcfg.SSE x senvcfg.SSE. menvcfg.SSE=0 forces senvcfg.SSE read-only zero, which the
+    // trace does not re-log, so senvcfg.SSE is sampled as its effective value.
     sse_state: coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1),
-                           (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1)} {
+                           ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1 &&
+                            get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))} {
         bins men0_sen0 = {2'b00};
         bins men1_sen0 = {2'b10};
         bins men1_sen1 = {2'b11};
-        illegal_bins men0_sen1 = {2'b01};
     }
     // pmp0cfg R is bit 0, W is bit 1. Shadow stack instructions require read-write.
+    // R=0 with W=1 is a reserved combination, so it cannot be configured.
     pmp0_rw: coverpoint ins.current.csr[CSR_PMPCFG0][1:0] {
         bins no_perm    = {2'b00};
         bins read_only  = {2'b01};
-        bins write_only = {2'b10};
         bins read_write = {2'b11};
     }
     csrops: coverpoint ins.current.insn {
@@ -115,6 +121,10 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
     menvcfg_sse: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") {
         bins sse_off = {1'b0};
         bins sse_on  = {1'b1};
+    }
+    // Zicfiss is inactive in S-mode only while menvcfg.SSE=0.
+    s_sse_inactive: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") {
+        bins sse_off = {1'b0};
     }
     // What the test attempted to write into bit 3 (the SSE position).
     sse_bit_written: coverpoint ins.current.rs1_val[3] {
@@ -161,10 +171,11 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
     // software-check exception a value mismatch would raise.
     cp_ss_pmp_permissions:         cross priv_mode_s, ss_mem_instr, pmp0_rw;
 
-    // Zicfiss inactive: MOP-encoded instructions stay inert. At M-mode this is
-    // unconditional; the lower-mode legs are gated by the SSE chain. ssp_LSBs proves
-    // inertness holds even when ssp is misaligned.
-    cp_ss_instr_inactive:          cross priv_mode_m_s, ss_mop_instr, sse_state, ssp_LSBs;
+    // Zicfiss inactive: MOP-encoded instructions stay inert, even with an ssp that an
+    // active instruction would fault on. At M-mode this holds for every SSE state; S-mode
+    // is gated by menvcfg.SSE alone. The U-mode leg is cp_ss_instr_inactive_u in ZicfissU.
+    cp_ss_instr_inactive_m:        cross priv_mode_m, ss_mop_instr, sse_state, ssp_state;
+    cp_ss_instr_inactive_s:        cross priv_mode_s, ss_mop_instr, s_sse_inactive, ssp_state;
 
     // menvcfg.SSE=0 forces senvcfg.SSE (and henvcfg.SSE) read-only zero.
     cp_envcfg_sse_rdonly0_senvcfg: cross priv_mode_m, csr_write_ops, senvcfg_csr, menvcfg_sse,
@@ -173,6 +184,15 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
         // architecturally impossible in that half of the cross.
         ignore_bins rdonly0_cannot_read_one =
             binsof(menvcfg_sse.sse_off) && binsof(senvcfg_sse_readback.reads_one);
+        // With menvcfg.SSE=1 the field is writable: csrrw reads back what it wrote, and
+        // csrrs of a 1 reads back 1.
+        ignore_bins csrrw_reads_back_written =
+            binsof(csr_write_ops.csrrw) && binsof(menvcfg_sse.sse_on) &&
+            ((binsof(sse_bit_written.wrote_zero) && binsof(senvcfg_sse_readback.reads_one)) ||
+             (binsof(sse_bit_written.wrote_one) && binsof(senvcfg_sse_readback.reads_zero)));
+        ignore_bins csrrs_set_reads_one =
+            binsof(csr_write_ops.csrrs) && binsof(menvcfg_sse.sse_on) &&
+            binsof(sse_bit_written.wrote_one) && binsof(senvcfg_sse_readback.reads_zero);
     }
     `ifdef H_SUPPORTED
         cp_envcfg_sse_rdonly0_henvcfg: cross priv_mode_m, csr_write_ops, henvcfg_csr, menvcfg_sse,

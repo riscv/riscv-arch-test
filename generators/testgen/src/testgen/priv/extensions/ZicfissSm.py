@@ -13,8 +13,6 @@ testable here is the gating (menvcfg.SSE at the top of the enable chain, and the
 read-only-zero propagation into senvcfg/henvcfg) plus the one M-mode instruction
 behaviour the spec does define — SSAMOSWAP always faults at M.
 
-None of these testcases place a shadow stack on an SS page, so this suite is
-independent of the sail-riscv SS-page limitation that blocks ZicfissU/ZicfissS.
 """
 
 from __future__ import annotations
@@ -27,7 +25,6 @@ from testgen.priv.extensions.ZicfissCommon import (
     GOTO_SMODE,
     SSE_BIT,
     both_xlens,
-    guard_ss_page,
     identity_map_only,
     map_zicfiss_pages,
     page_table_data_section,
@@ -212,7 +209,8 @@ def _generate_pmp_permissions(test_data: TestData) -> list[str]:
     lines: list[str] = [comment_banner(coverpoint, "PMP read-write requirement and fault priority")]
 
     # pmp0cfg: A=NAPOT (0x18) plus the R/W bits under test. pmp1cfg = 0x1F allows the rest.
-    for tag, rw in (("none", 0x0), ("r", 0x1), ("w", 0x2), ("rw", 0x3)):
+    # R=0 with W=1 is reserved, so it is not a configuration that can be tested.
+    for tag, rw in (("none", 0x0), ("r", 0x1), ("rw", 0x3)):
 
         def build(xlen: int, rw: int = rw, tag: str = tag) -> list[str]:
             ss_va, _, _ = va_for(xlen)
@@ -248,14 +246,15 @@ def _generate_pmp_permissions(test_data: TestData) -> list[str]:
                         *ss_insn(mnemonic, compressed=compressed),
                     ]
                 )
-            block.extend(
-                [
-                    f"LI(x{addr_reg}, {hex(ss_va)})",
-                    f"LI(x{cfg_reg}, 0x11223344)",
-                    test_data.add_testcase(f"ssamoswap_w_pmp_{tag}_rv{xlen}", coverpoint, _CG),
-                    *ss_insn(f"ssamoswap.w x{cfg_reg}, x{cfg_reg}, (x{addr_reg})"),
-                ]
-            )
+            for width in ["w"] + (["d"] if xlen == 64 else []):
+                block.extend(
+                    [
+                        f"LI(x{addr_reg}, {hex(ss_va)})",
+                        f"LI(x{cfg_reg}, 0x11223344)",
+                        test_data.add_testcase(f"ssamoswap_{width}_pmp_{tag}_rv{xlen}", coverpoint, _CG),
+                        *ss_insn(f"ssamoswap.{width} x{cfg_reg}, x{cfg_reg}, (x{addr_reg})"),
+                    ]
+                )
             block.extend(restore_link_regs(save_x1, save_x5))
             block.extend(teardown_vm("M"))
             block.extend(
@@ -276,69 +275,72 @@ def _generate_pmp_permissions(test_data: TestData) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# cp_ss_instr_inactive
+# cp_ss_instr_inactive_m / cp_ss_instr_inactive_s
 # ---------------------------------------------------------------------------
 
 
 def _generate_instr_inactive(test_data: TestData) -> list[str]:
     """MOP-encoded SS instructions stay inert whenever Zicfiss is inactive.
 
-    Leg A is M-mode, where Zicfiss is never supported and the behaviour is
-    unconditional. Leg B drives the gated states and executes in S-mode. Both legs
-    repeat every instruction with a hostile ssp.
+    Leg A is M-mode, where Zicfiss is never supported, across every SSE state. Leg B
+    executes in S-mode with menvcfg.SSE=0; ssp is set from M-mode because it is not
+    accessible to S-mode then. Both legs repeat every instruction with a hostile ssp.
     """
-    coverpoint = "cp_ss_instr_inactive"
-    lines: list[str] = [comment_banner(coverpoint, "SS instructions inert while Zicfiss is inactive")]
+    lines: list[str] = [comment_banner("cp_ss_instr_inactive_m/s", "SS instructions inert while Zicfiss is inactive")]
 
-    for leg, menvcfg, senvcfg in (("m_uncond_sse0", 0, 0), ("m_uncond_sse1", 1, 1), ("s_gated", 1, 0)):
+    for mode, menvcfg, senvcfg in (("m", 0, 0), ("m", 1, 0), ("m", 1, 1), ("s", 0, 0)):
+        leg = f"{mode}_men{menvcfg}_sen{senvcfg}"
 
-        def build(xlen: int, leg: str = leg, menvcfg: int = menvcfg, senvcfg: int = senvcfg) -> list[str]:
+        def build(
+            xlen: int, mode: str = mode, leg: str = leg, menvcfg: int = menvcfg, senvcfg: int = senvcfg
+        ) -> list[str]:
             ss_va, _, _ = va_for(xlen)
-            unmapped = va_unmapped(xlen)
             addr_reg, rd_reg = test_data.int_regs.get_registers(2)
-            block = [
-                *satp_setup(xlen),
-                *map_zicfiss_pages(xlen, user=False),
-                *set_envcfg_sse("menvcfg", menvcfg, test_data, mode="M"),
-                *set_envcfg_sse("senvcfg", senvcfg, test_data, mode="M"),
-            ]
-            if leg == "s_gated":
-                block.append(GOTO_SMODE)
+            # Clear senvcfg.SSE before menvcfg.SSE, and set it after, so the pair never
+            # passes through the unreachable menvcfg.SSE=0, senvcfg.SSE=1 state.
+            envcfg = [("menvcfg", menvcfg), ("senvcfg", senvcfg)]
+            if not senvcfg:
+                envcfg.reverse()
+            block = [*satp_setup(xlen), *map_zicfiss_pages(xlen, user=False)]
+            for csr, value in envcfg:
+                block.extend(set_envcfg_sse(csr, value, test_data, mode="M"))
             save_x1, save_x5, save_lines = save_link_regs(test_data)
             block.extend(save_lines)
 
-            # valid, misaligned, unmapped, and a value that would mismatch
             for state, addr in (
                 ("valid", ss_va + 0x800),
-                ("misaligned", ss_va + 0x801),
-                ("unmapped", unmapped),
+                ("unaligned", ss_va + 0x804),
+                ("unmapped", va_unmapped(xlen)),
                 ("mismatch", ss_va + 0x800),
             ):
+                block.extend([f"LI(x{addr_reg}, {hex(addr)})", f"csrw ssp, x{addr_reg}"])
+                if mode == "s":
+                    block.append(GOTO_SMODE)
                 for mnemonic, compressed, name in _MOP_FORMS:
                     reg = "x1" if "x1" in mnemonic else ("x5" if "x5" in mnemonic else None)
-                    setup = [f"LI(x{addr_reg}, {hex(addr)})", f"csrw ssp, x{addr_reg}"]
                     if reg:
-                        setup.append(f"LI({reg}, {'0xDEADBEEF' if state == 'mismatch' else '0x11111111'})")
+                        block.append(f"LI({reg}, {'0xDEADBEEF' if state == 'mismatch' else '0'})")
                     form = f"ssrdp x{rd_reg}" if mnemonic == "ssrdp" else mnemonic
                     block.extend(
                         [
-                            *setup,
-                            test_data.add_testcase(f"{name}_{leg}_{state}_rv{xlen}", coverpoint, _CG),
+                            test_data.add_testcase(
+                                f"{name}_{leg}_{state}_rv{xlen}", f"cp_ss_instr_inactive_{mode}", _CG
+                            ),
                             *ss_insn(form, compressed=compressed),
                         ]
                     )
                     if mnemonic == "ssrdp":
                         block.append(write_sigupd(rd_reg, test_data))
+                if mode == "s":
+                    block.append(GOTO_MMODE)
+                block.extend([f"csrr x{rd_reg}, ssp   # unchanged", write_sigupd(rd_reg, test_data)])
 
             block.extend(restore_link_regs(save_x1, save_x5))
-            if leg == "s_gated":
-                block.extend(teardown_vm("M"))
-            else:
-                block.extend(["csrwi satp, 0", "sfence.vma"])
+            block.extend(["csrwi satp, 0", "sfence.vma"])
             test_data.int_regs.return_registers([addr_reg, rd_reg, save_x1, save_x5])
             return block
 
-        lines.append(f"# --- {leg} (menvcfg.SSE={menvcfg}, senvcfg.SSE={senvcfg}) ---")
+        lines.append(f"# --- {mode.upper()}-mode, menvcfg.SSE={menvcfg}, senvcfg.SSE={senvcfg} ---")
         lines.extend(both_xlens(build))
     return lines
 
@@ -350,7 +352,7 @@ def _generate_instr_inactive(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "ZicfissSm",
-    required_extensions=["S", "U", "Zicfiss", "Zimop", "Zaamo", "Zicsr"],
+    required_extensions=["S", "U", "Zicfiss", "Zimop", "Zaamo", "Zcmop", "Zca", "Zicsr"],
     # M-mode control-plane suite: it boots to M-mode and drops to S-mode through T-SBI
     # for the legs that need a lower privilege level.
     extra_defines=["#define BOOT_TO_MMODE"],
@@ -358,30 +360,16 @@ def _generate_instr_inactive(test_data: TestData) -> list[str]:
 def make_zicfisssm(test_data: TestData) -> list[TestChunk]:
     """Generate the ZicfissSm test suite."""
     test_chunks: list[TestChunk] = []
-    for section in (_generate_ssamoswap_mmode_fault, _generate_menvcfg_gating, _generate_envcfg_rdonly0):
+    for section in (
+        _generate_ssamoswap_mmode_fault,
+        _generate_menvcfg_gating,
+        _generate_envcfg_rdonly0,
+        _generate_pmp_permissions,
+        _generate_instr_inactive,
+    ):
         tc = test_data.begin_test_chunk()
         tc.code.extend(page_table_data_section())
         tc.code.extend(section(test_data))
         test_chunks.append(test_data.end_test_chunk())
-
-    tc = test_data.begin_test_chunk()
-    tc.code.extend(page_table_data_section())
-    tc.code.extend(
-        guard_ss_page(
-            _generate_pmp_permissions(test_data),
-            reason="the SS instructions target the shadow stack page",
-        )
-    )
-    test_chunks.append(test_data.end_test_chunk())
-
-    tc = test_data.begin_test_chunk()
-    tc.code.extend(page_table_data_section())
-    tc.code.extend(
-        guard_ss_page(
-            _generate_instr_inactive(test_data),
-            reason="the inert instructions still name the shadow stack page",
-        )
-    )
-    test_chunks.append(test_data.end_test_chunk())
 
     return test_chunks

@@ -3,12 +3,45 @@ normative_rule_definitions:
   # to 1, the Zicfiss extension is activated in VU/U-mode. When the SSE field is 0,
   # the Zicfiss extension remains inactive in VU/U-mode, and the following rules
   # apply:
-  - names: [senvcfg-sse_Zicfiss]
+  - names: [senvcfg_sse_Zicfiss_op, senvcfg_sse_Zicfiss_sz]
     coverpoint:
       [
-        "{ZicfissU_cg}/{cp_ssp_csr_gating_u,cp_ssamoswap_sse_gating}",
+        "{ZicfissU_cg}/{cp_ssp_csr_gating_u,cp_ssamoswap_sse_gating,cp_ss_instr_inactive_u}",
         "{ZicfissS_cg}/{cp_senvcfg_sse_rdonly0_s}",
         "{ZicfissSm_cg}/{cp_envcfg_sse_rdonly0_senvcfg}",
+      ]
+
+  # The Zicfiss extension adds the SSE field to menvcfg. When the SSE field is set to
+  # 1 the Zicfiss extension is activated in S-mode. When SSE field is 0, the
+  # following rules apply to privilege modes that are less than M: 32-bit Zicfiss
+  # instructions will revert to their behavior as defined by Zimop. 16-bit Zicfiss
+  # instructions will revert to their behavior as defined by Zcmop. The
+  # pte.xwr=0b010 encoding in VS/S-stage page tables becomes reserved.
+  # SSAMOSWAP.W/D raises an illegal-instruction exception.
+  - name: menvcfg_sse_op
+    coverpoint:
+      [
+        "{ZicfissSm_cg}/{cp_menvcfg_sse_gating,cp_ss_instr_inactive_m,cp_ss_instr_inactive_s}",
+        "{ZicfissS_cg}/{cp_ssp_csr_gating_s,cp_ss_page_enc_load,cp_ss_page_enc_store}",
+        "{ZicfissU_cg}/{cp_ss_instr_inactive_u,cp_ssamoswap_sse_gating}",
+      ]
+
+  # When menvcfg.SSE is 0, the henvcfg.SSE and senvcfg.SSE fields are read-only zero.
+  - name: menvcfg_sse_rdonly0
+    coverpoint:
+      [
+        "{ZicfissSm_cg}/{cp_envcfg_sse_rdonly0_senvcfg,cp_envcfg_sse_rdonly0_henvcfg}",
+        "{ZicfissS_cg}/{cp_senvcfg_sse_rdonly0_s}",
+      ]
+
+  # The Zicfiss extension adds the SSE field in henvcfg. If the SSE field is set to
+  # 1, the Zicfiss extension is activated in VS-mode. When the SSE field is 0, the
+  # Zicfiss extension remains inactive in VS-mode, and the following rules apply
+  # when V=1:
+  - name: henvcfg_sse_op
+    coverpoint:
+      [
+        "{ZicfissH_cg}/{cp_ssp_csr_gating_vs,cp_ssamoswap_sse_gating_vs,cp_ss_instr_inactive_virt,cp_envcfg_sse_rdonly0_virt}",
       ]
 
   # If the privilege mode is less than M and menvcfg.SSE is 0, an
@@ -16,7 +49,7 @@ normative_rule_definitions:
   # result in either an illegal-instruction exception or a virtual-instruction
   # exception, contingent upon the state of the x`envcfg.SSE` fields. The conditions
   # are specified as follows:
-  - name: Zicfiss_ssp_below_m_mode
+  - name: Zicfilp_ssp_below_m_mode
     coverpoint:
       [
         "{ZicfissSm_cg}/{cp_menvcfg_sse_gating}",
@@ -138,3 +171,84 @@ normative_rule_definitions:
   # accessed memory; else a store/AMO guest-page-fault exception is raised.
   - name: active_g_stage_pte
     coverpoint: ["{ZicfissH_cg}/{cp_ss_g_stage}"]
+
+  # The Zicfiss instructions, except SSAMOSWAP.W and SSAMOSWAP.D, are encoded using a
+  # subset of May-Be-Operation instructions defined by the Zimop and Zcmop
+  # extensions.
+  - name: Zicfiss_enc
+    coverpoint:
+      [
+        "{ZicfissU_cg}/{cp_sspush,cp_sspopchk_match,cp_ssrdp,cp_ss_instr_inactive_u}",
+        "{ZicfissSm_cg}/{cp_ss_instr_inactive_m,cp_ss_instr_inactive_s}",
+      ]
+
+  # SSPUSH x1 and SSPUSH x5 - encoded using MOP.RR.7. C.SSPUSH x1 - encoded using
+  # C.MOP.1.
+  - name: Zicfiss_sspush_enc
+    coverpoint: ["{ZicfissU_cg}/{cp_sspush}", "{ZicfissS_cg}/{cp_sspush_s}"]
+
+  # SSPOPCHK x1 and SSPOPCHK x5 - encoded using MOP.R.28. C.SSPOPCHK x5 - encoded
+  # using C.MOP.5.
+  - name: Zicfiss_sspopchk_enc
+    coverpoint:
+      [
+        "{ZicfissU_cg}/{cp_sspopchk_match,cp_sspopchk_mismatch}",
+        "{ZicfissS_cg}/{cp_sspopchk_match_s,cp_sspopchk_mismatch_s}",
+      ]
+
+  # SSRDP - encoded using MOP.R.28.
+  - name: Zicfiss_ssrdp_enc
+    coverpoint: ["{ZicfissU_cg}/{cp_ssrdp}", "{ZicfissS_cg}/{cp_ssrdp_s}"]
+
+  # A function that spills the link register stores a shadow copy on the shadow stack
+  # in its prologue, and compares it with the link register from the regular stack in
+  # its epilogue. A mismatch causes a software-check exception.
+  - name: Zicfiss_link_reg_func
+    coverpoint: ["{ZicfissU_cg}/{cp_ss_call_return}"]
+
+  # Perform an atomic swap from a shadow stack location.
+  - name: Zicfiss_atomic_swap
+    coverpoint:
+      ["{ZicfissU_cg}/{cp_ssamoswap}", "{ZicfissS_cg}/{cp_ssamoswap_s}"]
+
+  # The ssp CSR is an unprivileged read-write (URW) CSR at address 0x011 that reads
+  # and writes XLEN low order bits of the shadow stack pointer. Bits 1:0 are
+  # read-only zero, and so is bit 2 if UXLEN or SXLEN may never be 32.
+  - name: csr_ssp
+    coverpoint: ["{ZicfissU_cg}/{cp_ssp_access,cp_ssp_low_bits_ro_zero}"]
+
+  # A shadow stack push decrements ssp by XLEN/8 and then stores the link register
+  # at the new top of the shadow stack. ssp is decremented only if the store
+  # completes successfully.
+  - name: ss_push_c-push_op
+    coverpoint:
+      [
+        "{ZicfissU_cg}/{cp_sspush,cp_ss_page_crossing}",
+        "{ZicfissS_cg}/{cp_sspush_s}",
+      ]
+
+  # A shadow stack pop reads XLEN bits from the top of the shadow stack and then
+  # increments ssp by XLEN/8. SSPOPCHK compares the value with the link register and
+  # raises a software-check exception (xtval=3) on a mismatch, at lower priority than
+  # an access fault. ssp is incremented only if the load completes and matches.
+  - name: sspopchk_op
+    coverpoint:
+      [
+        "{ZicfissU_cg}/{cp_sspopchk_match,cp_sspopchk_mismatch,cp_sspopchk_fault_priority,cp_ss_page_crossing}",
+        "{ZicfissS_cg}/{cp_sspopchk_match_s,cp_sspopchk_mismatch_s,cp_sspopchk_fault_priority_s}",
+        "{ZicfissSm_cg}/{cp_ss_pmp_permissions}",
+      ]
+
+  # SSRDP moves the contents of ssp to a destination register.
+  - name: ssrdp_read
+    coverpoint: ["{ZicfissU_cg}/{cp_ssrdp}", "{ZicfissS_cg}/{cp_ssrdp_s}"]
+
+  # SSAMOSWAP.W atomically swaps a word with a shadow stack location (sign-extending
+  # the loaded value on RV64), and SSAMOSWAP.D a doubleword. The address must be
+  # naturally aligned, with the same exception options as A-extension AMOs.
+  - names: [rv32_ssamoswap, rv64_ssamoswap]
+    coverpoint:
+      [
+        "{ZicfissU_cg}/{cp_ssamoswap,cp_ssamoswap_aqrl,cp_ssamoswap_reg_edges,cp_ss_address_alignment_swap}",
+        "{ZicfissS_cg}/{cp_ssamoswap_s,cp_ss_address_alignment_swap_s}",
+      ]

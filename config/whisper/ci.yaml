@@ -5,10 +5,11 @@
 # SsstrictSm, unknown
 # Smstateen Sail does not yet support 1P13 bit
 # Sdtrig* not yet implemented in Sail
-# ZicfissU, ZicfissS, ZicfissSm, ZicfissV excluded due to a Whisper bug (https://github.com/tenstorrent/whisper/issues/51):
-# menvcfg.SSE / senvcfg.SSE are not writable, so Zicfiss can never be activated
+# ZicfissU, ZicfissS, ZicfissSm excluded due to Whisper bugs: SSAMOSWAP in M-mode raises an
+# illegal-instruction exception instead of a store/AMO access fault, and an S-mode ordinary store to a
+# U=1 shadow stack page with SUM=0 raises a store/AMO access fault instead of the U/SUM page fault
 ci_enabled: true
-exclude_extensions: "SsstrictSm,Smstateen,SdtrigSm,SdtrigS,SdtrigU,ZicfissU,ZicfissS,ZicfissSm,ZicfissV"
+exclude_extensions: "SsstrictSm,Smstateen,SdtrigSm,SdtrigS,SdtrigU,ZicfissU,ZicfissS,ZicfissSm"
 exclude_configs:
   - whisper-rv32-max-spike-ref
   - whisper-rv64-max-spike-ref

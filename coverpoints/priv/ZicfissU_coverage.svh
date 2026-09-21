@@ -11,6 +11,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZICFISSU
+
+// ssp[2] is writable only when UXLEN or SXLEN can be 32
+`ifdef UDB_UXLEN_32
+    `define ZICFISS_SSP_BIT2_WRITABLE
+`elsif UDB_SXLEN_32
+    `define ZICFISS_SSP_BIT2_WRITABLE
+`endif
+
 covergroup ZicfissU_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -39,6 +47,30 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
         wildcard bins ssamoswap_w = {SSAMOSWAP_W};
         `ifdef UDB_MXLEN_64
             wildcard bins ssamoswap_d = {SSAMOSWAP_D};
+        `endif
+    }
+    // The instructions that address memory through ssp.
+    ss_stack_instr: coverpoint ins.current.insn {
+        wildcard bins sspush_x1     = {SSPUSH_X1};
+        wildcard bins sspush_x5     = {SSPUSH_X5};
+        wildcard bins sspopchk_x1   = {SSPOPCHK_X1};
+        wildcard bins sspopchk_x5   = {SSPOPCHK_X5};
+        `ifdef ZCMOP_SUPPORTED
+            wildcard bins c_sspush_x1   = {C_SSPUSH_X1};
+            wildcard bins c_sspopchk_x5 = {C_SSPOPCHK_X5};
+        `endif
+    }
+    // MOP-encoded instructions, which revert to Zimop/Zcmop while Zicfiss is inactive.
+    // SSAMOSWAP is AMO-encoded and traps instead.
+    ss_mop_instr: coverpoint ins.current.insn {
+        wildcard bins sspush_x1     = {SSPUSH_X1};
+        wildcard bins sspush_x5     = {SSPUSH_X5};
+        wildcard bins sspopchk_x1   = {SSPOPCHK_X1};
+        wildcard bins sspopchk_x5   = {SSPOPCHK_X5};
+        wildcard bins ssrdp         = {SSRDP};
+        `ifdef ZCMOP_SUPPORTED
+            wildcard bins c_sspush_x1   = {C_SSPUSH_X1};
+            wildcard bins c_sspopchk_x5 = {C_SSPOPCHK_X5};
         `endif
     }
     // Every SS instruction that accesses memory — used for page/fault crosses.
@@ -97,10 +129,26 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
         }
     `endif
 
+    // SSPUSH x5 pushes x5; SSPUSH x1 and C.SSPUSH x1 push x1.
+    ss_push_value: coverpoint ((ins.current.insn[1:0] == 2'b11 && ins.current.insn[24:20] == 5'd5) ?
+                               ins.prev.x_wdata[5] : ins.prev.x_wdata[1]) {
+        bins all_zeros = {'0};
+        bins all_ones  = {'1};
+        `ifdef UDB_MXLEN_64
+            bins pattern = {[64'h1 : 64'h7FFFFFFFFFFFFFFF]};
+        `else
+            bins pattern = {[32'h1 : 32'h7FFFFFFF]};
+        `endif
+    }
+
     // ── Alignment building blocks ─────────────────────────────────────────
-    // Sweep the bottom 3 bits over all 8 values.
+    // ssp[1:0] are read-only zero, and so is ssp[2] unless UXLEN or SXLEN can be 32. The
+    // test writes all eight low-bit values; only these can be held.
     ssp_LSBs: coverpoint ins.prev.csr[CSR_SSP][2:0] {
-        // auto fills 000 through 111
+        bins aligned_8 = {3'b000};
+        `ifdef ZICFISS_SSP_BIT2_WRITABLE
+            bins aligned_4 = {3'b100};
+        `endif
     }
     ssamoswap_adr_LSBs: coverpoint ins.current.rs1_val[2:0] {
         // auto fills 000 through 111
@@ -156,36 +204,36 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
         bins sse_on  = {1'b1};
     }
     // Zicfiss active for U-mode requires BOTH menvcfg.SSE and senvcfg.SSE.
-    // menvcfg.SSE=0 forces senvcfg.SSE read-only zero, so {menvcfg=0, senvcfg=1} is
-    // architecturally unreachable. The test still attempts it; the bin is illegal so an
-    // implementation that allows it is flagged rather than silently covered.
+    // menvcfg.SSE=0 forces senvcfg.SSE read-only zero, which the trace does not re-log, so
+    // senvcfg.SSE is sampled as its effective value. The test still attempts to set it; the
+    // read-back is checked by the signature.
     u_sse_active: coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1),
-                              (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1)} {
+                              ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1 &&
+                               get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))} {
         bins inactive_both_off = {2'b00};
         bins inactive_sen_off  = {2'b10};
         bins active            = {2'b11};
-        illegal_bins men0_sen1 = {2'b01};
     }
     u_sse_inactive: coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1),
-                                (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1)} {
+                                ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1 &&
+                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))} {
         bins both_off = {2'b00};
         bins sen_off  = {2'b10};
-        illegal_bins men0_sen1 = {2'b01};
     }
 
     // ── Target page / PMA building blocks ─────────────────────────────────
-    // pte.xwr occupies bits [3:1] of the leaf PTE; V is bit 0.
-    // All eight encodings: 000 is a pointer rather than a leaf, 110 and 111 are
-    // reserved, and those fail the walk itself rather than the shadow stack check.
-    pte_xwr: coverpoint ins.current.pte_d[3:1] {
-        bins non_leaf     = {3'b000};
-        bins read_only    = {3'b001};
-        bins ss_page      = {3'b010};
-        bins read_write   = {3'b011};
-        bins exec_only    = {3'b100};
-        bins exec_read    = {3'b101};
-        bins rsvd_wx      = {3'b110};
-        bins rsvd_rwx     = {3'b111};
+    // pte.xwr occupies bits [3:1] of the PTE the walk ended on; V is bit 0. All eight
+    // encodings: 000 at the last level is a pointer where a leaf is required and 110 is
+    // reserved, so both fail the walk itself rather than the shadow stack check.
+    pte_xwr: coverpoint ins.current.pte_d[3:1] iff (ins.current.pte_d[0]) {
+        bins non_leaf        = {3'b000};
+        bins read_only       = {3'b001};
+        bins ss_page         = {3'b010};
+        bins read_write      = {3'b011};
+        bins exec_only       = {3'b100};
+        bins exec_read       = {3'b101};
+        bins rsvd_wx         = {3'b110};
+        bins read_write_exec = {3'b111};
     }
     // pte.U is bit 4; pte.A is bit 6 and pte.D is bit 7.
     pte_u: coverpoint ins.current.pte_d[4] {
@@ -221,14 +269,6 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     }
     pte_ss_page: coverpoint ins.current.pte_d[3:1] {
         bins ss_page = {3'b010};
-    }
-    // The Sail->RVVI converter does not populate pte_d, so page identity is taken from
-    // the address instead. The shadow stack, read/write and read-only test pages are
-    // laid out one after another, so VA[13:12] identifies which one is being touched.
-    ss_target_page: coverpoint ins.prev.csr[CSR_SSP][13:12] {
-        bins ss_page    = {2'd0};
-        bins rw_page    = {2'd1};
-        bins ro_page    = {2'd2};
     }
 
     // ── Non-SS accessors of an SS page ────────────────────────────────────
@@ -306,6 +346,17 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
         `endif
     }
 
+    // ssp on the shadow stack page, or on the unmapped page an active access would fault on.
+    ssp_state: coverpoint ins.prev.csr[CSR_SSP] {
+        `ifdef UDB_MXLEN_64
+            bins ss_page  = {[64'h140300000:64'h140300FFF]};
+            bins unmapped = {64'h140400000};
+        `else
+            bins ss_page  = {[32'hC0300000:32'hC0300FFF]};
+            bins unmapped = {32'hC0400000};
+        `endif
+    }
+
     // ── Main coverpoints ──────────────────────────────────────────────────
     // Instruction behaviour (Zicfiss active)
     // The immediate CSR forms carry a 5-bit uimm, so rs1_val can never be all-ones
@@ -316,7 +367,7 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
             binsof(ssp_write_pattern.all_ones);
     }
     cp_ssp_low_bits_ro_zero:       cross priv_mode_u, csr_reg_ops, ssp_csr, ssp_wr_low_bits, ssp_rd_low_bits;
-    cp_sspush:                     cross priv_mode_u, ss_push_instr, ssp_write_pattern, pte_ss_page;
+    cp_sspush:                     cross priv_mode_u, ss_push_instr, ss_push_value, pte_ss_page;
     cp_sspopchk_match:             cross priv_mode_u, ss_pop_instr, sspopchk_outcome, pte_ss_page {
         ignore_bins mismatch = binsof(sspopchk_outcome.mismatched);
     }
@@ -337,14 +388,19 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     // Alignment
     cp_ss_address_alignment_ssp:   cross priv_mode_u, ss_push_instr, ssp_LSBs;
     cp_ss_address_alignment_pop:   cross priv_mode_u, ss_pop_instr, ssp_LSBs;
-    cp_ss_address_alignment_swap:  cross priv_mode_u, ssamoswap_instr, ssamoswap_adr_LSBs;
+    cp_ss_address_alignment_swap:  cross priv_mode_u, ssamoswap_instr, ssamoswap_adr_LSBs {
+        // A misaligned SSAMOSWAP.W at addr[2:0] of 1-3 stays inside one misaligned atomicity
+        // granule, where the reference models differ on whether it executes or faults. Untested.
+        ignore_bins w_within_granule =
+            binsof(ssamoswap_instr.ssamoswap_w) && binsof(ssamoswap_adr_LSBs) intersect {[3'd1:3'd3]};
+    }
 
     // Page / PMA behaviour
-    cp_ss_instr_target_page:       cross priv_mode_u, ss_mem_instr, ss_target_page;
+    cp_ss_instr_target_page:       cross priv_mode_u, ss_mem_instr, pte_xwr;
 
     // A push at the base of a page writes into the preceding page; a pop reads the
     // page ssp is already on. The fault follows the page actually accessed.
-    cp_ss_page_crossing:           cross priv_mode_u, ss_mem_instr, ssp_page_offset;
+    cp_ss_page_crossing:           cross priv_mode_u, ss_stack_instr, ssp_page_offset;
 
     // pte.A / pte.D: SSPUSH and SSAMOSWAP write and so need D; SSPOPCHK only reads.
     cp_ss_page_ad_bits:            cross priv_mode_u, ss_mem_instr, pte_ad;
@@ -375,6 +431,10 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     // Enable-chain gating
     cp_ssp_csr_gating_u:           cross priv_mode_u, csrops, ssp_csr, u_sse_active;
     cp_ssamoswap_sse_gating:       cross priv_mode_u, ssamoswap_instr, u_sse_inactive;
+
+    // Zicfiss inactive for U-mode: the MOP-encoded instructions stay inert, even with an
+    // ssp that an active instruction would fault on.
+    cp_ss_instr_inactive_u:        cross priv_mode_u, ss_mop_instr, u_sse_inactive, ssp_state;
 
 endgroup
 

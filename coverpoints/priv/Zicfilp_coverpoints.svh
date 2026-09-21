@@ -96,6 +96,22 @@
         }
     `endif
 
+    // Previous instruction was not an ELP-setting Indirect_CT, so the current instruction executes with ELP=NO_LP_EXPECTED
+    no_lp_branch_prev: coverpoint `ZICFILP_LP_BRANCH(ins.prev.insn) {
+        bins no_lp_expected = {1'b0};
+    }
+    // An LPAD that would fail the landing pad check if ELP were LP_EXPECTED:
+    // {is LPAD, LPL != 0 and LPL != x7[31:12], pc[1:0] == 2}
+    lpad_nop_case: coverpoint {(ins.current.insn ==? LPAD),
+                               ((ins.current.insn[31:12] != 20'h0) &&
+                                (ins.current.insn[31:12] != ins.prev.x_wdata[7][31:12])),
+                               (ins.current.pc_rdata[1:0] == 2'b10)} {
+        bins lpl_mismatch = {3'b1_1_0};
+        `ifdef ZCA_SUPPORTED
+            bins misaligned = {3'b1_0_1};
+        `endif
+    }
+
     // Expected landing pad label in x7[31:12] and the LPL encoded in the LPAD instruction
     x7_label: coverpoint ins.prev.x_wdata[7][31:12] {
         bins label_zero    = {20'h0};

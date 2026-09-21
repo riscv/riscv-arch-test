@@ -119,6 +119,8 @@ covergroup ZicfilpU_cg with function sample(ins_t ins);
 
     cp_exception_priority_zicfilp: cross priv_mode_u, lpe_enabled, priority_case;
 
+    cp_lpad_nop_no_lp_expected_zicfilp: cross priv_mode_u, lpe_enabled, no_lp_branch_prev, lpad_nop_case;
+
     `ifdef ZCA_SUPPORTED
         cp_lpad_alignment_exception_zicfilp: cross priv_mode_u, lpe_enabled, lp_branch_prev, lpad_lpl_zero, pc_misaligned;
     `endif

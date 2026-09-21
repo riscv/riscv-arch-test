@@ -340,6 +340,37 @@ def exception_priority_tests(test_data: TestData, priv: str, covergroup: str) ->
     return test_data.end_test_chunk()
 
 
+def lpad_nop_tests(test_data: TestData, priv: str, covergroup: str) -> TestChunk:
+    """With xLPE=1 but ELP=NO_LP_EXPECTED, an LPAD is a no-op whatever its label or alignment."""
+    coverpoint = "cp_lpad_nop_no_lp_expected_zicfilp"
+    temp_reg = test_data.int_regs.get_register()
+    tc = test_data.begin_test_chunk()
+    tc.code.extend(
+        [
+            comment_banner(
+                coverpoint,
+                f"{priv}-mode xLPE=1 and no Indirect_CT before the LPAD, so ELP=NO_LP_EXPECTED. An LPAD whose label\n"
+                "does not match x7[31:12] and, with Zca, an LPAD at pc[1:0]=2 are no-ops: no software-check exception.",
+            ),
+            *set_lpe(priv, priv, temp_reg, True),
+            f"LI(x7, 0x{LABEL << 12:x}) # expected landing pad label in x7[31:12]",
+            test_data.add_testcase("lpl_mismatch", coverpoint, covergroup),
+            f"lpad 0x{OTHER_LABEL:x} # label mismatch, but ELP=NO_LP_EXPECTED",
+            *check_trap_count(test_data, temp_reg),
+            "#ifdef ZCA_SUPPORTED",
+            ".p2align 2",
+            test_data.add_testcase("misaligned", coverpoint, covergroup),
+            ".hword 0x0001 # c.nop: puts the lpad at pc[1:0]=2",
+            ".hword 0x0017, 0x0000 # lpad 0 at pc[1:0]=2, but ELP=NO_LP_EXPECTED",
+            *check_trap_count(test_data, temp_reg),
+            "#endif",
+            *set_lpe(priv, priv, temp_reg, False),
+        ]
+    )
+    test_data.int_regs.return_registers([temp_reg])
+    return test_data.end_test_chunk()
+
+
 def lpad_alignment_tests(test_data: TestData, priv: str, covergroup: str) -> TestChunk:
     """With Zca an indirect jump may reach an LPAD at pc[1:0]=2, which raises a software-check exception."""
     coverpoint = "cp_lpad_alignment_exception_zicfilp"
@@ -387,6 +418,7 @@ def make_zicfilp_tests(test_data: TestData, priv: str, covergroup: str) -> list[
         lpad_label_tests(test_data, priv, covergroup),
         disabled_tests(test_data, priv, covergroup),
         exception_priority_tests(test_data, priv, covergroup),
+        lpad_nop_tests(test_data, priv, covergroup),
         lpad_alignment_tests(test_data, priv, covergroup),
     ]
 

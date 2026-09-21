@@ -4,9 +4,9 @@
 Alliance. Configurations here are written against a pinned upstream commit, and every UDB and Sail
 parameter cites the supporting documentation text plus a permalink to it.
 
-| Config | Core | ISA | Modes | Pinned commit |
-|---|---|---|---|---|
-| `veer-eh1` | [VeeR EH1](https://github.com/chipsalliance/Cores-VeeR-EH1) | RV32IMC_Zicsr_Zifencei_Zihpm | M only | `d04b1c7a` |
+| Config     | Core                                                        | ISA                          | Modes  | Pinned commit |
+| ---------- | ----------------------------------------------------------- | ---------------------------- | ------ | ------------- |
+| `veer-eh1` | [VeeR EH1](https://github.com/chipsalliance/Cores-VeeR-EH1) | RV32IMC_Zicsr_Zifencei_Zihpm | M only | `d04b1c7a`    |
 
 EH1 has no A, no bit-manipulation, no U-mode and no PMP, so the configuration above is its maximum
 feature set.

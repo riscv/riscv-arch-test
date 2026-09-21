@@ -8,5 +8,5 @@ set -euo pipefail
 
 INSTALL_DIR="${1:?Usage: setup-veer-eh1.sh <install-dir>}"
 
-echo "$INSTALL_DIR/bin" >> "$GITHUB_PATH"
-echo "VEER_SNAPSHOT=$INSTALL_DIR/eh1" >> "$GITHUB_ENV"
+echo "$INSTALL_DIR/bin" >>"$GITHUB_PATH"
+echo "VEER_SNAPSHOT=$INSTALL_DIR/eh1" >>"$GITHUB_ENV"

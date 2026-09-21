@@ -41,19 +41,7 @@ implemented_extensions:
   #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/csrdecode_mu
   # NOTE: only 3..6 exist; 7..31 do not, so Zihpm is implemented only in part.
   - { name: Zihpm, version: "= 2.0" }
-  # Zihpm is NOT implemented: it provides the unprivileged hpmcounter3..31 shadows for
-  # S/U-mode access, and EL2 is machine-mode only. The M-mode mhpmcounter3..6 /
-  # mhpmevent3..6 that EL2 does implement belong to Sm, and which of them exist is
-  # carried by HPM_COUNTER_EN below.
-  #   Quote: "VeeR EL2 is a machine-mode (M-mode) only, 32-bit CPU core"
-  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/overview.md
   - { name: Zifencei, version: "= 2.0" }
-  # U-mode is optional in EL2 and enabled here (-set user_mode=1), which is the maximum
-  # ratified feature set. Smepmp is deliberately left off.
-  #   Quote: "Originally, VeeR EL2 only implemented machine mode, and user mode support was
-  #   added for the Caliptra project. By default the VeeR EL2 Core is configured in machine
-  #   mode only, so to enable user mode, use the `-set` option"
-  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/user-mode.md#L3
   # U-mode is optional in EL2 and enabled here (-set user_mode=1), which is the maximum
   # ratified feature set. Smepmp is deliberately left off.
   #   Quote: "Originally, VeeR EL2 only implemented machine mode, and user mode support was
@@ -235,10 +223,17 @@ params:
   #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/performance.md
   MCOUNTINHIBIT_IMPLEMENTED: true
 
-  # mcounteren (0x306) does not exist on EL2: it is absent from the CSR map, and with
-  # no U-mode there is no lower privilege level whose counter access it could gate.
-  # UDB still requires the parameter, so every bit is false.
-  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/csrs.md
+  # mcounteren (0x306) DOES exist in this U-mode build - it is decoded in csrdecode_mu and
+  # implemented under `ifdef RV_USER_MODE, with CY, IR and HPM3..HPM6 writable and TM
+  # read-only zero (there is no time CSR on EL2).
+  #   Quote: "rvdffs #(6) mcounteren_ff (.*, ... .din({dec_csr_wrdata_r[6:2], dec_csr_wrdata_r[0]}))"
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv
+  # TODO: every bit is still false here, which matches mcounteren_writable_bits in sail.json
+  # but not the core. It is inert today because every test on this configuration boots to
+  # M-mode (tests/env/utils.h forces BOOT_TO_MMODE when the hart has no F, V, S or Zicntr),
+  # and correcting it depends on whether EL2 can claim Zicntr at all: UDB requires
+  # MCOUNTENABLE_EN[0:2] to be false unless Zicntr is implemented, and EL2 has the cycle and
+  # instret shadows but no time CSR. Fix both files together, with a DUT re-run.
   MCOUNTENABLE_EN:
     [
       false,

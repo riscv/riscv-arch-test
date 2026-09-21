@@ -5,15 +5,16 @@
     "E": false,
     "writable_misa": false,
     "writable_fiom": true,
-    // VeeR EH1 implements mhpmcounter3..6 / mhpmevent3..6 only (see HPM_COUNTER_EN in
-    // veer-eh1.yaml), so bits 3..6 are the only HPM counters that exist.
-    //   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/csr-address-map.md
+    // VeeR EL2 implements mhpmcounter3..6 / mhpmevent3..6 only (see HPM_COUNTER_EN in
+    // veer-el2-rv32imc-u-pmp.yaml), so bits 3..6 are the only HPM counters that exist.
+    //   Quote: "0xB03 ... mhpmcounter3" through "0xB06 ... mhpmcounter6"
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/csrs.md
     "writable_hpm_counters": {
       "len": 32,
       "value": "0x0000_0078"
     },
     // The top 29 bits control whether the corresponding bits of `scounteren`
-    // that control HPM counters are read-only zero. CV32E20 has no S-mode,
+    // that control HPM counters are read-only zero. VeeR EL2 has no S-mode,
     // so all bits are read-only zero.
     "scounteren_writable_bits": {
       "len": 32,
@@ -182,8 +183,11 @@
     // checked before address translation. `misaligned_exceptions` in
     // `regions` is checked after address translation.
     "misaligned": {
-      // CV32E20 LSU handles misaligned loads/stores in hardware (splits into two
-      // aligned transactions). No alignment exception is ever raised.
+      // VeeR EL2 splits misaligned loads/stores in hardware within a region, so no
+      // alignment exception is raised there. Accesses that cross a region boundary do
+      // raise a misaligned exception, which this global setting cannot express.
+      //   Quote: "Accesses across region boundaries always cause a misaligned exception."
+      //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/memory-map.md
       "exceptions": {
         "load_store": { "None": null },
         "vector": { "None": null },
@@ -221,7 +225,7 @@
           "writable": true,
           "read_idempotent": true,
           "write_idempotent": true,
-          // CV32E20 handles misaligned loads/stores in hardware; no per-region fault.
+          // VeeR EL2 splits misaligned loads/stores in hardware; no per-region fault.
           "misaligned_exceptions": {
             "load_store": { "None": null },
             "vector": { "None": null },
@@ -287,7 +291,7 @@
     "reservation": {
       // Reservation set size/alignment as a power of 2. Minimum 2 on RV32.
       "reservation_set_size_exp": 3,
-      // CV32E20 has no A extension so LR/SC is never executed.
+      // VeeR EL2 has no A extension so LR/SC is never executed.
       "require_exact_reservation_addr": false,
       // Some implementations (e.g. SiFive U74) also invalidate the
       // reservation on stores from the same hart.  If this is set to `true`, the
@@ -488,11 +492,16 @@
     "Zihintpause": {
       "supported": false
     },
-    // Zihpm provides the unprivileged hpmcounter3..31 shadows for S/U access; EH1 is
-    // machine-mode only, so it is not implemented. The M-mode mhpmcounter3..6 that EH1
-    // does have belong to Sm and are described by writable_hpm_counters above.
+    // Zihpm provides the unprivileged hpmcounter3..31 shadows, and the M+U build of
+    // VeeR EL2 decodes hpmcounter3..6 and their high halves, so it is implemented in
+    // part. Which counters exist is carried by writable_hpm_counters above and by
+    // HPM_COUNTER_EN in veer-el2-rv32imc-u-pmp.yaml, which claims Zihpm for the same
+    // reason; the two must agree or the reference model traps on every access the
+    // Zihpm tests make.
+    //   Quote: "csr_hpmc3 ... csr_hpmc6" (and their high halves) in the M+U decode table
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/csrdecode_mu
     "Zihpm": {
-      "supported": false
+      "supported": true
     },
     "Zimop": {
       "supported": false

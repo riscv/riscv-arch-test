@@ -1,0 +1,219 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
+
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+# UDB architecture configuration for the YosysHQ PicoRV32 (picorv32_axi) built as RV32IMC.
+#
+# Every citation below is pinned to picorv32 commit
+# ef203c2b0a3fb793280f5114941416c425c5b461 (repository HEAD; archived upstream).
+#
+# PicoRV32 is an UNPRIVILEGED-ONLY DUT. It implements no CSR instructions and no
+# privileged state: opcode 1110011 decodes to exactly four things - the fixed
+# rdcycle/rdcycleh/rdinstret/rdinstreth encodings (gated on ENABLE_COUNTERS) and
+# ecall/ebreak. There is no csrrw/csrrs/csrrc path and no mtvec, mepc, mcause,
+# mtval, mscratch or mstatus anywhere in picorv32.v.
+#   https://github.com/YosysHQ/picorv32/blob/ef203c2b0a3fb793280f5114941416c425c5b461/picorv32.v#L1079-L1087
+# README.md, "Custom Instructions for IRQ Handling": "The IRQ handling features in
+# PicoRV32 do not follow the RISC-V Privileged ISA specification. Instead PicoRV32
+# implements a very simple custom interrupt handling scheme."
+#   https://github.com/YosysHQ/picorv32/blob/ef203c2b0a3fb793280f5114941416c425c5b461/README.md#custom-instructions-for-irq-handling
+#
+# Sm 1.11.0 is declared under protest. UDB refuses a fully-configured config
+# without MXLEN ("Must set MXLEN for a full config"), and MXLEN is only defined
+# when Sm is implemented ("Parameter is not defined by this config: 'MXLEN'.
+# Failing condition(s): `Sm>=0`{false}"). Declaring Sm is how the existing CSR-less
+# config/spike/spike-RVI20U32 config expresses the same thing. It is made harmless
+# by `include_priv_tests: False` in test_config.yaml, which drops every test whose
+# requirements can only be met by Sm/S/U, and by leaving STANDARD_SM_SUPPORTED
+# undefined in rvmodel_macros.h so no trap prolog, trap handler or boot code is
+# emitted. 1.11.0 rather than 1.12.0 because nothing is implemented and the lower
+# version claims less (no mstatush, no mconfigptr).
+#
+# Every Sm-gated parameter below therefore describes a CSR that does not exist.
+# Each is set to the value a reader would infer from "the CSR reads as zero and
+# cannot be written", and is flagged NO SUCH CSR. None can be omitted:
+# `udb validate cfg` rejects the config without them.
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: picorv32-rv32imc
+description: PicoRV32 (picorv32_axi) as RV32IMC - unprivileged only, no CSRs
+implemented_extensions:
+  # RV32I. README.md opening line: "PicoRV32 is a CPU core that implements the
+  # RISC-V RV32IMC Instruction Set."
+  - { name: I, version: "= 2.1" }
+  # M: built with ENABLE_FAST_MUL=1 and ENABLE_DIV=1 (see install-picorv32.sh),
+  # which is the configuration riscv-formal verifies and `make test_verilator` builds.
+  # https://github.com/YosysHQ/picorv32/blob/ef203c2b0a3fb793280f5114941416c425c5b461/picorv32.v#L272-L327
+  - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
+  # C/Zca: built with COMPRESSED_ISA=1. Only Zca is possible - there is no F or D,
+  # so Zcf and Zcd cannot exist.
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  # Sm: see the header comment. Declared only to make MXLEN expressible.
+  - { name: Sm, version: "= 1.11.0" }
+  #
+  # Deliberately NOT declared:
+  #   Zicsr    - no csrrw/csrrs/csrrc decode at all (picorv32.v:1079-1087).
+  #   Zicntr   - rdcycle/rdinstret exist only as fixed encodings, and rdtime
+  #              aliases the cycle counter rather than reading a real time source
+  #              (picorv32.v:1079-1080). Without Zicsr the Zicntr suite could not
+  #              run in any case.
+  #   Zifencei - MISC-MEM is decoded only with funct3 == 0 (plain FENCE); fence.i
+  #              falls through to the illegal-instruction path:
+  #              "instr_fence <= (mem_rdata_q[6:0] == 7'b0001111 && !mem_rdata_q[14:12]);"
+  #              https://github.com/YosysHQ/picorv32/blob/ef203c2b0a3fb793280f5114941416c425c5b461/picorv32.v#L1088
+  #   A/B/F/D/Zihpm/U/S/PMP - none of these exist in picorv32.v.
+
+params:
+  # XLEN / address width
+  MXLEN: 32
+  # 32-bit AXI address bus: "output [31:0] mem_axi_awaddr".
+  # https://github.com/YosysHQ/picorv32/blob/ef203c2b0a3fb793280f5114941416c425c5b461/picorv32.v#L2555-L2585
+  PHYS_ADDR_WIDTH: 32
+  M_MODE_ENDIANNESS: little
+
+  # misa: NO SUCH CSR, so no bit of it is mutable either.
+  MISA_CSR_IMPLEMENTED: false
+  MUTABLE_MISA_M: false
+  MUTABLE_MISA_C: false
+
+  # PRECISE_SYNCHRONOUS_EXCEPTIONS: false. PicoRV32 does not deliver synchronous
+  # exceptions at all. Every condition the spec calls an exception instead drives
+  # the `trap` output and parks the core in cpu_state_trap forever; nothing is
+  # recorded and nothing resumes. "cpu_state_trap: begin trap <= 1; end"
+  # https://github.com/YosysHQ/picorv32/blob/ef203c2b0a3fb793280f5114941416c425c5b461/picorv32.v#L1485-L1489
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: false
+
+  # ecall/ebreak reach cpu_state_trap when ENABLE_IRQ=0, so "traps" in the sense of
+  # "does not simply retire" is true. There is no handler to enter.
+  # https://github.com/YosysHQ/picorv32/blob/ef203c2b0a3fb793280f5114941416c425c5b461/picorv32.v#L1605-L1611
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_EBREAK: true
+  # CATCH_ILLINSN=1: any encoding outside the decode table sets instr_trap.
+  # https://github.com/YosysHQ/picorv32/blob/ef203c2b0a3fb793280f5114941416c425c5b461/picorv32.v#L679-L690
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  # Every CSR is unimplemented, so every csrr* encoding is simply an unknown
+  # encoding and halts through the same CATCH_ILLINSN path.
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  TRAP_ON_ILLEGAL_WLRL: false # NO SUCH CSR: no WLRL field exists to write.
+
+  # mtval: NO SUCH CSR. Nothing is reported anywhere, ever.
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false
+  MTVAL_WIDTH: 32 # NO SUCH CSR; UDB requires a width and MXLEN is the only sane one.
+
+  # Misaligned accesses. Built with CATCH_MISALIGN=1, so a misaligned load, store
+  # or fetch halts the core rather than being emulated or split. README.md,
+  # "Parameters": "CATCH_MISALIGN (default = 1) ... Set this to 0 to disable the
+  # circuitry for catching misaligned memory accesses."
+  # https://github.com/YosysHQ/picorv32/blob/ef203c2b0a3fb793280f5114941416c425c5b461/picorv32.v#L1922-L1944
+  MISALIGNED_LDST: false
+  # The alignment check is made on reg_op1 before the bus access is issued, so no
+  # access fault can precede it: the misaligned condition wins.
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: high
+
+  # Machine information registers: NO SUCH CSRs. mvendorid/marchid/mimpid do not
+  # exist; an unimplemented read-only CSR is architecturally zero.
+  MARCHID_IMPLEMENTED: false
+  MIMPID_IMPLEMENTED: false
+  VENDOR_ID_BANK: 0x0
+  VENDOR_ID_OFFSET: 0x0
+
+  # No PMA hardware. The AXI data bus is 32 bits wide with a 4-bit write strobe
+  # ("output [3:0] mem_axi_wstrb"), so the natural granule is 4 bytes = 2^2.
+  PMA_GRANULARITY: 2
+
+  # mtvec: NO SUCH CSR. Modelled as read-only zero in direct mode, which is what a
+  # hardwired-zero mtvec would look like.
+  MTVEC_ACCESS: ro
+  MTVEC_MODES: [0]
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
+
+  # Counters. mcountinhibit does not exist. rdcycle/rdinstret exist only as fixed
+  # instruction encodings with no CSR behind them, and no hpmcounter exists at all.
+  MCOUNTINHIBIT_IMPLEMENTED: false
+  HPM_COUNTER_EN:
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  # mcounteren does not exist and there is no U-mode to enable counters for.
+  MCOUNTENABLE_EN:
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+
+  # No PMP hardware of any kind.
+  NUM_PMP_ENTRIES: 0

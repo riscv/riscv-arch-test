@@ -1,0 +1,52 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# CI configuration for the YosysHQ PicoRV32 core
+
+ci_enabled: true
+
+# PicoRV32 is an unprivileged-only DUT, so most of ACT is not excluded here - it is
+# never selected in the first place. Two structural filters do that work, and both
+# are in the config rather than in this string:
+#
+#   * test_config.yaml sets `include_priv_tests: False`, and rvmodel_macros.h leaves
+#     STANDARD_SM_SUPPORTED undefined with a blank RVMODEL_BOOT_TO_MMODE. Together
+#     these drop every test that can only be satisfied by Sm/S/U and stop ACT from
+#     emitting any boot code, trap prolog or trap handler. PicoRV32 has no CSR
+#     instructions and no privileged state at all; README.md says of the one piece of
+#     interrupt machinery it does have: "The IRQ handling features in PicoRV32 do not
+#     follow the RISC-V Privileged ISA specification. Instead PicoRV32 implements a
+#     very simple custom interrupt handling scheme."
+#     https://github.com/YosysHQ/picorv32/blob/ef203c2b0a3fb793280f5114941416c425c5b461/README.md#custom-instructions-for-irq-handling
+#     That covers Sm, U, PMP*, Exceptions*, Zicsr, Zicntr, Zihpm and the whole
+#     interrupt and trap family.
+#   * MISALIGNED_LDST: false in the UDB config deselects Misalign and MisalignZca.
+#     PicoRV32 is built with CATCH_MISALIGN=1, which halts the core on a misaligned
+#     access with no mcause and no way to resume, so those suites cannot run.
+#   * Zifencei is not declared (fence.i is an illegal instruction on this core;
+#     only funct3 == 0 is decoded at picorv32.v:1088), so its suite is not selected.
+#
+# That leaves 77 selected tests: I 39, Zca 26, M 8, Zmmul 4. 76 of them pass.
+#
+# Exclusions, at the suite-directory granularity EXCLUDE_EXTENSIONS supports:
+#
+#   I  1 of 39 fails: I-fence-00, because A FENCE WITH A NONZERO rd CLOBBERS THAT
+#      REGISTER. The unprivileged spec requires the rd, rs1, fm, pred and succ fields
+#      of a FENCE to be ignored by implementations that do not use them, and reserves
+#      nonzero rd/rs1 for future extensions, so a FENCE must not write an integer
+#      register. PicoRV32 decodes FENCE (picorv32.v:1088) but gives it no execution
+#      case; it falls through the `default:` arm of cpu_state_ld_rs1 into
+#      cpu_state_exec, which unconditionally sets latched_store and writes the ALU
+#      result to decoded_rd. With the canonical encoding rd is x0 and the write is
+#      discarded, which is why plain `fence` and `fence.tso` both pass. Measured with
+#      a directed probe: `.word 0x0330008f` (fence rw,rw with rd = x1) leaves x1 = 0
+#      where 0x5a5a5a5a was expected, and the same happens for the reserved
+#      rd != x0 hint encodings 0x0030008f and 0x0300008f.
+#      The same ELF family passes on config/sail/sail-rv32-max (39 of 39), so this is
+#      a DUT divergence and not an ACT or config problem.
+#      Excluding the suite to silence one test also drops 38 passing tests; that is
+#      the cost of having no per-test exclusion.
+exclude_extensions: "I"
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache"
+install_script: ".github/scripts/install-picorv32.sh"
+setup_script: ".github/scripts/setup-picorv32.sh"

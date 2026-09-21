@@ -1,0 +1,84 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# CI configuration for the BSC Sargantana core, as delivered in bsc-loca/core_tile
+
+ci_enabled: true
+
+# Exclusions are by test-suite directory, the only granularity EXCLUDE_EXTENSIONS supports, so a
+# suite with one bad testcase costs all of its passing tests too.  Measured on core_tile
+# @ 2528e7df (core 403975c) built with `make sim` at the default DracDefaultConfig.
+# Current state: 505 tests selected, 449 pass, 56 fail; excluding the suites below leaves 296.
+#
+# --- Suites that cannot even be BUILT for this core -----------------------------------------
+#
+#   Smstateen     Their MARCH header is hardcoded to
+#   Ssstateen       "rv${XLEN}i_zicsr_zifencei_zfinx_zcmt_{sm,ss}stateen".
+#                 zcmt implies Zca, so the assembler emits 16-bit instructions into a test for a
+#                 core whose misa hardwires C to 0.  The resulting ELF has 32-bit instructions at
+#                 2-mod-4 addresses; Sargantana executes into the middle of one after an sret and
+#                 then stops retiring forever.  This is an ACT test-generation problem, not a DUT
+#                 one: nothing in the config can suppress the zcmt in the MARCH string.
+#
+#   ExceptionsSm  ExceptionsSm_medeleg_m-00 overruns its own trap signature region on the
+#                 REFERENCE MODEL, before the DUT is involved: "RVCP: Trap signature overflow in
+#                 sig mode. Increase TRAP_SIGUPD_COUNT for this test."  The test deliberately
+#                 probes every load and store width at offsets 1, 2 and 3 from a base; on a core
+#                 without misaligned support all 541 of those probes trap, and 764 traps at the
+#                 recorded entry size do not fit in the test's fixed TRAP_SIGUPD_COUNT of 3000
+#                 (24000 bytes).  Also an ACT sizing problem rather than a DUT finding.
+#
+# --- Suites with DUT failures ----------------------------------------------------------------
+#
+#   F          10 of 84 fail.  Eight are FMA (fmadd/fmsub/fnmadd/fnmsub.s) cases where a
+#              subnormal addend makes the core set the underflow flag as well as inexact:
+#              fflags reads 0x3 where 0x1 is required.
+#
+#   ZfaF        2 of 9, ZfaD 7 of 17.  Two separate bugs.  (a) The quiet comparisons fleq/fltq
+#              raise NV on a quiet NaN, which is exactly what distinguishes them from fle/flt:
+#              fflags reads 0x10 where 0x0 is required.  (b) fround/froundnx and the quiet
+#              compares do not treat an improperly NaN-boxed narrower operand as the canonical
+#              NaN; they operate on the raw bits.  ZfaD_fcvtmod.w.d also drops the inexact flag.
+#
+#   Zfhmin      2 of 6, ZfhminD 3 of 8.  The same NaN-boxing bug on fcvt.s.h / fcvt.d.h, plus
+#              fcvt.h.d rounding a value just under the FP16 subnormal range up to the smallest
+#              subnormal instead of to zero.
+#
+#   ZicsrF      1 of 1.  fcvt.h.s underflow reporting, the same family as the F FMA flag bug.
+#
+#   SmF         1 of 1.  Writing mstatus.FS from Off to Initial and then executing an flw leaves
+#              mstatus.SD clear: the core reads 0x0000000a00006080 where 0x8000000a00006080 is
+#              required.  SD must read 1 whenever FS is Dirty.
+#
+#   Zicntr      2 of 2, ZicntrS 1 of 1, ZicntrU 1 of 1.  The `time` CSR exists and is readable,
+#              but it is driven by a top-level port that the standalone testbench ties to zero
+#              ("// No support for timer, interrupts, etc in simulation / .time_i(64'd0),",
+#              simulator/sim_top.sv), so it never advances.  This is a testbench limitation, not
+#              a core bug; it would need an external timer model to test.
+#
+#   Zifencei   1 of 1, and the failure is real: after storing a new instruction and executing
+#              fence.i, the core still fetches the stale one (the test reads 4 where 8 is
+#              required).  fence.i does invalidate the I-cache, but it does not wait for the
+#              HPDcache write-through buffer to drain, so the refill re-reads the old bytes.
+#
+#   Sm          7 of 27, S 3 of 8.  Four distinct findings: sepc leaves bit 1 writable although
+#              IALIGN is 32 (mepc correctly masks it); menvcfg.CBIE reads back the reserved
+#              encoding 0b10; mstatus.MPP accepts the reserved value 0b10 and mie/sip expose the
+#              VS-level and LCOFIP bits, because the RTL enables the hypervisor and Sscofpmf
+#              fields that this configuration does not claim; and mip.MTIP never sets because
+#              there is no timer.
+#
+#   Sv          9 of 33, SvZicbo 4 of 6, ExceptionsSv 2 of 4.  Four findings: a non-canonical
+#              Sv39 address raises an access fault instead of a page fault (and the canonicality
+#              check uses 41 bits, not 39); a store through a PTE with the reserved R=0/W=1
+#              encoding reports a LOAD page fault instead of a store/AMO page fault; a PTE that
+#              points at unimplemented physical memory gives a page fault instead of the access
+#              fault the spec requires, because the walker does not PMA-check its own fetches;
+#              and a non-leaf PTE with A/D/U set is accepted instead of faulting.  Three tests in
+#              Sv hang the core permanently - a PTE with the Svnapot N bit, an Svpbmt PBMT field
+#              or any other reserved high bit set stops the pipeline retiring for over a million
+#              cycles instead of raising a page fault.
+exclude_extensions: "Smstateen,Ssstateen,ExceptionsSm,F,ZfaF,ZfaD,Zfhmin,ZfhminD,ZicsrF,SmF,Zicntr,ZicntrS,ZicntrU,Zifencei,Sm,S,Sv,SvZicbo,ExceptionsSv"
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler libboost-regex-dev"
+install_script: ".github/scripts/install-sargantana.sh"
+setup_script: ".github/scripts/setup-sargantana.sh"

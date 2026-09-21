@@ -56,11 +56,6 @@ fvvfp_config = InstructionTypeConfig(
 fvvfp_down_config = InstructionTypeConfig(
     instruction_class=["vector_fp"], required_params={"vd", "fs1", "vs2"}, vector_data=VectorTypeConfig()
 )
-fvvfm_config = InstructionTypeConfig(
-    instruction_class=["vector_fp"],
-    required_params={"vd", "fs1", "vs2", "maskval"},
-    vector_data=VectorTypeConfig(overlap_constraints={("vd", "v0"), ("vs2", "v0")}),
-)
 
 
 @add_instruction_formatter("FVVF", fvvf_config)

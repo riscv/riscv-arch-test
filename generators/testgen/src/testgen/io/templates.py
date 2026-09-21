@@ -174,6 +174,7 @@ def get_vector_base_extension(testsuite: str, instr_name: str, xlen: int, sew: i
         "Vf64": ["Zve64d", "F", "D"],
         "Zvfbfmin": ["Zve32f"],
         "Zvfbfwma": ["Zve32f", "Zfbfmin", "F"],
+        "Zvfhmin": ["Zve32f", "F"],
     }
 
     if testsuite not in vector_map:

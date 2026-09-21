@@ -700,4 +700,11 @@ def handle_vector_fp(setup: list[str], check: list[str], frm_val: int, test_data
     setup.append(f"fsrmi {frm_val}")
     setup.append("fsflagsi 0b00000 # clear all fflags")
     check.insert(0, write_sigupd(None, test_data, "fflags"))
-    check.append("fsrmi 0x0")
+
+    # Insert a rounding mode reset inside the test body, (i.e before any #endifs)
+    for i in range(len(check) - 1, -1, -1):
+        if check[i] != "#endif":
+            check.insert(i + 1, "fsrmi 0x0")
+            break
+    else:
+        check.insert(0, "fsrmi 0x0")

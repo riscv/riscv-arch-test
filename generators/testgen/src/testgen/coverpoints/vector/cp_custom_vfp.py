@@ -151,7 +151,7 @@ def cp_custom_vfncvt_rup_overflow(
     test_chunks = []
     for val, bin_name in values:
         label = f"cp_custom_vfncvt_rup_overflow_{bin_name}"
-        test_data.register_vector_data(label, 64, elements=[val])
+        test_data.register_vector_data(label, 2 * test_data.config.sew, elements=[val])
         params = generate_random_vector_params(
             test_data, instr_name, instr_type, 1, vs2_val_pointer=label, csr_frm_val=3
         )
@@ -356,7 +356,7 @@ _RECIP_FLAG_EDGES = {
         (0x7BFF, "pos_norm_big", False),
         (0x0000, "pos_zero", True),
         (0x7E00, "qNaN", False),
-        (0x7D00, "sNaN", False),
+        (0x7D00, "sNaN", True),
     ],
     32: [
         (0xFF800000, "neg_inf", False),
@@ -372,7 +372,7 @@ _RECIP_FLAG_EDGES = {
         (0x7F7FFFFF, "pos_norm_big", False),
         (0x00000000, "pos_zero", True),
         (0x7FC00000, "qNaN", False),
-        (0x7FA00000, "sNaN", False),
+        (0x7FA00000, "sNaN", True),
     ],
     64: [
         (0xFFF0000000000000, "neg_inf", False),
@@ -388,7 +388,7 @@ _RECIP_FLAG_EDGES = {
         (0x7FEFFFFFFFFFFFFF, "pos_norm_big", False),
         (0x0000000000000000, "pos_zero", True),
         (0x7FF8000000000000, "qNaN", False),
-        (0x7FF0000000000001, "sNaN", False),
+        (0x7FF0000000000001, "sNaN", True),
     ],
 }
 _RECIP_FLAG_SPACER = {16: 0xFC00, 32: 0xFF800000, 64: 0xFFF0000000000000}  # -inf
@@ -628,6 +628,9 @@ def cp_custom_fmv_fs_vs2_all_lmul(
     assert test_data.config.sew is not None, "SEW must be provided for vector tests"
     sew = test_data.config.sew
 
+    if sew > test_data.config.flen:
+        return []
+
     test_chunks = []
     for exponent in get_legal_lmuls(sew):
         lmul = 2.0**exponent
@@ -656,7 +659,8 @@ def cp_custom_fmv_fs_vs2_all_lmul(
 def cp_custom_vfp_flags(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """VFP flags currently has no generation as it is covered by other test generation"""
 
-    # Currently this coverpoint is disabled
+    # Currently this coverpoint's generation is disabled. The values of fflags are reached in the other testgen
+    # and it is unclear as to how it is different than cp_csr_fflags.
     return []
 
 

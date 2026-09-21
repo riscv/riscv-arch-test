@@ -83,6 +83,8 @@ def generate_vector_special_cases(
             "vd_val_pointer": vd_label,
             "fs1val": fs1_val,
         }
+    else:
+        return []
 
     params = generate_random_vector_params(
         test_data,

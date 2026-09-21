@@ -83,23 +83,33 @@ def unordered_sum_rng(element_count: int, sew: int, register: str) -> list[int]:
 
         # Find numbers that sum to the target by picking random points as barriers between them
         # e.g. insert | into *********** to get ****|*|****|**, meaning 4 + 1 + 4 + 2 = 11
-        negative_cuts = sorted(random_range(0, negative_target) for _ in range(math.ceil(element_count / 2)))
-        negative_sequence = (
-            [negative_cuts[0]]
-            + [negative_cuts[i + 1] - negative_cuts[i] for i in range(len(negative_cuts) - 1)]
-            + [negative_target - negative_cuts[-1]]
-        )
+        negative_cuts = sorted(random_range(0, negative_target) for _ in range(math.ceil(element_count / 2) - 1))
+        if negative_cuts:
+            negative_sequence = (
+                [negative_cuts[0]]
+                + [negative_cuts[i + 1] - negative_cuts[i] for i in range(len(negative_cuts) - 1)]
+                + [negative_target - negative_cuts[-1]]
+            )
+        else:
+            negative_sequence = [negative_target]
         negative_sequence = [-item for item in negative_sequence]
 
-        positive_cuts = sorted(random_range(0, positive_target) for _ in range(math.floor(element_count / 2)))
-        positive_sequence = (
-            [positive_cuts[0]]
-            + [positive_cuts[i + 1] - positive_cuts[i] for i in range(len(positive_cuts) - 1)]
-            + [positive_target - positive_cuts[-1]]
-        )
+        positive_cuts = sorted(random_range(0, positive_target) for _ in range(math.floor(element_count / 2) - 1))
+        if positive_cuts:
+            positive_sequence = (
+                [positive_cuts[0]]
+                + [positive_cuts[i + 1] - positive_cuts[i] for i in range(len(positive_cuts) - 1)]
+                + [positive_target - positive_cuts[-1]]
+            )
+        else:
+            positive_sequence = [positive_target]
 
         final_sequence = negative_sequence + positive_sequence
         random.shuffle(final_sequence)
+
+        assert len(final_sequence) == element_count, (
+            f"Theoretically Unreachable: unordered_sum_rng generated {len(final_sequence)} elements, expected {element_count}"
+        )
 
     return to_fp_words(final_sequence, sew)
 

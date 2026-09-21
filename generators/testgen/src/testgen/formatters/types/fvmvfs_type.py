@@ -11,7 +11,6 @@ from testgen.asm.vector_helpers import (
     handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
-    prep_mask_v,
 )
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
@@ -43,10 +42,6 @@ def format_fvmvfs_type(
     # Set up the instructions: Mask, vs2, no need to touch fd
     setup = []
 
-    # Setup Mask
-    if params.maskval:
-        setup.extend(prep_mask_v(params.maskval, test_data, params))
-
     # 1 for a scalar register
     load_code, random_vl_reg = load_vec_regs([VectorLoad("vs2", vl=1, lmul=1)], params, test_data)
     setup.extend(load_code)
@@ -56,16 +51,9 @@ def format_fvmvfs_type(
     if random_vl_reg.startswith("x"):
         test_data.int_regs.return_register(int(random_vl_reg[1:]))
 
-    if params.maskval:
-        test = [f"{instr_str} f{params.fd}, v{params.vs2}, v0.t"]
-    else:
-        test = [f"{instr_str} f{params.fd}, v{params.vs2}"]
+    test = [f"{instr_str} f{params.fd}, v{params.vs2}"]
 
     check = [write_sigupd(params.fd, test_data, "float")]
-
-    # This can only be released after sigupd
-    if params.maskval:
-        test_data.vec_regs.return_register(0)
 
     handle_parameter_exclusions(params.lmul, setup, check)
     # These moves do not need frm to be set or fflags checked

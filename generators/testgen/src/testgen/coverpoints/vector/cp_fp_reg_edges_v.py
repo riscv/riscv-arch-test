@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Floating point register edge value coverpoint generators (cp_fs1_edges, cp_fs2_edges, cp_fs3_edges)."""
+"""Floating point register edge value coverpoint generators for vector instructions (only fs1 is used in V)."""
 
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.edges import VECTOR_EDGES

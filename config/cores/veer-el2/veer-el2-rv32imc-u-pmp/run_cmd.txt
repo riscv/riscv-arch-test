@@ -1,0 +1,1 @@
+run-veer-el2.sh --elf

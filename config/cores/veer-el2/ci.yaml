@@ -1,0 +1,61 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# CI configuration for the CHIPS Alliance VeeR EL2 core
+
+ci_enabled: true
+
+# Exclusions are by test-suite directory, the only granularity EXCLUDE_EXTENSIONS supports.
+# Each entry records the specific measured reason, on Cores-VeeR-EL2 @ 925f3a34 built with
+# user mode and 64 PMP entries. Current state: 190 tests selected, 158 pass, 32 fail.
+#
+#   Sm            16 of 30 fail: trap-count mismatches, plus mepc and mtval mismatches, plus CSR
+#                 writability - mstatus reads 0x00021888 where 0x00221888 is expected (bit 21, TW,
+#                 is not implemented; EL2 implements only MPRV/MPP/MPIE/MIE), a written mip bit
+#                 reads back 0 because mip is pin-driven and read-only to software, and a mcycle
+#                 write does not stick.
+#
+#   U             6 of 14 fail: trap-count and mepc/mtval mismatches in U-mode traps, the same
+#                 family as the Sm mismatches. Needs per-test triage.
+#
+#   ExceptionsSm  1 of 4, ExceptionsU 1 of 5, ExceptionsZc 1 of 1: mtval mismatches. mtval
+#                 population is undocumented in the PRM, so the REPORT_VA_IN_MTVAL_ON_* parameters
+#                 are set from the RISC-V defaults and at least one is wrong for this core.
+#
+#   PMPSm         1 of 18: PMPSm_cfg_A_tor_zero-00 expects a Store/AMO access fault (cause 7) from
+#                 a TOR entry with pmpaddr=0 and gets an illegal instruction (cause 2) instead -
+#                 the expected PMP fault does not occur.
+#
+#   PMPU          1 of 10: PMPU_csr_access-00 exposes an mtval inconsistency. It expects the
+#                 faulting instruction encoding (0x3b021073) and EL2 writes 0x0. Setting
+#                 xtval_nonzero.illegal_instruction false to match fixes this test and breaks five
+#                 Sm/U tests that do expect the encoding, so EL2 writes the encoding for most
+#                 illegal instructions but zero for an illegal CSR access. The spec permits either
+#                 policy, not both; the config models the majority.
+#
+#   PMPZca        3 of 7: compressed instructions straddling a PMP region boundary.
+#                 PMPZca_misaligned_napot-00 expects an instruction access fault (cause 1) and gets
+#                 an illegal instruction (cause 2); the na4 and tor variants report trap count
+#                 mismatches. Candidate finding: EL2 does not appear to fault on a fetch that
+#                 crosses out of an executable PMP region. Not yet confirmed against
+#                 design/el2_pmp.sv - a directed test is the right next step.
+#
+#   Zifencei      1 of 1, and fence.i does NOT trap - it retires normally and the next fetch simply
+#                 returns the stale instruction. The VeeR testbench models instruction and data
+#                 memory as two independent arrays, both loaded from program.hex at time 0, and
+#                 stores reach only the data array, so self-modifying code can never be fetched.
+#                 Proven not to be a stale I-cache: rebuilding with icache_enable=0 fails
+#                 identically, and the testbench's imem instance is tied off with .HWDATA(64'h0).
+#
+#   I             1 of 39: I-fence-00, because FENCE.TSO IS NOT IMPLEMENTED. fence.tso (encoding
+#                 0x8330000f, FENCE with fm=1000) raises an illegal instruction; plain fence is
+#                 fine. The decode table hardcodes the fm field to zero so fm=1000 matches no
+#                 pattern. The unprivileged spec says: "The fence.tso instruction was incorrectly
+#                 described as optional in 2019. However, fence.tso is encoded within the standard
+#                 fence encoding such that implementations must treat it as a simple global fence
+#                 if they do not support TSO optimizations." Excluding the suite to silence one
+#                 test also drops 38 passing tests, the cost of having no per-test exclusion.
+exclude_extensions: "Sm,U,ExceptionsSm,ExceptionsU,ExceptionsZc,PMPSm,PMPU,PMPZca,Zifencei,I"
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache"
+install_script: ".github/scripts/install-veer-el2.sh"
+setup_script: ".github/scripts/setup-veer-el2.sh"

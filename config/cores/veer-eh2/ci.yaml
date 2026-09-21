@@ -7,7 +7,7 @@ ci_enabled: true
 # Exclusions are by test-suite directory, the only granularity EXCLUDE_EXTENSIONS supports.
 # Each entry records the specific measured reason, on Cores-VeeR-EH2 @ bd52450b built with
 # atomics on, bit-manipulation off and a single hart.
-# Current state: 127 tests selected, 110 pass, 17 fail.
+# Current state: 127 tests selected, 111 pass, 16 fail.
 #
 #   Zaamo         THE A EXTENSION CANNOT BE TESTED AS CONFIGURED, and these suites do not even
 #   Zalrsc        build. VeeR EH2 makes atomic instructions illegal outside the DCCM
@@ -24,7 +24,7 @@ ci_enabled: true
 #                 hardware implements them (misa bit 0 is set with ATOMIC_ENABLE=1); they are
 #                 simply unreachable from where the tests execute.
 #
-#   Sm            13 of 27 fail: trap-count mismatches (8), mtval mismatches, and CSR writability -
+#   Sm            12 of 27 fail: trap-count mismatches (8), mtval mismatches, and CSR writability -
 #                 a written mip bit reads back 0 because mip is pin-driven and read-only to
 #                 software, and a mcycle write does not stick.
 #

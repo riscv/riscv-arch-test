@@ -118,13 +118,8 @@
 
 ##### Supervisor Interrupts #####
 #ifdef S_SUPPORTED
-  #ifndef RVMODEL_SET_SEXT_INT
-    #error "RVMODEL_SET_SEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
-  #endif
-
-  #ifndef RVMODEL_CLR_SEXT_INT
-    #error "RVMODEL_CLR_SEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
-  #endif
+  // RVMODEL_SET_SEXT_INT / RVMODEL_CLR_SEXT_INT are optional: platforms without a supervisor
+  // external interrupt controller leave them undefined and the trap handler uses mip.SEIP.
 
   #ifndef RVMODEL_CLR_SEXT_INT_M
     #ifdef RVMODEL_CLR_SEXT_INT

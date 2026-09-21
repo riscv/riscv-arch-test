@@ -151,8 +151,6 @@
 
 ##### Supervisor Interrupts #####
 
-#define CVW_SSIP_ADDRESS (CLINT_BASE_ADDRESS + 0xC000)
-
 #define RVMODEL_SET_SEXT_INT(_R1, _R2)          \
   li _R1, 7;                                     \
   li _R2, PLIC_BASE_ADDRESS;                     \
@@ -175,13 +173,8 @@
   li _R2, PLIC_SENABLE_ADDRESS;  /* Disable the S-context UART enable that SET_SEXT turned on, so a later MEXT test does not also raise SEIP via the shared source */\
   sw zero, 0(_R2);
 
-#define RVMODEL_SET_SSW_INT(_R1, _R2) \
-  li _R1, 1; \
-  li _R2, CVW_SSIP_ADDRESS; \
-  sw _R1, 0(_R2);
-
-#define RVMODEL_CLR_SSW_INT(_R1, _R2) \
-  li _R2, CVW_SSIP_ADDRESS; \
-  sw zero, 0(_R2);
+// RVMODEL_SET_SSW_INT / RVMODEL_CLR_SSW_INT are intentionally undefined: Wally has no
+// supervisor software interrupt controller (the CLINT-range slot at 0x0200C000 belongs to
+// the hypervisor TrickBox), so the test environment raises and clears SSI through mip.SSIP.
 
 #endif // _RVMODEL_MACROS_H

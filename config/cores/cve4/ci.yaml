@@ -7,7 +7,7 @@ ci_enabled: true
 # ExceptionsZalrsc/ExceptionsZaamo: Throwing access fault instead of misaligned fault.
 # See https://github.com/openhwfoundation/cv32e40x/issues/1000 and
 # https://github.com/riscv/riscv-arch-test/pull/1710#issuecomment-5444172186
-exclude_extensions: "Sm,SmF,ExceptionsZalrsc,ExceptionsZaamo"
+exclude_extensions: "SmF,ExceptionsZalrsc,ExceptionsZaamo"
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cve4.sh"
 setup_script: ".github/scripts/setup-cve4.sh"

@@ -96,6 +96,14 @@ unexpected_trap:
 // which the M-mode handler above resumes from.  In VS-mode the scause, stval and sepc names
 // reach vscause, vstval and vsepc, so the same code serves both modes.
 .balign 4
+.globl hs_trap_handler
+hs_trap_handler:                        // HS-mode variant: also record the hypervisor trap values
+    csrr    t0, htval
+    la      t1, s_htval
+    SREG    t0, 0(t1)
+    csrr    t0, htinst
+    la      t1, s_htinst
+    SREG    t0, 0(t1)
 .globl s_trap_handler
 s_trap_handler:
     csrr    t0, scause

@@ -74,6 +74,15 @@ breakpoints, misaligned accesses, and load, store and instruction access faults,
 by pointing PMP entry 0 at the scratch page with no permissions while entry 1 grants everything
 else, plus `TRAP_ON_ECALL_FROM_VS` and `REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT`.
 
+Page faults use a one-level page table built in the scratch area: the entry for the region that
+holds the program maps it to itself and every other entry is invalid, so a load, store or jump to
+another region page-faults while the stubs and handlers keep running. With the table in `satp` the
+faults are taken delegated (`STVAL`) and undelegated (`MTVAL`); with it in `vsatp` and the G-stage
+Bare they are taken in VS-mode (`VSTVAL`); with a G-stage table in `hgatp` (leaf `U` bit set, 16 KiB
+root, which is why the scratch area is 16 KiB) and the VS-stage Bare they are guest page faults,
+whose GPA is read from `htval` when HS-mode took the trap or `mtval2` when M-mode did. A hart whose
+`satp` accepts no translation mode instead gets `TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY`.
+
 The parameters that are not extracted, grouped by what it would take, are tracked in
 [parameters_not_extracted.md](parameters_not_extracted.md).
 

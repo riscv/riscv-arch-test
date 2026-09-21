@@ -29,7 +29,7 @@ extern volatile unsigned long probe_resume;   // while nonzero, a trap resumes h
 extern volatile unsigned long probe_cause;    // mcause of the most recent probe trap
 extern volatile unsigned long probe_tval;     // mtval of the most recent probe trap
 extern volatile unsigned long probe_epc;      // mepc of the most recent probe trap
-#define PROBE_SCRATCH_SIZE 4096
+#define PROBE_SCRATCH_SIZE 16384       // a G-stage root page table needs 16 KiB, 16 KiB aligned
 extern unsigned char probe_scratch[PROBE_SCRATCH_SIZE];
 
 #define CAUSE_NONE (~0ul)

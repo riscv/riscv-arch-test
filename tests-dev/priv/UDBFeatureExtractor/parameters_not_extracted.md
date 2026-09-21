@@ -5,17 +5,15 @@ measurement was conclusive. This list tracks the parameters it does not measure 
 what it would take, so that groups can be worked through one at a time. When a group is
 implemented, remove it here and describe the mechanism in the README.
 
-## Would need page tables
+## Would need a second page-table level
 
-A minimal page table in the scratch page (an identity gigapage or megapage for the program plus an
-invalid entry) would let the S-mode and VS-mode handlers take page faults with `satp` on.
+The one-level table in the scratch area gives the ordinary page faults and guest page faults. An
+intermediate guest page fault needs a VS-stage table whose own pages sit in a guest-physical region
+the G-stage table does not map.
 
-- `REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT`, `REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT`,
-  `REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT` (page faults not delegated)
-- `REPORT_VA_IN_STVAL_ON_*_PAGE_FAULT`, `REPORT_VA_IN_VSTVAL_ON_*_PAGE_FAULT` (delegated)
-- `REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT`, `REPORT_GPA_IN_TVAL_ON_*_GUEST_PAGE_FAULT` (a G-stage
-  table in `hgatp` as well)
-- `TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY`
+- `REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT`
+- `TINST_VALUE_ON_LOAD_PAGE_FAULT`, `TINST_VALUE_ON_STORE_AMO_PAGE_FAULT`,
+  `TINST_VALUE_ON_FINAL_*_GUEST_PAGE_FAULT` (with the TINST group below)
 
 ## Would need traps from VS-mode handled in HS-mode
 
@@ -27,8 +25,6 @@ and `htinst` read there.
   `TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT`, `TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED`,
   `TINST_VALUE_ON_MCALL`, `TINST_VALUE_ON_SCALL`, `TINST_VALUE_ON_UCALL`, `TINST_VALUE_ON_VSCALL`,
   `TINST_VALUE_ON_VIRTUAL_INSTRUCTION`
-- `TINST_VALUE_ON_LOAD_PAGE_FAULT`, `TINST_VALUE_ON_STORE_AMO_PAGE_FAULT`,
-  `TINST_VALUE_ON_FINAL_*_GUEST_PAGE_FAULT` (page tables too)
 - `REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION` (a virtual-instruction exception is never
   taken in VS-mode itself; the parameter's meaning needs checking against UDB first)
 

@@ -282,8 +282,10 @@ static const struct { const char *sv; unsigned long mode; } atp_modes[] = { { "S
 // returns with its own ecall.
 
 volatile unsigned long s_cause, s_tval, s_epc;   // written by s_trap_handler
-extern char s_trap_handler[];
+volatile unsigned long s_htval, s_htinst;        // written by hs_trap_handler
+extern char s_trap_handler[], hs_trap_handler[];
 volatile unsigned long lower_stub;               // address the mret enters
+volatile unsigned long fault_va;                 // address the page-fault stubs touch
 
 #define DEFINE_STUB(name, arch, insn)                                                       \
     __asm__(".text\n.balign 4\n.globl " #name "\n" #name ":\n\t.option push\n\t.option arch, +" arch \
@@ -298,6 +300,14 @@ DEFINE_STUB(stub_jump_misaligned, "zicsr", "jalr zero, 2(a1)")
 DEFINE_STUB(stub_lw_scratch, "zicsr", "lw t1, 0(a1)")
 DEFINE_STUB(stub_sw_scratch, "zicsr", "sw t1, 0(a1)")
 DEFINE_STUB(stub_jump_scratch, "zicsr", "jalr zero, 0(a1)")
+#if __riscv_xlen == 64
+#define LOAD_FAULT_VA "la a2, fault_va\n\tld a2, 0(a2)\n\t"
+#else
+#define LOAD_FAULT_VA "la a2, fault_va\n\tlw a2, 0(a2)\n\t"
+#endif
+DEFINE_STUB(stub_load_fault_va, "zicsr", LOAD_FAULT_VA "lw t1, 0(a2)")
+DEFINE_STUB(stub_store_fault_va, "zicsr", LOAD_FAULT_VA "sw t1, 0(a2)")
+DEFINE_STUB(stub_jump_fault_va, "zicsr", LOAD_FAULT_VA "jalr zero, 0(a2)")
 
 #if __riscv_xlen == 64
 #define LREG_ASM "ld"
@@ -341,9 +351,12 @@ DEFINE_CSR_SET(pmpaddr1_set, pmpaddr1)
 DEFINE_CSR_READ(stvec_rd, stvec)
 DEFINE_CSR_READ(vstvec_rd, vstvec)
 
-// Exceptions delegated to the lower mode: everything but the ecalls, which must reach M-mode
+// Exceptions delegated to the lower mode: everything but the ecalls, which must reach M-mode.
+// The guest-page-fault bits (20, 21, 23) only exist with H and are ignored otherwise.
+#define PAGE_FAULTS ((1ul << 12) | (1ul << 13) | (1ul << 15))
+#define GUEST_PAGE_FAULTS ((1ul << 20) | (1ul << 21) | (1ul << 23))
 #define DELEGATED ((1ul << 0) | (1ul << 1) | (1ul << 2) | (1ul << 3) | (1ul << 4) | (1ul << 5) |   \
-                   (1ul << 6) | (1ul << 7) | (1ul << 12) | (1ul << 13) | (1ul << 15))
+                   (1ul << 6) | (1ul << 7) | PAGE_FAULTS | GUEST_PAGE_FAULTS)
 
 // PMP entry 0 grants everything to the lower modes ...
 static void pmp_open(unsigned num_pmp)
@@ -373,6 +386,77 @@ static void pmp_close(unsigned num_pmp)
     }
 }
 
+static void concat(char *out, const char *a, const char *b, const char *c)
+{
+    for (; *a; a++) *out++ = *a;
+    for (; *b; b++) *out++ = *b;
+    for (; *c; c++) *out++ = *c;
+    *out = '\0';
+}
+
+// A one-level page table in probe_scratch: the entry for the region holding the program maps it
+// to itself, every other entry is invalid, so an access to fault_va (another region) page-faults
+// while the stubs and handlers keep running.  For a G-stage table the leaf carries the U bit and
+// the root is 16 KiB, which is why probe_scratch is that size.  Uses the first translation mode
+// the CSR accepts; returns false if it accepts none.
+// hfence.vvma zero, zero and hfence.gvma zero, zero; the assembler will not enable H on an E base
+#define HFENCE_VVMA ".insn r 0x73, 0, 0x11, x0, x0, x0"
+#define HFENCE_GVMA ".insn r 0x73, 0, 0x31, x0, x0, x0"
+#define PTE_LEAF 0xCF          // V R W X A D
+#define PTE_U 0x10
+static const struct { unsigned long mode; unsigned shift; } atp_levels[] = {
+#if __riscv_xlen == 64
+    { 8, 30 }, { 9, 39 }, { 10, 48 }
+#else
+    { 1, 22 }
+#endif
+};
+
+static bool build_page_table(unsigned long (*wr)(unsigned long), bool gstage, unsigned long *atp,
+                             unsigned long *fault)
+{
+    for (unsigned i = 0; i < COUNT(atp_levels); i++) {
+        if (!atp_accepts(wr, ATP_MODE(atp_levels[i].mode)))
+            continue;
+        unsigned shift = atp_levels[i].shift;
+        unsigned long base = (unsigned long)probe_scratch;
+        unsigned long idx = base >> shift, fault_idx = idx == 1 ? 2 : 1;
+        volatile unsigned long *table = (volatile unsigned long *)probe_scratch;
+        for (unsigned j = 0; j < PROBE_SCRATCH_SIZE / sizeof(unsigned long); j++)
+            table[j] = 0;
+        table[idx] = ((((idx << shift) >> 12)) << 10) | PTE_LEAF | (gstage ? PTE_U : 0);
+        *atp = ATP_MODE(atp_levels[i].mode) | (base >> 12);
+        *fault = fault_idx << shift;
+        return true;
+    }
+    return false;
+}
+
+// The REPORT_VA_IN_<tval>_ON_*_PAGE_FAULT parameters for the mode entered with mpp/virt.  When the
+// faults are delegated the lower mode's handler records them, otherwise the M-mode handler does.
+static void page_fault_params(const char *tval, bool virt, bool delegated, unsigned long mstatus)
+{
+    static const struct { int stub; unsigned long cause; const char *suffix; } faults[] = {
+        { 0, 13, "_ON_LOAD_PAGE_FAULT" }, { 1, 15, "_ON_STORE_AMO_PAGE_FAULT" }, { 2, 12, "_ON_INSTRUCTION_PAGE_FAULT" },
+    };
+    char *const stubs[] = { stub_load_fault_va, stub_store_fault_va, stub_jump_fault_va };
+    char name[80];
+    for (unsigned i = 0; i < COUNT(faults); i++) {
+        unsigned long cause = run_in_mode(stubs[faults[i].stub], 1, virt, mstatus);
+        if (cause != faults[i].cause)
+            continue;
+        concat(name, "REPORT_VA_IN_", tval, faults[i].suffix);
+        param_bool(name, (delegated ? s_tval : probe_tval) == fault_va);
+    }
+}
+
+// After a guest page fault: the GPA >> 2 the trap reported, from htval if the HS-mode handler
+// took it, else from mtval2, which still holds it since nothing has trapped into M-mode since
+static unsigned long guest_pa(void)
+{
+    return s_cause != CAUSE_NONE ? s_htval : PROBE_VALUE("zicsr", "csrr a3, mtval2");
+}
+
 // U-mode or S-mode ecall
 static void ecall_from(const char *name, unsigned long mpp, bool virt, unsigned long mstatus)
 {
@@ -381,14 +465,6 @@ static void ecall_from(const char *name, unsigned long mpp, bool virt, unsigned 
         param_bool(name, true);
     else if (cause == CAUSE_BREAKPOINT)           // the ecall did not trap, the ebreak after it did
         param_bool(name, false);
-}
-
-static void concat(char *out, const char *a, const char *b, const char *c)
-{
-    for (; *a; a++) *out++ = *a;
-    for (; *b; b++) *out++ = *b;
-    for (; *c; c++) *out++ = *c;
-    *out = '\0';
 }
 
 // The REPORT_*_IN_STVAL_ON_* (or VSTVAL) parameters: take each trap in S-mode (VS-mode) and
@@ -777,9 +853,26 @@ void print_parameters(unsigned long vlen)
             unsigned long stvec = stvec_rd();
             ecall_from("TRAP_ON_ECALL_FROM_S", 1, false, mstatus);
             medeleg_set(DELEGATED);
-            stvec_set((unsigned long)s_trap_handler);
+            stvec_set((unsigned long)(has_h ? hs_trap_handler : s_trap_handler));
             satp_set(0);
             lower_mode_tval_params("STVAL", false, usable_pmp, mstatus);
+            // Page faults, with a page table in the scratch area and satp pointing at it
+            unsigned long atp, fva;
+            bool have_table = build_page_table(satp_wr, false, &atp, &fva);
+            if (have_table) {
+                fault_va = fva;
+                satp_set(atp);
+                PROBE("zicsr", "sfence.vma");
+                page_fault_params("STVAL", false, true, mstatus);
+                medeleg_set(DELEGATED & ~PAGE_FAULTS);
+                page_fault_params("MTVAL", false, false, mstatus);
+                medeleg_set(DELEGATED);
+                satp_set(0);
+                PROBE("zicsr", "sfence.vma");
+            } else {
+                // satp accepts no translation mode: does sfence.vma trap?
+                param_bool("TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY", !PROBE("zicsr", "sfence.vma"));
+            }
             if (usable_pmp >= 2) {
                 // An instruction access fault not delegated: the M-mode tval after a jump from S
                 medeleg_set(DELEGATED & ~(1ul << CAUSE_INSTRUCTION_ACCESS_FAULT));
@@ -791,13 +884,44 @@ void print_parameters(unsigned long vlen)
             }
             if (has_h) {
                 unsigned long vstvec = vstvec_rd();
-                hedeleg_set(DELEGATED);
+                // Guest page faults must reach HS-mode: the spec makes their hedeleg bits
+                // read-only zero, but Sail 0.14 lets them be set and delegates
+                hedeleg_set(DELEGATED & ~GUEST_PAGE_FAULTS);
                 vstvec_set((unsigned long)s_trap_handler);
                 vsatp_set(0);
                 hgatp_set(0);
                 PROBE("zicsr", "li t1, 1 << 7\n\tcsrs hstatus, t1");     // SPV: mret enters VS
                 ecall_from("TRAP_ON_ECALL_FROM_VS", 1, true, mstatus);
                 lower_mode_tval_params("VSTVAL", true, usable_pmp, mstatus);
+                // VS-stage page faults: the same table in vsatp with the G-stage Bare
+                if (have_table && build_page_table(vsatp_wr, false, &atp, &fva)) {
+                    fault_va = fva;
+                    vsatp_set(atp);
+                    PROBE("zicsr", HFENCE_VVMA);
+                    page_fault_params("VSTVAL", true, true, mstatus);
+                    vsatp_set(0);
+                    PROBE("zicsr", HFENCE_VVMA);
+                }
+                // Guest page faults: a G-stage table in hgatp with the VS-stage Bare.  They cannot
+                // be delegated to VS, so HS takes them and hs_trap_handler records htval.
+                if (build_page_table(hgatp_wr, true, &atp, &fva)) {
+                    fault_va = fva;
+                    hgatp_set(atp);
+                    PROBE("zicsr", HFENCE_GVMA);
+                    // The GPA is in htval when HS-mode took the fault and in mtval2 when M-mode did
+                    // (a hart may not let medeleg delegate guest page faults); UDB names both
+                    if (run_in_mode(stub_load_fault_va, 1, true, mstatus) == 21) {
+                        bool gpa_ok = guest_pa() == fva >> 2;
+                        param_bool("REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT", gpa_ok);
+                        param_bool("REPORT_GPA_IN_TVAL_ON_LOAD_GUEST_PAGE_FAULT", gpa_ok);
+                    }
+                    if (run_in_mode(stub_store_fault_va, 1, true, mstatus) == 23)
+                        param_bool("REPORT_GPA_IN_TVAL_ON_STORE_AMO_GUEST_PAGE_FAULT", guest_pa() == fva >> 2);
+                    if (run_in_mode(stub_jump_fault_va, 1, true, mstatus) == 20)
+                        param_bool("REPORT_GPA_IN_TVAL_ON_INSTRUCTION_GUEST_PAGE_FAULT", guest_pa() == fva >> 2);
+                    hgatp_set(0);
+                    PROBE("zicsr", HFENCE_GVMA);
+                }
                 PROBE("zicsr", "li t1, 1 << 7\n\tcsrc hstatus, t1");
                 hedeleg_set(0);
                 vstvec_set(vstvec);

@@ -76,8 +76,9 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
             bins unmapped = {32'hC0400000};
         `endif
     }
-    // menvcfg.SSE x senvcfg.SSE. menvcfg.SSE=0 forces senvcfg.SSE read-only zero, which the
-    // trace does not re-log, so senvcfg.SSE is sampled as its effective value.
+    // menvcfg.SSE x senvcfg.SSE. menvcfg.SSE=0 forces senvcfg.SSE read-only zero. Clearing menvcfg.SSE does not re-log
+    // senvcfg, so until the next senvcfg write the trace can still show senvcfg.SSE=1; ANDing with
+    // menvcfg.SSE gives the effective value. An explicit senvcfg write is logged legalized.
     sse_state: coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1),
                            ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1 &&
                             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))} {
@@ -152,12 +153,24 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
             bins bare     = {4'b0000};
             bins translating = {[4'b1000:4'b1011]};
         }
+        satp_bare: coverpoint ins.current.csr[CSR_SATP][63:60] {
+            bins bare = {4'b0000};
+        }
     `else
         satp_mode: coverpoint ins.current.csr[CSR_SATP][31] {
             bins bare        = {1'b0};
             bins translating = {1'b1};
         }
+        satp_bare: coverpoint ins.current.csr[CSR_SATP][31] {
+            bins bare = {1'b0};
+        }
     `endif
+    // Zicfiss active in the mode the instruction runs in: menvcfg.SSE=1, and senvcfg.SSE=1 too in U-mode.
+    ss_active_below_m: coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
+                                   ((ins.prev.mode == 2'b01) ||
+                                    (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))) {
+        bins active = {1'b1};
+    }
     // ── Main coverpoints ──────────────────────────────────────────────────
     // SSAMOSWAP at M faults unconditionally — sweep every axis that might wrongly
     // be treated as a precondition.
@@ -171,6 +184,9 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
     // software-check exception a value mismatch would raise.
     cp_ss_pmp_permissions:         cross priv_mode_s, ss_mem_instr, pmp0_rw;
 
+    // Below M-mode with satp.MODE=Bare, every SS memory access raises a store/AMO access fault.
+    cp_ss_satp_bare:               cross priv_mode_s_u, ss_mem_instr, ss_active_below_m, satp_bare;
+
     // Zicfiss inactive: MOP-encoded instructions stay inert, even with an ssp that an
     // active instruction would fault on. At M-mode this holds for every SSE state; S-mode
     // is gated by menvcfg.SSE alone. The U-mode leg is cp_ss_instr_inactive_u in ZicfissU.
@@ -180,9 +196,9 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
     // menvcfg.SSE=0 forces senvcfg.SSE (and henvcfg.SSE) read-only zero.
     cp_envcfg_sse_rdonly0_senvcfg: cross priv_mode_m, csr_write_ops, senvcfg_csr, menvcfg_sse,
                                          sse_bit_written, senvcfg_sse_readback {
-        // menvcfg.SSE=0 forces senvcfg.SSE read-only zero, so a read-back of 1 is
-        // architecturally impossible in that half of the cross.
-        ignore_bins rdonly0_cannot_read_one =
+        // menvcfg.SSE=0 forces senvcfg.SSE read-only zero, and the write that is sampled here
+        // is logged with its legalized value, so a read-back of 1 is an error.
+        illegal_bins rdonly0_cannot_read_one =
             binsof(menvcfg_sse.sse_off) && binsof(senvcfg_sse_readback.reads_one);
         // With menvcfg.SSE=1 the field is writable: csrrw reads back what it wrote, and
         // csrrs of a 1 reads back 1.
@@ -194,9 +210,21 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
             binsof(csr_write_ops.csrrs) && binsof(menvcfg_sse.sse_on) &&
             binsof(sse_bit_written.wrote_one) && binsof(senvcfg_sse_readback.reads_zero);
     }
+    // H_SUPPORTED is undefined for coverage until Sail supports the hypervisor extension (see
+    // riscv_arch_test.sv), so this cross and its stimulus are dormant until then.
     `ifdef H_SUPPORTED
         cp_envcfg_sse_rdonly0_henvcfg: cross priv_mode_m, csr_write_ops, henvcfg_csr, menvcfg_sse,
-                                             sse_bit_written, henvcfg_sse_readback;
+                                             sse_bit_written, henvcfg_sse_readback {
+            illegal_bins rdonly0_cannot_read_one =
+                binsof(menvcfg_sse.sse_off) && binsof(henvcfg_sse_readback.reads_one);
+            ignore_bins csrrw_reads_back_written =
+                binsof(csr_write_ops.csrrw) && binsof(menvcfg_sse.sse_on) &&
+                ((binsof(sse_bit_written.wrote_zero) && binsof(henvcfg_sse_readback.reads_one)) ||
+                 (binsof(sse_bit_written.wrote_one) && binsof(henvcfg_sse_readback.reads_zero)));
+            ignore_bins csrrs_set_reads_one =
+                binsof(csr_write_ops.csrrs) && binsof(menvcfg_sse.sse_on) &&
+                binsof(sse_bit_written.wrote_one) && binsof(henvcfg_sse_readback.reads_zero);
+        }
     `endif
 
 endgroup

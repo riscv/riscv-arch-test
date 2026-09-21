@@ -338,6 +338,8 @@ def _umode_image_map(xlen: int) -> list[str]:
         "slli t4, t4, 12          # first page of the user-writable data region",
         "1:",
         "bgeu t0, t1, 2f",
+        "LA(t5, rvtest_uimg_lvl0_pg_tbl + 4096)",
+        "bgeu t2, t5, 2f          # leaf table full: leave the rest unmapped",
         "srli t5, t0, 12",
         "slli t5, t5, 10",
         f"ori t5, t5, ({_IMAGE_PERMS})",
@@ -422,15 +424,20 @@ def identity_map_only(xlen: int, *, user: bool = False) -> list[str]:
     return _identity_map(xlen, user=user)
 
 
-def map_zicfiss_pages(xlen: int, *, ss_perms: str = PTE_SS, user: bool = True) -> list[str]:
+def map_zicfiss_pages(
+    xlen: int, *, ss_perms: str = PTE_SS, user: bool = True, ss_page_user: bool | None = None
+) -> list[str]:
     """Wire up the PTE chain mapping the SS / RW / RO pages.
 
     ``ss_perms`` lets a caller remap the shadow stack page with a different
     encoding (e.g. PTE_RO) to exercise the wrong-page-type coverpoints.
     ``user`` adds PTE_U to every leaf, required when the testcases run in U-mode, and
     selects the split 4 KiB image map over the plain supervisor superpage.
+    ``ss_page_user`` overrides ``user`` for the shadow stack page alone; False leaves its
+    U bit to ``ss_perms``.
     """
     u = " | PTE_U" if user else ""
+    ss_u = u if ss_page_user is None else (" | PTE_U" if ss_page_user else "")
     if xlen == 64:
         setup, va_ss, va_rw, va_ro = "PTE_SETUP_SV39", VA_SS_RV64, VA_RW_RV64, VA_RO_RV64
         chain = [
@@ -444,7 +451,7 @@ def map_zicfiss_pages(xlen: int, *, ss_perms: str = PTE_SS, user: bool = True) -
     return [
         *(_umode_image_map(xlen) if user else _identity_map(xlen, user=False)),
         *chain,
-        f"{setup}(rvtest_zicfiss_ss_page, ({ss_perms}{u}), {hex(va_ss)}, LEVEL0)",
+        f"{setup}(rvtest_zicfiss_ss_page, ({ss_perms}{ss_u}), {hex(va_ss)}, LEVEL0)",
         f"{setup}(rvtest_zicfiss_rw_page, ({PTE_RW}{u}), {hex(va_rw)}, LEVEL0)",
         f"{setup}(rvtest_zicfiss_ro_page, ({PTE_RO}{u}), {hex(va_ro)}, LEVEL0)",
         "sfence.vma",

@@ -97,8 +97,9 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
         bins sse_off = {1'b0};
         bins sse_on  = {1'b1};
     }
-    // menvcfg.SSE=0 forces senvcfg.SSE read-only zero, which the trace does not re-log, so
-    // senvcfg.SSE is sampled as its effective value.
+    // menvcfg.SSE=0 forces senvcfg.SSE read-only zero. Clearing menvcfg.SSE does not re-log
+    // senvcfg, so until the next senvcfg write the trace can still show senvcfg.SSE=1; ANDing with
+    // menvcfg.SSE gives the effective value. An explicit senvcfg write is logged legalized.
     s_sse_state: coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1),
                              ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1 &&
                               get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))} {
@@ -238,9 +239,9 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
     // senvcfg.SSE reads back 0 from S-mode whenever menvcfg.SSE is 0.
     cp_senvcfg_sse_rdonly0_s:      cross priv_mode_s, csr_write_ops, senvcfg_csr, menvcfg_sse,
                                          sse_bit_written, senvcfg_sse_readback {
-        // menvcfg.SSE=0 forces senvcfg.SSE read-only zero, so a read-back of 1 is
-        // architecturally impossible in that half of the cross.
-        ignore_bins rdonly0_cannot_read_one =
+        // menvcfg.SSE=0 forces senvcfg.SSE read-only zero, and the write that is sampled here
+        // is logged with its legalized value, so a read-back of 1 is an error.
+        illegal_bins rdonly0_cannot_read_one =
             binsof(menvcfg_sse.sse_off) && binsof(senvcfg_sse_readback.reads_one);
         // With menvcfg.SSE=1 the field is writable: csrrw reads back what it wrote, and
         // csrrs of a 1 reads back 1.

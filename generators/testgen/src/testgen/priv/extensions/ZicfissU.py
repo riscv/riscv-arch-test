@@ -599,13 +599,13 @@ def _generate_target_page(test_data: TestData) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# cp_ss_instr_target_page — MXR and pte.U axes
+# cp_ss_instr_target_page_u_mxr — MXR and pte.U axes
 # ---------------------------------------------------------------------------
 
 
 def _generate_target_page_mxr_u(test_data: TestData) -> list[str]:
     """Sweep sstatus.MXR and the page's U bit against the SS instructions."""
-    coverpoint = "cp_ss_instr_target_page"
+    coverpoint = "cp_ss_instr_target_page_u_mxr"
     lines: list[str] = [comment_banner(coverpoint, "MXR and pte.U axes on the shadow stack page")]
 
     for u_bit in (0, 1):
@@ -615,11 +615,11 @@ def _generate_target_page_mxr_u(test_data: TestData) -> list[str]:
             ss_va, _, _ = va_for(xlen)
             ssp_top = ss_va + 0x800
             addr_reg, mask_reg = test_data.int_regs.get_registers(2)
-            # user=False keeps the identity map supervisor-only; the SS page's own U bit
-            # is what is being swept here.
+            # user=True maps the image user-accessible for the U-mode testcases;
+            # ss_page_user=False leaves the SS page's U bit to perms, which is the axis swept here.
             block = [
                 GOTO_SMODE,
-                *map_zicfiss_pages(xlen, ss_perms=perms, user=True),
+                *map_zicfiss_pages(xlen, ss_perms=perms, user=True, ss_page_user=False),
                 *set_sum(),
                 *set_envcfg_sse("menvcfg", 1, test_data, mode="S"),
                 *set_envcfg_sse("senvcfg", 1, test_data, mode="S"),
@@ -646,6 +646,7 @@ def _generate_target_page_mxr_u(test_data: TestData) -> list[str]:
                             *ss_insn(mnemonic, compressed=compressed),
                         ]
                     )
+                block.extend(_ssamoswap_forms(test_data, xlen, ssp_top, addr_reg, f"u{u_bit}_mxr{mxr}", coverpoint))
             block.extend(restore_link_regs(save_x1, save_x5))
             block.extend(teardown_vm("U"))
             test_data.int_regs.return_registers([addr_reg, mask_reg, save_x1, save_x5])
@@ -925,10 +926,13 @@ def _generate_page_access(test_data: TestData) -> list[str]:
 
 
 def _generate_sse_gating(test_data: TestData) -> list[str]:
-    """Sweep the (menvcfg.SSE, senvcfg.SSE) enable chain from U-mode."""
+    """Sweep the reachable (menvcfg.SSE, senvcfg.SSE) states from U-mode.
+
+    menvcfg.SSE=0 makes senvcfg.SSE read-only zero, so (0, 1) is the same state as (0, 0).
+    """
     lines: list[str] = [comment_banner("cp_ssp_csr_gating_u", "SSE enable chain seen from U-mode")]
 
-    for menvcfg, senvcfg in [(1, 1), (1, 0), (0, 1), (0, 0)]:
+    for menvcfg, senvcfg in [(1, 1), (1, 0), (0, 0)]:
         tag = f"m{menvcfg}s{senvcfg}"
 
         def build(xlen: int, menvcfg: int = menvcfg, senvcfg: int = senvcfg, tag: str = tag) -> list[str]:

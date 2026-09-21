@@ -97,12 +97,13 @@ covergroup ZicfissH_cg with function sample(ins_t ins);
     // ILLEGAL-instruction even when V=1, while henvcfg.SSE/senvcfg.SSE gating with V=1
     // raises VIRTUAL-instruction. The inactive_men_off bin below is therefore the
     // illegal-instruction case, not a virtual-instruction one.
-    // VS-mode needs menvcfg.SSE and henvcfg.SSE.
+    // VS-mode needs menvcfg.SSE and henvcfg.SSE. menvcfg.SSE=0 forces henvcfg.SSE read-only zero,
+    // which the trace does not re-log, so henvcfg.SSE is sampled as its effective value.
     vs_sse_state: coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1),
-                              ins.prev.csr[CSR_HENVCFG][3]} {
-        bins inactive_men_off = {2'b01};
+                              ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
+                               ins.prev.csr[CSR_HENVCFG][3])} {
+        bins inactive_men_off = {2'b00};
         bins inactive_hen_off = {2'b10};
-        bins inactive_both    = {2'b00};
         bins active           = {2'b11};
     }
     // VU-mode additionally needs senvcfg.SSE.
@@ -141,19 +142,22 @@ covergroup ZicfissH_cg with function sample(ins_t ins);
         wildcard bins csrrw = {CSRRW};
         wildcard bins csrrs = {CSRRS};
     }
-    // Full three-bit enable state. Which bits actually apply depends on the mode.
+    // Full three-bit enable state. Which bits actually apply depends on the mode. menvcfg.SSE=0
+    // forces both children read-only zero, which the trace does not re-log, so they are sampled
+    // as their effective values.
     sse_chain: coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1),
-                           (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1),
-                           ins.prev.csr[CSR_HENVCFG][3]} {
+                           ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
+                            (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1)),
+                           ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
+                            ins.prev.csr[CSR_HENVCFG][3])} {
         bins m0s0h0 = {3'b000};
-        bins m0s0h1 = {3'b001};
         bins m1s0h0 = {3'b100};
         bins m1s0h1 = {3'b101};
         bins m1s1h0 = {3'b110};
         bins m1s1h1 = {3'b111};
-        // menvcfg.SSE=0 forces both children to 0, so m0s1* and m0s0h1 with a set
-        // child are unreachable.
-        illegal_bins m0_child_set = {3'b010, 3'b011};
+        // menvcfg.SSE=0 forces both children to 0, so any state with a set child under
+        // menvcfg.SSE=0 is unreachable.
+        illegal_bins m0_child_set = {3'b001, 3'b010, 3'b011};
     }
     ss_all_instr: coverpoint ins.current.insn {
         wildcard bins sspush_x1     = {SSPUSH_X1};

@@ -30,8 +30,9 @@ normative_rule_definitions:
   - name: menvcfg_sse_rdonly0
     coverpoint:
       [
-        "{ZicfissSm_cg}/{cp_envcfg_sse_rdonly0_senvcfg,cp_envcfg_sse_rdonly0_henvcfg}",
+        "{ZicfissSm_cg}/{cp_envcfg_sse_rdonly0_senvcfg}",
         "{ZicfissS_cg}/{cp_senvcfg_sse_rdonly0_s}",
+        "henvcfg.SSE: {ZicfissSm_cg}/cp_envcfg_sse_rdonly0_henvcfg, dormant until H_SUPPORTED is enabled for coverage (riscv_arch_test.sv undefines it until Sail supports the hypervisor extension)",
       ]
 
   # The Zicfiss extension adds the SSE field in henvcfg. If the SSE field is set to
@@ -118,8 +119,7 @@ normative_rule_definitions:
   # mode is less than M, shadow stack instructions raise a store/AMO access-fault
   # exception.
   - name: satp_mode_bare
-    # TODO no test yet: SS instruction with satp.MODE=Bare below M-mode is not generated
-    coverpoint: [""]
+    coverpoint: ["{ZicfissSm_cg}/{cp_ss_satp_bare}"]
 
   # When the effective privilege mode is M, memory access by an SSAMOSWAP.W/D
   # instruction results in a store/AMO access-fault exception.
@@ -146,7 +146,7 @@ normative_rule_definitions:
   - name: ss_page_exceptions
     coverpoint:
       [
-        "{ZicfissU_cg}/{cp_ss_page_access_store,cp_ss_page_access_load,cp_ss_page_access_amo,cp_ss_page_access_cbo,cp_ss_page_access_cboz,cp_ss_page_access_lrsc,cp_ss_page_access_amocas,cp_ss_instr_target_page}",
+        "{ZicfissU_cg}/{cp_ss_page_access_store,cp_ss_page_access_load,cp_ss_page_access_amo,cp_ss_page_access_cbo,cp_ss_page_access_cboz,cp_ss_page_access_lrsc,cp_ss_page_access_amocas,cp_ss_instr_target_page,cp_ss_instr_target_page_u_mxr}",
         "{ZicfissS_cg}/{cp_ss_page_enc_load,cp_ss_page_enc_store,cp_ss_instr_target_page_s}",
       ]
 
@@ -251,4 +251,19 @@ normative_rule_definitions:
       [
         "{ZicfissU_cg}/{cp_ssamoswap,cp_ssamoswap_aqrl,cp_ssamoswap_reg_edges,cp_ss_address_alignment_swap}",
         "{ZicfissS_cg}/{cp_ssamoswap_s,cp_ss_address_alignment_swap_s}",
+      ]
+
+  # On a trap caused by a software-check exception, the stval register holds the cause for the exception.
+  - name: stval_exception_info
+    coverpoint:
+      [
+        "{ZicfissU_cg}/{cp_sspopchk_mismatch}",
+        "{ZicfissS_cg}/{cp_sspopchk_mismatch_s}",
+      ]
+
+  # On a trap caused by a software-check exception, the mtval register holds the cause for the exception.
+  - name: mtval_swchk
+    coverpoint:
+      [
+        "Not reachable for Zicfiss: shadow stack instructions are never active in M-mode, and the ACT4 boot delegates software-check exceptions to S-mode (medeleg[18]=1), so a shadow stack fault is always reported in stval; see stval_exception_info",
       ]

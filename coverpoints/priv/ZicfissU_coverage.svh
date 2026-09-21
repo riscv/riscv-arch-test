@@ -204,9 +204,9 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
         bins sse_on  = {1'b1};
     }
     // Zicfiss active for U-mode requires BOTH menvcfg.SSE and senvcfg.SSE.
-    // menvcfg.SSE=0 forces senvcfg.SSE read-only zero, which the trace does not re-log, so
-    // senvcfg.SSE is sampled as its effective value. The test still attempts to set it; the
-    // read-back is checked by the signature.
+    // menvcfg.SSE=0 forces senvcfg.SSE read-only zero. Clearing menvcfg.SSE does not re-log
+    // senvcfg, so until the next senvcfg write the trace can still show senvcfg.SSE=1; ANDing with
+    // menvcfg.SSE gives the effective value. An explicit senvcfg write is logged legalized.
     u_sse_active: coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1),
                               ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1 &&
                                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))} {
@@ -397,6 +397,9 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
 
     // Page / PMA behaviour
     cp_ss_instr_target_page:       cross priv_mode_u, ss_mem_instr, pte_xwr;
+    // The SS page's U bit and sstatus.MXR: a U=0 page faults in translation from U-mode, and
+    // MXR has no effect on an SS instruction's access to the R=0 SS page.
+    cp_ss_instr_target_page_u_mxr: cross priv_mode_u, ss_mem_instr, pte_ss_page, pte_u, sstatus_mxr;
 
     // A push at the base of a page writes into the preceding page; a pop reads the
     // page ssp is already on. The fault follows the page actually accessed.

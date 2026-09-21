@@ -23,6 +23,7 @@ from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZicfissCommon import (
     GOTO_MMODE,
     GOTO_SMODE,
+    GOTO_UMODE,
     SSE_BIT,
     both_xlens,
     identity_map_only,
@@ -152,42 +153,48 @@ def _generate_menvcfg_gating(test_data: TestData) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# cp_envcfg_sse_rdonly0_senvcfg
+# cp_envcfg_sse_rdonly0_senvcfg / cp_envcfg_sse_rdonly0_henvcfg
 # ---------------------------------------------------------------------------
 
 
 def _generate_envcfg_rdonly0(test_data: TestData) -> list[str]:
-    """With menvcfg.SSE=0, senvcfg.SSE is read-only zero regardless of what is written."""
-    coverpoint = "cp_envcfg_sse_rdonly0_senvcfg"
+    """With menvcfg.SSE=0, senvcfg.SSE and henvcfg.SSE are read-only zero regardless of what is written.
+
+    The henvcfg leg needs the hypervisor extension, so it is assembled only with H_SUPPORTED.
+    """
     rd_reg, val_reg = test_data.int_regs.get_registers(2)
     lines: list[str] = [
-        comment_banner(coverpoint, "menvcfg.SSE=0 forces senvcfg.SSE read-only zero"),
+        comment_banner("cp_envcfg_sse_rdonly0_*", "menvcfg.SSE=0 forces senvcfg.SSE and henvcfg.SSE read-only zero"),
     ]
 
-    for menvcfg_sse in (0, 1):
-        lines.extend(set_envcfg_sse("menvcfg", menvcfg_sse, test_data, mode="M"))
-        for written in (0, 1):
-            tag = f"men{menvcfg_sse}_wrote{written}"
-            # csrrw writes the whole register; csrrs sets just the SSE bit.
-            lines.extend(
-                [
-                    f"LI(x{val_reg}, {hex(written << SSE_BIT)})",
-                    test_data.add_testcase(f"senvcfg_sse_csrrw_{tag}", coverpoint, _CG),
-                    f"csrrw x{rd_reg}, senvcfg, x{val_reg}",
-                    f"csrr x{rd_reg}, senvcfg   # SSE must read 0 when menvcfg.SSE=0",
-                    write_sigupd(rd_reg, test_data),
-                ]
-            )
-            if written:
-                lines.extend(
+    for csr in ("senvcfg", "henvcfg"):
+        coverpoint = f"cp_envcfg_sse_rdonly0_{csr}"
+        body: list[str] = []
+        for menvcfg_sse in (0, 1):
+            body.extend(set_envcfg_sse("menvcfg", menvcfg_sse, test_data, mode="M"))
+            for written in (0, 1):
+                tag = f"men{menvcfg_sse}_wrote{written}"
+                # csrrw writes the whole register; csrrs sets just the SSE bit.
+                body.extend(
                     [
-                        f"LI(x{val_reg}, {hex(1 << SSE_BIT)})",
-                        test_data.add_testcase(f"senvcfg_sse_csrrs_{tag}", coverpoint, _CG),
-                        f"csrrs x{rd_reg}, senvcfg, x{val_reg}",
-                        f"csrr x{rd_reg}, senvcfg",
+                        f"LI(x{val_reg}, {hex(written << SSE_BIT)})",
+                        test_data.add_testcase(f"{csr}_sse_csrrw_{tag}", coverpoint, _CG),
+                        f"csrrw x{rd_reg}, {csr}, x{val_reg}",
+                        f"csrr x{rd_reg}, {csr}   # SSE must read 0 when menvcfg.SSE=0",
                         write_sigupd(rd_reg, test_data),
                     ]
                 )
+                if written:
+                    body.extend(
+                        [
+                            f"LI(x{val_reg}, {hex(1 << SSE_BIT)})",
+                            test_data.add_testcase(f"{csr}_sse_csrrs_{tag}", coverpoint, _CG),
+                            f"csrrs x{rd_reg}, {csr}, x{val_reg}",
+                            f"csrr x{rd_reg}, {csr}",
+                            write_sigupd(rd_reg, test_data),
+                        ]
+                    )
+        lines.extend(["#ifdef H_SUPPORTED", *body, "#endif"] if csr == "henvcfg" else body)
 
     test_data.int_regs.return_registers([rd_reg, val_reg])
     return lines
@@ -271,6 +278,57 @@ def _generate_pmp_permissions(test_data: TestData) -> list[str]:
 
         lines.append(f"# --- pmp0cfg R/W = {tag} ---")
         lines.extend(both_xlens(build))
+    return lines
+
+
+# ---------------------------------------------------------------------------
+# cp_ss_satp_bare
+# ---------------------------------------------------------------------------
+
+
+def _generate_satp_bare(test_data: TestData) -> list[str]:
+    """Below M-mode, an SS instruction with satp.MODE=Bare raises a store/AMO access fault."""
+    coverpoint = "cp_ss_satp_bare"
+    lines: list[str] = [comment_banner(coverpoint, "SS instructions in S- and U-mode with satp.MODE=Bare")]
+
+    def build(xlen: int) -> list[str]:
+        addr_reg, data_reg = test_data.int_regs.get_registers(2)
+        block = [
+            "csrwi satp, 0",
+            "sfence.vma",
+            *set_envcfg_sse("menvcfg", 1, test_data, mode="M"),
+            *set_envcfg_sse("senvcfg", 1, test_data, mode="M"),
+        ]
+        save_x1, save_x5, save_lines = save_link_regs(test_data)
+        block.extend(save_lines)
+        for mode in ("S", "U"):
+            block.append(GOTO_SMODE if mode == "S" else GOTO_UMODE)
+            tag = f"{mode.lower()}mode_bare_rv{xlen}"
+            for mnemonic, compressed, name in _PUSH_FORMS + _POP_FORMS:
+                reg = "x1" if "x1" in mnemonic else "x5"
+                block.extend(
+                    [
+                        f"LA(x{addr_reg}, rvtest_zicfiss_ss_page + 0x800)",
+                        f"csrw ssp, x{addr_reg}",
+                        f"LI({reg}, 0x0BADF00D)",
+                        test_data.add_testcase(f"{name}_{tag}", coverpoint, _CG),
+                        *ss_insn(mnemonic, compressed=compressed),
+                    ]
+                )
+            block.extend([f"LA(x{addr_reg}, rvtest_zicfiss_ss_page)", f"LI(x{data_reg}, 0x11223344)"])
+            for width in ["w"] + (["d"] if xlen == 64 else []):
+                block.extend(
+                    [
+                        test_data.add_testcase(f"ssamoswap_{width}_{tag}", coverpoint, _CG),
+                        *ss_insn(f"ssamoswap.{width} x{data_reg}, x{data_reg}, (x{addr_reg})"),
+                    ]
+                )
+            block.append(GOTO_MMODE)
+        block.extend(restore_link_regs(save_x1, save_x5))
+        test_data.int_regs.return_registers([addr_reg, data_reg, save_x1, save_x5])
+        return block
+
+    lines.extend(both_xlens(build))
     return lines
 
 
@@ -365,6 +423,7 @@ def make_zicfisssm(test_data: TestData) -> list[TestChunk]:
         _generate_menvcfg_gating,
         _generate_envcfg_rdonly0,
         _generate_pmp_permissions,
+        _generate_satp_bare,
         _generate_instr_inactive,
     ):
         tc = test_data.begin_test_chunk()

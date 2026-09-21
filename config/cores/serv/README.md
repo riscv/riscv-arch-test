@@ -14,9 +14,14 @@ The build knobs are the ones SERV's own compliance flow uses: `width=1`, `compre
 `with_csr=1`, `MDU=1`, `memsize=8388608`. Nothing in SERV, `servant` or the testbench is patched;
 this port is config plus scripts.
 
-SERV implements privileged specification 1.11, so it is declared `Sm 1.11.0`. That matters:
-`mstatush` arrived in 1.12, SERV has no `mstatush`, and ACT guards every access to it behind
-`SM1P12P0_OR_LATER_SUPPORTED`.
+SERV implements privileged specification 1.11, so it is declared `Sm 1.11.0` to UDB and
+`Privileged_ISA_1_11` to Sail. That matters: `mstatush` arrived in 1.12, SERV has no `mstatush`,
+and ACT guards every access to it behind `SM1P12P0_OR_LATER_SUPPORTED`.
+
+Declaring 1.11 to Sail rather than 1.12 costs one test, `Sm_mcsr_walk-11` at bin
+`mstatush_set_bit_6`. At 1.12 the reference model and SERV happened to agree, because SERV aliases
+`mstatush` onto `mstatus`; at 1.11 they do not, which is the aliasing showing through rather than a
+new defect. `Sm` is excluded either way, so the CI result is unchanged.
 
 ## The CSR address aliasing, and why the configuration is enough
 
@@ -34,7 +39,7 @@ initializes it and is therefore harmless. The two trap-handler `mip` reads are b
 interrupt-only paths that this M-mode-only, interrupt-free configuration never reaches. No custom
 `RVMODEL_BOOT_TO_MMODE` is needed.
 
-Current results: 89/116 with nothing excluded, 77/77 with the exclusions in `ci.yaml`, which
+Current results: 88/116 with nothing excluded, 77/77 with the exclusions in `ci.yaml`, which
 records the measured reason for every excluded suite.
 
 ## Building and running

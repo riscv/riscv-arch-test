@@ -7,7 +7,7 @@ ci_enabled: true
 # Exclusions are by test-suite directory, the only granularity EXCLUDE_EXTENSIONS supports.
 # Each entry records the specific measured reason, on olofk/serv @ f200eb2e verilated as
 # width=1, compressed=1, with_csr=1, MDU=1, memsize=8 MiB.  Without exclusions: 116 tests
-# selected, 89 pass, 27 fail.  With them: 77 selected, 77 pass.
+# selected, 88 pass, 28 fail.  With them: 77 selected, 77 pass.
 # Every failure is a DUT-versus-spec divergence, not a configuration error: the identical
 # test sources all pass on config/sail/sail-rv32-max.  ~/reviews/act-ports/serv-discrepancies.md
 # has the full write-up with RTL citations.

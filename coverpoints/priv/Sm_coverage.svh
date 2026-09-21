@@ -581,11 +581,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     cp_misa_dependencies :      cross priv_mode_m, csrrw, misa, misa_dependencies;
     cp_misa_clear_c :           cross priv_mode_m, csrc, misa_c_0, pc_1;
 
-    `ifdef UDB_TIME_CSR_IMPLEMENTED
-        cp_mtime_write :        cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
-        `ifdef UDB_MXLEN_32
-            cp_mtimeh_write :   cross priv_mode_m, csrr,  timeh_csr; // assumes mtimeh has been written
-        `endif
+    cp_mtime_write :            cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
+    `ifdef UDB_MXLEN_32
+        cp_mtimeh_write :       cross priv_mode_m, csrr,  timeh_csr; // assumes mtimeh has been written
     `endif
 
     `ifdef SM1P13P0_OR_LATER_SUPPORTED
@@ -696,9 +694,43 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             bins zero = { 0 };
             bins nonzero = { [1:$] };
         }
+        shadow_int : coverpoint {ins.prev.insn[31:20], ins.current.insn[31:20]} {
+            bins mie_sie         = { {CSR_MIE, CSR_SIE} };
+            bins mip_sip         = { {CSR_MIP, CSR_SIP} };
+            bins sie_mie         = { {CSR_SIE, CSR_MIE} };
+            bins sip_mip         = { {CSR_SIP, CSR_MIP} };
+        }
+        // S-level interrupt delegation bits {LCOFI, SEI, STI, SSI}; the VS bits are read-only without H
+        mideleg_s: coverpoint {ins.current.csr[CSR_MIDELEG][13], ins.current.csr[CSR_MIDELEG][9],
+                               ins.current.csr[CSR_MIDELEG][5],  ins.current.csr[CSR_MIDELEG][1]} {
+            bins none = {4'b0000};
+            bins all  = {4'b1111};
+        }
+        mideleg_s_walking: coverpoint {ins.current.csr[CSR_MIDELEG][13], ins.current.csr[CSR_MIDELEG][9],
+                                       ins.current.csr[CSR_MIDELEG][5],  ins.current.csr[CSR_MIDELEG][1]} {
+            bins lcofi = {4'b1000};
+            bins sei   = {4'b0100};
+            bins sti   = {4'b0010};
+            bins ssi   = {4'b0001};
+        }
+        sip_sie: coverpoint ins.current.insn[31:20] {
+            bins sip = {CSR_SIP};
+            bins sie = {CSR_SIE};
+        }
+        satp : coverpoint ins.current.insn[31:20] {
+            bins satp = {CSR_SATP};
+        }
+        mstatus_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
+        }
 
         cp_scsr_from_m :            cross priv_mode_m, scsrname, csraccesses;
+        cp_satp_from_m :            cross priv_mode_m, csrr, satp, mstatus_tvm;
+        cp_satp_from_s :            cross priv_mode_s, csrr, satp, mstatus_tvm;
         cp_shadow :                 cross priv_mode_m, shadow, csrw_prev, rs1_prev, csrr;
+        // sip/sie alias mip/mie only for delegated interrupts
+        cp_shadow_deleg :           cross priv_mode_m, shadow_int, csrw_prev, csrr, mideleg_s;
+        // delegate one interrupt at a time and read sip/sie
+        cp_shadow_deleg_walk :      cross priv_mode_m, csrr, sip_sie, mideleg_s_walking;
     `endif
 
 endgroup

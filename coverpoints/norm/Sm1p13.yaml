@@ -1,0 +1,73 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+#
+# Sm1p13 features are tested by Sm.py and Sm_coverage.svh under
+# `ifdef SM1P13P0_OR_LATER_SUPPORTED; the coverpoints below live in the Sm suite.
+# Software-check exceptions are exercised by Zicfilp/Zicfiss, hardware errors by
+# Smrnmi, LCOFI by Sscofpmf, hedelegh by the Hypervisor suites, and the
+# misaligned atomicity granule PMA by Zama16b.
+
+normative_rule_definitions:
+  # medelegh (RV32 only): write all 1s to medelegh and read back.
+
+  # When XLEN=32, medelegh is a 32-bit read/write register that aliases bits 63:32
+  # of medeleg.
+  - names: [medelegh_sz_xlen32, medelegh_acc_xlen32, medelegh_enc_xlen32]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/medelegh"]
+
+  # misa.MXL is read-only: write all U, S, M values of misa.MXL and read back M-mode.
+
+  # The MXL (Machine XLEN) field encodes the native base integer ISA width as shown
+  # in <<norm:misa_mxl_enc>>. If misa is nonzero, the MXL field indicates the
+  # effective XLEN in M-mode, a constant termed MXLEN.
+  - names: [misa_mxl_op, MXLEN]
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
+
+  # The MXL field is read-only.
+  - name: misa_mxl_acc
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
+
+  # MXL|XLEN === 1|32 2|64 3|Reserved ===
+  - name: misa_mxl_enc
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
+
+  # misa.B (bit 1) and misa.V (bit 21): read, set, clear, and read back.
+
+  # The Extensions field encodes the presence of the standard extensions, with a
+  # single bit per letter of the alphabet (bit 0 encodes presence of extension A,
+  # bit 1 encodes presence of extension B, through to bit 25 which encodes Z).
+  # ... 1|B|B extension ... 21|V|Vector extension ...
+  - name: misa_extensions_enc
+    coverpoint: ["Sm_mcsr_cg/{cp_misa_b, cp_misa_v}"]
+
+  # The Extensions field is a WARL field that can contain writable bits where the
+  # implementation allows the supported ISA to be modified.
+  - names: [misa_extensions_op, MISA_EXTENSIONS_WRITABLE_BITS]
+    coverpoint: ["Sm_mcsr_cg/{cp_misa_b, cp_misa_v}"]
+
+  # mcause accepts software-check (18) and hardware-error (19) exception codes.
+
+  # Interrupt|Exception Code|Description === ... 0|18|Software check 0|19|Hardware
+  # error ... ===
+  - name: mcause_exccode_enc
+    coverpoint: ["Sm_mcause_cg/cp_mcause_write_exception"]
+
+  # Memory-mapped msip: write all 1s / all 0s, read back, then read mip.MSIP.
+
+  # A hart's memory-mapped msip register is a 32-bit read/write register
+  - names: [msip_sz, msip_acc]
+    coverpoint: ["Sm_mcsr_cg/cp_msip"]
+
+  # bits 31-1 read as zero and bit 0 contains the MSIP bit.
+  - name: msip_enc
+    coverpoint: ["Sm_mcsr_cg/cp_msip"]
+
+  # MSIP is read-only in mip, and is written by accesses to memory-mapped control
+  # registers, which are used to provide machine-level interprocessor interrupts.
+  - name: mip_msip_rdonly
+    coverpoint: ["Sm_mcsr_cg/cp_msip"]
+
+  # When the memory-mapped msip register changes, it is guaranteed to be reflected
+  # in mip.MSIP eventually, but not necessarily immediately.
+  - name: MSIP_UPDATE_MAX_TIME
+    coverpoint: ["Sm_mcsr_cg/cp_msip"]

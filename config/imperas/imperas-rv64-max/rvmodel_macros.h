@@ -96,7 +96,7 @@
 // Interrupt latency configuration
 #define RVMODEL_INTERRUPT_LATENCY 10
 
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
+#define RVMODEL_TIMER_INT_SOON_DELAY 1000
 
 // TODO: remove support for external machine and supervisor interrupts for Imperas configs when UDB adds parameter
 // In the meantime, leave as nop
@@ -110,5 +110,6 @@
 
 #define RVMODEL_SET_SEXT_INT(_R1, _R2)        nop
 #define RVMODEL_CLR_SEXT_INT(_R1, _R2)        nop
+
 
 #endif // _RVMODEL_MACROS_H

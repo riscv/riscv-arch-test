@@ -134,3 +134,52 @@ normative_rule_definitions:
         "SsstrictS_instr_cg/cp_upperreg_fmv_rs1",
         "SsstrictS_instr_cg/cp_upperreg_fmv_rd",
       ]
+
+  # High-half CSRs that only exist when XLEN=32. SsstrictS sweeps the supervisor,
+  # hypervisor, and user CSR address ranges, so on RV64 these addresses are
+  # exercised as nonexistent CSRs. M-mode high-half CSRs are in SsstrictSm.yaml.
+
+  # When XLEN>32, an attempt to access a high-half CSR always raises an
+  # illegal-instruction exception.
+  - name: H_illegal_high_half
+    coverpoint: ["SsstrictS_scsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}"]
+
+  # When XLEN=32, hedelegh is a 32-bit read/write register that aliases bits 63:32
+  # of hedeleg. Register hedelegh does not exist when XLEN=64.
+  - names: [hedelegh_sz, hedelegh_acc, hedelegh_op]
+    coverpoint:
+      ["SsstrictS_scsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}/hedelegh"]
+
+  # When XLEN=32, henvcfgh is a 32-bit read/write register that aliases bits 63:32
+  # of henvcfg. Register henvcfgh does not exist when XLEN=64.
+  - names: [henvcfgh_sz, henvcfgh_acc, henvcfgh_op]
+    coverpoint:
+      ["SsstrictS_scsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}/henvcfgh"]
+
+  # When XLEN=32, htimedeltah is a 32-bit read/write register that aliases bits
+  # 63:32 of htimedelta. Register htimedeltah does not exist when XLEN=64.
+  - names: [htimedeltah_sz, htimedeltah_acc, htimedeltah_op]
+    coverpoint:
+      ["SsstrictS_scsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}/htimedeltah"]
+
+  # For RV32, there are CSR addresses for accessing the upper 32 bits of
+  # corresponding machine-level and hypervisor CSRs: mstateen0h, mstateen1h,
+  # mstateen2h, mstateen3h, hstateen0h, hstateen1h, hstateen2h, and hstateen3h.
+  - name: stateen_rv32_upper_bits_csrs
+    coverpoint:
+      [
+        "SsstrictS_scsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}/{hstateen0h, hstateen1h, hstateen2h, hstateen3h}",
+      ]
+
+  # In RV32 only, accesses to the vstimecmp CSR access the low 32 bits, while
+  # accesses to the vstimecmph CSR access the high 32 bits of vstimecmp.
+  - name: vstimecmp_acc
+    coverpoint:
+      ["SsstrictS_scsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}/vstimecmph"]
+
+  # The stimecmp CSR is a 64-bit register and has 64-bit precision on all RV32 and
+  # RV64 systems. In RV32 only, accesses to the stimecmp CSR access the low 32 bits,
+  # while accesses to the stimecmph CSR access the high 32 bits of stimecmp.
+  - name: stimecmp_stimecmph_sz_acc
+    coverpoint:
+      ["SsstrictS_scsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}/stimecmph"]

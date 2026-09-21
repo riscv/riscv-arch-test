@@ -25,18 +25,32 @@ ci_enabled: true
 #   ExceptionsZc  1 of 1 fails: same mstatush recursion, 15000 `csrr 0x310` executions,
 #                 actual signature offset 0x0 against an expected 0x288.
 #
-#   Zifencei      1 of 1 fails: NOT mstatush (0 `csrr 0x310` executions). The VeeR testbench models
+#   Zifencei      1 of 1 fails: NOT mstatush (0 `csrr 0x310` executions), and fence.i does not trap -
+#                 it retires normally and the next fetch simply returns the stale instruction. The
+#                 VeeR testbench models
 #                 instruction and data memory as two independent arrays, both loaded from
 #                 program.hex at time 0 (tb_top.sv:422), and stores reach only the data array, so
 #                 self-modifying code can never be fetched. Zifencei-fence.i-00 reads x24=0x4 where
 #                 0x8 is expected. EH1 also documents a real fence.i I/D-ordering deviation
 #                 (docs/source/compliance-test-suite-failures.md, I-FENCE.I-01), so this cannot be
 #                 attributed to the core until the testbench mirrors stores into instruction memory.
+#                 Proven not to be a stale I-cache: rebuilding with -set icache_enable=0 fails
+#                 identically, and the testbench's imem instance is tied off with .HWDATA(64'h0),
+#                 so no store can ever reach fetched memory.
 #
-#   I             1 of 39 fail: I-fence-00 only, and for the mstatush reason (7500 `csrr 0x310`).
-#                 Excluding the whole suite to silence one test also drops 38 passing tests, which is
-#                 the cost of having no per-test exclusion mechanism. Worth revisiting if ACT grows
-#                 one; the other 38 pass today.
+#   I             1 of 39 fail: I-fence-00, which hits two bugs at once.
+#                 (a) fence.tso (encoding 0x8330000f, i.e. FENCE with fm=1000) raises an illegal
+#                     instruction: the decode table hardcodes the fm field to zero
+#                     (design/dec/decode:56, "fence = [0000........00000000000000001111]").
+#                     Plain fence works - 0x0ff0000f and 0x0330000f both retire. The unprivileged
+#                     spec requires fence.tso to be treated as a normal global fence: "The fence.tso
+#                     instruction was incorrectly described as optional in 2019. However, fence.tso
+#                     is encoded within the standard fence encoding such that implementations must
+#                     treat it as a simple global fence if they do not support TSO optimizations."
+#                 (b) recording that trap then triggers the mstatush recursion above (3750 nested
+#                     traps), which is what leaves the test with zero signature entries.
+#                 Excluding the whole suite to silence one test also drops 38 passing tests, the cost
+#                 of having no per-test exclusion mechanism.
 exclude_extensions: "Sm,ExceptionsSm,ExceptionsZc,Zifencei,I"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"

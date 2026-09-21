@@ -95,9 +95,10 @@ total, how many extensions match and which are missing (in the yaml but not dete
 does list (Zkn, Zks, Zbkc) is shown as implied instead.  `--jobs` runs configurations in parallel;
 a Verilator run of Wally takes minutes the first time, Sail a few seconds.
 
-Two startup steps matter for some targets: `mstatus.MDT` is cleared, since Smdbltrp sets it at
-reset and a probe's trap would then be a double trap, and `mnstatus.NMIE` is set, since with Smrnmi
-an exception taken while it is clear goes to the RNMI vector rather than `mtvec`.
+Two steps before the first probe matter for some targets: `mstatus.MDT` is cleared, since
+Smdbltrp sets it at reset and a probe's trap would then be a double trap, and `mnstatus.NMIE` is
+set, since with Smrnmi an exception taken while it is clear goes to the RNMI vector rather than
+`mtvec`.  Both are probes themselves, so a hart without the CSR just traps normally.
 
 ```
 make -f tests-dev/priv/UDBFeatureExtractor/Makefile test

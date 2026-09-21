@@ -243,9 +243,16 @@ void report_unexpected_trap(unsigned long cause, unsigned long epc, unsigned lon
 
 int main(void)
 {
-    // With Smrnmi, mnstatus.NMIE is clear at reset and an exception taken while it is clear goes
-    // to the RNMI vector instead of mtvec; set it before the first probe can trap.  Without
-    // Smrnmi the access itself traps, which is fine here.
+    // Two reset states would turn the first probe's trap into something else, so undo them before
+    // any probe.  Smdbltrp sets mstatus.MDT at reset, and a trap while it is set is a double
+    // trap.  Smrnmi clears mnstatus.NMIE at reset, and an exception taken while it is clear goes
+    // to the RNMI vector instead of mtvec.  Both are done as probes so that a hart without the
+    // CSR (mstatush needs privileged 1.12, mnstatus needs Smrnmi) just takes an ordinary trap.
+#if __riscv_xlen == 64
+    PROBE("zicsr", "li t1, 1 << 42\n\tcsrc mstatus, t1");
+#else
+    PROBE("zicsr", "li t1, 1 << 10\n\tcsrc mstatush, t1");
+#endif
     PROBE("zicsr", "li t1, 8\n\tcsrs 0x744, t1");
 
     bool has_i = check("I", probe_I);

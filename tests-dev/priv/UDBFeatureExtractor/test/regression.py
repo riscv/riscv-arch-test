@@ -16,6 +16,7 @@
 
 import argparse
 import concurrent.futures
+import os
 import re
 import shlex
 import shutil
@@ -73,7 +74,12 @@ def run_config(root, build, makefile, config_dir, udb_yaml, timeout):
         return name, "FAIL", f"build failed, see {log}", set(), expected, set()
     elf = work / f"feature_extractor{xlen}.elf"
 
+    # A run_cmd.txt may start with VAR=value environment settings, as the shell would accept
     command = DEBUG_PLACEHOLDER_RE.sub("", (config_dir / "run_cmd.txt").read_text()).split()
+    env = dict(os.environ)
+    while command and re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", command[0]):
+        var, value = command.pop(0).split("=", 1)
+        env[var] = value
     if not command or shutil.which(command[0]) is None:
         return name, "skip", f"{command[0] if command else 'run_cmd.txt'} not on PATH", set(), expected, set()
     out = work / "extracted_config.yaml"
@@ -87,7 +93,7 @@ def run_config(root, build, makefile, config_dir, udb_yaml, timeout):
     log = work / "run.log"
     try:
         with open(log, "w") as f:
-            proc = subprocess.run(command, stdout=f, stderr=subprocess.STDOUT, cwd=root, timeout=timeout)
+            proc = subprocess.run(command, stdout=f, stderr=subprocess.STDOUT, cwd=root, env=env, timeout=timeout)
         rc = proc.returncode
     except subprocess.TimeoutExpired:
         return name, "FAIL", f"timed out after {timeout}s, see {log}", set(), expected, set()

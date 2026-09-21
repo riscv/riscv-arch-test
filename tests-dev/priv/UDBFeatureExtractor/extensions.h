@@ -45,7 +45,7 @@
     X(M,        "2.0",   "m",                  "div t1, t2, t2")                              \
     /* atomics */                                                                             \
     X(Zaamo,    "1.0.0", "zaamo",              "amoadd.w t1, t2, 0(a1)")                      \
-    X(Zalrsc,   "1.0.0", "zalrsc",             "lr.w t1, 0(a1)")                              \
+    X(Zalrsc,   "1.0.0", "zalrsc",             "lr.w t1, 0(a1)\n\tsc.w t2, t1, 0(a1)") /* sc releases the reservation, or wrs.nto below stalls */ \
     X(Zacas,    "1.0.0", "zaamo,+zacas",       "amocas.w t1, t2, 0(a1)")                      \
     X(Zabha,    "1.0.0", "zaamo,+zabha",       "amoadd.b t1, t2, 0(a1)")                      \
     X(Zawrs,    "1.0.0", "zawrs",              "wrs.nto")                                     \

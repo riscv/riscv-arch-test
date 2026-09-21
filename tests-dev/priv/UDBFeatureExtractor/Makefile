@@ -45,7 +45,7 @@ CFLAGS := -march=$(ARCH) -mabi=$(ABI) -mcmodel=medany \
           -I$(SRC_DIR) -I$(CONFIG_DIR)
 
 SRCS := start.S feature_extractor.c parameters.c console.c
-DEPS := extensions.h probe.h console.h
+DEPS := extensions.h probe.h udb_parameters.h console.h
 ELF  := $(BUILD_DIR)/feature_extractor$(XLEN).elf
 
 .PHONY: all elf run dump test regression clean help

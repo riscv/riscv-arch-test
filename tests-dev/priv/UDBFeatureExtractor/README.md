@@ -96,6 +96,17 @@ left by reset (read before any probe touches the vector unit), whether `vill` is
 and twice VLMAX, the widest index EEW an indexed load accepts, the `vstart` values an arithmetic
 instruction accepts, and whether a whole-register load tolerates a misaligned base.
 
+The fault-only-first and segment parameters use a second page table with one 4 KiB page mapped and
+the page after it invalid (Sv39 or Sv32, whose levels fit the scratch area). In S-mode a
+fault-only-first load, an ordinary load, a two-field segment load and a two-field segment store are
+run against the page's edge, and `vl`, the destination registers (written back to memory in M-mode)
+and the page's last bytes say what was trimmed, loaded or stored.
+
+At the end of the `params` section the extractor prints, commented out and without values, every
+parameter that applies to the hart but that it could not determine, under a comment saying so. The
+parameter list with each one's defining extension is `udb_parameters.h`, generated from
+riscv-unified-db by `test/gen_udb_parameters.py`; regenerate it when UDB adds parameters.
+
 Control-flow integrity: with `mseccfg.MLPE` set, an indirect jump to an instruction that is not
 `lpad` raises a software-check exception with tval 2, in M-mode directly and in S-mode and
 VS-mode through `menvcfg.LPE`/`henvcfg.LPE`; a shadow-stack pop whose value does not match

@@ -18,6 +18,7 @@
 #include "console.h"
 #include "extensions.h"
 #include "probe.h"
+#include "udb_parameters.h"
 
 bool have(const char *name);            // feature_extractor.c
 
@@ -25,26 +26,64 @@ bool have(const char *name);            // feature_extractor.c
 #define BIT(n) (1ul << (n))
 
 // ---------------------------------------------------------------------------------------------
-// Output helpers
+// Output helpers.  Every parameter printed is remembered, so that at the end the parameters that
+// apply to the hart but were not determined can be listed.
+
+#define MAX_PRINTED 320
+static char printed[MAX_PRINTED][64];
+static unsigned num_printed;
+
+static void note_printed(const char *name)
+{
+    if (num_printed < MAX_PRINTED) {
+        unsigned i = 0;
+        for (; name[i] && i < 63; i++)
+            printed[num_printed][i] = name[i];
+        printed[num_printed][i] = '\0';
+        num_printed++;
+    }
+}
+
+static bool was_printed(const char *name)
+{
+    for (unsigned i = 0; i < num_printed; i++) {
+        const char *a = printed[i], *b = name;
+        while (*a && *a == *b) { a++; b++; }
+        if (*a == '\0' && *b == '\0')
+            return true;
+    }
+    return false;
+}
 
 static void param_bool(const char *name, bool v)
 {
+    note_printed(name);
     printf("  %s: %s\n", name, v ? "true" : "false");
 }
 
 static void param_int(const char *name, unsigned long v)
 {
+    note_printed(name);
     printf("  %s: %u\n", name, v);
 }
 
 static void param_str(const char *name, const char *v)
 {
+    note_printed(name);
     printf("  %s: %s\n", name, v);
+}
+
+// A string value that YAML would otherwise read as a number
+static void param_quoted(const char *name, const char *v)
+{
+    note_printed(name);
+    printf("  %s: \"%s\"\n", name, v);
 }
 
 // A list of booleans from a bit mask, lowest bit first
 static void param_bools(const char *name, unsigned long mask, unsigned count)
 {
+    note_printed(name);
     printf("  %s: [", name);
     for (unsigned i = 0; i < count; i++)
         printf("%s%s", i ? ", " : "", (mask >> i) & 1 ? "true" : "false");
@@ -53,6 +92,7 @@ static void param_bools(const char *name, unsigned long mask, unsigned count)
 
 static void param_ints(const char *name, const unsigned long *v, unsigned count)
 {
+    note_printed(name);
     printf("  %s: [", name);
     for (unsigned i = 0; i < count; i++)
         printf("%s%u", i ? ", " : "", v[i]);
@@ -321,6 +361,19 @@ volatile unsigned long shadow_ssp;              // shadow stack pointer for the 
 #endif
 DEFINE_STUB(stub_shadow_stack, "zimop,+zicfiss",
             LOAD_SHADOW_SSP "csrw 0x011, a2\n\tli t0, 0x1234\n\tsspush x5\n\tli t0, 0x5678\n\tsspopchk x5")
+// Vector loads and stores against the edge of a mapped page (a2 = fault_va): fault-only-first
+// loads record vl in s_result, ordinary ones trap part way
+volatile unsigned long s_result;
+#if __riscv_xlen == 64
+#define STORE_VL_RESULT "csrr t1, vl\n\tla t2, s_result\n\tsd t1, 0(t2)"
+#else
+#define STORE_VL_RESULT "csrr t1, vl\n\tla t2, s_result\n\tsw t1, 0(t2)"
+#endif
+DEFINE_STUB(stub_vle8ff, "zve32x", LOAD_FAULT_VA "vsetivli x0, 16, e8, m1, tu, mu\n\tvle8ff.v v1, (a2)\n\t" STORE_VL_RESULT)
+DEFINE_STUB(stub_vle8, "zve32x", LOAD_FAULT_VA "vsetivli x0, 16, e8, m1, tu, mu\n\tvle8.v v1, (a2)")
+DEFINE_STUB(stub_vlseg2e8ff, "zve32x", LOAD_FAULT_VA "vsetivli x0, 8, e8, m1, tu, mu\n\tvlseg2e8ff.v v1, (a2)\n\t" STORE_VL_RESULT)
+DEFINE_STUB(stub_vsseg2e8, "zve32x", LOAD_FAULT_VA "vsetivli x0, 8, e8, m1, tu, mu\n\tvsseg2e8.v v1, (a2)")
+
 #define CSRR_HGATP 0x68002373                            // csrr t1, hgatp: virtual instruction in VS
 DEFINE_STUB(stub_virtual_insn, "zicsr", ".word 0x68002373")
 
@@ -462,6 +515,121 @@ static bool build_page_table(unsigned long (*wr)(unsigned long), bool gstage, un
                              unsigned long *fault, unsigned *shift_out)
 {
     return build_page_table_ex(wr, gstage, false, atp, fault, shift_out);
+}
+
+// A page table with one 4 KiB page mapped and the page after it invalid, for accesses that must
+// fault part way through: the second region of the root table leads through intermediate tables
+// in the scratch area to a leaf for the scratch area's last page.  Needs Sv39 (RV64) or Sv32
+// (RV32), which the scratch area's 16 KiB can hold the levels of.  Returns the page's VA and PA.
+static bool build_edge_page_table(unsigned long *atp, unsigned long *page_va, unsigned long *page_pa)
+{
+#if __riscv_xlen == 64
+    const unsigned long mode = 8, root_shift = 30;          // Sv39: root, level 1, level 0, page
+    const unsigned levels = 2;
+#else
+    const unsigned long mode = 1, root_shift = 22;          // Sv32: root, level 0, page
+    const unsigned levels = 1;
+#endif
+    if (!atp_accepts(satp_wr, ATP_MODE(mode)))
+        return false;
+    unsigned long base = (unsigned long)probe_scratch;
+    unsigned long idx = base >> root_shift, second = idx == 1 ? 2 : 1;
+    volatile unsigned long *table = (volatile unsigned long *)probe_scratch;
+    for (unsigned j = 0; j < PROBE_SCRATCH_SIZE / sizeof(unsigned long); j++)
+        table[j] = 0;
+    table[idx] = (((idx << root_shift) >> 12) << 10) | PTE_LEAF;
+    // root[second] -> table at +4K (-> table at +8K on RV64) -> leaf at the last 4 KiB
+    unsigned long next = base + 4096;
+    table[second] = ((next >> 12) << 10) | 1;
+    for (unsigned l = 1; l < levels; l++) {
+        volatile unsigned long *t = (volatile unsigned long *)next;
+        next += 4096;
+        t[0] = ((next >> 12) << 10) | 1;
+    }
+    volatile unsigned long *last = (volatile unsigned long *)next;
+    *page_pa = base + PROBE_SCRATCH_SIZE - 4096;
+    last[0] = ((*page_pa >> 12) << 10) | PTE_LEAF;
+    *page_va = second << root_shift;
+    *atp = ATP_MODE(mode) | (base >> 12);
+    return true;
+}
+
+// Write v1 and v2 (16 bytes each, e8) to memory at pa so their contents can be inspected
+static void dump_v1_v2(unsigned long pa)
+{
+    PROBE_VALUE_IN("zve32x", "vsetivli x0, 16, e8, m1, tu, mu\n\tvse8.v v1, (%[in])\n\taddi a2, %[in], 16\n\tvse8.v v2, (a2)", pa);
+}
+
+static void fill_v1_v2(unsigned long v1, unsigned long v2)
+{
+    PROBE_VALUE_IN("zve32x", "vsetivli x0, 16, e8, m1, tu, mu\n\tvmv.v.x v1, %[in]\n\tsrli a2, %[in], 8\n\tvmv.v.x v2, a2", v1 | (v2 << 8));
+}
+
+// The fault-only-first and segment parameters, in S-mode with the edge page table.  Tail
+// undisturbed throughout, so that elements past vl can only change by the behavior measured.
+static void vector_fault_params(unsigned long mstatus)
+{
+    unsigned long atp, page_va, page_pa;
+    if (!build_edge_page_table(&atp, &page_va, &page_pa))
+        return;
+    volatile unsigned char *page = (volatile unsigned char *)page_pa;
+    for (unsigned i = 0; i < 4096; i++)
+        page[i] = 0x11;
+    unsigned char *dump = (unsigned char *)(page_pa + 2048);
+    satp_set(atp);
+    PROBE("zicsr", "sfence.vma");
+
+    // A fault-only-first load entirely inside the page: is vl reduced anyway?
+    fill_v1_v2(0xEE, 0xEE);
+    fault_va = page_va;
+    s_result = 0;
+    if (run_in_mode(stub_vle8ff, 1, false, mstatus) == CAUSE_ECALL_S)
+        param_bool("VECTOR_FF_NO_EXCEPTION_TRIM", s_result < 16);
+    // One crossing into the invalid page at element 8: vl is trimmed; are elements past it written?
+    fill_v1_v2(0xEE, 0xEE);
+    fault_va = page_va + 4096 - 8;
+    s_result = 0;
+    if (run_in_mode(stub_vle8ff, 1, false, mstatus) == CAUSE_ECALL_S && s_result == 8) {
+        dump_v1_v2(page_pa + 2048);
+        bool untouched = true;
+        for (unsigned i = 8; i < 16; i++)
+            untouched = untouched && dump[i] == 0xEE;
+        param_str("VECTOR_FF_UPDATE_PAST_TRIM", untouched ? "update_none" : "custom");
+    }
+    // An ordinary load crossing at element 8 traps: are elements past the trap written?
+    fill_v1_v2(0xEE, 0xEE);
+    if (run_in_mode(stub_vle8, 1, false, mstatus) == 13) {
+        dump_v1_v2(page_pa + 2048);
+        bool changed = false;
+        for (unsigned i = 9; i < 16; i++)
+            changed = changed || dump[i] != 0xEE;
+        param_bool("VECTOR_LOAD_PAST_TRAP", changed);
+    }
+    // A two-field fault-only-first segment load with segment 3 straddling the edge (first field
+    // valid, second not): vl trims to 3; is the valid field of segment 3 loaded, and is anything
+    // beyond segment 3 written?
+    fill_v1_v2(0xEE, 0xEE);
+    fault_va = page_va + 4096 - 7;
+    s_result = 0;
+    if (run_in_mode(stub_vlseg2e8ff, 1, false, mstatus) == CAUSE_ECALL_S && s_result == 3) {
+        dump_v1_v2(page_pa + 2048);
+        param_str("VECTOR_FF_SEG_EXCEPTION_PARTIAL_LOAD", dump[3] == 0xEE ? "no_subsegment_loaded" : "custom");
+        bool untouched = dump[16 + 3] == 0xEE;
+        for (unsigned i = 4; i < 8; i++)
+            untouched = untouched && dump[i] == 0xEE && dump[16 + i] == 0xEE;
+        param_str("VECTOR_LOAD_SEG_FF_OVERWRITE_ELEMENTS_AFTER_FAULT", untouched ? "no_overwrite" : "custom");
+    }
+    // A two-field segment store straddling the edge the same way traps in segment 3: was its
+    // valid first field stored before the trap?
+    fill_v1_v2(0xAA, 0xBB);
+    for (unsigned i = 4096 - 8; i < 4096; i++)
+        page[i] = 0x11;
+    if (run_in_mode(stub_vsseg2e8, 1, false, mstatus) == 15)
+        param_bool("VECTOR_LS_SEG_PARTIAL_ACCESS", page[4096 - 1] == 0xAA);
+
+    satp_set(0);
+    PROBE("zicsr", "sfence.vma");
+    PROBE("zve32x", "vsetivli x0, 1, e32, m1, ta, ma");
 }
 
 // The REPORT_VA_IN_<tval>_ON_*_PAGE_FAULT parameters for the mode entered with mpp/virt.  When the
@@ -642,6 +810,7 @@ static void lower_mode_tval_params(const char *tval, bool virt, unsigned usable_
 void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned long reset_vl)
 {
     bool has_s = have("S"), has_u = have("U"), has_h = have("H");
+    bool any_atp = false;               // satp accepts some translation mode (set below)
     unsigned long v;
 
     printf("params:\n");
@@ -656,14 +825,12 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
     v = marchid_rd();
     if (v != PROBE_TRAPPED) {
         param_bool("MARCHID_IMPLEMENTED", v != 0);
-        if (v)
-            param_int("ARCH_ID_VALUE", v);
+        param_int("ARCH_ID_VALUE", v);
     }
     v = mimpid_rd();
     if (v != PROBE_TRAPPED) {
         param_bool("MIMPID_IMPLEMENTED", v != 0);
-        if (v)
-            param_int("IMP_ID_VALUE", v);
+        param_int("IMP_ID_VALUE", v);
     }
     v = mconfigptr_rd();
     if (v != PROBE_TRAPPED)
@@ -989,6 +1156,7 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
             // Page faults, with a page table in the scratch area and satp pointing at it
             unsigned long atp, fva;
             bool have_table = build_page_table(satp_wr, false, &atp, &fva, 0);
+            any_atp = have_table;
             if (have_table) {
                 fault_va = fva;
                 satp_set(atp);
@@ -1003,6 +1171,8 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
                 // satp accepts no translation mode: does sfence.vma trap?
                 param_bool("TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY", !PROBE("zicsr", "sfence.vma"));
             }
+            if (vlen)
+                vector_fault_params(mstatus);
             // Control-flow integrity faults taken in S-mode, and undelegated in M-mode (the
             // shadow-stack one can only reach M-mode this way, as M-mode has no shadow stack)
             cfi_params("STVAL", false, true, zicfilp, have("Zicfiss"), mstatus);
@@ -1171,6 +1341,18 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
                 if (g) { gany = true; glast = m; }
                 if (vs) { vany = true; vlast = m; }
             }
+            // the other XLEN's modes cannot exist here
+#if __riscv_xlen == 64
+            param_bool("SV32X4_TRANSLATION", false);
+            param_bool("SV32_VSMODE_TRANSLATION", false);
+#else
+            param_bool("SV39X4_TRANSLATION", false);
+            param_bool("SV39_VSMODE_TRANSLATION", false);
+            param_bool("SV48X4_TRANSLATION", false);
+            param_bool("SV48_VSMODE_TRANSLATION", false);
+            param_bool("SV57X4_TRANSLATION", false);
+            param_bool("SV57_VSMODE_TRANSLATION", false);
+#endif
             param_bool("GSTAGE_MODE_BARE", !gany || hgatp_bare_after(glast));
             param_bool("VSSTAGE_MODE_BARE", !vany || vsatp_bare_after(vlast));
             v = hgatp_wr(__riscv_xlen == 64 ? 0x03FFF00000000000ul : 0x1FC00000ul);   // VMID all ones
@@ -1256,7 +1438,7 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
                             : PROBE("zve32x", INDEX_EEW(16)) ? "16" : PROBE("zve32x", INDEX_EEW(8)) ? "8" : 0;
         if (max_eew) {
             bool is_xlen = (__riscv_xlen == 64 && max_eew[0] == '6') || (__riscv_xlen == 32 && max_eew[0] == '3');
-            printf("  VECTOR_LS_INDEX_MAX_EEW: \"%s\"\n", is_xlen ? "XLEN" : max_eew);
+            param_quoted("VECTOR_LS_INDEX_MAX_EEW", is_xlen ? "XLEN" : max_eew);
         }
         // The vstart values a load accepts (loads must resume from a nonzero vstart)
         if (PROBE("zve32x", "vsetivli x0, 8, e8, m1, ta, ma\n\tcsrwi vstart, 1\n\tvle8.v v1, (a1)"))
@@ -1395,4 +1577,15 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
         }
     }
 #endif
+
+    // Every UDB parameter that applies to this hart and was not determined above
+    bool first = true;
+#define UNDETERMINED(name, applies)                                                             \
+    if ((applies) && !was_printed(#name)) {                                                     \
+        if (first)                                                                              \
+            printf("  # The UDB feature extractor is unable to determine these parameter values:\n"); \
+        first = false;                                                                          \
+        printf("  # " #name ":\n");                                                              \
+    }
+    UDB_PARAMETERS(UNDETERMINED)
 }

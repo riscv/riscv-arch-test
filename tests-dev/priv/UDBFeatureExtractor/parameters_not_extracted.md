@@ -34,17 +34,22 @@ Would need a second hart, a cache model, or a memory-mapped device to observe.
 - `DCSR_MPRVEN_TYPE`, `DCSR_STEPIE_TYPE`, `DCSR_STOPCOUNT_TYPE`, `DCSR_STOPTIME_TYPE` (`dcsr` is
   only accessible in debug mode)
 
-## Vector behavior under a mid-instruction fault or on chosen data
+## Vector reductions on chosen data
 
-Each would need a vector load that faults part way (a buffer ending at an unmapped page, which the
-one-level page table does not give) or a reduction run on chosen data with the result inspected.
+Each would need a reduction run on chosen data with the result inspected.
 
-- `VECTOR_FF_NO_EXCEPTION_TRIM`, `VECTOR_FF_SEG_EXCEPTION_PARTIAL_LOAD`,
-  `VECTOR_FF_UPDATE_PAST_TRIM`, `VECTOR_LOAD_PAST_TRAP`,
-  `VECTOR_LOAD_SEG_FF_OVERWRITE_ELEMENTS_AFTER_FAULT`, `VECTOR_LS_SEG_PARTIAL_ACCESS`
 - `VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR`, `VFREDUSUM_INACTIVE_NODE_ELEMENT_BEHAVIOR`,
   `VFREDUSUM_NAN`, `VFREDUSUM_NODE_ROUNDING_BEHAVIOR`
 - `IMPRECISE_VECTOR_TRAP_SETTABLE` (no standard CSR bit selects it)
+
+## In the output
+
+Every parameter that applies to the hart (its defining extension was detected) and was not
+determined is printed at the end of the `params` section, commented out with no value, under the
+comment "The UDB feature extractor is unable to determine these parameter values". That covers the
+groups above and any parameter whose measurement was inconclusive on the hart at hand, such as a
+misaligned-access report on a hart that does not trap. The list of parameters and their defining
+extensions is `udb_parameters.h`, generated from riscv-unified-db by `test/gen_udb_parameters.py`.
 
 ## Measured with a caveat
 
@@ -67,3 +72,7 @@ one-level page table does not give) or a reduction run on chosen data with the r
   as the configuration yamls do, so a yaml that writes `"64"` on RV64 shows as a mismatch.
 - `SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED` is the complement of `VILL_SET_ON_RESERVED_VTYPE`, and
   `RESERVED_VSET_X0X0_VILL_SET` needs `vill` to be settable through a reserved vtype first.
+- The fault-only-first and segment parameters need Sv39 (RV64) or Sv32 (RV32), whose tables fit
+  the scratch area; a hart with only Sv48 or Sv57 leaves them undetermined.
+- `ARCH_ID_VALUE` and `IMP_ID_VALUE` are printed as 0 when `marchid`/`mimpid` read as zero, with
+  `MARCHID_IMPLEMENTED`/`MIMPID_IMPLEMENTED` false saying the value is not meaningful.

@@ -13,6 +13,9 @@
 --override iss/cpu0/simulateexceptions=T
 --override iss/cpu0/defaultsemihost=F
 
+# Guest external interrupts.
+--override cpu*/GEILEN=6
+
 # Bit manipulation
 --override cpu*/add_Extensions=B
 --override cpu*/misa_B_Zba_Zbb_Zbs=T

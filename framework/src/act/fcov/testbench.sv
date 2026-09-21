@@ -256,14 +256,21 @@ module testbench;
   assign rvvi.csr_wb[0][0] = csr_wb;
   assign rvvi.csr[0][0] = csr;
 
-  // Takes a string and splits it into individual words that are returned in the provided string queue
+  // Takes a string and splits it into individual words that are returned in the provided string queue.
+  // One pass over the characters: scanning and copying the remainder of the line for every word is
+  // quadratic, and vector trace lines run to hundreds of kilobytes.
   function automatic void splitLine(string line, ref string words[$]);
-    string word;
-    while (line.len() > 0) begin
-      num = $sscanf(line, "%s", word);
-      words.push_back(word);
-      line = line.substr(word.len() + 1, line.len() - 1);
+    int start = -1;
+    for (int i = 0; i < line.len(); i++) begin
+      byte c = line[i];
+      if (c == " " || c == "\n" || c == "\t" || c == "\r") begin
+        if (start >= 0) begin
+          words.push_back(line.substr(start, i-1));
+          start = -1;
+        end
+      end else if (start < 0) start = i;
     end
+    if (start >= 0) words.push_back(line.substr(start, line.len()-1));
   endfunction
 
 endmodule

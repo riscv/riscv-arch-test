@@ -82,6 +82,12 @@ def write_test_file(
     extra_defines = list(extra_defines or [])
     if trap_sigupd_count:
         extra_defines.append(f"#define TRAP_SIGUPD_COUNT {trap_sigupd_count}")
+    # utils.h picks RVTEST_TEST_CSR from the extensions the DUT implements, and that CSR may
+    # only be accessible in S- or M-mode.  Tell it which tests actually use the CSR so that
+    # only those boot into the higher mode; every other test still boots to the hart's lowest
+    # privilege mode.
+    if any("RVTEST_TEST_CSR" in line for tc in test_chunks for line in tc.code):
+        extra_defines.append("#define RVTEST_USES_TEST_CSR")
 
     # Construct filename and paths
     if instr_name is not None:

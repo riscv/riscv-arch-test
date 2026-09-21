@@ -224,21 +224,36 @@
 #define NOP                    0x13
 #define DOUBLE_NOP             (0x13<<32)+0x13
 
-// Determine the appropriate CSR to test based on the
-// supported extensions and set boot mode if necessary.
+// Determine the appropriate CSR to test based on the supported extensions, and record
+// the privilege mode that CSR is accessible from.
 #if defined(F_SUPPORTED)
   #define RVTEST_TEST_CSR fflags
 #elif defined(ZVE32X_SUPPORTED)
   #define RVTEST_TEST_CSR vxsat
 #elif defined(S_SUPPORTED)
   #define RVTEST_TEST_CSR sepc
-  #define BOOT_TO_SMODE
+  #define RVTEST_TEST_CSR_NEEDS_SMODE
 #elif defined(ZICNTR_SUPPORTED) && defined(U_SUPPORTED)
   #define RVTEST_TEST_CSR instret
   #define RVTEST_READ_ONLY_TEST_CSR
 #else
   #define RVTEST_TEST_CSR mepc
-  #define BOOT_TO_MMODE
+  #define RVTEST_TEST_CSR_NEEDS_MMODE
+#endif
+
+// sepc and mepc are only reachable from S- or M-mode, so a test that uses RVTEST_TEST_CSR
+// has to boot into that mode.  Only the tests that use it ask for this, by defining
+// RVTEST_USES_TEST_CSR before including riscv_arch_test.h (testgen emits that define for
+// every test whose body references RVTEST_TEST_CSR).  Setting the boot mode here for every
+// test instead would cost a hart all of its lower-privilege coverage merely because it has
+// no unprivileged CSR to test: a hart with U-mode but no F, V, S or Zicntr would run every
+// suite in M-mode, and one with S-mode but no F or V would run every suite in S-mode.
+#ifdef RVTEST_USES_TEST_CSR
+  #if defined(RVTEST_TEST_CSR_NEEDS_SMODE)
+    #define BOOT_TO_SMODE
+  #elif defined(RVTEST_TEST_CSR_NEEDS_MMODE)
+    #define BOOT_TO_MMODE
+  #endif
 #endif
 
 // RVTEST_TESTDATA_LOAD_INT(data_ptr, dest_reg) loads an integer value from the

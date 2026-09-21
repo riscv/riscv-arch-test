@@ -91,6 +91,24 @@ unexpected_trap:
     call    report_unexpected_trap
     j       halt_fail
 
+// Trap handler for S-mode and VS-mode probes.  parameters.c enters the lower mode with mret and
+// delegates exceptions to it; this handler records the trap and returns to M-mode with an ecall,
+// which the M-mode handler above resumes from.  In VS-mode the scause, stval and sepc names
+// reach vscause, vstval and vsepc, so the same code serves both modes.
+.balign 4
+.globl s_trap_handler
+s_trap_handler:
+    csrr    t0, scause
+    la      t1, s_cause
+    SREG    t0, 0(t1)
+    csrr    t0, stval
+    la      t1, s_tval
+    SREG    t0, 0(t1)
+    csrr    t0, sepc
+    la      t1, s_epc
+    SREG    t0, 0(t1)
+    ecall
+
 // void console_write(const char *s): print a NUL-terminated string with the DUT's mechanism
 .section .text
 .globl console_write

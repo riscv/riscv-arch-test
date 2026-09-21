@@ -274,19 +274,177 @@ static const struct { const char *sv; unsigned long mode; } atp_modes[] =
 static const struct { const char *sv; unsigned long mode; } atp_modes[] = { { "SV32", 1 } };
 #endif
 
-// U-mode or S-mode ecall: enter the mode with mret into ecall_stub and see what trap comes back
-__asm__(".text\n.balign 4\n.globl ecall_stub\necall_stub:\n\tecall\n\tebreak\n\tj ecall_stub");
-extern char ecall_stub[];
+// ---------------------------------------------------------------------------------------------
+// Probes run in U-, S- or VS-mode.  The mode is entered with mret into a stub that executes one
+// instruction and then an ecall; the ecall (or the trap the instruction takes, when it is not
+// delegated) comes back to the M-mode handler, which resumes the probe.  When the instruction's
+// trap is delegated, s_trap_handler in start.S records it in s_cause, s_tval and s_epc and
+// returns with its own ecall.
 
-static void ecall_from(const char *name, unsigned long mpp, unsigned long mstatus)
+volatile unsigned long s_cause, s_tval, s_epc;   // written by s_trap_handler
+extern char s_trap_handler[];
+volatile unsigned long lower_stub;               // address the mret enters
+
+#define DEFINE_STUB(name, arch, insn)                                                       \
+    __asm__(".text\n.balign 4\n.globl " #name "\n" #name ":\n\t.option push\n\t.option arch, +" arch \
+            "\n\t" insn "\n\t.option pop\n\t.balign 4\n\tecall\n1:\tj 1b");                       \
+    extern char name[];
+DEFINE_STUB(ecall_stub, "zicsr", "ecall\n\tebreak")     // ecall, then ebreak in case it did not trap
+DEFINE_STUB(stub_illegal, "zicsr", ".word 0x00004073")
+DEFINE_STUB(stub_ebreak, "zicsr", "ebreak")
+DEFINE_STUB(stub_lw_misaligned, "zicsr", "lw t1, 1(a1)")
+DEFINE_STUB(stub_sw_misaligned, "zicsr", "sw t1, 1(a1)")
+DEFINE_STUB(stub_jump_misaligned, "zicsr", "jalr zero, 2(a1)")
+DEFINE_STUB(stub_lw_scratch, "zicsr", "lw t1, 0(a1)")
+DEFINE_STUB(stub_sw_scratch, "zicsr", "sw t1, 0(a1)")
+DEFINE_STUB(stub_jump_scratch, "zicsr", "jalr zero, 0(a1)")
+
+#if __riscv_xlen == 64
+#define LREG_ASM "ld"
+#else
+#define LREG_ASM "lw"
+#endif
+
+// Enter privilege mode mpp (0 = U, 1 = S; with virt, VS) at stub and return the cause of the
+// trap that ended it: s_cause if the lower-mode handler took it, else the cause the M-mode handler
+// saw (CAUSE_ECALL_S or _U, or CAUSE_ECALL_VS = 10, when the stub ran to its ecall)
+#define CAUSE_ECALL_VS 10
+static unsigned long run_in_mode(char *stub, unsigned long mpp, bool virt, unsigned long mstatus)
 {
-    probe_cause = CAUSE_NONE;
-    PROBE_VALUE_IN("zicsr", "csrw mstatus, %[in]\n\tla a2, ecall_stub\n\tcsrw mepc, a2\n\tmret\n\tli a3, 0",
-                   (mstatus & ~(3ul << 11)) | (mpp << 11));
-    if (probe_cause == (mpp ? CAUSE_ECALL_S : CAUSE_ECALL_U))
+    s_cause = CAUSE_NONE;
+    lower_stub = (unsigned long)stub;
+    unsigned long ms = (mstatus & ~(3ul << 11)) | (mpp << 11);
+#if __riscv_xlen == 64
+    if (virt)
+        ms |= 1ul << 39;                                // MPV
+#else
+    if (virt)
+        PROBE("zicsr", "li t1, 1 << 7\n\tcsrs mstatush, t1");
+#endif
+    PROBE_VALUE_IN("zicsr", "csrw mstatus, %[in]\n\tla a2, lower_stub\n\t" LREG_ASM " a2, 0(a2)\n\t"
+                            "csrw mepc, a2\n\tmret\n\tli a3, 0", ms);
+#if __riscv_xlen == 32
+    if (virt)
+        PROBE("zicsr", "li t1, 1 << 7\n\tcsrc mstatush, t1");
+#endif
+    return s_cause != CAUSE_NONE ? s_cause : probe_cause;
+}
+
+DEFINE_CSR_SET(medeleg_set, medeleg)
+DEFINE_CSR_SET(hedeleg_set, hedeleg)
+DEFINE_CSR_SET(stvec_set, stvec)
+DEFINE_CSR_SET(vstvec_set, vstvec)
+DEFINE_CSR_SET(satp_set, satp)
+DEFINE_CSR_SET(vsatp_set, vsatp)
+DEFINE_CSR_SET(hgatp_set, hgatp)
+DEFINE_CSR_SET(pmpaddr1_set, pmpaddr1)
+DEFINE_CSR_READ(stvec_rd, stvec)
+DEFINE_CSR_READ(vstvec_rd, vstvec)
+
+// Exceptions delegated to the lower mode: everything but the ecalls, which must reach M-mode
+#define DELEGATED ((1ul << 0) | (1ul << 1) | (1ul << 2) | (1ul << 3) | (1ul << 4) | (1ul << 5) |   \
+                   (1ul << 6) | (1ul << 7) | (1ul << 12) | (1ul << 13) | (1ul << 15))
+
+// PMP entry 0 grants everything to the lower modes ...
+static void pmp_open(unsigned num_pmp)
+{
+    if (num_pmp) {
+        pmpaddr0_set(~0ul);
+        pmpcfg0_set((pmpcfg0_rd() & ~0xFFFFul) | 0x0F);    // entry 0 TOR R W X, entry 1 off
+        pmpaddr1_set(0);
+    }
+}
+
+// ... or entry 0 denies the scratch page and entry 1 grants everything else.  Entry 1 is a NAPOT
+// region of all ones, which covers the whole address space; TOR would start at entry 0's address.
+static void pmp_deny_scratch(void)
+{
+    pmpaddr0_set(((unsigned long)probe_scratch >> 2) | (PROBE_SCRATCH_SIZE / 8 - 1));  // NAPOT
+    pmpaddr1_set(~0ul);
+    pmpcfg0_set((pmpcfg0_rd() & ~0xFFFFul) | (0x1F << 8) | 0x18);
+}
+
+static void pmp_close(unsigned num_pmp)
+{
+    if (num_pmp) {
+        pmpcfg0_set(pmpcfg0_rd() & ~0xFFFFul);
+        pmpaddr0_set(0);
+        pmpaddr1_set(0);
+    }
+}
+
+// U-mode or S-mode ecall
+static void ecall_from(const char *name, unsigned long mpp, bool virt, unsigned long mstatus)
+{
+    unsigned long cause = run_in_mode(ecall_stub, mpp, virt, mstatus);
+    if (cause == (virt ? CAUSE_ECALL_VS : mpp ? CAUSE_ECALL_S : CAUSE_ECALL_U))
         param_bool(name, true);
-    else if (probe_cause == CAUSE_BREAKPOINT)     // the ecall did not trap, the ebreak after it did
+    else if (cause == CAUSE_BREAKPOINT)           // the ecall did not trap, the ebreak after it did
         param_bool(name, false);
+}
+
+static void concat(char *out, const char *a, const char *b, const char *c)
+{
+    for (; *a; a++) *out++ = *a;
+    for (; *b; b++) *out++ = *b;
+    for (; *c; c++) *out++ = *c;
+    *out = '\0';
+}
+
+// The REPORT_*_IN_STVAL_ON_* (or VSTVAL) parameters: take each trap in S-mode (VS-mode) and
+// compare what the mode's tval register holds with what the parameter says it should
+static void lower_mode_tval_params(const char *tval, bool virt, unsigned usable_pmp, unsigned long mstatus)
+{
+    char name[80];
+    unsigned long scratch = (unsigned long)probe_scratch, cause;
+    unsigned long mpp = 1;
+
+    cause = run_in_mode(stub_illegal, mpp, virt, mstatus);
+    if (cause == CAUSE_ILLEGAL_INSTRUCTION) {
+        concat(name, "REPORT_ENCODING_IN_", tval, "_ON_ILLEGAL_INSTRUCTION");
+        param_bool(name, s_tval == 0x00004073);
+    }
+    cause = run_in_mode(stub_ebreak, mpp, virt, mstatus);
+    if (cause == CAUSE_BREAKPOINT) {
+        concat(name, "REPORT_VA_IN_", tval, "_ON_BREAKPOINT");
+        param_bool(name, s_tval == s_epc);
+    }
+    cause = run_in_mode(stub_lw_misaligned, mpp, virt, mstatus);
+    if (cause == CAUSE_LOAD_MISALIGNED) {
+        concat(name, "REPORT_VA_IN_", tval, "_ON_LOAD_MISALIGNED");
+        param_bool(name, s_tval == scratch + 1);
+    }
+    cause = run_in_mode(stub_sw_misaligned, mpp, virt, mstatus);
+    if (cause == CAUSE_STORE_MISALIGNED) {
+        concat(name, "REPORT_VA_IN_", tval, "_ON_STORE_AMO_MISALIGNED");
+        param_bool(name, s_tval == scratch + 1);
+    }
+    if (!have("Zca")) {
+        cause = run_in_mode(stub_jump_misaligned, mpp, virt, mstatus);
+        if (cause == CAUSE_INSTRUCTION_MISALIGNED) {
+            concat(name, "REPORT_VA_IN_", tval, "_ON_INSTRUCTION_MISALIGNED");
+            param_bool(name, s_tval == scratch + 2);
+        }
+    }
+    if (usable_pmp >= 2) {
+        pmp_deny_scratch();
+        cause = run_in_mode(stub_lw_scratch, mpp, virt, mstatus);
+        if (cause == CAUSE_LOAD_ACCESS_FAULT) {
+            concat(name, "REPORT_VA_IN_", tval, "_ON_LOAD_ACCESS_FAULT");
+            param_bool(name, s_tval == scratch);
+        }
+        cause = run_in_mode(stub_sw_scratch, mpp, virt, mstatus);
+        if (cause == CAUSE_STORE_ACCESS_FAULT) {
+            concat(name, "REPORT_VA_IN_", tval, "_ON_STORE_AMO_ACCESS_FAULT");
+            param_bool(name, s_tval == scratch);
+        }
+        cause = run_in_mode(stub_jump_scratch, mpp, virt, mstatus);
+        if (cause == CAUSE_INSTRUCTION_ACCESS_FAULT) {
+            concat(name, "REPORT_VA_IN_", tval, "_ON_INSTRUCTION_ACCESS_FAULT");
+            param_bool(name, s_tval == scratch);
+        }
+        pmp_open(2);
+    }
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -608,20 +766,46 @@ void print_parameters(unsigned long vlen)
         param_bool("REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION", probe_tval == 0x00004073);
     probe_cause = CAUSE_NONE;
     param_bool("TRAP_ON_UNIMPLEMENTED_CSR", !PROBE("zicsr", "csrr t1, 0x3FF") && probe_cause == CAUSE_ILLEGAL_INSTRUCTION);
+    // Probes in U-, S- and VS-mode: PMP must let the lower modes run, the exceptions the probes
+    // take are delegated so the lower mode's tval registers can be seen, and address translation
+    // is Bare
     if (has_u || has_s) {
-        // Lower modes need a PMP entry granting everything when PMP is implemented
-        if (num_pmp) {
-            pmpaddr0_set(~0ul);
-            pmpcfg0_set((pmpcfg0_rd() & ~0xFFul) | 0x0F);      // TOR, R W X
-        }
+        pmp_open(num_pmp);
         if (has_u)
-            ecall_from("TRAP_ON_ECALL_FROM_U", 0, mstatus);
-        if (has_s)
-            ecall_from("TRAP_ON_ECALL_FROM_S", 1, mstatus);
-        if (num_pmp) {
-            pmpcfg0_set(pmpcfg0_rd() & ~0xFFul);
-            pmpaddr0_set(0);
+            ecall_from("TRAP_ON_ECALL_FROM_U", 0, false, mstatus);
+        if (has_s) {
+            unsigned long stvec = stvec_rd();
+            ecall_from("TRAP_ON_ECALL_FROM_S", 1, false, mstatus);
+            medeleg_set(DELEGATED);
+            stvec_set((unsigned long)s_trap_handler);
+            satp_set(0);
+            lower_mode_tval_params("STVAL", false, usable_pmp, mstatus);
+            if (usable_pmp >= 2) {
+                // An instruction access fault not delegated: the M-mode tval after a jump from S
+                medeleg_set(DELEGATED & ~(1ul << CAUSE_INSTRUCTION_ACCESS_FAULT));
+                pmp_deny_scratch();
+                if (run_in_mode(stub_jump_scratch, 1, false, mstatus) == CAUSE_INSTRUCTION_ACCESS_FAULT)
+                    param_bool("REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT", probe_tval == scratch);
+                pmp_open(2);
+                medeleg_set(DELEGATED);
+            }
+            if (has_h) {
+                unsigned long vstvec = vstvec_rd();
+                hedeleg_set(DELEGATED);
+                vstvec_set((unsigned long)s_trap_handler);
+                vsatp_set(0);
+                hgatp_set(0);
+                PROBE("zicsr", "li t1, 1 << 7\n\tcsrs hstatus, t1");     // SPV: mret enters VS
+                ecall_from("TRAP_ON_ECALL_FROM_VS", 1, true, mstatus);
+                lower_mode_tval_params("VSTVAL", true, usable_pmp, mstatus);
+                PROBE("zicsr", "li t1, 1 << 7\n\tcsrc hstatus, t1");
+                hedeleg_set(0);
+                vstvec_set(vstvec);
+            }
+            medeleg_set(0);
+            stvec_set(stvec);
         }
+        pmp_close(num_pmp);
     }
 
     // Address translation

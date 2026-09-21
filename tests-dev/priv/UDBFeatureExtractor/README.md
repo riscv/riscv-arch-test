@@ -65,33 +65,17 @@ entry 0 to everything), `TRAP_ON_RESERVED_INSTRUCTION`, `TRAP_ON_UNIMPLEMENTED_C
 instruction, breakpoint, misaligned load, store/AMO and instruction fetch, and load and store
 access faults (taken with `mstatus.MPRV` set and `MPP` = U, so that no PMP entry matches).
 
-Parameters that are not extracted, because nothing M-mode code can execute settles them:
+Some trap-report parameters are measured in S-mode and VS-mode: the extractor enters the mode with
+`mret` into a stub that executes one instruction, with the exception delegated through `medeleg`
+(and `hedeleg`) to a small handler in `start.S` that records `scause`, `stval` and `sepc` (which
+name the VS copies in VS-mode) and returns to M-mode with `ecall`. That gives the
+`REPORT_*_IN_STVAL_ON_*` and `REPORT_*_IN_VSTVAL_ON_*` values for illegal instructions,
+breakpoints, misaligned accesses, and load, store and instruction access faults, the last three
+by pointing PMP entry 0 at the scratch page with no permissions while entry 1 grants everything
+else, plus `TRAP_ON_ECALL_FROM_VS` and `REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT`.
 
-- **Need an S-, VS- or virtualized trap handler:** every `REPORT_*_IN_STVAL_ON_*`,
-  `REPORT_*_IN_VSTVAL_ON_*`, `REPORT_GPA_IN_*`, `TINST_VALUE_ON_*`, and `TRAP_ON_ECALL_FROM_VS`.
-- **Need page tables or an inaccessible fetch:** `REPORT_VA_IN_MTVAL_ON_*_PAGE_FAULT`,
-  `REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT`, `TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY`.
-- **Memory-system behavior:** `LRSC_RESERVATION_STRATEGY`, `LRSC_FAIL_ON_VA_SYNONYM`,
-  `LRSC_FAIL_ON_NON_EXACT_LRSC`, `MISALIGNED_LDST_EXCEPTION_PRIORITY`,
-  `MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE`, `MISALIGNED_SPLIT_STRATEGY`, `PMA_GRANULARITY`,
-  `FORCE_UPGRADE_CBO_INVAL_TO_FLUSH`, `ZAWRS_NTO_IS_NOP`, `PRECISE_SYNCHRONOUS_EXCEPTIONS`.
-- **Unbounded or undefined search:** `HPM_EVENTS` (every event number would have to be tried),
-  `TRAP_ON_ILLEGAL_WLRL` and `TRAP_ON_UNIMPLEMENTED_INSTRUCTION` (no encoding is known to be
-  illegal on every hart), `PMLEN` (the yamls do not agree on what it counts),
-  `SCTRDEPTH_DEPTH_LEGAL_VALUES`.
-- **Control-flow-integrity and debug traps:** `REPORT_CAUSE_IN_*_ON_*_SOFTWARE_CHECK`
-  (a landing-pad or shadow-stack fault would have to be provoked), `DCSR_*_TYPE` (`dcsr` is
-  only accessible in debug mode).
-- **Vector behavior beyond legality:** `LEGAL_VSTART`, `RESERVED_VSET_X0X0_*`,
-  `RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX`, `SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED`,
-  `FOLLOW_VTYPE_RESET_RECOMMENDATION`, `IMPRECISE_VECTOR_TRAP_SETTABLE`, `VECTOR_FF_*`,
-  `VECTOR_LOAD_*`, `VECTOR_LS_INDEX_MAX_EEW`, `VECTOR_LS_SEG_PARTIAL_ACCESS`,
-  `VECTOR_LS_WHOLEREG_MISALIGNED_LEGAL`, `VFREDUSUM_*`.
-
-Two measured values deserve a caveat: `HW_MSTATUS_FS_DIRTY_UPDATE` (and `VS`) reports `precise`
-whenever one floating-point (vector) instruction leaves the field Dirty, since `imprecise` cannot
-be told apart, and the `REPORT_VA_IN_MTVAL_ON_*_MISALIGNED` parameters can only be measured on a
-hart where the misaligned access traps.
+The parameters that are not extracted, grouped by what it would take, are tracked in
+[parameters_not_extracted.md](parameters_not_extracted.md).
 
 ### Probes that can over-report
 

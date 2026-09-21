@@ -1,0 +1,44 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# CI configuration for the CHIPS Alliance VeeR family: VeeR EH1
+
+ci_enabled: true
+
+# Exclusions are by test-suite directory, the only granularity EXCLUDE_EXTENSIONS supports.
+# Each entry below records the specific reason, measured on Cores-VeeR-EH1 @ d04b1c7a.
+# Full analysis, including traces: see the PR description.
+#
+#   Sm            19 of 27 fail, for two distinct reasons.
+#                 (a) 10 tests: VeeR EH1 does not implement mstatush (CSR 0x310). ACT's M-mode trap
+#                     handler reads it unconditionally on RV32 (sv_Mvect+0x6c: `csrr s1,0x310`) when
+#                     building the trap status word, so every trap raises a nested illegal
+#                     instruction and recurses until the trap signature overflows; the test finishes
+#                     having written zero signature entries. Measured 7500 `csrr 0x310` executions in
+#                     Sm_mcsr_walk-00 and Sm_csr_ro-00.
+#                 (b) 9 tests: CSR writability. Sm_mcsr_walk-02..09 write a mip bit and read it back
+#                     (expected 0x80, got 0x0) — EH1's mip is pin-driven and read-only to software.
+#                     Sm_mcsr_cntr-00 writes mcycle (expected 0, got 1) — the write does not stick.
+#
+#   ExceptionsSm  1 of 4 fail: the mstatush recursion above. ExceptionsSm-00 takes 754 trap-handler
+#                 entries, 750 of them from `csrr 0x310`, and writes no signature (expected 0x234).
+#
+#   ExceptionsZc  1 of 1 fails: same mstatush recursion, 15000 `csrr 0x310` executions,
+#                 actual signature offset 0x0 against an expected 0x288.
+#
+#   Zifencei      1 of 1 fails: NOT mstatush (0 `csrr 0x310` executions). The VeeR testbench models
+#                 instruction and data memory as two independent arrays, both loaded from
+#                 program.hex at time 0 (tb_top.sv:422), and stores reach only the data array, so
+#                 self-modifying code can never be fetched. Zifencei-fence.i-00 reads x24=0x4 where
+#                 0x8 is expected. EH1 also documents a real fence.i I/D-ordering deviation
+#                 (docs/source/compliance-test-suite-failures.md, I-FENCE.I-01), so this cannot be
+#                 attributed to the core until the testbench mirrors stores into instruction memory.
+#
+#   I             1 of 39 fail: I-fence-00 only, and for the mstatush reason (7500 `csrr 0x310`).
+#                 Excluding the whole suite to silence one test also drops 38 passing tests, which is
+#                 the cost of having no per-test exclusion mechanism. Worth revisiting if ACT grows
+#                 one; the other 38 pass today.
+exclude_extensions: "Sm,ExceptionsSm,ExceptionsZc,Zifencei,I"
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache"
+install_script: ".github/scripts/install-veer.sh"
+setup_script: ".github/scripts/setup-veer.sh"

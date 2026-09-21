@@ -110,8 +110,8 @@
 `ifdef I_COVERAGE
   `include "I_coverage.svh"
 `endif
-`ifdef INTERRUPTSSM2_COVERAGE
-  `include "InterruptsSm2_coverage.svh"
+`ifdef INTERRUPTSSM_COVERAGE
+  `include "InterruptsSm_coverage.svh"
 `endif
 `ifdef M_COVERAGE
   `include "M_coverage.svh"

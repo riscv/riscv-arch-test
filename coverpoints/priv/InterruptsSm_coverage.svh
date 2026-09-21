@@ -10,9 +10,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_INTERRUPTSSM2
+`define COVER_INTERRUPTSSM
 
-covergroup InterruptsSm2_cg with function sample(ins_t ins);
+covergroup InterruptsSm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -97,30 +97,30 @@ covergroup InterruptsSm2_cg with function sample(ins_t ins);
     // H hardwires mideleg bits 12, 10, 6, and 2 to 1, and Sail does not let M-level interrupts
     // (MEI, MTI, MSI) be delegated, so both are left out.
     `ifdef SSCOFPMF_SUPPORTED
-        `define SM2_NOH_MASK 16'h2222
+        `define SM_NOH_MASK 16'h2222
     `else
-        `define SM2_NOH_MASK 16'h0222
+        `define SM_NOH_MASK 16'h0222
     `endif
-    `define SM2_MIDELEG_NOH (ins.current.csr[CSR_MIDELEG][15:0] & `SM2_NOH_MASK)
-    `define SM2_MIP_NOH (ins.current.csr[CSR_MIP][15:0] & `SM2_NOH_MASK)
+    `define SM_MIDELEG_NOH (ins.current.csr[CSR_MIDELEG][15:0] & `SM_NOH_MASK)
+    `define SM_MIP_NOH (ins.current.csr[CSR_MIP][15:0] & `SM_NOH_MASK)
 
     // Interrupt bits this config supports: MEI, MTI, MSI, plus the S, Sscofpmf, and H interrupts
     `ifdef S_SUPPORTED
         `ifdef H_SUPPORTED
-            `define SM2_INT_MASK (16'h0888 | `SM2_NOH_MASK | 16'h0444)
+            `define SM_INT_MASK (16'h0888 | `SM_NOH_MASK | 16'h0444)
         `else
-            `define SM2_INT_MASK (16'h0888 | `SM2_NOH_MASK)
+            `define SM_INT_MASK (16'h0888 | `SM_NOH_MASK)
         `endif
     `else
-        `define SM2_INT_MASK 16'h0888
+        `define SM_INT_MASK 16'h0888
     `endif
 
     // mideleg delegates exactly one interrupt of the pending mip pair and nothing else.
     // x & -x keeps the lowest set bit; x & (x-1) clears it, leaving the higher bit of the pair.
     `ifdef S_SUPPORTED
         mideleg_one_of_mip_pair: coverpoint
-            ((`SM2_MIDELEG_NOH == (`SM2_MIP_NOH & -`SM2_MIP_NOH))          ? 2'd1 :
-             (`SM2_MIDELEG_NOH == (`SM2_MIP_NOH & (`SM2_MIP_NOH - 16'd1))) ? 2'd2 : 2'd0) {
+            ((`SM_MIDELEG_NOH == (`SM_MIP_NOH & -`SM_MIP_NOH))          ? 2'd1 :
+             (`SM_MIDELEG_NOH == (`SM_MIP_NOH & (`SM_MIP_NOH - 16'd1))) ? 2'd2 : 2'd0) {
             bins lower_delegated  = {2'd1};
             bins higher_delegated = {2'd2};
         }
@@ -179,7 +179,7 @@ covergroup InterruptsSm2_cg with function sample(ins_t ins);
 
     // Every interrupt enabled except one: the complement of mie, masked to the bits this config
     // supports, is one-hot. The bin names the single interrupt left disabled.
-    walking_mie_zero: coverpoint ((~ins.current.csr[CSR_MIE][15:0]) & `SM2_INT_MASK) {
+    walking_mie_zero: coverpoint ((~ins.current.csr[CSR_MIE][15:0]) & `SM_INT_MASK) {
         bins meie = {16'h0800};
         bins mtie = {16'h0080};
         bins msie = {16'h0008};
@@ -204,17 +204,17 @@ covergroup InterruptsSm2_cg with function sample(ins_t ins);
     }
 
     // The single disabled interrupt in walking_mie_zero is pending
-    mip_matches_mie_zero: coverpoint ((ins.current.csr[CSR_MIP][15:0] & ~ins.current.csr[CSR_MIE][15:0] & `SM2_INT_MASK) != 16'h0) {
+    mip_matches_mie_zero: coverpoint ((ins.current.csr[CSR_MIP][15:0] & ~ins.current.csr[CSR_MIE][15:0] & `SM_INT_MASK) != 16'h0) {
         bins pending = {1'b1};
     }
 
     // Exactly two interrupts enabled: mie masked to the bits this config supports has exactly two
     // bits set. One bin per pair of supported interrupt bits: 3 for M only, 15 for M+S,
     // 21 for M+S+Sscofpmf, 36 for M+S+H, and 45 for M+S+H+Sscofpmf.
-    mie_pairs: coverpoint (ins.current.csr[CSR_MIE][15:0] & `SM2_INT_MASK) {
+    mie_pairs: coverpoint (ins.current.csr[CSR_MIE][15:0] & `SM_INT_MASK) {
         // The second term drops pairs naming a bit this config does not implement, which would
         // otherwise be declared as bins that can never be hit.
-        bins pairs[] = {[0:$]} with ($countones(item) == 2 && (item & ~`SM2_INT_MASK) == 0);
+        bins pairs[] = {[0:$]} with ($countones(item) == 2 && (item & ~`SM_INT_MASK) == 0);
     }
 
     // One interrupt pending at a time. Bits 15:14, 12, 8, 4, and 0 are don't care because they are
@@ -241,16 +241,16 @@ covergroup InterruptsSm2_cg with function sample(ins_t ins);
     // Two interrupts pending at once: mip masked to the bits this config supports has exactly two
     // bits set. One bin per pair of supported interrupt bits: 3 for M only, 15 for M+S,
     // 21 for M+S+Sscofpmf, 36 for M+S+H, and 45 for M+S+H+Sscofpmf.
-    mip_pairs: coverpoint (ins.current.csr[CSR_MIP][15:0] & `SM2_INT_MASK) {
+    mip_pairs: coverpoint (ins.current.csr[CSR_MIP][15:0] & `SM_INT_MASK) {
         // The second term drops pairs naming a bit this config does not implement, which would
         // otherwise be declared as bins that can never be hit.
-        bins pairs[] = {[0:$]} with ($countones(item) == 2 && (item & ~`SM2_INT_MASK) == 0);
+        bins pairs[] = {[0:$]} with ($countones(item) == 2 && (item & ~`SM_INT_MASK) == 0);
     }
 
     // Exactly two S-level interrupts pending (no M-level or H interrupts)
     `ifdef S_SUPPORTED
-        mip_pairs_noh: coverpoint `SM2_MIP_NOH {
-            bins pairs[] = {[0:$]} with ($countones(item) == 2 && (item & ~`SM2_NOH_MASK) == 0);
+        mip_pairs_noh: coverpoint `SM_MIP_NOH {
+            bins pairs[] = {[0:$]} with ($countones(item) == 2 && (item & ~`SM_NOH_MASK) == 0);
         }
     `endif
 
@@ -379,18 +379,56 @@ covergroup InterruptsSm2_cg with function sample(ins_t ins);
     // main coverpoints
 
     cp_trigger:                 cross priv_mode_interrupts, mip_walking, mstatus_mie, mstatus_sie, mideleg_both, mie_ones, mtvec_both {
-        // MSI, MTI, STI, and LCOFI are raised through T-SBI in S/U and covered by cp_trigger_tsbi
+        // MSI and MTI are the only interrupts with no pending bit reachable below M: they cannot be
+        // delegated, so once pending they are enabled regardless of mstatus.MIE and are taken on the
+        // mret out of the T-SBI handler that set them, before any S/U instruction retires.
+        // cp_trigger_tsbi records them there. Everything else is reachable in S/U: sip.SSIP and
+        // sip.LCOFIP are read-write, stimecmp is S-accessible when menvcfg.STCE is 1, and MEI/SEI
+        // come from the interrupt controller.
         ignore_bins tsbi = binsof(priv_mode_interrupts) intersect {3'b001, 3'b000} &&
-                           binsof(mip_walking) intersect {16'h0008, 16'h0080, 16'h0020, 16'h2000};
+                           binsof(mip_walking) intersect {16'h0008, 16'h0080};
+        // The same argument applies wherever the mode cannot reach the pending bit either.
+        // sip.LCOFIP only aliases mip.LCOFIP when mideleg.LCOFI is set, and U-mode has no sip at
+        // all, so an undelegated LCOFI cannot be raised from S or U.
+        // mideleg_both, mstatus_sie.one and mip_walking.stip/.lcofip all need S, and the bins below
+        // only describe delegation, so the whole group is gated on S_SUPPORTED.
+        `ifdef S_SUPPORTED
+            `ifdef SSCOFPMF_SUPPORTED
+                ignore_bins lcofi_needs_mideleg = binsof(priv_mode_interrupts) intersect {3'b001, 3'b000} &&
+                                                  binsof(mip_walking.lcofip) && binsof(mideleg_both.zeros);
+                // With sstatus.SIE set, a delegated LCOFI is taken on the csrrs that made it pending,
+                // so no later S-mode instruction retires with it still showing in mip.
+                ignore_bins lcofi_taken_at_once_in_s = binsof(priv_mode_interrupts) intersect {3'b001} &&
+                                                       binsof(mip_walking.lcofip) && binsof(mstatus_sie.one);
+            `endif
+            // U-mode reaches neither sip.STIP (read-only) nor stimecmp, so an undelegated STI can
+            // only be raised for it from M and is taken on the mret.
+            ignore_bins u_cannot_raise_undelegated_sti = binsof(priv_mode_interrupts) intersect {3'b000} &&
+                                                         binsof(mip_walking.stip) && binsof(mideleg_both.zeros);
+        `endif
     }
     `ifdef U_SUPPORTED
         cp_trigger_tsbi:        cross priv_mode_m, mret_insn, mstatus_mpp, mip_walking, mstatus_mpie, mstatus_sie, mideleg_both, mie_ones, mtvec_both {
-            // MEI, SEI, and SSI are raised directly in S/U and covered by cp_trigger
-            ignore_bins direct = binsof(mip_walking) intersect {16'h0800, 16'h0200, 16'h0002};
+            // MEI is the only interrupt with no mip write path: it is raised by a store to the
+            // interrupt controller from whatever mode the test runs in, so it never sits pending
+            // across an mret. SEI and SSI do reach mip through T-SBI (MIP_SEIP, MIP_SSIP) and are
+            // recorded here.
+            ignore_bins mei_has_no_mip_write = binsof(mip_walking) intersect {16'h0800};
+            `ifdef SSCOFPMF_SUPPORTED
+                `ifdef S_SUPPORTED
+                    // S-mode raises LCOFI by writing sip.LCOFIP itself, so on the way back to S it is
+                    // never still pending here. U-mode has no sip access and keeps the T-SBI path.
+                    ignore_bins lcofi_is_direct_from_s =
+                        binsof(mstatus_mpp.S_mode) && binsof(mip_walking.lcofip);
+                `endif
+            `endif
         }
     `endif
 
-    // mip is only writable from M, so lower-mode tests reach these writes through T-SBI
+    // These are all S-level interrupts, hence the S_SUPPORTED gate. mip is an M CSR, so the mip
+    // flavours are written from M directly and from S/U through T-SBI. sip is not: sip.SSIP is
+    // read-write, so cp_trigger_reg_sip_ssip is an ordinary S-mode csrrs with no T-SBI involved,
+    // which is why it drops the mstatus.MIE dimension and requires mideleg.SSI.
     `ifdef S_SUPPORTED
         cp_trigger_reg_mip_ssip: cross csrrs_csrrsi, csr_mip, rs1_ssip, mstatus_mie, mstatus_sie, mideleg_both, mie_ones, mtvec_both;
         cp_trigger_reg_mip_seip: cross csrrs, csr_mip, rs1_seip, mstatus_mie, mstatus_sie, mideleg_both, mie_ones, mtvec_both;
@@ -398,14 +436,22 @@ covergroup InterruptsSm2_cg with function sample(ins_t ins);
     `endif
     `ifdef SSTC_SUPPORTED
         cp_trigger_sti_sstc:    cross priv_mode_interrupts, menvcfg_stce, mstatus_mie, mstatus_sie, mie_ones, mideleg_both, mtvec_both, stimecmp_max_min {
-            // In S/U with STCE = 1, an undelegated STI from stimecmp = 0 fires right after the mret
-            // from the T-SBI call and is covered by cp_trigger_sti_sstc_tsbi
-            ignore_bins tsbi = binsof(priv_mode_interrupts) intersect {3'b001, 3'b000} && binsof(menvcfg_stce) intersect {1} &&
+            // menvcfg.STCE = 1 is what makes stimecmp S-accessible, so S-mode arms its own timer and
+            // the STI is taken in S-mode, here. Only U-mode still goes through T-SBI, where an
+            // undelegated STI from stimecmp = 0 fires on the mret and cp_trigger_sti_sstc_tsbi
+            // records it.
+            ignore_bins tsbi = binsof(priv_mode_interrupts) intersect {3'b000} && binsof(menvcfg_stce) intersect {1} &&
                                binsof(mideleg_both.zeros) && binsof(stimecmp_max_min.min);
         }
         `ifdef U_SUPPORTED
             cp_trigger_sti_sstc_tsbi: cross priv_mode_m, mret_insn, mstatus_mpp, menvcfg_stce, mstatus_mpie, mstatus_sie, mie_ones, mideleg_both, mtvec_both, stimecmp_max_min {
-                ignore_bins direct = binsof(menvcfg_stce) intersect {0} || binsof(mideleg_both.ones) || binsof(stimecmp_max_min.max);
+                // Complement of the cp_trigger_sti_sstc ignore above, so the two still partition the
+                // space: only the U-mode STCE = 1 case arrives through T-SBI and is recorded here.
+                ignore_bins direct = binsof(menvcfg_stce) intersect {0} || binsof(mideleg_both.ones) || binsof(stimecmp_max_min.max)
+                                     `ifdef S_SUPPORTED
+                                         || binsof(mstatus_mpp.S_mode)
+                                     `endif
+                                     ;
             }
         `endif
     `endif
@@ -419,6 +465,14 @@ covergroup InterruptsSm2_cg with function sample(ins_t ins);
         cp_enable_one_tsbi:     cross priv_mode_m, mret_insn, mstatus_mpp, mideleg_zeros, walking_mie_one, mip_matches_mie_one {
             // MEI, SEI, and SSI are raised directly in S/U and covered by cp_enable_one
             ignore_bins direct = binsof(walking_mie_one) intersect {16'h0800, 16'h0200, 16'h0002};
+            `ifdef SSCOFPMF_SUPPORTED
+                `ifdef S_SUPPORTED
+                    // As in cp_trigger_tsbi: S-mode raises LCOFI through sip.LCOFIP itself, so it is
+                    // never still pending on the mret back to S.
+                    ignore_bins lcofi_is_direct_from_s =
+                        binsof(mstatus_mpp.S_mode) && binsof(walking_mie_one.lcofie);
+                `endif
+            `endif
         }
     `endif
     cp_enable_zero:             cross priv_mode_interrupts, mideleg_zeros, mstatus_mie_one, walking_mie_zero, mip_matches_mie_zero;
@@ -449,12 +503,12 @@ covergroup InterruptsSm2_cg with function sample(ins_t ins);
     // no privilege axis at all, which still elaborates and fills from M-mode WFIs -- a silent duplicate
     // of cp_wfi_m reporting coverage for a mode the hart does not have. Dropping the coverpoint is right.
     `ifdef S_SUPPORTED
-        `define SM2_WFI_PRIV priv_mode_s
+        `define SM_WFI_PRIV priv_mode_s
     `elsif U_SUPPORTED
-        `define SM2_WFI_PRIV priv_mode_u
+        `define SM_WFI_PRIV priv_mode_u
     `endif
-    `ifdef SM2_WFI_PRIV
-        cp_wfi:                 cross `SM2_WFI_PRIV, mstatus_mie, mie_mtie_one, mstatus_tw_zero, wfi, mideleg_zeros;
+    `ifdef SM_WFI_PRIV
+        cp_wfi:                 cross `SM_WFI_PRIV, mstatus_mie, mie_mtie_one, mstatus_tw_zero, wfi, mideleg_zeros;
     `endif
 
     // mstatus.TW = 1 traps WFI in every mode below M, so the timeout applies whenever any lower mode
@@ -476,14 +530,14 @@ covergroup InterruptsSm2_cg with function sample(ins_t ins);
 
 endgroup
 
-`undef SM2_INT_MASK
-`undef SM2_NOH_MASK
-`undef SM2_MIDELEG_NOH
-`undef SM2_MIP_NOH
-`ifdef SM2_WFI_PRIV
-    `undef SM2_WFI_PRIV
+`undef SM_INT_MASK
+`undef SM_NOH_MASK
+`undef SM_MIDELEG_NOH
+`undef SM_MIP_NOH
+`ifdef SM_WFI_PRIV
+    `undef SM_WFI_PRIV
 `endif
 
-function void interruptssm2_sample(int hart, int issue, ins_t ins);
-    InterruptsSm2_cg.sample(ins);
+function void interruptssm_sample(int hart, int issue, ins_t ins);
+    InterruptsSm_cg.sample(ins);
 endfunction

@@ -18,6 +18,11 @@ ci_enabled: true
 #                 region supports no atomics, reports "Trap signature overflow in sig mode" while
 #                 generating Zalrsc-sc.w-00. Testing atomics on this core needs the test data
 #                 region placed in the DCCM, which ACT cannot currently express.
+#                 Empirical confirmation: the UDB feature extractor from #2442, run on this core
+#                 from system memory where ACT runs, reports NO atomics at all - its probe
+#                 instruction traps. The configuration still claims A/Zaamo/Zalrsc because the
+#                 hardware implements them (misa bit 0 is set with ATOMIC_ENABLE=1); they are
+#                 simply unreachable from where the tests execute.
 #
 #   Sm            13 of 27 fail: trap-count mismatches (8), mtval mismatches, and CSR writability -
 #                 a written mip bit reads back 0 because mip is pin-driven and read-only to

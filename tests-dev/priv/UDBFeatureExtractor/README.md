@@ -90,6 +90,22 @@ HS-mode takes them and its handler records `htinst`; the ecalls reach M-mode and
 there. Zero is `always zero`, a value whose opcode field is a load, store or AMO is `always
 transformed standard instruction`, and anything else `custom`.
 
+Vector parameters beyond `VLEN`/`ELEN`/`SEW_MIN` come from vsetvli experiments: `vtype` and `vl` as
+left by reset (read before any probe touches the vector unit), whether `vill` is set by the
+`x0, x0` form when `vill` is already set or when VLMAX would change, `vl` for an AVL between VLMAX
+and twice VLMAX, the widest index EEW an indexed load accepts, the `vstart` values an arithmetic
+instruction accepts, and whether a whole-register load tolerates a misaligned base.
+
+Control-flow integrity: with `mseccfg.MLPE` set, an indirect jump to an instruction that is not
+`lpad` raises a software-check exception with tval 2, in M-mode directly and in S-mode and
+VS-mode through `menvcfg.LPE`/`henvcfg.LPE`; a shadow-stack pop whose value does not match
+(`sspush`, then `sspopchk` of a different value) raises one with tval 3 in S-mode and VS-mode
+through `menvcfg.SSE`/`henvcfg.SSE`, and undelegated in M-mode; the shadow stack has to be a page
+with the shadow-stack permission encoding, so the page table's second region aliases the program's
+region that way and `ssp` points into the scratch area through the alias. While
+these run the M-mode handler also clears the pending landing pad and `MLPE`, or the resume itself
+would fault.
+
 The parameters that are not extracted, grouped by what it would take, are tracked in
 [parameters_not_extracted.md](parameters_not_extracted.md).
 

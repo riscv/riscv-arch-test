@@ -286,6 +286,7 @@ volatile unsigned long s_htval, s_htinst;        // written by hs_trap_handler
 extern char s_trap_handler[], hs_trap_handler[];
 volatile unsigned long lower_stub;               // address the mret enters
 volatile unsigned long fault_va;                 // address the page-fault stubs touch
+volatile unsigned long cfi_active;               // tells the M-mode handler a landing-pad probe is running
 
 #define DEFINE_STUB(name, arch, insn)                                                       \
     __asm__(".text\n.balign 4\n.globl " #name "\n" #name ":\n\t.option push\n\t.option arch, +" arch \
@@ -308,6 +309,18 @@ DEFINE_STUB(stub_jump_scratch, "zicsr", "jalr zero, 0(a1)")
 DEFINE_STUB(stub_load_fault_va, "zicsr", LOAD_FAULT_VA "lw t1, 0(a2)")
 DEFINE_STUB(stub_store_fault_va, "zicsr", LOAD_FAULT_VA "sw t1, 0(a2)")
 DEFINE_STUB(stub_jump_fault_va, "zicsr", LOAD_FAULT_VA "jalr zero, 0(a2)")
+// An indirect jump to an instruction that is not lpad: a landing-pad fault where enabled
+DEFINE_STUB(stub_landing_pad, "zicsr", "la a2, 3f\n\tjalr zero, 0(a2)\n3:\tnop")
+// A shadow-stack pop whose value does not match: a shadow-stack fault where enabled.  The shadow
+// stack pointer is put in the scratch area first.
+volatile unsigned long shadow_ssp;              // shadow stack pointer for the probe, a shadow-stack page
+#if __riscv_xlen == 64
+#define LOAD_SHADOW_SSP "la a2, shadow_ssp\n\tld a2, 0(a2)\n\t"
+#else
+#define LOAD_SHADOW_SSP "la a2, shadow_ssp\n\tlw a2, 0(a2)\n\t"
+#endif
+DEFINE_STUB(stub_shadow_stack, "zimop,+zicfiss",
+            LOAD_SHADOW_SSP "csrw 0x011, a2\n\tli t0, 0x1234\n\tsspush x5\n\tli t0, 0x5678\n\tsspopchk x5")
 #define CSRR_HGATP 0x68002373                            // csrr t1, hgatp: virtual instruction in VS
 DEFINE_STUB(stub_virtual_insn, "zicsr", ".word 0x68002373")
 
@@ -358,8 +371,13 @@ DEFINE_CSR_READ(vstvec_rd, vstvec)
 #define PAGE_FAULTS ((1ul << 12) | (1ul << 13) | (1ul << 15))
 #define GUEST_PAGE_FAULTS ((1ul << 20) | (1ul << 21) | (1ul << 23))
 #define VIRTUAL_INSTRUCTION (1ul << 22)
+#define SOFTWARE_CHECK (1ul << 18)
+#define CAUSE_SOFTWARE_CHECK 18
+#define TVAL_LANDING_PAD 2
+#define TVAL_SHADOW_STACK 3
 #define DELEGATED ((1ul << 0) | (1ul << 1) | (1ul << 2) | (1ul << 3) | (1ul << 4) | (1ul << 5) |   \
-                   (1ul << 6) | (1ul << 7) | PAGE_FAULTS | GUEST_PAGE_FAULTS | VIRTUAL_INSTRUCTION)
+                   (1ul << 6) | (1ul << 7) | PAGE_FAULTS | GUEST_PAGE_FAULTS | VIRTUAL_INSTRUCTION | \
+                   SOFTWARE_CHECK)
 
 // PMP entry 0 grants everything to the lower modes ...
 static void pmp_open(unsigned num_pmp)
@@ -415,8 +433,9 @@ static const struct { unsigned long mode; unsigned shift; } atp_levels[] = {
 #endif
 };
 
-static bool build_page_table(unsigned long (*wr)(unsigned long), bool gstage, unsigned long *atp,
-                             unsigned long *fault, unsigned *shift_out)
+#define PTE_SHADOW 0xC5        // V W A D: the shadow-stack page encoding (writable, not readable)
+static bool build_page_table_ex(unsigned long (*wr)(unsigned long), bool gstage, bool shadow, unsigned long *atp,
+                                unsigned long *fault, unsigned *shift_out)
 {
     for (unsigned i = 0; i < COUNT(atp_levels); i++) {
         if (!atp_accepts(wr, ATP_MODE(atp_levels[i].mode)))
@@ -430,11 +449,19 @@ static bool build_page_table(unsigned long (*wr)(unsigned long), bool gstage, un
         for (unsigned j = 0; j < PROBE_SCRATCH_SIZE / sizeof(unsigned long); j++)
             table[j] = 0;
         table[idx] = ((((idx << shift) >> 12)) << 10) | PTE_LEAF | (gstage ? PTE_U : 0);
+        if (shadow)     // the second region aliases the program's region as shadow-stack memory
+            table[fault_idx] = ((((idx << shift) >> 12)) << 10) | PTE_SHADOW;
         *atp = ATP_MODE(atp_levels[i].mode) | (base >> 12);
         *fault = fault_idx << shift;
         return true;
     }
     return false;
+}
+
+static bool build_page_table(unsigned long (*wr)(unsigned long), bool gstage, unsigned long *atp,
+                             unsigned long *fault, unsigned *shift_out)
+{
+    return build_page_table_ex(wr, gstage, false, atp, fault, shift_out);
 }
 
 // The REPORT_VA_IN_<tval>_ON_*_PAGE_FAULT parameters for the mode entered with mpp/virt.  When the
@@ -484,6 +511,64 @@ static void tinst_param(const char *name, unsigned long cause, unsigned long exp
 {
     if (cause == expected)
         param_str(name, tinst_kind(tinst_seen(), memory_fault));
+}
+
+// Software-check exceptions in S-mode or VS-mode: landing pads enabled with menvcfg.LPE (henvcfg
+// for VS), shadow stacks with menvcfg.SSE (henvcfg); delegated they are recorded by the mode's
+// handler, undelegated by M-mode.  cfi_active covers the resume after a landing-pad fault.
+#define ENVCFG_LPE (1ul << 2)
+#define ENVCFG_SSE (1ul << 3)
+DEFINE_CSR_READ(menvcfg_rd, menvcfg)
+DEFINE_CSR_SET(menvcfg_set, menvcfg)
+DEFINE_CSR_READ(henvcfg_rd, henvcfg)
+DEFINE_CSR_SET(henvcfg_set, henvcfg)
+
+static void cfi_params(const char *tval, bool virt, bool delegated, bool zicfilp, bool zicfiss, unsigned long mstatus)
+{
+    char name[80];
+    unsigned long envcfg = virt ? henvcfg_rd() : menvcfg_rd();
+    unsigned long (*set)(unsigned long) = virt ? henvcfg_set : menvcfg_set;
+    cfi_active = 1;
+    if (zicfilp) {
+        set(envcfg | ENVCFG_LPE);
+        unsigned long cause = run_in_mode(stub_landing_pad, 1, virt, mstatus);
+        if (cause == CAUSE_SOFTWARE_CHECK) {
+            concat(name, "REPORT_CAUSE_IN_", tval, "_ON_LANDING_PAD_SOFTWARE_CHECK");
+            param_bool(name, (delegated ? s_tval : probe_tval) == TVAL_LANDING_PAD);
+        }
+        set(envcfg);
+    }
+    if (zicfiss) {
+        // Shadow-stack accesses need a page marked as shadow stack, so translation is on: the
+        // table's second region aliases the program's region with the shadow-stack encoding, and
+        // ssp points at the scratch area through that alias.  In VS-mode ssp is accessible only
+        // with menvcfg.SSE set as well.
+        unsigned long atp, region;
+        unsigned shift;
+        unsigned long (*atp_wr)(unsigned long) = virt ? vsatp_wr : satp_wr;
+        unsigned long (*atp_set)(unsigned long) = virt ? vsatp_set : satp_set;
+        if (build_page_table_ex(atp_wr, false, true, &atp, &region, &shift)) {
+            unsigned long base = (unsigned long)probe_scratch;
+            shadow_ssp = region + (base + 1024 - ((base >> shift) << shift));
+            unsigned long menvcfg = menvcfg_rd();
+            set(envcfg | ENVCFG_SSE);
+            if (virt)
+                menvcfg_set(menvcfg | ENVCFG_SSE);
+            atp_set(atp);
+            PROBE("zicsr", "sfence.vma");
+            unsigned long cause = run_in_mode(stub_shadow_stack, 1, virt, mstatus);
+            if (cause == CAUSE_SOFTWARE_CHECK) {
+                concat(name, "REPORT_CAUSE_IN_", tval, "_ON_SHADOW_STACK_SOFTWARE_CHECK");
+                param_bool(name, (delegated ? s_tval : probe_tval) == TVAL_SHADOW_STACK);
+            }
+            atp_set(0);
+            PROBE("zicsr", "sfence.vma");
+            if (virt)
+                menvcfg_set(menvcfg);
+            set(envcfg);
+        }
+    }
+    cfi_active = 0;
 }
 
 // U-mode or S-mode ecall
@@ -554,7 +639,7 @@ static void lower_mode_tval_params(const char *tval, bool virt, unsigned usable_
 
 // ---------------------------------------------------------------------------------------------
 
-void print_parameters(unsigned long vlen)
+void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned long reset_vl)
 {
     bool has_s = have("S"), has_u = have("U"), has_h = have("H");
     unsigned long v;
@@ -871,6 +956,22 @@ void print_parameters(unsigned long vlen)
         param_bool("REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION", probe_tval == 0x00004073);
     probe_cause = CAUSE_NONE;
     param_bool("TRAP_ON_UNIMPLEMENTED_CSR", !PROBE("zicsr", "csrr t1, 0x3FF") && probe_cause == CAUSE_ILLEGAL_INSTRUCTION);
+    // Control-flow integrity in M-mode: with mseccfg.MLPE set, an indirect jump to an instruction
+    // that is not lpad raises a software-check exception with tval 2.  The M-mode handler clears
+    // MLPE and the pending landing pad while cfi_active is set, so the resume does not fault.
+    bool zicfilp = PROBE_VALUE("zicsr", CSR_BIT(0x747, 10)) == 1;
+    if (zicfilp) {
+        cfi_active = 1;
+        lower_stub = (unsigned long)stub_landing_pad;
+        bool ok = PROBE("zicsr", "li t1, 1 << 10\n\tcsrs 0x747, t1\n\tla a2, lower_stub\n\t" LREG_ASM " a2, 0(a2)\n\t"
+                                 "jalr zero, 0(a2)");
+        // the stub ends in an ecall, which is the trap seen when no landing-pad fault occurred
+        if (!ok && probe_cause == CAUSE_SOFTWARE_CHECK)
+            param_bool("REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK", probe_tval == TVAL_LANDING_PAD);
+        PROBE("zicsr", "li t1, 1 << 10\n\tcsrc 0x747, t1");
+        cfi_active = 0;
+    }
+
     // Probes in U-, S- and VS-mode: PMP must let the lower modes run, the exceptions the probes
     // take are delegated so the lower mode's tval registers can be seen, and address translation
     // is Bare
@@ -902,6 +1003,12 @@ void print_parameters(unsigned long vlen)
                 // satp accepts no translation mode: does sfence.vma trap?
                 param_bool("TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY", !PROBE("zicsr", "sfence.vma"));
             }
+            // Control-flow integrity faults taken in S-mode, and undelegated in M-mode (the
+            // shadow-stack one can only reach M-mode this way, as M-mode has no shadow stack)
+            cfi_params("STVAL", false, true, zicfilp, have("Zicfiss"), mstatus);
+            medeleg_set(DELEGATED & ~SOFTWARE_CHECK);
+            cfi_params("MTVAL", false, false, false, have("Zicfiss"), mstatus);
+            medeleg_set(DELEGATED);
             if (usable_pmp >= 2) {
                 // An instruction access fault not delegated: the M-mode tval after a jump from S
                 medeleg_set(DELEGATED & ~(1ul << CAUSE_INSTRUCTION_ACCESS_FAULT));
@@ -969,6 +1076,7 @@ void print_parameters(unsigned long vlen)
                     hgatp_set(0);
                     PROBE("zicsr", HFENCE_GVMA);
                 }
+                cfi_params("VSTVAL", true, true, zicfilp, have("Zicfiss"), mstatus);
                 // tinst: traps from VS-mode taken in HS-mode (nothing delegated to VS), or by
                 // M-mode for the ecalls
                 hedeleg_set(0);
@@ -1112,7 +1220,54 @@ void print_parameters(unsigned long vlen)
             param_bool("VILL_SET_ON_RESERVED_VTYPE", vill_reserved != 0);
         param_bool("VECTOR_LS_MISALIGNED_LEGAL",
                    PROBE("zve32x", "vsetivli x0, 1, e32, m1, ta, ma\n\taddi a2, a1, 1\n\tvle32.v v1, (a2)"));
-        PROBE("zve32x", "vsetivli x0, 1, e32, m1, ta, ma");     // leave vtype legal
+        param_bool("VECTOR_LS_WHOLEREG_MISALIGNED_LEGAL",
+                   PROBE("zve32x", "vsetivli x0, 1, e32, m1, ta, ma\n\taddi a2, a1, 1\n\tvl1re32.v v1, (a2)"));
+        // Reserved fractional LMUL (SEW > LMUL * ELEN) supported at all: the complement of vill
+        // being set for it
+        if (vill_reserved != PROBE_TRAPPED)
+            param_str("SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED", vill_reserved ? "no_unrequired_supported" : "custom");
+        // vtype and vl at reset: vill set, everything else zero
+        if (reset_vtype != PROBE_TRAPPED && reset_vl != PROBE_TRAPPED)
+            param_bool("FOLLOW_VTYPE_RESET_RECOMMENDATION",
+                       reset_vtype == (1ul << (__riscv_xlen - 1)) && reset_vl == 0);
+        // vset with rd = rs1 = x0 while vill is set, and with a new VLMAX: does vill get set?
+        unsigned long vill_after;
+        if (vill_reserved != PROBE_TRAPPED && vill_reserved) {
+            vill_after = elen == 64
+                ? PROBE_VALUE("zve32x", "vsetivli x0, 1, e64, mf8, ta, ma\n\tvsetvli x0, x0, e8, m1, ta, ma\n\tcsrr a3, vtype\n\tsrli a3, a3, " STR(__riscv_xlen) " - 1")
+                : PROBE_VALUE("zve32x", "vsetivli x0, 1, e32, mf8, ta, ma\n\tvsetvli x0, x0, e8, m1, ta, ma\n\tcsrr a3, vtype\n\tsrli a3, a3, " STR(__riscv_xlen) " - 1");
+            if (vill_after != PROBE_TRAPPED)
+                param_str("RESERVED_VSET_X0X0_VILL_SET", vill_after ? "always" : "never");
+        }
+        vill_after = PROBE_VALUE("zve32x", "vsetivli x0, 4, e8, m1, ta, ma\n\tvsetvli x0, x0, e16, m1, ta, ma\n\t"
+                                           "csrr a3, vtype\n\tsrli a3, a3, " STR(__riscv_xlen) " - 1");
+        if (vill_after != PROBE_TRAPPED)
+            param_str("RESERVED_VSET_X0X0_VLMAX_CHANGE", vill_after ? "always" : "never");
+        // vl for an AVL between VLMAX and 2 * VLMAX (e8, m1: VLMAX = VLEN / 8)
+        unsigned long vlmax = vlen / 8;
+        unsigned long vl = PROBE_VALUE_IN("zve32x", "vsetvli a3, %[in], e8, m1, ta, ma", vlmax + 1);
+        if (vl != PROBE_TRAPPED)
+            param_str("RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX", vl == vlmax ? "VLMAX" : vl == (vlmax + 2) / 2 ? "ceil(AVL/2)" : "custom");
+        // The widest index EEW an indexed load accepts (SEW = 8, so any EEW up to 64 has a legal EMUL)
+        // (the index group is v8, aligned for every EMUL, and zeroed at its own EEW first)
+#define INDEX_EEW(e) "vsetivli x0, 8, e" #e ", m8, ta, ma\n\tvmv.v.i v8, 0\n\tvsetivli x0, 1, e8, m1, ta, ma\n\tvluxei" #e ".v v1, (a1), v8"
+        // (UDB writes the value as a string, and XLEN when it equals the hart's XLEN)
+        const char *max_eew = PROBE("zve64x", INDEX_EEW(64)) ? "64" : PROBE("zve32x", INDEX_EEW(32)) ? "32"
+                            : PROBE("zve32x", INDEX_EEW(16)) ? "16" : PROBE("zve32x", INDEX_EEW(8)) ? "8" : 0;
+        if (max_eew) {
+            bool is_xlen = (__riscv_xlen == 64 && max_eew[0] == '6') || (__riscv_xlen == 32 && max_eew[0] == '3');
+            printf("  VECTOR_LS_INDEX_MAX_EEW: \"%s\"\n", is_xlen ? "XLEN" : max_eew);
+        }
+        // The vstart values a load accepts (loads must resume from a nonzero vstart)
+        if (PROBE("zve32x", "vsetivli x0, 8, e8, m1, ta, ma\n\tcsrwi vstart, 1\n\tvle8.v v1, (a1)"))
+            param_str("LEGAL_VSTART", "1_stride");
+        else if (PROBE("zve32x", "vsetivli x0, 8, e8, m1, ta, ma\n\tcsrwi vstart, 2\n\tvle8.v v1, (a1)"))
+            param_str("LEGAL_VSTART", "2_stride");
+        else if (PROBE("zve32x", "vsetivli x0, 8, e8, m1, ta, ma\n\tcsrwi vstart, 4\n\tvle8.v v1, (a1)"))
+            param_str("LEGAL_VSTART", "4_stride");
+        else
+            param_str("LEGAL_VSTART", "custom");
+        PROBE("zve32x", "csrwi vstart, 0\n\tvsetivli x0, 1, e32, m1, ta, ma");     // leave vtype legal
         if (has_h) {
             v = PROBE_VALUE("zicsr", BIT_SET_READ(vsstatus, 1 << 9));
             if (v != PROBE_TRAPPED)

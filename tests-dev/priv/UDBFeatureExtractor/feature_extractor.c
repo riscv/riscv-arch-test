@@ -28,7 +28,7 @@ volatile unsigned long probe_tval;
 volatile unsigned long probe_epc;
 unsigned char probe_scratch[PROBE_SCRATCH_SIZE] __attribute__((aligned(PROBE_SCRATCH_SIZE)));
 
-void print_parameters(unsigned long vlen);   // parameters.c
+void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned long reset_vl);   // parameters.c
 
 // One probe function per table row
 #define DEFINE_PROBE(name, version, arch, insn) \
@@ -159,6 +159,10 @@ int main(void)
     PROBE("zicsr", "li t1, 1 << 10\n\tcsrc mstatush, t1");
 #endif
     PROBE("zicsr", "li t1, 8\n\tcsrs 0x744, t1");
+
+    // vtype and vl as left by reset, before any probe touches the vector unit
+    unsigned long reset_vtype = PROBE_VALUE("zicsr", "csrr a3, vtype");
+    unsigned long reset_vl = PROBE_VALUE("zicsr", "csrr a3, vl");
 
     bool has_i = check("I", probe_I);
     for (unsigned i = 0; i < NUM_EXTENSIONS; i++)
@@ -349,6 +353,6 @@ int main(void)
     if (has_h && shcounterenw && shgatpa && shvsatpa && have("Shvstvecd"))
         print_extension("Sha", "1.0.0");      // Shtvala and Shvstvala are assumed
 
-    print_parameters(vlen);
+    print_parameters(vlen, reset_vtype, reset_vl);
     return 0;
 }

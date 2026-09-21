@@ -80,7 +80,19 @@ trap_handler:
     SREG    t2, 0(t0)
     li      t0, 3 << 11                 // resume in M-mode even if the trap came from U or S
     csrs    mstatus, t0                 // (a probe may have entered a lower mode with mret)
-    csrw    mepc, t1
+    la      t0, cfi_active              // during the landing-pad probes: forget the expected
+    LREG    t2, 0(t0)                   // landing pad (MPELP, which mret would restore into ELP)
+    beqz    t2, 3f                      // and stop M-mode enforcement, or the resume would fault
+#if __riscv_xlen == 64
+    li      t0, 1 << 41
+    csrc    mstatus, t0
+#else
+    li      t0, 1 << 9
+    csrc    mstatush, t0
+#endif
+    li      t0, 1 << 10
+    csrc    mseccfg, t0
+3:  csrw    mepc, t1
     mret
 unexpected_trap:
     csrr    a0, mcause

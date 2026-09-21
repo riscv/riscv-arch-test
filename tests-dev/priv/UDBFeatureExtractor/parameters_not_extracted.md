@@ -29,27 +29,22 @@ Would need a second hart, a cache model, or a memory-mapped device to observe.
 - `TRAP_ON_ILLEGAL_WLRL` (a WLRL field and an illegal value would have to be chosen per hart)
 - `TRAP_ON_UNIMPLEMENTED_INSTRUCTION` (no encoding is unimplemented on every hart)
 
-## Control-flow-integrity and debug traps
+## Debug mode
 
-- `REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK`, `REPORT_CAUSE_IN_STVAL_ON_*`,
-  `REPORT_CAUSE_IN_VSTVAL_ON_*`, and the `SHADOW_STACK` versions (a landing-pad or shadow-stack
-  fault would have to be provoked with the feature enabled)
 - `DCSR_MPRVEN_TYPE`, `DCSR_STEPIE_TYPE`, `DCSR_STOPCOUNT_TYPE`, `DCSR_STOPTIME_TYPE` (`dcsr` is
   only accessible in debug mode)
 
-## Vector behavior beyond legality
+## Vector behavior under a mid-instruction fault or on chosen data
 
-Each would need a vector instruction run on chosen data and its result inspected.
+Each would need a vector load that faults part way (a buffer ending at an unmapped page, which the
+one-level page table does not give) or a reduction run on chosen data with the result inspected.
 
-- `LEGAL_VSTART`, `RESERVED_VSET_X0X0_VILL_SET`, `RESERVED_VSET_X0X0_VLMAX_CHANGE`,
-  `RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX`, `SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED`,
-  `FOLLOW_VTYPE_RESET_RECOMMENDATION`, `IMPRECISE_VECTOR_TRAP_SETTABLE`
 - `VECTOR_FF_NO_EXCEPTION_TRIM`, `VECTOR_FF_SEG_EXCEPTION_PARTIAL_LOAD`,
   `VECTOR_FF_UPDATE_PAST_TRIM`, `VECTOR_LOAD_PAST_TRAP`,
-  `VECTOR_LOAD_SEG_FF_OVERWRITE_ELEMENTS_AFTER_FAULT`
-- `VECTOR_LS_INDEX_MAX_EEW`, `VECTOR_LS_SEG_PARTIAL_ACCESS`, `VECTOR_LS_WHOLEREG_MISALIGNED_LEGAL`
+  `VECTOR_LOAD_SEG_FF_OVERWRITE_ELEMENTS_AFTER_FAULT`, `VECTOR_LS_SEG_PARTIAL_ACCESS`
 - `VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR`, `VFREDUSUM_INACTIVE_NODE_ELEMENT_BEHAVIOR`,
   `VFREDUSUM_NAN`, `VFREDUSUM_NODE_ROUNDING_BEHAVIOR`
+- `IMPRECISE_VECTOR_TRAP_SETTABLE` (no standard CSR bit selects it)
 
 ## Measured with a caveat
 
@@ -65,3 +60,10 @@ Each would need a vector instruction run on chosen data and its result inspected
 - `REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION` is checked in the tval of the mode that took
   the trap (HS or M), since a virtual-instruction exception is never taken in VS-mode.
 - The `TINST_VALUE_ON_*CALL` values come from `mtinst`, since the ecalls reach M-mode.
+- `REPORT_CAUSE_IN_*_ON_*_SOFTWARE_CHECK` is true when the tval is exactly 2 (landing pad) or 3
+  (shadow stack). The shadow-stack probe needs a translation mode, since the shadow stack must be a
+  page with the shadow-stack permission encoding; on a hart without one it is skipped.
+- `VECTOR_LS_INDEX_MAX_EEW` is written as `XLEN` when the widest accepted index EEW equals XLEN,
+  as the configuration yamls do, so a yaml that writes `"64"` on RV64 shows as a mismatch.
+- `SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED` is the complement of `VILL_SET_ON_RESERVED_VTYPE`, and
+  `RESERVED_VSET_X0X0_VILL_SET` needs `vill` to be settable through a reserved vtype first.

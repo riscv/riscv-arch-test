@@ -2374,11 +2374,11 @@ skp_\__MODE__\()tval:
 
 // --- Hypervisor-specific fields: mtval2 and mtinst (words 4-5) ---
   .ifc \__MODE__ , M
+        #ifdef H_SUPPORTED
         csrr    T3, CSR_MISA            // skip mtval2, mtinst save if hypervisor is enabled (misa[7] (H)-1)
         slli    T3, T3, UDB_MXLEN-7-1
         bgez    T3, 1f
 
-        #ifdef H_SUPPORTED
         sv_\__MODE__\()Mtval2:
         csrr    T3, CSR_MTVAL2
         TRAP_SIGUPD(T4, T3, 4, sv_\__MODE__\()Mtval2, sv_Mtval2_str) // write word 4: mtval2

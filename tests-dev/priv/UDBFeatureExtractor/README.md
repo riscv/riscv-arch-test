@@ -102,6 +102,15 @@ fault-only-first load, an ordinary load, a two-field segment load and a two-fiel
 run against the page's edge, and `vl`, the destination registers (written back to memory in M-mode)
 and the page's last bytes say what was trimmed, loaded or stored.
 
+Memory-model and reduction parameters: LR/SC behavior comes from an `sc.w` inside an `lr.d`
+reservation (non-exact), from SCs at increasing offsets from the LR (the reservation set), and from
+an SC through a second virtual address of the scratch area (VA synonym); the misaligned exception
+priority and split strategy from a misaligned access straddling the mapped page's edge; the
+`vfredusum` behaviors from reductions with all elements masked off, using a signed zero and a NaN
+payload as the scalar; `HPM_EVENTS` from writing event numbers to `mhpmevent3`; `TRAP_ON_ILLEGAL_WLRL`
+from writing an exception code no hart implements to `mcause`; and `FORCE_UPGRADE_CBO_INVAL_TO_FLUSH`
+from whether `menvcfg.CBIE` accepts 11.
+
 At the end of the `params` section the extractor prints, commented out and without values, every
 parameter that applies to the hart but that it could not determine, under a comment saying so. The
 parameter list with each one's defining extension is `udb_parameters.h`, generated from

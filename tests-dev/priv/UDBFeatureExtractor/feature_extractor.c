@@ -86,10 +86,14 @@ static void print_extension(const char *name, const char *version)
 
 // Run one probe, report a trap that is not an illegal-instruction exception (which would mean the
 // probe itself is wrong, for example a scratch address the implementation cannot access).
+volatile unsigned long unimplemented_seen;      // some probe's instruction raised an illegal-instruction exception
+
 static bool check(const char *name, bool (*probe)(void))
 {
     probe_cause = CAUSE_NONE;
     bool ok = probe();
+    if (!ok && probe_cause == CAUSE_ILLEGAL_INSTRUCTION)
+        unimplemented_seen = 1;
     if (!ok && probe_cause != CAUSE_NONE && probe_cause != CAUSE_ILLEGAL_INSTRUCTION)
         printf("# warning: the %s probe trapped with mcause %d, not an illegal-instruction exception\n",
                name, (long)probe_cause);

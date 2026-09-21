@@ -21,6 +21,7 @@
 #include "udb_parameters.h"
 
 bool have(const char *name);            // feature_extractor.c
+extern volatile unsigned long unimplemented_seen;
 
 #define COUNT(a) (sizeof(a) / sizeof((a)[0]))
 #define BIT(n) (1ul << (n))
@@ -164,6 +165,7 @@ DEFINE_CSR_READ(hcontext_rd, 0x6A8)
 DEFINE_CSR_WRITE_READ(scontext_wr, 0x5A8)
 DEFINE_CSR_READ(time_rd, time)
 DEFINE_CSR_WRITE_READ(mie_wr, mie)
+DEFINE_CSR_WRITE_READ(mhpmevent3_wr, mhpmevent3)
 DEFINE_CSR_WRITE_READ(jvt_wr, 0x017)
 DEFINE_CSR_SET(pmpaddr0_set, pmpaddr0)
 DEFINE_CSR_READ(pmpcfg0_rd, pmpcfg0)
@@ -361,6 +363,18 @@ volatile unsigned long shadow_ssp;              // shadow stack pointer for the 
 #endif
 DEFINE_STUB(stub_shadow_stack, "zimop,+zicfiss",
             LOAD_SHADOW_SSP "csrw 0x011, a2\n\tli t0, 0x1234\n\tsspush x5\n\tli t0, 0x5678\n\tsspopchk x5")
+// Misaligned accesses straddling the edge of a mapped page (a2 = fault_va)
+DEFINE_STUB(stub_lw_at_va, "zicsr", LOAD_FAULT_VA "lw t1, 0(a2)")
+DEFINE_STUB(stub_sw_at_va, "zicsr", LOAD_FAULT_VA "li t1, 0x5A5A5A5A\n\tsw t1, 0(a2)")
+DEFINE_STUB(stub_amo_at_va, "zaamo", LOAD_FAULT_VA "amoadd.w t1, t2, (a2)")
+// An SC through a second virtual address (fault_va) of the scratch area after an LR through the first
+#if __riscv_xlen == 64
+#define STORE_A3_RESULT "la t2, s_result\n\tsd a3, 0(t2)"
+#else
+#define STORE_A3_RESULT "la t2, s_result\n\tsw a3, 0(t2)"
+#endif
+DEFINE_STUB(stub_sc_synonym, "zalrsc", "lr.w t1, (a1)\n\t" LOAD_FAULT_VA "sc.w a3, t1, (a2)\n\t" STORE_A3_RESULT)
+
 // Vector loads and stores against the edge of a mapped page (a2 = fault_va): fault-only-first
 // loads record vl in s_result, ordinary ones trap part way
 volatile unsigned long s_result;
@@ -487,8 +501,8 @@ static const struct { unsigned long mode; unsigned shift; } atp_levels[] = {
 };
 
 #define PTE_SHADOW 0xC5        // V W A D: the shadow-stack page encoding (writable, not readable)
-static bool build_page_table_ex(unsigned long (*wr)(unsigned long), bool gstage, bool shadow, unsigned long *atp,
-                                unsigned long *fault, unsigned *shift_out)
+static bool build_page_table_ex(unsigned long (*wr)(unsigned long), bool gstage, unsigned long alias_flags,
+                                unsigned long *atp, unsigned long *fault, unsigned *shift_out)
 {
     for (unsigned i = 0; i < COUNT(atp_levels); i++) {
         if (!atp_accepts(wr, ATP_MODE(atp_levels[i].mode)))
@@ -502,8 +516,8 @@ static bool build_page_table_ex(unsigned long (*wr)(unsigned long), bool gstage,
         for (unsigned j = 0; j < PROBE_SCRATCH_SIZE / sizeof(unsigned long); j++)
             table[j] = 0;
         table[idx] = ((((idx << shift) >> 12)) << 10) | PTE_LEAF | (gstage ? PTE_U : 0);
-        if (shadow)     // the second region aliases the program's region as shadow-stack memory
-            table[fault_idx] = ((((idx << shift) >> 12)) << 10) | PTE_SHADOW;
+        if (alias_flags)    // the second region aliases the program's region with these permissions
+            table[fault_idx] = ((((idx << shift) >> 12)) << 10) | alias_flags;
         *atp = ATP_MODE(atp_levels[i].mode) | (base >> 12);
         *fault = fault_idx << shift;
         return true;
@@ -514,7 +528,7 @@ static bool build_page_table_ex(unsigned long (*wr)(unsigned long), bool gstage,
 static bool build_page_table(unsigned long (*wr)(unsigned long), bool gstage, unsigned long *atp,
                              unsigned long *fault, unsigned *shift_out)
 {
-    return build_page_table_ex(wr, gstage, false, atp, fault, shift_out);
+    return build_page_table_ex(wr, gstage, 0, atp, fault, shift_out);
 }
 
 // A page table with one 4 KiB page mapped and the page after it invalid, for accesses that must
@@ -632,6 +646,58 @@ static void vector_fault_params(unsigned long mstatus)
     PROBE("zve32x", "vsetivli x0, 1, e32, m1, ta, ma");
 }
 
+// Misaligned accesses that straddle the edge of the mapped page: which exception wins, and whether
+// the bytes before the edge were stored before the fault
+static void misaligned_edge_params(bool misaligned_ldst, bool misaligned_amo, unsigned long mstatus)
+{
+    unsigned long atp, page_va, page_pa;
+    if (!build_edge_page_table(&atp, &page_va, &page_pa))
+        return;
+    volatile unsigned char *page = (volatile unsigned char *)page_pa;
+    page[4094] = page[4095] = 0x11;
+    satp_set(atp);
+    PROBE("zicsr", "sfence.vma");
+    fault_va = page_va + 4094;
+    if (!misaligned_ldst) {
+        unsigned long cause = run_in_mode(stub_lw_at_va, 1, false, mstatus);
+        if (cause == CAUSE_LOAD_MISALIGNED)
+            param_str("MISALIGNED_LDST_EXCEPTION_PRIORITY", "high");
+        else if (cause == 13)
+            param_str("MISALIGNED_LDST_EXCEPTION_PRIORITY", "low");
+    } else {
+        if (have("Zaamo") && !misaligned_amo) {
+            unsigned long cause = run_in_mode(stub_amo_at_va, 1, false, mstatus);
+            if (cause == CAUSE_STORE_MISALIGNED)
+                param_str("MISALIGNED_LDST_EXCEPTION_PRIORITY", "high");
+            else if (cause == 15)
+                param_str("MISALIGNED_LDST_EXCEPTION_PRIORITY", "low");
+        }
+        // A misaligned store performed in pieces leaves the bytes before the edge written
+        if (run_in_mode(stub_sw_at_va, 1, false, mstatus) == 15)
+            param_str("MISALIGNED_SPLIT_STRATEGY", page[4094] == 0x5A && page[4095] == 0x5A ? "sequential_bytes" : "custom");
+    }
+    satp_set(0);
+    PROBE("zicsr", "sfence.vma");
+}
+
+// LR through the scratch area's own address, SC through an alias of it in the second region
+static void lrsc_synonym_param(unsigned long mstatus)
+{
+    unsigned long atp, region;
+    unsigned shift;
+    if (!build_page_table_ex(satp_wr, false, PTE_LEAF, &atp, &region, &shift))
+        return;
+    unsigned long base = (unsigned long)probe_scratch;
+    fault_va = region + (base - ((base >> shift) << shift));
+    s_result = ~0ul;
+    satp_set(atp);
+    PROBE("zicsr", "sfence.vma");
+    if (run_in_mode(stub_sc_synonym, 1, false, mstatus) == CAUSE_ECALL_S && s_result != ~0ul)
+        param_bool("LRSC_FAIL_ON_VA_SYNONYM", s_result != 0);
+    satp_set(0);
+    PROBE("zicsr", "sfence.vma");
+}
+
 // The REPORT_VA_IN_<tval>_ON_*_PAGE_FAULT parameters for the mode entered with mpp/virt.  When the
 // faults are delegated the lower mode's handler records them, otherwise the M-mode handler does.
 static void page_fault_params(const char *tval, bool virt, bool delegated, unsigned long mstatus)
@@ -715,7 +781,7 @@ static void cfi_params(const char *tval, bool virt, bool delegated, bool zicfilp
         unsigned shift;
         unsigned long (*atp_wr)(unsigned long) = virt ? vsatp_wr : satp_wr;
         unsigned long (*atp_set)(unsigned long) = virt ? vsatp_set : satp_set;
-        if (build_page_table_ex(atp_wr, false, true, &atp, &region, &shift)) {
+        if (build_page_table_ex(atp_wr, false, PTE_SHADOW, &atp, &region, &shift)) {
             unsigned long base = (unsigned long)probe_scratch;
             shadow_ssp = region + (base + 1024 - ((base >> shift) << shift));
             unsigned long menvcfg = menvcfg_rd();
@@ -909,12 +975,14 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
                    PROBE_VALUE("zicsr", BIT_CLEAR_READ(mstatush, 1 << 4)));
         static const unsigned long thirty_two[] = { 32 };
         param_ints("SXLEN", thirty_two, 1);
-        if (has_u)
-            param_ints("UXLEN", thirty_two, 1);
         if (has_h) {
             param_ints("VSXLEN", thirty_two, 1);
             param_ints("VUXLEN", thirty_two, 1);
         }
+    }
+    if (has_u) {
+        static const unsigned long thirty_two_u[] = { 32 };
+        param_ints("UXLEN", thirty_two_u, 1);
     }
 #endif
     if (has_u)
@@ -1005,6 +1073,22 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
             hpm |= BIT(i + 3);
     }
     param_bools("HPM_COUNTER_EN", hpm, 32);
+    // Event numbers mhpmevent3 accepts, among 0-255; a hart that accepts most of them is likely
+    // passing them through, and the list is left undetermined
+    if (hpm & BIT(3)) {
+        unsigned long events[256];
+        unsigned n = 0, tried = 0;
+        for (unsigned long e = 0; e < 256; e++) {
+            v = mhpmevent3_wr(e);
+            if (!PROBE_OK())
+                break;
+            tried++;
+            if ((v & 0xFFFF) == e)
+                events[n++] = e;
+        }
+        if (tried == 256 && n <= 64)
+            param_ints("HPM_EVENTS", events, n);
+    }
     bool inhibit = mcountinhibit_rd() != PROBE_TRAPPED;
     param_bool("MCOUNTINHIBIT_IMPLEMENTED", inhibit);
     if (inhibit)
@@ -1061,6 +1145,7 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
     probe_cause = CAUSE_NONE;
     bool lw_ok = PROBE("zicsr", "lw t1, 1(a1)");
     param_bool("MISALIGNED_LDST", lw_ok);
+    bool amo_ok = false;
     if (!lw_ok && probe_cause == CAUSE_LOAD_MISALIGNED)
         param_bool("REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED", probe_tval == scratch + 1);
     probe_cause = CAUSE_NONE;
@@ -1069,7 +1154,7 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
         param_bool("REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED", probe_tval == scratch + 1);
     if (have("Zaamo")) {
         probe_cause = CAUSE_NONE;
-        bool amo_ok = PROBE("zaamo", "addi a2, a1, 2\n\tamoadd.w t1, t2, (a2)");
+        amo_ok = PROBE("zaamo", "addi a2, a1, 2\n\tamoadd.w t1, t2, (a2)");
         param_bool("MISALIGNED_AMO", amo_ok);
         if (sw_ok && !amo_ok && probe_cause == CAUSE_STORE_MISALIGNED)
             param_bool("REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED", probe_tval == scratch + 2);
@@ -1108,6 +1193,43 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
         mstatus_set(mstatus);                       // MPP back to M in case a probe left it at U
     }
 
+    // LR/SC: does an SC succeed when it is not exactly the LR's access, and how far from the LR's
+    // address does one succeed (the reservation set)?  The scratch area is 16 KiB aligned.
+    if (have("Zalrsc")) {
+        unsigned long baseline = PROBE_VALUE("zalrsc", "lr.w t1, (a1)\n\tsc.w a3, t1, (a1)");
+        if (PROBE_OK() && baseline == 0) {
+#if __riscv_xlen == 64
+            unsigned long inset = PROBE_VALUE("zalrsc", "lr.d t1, (a1)\n\tsc.w a3, t1, (a1)");   // inside the set, wrong size
+            bool nonexact_fails = inset != 0;
+            param_bool("LRSC_FAIL_ON_NON_EXACT_LRSC", nonexact_fails);
+#else
+            bool nonexact_fails = false;   // no wider LR than lr.w on RV32 to test with
+#endif
+            if (!nonexact_fails) {
+                unsigned long at[4];
+                static const unsigned long offsets[] = { 4, 60, 64, 124 };
+                for (unsigned i = 0; i < 4; i++)
+                    at[i] = PROBE_VALUE_IN("zalrsc", "lr.w t1, (a1)\n\tadd a2, a1, %[in]\n\tsc.w a3, t1, (a2)", offsets[i]);
+                if (at[0] != 0)
+                    param_str("LRSC_RESERVATION_STRATEGY", "reserve exactly enough to cover the access");
+                else if (at[1] == 0 && at[2] != 0)
+                    param_str("LRSC_RESERVATION_STRATEGY", "reserve naturally-aligned 64-byte region");
+                else if (at[1] == 0 && at[2] == 0 && at[3] == 0)
+                    param_str("LRSC_RESERVATION_STRATEGY", "reserve naturally-aligned 128-byte region");
+                else
+                    param_str("LRSC_RESERVATION_STRATEGY", "custom");
+            }
+            PROBE("zalrsc", "lr.w t1, (a1)\n\tsc.w a3, t1, (a1)");     // leave no reservation behind
+        }
+    }
+
+    // Zicbom: may menvcfg.CBIE be 11 (a true invalidate), or is cbo.inval always a flush?
+    if (have("Zicbom")) {
+        v = PROBE_VALUE("zicsr", CSR_FIELD(menvcfg, 3 << 4, 3 << 4));
+        if (PROBE_OK())
+            param_bool("FORCE_UPGRADE_CBO_INVAL_TO_FLUSH", v == 0);
+    }
+
     // Traps on ebreak, ecall, reserved instructions and unimplemented CSRs
     probe_cause = CAUSE_NONE;
     bool ebreak_traps = !PROBE("zicsr", "ebreak");
@@ -1123,6 +1245,14 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
         param_bool("REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION", probe_tval == 0x00004073);
     probe_cause = CAUSE_NONE;
     param_bool("TRAP_ON_UNIMPLEMENTED_CSR", !PROBE("zicsr", "csrr t1, 0x3FF") && probe_cause == CAUSE_ILLEGAL_INSTRUCTION);
+    // A write of an exception code no hart implements to mcause, which is WLRL
+    probe_cause = CAUSE_NONE;
+    bool wlrl_ok = PROBE("zicsr", "csrr t2, mcause\n\tli t1, 0x3FF\n\tcsrw mcause, t1\n\tcsrw mcause, t2");
+    param_bool("TRAP_ON_ILLEGAL_WLRL", !wlrl_ok && probe_cause == CAUSE_ILLEGAL_INSTRUCTION);
+    // An extension probe whose instruction was not implemented trapped with an illegal-instruction
+    // exception; if every probed extension is implemented, nothing can be said
+    if (unimplemented_seen)
+        param_bool("TRAP_ON_UNIMPLEMENTED_INSTRUCTION", true);
     // Control-flow integrity in M-mode: with mseccfg.MLPE set, an indirect jump to an instruction
     // that is not lpad raises a software-check exception with tval 2.  The M-mode handler clears
     // MLPE and the pending landing pad while cfi_active is set, so the resume does not fault.
@@ -1173,6 +1303,9 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
             }
             if (vlen)
                 vector_fault_params(mstatus);
+            misaligned_edge_params(lw_ok, amo_ok, mstatus);
+            if (have("Zalrsc"))
+                lrsc_synonym_param(mstatus);
             // Control-flow integrity faults taken in S-mode, and undelegated in M-mode (the
             // shadow-stack one can only reach M-mode this way, as M-mode has no shadow stack)
             cfi_params("STVAL", false, true, zicfilp, have("Zicfiss"), mstatus);
@@ -1449,11 +1582,37 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
             param_str("LEGAL_VSTART", "4_stride");
         else
             param_str("LEGAL_VSTART", "custom");
+        // vfredusum with no active elements: is the final result the scalar copied (-0.0 stays
+        // -0.0, a NaN payload survives) or the scalar plus the additive identity?
+        if (have("Zve32f")) {
+#define VFREDUSUM_MASKED(scalar_bits)                                                           \
+            "vsetivli x0, 4, e32, m1, tu, mu\n\tvmv.v.i v0, 0\n\tli t1, " scalar_bits "\n\t"   \
+            "vmv.s.x v1, t1\n\tvmv.v.i v2, 0\n\tvfredusum.vs v3, v2, v1, v0.t\n\tvmv.x.s a3, v3"
+            unsigned long r = PROBE_VALUE("zve32f", VFREDUSUM_MASKED("0x80000000"));   // -0.0
+            if (PROBE_OK()) {
+                bool copy = (r & 0xFFFFFFFF) == 0x80000000;
+                param_str("VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR", copy ? "copy" : "additive_identity");
+                if (copy) {
+                    // one inactive element (masked off) beside one active -0.0 and the scalar -0.0:
+                    // an inactive input treated as +0.0 turns the result to +0.0
+                    r = PROBE_VALUE("zve32f", "vsetivli x0, 2, e32, m1, tu, mu\n\tvmv.v.i v0, 2\n\tli t1, 0x80000000\n\t"
+                                              "vmv.s.x v1, t1\n\tvmv.v.x v2, t1\n\tvfredusum.vs v3, v2, v1, v0.t\n\tvmv.x.s a3, v3");
+                    if (PROBE_OK())
+                        param_str("VFREDUSUM_INACTIVE_NODE_ELEMENT_BEHAVIOR",
+                                  (r & 0xFFFFFFFF) == 0x80000000 ? "copy" : "additive_identity");
+                }
+            }
+            r = PROBE_VALUE("zve32f", VFREDUSUM_MASKED("0x7FC12345"));   // a quiet NaN with a payload
+            if (PROBE_OK())
+                param_str("VFREDUSUM_NAN", (r & 0xFFFFFFFF) == 0x7FC12345 ? "no_change" : "custom");
+        }
         PROBE("zve32x", "csrwi vstart, 0\n\tvsetivli x0, 1, e32, m1, ta, ma");     // leave vtype legal
         if (has_h) {
             v = PROBE_VALUE("zicsr", BIT_SET_READ(vsstatus, 1 << 9));
             if (v != PROBE_TRAPPED)
                 param_bool("VSSTATUS_VS_EXISTS", v != 0);
+        } else {
+            param_bool("VSSTATUS_VS_EXISTS", false);        // no vsstatus without H
         }
     }
 
@@ -1547,8 +1706,7 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
             if (PROBE_OK())
                 param_int("DBG_HCONTEXT_WIDTH", popcount(v));
         }
-        if (has_h)
-            param_bool("HCONTEXT_AVAILABLE", hcontext_rd() != PROBE_TRAPPED);
+        param_bool("HCONTEXT_AVAILABLE", has_h && hcontext_rd() != PROBE_TRAPPED);   // no hcontext without H
         if (has_s) {
             v = scontext_wr(~0ul);
             if (PROBE_OK())

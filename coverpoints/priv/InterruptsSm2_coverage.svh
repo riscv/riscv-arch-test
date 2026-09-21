@@ -443,17 +443,29 @@ covergroup InterruptsSm2_cg with function sample(ins_t ins);
     cp_wfi_m:                   cross priv_mode_m, mstatus_mie, mstatus_tw, wfi, mideleg_zeros;
 
     // H modes not included as wfi behavior is additionally affected by hstatus.VTW - TODO: test in InterruptsH
-    cp_wfi:                     cross `ifdef S_SUPPORTED
-                                            priv_mode_s,
-                                      `else
-                                        `ifdef U_SUPPORTED
-                                            priv_mode_u,
-                                        `endif
-                                      `endif
-                                            mstatus_mie, mie_mtie_one, mstatus_tw_zero, wfi, mideleg_zeros;
+    // WFI with TW = 0 is exercised in the most privileged mode below M that this config implements.
+    // The mode is selected with a macro rather than an `ifdef inside the cross argument list: on a hart
+    // with neither S nor U (cv32e20 implements Sm and no lower mode) the inline form leaves a cross with
+    // no privilege axis at all, which still elaborates and fills from M-mode WFIs -- a silent duplicate
+    // of cp_wfi_m reporting coverage for a mode the hart does not have. Dropping the coverpoint is right.
+    `ifdef S_SUPPORTED
+        `define SM2_WFI_PRIV priv_mode_s
+    `elsif U_SUPPORTED
+        `define SM2_WFI_PRIV priv_mode_u
+    `endif
+    `ifdef SM2_WFI_PRIV
+        cp_wfi:                 cross `SM2_WFI_PRIV, mstatus_mie, mie_mtie_one, mstatus_tw_zero, wfi, mideleg_zeros;
+    `endif
+
+    // mstatus.TW = 1 traps WFI in every mode below M, so the timeout applies whenever any lower mode
+    // exists, not only when S does. S-mode implies U-mode, so S_SUPPORTED means both bins of
+    // priv_mode_s_u are reachable and U without S needs priv_mode_u alone. cp_wfi_timeout_tw_zero stays
+    // under S_SUPPORTED: U-mode WFI only times out with TW = 0 when S is implemented.
     `ifdef S_SUPPORTED
         cp_wfi_timeout:                     cross priv_mode_s_u, mstatus_mie, mie_mtie, mstatus_tw_one, wfi;
         cp_wfi_timeout_tw_zero:             cross priv_mode_u, mstatus_mie, mie_mtie, mstatus_tw_zero, wfi;
+    `elsif U_SUPPORTED
+        cp_wfi_timeout:                     cross priv_mode_u, mstatus_mie, mie_mtie, mstatus_tw_one, wfi;
     `endif
 
     `ifdef SSTC_SUPPORTED // need to modify this one to check more stuff
@@ -468,6 +480,9 @@ endgroup
 `undef SM2_NOH_MASK
 `undef SM2_MIDELEG_NOH
 `undef SM2_MIP_NOH
+`ifdef SM2_WFI_PRIV
+    `undef SM2_WFI_PRIV
+`endif
 
 function void interruptssm2_sample(int hart, int issue, ins_t ins);
     InterruptsSm2_cg.sample(ins);

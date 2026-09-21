@@ -1,125 +1,83 @@
 # SPDX-License-Identifier: Apache-2.0
-# Makefile for tests-dev/priv/UDBFeatureExtractor
+# Copyright (c) 2026 RISC-V International
 #
-# Usage:
-#   make                          # build and run with default config (Sail RVA23S64)
-#   make run                      # run feature extractor, produce extracted_config.yaml
-#   make run-no-M                 # run with M extension disabled
-#   make dump                     # disassemble ELF
-#   make clean                    # remove build artifacts
+# Makefile for the UDB feature extractor (tests-dev/priv/UDBFeatureExtractor)
 #
-# Override defaults:
-#   make CONFIG_DIR=config/sail/sail-RVA23S64 SIM=sail_riscv_sim
-#   make CONFIG_DIR=config/cores/cvw/cvw-rv64gc SIM=<cvw_sim>
+# Adapted by David Harris from the original by Jayant Malvi (riscv-arch-test #1655),
+# with assistance from Claude.
+#
+# Usage, from the repository root:
+#   make -f tests-dev/priv/UDBFeatureExtractor/Makefile            # build and run on Sail (RVA23S64)
+#   make -f tests-dev/priv/UDBFeatureExtractor/Makefile XLEN=32 CONFIG_DIR=config/sail/sail-rv32-max
+#   make -f tests-dev/priv/UDBFeatureExtractor/Makefile test       # self-test against Sail configurations
+#   make -f tests-dev/priv/UDBFeatureExtractor/Makefile elf CONFIG_DIR=config/cores/cvw/cvw-rv64gc
+#
+# CONFIG_DIR supplies the DUT's rvmodel_macros.h (console output and halt) and link.ld (memory
+# map).  Nothing else from the configuration is used, because the point of this program is to
+# produce the configuration.  SIM and SIM_FLAGS run the ELF; the console output is the YAML.
 
-REPO_ROOT := $(shell git rev-parse --show-toplevel 2>/dev/null || pwd)
-TEST_SRC  := $(REPO_ROOT)/tests-dev/priv/UDBFeatureExtractor
-BUILD_DIR := $(REPO_ROOT)/work/UDBFeatureExtractor
+REPO_ROOT  := $(shell git rev-parse --show-toplevel 2>/dev/null || pwd)
+SRC_DIR    := $(REPO_ROOT)/tests-dev/priv/UDBFeatureExtractor
+BUILD_DIR  ?= $(REPO_ROOT)/work/UDBFeatureExtractor
 
-# ── Per-target configuration (override on command line) ──────────────────────
+XLEN       ?= 64
 CONFIG_DIR ?= $(REPO_ROOT)/config/sail/sail-RVA23S64
 SIM        ?= sail_riscv_sim
-XLEN       ?= 64
-
-ifeq ($(XLEN),32)
-ABI        ?= ilp32
-else
-ABI        ?= lp64
-endif
+SIM_FLAGS  ?= --config $(CONFIG_DIR)/sail.json
+OUT        ?= $(BUILD_DIR)/extracted_config$(XLEN).yaml
 
 CC      := riscv64-unknown-elf-gcc
 OBJDUMP := riscv64-unknown-elf-objdump
+PYTHON  ?= python3
 
-ARCH := rv$(XLEN)i_zicsr_zifencei
+# Compiled for the E base so the extractor itself runs on RV32E and RV64E harts; each probe enables
+# its own extension with `.option arch`.  GCC warns that the lp64e ABI may be deprecated, hence
+# -Wno-deprecated.  --no-relax keeps the linker from introducing gp-relative addressing, so no gp
+# setup is needed.
+ARCH := rv$(XLEN)e_zicsr
+ABI  := $(if $(filter 32,$(XLEN)),ilp32e,lp64e)
 
-ARCH_TEST_INC := $(REPO_ROOT)/tests/env
+CFLAGS := -march=$(ARCH) -mabi=$(ABI) -mcmodel=medany \
+          -O2 -g -std=gnu11 -ffreestanding -fno-builtin -nostdlib -nostartfiles -static \
+          -Wall -Wextra -Wno-deprecated \
+          -Wl,--no-relax -Wl,--no-warn-rwx-segments \
+          -I$(SRC_DIR) -I$(CONFIG_DIR)
 
-COMMON_FLAGS := \
-    -march=$(ARCH) -mabi=$(ABI) \
-    -mcmodel=medany \
-    -nostartfiles -nostdlib -static \
-    -DXLEN=$(XLEN) \
-    -DTEST_FLEN=32 \
-    -DSIGNATURE \
-    -Wl,--no-warn-rwx-segments \
-    -Wl,-e,rvtest_entry_point
+SRCS := start.S feature_extractor.c console.c
+DEPS := extensions.h console.h
+ELF  := $(BUILD_DIR)/feature_extractor$(XLEN).elf
 
-CFLAGS := $(COMMON_FLAGS) \
-	-I$(TEST_SRC) \
-    -I$(CONFIG_DIR) \
-    -I$(ARCH_TEST_INC)
-
-# C-version extras:
-#   -std=gnu11      required for inline asm syntax
-#   -ffreestanding  no hosted-environment assumptions
-#   -O1 -g          mild optimisation + debug info
-C_EXTRA := -ffreestanding -O1 -g -std=gnu11 \
-           -fno-builtin -fno-builtin-printf -fno-builtin-puts
-
-YAML_C_OUT := $(BUILD_DIR)/extracted_config.yaml
-YAML_C_NOM := $(BUILD_DIR)/extracted_config-no-M.yaml
-
-ELF           := $(BUILD_DIR)/FeatureExtractorC.elf
-NO_M_CFG      := $(BUILD_DIR)/no_M_config.json
-LINKER_TEMPLATE := $(TEST_SRC)/link.template.ld
-LINKER_SCRIPT   := $(BUILD_DIR)/link.ld
-
-
-C_SRCS := \
-    $(TEST_SRC)/FeatureExtractorC.S \
-    $(TEST_SRC)/crt.S \
-    $(TEST_SRC)/feature_extractor.c \
-    $(TEST_SRC)/syscalls.c
-
-.PHONY: all run run-no-M dump clean help
+.PHONY: all elf run dump test clean help
 all: run
 
 $(BUILD_DIR):
 	mkdir -p $@
 
-$(LINKER_SCRIPT): $(LINKER_TEMPLATE) | $(BUILD_DIR)
-	@sed 's|INCLUDE "link.ld"|INCLUDE "$(CONFIG_DIR)/link.ld"|g' $< > $@
-
-$(ELF): $(C_SRCS) $(LINKER_SCRIPT) | $(BUILD_DIR)
-	@echo "=== Compiling FeatureExtractorC ==="
-	$(CC) $(CFLAGS) $(C_EXTRA) -T $(LINKER_SCRIPT) $(C_SRCS) -o $@
-
-$(NO_M_CFG): | $(BUILD_DIR)
-	@printf '{\n  "extensions": {\n    "M": { "supported": false }\n  }\n}\n' > $@
+elf: $(ELF)
+$(ELF): $(addprefix $(SRC_DIR)/,$(SRCS) $(DEPS)) $(CONFIG_DIR)/link.ld $(CONFIG_DIR)/rvmodel_macros.h | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -T $(CONFIG_DIR)/link.ld $(addprefix $(SRC_DIR)/,$(SRCS)) -o $@
 
 run: $(ELF)
-	@echo "=== Running FeatureExtractor ==="
-	$(SIM) --terminal-log $(YAML_C_OUT) $(ELF)
-	@echo "---"
-	@cat $(YAML_C_OUT)
-	@echo "---"
-
-run-no-M: $(ELF) $(NO_M_CFG)
-	@echo "=== Running FeatureExtractor with M disabled ==="
-	$(SIM) --terminal-log $(YAML_C_NOM) --config-override $(NO_M_CFG) $(ELF)
-	@echo "---"
-	@cat $(YAML_C_NOM)
-	@echo "---"
+	$(SIM) $(SIM_FLAGS) --terminal-log $(OUT) $(ELF)
+	@echo "--- $(OUT)"
+	@cat $(OUT)
 
 dump: $(ELF)
-	$(OBJDUMP) -d -s $(ELF) > $(BUILD_DIR)/FeatureExtractorC.dump
-	@echo "=== Disassembly written to $(BUILD_DIR)/FeatureExtractorC.dump ==="
+	$(OBJDUMP) -d $(ELF) > $(ELF:.elf=.dump)
+	@echo "Disassembly written to $(ELF:.elf=.dump)"
+
+# Run the extractor on the Sail max configurations with extensions switched off in turn and check
+# that the output matches each configuration
+test:
+	$(PYTHON) $(SRC_DIR)/test/run_sail_tests.py --repo-root $(REPO_ROOT) --sim $(SIM) --build-dir $(BUILD_DIR)
 
 clean:
 	rm -rf $(BUILD_DIR)
 
 help:
-	@echo "Usage: make -f tests-dev/priv/UDBFeatureExtractor/Makefile [target] [CONFIG_DIR=...] [SIM=...]"
-	@echo ""
-	@echo "Targets:"
-	@echo "  run        Build and run feature extractor (default)"
-	@echo "  run-no-M   Run with M extension disabled"
-	@echo "  dump       Disassemble ELF"
-	@echo "  clean      Remove build artifacts"
-	@echo ""
-	@echo "Defaults:"
-	@echo "  CONFIG_DIR = config/sail/sail-RVA23S64"
-	@echo "  SIM        = sail_riscv_sim"
-	@echo ""
-	@echo "Example (CVW):"
-	@echo "  make CONFIG_DIR=config/cores/cvw/cvw-rv64gc SIM=<cvw_sim>"
+	@echo "make -f tests-dev/priv/UDBFeatureExtractor/Makefile [target] [XLEN=32|64] [CONFIG_DIR=...] [SIM=...] [SIM_FLAGS=...]"
+	@echo "  run   build and run, writing the extracted UDB YAML to OUT (default)"
+	@echo "  elf   build only"
+	@echo "  dump  disassemble"
+	@echo "  test  self-test against the Sail max configurations for both XLENs"
+	@echo "  clean remove $(BUILD_DIR)"

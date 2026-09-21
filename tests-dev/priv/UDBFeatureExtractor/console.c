@@ -2,7 +2,7 @@
 // Copyright (c) 2026 RISC-V International
 //
 // console.c: a printf for the feature extractor's YAML output, on top of the DUT's string writer.
-// Supports %s, %c, %d (long), %x (unsigned long, hexadecimal) and %%.  Division is done by hand
+// Supports %s, %c, %d (long), %u (unsigned long), %x (unsigned long, hexadecimal) and %%.  Division is done by hand
 // so no libgcc helper is needed and the code runs without M.
 //
 // Adapted by David Harris from the original by Jayant Malvi (riscv-arch-test #1655),
@@ -65,6 +65,9 @@ int printf(const char *fmt, ...)
             put_unsigned((unsigned long)v, 10);
             break;
         }
+        case 'u':
+            put_unsigned(va_arg(ap, unsigned long), 10);
+            break;
         case 'x':
             put_unsigned(va_arg(ap, unsigned long), 16);
             break;

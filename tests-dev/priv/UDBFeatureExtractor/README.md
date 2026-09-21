@@ -44,6 +44,55 @@ Sscounterenw and Shcounterenw compare the writable bits of `scounteren` and `hco
 those of `mcounteren`. Sspm, Supm, Ssu32xl on RV32, Svade with Svadu, and Sha are derived as
 described in `extensions.h`.
 
+### Parameters
+
+`parameters.c` measures the UDB parameters that M-mode code can see and prints them as the
+`params` section, each only when the extension that defines it was detected and the
+measurement was conclusive. Most are CSR facts: identification CSRs (`VENDOR_ID_*`,
+`ARCH_ID_VALUE`, `IMP_ID_VALUE`, `CONFIG_PTR_ADDRESS`), which `misa` bits can be cleared
+(`MUTABLE_MISA_*`), the legal values and hardware updating of `mstatus.FS`/`VS`, endianness and
+XLEN choices per mode, `mtvec`/`stvec`/`vstvec` modes, base alignment and behavior on an illegal
+write, `mtval`/`stval` widths, which counters exist and which enable and inhibit bits are writable,
+which interrupts are implemented (`*_INTR_IMPL`), the PMP entry count, granularity, address-match
+modes and physical address width, `satp`/`hgatp`/`vsatp` modes, ASID and VMID widths, guest
+interrupt count, `CACHE_BLOCK_SIZE` (bytes cleared by `cbo.zero`), `VLEN`, `ELEN`, `SEW_MIN`,
+`VILL_SET_ON_RESERVED_VTYPE`, `VECTOR_LS_MISALIGNED_LEGAL`, the `mstateen0`/`hstateen0` enable
+bit types, `srmcfg` and debug context widths, and the `mctrctl` controls. The rest come from
+trapping: `MISALIGNED_LDST`, `MISALIGNED_AMO`, `LRSC_MISALIGNED_BEHAVIOR`, `TRAP_ON_EBREAK`,
+`TRAP_ON_ECALL_FROM_M/S/U` (the S and U cases enter the mode with `mret`, after opening PMP
+entry 0 to everything), `TRAP_ON_RESERVED_INSTRUCTION`, `TRAP_ON_UNIMPLEMENTED_CSR`, and the
+`REPORT_*_IN_MTVAL_ON_*` parameters for the traps the extractor can provoke: illegal
+instruction, breakpoint, misaligned load, store/AMO and instruction fetch, and load and store
+access faults (taken with `mstatus.MPRV` set and `MPP` = U, so that no PMP entry matches).
+
+Parameters that are not extracted, because nothing M-mode code can execute settles them:
+
+- **Need an S-, VS- or virtualized trap handler:** every `REPORT_*_IN_STVAL_ON_*`,
+  `REPORT_*_IN_VSTVAL_ON_*`, `REPORT_GPA_IN_*`, `TINST_VALUE_ON_*`, and `TRAP_ON_ECALL_FROM_VS`.
+- **Need page tables or an inaccessible fetch:** `REPORT_VA_IN_MTVAL_ON_*_PAGE_FAULT`,
+  `REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT`, `TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY`.
+- **Memory-system behavior:** `LRSC_RESERVATION_STRATEGY`, `LRSC_FAIL_ON_VA_SYNONYM`,
+  `LRSC_FAIL_ON_NON_EXACT_LRSC`, `MISALIGNED_LDST_EXCEPTION_PRIORITY`,
+  `MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE`, `MISALIGNED_SPLIT_STRATEGY`, `PMA_GRANULARITY`,
+  `FORCE_UPGRADE_CBO_INVAL_TO_FLUSH`, `ZAWRS_NTO_IS_NOP`, `PRECISE_SYNCHRONOUS_EXCEPTIONS`.
+- **Unbounded or undefined search:** `HPM_EVENTS` (every event number would have to be tried),
+  `TRAP_ON_ILLEGAL_WLRL` and `TRAP_ON_UNIMPLEMENTED_INSTRUCTION` (no encoding is known to be
+  illegal on every hart), `PMLEN` (the yamls do not agree on what it counts),
+  `SCTRDEPTH_DEPTH_LEGAL_VALUES`.
+- **Control-flow-integrity and debug traps:** `REPORT_CAUSE_IN_*_ON_*_SOFTWARE_CHECK`
+  (a landing-pad or shadow-stack fault would have to be provoked), `DCSR_*_TYPE` (`dcsr` is
+  only accessible in debug mode).
+- **Vector behavior beyond legality:** `LEGAL_VSTART`, `RESERVED_VSET_X0X0_*`,
+  `RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX`, `SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED`,
+  `FOLLOW_VTYPE_RESET_RECOMMENDATION`, `IMPRECISE_VECTOR_TRAP_SETTABLE`, `VECTOR_FF_*`,
+  `VECTOR_LOAD_*`, `VECTOR_LS_INDEX_MAX_EEW`, `VECTOR_LS_SEG_PARTIAL_ACCESS`,
+  `VECTOR_LS_WHOLEREG_MISALIGNED_LEGAL`, `VFREDUSUM_*`.
+
+Two measured values deserve a caveat: `HW_MSTATUS_FS_DIRTY_UPDATE` (and `VS`) reports `precise`
+whenever one floating-point (vector) instruction leaves the field Dirty, since `imprecise` cannot
+be told apart, and the `REPORT_VA_IN_MTVAL_ON_*_MISALIGNED` parameters can only be measured on a
+hart where the misaligned access traps.
+
 ### Untested extensions
 
 Extensions that add no instruction or CSR whose legality could be tested cannot be detected, and
@@ -94,6 +143,9 @@ total, how many extensions match and which are missing (in the yaml but not dete
 (detected but not in the yaml). An extra that is defined as exactly a set of extensions the yaml
 does list (Zkn, Zks, Zbkc) is shown as implied instead. `--jobs` runs configurations in parallel;
 a Verilator run of Wally takes minutes the first time, Sail a few seconds.
+The params section is compared the same way: each parameter the extractor prints is checked against
+the yaml's value, and the per-configuration line lists mismatches with both values, plus how many of
+the yaml's parameters were not extracted.
 
 Two steps before the first probe matter for some targets: `mstatus.MDT` is cleared, since
 Smdbltrp sets it at reset and a probe's trap would then be a double trap, and `mnstatus.NMIE` is

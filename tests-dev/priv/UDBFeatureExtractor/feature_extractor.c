@@ -19,104 +19,16 @@
 #include "console.h"
 #include "extensions.h"
 
-#if __riscv_xlen == 64
-#define SREG "sd"
-#else
-#define SREG "sw"
-#endif
+#include "probe.h"
 
 // Shared with start.S
-volatile unsigned long probe_resume;    // while nonzero, a trap resumes here instead of failing
-volatile unsigned long probe_cause;     // mcause of the most recent probe trap
-#define PROBE_SCRATCH_SIZE 4096
+volatile unsigned long probe_resume;
+volatile unsigned long probe_cause;
+volatile unsigned long probe_tval;
+volatile unsigned long probe_epc;
 unsigned char probe_scratch[PROBE_SCRATCH_SIZE] __attribute__((aligned(PROBE_SCRATCH_SIZE)));
 
-// Execute insn and return true if it retired without trapping.
-//
-// The resume address is stored before the instruction and cleared afterwards, so the trap handler
-// knows the trap was expected and returns to label 1 whatever the instruction's length was.  Label
-// 1 is aligned to 4 bytes because a 16-bit probe instruction leaves the code after it 2-byte
-// aligned, and a hart without C cannot resume at such an address (mepc[1] reads as zero).  The
-// clobber list is the register convention of extensions.h; t0 is used for the resume address and
-// a1 for the scratch pointer.  Floating-point and vector registers need no clobbers because the
-// compiled code never keeps values in them.
-#define PROBE(arch, insn) ({                                                            \
-    unsigned long ok;                                                                   \
-    __asm__ volatile(                                                                   \
-        "la    t0, 1f\n\t"                                                              \
-        SREG " t0, %[resume]\n\t"                                                       \
-        "la    a1, probe_scratch\n\t"                                                   \
-        ".option push\n\t"                                                              \
-        ".option arch, +" arch "\n\t"                                                   \
-        insn "\n\t"                                                                     \
-        ".option pop\n\t"                                                               \
-        "li    %[ok], 1\n\t"                                                            \
-        "j     2f\n\t"                                                                  \
-        ".balign 4\n"                                                                   \
-        "1:\n\t"                                                                        \
-        "li    %[ok], 0\n"                                                              \
-        "2:\n\t"                                                                        \
-        SREG " zero, %[resume]\n\t"                                                     \
-        : [ok] "=&r"(ok), [resume] "=m"(probe_resume)                                   \
-        :                                                                               \
-        : "memory", "t0", "t1", "t2", "a1", "a2", "a3", "s0", "s1");                     \
-    (bool)ok;                                                                           \
-})
-
-// Like PROBE, but also return the value left in a3, or PROBE_TRAPPED if the instruction trapped
-#define PROBE_TRAPPED (~0ul)
-#define PROBE_VALUE(arch, insn) ({                                                      \
-    unsigned long value;                                                                \
-    __asm__ volatile(                                                                   \
-        "la    t0, 1f\n\t"                                                              \
-        SREG " t0, %[resume]\n\t"                                                       \
-        "la    a1, probe_scratch\n\t"                                                   \
-        ".option push\n\t"                                                              \
-        ".option arch, +" arch "\n\t"                                                   \
-        insn "\n\t"                                                                     \
-        ".option pop\n\t"                                                               \
-        "mv    %[value], a3\n\t"                                                        \
-        "j     2f\n\t"                                                                  \
-        ".balign 4\n"                                                                   \
-        "1:\n\t"                                                                        \
-        "li    %[value], -1\n"                                                          \
-        "2:\n\t"                                                                        \
-        SREG " zero, %[resume]\n\t"                                                     \
-        : [value] "=&r"(value), [resume] "=m"(probe_resume)                             \
-        :                                                                               \
-        : "memory", "t0", "t1", "t2", "a1", "a2", "a3", "s0", "s1");                     \
-    value;                                                                              \
-})
-
-// Like PROBE_VALUE, with one input value that insn refers to as %[in]
-#define PROBE_VALUE_IN(arch, insn, input) ({                                            \
-    unsigned long probe_value_;                                                                \
-    __asm__ volatile(                                                                   \
-        "la    t0, 1f\n\t"                                                              \
-        SREG " t0, %[resume]\n\t"                                                       \
-        "la    a1, probe_scratch\n\t"                                                   \
-        ".option push\n\t"                                                              \
-        ".option arch, +" arch "\n\t"                                                   \
-        insn "\n\t"                                                                     \
-        ".option pop\n\t"                                                               \
-        "mv    %[value], a3\n\t"                                                        \
-        "j     2f\n\t"                                                                  \
-        ".balign 4\n"                                                                   \
-        "1:\n\t"                                                                        \
-        "li    %[value], -1\n"                                                          \
-        "2:\n\t"                                                                        \
-        SREG " zero, %[resume]\n\t"                                                     \
-        : [value] "=&r"(probe_value_), [resume] "=m"(probe_resume)                             \
-        : [in] "r"(input)                                                               \
-        : "memory", "t0", "t1", "t2", "a1", "a2", "a3", "s0", "s1");                     \
-    probe_value_;                                                                       \
-})
-
-#define STR_(x) #x
-#define STR(x) STR_(x)
-
-#define CAUSE_ILLEGAL_INSTRUCTION 2
-#define CAUSE_NONE (~0ul)
+void print_parameters(unsigned long vlen);   // parameters.c
 
 // One probe function per table row
 #define DEFINE_PROBE(name, version, arch, insn) \
@@ -156,7 +68,7 @@ static bool streq(const char *a, const char *b)
     return *a == '\0' && *b == '\0';
 }
 
-static bool have(const char *name)
+bool have(const char *name)
 {
     for (unsigned i = 0; i < NUM_EXTENSIONS; i++)
         if (streq(extensions[i].name, name))
@@ -198,13 +110,6 @@ static unsigned long read_vlenb(void)
     return v;
 }
 
-// Write a CSR, read it back and restore it; PROBE_TRAPPED if the CSR does not exist
-#define DEFINE_CSR_WRITE_READ(name, csr)                                                    \
-    static unsigned long name(unsigned long value)                                          \
-    {                                                                                       \
-        return PROBE_VALUE_IN("zicsr", "csrrw t2, " #csr ", %[in]\n\tcsrr a3, " #csr "\n\t" \
-                                       "csrw " #csr ", t2", value);                         \
-    }
 DEFINE_CSR_WRITE_READ(write_read_satp, satp)
 DEFINE_CSR_WRITE_READ(write_read_hgatp, hgatp)
 DEFINE_CSR_WRITE_READ(write_read_vsatp, vsatp)
@@ -342,10 +247,6 @@ int main(void)
     printf("# makes legal, or by writing a CSR field it adds.  These are not looked for (see the README):\n");
     printf("# untested: " UNTESTED_EXTENSIONS " " UNTESTED_PRIV_EXTENSIONS "%s%s\n",
            have("Svadu") ? "" : " Svade", __riscv_xlen == 32 ? " Ssu32xl" : "");
-    printf("params:\n");
-    printf("  MXLEN: %d\n", (long)__riscv_xlen);
-    if (vlen)
-        printf("  VLEN: %d\n", (long)vlen);
     printf("implemented_extensions:\n");
     print_extension(has_i ? "I" : "E", has_i ? "2.1" : "2.0");
     print_extension("Zicsr", "2.0");   // the extractor itself needs it to run
@@ -425,5 +326,6 @@ int main(void)
     if (has_h && shcounterenw && shgatpa && shvsatpa && have("Shvstvecd"))
         print_extension("Sha", "1.0.0");      // Shtvala and Shvstvala are assumed
 
+    print_parameters(vlen);
     return 0;
 }

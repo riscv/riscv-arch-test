@@ -63,6 +63,8 @@ park:
 // declares them clobbered.
 .balign 4
 trap_handler:
+    li      t0, 1 << 17                 // clear mstatus.MPRV: a probe may have set it to take a
+    csrc    mstatus, t0                 // fault, and the handler's own accesses must be M-mode ones
     la      t0, probe_resume
     LREG    t1, 0(t0)
     beqz    t1, unexpected_trap
@@ -70,6 +72,14 @@ trap_handler:
     csrr    t2, mcause
     la      t0, probe_cause
     SREG    t2, 0(t0)
+    csrr    t2, mtval
+    la      t0, probe_tval
+    SREG    t2, 0(t0)
+    csrr    t2, mepc
+    la      t0, probe_epc
+    SREG    t2, 0(t0)
+    li      t0, 3 << 11                 // resume in M-mode even if the trap came from U or S
+    csrs    mstatus, t0                 // (a probe may have entered a lower mode with mret)
     csrw    mepc, t1
     mret
 unexpected_trap:

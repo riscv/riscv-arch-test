@@ -28,7 +28,10 @@ from pathlib import Path
 import yaml
 
 # name, status ("ok", "FAIL" or "skip"), note, reported, expected, untested
-Result = tuple[str, str, str, set[str], set[str], set[str]]
+# params: (matched, mismatched {name: (extracted, expected)}, not extracted, extra)
+Params = tuple[set[str], dict[str, tuple[object, object]], set[str], set[str]]
+NO_PARAMS: Params = (set(), {}, set(), set())
+Result = tuple[str, str, str, set[str], set[str], set[str], Params]
 
 DEBUG_PLACEHOLDER_RE = re.compile(r"\{debug:([^}]*)\}")
 
@@ -57,17 +60,36 @@ def find_configs(root: Path) -> Iterator[tuple[Path, Path]]:
             yield d, yamls[0]
 
 
-def expected_extensions(udb_yaml: Path) -> tuple[set[str], int]:
+def expected_extensions(udb_yaml: Path) -> tuple[set[str], int, dict]:
     doc = yaml.safe_load(udb_yaml.read_text())
     names = set()
     for e in doc.get("implemented_extensions", []):
         names.add(e["name"] if isinstance(e, dict) else str(e))
-    return names, int((doc.get("params") or {}).get("MXLEN", 64))
+    params = doc.get("params") or {}
+    return names, int(params.get("MXLEN", 64)), params
+
+
+def compare_params(text: str, expected: dict) -> Params:
+    """Compare the params section of the extracted yaml with the configuration's."""
+    # Simulators that print to stdout surround the yaml with their own messages
+    yaml_text = "\n".join(l for l in text.splitlines() if re.match(r"^(#|params:|implemented_extensions:|  )", l))
+    try:
+        extracted = (yaml.safe_load(yaml_text) or {}).get("params") or {}
+    except yaml.YAMLError:
+        return NO_PARAMS
+    matched, mismatched = set(), {}
+    for name, value in extracted.items():
+        if name in expected:
+            if value == expected[name]:
+                matched.add(name)
+            else:
+                mismatched[name] = (value, expected[name])
+    return matched, mismatched, set(expected) - set(extracted), set(extracted) - set(expected)
 
 
 def run_config(root: Path, build: Path, makefile: Path, config_dir: Path, udb_yaml: Path, timeout: int) -> Result:
     name = config_dir.name
-    expected, xlen = expected_extensions(udb_yaml)
+    expected, xlen, expected_params = expected_extensions(udb_yaml)
     work = build / name
     work.mkdir(parents=True, exist_ok=True)
     log = work / "build.log"
@@ -80,7 +102,7 @@ def run_config(root: Path, build: Path, makefile: Path, config_dir: Path, udb_ya
             check=False,
         ).returncode
     if rc:
-        return name, "FAIL", f"build failed, see {log}", set(), expected, set()
+        return name, "FAIL", f"build failed, see {log}", set(), expected, set(), NO_PARAMS
     elf = work / f"feature_extractor{xlen}.elf"
 
     # A run_cmd.txt may start with VAR=value environment settings, as the shell would accept
@@ -90,7 +112,15 @@ def run_config(root: Path, build: Path, makefile: Path, config_dir: Path, udb_ya
         var, value = command.pop(0).split("=", 1)
         env[var] = value
     if not command or shutil.which(command[0]) is None:
-        return name, "skip", f"{command[0] if command else 'run_cmd.txt'} not on PATH", set(), expected, set()
+        return (
+            name,
+            "skip",
+            f"{command[0] if command else 'run_cmd.txt'} not on PATH",
+            set(),
+            expected,
+            set(),
+            NO_PARAMS,
+        )
     out = work / "extracted_config.yaml"
     out.unlink(missing_ok=True)
     # Console flags go right after the executable: some commands end with the option that takes
@@ -107,7 +137,7 @@ def run_config(root: Path, build: Path, makefile: Path, config_dir: Path, udb_ya
             )
         rc = proc.returncode
     except subprocess.TimeoutExpired:
-        return name, "FAIL", f"timed out after {timeout}s, see {log}", set(), expected, set()
+        return name, "FAIL", f"timed out after {timeout}s, see {log}", set(), expected, set(), NO_PARAMS
     text = out.read_text() if out.exists() else log.read_text()
     if not out.exists():
         out.write_text(text)
@@ -117,13 +147,13 @@ def run_config(root: Path, build: Path, makefile: Path, config_dir: Path, udb_ya
         untested |= set(m.group(1).split())
     problems = [l for l in text.splitlines() if l.startswith(("# warning", "# FATAL"))]
     if not reported:
-        return name, "FAIL", f"nothing reported (exit {rc}), see {log}", set(), expected, set()
+        return name, "FAIL", f"nothing reported (exit {rc}), see {log}", set(), expected, set(), NO_PARAMS
     status = "ok"
     notes = []
     if problems:
         status = "FAIL"
         notes += problems
-    return name, status, "; ".join(notes), reported, expected, untested
+    return name, status, "; ".join(notes), reported, expected, untested, compare_params(text, expected_params)
 
 
 def main() -> None:
@@ -151,7 +181,8 @@ def main() -> None:
     width = max(len(r[0]) for r in results)
     failures = 0
     total_matched = total_mismatched = total_untested = 0
-    for name, status, note, reported, expected, untested in results:
+    p_matched = p_mismatched = p_missing = 0
+    for name, status, note, reported, expected, untested, params in results:
         if status == "skip":
             print(f"skip {name:{width}}  {note}")
             continue
@@ -179,11 +210,29 @@ def main() -> None:
             line += "  implied: " + " ".join(sorted(implied))
         if note:
             line += "  " + note
+        pm, pmis, pmissing, pextra = params
+        if pmis and status != "FAIL":
+            status = "FAIL"
+            failures += 1
+            line = "FAIL" + line[4:]
         print(line)
+        if pm or pmis or pmissing:
+            p_matched += len(pm)
+            p_mismatched += len(pmis)
+            p_missing += len(pmissing)
+            pline = f"     params: {len(pm):3} of {len(pm) + len(pmis) + len(pmissing):3} match, {len(pmissing)} not extracted"
+            if pmis:
+                pline += "  mismatched: " + " ".join(
+                    f"{n} (extracted {v!r}, yaml {e!r})" for n, (v, e) in sorted(pmis.items())
+                )
+            if pextra:
+                pline += "  extra: " + " ".join(sorted(pextra))
+            print(pline)
     ran = sum(1 for r in results if r[1] != "skip")
     print(
         f"{ran} configurations run, {len(results) - ran} skipped: {total_matched} extensions match, "
-        f"{total_mismatched} mismatch, {total_untested} untested"
+        f"{total_mismatched} mismatch, {total_untested} untested; "
+        f"{p_matched} parameters match, {p_mismatched} mismatch, {p_missing} not extracted"
     )
     print("all configurations match" if not failures else f"{failures} configuration(s) FAILED")
     sys.exit(1 if failures else 0)

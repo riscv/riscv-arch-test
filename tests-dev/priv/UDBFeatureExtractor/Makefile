@@ -44,8 +44,8 @@ CFLAGS := -march=$(ARCH) -mabi=$(ABI) -mcmodel=medany \
           -Wl,--no-relax -Wl,--no-warn-rwx-segments \
           -I$(SRC_DIR) -I$(CONFIG_DIR)
 
-SRCS := start.S feature_extractor.c console.c
-DEPS := extensions.h console.h
+SRCS := start.S feature_extractor.c parameters.c console.c
+DEPS := extensions.h probe.h console.h
 ELF  := $(BUILD_DIR)/feature_extractor$(XLEN).elf
 
 .PHONY: all elf run dump test regression clean help

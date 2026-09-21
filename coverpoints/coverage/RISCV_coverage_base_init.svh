@@ -282,6 +282,14 @@
         `cover_info("//      SsstrictV - Enabled");
         `include "SsstrictV_coverage_init.svh"
     `endif
+    `ifdef COVER_SSTCS
+        `cover_info("//      SstcS - Enabled");
+        `include "SstcS_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSTCSM
+        `cover_info("//      SstcSm - Enabled");
+        `include "SstcSm_coverage_init.svh"
+    `endif
     `ifdef COVER_SSTVALA
         `cover_info("//      Sstvala - Enabled");
         `include "Sstvala_coverage_init.svh"

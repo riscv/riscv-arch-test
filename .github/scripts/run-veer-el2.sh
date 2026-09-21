@@ -5,7 +5,7 @@
 # produce or compare a signature: it loads the ELF, runs the testbench, and lets the
 # RVCP-SUMMARY line reach stdout where run_tests.py parses it.
 #
-# Usage:  run-veer-el2.sh [--snapshot DIR] [--stub ADDR] [--timeout SEC] [--keep] --elf <path>
+# Usage:  run-veer-el2.sh [--snapshot DIR] [--timeout SEC] [--keep] --elf <path>
 #   run_tests.py appends the ELF path as the final argument.
 # Env:    VEER_SNAPSHOT  directory holding obj_dir/Vtb_top (default: ~/repos/veer-builds/el2)
 #         CROSS          toolchain prefix (default: riscv64-unknown-elf)
@@ -15,45 +15,62 @@ SNAPSHOT="${VEER_SNAPSHOT:-$HOME/repos/veer-builds/el2}"
 CROSS="${CROSS:-riscv64-unknown-elf}"
 TIMEOUT=280
 KEEP=0
-STUB=""
 ELF=""
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    --snapshot) SNAPSHOT="$2"; shift 2 ;;
-    --timeout)  TIMEOUT="$2";  shift 2 ;;
-    --keep)     KEEP=1;        shift ;;
-    --stub)     STUB="$2";     shift 2 ;;   # prepend a jump stub at 0 to this address
-    --elf)      shift ;;                 # the ELF is the trailing argument
-    *)          ELF="$1";      shift ;;
+  --snapshot)
+    SNAPSHOT="$2"
+    shift 2
+    ;;
+  --timeout)
+    TIMEOUT="$2"
+    shift 2
+    ;;
+  --keep)
+    KEEP=1
+    shift
+    ;;
+  *)
+    ELF="$1"
+    shift
+    ;;
   esac
 done
 
-[ -n "$ELF" ]      || { echo "run-veer-el2.sh: no ELF given" >&2; exit 2; }
-[ -f "$ELF" ]      || { echo "run-veer-el2.sh: no such ELF: $ELF" >&2; exit 2; }
+[ -n "$ELF" ] || {
+  echo "run-veer-el2.sh: no ELF given" >&2
+  exit 2
+}
+[ -f "$ELF" ] || {
+  echo "run-veer-el2.sh: no such ELF: $ELF" >&2
+  exit 2
+}
 SIM="$SNAPSHOT/obj_dir/Vtb_top"
-[ -x "$SIM" ]      || { echo "run-veer-el2.sh: no simulator at $SIM (build it with tools/Makefile verilator-build)" >&2; exit 2; }
+[ -x "$SIM" ] || {
+  echo "run-veer-el2.sh: no simulator at $SIM (build it with tools/Makefile verilator-build)" >&2
+  exit 2
+}
 
 # The VeeR testbench hard-codes program.hex / console.log / exec.log relative to the
 # current directory, so every test needs its own directory to run in parallel safely.
 WORK="${ELF%.elf}.veerrun"
-rm -rf "$WORK"; mkdir -p "$WORK" || exit 2
+rm -rf "$WORK"
+mkdir -p "$WORK" || exit 2
 
 "$CROSS-objcopy" -O verilog "$ELF" "$WORK/test.hex" || exit 2
 
-# Some VeeR testbenches hard-code the reset vector to 0 (tb_top.sv: "reset_vector = 32'h0;"),
-# but ACT cannot link its image at address 0, so the tests are linked at TEST_BASE=0x1000
-# and we prepend a two-instruction boot stub at 0 that jumps there:
-#   lui t0, 0x1 ; jr t0
-printf '@00000000\n85 62 82 82\n' > "$WORK/program.hex"
-cat "$WORK/test.hex" >> "$WORK/program.hex"
+# The EL2 testbench takes its reset vector from RV_RESET_VEC (0x8000_0000), which is where the
+# tests link, so the image is loaded as-is with no boot stub. (EH1 and EH2 hard-code the reset
+# vector to 0 and do need one, which is why their runners are separate.)
+mv "$WORK/test.hex" "$WORK/program.hex"
 
 # The testbench's instruction-trace writer is unguarded and emits two lines plus a full
 # disassembly per retired instruction. Discard it; console.log is what we need.
 ln -sf /dev/null "$WORK/exec.log"
 ln -sf /dev/null "$WORK/trace_port.csv"
 
-out="$( cd "$WORK" && timeout --foreground -k 5 "$TIMEOUT" "$SIM" 2>&1 )"
+out="$(cd "$WORK" && timeout --foreground -k 5 "$TIMEOUT" "$SIM" 2>&1)"
 rc=$?
 printf '%s\n' "$out"
 

@@ -188,7 +188,8 @@ params:
   #   Quote: "0xB03 ... mhpmcounter3" through "0xB06 ... mhpmcounter6"
   #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/csrs.md
   HPM_EVENTS: [0]
-  HPM_COUNTER_EN: [
+  HPM_COUNTER_EN:
+    [
       false,
       false,
       false,
@@ -232,7 +233,8 @@ params:
   # no U-mode there is no lower privilege level whose counter access it could gate.
   # UDB still requires the parameter, so every bit is false.
   #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/csrs.md
-  MCOUNTENABLE_EN: [
+  MCOUNTENABLE_EN:
+    [
       false,
       false,
       false,
@@ -269,7 +271,8 @@ params:
 
   # mcountinhibit exists on EL2. Bit 1 (TM) is read-only zero per the spec; bits 3..6
   # track the four implemented mhpmcounters, and 7..31 do not exist.
-  COUNTINHIBIT_EN: [
+  COUNTINHIBIT_EN:
+    [
       true,
       false,
       true,

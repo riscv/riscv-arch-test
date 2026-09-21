@@ -44,7 +44,7 @@ mkdir -p "$INSTALL_DIR/el2"
   cd "$INSTALL_DIR/el2"
   RV_ROOT="$INSTALL_DIR/Cores-VeeR-EL2" \
     make -f "$INSTALL_DIR/Cores-VeeR-EL2/tools/Makefile" verilator-build -j"$(nproc)" \
-      CONF_PARAMS='-set build_axi4 -set user_mode=1 -set pmp_entries=64 -set smepmp=0 -set bitmanip_zba=0 -set bitmanip_zbb=0 -set bitmanip_zbc=0 -set bitmanip_zbs=0 -set fast_interrupt_redirect=0'
+    CONF_PARAMS='-set build_axi4 -set user_mode=1 -set pmp_entries=64 -set smepmp=0 -set bitmanip_zba=0 -set bitmanip_zbb=0 -set bitmanip_zbc=0 -set bitmanip_zbs=0 -set fast_interrupt_redirect=0'
 )
 
 # 4. Install the per-test runner

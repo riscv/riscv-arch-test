@@ -4,9 +4,9 @@
 from CHIPS Alliance. This configuration is written against a pinned upstream commit, and every UDB
 and Sail parameter cites the supporting documentation text plus a permalink to it.
 
-| Config | ISA | Modes | Pinned commit |
-|---|---|---|---|
-| `veer-el2-rv32imc-u-pmp` | RV32IMC_Zicsr_Zifencei | M + U, 64 PMP entries | `925f3a34` |
+| Config                   | ISA                    | Modes                 | Pinned commit |
+| ------------------------ | ---------------------- | --------------------- | ------------- |
+| `veer-el2-rv32imc-u-pmp` | RV32IMC_Zicsr_Zifencei | M + U, 64 PMP entries | `925f3a34`    |
 
 EL2's U-mode and PMP are both optional and are enabled here at their maximum, which is its maximum
 ratified feature set. Its bit-manipulation is a 0.94-draft subset rather than ratified B, so the

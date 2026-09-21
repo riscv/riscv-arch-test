@@ -10,7 +10,9 @@
 //
 // This file contains the coverpoint definitions that do not depend on the
 // privilege mode. Each Zicfilp privilege-mode coverage file includes it and
-// defines its own mode-specific coverpoints (xLPE, ELP, trap CSRs) and crosses.
+// defines its own mode-specific coverpoints (xLPE, trap CSRs) and crosses.
+// Crosses describe the conditions a test sets up; the expected outcomes
+// (exceptions, xtval, ELP) are checked by the signature.
 ///////////////////////////////////////////////
 
 // An indirect call/jump sets ELP=LP_EXPECTED (when xLPE=1) unless rs1 is x1, x5, or x7.
@@ -52,15 +54,26 @@
         }
     `endif
 
+    // Previous instruction was an Indirect_CT through a register other than x1/x5/x7:
+    // with xLPE=1 the current instruction executes with ELP=LP_EXPECTED
+    lp_branch_prev: coverpoint (
+        `ZICFILP_LP_JALR(ins.prev.insn)                                ? 2'd1 :
+        (`ZICFILP_LP_CJUMP(ins.prev.insn) && (ins.prev.insn ==? C_JR)) ? 2'd2 :
+        `ZICFILP_LP_CJUMP(ins.prev.insn)                               ? 2'd3 : 2'd0) {
+        bins jalr = {2'd1};
+        `ifdef ZCA_SUPPORTED
+            bins c_jr   = {2'd2};
+            bins c_jalr = {2'd3};
+        `endif
+    }
+
     // Current instruction
     lpad_dest: coverpoint (ins.current.insn ==? LPAD) {
         bins not_lpad = {1'b0};
         bins lpad     = {1'b1};
     }
-    // A legal instruction other than LPAD, or an illegal instruction (the software-check exception has priority)
-    not_lpad: coverpoint {(ins.current.insn ==? LPAD), (ins.current.insn == 32'hFFFFFFFF)} {
-        bins legal_instruction   = {2'b00};
-        bins illegal_instruction = {2'b01};
+    not_lpad: coverpoint (ins.current.insn ==? LPAD) {
+        bins not_lpad = {1'b0};
     }
     lpad_lpl_zero: coverpoint ins.current.insn {
         bins lpad_zero = {32'h00000017};
@@ -68,6 +81,20 @@
     lpad_lpl_nonzero: coverpoint ((ins.current.insn ==? LPAD) && (ins.current.insn[31:12] != 20'h0)) {
         bins lpl_nonzero = {1'b1};
     }
+    // An LPAD that passes the label check: LPL=0, or LPL equal to x7[31:12]
+    lpad_valid: coverpoint {(ins.current.insn ==? LPAD), (ins.current.insn[31:12] == 20'h0),
+                            (ins.current.insn[31:12] == ins.prev.x_wdata[7][31:12])} {
+        wildcard bins lpl_zero  = {3'b1_1_?};
+        wildcard bins lpl_match = {3'b1_0_1};
+    }
+    pc_aligned: coverpoint ins.current.pc_rdata[1:0] {
+        bins aligned = {2'b00};
+    }
+    `ifdef ZCA_SUPPORTED
+        pc_misaligned: coverpoint ins.current.pc_rdata[1:0] {
+            bins misaligned = {2'b10};
+        }
+    `endif
 
     // Expected landing pad label in x7[31:12] and the LPL encoded in the LPAD instruction
     x7_label: coverpoint ins.prev.x_wdata[7][31:12] {
@@ -91,10 +118,27 @@
         wildcard bins sc4_x7_label_zero    = {4'b1_1_0_1};
     }
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-        // Current instruction is an ELP-setting JALR whose target raises an instruction access fault
-        lp_jalr_to_fault_addr: coverpoint (`ZICFILP_LP_JALR(ins.current.insn) &&
-                                           ((ins.current.imm + ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS)) {
-            bins lp_jalr = {1'b1};
-        }
-    `endif
+    // Exception priority at the target of an ELP-setting Indirect_CT:
+    // an instruction access fault (logged with the JALR, which has no target record) or an illegal instruction
+    priority_case: coverpoint {
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+            (`ZICFILP_LP_JALR(ins.current.insn) &&
+             ((ins.current.imm + ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS)),
+        `else
+            1'b0,
+        `endif
+        (`ZICFILP_LP_BRANCH(ins.prev.insn) && (ins.current.insn == 32'hFFFFFFFF))
+    } {
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+            bins instr_access_fault = {2'b10};
+        `endif
+        bins illegal_instruction = {2'b01};
+    }
+
+    // Trap entry: a software-check exception at the target of an ELP-setting Indirect_CT (ELP=LP_EXPECTED),
+    // or an ecall that no such Indirect_CT precedes (ELP=NO_LP_EXPECTED)
+    trap_case: coverpoint {(`ZICFILP_LP_BRANCH(ins.prev.insn) && !(ins.current.insn ==? LPAD)),
+                           (!`ZICFILP_LP_BRANCH(ins.prev.insn) && (ins.current.insn == ECALL))} {
+        bins lp_expected_not_lpad = {2'b10};
+        bins no_lp_expected_ecall = {2'b01};
+    }

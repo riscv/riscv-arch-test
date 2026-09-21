@@ -72,7 +72,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "{ZicfilpSm_cg,ZicfilpS_cg,ZicfilpU_cg}/{cp_zicfilp_lpad_valid_execution,cp_zicfilp_lpad_missing_instruction_exception,cp_zicfilp_lpad_label_mismatch,cp_lpad_no_sw_exception_elp_clear_zicfilp}",
-        "The not-4-byte-aligned target case is not tested",
+        "{ZicfilpSm_cg,ZicfilpS_cg,ZicfilpU_cg}/cp_lpad_alignment_exception_zicfilp (Zca only: without Zca a target that is not 4-byte aligned raises an instruction-address-misaligned exception first)",
       ]
 
   # When Zicfilp is enabled, lpad is the only instruction allowed to execute when the ELP state is
@@ -91,7 +91,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "{ZicfilpSm_cg,ZicfilpS_cg,ZicfilpU_cg}/{cp_zicfilp_lpad_label_mismatch,cp_zicfilp_lpad_label_exception_delivery,cp_lpad_no_sw_exception_elp_clear_zicfilp}",
-        "The misaligned lpad case is not tested",
+        "{ZicfilpSm_cg,ZicfilpS_cg,ZicfilpU_cg}/cp_lpad_alignment_exception_zicfilp (Zca only)",
       ]
 
   # A trap may need to be delivered to the same or to a higher privilege mode upon completion of
@@ -110,8 +110,7 @@ normative_rule_definitions:
   - name: Zicfilp_exception_priority
     coverpoint:
       [
-        "{ZicfilpSm_cg,ZicfilpS_cg,ZicfilpU_cg}/cp_exception_priority_zicfilp",
-        "{ZicfilpSm_cg,ZicfilpS_cg,ZicfilpU_cg}/cp_zicfilp_lpad_missing_instruction_exception (illegal_instruction bin)",
+        "{ZicfilpSm_cg,ZicfilpS_cg,ZicfilpU_cg}/cp_exception_priority_zicfilp (instruction access fault and illegal instruction bins)",
       ]
 
   # The software-check exception due to the instruction not being an lpad instruction when ELP is LP_EXPECTED
@@ -164,6 +163,7 @@ normative_rule_definitions:
       [
         "ZicfilpSm_cg/cp_pelp_trap_return_m_zicfilp (MRET)",
         "ZicfilpS_cg/cp_pelp_trap_return_s_zicfilp (SRET)",
+        "xPELP=NO_LP_EXPECTED after an xRET to the same mode is checked in the signature",
       ]
 
   # The Zicfilp extension adds the SPELP and MPELP fields that hold the previous ELP, and are updated as
@@ -267,3 +267,17 @@ normative_rule_definitions:
       [
         "{ZicfilpS_cg,ZicfilpU_cg}/{cp_zicfilp_lpad_missing_instruction_exception,cp_zicfilp_lpad_label_mismatch,cp_zicfilp_lpad_label_exception_delivery}",
       ]
+
+  # If the Zicfilp extension is implemented, mnstatus also holds the MNPELP field, which on entry to the RNMI
+  # trap handler holds the previous ELP state.
+  - name: mnstatus_mnpelp_op
+    coverpoint: ["Deferred: Smrnmi (RNMI) is not yet tested"]
+
+  # When an RNMI trap is taken, MNPELP is set to ELP and ELP is set to 0.
+  - name: mnstatus_mnpelp_update
+    coverpoint: ["Deferred: Smrnmi (RNMI) is not yet tested"]
+
+  # If the Zicfilp extension is implemented, then if the new privileged mode is y, MNRET sets ELP to the logical
+  # AND of yLPE and mnstatus.MNPELP.
+  - name: mnret_zicfilp
+    coverpoint: ["Deferred: Smrnmi (RNMI) is not yet tested"]

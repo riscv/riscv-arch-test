@@ -1,0 +1,92 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# CI configuration for the cva6 family.
+#
+# Only cv64a6_imafdcv_sv39 (CVA6 + the Ara vector unit, 4 lanes, VLEN 512) is runnable;
+# cv32a65x has no run_cmd.txt and is build-only, so CI discovers nothing for it.
+#
+# Measured on Ara @ 34bd3bc152421b4601a7bf3d6e8e91ffb545c99e with
+# CVA6 @ 99eac9a649001bdf5b8f9da52e0ca73d5c48db1c, hierarchical Verilator model at
+# nr_lanes=4 vlen=512: 2361 tests selected, 347 pass, 2014 fail.
+# Full analysis, with RTL citations and directed-probe evidence for every claim, is in
+# the discrepancy report that accompanies this config.
+
+ci_enabled: true
+
+# Exclusions are by test-suite directory, the only granularity EXCLUDE_EXTENSIONS
+# supports. Each entry records the specific measured reason.
+#
+#   Zaamo, Zalrsc, ExceptionsZaamo, ExceptionsZalrsc, ExceptionsSvZaamo, ExceptionsSvZalrsc
+#                 Atomics do not work and do not fault. An axi_atop_filter sits in front
+#                 of the L2 ("// The L2 memory does not support atomics", ara_soc.sv:191),
+#                 so amoadd.d returns 0, leaves memory unmodified and raises no exception,
+#                 while misa.A still reads 1. sc.d is worse: it reports failure in rd and
+#                 commits the store anyway. Ara's own regression list already comments the
+#                 A suite out (apps/common/riscv_tests.mk:30-31). ExceptionsSvZaamo
+#                 additionally cannot be BUILT: with the DRAM region declared AMONone,
+#                 every AMO takes an extra trap in Sail and the test overflows its
+#                 TRAP_SIGUPD_COUNT during signature generation.
+#
+#   Vx8, Vx16, Vx32, Vx64, Vls8, Vls16, Vls32, Vls64
+#                 4 of 1915 pass. This is ONE DUT bug, not 1911 of them: vfirst.m and
+#                 vcpop.m ignore vl entirely and scan the whole mask register
+#                 (masku.sv:858-861 never truncates the operand to vl, and the slice
+#                 thresholds at masku.sv:1598-1606 are fixed functions of the register
+#                 width). ACT's vector self-check macro RVTEST_SIGUPD_V is vmsne.vv
+#                 followed by vfirst.m (tests/env/signature.h:339-346), so every vector
+#                 testcase fails on the check itself regardless of whether the
+#                 instruction under test is correct. Measured: with mask bit 0 = 0 and
+#                 bit 1 = 1 at vl=1, vfirst.m returns 1 where the spec requires -1, and
+#                 vcpop.m returns 1 where it requires 0.
+#                 A further 36 tests in these suites do not merely fail, they HANG:
+#                 vrgather.v{v,x,i}, vrgatherei16.vv, vmadc.v{v,x,i}m, vmsbc.v{v,x}m and
+#                 vcompress.vm each consume a 4,000,000-cycle budget without terminating
+#                 (20x the cycles any passing test needed).
+#                 These suites should be re-enabled once vfirst.m/vcpop.m respect vl;
+#                 until then they measure the harness, not the DUT.
+#
+#   Misalign, MisalignD, MisalignF, MisalignZca
+#                 0 of 20 pass, and 10 of them abort the simulator outright. Misaligned
+#                 scalar accesses neither trap nor work: a load crossing an 8-byte
+#                 boundary returns the first doubleword shifted and zero-filled rather
+#                 than the bytes from the next doubleword, a crossing store rotates its
+#                 data into the first doubleword (destroying a byte) and never writes the
+#                 second, and lw at offset 6 trips the CVA6 assertion
+#                 "invalid address offset used with {LW, LWU}" (load_unit.sv:556) whose
+#                 own comment says these offsets are supposed to have raised a
+#                 load-address-misaligned exception first.
+#
+#   S, U, UV, SmF, SmVF, Sstvala, Sstvecd, Ssu64xl, ZicsrF
+#                 The S and U suites fail 16 of 16 on the same root cause: sstatus.VS
+#                 reads as 0 because CVA6's S-mode status read mask omits VS entirely
+#                 (ariane_pkg.sv:114-127), so S-mode software cannot see or manage vector
+#                 context at all. S-00 expects a post-sret sstatus of 0x8000000200006600
+#                 and gets 0x8000000200006000 - exactly the VS field missing. UV
+#                 additionally aborts on the acc_dispatcher "Too many pending stores"
+#                 assertion (acc_dispatcher.sv:435).
+#
+#   ExceptionsF, ExceptionsS, ExceptionsSm, ExceptionsSv, ExceptionsU, ExceptionsZc
+#                 0 of 12. These suites probe RVMODEL_ACCESS_FAULT_ADDRESS, and this
+#                 platform CANNOT raise a data access fault by any means: the SoC
+#                 overrides CVA6's PMP entries to zero (ara_soc.sv:462), and PMP is one of
+#                 only two sources of a load/store access fault in CVA6 (the other, a
+#                 page-table-walk access exception, needs PMP too). An access to an
+#                 undecoded address does not fault - it never completes, and the core
+#                 deadlocks as soon as an instruction needs the result.
+#
+#   D, F          Left ENABLED: 168 of 200 pass and the 32 failures are a real, narrow
+#                 finding worth surfacing in CI - 26 fflags mismatches and 6 wrong
+#                 results, confined to fdiv, fsqrt, the fused multiply-add family and
+#                 fcvt.d.s/fcvt.s.d. Example: fcvt.d.s of +infinity sets NX when the
+#                 conversion is exact.
+#
+#   Sm            Left ENABLED: 17 of 27 pass. The failures are a genuine finding -
+#                 mstatus WPRI bits 38..62 are writable and read back what was written
+#                 (Sm_mcsr_walk fails on mstatus_set_bit_38 expecting 0 and reading
+#                 0x40_0000_0000), and mstatus.SD is not set by a dirty mstatus.VS
+#                 because the SD expression at csr_regfile.sv:1940 covers only xs and fs.
+exclude_extensions: "Zaamo,Zalrsc,ExceptionsZaamo,ExceptionsZalrsc,ExceptionsSvZaamo,ExceptionsSvZalrsc,Vx8,Vx16,Vx32,Vx64,Vls8,Vls16,Vls32,Vls64,Misalign,MisalignD,MisalignF,MisalignZca,S,U,UV,SmF,SmVF,Sstvala,Sstvecd,Ssu64xl,ZicsrF,ExceptionsF,ExceptionsS,ExceptionsSm,ExceptionsSv,ExceptionsU,ExceptionsZc"
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache libelf-dev"
+install_script: ".github/scripts/install-ara.sh"
+setup_script: ".github/scripts/setup-ara.sh"

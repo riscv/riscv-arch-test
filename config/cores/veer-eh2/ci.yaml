@@ -1,0 +1,47 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# CI configuration for the CHIPS Alliance VeeR EH2 core
+
+ci_enabled: true
+
+# Exclusions are by test-suite directory, the only granularity EXCLUDE_EXTENSIONS supports.
+# Each entry records the specific measured reason, on Cores-VeeR-EH2 @ bd52450b built with
+# atomics on, bit-manipulation off and a single hart.
+# Current state: 127 tests selected, 110 pass, 17 fail.
+#
+#   Zaamo         THE A EXTENSION CANNOT BE TESTED AS CONFIGURED, and these suites do not even
+#   Zalrsc        build. VeeR EH2 makes atomic instructions illegal outside the DCCM
+#                 ("# Make atomic instructions illegal outside of DCCM.",
+#                 https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/configs/veer.config#L2604),
+#                 and an ACT image is far larger than the 64 KB DCCM, so it runs from system
+#                 memory where every AMO and every LR/SC faults. The reference model, told the
+#                 region supports no atomics, reports "Trap signature overflow in sig mode" while
+#                 generating Zalrsc-sc.w-00. Testing atomics on this core needs the test data
+#                 region placed in the DCCM, which ACT cannot currently express.
+#
+#   Sm            13 of 27 fail: trap-count mismatches (8), mtval mismatches, and CSR writability -
+#                 a written mip bit reads back 0 because mip is pin-driven and read-only to
+#                 software, and a mcycle write does not stick.
+#
+#   ExceptionsSm  1 of 4, ExceptionsZc 1 of 1: mtval mismatches. mtval population is undocumented
+#                 in the PRM, so the REPORT_VA_IN_MTVAL_ON_* parameters are set from the RISC-V
+#                 defaults and at least one is wrong for this core.
+#
+#   Zifencei      1 of 1, and fence.i does NOT trap - it retires normally and the next fetch simply
+#                 returns the stale instruction. The VeeR testbench models instruction and data
+#                 memory as two independent arrays, both loaded from program.hex at time 0, and
+#                 stores reach only the data array, so self-modifying code can never be fetched.
+#
+#   I             1 of 39: I-fence-00, because FENCE.TSO IS NOT IMPLEMENTED. fence.tso (encoding
+#                 0x8330000f, FENCE with fm=1000) raises an illegal instruction; plain fence is
+#                 fine. The decode table hardcodes the fm field to zero so fm=1000 matches no
+#                 pattern. The unprivileged spec says: "The fence.tso instruction was incorrectly
+#                 described as optional in 2019. However, fence.tso is encoded within the standard
+#                 fence encoding such that implementations must treat it as a simple global fence
+#                 if they do not support TSO optimizations." Excluding the suite to silence one
+#                 test also drops 38 passing tests, the cost of having no per-test exclusion.
+exclude_extensions: "Zaamo,Zalrsc,Sm,ExceptionsSm,ExceptionsZc,Zifencei,I"
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache"
+install_script: ".github/scripts/install-veer-eh2.sh"
+setup_script: ".github/scripts/setup-veer-eh2.sh"

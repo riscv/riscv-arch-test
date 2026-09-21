@@ -18,6 +18,7 @@ from rich import print as rprint
 from act.build import build, prune_empty_dirs
 from act.build_plan import generate_build_plan
 from act.build_types import BuildTask
+from act.certificate_tests import certificate_exists
 from act.config import CoverageSimulator
 from act.coverreport import print_coverage_summary
 from act.parse_test_constraints import TestYamlHeaderError, generate_test_dict
@@ -50,6 +51,10 @@ def run_act(
         str,
         typer.Option("--exclude", "-x", help="Comma-separated list of extensions to exclude from test generation"),
     ] = "",
+    certificate: Annotated[
+        str | None,
+        typer.Option(help="Only select tests for the specified certificate"),
+    ] = None,
     jobs: Annotated[
         int,
         typer.Option("--jobs", "-j", help="Parallel build jobs (0 = auto-detect CPU count)"),
@@ -70,6 +75,10 @@ def run_act(
         CoverageSimulator,
         typer.Option(help="Coverage simulator backend", case_sensitive=False),
     ] = CoverageSimulator.QUESTA,
+    enable_experimental_extensions: Annotated[
+        bool,
+        typer.Option(help="Enable tests for experimental extensions"),
+    ] = False,
 ) -> None:
 
     # Parse options
@@ -88,6 +97,14 @@ def run_act(
 
     if jobs <= 0:
         jobs = os.cpu_count() or 1
+
+    if certificate:
+        if not certificate_exists(certificate):
+            raise typer.BadParameter(f"Unknown certificate '{certificate}'.", param_hint="--certificate")
+        rprint(
+            "[bold yellow]Certification mode:[/] "
+            f"selected certificate [bold]{certificate}[/]. M-mode tests and extensions that are not part of the certificate will not be run."
+        )
 
     # Resolve paths
     test_dir = test_dir.absolute()
@@ -108,7 +125,13 @@ def run_act(
     # (extensions.txt, rvtest_config.{h,svh}, and rvmodel_macros.svh) in
     # one parallel UDB pass, then select tests per config.
     for config, config_params, selected_tests in prepare_configs_and_select_tests(
-        config_files, full_test_dict, workdir, jobs=jobs, verbose=verbose
+        config_files,
+        certificate,
+        full_test_dict,
+        workdir,
+        jobs=jobs,
+        verbose=verbose,
+        enable_experimental_extensions=enable_experimental_extensions,
     ):
         mxlen = config_params["MXLEN"]
         if not isinstance(mxlen, int):
@@ -129,6 +152,7 @@ def run_act(
                 fast,
                 verbose,
                 dry_run,
+                enable_experimental_extensions,
             )
         )
 

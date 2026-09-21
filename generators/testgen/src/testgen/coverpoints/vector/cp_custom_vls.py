@@ -64,7 +64,8 @@ def make_cp_custom_ffLS(instr_name: str, instr_type: str, coverpoint: str, test_
     """
     Coverpoint that generates a test where an exception is raised, causing a change in vl to be observed.
 
-    The test achieves this by running a load at rs1=0x0, with element 0 masked so that a trap is not taken.
+    The test achieves this by running a load at RVMODEL_ACCESS_FAULT_ADDRESS, with element 0 masked so
+    that a trap is not taken.
     """
 
     suffix = coverpoint[len("cp_custom_ffLS_update_vl") :]
@@ -117,8 +118,11 @@ def make_cp_custom_ffLS(instr_name: str, instr_type: str, coverpoint: str, test_
 
     tc.code.extend([setup, label_line, test, check])
 
+    guards = ["RVMODEL_ACCESS_FAULT_ADDRESS"]
     if ifdef != "":
-        tc.code.insert(0, f"#ifdef {ifdef}")
+        guards.append(ifdef)
+    for guard in reversed(guards):
+        tc.code.insert(0, f"#ifdef {guard}")
         tc.code.append("#endif")
 
     tc = test_data.end_test_chunk()

@@ -1,0 +1,239 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
+
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+# UDB Architecture Configuration for the CHIPS Alliance VeeR EH1 core.
+#
+# Written against Cores-VeeR-EH1 commit d04b1c7ae675a63dc4307cacfd10547ec937b928.
+# Every parameter below cites the supporting text and a permalink to the original.
+# Sources, in order of preference: the PRM markdown under docs/source/ (the source of
+# the published "RISC-V VeeR EH1 Programmer's Reference Manual", Revision 1.9), then
+# configs/veer.config, then the RTL under design/.
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: veer-eh1
+description: CHIPS Alliance VeeR EH1 - RV32IMC, machine mode only, maximum feature set
+
+# misa reads 0x4000_1104: MXL=1 (RV32), plus C (bit 2), I (bit 8) and M (bit 12).
+#   Quote: "0x301 | MRW | misa | ISA and extensions (**Note:** writes ignored) | 0x4000_1104"
+#   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/csr-address-map.md#L15
+# Quote: "RV32IMC-compliant RISC-V core with branch predictor"
+#   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/core-overview.md
+# The bundled tests are built -march=rv32imc_zicsr_zifencei, confirming Zicsr and Zifencei.
+#   Quote: "ABI = -mabi=ilp32 -march=rv32imc_zicsr_zifencei"
+#   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/tools/Makefile#L23
+# There is no A, no F/D, no bit-manipulation and no U-mode in EH1: configs/veer.config
+# contains no atomic_enable, bitmanip_* or user_mode knob, so this IS the maximum
+# feature set for this core.
+implemented_extensions:
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  # Zihpm is implemented in part: mhpmcounter3..6 and mhpmevent3..6 exist; 7..31 do not.
+  # The per-counter truth is carried by HPM_COUNTER_EN below.
+  #   Quote: "0xB03 | MRW | mhpmcounter3" ... "0xB06 | MRW | mhpmcounter6"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/csr-address-map.md
+  - { name: Zihpm, version: "= 2.0" }
+  - { name: Zifencei, version: "= 2.0" }
+  - { name: Sm, version: "= 1.12.0" }
+
+params:
+  # XLEN
+  # Quote: "VeeR EH1 is a machine-mode (M-mode) only, 32-bit CPU core"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/core-overview.md
+  MXLEN: 32
+  # Quote (32-bit physical address space, 16 regions of 256 MB):
+  #   "The VeeR EH1 core has a 32-bit address space which is divided into 16 fixed
+  #    regions of 256 MB each."
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/memory-map.md
+  PHYS_ADDR_WIDTH: 32
+
+  # MISA: implemented but read-only ("writes ignored"), so no extension can be
+  # turned off through misa.
+  #   Quote: "misa | ISA and extensions (**Note:** writes ignored) | 0x4000_1104"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/csr-address-map.md#L15
+  MISA_CSR_IMPLEMENTED: true
+  MUTABLE_MISA_M: false
+  MUTABLE_MISA_C: false
+
+  # Endianness: RISC-V little-endian; EH1 implements no mstatus.MBE/SBE/UBE fields.
+  M_MODE_ENDIANNESS: little
+
+  # Trap behavior.
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_EBREAK: true
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  # !VERIFIED - the PRM does not state what an access to an unimplemented CSR does.
+  # Set to true (the ordinary RISC-V behaviour) pending an RTL read of
+  # design/dec/dec_decode_ctl.sv; if wrong it shows up as a Zicsr discrepancy.
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  TRAP_ON_ILLEGAL_WLRL: false
+
+  # MTVAL reporting. !VERIFIED for EH1 in detail: the PRM has no section enumerating
+  # which exceptions write mtval. These values follow the RISC-V defaults implemented
+  # by the TLU (design/dec/dec_tlu_ctl.sv); mismatches surface as Sm discrepancies.
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
+  MTVAL_WIDTH: 32
+
+  # Misaligned load/store: handled in hardware for ordinary (idempotent) memory.
+  #   Quote: "The core performs a misalignment check during the address calculation."
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/memory-map.md#L355
+  # Known deviation, accepted for this configuration: misaligned accesses to
+  # side-effect regions raise a misaligned exception where the priv spec recommends an
+  # access fault.
+  #   Quote: "The RISC-V Privileged specification recommends that misaligned accesses
+  #   to regions with potential side-effects should trigger an access fault exception,
+  #   instead of a misaligned exception ... Note that VeeR EH1 triggers a misaligned
+  #   exception in this case."
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/memory-map.md#L1060
+  MISALIGNED_LDST: true
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0 # no A extension in EH1
+  MISALIGNED_SPLIT_STRATEGY: custom
+
+  # Machine ID CSRs.
+  #   Quote: "0xF11 | MRO | mvendorid | Vendor ID | 0x0000_0045"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/csr-address-map.md#L20
+  # UDB splits mvendorid into (BANK << 7) | OFFSET; 0x45 has no continuation bytes.
+  VENDOR_ID_BANK: 0x0
+  VENDOR_ID_OFFSET: 0x45
+  #   Quote: "0xF12 | MRO | marchid | Architecture ID | 0x0000_000B"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/csr-address-map.md#L25
+  MARCHID_IMPLEMENTED: true
+  ARCH_ID_VALUE: 0xB
+  #   Quote: "0xF13 | MRO | mimpid | Implementation ID | 0x0000_0006"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/csr-address-map.md#L30
+  MIMPID_IMPLEMENTED: true
+  IMP_ID_VALUE: 0x6
+
+  # MTVEC. The TLU stores bits [31:2] and bit [0], dropping bit 1, so both Direct
+  # (MODE=0) and Vectored (MODE=1) are representable and BASE is 4-byte aligned.
+  #   Quote: "assign mtvec_ns[30:0] = {dec_csr_wrdata_wb[31:2], dec_csr_wrdata_wb[0]} ;"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/design/dec/dec_tlu_ctl.sv#L1145
+  # Vectored mode is used by the PRM's own interrupt example.
+  #   Quote: "trap_vector:            // Interrupt trap starts here when MTVEC[mode]=1"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/external-interrupts.md#L963
+  MTVEC_MODES: [0, 1]
+  MTVEC_ACCESS: rw
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom # bit 1 of a write is discarded, not retained
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  MTVEC_BASE_ALIGNMENT_VECTORED: 4
+
+  # Sm parameters.
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  # No PMA hardware: region attributes come from mrac, whose granularity is one
+  # 256 MB region, but the natural access granule on the 64-bit AHB/AXI bus is 8 bytes.
+  PMA_GRANULARITY: 3
+  # mconfigptr is not in the EH1 CSR map.
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/csr-address-map.md
+  CONFIG_PTR_ADDRESS: 0x0
+
+  # PMP: EH1 has no RISC-V PMP at all. Memory protection is a non-standard MPU of
+  # 8 instruction and 8 data access windows configured by build arguments, not CSRs.
+  #   Quote: "If at least one data access window is enabled, non-speculative load/store
+  #   requests which are not within the address range of any enabled data access window
+  #   cause a precise load/store address misaligned or access fault exception."
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/memory-map.md#L198
+  NUM_PMP_ENTRIES: 0
+
+  # Hardware performance monitors: mhpmcounter3-6 / mhpmevent3-6 only (4 counters).
+  #   Quote: "0xB03 ... mhpmcounter3" through "0xB06 ... mhpmcounter6"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/csr-address-map.md
+  HPM_EVENTS: [0]
+  HPM_COUNTER_EN: [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+
+  # mcountinhibit (0x320) does NOT exist on EH1. Its function is served by the
+  # non-standard mgpmc register at 0x7D0, which the next VeeR generation replaced with
+  # the standard CSR.
+  #   Quote: "0x7D0 | MRW | mgpmc | Group performance monitor control"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/csr-address-map.md
+  #   Quote (EL2 PRM, on the replacement): "replaces the non-standard mgpmc register of
+  #   the previous VeeR generation."
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/performance.md
+  MCOUNTINHIBIT_IMPLEMENTED: false
+
+  # mcounteren (0x306) does not exist on EH1: it is absent from the CSR map, and with
+  # no U-mode there is no lower privilege level whose counter access it could gate.
+  # UDB still requires the parameter, so every bit is false.
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/csr-address-map.md
+  MCOUNTENABLE_EN: [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]

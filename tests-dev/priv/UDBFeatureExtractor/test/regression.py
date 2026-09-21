@@ -22,9 +22,13 @@ import shlex
 import shutil
 import subprocess
 import sys
+from collections.abc import Iterator
 from pathlib import Path
 
 import yaml
+
+# name, status ("ok", "FAIL" or "skip"), note, reported, expected, untested
+Result = tuple[str, str, str, set[str], set[str], set[str]]
 
 DEBUG_PLACEHOLDER_RE = re.compile(r"\{debug:([^}]*)\}")
 
@@ -45,7 +49,7 @@ IMPLIED = {
 }
 
 
-def find_configs(root):
+def find_configs(root: Path) -> Iterator[tuple[Path, Path]]:
     for run_cmd in sorted((root / "config").glob("**/run_cmd.txt")):
         d = run_cmd.parent
         yamls = [y for y in d.glob("*.yaml") if y.name != "test_config.yaml"]
@@ -53,7 +57,7 @@ def find_configs(root):
             yield d, yamls[0]
 
 
-def expected_extensions(udb_yaml):
+def expected_extensions(udb_yaml: Path) -> tuple[set[str], int]:
     doc = yaml.safe_load(udb_yaml.read_text())
     names = set()
     for e in doc.get("implemented_extensions", []):
@@ -61,15 +65,20 @@ def expected_extensions(udb_yaml):
     return names, int((doc.get("params") or {}).get("MXLEN", 64))
 
 
-def run_config(root, build, makefile, config_dir, udb_yaml, timeout):
+def run_config(root: Path, build: Path, makefile: Path, config_dir: Path, udb_yaml: Path, timeout: int) -> Result:
     name = config_dir.name
     expected, xlen = expected_extensions(udb_yaml)
     work = build / name
     work.mkdir(parents=True, exist_ok=True)
     log = work / "build.log"
-    with open(log, "w") as f:
-        rc = subprocess.run(["make", "-f", str(makefile), "elf", f"XLEN={xlen}", f"CONFIG_DIR={config_dir}",
-                             f"BUILD_DIR={work}"], stdout=f, stderr=subprocess.STDOUT, cwd=root).returncode
+    with log.open("w") as f:
+        rc = subprocess.run(
+            ["make", "-f", str(makefile), "elf", f"XLEN={xlen}", f"CONFIG_DIR={config_dir}", f"BUILD_DIR={work}"],
+            stdout=f,
+            stderr=subprocess.STDOUT,
+            cwd=root,
+            check=False,
+        ).returncode
     if rc:
         return name, "FAIL", f"build failed, see {log}", set(), expected, set()
     elf = work / f"feature_extractor{xlen}.elf"
@@ -92,19 +101,21 @@ def run_config(root, build, makefile, config_dir, udb_yaml, timeout):
     command.append(str(elf))
     log = work / "run.log"
     try:
-        with open(log, "w") as f:
-            proc = subprocess.run(command, stdout=f, stderr=subprocess.STDOUT, cwd=root, env=env, timeout=timeout)
+        with log.open("w") as f:
+            proc = subprocess.run(
+                command, stdout=f, stderr=subprocess.STDOUT, cwd=root, env=env, timeout=timeout, check=False
+            )
         rc = proc.returncode
     except subprocess.TimeoutExpired:
         return name, "FAIL", f"timed out after {timeout}s, see {log}", set(), expected, set()
     text = out.read_text() if out.exists() else log.read_text()
     if not out.exists():
         out.write_text(text)
-    reported = set(re.findall(r"^\s*- \{ name: (\w+),", text, re.M))
+    reported = set(re.findall(r"^\s*- \{ name: (\w+),", text, re.MULTILINE))
     untested = set()
-    for m in re.finditer(r"^# untested: (.*)$", text, re.M):
+    for m in re.finditer(r"^# untested: (.*)$", text, re.MULTILINE):
         untested |= set(m.group(1).split())
-    problems = [l for l in text.splitlines() if l.startswith("# warning") or l.startswith("# FATAL")]
+    problems = [l for l in text.splitlines() if l.startswith(("# warning", "# FATAL"))]
     if not reported:
         return name, "FAIL", f"nothing reported (exit {rc}), see {log}", set(), expected, set()
     status = "ok"
@@ -115,7 +126,7 @@ def run_config(root, build, makefile, config_dir, udb_yaml, timeout):
     return name, status, "; ".join(notes), reported, expected, untested
 
 
-def main():
+def main() -> None:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--repo-root", required=True)
     p.add_argument("--build-dir", required=True)
@@ -170,8 +181,10 @@ def main():
             line += "  " + note
         print(line)
     ran = sum(1 for r in results if r[1] != "skip")
-    print(f"{ran} configurations run, {len(results) - ran} skipped: {total_matched} extensions match, "
-          f"{total_mismatched} mismatch, {total_untested} untested")
+    print(
+        f"{ran} configurations run, {len(results) - ran} skipped: {total_matched} extensions match, "
+        f"{total_mismatched} mismatch, {total_untested} untested"
+    )
     print("all configurations match" if not failures else f"{failures} configuration(s) FAILED")
     sys.exit(1 if failures else 0)
 

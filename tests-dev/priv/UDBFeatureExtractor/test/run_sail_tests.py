@@ -26,34 +26,140 @@ CASES = {
     "no-M": {"extensions": {"M": {"supported": False}}},
     "no-M-Zmmul": {"extensions": {"M": {"supported": False}, "Zmmul": {"supported": False}}},
     # H requires I, and the Sh* extensions require H
-    "E": {"base": {"E": True}, "extensions": {k: {"supported": False} for k in
-          ["H", "Sha", "Shcounterenw", "Shgatpa", "Shtvala", "Shvsatpa", "Shvstvala", "Shvstvecd"]}},
-    "no-A": {"extensions": {k: {"supported": False} for k in
-             ["A", "Zaamo", "Zalrsc", "Zacas", "Zabha", "Zawrs", "Zicfiss"]}},
-    "no-B": {"extensions": {k: {"supported": False} for k in
-             ["B", "Zba", "Zbb", "Zbs", "Zbc", "Zbkb", "Zbkc", "Zbkx", "Zknd", "Zkne", "Zknh", "Zksed", "Zksh", "Zkr"]}},
+    "E": {
+        "base": {"E": True},
+        "extensions": {
+            k: {"supported": False}
+            for k in ["H", "Sha", "Shcounterenw", "Shgatpa", "Shtvala", "Shvsatpa", "Shvstvala", "Shvstvecd"]
+        },
+    },
+    "no-A": {
+        "extensions": {k: {"supported": False} for k in ["A", "Zaamo", "Zalrsc", "Zacas", "Zabha", "Zawrs", "Zicfiss"]}
+    },
+    "no-B": {
+        "extensions": {
+            k: {"supported": False}
+            for k in [
+                "B",
+                "Zba",
+                "Zbb",
+                "Zbs",
+                "Zbc",
+                "Zbkb",
+                "Zbkc",
+                "Zbkx",
+                "Zknd",
+                "Zkne",
+                "Zknh",
+                "Zksed",
+                "Zksh",
+                "Zkr",
+            ]
+        }
+    },
     "no-C": {"extensions": {k: {"supported": False} for k in ["Zca", "Zcb", "Zcd", "Zcf", "Zcmop"]}},
     # Zifencei is not switched off: Sail 0.14 decodes fence.i whatever the configuration says
-    "no-Zi": {"extensions": {k: {"supported": False} for k in
-              ["Zicbom", "Zicboz", "Zicond", "Zimop", "Zicntr", "Zihpm", "Zicfiss", "Zicfilp"]}},
-    "no-V": {"extensions": {"V": {"support_level": "Disabled"},
-                            **{k: {"supported": False} for k in
-                               ["Zvbb", "Zvbc", "Zvkb", "Zvkg", "Zvkned", "Zvknha", "Zvknhb", "Zvksed", "Zvksh",
-                                "Zvfh", "Zvfhmin", "Zvfbfmin", "Zvfbfwma", "Zvabd", "Zvkt"]}}},
-    "no-FP": {"extensions": {"V": {"support_level": "Disabled"},
-                             **{k: {"supported": False} for k in
-                                ["F", "D", "Zfh", "Zfhmin", "Zfa", "Zfbfmin", "Zcd", "Zcf",
-                                 "Zvbb", "Zvbc", "Zvkb", "Zvkg", "Zvkned", "Zvknha", "Zvknhb", "Zvksed", "Zvksh",
-                                 "Zvfh", "Zvfhmin", "Zvfbfmin", "Zvfbfwma", "Zvabd", "Zvkt"]}}},
-    "Zfinx": {"base": {"mstatus": {"fs_legal_states": "ExtContext_Off"}},
-              "extensions": {"V": {"support_level": "Disabled"},
-                             **{k: {"supported": False} for k in
-                                ["F", "D", "Zfh", "Zfhmin", "Zfa", "Zfbfmin", "Zcd", "Zcf",
-                                 "Zvbb", "Zvbc", "Zvkb", "Zvkg", "Zvkned", "Zvknha", "Zvknhb", "Zvksed", "Zvksh",
-                                 "Zvfh", "Zvfhmin", "Zvfbfmin", "Zvfbfwma", "Zvabd", "Zvkt"]},
-                             **{k: {"supported": True} for k in ["Zfinx", "Zhinx", "Zhinxmin"]},
-                             # Zdinx without D fails an assertion in Sail 0.14 (flen stays 32)
-                             "Zdinx": {"supported": False}}},
+    "no-Zi": {
+        "extensions": {
+            k: {"supported": False}
+            for k in ["Zicbom", "Zicboz", "Zicond", "Zimop", "Zicntr", "Zihpm", "Zicfiss", "Zicfilp"]
+        }
+    },
+    "no-V": {
+        "extensions": {
+            "V": {"support_level": "Disabled"},
+            **{
+                k: {"supported": False}
+                for k in [
+                    "Zvbb",
+                    "Zvbc",
+                    "Zvkb",
+                    "Zvkg",
+                    "Zvkned",
+                    "Zvknha",
+                    "Zvknhb",
+                    "Zvksed",
+                    "Zvksh",
+                    "Zvfh",
+                    "Zvfhmin",
+                    "Zvfbfmin",
+                    "Zvfbfwma",
+                    "Zvabd",
+                    "Zvkt",
+                ]
+            },
+        }
+    },
+    "no-FP": {
+        "extensions": {
+            "V": {"support_level": "Disabled"},
+            **{
+                k: {"supported": False}
+                for k in [
+                    "F",
+                    "D",
+                    "Zfh",
+                    "Zfhmin",
+                    "Zfa",
+                    "Zfbfmin",
+                    "Zcd",
+                    "Zcf",
+                    "Zvbb",
+                    "Zvbc",
+                    "Zvkb",
+                    "Zvkg",
+                    "Zvkned",
+                    "Zvknha",
+                    "Zvknhb",
+                    "Zvksed",
+                    "Zvksh",
+                    "Zvfh",
+                    "Zvfhmin",
+                    "Zvfbfmin",
+                    "Zvfbfwma",
+                    "Zvabd",
+                    "Zvkt",
+                ]
+            },
+        }
+    },
+    "Zfinx": {
+        "base": {"mstatus": {"fs_legal_states": "ExtContext_Off"}},
+        "extensions": {
+            "V": {"support_level": "Disabled"},
+            **{
+                k: {"supported": False}
+                for k in [
+                    "F",
+                    "D",
+                    "Zfh",
+                    "Zfhmin",
+                    "Zfa",
+                    "Zfbfmin",
+                    "Zcd",
+                    "Zcf",
+                    "Zvbb",
+                    "Zvbc",
+                    "Zvkb",
+                    "Zvkg",
+                    "Zvkned",
+                    "Zvknha",
+                    "Zvknhb",
+                    "Zvksed",
+                    "Zvksh",
+                    "Zvfh",
+                    "Zvfhmin",
+                    "Zvfbfmin",
+                    "Zvfbfwma",
+                    "Zvabd",
+                    "Zvkt",
+                ]
+            },
+            **{k: {"supported": True} for k in ["Zfinx", "Zhinx", "Zhinxmin"]},
+            # Zdinx without D fails an assertion in Sail 0.14 (flen stays 32)
+            "Zdinx": {"supported": False},
+        },
+    },
 }
 
 # Extensions the extractor derives from vector support rather than a same-named Sail key
@@ -62,28 +168,44 @@ VECTOR_DERIVED = ["V", "Zve32x", "Zve32f", "Zve64x", "Zve64f", "Zve64d"]
 # Sail keys the extractor cannot be expected to report: privileged extensions (S, H, U, Sm*, Ss*,
 # Sh*, Sv*), the unprivileged extensions that no instruction can detect by trapping (listed in
 # NOT_DETECTABLE_EXTENSIONS in extensions.h), and extensions that are not yet ratified
-NOT_CHECKED = {"Zihintpause", "Zihintntl", "Zicbop", "Zicclsm", "Ztso", "Zkt", "Zvkt", "Zic64b", "Ziccif",
-               "Ziccamoa", "Ziccamoc", "Ziccrse", "Za64rs", "Za128rs", "Zama16b",
-               "Zibi", "Zvabd"}
+NOT_CHECKED = {
+    "Zihintpause",
+    "Zihintntl",
+    "Zicbop",
+    "Zicclsm",
+    "Ztso",
+    "Zkt",
+    "Zvkt",
+    "Zic64b",
+    "Ziccif",
+    "Ziccamoa",
+    "Ziccamoc",
+    "Ziccrse",
+    "Za64rs",
+    "Za128rs",
+    "Zama16b",
+    "Zibi",
+    "Zvabd",
+}
 
 
-def checked(name):
+def checked(name: str) -> bool:
     return name not in NOT_CHECKED and not re.match(r"^(S|H$|U$)", name)
 
 
-def load_config(path):
-    text = re.sub(r"^\s*//.*$", "", Path(path).read_text(), flags=re.M)
+def load_config(path: Path) -> dict:
+    text = re.sub(r"^\s*//.*$", "", Path(path).read_text(), flags=re.MULTILINE)
     return json.loads(text)
 
 
-def merge(base, override):
+def merge(base: dict, override: dict) -> dict:
     out = dict(base)
     for k, v in override.items():
         out[k] = merge(base.get(k, {}), v) if isinstance(v, dict) and isinstance(base.get(k), dict) else v
     return out
 
 
-def expected_extensions(config, reported):
+def expected_extensions(config: dict, reported: set[str]) -> dict[str, bool]:
     """Return {name: expected} for every reported or configured extension the config can decide."""
     exp = {}
     ext = config["extensions"]
@@ -109,12 +231,12 @@ def expected_extensions(config, reported):
     return exp
 
 
-def run(cmd, log):
-    with open(log, "w") as f:
-        return subprocess.run(cmd, stdout=f, stderr=subprocess.STDOUT).returncode
+def run(cmd: list[str], log: Path) -> int:
+    with log.open("w") as f:
+        return subprocess.run(cmd, stdout=f, stderr=subprocess.STDOUT, check=False).returncode
 
 
-def main():
+def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--repo-root", required=True)
     p.add_argument("--sim", default="sail_riscv_sim")
@@ -131,8 +253,10 @@ def main():
         config_dir = root / f"config/sail/sail-rv{xlen}-max"
         base = load_config(config_dir / "sail.json")
         elf = build / f"feature_extractor{xlen}.elf"
-        if subprocess.run(["make", "-f", str(makefile), "elf", f"XLEN={xlen}", f"CONFIG_DIR={config_dir}",
-                           f"BUILD_DIR={build}"]).returncode:
+        if subprocess.run(
+            ["make", "-f", str(makefile), "elf", f"XLEN={xlen}", f"CONFIG_DIR={config_dir}", f"BUILD_DIR={build}"],
+            check=False,
+        ).returncode:
             print(f"FAIL: build for XLEN={xlen}")
             failures += 1
             continue
@@ -144,12 +268,20 @@ def main():
             override_file.write_text(json.dumps(override, indent=2))
             out = work / "extracted_config.yaml"
             log = work / "sail.log"
-            cmd = [args.sim, "--config", str(config_dir / "sail.json"), "--config-override", str(override_file),
-                   "--terminal-log", str(out), str(elf)]
+            cmd = [
+                args.sim,
+                "--config",
+                str(config_dir / "sail.json"),
+                "--config-override",
+                str(override_file),
+                "--terminal-log",
+                str(out),
+                str(elf),
+            ]
             rc = run(cmd, log)
             text = out.read_text() if out.exists() else ""
             reported = set(re.findall(r"name: (\w+),", text))
-            warnings = [l for l in text.splitlines() if l.startswith("# warning") or l.startswith("# FATAL")]
+            warnings = [l for l in text.splitlines() if l.startswith(("# warning", "# FATAL"))]
             if rc or not reported:
                 print(f"FAIL rv{xlen} {case}: sail exit {rc}, {len(reported)} extensions reported; see {log}")
                 failures += 1

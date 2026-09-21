@@ -5,38 +5,37 @@
 ci_enabled: true
 
 # Exclusions are by test-suite directory, the only granularity EXCLUDE_EXTENSIONS supports.
-# Each entry below records the specific reason, measured on Cores-VeeR-EH1 @ d04b1c7a.
-# Full analysis, including traces: see the PR description.
+# Each entry records the specific measured reason, on Cores-VeeR-EH1 @ d04b1c7a.
+# Current state: 125 tests selected, 108 pass, 17 fail. Full analysis in the PR description.
 #
-#   Sm            19 of 27 fail, for two distinct reasons.
-#                 (a) 10 tests: VeeR EH1 does not implement mstatush (CSR 0x310). ACT's M-mode trap
-#                     handler reads it unconditionally on RV32 (sv_Mvect+0x6c: `csrr s1,0x310`) when
-#                     building the trap status word, so every trap raises a nested illegal
-#                     instruction and recurses until the trap signature overflows; the test finishes
-#                     having written zero signature entries. Measured 7500 `csrr 0x310` executions in
-#                     Sm_mcsr_walk-00 and Sm_csr_ro-00.
-#                 (b) 9 tests: CSR writability. Sm_mcsr_walk-02..09 write a mip bit and read it back
-#                     (expected 0x80, got 0x0) — EH1's mip is pin-driven and read-only to software.
-#                     Sm_mcsr_cntr-00 writes mcycle (expected 0, got 1) — the write does not stick.
+#   Sm            13 of 27 fail, in three modes.
+#                 (a) Trap count mismatch (Sm_mcsr_walk-03..10): the reference model records a
+#                     trap signature of 0x3080 bytes where the core records none, i.e. the two
+#                     disagree about which CSR accesses trap. Needs per-test triage.
+#                 (b) mtval mismatch (Sm_inst-00): see ExceptionsSm below.
+#                 (c) Value mismatch (Sm_mcsr_access-00, Sm_mcsr_cntr-00, Sm_mcsr_walk-02/-11):
+#                     mip is pin-driven and read-only to software, so a written bit reads back 0
+#                     (expected 0x80, got 0x0), and a mcycle write does not stick (expected 0,
+#                     got 1).
 #
-#   ExceptionsSm  1 of 4 fail: the mstatush recursion above. ExceptionsSm-00 takes 754 trap-handler
-#                 entries, 750 of them from `csrr 0x310`, and writes no signature (expected 0x234).
+#   ExceptionsSm  1 of 4 fail: mtval mismatch. The core writes a value into mtval where the
+#                 reference model expects 0 (expected 0x0, got 0x31a4). mtval population is
+#                 undocumented in the PRM, so the REPORT_VA_IN_MTVAL_ON_* parameters in the UDB
+#                 config are set from the RISC-V defaults and at least one of them is wrong for
+#                 this core.
 #
-#   ExceptionsZc  1 of 1 fails: same mstatush recursion, 15000 `csrr 0x310` executions,
-#                 actual signature offset 0x0 against an expected 0x288.
+#   ExceptionsZc  1 of 1 fails: same mtval mismatch as ExceptionsSm.
 #
-#   Zifencei      1 of 1 fails: NOT mstatush (0 `csrr 0x310` executions), and fence.i does not trap -
-#                 it retires normally and the next fetch simply returns the stale instruction. The
-#                 VeeR testbench models
-#                 instruction and data memory as two independent arrays, both loaded from
-#                 program.hex at time 0 (tb_top.sv:422), and stores reach only the data array, so
-#                 self-modifying code can never be fetched. Zifencei-fence.i-00 reads x24=0x4 where
-#                 0x8 is expected. EH1 also documents a real fence.i I/D-ordering deviation
+#   Zifencei      1 of 1 fails, and fence.i does NOT trap - it retires normally and the next fetch
+#                 simply returns the stale instruction. The VeeR testbench models instruction and
+#                 data memory as two independent arrays, both loaded from program.hex at time 0
+#                 (tb_top.sv:422), and stores reach only the data array, so self-modifying code can
+#                 never be fetched. Zifencei-fence.i-00 reads x24=0x4 where 0x8 is expected.
+#                 Proven not to be a stale I-cache: rebuilding with -set icache_enable=0 fails
+#                 identically, and the testbench's imem instance is tied off with .HWDATA(64'h0).
+#                 EH1 also documents a real fence.i I/D-ordering deviation
 #                 (docs/source/compliance-test-suite-failures.md, I-FENCE.I-01), so this cannot be
 #                 attributed to the core until the testbench mirrors stores into instruction memory.
-#                 Proven not to be a stale I-cache: rebuilding with -set icache_enable=0 fails
-#                 identically, and the testbench's imem instance is tied off with .HWDATA(64'h0),
-#                 so no store can ever reach fetched memory.
 #
 #   I             1 of 39 fail: I-fence-00, because FENCE.TSO IS NOT IMPLEMENTED.
 #                 fence.tso (encoding 0x8330000f, i.e. FENCE with fm=1000, pred=RW, succ=RW)
@@ -52,8 +51,6 @@ ci_enabled: true
 #                      support TSO optimizations."
 #                 with the companion note that "it is correct to ignore the fm field and implement
 #                 fence.tso as fence[RW,RW]". So the minimum conforming behaviour is to ignore fm.
-#                 Secondary effect: recording that trap then triggers the mstatush recursion above
-#                 (3750 nested traps), which is what leaves the test with zero signature entries.
 #                 Excluding the whole suite to silence one test also drops 38 passing tests, the cost
 #                 of having no per-test exclusion mechanism; a per-test skip would be preferable.
 exclude_extensions: "Sm,ExceptionsSm,ExceptionsZc,Zifencei,I"

@@ -42,7 +42,13 @@ implemented_extensions:
   #   Quote: "VeeR EH1 is a machine-mode (M-mode) only, 32-bit CPU core"
   #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/core-overview.md
   - { name: Zifencei, version: "= 2.0" }
-  - { name: Sm, version: "= 1.12.0" }
+  # VeeR EH1 implements privileged spec 1.11, not 1.12. mstatush, which 1.12 added, does
+  # not exist on this core, and ACT already guards every mstatush access behind
+  # SM1P12P0_OR_LATER_SUPPORTED, so declaring 1.11 is both accurate and necessary.
+  #   Quote: "The RISC-V Instruction Set Manual Volume II: Privileged Architecture |
+  #   20190608-Priv-MSU-Ratified | Specification ratified"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/intro.md
+  - { name: Sm, version: "= 1.11.0" }
 
 params:
   # XLEN
@@ -139,9 +145,8 @@ params:
   # No PMA hardware: region attributes come from mrac, whose granularity is one
   # 256 MB region, but the natural access granule on the 64-bit AHB/AXI bus is 8 bytes.
   PMA_GRANULARITY: 3
-  # mconfigptr is not in the EH1 CSR map.
-  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/csr-address-map.md
-  CONFIG_PTR_ADDRESS: 0x0
+  # CONFIG_PTR_ADDRESS is omitted: mconfigptr was added in privileged spec 1.12 and this
+  # core implements 1.11, so UDB does not define the parameter for this config.
 
   # PMP: EH1 has no RISC-V PMP at all. Memory protection is a non-standard MPU of
   # 8 instruction and 8 data access windows configured by build arguments, not CSRs.

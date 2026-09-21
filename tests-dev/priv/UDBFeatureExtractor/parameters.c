@@ -308,6 +308,8 @@ DEFINE_STUB(stub_jump_scratch, "zicsr", "jalr zero, 0(a1)")
 DEFINE_STUB(stub_load_fault_va, "zicsr", LOAD_FAULT_VA "lw t1, 0(a2)")
 DEFINE_STUB(stub_store_fault_va, "zicsr", LOAD_FAULT_VA "sw t1, 0(a2)")
 DEFINE_STUB(stub_jump_fault_va, "zicsr", LOAD_FAULT_VA "jalr zero, 0(a2)")
+#define CSRR_HGATP 0x68002373                            // csrr t1, hgatp: virtual instruction in VS
+DEFINE_STUB(stub_virtual_insn, "zicsr", ".word 0x68002373")
 
 #if __riscv_xlen == 64
 #define LREG_ASM "ld"
@@ -355,8 +357,9 @@ DEFINE_CSR_READ(vstvec_rd, vstvec)
 // The guest-page-fault bits (20, 21, 23) only exist with H and are ignored otherwise.
 #define PAGE_FAULTS ((1ul << 12) | (1ul << 13) | (1ul << 15))
 #define GUEST_PAGE_FAULTS ((1ul << 20) | (1ul << 21) | (1ul << 23))
+#define VIRTUAL_INSTRUCTION (1ul << 22)
 #define DELEGATED ((1ul << 0) | (1ul << 1) | (1ul << 2) | (1ul << 3) | (1ul << 4) | (1ul << 5) |   \
-                   (1ul << 6) | (1ul << 7) | PAGE_FAULTS | GUEST_PAGE_FAULTS)
+                   (1ul << 6) | (1ul << 7) | PAGE_FAULTS | GUEST_PAGE_FAULTS | VIRTUAL_INSTRUCTION)
 
 // PMP entry 0 grants everything to the lower modes ...
 static void pmp_open(unsigned num_pmp)
@@ -413,12 +416,14 @@ static const struct { unsigned long mode; unsigned shift; } atp_levels[] = {
 };
 
 static bool build_page_table(unsigned long (*wr)(unsigned long), bool gstage, unsigned long *atp,
-                             unsigned long *fault)
+                             unsigned long *fault, unsigned *shift_out)
 {
     for (unsigned i = 0; i < COUNT(atp_levels); i++) {
         if (!atp_accepts(wr, ATP_MODE(atp_levels[i].mode)))
             continue;
         unsigned shift = atp_levels[i].shift;
+        if (shift_out)
+            *shift_out = shift;
         unsigned long base = (unsigned long)probe_scratch;
         unsigned long idx = base >> shift, fault_idx = idx == 1 ? 2 : 1;
         volatile unsigned long *table = (volatile unsigned long *)probe_scratch;
@@ -455,6 +460,30 @@ static void page_fault_params(const char *tval, bool virt, bool delegated, unsig
 static unsigned long guest_pa(void)
 {
     return s_cause != CAUSE_NONE ? s_htval : PROBE_VALUE("zicsr", "csrr a3, mtval2");
+}
+
+// After a trap from VS-mode: the tinst value, from htinst if HS-mode took it, else mtinst
+static unsigned long tinst_seen(void)
+{
+    return s_cause != CAUSE_NONE ? s_htinst : PROBE_VALUE("zicsr", "csrr a3, mtinst");
+}
+
+// The TINST_VALUE_* classification of a tinst value: zero, a transformed standard load, store or
+// AMO (which the H extension defines only for memory-access faults), or anything else
+static const char *tinst_kind(unsigned long tinst, bool memory_fault)
+{
+    if (tinst == 0)
+        return "always zero";
+    unsigned op = tinst & 0x7C;                  // opcode bits 6:2; bit 1 says whether the original was 32-bit
+    if (memory_fault && (op == 0x00 || op == 0x20 || op == 0x2C))
+        return "always transformed standard instruction";
+    return "custom";
+}
+
+static void tinst_param(const char *name, unsigned long cause, unsigned long expected, bool memory_fault)
+{
+    if (cause == expected)
+        param_str(name, tinst_kind(tinst_seen(), memory_fault));
 }
 
 // U-mode or S-mode ecall
@@ -858,7 +887,7 @@ void print_parameters(unsigned long vlen)
             lower_mode_tval_params("STVAL", false, usable_pmp, mstatus);
             // Page faults, with a page table in the scratch area and satp pointing at it
             unsigned long atp, fva;
-            bool have_table = build_page_table(satp_wr, false, &atp, &fva);
+            bool have_table = build_page_table(satp_wr, false, &atp, &fva, 0);
             if (have_table) {
                 fault_va = fva;
                 satp_set(atp);
@@ -894,7 +923,7 @@ void print_parameters(unsigned long vlen)
                 ecall_from("TRAP_ON_ECALL_FROM_VS", 1, true, mstatus);
                 lower_mode_tval_params("VSTVAL", true, usable_pmp, mstatus);
                 // VS-stage page faults: the same table in vsatp with the G-stage Bare
-                if (have_table && build_page_table(vsatp_wr, false, &atp, &fva)) {
+                if (have_table && build_page_table(vsatp_wr, false, &atp, &fva, 0)) {
                     fault_va = fva;
                     vsatp_set(atp);
                     PROBE("zicsr", HFENCE_VVMA);
@@ -904,7 +933,8 @@ void print_parameters(unsigned long vlen)
                 }
                 // Guest page faults: a G-stage table in hgatp with the VS-stage Bare.  They cannot
                 // be delegated to VS, so HS takes them and hs_trap_handler records htval.
-                if (build_page_table(hgatp_wr, true, &atp, &fva)) {
+                unsigned gshift = 0;
+                if (build_page_table(hgatp_wr, true, &atp, &fva, &gshift)) {
                     fault_va = fva;
                     hgatp_set(atp);
                     PROBE("zicsr", HFENCE_GVMA);
@@ -922,6 +952,72 @@ void print_parameters(unsigned long vlen)
                     hgatp_set(0);
                     PROBE("zicsr", HFENCE_GVMA);
                 }
+                // Intermediate guest page fault: the VS-stage root in a guest-physical region the
+                // G-stage table does not map, so the walk's first PTE fetch is the fault
+                if (build_page_table(hgatp_wr, true, &atp, &fva, &gshift)) {
+                    hgatp_set(atp);
+                    PROBE("zicsr", HFENCE_GVMA);
+                    vsatp_set((atp & ATP_MODE_MASK) | (fva >> 12));
+                    PROBE("zicsr", HFENCE_VVMA);
+                    unsigned long cause = run_in_mode(ecall_stub, 1, true, mstatus);
+                    unsigned long entries = 4096 / sizeof(unsigned long);
+                    unsigned long pte_gpa = fva + (((unsigned long)ecall_stub >> gshift) & (entries - 1)) * sizeof(unsigned long);
+                    if (cause == 20 || cause == 21 || cause == 23)
+                        param_bool("REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT", guest_pa() == pte_gpa >> 2);
+                    vsatp_set(0);
+                    PROBE("zicsr", HFENCE_VVMA);
+                    hgatp_set(0);
+                    PROBE("zicsr", HFENCE_GVMA);
+                }
+                // tinst: traps from VS-mode taken in HS-mode (nothing delegated to VS), or by
+                // M-mode for the ecalls
+                hedeleg_set(0);
+                tinst_param("TINST_VALUE_ON_BREAKPOINT", run_in_mode(stub_ebreak, 1, true, mstatus), CAUSE_BREAKPOINT, false);
+                if (!have("Zca"))
+                    tinst_param("TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED",
+                                run_in_mode(stub_jump_misaligned, 1, true, mstatus), CAUSE_INSTRUCTION_MISALIGNED, false);
+                tinst_param("TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED", run_in_mode(stub_lw_misaligned, 1, true, mstatus), CAUSE_LOAD_MISALIGNED, true);
+                tinst_param("TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED", run_in_mode(stub_sw_misaligned, 1, true, mstatus), CAUSE_STORE_MISALIGNED, true);
+                if (usable_pmp >= 2) {
+                    pmp_deny_scratch();
+                    tinst_param("TINST_VALUE_ON_LOAD_ACCESS_FAULT", run_in_mode(stub_lw_scratch, 1, true, mstatus), CAUSE_LOAD_ACCESS_FAULT, true);
+                    tinst_param("TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT", run_in_mode(stub_sw_scratch, 1, true, mstatus), CAUSE_STORE_ACCESS_FAULT, true);
+                    pmp_open(2);
+                }
+                if (have_table && build_page_table(vsatp_wr, false, &atp, &fva, 0)) {
+                    fault_va = fva;
+                    vsatp_set(atp);
+                    PROBE("zicsr", HFENCE_VVMA);
+                    tinst_param("TINST_VALUE_ON_LOAD_PAGE_FAULT", run_in_mode(stub_load_fault_va, 1, true, mstatus), 13, true);
+                    tinst_param("TINST_VALUE_ON_STORE_AMO_PAGE_FAULT", run_in_mode(stub_store_fault_va, 1, true, mstatus), 15, true);
+                    vsatp_set(0);
+                    PROBE("zicsr", HFENCE_VVMA);
+                }
+                if (build_page_table(hgatp_wr, true, &atp, &fva, 0)) {
+                    fault_va = fva;
+                    hgatp_set(atp);
+                    PROBE("zicsr", HFENCE_GVMA);
+                    tinst_param("TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT", run_in_mode(stub_load_fault_va, 1, true, mstatus), 21, true);
+                    tinst_param("TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT", run_in_mode(stub_store_fault_va, 1, true, mstatus), 23, true);
+                    tinst_param("TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT", run_in_mode(stub_jump_fault_va, 1, true, mstatus), 20, false);
+                    hgatp_set(0);
+                    PROBE("zicsr", HFENCE_GVMA);
+                }
+                // A virtual-instruction exception (csrr hgatp in VS-mode) reaches HS-mode; UDB
+                // names vstval for its encoding although VS-mode never takes the trap, so the
+                // encoding is checked in the tval of the mode that did
+                unsigned long cause = run_in_mode(stub_virtual_insn, 1, true, mstatus);
+                if (cause == 22) {
+                    tinst_param("TINST_VALUE_ON_VIRTUAL_INSTRUCTION", cause, 22, false);
+                    param_bool("REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION",
+                               (s_cause != CAUSE_NONE ? s_tval : probe_tval) == CSRR_HGATP);
+                }
+                // ecalls: VS and VU reach M-mode (mtinst); S and M likewise
+                tinst_param("TINST_VALUE_ON_VSCALL", run_in_mode(ecall_stub, 1, true, mstatus), CAUSE_ECALL_VS, false);
+                tinst_param("TINST_VALUE_ON_UCALL", run_in_mode(ecall_stub, 0, true, mstatus), CAUSE_ECALL_U, false);
+                tinst_param("TINST_VALUE_ON_SCALL", run_in_mode(ecall_stub, 1, false, mstatus), CAUSE_ECALL_S, false);
+                PROBE("zicsr", "ecall");
+                tinst_param("TINST_VALUE_ON_MCALL", probe_cause, CAUSE_ECALL_M, false);
                 PROBE("zicsr", "li t1, 1 << 7\n\tcsrc hstatus, t1");
                 hedeleg_set(0);
                 vstvec_set(vstvec);
@@ -1077,6 +1173,32 @@ void print_parameters(unsigned long vlen)
             param_int("RCID_WIDTH", popcount(v & 0xFFF));
             param_int("MCID_WIDTH", popcount((v >> 16) & 0xFFF));
         }
+    }
+
+#if __riscv_xlen == 64
+    // Pointer masking: PMLEN is 16 when PMM accepts 3, else 7, in whichever CSR has the field
+    if (have("Smnpm") || have("Smmpm") || have("Ssnpm")) {
+        unsigned long pmm3 = have("Smnpm") ? PROBE_VALUE("zicsr", CSR_FIELD(menvcfg, 3 << 32, 3 << 32))
+                           : have("Smmpm") ? PROBE_VALUE("zicsr", CSR_FIELD(0x747, 3 << 32, 3 << 32))
+                                           : PROBE_VALUE("zicsr", CSR_FIELD(senvcfg, 3 << 32, 3 << 32));
+        if (PROBE_OK())
+            param_int("PMLEN", pmm3 ? 16 : 7);
+    }
+#endif
+
+    // Smctr: which CTR buffer depths sctrdepth.DEPTH accepts
+    if (have("Smctr")) {
+        unsigned long depths[5];
+        unsigned n = 0;
+        static const unsigned long codes[] = { 0, 1, 2, 3, 4 };
+        for (unsigned i = 0; i < 5; i++) {
+            unsigned long ok = PROBE_VALUE_IN("zicsr", "csrr t2, 0x14F\n\tcsrw 0x14F, %[in]\n\tcsrr a3, 0x14F\n\t"
+                                                       "csrw 0x14F, t2\n\tandi a3, a3, 7", codes[i]);
+            if (PROBE_OK() && ok == codes[i])
+                depths[n++] = 16ul << i;
+        }
+        if (n)
+            param_ints("SCTRDEPTH_DEPTH_LEGAL_VALUES", depths, n);
     }
 
     // Sdtrig: the context CSRs

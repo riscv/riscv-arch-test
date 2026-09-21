@@ -82,6 +82,13 @@ Bare they are taken in VS-mode (`VSTVAL`); with a G-stage table in `hgatp` (leaf
 root, which is why the scratch area is 16 KiB) and the VS-stage Bare they are guest page faults,
 whose GPA is read from `htval` when HS-mode took the trap or `mtval2` when M-mode did. A hart whose
 `satp` accepts no translation mode instead gets `TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY`.
+Putting the VS-stage root itself in an unmapped guest-physical region makes the walk's first PTE
+fetch an intermediate guest page fault.
+
+The `TINST_VALUE_ON_*` parameters repeat the VS-mode traps with nothing delegated to VS-mode, so
+HS-mode takes them and its handler records `htinst`; the ecalls reach M-mode and `mtinst` is read
+there. Zero is `always zero`, a value whose opcode field is a load, store or AMO is `always
+transformed standard instruction`, and anything else `custom`.
 
 The parameters that are not extracted, grouped by what it would take, are tracked in
 [parameters_not_extracted.md](parameters_not_extracted.md).

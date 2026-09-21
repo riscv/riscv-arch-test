@@ -5,29 +5,6 @@ measurement was conclusive. This list tracks the parameters it does not measure 
 what it would take, so that groups can be worked through one at a time. When a group is
 implemented, remove it here and describe the mechanism in the README.
 
-## Would need a second page-table level
-
-The one-level table in the scratch area gives the ordinary page faults and guest page faults. An
-intermediate guest page fault needs a VS-stage table whose own pages sit in a guest-physical region
-the G-stage table does not map.
-
-- `REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT`
-- `TINST_VALUE_ON_LOAD_PAGE_FAULT`, `TINST_VALUE_ON_STORE_AMO_PAGE_FAULT`,
-  `TINST_VALUE_ON_FINAL_*_GUEST_PAGE_FAULT` (with the TINST group below)
-
-## Would need traps from VS-mode handled in HS-mode
-
-The VS-mode probes exist; these need the trap left undelegated by `hedeleg` so that HS-mode sees it,
-and `htinst` read there.
-
-- `TINST_VALUE_ON_BREAKPOINT`, `TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED`,
-  `TINST_VALUE_ON_LOAD_ACCESS_FAULT`, `TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED`,
-  `TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT`, `TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED`,
-  `TINST_VALUE_ON_MCALL`, `TINST_VALUE_ON_SCALL`, `TINST_VALUE_ON_UCALL`, `TINST_VALUE_ON_VSCALL`,
-  `TINST_VALUE_ON_VIRTUAL_INSTRUCTION`
-- `REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION` (a virtual-instruction exception is never
-  taken in VS-mode itself; the parameter's meaning needs checking against UDB first)
-
 ## Would need a misaligned access that traps
 
 Measurable only on a hart without misaligned support; the extractor already prints them there.
@@ -51,9 +28,6 @@ Would need a second hart, a cache model, or a memory-mapped device to observe.
 - `HPM_EVENTS` (every event number would have to be written to `mhpmevent3` and read back)
 - `TRAP_ON_ILLEGAL_WLRL` (a WLRL field and an illegal value would have to be chosen per hart)
 - `TRAP_ON_UNIMPLEMENTED_INSTRUCTION` (no encoding is unimplemented on every hart)
-- `PMLEN` (the configuration yamls do not agree on what it counts)
-- `SCTRDEPTH_DEPTH_LEGAL_VALUES` (would write each depth to `sctrdepth`; cheap once Smctr is
-  seen on a simulator)
 
 ## Control-flow-integrity and debug traps
 
@@ -83,3 +57,11 @@ Each would need a vector instruction run on chosen data and its result inspected
   instruction leaves the field Dirty; `imprecise` cannot be told apart.
 - `MTVEC_ILLEGAL_WRITE_BEHAVIOR` reports `custom` whenever a reserved mode is not retained, which
   includes harts that legalize the mode field.
+- `TINST_VALUE_ON_*` reports `always transformed standard instruction` when the value's opcode
+  field is a load, store or AMO and `custom` for any other nonzero value; a hart that transforms
+  some faults and not others would need each `TINST_VALUE_*` looked at separately.
+- `PMLEN` is reported as 16 when the PMM field accepts 3 and 7 when it only accepts 2; the
+  configuration yamls carry 17, which matches neither definition in the pointer-masking spec.
+- `REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION` is checked in the tval of the mode that took
+  the trap (HS or M), since a virtual-instruction exception is never taken in VS-mode.
+- The `TINST_VALUE_ON_*CALL` values come from `mtinst`, since the ecalls reach M-mode.

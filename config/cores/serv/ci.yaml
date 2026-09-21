@@ -1,0 +1,62 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# CI configuration for SERV, the award-winning bit-serial RISC-V CPU
+
+ci_enabled: true
+
+# Exclusions are by test-suite directory, the only granularity EXCLUDE_EXTENSIONS supports.
+# Each entry records the specific measured reason, on olofk/serv @ f200eb2e verilated as
+# width=1, compressed=1, with_csr=1, MDU=1, memsize=8 MiB.  Without exclusions: 116 tests
+# selected, 89 pass, 27 fail.  With them: 77 selected, 77 pass.
+# Every failure is a DUT-versus-spec divergence, not a configuration error: the identical
+# test sources all pass on config/sail/sail-rv32-max.  ~/reviews/act-ports/serv-discrepancies.md
+# has the full write-up with RTL citations.
+#
+#   Zicsr         6 of 6 fail, all the same divergence: mepc DOES NOT CLEAR BIT 0.  Each test
+#                 writes an odd value to mepc (0x341) and reads it back one greater than the
+#                 model expects - 0x2f76bb91 against 0x2f76bb90, and five more like it.  mepc
+#                 lives verbatim in the register file with no WARL legalization on the write
+#                 path, so every bit written reads back.  The privileged spec requires the low
+#                 bit of mepc to be hardwired to zero.  Excluding the suite for one divergence
+#                 also drops the five other csrr* opcodes it covers, the cost of having no
+#                 per-test exclusion.
+#
+#   Zifencei      1 of 1 fails, and fence.i is NOT DECODED AS A FENCE.  SERV has no MISC-MEM
+#                 decode at all: co_dbus_en is ~opcode[2] & ~opcode[4], which is true for
+#                 MISC-MEM, so fence.i executes as a halfword load from rs1+imm whose result is
+#                 discarded.  Zifencei-fence.i-00 executes 0x0010100f - fence.i with funct12=1,
+#                 which the spec says implementations shall ignore - and SERV loads a halfword
+#                 from address 1 and takes a load-address-misaligned exception (mcause 4) that
+#                 the reference model does not.  Confirmed by a directed probe.  The extension
+#                 is still declared, because SERV has no instruction cache and no store buffer
+#                 and fetches through the same Wishbone port that stores use, so the memory
+#                 ordering fence.i must provide holds trivially.
+#
+#   Sm            18 of 27 fail, for six separate divergences:
+#                 - No illegal-instruction exception of any kind, so 12 tests
+#                   (Sm_mcsr_walk-03..10, Sm_mcsr_cntr-00, Sm_csr_ro-00/01,
+#                   Sm_csr_insufficient_priv-00) record zero traps where the model records
+#                   thousands of bytes of them.  The README says SERV "shamelessly take[s]
+#                   advantage of the fact that some opcodes aren't supposed to appear".
+#                 - mstatus.MPIE is not implemented: it is neither readable nor writable, by
+#                   the RTL's own comment.  Sm_mcsr_access-00, Sm_mcsr_walk-00 and Sm_xret-00
+#                   read 0x00001800 where 0x00001880 is expected.
+#                 - mie is WRITE-ONLY.  csr_out has no mie term, so Sm_mcsr_walk-01 writes
+#                   MTIE and reads back 0.
+#                 - mip does not exist; 0x344 decodes to mscratch.  Sm_mcsr_walk-02 reads back
+#                   whatever mscratch holds.
+#                 - misa does not exist; 0x301 decodes to mtvec.  Sm_misa-00 reads the trap
+#                   vector where it expects MXL=1.
+#                 - mcycle, minstret, mvendorid, marchid and mimpid, which Sm makes mandatory,
+#                   are absent and alias onto mstatus or mtvec.
+#
+#   ExceptionsSm  1 of 4 fails, and ExceptionsZc 1 of 1, both for the same reason: the suite
+#                 walks the exception causes in order and SERV never raises cause 2 (illegal
+#                 instruction), so every later trap record is compared against the wrong entry.
+#                 The first mismatch reports a Breakpoint where an Illegal instruction was
+#                 expected.  ExceptionsSm's three medeleg tests pass.
+exclude_extensions: "Zicsr,Zifencei,Sm,ExceptionsSm,ExceptionsZc"
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache"
+install_script: ".github/scripts/install-serv.sh"
+setup_script: ".github/scripts/setup-serv.sh"

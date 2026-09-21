@@ -1,0 +1,218 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
+
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+# UDB architecture configuration for SERV, the award-winning bit-serial RISC-V CPU,
+# in the `servant` reference SoC.  Written against olofk/serv commit
+# f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8, built as the SERV compliance flow builds it:
+# width=1, compressed=1, with_csr=1, MDU=1.
+#   Quote: "build_serv = 'fusesoc run --target=verilator_tb --flag=mdu \
+#     --build --work-root=servant_test award-winning:serv:servant \
+#     --memsize=8388608 --compressed=1'"
+#   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/verif/plugin-serv/riscof_serv.py#L40-L43
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: serv-rv32imc
+description: SERV bit-serial RV32IMC_Zicsr core in the servant reference SoC, M-mode only
+implemented_extensions:
+  - { name: I, version: "= 2.1" }
+  # M comes from the external MDU accelerator that servant instantiates under `MDU`.
+  #   Quote: "if (with_mdu) begin : gen_mdu / mdu_top mdu_serv"
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/servile/servile.v#L184-L185
+  - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
+  # C is the `compressed` build knob, which pulls in serv_compdec and serv_aligner.
+  #   Quote: "compressed: datatype: int / description : Enable/Disable the Compressed extension"
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/servant.core#L722-L725
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  # Zifencei is trivially satisfied: SERV has no instruction cache and no store buffer, and
+  # fetches through the same Wishbone port that stores use, so a store is visible to the very
+  # next fetch with no synchronisation.  SERV does not decode MISC-MEM at all -- it falls into
+  # the load path (co_dbus_en = ~opcode[2] & ~opcode[4]) and retires as a discarded byte/halfword
+  # load -- so fence.i neither traps nor needs to do anything.
+  #   Quote: "wire co_dbus_en    = ~opcode[2] & ~opcode[4];"
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_decode.v#L88
+  - { name: Zifencei, version: "= 2.0" }
+  # Sm 1.11.0, NOT 1.12.0.  mstatush arrived in priv 1.12 and SERV has no mstatush: CSR address
+  # bits 25:23 and 19:12 are not decoded, so 0x310 (mstatush) decodes as 0x300 (mstatus) and a
+  # read or write of mstatush silently hits mstatus.  ACT guards every mstatush access behind
+  # SM1P12P0_OR_LATER_SUPPORTED, so declaring 1.11.0 compiles them all out.
+  #   Quote: "Bits 26, 22, 21 and 20 are enough to uniquely identify the eight supported CSR regs"
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_decode.v#L168
+  - { name: Sm, version: "= 1.11.0" }
+
+params:
+  MXLEN: 32
+  PHYS_ADDR_WIDTH: 32
+
+  # misa does not exist.  0x301 decodes to bits {26,22,21,20} = {0,0,0,1}, which is the same
+  # pattern as mtvec (0x305), so `csrr misa` returns mtvec and `csrw misa` destroys mtvec.
+  # Declaring the CSR unimplemented keeps ACT from generating any misa access.
+  #   Quote: "300|0_000|mstatus | xx ... 305|0_101|mtvec   | 01"
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_decode.v#L175-L186
+  MISA_CSR_IMPLEMENTED: false
+  MUTABLE_MISA_M: false
+  MUTABLE_MISA_C: false
+
+  M_MODE_ENDIANNESS: little
+
+  # ecall and ebreak are the only two SYSTEM instructions SERV raises an exception for.
+  #   Quote: "wire co_e_op = opcode[4] & opcode[2] & !op21 & !(|funct3);"
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_decode.v#L149
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_EBREAK: true
+
+  # SERV has NO illegal-instruction exception of any kind.  The decoder is a set of
+  # don't-care-heavy boolean expressions with no validity check, and the README says so in
+  # as many words.
+  #   Quote: "we shamelessly take advantage of the fact that some opcodes aren't supposed to
+  #   appear in a valid RISC-V program"
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/README.md
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: false
+  TRAP_ON_RESERVED_INSTRUCTION: false
+  # Every CSR address decodes to one of the seven implemented CSRs; none of them trap.
+  TRAP_ON_UNIMPLEMENTED_CSR: false
+  TRAP_ON_ILLEGAL_WLRL: false
+
+  # mtval is written on EVERY trap from one of two sources, selected by o_mtval_pc, which is
+  # just opcode[4]: the branch-target adder output for BRANCH/JAL/JALR/SYSTEM, and the
+  # load/store effective address otherwise.  There is no "write zero" path.
+  #   Quote: "wire [B:0]  mtval = i_mtval_pc ? i_bad_pc : i_bufreg_q;"
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_rf_if.v#L72
+  #   Quote: "wire co_mtval_pc   = opcode[4];"
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_decode.v#L89
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true
+  # SERV never raises an access fault: the Wishbone fabric has no error response path and
+  # servile_mux decodes the whole 32-bit space into RAM, GPIO and timer with no default slave.
+  #   Quote: "wire ext = (i_wb_cpu_adr[31:30] != 2'b00);"
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/servile/servile_mux.v#L44
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false
+  MTVAL_WIDTH: 32
+
+  # Misaligned loads, stores and jumps all trap.  mcause 4 (load), 6 (store), 0 (instruction).
+  #   Quote: "During an exception, the exception code is assigned to indicate / if it was caused
+  #   by an ebreak instruction (3), / ecall instruction (11), misaligned load (4),
+  #   misaligned store (6) / or misaligned jump (0)"
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_csr.v#L138-L141
+  MISALIGNED_LDST: false
+  # Untestable on SERV: it raises no access faults at all, so the relative priority of a
+  # misaligned exception and an access fault can never be observed.  Set to the ordering the
+  # privileged spec gives in its synchronous-exception priority table.
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: high
+
+  # No mvendorid, marchid, mimpid or mconfigptr: only seven CSR addresses are decoded at all,
+  # and all four of those are outside the decoded set.  A zero mvendorid means "non-commercial
+  # or not implemented", which is exactly SERV's situation.
+  MARCHID_IMPLEMENTED: false
+  MIMPID_IMPLEMENTED: false
+  VENDOR_ID_BANK: 0
+  VENDOR_ID_OFFSET: 0
+
+  # Exceptions are precise: SERV retires one instruction at a time, 32+ cycles each, and the
+  # trap is taken at the end of the offending instruction's own state sequence.
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+
+  # The Wishbone data port carries a 4-bit byte-enable, so the smallest distinguishable
+  # granule is 4 bytes.
+  #   Quote: "output wire [3:0]  o_wb_mem_sel,"
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/servile/servile_mux.v#L26
+  PMA_GRANULARITY: 2
+
+  # mtvec is DIRECT MODE ONLY.  The trap PC is the stored mtvec with its low two bits forced
+  # to zero; the MODE field is never examined.  Note that mtvec is held verbatim in the
+  # register file, so the low two bits READ BACK AS WRITTEN - a WARL violation recorded in
+  # ~/reviews/act-ports/serv-discrepancies.md.
+  #   Quote: "assign new_pc = i_trap ? (i_csr_pc & !(i_cnt0 || i_cnt1)) : ..."
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_ctrl.v#L75
+  MTVEC_MODES: [0]
+  MTVEC_ACCESS: rw
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
+
+  # No counters at all.  mcycle, minstret, mhpmcounter* and mcountinhibit are not decoded:
+  # 0xB00/0xB02 and 0x320 all collapse onto mstatus or mtvec.  Declaring every HPM counter
+  # absent is what keeps ACT's boot from writing mcountinhibit and mhpmevent3..31, each of
+  # which would otherwise land on mstatus or mtvec and destroy the trap vector.
+  HPM_COUNTER_EN:
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  MCOUNTINHIBIT_IMPLEMENTED: false
+  NUM_PMP_ENTRIES: 0
+  MCOUNTENABLE_EN:
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]

@@ -28,6 +28,16 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
     # Mode mapping
     mode_map = {"M": "3", "S": "1", "HS": "1", "U": "0"}
 
+    # sip and sie are restricted views of mip and mie through mideleg, and Sail logs only the view
+    # that was accessed. A csrrs to sip therefore leaves the mip the covergroups read unchanged, so
+    # an interrupt S-mode raised for itself is invisible to any coverpoint keyed on mip. Mirror the
+    # S view back into the M register: the delegated bits take the logged value and the rest keep
+    # what mip/mie already held. A read mirrors to the same value it already has, so it costs
+    # nothing and resynchronises after a write this converter did not see.
+    SIP, MIP, SIE, MIE, MIDELEG = 0x144, 0x344, 0x104, 0x304, 0x303
+    s_view_of = {SIP: MIP, SIE: MIE}
+    csr_state: dict[int, int] = {}
+
     # TODO: Add support for parsing traps, interrupts, and VM signals
 
     # Main parsing of log file
@@ -61,6 +71,15 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
                         if reg_match:
                             reg_num, reg_val = reg_match.groups()
                             reg_writes[(reg, reg_num)] = reg_val
+                            if reg == "CSR":
+                                csr_num, csr_val = int(reg_num, 16), int(reg_val, 16)
+                                csr_state[csr_num] = csr_val
+                                m_num = s_view_of.get(csr_num)
+                                if m_num is not None:
+                                    mideleg = csr_state.get(MIDELEG, 0)
+                                    m_val = (csr_state.get(m_num, 0) & ~mideleg) | (csr_val & mideleg)
+                                    csr_state[m_num] = m_val
+                                    reg_writes[("CSR", f"{m_num:x}")] = f"{m_val:016x}"
                             break
                     if insn_pattern.search(lines[j]):
                         break

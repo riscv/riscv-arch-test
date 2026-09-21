@@ -46,6 +46,8 @@ CONSOLE_FLAGS = {
 # Extensions defined as exactly a set of others: a yaml that lists the members but not the name is
 # not contradicted when the extractor reports the name, so such an extra is listed as implied
 IMPLIED = {
+    "A": {"Zaamo", "Zalrsc"},
+    "B": {"Zba", "Zbb", "Zbs"},
     "Zkn": {"Zbkb", "Zbkc", "Zbkx", "Zkne", "Zknd", "Zknh"},
     "Zks": {"Zbkb", "Zbkc", "Zbkx", "Zksed", "Zksh"},
     "Zbkc": {"Zbc"},
@@ -71,11 +73,19 @@ def expected_extensions(udb_yaml: Path) -> tuple[set[str], int, dict]:
 
 def compare_params(text: str, expected: dict) -> Params:
     """Compare the params section of the extracted yaml with the configuration's."""
-    # Simulators that print to stdout surround the yaml with their own messages
+    # Simulators that print to stdout surround the yaml with their own messages, and some
+    # prefix every line with a timestamp such as "[123 ns] "
+    text = "\n".join(re.sub(r"^\[\s*\d+ [a-z]+\] ", "", l) for l in text.splitlines())
     yaml_text = "\n".join(l for l in text.splitlines() if re.match(r"^(#|params:|implemented_extensions:|  )", l))
-    try:
-        extracted = (yaml.safe_load(yaml_text) or {}).get("params") or {}
-    except yaml.YAMLError:
+    # A simulator that stops on a cycle limit can cut the last line; drop a truncated tail
+    extracted = None
+    for _ in range(8):
+        try:
+            extracted = (yaml.safe_load(yaml_text) or {}).get("params") or {}
+            break
+        except yaml.YAMLError:
+            yaml_text = yaml_text[: yaml_text.rstrip("\n").rfind("\n")]
+    if extracted is None:
         return NO_PARAMS
     matched, mismatched = set(), {}
     for name, value in extracted.items():
@@ -141,6 +151,7 @@ def run_config(root: Path, build: Path, makefile: Path, config_dir: Path, udb_ya
     text = out.read_text() if out.exists() else log.read_text()
     if not out.exists():
         out.write_text(text)
+    text = "\n".join(re.sub(r"^\[\s*\d+ [a-z]+\] ", "", l) for l in text.splitlines())
     reported = set(re.findall(r"^\s*- \{ name: (\w+),", text, re.MULTILINE))
     untested = set()
     for m in re.finditer(r"^# untested: (.*)$", text, re.MULTILINE):

@@ -61,7 +61,11 @@ park:
 // to know the length of the instruction that trapped.  Any other trap is a fatal error: it is
 // reported with its cause and the run fails.  t0-t2 may be clobbered here because every probe
 // declares them clobbered.
-.balign 4
+// Aligned to 256 bytes: a hart whose mtvec is fixed in vectored mode (Ibex) needs that
+// alignment, and synchronous exceptions still enter at the base.  The handlers live in .text
+// rather than .text.init so the alignment does not move the entry point off the reset address.
+.section .text, "ax", @progbits
+.balign 256
 trap_handler:
     li      t0, 1 << 17                 // clear mstatus.MPRV: a probe may have set it to take a
     csrc    mstatus, t0                 // fault, and the handler's own accesses must be M-mode ones

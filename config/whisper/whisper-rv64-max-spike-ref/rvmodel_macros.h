@@ -34,9 +34,9 @@
   li      t1, ADDR_SOURCECFG1; /* setting up for APLIC */\
   li      t2, SM_EDGE1; \
   sw      t2, 0(t1); \
-  /* li      t1, ADDR_TARGET1; \
+  li      t1, ADDR_TARGET1; \
   li      t2, TARGET1_H0_P1; \
-  sw      t2, 0(t1); \ */
+  sw      t2, 0(t1); \
   li      t1, ADDR_DOMAINCFG; \
   li      t2, DOMAINCFG_RUN; \
   sw      t2, 0(t1); \

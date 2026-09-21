@@ -1,0 +1,455 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
+
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+# UDB Architecture Configuration for the Hazard3 core (the RP2350 CPU).
+#
+# Written against Wren6991/Hazard3 commit 8af992930f71a69b0e06c38734c1094f41a05ca0,
+# which is release v1.1.1. Every non-obvious parameter below cites the supporting text
+# and a permalink pinned to that commit. Sources, in order of preference: the
+# asciidoc manual under doc/sections/ (the source of the published "Hazard3 User Manual"),
+# then the RTL under hdl/. Where the manual and the RTL disagree, both are cited and the
+# comment says which one this config follows.
+#
+# The RTL is built from test/sim/tb_common/hdl/config_act.vh, which is
+# config_pmpfull.vh (the RP2350 feature set plus Zbc and 16 PMP regions) with
+# RESET_VECTOR moved to 0x80000000, the custom Xh3* extensions off, the frozen-but-
+# unratified Zcmp/Zilsd/Zclsd off, and mvendorid/mconfigptr set to zero. See README.md.
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: hazard3-rv32imacb-u-pmp
+description: Hazard3 (RP2350 CPU) - RV32IMACB_Zicsr_Zifencei with U-mode and 16 PMP regions
+
+# misa reads 0x40901507: MXL=1 (RV32), X (23), U (20), M (12), I (8), C (2), B (1), A (0).
+#   Quote: "| 31:30 | `mxl` | Always `0x1`. ... | 23 | `x` | Always 1 ... | 20 | `u` | 1 if
+#   User mode is supported ... | 12 | `m` | ... | 8 | `i` | ... | 2 | `c` | ... | 1 | `b` |
+#   1 if Zba, Zbb and Zbs are all present ... | 0 | `a` | 1 if the A extension is present"
+#   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L104-L114
+# The extension set and its ratified versions are listed by the manual itself.
+#   Quote: "| `RV32I` v2.1 | ... | `M` v2.0 | ... | `A` v2.1 | ... | `C` v2.0 | ...
+#   | `Zicsr` v2.0 | ... | `Zifencei` v2.0 | ... | `Zba` v1.0.0 | ... | `Zbb` v1.0.0 |
+#   ... | `Zbc` v1.0.0 | ... | `Zbs` v1.0.0 | ... | `Zbkb` v1.0.1 | ... | `Zbkx` v1.0.1 |
+#   ... | `Zcb` v1.0.3-1 | ... | Machine ISA v1.12 |"
+#   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/introduction.adoc#L122-L139
+implemented_extensions:
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  # Zmmul is the multiply-only subset that M implies.
+  - { name: Zmmul, version: "= 1.0.0" }
+  - { name: A, version: "= 2.1.0" }
+  - { name: Zaamo, version: "= 1.0.0" }
+  - { name: Zalrsc, version: "= 1.0.0" }
+  - { name: C, version: "= 2.0" }
+  # With no F or D, C is exactly Zca.
+  #   Quote: "on Hazard3, Zca is synonymous with C, as the F and D extensions are not supported."
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/configuration_and_integration.adoc#L409
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zcb, version: "= 1.0.0" }
+  # misa.B is set only when Zba, Zbb and Zbs are all present, which is the definition of
+  # ratified B 1.0. Zbc is a separate ratified extension and is present as well.
+  - { name: B, version: "= 1.0.0" }
+  - { name: Zba, version: "= 1.0.0" }
+  - { name: Zbb, version: "= 1.0.0" }
+  - { name: Zbs, version: "= 1.0.0" }
+  - { name: Zbc, version: "= 1.0.0" }
+  - { name: Zbkb, version: "= 1.0.0" }
+  - { name: Zbkx, version: "= 1.0.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zifencei, version: "= 2.0" }
+  # Zicntr, with a documented gap: cycle/cycleh and instret/instreth exist as read-only
+  # unprivileged shadows gated by mcounteren, but time/timeh are not implemented. ACT
+  # covers that with TIME_CSR_IMPLEMENTED: false below, which makes it emulate time reads
+  # from the platform's memory-mapped mtime through the invisible trap handler.
+  #   Quote: "CYCLE: if (CSR_COUNTER) begin decode_match = mcounteren_cy ? match_uro : match_mro; ...
+  #   INSTRET: if (CSR_COUNTER) begin decode_match = mcounteren_ir ? match_uro : match_mro;"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/hdl/hazard3_csr.v#L1115-L1131
+  #   Quote: "| 1 | `tm` | No hardware effect, as the `time`/`timeh` CSRs are not implemented."
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L276
+  - { name: Zicntr, version: "= 2.0" }
+  # U-mode is optional (U_MODE parameter) and is enabled here, which is Hazard3's maximum
+  # ratified feature set. There is no S-mode at all.
+  #   Quote: "Debug, Machine and User privilege/execution modes"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/introduction.adoc#L20
+  - { name: U, version: "= 1.0.0" }
+  # Privileged spec 1.12, NOT 1.11: mstatush is decoded (hardwired 0) and mconfigptr is
+  # implemented, both of which 1.12 made mandatory.
+  #   Quote: "| Machine ISA v1.12 | https://github.com/riscv/riscv-isa-manual/releases/download/Priv-v1.12/riscv-privileged-20211203.pdf[Privileged Architecture 20211203]"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/introduction.adoc#L139
+  #   Quote: "Prior to priv-1.12 MSTATUSH could be left unimplemented in this case, but now
+  #   it must be decoded even if hardwired to 0."
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/hdl/hazard3_csr.v#L800-L803
+  - { name: Sm, version: "= 1.12.0" }
+  #
+  # Deliberately NOT claimed:
+  #   Zihpm   - mhpmcounter3..31 and mhpmevent3..31 are hardwired to 0, and the
+  #             unprivileged hpmcounter3..31 shadows (0xC03..0xC1F), which are what Zihpm
+  #             actually provides to S/U mode, are not decoded at all.
+  #             Quote: "==== mhpmcounter3...31 / Address: `0xb03` through `0xb1f` / Hardwired to 0."
+  #             https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L350-L352
+  #   Smepmp  - mseccfg is not decoded.
+  #             Quote: "MSECCFG is strictly optional, and we don't implement any of its
+  #             features (ePMP etc) so we don't decode it."
+  #             https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/hdl/hazard3_csr.v#L1108-L1110
+  #   Sdext / Sdtrig - the RTL is built with DEBUG_SUPPORT = 1, so tselect/tdata1..3 and
+  #             dcsr exist, but the trigger module is a documented subset (no load/store
+  #             matching, no chaining, action hardwired to 0) and no debugger is attached
+  #             in this flow. Claiming Sdtrig would select suites that exercise the
+  #             unimplemented halves.
+  #             Quote: "| 1 | `store` | Hardwired to zero; store address/data matching is not supported"
+  #             https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L440-L441
+  #   Zilsd / Zclsd / Zcmp - implemented by the RTL but frozen rather than ratified, with
+  #             no ACT suite; built out (see README.md).
+
+params:
+  # ------------------------------------------------------------------ base
+  #   Quote: "All CSRs are 32-bit; MXLEN is fixed at 32 bits on Hazard3."
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L5
+  MXLEN: 32
+  # 32-bit physical address space; no virtual memory at all.
+  #   Quote: "`pmpaddr` registers express addresses in units of 4 bytes, so on Hazard3 (a
+  #   32-bit processor with no virtual address support) only the lower 30 bits of each
+  #   address register are implemented."
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L309
+  PHYS_ADDR_WIDTH: 32
+
+  # misa exists but is read-only, so no extension can be disabled through it.
+  #   Quote: "==== misa / Address: `0x301` / Read-only, constant."
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L98-L102
+  MISA_CSR_IMPLEMENTED: true
+  MUTABLE_MISA_A: false
+  MUTABLE_MISA_B: false
+  MUTABLE_MISA_C: false
+  MUTABLE_MISA_M: false
+  MUTABLE_MISA_U: false
+
+  # Endianness: mstatus.MBE/SBE/UBE are all hardwired 0 and mstatush is hardwired 0, so
+  # the core is fixed little-endian.
+  #   Quote: "MSTATUSH is all zeroes (fields are MBE and SBE, which are zero because we are
+  #   pure little-endian.)"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/hdl/hazard3_csr.v#L800-L801
+  M_MODE_ENDIANNESS: little
+  U_MODE_ENDIANNESS: little
+  UXLEN: [32]
+
+  # ------------------------------------------------------------------ traps
+  #   Quote: "| 8 | Environment call from U-mode" / "| 11 | Environment call from M-mode"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L253-L255
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_ECALL_FROM_U: true
+  #   Quote: "| 3 | Breakpoint"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L248
+  TRAP_ON_EBREAK: true
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  # Every unimplemented CSR address raises an illegal instruction exception, including all
+  # S-mode CSRs and the U-mode CSRs that are not implemented.
+  #   Quote: "All CSR addresses not listed in this section are unimplemented. Accessing an
+  #   unimplemented CSR will cause an illegal instruction exception (`mcause` = 2). This
+  #   includes all U-mode and S-mode CSRs."
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L5
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  # WARL fields silently round illegal writes rather than trapping; mstatus.MPP is the
+  # documented example.
+  #   Quote: "If another value is written, hardware rounds to the nearest supported mode."
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L126
+  TRAP_ON_ILLEGAL_WLRL: false
+
+  # mtval is hardwired to 0 for every trap, so nothing is ever reported in it.
+  #   Quote: "==== mtval / Address: `0x343` / Hardwired to 0."
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L257-L261
+  #   Quote: "MTVAL: if (CSR_M_TRAP) begin decode_match = match_mrw; // Hardwired to 0 end"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/hdl/hazard3_csr.v#L844-L847
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false
+  # Zero implemented bits: the whole register is read-only zero, not merely never written.
+  MTVAL_WIDTH: 0
+
+  # All traps are precise.
+  #   Quote: "All traps on Hazard3 are precise. For example, a load/store bus error will set
+  #   `mepc` to the exact address of the load/store instruction which encountered the fault."
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L220
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+
+  # ------------------------------------------------------------------ misaligned access
+  # Hazard3 has no misaligned load/store support in hardware: every bus access is naturally
+  # aligned, and a misaligned address raises cause 4 (load), 6 (store/AMO) or 0 (fetch).
+  #   Quote: "All Hazard3 bus accesses are naturally aligned. That is, address modulo access
+  #   size is always zero; `HADDR % (1 << HSIZE) == 0`"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/bus_behaviour.adoc#L24
+  #   Quote: "| 0 | Instruction address misaligned ... | 4 | Load address misaligned ...
+  #   | 6 | Store/AMO address misaligned"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L245-L251
+  MISALIGNED_LDST: false
+  # The misalignment check sits above the PMP check in the exception priority chain, so a
+  # misaligned access to a PMP-denied address reports misaligned, not access fault.
+  #   Quote: "x_unaligned_addr && x_memop_write ? EXCEPT_STORE_ALIGN :
+  #   x_unaligned_addr && !x_memop_write ? EXCEPT_LOAD_ALIGN :
+  #   x_loadstore_pmp_fail && (d_memop_is_amo || bus_hwrite_d) ? EXCEPT_STORE_FAULT :"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/hdl/hazard3_core.v#L1119-L1122
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: high
+  # (MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE and MISALIGNED_SPLIT_STRATEGY are only defined
+  # when MISALIGNED_LDST is true, so they are omitted.)
+
+  # ------------------------------------------------------------------ A extension
+  # A misaligned AMO raises a store/AMO address-misaligned exception (cause 6); a
+  # misaligned lr.w raises load address-misaligned (4) and a misaligned sc.w raises
+  # store/AMO address-misaligned (6). Never an access fault.
+  #   Quote: "|EXTENSION_A && x_unaligned_addr && d_memop_is_amo ? EXCEPT_STORE_ALIGN :"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/hdl/hazard3_core.v#L1117
+  MISALIGNED_AMO: false
+  LRSC_MISALIGNED_BEHAVIOR: "always raise misaligned exception"
+  # Hazard3's own local monitor is a single flag with no address, so exactness is decided
+  # entirely by the AHB5 global monitor. In the reference testbench that monitor compares
+  # the address masked to an 8-byte granule, so an sc.w within the same aligned 8 bytes as
+  # the lr.w succeeds. UDB has no "8 bytes" option, so this is modelled as the nearest
+  # legal value; see hazard3-discrepancies.md.
+  #   Quote: "#define RESERVATION_ADDR_MASK (0xfffffff8u)"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/test/sim/tb_common/include/tb_constants.h#L12
+  #   Quote: "mw_local_exclusive_reserved <= bus_dph_exokay_d && !bus_dph_err_d;"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/hdl/hazard3_core.v#L1495
+  LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
+  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+  # No virtual memory, so no address synonyms exist.
+  LRSC_FAIL_ON_VA_SYNONYM: false
+
+  # ------------------------------------------------------------------ identification
+  # mvendorid is a configurable constant; config_act.vh sets it to all-zeroes, which the
+  # manual explicitly permits, so both the JEDEC bank and offset fields are zero.
+  #   Quote: "Vendor identifier. Read-only, configurable constant. Should contain either
+  #   all-zeroes, or a valid JEDEC JEP106 vendor ID"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L18
+  VENDOR_ID_BANK: 0x0
+  VENDOR_ID_OFFSET: 0x0
+  # marchid is the registered open-source architecture ID 27 for Hazard3.
+  #   Quote: "| 30:0 | - | 0x1b (decimal 27): the ... registered architecture ID for Hazard3"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L36
+  #   Quote: "MARCHID: ... rdata = 32'd27;"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/hdl/hazard3_csr.v#L759-L763
+  MARCHID_IMPLEMENTED: true
+  ARCH_ID_VALUE: 0x1b
+  # mimpid encodes the release version v1.1.1 plus the eco_version input, which the
+  # testbench ties to 0xa: prerelease=0, major=1, minor=1, patch=1, eco=0xa -> 0x010101a0.
+  #   Quote: "| 27:24 | `major` | ... | 23:16 | `minor` | ... | 15:8 | `patch` | ...
+  #   | 7:4 | `eco` | Connected to external signals, initially zero"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L50-L56
+  #   Quote: ".eco_version (4'ha),"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/test/sim/tb_common/hdl/tb.v#L316
+  MIMPID_IMPLEMENTED: true
+  IMP_ID_VALUE: 0x010101a0
+  # mconfigptr is implemented as a configurable read-only constant; config_act.vh sets it
+  # to zero, which the manual permits ("or all-zeroes").
+  #   Quote: "| 31:0 | - | Either pointer to configuration data structure, containing
+  #   information about the harts and system, or all-zeroes. At least 4-byte-aligned."
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L93
+  CONFIG_PTR_ADDRESS: 0
+
+  # ------------------------------------------------------------------ mtvec
+  # Both Direct and Vectored are supported, MODE bit 1 is hardwired 0, and BASE holds all
+  # 30 bits, so BASE is 4-byte aligned in both modes. MTVEC_WMASK in config_act.vh is
+  # 0xfffffffd, i.e. the whole register except the hardwired mode bit 1.
+  #   Quote: "| 31:2 | `base` | Base address for trap entry. ... | 0 | `mode` | 0 selects
+  #   Direct mode ... 1 selects Vectored mode"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L197-L199
+  #   Quote: "NOTE: In the RISC-V specification, `mode` is a 2-bit write-any read-legal
+  #   field in bits 1:0. Hazard3 implements this by hardwiring bit 1 to 0."
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L201
+  # NOTE: in Vectored mode Hazard3 ORs the offset into BASE instead of adding it, so a
+  # trap table whose base is not aligned to its rounded-up size behaves differently from
+  # the reference model. ACT already aligns its M-mode trampoline to 64 bytes, which is
+  # larger than the 48-byte vectored table, so OR and ADD agree here.
+  #   Quote: "In Vectored mode, this is _OR'd_ with the trap offset to calculate the trap
+  #   entry address, so the table must be aligned to its total size, rounded up to a power of 2."
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L197
+  MTVEC_MODES: [0, 1]
+  MTVEC_ACCESS: rw
+  # A write of MODE=2 or 3 has its bit 1 dropped rather than being rejected, so the
+  # register does not retain its old value.
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  MTVEC_BASE_ALIGNMENT_VECTORED: 4
+
+  # ------------------------------------------------------------------ PMA
+  # Hazard3 has no PMA hardware; memory attributes come from the system integration, and
+  # the natural access granule on the 32-bit AHB5 port is 4 bytes.
+  #   Quote: "Hazard3 marks all transfers as non-cacheable and non-bufferable using
+  #   `HPROT[3:2]`. These signals are tied off to constants and are not controllable by software."
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/bus_behaviour.adoc#L50
+  PMA_GRANULARITY: 2
+
+  # ------------------------------------------------------------------ PMP
+  # 16 regions, all dynamically configurable (PMP_HARDWIRED is all-zeroes), G = 0 so the
+  # granule is 4 bytes and NA4 is available.
+  #   Quote: "Physical memory protection (PMP) with up to 16 regions (configurable support
+  #   for NAPOT and/or TOR matching)"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/introduction.adoc#L22
+  #   Quote: "This is the _G_ parameter in the privileged spec ... If _G_ > 0, `pmcfg.a`
+  #   cannot be set to NA4 ... Default value: `0`"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/configuration_and_integration.adoc#L544-L558
+  NUM_PMP_ENTRIES: 16
+  NUM_USABLE_PMP_ENTRIES: 16
+  PMP_GRANULARITY: 2
+  PMP_NA4_SUPPORTED: true
+  PMP_NAPOT_SUPPORTED: true
+  # DOC-VS-RTL CONFLICT, resolved in favour of the RTL. The CSR chapter describes the
+  # default build, in which PMP_MATCH_TOR is 0:
+  #   Quote: "| 4:3 | `A` | Address-matching mode. Values supported are 0 (OFF), 2 (NA4 ...)
+  #   and 3 (NAPOT ...). 1 (TOR, top of range) is not supported."
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L297
+  # but TOR is a build-time option, and config_act.vh sets PMP_MATCH_TOR = 1:
+  #   Quote: "PMP_MATCH_TOR: Enable PMP support for the TOR (top-of-range) matching mode.
+  #   When disabled, attempting to select this mode will set the region to OFF."
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/configuration_and_integration.adoc#L570-L574
+  #   Quote: "pmp_region_is_tor[i] = PMP_MATCH_TOR && pmpcfg_a[i] == PMP_A_TOR;"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/hdl/hazard3_pmp.v#L179
+  PMP_TOR_SUPPORTED: true
+
+  # ------------------------------------------------------------------ counters
+  # mhpmcounter3..31 and mhpmevent3..31 are decoded but hardwired to 0, so no HPM counter
+  # is implemented. (Indices 0..2 are CY/TM/IR and must be false in this parameter.)
+  #   Quote: "==== mhpmcounter3...31 / Address: `0xb03` through `0xb1f` / Hardwired to 0."
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L350-L352
+  #   Quote: "==== mhpmevent3...31 / Address: `0x323` through `0x33f` / Hardwired to 0."
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L375-L379
+  # (HPM_EVENTS is only defined when at least one of HPM_COUNTER_EN[3..31] is true.)
+  HPM_COUNTER_EN:
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+
+  # mcountinhibit exists with only CY (bit 0) and IR (bit 2) implemented; bit 1 (TM) is
+  # read-only zero as the spec requires, and bits 3..31 are hardwired 0 because no HPM
+  # counter exists. Both implemented bits RESET TO 1, so the counters are stopped out of
+  # reset and rvmodel_macros.h clears the register in RVMODEL_BOOT.
+  #   Quote: "| 2 | `ir` | When 1, inhibit counting of `minstret`/`minstreth`. Resets to 1.
+  #   | 0 | `cy` | When 1, inhibit counting of `mcycle`/`mcycleh`. Resets to 1."
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L371-L372
+  MCOUNTINHIBIT_IMPLEMENTED: true
+  COUNTINHIBIT_EN:
+    [
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+
+  # mcounteren exists because U-mode is implemented. CY (0), TM (1) and IR (2) are all
+  # writable - TM has no hardware effect because there is no time CSR, but the field still
+  # exists so that M-mode software can decide whether to emulate U-mode time reads, which
+  # is exactly what ACT's invisible trap handler does. Bits 3..31 are RES0.
+  #   Quote: "| 31:3 | - | RES0 | 2 | `ir` | If 1, U-mode is permitted to access the
+  #   `instret`/`instreth` ... | 1 | `tm` | No hardware effect, as the `time`/`timeh` CSRs
+  #   are not implemented. However, this field still exists, as M-mode software can use it
+  #   to track whether it should emulate U-mode attempts to access those CSRs. | 0 | `cy` |"
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L273-L277
+  MCOUNTENABLE_EN:
+    [
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+
+  # ------------------------------------------------------------------ Zicntr
+  # There is no time/timeh CSR. ACT reacts to this by emulating time reads from the
+  # platform's memory-mapped mtime (RVMODEL_MTIME_ADDRESS) through the invisible trap
+  # handler, which is what makes the Zicntr suites and the whole machine-timer-interrupt
+  # family runnable on this core.
+  #   Quote: "No hardware effect, as the `time`/`timeh` CSRs are not implemented."
+  #   https://github.com/Wren6991/Hazard3/blob/8af992930f71a69b0e06c38734c1094f41a05ca0/doc/sections/csr.adoc#L276
+  TIME_CSR_IMPLEMENTED: false

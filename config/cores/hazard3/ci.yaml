@@ -1,0 +1,63 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# CI configuration for the Hazard3 core (the RP2350 CPU)
+
+ci_enabled: true
+
+# Exclusions are by test-suite directory, the only granularity EXCLUDE_EXTENSIONS supports.
+# Measured on Wren6991/Hazard3 @ 8af9929 (v1.1.1), built from the config_act.vh in
+# .github/scripts/install-hazard3.sh. Current state: 258 tests selected, 240 pass, 18 fail;
+# with these exclusions applied, all 155 remaining tests pass. Every failing test was also
+# run on config/sail/sail-rv32-max, where all of them pass, so none is an ACT framework bug.
+# Full per-test analysis: ~/reviews/act-ports/hazard3-discrepancies.md.
+#
+#   I                 1 of 39 fails: I-fence-00, coverpoint cp_custom_fence/fence_nonzerors1.
+#                     A FENCE with a nonzero rs1 raises an illegal instruction. The decode
+#                     pattern RVOPC_FENCE requires rs1 and rd to be zero, while the
+#                     unprivileged spec says base implementations shall IGNORE those fields.
+#                     fence.tso is fine on this core (fm is a don't-care in the pattern).
+#                     Excluding the suite to silence one test also drops 38 passing tests,
+#                     the cost of having no per-test exclusion.
+#
+#   Zifencei          1 of 1 fails: same root cause. RVOPC_FENCE_I requires funct12, rs1 and
+#                     rd to be zero, so fence.i with a nonzero rs1 raises an illegal
+#                     instruction where the spec requires those fields to be ignored.
+#
+#   Sm                12 of 27 fail, from two spec-legal choices that the reference model
+#                     cannot be told about:
+#                     - mtval is hardwired to 0 (Sm_mcsr_access-00, Sm_mcsr_addr-00). The
+#                       priv spec explicitly permits a read-only-zero mtval, but sail.json
+#                       has no knob for it: xtval_nonzero controls only what traps write,
+#                       not whether a direct CSR write sticks.
+#                     - mhpmcounter3..31 and mhpmevent3..31 are decoded as read-only zero
+#                       (Sm_mcsr_cntr-00, Sm_mcsr_walk-02..10). The priv spec says a legal
+#                       implementation makes them read-only 0, but Sail only offers "absent"
+#                       (writable_hpm_counters = 0, which raises illegal instruction) or
+#                       "writable". The reference takes 194-776 illegal-instruction traps per
+#                       test that the DUT correctly does not take.
+#
+#   ZicntrU           1 of 1 fails: cp_mcounter_inc_inaccessible. minstret over-counts by 2
+#                     for every ecall and mret, so the measured instret delta across three
+#                     T-SBI round trips is 6 too large. The RTL counts ECALL and EBREAK as
+#                     retired instructions even though both take a trap
+#                     (x_except_counts_as_retire in hazard3_core.v), contrary to "minstret
+#                     counts the number of instructions the hart has retired".
+#
+#   ExceptionsZalrsc  1 of 1 fails: cp_store_access_fault/sc.w_fault. An sc.w with no live
+#                     local reservation is suppressed before the bus, so no access fault is
+#                     raised and rd gets the failure code 1. The spec says "No sc.w
+#                     instruction shall retire unless it passes memory permission checks."
+#
+#   PMPZalrsc         1 of 1 fails: cp_cfg_RW/entry5_lxwr1000_2_sc_w. Same root cause, with
+#                     the permission denial coming from a locked no-permission PMP entry
+#                     rather than from an unmapped address.
+#
+#   PMPSm             1 of 33 fails: cp_cfg_L_modify/L1_modify_pmpcfg0. When entry i is
+#                     locked and TOR, Hazard3 also ignores writes to pmpcfg[i-1], not just
+#                     to pmpaddr[i-1] as the priv spec requires
+#                     (region_locked in hazard3_pmp.v). 32 passing tests are lost with it.
+exclude_extensions: "ExceptionsZalrsc,I,PMPSm,PMPZalrsc,Sm,Zifencei,ZicntrU"
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache"
+install_script: ".github/scripts/install-hazard3.sh"
+setup_script: ".github/scripts/setup-hazard3.sh"

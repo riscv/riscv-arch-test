@@ -1,0 +1,9 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+name: hazard3-rv32imacb-u-pmp
+compiler_exe: riscv64-unknown-elf-gcc # executable name on $PATH or full path to executable
+objdump_exe: riscv64-unknown-elf-objdump # executable name on $PATH or full path to executable, optional
+ref_model_exe: sail_riscv_sim # executable name on $PATH or full path to executable
+udb_config: hazard3-rv32imacb-u-pmp.yaml
+linker_script: link.ld
+dut_include_dir: . # Directory containing DUT specific rvmodel_macros.h

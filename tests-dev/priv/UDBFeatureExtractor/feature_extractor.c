@@ -197,8 +197,22 @@ int main(void)
     for (unsigned i = 0; i < NUM_PRIV_EXTENSIONS; i++)
         priv_extensions[i].supported = check(priv_extensions[i].name, priv_extensions[i].probe);
     bool has_s = have("S"), has_h = have("H");
+    // Probed individually only to explain a missing Zicntr: the extension needs all three.
+    bool cycle_ok   = PROBE_VALUE("zicsr", CSR_EXISTS(cycle))   != PROBE_TRAPPED;
+    bool time_ok    = PROBE_VALUE("zicsr", CSR_EXISTS(time))    != PROBE_TRAPPED;
+    bool instret_ok = PROBE_VALUE("zicsr", CSR_EXISTS(instret)) != PROBE_TRAPPED;
+    // Privileged 1.12 added both menvcfg and, on RV32, mstatush.  A hart that has one and not the
+    // other matches neither version, so check both rather than inferring from menvcfg alone: a
+    // configuration declaring 1.12 makes the test environment read mstatush unconditionally, and
+    // on a hart without it every trap then takes a nested trap.  VeeR EL2 is such a hart - it
+    // implements menvcfg, mcounteren and mseccfg but not mstatush - and declaring 1.12 for it
+    // made every privileged test die.  Report the lower version, which is the one such a hart
+    // actually works under, and say so.
     unsigned long menvcfg = PROBE_VALUE("zicsr", CSR_EXISTS(menvcfg));
-    const char *sm_version = menvcfg != PROBE_TRAPPED ? "1.12.0" : "1.11.0";
+    bool has_menvcfg = menvcfg != PROBE_TRAPPED;
+    bool has_mstatush = __riscv_xlen != 32 ||
+                        PROBE_VALUE("zicsr", CSR_EXISTS(0x310)) != PROBE_TRAPPED;
+    const char *sm_version = has_menvcfg && has_mstatush ? "1.12.0" : "1.11.0";
 
     // Address translation: which modes satp accepts, and whether hgatp and vsatp accept the same
     bool atp_ok[NUM_ATP_MODES], any_atp = false;
@@ -247,6 +261,15 @@ int main(void)
     printf("# makes legal, or by writing a CSR field it adds.  These are not looked for (see the README):\n");
     printf("# untested: " UNTESTED_EXTENSIONS " " UNTESTED_PRIV_EXTENSIONS "%s%s\n",
            have("Svadu") ? "" : " Svade", __riscv_xlen == 32 ? " Ssu32xl" : "");
+    if (has_menvcfg && !has_mstatush)
+        printf("# note: menvcfg is implemented but mstatush is not, so this hart matches neither\n"
+               "#       privileged 1.11 nor 1.12.  Sm is reported as 1.11.0 because that is the\n"
+               "#       version it works under; declaring 1.12 makes the trap handler read\n"
+               "#       mstatush and every trap then takes a nested trap.\n");
+    if (!have("Zicntr") && cycle_ok && instret_ok && !time_ok)
+        printf("# note: cycle and instret are implemented but time is not, so Zicntr is not\n"
+               "#       reported.  If the platform supplies time some other way, set\n"
+               "#       TIME_CSR_IMPLEMENTED to false and claim Zicntr by hand.\n");
     printf("implemented_extensions:\n");
     print_extension(has_i ? "I" : "E", has_i ? "2.1" : "2.0");
     print_extension("Zicsr", "2.0");   // the extractor itself needs it to run

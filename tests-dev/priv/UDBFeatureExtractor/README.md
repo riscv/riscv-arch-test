@@ -35,13 +35,13 @@ Privileged extensions mostly add a CSR, or a field of an existing CSR, so their 
 accesses built from three helpers in `extensions.h`: `CSR_EXISTS` (the access traps unless the
 extension is present), `CSR_BIT` and `CSR_FIELD` (the field accepts a value; the original value is
 restored afterwards). For example Sstc is `stimecmp` existing, Svadu is `menvcfg.ADUE` being
-settable, and Sstvecd is `stvec` accepting mode 0. The privilege modes are U (`mstatus.MPP` can
-hold 0), S (`sstatus` exists) and H (`hstatus` exists); Sm is always present since the extractor
-runs in M-mode, with version 1.12 if `menvcfg` exists and 1.11 otherwise (1.13 is not
-distinguished). Address-translation modes are found by writing each mode to `satp` and reading it
-back, which also gives Svbare, and Shgatpa and Shvsatpa by repeating that on `hgatp` and `vsatp`.
-Sscounterenw and Shcounterenw compare the writable bits of `scounteren` and `hcounteren` with
-those of `mcounteren`. Sspm, Supm, Ssu32xl on RV32, Svade with Svadu, and Sha are derived as
+settable, and Sstvecd is `stvec` accepting mode 0. The privilege modes are U (`mstatus.MPP` can hold
+0), S (`sstatus` exists) and H (`hstatus` exists); Sm is always present since the extractor runs in
+M-mode, with version 1.12 if `menvcfg` and (on RV32) `mstatush` both exist and 1.11 otherwise (1.13
+is not distinguished). Address-translation modes are found by writing each mode to `satp` and
+reading it back, which also gives Svbare, and Shgatpa and Shvsatpa by repeating that on `hgatp` and
+`vsatp`. Sscounterenw and Shcounterenw compare the writable bits of `scounteren` and `hcounteren`
+with those of `mcounteren`. Sspm, Supm, Ssu32xl on RV32, Svade with Svadu, and Sha are derived as
 described in `extensions.h`.
 
 ### Parameters
@@ -92,6 +92,31 @@ Two measured values deserve a caveat: `HW_MSTATUS_FS_DIRTY_UPDATE` (and `VS`) re
 whenever one floating-point (vector) instruction leaves the field Dirty, since `imprecise` cannot
 be told apart, and the `REPORT_VA_IN_MTVAL_ON_*_MISALIGNED` parameters can only be measured on a
 hart where the misaligned access traps.
+
+### Probes that can over-report
+
+A probe shows that an instruction retires or that a CSR field holds a value. That is not always
+the same as the extension being implemented, and two cases are known:
+
+- **Smepmp** is probed by setting `mseccfg.RLB`. A hart may implement the `mseccfg` register
+  without enforcing the MML and MMWP rules the extension defines — VeeR EL2 implements the CSR
+  unconditionally while a build option gates only the PMP enforcement — and the probe reports
+  Smepmp for such a hart. The behaviour cannot be probed instead, because MML and MMWP are sticky
+  until reset, so setting either would change the machine under every later probe.
+- **Any extension whose CSR exists but whose semantics are partial** has the same shape. Treat the
+  output as a starting point to check against the core's documentation, not as a verdict.
+
+The reverse mistake is worth naming too: an extension is reported only when _every_ part of it is
+present. `Zicntr` needs `cycle`, `time` and `instret`, so a hart with two of the three — VeeR EL2
+and Ibex both have `cycle` and `instret` but no `time` — is not reported, and the extractor prints
+a note saying which one is missing. If the platform supplies `time` another way, set
+`TIME_CSR_IMPLEMENTED` to false and claim `Zicntr` by hand.
+
+`Sm` is reported as 1.12 only when both `menvcfg` and, on RV32, `mstatush` are present, since 1.12
+added both. A hart with one and not the other matches neither version; the extractor reports the
+lower one, which is the version such a hart actually works under, and prints a note. Declaring 1.12
+for a hart without `mstatush` makes the test environment read it on every trap, and each trap then
+takes a nested trap.
 
 ### Untested extensions
 

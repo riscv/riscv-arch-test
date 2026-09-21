@@ -52,7 +52,11 @@
     X(Zalasr,   "1.0.0", "zicsr",              ".insn r 0x2F, 2, 0x1A, t1, a1, x0") /* lw.aq t1, (a1); binutils 2.45 lacks Zalasr */ \
     /* Zi*: CSRs, fences, conditional ops, may-be-ops, cache-block ops */                     \
     X(Zifencei, "2.0.0", "zifencei",           "fence.i")                                     \
-    X(Zicntr,   "2.0",   "zicsr",              "csrr t1, cycle")                              \
+    /* Zicntr is cycle, time AND instret, so all three are read: a hart that implements only
+       some of them does not implement Zicntr.  VeeR EL2 and Ibex both have cycle and instret
+       but no time, and a cycle-only probe reported Zicntr for both.  See also the note the
+       extractor prints when it finds exactly that combination. */                            \
+    X(Zicntr,   "2.0",   "zicsr",              "csrr t1, cycle\n\tcsrr t1, time\n\tcsrr t1, instret") \
     X(Zihpm,    "2.0.0", "zicsr",              "csrr t1, hpmcounter3")                        \
     X(Zicond,   "1.0",   "zicond",             "czero.eqz t1, t2, t2")                        \
     X(Zimop,    "1.0.0", "zimop",              "mop.r.0 t1, t2")                              \
@@ -193,6 +197,12 @@
     P(Smrnmi,     "1.0.0", "zicsr", CSR_EXISTS(0x740))              /* mnscratch          */ \
     P(Smcntrpmf,  "1.0.0", "zicsr", CSR_EXISTS(0x321))              /* mcyclecfg          */ \
     P(Smctr,      "1.0.0", "zicsr", CSR_EXISTS(0x34E))              /* mctrctl            */ \
+    /* mseccfg.RLB being writable shows the CSR interface, not that the MML/MMWP rules are
+       enforced; a hart may implement the register and not the behaviour.  VeeR EL2 does exactly
+       that - mseccfg is implemented unconditionally while RV_SMEPMP gates only the PMP
+       enforcement - so this row over-reports on such a hart.  Probing the behaviour is not an
+       option here: MML and MMWP are sticky until reset, so setting either would change the
+       machine under the remaining probes. */                                                 \
     P(Smepmp,     "1.0.0", "zicsr", CSR_BIT(0x747, 2))              /* mseccfg.RLB        */ \
     P(Sdtrig,     "1.0.0", "zicsr", CSR_EXISTS(0x7A4))              /* tinfo              */ \
     /* supervisor-level extensions */                                                         \

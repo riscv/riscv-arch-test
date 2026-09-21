@@ -228,21 +228,20 @@ params:
   # read-only zero (there is no time CSR on EL2).
   #   Quote: "rvdffs #(6) mcounteren_ff (.*, ... .din({dec_csr_wrdata_r[6:2], dec_csr_wrdata_r[0]}))"
   #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv
-  # TODO: every bit is still false here, which matches mcounteren_writable_bits in sail.json
-  # but not the core. It is inert today because every test on this configuration boots to
-  # M-mode (tests/env/utils.h forces BOOT_TO_MMODE when the hart has no F, V, S or Zicntr),
-  # and correcting it depends on whether EL2 can claim Zicntr at all: UDB requires
-  # MCOUNTENABLE_EN[0:2] to be false unless Zicntr is implemented, and EL2 has the cycle and
-  # instret shadows but no time CSR. Fix both files together, with a DUT re-run.
+  # Only bits 3..6 are marked writable here. The core also makes CY (0) and IR (2)
+  # writable, but UDB requires MCOUNTENABLE_EN[0:2] to be false unless Zicntr is
+  # implemented, and EL2 cannot claim Zicntr: it has the cycle and instret shadows but no
+  # time CSR at all. sail.json carries the core's full mask (0x7D) so the reference model
+  # matches the hardware.
   MCOUNTENABLE_EN:
     [
       false,
       false,
       false,
-      false,
-      false,
-      false,
-      false,
+      true,
+      true,
+      true,
+      true,
       false,
       false,
       false,

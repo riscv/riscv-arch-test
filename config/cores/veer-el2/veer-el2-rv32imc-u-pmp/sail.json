@@ -26,9 +26,13 @@
     // modes, are read-only zero. A set bit specifies that the
     // corresponding bit of `mcounteren` is writable, otherwise the
     // bit is read-only zero.
+    // VeeR EL2 implements mcounteren in the U-mode build and makes CY (0), IR (2) and
+    // HPM3..HPM6 (6:3) writable; TM (1) is read-only zero because there is no time CSR.
+    //   Quote: "rvdffs #(6) mcounteren_ff (.*, ... .din({dec_csr_wrdata_r[6:2], dec_csr_wrdata_r[0]}))"
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv
     "mcounteren_writable_bits": {
       "len": 32,
-      "value": "0x0"
+      "value": "0x0000_007D"
     },
     "hcounteren_writable_bits": {
       "len": 32,

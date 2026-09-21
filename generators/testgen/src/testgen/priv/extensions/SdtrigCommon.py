@@ -2100,7 +2100,7 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
     )
 
     ######################################
-    coverpoint = "cp_sdtrig_etrigger_cross_priv"
+    coverpoint = "cp_sdtrig_etrigger"
     ######################################
     lines.append(
         comment_banner(

@@ -184,9 +184,10 @@ def _generate_unpriv_tests_for_instruction(
             ]
         else:
             extra_defines = []
+            vdsew = 0
 
         generated_files.add(
-            write_test_file(test_config, instr_name, test_file_chunks, output_dir, file_idx, extra_defines)
+            write_test_file(test_config, instr_name, test_file_chunks, output_dir, file_idx, extra_defines, vdsew=vdsew)
         )
 
     # Clean up (make sure all registers were returned)

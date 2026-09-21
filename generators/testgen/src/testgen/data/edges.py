@@ -717,6 +717,9 @@ def get_vector_edge(edge: str, suffix: str, sew: int) -> int:
     if suffix == "f_bf16":
         return VECTOR_EDGES.bf16[edge]
 
+    if "f_" in suffix:
+        raise ValueError(f"Unknown Floating Point Edge, {suffix}")
+
     if suffix == "eew1":
         return VECTOR_EDGES.edge_value(edge, 8)
 

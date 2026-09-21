@@ -42,8 +42,13 @@ def cp_custom_vfp_NaN_input(instr_name: str, instr_type: str, coverpoint: str, t
     test_chunks = []
     for nan_type in ["sNaN", "qNaN"]:  # Due problems with the trace, we need to emit sNaN first
         label = f"cp_custom_vfp_NaN_input_{nan_type}"
-        val = NAN_VALUES[test_data.config.sew][nan_type]
-        test_data.register_vector_data(label, test_data.config.sew, elements=[val])
+
+        instr_type_config = get_instruction_type_config(instr_type)
+        assert instr_type_config.vector_data is not None, "Vector data must be provided for vector instructions"
+        eew = test_data.config.sew * 2 if "vs2" in instr_type_config.vector_data.widened_regs else test_data.config.sew
+
+        val = NAN_VALUES[eew][nan_type]
+        test_data.register_vector_data(label, eew, elements=[val])
 
         params = generate_random_vector_params(
             test_data, instr_name, instr_type, lmul, vs2_val_pointer=label, additional_no_overlap={("vs2", "vs1")}
@@ -112,6 +117,10 @@ _NCVT_NEG_OVERFLOW_F64 = 0xC7F0000000000000
 _NCVT_LARGE_INT64 = 0x0000000100000000  # 2^32, doesn't overflow float32 but exercises the path
 _NCVT_LARGE_FLOAT_FOR_INT = 0x41F0000000000000  # 2^32 as a double, exceeds int32/uint32 range
 
+# 32-bit single precision values exceeding bf16 range
+_NCVT_POS_OVERFLOW_F32 = 0x7F7FF800
+_NCVT_NEG_OVERFLOW_F32 = 0xFF7FF800
+
 
 @add_coverpoint_generator("cp_custom_vfncvt_rup_overflow")
 def cp_custom_vfncvt_rup_overflow(
@@ -125,7 +134,7 @@ def cp_custom_vfncvt_rup_overflow(
     the float32 range, and float-to-int overflow sets NV rather than OF. Every variant still gets a
     test so coverage stays uniform, even though only float-to-float can hit the OF bin.
     """
-    if test_data.config.sew != 32:
+    if test_data.config.sew != 32 and not ("bf16" in instr_name and test_data.config.sew == 16):
         return []
 
     if instr_name in _NCVT_FLOAT_TO_FLOAT:
@@ -134,6 +143,8 @@ def cp_custom_vfncvt_rup_overflow(
         values = [(_NCVT_LARGE_INT64, "large_integer")]
     elif instr_name in _NCVT_FLOAT_TO_INT:
         values = [(_NCVT_LARGE_FLOAT_FOR_INT, "large_float_for_int")]
+    elif instr_name == "vfncvtbf16.f.f.w":
+        values = [(_NCVT_POS_OVERFLOW_F32, "positive_overflow"), (_NCVT_NEG_OVERFLOW_F32, "negative_overflow")]
     else:
         raise ValueError("Unsupported Instruction for cp_custom_vfncvt_rup_overflow")
 
@@ -638,47 +649,16 @@ def cp_custom_fmv_fs_vs2_all_lmul(
 
 ##################################
 # cp_custom_vfp_flags / cp_custom_vfp_flags_inactive_not_set
-#
-# Registers cp_custom_vfp_flags_<variant> for each variant in _VFP_FLAGS_VARIANTS below. The Vf.csv
-# column cp_custom_vfp_flags holds the variant suffix (e.g. nv_nx_dz); the framework appends it to
-# the column name automatically. cp_custom_vfp_flags_set (a separate CSV column, always "x") maps to
-# the "set" variant the same way.
-#
-# Variant suffixes and the flags they test:
-#   nv            -> NV
-#   nv_nx         -> NV, NX
-#   nv_nx_dz      -> NV, NX, DZ
-#   nv_nx_of      -> NV, NX, OF
-#   nv_nx_of_uf   -> NV, NX, OF, UF
-#   nx            -> NX
-#   nv_dz         -> NV, DZ
 ##################################
 
-# ".w"-suffixed instructions whose vs2 operand is 2*SEW wide.
-_VFP_FLAGS_WIDE_SRC = {
-    "vfncvt.f.f.w",
-    "vfncvt.rod.f.f.w",
-    "vfncvt.x.f.w",
-    "vfncvt.xu.f.w",
-    "vfncvt.rtz.x.f.w",
-    "vfncvt.rtz.xu.f.w",
-    "vfncvt.f.x.w",
-    "vfncvt.f.xu.w",
-    "vfwadd.wv",
-    "vfwadd.wf",
-    "vfwsub.wv",
-    "vfwsub.wf",
-}
-_VFP_FLAGS_NARROW_I2F = {"vfncvt.f.x.w", "vfncvt.f.xu.w"}
 
-_VFP_FLAGS_WIDENING_NX_IMPOSSIBLE = {
-    "vfwadd.vv",
-    "vfwadd.vf",
-    "vfwsub.vv",
-    "vfwsub.vf",
-    "vfwmul.vv",
-    "vfwmul.vf",
-}
+@add_coverpoint_generator("cp_custom_vfp_flags")
+def cp_custom_vfp_flags(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """VFP flags currently has no generation as it is covered by other test generation"""
+
+    # Currently this coverpoint is disabled
+    return []
+
 
 _VFP_FLAGS_TV: dict[int, dict[str, int]] = {
     16: {
@@ -712,337 +692,6 @@ _VFP_FLAGS_TV: dict[int, dict[str, int]] = {
         "THREE": 0x4008000000000000,
     },
 }
-
-# Instructions whose NX trigger value isn't just _VFP_FLAGS_TV[sew]["NX"] (e.g. rsqrt(1)/rec(1) are
-# exact, so they need a different value to force an inexact result).
-_VFP_FLAGS_NX_OVERRIDE: dict[str, dict[int, int]] = {
-    "vfrsqrt7.v": {16: 0x4200, 32: 0x40400000, 64: 0x4008000000000000},
-    "vfrec7.v": {16: 0x4200, 32: 0x40400000, 64: 0x4008000000000000},
-    "vfsqrt.v": {16: 0x4000, 32: 0x40000000, 64: 0x4000000000000000},
-    "vfncvt.f.x.w": {16: 0x00000801, 32: 0x0000000001000001},
-    "vfncvt.f.xu.w": {16: 0x00000801, 32: 0x0000000001000001},
-}
-
-# Two-operand NX strategies: (vs2_key, vs1_key) looked up in _VFP_FLAGS_TV[sew]. For .vf, vs1_key is
-# the fs1 value.
-_VFP_FLAGS_NX_PAIR: dict[str, tuple[str, str]] = {
-    "vfsub.vv": ("OF", "ONE"),  # max - 1 -> inexact
-    "vfsub.vf": ("OF", "ONE"),
-    "vfrsub.vf": ("ONE", "OF"),  # reversed: fs1 - vs2
-    "vfdiv.vv": ("ONE", "THREE"),  # 1 / 3 -> inexact
-    "vfdiv.vf": ("ONE", "THREE"),
-    "vfrdiv.vf": ("THREE", "ONE"),  # reversed: fs1 / vs2
-    "vfnmadd.vv": ("OF", "OF"),  # overflow -> NX
-}
-
-_VFP_FLAGS_DZ_PAIR: dict[str, tuple[str, ...]] = {
-    "vfdiv.vv": ("ONE", "DZ"),  # vs2=1, vs1=0
-    "vfdiv.vf": ("ONE", "DZ"),  # vs2=1, fs1=0
-    "vfrdiv.vf": ("DZ",),  # vs2=0 (divisor in reversed div)
-    "vfrsqrt7.v": ("DZ",),  # rsqrt(0) -> DZ
-    "vfrec7.v": ("DZ",),  # rec(0) -> DZ
-}
-
-_VFP_FLAGS_OF_SET = {"vfadd.vv", "vfadd.vf", "vfmul.vv", "vfmul.vf"}
-# Widening .w add/sub (vfwadd.w*, vfwsub.w*) cannot overflow the wide format: the narrow operand is
-# always negligible next to the wide format's ULP at extremes. They use nv_nx rather than nv_nx_of.
-_VFP_FLAGS_UF_SET = {"vfmul.vv", "vfmul.vf"}
-
-_VFP_FLAGS_VARIANTS: dict[str, list[str]] = {
-    "set": ["NV"],
-    "nv": ["NV"],
-    "nv_nx": ["NV", "NX"],
-    "nv_nx_dz": ["NV", "NX", "DZ"],
-    "nv_nx_of": ["NV", "NX", "OF"],
-    "nv_nx_of_uf": ["NV", "NX", "OF", "UF"],
-    "nx": ["NX"],
-    "nv_dz": ["NV", "DZ"],
-}
-
-
-def _vfp_flags_gen1(
-    instr_name: str,
-    instr_type: str,
-    test_data: TestData,
-    coverpoint: str,
-    sew: int,
-    label: str,
-    val: int,
-    desc: str,
-    bin_name: str,
-    *,
-    fs1_val: int | None = None,
-) -> TestChunk:
-    """Force vs2 (and, for .vf/.wf instructions, fs1) to a value; leave any other operand random."""
-    esize = sew * 2 if instr_name in _VFP_FLAGS_WIDE_SRC else sew
-    test_data.register_vector_data(label, esize, elements=[val])
-
-    kwargs = {}
-    if instr_name.endswith((".vf", ".wf")):
-        kwargs["fs1val"] = fs1_val if fs1_val is not None else val
-
-    params = generate_random_vector_params(test_data, instr_name, instr_type, 1, vs2_val_pointer=label, **kwargs)
-    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_testcase_registers(test_data, params)
-    return tc
-
-
-def _vfp_flags_emit(
-    instr_name: str,
-    instr_type: str,
-    test_data: TestData,
-    coverpoint: str,
-    sew: int,
-    vs2_val: int,
-    vs1_val: int | None,
-    tag: str,
-    desc: str,
-    bin_name: str,
-) -> TestChunk:
-    """Force vs2 and vs1/fs1 to specific values, dispatching on the instruction's operand shape."""
-    esize = sew * 2 if instr_name in _VFP_FLAGS_WIDE_SRC else sew
-    vs2_label = f"custom_flag_vs2_{tag}_sew{sew}"
-    test_data.register_vector_data(vs2_label, esize, elements=[vs2_val])
-
-    if instr_name.endswith((".vv", ".vs")):
-        vs1_label = f"custom_flag_vs1_{tag}_sew{sew}"
-        test_data.register_vector_data(vs1_label, sew, elements=[vs1_val if vs1_val is not None else vs2_val])
-        params = generate_random_vector_params(
-            test_data,
-            instr_name,
-            instr_type,
-            1,
-            vs2_val_pointer=vs2_label,
-            vs1_val_pointer=vs1_label,
-            additional_no_overlap={("vs2", "vs1")},
-        )
-    elif instr_name.endswith((".vf", ".wf")):
-        params = generate_random_vector_params(
-            test_data,
-            instr_name,
-            instr_type,
-            1,
-            vs2_val_pointer=vs2_label,
-            fs1val=vs1_val if vs1_val is not None else vs2_val,
-        )
-    else:
-        params = generate_random_vector_params(test_data, instr_name, instr_type, 1, vs2_val_pointer=vs2_label)
-
-    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_testcase_registers(test_data, params)
-    return tc
-
-
-def _vfp_flags_pair(
-    instr_name: str,
-    instr_type: str,
-    test_data: TestData,
-    coverpoint: str,
-    sew: int,
-    vs2_val: int,
-    vs1_val: int | None,
-    flag: str,
-    detail: str,
-) -> list[TestChunk]:
-    """Emit the same test twice, to hit both the 0->1 and 1->1 flag transitions."""
-    tag = flag.lower()
-    test_chunks = []
-    for i in range(2):
-        sfx = "" if i == 0 else "1"
-        desc = f"cp_custom_vfp_flags ({flag}{sfx} via {detail}, {instr_name})"
-        bin_name = f"{tag}{sfx}"
-        test_chunks.append(
-            _vfp_flags_emit(instr_name, instr_type, test_data, coverpoint, sew, vs2_val, vs1_val, tag, desc, bin_name)
-        )
-    return test_chunks
-
-
-def _vfp_flags_gen_spacer(
-    instr_name: str, instr_type: str, test_data: TestData, coverpoint: str, sew: int
-) -> TestChunk:
-    """Clean spacer (fflags=0) so the first flag test gets a 0->1 transition."""
-    t = _VFP_FLAGS_TV[sew]
-
-    vector_config = get_instruction_type_config(instr_type).vector_data
-    assert vector_config is not None
-
-    one = t["ONE"]
-    if "vs2" in vector_config.widened_regs:
-        vs2_one = 1 if instr_name in _VFP_FLAGS_NARROW_I2F else _VFP_FLAGS_TV.get(sew * 2, {}).get("ONE", t["ONE"])
-    else:
-        vs2_one = one
-
-    vs1_one = one
-    desc = f"cp_custom_vfp_flags (clean spacer, {instr_name})"
-    return _vfp_flags_emit(
-        instr_name, instr_type, test_data, coverpoint, sew, vs2_one, vs1_one, "spacer", desc, "spacer"
-    )
-
-
-def _vfp_flags_gen_nv(
-    instr_name: str, instr_type: str, test_data: TestData, coverpoint: str, sew: int
-) -> list[TestChunk]:
-    """NV (Invalid Operation) via sNaN input."""
-    t = _VFP_FLAGS_TV[sew]
-
-    vector_config = get_instruction_type_config(instr_type).vector_data
-    assert vector_config is not None
-
-    nv = t["NV"]
-    vs2_nv = _VFP_FLAGS_TV.get(sew * 2, {}).get("NV", t["NV"]) if "vs2" in vector_config.widened_regs else nv
-    vs1_nv = nv
-    return _vfp_flags_pair(instr_name, instr_type, test_data, coverpoint, sew, vs2_nv, vs1_nv, "NV", "sNaN")
-
-
-def _vfp_flags_gen_dz(
-    instr_name: str, instr_type: str, test_data: TestData, coverpoint: str, sew: int
-) -> list[TestChunk]:
-    """DZ (Divide by Zero) -- only for instructions in _VFP_FLAGS_DZ_PAIR."""
-    t = _VFP_FLAGS_TV[sew]
-    keys = _VFP_FLAGS_DZ_PAIR[instr_name]
-    vs2 = t[keys[0]]
-    vs1 = t[keys[1]] if len(keys) > 1 else None
-    return _vfp_flags_pair(instr_name, instr_type, test_data, coverpoint, sew, vs2, vs1, "DZ", "zero")
-
-
-def _vfp_flags_gen_of(
-    instr_name: str, instr_type: str, test_data: TestData, coverpoint: str, sew: int
-) -> list[TestChunk]:
-    """OF (Overflow) via max + max or max * max -- only for instructions in _VFP_FLAGS_OF_SET."""
-    of_val = _VFP_FLAGS_TV[sew]["OF"]
-    return _vfp_flags_pair(instr_name, instr_type, test_data, coverpoint, sew, of_val, of_val, "OF", "max normal")
-
-
-def _vfp_flags_gen_uf(
-    instr_name: str, instr_type: str, test_data: TestData, coverpoint: str, sew: int
-) -> list[TestChunk]:
-    """UF (Underflow) via tiny * tiny -- only for instructions in _VFP_FLAGS_UF_SET."""
-    uf = _VFP_FLAGS_TV[sew]["UF"]
-    return _vfp_flags_pair(instr_name, instr_type, test_data, coverpoint, sew, uf, uf, "UF", "tiny*tiny")
-
-
-def _vfp_flags_resolve_nx(instr_name: str, instr_type: str, sew: int) -> int:
-    """Resolve the default-path NX trigger value."""
-    t = _VFP_FLAGS_TV[sew]
-    if instr_name in _VFP_FLAGS_NX_OVERRIDE:
-        return _VFP_FLAGS_NX_OVERRIDE[instr_name].get(sew, t["NX"])
-    vector_config = get_instruction_type_config(instr_type).vector_data
-    assert vector_config is not None
-
-    if "vs2" in vector_config.widened_regs:
-        return _VFP_FLAGS_TV.get(sew * 2, {}).get("NX", t["NX"])
-    return t["NX"]
-
-
-def _vfp_flags_gen_nx_wide(
-    instr_name: str, instr_type: str, test_data: TestData, coverpoint: str, sew: int, vs2_val: int, vs1_val: int
-) -> list[TestChunk]:
-    """Force NX on a .wv/.wf continuation instruction: vs2 at 2*SEW, vs1/fs1 at SEW."""
-    vs2_label = f"custom_flag_wide_nx_sew{sew}"
-    test_data.register_vector_data(vs2_label, sew * 2, elements=[vs2_val])
-
-    test_chunks = []
-    for i in range(2):
-        sfx = "" if i == 0 else "1"
-        desc = f"cp_custom_vfp_flags (NX{sfx} forced, {instr_name})"
-        if instr_name.endswith(".wv"):
-            vs1_label = f"custom_flag_one_sew{sew}"
-            test_data.register_vector_data(vs1_label, sew, elements=[vs1_val])
-            params = generate_random_vector_params(
-                test_data,
-                instr_name,
-                instr_type,
-                1,
-                vs2_val_pointer=vs2_label,
-                vs1_val_pointer=vs1_label,
-                additional_no_overlap={("vs2", "vs1")},
-            )
-        else:
-            params = generate_random_vector_params(
-                test_data, instr_name, instr_type, 1, vs2_val_pointer=vs2_label, fs1val=vs1_val
-            )
-        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"nx{sfx}_forced", coverpoint)
-        return_testcase_registers(test_data, params)
-        test_chunks.append(tc)
-
-    return test_chunks
-
-
-def _vfp_flags_gen_nx(
-    instr_name: str, instr_type: str, test_data: TestData, coverpoint: str, sew: int
-) -> list[TestChunk]:
-    """NX (Inexact) -- strategy depends on the instruction's operand shape."""
-    t = _VFP_FLAGS_TV[sew]
-
-    if instr_name in _VFP_FLAGS_NX_PAIR:
-        k2, k1 = _VFP_FLAGS_NX_PAIR[instr_name]
-        return _vfp_flags_pair(
-            instr_name, instr_type, test_data, coverpoint, sew, t[k2], t[k1], "NX", f"{k2.lower()}/{k1.lower()}"
-        )
-
-    if instr_name.endswith(".vs"):
-        of_val = t["OF"]
-        return _vfp_flags_pair(instr_name, instr_type, test_data, coverpoint, sew, of_val, of_val, "NX", "overflow sum")
-
-    if instr_name in {"vfwadd.wv", "vfwsub.wv", "vfwadd.wf", "vfwsub.wf"}:
-        wt = _VFP_FLAGS_TV.get(sew * 2, {})
-        return _vfp_flags_gen_nx_wide(
-            instr_name, instr_type, test_data, coverpoint, sew, wt.get("OF", t["NX"]), t["ONE"]
-        )
-
-    # Default: alternate between two NX trigger values so consecutive tests aren't identical.
-    nx_val = _vfp_flags_resolve_nx(instr_name, instr_type, sew)
-    if instr_name in _VFP_FLAGS_NARROW_I2F:
-        nx2_val = nx_val + 2
-        label_base = "custom_flag_int_nx"
-    elif instr_name in _VFP_FLAGS_WIDE_SRC:
-        nx2_val = _VFP_FLAGS_TV.get(sew * 2, {}).get("NX2", nx_val)
-        label_base = "custom_flag_wide_nx"
-    else:
-        nx2_val = t.get("NX2", nx_val)
-        label_base = "custom_flag_nx"
-
-    tries = 8 if instr_name in _VFP_FLAGS_WIDE_SRC else 4
-    fs1_val = nx_val if instr_name.endswith((".vf", ".wf")) else None
-
-    test_chunks = []
-    for i in range(tries):
-        val = nx_val if i % 2 == 0 else nx2_val
-        label = f"{label_base}{'2' if i % 2 else ''}_sew{sew}"
-        desc = f"cp_custom_vfp_flags (NX try {i + 1}, {instr_name})"
-        test_chunks.append(
-            _vfp_flags_gen1(
-                instr_name, instr_type, test_data, coverpoint, sew, label, val, desc, f"nx_try{i + 1}", fs1_val=fs1_val
-            )
-        )
-    return test_chunks
-
-
-_VFP_FLAGS_GEN = {
-    "NV": _vfp_flags_gen_nv,
-    "NX": _vfp_flags_gen_nx,
-    "DZ": _vfp_flags_gen_dz,
-    "OF": _vfp_flags_gen_of,
-    "UF": _vfp_flags_gen_uf,
-}
-
-
-@add_coverpoint_generator("cp_custom_vfp_flags")
-def cp_custom_vfp_flags(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
-    """Generate a clean spacer plus one test per flag for the variant named in the coverpoint."""
-    assert test_data.config.sew is not None, "SEW must be provided for vector tests"
-    sew = test_data.config.sew
-
-    if sew > test_data.config.flen:
-        return []
-
-    variant = coverpoint[len("cp_custom_vfp_flags_") :]
-
-    test_chunks = [_vfp_flags_gen_spacer(instr_name, instr_type, test_data, coverpoint, sew)]
-    for flag in _VFP_FLAGS_VARIANTS[variant]:
-        test_chunks.extend(_VFP_FLAGS_GEN[flag](instr_name, instr_type, test_data, coverpoint, sew))
-
-    return test_chunks
 
 
 @add_coverpoint_generator("cp_custom_vfp_flags_inactive_not_set")

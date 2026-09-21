@@ -48,9 +48,9 @@ def make_cross_edges(instr_name: str, instr_type: str, coverpoint: str, test_dat
 
     edges1 = edges2 = VECTOR_EDGES.vx_edges
     suffix1 = suffix2 = "emul1"
-    if coverpoint.endswith("wv"):
+    if coverpoint.endswith("wv") and not coverpoint.endswith("fwv"):
         suffix1 = "emul2"
-    elif coverpoint.endswith("wred"):
+    elif coverpoint.endswith("wred") and not coverpoint.endswith("fwred"):
         suffix2 = "emul2"
     elif coverpoint.endswith("mm"):
         suffix1 = suffix2 = "eew1"
@@ -176,15 +176,26 @@ def make_vs2_fs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_d
     assert sew is not None, "SEW must be set for vector tests"
 
     vs2_edges = VECTOR_EDGES.vf_edges
-    suffix = "f_emul2" if coverpoint.endswith("wf") else "f"
-    if sew == 16:
+
+    if coverpoint == "cr_vs2_fs1_edges_wf":
+        suffix = "f_emul2"
+    elif coverpoint == "cr_vs2_fs1_edges_bf16":
+        suffix = "f_bf16"
+    elif coverpoint == "cr_vs2_fs1_edges":
+        suffix = "f"
+    else:
+        raise ValueError(f"Unknown cr_vs2_fs1_edges coverpoint variant {coverpoint}")
+
+    if sew == 16 and suffix != "f_bf16":
         fs1_edges = VECTOR_EDGES.f16
+    elif sew == 16 and suffix == "f_bf16":
+        fs1_edges = VECTOR_EDGES.bf16
     elif sew == 32:
         fs1_edges = VECTOR_EDGES.f32
     elif sew == 64:
         fs1_edges = VECTOR_EDGES.f64
     else:
-        raise ValueError(f"Unsupported SEW ({sew}) for cr_vs2_fs2_edges")
+        raise ValueError(f"Unsupported SEW ({sew}) for cr_vs2_fs1_edges")
 
     test_chunks = []
     for vs2_edge in vs2_edges:
@@ -192,10 +203,16 @@ def make_vs2_fs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_d
 
         for fs1_edge_name in fs1_edges:
             params = generate_random_vector_params(
-                test_data, instr_name, instr_type, lmul=1, fs1val=fs1_edges[fs1_edge_name], vs2_val_pointer=vs2_label
+                test_data,
+                instr_name,
+                instr_type,
+                lmul=1,
+                fs1val=fs1_edges[fs1_edge_name],
+                vs2_val_pointer=vs2_label,
+                additional_no_overlap={("vd", "vs2")},
             )
             desc = f"{coverpoint} (vs2={vs2_edge}, fs1={fs1_edge_name})"
-            bin_name = f"cp_vs2_rs1_edges_b{vs2_edge}_{fs1_edge_name}"
+            bin_name = f"cp_vs2_fs1_edges_b{vs2_edge}_{fs1_edge_name}"
 
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
 

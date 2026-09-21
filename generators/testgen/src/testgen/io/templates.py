@@ -142,7 +142,7 @@ def canonicalize_extensions(
             # Our tests run some vector tests with the test SEW as a suffix. These suffixes are not part of
             # extension names, so they need to be dropped from the extensions list
             no_sew_suffix = re.sub(r"\d+$", "", testsuite)
-            if no_sew_suffix in ext_components:
+            if no_sew_suffix in ext_components and no_sew_suffix.startswith("V"):
                 ext_components.remove(no_sew_suffix)
 
     if any(ext.startswith(("V", "Zv")) for ext in ext_components):
@@ -173,7 +173,7 @@ def get_vector_base_extension(testsuite: str, instr_name: str, xlen: int, sew: i
         "Vf32": ["Zve32f", "F"],
         "Vf64": ["Zve64d", "F", "D"],
         "Zvfbfmin": ["Zve32f"],
-        "Zvfbfwma": ["Zve32f", "Zfbfmin"],
+        "Zvfbfwma": ["Zve32f", "Zfbfmin", "F"],
     }
 
     if testsuite not in vector_map:
@@ -193,11 +193,13 @@ def get_vector_base_extension(testsuite: str, instr_name: str, xlen: int, sew: i
         # EEW=64 in Zve64*.
         if zve_ext in mapped and instr_name.startswith("vmulh") and sew == 64:
             mapped.remove(zve_ext)
+            mapped.append("V")
 
         # All Zve* extensions support all vector fixed-point arithmetic instructions (31.1.12. Vector Fixed-Point
         # Arithmetic Instructions), except that vsmul.vv and vsmul.vx are not included in EEW=64 in Zve64*.
         if zve_ext in mapped and instr_name.startswith("vsmul") and sew == 64:
             mapped.remove(zve_ext)
+            mapped.append("V")
 
         # All Zve* extensions support all vector permutation instructions (31.1.16. Vector Permutation Instructions),
         # except that Zve32x and Zve64x do not include those with floating-point operands, and Zve64f does not include
@@ -209,6 +211,7 @@ def get_vector_base_extension(testsuite: str, instr_name: str, xlen: int, sew: i
             and sew == 64
         ):
             mapped.remove(zve_ext)
+            mapped.append("V")
 
     if "Zve32x" in mapped and instr_name.startswith(("vw", "vn")) and sew == 32:
         # Zve32x allows for an ELEN of 32, so a widening instruction at sew = 32 would widen to an eew of 64, which
@@ -216,7 +219,7 @@ def get_vector_base_extension(testsuite: str, instr_name: str, xlen: int, sew: i
         mapped.remove("Zve32x")
         mapped.append("Zve64x")
 
-    if "Zve32f" in mapped and instr_name.startswith(("vfw", "vfn")) and sew == 32:
+    if "Zve32f" in mapped and instr_name.startswith(("vfw", "vfncvt")) and sew == 32:
         # Same logic for floating point
         mapped.remove("Zve32f")
         mapped.append("Zve64f")

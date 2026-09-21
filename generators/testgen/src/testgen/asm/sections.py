@@ -13,7 +13,7 @@ from testgen.constants import VLEN_MAX
 from testgen.data.random import random_int
 
 
-def generate_test_data_section(data_values: list[int], xlen: int, flen: int) -> str:
+def generate_test_data_section(data_values: list[int], xlen: int, flen: int, vdsew: int) -> str:
     """
     Generate the .data section containing all test values.
 
@@ -28,7 +28,7 @@ def generate_test_data_section(data_values: list[int], xlen: int, flen: int) -> 
     lines: list[str] = []
 
     # Use .word for 32-bit, .dword for 64-bit
-    data_size = max(xlen, flen)
+    data_size = max(xlen, flen, vdsew)
     directive = ".word" if data_size == 32 else ".dword"  # TODO: handle Q extension
 
     for value in data_values:

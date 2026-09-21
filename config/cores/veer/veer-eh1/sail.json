@@ -481,11 +481,11 @@
     "Zihintpause": {
       "supported": false
     },
-    // EH1 implements Zihpm partially: mhpmcounter3..6 and mhpmevent3..6 exist, 7..31
-    // do not. Sail models the whole 3..31 set, so this is "supported: true" with the
-    // per-counter truth expressed by HPM_COUNTER_EN in veer-eh1.yaml.
+    // Zihpm provides the unprivileged hpmcounter3..31 shadows for S/U access; EH1 is
+    // machine-mode only, so it is not implemented. The M-mode mhpmcounter3..6 that EH1
+    // does have belong to Sm and are described by writable_hpm_counters above.
     "Zihpm": {
-      "supported": true
+      "supported": false
     },
     "Zimop": {
       "supported": false

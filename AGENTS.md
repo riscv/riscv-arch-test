@@ -72,6 +72,49 @@
 - CI checks that generated files (`tests/rv32i tests/rv32e tests/rv64i tests/rv64e coverpoints/unpriv coverpoints/coverage`) have not changed.
 - PRs branch from and target `act4`; docs release workflow also triggers from `act4`.
 
+## Bringing Up A New DUT
+
+- Start from an existing config of the same shape, but **audit every field you inherit**. A
+  `sail.json` copied from another core can silently describe different hardware: copying CV32E20's
+  `mtvec` block (`direct.supported: false`, `vectored.base_alignment: 8`) onto a core that supports
+  both modes with 4-byte alignment made Sail force `mtvec.MODE` to 1 on write. ACT reads `mtvec`
+  back to decide whether it is writable, saw the mismatch, and fell into its trampoline-relocation
+  fallback, which copies to the _original_ `mtvec` value — `0x1 & ~3 == 0` — so every test died at
+  address 0 with "possible trap loop". Cross-check `sail.json` against the UDB config field by
+  field; they describe the same hardware and must agree.
+- `TEST_BASE = 0` does not work. Every test fails during signature generation with a diagnostic
+  naming an innocent instruction and `XEPC`/`XCAUSE`/`XTVAL` at their reset values. Link at a
+  non-zero address; if the DUT boots from 0, prepend a jump stub in the runner.
+- Trap diagnostics can be misleading. "Instruction that trapped" with `XCAUSE=0, XTVAL=0` and a
+  tiny `XEPC` usually means no trap happened at all and the handler is printing reset values —
+  confirm against a Sail `--trace` before believing the named instruction.
+
+## Before Committing
+
+- **Run `prek` and fix everything it reports.** `mise exec -- prek run --files <changed files>`, or
+  `mise run prek` for the whole tree. The hooks are not cosmetic-only: `shellcheck` catches real
+  bugs. It found a runner script that parsed a `--stub` option and never used it, while still
+  unconditionally prepending another core's boot stub — harmless by luck, wrong by intent.
+- `shfmt` and `prettier` rewrite files in place, so re-stage after running and **re-run the build
+  and tests**: `prettier` reflows YAML, and a config that reformats is still a config that has to
+  validate.
+- `prek run --files` only checks what you name. Pass `$(git diff --name-only <base>...HEAD)` so
+  nothing in the change is missed, rather than checking one file at a time.
+
+## Process Traps
+
+- **The build stops at the first failure.** `✗ Build failed: 130 succeeded, 1 failed` does **not**
+  mean the other 130 tests passed — the rest were never attempted. A run that reports a single
+  failure can turn into dozens once that one is excluded. Do not read the "succeeded" count as a
+  pass rate.
+- **Stale artifacts survive a config change.** Editing a UDB config regenerates
+  `work/<config>/rvtest_config.h`, but already-built `.sig.elf` files are not rebuilt, so tests
+  keep failing (or passing) for the _old_ configuration. `rm -rf work/<config>` after editing any
+  UDB or Sail config. Symptom: a test that built cleanly moments ago starts failing, or vice versa.
+- **Stale ELFs are not pruned when the extension set shrinks.** Removing an extension from a config
+  leaves `work/<config>/elfs/<ext>/` in place, and `run_tests.py` still runs it and counts the
+  results, reporting failures for an extension the config no longer claims.
+
 ## Debugging
 
 - Per-config run summaries are in `work/<config>/summary.log`; per-test simulator logs are in `work/<config>/logs/`.

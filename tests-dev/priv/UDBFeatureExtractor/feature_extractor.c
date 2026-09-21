@@ -88,7 +88,35 @@ unsigned char probe_scratch[PROBE_SCRATCH_SIZE] __attribute__((aligned(PROBE_SCR
     value;                                                                              \
 })
 
+// Like PROBE_VALUE, with one input value that insn refers to as %[in]
+#define PROBE_VALUE_IN(arch, insn, input) ({                                            \
+    unsigned long probe_value_;                                                                \
+    __asm__ volatile(                                                                   \
+        "la    t0, 1f\n\t"                                                              \
+        SREG " t0, %[resume]\n\t"                                                       \
+        "la    a1, probe_scratch\n\t"                                                   \
+        ".option push\n\t"                                                              \
+        ".option arch, +" arch "\n\t"                                                   \
+        insn "\n\t"                                                                     \
+        ".option pop\n\t"                                                               \
+        "mv    %[value], a3\n\t"                                                        \
+        "j     2f\n\t"                                                                  \
+        ".balign 4\n"                                                                   \
+        "1:\n\t"                                                                        \
+        "li    %[value], -1\n"                                                          \
+        "2:\n\t"                                                                        \
+        SREG " zero, %[resume]\n\t"                                                     \
+        : [value] "=&r"(probe_value_), [resume] "=m"(probe_resume)                             \
+        : [in] "r"(input)                                                               \
+        : "memory", "t0", "t1", "t2", "a1", "a2", "a3", "s0", "s1");                     \
+    probe_value_;                                                                       \
+})
+
+#define STR_(x) #x
+#define STR(x) STR_(x)
+
 #define CAUSE_ILLEGAL_INSTRUCTION 2
+#define CAUSE_NONE (~0ul)
 
 // One probe function per table row
 #define DEFINE_PROBE(name, version, arch, insn) \
@@ -99,6 +127,15 @@ EXTENSIONS(DEFINE_PROBE)
     static bool probe_##name(void) { return PROBE(arch, insn); }
 HELPER_PROBES(DEFINE_HELPER)
 
+// Privileged probes succeed when the sequence neither traps nor leaves a3 zero
+#define DEFINE_PRIV_PROBE(name, version, arch, insn)                                        \
+    static bool probe_##name(void)                                                          \
+    {                                                                                       \
+        unsigned long v = PROBE_VALUE(arch, insn);                                          \
+        return v != PROBE_TRAPPED && v != 0;                                                \
+    }
+PRIV_EXTENSIONS(DEFINE_PRIV_PROBE)
+
 struct extension {
     const char *name;
     const char *version;
@@ -108,16 +145,25 @@ struct extension {
 
 #define TABLE_ROW(name, version, arch, insn) { #name, version, probe_##name, false },
 static struct extension extensions[] = { EXTENSIONS(TABLE_ROW) };
-#define NUM_EXTENSIONS (sizeof(extensions) / sizeof(extensions[0]))
+static struct extension priv_extensions[] = { PRIV_EXTENSIONS(TABLE_ROW) };
+#define COUNT(a) (sizeof(a) / sizeof((a)[0]))
+#define NUM_EXTENSIONS COUNT(extensions)
+#define NUM_PRIV_EXTENSIONS COUNT(priv_extensions)
+
+static bool streq(const char *a, const char *b)
+{
+    while (*a && *a == *b) { a++; b++; }
+    return *a == '\0' && *b == '\0';
+}
 
 static bool have(const char *name)
 {
-    for (unsigned i = 0; i < NUM_EXTENSIONS; i++) {
-        const char *a = extensions[i].name, *b = name;
-        while (*a && *a == *b) { a++; b++; }
-        if (*a == '\0' && *b == '\0')
+    for (unsigned i = 0; i < NUM_EXTENSIONS; i++)
+        if (streq(extensions[i].name, name))
             return extensions[i].supported;
-    }
+    for (unsigned i = 0; i < NUM_PRIV_EXTENSIONS; i++)
+        if (streq(priv_extensions[i].name, name))
+            return priv_extensions[i].supported;
     return false;
 }
 
@@ -130,9 +176,9 @@ static void print_extension(const char *name, const char *version)
 // probe itself is wrong, for example a scratch address the implementation cannot access).
 static bool check(const char *name, bool (*probe)(void))
 {
-    probe_cause = 0;
+    probe_cause = CAUSE_NONE;
     bool ok = probe();
-    if (!ok && probe_cause != CAUSE_ILLEGAL_INSTRUCTION)
+    if (!ok && probe_cause != CAUSE_NONE && probe_cause != CAUSE_ILLEGAL_INSTRUCTION)
         printf("# warning: the %s probe trapped with mcause %d, not an illegal-instruction exception\n",
                name, (long)probe_cause);
     return ok;
@@ -152,6 +198,43 @@ static unsigned long read_vlenb(void)
     return v;
 }
 
+// Write a CSR, read it back and restore it; PROBE_TRAPPED if the CSR does not exist
+#define DEFINE_CSR_WRITE_READ(name, csr)                                                    \
+    static unsigned long name(unsigned long value)                                          \
+    {                                                                                       \
+        return PROBE_VALUE_IN("zicsr", "csrrw t2, " #csr ", %[in]\n\tcsrr a3, " #csr "\n\t" \
+                                       "csrw " #csr ", t2", value);                         \
+    }
+DEFINE_CSR_WRITE_READ(write_read_satp, satp)
+DEFINE_CSR_WRITE_READ(write_read_hgatp, hgatp)
+DEFINE_CSR_WRITE_READ(write_read_vsatp, vsatp)
+DEFINE_CSR_WRITE_READ(write_read_mcounteren, mcounteren)
+DEFINE_CSR_WRITE_READ(write_read_scounteren, scounteren)
+DEFINE_CSR_WRITE_READ(write_read_hcounteren, hcounteren)
+
+// Write a translation mode to satp/hgatp/vsatp, then Bare, and report whether Bare stuck
+#define DEFINE_BARE_AFTER(name, csr)                                                        \
+    static bool name(unsigned long mode)                                                    \
+    {                                                                                       \
+        unsigned long v = PROBE_VALUE_IN("zicsr", "csrw " #csr ", %[in]\n\tcsrw " #csr ", zero\n\t" \
+                                                  "csrr a3, " #csr "\n\tseqz a3, a3", mode); \
+        return v != PROBE_TRAPPED && v != 0;                                                \
+    }
+DEFINE_BARE_AFTER(satp_bare_after, satp)
+DEFINE_BARE_AFTER(hgatp_bare_after, hgatp)
+DEFINE_BARE_AFTER(vsatp_bare_after, vsatp)
+
+// Address translation modes: satp.MODE values; hgatp uses the same values for the x4 modes
+#if __riscv_xlen == 64
+#define ATP_MODE(m) ((unsigned long)(m) << 60)
+static const struct { const char *name; unsigned long mode; } atp_modes[] =
+    { { "Sv39", 8 }, { "Sv48", 9 }, { "Sv57", 10 } };
+#else
+#define ATP_MODE(m) ((unsigned long)(m) << 31)
+static const struct { const char *name; unsigned long mode; } atp_modes[] = { { "Sv32", 1 } };
+#endif
+#define NUM_ATP_MODES COUNT(atp_modes)
+
 // Called from the trap handler for a trap that no probe expected
 void report_unexpected_trap(unsigned long cause, unsigned long epc, unsigned long tval)
 {
@@ -160,6 +243,11 @@ void report_unexpected_trap(unsigned long cause, unsigned long epc, unsigned lon
 
 int main(void)
 {
+    // With Smrnmi, mnstatus.NMIE is clear at reset and an exception taken while it is clear goes
+    // to the RNMI vector instead of mtvec; set it before the first probe can trap.  Without
+    // Smrnmi the access itself traps, which is fine here.
+    PROBE("zicsr", "li t1, 8\n\tcsrs 0x744, t1");
+
     bool has_i = check("I", probe_I);
     for (unsigned i = 0; i < NUM_EXTENSIONS; i++)
         extensions[i].supported = check(extensions[i].name, extensions[i].probe);
@@ -188,15 +276,65 @@ int main(void)
     }
 #endif
 
-    // Zicfilp: set mseccfg.MLPE, read it back and clear it again.  Nothing between the set and
-    // the clear jumps indirectly, so enabling landing pads for a moment cannot fault.
-    unsigned long mlpe = PROBE_VALUE("zicsr", "li t1, 0x400\n\tcsrrs zero, 0x747, t1\n\tcsrr a3, 0x747\n\t"
-                                              "csrrc zero, 0x747, t1\n\tand a3, a3, t1");
+    // Zicfilp: mseccfg.MLPE can be set.  Nothing between the set and the restore jumps
+    // indirectly, so enabling landing pads for a moment cannot fault.
+    unsigned long mlpe = PROBE_VALUE("zicsr", CSR_BIT(0x747, 10));
     bool zicfilp = mlpe != PROBE_TRAPPED && mlpe != 0;
 
+    // Privileged extensions
+    for (unsigned i = 0; i < NUM_PRIV_EXTENSIONS; i++)
+        priv_extensions[i].supported = check(priv_extensions[i].name, priv_extensions[i].probe);
+    bool has_s = have("S"), has_h = have("H");
+    unsigned long menvcfg = PROBE_VALUE("zicsr", CSR_EXISTS(menvcfg));
+    const char *sm_version = menvcfg != PROBE_TRAPPED ? "1.12.0" : "1.11.0";
+
+    // Address translation: which modes satp accepts, and whether hgatp and vsatp accept the same
+    bool atp_ok[NUM_ATP_MODES], any_atp = false;
+    unsigned long last_atp = 0;
+    bool shgatpa = has_h, shvsatpa = has_h;
+    for (unsigned i = 0; i < NUM_ATP_MODES; i++) {
+        unsigned long m = ATP_MODE(atp_modes[i].mode);
+        atp_ok[i] = has_s && write_read_satp(m) == m;
+        if (atp_ok[i]) {
+            any_atp = true;
+            last_atp = m;
+            shgatpa = shgatpa && write_read_hgatp(m) == m;
+            shvsatpa = shvsatpa && write_read_vsatp(m) == m;
+        }
+    }
+    bool svbare = has_s && (!any_atp || satp_bare_after(last_atp));
+    if (any_atp) {
+        shgatpa = shgatpa && hgatp_bare_after(last_atp);
+        shvsatpa = shvsatpa && vsatp_bare_after(last_atp);
+    }
+
+    // Ssccfg: scountinhibit is accessible only while menvcfg.CDE is set, so set it, try the
+    // access, and clear it again afterwards whether or not the access trapped
+    bool ssccfg = false;
+    if (have("Smcdeleg")) {
+#if __riscv_xlen == 64
+#define CDE_CSR menvcfg
+#define CDE_BIT 60
+#else
+#define CDE_CSR menvcfgh
+#define CDE_BIT 28
+#endif
+        unsigned long v = PROBE_VALUE("zicsr", "li t1, 1 << " STR(CDE_BIT) "\n\tcsrs " STR(CDE_CSR) ", t1\n\t"
+                                               "csrr a3, 0x120\n\tli a3, 1");
+        PROBE_VALUE("zicsr", "li t1, 1 << " STR(CDE_BIT) "\n\tcsrc " STR(CDE_CSR) ", t1\n\tli a3, 1");
+        ssccfg = v != PROBE_TRAPPED && v != 0;
+    }
+
+    // Counter enables: every bit writable in mcounteren must be writable in scounteren/hcounteren
+    unsigned long m_writable = write_read_mcounteren(~0ul);
+    bool sscounterenw = has_s && (write_read_scounteren(~0ul) & m_writable) == m_writable;
+    bool shcounterenw = has_h && (write_read_hcounteren(~0ul) & m_writable) == m_writable;
+
     printf("# Generated by the riscv-arch-test UDB feature extractor (tests-dev/priv/UDBFeatureExtractor)\n");
-    printf("# Extensions detected by executing an instruction that only the extension defines and\n");
-    printf("# checking whether it traps.  Not detectable that way: " NOT_DETECTABLE_EXTENSIONS ".\n");
+    printf("# Extensions are detected by executing an instruction or CSR access that only the extension\n");
+    printf("# makes legal, or by writing a CSR field it adds.  These are not looked for (see the README):\n");
+    printf("# untested: " UNTESTED_EXTENSIONS " " UNTESTED_PRIV_EXTENSIONS "%s%s\n",
+           have("Svadu") ? "" : " Svade", __riscv_xlen == 32 ? " Ssu32xl" : "");
     printf("params:\n");
     printf("  MXLEN: %d\n", (long)__riscv_xlen);
     if (vlen)
@@ -249,6 +387,36 @@ int main(void)
         print_extension("Zhinx", "1.0.0");
     if (fcvt_s_h && !have("Zfhmin"))
         print_extension("Zhinxmin", "1.0.0");
+
+    // Privileged extensions
+    print_extension("Sm", sm_version);
+    for (unsigned i = 0; i < NUM_PRIV_EXTENSIONS; i++)
+        if (priv_extensions[i].supported)
+            print_extension(priv_extensions[i].name,
+                            streq(priv_extensions[i].name, "S") ? sm_version : priv_extensions[i].version);
+    for (unsigned i = 0; i < NUM_ATP_MODES; i++)
+        if (atp_ok[i])
+            print_extension(atp_modes[i].name, "1.0");
+    if (svbare)
+        print_extension("Svbare", "1.0.0");
+    if (have("Svadu"))
+        print_extension("Svade", "1.0.0");    // menvcfg.ADUE = 0 is defined as Svade behavior
+    if (sscounterenw)
+        print_extension("Sscounterenw", "1.0.0");
+    if (shcounterenw)
+        print_extension("Shcounterenw", "1.0.0");
+    if (shgatpa)
+        print_extension("Shgatpa", "1.0.0");
+    if (shvsatpa)
+        print_extension("Shvsatpa", "1.0.0");
+    if (has_s && have("Smnpm"))
+        print_extension("Sspm", "1.0.0");
+    if (has_s ? have("Ssnpm") : have("Smnpm"))
+        print_extension("Supm", "1.0.0");
+    if (ssccfg)
+        print_extension("Ssccfg", "1.0.0");
+    if (has_h && shcounterenw && shgatpa && shvsatpa && have("Shvstvecd"))
+        print_extension("Sha", "1.0.0");      // Shtvala and Shvstvala are assumed
 
     return 0;
 }

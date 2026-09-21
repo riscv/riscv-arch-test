@@ -1,6 +1,6 @@
 # UDB feature extractor
 
-Detects which ratified unprivileged extensions a hart implements and prints the result as the
+Detects which ratified unprivileged and privileged extensions a hart implements and prints the result as the
 `implemented_extensions` section of a [UDB](https://github.com/riscv-software-src/riscv-unified-db)
 configuration, ready to seed a `config/cores/<vendor>/<core>/<core>.yaml`.
 
@@ -29,10 +29,38 @@ Zcmp reuses Zcd's `c.fsdsp` space, so it is probed only when Zcd is absent; on R
 file it wrote; and Zicfilp's `lpad` is a hint until landing pads are enabled, so Zicfilp is
 detected by whether the `MLPE` bit it adds to `mseccfg` can be set.
 
-Extensions that add no instruction whose legality could be tested cannot be detected: hints
-(Zihintpause, Zihintntl, Zicbop) execute everywhere, and the behavioral extensions (Zicclsm, Ztso,
-Zkt, Zvkt, Zic64b, Ziccif, Ziccamoa, Ziccamoc, Ziccrse, Za64rs, Za128rs, Zama16b) change what
-instructions do rather than whether they trap.  The output names them in a comment.
+### Privileged extensions
+
+Privileged extensions mostly add a CSR, or a field of an existing CSR, so their probes are CSR
+accesses built from three helpers in `extensions.h`: `CSR_EXISTS` (the access traps unless the
+extension is present), `CSR_BIT` and `CSR_FIELD` (the field accepts a value; the original value is
+restored afterwards).  For example Sstc is `stimecmp` existing, Svadu is `menvcfg.ADUE` being
+settable, and Sstvecd is `stvec` accepting mode 0.  The privilege modes are U (`mstatus.MPP` can
+hold 0), S (`sstatus` exists) and H (`hstatus` exists); Sm is always present since the extractor
+runs in M-mode, with version 1.12 if `menvcfg` exists and 1.11 otherwise (1.13 is not
+distinguished).  Address-translation modes are found by writing each mode to `satp` and reading it
+back, which also gives Svbare, and Shgatpa and Shvsatpa by repeating that on `hgatp` and `vsatp`.
+Sscounterenw and Shcounterenw compare the writable bits of `scounteren` and `hcounteren` with
+those of `mcounteren`.  Sspm, Supm, Ssu32xl on RV32, Svade with Svadu, and Sha are derived as
+described in `extensions.h`.
+
+### Untested extensions
+
+Extensions that add no instruction or CSR whose legality could be tested cannot be detected, and
+the output names them on a `# untested:` line so the reader knows they were not looked for:
+
+- hints, which execute everywhere: Zihintpause, Zihintntl, Zicbop
+- behavioral guarantees: Zicclsm, Ztso, Zkt, Zvkt, Zic64b, Ziccif, Ziccamoa, Ziccamoc, Ziccrse,
+  Za64rs, Za128rs, Zama16b, and Zk, Zvkn, Zvknc, Zvkng, Zvks, Zvksc, Zvksg (which need Zkt or Zvkt)
+- trap-value guarantees: Sstvala, Shtvala, Shvstvala
+- page-table-walk behavior: Ssccptr, Svvptc, Svnapot, Svrsw60t59b, and Svade unless Svadu is
+  present (with Svadu, `menvcfg.ADUE = 0` is defined as Svade behavior)
+- Ssstrict, which is what every other probe assumes
+- Sdext, which is only visible from debug mode
+
+Zibi and Zvabd are not probed because they are frozen, not ratified.  Sha is reported when H and
+its testable members (Shcounterenw, Shgatpa, Shvsatpa, Shvstvecd) are present, assuming the two
+untested ones.
 
 ## Building and running
 
@@ -54,14 +82,32 @@ for running on a DUT with its own simulator.  The console output is the YAML, so
 ## Testing
 
 ```
+make -f tests-dev/priv/UDBFeatureExtractor/Makefile regression JOBS=8
+```
+
+runs the extractor on every configuration directory under `config/` that has a `run_cmd.txt` (the
+Sail profile and max configurations, and the cores) using that command, and compares the
+extensions it reports with the directory's UDB yaml.  Configurations whose simulator is not on
+`PATH` are skipped.  Names are compared, not versions; extensions the extractor lists as untested
+are counted separately rather than as mismatches.  The summary gives, per configuration and in
+total, how many extensions match and which are missing (in the yaml but not detected) or extra
+(detected but not in the yaml).  An extra that is defined as exactly a set of extensions the yaml
+does list (Zkn, Zks, Zbkc) is shown as implied instead.  `--jobs` runs configurations in parallel;
+a Verilator run of Wally takes minutes the first time, Sail a few seconds.
+
+Two startup steps matter for some targets: `mstatus.MDT` is cleared, since Smdbltrp sets it at
+reset and a probe's trap would then be a double trap, and `mnstatus.NMIE` is set, since with Smrnmi
+an exception taken while it is clear goes to the RNMI vector rather than `mtvec`.
+
+```
 make -f tests-dev/priv/UDBFeatureExtractor/Makefile test
 ```
 
-runs the extractor for RV32 and RV64 on the Sail max configurations with groups of extensions
-switched off through `--config-override` (M, A, B, C, Zi*, vector, floating point, Zfinx family,
-and E) and checks that every extension the Sail configuration names is reported exactly when the
-configuration enables it.  Privileged extensions, the undetectable ones above and extensions that
-are not yet ratified (Zibi, Zvabd) are not checked.
+is a finer self-test of the unprivileged probes: it runs the extractor for RV32 and RV64 on the
+Sail max configurations with groups of extensions switched off through `--config-override` (M, A,
+B, C, Zi*, vector, floating point, Zfinx family, and E) and checks that every extension the Sail
+configuration names is reported exactly when the configuration enables it.  Privileged
+extensions, the untested ones above and extensions that are not yet ratified are not checked.
 
 ## Adding an extension
 
@@ -77,3 +123,13 @@ executes.  The probe function, the YAML line and the self-test follow from the r
 instruction, `a1` points at aligned scratch memory for loads, stores, atomics and cache-block
 operations, and `t1`, `t2`, `a2`, `a3`, `s0`, `s1`, the low floating-point registers and all
 vector registers may be written.
+
+A privileged extension is a row in the `PRIV_EXTENSIONS` table instead:
+
+```
+P(Sfoo, "1.0.0", "zicsr", CSR_EXISTS(0x5C0))
+P(Sbar, "1.0.0", "zicsr", CSR_BIT(menvcfg, 58))
+```
+
+Any sequence that leaves `a3` nonzero when the extension is present, and traps or leaves it zero
+otherwise, may be used in place of the helpers.

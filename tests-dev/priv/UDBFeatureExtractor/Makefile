@@ -10,6 +10,7 @@
 #   make -f tests-dev/priv/UDBFeatureExtractor/Makefile            # build and run on Sail (RVA23S64)
 #   make -f tests-dev/priv/UDBFeatureExtractor/Makefile XLEN=32 CONFIG_DIR=config/sail/sail-rv32-max
 #   make -f tests-dev/priv/UDBFeatureExtractor/Makefile test       # self-test against Sail configurations
+#   make -f tests-dev/priv/UDBFeatureExtractor/Makefile regression JOBS=8   # every config/ vs its UDB yaml
 #   make -f tests-dev/priv/UDBFeatureExtractor/Makefile elf CONFIG_DIR=config/cores/cvw/cvw-rv64gc
 #
 # CONFIG_DIR supplies the DUT's rvmodel_macros.h (console output and halt) and link.ld (memory
@@ -47,7 +48,7 @@ SRCS := start.S feature_extractor.c console.c
 DEPS := extensions.h console.h
 ELF  := $(BUILD_DIR)/feature_extractor$(XLEN).elf
 
-.PHONY: all elf run dump test clean help
+.PHONY: all elf run dump test regression clean help
 all: run
 
 $(BUILD_DIR):
@@ -71,6 +72,13 @@ dump: $(ELF)
 test:
 	$(PYTHON) $(SRC_DIR)/test/run_sail_tests.py --repo-root $(REPO_ROOT) --sim $(SIM) --build-dir $(BUILD_DIR)
 
+# Run the extractor on every configuration under config/ that has a run_cmd.txt, using that
+# command, and compare the result with the configuration's UDB yaml.  JOBS configurations run in
+# parallel; configurations whose simulator is not installed are skipped.
+JOBS ?= 1
+regression:
+	$(PYTHON) $(SRC_DIR)/test/regression.py --repo-root $(REPO_ROOT) --build-dir $(BUILD_DIR)/regression --jobs $(JOBS)
+
 clean:
 	rm -rf $(BUILD_DIR)
 
@@ -80,4 +88,5 @@ help:
 	@echo "  elf   build only"
 	@echo "  dump  disassemble"
 	@echo "  test  self-test against the Sail max configurations for both XLENs"
+	@echo "  regression  run every config/**/run_cmd.txt configuration and compare with its UDB yaml (JOBS=n)"
 	@echo "  clean remove $(BUILD_DIR)"

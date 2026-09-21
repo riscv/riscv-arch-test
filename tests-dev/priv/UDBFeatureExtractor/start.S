@@ -35,6 +35,15 @@ rvtest_entry_point:
     csrw    mtvec, t0
     li      t0, MSTATUS_FS_VS
     csrs    mstatus, t0
+    // Smdbltrp sets mstatus.MDT at reset, and a trap while it is set is a double trap; clear it
+    // so the probes' traps are ordinary ones (the bit is WARL zero without Smdbltrp)
+#if __riscv_xlen == 64
+    li      t0, 1 << 42
+    csrc    mstatus, t0
+#else
+    li      t0, 1 << 10
+    csrc    mstatush, t0
+#endif
 #ifdef RVMODEL_IO_INIT
     RVMODEL_IO_INIT(t0, t1, t2)
 #endif

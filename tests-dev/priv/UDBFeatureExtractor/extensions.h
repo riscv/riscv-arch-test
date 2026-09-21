@@ -49,6 +49,7 @@
     X(Zacas,    "1.0.0", "zaamo,+zacas",       "amocas.w t1, t2, 0(a1)")                      \
     X(Zabha,    "1.0.0", "zaamo,+zabha",       "amoadd.b t1, t2, 0(a1)")                      \
     X(Zawrs,    "1.0.0", "zawrs",              "wrs.nto")                                     \
+    X(Zalasr,   "1.0.0", "zicsr",              ".insn r 0x2F, 2, 0x1A, t1, a1, x0") /* lw.aq t1, (a1); binutils 2.45 lacks Zalasr */ \
     /* Zi*: CSRs, fences, conditional ops, may-be-ops, cache-block ops */                     \
     X(Zifencei, "2.0.0", "zifencei",           "fence.i")                                     \
     X(Zicntr,   "2.0",   "zicsr",              "csrr t1, cycle")                              \
@@ -130,7 +131,7 @@
 //   Zclsd's c.ld/c.sd are Zcf's c.flw/c.fsw, so the encoding is executed and the extension
 //     decided by whether it wrote an x register (Zclsd) or not (Zcf)
 //   Zicfilp's only instruction, lpad, is a hint until landing pads are enabled, so it is detected
-//     by whether the MLPE bit it adds to mseccfg can be set
+//     by whether the MLPE bit it adds to mseccfg can be set (CSR_BIT below)
 #define HELPER_PROBES(X)                                                                      \
     X(fadd_s,   "f",      "fadd.s ft0, ft2, ft4")                                             \
     X(fadd_d,   "d",      "fadd.d ft0, ft2, ft4")                                             \
@@ -148,11 +149,113 @@
 //   Zcmp = cm.mvsa01 executes and Zcd is absent      Zcf / Zclsd / Zicfilp = see above
 // They are computed in feature_extractor.c.
 
-// Ratified unprivileged extensions that add no instruction or CSR whose legality could be tested,
-// so a trap-based probe cannot see them.  They are reported as a comment.
-#define NOT_DETECTABLE_EXTENSIONS                                                             \
-    "Zihintpause, Zihintntl, Zicbop (hints that execute everywhere), "                        \
-    "Zicclsm, Ztso, Zkt, Zvkt, Zic64b, Ziccif, Ziccamoa, Ziccamoc, Ziccrse, Za64rs, Za128rs, " \
-    "Zama16b (behavioral guarantees), Zk, Zvkn, Zvks and their variants (need Zkt or Zvkt)"
+// ---------------------------------------------------------------------------------------------
+// Privileged extensions
+//
+// Nearly every privileged extension adds a CSR, or a field of an existing CSR, and nothing else
+// that M-mode code can see, so these probes are CSR accesses.  Each row is
+//     P(name, version, arch, insn)
+// where insn leaves a3 nonzero when the extension is present and either traps or leaves a3 zero
+// when it is absent.  Three helpers cover almost every row:
+//   CSR_EXISTS(csr)             reading the CSR traps unless the extension is implemented
+//   CSR_BIT(csr, n)             bit n of the CSR can be set (it is WARL zero without the extension)
+//   CSR_FIELD(csr, mask, value) the field under mask accepts value
+// CSR_BIT and CSR_FIELD restore the CSR's original value afterwards, and nothing between the
+// write and the restore depends on the field, so enabling a feature for an instant is harmless.
+// A CSR that does not exist traps, which also counts as absent.
+#define CSR_EXISTS(csr) "csrr a3, " #csr "\n\tli a3, 1"
+#define CSR_FIELD(csr, mask, value)                                                           \
+    "csrr t2, " #csr "\n\t"           /* t2 = original                                */     \
+    "li t1, " #mask "\n\t"                                                                    \
+    "not a2, t1\n\t"                                                                          \
+    "and a2, t2, a2\n\t"              /* a2 = original & ~mask                         */     \
+    "li t1, " #value "\n\t"                                                                   \
+    "or a2, a2, t1\n\t"                                                                       \
+    "csrw " #csr ", a2\n\t"           /* write the field                               */     \
+    "csrr a3, " #csr "\n\t"                                                                   \
+    "csrw " #csr ", t2\n\t"           /* restore                                       */     \
+    "li t1, " #mask "\n\t"                                                                    \
+    "and a3, a3, t1\n\t"                                                                      \
+    "li t1, " #value "\n\t"                                                                   \
+    "xor a3, a3, t1\n\t"                                                                      \
+    "seqz a3, a3"                     /* a3 = field read back as value                 */
+#define CSR_BIT(csr, n) CSR_FIELD(csr, 1 << (n), 1 << (n))
+
+#define PRIV_EXTENSIONS_COMMON(P)                                                             \
+    /* privilege modes */                                                                     \
+    P(U,          "1.0.0", "zicsr", CSR_FIELD(mstatus, 3 << 11, 0))    /* MPP can hold U    */ \
+    P(S,          "1.12.0", "zicsr", CSR_EXISTS(sstatus))                                     \
+    P(H,          "1.0.0", "zicsr", CSR_EXISTS(hstatus))                                      \
+    /* machine-level extensions */                                                            \
+    P(Smstateen,  "1.0.0", "zicsr", CSR_EXISTS(0x30C))              /* mstateen0          */ \
+    P(Smcsrind,   "1.0.0", "zicsr", CSR_EXISTS(0x350))              /* miselect           */ \
+    P(Smaia,      "1.0.0", "zicsr", CSR_EXISTS(0xFB0))              /* mtopi              */ \
+    P(Smrnmi,     "1.0.0", "zicsr", CSR_EXISTS(0x740))              /* mnscratch          */ \
+    P(Smcntrpmf,  "1.0.0", "zicsr", CSR_EXISTS(0x321))              /* mcyclecfg          */ \
+    P(Smctr,      "1.0.0", "zicsr", CSR_EXISTS(0x34E))              /* mctrctl            */ \
+    P(Smepmp,     "1.0.0", "zicsr", CSR_BIT(0x747, 2))              /* mseccfg.RLB        */ \
+    P(Sdtrig,     "1.0.0", "zicsr", CSR_EXISTS(0x7A4))              /* tinfo              */ \
+    /* supervisor-level extensions */                                                         \
+    P(Ssstateen,  "1.0.0", "zicsr", CSR_EXISTS(0x10C))              /* sstateen0          */ \
+    P(Sscsrind,   "1.0.0", "zicsr", CSR_EXISTS(0x150))              /* siselect           */ \
+    P(Ssaia,      "1.0.0", "zicsr", CSR_EXISTS(0xDB0))              /* stopi              */ \
+    P(Sscofpmf,   "1.0.0", "zicsr", CSR_EXISTS(0xDA0))              /* scountovf          */ \
+    P(Sstc,       "1.0.0", "zicsr", CSR_EXISTS(0x14D))              /* stimecmp           */ \
+    P(Ssqosid,    "1.0.0", "zicsr", CSR_EXISTS(0x181))              /* srmcfg             */ \
+    P(Ssctr,      "1.0.0", "zicsr", CSR_EXISTS(0x14E))              /* sctrctl            */ \
+    P(Ssube,      "1.0.0", "zicsr", CSR_BIT(sstatus, 6))            /* UBE                */ \
+    P(Sstvecd,    "1.0.0", "zicsr", CSR_FIELD(stvec, 3, 0))         /* direct mode        */ \
+    P(Sstvecv,    "1.0.0", "zicsr", CSR_FIELD(stvec, 3, 1))         /* vectored mode      */ \
+    P(Svinval,    "1.0.0", "svinval", "sinval.vma zero, zero\n\tli a3, 1")                    \
+    /* hypervisor-level extensions */                                                         \
+    P(Shvstvecd,  "1.0.0", "zicsr", CSR_FIELD(vstvec, 3, 0))                                  \
+    P(Shlcofideleg, "1.0.0", "zicsr", CSR_BIT(hideleg, 13))         /* LCOFI delegable    */
+
+#if __riscv_xlen == 64
+#define PRIV_EXTENSIONS_XLEN(P)                                                               \
+    P(Smdbltrp,   "1.0.0", "zicsr", CSR_BIT(mstatus, 42))           /* MDT                */ \
+    P(Ssdbltrp,   "1.0.0", "zicsr", CSR_BIT(menvcfg, 59))           /* DTE                */ \
+    P(Smcdeleg,   "1.0.0", "zicsr", CSR_BIT(menvcfg, 60))           /* CDE                */ \
+    P(Svadu,      "1.0.0", "zicsr", CSR_BIT(menvcfg, 61))           /* ADUE               */ \
+    P(Svpbmt,     "1.0.0", "zicsr", CSR_BIT(menvcfg, 62))           /* PBMTE              */ \
+    P(Smmpm,      "1.0.0", "zicsr", CSR_FIELD(0x747, 3 << 32, 2 << 32))   /* mseccfg.PMM  */ \
+    P(Smnpm,      "1.0.0", "zicsr", CSR_FIELD(menvcfg, 3 << 32, 2 << 32)) /* menvcfg.PMM  */ \
+    P(Ssnpm,      "1.0.0", "zicsr", CSR_FIELD(senvcfg, 3 << 32, 2 << 32)) /* senvcfg.PMM  */ \
+    P(Ssu64xl,    "1.0.0", "zicsr", CSR_FIELD(sstatus, 3 << 32, 2 << 32)) /* UXL = 64     */ \
+    P(Ssu32xl,    "1.0.0", "zicsr", CSR_FIELD(sstatus, 3 << 32, 1 << 32)) /* UXL = 32     */
+#else
+#define PRIV_EXTENSIONS_XLEN(P)                                                               \
+    P(Smdbltrp,   "1.0.0", "zicsr", CSR_BIT(mstatush, 10))                                    \
+    P(Ssdbltrp,   "1.0.0", "zicsr", CSR_BIT(menvcfgh, 27))                                    \
+    P(Smcdeleg,   "1.0.0", "zicsr", CSR_BIT(menvcfgh, 28))                                    \
+    P(Svadu,      "1.0.0", "zicsr", CSR_BIT(menvcfgh, 29))                                    \
+    P(Svpbmt,     "1.0.0", "zicsr", CSR_BIT(menvcfgh, 30))
+#endif
+
+#define PRIV_EXTENSIONS(P) PRIV_EXTENSIONS_COMMON(P) PRIV_EXTENSIONS_XLEN(P)
+
+// Privileged extensions computed in feature_extractor.c from the rows above and the address
+// translation modes (satp, hgatp and vsatp are written with each mode and read back):
+//   Sm = always, since the extractor runs in M-mode; version 1.12 if menvcfg exists, else 1.11
+//   Sv32 / Sv39 / Sv48 / Sv57 = satp accepts the mode         Svbare = satp accepts Bare
+//   Shgatpa, Shvsatpa = hgatp / vsatp accept every mode satp accepts, and Bare
+//   Sscounterenw, Shcounterenw = every writable mcounteren bit is writable in scounteren / hcounteren
+//   Sspm = Smnpm with S       Supm = Ssnpm with S, Smnpm without
+//   Ssccfg = scountinhibit is accessible once menvcfg.CDE (Smcdeleg) is set
+//   Ssu32xl on RV64 = sstatus.UXL accepts 1; on RV32 UXLEN can only be 32, so it is not reported
+//   Svade = Svadu (menvcfg.ADUE = 0 is defined as Svade behavior); untested otherwise
+//   Sha = H + Shcounterenw + Shgatpa + Shvsatpa + Shvstvecd (Shtvala and Shvstvala are untested)
+
+// Ratified extensions that no probe can see, reported in a comment so the reader knows they were
+// not looked for.  Unprivileged: hints execute everywhere (Zihintpause, Zihintntl, Zicbop), the
+// rest constrain behavior rather than legality (Zicclsm, Ztso, Zkt, Zvkt, Zic64b, Zicc*, Za64rs,
+// Za128rs, Zama16b), and Zk / Zvkn* / Zvks* need Zkt or Zvkt.  Privileged: trap-value guarantees
+// (Sstvala, Shtvala, Shvstvala), page-table-walk behavior (Ssccptr, Svvptc, Svnapot, Svrsw60t59b,
+// and Svade unless Svadu is present), Ssstrict, and debug mode (Sdext).
+#define UNTESTED_EXTENSIONS                                                                   \
+    "Zihintpause Zihintntl Zicbop Zicclsm Ztso Zkt Zvkt Zic64b Ziccif Ziccamoa Ziccamoc Ziccrse " \
+    "Za64rs Za128rs Zama16b Zk Zvkn Zvknc Zvkng Zvks Zvksc Zvksg"
+#define UNTESTED_PRIV_EXTENSIONS                                                              \
+    "Sstvala Shtvala Shvstvala Ssccptr Svvptc Svnapot Svrsw60t59b Ssstrict Sdext"
 
 #endif

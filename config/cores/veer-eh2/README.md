@@ -5,9 +5,9 @@ from CHIPS Alliance, dual-threaded and with an optional A extension. This config
 against a pinned upstream commit, and every UDB and Sail parameter cites the supporting
 documentation text plus a permalink to it.
 
-| Config | ISA | Modes | Pinned commit |
-|---|---|---|---|
-| `veer-eh2-rv32imac` | RV32IMAC_Zicsr_Zifencei | M only, single hart | `bd52450b` |
+| Config              | ISA                     | Modes               | Pinned commit |
+| ------------------- | ----------------------- | ------------------- | ------------- |
+| `veer-eh2-rv32imac` | RV32IMAC_Zicsr_Zifencei | M only, single hart | `bd52450b`    |
 
 Atomics are on, which is the default and the maximum ratified feature set. Bit-manipulation is off
 because VeeR's Zb* is a 0.94-draft subset rather than ratified B, and the core is built with one

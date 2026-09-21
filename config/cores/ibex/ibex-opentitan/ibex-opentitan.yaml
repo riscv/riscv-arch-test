@@ -1,0 +1,383 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
+
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+# UDB Architecture Configuration for the lowRISC Ibex core, built in the "opentitan"
+# configuration with BaseIsa forced to RV32I (CHERIoT mode off).
+#
+# Written against lowRISC/ibex commit e9f55342edbd27e9e17a0e41b1c95a81abb5eac8.
+# Every non-obvious parameter below cites the supporting text and a permalink pinned
+# to that commit. Sources, in order of preference: the reStructuredText manual under
+# doc/ (the source of the published Ibex User Manual), then ibex_configs.yaml, then
+# the RTL under rtl/ and examples/simple_system/.
+#
+# Values marked MEASURED were read back from the verilated core itself with a
+# directed assembly probe; the observed value is quoted in the comment.
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: ibex-opentitan
+description: lowRISC Ibex, "opentitan" configuration with BaseIsa=RV32I - RV32IMCB_Zcb with U-mode and 16 PMP entries
+
+# misa MEASURED as 0x4090_1104: MXL=1 (RV32), C (bit 2), I (bit 8), M (bit 12),
+# U (bit 20) and X (bit 23). Note misa.B reads 0 even though Zba/Zbb/Zbc/Zbs are all
+# present, so B is deliberately NOT claimed below while its constituents are.
+#   Quote: "``misa`` is a WARL register which describes the ISA supported by the hart.
+#   On Ibex, ``misa`` is hard-wired, i.e. it will remain unchanged after any write."
+#   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/cs_registers.rst#L176-L177
+implemented_extensions:
+  # Quote: "The RV32I Base Integer Instruction Set, version 2.1"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/01_overview/compliance.rst#L19
+  - { name: I, version: "= 2.1" }
+  # RV32M = RV32MSingleCycle in the opentitan configuration.
+  #   Quote: "RV32M                    : "ibex_pkg::RV32MSingleCycle""
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/ibex_configs.yaml#L44
+  #   Quote: "**M**: Standard Extension for Integer Multiplication and Division | 2.0"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/01_overview/compliance.rst#L41-L43
+  - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
+  # C is not configurable on Ibex; every configuration implements it.
+  #   Quote: "**C**: Standard Extension for Compressed Instructions | 2.0 | always enabled"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/01_overview/compliance.rst#L37-L39
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  # RV32ZC = RV32ZcaZcbZcmp in the opentitan configuration, so Zcb is present.
+  #   Quote: "RV32ZC                   : "ibex_pkg::RV32ZcaZcbZcmp""
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/ibex_configs.yaml#L46
+  #   Quote: "**Zcb**: Simple Code-Size Saving Instructions | 1.0.0 | optional"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/01_overview/compliance.rst#L57-L59
+  # MEASURED: c.zext.b (0x9de1) on 0x00001234 produced 0x00000034.
+  - { name: Zcb, version: "= 1.0.0" }
+  # Zcmp IS implemented by this build (RV32ZcaZcbZcmp; cm.push/cm.pop MEASURED to
+  # execute correctly) but is deliberately NOT claimed: sail-riscv 0.14.1, the
+  # reference model ACT builds signatures with, has no Zcmp knob in its configuration
+  # schema, so no reference signature could be produced for it. ACT has no Zcmp test
+  # suite either, so nothing is lost.
+  # Quote: "**Zicsr**: Control and Status Register Instructions | 2.0 | always enabled"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/01_overview/compliance.rst#L49-L51
+  - { name: Zicsr, version: "= 2.0" }
+  # Quote: "**Zifencei**: Instruction-Fetch Fence | 2.0 | always enabled"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/01_overview/compliance.rst#L57-L59
+  - { name: Zifencei, version: "= 2.0" }
+  # RV32B = RV32BOTEarlGrey, which is every bit-manipulation sub-extension except Zbe.
+  # Only Zba/Zbb/Zbc/Zbs are ratified at 1.0.0 and only those are claimed; the draft
+  # 0.93 Zbf/Zbp/Zbr/Zbt instructions Ibex additionally decodes are not modelled by
+  # UDB or Sail and are recorded as a divergence in the discrepancy report.
+  #   Quote: "RV32B                    : "ibex_pkg::RV32BOTEarlGrey""
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/ibex_configs.yaml#L45
+  #   Quote: ""ibex_pkg::RV32BOTEarlGrey": All sub-extensions except Zbe"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/02_user/integration.rst#L317
+  #   Quote: "Ibex fully implements the ratified version 1.0.0 of the RISC-V
+  #   Bit-Manipulation Extension including the Zba, Zbb, Zbc and Zbs sub-extensions."
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/01_overview/compliance.rst#L87
+  # MEASURED: sh1add(0x10,3)=0x23, cpop(0xF0F0F0F0)=0x10, rev8(0x11223344)=0x44332211,
+  # bseti(0,5)=0x20, clmul(3,5)=0xF.
+  - { name: Zba, version: "= 1.0.0" }
+  - { name: Zbb, version: "= 1.0.0" }
+  - { name: Zbc, version: "= 1.0.0" }
+  - { name: Zbs, version: "= 1.0.0" }
+  # Zicntr: mcycle/minstret and their unprivileged cycle/instret aliases exist. The
+  # time CSR does NOT (see TIME_CSR_IMPLEMENTED below), so ACT emulates time reads
+  # from the memory-mapped mtime named by RVMODEL_MTIME_ADDRESS.
+  #   Quote: "Additionally, Ibex implements the Zicntr and Zihpm extensions which
+  #   provide User-mode (U-mode) aliases for these performance counters: ``cycle(h)``,
+  #   ``instret(h)``, and ``hpmcounter3(h)`` - ``hpmcounter31(h)``."
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/performance_counters.rst#L11
+  - { name: Zicntr, version: "= 2.0" }
+  # Zihpm is about the UNPRIVILEGED hpmcounter* aliases, which Ibex does implement and
+  # which mcounteren really does gate: MEASURED, a U-mode `csrr cycle` with
+  # mcounteren=0 raises an illegal instruction (mcause 2, mtval 0xc0002573).
+  #   Quote: "When a bit in ``mcounteren`` is clear (0), any attempt to read the
+  #   corresponding counter alias from U-mode will trigger an illegal instruction
+  #   exception."
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/performance_counters.rst#L75
+  - { name: Zihpm, version: "= 2.0" }
+  # Quote: "Ibex supports operation in Machine Mode (M-Mode) and User Mode (U-Mode)."
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/exception_interrupts.rst#L23
+  - { name: U, version: "= 1.0.0" }
+  # Sm 1.12, NOT 1.11. This matters: ACT's recorded-trap path reads mstatush whenever
+  # Sm >= 1.12, and on a core without mstatush that turns every trap into a recursive
+  # trap. Ibex really does implement mstatush (read-only zero), so 1.12 is safe here.
+  #   Quote: "RISC-V Instruction Set Manual, Volume II: Privileged Architecture,
+  #   document version 20211203 (December 4, 2021). Ibex implements the Machine ISA
+  #   version 1.12."
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/01_overview/compliance.rst#L8-L9
+  #   Quote: "// mstatush: All zeros for Ibex (fixed little endian and all other bits reserved)
+  #   CSR_MSTATUSH: csr_rdata_int = '0;"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_cs_registers.sv#L444-L445
+  # MEASURED: `csrr x, 0x310` returns 0x00000000 and does not trap.
+  - { name: Sm, version: "= 1.12.0" }
+
+params:
+  # Ibex is a 32-bit core with a flat 32-bit physical address space.
+  #   Quote: "Ibex is a standards-compliant 32 bit RISC-V processor."
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/01_overview/compliance.rst#L4
+  MXLEN: 32
+  PHYS_ADDR_WIDTH: 32
+
+  # misa exists but is hard-wired, so no extension can be turned off through it.
+  MISA_CSR_IMPLEMENTED: true
+  MUTABLE_MISA_M: false
+  MUTABLE_MISA_C: false
+  MUTABLE_MISA_U: false
+
+  # Endianness: mstatush reads zero, and the RTL comment says so explicitly.
+  #   Quote: "// mstatush: All zeros for Ibex (fixed little endian and all other bits reserved)"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_cs_registers.sv#L444
+  M_MODE_ENDIANNESS: little
+  U_MODE_ENDIANNESS: little
+  UXLEN: [32]
+
+  # Trap behaviour.
+  #   Quote: "8 | Environment call from U-Mode (ECALL)" and
+  #   "11 | Environment call from M-Mode (ECALL)"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/exception_interrupts.rst#L121-L123
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_ECALL_FROM_U: true
+  #   Quote: "3 | Breakpoint"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/exception_interrupts.rst#L115
+  TRAP_ON_EBREAK: true
+  #   Quote: "The illegal instruction exception, instruction access fault, LSU error
+  #   exceptions and ECALL instruction exceptions cannot be disabled and are always active."
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/exception_interrupts.rst#L126
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  # MEASURED: `csrr x, 0xC01` (time, which Ibex does not implement) raises an illegal
+  # instruction with mcause 2 and mtval 0xc0102573. This differs from cv32e20, whose
+  # config sets it false.
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  # MEASURED: a write of 0xFFFFFFFF to mcause (WLRL) is accepted and reads back
+  # 0xFFFFFFFF rather than trapping.
+  TRAP_ON_ILLEGAL_WLRL: false
+
+  # mtval reporting. The manual enumerates exactly which exceptions write it.
+  #   Quote: "In the case of errors in the load-store unit ``mtval`` holds the address
+  #   of the transaction causing the error. If this transaction is misaligned, ``mtval``
+  #   holds the address of the missing transaction part. In the case of illegal
+  #   instruction exceptions, ``mtval`` holds the actual faulting instruction.
+  #   For all other exceptions, ``mtval`` is 0."
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/cs_registers.rst#L292-L296
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
+  # Ibex never raises a misaligned load/store or instruction-address-misaligned
+  # exception at all (see MISALIGNED_LDST below), so these cannot be observed.
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false
+  # MEASURED: a load from unmapped 0x00400000 gave mcause 5 with mtval 0x00400000;
+  # a store to a PMP-denied console address gave mcause 7 with mtval 0x00020000.
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  # MEASURED: a jump to unmapped 0x00400000 gave mcause 1 with mtval equal to the
+  # faulting PC. The manual's "for all other exceptions mtval is 0" sentence is
+  # therefore inaccurate for fetch faults; the measurement wins.
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
+  MTVAL_WIDTH: 32
+
+  # Misaligned load/store: split in the LSU, never reported as an exception. The
+  # exception-cause table has no code 4 (load address misaligned) or 6 (store/AMO
+  # address misaligned) entry.
+  #   Quote: "Ibex can trigger an exception due to the following exception causes:
+  #   1 Instruction access fault / 2 Illegal instruction / 3 Breakpoint /
+  #   5 Load access fault / 7 Store access fault / 8 ECALL U / 11 ECALL M"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/exception_interrupts.rst#L106-L123
+  #   Quote: "Note that Ibex cannot generated an 'instruction address misaligned'
+  #   exception as all configurations implement the 'C' extension."
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/exception_interrupts.rst#L128
+  MISALIGNED_LDST: true
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0 # no A extension on Ibex
+  MISALIGNED_SPLIT_STRATEGY: custom
+
+  # Machine ID CSRs. mvendorid and mimpid are parameters that default to zero and the
+  # simple_system integration leaves them at the default, so both are "not implemented"
+  # in the spec's read-only-zero sense. marchid is a fixed 22 (0x16).
+  #   Quote: "parameter logic [31:0]            CsrMvendorId                = 32'b0,"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_cs_registers.sv#L33
+  #   Quote: "localparam logic [31:0] CSR_MARCHID_VALUE = {1'b0, 31'd22};"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_pkg.sv#L727
+  # MEASURED: mvendorid 0x00000000, marchid 0x00000016, mimpid 0x00000000.
+  VENDOR_ID_BANK: 0x0
+  VENDOR_ID_OFFSET: 0x0
+  MARCHID_IMPLEMENTED: true
+  ARCH_ID_VALUE: 0x16
+  MIMPID_IMPLEMENTED: false
+  # mconfigptr is implemented but hardwired to zero, which the spec defines as
+  # "the configuration data structure does not exist".
+  #   Quote: "localparam logic [31:0] CSR_MCONFIGPTR_VALUE = 32'b0;"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_pkg.sv#L734
+  CONFIG_PTR_ADDRESS: 0x0
+
+  # mtvec. MODE is hardwired to 1 (Vectored); Direct is NOT available, and BASE is
+  # forced to a 256-byte boundary. Getting this wrong is fatal: Sail would relocate
+  # ACT's trampoline for a mode the DUT cannot enter.
+  #   Quote: "31:2 **BASE:** The trap-vector base address, always aligned to 256 bytes,
+  #   i.e., ``mtvec[7:2]`` is always set to 6'b0.
+  #   1:0 **MODE:** Always set to 2'b01 to indicate vectored interrupt handling (read-only)."
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/cs_registers.rst#L216-L219
+  # MEASURED: writing 0x12345678 to mtvec reads back 0x12345601.
+  MTVEC_MODES: [1]
+  MTVEC_ACCESS: rw
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom # low bits of a write are zeroed, not retained
+  MTVEC_BASE_ALIGNMENT_VECTORED: 256
+
+  # Sm parameters.
+  #   Quote: "When entering an interrupt/exception handler, the core sets the ``mepc``
+  #   CSR to the current program counter"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/exception_interrupts.rst#L8
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  # No PMA hardware. The data side of the OBI bus carries a 4-bit byte enable over a
+  # 32-bit bus, so the natural access granule is 4 bytes (2^2).
+  #   Quote: "output logic [3:0]                                                   data_be_o,"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_top.sv#L97
+  PMA_GRANULARITY: 2
+
+  # PMP: PMPEnable=1 with PMPNumRegions=16 and PMPGranularity=0 in the opentitan
+  # configuration. Granularity 0 means NA4 is available; UDB encodes PMP_GRANULARITY
+  # as G+2, so G=0 becomes 2.
+  #   Quote: "PMPEnable                : 1 / PMPGranularity           : 0 / PMPNumRegions            : 16"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/ibex_configs.yaml#L56-L58
+  #   Quote: "0x3B0 | ``pmpaddr0`` ... 0x3BF | ``pmpaddr15``"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/cs_registers.rst#L49-L54
+  # MEASURED: pmpaddr15 accepts and returns 0xFFFFFFFF; pmpcfg0 accepts both 0x1F
+  # (NAPOT|RWX) and 0x17 (NA4|RWX) and reads each back unchanged.
+  NUM_PMP_ENTRIES: 16
+  NUM_USABLE_PMP_ENTRIES: 16
+  PMP_GRANULARITY: 2
+  PMP_TOR_SUPPORTED: true
+  PMP_NA4_SUPPORTED: true
+  PMP_NAPOT_SUPPORTED: true
+
+  # The time CSR is NOT implemented; ACT emulates time/timeh reads from the
+  # memory-mapped mtime at RVMODEL_MTIME_ADDRESS through its invisible trap handler.
+  #   Quote: "1 | R | **TM:** Always reads as zero. The ``time`` CSR is not implemented."
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/cs_registers.rst#L242
+  # MEASURED: `csrr x, 0xC01` traps with mcause 2.
+  TIME_CSR_IMPLEMENTED: false
+
+  # Hardware performance monitors: MHPMCounterNum=10 makes mhpmcounter3..12 real;
+  # 13..31 decode but are read-only zero.
+  #   Quote: "MHPMCounterNum           : 10"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/ibex_configs.yaml#L59
+  #   Quote: "Set ``MHPMCounterNum`` to a value between 1 and 10 to make the counters
+  #   ``mhpmcounter3(h)`` - ``mhpmcounter12(h)`` available"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/performance_counters.rst#L90
+  # MEASURED: writing all-ones to mcountinhibit reads back 0x00001FFD, i.e. bits
+  # 0 and 2..12 only.
+  HPM_EVENTS: [0]
+  HPM_COUNTER_EN: [
+      false,
+      false,
+      false, # 0 (mcycle), 1 (reserved), 2 (minstret) are not mhpmcounters
+      true,
+      true,
+      true,
+      true,
+      true, # mhpmcounter3..7
+      true,
+      true,
+      true,
+      true,
+      true, # mhpmcounter8..12
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 13..19
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 20..25
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 26..31
+    ]
+
+  #   Quote: "0x320 | ``mcountinhibit`` | RW | Machine Counter-Inhibit Register"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/cs_registers.rst#L25
+  MCOUNTINHIBIT_IMPLEMENTED: true
+  # Bit 0 = mcycle, bit 1 = TM (read-only zero, no time counter), bit 2 = minstret,
+  # bits 3..12 = the implemented mhpmcounters. MEASURED mask 0x00001FFD.
+  COUNTINHIBIT_EN: [
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true, # 0..7
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false, # 8..15
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 16..23
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 24..31
+    ]
+
+  # mcounteren has exactly the same writable mask: CY, IR and HPM3..HPM12, with TM
+  # read-only zero because there is no time CSR to enable.
+  #   Quote: "Bits above ``MHPMCounterNum + 2`` always read as zero."
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/cs_registers.rst#L238
+  # MEASURED: writing all-ones to mcounteren reads back 0x00001FFD.
+  MCOUNTENABLE_EN: [
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true, # 0..7
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false, # 8..15
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 16..23
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 24..31
+    ]

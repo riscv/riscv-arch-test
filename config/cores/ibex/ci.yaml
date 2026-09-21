@@ -1,0 +1,58 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# CI configuration for the lowRISC Ibex core
+
+ci_enabled: true
+
+# Exclusions are by test-suite directory, the only granularity EXCLUDE_EXTENSIONS
+# supports, so a suite with one failing test loses all its passing tests too.
+# Measured on lowRISC/ibex @ e9f5534 verilated as Ibex Simple System in the
+# "opentitan" configuration with BaseIsa=RV32I: 240 tests selected, 236 pass, 4 fail.
+# Each of the four also PASSES on config/sail/sail-rv32-max, so none of them is an
+# ACT framework or test-generation problem.
+#
+#   ExceptionsSm  1 of 4 fails (ExceptionsSm-00): the test jumps to
+#                 RVMODEL_ACCESS_FAULT_ADDRESS and expects an instruction access fault
+#                 (mcause 1); the DUT does not fault at all and the trap stream is one
+#                 entry short from there on (reported as "expected cause 1, actual
+#                 cause 5"). Cause: Ibex Simple System wires the core's instruction
+#                 port straight to port B of the RAM and ties the fetch error input
+#                 off - "assign instr_err = '0;" - and ram_2p indexes with
+#                 b_addr_i[19:2] only, so every fetch address aliases into the 1 MB RAM
+#                 and no fetch can ever raise a bus error. This is an integration
+#                 limitation of the example system, not of the Ibex core, which has a
+#                 real instr_err_i input. Data-side access faults do work: the same
+#                 address faults correctly for loads and stores (mcause 5/7 with the
+#                 address in mtval), which is why RVMODEL_ACCESS_FAULT_ADDRESS is still
+#                 defined and ExceptionsZc-00 passes.
+#
+#   ExceptionsU   1 of 1 fails (ExceptionsU-00): same root cause. The missing fetch
+#                 fault shifts the trap stream, so the first mismatch is reported as a
+#                 Vector+Mode+Status word difference of 0x03000000 - the two mstatus.MPP
+#                 bits - because the DUT is compared against the next expected trap,
+#                 which was taken from U-mode rather than M-mode.
+#
+#   PMPSm         1 of 33 fails (PMPSm_cfg_A_tor_zero-00): same root cause again. The
+#                 test's last probe is "jalr x0, 0(a5)" with a5 = 0, which should raise
+#                 an instruction access fault because address 0 is outside the RAM.
+#                 The fetch aliases into RAM instead and retires. The other 32 PMPSm
+#                 tests pass, including every PMP-generated execute fault, which are
+#                 produced inside the core and are unaffected.
+#
+#   Sm            1 of 27 fails (Sm_mcsr_cntr-00), at bin mhpmcounter3h_csrrw_some:
+#                 the test writes 0x1234FFFF to mhpmcounter3h and requires the value to
+#                 stick. MHPMCounterWidth is 32 in the opentitan configuration, so the
+#                 event counters are 32 bits wide and mhpmcounter3h..12h are read-only
+#                 zero. MEASURED: mhpmcounter3 accepts 0x1234FFFF, mhpmcounter3h reads
+#                 back 0x00000000, while mcycleh and minstreth (always 64-bit) do
+#                 accept it. The privileged spec permits this - "The mhpmcounters are
+#                 WARL registers that support up to 64 bits of precision on RV32 and
+#                 RV64" - so it is not a DUT defect; there is simply no UDB parameter
+#                 or sail.json field for HPM counter width (UDB has only HPM_EVENTS and
+#                 HPM_COUNTER_EN, and sail.json's writable_hpm_counters is a per-counter
+#                 enable mask), so the reference model assumes full 64-bit precision.
+exclude_extensions: "ExceptionsSm,ExceptionsU,PMPSm,Sm"
+
+apt_packages: "autoconf flex bison help2man libfl-dev libelf-dev ccache python3-venv"
+install_script: ".github/scripts/install-ibex.sh"
+setup_script: ".github/scripts/setup-ibex.sh"

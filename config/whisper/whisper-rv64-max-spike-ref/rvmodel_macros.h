@@ -99,7 +99,7 @@
   beqz _R1, 3f               ; /* Exit if null */     \
 2:                           ;                        \
   li   _R2, 0x10000000       ; /* virtual printer */  \
-  sb   _R1, 0(_R2)           ;                        \
+  sw   _R1, 0(_R2)           ;                        \
   addi _STR_PTR, _STR_PTR, 1 ; /* Next char */        \
   j 1b                       ; /* Loop */             \
 3:

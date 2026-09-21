@@ -43,14 +43,19 @@
     // can range from a minimum of 2 upto a maximum of 24. If
     // unaligned values are written to these CSRs, the lowest bits
     // will be zeroed to respect the specified alignment.
+    // VeeR stores mtvec as {wrdata[31:2], wrdata[0]}: bit 1 is dropped, so BASE is
+    // 4-byte aligned (base_alignment 2) and both MODE=0 (Direct) and MODE=1 (Vectored)
+    // are representable. Must agree with MTVEC_MODES and MTVEC_BASE_ALIGNMENT_* in the
+    // UDB config.
+    //   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/design/dec/dec_tlu_ctl.sv#L1145
     "mtvec": {
       "direct": {
-        "supported": false,
+        "supported": true,
         "base_alignment": 2
       },
       "vectored": {
         "supported": true,
-        "base_alignment": 8
+        "base_alignment": 2
       }
     },
     // Similar to `mtvec` above. If `S` mode is not supported, these

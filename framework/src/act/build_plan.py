@@ -40,7 +40,13 @@ _OBJDUMP_FLAGS_DEBUG = [*_OBJDUMP_FLAGS_COMMON, "-t", "-s"]
 # ---------------------------------------------------------------------------
 
 
-def _sail_platform_base(data: dict[object, object], name: str, path: Path) -> int:
+def _sail_platform_base(data: dict[object, object], name: str, path: Path) -> int | None:
+    """Return the base address of a Sail platform device, or None when the platform lacks it.
+
+    A DUT with no CLINT or no interrupt controller says so in its sail config; sail_macros.h
+    then leaves the corresponding RVMODEL interrupt macros as the DUT defined them instead of
+    redirecting them at a Sail device that does not exist.
+    """
     platform = data.get("platform")
     if not isinstance(platform, dict):
         raise TypeError(f"Sail config {path} is missing the `platform` object.")
@@ -50,13 +56,7 @@ def _sail_platform_base(data: dict[object, object], name: str, path: Path) -> in
         raise TypeError(f"Sail config {path} is missing the `platform.{name}` object.")
 
     if device.get("supported") is not True:
-        raise ValueError(
-            f"Sail config {path} must set `platform.{name}.supported` to true. "
-            "ACT signature generation requires this Sail device even when the DUT uses a different "
-            "interrupt mechanism or does not provide the same device. Enable the device in the sail "
-            "config and place it in an IO memory region. Select an address that does not map to DUT "
-            "memory, or it may overlap the DUT's own IO memory."
-        )
+        return None
 
     base = device.get("base")
     if not isinstance(base, int):
@@ -73,12 +73,13 @@ def _sail_platform_defines(sail_config_path: Path) -> tuple[str, ...]:
     if not isinstance(config_data, dict):
         raise TypeError(f"Sail config {sail_config_path} must contain a JSON object.")
 
-    clint_base = _sail_platform_base(config_data, "clint", sail_config_path)
-    sig_base = _sail_platform_base(config_data, "simple_interrupt_generator", sail_config_path)
-    return (
-        f"-DSAIL_CLINT_BASE_ADDRESS=0x{clint_base:x}",
-        f"-DSAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS=0x{sig_base:x}",
-    )
+    devices = {
+        "SAIL_CLINT_BASE_ADDRESS": _sail_platform_base(config_data, "clint", sail_config_path),
+        "SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS": _sail_platform_base(
+            config_data, "simple_interrupt_generator", sail_config_path
+        ),
+    }
+    return tuple(f"-D{macro}=0x{base:x}" for macro, base in devices.items() if base is not None)
 
 
 def _ref_model_sig_cmd(

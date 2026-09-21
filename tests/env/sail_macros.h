@@ -12,18 +12,28 @@
 #ifndef _SAIL_MACROS_H
 #define _SAIL_MACROS_H
 
-#ifndef SAIL_CLINT_BASE_ADDRESS
-  #error "SAIL_CLINT_BASE_ADDRESS is not defined, should have been passed by the ACT compilation framework."
+// SAIL_CLINT_BASE_ADDRESS and SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS are passed by the ACT
+// compilation framework, one per device the sail config marks supported.  A platform may have
+// neither: a DUT with no timer and no interrupt controller says so in its sail config, and the
+// macros each missing device would drive are then left as the DUT defined them, which on such a
+// DUT are the stubs that do nothing.  A DUT that does have a timer needs Sail to model one, so
+// that combination is an error rather than a silent divergence.
+#ifdef SAIL_CLINT_BASE_ADDRESS
+  #define SAIL_MSIP_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0x0)
+  #define SAIL_MTIMECMP_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0x4000)
+  #define SAIL_MTIME_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0xBFF8)
+#else
+  #ifdef RVMODEL_MTIME_ADDRESS
+    #error "The sail config has no CLINT but the DUT defines RVMODEL_MTIME_ADDRESS. Set platform.clint.supported to true so the reference model can provide mtime."
+  #endif
+  #ifdef RVMODEL_MSIP_ADDRESS
+    #error "The sail config has no CLINT but the DUT defines RVMODEL_MSIP_ADDRESS. Set platform.clint.supported to true so the reference model can provide msip."
+  #endif
 #endif
 
-#ifndef SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS
-  #error "SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS is not defined, should have been passed by the ACT compilation framework."
+#ifdef SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS
+  #define SAIL_SIG_ADDRESS (SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS + 0x4)
 #endif
-
-#define SAIL_MSIP_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0x0)
-#define SAIL_MTIMECMP_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0x4000)
-#define SAIL_MTIME_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0xBFF8)
-#define SAIL_SIG_ADDRESS (SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS + 0x4)
 
 // Don't use invisible trap emulation for expected result generation
 #undef RVTEST_EMULATE_TIME_CSR
@@ -104,19 +114,21 @@
 
 ##### Machine Timer #####
 
-#ifdef RVMODEL_MTIMECMP_ADDRESS
-  #undef RVMODEL_MTIMECMP_ADDRESS
-  #define RVMODEL_MTIMECMP_ADDRESS SAIL_MTIMECMP_ADDRESS
-#endif
+#ifdef SAIL_CLINT_BASE_ADDRESS
+  #ifdef RVMODEL_MTIMECMP_ADDRESS
+    #undef RVMODEL_MTIMECMP_ADDRESS
+    #define RVMODEL_MTIMECMP_ADDRESS SAIL_MTIMECMP_ADDRESS
+  #endif
 
-#ifdef RVMODEL_MTIME_ADDRESS
-  #undef RVMODEL_MTIME_ADDRESS
-  #define RVMODEL_MTIME_ADDRESS SAIL_MTIME_ADDRESS
-#endif
+  #ifdef RVMODEL_MTIME_ADDRESS
+    #undef RVMODEL_MTIME_ADDRESS
+    #define RVMODEL_MTIME_ADDRESS SAIL_MTIME_ADDRESS
+  #endif
 
-#ifdef RVMODEL_MSIP_ADDRESS
-  #undef RVMODEL_MSIP_ADDRESS
-  #define RVMODEL_MSIP_ADDRESS SAIL_MSIP_ADDRESS
+  #ifdef RVMODEL_MSIP_ADDRESS
+    #undef RVMODEL_MSIP_ADDRESS
+    #define RVMODEL_MSIP_ADDRESS SAIL_MSIP_ADDRESS
+  #endif
 #endif
 
 ##### Machine Interrupts #####
@@ -128,6 +140,9 @@
 #undef RVMODEL_TIMER_INT_SOON_DELAY
 #define RVMODEL_TIMER_INT_SOON_DELAY 5000 // Sail ticks once per instruction; T-SBI round trips in the *_INT_SOON macros cost up to ~1000 ticks
 
+// The external and supervisor interrupt macros drive the simple interrupt generator; without it
+// the DUT's own definitions stand, so a DUT with no interrupt controller keeps its stubs.
+#ifdef SAIL_SIG_ADDRESS
 #undef RVMODEL_SET_MEXT_INT
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)        \
   li _R1, (1 << 31) | (1 << 11);               \
@@ -141,6 +156,10 @@
   li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear MEXT interrupt */ \
 
+#endif // SAIL_SIG_ADDRESS
+
+// The software interrupt macros drive the CLINT's msip register.
+#ifdef SAIL_MSIP_ADDRESS
 #undef RVMODEL_SET_MSW_INT
 #define RVMODEL_SET_MSW_INT(_R1, _R2)        \
   li _R1, 1;                 \
@@ -155,7 +174,10 @@
 
 
 
+#endif // SAIL_MSIP_ADDRESS
+
 ##### Supervisor Interrupts #####
+#ifdef SAIL_SIG_ADDRESS
 #undef RVMODEL_SET_SEXT_INT
 #define RVMODEL_SET_SEXT_INT(_R1, _R2)        \
   li _R1, (1 << 31) | (1 << 9);               \
@@ -179,5 +201,7 @@
   li _R1, (1 << 1);               \
   li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear SSW interrupt */ \
+
+#endif // SAIL_SIG_ADDRESS
 
 #endif // _SAIL_MACROS_H

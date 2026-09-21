@@ -38,19 +38,24 @@ ci_enabled: true
 #                 identically, and the testbench's imem instance is tied off with .HWDATA(64'h0),
 #                 so no store can ever reach fetched memory.
 #
-#   I             1 of 39 fail: I-fence-00, which hits two bugs at once.
-#                 (a) fence.tso (encoding 0x8330000f, i.e. FENCE with fm=1000) raises an illegal
-#                     instruction: the decode table hardcodes the fm field to zero
-#                     (design/dec/decode:56, "fence = [0000........00000000000000001111]").
-#                     Plain fence works - 0x0ff0000f and 0x0330000f both retire. The unprivileged
-#                     spec requires fence.tso to be treated as a normal global fence: "The fence.tso
-#                     instruction was incorrectly described as optional in 2019. However, fence.tso
-#                     is encoded within the standard fence encoding such that implementations must
-#                     treat it as a simple global fence if they do not support TSO optimizations."
-#                 (b) recording that trap then triggers the mstatush recursion above (3750 nested
-#                     traps), which is what leaves the test with zero signature entries.
+#   I             1 of 39 fail: I-fence-00, because FENCE.TSO IS NOT IMPLEMENTED.
+#                 fence.tso (encoding 0x8330000f, i.e. FENCE with fm=1000, pred=RW, succ=RW)
+#                 raises an illegal instruction on VeeR EH1. Plain fence is fine: 0x0ff0000f
+#                 and 0x0330000f both execute and retire. The cause is the decode table, which
+#                 hardcodes the fm field to zero so fm=1000 matches no pattern:
+#                     fence =   [0000........00000000000000001111]
+#                     https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/design/dec/decode#L56
+#                 This is a conformance bug, not an optional feature. The unprivileged spec says:
+#                     "The fence.tso instruction was incorrectly described as optional in 2019.
+#                      However, fence.tso is encoded within the standard fence encoding such that
+#                      implementations must treat it as a simple global fence if they do not
+#                      support TSO optimizations."
+#                 with the companion note that "it is correct to ignore the fm field and implement
+#                 fence.tso as fence[RW,RW]". So the minimum conforming behaviour is to ignore fm.
+#                 Secondary effect: recording that trap then triggers the mstatush recursion above
+#                 (3750 nested traps), which is what leaves the test with zero signature entries.
 #                 Excluding the whole suite to silence one test also drops 38 passing tests, the cost
-#                 of having no per-test exclusion mechanism.
+#                 of having no per-test exclusion mechanism; a per-test skip would be preferable.
 exclude_extensions: "Sm,ExceptionsSm,ExceptionsZc,Zifencei,I"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"

@@ -1,4 +1,4 @@
-# ACT Configurations for the CHIPS Alliance VeeR Cores
+# ACT Configuration for the CHIPS Alliance VeeR EH1 Core
 
 [VeeR](https://github.com/chipsalliance) is a family of open-source RISC-V cores from CHIPS
 Alliance. Configurations here are written against a pinned upstream commit, and every UDB and Sail
@@ -26,9 +26,9 @@ RV_ROOT=~/repos/Cores-VeeR-EH1 make -f $RV_ROOT/tools/Makefile verilator-build
 export PATH=$HOME/repos/veer-builds/bin:$PATH   # holds run-veer.sh
 export VEER_SNAPSHOT=$HOME/repos/veer-builds/eh1
 cd <act root>
-make CONFIG_FILES=config/cores/veer/veer-eh1/test_config.yaml \
+make CONFIG_FILES=config/cores/veer-eh1/veer-eh1-rv32imc/test_config.yaml \
      EXCLUDE_EXTENSIONS=ExceptionsSm,Sm,ExceptionsZc --jobs $(nproc)
-./run_tests.py "run-veer.sh --elf" work/veer-eh1/elfs
+./run_tests.py "run-veer.sh --elf" work/veer-eh1-rv32imc/elfs
 ```
 
 The three excluded suites fail during signature generation on the reference model, not on the DUT;

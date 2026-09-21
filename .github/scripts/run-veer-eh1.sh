@@ -27,10 +27,10 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-[ -n "$ELF" ]      || { echo "run-veer.sh: no ELF given" >&2; exit 2; }
-[ -f "$ELF" ]      || { echo "run-veer.sh: no such ELF: $ELF" >&2; exit 2; }
+[ -n "$ELF" ]      || { echo "run-veer-eh1.sh: no ELF given" >&2; exit 2; }
+[ -f "$ELF" ]      || { echo "run-veer-eh1.sh: no such ELF: $ELF" >&2; exit 2; }
 SIM="$SNAPSHOT/obj_dir/Vtb_top"
-[ -x "$SIM" ]      || { echo "run-veer.sh: no simulator at $SIM (build it with tools/Makefile verilator-build)" >&2; exit 2; }
+[ -x "$SIM" ]      || { echo "run-veer-eh1.sh: no simulator at $SIM (build it with tools/Makefile verilator-build)" >&2; exit 2; }
 
 # The VeeR testbench hard-codes program.hex / console.log / exec.log relative to the
 # current directory, so every test needs its own directory to run in parallel safely.
@@ -64,6 +64,6 @@ fi
 if [ "$rc" -eq 0 ] && [ "$KEEP" -eq 0 ]; then
   rm -rf "$WORK"
 else
-  echo "run-veer.sh: artifacts kept in $WORK (exit $rc)" >&2
+  echo "run-veer-eh1.sh: artifacts kept in $WORK (exit $rc)" >&2
 fi
 exit $rc

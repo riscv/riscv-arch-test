@@ -2,12 +2,12 @@
 # Copyright (c) 2026, Harvey Mudd College
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 # Install the VeeR EH1 testbench (Verilator) for CI.
-# Usage: install-veer.sh <install-dir>
+# Usage: install-veer-eh1.sh <install-dir>
 # Cache key derives from sha256(this file); bump the pins below to invalidate.
 
 set -euo pipefail
 
-INSTALL_DIR="${1:?Usage: install-veer.sh <install-dir>}"
+INSTALL_DIR="${1:?Usage: install-veer-eh1.sh <install-dir>}"
 VEER_EH1_REPO="https://github.com/chipsalliance/Cores-VeeR-EH1.git"
 VEER_EH1_COMMIT="d04b1c7ae675a63dc4307cacfd10547ec937b928"
 VERILATOR_VERSION="v5.036"
@@ -44,4 +44,4 @@ mkdir -p "$INSTALL_DIR/eh1"
 )
 
 # 4. Install the per-test runner
-install -m 0755 "$(dirname "$0")/run-veer.sh" "$INSTALL_DIR/bin/run-veer.sh"
+install -m 0755 "$(dirname "$0")/run-veer-eh1.sh" "$INSTALL_DIR/bin/run-veer-eh1.sh"

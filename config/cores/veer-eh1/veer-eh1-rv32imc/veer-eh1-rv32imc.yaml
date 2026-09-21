@@ -14,7 +14,7 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: veer-eh1
+name: veer-eh1-rv32imc
 description: CHIPS Alliance VeeR EH1 - RV32IMC, machine mode only, maximum feature set
 
 # misa reads 0x4000_1104: MXL=1 (RV32), plus C (bit 2), I (bit 8) and M (bit 12).

@@ -1,1 +1,0 @@
-run-veer.sh --elf

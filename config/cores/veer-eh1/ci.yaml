@@ -56,5 +56,5 @@ ci_enabled: true
 exclude_extensions: "Sm,ExceptionsSm,ExceptionsZc,Zifencei,I"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
-install_script: ".github/scripts/install-veer.sh"
-setup_script: ".github/scripts/setup-veer.sh"
+install_script: ".github/scripts/install-veer-eh1.sh"
+setup_script: ".github/scripts/setup-veer-eh1.sh"

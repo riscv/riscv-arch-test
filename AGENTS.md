@@ -100,6 +100,10 @@
   validate.
 - `prek run --files` only checks what you name. Pass `$(git diff --name-only <base>...HEAD)` so
   nothing in the change is missed, rather than checking one file at a time.
+- Keep PR descriptions brief, preferably to a single paragraph unless more is absolutely necessary
+  to understand a subtle or complicated PR. Always make sure that PRs pass `prek` and regression or
+  other appropriate tests so it won't fail CI, and keep verification to one sentence unless
+  something unusual is necessary.
 
 ## Process Traps
 

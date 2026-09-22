@@ -321,8 +321,11 @@ def _generate_jvt(test_data: TestData) -> list[str]:
 # ---------------------------------------------------------------------------
 # cp_fcsr_ro_zero
 #   Cross: misa_F × csrops × mstateen0_fcsr_bit
-#   Exercises the ignore_bins-covered path where fcsr reads as zero
-#   when misa.F is set but mstateen0.fcsr (bit 1) is clear.
+#   The FCSR bit only has an effect when misa.F = 0: whenever misa.F = 1 the bit is
+#   read-only zero (norm:mstateen0_fcsr_roz), so "misa.F set with the bit clear" is not
+#   an fcsr-reads-zero case at all -- fcsr is then a normal FP CSR governed by
+#   mstatus.FS. With misa.F = 0 and the bit clear, fcsr and every FP instruction raise
+#   illegal-instruction (norm:stateen0_fcsr0_misa_f0_illegal_fpu_instr).
 # ---------------------------------------------------------------------------
 
 
@@ -333,7 +336,8 @@ def _generate_fcsr_ro_zero(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(
             coverpoint,
-            "misa.F set, mstateen0.fcsr (bit 1) clear — fcsr reads as zero (access-fault path)",
+            "misa.F clear (Zfinx), mstateen0.fcsr (bit 1) clear — fcsr and every FP instruction "
+            "raise illegal-instruction (norm:stateen0_fcsr0_misa_f0_illegal_fpu_instr)",
         )
     ]
 
@@ -344,13 +348,18 @@ def _generate_fcsr_ro_zero(test_data: TestData) -> list[str]:
         [
             f"LI(x{ones_reg}, -1)",
             "",
-            f"{INDENT}# Ensure misa.F is set (read misa, verify F bit, then proceed)",
+            f"{INDENT}# mstateen0.FCSR only does anything when misa.F = 0: the priv spec makes the",
+            f"{INDENT}# bit read-only zero whenever misa.F = 1 (norm:mstateen0_fcsr_roz), so the",
+            f"{INDENT}# csrc below would be a no-op and fcsr would read normally. This block is",
+            f"{INDENT}# Zfinx-only and Zfinx harts have no f registers, so F is expected clear;",
+            f"{INDENT}# check it rather than assume it, and skip the block if a hart reports both.",
             "#ifdef UDB_MISA_CSR_IMPLEMENTED",
             f"csrr x{temp_reg}, misa",
+            f"andi x{temp_reg}, x{temp_reg}, {1 << 5}   # bit 5 = F",
+            f"bnez x{temp_reg}, 1f",
             "#endif // UDB_MISA_CSR_IMPLEMENTED",
-            f"{INDENT}# bit 5 = F; test proceeds assuming F is present per MARCH",
             "",
-            f"{INDENT}# Clear mstateen0.fcsr so fcsr reads zero",
+            f"{INDENT}# Clear mstateen0.fcsr so fcsr and FP instructions trap",
             f"LI(x{temp_reg}, {FCSR_BIT_MASK})",
             f"csrc mstateen0, x{temp_reg}",
         ]
@@ -365,6 +374,15 @@ def _generate_fcsr_ro_zero(test_data: TestData) -> list[str]:
                 "nop",
             ]
         )
+
+    lines.extend(
+        [
+            "",
+            "#ifdef UDB_MISA_CSR_IMPLEMENTED",
+            f"1:{INDENT}# misa.F was set, so mstateen0.FCSR is read-only zero and there is nothing here",
+            "#endif // UDB_MISA_CSR_IMPLEMENTED",
+        ]
+    )
 
     test_data.int_regs.return_registers([temp_reg, ones_reg])
     return lines

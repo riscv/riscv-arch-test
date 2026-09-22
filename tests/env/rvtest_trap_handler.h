@@ -2404,11 +2404,11 @@ skp_\__MODE__\()tval:
 
 // --- Hypervisor-specific fields: mtval2 and mtinst (words 4-5) ---
   .ifc \__MODE__ , M
+        #ifdef H_SUPPORTED
         csrr    T3, CSR_MISA            // skip mtval2, mtinst save if hypervisor is enabled (misa[7] (H)-1)
         slli    T3, T3, UDB_MXLEN-7-1
         bgez    T3, 1f
 
-        #ifdef H_SUPPORTED
         sv_\__MODE__\()Mtval2:
         csrr    T3, CSR_MTVAL2
         TRAP_SIGUPD(T4, T3, 4, sv_\__MODE__\()Mtval2, sv_Mtval2_str) // write word 4: mtval2
@@ -2803,7 +2803,10 @@ rtn_fm_mmode:
 //                   defined, the M-mode prolog installs
 //                   trap_handler_fastillegalinstr in mtvec and the S-mode
 //                   prolog installs strap_handler_fastillegalinstr in stvec
-//                   (both direct mode), instead of the standard trampolines.
+//                   with the selected xTVEC mode, instead of the standard
+//                   trampolines. In vectored mode, synchronous exceptions
+//                   still enter at the handler BASE; these tests do not enable
+//                   interrupts.
 //
 //  M-mode handler (mtvec): handles illegal-instruction traps taken in (or not
 //  delegated from) M-mode. Any other cause is forwarded to Mtrampoline, the
@@ -2815,9 +2818,10 @@ rtn_fm_mmode:
 //  Any other S-mode trap is forwarded to Strampoline.
 //
 //  Assumptions:
-//    - xTVEC accepts the handler address in direct mode (the prolog's
-//      trampoline-relocation fallback for read-only xTVEC does not apply to
-//      the fast handler).
+//    - The tests do not enable interrupts when the handler uses vectored mode.
+//      Synchronous exceptions enter at the handler BASE in both supported
+//      modes. If xTVEC does not accept the handler address, the prolog uses
+//      the standard trampoline relocation fallback instead of the fast handler.
 //    - The hart has read access to the trapping instruction (PMP/physical
 //      memory allows instruction reads at the faulting PC) and address
 //      translation is disabled, so the handler can read the instruction word

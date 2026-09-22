@@ -45,9 +45,8 @@ def guard_symbol(int_type: str) -> str:
 # in first to make S_SUPPORTED and H_SUPPORTED visible to the guards below.
 INTR_IMPL_DEFINES = [
     '#include "rvtest_config.h"',
-    "#define UDB_MEI_INTR_IMPL",
-    "#define UDB_MTI_INTR_IMPL",
-    "#define UDB_MSI_INTR_IMPL",
+    # UDB_MEI/MTI/MSI_INTR_IMPL are derived in tests/env/riscv_arch_test.h from whether the
+    # platform actually has a way to raise each one, so they are deliberately absent here.
     "#ifdef S_SUPPORTED",
     "#define UDB_SEI_INTR_IMPL",
     "#define UDB_STI_INTR_IMPL",

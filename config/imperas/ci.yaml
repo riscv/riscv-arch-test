@@ -10,11 +10,12 @@
 #   https://solvnetplus.synopsys.com/s/case/500WQ0000230O4P/imperas-treats-vwmaccuvv-v14-v9-v15-v0t-as-legal
 #   SsstrictSm additionally trips on hcontext (0x6a8) on rv64-max, which Imperas implements
 #   and Sail does not. The rv32 configs pass SsstrictS/U entirely, and rv32gck passes all three.
-# - InterruptsSm: Imperas does not implement machine external interrupts
-#   (https://github.com/riscv/sail-riscv/issues/1836); InterruptsS passes because the env
-#   falls back to mip.SEIP when RVMODEL_SET_SEXT_INT is undefined
+# - InterruptsSm/S now pass: Imperas implements neither machine nor supervisor external
+#   interrupts (https://github.com/riscv/sail-riscv/issues/1836), and both are handled without
+#   an exclusion -- MEI through UDB_MEI_INTR_IMPL staying clear because rvmodel_macros.h defines
+#   no RVMODEL_SET_MEXT_INT, and SEI through the env falling back to mip.SEIP
 # - Smstateen: Sail does not implement all state yet to match
 # - ExceptionsVx: https://solvnetplus.synopsys.com/s/case/500WQ000023l1CPYAY/vmvnrrv-does-not-raise-an-illegalinstruction-exception-when-vtypevill-1
 #
 ci_enabled: false
-exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,InterruptsSm,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU"

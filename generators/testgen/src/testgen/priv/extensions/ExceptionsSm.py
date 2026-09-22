@@ -282,7 +282,10 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
 @add_priv_test_generator(
     "ExceptionsSm",
     required_extensions=["Sm"],
-    extra_defines=["#define BOOT_TO_MMODE"],
+    extra_defines=[
+        "#define BOOT_TO_MMODE",
+        "#define TRAP_SIGUPD_COUNT 5000",
+    ],
 )
 def make_exceptionssm(test_data: TestData) -> list[TestChunk]:
     """Main entry point for Sm exception test generation (refactored)."""
@@ -322,7 +325,8 @@ def make_exceptionssm(test_data: TestData) -> list[TestChunk]:
 
     # medeleg only exists with S-mode; walk it from M-, S- and U-mode.  One file per mode: each walk
     # repeats the misaligned load and store sweeps for every medeleg value, so a DUT that traps on
-    # every misaligned access records ~700 trap signatures of up to 6 words.
+    # every misaligned access records ~700 trap signatures of up to 6 words, ~4.2k entries of the
+    # TRAP_SIGUPD_COUNT area.
     for mode_tag, priv_mode in (("mode_m", 3), ("mode_s", 1), ("mode_u", 0)):
         tc = test_data.begin_test_chunk(f"medeleg_{mode_tag[-1]}")
         tc.code.append("#ifdef S_SUPPORTED")

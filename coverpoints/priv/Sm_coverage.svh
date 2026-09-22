@@ -262,7 +262,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         // bins mcause     = {CSR_MCAUSE}; // WLRL field; tested with cp_mcause_write_exception and cp_mcause_write_interrupt
         bins mtval      = {CSR_MTVAL};
         bins mip        = {CSR_MIP};
-        bins mcountinhibit = {CSR_MCOUNTINHIBIT};
+        `ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
+            bins mcountinhibit = {CSR_MCOUNTINHIBIT};
+        `endif
         bins mhpmevent3 = {CSR_MHPMEVENT3};
         bins mhpmevent4 = {CSR_MHPMEVENT4};
         bins mhpmevent5 = {CSR_MHPMEVENT5};
@@ -397,6 +399,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins ones = {'1};
     }
 
+    `ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
     old_mcountinhibit_cy: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "cy") {
         bins zero = {1'b0};
         `ifdef UDB_COUNTINHIBIT_EN_0
@@ -409,6 +412,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             bins one = {1'b1}; // only if counter can be inhibited
         `endif
     }
+    `endif
 
     mcycle: coverpoint ins.current.insn[31:20] {
         bins mcycle = {CSR_MCYCLE};
@@ -573,8 +577,10 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     // counters
     cp_cntr_access :            cross priv_mode_m, mcounters, cntraccesses;
-    cp_inhibit_mcycle :         cross priv_mode_m, csrr, mcycle, old_mcountinhibit_cy;
-    cp_inhibit_minstret :       cross priv_mode_m, csrr, minstret, old_mcountinhibit_ir;
+    `ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
+        cp_inhibit_mcycle :     cross priv_mode_m, csrr, mcycle, old_mcountinhibit_cy;
+        cp_inhibit_minstret :   cross priv_mode_m, csrr, minstret, old_mcountinhibit_ir;
+    `endif
 
     // misa
     cp_misa_mxl :               cross priv_mode_m, misa, misa_mxl_accesses;

@@ -1128,24 +1128,27 @@ init_\__MODE__\()tvec:
 #endif
         LREG    T4, tentry_addr_off(T1)            // T4 = common entry point (end of trampoline)
         addi    T4, T4, -actual_tramp_sz           // T4 = start of trampoline (entry point - tramp size)
-        or      T2, T4, T2                         // T2 = trampoline start + selected mode bits
+        mv      T5, T4                             // T5 = handler BASE to install (trampoline by default)
 #ifdef RVTEST_USE_FAST_TRAP_HANDLER
         // Fast trap handler (see RVTEST_FAST_TRAP_HANDLER): install it in M/S
-        // xTVEC instead of the standard trampoline, in direct mode. Requires a
-        // writable xTVEC that supports direct mode; the trampoline-relocation
-        // fallback below does not apply to the fast handler.
+        // xTVEC instead of the standard trampoline. It keeps the MODE bits
+        // selected above: it only serves synchronous exceptions, which enter at
+        // BASE in both direct and vectored mode, and the tests that use it never
+        // enable interrupts. T4 still points at the trampoline, which remains the
+        // source for the relocation fallback below if xTVEC rejects the write.
         // TODO: Update this to use the trampoline so it works for all xTVEC configs.
   .ifc \__MODE__ , M
-        LA(     T2, trap_handler_fastillegalinstr)
+        LA(     T5, trap_handler_fastillegalinstr)
   .endif
   #ifdef S_SUPPORTED
     .ifc \__MODE__ , S
-        LA(     T2, strap_handler_fastillegalinstr)
+        LA(     T5, strap_handler_fastillegalinstr)
     .endif
   #endif
 #endif
+        or      T2, T5, T2                         // T2 = handler BASE + selected mode bits
         SREG    T2, xtvec_new_off(T1)              // save new xTVEC value in save area
-        csrw    CSR_XTVEC, T2                      // attempt to write trampoline address to xTVEC
+        csrw    CSR_XTVEC, T2                      // attempt to write handler address to xTVEC
 
         csrr    T5, CSR_XTVEC                      // read back xTVEC to verify it was written
 #ifndef HANDLER_TESTCODE_ONLY
@@ -1153,7 +1156,8 @@ init_\__MODE__\()tvec:
 #endif
         // xTVEC is NOT fully writable — need to copy trampoline to xTVEC target
         csrw    CSR_XTVEC, T3                      // restore original xTVEC (we'll overwrite its target)
-        beqz    T3, abort\__MODE__\()test           // if xTVEC was 0 (uninitialized), can't proceed — abort
+        andi    T5, T3, ~WDBYTMSK                  // T5 = original xTVEC BASE (MODE bits stripped)
+        beqz    T5, abort\__MODE__\()test           // if BASE is 0 (uninitialized reset value), can't relocate there — abort
         SREG    T3, xtvec_new_off(T1)               // update tvec_new with the original (now-in-use) xTVEC
 
 //---------- Copy trampoline to fixed xTVEC target ----------

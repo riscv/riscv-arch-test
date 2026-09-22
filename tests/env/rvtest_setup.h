@@ -1061,16 +1061,14 @@
         #endif
       #endif
 
-      // Enable all performance counters if they exist.  mcountinhibit is optional, and whether an
-      // absent one is reserved (and hence traps) is unsettled, so only write it when the
-      // configuration says it exists.  A hart without it behaves as though it were zero anyway.
-      //   see https://github.com/riscv/riscv-isa-manual/issues/2964
+      // Enable all performance counters if they exist.
+      // mcountinhibit is optional and accessing the CSR is reserved
+      // if it is not implemented.
       #ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
-      csrw mcountinhibit, zero
+        csrw mcountinhibit, zero
       #endif
 
-      // Initialize counter event selectors to 0.  All 29 must be implemented, at a minimum as
-      // read-only zero, so these writes are legal on every hart and are left unconditional.
+      // Initialize counter event selectors to 0.  They must be implemented.
       csrw mhpmevent3, zero
       csrw mhpmevent4, zero
       csrw mhpmevent5, zero

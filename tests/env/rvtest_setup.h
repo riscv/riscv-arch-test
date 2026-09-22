@@ -1061,13 +1061,17 @@
         #endif
       #endif
 
-      // Enable all performance counters if they exist
-      // This is reserved if mcountinhibit is not implemented, and might trap or have unspecified behavior
-      //   *** need to define a UDB parameter MCOUNTINHIBIT_IMPLEMENTED to determine whether mcountinhibit is implemented
+      // Enable all performance counters if they exist.
+      // mcountinhibit is optional (UDB MCOUNTINHIBIT_IMPLEMENTED); accessing it when it is not
+      // implemented is reserved and may trap (TRAP_ON_UNIMPLEMENTED_CSR), which at this point in
+      // boot, before mtvec is programmed, would send the hart into a trap loop.
       //   see https://github.com/riscv/riscv-isa-manual/issues/2964
+      #ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
       csrw mcountinhibit, zero
+      #endif
 
-      // Initialize counter event selectors to 0.  They must be implemented.
+      // Initialize counter event selectors to 0.  They must be implemented (possibly as
+      // read-only zero when HPM_COUNTER_EN[n] is false), so writing them is always legal.
       csrw mhpmevent3, zero
       csrw mhpmevent4, zero
       csrw mhpmevent5, zero

@@ -30,6 +30,18 @@ SM_VADDR_CSRS = {
     "mtval": (0b00, {}),
 }
 
+# CSRs whose existence depends on a UDB parameter.  Their access/walk tests are wrapped in
+# #ifdef <define> so that a DUT without the CSR does not execute a reserved access.
+_CSR_GATE_DEFINES = {"mcountinhibit": "UDB_MCOUNTINHIBIT_IMPLEMENTED"}
+
+
+def _gate_csr(csr_name: str, lines: list[str]) -> list[str]:
+    """Wrap the test lines for csr_name in #ifdef/#endif if the CSR is optional."""
+    define = _CSR_GATE_DEFINES.get(csr_name)
+    if define is None:
+        return lines
+    return [f"\n#ifdef {define}", *lines, "#endif"]
+
 
 def _gen_misa_dependencies(
     misa: str, mask: str, cpbin: str, comment: str, coverpoint: str, covergroup: str, test_data: TestData
@@ -681,7 +693,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     for csr in csrm:
         tc = test_data.new_test_chunk(test_chunks)
-        tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+        tc.code.extend(_gate_csr(csr[0], csr_access_test(test_data, csr, covergroup, coverpoint)))
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
@@ -751,7 +763,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         if csr[0] in SM_VADDR_CSRS:
             continue  # skip the virtual-address CSRs; they are walked in addr_csr_tests
         tc = test_data.new_test_chunk(test_chunks)
-        tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
+        tc.code.extend(_gate_csr(csr[0], csr_walk_test(test_data, csr, covergroup, coverpoint)))
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
@@ -1314,6 +1326,9 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
 
     r1, r2 = test_data.int_regs.get_registers(2)
 
+    # mcountinhibit is optional (UDB MCOUNTINHIBIT_IMPLEMENTED); skip the inhibit tests without it.
+    lines.append("\n#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED")
+
     ######################################
     coverpoint = "cp_inhibit_mcycle"
     ######################################
@@ -1357,6 +1372,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             write_sigupd(r2, test_data),
         ]
     )
+    lines.append("#endif  // UDB_MCOUNTINHIBIT_IMPLEMENTED")
 
     ######################################
     coverpoint = "cp_mtime_write"
@@ -1398,7 +1414,13 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     r_val, r_val2, r_temp, r_counter = test_data.int_regs.get_registers(4)
 
     # Re-enable all counters before trying to wrap them!
-    lines.append("csrw mcountinhibit, x0    # Clear inhibit register")
+    lines.extend(
+        [
+            "#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED",
+            "csrw mcountinhibit, x0    # Clear inhibit register",
+            "#endif",
+        ]
+    )
 
     ######################################
     coverpoint = "cp_mcycle_wraparound"

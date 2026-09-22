@@ -16,16 +16,14 @@ ci_enabled: true
 # Exclusions are by test-suite directory, the only granularity EXCLUDE_EXTENSIONS
 # supports. Each entry records the specific measured reason.
 #
-#   Zaamo, Zalrsc, ExceptionsZaamo, ExceptionsZalrsc, ExceptionsSvZaamo, ExceptionsSvZalrsc
-#                 Atomics do not work and do not fault. An axi_atop_filter sits in front
-#                 of the L2 ("// The L2 memory does not support atomics", ara_soc.sv:191),
-#                 so amoadd.d returns 0, leaves memory unmodified and raises no exception,
-#                 while misa.A still reads 1. sc.d is worse: it reports failure in rd and
-#                 commits the store anyway. Ara's own regression list already comments the
-#                 A suite out (apps/common/riscv_tests.mk:30-31). ExceptionsSvZaamo
-#                 additionally cannot be BUILT: with the DRAM region declared AMONone,
-#                 every AMO takes an extra trap in Sail and the test overflows its
-#                 TRAP_SIGUPD_COUNT during signature generation.
+#   (atomics)     NOT LISTED BELOW: A, Zaamo and Zalrsc are no longer declared in the UDB
+#                 configuration, so these suites are not selected at all. Atomics do not
+#                 work and do not fault - an axi_atop_filter sits in front of the L2
+#                 ("// The L2 memory does not support atomics", ara_soc.sv:191), so
+#                 amoadd.d returns 0, leaves memory unmodified and raises no exception,
+#                 while misa.A still reads 1, and sc.d reports failure in rd yet commits
+#                 the store. Ara's own regression list already comments the A suite out
+#                 (apps/common/riscv_tests.mk:30-31).
 #
 #   Vx8, Vx16, Vx32, Vx64, Vls8, Vls16, Vls32, Vls64
 #                 4 of 1915 pass. This is ONE DUT bug, not 1911 of them: vfirst.m and
@@ -45,16 +43,15 @@ ci_enabled: true
 #                 These suites should be re-enabled once vfirst.m/vcpop.m respect vl;
 #                 until then they measure the harness, not the DUT.
 #
-#   Misalign, MisalignD, MisalignF, MisalignZca
-#                 0 of 20 pass, and 10 of them abort the simulator outright. Misaligned
-#                 scalar accesses neither trap nor work: a load crossing an 8-byte
-#                 boundary returns the first doubleword shifted and zero-filled rather
-#                 than the bytes from the next doubleword, a crossing store rotates its
-#                 data into the first doubleword (destroying a byte) and never writes the
-#                 second, and lw at offset 6 trips the CVA6 assertion
-#                 "invalid address offset used with {LW, LWU}" (load_unit.sv:556) whose
-#                 own comment says these offsets are supposed to have raised a
-#                 load-address-misaligned exception first.
+#   (misaligned)  NOT LISTED BELOW: MISALIGNED_LDST is false in the UDB configuration, so
+#                 the Misalign suites are not selected. Misaligned scalar accesses neither
+#                 trap nor work: a load crossing an 8-byte boundary returns the first
+#                 doubleword shifted and zero-filled rather than the bytes from the next
+#                 doubleword, a crossing store rotates its data into the first doubleword
+#                 (destroying a byte) and never writes the second, and lw at offset 6 trips
+#                 the CVA6 assertion "invalid address offset used with {LW, LWU}"
+#                 (load_unit.sv:556) whose own comment says these offsets are supposed to
+#                 have raised a load-address-misaligned exception first.
 #
 #   S, U, UV, SmF, SmVF, Sstvala, Sstvecd, Ssu64xl, ZicsrF
 #                 The S and U suites fail 16 of 16 on the same root cause: sstatus.VS
@@ -66,7 +63,11 @@ ci_enabled: true
 #                 assertion (acc_dispatcher.sv:435).
 #
 #   ExceptionsF, ExceptionsS, ExceptionsSm, ExceptionsSv, ExceptionsU, ExceptionsZc
-#                 0 of 12. These suites probe RVMODEL_ACCESS_FAULT_ADDRESS, and this
+#                 0 of 12. ExceptionsSm additionally cannot be BUILT since
+#                 MISALIGNED_LDST became false: every alignment probe now traps in
+#                 the reference model and the medeleg walk overflows the hardcoded
+#                 TRAP_SIGUPD_COUNT 3000 (riscv/riscv-arch-test#2457 item A2, fixed
+#                 by #2460). The rest probe RVMODEL_ACCESS_FAULT_ADDRESS, and this
 #                 platform CANNOT raise a data access fault by any means: the SoC
 #                 overrides CVA6's PMP entries to zero (ara_soc.sv:462), and PMP is one of
 #                 only two sources of a load/store access fault in CVA6 (the other, a
@@ -85,7 +86,7 @@ ci_enabled: true
 #                 (Sm_mcsr_walk fails on mstatus_set_bit_38 expecting 0 and reading
 #                 0x40_0000_0000), and mstatus.SD is not set by a dirty mstatus.VS
 #                 because the SD expression at csr_regfile.sv:1940 covers only xs and fs.
-exclude_extensions: "Zaamo,Zalrsc,ExceptionsZaamo,ExceptionsZalrsc,ExceptionsSvZaamo,ExceptionsSvZalrsc,Vx8,Vx16,Vx32,Vx64,Vls8,Vls16,Vls32,Vls64,Misalign,MisalignD,MisalignF,MisalignZca,S,U,UV,SmF,SmVF,Sstvala,Sstvecd,Ssu64xl,ZicsrF,ExceptionsF,ExceptionsS,ExceptionsSm,ExceptionsSv,ExceptionsU,ExceptionsZc"
+exclude_extensions: "Vx8,Vx16,Vx32,Vx64,Vls8,Vls16,Vls32,Vls64,S,U,UV,SmF,SmVF,Sstvala,Sstvecd,Ssu64xl,ZicsrF,ExceptionsF,ExceptionsS,ExceptionsSm,ExceptionsSv,ExceptionsU,ExceptionsZc"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache libelf-dev"
 install_script: ".github/scripts/install-ara.sh"

@@ -29,17 +29,20 @@ implemented_extensions:
   - { name: M, version: "= 2.0" }
   - { name: Zmmul, version: "= 1.0.0" }
 
-  # A is declared because misa.A really does read 1 (RVA: bit'(CVA6ConfigAExtEn), and
-  # CVA6ConfigAExtEn = 1), even though the Ara SoC filters every AXI atomic to an error
-  # before it reaches the L2.  Declaring A keeps the misa checks honest; the Zaamo and
-  # Zalrsc test suites are excluded in ci.yaml instead.  See the discrepancy notes.
+  # A, Zaamo and Zalrsc are NOT declared.  misa.A reads 1, because CVA6ConfigAExtEn = 1,
+  # but atomics do not work in this SoC: the L2 sits behind an axi_atop_filter, so every
+  # AXI atomic is turned into an error before it reaches memory.  Measured: amoadd.d
+  # returns 0 and leaves memory unchanged while raising no fault, and sc.d reports failure
+  # in rd yet commits the store.  The configuration describes what the DUT can do, so the
+  # extension is left out rather than declared and then excluded suite by suite; misa.A
+  # reading 1 without working atomics is recorded as discrepancy D3 instead.
   #   Quote: "localparam CVA6ConfigAExtEn = 1;"
   #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/cv64a6_imafdcv_sv39_config_pkg.sv#L29
   #   Quote: "// The L2 memory does not support atomics"
   #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_soc.sv#L191
-  - { name: A, version: "= 2.1.0" }
-  - { name: Zaamo, version: "= 1.0.0" }
-  - { name: Zalrsc, version: "= 1.0.0" }
+  #   Quote: "# Atomics are messy, since there is currently no memory region capable of
+  #     handling them"
+  #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/apps/common/riscv_tests.mk#L30
 
   # F and D: RVF = RVD = CVA6ConfigRVF = 1.  Half precision is off (CVA6ConfigF16En = 0),
   # so no Zfh/Zfhmin and, on the vector side, no Zvfh/Zvfhmin.
@@ -151,19 +154,11 @@ implemented_extensions:
   #            https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_soc.sv#L462
 
 params:
-  # ---------------------------------------------------------------- A params
-  # The A extension is architecturally present but every AMO is filtered out by the
-  # SoC, so these values describe what CVA6 itself would do.  MISALIGNED_AMO is false:
-  # CVA6 raises a misaligned exception for an unaligned AMO.
-  MISALIGNED_AMO: false
-  LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
-  LRSC_FAIL_ON_VA_SYNONYM: false
-  LRSC_MISALIGNED_BEHAVIOR: "always raise access fault"
-  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+  # No A params: with Zaamo and Zalrsc undeclared, MISALIGNED_AMO, the LRSC_* parameters
+  # and MUTABLE_MISA_A are not defined for this configuration.
   # misa is write-ignored, so no misa bit is mutable.
   #   Quote: "riscv::CSR_MISA: ;"  (the write case body is empty)
   #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1535
-  MUTABLE_MISA_A: false
   MUTABLE_MISA_M: false
   MUTABLE_MISA_F: false
   MUTABLE_MISA_D: false
@@ -291,13 +286,15 @@ params:
   # first doubleword and never writes the second, and some offsets trip a CVA6 RTL
   # assertion that kills the simulation.  See discrepancy D13 in
   # ~/reviews/act-ports/cva6-ara-discrepancies.md.  `true` is the value that matches
-  # the observable "no trap" behaviour, and it makes the Misalign suites fail in a way
-  # that points straight at the wrong data rather than at a missing exception.
-  MISALIGNED_LDST: true
+  # the observable "no trap" behaviour, but it is not the right declaration: a misaligned
+  # access on this DUT neither traps nor works, and "supported" is the stronger of those
+  # two claims.  Declared false, which deselects the Misalign suites rather than running
+  # tests the hardware cannot satisfy.  The silent data corruption is recorded as
+  # discrepancy D13 instead.
+  MISALIGNED_LDST: false
   MISALIGNED_LDST_EXCEPTION_PRIORITY: low
-  # No Misaligned Atomicity Granule is advertised: a misaligned access is split.
-  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0
-  MISALIGNED_SPLIT_STRATEGY: sequential_bytes
+  # MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE and MISALIGNED_SPLIT_STRATEGY are gated on
+  # MISALIGNED_LDST being true, so they are not defined for this configuration.
   TRAP_ON_ILLEGAL_WLRL: false
   TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
   TRAP_ON_RESERVED_INSTRUCTION: true

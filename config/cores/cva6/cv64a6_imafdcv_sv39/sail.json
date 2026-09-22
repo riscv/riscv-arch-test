@@ -234,10 +234,15 @@
         // without a fault (use `{"None" : null}`), or raise an access fault
         // (use `{"Some": "AccessFault"}`) or a misaligned exception
         // (use `{"Some": "AlignmentException"}`).
-        // This option controls scalar loads/stores.  Measured: misaligned scalar
-        // loads and stores complete correctly with no exception.
+        // This option controls scalar loads/stores.  Measured: a misaligned scalar
+        // access raises no exception, but it does not work either - a load crossing an
+        // 8-byte boundary returns the first doubleword shifted and zero-filled, and a
+        // store corrupts the first doubleword and never writes the second (discrepancy
+        // D13).  The UDB configuration therefore declares MISALIGNED_LDST false, and
+        // this matches it, so the Misalign suites are deselected rather than run
+        // against hardware that cannot satisfy them.
         "load_store": {
-          "None": null
+          "Some": "AlignmentException"
         },
         // A misaligned vector load/store can be configured independently of the
         // scalar case above, but uses the same option values.  Ara raises an ILLEGAL

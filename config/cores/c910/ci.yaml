@@ -2,7 +2,19 @@
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 # CI configuration for the XuanTie OpenC910
 
-ci_enabled: true
+# DISABLED IN CI: the core is too slow for a GitHub runner.
+#
+# OpenC910 verilates to a large model that runs at roughly 1.8k cycles/s per CPU, and the
+# tests are long: a typical I test is about 38k cycles, an FP test about 200k.  On this
+# project's 32-core machine the full 538-test run takes about 90 minutes at -j20; on a
+# 2-core runner individual tests exceed run-c910.sh's 300s per-test ceiling and the job
+# fails on timeouts rather than on anything the core got wrong.  Raising the ceiling would
+# only convert those into a job that runs for hours.
+#
+# Everything below is kept so the configuration stays reviewable and can be run by hand:
+#   make c910-openc910
+# Measured locally: 538 selected, 486 pass, 52 fail; with the exclusions below, 219/219.
+ci_enabled: false
 
 # Exclusions are by test-suite directory, the only granularity EXCLUDE_EXTENSIONS
 # supports, so a suite with one failing test loses all its passing tests too. That is

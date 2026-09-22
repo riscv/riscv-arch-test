@@ -26,13 +26,18 @@ git clone --depth 1 --branch "$VERILATOR_VERSION" https://github.com/verilator/v
 rm -rf "$INSTALL_DIR/verilator-src"
 export PATH="$INSTALL_DIR/bin:$PATH"
 
-# 2. Clone Hazard3 at the pinned commit
+# 2. Clone Hazard3 at the pinned commit.
+#    scripts/ is a submodule and holds listfiles, which both testbench Makefiles use to
+#    turn a .f file into the Verilator command line, so the build produces no input files
+#    at all without it.  The other submodules (libfpga, riscv-formal, embench and the
+#    vendored ACT3 tree) are not used here.
 git init "$INSTALL_DIR/Hazard3"
 (
   cd "$INSTALL_DIR/Hazard3"
   git remote add origin "$HAZARD3_REPO"
   git fetch --depth 1 origin "$HAZARD3_COMMIT"
   git checkout FETCH_HEAD
+  git submodule update --init --depth 1 scripts
 )
 
 # 3. Write the RTL configuration this ACT config is written against.

@@ -14,15 +14,16 @@
 # - Smstateen: Sail does not implement all state yet to match
 # - ExceptionsVx: https://solvnetplus.synopsys.com/s/case/500WQ000023l1CPYAY/vmvnrrv-does-not-raise-an-illegalinstruction-exception-when-vtypevill-1
 # - ZicfissU/S/Sm: three model bugs, seen on imperas-rv64-max and imperas-rv32gck with ImperasDV
-#   Y-2026.03-DEV-20260612 against Sail 0.14.1 (ZicfissV passes):
+#   Y-2026.03-DEV-20260612 against Sail 0.14.1 (ZicfissV passes). Filed as
+#   https://solvnetplus.synopsys.com/s/case/500WQ000028qjufYAA/zicfiss-discrepancies
 #   1. A memory fault does not outrank the SSPOPCHK software check. With PMP read-only on the
-#      shadow stack (ZicfissSm, cp_ss_pmp_permissions) or on an xwr=001 page (ZicfissS,
-#      cp_ss_instr_target_page_s), SSPOPCHK raises a software check (cause 18, xtval 3) instead of
+#      shadow stack (ZicfissSm, cp_ss_pmp_permissions) or on an xwr=001 page (ZicfissS/U,
+#      cp_ss_instr_target_page*), SSPOPCHK raises a software check (cause 18, xtval 3) instead of
 #      the store/AMO access fault or store/AMO page fault.
 #   2. An S-mode SS access to a U=1 page with SUM=0 raises a store/AMO access fault instead of a
 #      store/AMO page fault (ZicfissS, cp_ss_page_perm_priority).
-#   3. The SS page encoding pte.xwr=010 is treated as a non-leaf PTE ("Page table entry non-leaf
-#      and U!=0"), so ZicfissU never reaches its signature.
+#   3. CBO.CLEAN/FLUSH/INVAL/ZERO on a shadow stack page do not raise the store/AMO access fault,
+#      and CBO.ZERO zeroes the page (ZicfissU, cp_ss_page_access).
 #
 ci_enabled: false
 exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,InterruptsSm,InterruptsS,InterruptsSSm,InterruptsU,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,ZicfissU,ZicfissS,ZicfissSm"

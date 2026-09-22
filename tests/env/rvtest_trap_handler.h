@@ -2777,7 +2777,10 @@ rtn_fm_mmode:
 //                   defined, the M-mode prolog installs
 //                   trap_handler_fastillegalinstr in mtvec and the S-mode
 //                   prolog installs strap_handler_fastillegalinstr in stvec
-//                   (both direct mode), instead of the standard trampolines.
+//                   with the selected xTVEC mode, instead of the standard
+//                   trampolines. In vectored mode, synchronous exceptions
+//                   still enter at the handler BASE; these tests do not enable
+//                   interrupts.
 //
 //  M-mode handler (mtvec): handles illegal-instruction traps taken in (or not
 //  delegated from) M-mode. Any other cause is forwarded to Mtrampoline, the
@@ -2789,9 +2792,10 @@ rtn_fm_mmode:
 //  Any other S-mode trap is forwarded to Strampoline.
 //
 //  Assumptions:
-//    - xTVEC accepts the handler address in direct mode (the prolog's
-//      trampoline-relocation fallback for read-only xTVEC does not apply to
-//      the fast handler).
+//    - The tests do not enable interrupts when the handler uses vectored mode.
+//      Synchronous exceptions enter at the handler BASE in both supported
+//      modes. If xTVEC does not accept the handler address, the prolog uses
+//      the standard trampoline relocation fallback instead of the fast handler.
 //    - The hart has read access to the trapping instruction (PMP/physical
 //      memory allows instruction reads at the faulting PC) and address
 //      translation is disabled, so the handler can read the instruction word

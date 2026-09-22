@@ -13,7 +13,6 @@ from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.InterruptsCommon import (
-    INTR_IMPL_DEFINES,
     REG_TRIGGER_DEFINES,
     SHARED_GENERATORS,
     SSTC_TRIGGER_DEFINES,
@@ -100,7 +99,7 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
 @add_priv_test_generator(
     SUITE,
     required_extensions=["S"],
-    extra_defines=[*INTR_IMPL_DEFINES, *REG_TRIGGER_DEFINES, *SSTC_TRIGGER_DEFINES, "#define BOOT_TO_SMODE"],
+    extra_defines=[*REG_TRIGGER_DEFINES, *SSTC_TRIGGER_DEFINES, "#define BOOT_TO_SMODE"],
 )
 def make_interruptss(test_data: TestData) -> list[TestChunk]:
     """Generate tests for InterruptsS interrupt behavior that does not rely on M-mode."""

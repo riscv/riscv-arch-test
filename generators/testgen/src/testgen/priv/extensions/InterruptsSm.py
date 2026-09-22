@@ -13,7 +13,6 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.InterruptsCommon import (
-    INTR_IMPL_DEFINES,
     REG_TRIGGER_DEFINES,
     SHARED_GENERATORS,
     SSTC_TRIGGER_DEFINES,
@@ -154,7 +153,7 @@ def _generate_cp_write_stip_sstc(test_data: TestData, test_chunks: list[TestChun
 @add_priv_test_generator(
     SUITE,
     required_extensions=["Sm"],
-    extra_defines=[*INTR_IMPL_DEFINES, *REG_TRIGGER_DEFINES, *SSTC_TRIGGER_DEFINES, "#define BOOT_TO_MMODE"],
+    extra_defines=[*REG_TRIGGER_DEFINES, *SSTC_TRIGGER_DEFINES, "#define BOOT_TO_MMODE"],
 )
 def make_interruptssm(test_data: TestData) -> list[TestChunk]:
     """Generate InterruptsSm tests: interrupt behavior that relies on M-mode, including delegation."""

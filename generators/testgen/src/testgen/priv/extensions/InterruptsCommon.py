@@ -38,27 +38,6 @@ def guard_symbol(int_type: str) -> str:
     return int_guard.get(int_type, f"UDB_{int_type}_INTR_IMPL")
 
 
-# TODO: remove once https://github.com/riscv/riscv-unified-db/pull/1963 is merged and UDB emits these
-# from the MEI/MTI/MSI/SEI/STI/SSI_INTR_IMPL parameters. UDB_LCOFI_INTR_IMPL stays derived from
-# SSCOFPMF_SUPPORTED in tests/env/derived_config.h.  VS*I_INTR_IMPL also need to be added to UDB.
-# These defines precede the riscv_arch_test.h include, so rvtest_config.h (include-guarded) is pulled
-# in first to make S_SUPPORTED and H_SUPPORTED visible to the guards below.
-INTR_IMPL_DEFINES = [
-    '#include "rvtest_config.h"',
-    # UDB_MEI/MTI/MSI_INTR_IMPL are derived in tests/env/riscv_arch_test.h from whether the
-    # platform actually has a way to raise each one, so they are deliberately absent here.
-    "#ifdef S_SUPPORTED",
-    "#define UDB_SEI_INTR_IMPL",
-    "#define UDB_STI_INTR_IMPL",
-    "#define UDB_SSI_INTR_IMPL",
-    "#endif // S_SUPPORTED",
-    "#ifdef H_SUPPORTED",
-    "#define UDB_VSEI_INTR_IMPL",
-    "#define UDB_VSTI_INTR_IMPL",
-    "#define UDB_VSSI_INTR_IMPL",
-    "#endif // H_SUPPORTED",
-]
-
 # RVTEST_SET/CLR_<name>_INT_<priv> macro name (tests/env/utils.h) for each interrupt type.
 # Types missing here have no trigger macros yet; their UDB_<int>_INTR_IMPL guard is never defined.
 int_macro = {"MEI": "MEXT", "MTI": "MTIME", "MSI": "MSW", "SEI": "SEXT", "STI": "STIME", "SSI": "SSW"}

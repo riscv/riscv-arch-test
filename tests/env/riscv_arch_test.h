@@ -33,6 +33,21 @@
   #define UDB_MSI_INTR_IMPL
 #endif
 
+// The supervisor-level ones need no platform support: rvtest_set_{sext,ssw}_int_* fall back to
+// mip.SEIP / mip.SSIP when the platform defines no controller macro, and rvtest_set_stime_int_*
+// always uses mip.STIP. All three are writable, so S-mode interrupts are raisable wherever
+// S-mode exists. Same for the VS-level ones under H.
+#ifdef S_SUPPORTED
+  #define UDB_SEI_INTR_IMPL
+  #define UDB_STI_INTR_IMPL
+  #define UDB_SSI_INTR_IMPL
+#endif
+#ifdef H_SUPPORTED
+  #define UDB_VSEI_INTR_IMPL
+  #define UDB_VSTI_INTR_IMPL
+  #define UDB_VSSI_INTR_IMPL
+#endif
+
 #ifndef RVTEST_SELFCHECK
   #include "sail_macros.h"
 #endif

@@ -79,6 +79,8 @@ ci_enabled: true
 #              cycles instead of raising a page fault.
 exclude_extensions: "Smstateen,Ssstateen,ExceptionsSm,F,ZfaF,ZfaD,Zfhmin,ZfhminD,ZicsrF,SmF,Zicntr,ZicntrS,ZicntrU,Zifencei,Sm,S,Sv,SvZicbo,ExceptionsSv"
 
-apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler libboost-regex-dev"
+# core_tile builds Spike as its disassembler helper, and Spike's configure runs AX_BOOST_ASIO,
+# which needs the Boost headers and the system library as well as regex.
+apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler libboost-dev libboost-regex-dev libboost-system-dev"
 install_script: ".github/scripts/install-sargantana.sh"
 setup_script: ".github/scripts/setup-sargantana.sh"

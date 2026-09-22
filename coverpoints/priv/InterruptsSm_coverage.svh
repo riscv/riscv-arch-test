@@ -394,7 +394,11 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         // only describe delegation, so the whole group is gated on S_SUPPORTED.
         `ifdef S_SUPPORTED
             `ifdef SSCOFPMF_SUPPORTED
-                ignore_bins lcofi_needs_mideleg = binsof(priv_mode_interrupts) intersect {3'b001, 3'b000} &&
+                // In U-mode the pending bit is out of reach whatever mideleg says, because U has no sip
+            // at all, so the T-SBI call that sets it takes the interrupt on its own mret.
+            ignore_bins lcofi_u_has_no_sip = binsof(priv_mode_interrupts) intersect {3'b000} &&
+                                             binsof(mip_walking.lcofip);
+            ignore_bins lcofi_needs_mideleg = binsof(priv_mode_interrupts) intersect {3'b001} &&
                                                   binsof(mip_walking.lcofip) && binsof(mideleg_both.zeros);
                 // With sstatus.SIE set, a delegated LCOFI is taken on the csrrs that made it pending,
                 // so no later S-mode instruction retires with it still showing in mip.
@@ -403,8 +407,10 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
             `endif
             // U-mode reaches neither sip.STIP (read-only) nor stimecmp, so an undelegated STI can
             // only be raised for it from M and is taken on the mret.
-            ignore_bins u_cannot_raise_undelegated_sti = binsof(priv_mode_interrupts) intersect {3'b000} &&
-                                                         binsof(mip_walking.stip) && binsof(mideleg_both.zeros);
+            // Same for STI: sip.STIP is read-only and U cannot reach stimecmp, so every U-mode STI
+            // is raised from M and taken on the mret, whatever mideleg says.
+            ignore_bins u_cannot_raise_sti = binsof(priv_mode_interrupts) intersect {3'b000} &&
+                                             binsof(mip_walking.stip);
         `endif
     }
     `ifdef U_SUPPORTED
@@ -440,8 +446,10 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
             // the STI is taken in S-mode, here. Only U-mode still goes through T-SBI, where an
             // undelegated STI from stimecmp = 0 fires on the mret and cp_trigger_sti_sstc_tsbi
             // records it.
+            // U-mode cannot reach stimecmp whatever menvcfg.STCE says, so the armed-timer case is
+            // always raised from M through T-SBI and taken on the mret, for either mideleg value.
             ignore_bins tsbi = binsof(priv_mode_interrupts) intersect {3'b000} && binsof(menvcfg_stce) intersect {1} &&
-                               binsof(mideleg_both.zeros) && binsof(stimecmp_max_min.min);
+                               binsof(stimecmp_max_min.min);
         }
         `ifdef U_SUPPORTED
             cp_trigger_sti_sstc_tsbi: cross priv_mode_m, mret_insn, mstatus_mpp, menvcfg_stce, mstatus_mpie, mstatus_sie, mie_ones, mideleg_both, mtvec_both, stimecmp_max_min {

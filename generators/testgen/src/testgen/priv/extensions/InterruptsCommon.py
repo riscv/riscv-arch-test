@@ -20,13 +20,14 @@ from testgen.data.test_chunk import TestChunk
 machine_ints = {"MEI": 11, "MTI": 7, "MSI": 3}
 supervisor_ints = {"LCOFI": 13, "SEI": 9, "STI": 5, "SSI": 1, "VSEI": 10, "VSTI": 6, "VSSI": 2}
 # Interrupts raised by writing a pending bit directly instead of through the platform (cp_trigger_reg)
-reg_ints = {"MIP_SEIP": 9, "MIP_SSIP": 1, "SIP_SSIP": 1}
+reg_ints = {"MIP_SEIP": 9, "MIP_SSIP": 1, "SIP_SSIP": 1, "SIP_LCOFIP": 13}
 # STI raised through stimecmp with menvcfg.STCE = 0 or 1 (cp_trigger_sti_sstc)
 sstc_ints = {"SSTC_STCE0": 5, "SSTC_STCE1": 5}
 # mip/mie bit position of every interrupt type
 int_bit = machine_ints | supervisor_ints | reg_ints | sstc_ints
 # Guard symbol and coverpoint for types that do not use the UDB_<int>_INTR_IMPL / cp_trigger defaults
 int_guard = {"MIP_SEIP": "UDB_SEI_INTR_IMPL", "MIP_SSIP": "UDB_SSI_INTR_IMPL", "SIP_SSIP": "UDB_SSI_INTR_IMPL"}
+int_guard |= {"SIP_LCOFIP": "UDB_LCOFI_INTR_IMPL"}
 int_guard |= {name: "SSTC_SUPPORTED" for name in sstc_ints}
 int_coverpoint = {name: "cp_trigger_reg" for name in reg_ints}
 int_coverpoint |= {name: "cp_trigger_sti_sstc" for name in sstc_ints}
@@ -85,13 +86,25 @@ REG_TRIGGER_DEFINES = [
     "#define RVTEST_CLR_MIP_SSIP_INT_U RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<1)",
     "#define RVTEST_SET_SIP_SSIP_INT_U RVTEST_TSBI_CSR_SET(CSR_SIP, 1<<1)",
     "#define RVTEST_CLR_SIP_SSIP_INT_U RVTEST_TSBI_CSR_CLEAR(CSR_SIP, 1<<1)",
-    # LCOFI has no platform source; raise and clear it through mip.LCOFIP
+    # LCOFI has no platform source, so it is raised through the LCOFIP pending bit. mip.LCOFIP is
+    # M-only and works whatever mideleg says, so the plain LCOFI type always goes through mip, the
+    # way MIP_SSIP does. sip.LCOFIP is the second flavour below, exactly as SIP_SSIP is for SSI.
     "#define RVTEST_SET_LCOFI_INT_M li a1, 1<<13; csrs mip, a1",
     "#define RVTEST_CLR_LCOFI_INT_M li a1, 1<<13; csrc mip, a1",
     "#define RVTEST_SET_LCOFI_INT_S RVTEST_TSBI_CSR_SET(CSR_MIP, 1<<13)",
     "#define RVTEST_CLR_LCOFI_INT_S RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<13)",
     "#define RVTEST_SET_LCOFI_INT_U RVTEST_TSBI_CSR_SET(CSR_MIP, 1<<13)",
     "#define RVTEST_CLR_LCOFI_INT_U RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<13)",
+    # sip.LCOFIP is read-write, unlike sip.STIP and sip.SEIP, so S-mode raises LCOFI itself with no
+    # T-SBI call. Like SIP_SSIP it only reaches mip when mideleg.LCOFI is set; the mideleg = 0 half
+    # of the sweep writes a read-only-zero field and raises nothing, which is the point of having
+    # both flavours. U-mode has no sip access and marshals the sip write through T-SBI.
+    "#define RVTEST_SET_SIP_LCOFIP_INT_M li a1, 1<<13; csrs sip, a1",
+    "#define RVTEST_CLR_SIP_LCOFIP_INT_M li a1, 1<<13; csrc sip, a1",
+    "#define RVTEST_SET_SIP_LCOFIP_INT_S li a1, 1<<13; csrs sip, a1",
+    "#define RVTEST_CLR_SIP_LCOFIP_INT_S li a1, 1<<13; csrc sip, a1",
+    "#define RVTEST_SET_SIP_LCOFIP_INT_U RVTEST_TSBI_CSR_SET(CSR_SIP, 1<<13)",
+    "#define RVTEST_CLR_SIP_LCOFIP_INT_U RVTEST_TSBI_CSR_CLEAR(CSR_SIP, 1<<13)",
 ]
 
 # RVTEST_SET/CLR_SSTC_STCE<n>_INT_<priv>: write menvcfg.STCE, then raise STI through stimecmp; clearing

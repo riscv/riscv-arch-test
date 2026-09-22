@@ -475,7 +475,10 @@
       rvtest_clr_sstc_int_ms:
         li a1, -1 // all 1s
         #if UDB_MXLEN == 32
+          // Upper word first, which is what actually clears STI; the lower word then makes the
+          // 64-bit stimecmp read all 1s as it does on RV64, and is never transiently armed.
           csrw stimecmph, a1 // set upper word of stimecmp to all 1s to clear STI
+          csrw stimecmp, a1  // and the lower word, so the whole register is all 1s
         #else
           csrw stimecmp, a1 // set stimecmp to all 1s to clear STI
         #endif
@@ -738,6 +741,7 @@
         li a1, -1 // all 1s
         #if UDB_MXLEN == 32
           RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMPH) // set upper word of stimecmp to all 1s to clear STI
+          RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMP)  // and the lower word, so the whole register is all 1s
         #else
           RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMP) // set stimecmp to all 1s to clear STI
         #endif

@@ -2140,7 +2140,8 @@ sv_\__MODE__\()vect:
 //if HSMode          move hstatus [ 8: 6] into bit 16:14
 .ifc \__MODE__ , M
   #if (UDB_MXLEN==64)
-        srli    T4, T4, UDB_MXLEN-32                 // align to mstatush
+        csrr    T4, CSR_XSTATUS                      // re-read mstatus (T2 copy was shifted to [16:0])
+        srli    T4, T4, UDB_MXLEN-32                 // mstatus[39:38] (MPV, GVA) -> bits 7:6, as in mstatush
   #else
         #ifdef SM1P12P0_OR_LATER_SUPPORTED
           csrr    T4, CSR_MSTATUSH

@@ -1121,11 +1121,37 @@ init_\__MODE__\()tvec:
         csrr    T3, CSR_XTVEC                     // T3 = current xTVEC value (address + mode bits)
         SREG    T3, xtvec_sav_off(T1)              // save original xTVEC in save area
         andi    T2, T3, WDBYTMSK                   // T2 = mode bits from original xTVEC (bits 1:0)
-#if defined(UDB_MTVEC_MODES_0)
+// Select the MODE this mode's xTVEC supports: direct (0) when the DUT allows
+// it, otherwise vectored (1). mtvec, stvec (also used by HS-mode) and vstvec
+// each have their own UDB_*TVEC_MODES_* list.
+  .ifc \__MODE__ , M
+    #if defined(UDB_MTVEC_MODES_0)
         andi    T2, T2, ~WDBYTMSK                  // direct supported -> force MODE=0 (deterministic; matches reference reset)
-#elif defined(UDB_MTVEC_MODES_1)
+    #elif defined(UDB_MTVEC_MODES_1)
         ori     T2, x0, 1                          // no direct -> force vectored MODE=1
-#endif
+    #endif
+  .endif
+  .ifc \__MODE__ , S
+    #if defined(UDB_STVEC_MODES_0)
+        andi    T2, T2, ~WDBYTMSK                  // direct supported -> force MODE=0
+    #elif defined(UDB_STVEC_MODES_1)
+        ori     T2, x0, 1                          // no direct -> force vectored MODE=1
+    #endif
+  .endif
+  .ifc \__MODE__ , H
+    #if defined(UDB_STVEC_MODES_0)
+        andi    T2, T2, ~WDBYTMSK                  // HS-mode uses stvec
+    #elif defined(UDB_STVEC_MODES_1)
+        ori     T2, x0, 1
+    #endif
+  .endif
+  .ifc \__MODE__ , V
+    #if defined(UDB_VSTVEC_MODES_0)
+        andi    T2, T2, ~WDBYTMSK                  // VS-mode uses vstvec
+    #elif defined(UDB_VSTVEC_MODES_1)
+        ori     T2, x0, 1
+    #endif
+  .endif
         LREG    T4, tentry_addr_off(T1)            // T4 = common entry point (end of trampoline)
         addi    T4, T4, -actual_tramp_sz           // T4 = start of trampoline (entry point - tramp size)
         mv      T5, T4                             // T5 = handler BASE to install (trampoline by default)

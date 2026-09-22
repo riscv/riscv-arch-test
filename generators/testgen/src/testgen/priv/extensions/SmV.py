@@ -121,8 +121,10 @@ def _gen_mstatus_vs_off(test_data: TestData, temp_reg: int) -> list[str]:
     lines.append("vmv.v.i v1, 1")
     lines.append("vmv.v.i v2, 2")
     # Ensure misa.V set (best effort)
+    lines.append("#ifdef UDB_MISA_CSR_IMPLEMENTED")
     lines.append(f"LI(x{temp_reg}, 0x200000)  # misa.V mask")
     lines.append(f"csrs misa, x{temp_reg}    # set misa.V if writable")
+    lines.append("#endif // UDB_MISA_CSR_IMPLEMENTED")
     lines.extend(_set_vs(vs=0, temp_reg=temp_reg))
     lines.append(test_data.add_testcase("vadd_vs_off", "cp_mstatus_vs_off_arithmetic", _CG))
     lines.append("vadd.vv v3, v1, v2  # traps: VS=Off")
@@ -130,8 +132,10 @@ def _gen_mstatus_vs_off(test_data: TestData, temp_reg: int) -> list[str]:
 
     lines.append(comment_banner("cp_mstatus_vs_off_csr", "VS=Off -> vsetvli traps illegal-instruction"))
     lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
+    lines.append("#ifdef UDB_MISA_CSR_IMPLEMENTED")
     lines.append(f"LI(x{temp_reg}, 0x200000)")
     lines.append(f"csrs misa, x{temp_reg}")
+    lines.append("#endif // UDB_MISA_CSR_IMPLEMENTED")
     lines.extend(_set_vs(vs=0, temp_reg=temp_reg))
     lines.append(test_data.add_testcase("vsetvli_vs_off", "cp_mstatus_vs_off_csr", _CG))
     lines.append(f"vsetvli x{temp_reg}, x0, e8, m1, tu, mu  # traps: VS=Off")
@@ -145,11 +149,13 @@ def _gen_misa_v(test_data: TestData, temp_reg: int) -> list[str]:
     lines = [
         comment_banner(coverpoint, "csrrs/csrrc misa with rs1[21]=1 to attempt to clear/set V"),
     ]
+    lines.append("#ifdef UDB_MISA_CSR_IMPLEMENTED")
     lines.append(f"LI(x{temp_reg}, 0x200000)  # misa.V")
     lines.append(test_data.add_testcase("misa_v_csrrc", coverpoint, _CG))
     lines.append(f"csrc misa, x{temp_reg}")
     lines.append(test_data.add_testcase("misa_v_csrrs", coverpoint, _CG))
     lines.append(f"csrs misa, x{temp_reg}")
+    lines.append("#endif // UDB_MISA_CSR_IMPLEMENTED")
     lines.append("nop")
     return lines
 

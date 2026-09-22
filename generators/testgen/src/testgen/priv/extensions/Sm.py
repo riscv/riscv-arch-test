@@ -914,6 +914,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     ######################################
 
     tc = test_data.new_test_chunk(test_chunks, "misa")
+    tc.code.append("#ifdef UDB_MISA_CSR_IMPLEMENTED")
 
     tc.section_header = comment_banner(
         coverpoint,
@@ -974,12 +975,14 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     )
 
     test_data.int_regs.return_registers([rmsb, rmsb2, rboth, rr])
+    tc.code.append("#endif // UDB_MISA_CSR_IMPLEMENTED")
 
     ######################################
     coverpoint = "cp_misa_dependencies"
     ######################################
 
     tc = test_data.new_test_chunk(test_chunks, "misa")
+    tc.code.append("#ifdef UDB_MISA_CSR_IMPLEMENTED")
 
     tc.section_header = comment_banner(
         coverpoint,
@@ -1053,12 +1056,14 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             ),
         ]
     )
+    tc.code.append("#endif // UDB_MISA_CSR_IMPLEMENTED")
 
     ######################################
     coverpoint = "cp_misa_clear_c"
     ######################################
 
     tc = test_data.new_test_chunk(test_chunks, "misa")
+    tc.code.append("#ifdef UDB_MISA_CSR_IMPLEMENTED")
 
     tc.section_header = comment_banner(
         coverpoint,
@@ -1102,12 +1107,14 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     )
 
     test_data.int_regs.return_registers([r1, r2, rc, rmisasave])
+    tc.code.append("#endif // UDB_MISA_CSR_IMPLEMENTED")
 
     ######################################
     coverpoint = "cp_misa_bv"
     ######################################
 
     tc = test_data.new_test_chunk(test_chunks, "misa")
+    tc.code.append("#ifdef UDB_MISA_CSR_IMPLEMENTED")
 
     tc.section_header = comment_banner(
         coverpoint,
@@ -1158,6 +1165,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     )
 
     test_data.int_regs.return_registers([rmisasave3, rb, rv, rr3])
+    tc.code.append("#endif // UDB_MISA_CSR_IMPLEMENTED")
 
     ######################################
     coverpoint = "cp_msip"

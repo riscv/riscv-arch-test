@@ -218,14 +218,6 @@
 
 #define TSBI_RESERVED_RET   (-1)                 // return value for unrecognized operations
 
-#ifndef _VA_SZ_
-  #if UDB_MXLEN==32
-    #define _VA_SZ_ 32                           // RV32: 32-bit virtual address
-  #else
-    #define _VA_SZ_ 57                           // RV64: default to Sv57 (largest standard VA)
-  #endif
-#endif
-
 //==============================================================================
 // SECTION 5: MODE ENCODING CONSTANTS
 //
@@ -1031,7 +1023,7 @@
 //    - xSCRATCH with pointer to this mode's save area
 //    - Timer comparator to max value (prevent premature timer interrupts)
 //    - xEDELEG saved and cleared (prevent delegation during init)
-//    - xSATP saved and set to identity-mapped page table (if not M-mode)
+//    - xSATP saved and cleared to MODE=Bare (if not M-mode)
 //    - xTVEC pointed to trampoline (or trampoline copied to xTVEC target)
 //
 //  Parameters:
@@ -1097,22 +1089,15 @@ init_\__MODE__\()edeleg:
   .endif
        SREG    T2, xedeleg_sv_off(T1)            // store saved xedeleg in save area
 
-//---------- Save and set xSATP (non-M-mode only) ----------
+//---------- Save and clear xSATP (non-M-mode only) ----------
+// Translation stays off (MODE=Bare) for the duration of the test.  The prolog runs in
+// M-mode before rvtest_identity_map has filled rvtest_\__MODE__\()root_pg_tbl, so enabling
+// translation here would fault on the first fetch after the boot mret.  Suites that need
+// paging (Sv*) program xsatp themselves, using the root page table and the identity
+// superpages that rvtest_identity_map installs in it after boot.
 init_\__MODE__\()satp:
-.ifnc \__MODE__ , M                      // if HS, S or VS mode **FIXME: fixed offset frm trapreg_sv?
-        LA(     T4, rvtest_\__MODE__\()root_pg_tbl)     // rplc xsatp w/ identity-mapped pg table
-        srli T4, T4, 12
-      #if (UDB_MXLEN==32)
-        LI(T3, SATP32_MODE)             //enables  SV32 mode
-      #elseif (_VA_SZ_ == 39)
-        LI(T3, (SATP64_MODE) & (SATP_MODE_SV39 << 60))  // RV64 SV39
-      #elseif (_VA_SZ_ == 48)
-        LI(T3, (SATP64_MODE) & (SATP_MODE_SV48 << 60))  // RV64 SV48
-      #elseif (_VA_SZ_ == 57)
-        LI(T3, (SATP64_MODE) & (SATP_MODE_SV57 << 60))  // RV64 SV57
-      #endif
-        or      T4, T4, T3                        // combine MODE bits with PPN
-        csrrw   T4, CSR_XSATP, T4                 // write new xSATP, get old value in T4
+.ifnc \__MODE__ , M                      // if HS, S or VS mode
+        csrrw   T4, CSR_XSATP, zero               // write Bare (0), get old value in T4
         SREG    T4, xsatp_sv_off(T1)              // save old xSATP in save area
 .endif
 
@@ -1285,8 +1270,8 @@ rvtest_\__MODE__\()prolog_done:
 .option rvc             // temporarily allow compress to allow c.nop alignment
 // Ensure that trampoline is on a boundary that satisfies the relevant xTVEC
 // WARL BASE alignment. M-mode uses mtvec; S-mode and HS-mode use stvec.
-// VS-mode keeps the legacy mtvec-based over-alignment until UDB exposes a
-// separate vstvec BASE alignment parameter.
+// VS-mode also uses the stvec alignment (vstvec is the VS-mode alias of
+// stvec) until UDB exposes a separate vstvec BASE alignment parameter.
 .ifc \__MODE__,M
 .balign 64
 #ifdef UDB_MTVEC_BASE_ALIGNMENT_VECTORED

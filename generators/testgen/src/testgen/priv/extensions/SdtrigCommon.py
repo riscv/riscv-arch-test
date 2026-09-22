@@ -419,7 +419,7 @@ def _config_etrigger(
     return lines
 
 
-def _config_textra_scontext(
+def _config_textra(
     reg: int,
     trig_num: int,
     trig_type: str,
@@ -444,6 +444,42 @@ def _config_textra_scontext(
         raise ValueError(f"unsupported textra trigger type: {trig_type}")
 
     return lines
+
+
+def _fire_textra_trigger(
+    test_data: TestData,
+    trig_type: str,
+    mode: str,
+    cfg_reg: int,
+    addr_reg: int,
+    data_reg: int,
+) -> list[str]:
+
+    if trig_type == "icount":
+        return [
+            "nop # icount: decrement count and test ASID match",
+        ]
+
+    if trig_type == "itrigger":
+        return [
+            *_cause_interrupt(5, mode, cfg_reg),
+            "nop # allow supervisor timer interrupt to be taken",
+            *_clear_interrupt(5, mode, cfg_reg),
+        ]
+
+    if trig_type == "etrigger":
+        return [
+            ".word 0xFFFFFFFF # illegal instruction",
+        ]
+
+    if trig_type == "mcontrol6":
+        return [
+            f"LA(x{addr_reg}, scratch)",
+            f"LI(x{data_reg}, 0x12345678)",
+            f"sw x{data_reg}, 0(x{addr_reg}) # mcontrol6 data-store trigger",
+        ]
+
+    raise ValueError(f"unsupported textra trigger type: {trig_type}")
 
 
 def _fire_supported_triggers(trig_num: int, mode: str, cfg_reg: int, addr_reg: int, data_reg: int) -> list[str]:
@@ -1790,6 +1826,17 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines: list[str] = tc.code
 
     trig_type4 = ("icount", "itrigger", "etrigger", "mcontrol6")
+    # TODO: Uncomment these once UDB includes sdtrig parameters
+    # trig_type_guards = {
+    #     "icount": "UDB_ICOUNT_TRIG{trig_num}_AVAILABLE",
+    #     "itrigger": "UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE",
+    #     "etrigger": "UDB_ETRIGGER_TRIG{trig_num}_AVAILABLE",
+    #     "mcontrol6": "UDB_MCONTROL6_TRIG{trig_num}_AVAILABLE",
+    # }
+    # RV64 spelling; RV32 bins differ (see svh)
+    # mhvalue = ("match", "zero", "half")
+    # svalue = ("aaaaaaaa", "bbbbbbaa", "bbbbaabb", "bbaabbbb", "aabbbbbb", "bbbbbbbb")
+    # svalue_asid = ("below", "equal", "above")
     # RV64 spelling; RV32 bins differ (see svh)
     # mhvalue = ("match", "zero", "half")
     # svalue = ("aaaaaaaa", "bbbbbbaa", "bbbbaabb", "bbaabbbb", "aabbbbbb", "bbbbbbbb")
@@ -1844,10 +1891,12 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
         4, exclude_regs=[2], reg_range=list(range(8, 16))
     )
     lines.extend(_global_ie(mode, True))
-    lines.append("#ifdef UDB_SCONTEXT_AVAILABLE")
+    # lines.append("#ifdef UDB_SCONTEXT_AVAILABLE")
 
     for trig_num in range(UDB_NUM_TRIGGERS):
         for tt in trig_type4:
+            # guard = trig_type_guards[tt].format(trig_num=trig_num)
+            # lines.append(f"#endif // {guard}")
             # ----------------------------------------------------------
             # RV32
             # ----------------------------------------------------------
@@ -1866,39 +1915,11 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                     lines.extend(
                         [
                             _add_tc(test_data, binname, coverpoint, covergroup),
-                            *_config_textra_scontext(cfg_reg, trig_num, tt, tdata3, mode),
+                            *_config_textra(cfg_reg, trig_num, tt, tdata3, mode),
+                            *_fire_textra_trigger(test_data, tt, mode, cfg_reg, addr_reg, data_reg),
+                            *_disable_trigger(cfg_reg, trig_num, mode),
                         ]
                     )
-
-                    if tt == "icount":
-                        lines.append("nop # icount: decrement count and test scontext match")
-
-                    elif tt == "itrigger":
-                        lines.extend(
-                            [
-                                *_cause_interrupt(5, mode, cfg_reg),
-                                "nop # allow supervisor timer interrupt to be taken",
-                                *_clear_interrupt(5, mode, cfg_reg),
-                            ]
-                        )
-
-                    elif tt == "etrigger":
-                        lines.extend(
-                            [
-                                ".word 0x11111111 # illegal instruction",
-                            ]
-                        )
-
-                    elif tt == "mcontrol6":
-                        lines.extend(
-                            [
-                                f"LA(x{addr_reg}, scratch)",
-                                f"LI(x{data_reg}, 0x12345678)",
-                                f"sw x{data_reg}, 0(x{addr_reg}) # mcontrol6 data-store trigger",
-                            ]
-                        )
-
-                    lines.extend(_disable_trigger(cfg_reg, trig_num, mode))
 
             # ----------------------------------------------------------
             # RV64
@@ -1921,45 +1942,17 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                     lines.extend(
                         [
                             _add_tc(test_data, binname, coverpoint, covergroup),
-                            *_config_textra_scontext(cfg_reg, trig_num, tt, tdata3, mode),
+                            *_config_textra(cfg_reg, trig_num, tt, tdata3, mode),
+                            *_fire_textra_trigger(test_data, tt, mode, cfg_reg, addr_reg, data_reg),
+                            *_disable_trigger(cfg_reg, trig_num, mode),
                         ]
                     )
 
-                    if tt == "mcontrol6":
-                        lines.extend(
-                            [
-                                f"LA(x{addr_reg}, scratch)",
-                                f"LI(x{data_reg}, 0x12345678)",
-                                f"sw x{data_reg}, 0(x{addr_reg}) # mcontrol6 data-store trigger",
-                            ]
-                        )
-
-                    elif tt == "icount":
-                        lines.append("nop # icount: decrement count and test scontext match")
-
-                    elif tt == "itrigger":
-                        lines.extend(
-                            [
-                                *_cause_interrupt(5, mode, cfg_reg),
-                                "nop # allow supervisor timer interrupt to be taken",
-                                *_clear_interrupt(5, mode, cfg_reg),
-                            ]
-                        )
-
-                    elif tt == "etrigger":
-                        lines.extend(
-                            [
-                                ".word 0xffffffff # illegal instruction",
-                            ]
-                        )
-
-                    lines.extend(_disable_trigger(cfg_reg, trig_num, mode))
-
             lines.append("#endif")
 
-        # lines.append(f"#endif // {trig_guard}")
+            # lines.append(f"#endif // {guard}")
 
-    lines.append("#endif // UDB_SCONTEXT_AVAILABLE")
+    # lines.append("#endif // UDB_SCONTEXT_AVAILABLE")
 
     test_data.int_regs.return_registers([cfg_reg, addr_reg, data_reg, temp_reg])
     lines.extend(_global_ie(mode, False))

@@ -12,7 +12,7 @@ from testgen.formatters.registry import InstructionTypeConfig, add_instruction_f
 
 cils_config = InstructionTypeConfig(
     required_params={"rd", "immval", "temp_reg", "temp_val"},
-    reg_range=range(1, 31),  # rd cannot be x0
+    reg_range=range(1, 32),  # rd cannot be x0
     imm_bits=9,  # c.ldsp: [0, 504] in multiples of 8, c.lwsp: [0, 252] in multiples of 4
     imm_signed=False,
 )

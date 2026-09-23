@@ -20,6 +20,7 @@ Each is described below.
   - [Adding New Privileged Tests](#adding-new-privileged-tests)
   - [Splitting Privileged Tests](#splitting-privileged-tests)
 - [Debugging Coverage](#debugging-coverage)
+- [Collecting Coverage with Verilator](#collecting-coverage-with-verilator)
 - [Adding a New Simulator or DUT Config](#adding-a-new-simulator-or-dut-config)
   - [Adding a Config for Running Locally](#adding-a-config-for-running-locally)
   - [Adding CI Support for a Simulator](#adding-ci-support-for-a-simulator)
@@ -776,6 +777,27 @@ $display("mode: %b, medel: %b, funct3: %b, rs1_1_0: %b, pc_1: %b, offset: %b ",
 ```
 
 Then look in the `work/sail-rv64-max/coverage/priv/ExceptionsZc/ExceptionsZc.ucdb.log` file to see how these RVVI signals change after each instruction. Find the instruction that should have hit a bin, and see which coverpoint input(s) aren't taking on the necessary values. It is often useful to compare the `*.ucdb.log` file with the `*.trace` file in `work/sail-rv64-max/coverage/priv/ExceptionsZc`.
+
+## Collecting Coverage with Verilator
+
+`make coverage` uses Questa by default. To collect coverage with Verilator instead, set `COVERAGE_SIMULATOR`:
+
+```bash
+make coverage COVERAGE_SIMULATOR=verilator
+make coverage COVERAGE_SIMULATOR=verilator EXTENSIONS=ExceptionsSm
+```
+
+Set `VERILATOR` to choose the Verilator executable; the default is `verilator` on the `PATH`:
+
+```bash
+VERILATOR=~/verilator/bin/verilator make coverage COVERAGE_SIMULATOR=verilator
+```
+
+Verilator must include the covergroup fixes in [verilator#8459](https://github.com/verilator/verilator/pull/8459), [#8460](https://github.com/verilator/verilator/pull/8460), [#8463](https://github.com/verilator/verilator/pull/8463), and [#8464](https://github.com/verilator/verilator/pull/8464). Build Verilator from its `master` branch once they are merged. With an older Verilator, many coverage suites fail to compile or report incorrect coverage.
+
+Each suite builds a coverage database at `work/<config>/coverage/<class>/<suite>/<suite>.dat`. Compiler messages are in `dat_work/verilator.log` and simulation output is in `dat_work/sim.log` in the same directory. Reports are written to `work/<config>/reports/` in the same format as with Questa. Warnings from building a suite, such as unsupported covergroup constructs or out-of-range selects, can affect its coverage. They are listed at the top of the suite's report and in `work/<config>/reports/<suite>_warnings.txt`, and the coverage summary lists the suites that have them. Verilator ignores `type_option.weight`, so the report reads each coverpoint's and cross's weight from its declaration and computes covergroup coverage as the weighted average of its items (IEEE 1800-2023 19.11), as Questa does.
+
+Verilator compiles each suite's testbench to C++ before simulating it, so the first run of a suite takes longer than with Questa. Rebuilds of unchanged suites are faster when `ccache` is installed.
 
 ## Adding a New Simulator or DUT Config
 

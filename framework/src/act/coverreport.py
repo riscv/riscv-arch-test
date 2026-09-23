@@ -7,6 +7,7 @@
 # Generate txt coverage reports from coverage database
 ##################################
 
+import math
 import re
 import subprocess
 import sys
@@ -137,6 +138,8 @@ def generate_report(
         _generate_questa_report(coverage_db, report_prefix)
     elif simulator == CoverageSimulator.VCS:
         _generate_vcs_report(coverage_db, report_prefix)
+    elif simulator == CoverageSimulator.VERILATOR:
+        _generate_verilator_report(coverage_db, report_prefix)
     else:
         raise ValueError(f"Unknown simulator: {simulator}")
 
@@ -304,3 +307,171 @@ def _generate_vcs_report(vdb: Path, report_prefix: Path) -> None:
         text=True,
     )
     _write_vcs_reports(report_prefix, urg_report_dir)
+
+
+# ── Verilator helpers ───────────────────────────────────────────────────────
+
+_VERILATOR_POINT_PATTERN = re.compile(r"^C '([^']*)' (\d+)$")
+_VERILATOR_CG_PREFIX = "__vlAnonCG_"
+_ITEM_DECL_PATTERN = re.compile(r"\b(\w+)\s*:\s*(?:coverpoint|cross)\b")
+_TYPE_WEIGHT_PATTERN = re.compile(r"\btype_option\.weight\s*=\s*(\d+)")
+
+
+class _VerilatorItem:
+    """One coverpoint or cross of a covergroup, as read from coverage.dat."""
+
+    def __init__(self, name: str, is_cross: bool, weight: int) -> None:
+        self.name = name
+        self.is_cross = is_cross
+        self.weight = weight
+        self.bins: list[tuple[str, int]] = []  # (bin name, hit count) for normal bins
+
+    @property
+    def covered(self) -> int:
+        return sum(1 for _, count in self.bins if count > 0)
+
+    @property
+    def percent(self) -> float:
+        return 100.0 * self.covered / len(self.bins) if self.bins else 100.0
+
+
+class _ItemWeights:
+    """Look up type_option.weight of the coverpoint or cross declared around a source line."""
+
+    def __init__(self) -> None:
+        self._files: dict[str, list[tuple[int, str, int]]] = {}
+
+    def weight(self, filename: str, line: int, item: str) -> int:
+        decls = self._files.get(filename)
+        if decls is None:
+            decls = self._files[filename] = self._parse(Path(filename))
+        # The item's declaration is the last one with its name at or before the bin's line.
+        candidates = [weight for decl_line, name, weight in decls if name == item and decl_line <= line]
+        return candidates[-1] if candidates else 1
+
+    @staticmethod
+    def _parse(path: Path) -> list[tuple[int, str, int]]:
+        """Return (line, name, weight) for every coverpoint and cross declared in a file."""
+        try:
+            text = path.read_text(errors="ignore")
+        except OSError:
+            return []
+        text = re.sub(r"//[^\n]*", "", text)
+        matches = list(_ITEM_DECL_PATTERN.finditer(text))
+        decls: list[tuple[int, str, int]] = []
+        for idx, match in enumerate(matches):
+            # An item's options lie between its declaration and the next declaration or endgroup.
+            end = matches[idx + 1].start() if idx + 1 < len(matches) else len(text)
+            endgroup = text.find("endgroup", match.end(), end)
+            weight = _TYPE_WEIGHT_PATTERN.search(text, match.end(), end if endgroup < 0 else endgroup)
+            line = text.count("\n", 0, match.start()) + 1
+            decls.append((line, match.group(1), int(weight.group(1)) if weight else 1))
+        return decls
+
+
+def _verilator_keys(record: str) -> dict[str, str]:
+    """Split a coverage.dat key string (\\x01key\\x02value...) into a dict."""
+    keys: dict[str, str] = {}
+    for field in record.split("\x01")[1:]:
+        key, _, value = field.partition("\x02")
+        keys[key] = value
+    return keys
+
+
+def _parse_verilator_coverage(dat: Path) -> dict[str, dict[str, _VerilatorItem]]:
+    """Parse covergroup bins from a Verilator coverage.dat into {covergroup: {item: _VerilatorItem}}."""
+    weights = _ItemWeights()
+    groups: dict[str, dict[str, _VerilatorItem]] = {}
+    for line in dat.read_text(errors="ignore").splitlines():
+        match = _VERILATOR_POINT_PATTERN.match(line)
+        if not match:
+            continue
+        keys = _verilator_keys(match.group(1))
+        if keys.get("t") != "covergroup" or "bin_type" in keys:
+            continue  # not a covergroup bin, or an ignore/illegal/default bin
+        parts = keys.get("h", "").split(".", 2)
+        if len(parts) != 3:
+            continue
+        group_name = parts[0].removeprefix(_VERILATOR_CG_PREFIX)
+        items = groups.setdefault(group_name, {})
+        item = items.get(parts[1])
+        if item is None:
+            weight = weights.weight(keys.get("f", ""), int(keys.get("l", "0")), parts[1])
+            item = items[parts[1]] = _VerilatorItem(parts[1], "cross" in keys, weight)
+        item.bins.append((parts[2], int(match.group(2))))
+    return groups
+
+
+def _verilator_group_percent(items: dict[str, _VerilatorItem]) -> float:
+    """Covergroup coverage: the weighted average of its items' coverage (IEEE 1800-2023 19.11)."""
+    weighted = [item for item in items.values() if item.weight > 0 and item.bins]
+    total_weight = sum(item.weight for item in weighted)
+    if not total_weight:
+        return 100.0
+    return sum(item.weight * item.percent for item in weighted) / total_weight
+
+
+def _verilator_percent_str(percent: float) -> str:
+    """Format a percentage truncated to two decimals, as Questa does, so a near miss never reads 100.00%."""
+    return f"{math.floor(percent * 100) / 100:.2f}%"
+
+
+def _verilator_status(percent: float) -> str:
+    return "Covered" if percent >= 100.0 else ("ZERO" if percent == 0.0 else "Uncovered")
+
+
+def _verilator_group_section(name: str, items: dict[str, _VerilatorItem], uncovered_only: bool) -> str:
+    """Describe one covergroup, its items, and their bins."""
+    percent = _verilator_group_percent(items)
+    counted = [item for item in items.values() if item.weight > 0]
+    covered = sum(item.covered for item in counted)
+    total = sum(len(item.bins) for item in counted)
+    lines = [
+        f"Covergroup {name}: {_verilator_percent_str(percent)} {_verilator_status(percent)}",
+        f"    covered/total bins: {covered}/{total}",
+    ]
+    for item in sorted(items.values(), key=lambda i: i.name):
+        if uncovered_only and (item.weight == 0 or item.percent >= 100.0):
+            continue
+        kind = "Cross" if item.is_cross else "Coverpoint"
+        weight_note = f" [weight {item.weight}]" if item.weight != 1 else ""
+        lines.append(
+            f"    {kind} {item.name}{weight_note}: {_verilator_percent_str(item.percent)} ({item.covered}/{len(item.bins)}) "
+            f"{_verilator_status(item.percent)}"
+        )
+        for bin_name, count in sorted(item.bins):
+            if uncovered_only and count > 0:
+                continue
+            lines.append(f"        bin {bin_name}: {count} {'Covered' if count > 0 else 'ZERO'}")
+    return "\n".join(lines)
+
+
+def _generate_verilator_report(dat: Path, report_prefix: Path) -> None:
+    """Generate Verilator coverage reports from a coverage.dat file."""
+    full_report, uncovered_report, summary_report = _report_paths(report_prefix)
+
+    groups = _parse_verilator_coverage(dat)
+    if not groups:
+        raise ValueError(f"No covergroup entries found in {dat}")
+
+    entries: list[CoverageEntry] = []
+    for name, items in sorted(groups.items()):
+        percent = _verilator_group_percent(items)
+        entries.append((name, _verilator_percent_str(percent), "100", "-", _verilator_status(percent)))
+    table = _format_table(entries)
+
+    summary_report.write_text(table)
+    sections = [_verilator_group_section(name, items, uncovered_only=False) for name, items in sorted(groups.items())]
+    full_report.write_text(f"Coverage Report with details\n\n{table}\n" + "\n\n".join(sections) + "\n")
+
+    uncovered = {name: items for name, items in groups.items() if _verilator_group_percent(items) < 100.0}
+    if uncovered:
+        uncovered_table = _format_table([e for e in entries if e[0] in uncovered])
+        sections = [
+            _verilator_group_section(name, items, uncovered_only=True) for name, items in sorted(uncovered.items())
+        ]
+        uncovered_report.write_text(
+            f"Coverage Report with details\n\n{uncovered_table}\n" + "\n\n".join(sections) + "\n"
+        )
+    elif uncovered_report.exists():
+        uncovered_report.unlink()

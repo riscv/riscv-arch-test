@@ -71,14 +71,25 @@ def _cret_body(test_data: TestData, amode: str) -> list[str]:
 
 
 def _cret_data(amode: str) -> list[str]:
-    """Four c.ret instructions: just below, at the start, at the top and just above the region."""
+    """Four c.ret instructions: just below, at the start, at the top and just above the region.
+
+    The blob sits where every other PMP test puts its region: at a page boundary, behind a pad
+    one grain wide, so the region starts at the grain-aligned address the coverage model expects
+    (``PMP_REGION_START`` for TOR and NA4, ``PMP_NAPOT_REGION_START`` for NAPOT).  The pad is
+    filled with uncompressed ``jr ra`` and ends in ``c.nop; c.ret`` so that the c.ret probed just
+    below the region is its last halfword.
+    """
+    pad_bytes = _REGION_BYTES["napot" if amode == "napot" else "tor"]
     lines = [
-        "#if __riscv_xlen == 32",
-        ".p2align 11",
-        "#else",
-        ".p2align 10",
-        "#endif",
-        f".skip {'0x806' if amode == 'napot' else '0x802'}",
+        ".p2align 12",
+        ".p2align (UDB_PMP_GRANULARITY)",
+        ".option push",
+        ".option norvc",
+        f".rept (({pad_bytes} - 4) / 4)",
+        "jr ra",
+        ".endr",
+        ".option pop",
+        "c.nop",
         "TEST_FOR_EXECUTION_0:",
         "ret",
         "TEST_FOR_EXECUTION_1:",

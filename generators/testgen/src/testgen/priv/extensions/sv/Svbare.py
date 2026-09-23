@@ -62,7 +62,7 @@ def begin_bare_test(test_data: TestData, split_name: str) -> TestChunk:
 
 @add_priv_test_generator(
     "Svbare",
-    required_extensions=["S"],
+    required_extensions=["S", "Svbare"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svbare_smode(test_data: TestData) -> list[TestChunk]:
@@ -73,7 +73,7 @@ def make_svbare_smode(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "Svbare",
-    required_extensions=["S"],
+    required_extensions=["S", "Svbare"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svbare_umode(test_data: TestData) -> list[TestChunk]:

@@ -13,7 +13,7 @@ from enum import Enum
 from pathlib import Path
 
 import rich
-from pydantic import BaseModel, DirectoryPath, FilePath, ValidationInfo, field_validator, model_validator
+from pydantic import BaseModel, DirectoryPath, Field, FilePath, ValidationInfo, field_validator, model_validator
 from ruamel.yaml import YAML
 
 from act.toolchain import CompilerType, Toolchain
@@ -92,6 +92,7 @@ class Config(BaseModel):
     ref_model_exe: Path
     ref_model_type: RefModelType  # Inferred from ref_model_exe by model validator
     include_priv_tests: bool = True
+    harts: int = Field(default=1, ge=1)
 
     model_config = {"frozen": True}
 

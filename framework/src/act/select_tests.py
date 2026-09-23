@@ -15,6 +15,7 @@ from act.certificate_tests import get_certificate_test_suites
 from act.config import Config, load_config
 from act.parse_test_constraints import ExtensionRequirement, TestMetadata
 from act.parse_udb_config import get_config_params, get_implemented_extensions, prepare_dut_outputs
+from act.toolchain import EXPERIMENTAL_EXTENSIONS
 
 PRIV_EXTENSIONS = {"Sm", "S", "U"}
 
@@ -71,10 +72,12 @@ def check_test_extensions(
     )
 
 
-def _requires_privilege_extension(required_extensions: frozenset[ExtensionRequirement]) -> bool:
-    """Check whether the requirements can only be met with a privilege extension."""
+def _requires_extension_from(
+    required_extensions: frozenset[ExtensionRequirement], extensions: frozenset[str] | set[str]
+) -> bool:
+    """Check whether a requirement can only be met with an extension in the given set."""
     return any(
-        requirement in PRIV_EXTENSIONS if isinstance(requirement, str) else requirement.issubset(PRIV_EXTENSIONS)
+        requirement in extensions if isinstance(requirement, str) else requirement.issubset(extensions)
         for requirement in required_extensions
     )
 
@@ -93,14 +96,23 @@ def select_tests(
     test_dict: dict[str, TestMetadata],
     implemented_extensions: set[str],
     config_params: dict[str, ConfigParamValue],
+    harts: int = 1,
     *,
     include_priv_tests: bool = True,
+    enable_experimental_extensions: bool = False,
 ) -> dict[str, TestMetadata]:
-    """Select tests that match the UDB configuration."""
+    """Select tests that match the DUT configuration."""
     selected_tests: dict[str, TestMetadata] = {}
     for test_name, test_metadata in test_dict.items():
+        if harts < test_metadata.min_harts:
+            continue
         # Skip privileged tests if disabled
-        if not include_priv_tests and _requires_privilege_extension(test_metadata.required_extensions):
+        if not include_priv_tests and _requires_extension_from(test_metadata.required_extensions, PRIV_EXTENSIONS):
+            continue
+        # Skip experimental extensions unless enabled
+        if not enable_experimental_extensions and _requires_extension_from(
+            test_metadata.required_extensions, EXPERIMENTAL_EXTENSIONS
+        ):
             continue
         # Check if all extensions match
         if check_test_extensions(
@@ -134,6 +146,7 @@ def prepare_configs_and_select_tests(
     jobs: int = 1,
     verbose: bool = False,
     validate_tools: bool = True,
+    enable_experimental_extensions: bool = False,
 ) -> list[tuple[Config, dict[str, ConfigParamValue], dict[str, TestMetadata]]]:
     """Load configs, generate their UDB outputs, and select tests for each.
 
@@ -161,7 +174,12 @@ def prepare_configs_and_select_tests(
         implemented_extensions = get_implemented_extensions(workdir / config.name / "extensions.txt")
         config_params = get_config_params(config.udb_config)
         selected_tests = select_tests(
-            full_test_dict, implemented_extensions, config_params, include_priv_tests=config.include_priv_tests
+            full_test_dict,
+            implemented_extensions,
+            config_params,
+            harts=config.harts,
+            include_priv_tests=config.include_priv_tests,
+            enable_experimental_extensions=enable_experimental_extensions,
         )
         if certificate:
             selected_tests = filter_tests_by_certificate(selected_tests, certificate)

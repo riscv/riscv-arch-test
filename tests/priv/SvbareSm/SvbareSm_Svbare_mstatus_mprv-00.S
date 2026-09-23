@@ -9,9 +9,9 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S']
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Svbare']
 # # # no param constraints
-# MARCH: rv${XLEN}i_zicsr_zifencei
+# MARCH: rv${XLEN}i_zicsr_zifencei_svbare
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region

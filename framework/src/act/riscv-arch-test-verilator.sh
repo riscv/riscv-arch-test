@@ -60,6 +60,9 @@ if ! "${VERILATOR}" --binary --timing --coverage-user -Wno-fatal -Wno-lint --top
   exit 1
 fi
 
+# Keep warnings for the report. The report applies type_option.weight itself.
+grep -E '^%Warning-' verilator.log | grep -vF "Ignoring unsupported coverage option: 'weight'" >warnings.txt || true
+
 # Simulate
 if ! ./obj_dir/Vtestbench +traceFileList="${TRACEFILELIST}" +verilator+coverage+file+"${COVERAGEDAT}" >sim.log 2>&1; then
   echo "ERROR collecting coverage. Vtestbench run failed; see ${WKDIR}/sim.log" >&2

@@ -125,6 +125,12 @@ def print_coverage_summary(overall_summary: Path, config_name: str) -> None:
         print(_green(f" RVCP COVERAGE COMPLETE: {config_name}"))
         print(f"  {len(entries)} covergroups all with 100% coverage")
 
+    warnings_files = sorted(overall_summary.parent.glob("*_warnings.txt"))
+    if warnings_files:
+        print(_red(f"  Simulator warnings in {len(warnings_files)} coverage files:"))
+        for path in warnings_files:
+            print(f"    {path}")
+
 
 def generate_report(
     coverage_db: Path,
@@ -446,9 +452,22 @@ def _verilator_group_section(name: str, items: dict[str, _VerilatorItem], uncove
     return "\n".join(lines)
 
 
+def _verilator_warnings(dat: Path, report_prefix: Path) -> str:
+    """Copy the build's Verilator warnings to <suite>_warnings.txt and return them as a report section."""
+    warnings_report = report_prefix.parent / f"{report_prefix.name}_warnings.txt"
+    warnings_file = dat.parent / "dat_work" / "warnings.txt"
+    warnings = warnings_file.read_text() if warnings_file.exists() else ""
+    if not warnings:
+        warnings_report.unlink(missing_ok=True)
+        return ""
+    warnings_report.write_text(warnings)
+    return f"Verilator warnings (coverage may be affected)\n{warnings}\n"
+
+
 def _generate_verilator_report(dat: Path, report_prefix: Path) -> None:
     """Generate Verilator coverage reports from a coverage.dat file."""
     full_report, uncovered_report, summary_report = _report_paths(report_prefix)
+    warnings = _verilator_warnings(dat, report_prefix)
 
     groups = _parse_verilator_coverage(dat)
     if not groups:
@@ -462,7 +481,7 @@ def _generate_verilator_report(dat: Path, report_prefix: Path) -> None:
 
     summary_report.write_text(table)
     sections = [_verilator_group_section(name, items, uncovered_only=False) for name, items in sorted(groups.items())]
-    full_report.write_text(f"Coverage Report with details\n\n{table}\n" + "\n\n".join(sections) + "\n")
+    full_report.write_text(f"Coverage Report with details\n\n{warnings}{table}\n" + "\n\n".join(sections) + "\n")
 
     uncovered = {name: items for name, items in groups.items() if _verilator_group_percent(items) < 100.0}
     if uncovered:
@@ -471,7 +490,7 @@ def _generate_verilator_report(dat: Path, report_prefix: Path) -> None:
             _verilator_group_section(name, items, uncovered_only=True) for name, items in sorted(uncovered.items())
         ]
         uncovered_report.write_text(
-            f"Coverage Report with details\n\n{uncovered_table}\n" + "\n\n".join(sections) + "\n"
+            f"Coverage Report with details\n\n{warnings}{uncovered_table}\n" + "\n\n".join(sections) + "\n"
         )
     elif uncovered_report.exists():
         uncovered_report.unlink()

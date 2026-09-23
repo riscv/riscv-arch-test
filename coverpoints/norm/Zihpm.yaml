@@ -6,3 +6,13 @@ normative_rule_definitions:
 
   - name: hpmcounter_op_sz_mode
     coverpoint: ["Zihpm_csrrs_cg/{cp_cntr_hpm}"]
+
+  # Not tested: accessing an unimplemented counter is implementation-defined behavior, and the
+  # two permitted responses (an illegal-instruction exception, or a constant value) are equally
+  # conformant, so a reference signature cannot require either one. cp_cntr_hpm accordingly reads
+  # only the counters that HPM_COUNTER_EN says the configuration implements.
+  - name: HPM_UNIMPLEMENTED_COUNTER_ACCESS
+    coverpoint:
+      [
+        "Not tested: implementation-defined behavior; an unimplemented counter may trap or return a constant value, so neither response can be required. cp_cntr_hpm reads only the counters HPM_COUNTER_EN implements.",
+      ]

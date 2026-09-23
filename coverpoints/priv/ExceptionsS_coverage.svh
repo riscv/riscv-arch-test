@@ -87,6 +87,13 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
     ebreak: coverpoint ins.current.insn {
         bins ebreak = {EBREAK};
     }
+    `ifdef ZCA_SUPPORTED
+        // 32-bit ebreak at 62 mod 64: the fetch straddles a 64-byte boundary. xtval must still
+        // be zero or the address of the ebreak, never the address of the second half of the fetch.
+        straddle64: coverpoint ins.current.pc_rdata[5:1] {
+            bins straddle64 = {5'b11111};
+        }
+    `endif
     adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0]  {
         // auto fills 000 through 111
     }
@@ -131,6 +138,9 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
     cp_illegal_instruction_seed:             cross priv_mode_s, csrops, rs1_zero, seed;
     cp_illegal_instruction_csr:              cross priv_mode_s, csrops, csr_0x000;
     cp_breakpoint:                           cross priv_mode_s, ebreak;
+    `ifdef ZCA_SUPPORTED
+        cp_ebreak_straddle64:                cross priv_mode_s, ebreak, straddle64;
+    `endif
     cp_load_address_misaligned:              cross priv_mode_s, loadops, adr_LSBs;
     cp_store_address_misaligned:             cross priv_mode_s, storeops, adr_LSBs;
     cp_ecall_s:                              cross priv_mode_s, ecall;

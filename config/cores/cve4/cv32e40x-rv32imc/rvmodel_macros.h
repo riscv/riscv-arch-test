@@ -73,7 +73,7 @@
 ##### Machine Timer #####
 #define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
 
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
+#define RVMODEL_TIMER_INT_SOON_DELAY 10000
 // CLINT machine timer in mm_ram at Sail's CLINT base (matches sail.json).
 #define RVMODEL_MTIME_ADDRESS     0x0200BFF8
 #define RVMODEL_MTIMECMP_ADDRESS  0x02004000

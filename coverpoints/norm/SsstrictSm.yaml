@@ -1,0 +1,53 @@
+# Mapping of normative rules to coverpoints for a test suite
+#
+# SsstrictSm sweeps every standard M-mode CSR address from machine mode, so on
+# RV64 it exercises the high-half CSRs that only exist when XLEN=32.
+
+normative_rule_definitions:
+  # When XLEN>32, an attempt to access a high-half CSR always raises an
+  # illegal-instruction exception.
+  - name: H_illegal_high_half
+    coverpoint: ["SsstrictSm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}"]
+
+  # The medelegh register does not exist when XLEN=64.
+  - name: MEDELEGH_OMIT_XLEN64
+    coverpoint:
+      ["SsstrictSm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}/medelegh"]
+
+  # When XLEN=32, menvcfgh is a 32-bit read/write register that aliases bits 63:32
+  # of menvcfg. The menvcfgh register does not exist when XLEN=64.
+  - names: [menvcfgh_sz, menvcfgh_acc, menvcfgh_op]
+    coverpoint:
+      ["SsstrictSm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}/menvcfgh"]
+
+  # Register mseccfgh exists when XLEN=32 and mseccfg is implemented; it does not
+  # exist when XLEN=64.
+  - name: mseccfgh_presence
+    coverpoint:
+      ["SsstrictSm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}/mseccfgh"]
+
+  # For RV32 only, mstatush is a 32-bit read/write register formatted as shown in
+  # <<mstatushreg>>.
+  - names: [mstatush_sz, mstatush_acc]
+    coverpoint:
+      ["SsstrictSm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}/mstatush"]
+
+  # For RV32, there are CSR addresses for accessing the upper 32 bits of
+  # corresponding machine-level and hypervisor CSRs: mstateen0h, mstateen1h,
+  # mstateen2h, mstateen3h, hstateen0h, hstateen1h, hstateen2h, and hstateen3h.
+  # SsstrictSm sweeps only the machine-level CSRs, so it covers the mstateen*h
+  # half of this rule; the hstateen*h CSRs are hypervisor CSRs and are not
+  # exercised by this suite.
+  - name: stateen_rv32_upper_bits_csrs
+    coverpoint:
+      [
+        "SsstrictSm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}/{mstateen0h, mstateen1h, mstateen2h, mstateen3h}",
+      ]
+
+  # For RV32, bits 63:32 of mcyclecfg can be accessed via the mcyclecfgh CSR, and
+  # bits 63:32 of minstretcfg can be accessed via the minstretcfgh CSR.
+  - name: rv32_high_access
+    coverpoint:
+      [
+        "SsstrictSm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}/{mcyclecfgh, minstretcfgh}",
+      ]

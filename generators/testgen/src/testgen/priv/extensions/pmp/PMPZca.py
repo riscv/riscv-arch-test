@@ -12,7 +12,6 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.pmp.helpers import (
     LOCKED_LXWR_CASES,
-    NAPOT_MASK_DEFINES,
     NAPOT_REGION_WORDS,
     RETURN_TRAMPOLINE,
     TOR_REGION_WORDS,
@@ -20,6 +19,7 @@ from testgen.priv.extensions.pmp.helpers import (
     cfg_shift,
     lxwr_walk_body,
     make_exec_region,
+    napot_mask_defines,
     set_pmpaddr,
     set_pmpcfg,
     zero_pmp_regs,
@@ -56,7 +56,7 @@ def _cret_body(test_data: TestData, amode: str) -> list[str]:
         "",
         f"#define PMPCFG {cfg_byte('1111', amode, cfg_shift(entry))}",
         "#define REGIONSTART TEST_FOR_EXECUTION_1",
-        *(NAPOT_MASK_DEFINES if amode == "napot" else []),
+        *(napot_mask_defines() if amode == "napot" else []),
         "",
         "RVTEST_PMP_SET_BACKGROUND x4",
         "",
@@ -71,14 +71,25 @@ def _cret_body(test_data: TestData, amode: str) -> list[str]:
 
 
 def _cret_data(amode: str) -> list[str]:
-    """Four c.ret instructions: just below, at the start, at the top and just above the region."""
+    """Four c.ret instructions: just below, at the start, at the top and just above the region.
+
+    The blob sits where every other PMP test puts its region: at a page boundary, behind a pad
+    one grain wide, so the region starts at the grain-aligned address the coverage model expects
+    (``PMP_REGION_START`` for TOR and NA4, ``PMP_NAPOT_REGION_START`` for NAPOT).  The pad is
+    filled with uncompressed ``jr ra`` and ends in ``c.nop; c.ret`` so that the c.ret probed just
+    below the region is its last halfword.
+    """
+    pad_bytes = _REGION_BYTES["napot" if amode == "napot" else "tor"]
     lines = [
-        "#if __riscv_xlen == 32",
-        ".p2align 11",
-        "#else",
-        ".p2align 10",
-        "#endif",
-        f".skip {'0x806' if amode == 'napot' else '0x802'}",
+        ".p2align 12",
+        ".p2align (UDB_PMP_GRANULARITY)",
+        ".option push",
+        ".option norvc",
+        f".rept (({pad_bytes} - 4) / 4)",
+        "jr ra",
+        ".endr",
+        ".option pop",
+        "c.nop",
         "TEST_FOR_EXECUTION_0:",
         "ret",
         "TEST_FOR_EXECUTION_1:",
@@ -120,7 +131,7 @@ def _region_body(test_data: TestData, amode: str, misaligned: bool) -> list[str]
     region = "TEST_FOR_EXECUTION_0" if (amode == "na4" and misaligned) else "TEST_FOR_EXECUTION_1"
     lines.extend(["", f"#define REGIONSTART {region}", f"#define REGION_SIZE {size}"])
     if amode == "napot":
-        lines.extend(NAPOT_MASK_DEFINES)
+        lines.extend(napot_mask_defines())
     lines.extend(["", "RVTEST_PMP_SET_BACKGROUND x4"])
     lines.append(f"// PMP configuration: three consecutive {amode.upper()} regions, the third locked with XWR = 000")
     if amode == "tor":

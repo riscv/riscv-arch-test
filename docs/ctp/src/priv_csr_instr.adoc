@@ -90,8 +90,8 @@ privilege mode: ZkrSm in M-mode, ZkrS in S-mode, and ZkrU in U-mode.
 
 [[t-Zkr-coverpoints]]
 .Zkr Coverpoints
-// ,===
-
-// ,===
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=231840071#gid=231840071[Google Sheet Testplan]
+,===
 
 include::norm/Zkr_norm_rules.adoc[]

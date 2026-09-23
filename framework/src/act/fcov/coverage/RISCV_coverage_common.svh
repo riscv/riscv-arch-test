@@ -38,15 +38,26 @@
 
 /*          To align with the starting address of a PMP region used in testing, the address is hardcoded here.
             Since the Sail data region begins at 0x80004000, we simply add the size of the test strings,
-            which has been fixed at 4 KB. PMP region starts at 80005004, because there is a return instruction at
-            80005000, which is there to make sure we fetch a proper inrtuction from the background region.
+            which has been fixed at 4 KB. The executable blob each test places there begins at 80005000
+            with a pad of return instructions, which is there to make sure we fetch a proper instruction
+            from the background region; the region under test follows that pad.
  */
-`define PMP_REGION_START   32'h80005004 // generic tests
+`define PMP_PAD_START      32'h80005000 // pad ahead of the region under test
 `define PMP_SPECIAL_REGION_START 32'h80005000 // Zicbo + Zaamo tests
 
 // Calculate region size g in bytes.
 `define g_tor       (2 ** (`UDB_PMP_GRANULARITY))
 `define g_napot     ((`UDB_PMP_GRANULARITY > 3) ? (2 ** (`UDB_PMP_GRANULARITY)) : (2 ** (`UDB_PMP_GRANULARITY + 1)))
+
+// Region bases. Each test pads its blob by one grain so that the region under test starts on a
+// grain-aligned boundary and the pad stays in the background region (the pad is emitted by
+// PMP_TOR_REGION_BYTES and PMP_NAPOT_REGION_PAD_WORDS in tests/env/rvtest_pmp_macros.h). A TOR or
+// NA4 region is padded by one g_tor and a NAPOT region by one g_napot, so both bases track the
+// grain: at grain 2 they are 0x80005004 and 0x80005008, at grain 6 both are 0x80005040. A NAPOT
+// base must be g_napot-aligned in particular, because `(base>>2)|trailing1s` would otherwise decode
+// to a region that swallows the pad -> NAPOT tests hang / mis-cover.
+`define PMP_REGION_START       (`PMP_PAD_START + `g_tor)   // generic (TOR/NA4) tests
+`define PMP_NAPOT_REGION_START (`PMP_PAD_START + `g_napot)
 
 // Calculate k = G - 1 trailing ones in NAPOT encoding.
 `define k  ((`UDB_PMP_GRANULARITY > 3) ? (`UDB_PMP_GRANULARITY - 3) : 0)
@@ -56,13 +67,6 @@
 // TOR or NA4 region: directly right-shifted
 `define NON_STANDARD_REGION  (`PMP_REGION_START >> 2)              // TOR/NA4 format: yyyyy...
 `define SPECIAL_NON_STANDARD_REGION  (`PMP_SPECIAL_REGION_START >> 2)              // TOR/NA4 format: yyyyy...
-
-// NAPOT region base. PMP_REGION_START (0x80005004) is only TOR/NA4-alignable: it is not a power-of-2
-// boundary, so `(PMP_REGION_START>>2)|trailing1s` decodes to a 16-byte NAPOT region based at
-// 0x80005000 that swallows the return-instruction pad -> NAPOT tests hang / mis-cover. A NAPOT region
-// must instead sit on the next g_napot-aligned address, leaving the pad in the background region.
-// Grain 2: 0x80005008. Grain 4: 0x80005010.
-`define PMP_NAPOT_REGION_START ((`PMP_REGION_START & ~(`g_napot - 1)) + `g_napot)
 
 // NAPOT region: add trailing 1s per `k` to form mask
 `define STANDARD_REGION      ((`PMP_NAPOT_REGION_START >> 2) | ((2 ** `k) - 1)) // NAPOT format: yyyyy...0111

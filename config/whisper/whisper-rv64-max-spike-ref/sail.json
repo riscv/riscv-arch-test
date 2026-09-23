@@ -1,5 +1,5 @@
 {
-  "$schema": "/opt/riscv/share/sail-riscv/sail_riscv_config_schema.json",
+  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.14.1/sail_riscv_config_schema.json",
   "base": {
     "xlen": 64,
     "E": false,
@@ -42,7 +42,12 @@
       "fetch_access_fault": true,
       "fetch_page_fault": true,
       "software_check": true,
-      "reserved_exceptions": false
+      "reserved_exceptions": false,
+      "virtual_instruction": true,
+      "load_guest_page_fault": true,
+      "samo_guest_page_fault": true,
+      "fetch_guest_page_fault": true,
+      "hardware_error": true
     },
     "reserved_behavior": {
       // The configuration option determines how to handle the reserved behavior `amocas_odd_registers`.
@@ -73,7 +78,60 @@
       // "Zdinx_Fatal"  – raise a Sail exception, stopping execution.
       // "Zdinx_Illegal" – treat it as an illegal instruction.
       "rv32zdinx_odd_register": "Zdinx_Illegal"
-    }
+    },
+    "mcounteren_writable_bits": {
+      "len": 32,
+      "value": "0x0000_07FF"
+    },
+    "hcounteren_writable_bits": {
+      "len": 32,
+      "value": "0x0000_07FF"
+    },
+    "mtvec": {
+      "direct": {
+        "supported": true,
+        "base_alignment": 2
+      },
+      "vectored": {
+        "supported": true,
+        "base_alignment": 2
+      }
+    },
+    "stvec": {
+      "direct": {
+        "supported": true
+      },
+      "vectored": {
+        "supported": true,
+        "base_alignment": 2
+      }
+    },
+    "vstvec": {
+      "direct": {
+        "supported": true
+      },
+      "vectored": {
+        "supported": true,
+        "base_alignment": 2
+      }
+    },
+    "medeleg": {
+      "delegatable_bits": {
+        "len": 64,
+        "value": "0x0000_0000_000c_b3FF"
+      }
+    },
+    "mideleg": {
+      "delegatable_bits": {
+        "len": "xlen",
+        "value": "0x0000_0000_0000_2222"
+      }
+    },
+    "mstatus": {
+      "fs_legal_states": "ExtContext_FourState",
+      "vs_legal_states": "ExtContext_FourState"
+    },
+    "privileged_isa_version": "Privileged_ISA_1_13"
   },
   "memory": {
     "pmp": {
@@ -112,23 +170,22 @@
         "vector": {
           "None": null
         },
-        // A misaligned LR/SC currently always faults, and this field can specify
-        // whether it generates an access fault (use `"AccessFault"`)
-        // or a misaligned exception (use `"AlignmentException"`).
-        "lrsc": "AccessFault",
-        // Similarly, a misaligned AMO currently always faults, and this field
-        // can specify either `"AccessFault"` or `"AlignmentException"`.
-        "amo": "AccessFault"
+        // Similarly, a misaligned AMO and LR/SC can be configured with the same
+        // option values.
+        "amo": { "Some": "AccessFault" },
+        "lrsc": {
+          "None": null
+        }
       },
       // If a misaligned access was specified to have no fault in `exceptions` above, the
       // fields below specify how it is handled.
       //
       // Memory accesses that span multiple naturally aligned
-      // 2^allowed_within_exp sized regions will be split into multiple
+      // 2^default_allowed_within_exp sized regions will be split into multiple
       // memory operations. 0 means all misaligned accesses will be split.
       // The maximum value is 12 (one page).
-      "allowed_within_exp": 0,
-      // If the access gets split due to `allowed_within_exp` then the size
+      "default_allowed_within_exp": 0,
+      // If the access gets split due to `default_allowed_within_exp` then the size
       // of the operations will be one byte if `byte_by_byte` is set, otherwise
       // they will be the maximum size possible based on the alignment. For
       // example a 4-byte access to address 0x2 will use two 2-byte operations.
@@ -176,13 +233,16 @@
             "vector": {
               "Some": "AlignmentException"
             },
-            "amo": "AccessFault"
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
           },
           "atomic_support": "AMONone",
           "reservability": "RsrvNone",
           "supports_cbo_zero": false,
           "supports_pte_read": false,
-          "supports_pte_write": false
+          "supports_pte_write": false,
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0
         },
         "include_in_device_tree": false
       },
@@ -212,17 +272,23 @@
             "vector": {
               "None": null
             },
-            "amo": "AccessFault"
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
           },
           "atomic_support": "AMOCASQ",
           "reservability": "RsrvEventual",
           "supports_cbo_zero": true,
           "supports_pte_read": true,
-          "supports_pte_write": true
+          "supports_pte_write": true,
+          "misaligned_atomicity_granule_size_exp": 4,
+          "vector_misaligned_atomicity_granule_size_exp": 4
         },
         "include_in_device_tree": true
       }
-    ]
+    ],
+    "physaddr_bits": 56,
+    "asidlen": 16,
+    "vmidlen": 14
   },
   "platform": {
     "vendorid": 0,
@@ -241,19 +307,22 @@
       // address as the matching Load-Reserve in order to succeed, regardless of the
       // configured reservation set size.  This controls whether such an exact address
       // match is required for a Store-Conditional to succeed.
-      "require_exact_reservation_addr": false
+      "require_exact_reservation_addr": false,
+      "invalidate_on_same_hart_store": false
     },
     "clint": {
       // This must be in a suitable IO memory region (see `memory.regions`).
       "base": 33554432,
-      "size": 786432
+      "size": 786432,
+      "supported": true
     },
     // Very simple MMIO device to generate interrupts for testing
     // purposes. See docs/SimpleInterruptGenerator.md for details.
     "simple_interrupt_generator": {
       // This must be in a suitable IO memory region (see `memory.regions`)
       // and 4-byte aligned. The size is always 0x20.
-      "base": 201326592
+      "base": 201326592,
+      "supported": true
     },
     "clock_frequency": 1000000000,
     "instructions_per_tick": 2,
@@ -269,17 +338,43 @@
     // Note: it is also legal for these instructions to spuriously
     // retire successfully at any point, but there is currently no
     // configuration option for this behaviour.
-    "max_time_to_wait": 200
+    "max_time_to_wait": 200,
+    "interrupts": {
+      "machine": {
+        "software": {
+          "supported": true
+        },
+        "external": {
+          "supported": true
+        },
+        "timer": {
+          "supported": true
+        }
+      }
+    },
+    "wfi_available_to_user_mode": true
   },
   "extensions": {
     "M": {
-      "supported": true
+      "supported": true,
+      "interrupts": {
+        "software": {
+          "supported": true
+        },
+        "external": {
+          "supported": true
+        },
+        "timer": {
+          "supported": true
+        }
+      }
     },
     "A": {
       "supported": true
     },
     "F": {
-      "supported": true
+      "supported": true,
+      "fflags_dirty_policy": "Fflags_Dirty_Precise"
     },
     "D": {
       "supported": true
@@ -299,19 +394,35 @@
       "support_level": "Full",
       "vlen_exp": 8,
       "elen_exp": 6,
-      "vl_use_ceil": false
+      "vl_use_ceil": false,
+      "reserved_behavior": {
+        "illegal_vtype": "IllegalVtype_SetVill",
+        "vstart_out_of_bounds": "Vstart_Illegal"
+      },
+      "max_index_eew_exp": 6,
+      "vstart": {
+        "zero_required": {
+          "arith": true,
+          "scalar_move": true
+        }
+      }
     },
     "B": {
       "supported": true
     },
     "S": {
-      "supported": true
+      "supported": true,
+      "interrupts": {
+        "software": { "supported": true },
+        "external": { "supported": true },
+        "timer": { "supported": true }
+      }
     },
     "U": {
       "supported": true
     },
     "Zibi": {
-      "supported": true
+      "supported": false
     },
     // This extension just asserts that the cache block size is 64 bytes.
     // If you enable this you also need to ensure `platform.cache_block_size_exp`
@@ -483,7 +594,7 @@
       "supported": false
     },
     "Zvabd": {
-      "supported": true
+      "supported": false
     },
     "Zvfbfmin": {
       "supported": true
@@ -598,6 +709,71 @@
     },
     "Svvptc": {
       "supported": true
+    },
+    "H": {
+      "supported": true,
+      "geilen": 63,
+      "guest_page_fault_writes_htval": true,
+      "hgatp_modes": {
+        "Sv32x4": false,
+        "Sv39x4": true,
+        "Sv48x4": true,
+        "Sv57x4": true
+      },
+      "vsatp_modes": {
+        "Sv32": false,
+        "Sv39": true,
+        "Sv48": true,
+        "Sv57": true
+      }
+    },
+    "Sha": {
+      "supported": true
+    },
+    "Shcounterenw": {
+      "supported": true
+    },
+    "Shgatpa": {
+      "supported": true
+    },
+    "Shtvala": {
+      "supported": true
+    },
+    "Shvsatpa": {
+      "supported": true
+    },
+    "Shvstvala": {
+      "supported": true
+    },
+    "Shvstvecd": {
+      "supported": true
+    },
+    "Sstvecd": {
+      "supported": true
+    },
+    "Svukte": {
+      "supported": false
+    },
+    "Zilx": {
+      "supported": false
+    },
+    "Zama16b": {
+      "supported": true
+    },
+    "Ssnpm": {
+      "supported": true,
+      "supported_pmlen_7": true,
+      "supported_pmlen_16": false
+    },
+    "Smnpm": {
+      "supported": true,
+      "supported_pmlen_7": true,
+      "supported_pmlen_16": false
+    },
+    "Smmpm": {
+      "supported": true,
+      "supported_pmlen_7": true,
+      "supported_pmlen_16": false
     }
   }
 }

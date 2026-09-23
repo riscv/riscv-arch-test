@@ -25,6 +25,10 @@ ci_enabled: true
 # Smstateen will be added back once sail starts supporting SM1P13 too
 # ZawrsU and ZawrsS fail on qemu due to stval mismatching, filed QEMU issue https://gitlab.com/qemu-project/qemu/-/work_items/4080
 exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU"
+# qemu-rv64-mu: Sail 0.13.1 reads mstatus.SXL for U-mode address translation even when S is
+#   not supported (internal error "architecture(0b00) is invalid"); fixed in Sail 0.14
+exclude_configs:
+  - qemu-rv64-mu
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"
 shards: 1

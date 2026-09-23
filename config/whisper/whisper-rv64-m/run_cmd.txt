@@ -1,0 +1,1 @@
+whisper --maxinst 100000000:f {debug:--log --loglabel --traceload --logfile __TRACEFILE__} --config config/whisper/whisper-rv64-m/whisper.json

@@ -320,7 +320,8 @@ TEST_FOR_EXECUTION_0:
   .option pop
 TEST_FOR_EXECUTION:
   .rept (PMP_TOR_REGION_BYTES / 4)
-  nop
+  c.nop
+  c.nop
   .endr
   .option push
   .option norvc

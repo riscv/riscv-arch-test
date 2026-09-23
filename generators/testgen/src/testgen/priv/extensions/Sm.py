@@ -575,8 +575,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (0 << 34)  # SXL:  Supervisor-Mode XLEN  not supported by Sail.  Test in xlen suite.
         | (0 << 36)  # SBE not supported by Sail; test in Endian
         | (0 << 37)  # MBE not supported by Sail; test in Endian
-        | (0 << 38)  # GVA not supported by Sail; TODO change to 1 when H is implemented
-        | (0 << 39)  # MPV not supported by Sail; TODO change to 1 when H is implemented
+        | (1 << 38)
+        | (1 << 39)
         | (1 << 41)  # MPELP: Machine Previous Expect Landing Pad
         | (0 << 42)  # MDT:   not yet supported by Sail; TODO change to 1 when Smdbltrp implemented
         | (1 << 63)  # SD for RV64
@@ -619,8 +619,6 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         #        ("mcause", None), # WLRL fields can't be handled with masks.  Use cp_mcause_* instead
         ("mtval", None),  # only accessed here; walked in cp_mtval_* instead
         ("mip", 0xFFFF),  # limit to standard interrupt bits
-        # TODO: remove mcountinhibit mask when Sail gets parameters for writable bits
-        ("mcountinhibit", 0b111),
         ("mhpmevent3", 0),  # mask all bits because they are WARL and can all be ROZ
         ("mhpmevent4", 0),  # mask all bits because they are WARL and can all be ROZ
         ("mhpmevent5", 0),  # mask all bits because they are WARL and can all be ROZ
@@ -651,6 +649,9 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ("mhpmevent30", 0),  # mask all bits because they are WARL and can all be ROZ
         ("mhpmevent31", 0),  # mask all bits because they are WARL and can all be ROZ
     ]
+    # mcountinhibit is optional, so it is accessed under UDB_MCOUNTINHIBIT_IMPLEMENTED
+    # TODO: remove mcountinhibit mask when Sail gets parameters for writable bits
+    csr_mcountinhibit = ("mcountinhibit", 0b111)
     csr_menvcfg = ("menvcfg", menvcfg_mask)
     csr_mseccfg = ("mseccfg", mseccfg_mask)
     # RV32-only high CSRs
@@ -682,6 +683,11 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     for csr in csrm:
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.append("\n#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED")
+    tc.code.extend(csr_access_test(test_data, csr_mcountinhibit, covergroup, coverpoint))
+    tc.code.append("#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED")
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
@@ -752,6 +758,11 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             continue  # skip the virtual-address CSRs; they are walked in addr_csr_tests
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
+
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.append("\n#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED")
+    tc.code.extend(csr_walk_test(test_data, csr_mcountinhibit, covergroup, coverpoint))
+    tc.code.append("#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED")
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
@@ -1325,6 +1336,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     )
     lines.extend(
         [
+            "#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED",
             f"LI(x{r1}, 0b1)        # inhibit mcycle",
             f"csrw mcountinhibit, x{r1}        # inhibit mcycle",
             f"csrr x{r1}, mcycle        # read mcycle",
@@ -1355,6 +1367,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             f"csrr x{r2}, minstret        # read minstret again",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be 0",
             write_sigupd(r2, test_data),
+            "#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED",
         ]
     )
 
@@ -1398,7 +1411,13 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     r_val, r_val2, r_temp, r_counter = test_data.int_regs.get_registers(4)
 
     # Re-enable all counters before trying to wrap them!
-    lines.append("csrw mcountinhibit, x0    # Clear inhibit register")
+    lines.extend(
+        [
+            "#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED",
+            "csrw mcountinhibit, x0    # Clear inhibit register",
+            "#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED",
+        ]
+    )
 
     ######################################
     coverpoint = "cp_mcycle_wraparound"

@@ -35,6 +35,8 @@ TESTCASES_PER_PRIV_FILE = 512
 # Extension Configuration
 # =============================================================================
 
+EXPERIMENTAL_EXTENSIONS = frozenset({})
+
 # Extensions that should generate RV32E/RV64E variants
 # TODO: Add Zcmp and Zcmt when implemented
 E_EXTENSION_TESTS = frozenset(

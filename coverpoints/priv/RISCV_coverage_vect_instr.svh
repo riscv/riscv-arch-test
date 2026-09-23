@@ -433,8 +433,10 @@
     //
     // The generator emits vsetivli x0, 1, eN, m1, ta, ma before each SEW
     // group, so the current SEW is reflected in the vtype CSR.  This
-    // coverpoint reads vsew from vtype[5:3].
+    // coverpoint reads vsew from vtype[5:3].  Without the vector extension
+    // there is no vtype, so collapse SEW to one bin and keep the crosses.
 
+`ifdef ZVL32B_SUPPORTED
     current_vsew : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "vtype", "vsew")[2:0] {
         bins e8  = {3'b000};
         bins e16 = {3'b001};
@@ -442,3 +444,8 @@
         bins e64 = {3'b011};
         // 100-111 are reserved
     }
+`else
+    current_vsew : coverpoint 1'b0 {
+        bins novec = {1'b0};
+    }
+`endif

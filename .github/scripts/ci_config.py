@@ -68,7 +68,7 @@ def _selected_suite_weights(config_file: Path, exclude: str, workdir: Path) -> t
     keeps the weighting tied exactly to ACT's selected tests.
     """
     ((_, _, selected_tests),) = prepare_configs_and_select_tests(
-        [config_file], _full_test_dict(exclude), workdir, validate_tools=False
+        [config_file], None, _full_test_dict(exclude), workdir, validate_tools=False
     )
     weights: dict[str, int] = {}
     for test_name in selected_tests:
@@ -146,7 +146,9 @@ def _warm_udb_outputs(config_dir: Path, workdir: Path) -> None:
                 config_files.append(run_cmd_file.parent / "test_config.yaml")
 
     if config_files:
-        prepare_configs_and_select_tests(config_files, {}, workdir, jobs=os.cpu_count() or 1, validate_tools=False)
+        prepare_configs_and_select_tests(
+            config_files, None, {}, workdir, jobs=os.cpu_count() or 1, validate_tools=False
+        )
 
 
 def discover_configs(config_dir: Path, workdir: Path | None = None) -> list[dict]:

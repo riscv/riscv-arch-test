@@ -24,6 +24,10 @@ _MARCH_PREFIX = re.compile(r"^(rv(?:32|64))(.*)$", re.IGNORECASE)
 _SINGLE_LETTER_EXTENSION = re.compile(r"[a-z](?:\d+p\d+)?", re.IGNORECASE)
 _MARCH_VERSION = re.compile(r"\d+p\d+$", re.IGNORECASE)
 
+# Extensions that are available only with --enable-experimental-extensions.
+EXPERIMENTAL_EXTENSIONS = frozenset({})
+_EXPERIMENTAL_EXTENSIONS_LOWER = frozenset(extension.lower() for extension in EXPERIMENTAL_EXTENSIONS)
+
 
 def _parse_supported_extensions(output: str, tool: str) -> dict[str, str | None]:
     """Parse RISC-V extensions from ``-march=help`` style output."""
@@ -100,6 +104,12 @@ class Toolchain:
         """Build compiler flags that set and validate the ISA string."""
         march = march.replace("${XLEN}", str(xlen))
         base, extension_tokens = _parse_march(march)
+        extension_tokens = [
+            token
+            for token in extension_tokens
+            if _MARCH_VERSION.sub("", token.removeprefix("_")) not in _EXPERIMENTAL_EXTENSIONS_LOWER
+        ]
+        march = f"{base}{''.join(extension_tokens)}"
         extensions = {_MARCH_VERSION.sub("", token.removeprefix("_")) for token in extension_tokens}
         if "g" in extensions:
             extensions.remove("g")

@@ -19,7 +19,6 @@ implemented_extensions:
   - { name: Sm, version: "= 1.13.0" }
   - { name: Smaia, version: "= 1.0.0" }
   - { name: Smcntrpmf, version: "= 1.0.0" }
-  - { name: Smdbltrp, version: "= 1.0.0" }
   - { name: Smepmp, version: "= 1.0.0" }
   - { name: Smmpm, version: "= 1.0.0" }
   - { name: Smnpm, version: "= 1.0.0" }
@@ -132,7 +131,7 @@ params:
   CACHE_BLOCK_SIZE: 64
   FORCE_UPGRADE_CBO_INVAL_TO_FLUSH: false
   # Zicntr params
-  TIME_CSR_IMPLEMENTED: true
+  TIME_CSR_IMPLEMENTED: false
   # U params
   MUTABLE_MISA_U: true
   U_MODE_ENDIANNESS: dynamic

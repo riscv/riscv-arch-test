@@ -117,7 +117,7 @@
 // Interrupt latency configuration
 #define RVMODEL_INTERRUPT_LATENCY 10
 
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
+#define RVMODEL_TIMER_INT_SOON_DELAY 10000
 
 ##### Machine Timer #####
 #define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
@@ -161,5 +161,6 @@
 #define RVMODEL_SET_SSW_INT(_R1, _R2)
 
 #define RVMODEL_CLR_SSW_INT(_R1, _R2)
+
 
 #endif // _RVMODEL_MACROS_H

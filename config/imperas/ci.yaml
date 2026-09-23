@@ -13,10 +13,7 @@
 # - InterruptsSm/S/SSm/U: Imperas does not implement external interrupts
 # - Smstateen: Sail does not implement all state yet to match
 # - ExceptionsVx: https://solvnetplus.synopsys.com/s/case/500WQ000023l1CPYAY/vmvnrrv-does-not-raise-an-illegalinstruction-exception-when-vtypevill-1
-# - ExceptionsSvZalrsc: misaligned LR under Sv39: Imperas raises load page fault (13, translation
-#   first); Sail rv64-max config checks misaligned LR/SC pre-translation and raises load access
-#   fault (5). No Imperas parameter changes this priority.
 # - Ssnpm,Smmpm,SmnpmS,SmnpmU:Imperas still applies pointer masking when MXR is set, contradicting the spec rule. Issue filed (https://solvnetplus.synopsys.com/s/case/500WQ000025qNCkYAM/pointer-masking-should-be-disabled-when-mxr1)
 #
 ci_enabled: false
-exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,SsstrictV,ExceptionsSvZalrsc,InterruptsSm,InterruptsS,InterruptsSSm,InterruptsU,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,Ssnpm,Smmpm,SmnpmS,SmnpmU"
+exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,InterruptsSm,InterruptsS,InterruptsSSm,InterruptsU,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,Ssnpm,Smmpm,SmnpmS,SmnpmU"

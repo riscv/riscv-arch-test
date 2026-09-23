@@ -569,7 +569,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 21)  # TW:   Timeout Wait
         | (1 << 22)  # TSR:  Trap SRET
         | (1 << 23)  # SPELP: Supervisor Previous Expect Landing Pad
-        | (0 << 24)  # SDT: not yet supported by Sail; TODO change to 1 when Ssdbltrp implemented
+        | (0 << 24)  # SDT: walked only with Ssdbltrp (gated_mask_bits below)
         | (1 << 31)  # SD for RV32 (probably shouldn't be tested for RV64, but seems to work ok)
         | (0 << 32)  # UXL:  User-Mode XLEN not supported by Sail.  Test in xlen suite.
         | (0 << 34)  # SXL:  Supervisor-Mode XLEN  not supported by Sail.  Test in xlen suite.
@@ -578,7 +578,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 38)
         | (1 << 39)
         | (1 << 41)  # MPELP: Machine Previous Expect Landing Pad
-        | (0 << 42)  # MDT:   not yet supported by Sail; TODO change to 1 when Smdbltrp implemented
+        | (0 << 42)  # MDT: walked only with Smdbltrp (gated_mask_bits below)
         | (1 << 63)  # SD for RV64
     )
     mseccfg_mask = (
@@ -598,8 +598,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 6)  # CBCFE: Cache Block Clean and Flush Enable
         | (1 << 7)  # CBZE: Cache Block Zero Enable
         | (3 << 32)  # PMM: Pointer Masking
-        | (0 << 59)  # Double Trap not supported by Sail; TODO change to 1 when Smdbltrp implemented
-        | (0 << 60)  # Counter Delegation Smcdeleg not supported by Sail; TODO change to 1 when Smcdeleg implemented
+        | (0 << 59)  # DTE: walked only with Ssdbltrp (gated_mask_bits below)
+        | (0 << 60)  # CDE: walked only with Smcdeleg (gated_mask_bits below)
         | (1 << 61)  # ADUE: A/D
         | (1 << 62)  # PBMTE: Page-Based Memory Type Enable
         | (1 << 63)  # STCE: Supervisor Timer Compare Enable
@@ -750,6 +750,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             coverpoint_masked,
             warl_fields=warl_fields,
             maskedwrites=True,
+            gated_mask_bits=[("SSDBLTRP_SUPPORTED", 1 << 24), ("SMDBLTRP_SUPPORTED", 1 << 42)],
         )
     )
 
@@ -767,7 +768,15 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
     tc.code.extend(
-        csr_walk_test(test_data, csr_menvcfg, covergroup, coverpoint_masked, warl_fields=warl_fields, maskedwrites=True)
+        csr_walk_test(
+            test_data,
+            csr_menvcfg,
+            covergroup,
+            coverpoint_masked,
+            warl_fields=warl_fields,
+            maskedwrites=True,
+            gated_mask_bits=[("SSDBLTRP_SUPPORTED", 1 << 59), ("SMCDELEG_SUPPORTED", 1 << 60)],
+        )
     )
     tc.code.append("#endif")
 
@@ -786,9 +795,27 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ]
     )
 
-    tc.code.extend(csr_walk_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.extend(
+        csr_walk_test(
+            test_data,
+            csr_mstatush,
+            covergroup,
+            coverpoint_masked,
+            maskedwrites=True,
+            gated_mask_bits=[("SMDBLTRP_SUPPORTED", 1 << 10)],
+        )
+    )
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
-    tc.code.extend(csr_walk_test(test_data, csr_menvcfgh, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.extend(
+        csr_walk_test(
+            test_data,
+            csr_menvcfgh,
+            covergroup,
+            coverpoint_masked,
+            maskedwrites=True,
+            gated_mask_bits=[("SSDBLTRP_SUPPORTED", 1 << 27), ("SMCDELEG_SUPPORTED", 1 << 28)],
+        )
+    )
     tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
     tc.code.extend(csr_walk_test(test_data, csr_mseccfgh, covergroup, coverpoint_masked, maskedwrites=True))

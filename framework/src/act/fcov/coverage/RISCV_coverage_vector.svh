@@ -291,11 +291,13 @@ typedef enum {
     None
 } edge_vs2_ls_values_t;
 
-function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BITS val);
+// val is the index register of an indexed load or store.  Its elements are as wide as the
+// instruction's width field says (the index EEW), not vtype.vsew: an ei8 index vector under an
+// e64 vtype packs eight indices into every 64-bit chunk, so the walk below goes by the index EEW.
+function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BITS val, logic [2:0] width);
 
   logic all_values_within_range = 1'b1;
 
-  `XLEN_BITS vsew               = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew");
   int vlmax                     = get_vtype_vlmax(hart, issue, `SAMPLE_BEFORE);
 
   if (val == 0) begin
@@ -303,13 +305,13 @@ function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BIT
   end
 
   //------------------------------------------
-  // Walk across VAL in chunks of size SEW
+  // Walk across VAL in chunks of the index EEW, the width the instruction's width field encodes
   //------------------------------------------
-  case (vsew)
+  case (width)
     //--------------------------------------------------------------
     //  8-bit elements
     //--------------------------------------------------------------
-    0: begin : SEW8
+    3'b000: begin : EEW8
       for (int idx = 1; idx <= `UDB_VLEN / 8; ++idx) begin
         logic [7:0] elem = val[idx*8-1 -: 8];
 
@@ -320,7 +322,7 @@ function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BIT
     //--------------------------------------------------------------
     // 16-bit elements
     //--------------------------------------------------------------
-    1: begin : SEW16
+    3'b101: begin : EEW16
       for (int idx = 1; idx <= `UDB_VLEN / 16; ++idx) begin
         logic [15:0] elem = val[idx*16-1 -: 16];
 
@@ -333,7 +335,7 @@ function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BIT
     //--------------------------------------------------------------
     // 32-bit elements
     //--------------------------------------------------------------
-    2: begin : SEW32
+    3'b110: begin : EEW32
       for (int idx = 1; idx <= `UDB_VLEN / 32; ++idx) begin
         logic [31:0] elem = val[idx*32-1 -: 32];
 
@@ -346,7 +348,7 @@ function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BIT
     //--------------------------------------------------------------
     // 64-bit elements
     //--------------------------------------------------------------
-    3: begin : SEW64
+    3'b111: begin : EEW64
       for (int idx = 1; idx <= `UDB_VLEN / 64; ++idx) begin
         logic [63:0] elem = val[idx*64-1 -: 64];
 
@@ -355,7 +357,7 @@ function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BIT
     end
     //--------------------------------------------------------------
     default : begin
-      $error("ERROR: SystemVerilog Functional Coverage: Unsupported VSEW: %s", vsew);
+      $error("ERROR: SystemVerilog Functional Coverage: Unsupported index width field: %b", width);
       $fatal(1);
     end
   endcase

@@ -11,6 +11,41 @@
 import re
 from pathlib import Path
 
+MSTATUS = "300"
+SSTATUS = "100"
+
+
+def _sstatus_mask(xlen: int) -> int:
+    """Return the mstatus bits visible through sstatus."""
+    # SIE, SPIE, UBE, SPP, VS, FS, XS, SUM, MXR, SPELP, SDT
+    bits = [1, 5, 6, 8, 9, 10, 13, 14, 15, 16, 18, 19, 23, 24]
+    if xlen == 64:
+        bits += [32, 33]  # UXL
+    bits.append(xlen - 1)  # SD
+    return sum(1 << b for b in bits)
+
+
+def _alias_status_writes(reg_writes: dict[tuple[str, str], str], last_mstatus: int | None) -> int | None:
+    """Add the sstatus or mstatus update implied by a write to the other.
+
+    sstatus is a view of mstatus, but Sail logs only the register named in the instruction.
+    Returns the mstatus value after this instruction, or None if it is not yet known.
+    """
+    mstatus = reg_writes.get(("CSR", MSTATUS))
+    sstatus = reg_writes.get(("CSR", SSTATUS))
+    if mstatus is not None:
+        xlen = len(mstatus) * 4
+        value = int(mstatus, 16)
+        reg_writes[("CSR", SSTATUS)] = f"{value & _sstatus_mask(xlen):0{len(mstatus)}X}"
+        return value
+    if sstatus is not None and last_mstatus is not None:
+        xlen = len(sstatus) * 4
+        mask = _sstatus_mask(xlen)
+        value = (last_mstatus & ~mask) | (int(sstatus, 16) & mask)
+        reg_writes[("CSR", MSTATUS)] = f"{value:0{len(sstatus)}X}"
+        return value
+    return last_mstatus
+
 
 def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
     # Regular expression to match instruction lines
@@ -35,6 +70,7 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
         lines = f.readlines()
         output_line = ""
         prev_mode_num: str | None = None
+        last_mstatus: int | None = None
         for i in range(len(lines)):
             line = lines[i]
 
@@ -65,6 +101,7 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
                     if insn_pattern.search(lines[j]):
                         break
                     j += 1
+                last_mstatus = _alias_status_writes(reg_writes, last_mstatus)
                 for (reg_type, reg_num), reg_val in reg_writes.items():
                     next_output += f" {reg_type} {reg_num} {reg_val}"
 

@@ -1413,8 +1413,15 @@ common_\__MODE__\()handler:                      // entered with T6 = vector add
 //   T6 (x15) saved at trap_sv_off+6*REGWIDTH(sp) (by per-cause stub above)
 //   orig sp saved at trap_sv_off+7*REGWIDTH(sp)
 //   a0/a1  untouched — they carry the T-SBI operation code/argument (if any)
+//
+// The jr T5 above is an indirect jump through a register other than x1/x5/x7,
+// so when Zicfilp is enabled in this mode it sets ELP=LP_EXPECTED. The entry
+// therefore starts with a 4-byte-aligned lpad 0 (auipc x0, 0), which is a HINT
+// that executes as a no-op when Zicfilp is not implemented or not enabled.
 
+        .p2align 2                               // landing pad must be 4-byte aligned
 common_\__MODE__\()entry:                       // common entry for all traps in this mode
+        auipc   x0, 0                            // lpad 0: landing pad for the jr T5 above
         SREG    T4, trap_sv_off+4*REGWIDTH(sp)  // save T4 (x9)
         SREG    T3, trap_sv_off+3*REGWIDTH(sp)  // save T3 (x8)
         SREG    T2, trap_sv_off+2*REGWIDTH(sp)  // save T2 (x7)

@@ -117,13 +117,21 @@ See Ssnpm for normative rules.
 
 ==== Zicfilp Landing Pads
 
-In Privileged section because it has both unpriv and privileged behaviors.
+In Privileged section because it has both unpriv and privileged behaviors.  The landing pad tests run once per
+privilege mode: ZicfilpSm in M-mode, ZicfilpS in S-mode, and ZicfilpU in U-mode.  ZicfilpSm also covers
+MPELP on trap entry into M-mode and ELP on MRET, which require M-mode control of medeleg, mstatus.MPP, and mstatus.MPELP.
+ZicfilpS covers SPELP on trap entry into S-mode and ELP on SRET.
 
 [[t-Zicfilp-coverpoints]]
 .Zicfilp Coverpoints
-//,===
-//include::{testplansdir}/Zicfilp.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?gid=1319034416#gid=1319034416[Google Sheet Testplan (coverpoints shared by all modes)]
+https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?gid=2113591295#gid=2113591295[Google Sheet Testplan (ZicfilpSm)]
+https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?gid=779370838#gid=779370838[Google Sheet Testplan (ZicfilpS)]
+https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?gid=84584846#gid=84584846[Google Sheet Testplan (ZicfilpU)]
+,===
+
+include::norm/Zicfilp_norm_rules.adoc[]
 
 ==== Zicfiss Shadow Stack
 

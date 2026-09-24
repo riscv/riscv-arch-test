@@ -25,15 +25,14 @@
 
 // Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
 // if defined.  For most DUTs, the default should work and this macro
-// should not be defined.  If no M-mode or CSRs are implemented, define this
-// macro as blank to bypass the boot process.  If a nonconforming
+// should not be defined.  If no standard M-mode CSRs are implemented, leave
+// STANDARD_SM_SUPPORTED undefined instead.  If a nonconforming
 // M-mode is implemented, define this macro to set up the necessary
 // state in a fashion similar to RVTEST_BOOT_TO_MMODE.
 //
-// PicoRV32 is the "no M-mode or CSRs are implemented" case, so this is blank.
-// docs/ctp/src/abstraction.adoc:26,30 documents exactly this option, and
-// config/spike/spike-RVI20U32/rvmodel_macros.h:22-30 is the existing precedent.
-#define RVMODEL_BOOT_TO_MMODE
+// PicoRV32 implements no CSRs, so STANDARD_SM_SUPPORTED is left undefined and the
+// default boot code, which touches CSRs only for a standard M-mode, does nothing.
+//#define RVMODEL_BOOT_TO_MMODE
 
 # Address to use for load/store fault tests that should cause an access fault on the DUT.
 // PicoRV32 generates no access faults: the AXI testbench answers every in-range

@@ -29,19 +29,9 @@ def _setup_envcfg(extension: str, mode: str) -> tuple[str, ...]:
     return (f"LI(t0, {mask})", "csrs menvcfg, t0", *(("csrs senvcfg, t0",) if mode == "Umode" else ()))
 
 
-def _add_operations(
-    test_data: TestData, sv: SvMode, mode: str, level: int, extension: str, number: int, *, on_pte: bool = False
-) -> list[str]:
-    if mode == "Mmode":
-        enter, leave = [], []
-    elif on_pte:
-        # va_data is VA 0, which on Sv48/Sv57 is the root slot the boot tables identity map the
-        # image through, so only the code alias stays executable. RVTEST_GOTO_LOWER_MODE mrets
-        # into the alias; the T-SBI relocation moves into it only for GOTO_UMODE, so a
-        # GOTO_SMODE from M-mode would resume at an unmapped PC.
-        enter, leave = [f"RVTEST_GOTO_LOWER_MODE {mode}"], ["RVTEST_GOTO_MMODE"]
-    else:
-        enter, leave = [f"RVTEST_TSBI_GOTO_{mode.upper()}"], ["RVTEST_TSBI_GOTO_MMODE"]
+def _add_operations(test_data: TestData, sv: SvMode, mode: str, level: int, extension: str, number: int) -> list[str]:
+    enter = [] if mode == "Mmode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"]
+    leave = [] if mode == "Mmode" else ["RVTEST_TSBI_GOTO_MMODE"]
     lines = [*virtual_address(sv, "va_data", level), *enter]
     for operation in _FAMILIES[extension][1]:
         name = operation.split()[0].replace(".", "_")
@@ -154,7 +144,7 @@ def _make_on_pte(test_data: TestData, sv: SvMode, mode: str, extension: str) -> 
                 *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                 "sfence.vma",
                 "",
-                *_add_operations(test_data, sv, mode, level, extension, number, on_pte=True),
+                *_add_operations(test_data, sv, mode, level, extension, number),
             ]
         )
         if top:

@@ -459,11 +459,24 @@
         sub     T4, T4, T3                           // T4 = offset into the alias
         LA(     T3, Mtramptbl_sv)
         LREG    T3, code_seg_siz(T3)                 // T3 = code region size
+  .ifc \__MODE__ , M
+        bgtu    T4, T3, 8f                           // not in the alias: an M caller entering S goes the other way
+  .else
         bgtu    T4, T3, 9f                           // caller is not in the alias
+  .endif
         add     T4, T4, T2
         csrw    CSR_XEPC, T4
   .ifc \__MODE__ , M
         j       9f
+
+        // An M-mode caller asking for S-mode runs in the code region, not the alias.
+        // A test whose own map does not cover the code region -- one that maps a test VA
+        // over the root slot the boot tables identity map it through -- can only fetch
+        // through the alias, so send S-mode there, exactly as GOTO_UMODE does.
+8:      li      T4, TSBI_GOTO_SMODE
+        bne     a0, T4, 9f                           // GOTO_MMODE: M does not translate, nothing to do
+        LA(     T3, Mtramptbl_sv)
+        LREG    T3, code_bgn_off+sv_area_sz(T3)      // T3 = registered code alias (clobbered above)
 1:      csrr    T4, CSR_SATP
     #if (UDB_MXLEN==32)
         bgez    T4, 9f                               // satp.MODE = Bare

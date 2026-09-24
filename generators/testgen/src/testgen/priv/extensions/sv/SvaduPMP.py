@@ -85,12 +85,8 @@ def _make_svadupmp_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk
                         "va_data",
                         level,
                         f"test{number}",
-                        # va_data is VA 0, which on Sv48/Sv57 is the root slot the boot tables identity map the
-                        # image through, so only the code alias stays executable. RVTEST_GOTO_LOWER_MODE mrets
-                        # into the alias; the T-SBI relocation moves into it only for GOTO_UMODE, so a
-                        # GOTO_SMODE from M-mode would resume at an unmapped PC.
-                        enter=[f"RVTEST_GOTO_LOWER_MODE {mode}"],
-                        leave=["RVTEST_GOTO_MMODE"],
+                        enter=[] if mode == "Mmode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"],
+                        leave=[] if mode == "Mmode" else ["RVTEST_TSBI_GOTO_MMODE"],
                     ),
                     *_add_pte_readback(test_data, sv, level, number),
                     "",

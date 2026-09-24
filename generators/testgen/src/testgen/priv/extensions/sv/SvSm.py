@@ -266,7 +266,6 @@ def make_svsm_sv57_sbe(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvSm",
     required_extensions=["Sm", "S"],
-    march_extensions=[],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svsm_mstatus_tvm(test_data: TestData) -> list[TestChunk]:

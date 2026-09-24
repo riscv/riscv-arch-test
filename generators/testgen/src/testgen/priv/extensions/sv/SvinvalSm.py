@@ -17,7 +17,6 @@ from testgen.priv.registry import add_priv_test_generator
 @add_priv_test_generator(
     "SvinvalSm",
     required_extensions=["Sm", "S", "Svinval"],
-    march_extensions=["Svinval"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svinvalsm_tvm(test_data: TestData) -> list[TestChunk]:

@@ -24,8 +24,7 @@ def bare_rwx(test_data: TestData, name: str, *, enter: tuple[str, ...] = (), lea
         ("exec", 14, "jalr ra, a5, 0"),
     ):
         lines.append(test_data.add_testcase(f"{name}_{operation}", "cp_bare_access", f"{test_data.testsuite}_cg"))
-        # The nop is where the jalr returns, and where the handler resumes if the access faults.
-        lines.extend([instruction, "nop", write_sigupd(register, test_data, label=test_data.current_testcase_label)])
+        lines.extend([instruction, write_sigupd(register, test_data, label=test_data.current_testcase_label)])
     lines.extend(leave)
     return lines
 
@@ -50,7 +49,6 @@ def begin_bare_test(test_data: TestData, split_name: str) -> TestChunk:
 @add_priv_test_generator(
     "Svbare",
     required_extensions=["Svbare"],
-    march_extensions=["Svbare"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svbare_smode(test_data: TestData) -> list[TestChunk]:
@@ -62,7 +60,6 @@ def make_svbare_smode(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "Svbare",
     required_extensions=["Svbare"],
-    march_extensions=["Svbare"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svbare_umode(test_data: TestData) -> list[TestChunk]:

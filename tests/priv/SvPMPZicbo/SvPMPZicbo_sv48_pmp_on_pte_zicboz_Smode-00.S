@@ -88,11 +88,11 @@ SvPMPZicbo_cp_pmpcfg_write_pmpcfg0:
   slli a0, a0, 25
   srli a0, a0, 25
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
+  RVTEST_TSBI_GOTO_SMODE
 SvPMPZicbo_cg_cp_pmp_zicbo_test1_cbo_zero:
   cbo.zero (a5)
   nop
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE
   .endif
 
   LA(x5, rvtest_slvl2_pg_tbl)
@@ -114,11 +114,11 @@ SvPMPZicbo_cg_cp_pmp_zicbo_test1_cbo_zero:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
+  RVTEST_TSBI_GOTO_SMODE
 SvPMPZicbo_cg_cp_pmp_zicbo_test2_cbo_zero:
   cbo.zero (a5)
   nop
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE
 
   LA(x5, rvtest_slvl1_pg_tbl)
   srl x5, x5, PMP_SHIFT
@@ -140,11 +140,11 @@ SvPMPZicbo_cg_cp_pmp_zicbo_test2_cbo_zero:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
+  RVTEST_TSBI_GOTO_SMODE
 SvPMPZicbo_cg_cp_pmp_zicbo_test3_cbo_zero:
   cbo.zero (a5)
   nop
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE
 
   LA(x5, rvtest_slvl0_pg_tbl)
   srl x5, x5, PMP_SHIFT
@@ -167,11 +167,11 @@ SvPMPZicbo_cg_cp_pmp_zicbo_test3_cbo_zero:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
+  RVTEST_TSBI_GOTO_SMODE
 SvPMPZicbo_cg_cp_pmp_zicbo_test4_cbo_zero:
   cbo.zero (a5)
   nop
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test

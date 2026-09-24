@@ -354,8 +354,8 @@
   // Note: _ms and _su are shared implementations
   // used for multiple privilege modes
 
-  // A memory-mapped write reaches mip only eventually. After clearing an
-  // interrupt source, poll mip until the pending bit reads 0, for at most
+  // A write to msip, mtimecmp, or stimecmp reaches mip only eventually. After
+  // clearing an interrupt source, poll mip until the pending bit reads 0, for at most
   // RVMODEL_INTERRUPT_LATENCY iterations, so the interrupt is not taken again
   // when the test next enables it. The _SU flavor reads mip through T-SBI.
   .macro RVTEST_WAIT_MIP_CLEAR_M mask
@@ -502,7 +502,7 @@
         ret
 
       // Clear STI using Sstc.  Assumes menvcfg.STCE=1
-      rvtest_clr_sstc_int_ms:
+      rvtest_clr_sstc_int_m:
         li a1, -1 // all 1s
         #if UDB_MXLEN == 32
           // Upper word first, which is what actually clears STI; the lower word then makes the
@@ -512,6 +512,21 @@
         #else
           csrw stimecmp, a1 // set stimecmp to all 1s to clear STI
         #endif
+        RVTEST_WAIT_MIP_CLEAR_M 0x20 // mip.STIP
+        ret
+
+      // Clear STI from S-mode using Sstc.  Assumes menvcfg.STCE=1
+      rvtest_clr_sstc_int_s:
+        li a1, -1 // all 1s
+        #if UDB_MXLEN == 32
+          // Upper word first, which is what actually clears STI; the lower word then makes the
+          // 64-bit stimecmp read all 1s as it does on RV64, and is never transiently armed.
+          csrw stimecmph, a1 // set upper word of stimecmp to all 1s to clear STI
+          csrw stimecmp, a1  // and the lower word, so the whole register is all 1s
+        #else
+          csrw stimecmp, a1 // set stimecmp to all 1s to clear STI
+        #endif
+        RVTEST_WAIT_MIP_CLEAR_SU 0x20 // mip.STIP
         ret
     #endif // SSTC_SUPPORTED
 
@@ -777,6 +792,7 @@
         #else
           RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMP) // set stimecmp to all 1s to clear STI
         #endif
+        RVTEST_WAIT_MIP_CLEAR_SU 0x20 // mip.STIP
         ret
     #endif // SSTC_SUPPORTED
   #endif // S_SUPPORTED

@@ -327,11 +327,9 @@ TODO
 
 testgen/src/testgen/io/templates.py format_params needs to accept STANDARD_SM_SUPPORTED parameter when available.  How to deal with UDB? (Released in UDB 4/29/26).
 
-remove mention of RVTEST_VECTOR  from vector code
-
 Test generator:
     Any test that lists Sm in REQUIRED_EXTENSIONS adds STANDARD_SM_SUPPORTED as a parameter (outdated; as of 9/16/26 it adds BOOT_TO_MMODE)
-    DONE *** edit generators/testgen/src/testgen/io/templates.py/generate_defines_from_extensions to define these boot_TO_*.  DONE Drop RVTEST_FP and tweak where it was used (hopefully removed)
+    DONE *** edit generators/testgen/src/testgen/io/templates.py/generate_defines_from_extensions to define these boot_TO_*.
 
     Restore this code when fully transitioned to S-SBI
         if any(ext in ext_components for ext in ["H", "S"]):

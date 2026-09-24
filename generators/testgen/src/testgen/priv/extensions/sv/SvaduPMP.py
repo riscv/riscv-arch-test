@@ -12,7 +12,7 @@ from testgen.asm.helpers import write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.pmp import helpers as pmp
-from testgen.priv.extensions.sv.access import add_rwx_test, legacy_enter_mode, legacy_leave_mode
+from testgen.priv.extensions.sv.access import add_rwx_test
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import SV32, SV39, SV48, SV57, PteFlags, SvMode, create_page_mapping
 from testgen.priv.registry import add_priv_test_generator
@@ -85,8 +85,12 @@ def _make_svadupmp_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk
                         "va_data",
                         level,
                         f"test{number}",
-                        enter=legacy_enter_mode(mode),
-                        leave=legacy_leave_mode(),
+                        # va_data is VA 0, which on Sv48/Sv57 is the root slot the boot tables identity map the
+                        # image through, so only the code alias stays executable. RVTEST_GOTO_LOWER_MODE mrets
+                        # into the alias; the T-SBI relocation moves into it only for GOTO_UMODE, so a
+                        # GOTO_SMODE from M-mode would resume at an unmapped PC.
+                        enter=[f"RVTEST_GOTO_LOWER_MODE {mode}"],
+                        leave=["RVTEST_GOTO_MMODE"],
                     ),
                     *_add_pte_readback(test_data, sv, level, number),
                     "",
@@ -103,6 +107,7 @@ def _make_svadupmp(test_data: TestData, sv: SvMode) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvaduPMP",
     required_extensions=["Sv32", "Svadu", "Sm"],
+    march_extensions=["Svadu"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
@@ -113,6 +118,7 @@ def make_svadupmp_sv32(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvaduPMP",
     required_extensions=["Sv39", "Svadu", "Sm"],
+    march_extensions=["Svadu"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
@@ -123,6 +129,7 @@ def make_svadupmp_sv39(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvaduPMP",
     required_extensions=["Sv48", "Svadu", "Sm"],
+    march_extensions=["Svadu"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
@@ -133,6 +140,7 @@ def make_svadupmp_sv48(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvaduPMP",
     required_extensions=["Sv57", "Svadu", "Sm"],
+    march_extensions=["Svadu"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )

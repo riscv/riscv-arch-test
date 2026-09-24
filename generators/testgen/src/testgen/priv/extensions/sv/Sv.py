@@ -15,7 +15,7 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
-from testgen.priv.extensions.sv.access import add_rwx_test, enter_mode, leave_mode
+from testgen.priv.extensions.sv.access import add_rwx_test
 from testgen.priv.extensions.sv.assembly import VA_ONES_DATA, VA_ZEROS_DATA
 from testgen.priv.extensions.sv.generate import begin_sv_test, keep_image_mapped, sv_data
 from testgen.priv.extensions.sv.page_tables import (
@@ -29,8 +29,6 @@ from testgen.priv.extensions.sv.page_tables import (
     create_page_mapping,
 )
 from testgen.priv.registry import add_priv_test_generator
-
-DRIVER = "Smode"
 
 
 def change_pte_to_be(sv: SvMode) -> list[str]:
@@ -100,7 +98,7 @@ def _extreme_access(
         operation: test_data.add_testcase(f"{name}_{operation}", coverpoint, test_data.testsuite).removesuffix(":")
         for operation in operations
     }
-    lines = [*enter_mode(mode, driver_mode), f"LI(a5, {va})"]
+    lines = [*([] if mode == driver_mode else [f"RVTEST_TSBI_GOTO_{mode.upper()}"]), f"LI(a5, {va})"]
     if style.startswith("rw"):
         instruction = "sw" if style == "rw_word" else "sb"
         load = "lw" if style == "rw_word" else "lbu"
@@ -113,7 +111,7 @@ def _extreme_access(
                 f"{labels['load']}:",
                 f"{load} a3, 0(a5)",
                 "nop",
-                *leave_mode(mode, driver_mode),
+                *([] if mode == driver_mode else [f"RVTEST_TSBI_GOTO_{driver_mode.upper()}"]),
                 write_sigupd(12, test_data, label=labels["store"]),
                 write_sigupd(13, test_data, label=labels["load"]),
             ]
@@ -124,7 +122,7 @@ def _extreme_access(
                 f"{labels['exec']}:",
                 "jalr ra, a5, 0",
                 "nop",
-                *leave_mode(mode, driver_mode),
+                *([] if mode == driver_mode else [f"RVTEST_TSBI_GOTO_{driver_mode.upper()}"]),
                 write_sigupd(14, test_data, label=labels["exec"]),
             ]
         )
@@ -139,7 +137,7 @@ def emit_access(
     name: str,
     va: str,
     mode: str,
-    driver_mode: str = DRIVER,
+    driver_mode: str = "Smode",
 ) -> list[str]:
     if style in ("rw_byte", "rw_word", "x_only"):
         return _extreme_access(test_data, sv, name, va, mode, style, driver_mode)
@@ -164,7 +162,7 @@ def emit_access(
             True,
         )
     elif style == "sum":
-        setup = ("LI(t0, MSTATUS_SUM)", "csrs sstatus, t0" if driver_mode == "Smode" else "csrs mstatus, t0")
+        setup = ("LI(t0, MSTATUS_SUM)", "csrs sstatus, t0")
     elif style == "sl":
         include_exec = False
     if not enter_lower_mode:
@@ -177,8 +175,8 @@ def emit_access(
         level,
         name,
         direct_address=direct_address,
-        enter=enter_mode(mode, driver_mode) if enter_lower_mode else (),
-        leave=leave_mode(mode, driver_mode) if enter_lower_mode else (),
+        enter=([] if mode == driver_mode else [f"RVTEST_TSBI_GOTO_{mode.upper()}"]) if enter_lower_mode else (),
+        leave=([] if mode == driver_mode else [f"RVTEST_TSBI_GOTO_{driver_mode.upper()}"]) if enter_lower_mode else (),
         setup=setup,
         cleanup=cleanup,
         reset_setup_after_store=reset_setup_after_store,
@@ -947,6 +945,7 @@ def _make_sv(test_data: TestData, sv: SvMode) -> list[TestChunk]:
 @add_priv_test_generator(
     "Sv",
     required_extensions=["Sv32"],
+    march_extensions=[],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_sv32(test_data: TestData) -> list[TestChunk]:
@@ -956,6 +955,7 @@ def make_sv32(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "Sv",
     required_extensions=["Sv39"],
+    march_extensions=[],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_sv39(test_data: TestData) -> list[TestChunk]:
@@ -965,6 +965,7 @@ def make_sv39(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "Sv",
     required_extensions=["Sv48"],
+    march_extensions=[],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_sv48(test_data: TestData) -> list[TestChunk]:
@@ -974,6 +975,7 @@ def make_sv48(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "Sv",
     required_extensions=["Sv57"],
+    march_extensions=[],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_sv57(test_data: TestData) -> list[TestChunk]:

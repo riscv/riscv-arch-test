@@ -11,12 +11,10 @@
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.sv.access import add_rwx_test, enter_mode, leave_mode
+from testgen.priv.extensions.sv.access import add_rwx_test
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import SV39, SV48, SV57, PteFlags, SvMode, create_page_mapping
 from testgen.priv.registry import add_priv_test_generator
-
-DRIVER = "Smode"
 
 _PBMT = (("(1 << 61)", "PBMT=1", False), ("(2 << 61)", "PBMT=2", False), ("(3 << 61)", "PBMT=3", True))
 
@@ -60,8 +58,8 @@ def _make_leaf_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                         "va_data",
                         level,
                         f"test{number}",
-                        enter=enter_mode(mode, DRIVER),
-                        leave=leave_mode(mode, DRIVER),
+                        enter=[] if mode == "Smode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"],
+                        leave=[] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"],
                     ),
                 ]
             )
@@ -98,8 +96,8 @@ def _make_nonleaf_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk
                         "va_data",
                         level,
                         f"test{number}",
-                        enter=enter_mode(mode, DRIVER),
-                        leave=leave_mode(mode, DRIVER),
+                        enter=[] if mode == "Smode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"],
+                        leave=[] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"],
                     ),
                     "",
                 ]
@@ -118,6 +116,7 @@ def _make_svpbmt(test_data: TestData, sv: SvMode) -> list[TestChunk]:
 @add_priv_test_generator(
     "Svpbmt",
     required_extensions=["Sv39", "Svpbmt"],
+    march_extensions=["Svpbmt"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svpbmt_sv39(test_data: TestData) -> list[TestChunk]:
@@ -127,6 +126,7 @@ def make_svpbmt_sv39(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "Svpbmt",
     required_extensions=["Sv48", "Svpbmt"],
+    march_extensions=["Svpbmt"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svpbmt_sv48(test_data: TestData) -> list[TestChunk]:
@@ -136,6 +136,7 @@ def make_svpbmt_sv48(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "Svpbmt",
     required_extensions=["Sv57", "Svpbmt"],
+    march_extensions=["Svpbmt"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svpbmt_sv57(test_data: TestData) -> list[TestChunk]:

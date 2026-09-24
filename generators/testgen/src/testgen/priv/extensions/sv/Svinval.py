@@ -36,6 +36,7 @@ def add_operations(test_data: TestData, number: int) -> list[str]:
 @add_priv_test_generator(
     "Svinval",
     required_extensions=["S", "Svinval"],
+    march_extensions=["Svinval"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svinval(test_data: TestData) -> list[TestChunk]:

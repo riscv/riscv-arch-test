@@ -32,8 +32,6 @@ from testgen.priv.extensions.sv.Sv import (
 )
 from testgen.priv.registry import add_priv_test_generator
 
-DRIVER = "Mmode"
-
 
 def _t_mstatus_mprv(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     for mode in ("Smode", "Umode"):
@@ -48,7 +46,7 @@ def _t_mstatus_mprv(test_data: TestData, test_chunks: list[TestChunk], sv: SvMod
                     *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                     "sfence.vma",
                     "",
-                    *emit_access(test_data, sv, level, style, f"test{number}", "va_data", "Mmode", DRIVER),
+                    *emit_access(test_data, sv, level, style, f"test{number}", "va_data", "Mmode", "Mmode"),
                     "",
                 ]
             )
@@ -77,7 +75,7 @@ def _t_upage_mprv(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode)
                     ),
                     "sfence.vma",
                     "",
-                    *emit_access(test_data, sv, level, style, f"test{number}", "va_data", "Mmode", DRIVER),
+                    *emit_access(test_data, sv, level, style, f"test{number}", "va_data", "Mmode", "Mmode"),
                     "",
                 ]
             )
@@ -148,7 +146,7 @@ def _t_mstatus_sbe(test_data: TestData, sv: SvMode) -> list[TestChunk]:
                         f"test{number}",
                         "va_data",
                         "Smode",
-                        DRIVER,
+                        "Mmode",
                     ),
                     "",
                 ]
@@ -180,6 +178,7 @@ def _make_svsm(test_data: TestData, sv: SvMode) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvSm",
     required_extensions=["Sm", "Sv32"],
+    march_extensions=[],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svsm_sv32(test_data: TestData) -> list[TestChunk]:
@@ -189,6 +188,7 @@ def make_svsm_sv32(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvSm",
     required_extensions=["Sm", "Sv39"],
+    march_extensions=[],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svsm_sv39(test_data: TestData) -> list[TestChunk]:
@@ -198,6 +198,7 @@ def make_svsm_sv39(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvSm",
     required_extensions=["Sm", "Sv48"],
+    march_extensions=[],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svsm_sv48(test_data: TestData) -> list[TestChunk]:
@@ -207,42 +208,55 @@ def make_svsm_sv48(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvSm",
     required_extensions=["Sm", "Sv57"],
+    march_extensions=[],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svsm_sv57(test_data: TestData) -> list[TestChunk]:
     return _make_svsm(test_data, SV57)
 
 
+# TODO: drop NORUN once a DUT and the reference model implement big-endian implicit
+# page-table accesses (mstatus.SBE=1); until then no configuration can run this test.
 @add_priv_test_generator(
     "SvSm",
     required_extensions=["Sm", "Sv32", "NORUN"],
+    march_extensions=[],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svsm_sv32_sbe(test_data: TestData) -> list[TestChunk]:
     return _t_mstatus_sbe(test_data, SV32)
 
 
+# TODO: drop NORUN once a DUT and the reference model implement big-endian implicit
+# page-table accesses (mstatus.SBE=1); until then no configuration can run this test.
 @add_priv_test_generator(
     "SvSm",
     required_extensions=["Sm", "Sv39", "NORUN"],
+    march_extensions=[],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svsm_sv39_sbe(test_data: TestData) -> list[TestChunk]:
     return _t_mstatus_sbe(test_data, SV39)
 
 
+# TODO: drop NORUN once a DUT and the reference model implement big-endian implicit
+# page-table accesses (mstatus.SBE=1); until then no configuration can run this test.
 @add_priv_test_generator(
     "SvSm",
     required_extensions=["Sm", "Sv48", "NORUN"],
+    march_extensions=[],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svsm_sv48_sbe(test_data: TestData) -> list[TestChunk]:
     return _t_mstatus_sbe(test_data, SV48)
 
 
+# TODO: drop NORUN once a DUT and the reference model implement big-endian implicit
+# page-table accesses (mstatus.SBE=1); until then no configuration can run this test.
 @add_priv_test_generator(
     "SvSm",
     required_extensions=["Sm", "Sv57", "NORUN"],
+    march_extensions=[],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svsm_sv57_sbe(test_data: TestData) -> list[TestChunk]:
@@ -252,6 +266,7 @@ def make_svsm_sv57_sbe(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvSm",
     required_extensions=["Sm", "S"],
+    march_extensions=[],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svsm_mstatus_tvm(test_data: TestData) -> list[TestChunk]:

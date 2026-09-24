@@ -12,7 +12,7 @@ from testgen.asm.helpers import write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.sv.access import enter_mode, leave_mode, virtual_address
+from testgen.priv.extensions.sv.access import virtual_address
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
     SV32,
@@ -69,7 +69,7 @@ def _add_adu_access(test_data: TestData, sv: SvMode, mode: str, level: int, numb
         *virtual_address(sv, f"va_data_l{level}_w", level, destination="s0", scratch="t0", merge_sv32_base_page=True),
         *virtual_address(sv, f"va_data_l{level}_r", level, destination="s1", scratch="t0", merge_sv32_base_page=True),
         *virtual_address(sv, f"va_data_l{level}_x", level, destination="a5", scratch="t0", merge_sv32_base_page=True),
-        *enter_mode(mode, "Smode"),
+        *([] if mode == "Smode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"]),
         "addi a2, a2, 16",
         f"{labels['store']}:",
         "sw a2, 20(s0)",
@@ -80,7 +80,7 @@ def _add_adu_access(test_data: TestData, sv: SvMode, mode: str, level: int, numb
         f"{labels['exec']}:",
         "jalr ra, a5, 0",
         "nop",
-        *leave_mode(mode, "Smode"),
+        *([] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"]),
         write_sigupd(12, test_data, label=labels["store"]),
         write_sigupd(13, test_data, label=labels["load"]),
         write_sigupd(14, test_data, label=labels["exec"]),
@@ -157,6 +157,7 @@ def _make_svadu(test_data: TestData, sv: SvMode) -> list[TestChunk]:
 @add_priv_test_generator(
     "Svadu",
     required_extensions=["Sv32", "Svadu"],
+    march_extensions=["Svadu"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svadu_sv32(test_data: TestData) -> list[TestChunk]:
@@ -166,6 +167,7 @@ def make_svadu_sv32(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "Svadu",
     required_extensions=["Sv39", "Svadu"],
+    march_extensions=["Svadu"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svadu_sv39(test_data: TestData) -> list[TestChunk]:
@@ -175,6 +177,7 @@ def make_svadu_sv39(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "Svadu",
     required_extensions=["Sv48", "Svadu"],
+    march_extensions=["Svadu"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svadu_sv48(test_data: TestData) -> list[TestChunk]:
@@ -184,6 +187,7 @@ def make_svadu_sv48(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "Svadu",
     required_extensions=["Sv57", "Svadu"],
+    march_extensions=["Svadu"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svadu_sv57(test_data: TestData) -> list[TestChunk]:

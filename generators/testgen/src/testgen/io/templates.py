@@ -270,8 +270,8 @@ def generate_march_string(ext_components: list[str], xlen: int) -> str:
     single_letter: list[str] = []
     multi_letter: list[str] = []
     for ext in ext_components:
-        if ext in ["Sm", "S", "U", "Sv32", "Sv39", "Sv48", "Sv57", "NORUN"]:
-            continue  # Skip privilege modes, address-translation modes, and NORUN in march string
+        if ext in ["Sm", "S", "U"]:
+            continue  # Skip privilege modes in march string
         if len(ext) == 1:
             single_letter.append(ext)
         else:

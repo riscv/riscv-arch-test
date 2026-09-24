@@ -14,12 +14,6 @@ from testgen.asm.helpers import write_sigupd
 from testgen.data.state import TestData
 from testgen.priv.extensions.sv.page_tables import SvMode
 
-_GOTO = {
-    "Mmode": "RVTEST_TSBI_GOTO_MMODE",
-    "Smode": "RVTEST_TSBI_GOTO_SMODE",
-    "Umode": "RVTEST_TSBI_GOTO_UMODE",
-}
-
 
 def virtual_address(
     sv: SvMode,
@@ -45,31 +39,6 @@ def virtual_address(
         f"srli {scratch}, {scratch}, {sv.xlen - shift}",
         f"add {destination}, {destination}, {scratch}",
     ]
-
-
-def enter_mode(mode: str, driver_mode: str) -> list[str]:
-    """Switch from the mode the test booted to into the mode under test."""
-    return [] if mode == driver_mode else [_GOTO[mode]]
-
-
-def leave_mode(mode: str, driver_mode: str) -> list[str]:
-    """Return to the boot mode after enter_mode."""
-    return [] if mode == driver_mode else [_GOTO[driver_mode]]
-
-
-def legacy_enter_mode(mode: str) -> list[str]:
-    """Mode entry for the SvPMP suites, which still boot to M-mode and use the pre-T-SBI macros.
-
-    Unlike the T-SBI macros, RVTEST_GOTO_LOWER_MODE also moves the caller into the code
-    alias, which those suites rely on because their test VAs overwrite the root slot that
-    maps the test image.
-    """
-    return [f"RVTEST_GOTO_LOWER_MODE {mode}"]
-
-
-def legacy_leave_mode() -> list[str]:
-    """Return to M-mode after legacy_enter_mode."""
-    return ["RVTEST_GOTO_MMODE"]
 
 
 def add_rwx_test(

@@ -5,10 +5,6 @@
 
 The UDB configuration file determines whether to run tests for Sv32, or for Sv39 and possibly Sv48 and Sv57.
 
-The Sv suites use T-SBI. Each test boots to S-mode and runs from the boot identity map of the test image.
-Each test registers a U-accessible virtual alias of the code region, and `RVTEST_TSBI_GOTO_UMODE` runs
-U-mode accesses from that alias; `RVTEST_TSBI_GOTO_SMODE` returns to the identity-mapped code.
-M-mode CSRs such as `menvcfg` are written through T-SBI CSR calls.
 Coverpoints that need M-mode state (`mstatus.MPRV`, `mstatus.TVM`, `mstatus.SBE`, or an M-mode CSR access)
 are in the `Sm` suites: SvSm, SvbareSm and SvinvalSm.
 The PMP suites (SvPMP, SvPMPZicbo, SvaduPMP) boot to M-mode because they program PMP entries.

@@ -10,7 +10,7 @@
 
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.sv.access import add_rwx_test, enter_mode, leave_mode
+from testgen.priv.extensions.sv.access import add_rwx_test
 from testgen.priv.extensions.sv.assembly import NAPOT_DATA, NAPOT_RESERVED_DATA
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
@@ -23,8 +23,6 @@ from testgen.priv.extensions.sv.page_tables import (
     create_page_mapping,
 )
 from testgen.priv.registry import add_priv_test_generator
-
-DRIVER = "Smode"
 
 _NAPOT_VA = {"sv39": "0x140200000", "sv48": "0x0280C0410000", "sv57": "0x400280C0410000"}
 
@@ -108,8 +106,8 @@ def _make_reserved(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     "va_data",
                     level,
                     f"test{number}",
-                    enter=enter_mode(mode, DRIVER),
-                    leave=leave_mode(mode, DRIVER),
+                    enter=[] if mode == "Smode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"],
+                    leave=[] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"],
                 ),
                 "",
             ]
@@ -129,8 +127,8 @@ def _make_reserved(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     "va_data",
                     0,
                     f"test{number}",
-                    enter=enter_mode(mode, DRIVER),
-                    leave=leave_mode(mode, DRIVER),
+                    enter=[] if mode == "Smode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"],
+                    leave=[] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"],
                 ),
                 "",
             ]
@@ -149,6 +147,7 @@ def _make_svnapot(test_data: TestData, sv: SvMode) -> list[TestChunk]:
 @add_priv_test_generator(
     "Svnapot",
     required_extensions=["Sv39", "Svnapot"],
+    march_extensions=["Svnapot"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svnapot_sv39(test_data: TestData) -> list[TestChunk]:
@@ -158,6 +157,7 @@ def make_svnapot_sv39(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "Svnapot",
     required_extensions=["Sv48", "Svnapot"],
+    march_extensions=["Svnapot"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svnapot_sv48(test_data: TestData) -> list[TestChunk]:
@@ -167,6 +167,7 @@ def make_svnapot_sv48(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "Svnapot",
     required_extensions=["Sv57", "Svnapot"],
+    march_extensions=["Svnapot"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svnapot_sv57(test_data: TestData) -> list[TestChunk]:

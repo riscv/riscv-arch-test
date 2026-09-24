@@ -11,7 +11,7 @@
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.pmp import helpers as pmp
-from testgen.priv.extensions.sv.access import legacy_enter_mode, legacy_leave_mode, virtual_address
+from testgen.priv.extensions.sv.access import virtual_address
 from testgen.priv.extensions.sv.assembly import DATA_REGION_ALIGNED
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import SV32, SV39, SV48, SV57, PteFlags, SvMode, create_page_mapping
@@ -29,8 +29,20 @@ def _setup_envcfg(extension: str, mode: str) -> tuple[str, ...]:
     return (f"LI(t0, {mask})", "csrs menvcfg, t0", *(("csrs senvcfg, t0",) if mode == "Umode" else ()))
 
 
-def _add_operations(test_data: TestData, sv: SvMode, mode: str, level: int, extension: str, number: int) -> list[str]:
-    lines = [*virtual_address(sv, "va_data", level), *legacy_enter_mode(mode)]
+def _add_operations(
+    test_data: TestData, sv: SvMode, mode: str, level: int, extension: str, number: int, *, on_pte: bool = False
+) -> list[str]:
+    if mode == "Mmode":
+        enter, leave = [], []
+    elif on_pte:
+        # va_data is VA 0, which on Sv48/Sv57 is the root slot the boot tables identity map the
+        # image through, so only the code alias stays executable. RVTEST_GOTO_LOWER_MODE mrets
+        # into the alias; the T-SBI relocation moves into it only for GOTO_UMODE, so a
+        # GOTO_SMODE from M-mode would resume at an unmapped PC.
+        enter, leave = [f"RVTEST_GOTO_LOWER_MODE {mode}"], ["RVTEST_GOTO_MMODE"]
+    else:
+        enter, leave = [f"RVTEST_TSBI_GOTO_{mode.upper()}"], ["RVTEST_TSBI_GOTO_MMODE"]
+    lines = [*virtual_address(sv, "va_data", level), *enter]
     for operation in _FAMILIES[extension][1]:
         name = operation.split()[0].replace(".", "_")
         lines.extend(
@@ -40,7 +52,7 @@ def _add_operations(test_data: TestData, sv: SvMode, mode: str, level: int, exte
                 "nop",
             ]
         )
-    lines.extend(legacy_leave_mode())
+    lines.extend(leave)
     return lines
 
 
@@ -142,7 +154,7 @@ def _make_on_pte(test_data: TestData, sv: SvMode, mode: str, extension: str) -> 
                 *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                 "sfence.vma",
                 "",
-                *_add_operations(test_data, sv, mode, level, extension, number),
+                *_add_operations(test_data, sv, mode, level, extension, number, on_pte=True),
             ]
         )
         if top:
@@ -163,6 +175,7 @@ def _make_svpmpzicbo(test_data: TestData, sv: SvMode, extension: str) -> list[Te
 @add_priv_test_generator(
     "SvPMPZicbo",
     required_extensions=["Sv32", "Zicbom", "Sm"],
+    march_extensions=["Zicbom"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
@@ -173,6 +186,7 @@ def make_svpmpzicbo_sv32_zicbom(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvPMPZicbo",
     required_extensions=["Sv32", "Zicboz", "Sm"],
+    march_extensions=["Zicboz"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
@@ -183,6 +197,7 @@ def make_svpmpzicbo_sv32_zicboz(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvPMPZicbo",
     required_extensions=["Sv39", "Zicbom", "Sm"],
+    march_extensions=["Zicbom"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
@@ -193,6 +208,7 @@ def make_svpmpzicbo_sv39_zicbom(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvPMPZicbo",
     required_extensions=["Sv39", "Zicboz", "Sm"],
+    march_extensions=["Zicboz"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
@@ -203,6 +219,7 @@ def make_svpmpzicbo_sv39_zicboz(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvPMPZicbo",
     required_extensions=["Sv48", "Zicbom", "Sm"],
+    march_extensions=["Zicbom"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
@@ -213,6 +230,7 @@ def make_svpmpzicbo_sv48_zicbom(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvPMPZicbo",
     required_extensions=["Sv48", "Zicboz", "Sm"],
+    march_extensions=["Zicboz"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
@@ -223,6 +241,7 @@ def make_svpmpzicbo_sv48_zicboz(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvPMPZicbo",
     required_extensions=["Sv57", "Zicbom", "Sm"],
+    march_extensions=["Zicbom"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
@@ -233,6 +252,7 @@ def make_svpmpzicbo_sv57_zicbom(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvPMPZicbo",
     required_extensions=["Sv57", "Zicboz", "Sm"],
+    march_extensions=["Zicboz"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )

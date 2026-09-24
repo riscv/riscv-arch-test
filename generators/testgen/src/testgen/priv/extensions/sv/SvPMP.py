@@ -11,7 +11,7 @@
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.pmp import helpers as pmp
-from testgen.priv.extensions.sv.access import add_rwx_test, legacy_enter_mode, legacy_leave_mode
+from testgen.priv.extensions.sv.access import add_rwx_test
 from testgen.priv.extensions.sv.assembly import DATA_REGION_ALIGNED
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import SV32, SV39, SV48, SV57, PteFlags, SvMode, create_page_mapping
@@ -28,8 +28,6 @@ _PA_CFGS = (
     (pmp.cfg_byte("0011", "napot", pmp.cfg_shift(1)), "pmpcfg0_rw", 1),
     (pmp.cfg_byte("0100", "napot", pmp.cfg_shift(1)), "pmpcfg0_x", 2),
 )
-_PARAMS = ["NUM_PMP_ENTRIES: '>0'"]
-_DEFINES = ["#define BOOT_TO_MMODE"]
 
 
 def _begin_test(
@@ -91,8 +89,8 @@ def _make_pmp_on_pa(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                         "va_data",
                         level,
                         f"test{number}",
-                        enter=legacy_enter_mode(mode),
-                        leave=legacy_leave_mode(),
+                        enter=[] if mode == "Mmode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"],
+                        leave=[] if mode == "Mmode" else ["RVTEST_TSBI_GOTO_MMODE"],
                     ),
                     "",
                 ]
@@ -144,8 +142,12 @@ def _make_pmp_on_pte(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     "va_data",
                     level,
                     f"test{number}",
-                    enter=legacy_enter_mode(mode),
-                    leave=legacy_leave_mode(),
+                    # va_data is VA 0, which on Sv48/Sv57 is the root slot the boot tables identity map the
+                    # image through, so only the code alias stays executable. RVTEST_GOTO_LOWER_MODE mrets
+                    # into the alias; the T-SBI relocation moves into it only for GOTO_UMODE, so a
+                    # GOTO_SMODE from M-mode would resume at an unmapped PC.
+                    enter=[f"RVTEST_GOTO_LOWER_MODE {mode}"],
+                    leave=["RVTEST_GOTO_MMODE"],
                 ),
             ]
         )
@@ -167,8 +169,9 @@ def _make_svpmp(test_data: TestData, sv: SvMode) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvPMP",
     required_extensions=["Sv32", "Sm"],
-    params=_PARAMS,
-    extra_defines=_DEFINES,
+    march_extensions=[],
+    params=["NUM_PMP_ENTRIES: '>0'"],
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svpmp_sv32(test_data: TestData) -> list[TestChunk]:
     return _make_svpmp(test_data, SV32)
@@ -177,8 +180,9 @@ def make_svpmp_sv32(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvPMP",
     required_extensions=["Sv39", "Sm"],
-    params=_PARAMS,
-    extra_defines=_DEFINES,
+    march_extensions=[],
+    params=["NUM_PMP_ENTRIES: '>0'"],
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svpmp_sv39(test_data: TestData) -> list[TestChunk]:
     return _make_svpmp(test_data, SV39)
@@ -187,8 +191,9 @@ def make_svpmp_sv39(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvPMP",
     required_extensions=["Sv48", "Sm"],
-    params=_PARAMS,
-    extra_defines=_DEFINES,
+    march_extensions=[],
+    params=["NUM_PMP_ENTRIES: '>0'"],
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svpmp_sv48(test_data: TestData) -> list[TestChunk]:
     return _make_svpmp(test_data, SV48)
@@ -197,8 +202,9 @@ def make_svpmp_sv48(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvPMP",
     required_extensions=["Sv57", "Sm"],
-    params=_PARAMS,
-    extra_defines=_DEFINES,
+    march_extensions=[],
+    params=["NUM_PMP_ENTRIES: '>0'"],
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svpmp_sv57(test_data: TestData) -> list[TestChunk]:
     return _make_svpmp(test_data, SV57)

@@ -18,6 +18,7 @@ from testgen.priv.registry import add_priv_test_generator
 @add_priv_test_generator(
     "SvbareSm",
     required_extensions=["Sm", "S", "Svbare"],
+    march_extensions=["Svbare"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svbaresm_mprv(test_data: TestData) -> list[TestChunk]:

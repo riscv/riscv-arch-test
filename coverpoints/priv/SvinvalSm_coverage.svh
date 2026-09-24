@@ -12,22 +12,19 @@
 `define COVER_SVINVALSM
 covergroup SvinvalSm_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include  "general/RISCV_coverage_standard_coverpoints.svh"
+
     cp_instr : coverpoint ins.current.insn {
         wildcard bins sfence_inval_ir = {SFENCE_INVAL_IR};
         wildcard bins sfence_w_inval  = {SFENCE_W_INVAL};
         wildcard bins sinval_vma      = {SINVAL_VMA};
         wildcard bins sfence_vma      = {SFENCE_VMA}; // not essential, but might as well cross it
     }
-    cp_priv : coverpoint {ins.prev.mode} {
-        bins M_mode     = {2'b11};
-        bins S_mode     = {2'b01};
-        bins U_mode     = {2'b00};
-    }
     cp_tvm : coverpoint ins.prev.csr[CSR_MSTATUS][20] {
         bins zero = {0};
         bins set  = {1};
     }
-    cr_svinival : cross cp_instr, cp_priv, cp_tvm {
+    cr_svinival : cross cp_instr, priv_mode_m_s_u, cp_tvm {
         // each instruction executed in every mode with mstatus.TVM clear and set
     }
  endgroup

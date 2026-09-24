@@ -32,15 +32,9 @@ covergroup SvbareSm_cg with function sample(ins_t ins);
         bins set = {1};
     }
 
-    `ifdef UDB_MXLEN_64
-        satp_bare: coverpoint ins.current.csr[CSR_SATP][63:60] {
-            bins bare = {4'b0000};
-        }
-    `else
-        satp_bare: coverpoint ins.current.csr[CSR_SATP][31] {
-            bins bare = {1'b0};
-        }
-    `endif
+    satp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
+        bins bare = {'0};
+    }
 
 
     cp_satp_bare_mprv_load:  cross satp_bare, mprv_mstatus, mpp_mstatus, read_acc, priv_mode_m;

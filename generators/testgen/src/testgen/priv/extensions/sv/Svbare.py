@@ -17,30 +17,17 @@ from testgen.priv.registry import add_priv_test_generator
 
 
 def bare_rwx(test_data: TestData, name: str, *, enter: tuple[str, ...] = (), leave: tuple[str, ...] = ()) -> list[str]:
-    labels = {
-        operation: test_data.add_testcase(
-            f"{name}_{operation}", "cp_bare_access", f"{test_data.testsuite}_cg"
-        ).removesuffix(":")
-        for operation in ("store", "load", "exec")
-    }
-    return [
-        *enter,
-        "LA(a5, rvtest_data_1)",
-        "addi a2, a2, 16",
-        f"{labels['store']}:",
-        "sw a2, 20(a5)",
-        "nop",
-        f"{labels['load']}:",
-        "lw a3, 20(a5)",
-        "nop",
-        f"{labels['exec']}:",
-        "jalr ra, a5, 0",
-        "nop",
-        *leave,
-        write_sigupd(12, test_data, label=labels["store"]),
-        write_sigupd(13, test_data, label=labels["load"]),
-        write_sigupd(14, test_data, label=labels["exec"]),
-    ]
+    lines = [*enter, "LA(a5, rvtest_data_1)", "addi a2, a2, 16"]
+    for operation, register, instruction in (
+        ("store", 12, "sw a2, 20(a5)"),
+        ("load", 13, "lw a3, 20(a5)"),
+        ("exec", 14, "jalr ra, a5, 0"),
+    ):
+        lines.append(test_data.add_testcase(f"{name}_{operation}", "cp_bare_access", f"{test_data.testsuite}_cg"))
+        # The nop is where the jalr returns, and where the handler resumes if the access faults.
+        lines.extend([instruction, "nop", write_sigupd(register, test_data, label=test_data.current_testcase_label)])
+    lines.extend(leave)
+    return lines
 
 
 def begin_bare_test(test_data: TestData, split_name: str) -> TestChunk:
@@ -62,7 +49,8 @@ def begin_bare_test(test_data: TestData, split_name: str) -> TestChunk:
 
 @add_priv_test_generator(
     "Svbare",
-    required_extensions=["S", "Svbare"],
+    required_extensions=["Svbare"],
+    march_extensions=["Svbare"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svbare_smode(test_data: TestData) -> list[TestChunk]:
@@ -73,7 +61,8 @@ def make_svbare_smode(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "Svbare",
-    required_extensions=["S", "Svbare"],
+    required_extensions=["Svbare"],
+    march_extensions=["Svbare"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svbare_umode(test_data: TestData) -> list[TestChunk]:

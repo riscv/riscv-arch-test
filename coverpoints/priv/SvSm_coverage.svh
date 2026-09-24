@@ -20,20 +20,21 @@ covergroup SvSm_satp_cg with function sample(ins_t ins);
         bins set  = {1};
     }
 
+    // satp is always accessible from M-mode, so an access here never raises an exception.
     Mcause: coverpoint ins.current.csr[CSR_MCAUSE][31:0] {
-        bins illegal_ins  = {32'd2};
         bins no_exception = {32'd0};
     }
 
     cp_ins: coverpoint ins.current.insn {
-        wildcard bins csrrs = {32'b000110000000_?????_010_?????_1110011};
-        wildcard bins csrrw = {32'b000110000000_?????_001_?????_1110011};
-        wildcard bins csrrc = {32'b000110000000_?????_011_?????_1110011};
+        wildcard bins csrrs = {CSRRS};
+        wildcard bins csrrw = {CSRRW};
+        wildcard bins csrrc = {CSRRC};
+    }
+    satp_csr: coverpoint ins.current.insn[31:20] {
+        bins satp = {CSR_SATP};
     }
 
-    cp_access_m: cross priv_mode_m, cp_ins, Mcause, tvm_mstatus { //sat.1
-        ignore_bins ig1 = binsof(Mcause.illegal_ins);
-    }
+    cp_access_m: cross priv_mode_m, cp_ins, satp_csr, Mcause, tvm_mstatus; //sat.1
 endgroup
 
 covergroup SvSm_mstatus_mprv_cg with function sample(ins_t ins);

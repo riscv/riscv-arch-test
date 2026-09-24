@@ -66,7 +66,10 @@ main:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL1)
   sfence.vma
 
-// Register the alias so the T-SBI GOTO macros can move an excursion into it.
+// The boot tables identity map the test image, but that mapping is not user
+// accessible, so the code is mapped again at va_rvtest_code_begin. Registering
+// that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
+// to can fetch from.
   LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL1)
 
@@ -90,22 +93,22 @@ SvPMPZicbo_cp_pmpcfg_pmpcfg0_x:
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Smode
+  RVTEST_TSBI_GOTO_SMODE
 SvPMPZicbo_cg_cp_pmp_zicbo_test1_cbo_zero:
   cbo.zero (a5)
   nop
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE
 
   PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
   LI(a5, va_data)
-  RVTEST_GOTO_LOWER_MODE Smode
+  RVTEST_TSBI_GOTO_SMODE
 SvPMPZicbo_cg_cp_pmp_zicbo_test2_cbo_zero:
   cbo.zero (a5)
   nop
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test

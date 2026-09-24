@@ -68,6 +68,9 @@ covergroup SdtrigSm_trig_module_reg_cg with function sample(ins_t ins);
     cp_tinfo_read_only:       cross priv_mode_m, triggernum, csr_tinfo, csr_access;                         // NTRIG
 endgroup
 
+covergroup SdtrigSm_tcontrol_cg with function sample(ins_t ins);
+endgroup
+
 covergroup SdtrigSm_mcontrol6_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -292,4 +295,5 @@ endgroup
 function void sdtrigsm_sample(int hart, int issue, ins_t ins);
     SdtrigSm_trig_module_reg_cg.sample(ins);
     SdtrigSm_mcontrol6_cg.sample(ins);
+    SdtrigSm_tcontrol_cg.sample(ins);
 endfunction

@@ -22,6 +22,13 @@
   #include "rvtest_pmp_macros.h"
 #endif
 #ifdef RVTEST_VECTOR
+  // Tests that do not sweep an element width use 0.
+  #ifndef RVTEST_SEW
+    #define RVTEST_SEW 0
+  #endif
+  #ifndef VDSEW
+    #define VDSEW 0
+  #endif
   #include "rvtest_macros_vector.h"
 #endif
 #ifdef RVTEST_HYPERVISOR

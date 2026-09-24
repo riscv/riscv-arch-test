@@ -53,11 +53,6 @@ def _gen_uvcsrwalk(test_data: TestData, temp_reg: int, test_chunks: list[TestChu
     "UV",
     required_extensions=["Sm", "U", "M", "V", "Zicsr"],
     march_extensions=["M", "V"],
-    extra_defines=[
-        "#define RVTEST_VECTOR",
-        "#define RVTEST_SEW 0",
-        "#define VDSEW 0",
-    ],
     testcases_per_file=512,
 )
 def make_uv(test_data: TestData) -> list[TestChunk]:

@@ -67,6 +67,9 @@ def insert_header_template(
         all_extensions = flat_ext_components
         march = generate_march_string(all_extensions, xlen)
     all_defines = [*(extra_defines or []), *generate_defines_from_extensions(all_extensions)]
+    # MARCH-only extensions are excluded: a test may assemble vector CSR names without requiring V.
+    if any(ext == "V" or ext.startswith("Zve") for ext in flat_ext_components):
+        all_defines.append("#define RVTEST_VECTOR")
     if not EXPERIMENTAL_EXTENSIONS.isdisjoint(all_extensions):
         all_defines.append("#define RVTEST_EXPERIMENTAL")
     # Replace placeholders

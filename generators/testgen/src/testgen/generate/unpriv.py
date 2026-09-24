@@ -178,7 +178,6 @@ def _generate_unpriv_tests_for_instruction(
             elif info.load_store_eew == 64:
                 vdsew = 64
             extra_defines = [
-                "#define RVTEST_VECTOR",
                 f"#define RVTEST_SEW {sew}",
                 f"#define VDSEW {vdsew}",
             ]

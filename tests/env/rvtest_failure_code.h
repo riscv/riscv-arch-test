@@ -130,7 +130,7 @@
         j failedtest_saveregs
 #endif // F_SUPPORTED
 
-#ifdef RVTEST_VECTOR // *** TODO: change all RVTEST_VECTOR to ZVL32B_SUPPORTED
+#ifdef RVTEST_VECTOR
 
     # -------- ACTIVE --------
     failedtest_vec_active_x5_x4:
@@ -424,7 +424,7 @@
         li x10, 2
         beq x9, x10, failedtest_saveresults_fflags
 #endif // F_SUPPORTED
-#ifdef RVTEST_VECTOR  // *** TODO: change to ZVL32B_SUPPORTED
+#ifdef RVTEST_VECTOR
         li x10, 4
         beq x9, x10, failedtest_saveresults_vector
         li x10, 5

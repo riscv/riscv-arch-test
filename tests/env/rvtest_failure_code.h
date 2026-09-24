@@ -130,7 +130,7 @@
         j failedtest_saveregs
 #endif // F_SUPPORTED
 
-#ifdef RVTEST_VECTOR // *** TODO: change all RVTEST_VECTOR to ZVL32B_SUPPORTED
+#ifdef ZVL32B_SUPPORTED
 
     # -------- ACTIVE --------
     failedtest_vec_active_x5_x4:
@@ -309,7 +309,7 @@
         mv DEFAULT_LINK_REG, x14
         j failedtest_saveregs
 
-#endif // RVTEST_VECTOR
+#endif // ZVL32B_SUPPORTED
 
     # for the rest of this code, DEFAULT_LINK_REG contains return address of jal from the failure, DEFAULT_TEMP_REG points to scratch space
     failedtest_saveregs:
@@ -346,7 +346,7 @@
         SREG x30, 240(DEFAULT_TEMP_REG)
         SREG x31, 248(DEFAULT_TEMP_REG)
 
-    #ifdef RVTEST_VECTOR
+    #ifdef ZVL32B_SUPPORTED
         # We need to ensure that VS is set in mstatus here, as VS off is an exceptions test
         LI (x6, 0x600)
         csrs mstatus, x6
@@ -414,7 +414,7 @@
         vs1r.v v30, (x6)
         addi x6, x6, VLEN_BYTES
         vs1r.v v31, (x6)
-    #endif // RVTEST_VECTOR
+    #endif // ZVL32B_SUPPORTED
 
     failedtest_saveresults:
         # Dispatch based on failure type
@@ -425,12 +425,12 @@
         li x10, 2
         beq x9, x10, failedtest_saveresults_fflags
 #endif // F_SUPPORTED
-#ifdef RVTEST_VECTOR  // *** TODO: change to ZVL32B_SUPPORTED
+#ifdef ZVL32B_SUPPORTED
         li x10, 4
         beq x9, x10, failedtest_saveresults_vector
         li x10, 5
         beq x9, x10, failedtest_saveresults_vxsat
-#endif // RVTEST_VECTOR
+#endif // ZVL32B_SUPPORTED
         li x10, 3
         beq x9, x10, failedtest_saveresults_trap
 
@@ -610,7 +610,7 @@
 
 #endif // F_SUPPORTED
 
-#ifdef RVTEST_VECTOR
+#ifdef ZVL32B_SUPPORTED
 
     failedtest_saveresults_vector:
         # --------------------------------------------------
@@ -876,7 +876,7 @@
         SREG x6, 280(DEFAULT_TEMP_REG)    # record expected value
         j failedtest_saveresults_common
 
-#endif // RVTEST_VECTOR
+#endif // ZVL32B_SUPPORTED
 
     failedtest_saveresults_bad_instr:
         li x8, 1
@@ -1302,7 +1302,7 @@
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
     failedtest_report_after_reg:
-    #ifdef RVTEST_VECTOR
+    #ifdef ZVL32B_SUPPORTED
         // ---- Vector-specific fields (only printed for failure_type == 4) ----
         lw a0, failure_type
         li a1, 4
@@ -1445,7 +1445,7 @@
         j failedtest_report_end
 
     failedtest_report_vec_done:
-    #endif // RVTEST_VECTOR
+    #endif // ZVL32B_SUPPORTED
 
         # Print failing value — type-aware
         LA(a0, badvalstr)
@@ -1990,7 +1990,7 @@
         ret
 
 
-#if defined(F_SUPPORTED) && CONFIG_FLEN > UDB_MXLEN || defined(RVTEST_VECTOR)
+#if defined(F_SUPPORTED) && CONFIG_FLEN > UDB_MXLEN || defined(ZVL32B_SUPPORTED)
     # Convert two UDB_MXLEN-wide values to combined hex string: "0xUPPER_LOWER\n\0"
     # a0: upper UDB_MXLEN-bit value
     # a1: lower UDB_MXLEN-bit value
@@ -2070,7 +2070,7 @@
     expected_value_upper:
         .fill 2, 4, 0xfeedf00dbaaaaaad
 #endif
-#ifdef RVTEST_VECTOR
+#ifdef ZVL32B_SUPPORTED
     failing_region:                              # 0=active, 1=tail, 2=mask, 3=base
         .fill 1, 4, 0xfeedf00d
     failing_index:                               # element index of first mismatch
@@ -2085,7 +2085,7 @@
         .fill VLEN_WORDS, 4, 0xbaaaaaad
     vecreg_scratch:                              # space to save full vector register contents
         .fill VECREG_REGION_WORDS, 4, 0xfeedf00dbaaaaaad
-#endif // RVTEST_VECTOR
+#endif // ZVL32B_SUPPORTED
 
     //==========================================================================
     // TRAP DIAGNOSTIC DATA SECTION
@@ -2383,7 +2383,7 @@
         .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in VS-Mode.\"";
     Vclr_Vext_int_str:
         .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in VS-Mode.\"";
-#ifdef RVTEST_VECTOR
+#ifdef ZVL32B_SUPPORTED
     regionstr:
         .string "RVCP: Region: "
     region_active_str:

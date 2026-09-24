@@ -1761,8 +1761,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
         # @SIGUPD_COUNT_FROM_TESTGEN@ intentionally left unreplaced; finalizeSigupdCount()
         # rewrites it after the test body is fully generated and sigupd_count is final.
         .replace("@TESTCASE_STRINGS@", generate_testcase_string_section())
-        .replace("@EXTRA_DEFINES@", (f"#define RVTEST_VECTOR\n"
-                                     f"#define RVTEST_SEW {sew}\n"
+        .replace("@EXTRA_DEFINES@", (f"#define RVTEST_SEW {sew}\n"
                                      f"#define VDSEW {vdsew}\n"
                                      + (f"\n{getPrivExtraDefines(sew)}" if priv else "")
                                      + ("\n#define TRAP_SIGUPD_COUNT 50000" if test.startswith("SsstrictV") else "")))

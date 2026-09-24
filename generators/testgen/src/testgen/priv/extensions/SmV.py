@@ -534,7 +534,6 @@ def _gen_vl_walking1s_sew_lmul(test_data: TestData, temp_reg: int) -> list[str]:
     required_extensions=["Sm", "M", "V", "Zicsr"],
     march_extensions=["M", "V"],
     extra_defines=[
-        "#define RVTEST_VECTOR",
         "#define RVTEST_SEW 0",
         "#define VDSEW 0",
     ],

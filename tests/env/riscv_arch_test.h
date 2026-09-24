@@ -18,7 +18,7 @@
 #if UDB_NUM_PMP_ENTRIES > 0
   #include "rvtest_pmp_macros.h"
 #endif
-#ifdef RVTEST_VECTOR
+#ifdef ZVL32B_SUPPORTED
   #include "rvtest_macros_vector.h"
 #endif
 #ifdef RVTEST_HYPERVISOR

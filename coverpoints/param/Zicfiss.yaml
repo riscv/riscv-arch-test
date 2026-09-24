@@ -4,7 +4,7 @@
 
 parameter_definitions:
   - name: REPORT_CAUSE_IN_MTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
-    coverpoint: ["cp_sspopchk_mismatch, cp_sspopchk_mismatch_s"]
+    coverpoint: ["cp_ss_swcheck_mtval"]
     effect: [
         "When true, a shadow stack software-check exception taken to M-mode reports the
         shadow stack fault code (3) in `mtval`. When false, `mtval` is 0 and the test

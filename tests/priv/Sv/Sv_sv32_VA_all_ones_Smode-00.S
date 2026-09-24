@@ -18,7 +18,7 @@
 #define SIGUPD_COUNT 13
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 #define TRAP_SIGUPD_COUNT 10
 
 // Include framework macros
@@ -35,7 +35,6 @@ RVTEST_BEGIN
 
 
 main:
-  LI( a2, 0x800)              // Test signature initialization
 
 // Virtual addresses for code and test regions
 
@@ -50,12 +49,17 @@ main:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL1)
   sfence.vma
 
-// Set up the code-region save area.
-  csrr a0, mscratch
+// The boot tables identity map the test image, but that mapping is not user
+// accessible, so the code is mapped again at va_rvtest_code_begin. Registering
+// that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
+// to can fetch from.
+  LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL1)
 
   SATP_SETUP_SV32 // Enable address translation.
   sfence.vma
+
+  LI( a2, 0x800)              // Test signature initialization
 
 
 // 4KB page at level 0
@@ -65,7 +69,6 @@ main:
   PTE_SETUP_SV32(rvtest_data_1_l0_rw, (PTE_D | PTE_A | PTE_W | PTE_R | PTE_V), va_data_rw, LEVEL0)
   sfence.vma
 
-  RVTEST_GOTO_LOWER_MODE Smode
   LI(a5, va_data_rw)
   addi a2, a2, 16
 Sv_cp_sv32_VA_all_ones_Smode_test1_store:
@@ -74,7 +77,6 @@ Sv_cp_sv32_VA_all_ones_Smode_test1_store:
 Sv_cp_sv32_VA_all_ones_Smode_test1_load:
   lbu a3, 0(a5)
   nop
-  RVTEST_GOTO_MMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_VA_all_ones_Smode_test1_store, Sv_cp_sv32_VA_all_ones_Smode_test1_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -88,12 +90,10 @@ Sv_cp_sv32_VA_all_ones_Smode_test1_load:
   PTE_SETUP_SV32(rvtest_data_1_l0_x, (PTE_D | PTE_A | PTE_X | PTE_V), va_data_x, LEVEL0)
   sfence.vma
 
-  RVTEST_GOTO_LOWER_MODE Smode
   LI(a5, va_data_x)
 Sv_cp_sv32_VA_all_ones_Smode_test2_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_GOTO_MMODE
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_VA_all_ones_Smode_test2_exec, Sv_cp_sv32_VA_all_ones_Smode_test2_exec_str)
 
@@ -136,9 +136,9 @@ rvtest_slvl0_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_cp_sv32_VA_all_ones_Smode_test1_store_str: .string "\"test: 355; cg: Sv; cp: cp_sv32_VA_all_ones_Smode; bin: test1_store\""
-Sv_cp_sv32_VA_all_ones_Smode_test1_load_str: .string "\"test: 356; cg: Sv; cp: cp_sv32_VA_all_ones_Smode; bin: test1_load\""
-Sv_cp_sv32_VA_all_ones_Smode_test2_exec_str: .string "\"test: 357; cg: Sv; cp: cp_sv32_VA_all_ones_Smode; bin: test2_exec\""
+Sv_cp_sv32_VA_all_ones_Smode_test1_store_str: .string "\"test: 331; cg: Sv; cp: cp_sv32_VA_all_ones_Smode; bin: test1_store\""
+Sv_cp_sv32_VA_all_ones_Smode_test1_load_str: .string "\"test: 332; cg: Sv; cp: cp_sv32_VA_all_ones_Smode; bin: test1_load\""
+Sv_cp_sv32_VA_all_ones_Smode_test2_exec_str: .string "\"test: 333; cg: Sv; cp: cp_sv32_VA_all_ones_Smode; bin: test2_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

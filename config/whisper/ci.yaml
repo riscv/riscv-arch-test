@@ -4,10 +4,12 @@
 
 # SsstrictSm, unknown
 # Smstateen Sail does not yet support 1P13 bit
-# Sdtrig* not yet implemented in Sail
+# Sdtrig* not yet implemented in Sail (https://github.com/riscv/sail-riscv/issues/222)
 # H: whisper.json does not enable h, and enabling it exposes incomplete H support:
 #    the mie/mip VS interrupt bits (2, 6, 10, 12) read as zero, which fails the Sm
-#    mcsr access/walk/shadow tests. Re-enable once whisper implements them.
+#    mcsr access/walk/shadow tests. Re-enable once whisper implements them. Only
+#    whisper-rv32-max is affected: whisper-rv64-max sets TIME_CSR_IMPLEMENTED false,
+#    and the H suite requires it true, so that config never selects H anyway.
 ci_enabled: true
 exclude_extensions: "SsstrictSm,Smstateen,SdtrigSm,SdtrigS,SdtrigU,H"
 exclude_configs:

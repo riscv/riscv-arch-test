@@ -1040,6 +1040,12 @@
         li x9, 1
         j trap_diag_field_identified
     1:
+        la x7, sv_Htval2_str
+        bne x6, x7, 1f
+        li x8, 6                                     # subtype: second trap value (htval here)
+        li x9, 1                                     # mode: S/HS
+        j trap_diag_field_identified
+    1:
 
         //--- HS-mode trap signature field checks ---
         la x7, sv_Hvect_str

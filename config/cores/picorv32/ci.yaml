@@ -9,9 +9,9 @@ ci_enabled: true
 # are in the config rather than in this string:
 #
 #   * test_config.yaml sets `include_priv_tests: False`, and rvmodel_macros.h leaves
-#     STANDARD_SM_SUPPORTED undefined with a blank RVMODEL_BOOT_TO_MMODE. Together
-#     these drop every test that can only be satisfied by Sm/S/U and stop ACT from
-#     emitting any boot code, trap prolog or trap handler. PicoRV32 has no CSR
+#     STANDARD_SM_SUPPORTED undefined. Together these drop every test that can only
+#     be satisfied by Sm/S/U and stop ACT from emitting any CSR boot code, trap
+#     prolog or trap handler. PicoRV32 has no CSR
 #     instructions and no privileged state at all; README.md says of the one piece of
 #     interrupt machinery it does have: "The IRQ handling features in PicoRV32 do not
 #     follow the RISC-V Privileged ISA specification. Instead PicoRV32 implements a

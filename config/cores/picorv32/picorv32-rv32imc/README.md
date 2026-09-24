@@ -18,8 +18,8 @@ privileged state: opcode `1110011` decodes to exactly four things - the fixed
 anywhere in `picorv32.v`. Interrupt state lives in custom `q0..q3` registers under the `custom0`
 opcode, and the README says the scheme "do not follow the RISC-V Privileged ISA specification".
 
-ACT supports this case directly: `RVMODEL_BOOT_TO_MMODE` is defined blank, `STANDARD_SM_SUPPORTED`
-is left undefined, and `test_config.yaml` sets `include_priv_tests: False`. See
+ACT supports this case directly: `STANDARD_SM_SUPPORTED` is left undefined, so the default boot
+code touches no CSRs, and `test_config.yaml` sets `include_priv_tests: False`. See
 `docs/ctp/src/abstraction.adoc` and the existing `config/spike/spike-RVI20U32` config.
 
 77 tests are selected: I 39, Zca 26, M 8, Zmmul 4. Everything else in ACT is out of reach.

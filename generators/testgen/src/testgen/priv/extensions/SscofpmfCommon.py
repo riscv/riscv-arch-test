@@ -164,9 +164,12 @@ def _generate_xinh_inhibits_tests(test_data: TestData, priv_mode: str) -> list[s
                 "",
                 f"{indent}{test_data.add_testcase(binname, coverpoint, covergroup)}",
                 f"{indent}{_csr_access(f'csrr x{r_temp}, CSR_MHPMEVENT3H', priv_mode)}",
-                # VSINH/VUINH are hardwired 0 on Sail (no H support), so mask them out of the checked value.
-                f"{indent}LI(x{r_hval}, 0xF3FFFFFF)   # clear bits 27:26 (VSINH/VUINH) -- H unsupported by Sail",
+                # VSINH/VUINH are read-only zero without H, so check them only on an H hart.
+                # (tests/env/riscv_arch_test.h currently undefines H_SUPPORTED everywhere.)
+                "#ifndef H_SUPPORTED",
+                f"{indent}LI(x{r_hval}, 0xF3FFFFFF)   # clear bits 27:26 (VSINH/VUINH)",
                 f"{indent}and x{r_temp}, x{r_temp}, x{r_hval}",
+                "#endif",
                 f"{indent}{write_sigupd(r_temp, test_data)}",
                 "",
             ]
@@ -182,9 +185,11 @@ def _generate_xinh_inhibits_tests(test_data: TestData, priv_mode: str) -> list[s
                 "",
                 f"{indent}{test_data.add_testcase(binname, coverpoint, covergroup)}",
                 f"{indent}{_csr_access(f'csrr x{r_temp}, RVMODEL_MHPMEVENT', priv_mode)}",
-                # VSINH/VUINH are hardwired 0 on Sail (no H support), so mask them out of the checked value.
-                f"{indent}LI(x{r_val}, 0xF3FFFFFFFFFFFFFF)   # clear bits 59:58 (VSINH/VUINH) -- H unsupported by Sail",
+                # VSINH/VUINH are read-only zero without H, so check them only on an H hart.
+                "#ifndef H_SUPPORTED",
+                f"{indent}LI(x{r_val}, 0xF3FFFFFFFFFFFFFF)   # clear bits 59:58 (VSINH/VUINH)",
                 f"{indent}and x{r_temp}, x{r_temp}, x{r_val}",
+                "#endif",
                 f"{indent}{write_sigupd(r_temp, test_data)}",
                 "",
             ]

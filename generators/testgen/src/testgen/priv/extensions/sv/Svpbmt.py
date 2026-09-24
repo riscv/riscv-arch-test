@@ -8,6 +8,7 @@
 
 """Generate Svpbmt leaf and non-leaf PTE tests."""
 
+from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.access import add_rwx_test
@@ -16,7 +17,6 @@ from testgen.priv.extensions.sv.page_tables import SV39, SV48, SV57, PteFlags, S
 from testgen.priv.registry import add_priv_test_generator
 
 _PBMT = (("(1 << 61)", "PBMT=1", False), ("(2 << 61)", "PBMT=2", False), ("(3 << 61)", "PBMT=3", True))
-_MARCH = ["I", "Zicsr", "Zifencei"]
 
 
 def _begin_test(test_data: TestData, sv: SvMode, mode: str, topic: str) -> TestChunk:
@@ -25,7 +25,7 @@ def _begin_test(test_data: TestData, sv: SvMode, mode: str, topic: str) -> TestC
         sv,
         mode,
         f"{sv.name}_{topic}_{mode}",
-        setup_asm=("LI(t0, MENVCFG_PBMTE)", "csrs menvcfg, t0"),
+        setup_asm=("LI(t0, MENVCFG_PBMTE)", tsbi_call("csrs menvcfg, t0")),
     )
 
 
@@ -51,7 +51,16 @@ def _make_leaf_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                     "sfence.vma",
                     "",
-                    *add_rwx_test(test_data, sv, mode, "va_data", level, f"test{number}"),
+                    *add_rwx_test(
+                        test_data,
+                        sv,
+                        mode,
+                        "va_data",
+                        level,
+                        f"test{number}",
+                        enter=[] if mode == "Smode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"],
+                        leave=[] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"],
+                    ),
                 ]
             )
             if guarded:
@@ -80,7 +89,16 @@ def _make_nonleaf_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk
                     ),
                     "sfence.vma",
                     "",
-                    *add_rwx_test(test_data, sv, mode, "va_data", level, f"test{number}"),
+                    *add_rwx_test(
+                        test_data,
+                        sv,
+                        mode,
+                        "va_data",
+                        level,
+                        f"test{number}",
+                        enter=[] if mode == "Smode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"],
+                        leave=[] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"],
+                    ),
                     "",
                 ]
             )
@@ -97,9 +115,9 @@ def _make_svpbmt(test_data: TestData, sv: SvMode) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "Svpbmt",
-    required_extensions=["I", "Sv39", "Svpbmt"],
-    march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sv39", "Svpbmt"],
+    march_extensions=["Svpbmt"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svpbmt_sv39(test_data: TestData) -> list[TestChunk]:
     return _make_svpbmt(test_data, SV39)
@@ -107,9 +125,9 @@ def make_svpbmt_sv39(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "Svpbmt",
-    required_extensions=["I", "Sv48", "Svpbmt"],
-    march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sv48", "Svpbmt"],
+    march_extensions=["Svpbmt"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svpbmt_sv48(test_data: TestData) -> list[TestChunk]:
     return _make_svpbmt(test_data, SV48)
@@ -117,9 +135,9 @@ def make_svpbmt_sv48(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "Svpbmt",
-    required_extensions=["I", "Sv57", "Svpbmt"],
-    march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sv57", "Svpbmt"],
+    march_extensions=["Svpbmt"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svpbmt_sv57(test_data: TestData) -> list[TestChunk]:
     return _make_svpbmt(test_data, SV57)

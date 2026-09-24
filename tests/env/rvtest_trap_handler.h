@@ -104,6 +104,9 @@
 //    TSBI_GOTO_UMODE  (a0=3)          — Switch caller to U-mode
 //    TSBI_GOTO_VSMODE (a0=4)          — Switch caller to VS-mode (H required)
 //    TSBI_GOTO_VUMODE (a0=5)          — Switch caller to VU-mode (H required)
+//      The three GOTO ops above also relocate the resume address when a test
+//      runs with translation on and has registered a code alias for its code
+//      region (see TSBI_RELOCATE_EPC).
 //    TSBI_ECALL_TEST  (a0=0x73)       — Test ecall path; returns xEPC in a0
 //    CSR_ACCESS       (a0=CSR opcode) — Execute CSR instruction; rd must be a0
 //    TSBI_LW/LWP4/LD  (a0=load opcode) — Load from physical address a1 into a0
@@ -399,6 +402,91 @@
   beq     \STATUS_REG, \TMP_REG, 1f
   RVTEST_RESTORE_MEDELEG_ILLEGAL \SAVE_AREA_REG, \TMP_REG
 1:
+.endm
+
+// Relocate the resume address (xEPC, already past the ecall) of
+// RVTEST_TSBI_GOTO_MMODE, RVTEST_TSBI_GOTO_SMODE and RVTEST_TSBI_GOTO_UMODE
+// between the two mappings of the code region.
+//
+// The test image is identity mapped by the boot page tables, but that mapping is
+// not user accessible, so a test that runs code in U-mode maps its code region a
+// second time at a virtual alias. It registers that alias by writing it to code_bgn
+// of the S save area, which is what SAVE_AREA_SETUP(VA, rvtest_code_begin, code,
+// LEVEL) does. Both mappings cover the whole code region, so the offset from the
+// region start is the same in either one and only the base has to be swapped.
+//
+// For example, an Sv39 test that maps rvtest_code_begin (0x80000000) at
+// va_rvtest_code_begin (0xC0000000) and calls RVTEST_TSBI_GOTO_UMODE at 0x80000210
+// resumes at 0xC0000210, and the RVTEST_TSBI_GOTO_SMODE that ends the U-mode
+// excursion, reached at 0xC0000260, resumes at 0x80000260. GOTO_SMODE and
+// GOTO_MMODE have to move back because M-mode does not translate and S-mode cannot
+// execute a user page. The resume address may equal rvtest_code_end, which is where
+// the end-of-test code starts.
+//
+// Each direction checks that xEPC really lies in the mapping it is moving out of, so
+// a test that registers an alias but resumes somewhere else is left alone, as is one
+// that never registers an alias. Uses T2-T4; a0 = GOTO operation code.
+//
+// M and S service different callers, so they get different halves:
+//   M handles GOTO_UMODE, whose caller runs in the code region, and it is the only
+//     one that has to ask whether translation is on at all. Reading satp there is
+//     always legal; in S-mode it would raise an illegal instruction when
+//     mstatus.TVM is set.
+//   S only ever services callers already in U-mode, which reach it because
+//     ecall-from-U is delegated, so it only moves them back out of the alias.
+.macro TSBI_RELOCATE_EPC __MODE__
+// Without S-mode there is no satp, and no S save area to register an alias in.
+#ifdef S_SUPPORTED
+        LA(     T2, Mtramptbl_sv)
+        LREG    T3, code_bgn_off+sv_area_sz(T2)      // T3 = registered code alias
+        LREG    T2, code_bgn_off(T2)                 // T2 = rvtest_code_begin
+        beq     T2, T3, 9f                           // no alias registered
+        li      T4, TSBI_GOTO_UMODE
+  .ifc \__MODE__ , M
+        beq     a0, T4, 1f                           // GOTO_UMODE: code region -> alias
+  .else
+        beq     a0, T4, 9f                           // U caller returning to U: already in the alias
+  .endif
+        bgtu    a0, T4, 9f                           // VS/VU: not relocated
+        csrr    T4, CSR_XEPC                         // GOTO_M/SMODE: alias -> code region
+        sub     T4, T4, T3                           // T4 = offset into the alias
+        LA(     T3, Mtramptbl_sv)
+        LREG    T3, code_seg_siz(T3)                 // T3 = code region size
+  .ifc \__MODE__ , M
+        bgtu    T4, T3, 8f                           // not in the alias: an M caller entering S goes the other way
+  .else
+        bgtu    T4, T3, 9f                           // caller is not in the alias
+  .endif
+        add     T4, T4, T2
+        csrw    CSR_XEPC, T4
+  .ifc \__MODE__ , M
+        j       9f
+
+        // An M-mode caller asking for S-mode runs in the code region, not the alias.
+        // A test whose own map does not cover the code region -- one that maps a test VA
+        // over the root slot the boot tables identity map it through -- can only fetch
+        // through the alias, so send S-mode there, exactly as GOTO_UMODE does.
+8:      li      T4, TSBI_GOTO_SMODE
+        bne     a0, T4, 9f                           // GOTO_MMODE: M does not translate, nothing to do
+        LA(     T3, Mtramptbl_sv)
+        LREG    T3, code_bgn_off+sv_area_sz(T3)      // T3 = registered code alias (clobbered above)
+1:      csrr    T4, CSR_SATP
+    #if (UDB_MXLEN==32)
+        bgez    T4, 9f                               // satp.MODE = Bare
+    #else
+        srli    T4, T4, MODE_LSB
+        beqz    T4, 9f                               // satp.MODE = Bare
+    #endif
+        csrr    T4, CSR_XEPC
+        sub     T4, T4, T2                           // T4 = offset into the code region
+        LA(     T2, Mtramptbl_sv)
+        LREG    T2, code_seg_siz(T2)                 // T2 = code region size
+        bgtu    T4, T2, 9f                           // caller is not in the code region
+        add     T4, T4, T3
+        csrw    CSR_XEPC, T4
+  .endif
+9:
+#endif
 .endm
 
 //==============================================================================
@@ -1550,15 +1638,16 @@ tsbi_\__MODE__\()ecall_test:
         //   then mret. The mret instruction transitions to the mode specified by MPP/MPV
         //   and jumps to mepc (which is now the instruction after the caller's ecall).
         //
-        // Note: For GOTO_MMODE, we reuse the existing rtn2mmode path which handles
-        //   EPC relocation across address spaces. The simpler GOTO_S/U/VS/VU paths
-        //   don't need relocation because they set MPP/MPV and let mret handle it.
+        // Note: a test that mapped its code region at a second virtual address for a
+        //   U-mode excursion resumes in whichever of the two mappings the target mode
+        //   can fetch from; TSBI_RELOCATE_EPC moves mepc between them.
         //--------------------------------------------------------------
 tsbi_\__MODE__\()goto_mode:
         // First, bump mepc past the ecall instruction
         csrr    T4, CSR_XEPC                        // T4 = mepc (caller's ecall address)
         addi    T4, T4, 4                            // T4 = mepc + 4 (instruction after ecall)
         csrw    CSR_XEPC, T4                         // mepc = mepc + 4
+        TSBI_RELOCATE_EPC \__MODE__                  // move between code region and its alias if needed
 
         // Dispatch based on caller's a0 (still live in a0 from the ecall)
         li      T2, TSBI_GOTO_MMODE                  // T2 = 1
@@ -1768,6 +1857,7 @@ tsbi_\__MODE__\()goto_mode:
         csrr    T4, CSR_XEPC                        // T4 = sepc (caller's ecall address)
         addi    T4, T4, 4                            // skip ecall
         csrw    CSR_XEPC, T4                         // sepc += 4
+        TSBI_RELOCATE_EPC \__MODE__                  // move between code region and its alias if needed
 
         li      T2, TSBI_GOTO_MMODE                  // can't handle GOTO_MMODE from S-mode
         beq     a0, T2, tsbi_\__MODE__\()forward_goto_m // -> forward to M-mode; caller resumes in M

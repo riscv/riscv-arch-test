@@ -18,7 +18,6 @@ from testgen.priv.extensions.sv.page_tables import SV32, SV39, SV48, SV57, PteFl
 from testgen.priv.extensions.sv.SvPMP import PMP_PTE_VAS
 from testgen.priv.registry import add_priv_test_generator
 
-_MARCH = ["I", "Zicsr", "Zifencei"]
 _FAMILIES = {
     "Zicbom": ("MENVCFG_CBCFE | MENVCFG_CBIE", ("cbo.clean (a5)", "cbo.flush (a5)", "cbo.inval (a5)")),
     "Zicboz": ("MENVCFG_CBZE", ("cbo.zero (a5)",)),
@@ -31,7 +30,9 @@ def _setup_envcfg(extension: str, mode: str) -> tuple[str, ...]:
 
 
 def _add_operations(test_data: TestData, sv: SvMode, mode: str, level: int, extension: str, number: int) -> list[str]:
-    lines = [*virtual_address(sv, "va_data", level), f"RVTEST_GOTO_LOWER_MODE {mode}"]
+    enter = [] if mode == "Mmode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"]
+    leave = [] if mode == "Mmode" else ["RVTEST_TSBI_GOTO_MMODE"]
+    lines = [*virtual_address(sv, "va_data", level), *enter]
     for operation in _FAMILIES[extension][1]:
         name = operation.split()[0].replace(".", "_")
         lines.extend(
@@ -41,7 +42,7 @@ def _add_operations(test_data: TestData, sv: SvMode, mode: str, level: int, exte
                 "nop",
             ]
         )
-    lines.append("RVTEST_GOTO_MMODE")
+    lines.extend(leave)
     return lines
 
 
@@ -163,8 +164,8 @@ def _make_svpmpzicbo(test_data: TestData, sv: SvMode, extension: str) -> list[Te
 
 @add_priv_test_generator(
     "SvPMPZicbo",
-    required_extensions=["I", "Sv32", "Zicbom", "Sm"],
-    march_extensions=_MARCH + ["Zicbom"],
+    required_extensions=["Sv32", "Zicbom", "Sm"],
+    march_extensions=["Zicbom"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
@@ -174,8 +175,8 @@ def make_svpmpzicbo_sv32_zicbom(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvPMPZicbo",
-    required_extensions=["I", "Sv32", "Zicboz", "Sm"],
-    march_extensions=_MARCH + ["Zicboz"],
+    required_extensions=["Sv32", "Zicboz", "Sm"],
+    march_extensions=["Zicboz"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
@@ -185,8 +186,8 @@ def make_svpmpzicbo_sv32_zicboz(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvPMPZicbo",
-    required_extensions=["I", "Sv39", "Zicbom", "Sm"],
-    march_extensions=_MARCH + ["Zicbom"],
+    required_extensions=["Sv39", "Zicbom", "Sm"],
+    march_extensions=["Zicbom"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
@@ -196,8 +197,8 @@ def make_svpmpzicbo_sv39_zicbom(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvPMPZicbo",
-    required_extensions=["I", "Sv39", "Zicboz", "Sm"],
-    march_extensions=_MARCH + ["Zicboz"],
+    required_extensions=["Sv39", "Zicboz", "Sm"],
+    march_extensions=["Zicboz"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
@@ -207,8 +208,8 @@ def make_svpmpzicbo_sv39_zicboz(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvPMPZicbo",
-    required_extensions=["I", "Sv48", "Zicbom", "Sm"],
-    march_extensions=_MARCH + ["Zicbom"],
+    required_extensions=["Sv48", "Zicbom", "Sm"],
+    march_extensions=["Zicbom"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
@@ -218,8 +219,8 @@ def make_svpmpzicbo_sv48_zicbom(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvPMPZicbo",
-    required_extensions=["I", "Sv48", "Zicboz", "Sm"],
-    march_extensions=_MARCH + ["Zicboz"],
+    required_extensions=["Sv48", "Zicboz", "Sm"],
+    march_extensions=["Zicboz"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
@@ -229,8 +230,8 @@ def make_svpmpzicbo_sv48_zicboz(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvPMPZicbo",
-    required_extensions=["I", "Sv57", "Zicbom", "Sm"],
-    march_extensions=_MARCH + ["Zicbom"],
+    required_extensions=["Sv57", "Zicbom", "Sm"],
+    march_extensions=["Zicbom"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
@@ -240,8 +241,8 @@ def make_svpmpzicbo_sv57_zicbom(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvPMPZicbo",
-    required_extensions=["I", "Sv57", "Zicboz", "Sm"],
-    march_extensions=_MARCH + ["Zicboz"],
+    required_extensions=["Sv57", "Zicboz", "Sm"],
+    march_extensions=["Zicboz"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )

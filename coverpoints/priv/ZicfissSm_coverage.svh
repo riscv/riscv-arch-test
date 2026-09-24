@@ -187,6 +187,19 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
     // Below M-mode with satp.MODE=Bare, every SS memory access raises a store/AMO access fault.
     cp_ss_satp_bare:               cross priv_mode_s_u, ss_mem_instr, ss_active_below_m, satp_bare;
 
+    // This suite boots to M-mode, which leaves medeleg at zero, so a software-check exception
+    // from S-mode is taken in M-mode and reports shadow stack fault (code 3) in mtval.
+    // Guarded on the trap being taken by this instruction, since the CSR array is persistent.
+    sw_check_m: coverpoint ins.current.csr[CSR_MCAUSE]
+                iff (ins.current.csr_wb[CSR_MEPC] && (ins.current.csr[CSR_MEPC] == ins.current.pc_rdata)) {
+        bins cause_18 = {18};
+    }
+    mtval_ss_fault: coverpoint ins.current.csr[CSR_MTVAL]
+                    iff (ins.current.csr_wb[CSR_MEPC] && (ins.current.csr[CSR_MEPC] == ins.current.pc_rdata)) {
+        bins ss_fault = {3};
+    }
+    cp_ss_swcheck_mtval:           cross priv_mode_s, ss_pop_instr, sw_check_m, mtval_ss_fault;
+
     // Zicfiss inactive: MOP-encoded instructions stay inert, even with an ssp that an
     // active instruction would fault on. At M-mode this holds for every SSE state; S-mode
     // is gated by menvcfg.SSE alone. The U-mode leg is cp_ss_instr_inactive_u in ZicfissU.

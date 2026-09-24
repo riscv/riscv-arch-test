@@ -106,16 +106,21 @@ covergroup ZicfissH_cg with function sample(ins_t ins);
         bins inactive_hen_off = {2'b10};
         bins active           = {2'b11};
     }
-    // VU-mode additionally needs senvcfg.SSE.
-    vu_sse_state: coverpoint {ins.prev.csr[CSR_HENVCFG][3],
-                              (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1)} {
+    // VU-mode additionally needs senvcfg.SSE. menvcfg.SSE=0 forces both children read-only zero,
+    // which the trace does not re-log, so both are sampled as their effective values.
+    vu_sse_state: coverpoint {((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
+                               ins.prev.csr[CSR_HENVCFG][3]),
+                              ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
+                               (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))} {
         bins inactive_both   = {2'b00};
         bins inactive_hen_off = {2'b01};
         bins inactive_sen_off = {2'b10};
         bins active          = {2'b11};
     }
-    vu_sse_inactive: coverpoint {ins.prev.csr[CSR_HENVCFG][3],
-                                 (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1)} {
+    vu_sse_inactive: coverpoint {((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
+                                  ins.prev.csr[CSR_HENVCFG][3]),
+                                 ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
+                                  (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))} {
         bins both_off = {2'b00};
         bins hen_off  = {2'b01};
         bins sen_off  = {2'b10};

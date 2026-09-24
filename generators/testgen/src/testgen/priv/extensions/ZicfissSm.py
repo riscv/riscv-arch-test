@@ -308,14 +308,14 @@ def _generate_satp_bare(test_data: TestData) -> list[str]:
                 reg = "x1" if "x1" in mnemonic else "x5"
                 block.extend(
                     [
-                        f"LA(x{addr_reg}, rvtest_zicfiss_ss_page + 0x800)",
+                        f"LA(x{addr_reg}, scratch + 0x40)",
                         f"csrw ssp, x{addr_reg}",
                         f"LI({reg}, 0x0BADF00D)",
                         test_data.add_testcase(f"{name}_{tag}", coverpoint, _CG),
                         *ss_insn(mnemonic, compressed=compressed),
                     ]
                 )
-            block.extend([f"LA(x{addr_reg}, rvtest_zicfiss_ss_page)", f"LI(x{data_reg}, 0x11223344)"])
+            block.extend([f"LA(x{addr_reg}, scratch + 0x40)", f"LI(x{data_reg}, 0x11223344)"])
             for width in ["w"] + (["d"] if xlen == 64 else []):
                 block.extend(
                     [
@@ -326,6 +326,57 @@ def _generate_satp_bare(test_data: TestData) -> list[str]:
             block.append(GOTO_MMODE)
         block.extend(restore_link_regs(save_x1, save_x5))
         test_data.int_regs.return_registers([addr_reg, data_reg, save_x1, save_x5])
+        return block
+
+    # No page tables are involved, and the premise is satp.MODE=Bare, so the Sv guards
+    # of both_xlens would skip this on exactly the DUTs the rule is about.
+    lines.extend(["#if __riscv_xlen == 64", *build(64), "#else", *build(32), "#endif  // __riscv_xlen"])
+    return lines
+
+
+# ---------------------------------------------------------------------------
+# cp_ss_swcheck_mtval
+# ---------------------------------------------------------------------------
+
+
+def _generate_swcheck_mtval(test_data: TestData) -> list[str]:
+    """An SSPOPCHK value mismatch in S-mode is taken in M-mode, reporting mtval = shadow stack fault.
+
+    This suite boots to M-mode, where RVTEST_BOOT_TO_MMODE leaves medeleg at zero, so the
+    software-check exception is not delegated.
+    """
+    coverpoint = "cp_ss_swcheck_mtval"
+    lines: list[str] = [comment_banner(coverpoint, "SSPOPCHK mismatch in S-mode reports mtval=3 in M-mode")]
+
+    def build(xlen: int) -> list[str]:
+        ss_va, _, _ = va_for(xlen)
+        ssp_top = ss_va + 0x800
+        addr_reg = test_data.int_regs.get_register()
+        block = [
+            *satp_setup(xlen),
+            *map_zicfiss_pages(xlen, user=False),
+            *set_envcfg_sse("menvcfg", 1, test_data, mode="M"),
+        ]
+        save_x1, save_x5, save_lines = save_link_regs(test_data)
+        block.extend(save_lines)
+        block.append(GOTO_SMODE)
+        for mnemonic, compressed, name in _POP_FORMS:
+            reg = "x1" if "x1" in mnemonic else "x5"
+            block.extend(
+                [
+                    f"LI(x{addr_reg}, {hex(ssp_top)})",
+                    f"csrw ssp, x{addr_reg}",
+                    f"LI({reg}, 0xA5A5A5A5)",
+                    *ss_insn(f"sspush {reg}"),
+                    f"LI({reg}, 0x0BADF00D)   # no longer matches what the shadow stack holds",
+                    test_data.add_testcase(f"{name}_mismatch_rv{xlen}", coverpoint, _CG),
+                    *ss_insn(mnemonic, compressed=compressed),
+                ]
+            )
+        block.append(GOTO_MMODE)
+        block.extend(restore_link_regs(save_x1, save_x5))
+        block.extend(["csrwi satp, 0", "sfence.vma"])
+        test_data.int_regs.return_registers([addr_reg, save_x1, save_x5])
         return block
 
     lines.extend(both_xlens(build))
@@ -424,6 +475,7 @@ def make_zicfisssm(test_data: TestData) -> list[TestChunk]:
         _generate_envcfg_rdonly0,
         _generate_pmp_permissions,
         _generate_satp_bare,
+        _generate_swcheck_mtval,
         _generate_instr_inactive,
     ):
         tc = test_data.begin_test_chunk()

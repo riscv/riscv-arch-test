@@ -263,7 +263,4 @@ normative_rule_definitions:
 
   # On a trap caused by a software-check exception, the mtval register holds the cause for the exception.
   - name: mtval_swchk
-    coverpoint:
-      [
-        "Not reachable for Zicfiss: shadow stack instructions are never active in M-mode, and the ACT4 boot delegates software-check exceptions to S-mode (medeleg[18]=1), so a shadow stack fault is always reported in stval; see stval_exception_info",
-      ]
+    coverpoint: ["{ZicfissSm_cg}/{cp_ss_swcheck_mtval}"]

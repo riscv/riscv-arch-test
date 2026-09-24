@@ -193,6 +193,12 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
         bins matched    = {1'b0};
         bins mismatched = {1'b1};
     }
+    // On a software-check exception the trap value register reports shadow stack fault (code 3).
+    // Guarded on the trap being taken by this instruction, since the CSR array is persistent.
+    stval_ss_fault: coverpoint ins.current.csr[CSR_STVAL]
+                    iff (ins.current.csr_wb[CSR_SEPC] && (ins.current.csr[CSR_SEPC] == ins.current.pc_rdata)) {
+        bins ss_fault = {3};
+    }
 
     // ── Enable-chain (SSE) building blocks ────────────────────────────────
     menvcfg_sse: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") {
@@ -371,7 +377,7 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     cp_sspopchk_match:             cross priv_mode_u, ss_pop_instr, sspopchk_outcome, pte_ss_page {
         ignore_bins mismatch = binsof(sspopchk_outcome.mismatched);
     }
-    cp_sspopchk_mismatch:          cross priv_mode_u, ss_pop_instr, sspopchk_outcome, pte_ss_page {
+    cp_sspopchk_mismatch:          cross priv_mode_u, ss_pop_instr, sspopchk_outcome, pte_ss_page, stval_ss_fault {
         ignore_bins match = binsof(sspopchk_outcome.matched);
     }
     cp_sspopchk_fault_priority:    cross priv_mode_u, ss_pop_instr, ssp_fault_address;

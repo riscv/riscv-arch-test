@@ -40,6 +40,12 @@ _VU_PERMS = "(PTE_V | PTE_R | PTE_W | PTE_X | PTE_U | PTE_A | PTE_D)"
 _HEDELEG_RO_ZERO = hex(sum(1 << b for b in (9, 10, 11, 16, 20, 21, 22, 23)))
 _HIDELEG_RO_ZERO = hex(sum(1 << b for b in (1, 5, 9, 12)))
 
+# Bits the spec requires to be writable. hedeleg: the exceptions that can be taken
+# in VS/VU mode, less bit 0, whose presence depends on IALIGN. hideleg: the VS-level
+# interrupts, which a hypervisor must be able to delegate to the guest.
+_HEDELEG_WRITABLE = hex(sum(1 << b for b in (1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 15, 18, 19)))
+_HIDELEG_WRITABLE = hex(sum(1 << b for b in (2, 6, 10)))
+
 
 def _gen_ecall_test(test_data: TestData, check: int, temp: int, bin_name: str) -> list[str]:
     """RVTEST_TSBI_ECALL_TEST, checking it returns the ecall's own address."""
@@ -78,16 +84,21 @@ def _gen_hs_csr_tests(test_data: TestData, check: int, temp: int) -> list[str]:
         f"{INDENT}and x{check}, x{check}, x{temp}   # SPV must be 0: we have never left HS-mode",
         write_sigupd(check, test_data),
         "",
-        "# hedeleg and hideleg are WARL, and which of the remaining bits an",
-        "# implementation makes writable is its own choice, so only the bits the",
-        "# spec requires to read as zero are checked. Writing all ones and masking",
-        "# to those bits must leave zero.",
+        "# hedeleg and hideleg are WARL. Writing all ones and masking to the bits the",
+        "# spec requires to read as zero must leave zero, and masking to the bits it",
+        "# requires to be writable must leave that mask; the bits in between are an",
+        "# implementation choice and are not checked.",
         f"{INDENT}LI(x{temp}, -1)",
         test_data.add_testcase("ro_zero_bits", "cp_hedeleg_warl", _CG),
         f"{INDENT}csrw hedeleg, x{temp}",
         f"{INDENT}csrr x{check}, hedeleg",
         f"{INDENT}LI(x{temp}, {_HEDELEG_RO_ZERO})",
         f"{INDENT}and x{check}, x{check}, x{temp}",
+        write_sigupd(check, test_data),
+        test_data.add_testcase("required_writable_bits", "cp_hedeleg_warl", _CG),
+        f"{INDENT}csrr x{check}, hedeleg",
+        f"{INDENT}LI(x{temp}, {_HEDELEG_WRITABLE})",
+        f"{INDENT}and x{check}, x{check}, x{temp}   # must read back as the mask itself",
         write_sigupd(check, test_data),
         f"{INDENT}csrw hedeleg, x0",
         "",
@@ -97,6 +108,11 @@ def _gen_hs_csr_tests(test_data: TestData, check: int, temp: int) -> list[str]:
         f"{INDENT}csrr x{check}, hideleg",
         f"{INDENT}LI(x{temp}, {_HIDELEG_RO_ZERO})",
         f"{INDENT}and x{check}, x{check}, x{temp}",
+        write_sigupd(check, test_data),
+        test_data.add_testcase("required_writable_bits", "cp_hideleg_warl", _CG),
+        f"{INDENT}csrr x{check}, hideleg",
+        f"{INDENT}LI(x{temp}, {_HIDELEG_WRITABLE})",
+        f"{INDENT}and x{check}, x{check}, x{temp}   # must read back as the mask itself",
         write_sigupd(check, test_data),
         f"{INDENT}csrw hideleg, x0",
     ]
@@ -146,14 +162,34 @@ def _gen_hlv_hsv_tests(test_data: TestData, check: int, temp: int) -> list[str]:
         test_data.add_testcase("roundtrip", "cp_hlv_hsv", _CG),
         "#if __riscv_xlen == 32",
         f"{INDENT}hsv.w x{check}, (x{temp})",
-        f"{INDENT}li x{check}, 0",
+        f"{INDENT}LI(x{check}, 0)",
         f"{INDENT}hlv.w x{check}, (x{temp})",
         "#else",
         f"{INDENT}hsv.d x{check}, (x{temp})",
-        f"{INDENT}li x{check}, 0",
+        f"{INDENT}LI(x{check}, 0)",
         f"{INDENT}hlv.d x{check}, (x{temp})",
         "#endif",
         write_sigupd(check, test_data),
+        "",
+        "# The same round trip with hstatus.SPVP=1, which makes hlv/hsv check the",
+        "# access as VS-mode rather than VU-mode.",
+        f"{INDENT}LI(x{temp}, HSTATUS_SPVP)",
+        f"{INDENT}csrs hstatus, x{temp}",
+        f"{INDENT}LA(x{temp}, H_guest_scratch)",
+        f"{INDENT}LI(x{check}, 0xA55A)",
+        test_data.add_testcase("roundtrip_spvp", "cp_hlv_hsv", _CG),
+        "#if __riscv_xlen == 32",
+        f"{INDENT}hsv.w x{check}, (x{temp})",
+        f"{INDENT}LI(x{check}, 0)",
+        f"{INDENT}hlv.w x{check}, (x{temp})",
+        "#else",
+        f"{INDENT}hsv.d x{check}, (x{temp})",
+        f"{INDENT}LI(x{check}, 0)",
+        f"{INDENT}hlv.d x{check}, (x{temp})",
+        "#endif",
+        write_sigupd(check, test_data),
+        f"{INDENT}LI(x{temp}, HSTATUS_SPVP)",
+        f"{INDENT}csrc hstatus, x{temp}",
     ]
 
 
@@ -183,7 +219,7 @@ def _gen_vsmode_tests(test_data: TestData, check: int, temp: int) -> list[str]:
         "# Accessing an HS-mode CSR from VS-mode raises a virtual instruction",
         "# exception (cause 22). The check register keeps its pre-trap value,",
         "# which is how we know the instruction never completed.",
-        f"{INDENT}li x{check}, -1",
+        f"{INDENT}LI(x{check}, -1)",
         test_data.add_testcase("hs_csr_from_vs", "cp_virtual_instruction", _CG),
         f"{INDENT}csrr x{check}, hgatp",
         write_sigupd(check, test_data),
@@ -195,12 +231,17 @@ def _gen_vsmode_tests(test_data: TestData, check: int, temp: int) -> list[str]:
         "",
         f"{INDENT}RVTEST_TSBI_GOTO_SMODE   # leave the guest",
         "",
-        "# Back in HS-mode: sstatus is the real sstatus again, so the SPP bit set",
-        "# from inside the guest must not be visible here.",
+        "# Back in HS-mode: the SPP the guest set went to vsstatus, which HS can read",
+        "# directly. Comparing the two registers is what shows they are distinct --",
+        "# reading sstatus.SPP alone would prove nothing, since the sret that returned",
+        "# us to HS-mode always clears it.",
         test_data.add_testcase("spp_not_in_hs", "cp_vsstatus_alias", _CG),
         f"{INDENT}csrr x{check}, sstatus",
+        f"{INDENT}csrr x{temp}, vsstatus",
+        f"{INDENT}xor x{check}, x{check}, x{temp}",
         f"{INDENT}LI(x{temp}, SSTATUS_SPP)",
         f"{INDENT}and x{check}, x{check}, x{temp}",
+        f"{INDENT}sltu x{check}, x0, x{check}   # 1 = the guest's SPP stayed in vsstatus",
         write_sigupd(check, test_data),
         "",
         "# GOTO_SMODE had to clear hstatus.SPV to get us out of the guest; had it",
@@ -229,7 +270,7 @@ def _gen_vumode_tests(test_data: TestData, check: int, temp: int) -> list[str]:
         "",
         "# A supervisor CSR is a virtual instruction exception from VU-mode, not an",
         "# illegal instruction, which is what shows this really is VU and not U.",
-        f"{INDENT}li x{check}, -1",
+        f"{INDENT}LI(x{check}, -1)",
         test_data.add_testcase("s_csr_from_vu", "cp_virtual_instruction", _CG),
         f"{INDENT}csrr x{check}, sscratch",
         write_sigupd(check, test_data),
@@ -263,7 +304,7 @@ def _gen_vumode_tests(test_data: TestData, check: int, temp: int) -> list[str]:
     ]
 
 
-def _gen_twostage_setup(test_data: TestData, check: int, temp: int) -> list[str]:
+def _gen_twostage_setup(test_data: TestData, check: int, temp: int, base: int) -> list[str]:
     """Build the G-stage and VS-stage page tables and turn both stages on."""
     return [
         "",
@@ -276,8 +317,17 @@ def _gen_twostage_setup(test_data: TestData, check: int, temp: int) -> list[str]
         f"//           VA  0x{_ALIAS_GIB:08X} -> GPA 0x{_TEST_GIB:08X}   (non-identity view)",
         "/////////////////////////////////",
         "",
-        f"{INDENT}LI(t0, 0x{_TEST_GIB:08X})",
-        f"{INDENT}G_PTE_SETUP_PA_REG(sv39x4, t0, {_G_PERMS}, 0x{_TEST_GIB:08X}, LEVEL2)",
+        "# The VS-stage macros take their VA as an immediate, so the three windows are",
+        "# fixed constants, which only works while the image really does live in the",
+        f"# 0x{_TEST_GIB:08X} gigapage. Derive that gigapage from rvtest_code_begin and stop",
+        "# the test if a link script ever moves the image somewhere else.",
+        f"{INDENT}LA(x{base}, rvtest_code_begin)",
+        f"{INDENT}srli x{base}, x{base}, 30",
+        f"{INDENT}slli x{base}, x{base}, 30   # align down to the 1 GiB the image sits in",
+        f"{INDENT}LI(x{check}, 0x{_TEST_GIB:08X})",
+        f"{INDENT}bne x{base}, x{check}, abort_test",
+        "",
+        f"{INDENT}G_PTE_SETUP_PA_REG(sv39x4, x{base}, {_G_PERMS}, 0x{_TEST_GIB:08X}, LEVEL2)",
         f"{INDENT}VS_PTE_SETUP(sv39, GPA, 0x{_TEST_GIB:08X}, {_VS_PERMS}, 0x{_TEST_GIB:08X}, LEVEL2)",
         f"{INDENT}VS_PTE_SETUP(sv39, GPA, 0x{_HOLE_GIB:08X}, {_VS_PERMS}, 0x{_HOLE_GIB:08X}, LEVEL2)",
         f"{INDENT}VS_PTE_SETUP(sv39, GPA, 0x{_TEST_GIB:08X}, {_VS_PERMS}, 0x{_ALIAS_GIB:08X}, LEVEL2)",
@@ -319,14 +369,14 @@ def _gen_twostage_guest(test_data: TestData, check: int, temp: int, addr: int) -
         f"{INDENT}LI(x{check}, 0x1234ABCD)",
         ident_label,
         f"{INDENT}SREG x{check}, 0(x{addr})",
-        f"{INDENT}li x{check}, 0",
+        f"{INDENT}LI(x{check}, 0)",
         f"{INDENT}LREG x{check}, 0(x{addr})",
         write_sigupd(check, test_data),
         "",
         "# An exception whose xEPC is a guest virtual address. The HS handler has",
         "# to read this instruction's low halfword to learn its width, which means",
         "# reading at a guest VA.",
-        f"{INDENT}li x{check}, -1",
+        f"{INDENT}LI(x{check}, -1)",
         test_data.add_testcase("translated_guest", "cp_virtual_instruction", _CG),
         f"{INDENT}csrr x{check}, hgatp",
         write_sigupd(check, test_data),
@@ -338,10 +388,10 @@ def _gen_twostage_guest(test_data: TestData, check: int, temp: int, addr: int) -
         f"{INDENT}add x{addr}, x{addr}, x{temp}",
         f"{INDENT}jr x{addr}",
         "1:",
-        f"{INDENT}li x{check}, -1",
+        f"{INDENT}LI(x{check}, -1)",
         test_data.add_testcase("non_identity_guest_va", "cp_virtual_instruction", _CG),
         f"{INDENT}csrr x{check}, hgatp",
-        f"{INDENT}addi x{check}, x{check}, 2   # reached only if the handler skipped four bytes",
+        f"{INDENT}addi x{check}, x{check}, 2   # the handler resumed here, four bytes past the csrr",
         write_sigupd(check, test_data),
         "",
         "# The same thing with an instruction chosen so that a short skip is",
@@ -349,9 +399,9 @@ def _gen_twostage_guest(test_data: TestData, check: int, temp: int, addr: int) -
         "# upper halfword is 0x0000 -- the defined illegal compressed encoding. A",
         "# handler that misreads the width resumes two bytes in, lands on that",
         "# halfword and takes a second trap that shows up in the trap signature.",
-        f"{INDENT}li x{check}, -1",
+        f"{INDENT}LI(x{check}, -1)",
         test_data.add_testcase("non_identity_guest_va", "cp_illegal_instruction", _CG),
-        f"{INDENT}.word 0x000024F3",
+        f"{INDENT}.word 0x000024F3   # csrr x9, 0x000: an unimplemented CSR, so it always traps",
         f"{INDENT}addi x{check}, x{check}, 3",
         write_sigupd(check, test_data),
         "",
@@ -365,9 +415,17 @@ def _gen_twostage_guest(test_data: TestData, check: int, temp: int, addr: int) -
         "# G-stage entry, so this load raises a load guest-page fault (cause 21)",
         "# and htval takes the faulting guest physical address, shifted right by 2.",
         f"{INDENT}LI(x{addr}, 0x{_HOLE_GIB:08X})",
-        f"{INDENT}li x{check}, -1",
+        f"{INDENT}LI(x{check}, -1)",
         test_data.add_testcase("load", "cp_guest_page_fault", _CG),
         f"{INDENT}LREG x{check}, 0(x{addr})",
+        write_sigupd(check, test_data),
+        "",
+        "# The same hole written instead of read: a store guest-page fault (cause 23),",
+        "# which htval records the same way.",
+        f"{INDENT}LI(x{addr}, 0x{_HOLE_GIB:08X})",
+        f"{INDENT}LI(x{check}, 0x5A5A)",
+        test_data.add_testcase("store", "cp_guest_page_fault", _CG),
+        f"{INDENT}SREG x{check}, 0(x{addr})",
         write_sigupd(check, test_data),
         "",
         f"{INDENT}RVTEST_TSBI_GOTO_SMODE   # back to HS-mode",
@@ -407,7 +465,7 @@ def _gen_twostage_vu(test_data: TestData, check: int, temp: int, addr: int) -> l
         f"{INDENT}LI(x{check}, 0x5678DCBA)",
         test_data.add_testcase("load_store_vu", "cp_twostage_access", _CG),
         f"{INDENT}SREG x{check}, 0(x{addr})",
-        f"{INDENT}li x{check}, 0",
+        f"{INDENT}LI(x{check}, 0)",
         f"{INDENT}LREG x{check}, 0(x{addr})",
         write_sigupd(check, test_data),
         "",
@@ -416,7 +474,7 @@ def _gen_twostage_vu(test_data: TestData, check: int, temp: int, addr: int) -> l
         *_gen_ecall_test(test_data, check, temp, "from_vu_translated"),
         "",
         f"{INDENT}LI(x{addr}, 0x{_HOLE_GIB:08X})",
-        f"{INDENT}li x{check}, -1",
+        f"{INDENT}LI(x{check}, -1)",
         test_data.add_testcase("load_vu", "cp_guest_page_fault", _CG),
         f"{INDENT}LREG x{check}, 0(x{addr})",
         write_sigupd(check, test_data),
@@ -480,15 +538,15 @@ def make_h_twostage(test_data: TestData) -> list[TestChunk]:
     """Generate the two-stage translation tests (Sv39x4 G-stage over Sv39 VS-stage)."""
     test_chunks: list[TestChunk] = []
 
-    check, temp, addr = test_data.int_regs.get_registers(3)
+    check, temp, addr, base = test_data.int_regs.get_registers(4)
 
     tc = test_data.begin_test_chunk("twostage")
-    tc.code.extend(_gen_twostage_setup(test_data, check, temp))
+    tc.code.extend(_gen_twostage_setup(test_data, check, temp, base))
     tc.code.extend(_gen_twostage_guest(test_data, check, temp, addr))
     tc.code.extend(_gen_twostage_vu(test_data, check, temp, addr))
     tc.code.extend(_gen_twostage_teardown(test_data, check))
     tc.raw_data.extend([".p2align 3", "H_guest_data:", "  .dword 0"])
     test_chunks.append(test_data.end_test_chunk())
 
-    test_data.int_regs.return_registers([check, temp, addr])
+    test_data.int_regs.return_registers([check, temp, addr, base])
     return test_chunks

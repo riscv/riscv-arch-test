@@ -27,7 +27,9 @@ ci_enabled: true
 # H: mstatus.MPV and mstatus.GVA read back as zero after being written from M-mode
 #    even with misa.H set, so mret never enters VS/VU: a guest's ecall is reported
 #    as cause 9/8 instead of 10, and a hypervisor CSR access from VS raises an
-#    illegal instruction instead of a virtual instruction exception.
+#    illegal instruction instead of a virtual instruction exception. QEMU made both
+#    fields read-only in commit 18645f1957 ("target/riscv/csr.c: do not allow mstatus
+#    MPV/GVA writes", v11.1.0), which is what a test needs to write to enter a guest.
 exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"

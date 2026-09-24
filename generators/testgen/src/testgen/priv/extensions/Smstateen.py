@@ -624,7 +624,6 @@ def _generate_se0_controls_sstateen0(test_data: TestData, *, se0: int) -> list[s
     "Smstateen",
     required_extensions=["Smstateen"],
     march_extensions=["Smstateen"],
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_smstateen(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Smstateen state-enable extension testsuite."""

@@ -21,7 +21,6 @@ _MODES = ["S", "U"]  # supervisor, then user
     "ExceptionsZicboS",
     required_extensions=["S", ["Zicbom", "Zicboz", "Zicbop"]],
     march_extensions=["Zicbom", "Zicboz", "Zicbop"],
-    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_exceptionszicbos(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ExceptionsZicboS coverpoints."""

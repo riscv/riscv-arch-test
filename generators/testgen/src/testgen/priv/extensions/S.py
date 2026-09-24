@@ -388,7 +388,6 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
 @add_priv_test_generator(
     "S",
     required_extensions=["S"],
-    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_s(test_data: TestData) -> list[TestChunk]:
     """Generate tests for S supervisor-mode testsuite."""

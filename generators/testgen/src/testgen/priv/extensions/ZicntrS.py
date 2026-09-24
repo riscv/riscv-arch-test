@@ -20,7 +20,6 @@ covergroup = "ZicntrS_cg"
     "ZicntrS",
     required_extensions=["S", "Zicntr"],
     march_extensions=["Zicntr", "Zihpm"],
-    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_zicntrs(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZicntrS coverpoints"""

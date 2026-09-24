@@ -24,7 +24,6 @@ covergroup = "ZicntrSm_cg"
         "Zicntr",
     ],  # don't bother to generate if U is not supported, because it would be empty
     march_extensions=["Zicntr", "Zihpm"],
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_zicntrsm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZicntrSm coverpoints: the M-mode halves of the Zicntr counter-enable tests."""

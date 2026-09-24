@@ -849,7 +849,6 @@ def _make_all_entries_chunk(test_data: TestData) -> TestChunk:
 
 @add_priv_test_generator(
     "PMPSm",
-    extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Sm"],
     params=["NUM_PMP_ENTRIES: '>0'"],
 )
@@ -869,7 +868,6 @@ def make_pmpsm_base(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "PMPSm",
-    extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Sm"],
     params=["MXLEN: 64", "NUM_PMP_ENTRIES: '>0'"],
 )
@@ -882,7 +880,6 @@ def make_pmpsm_rv64(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "PMPSm",
-    extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_NA4_SUPPORTED: true"],
 )
@@ -892,7 +889,6 @@ def make_pmpsm_na4(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "PMPSm",
-    extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
 )
@@ -909,7 +905,6 @@ def make_pmpsm_napot(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "PMPSm",
-    extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true"],
 )

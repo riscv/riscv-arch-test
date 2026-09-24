@@ -59,7 +59,6 @@ def _generate_ssu64xl_tests(test_data: TestData) -> list[str]:
     "Ssu64xl",
     required_extensions=["S", "Ssu64xl"],
     march_extensions=["S"],
-    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_ssu64xl(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []

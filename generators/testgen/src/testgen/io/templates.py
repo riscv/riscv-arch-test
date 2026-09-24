@@ -64,9 +64,11 @@ def insert_header_template(
         # combine required_extensions and march_extensions for extra_defines
         all_extensions = list(dict.fromkeys(flat_ext_components + march_ext_components))
     else:
+        march_ext_components = []
         all_extensions = flat_ext_components
         march = generate_march_string(all_extensions, xlen)
-    all_defines = [*(extra_defines or []), *generate_defines_from_extensions(all_extensions)]
+    # Alternatives such as ["Sm", "U"] do not select a boot mode
+    all_defines = [*(extra_defines or []), *generate_defines_from_extensions(ext_components + march_ext_components)]
     if not EXPERIMENTAL_EXTENSIONS.isdisjoint(all_extensions):
         all_defines.append("#define RVTEST_EXPERIMENTAL")
     # Replace placeholders
@@ -318,13 +320,12 @@ def format_params(params: list[str], ext_components: list[str]) -> str:
 
 
 def generate_defines_from_extensions(ext_components: list[str]) -> list[str]:
-    """Generate extra #define statements from extension components."""
+    """Select the boot mode: M-mode if any Sm* extension is required, else S-mode for S/H/Ss*/Sv*/Sh*."""
     extra_defines: list[str] = []
 
-    # disable the following defines until booting to modes is implemented dh 7/1/26
-    # if any(ext in ext_components for ext in ["H", "S"]):
-    #     extra_defines.append("#define BOOT_TO_SMODE")
-    # elif "Sm" in ext_components:
-    #     extra_defines.append("#define BOOT_TO_MMODE")
+    if any(ext.startswith("Sm") for ext in ext_components):
+        extra_defines.append("#define BOOT_TO_MMODE")
+    elif any(ext in ("S", "H") or (ext.startswith(("Ss", "Sv", "Sh")) and ext != "Ssstrict") for ext in ext_components):
+        extra_defines.append("#define BOOT_TO_SMODE")
 
     return extra_defines

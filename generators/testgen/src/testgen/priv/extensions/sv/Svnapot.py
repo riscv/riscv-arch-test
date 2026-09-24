@@ -148,7 +148,6 @@ def _make_svnapot(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     "Svnapot",
     required_extensions=["Sv39", "Svnapot"],
     march_extensions=["Svnapot"],
-    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svnapot_sv39(test_data: TestData) -> list[TestChunk]:
     return _make_svnapot(test_data, SV39)
@@ -158,7 +157,6 @@ def make_svnapot_sv39(test_data: TestData) -> list[TestChunk]:
     "Svnapot",
     required_extensions=["Sv48", "Svnapot"],
     march_extensions=["Svnapot"],
-    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svnapot_sv48(test_data: TestData) -> list[TestChunk]:
     return _make_svnapot(test_data, SV48)
@@ -168,7 +166,6 @@ def make_svnapot_sv48(test_data: TestData) -> list[TestChunk]:
     "Svnapot",
     required_extensions=["Sv57", "Svnapot"],
     march_extensions=["Svnapot"],
-    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svnapot_sv57(test_data: TestData) -> list[TestChunk]:
     return _make_svnapot(test_data, SV57)

@@ -23,7 +23,6 @@ from testgen.priv.registry import add_priv_test_generator
 
 @add_priv_test_generator(
     "PMPZaamo",
-    extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zaamo", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'"],
 )

@@ -20,7 +20,6 @@ _CG = "ExceptionsZicboSm_cg"
     "ExceptionsZicboSm",
     required_extensions=["Sm", ["Zicbom", "Zicboz", "Zicbop"]],
     march_extensions=["Zicbom", "Zicboz", "Zicbop"],
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_exceptionszicbosm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ExceptionsZicboSm coverpoints."""

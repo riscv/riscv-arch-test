@@ -179,7 +179,6 @@ def _make_svsm(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     "SvSm",
     required_extensions=["Sm", "Sv32"],
     march_extensions=[],
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svsm_sv32(test_data: TestData) -> list[TestChunk]:
     return _make_svsm(test_data, SV32)
@@ -189,7 +188,6 @@ def make_svsm_sv32(test_data: TestData) -> list[TestChunk]:
     "SvSm",
     required_extensions=["Sm", "Sv39"],
     march_extensions=[],
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svsm_sv39(test_data: TestData) -> list[TestChunk]:
     return _make_svsm(test_data, SV39)
@@ -199,7 +197,6 @@ def make_svsm_sv39(test_data: TestData) -> list[TestChunk]:
     "SvSm",
     required_extensions=["Sm", "Sv48"],
     march_extensions=[],
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svsm_sv48(test_data: TestData) -> list[TestChunk]:
     return _make_svsm(test_data, SV48)
@@ -209,7 +206,6 @@ def make_svsm_sv48(test_data: TestData) -> list[TestChunk]:
     "SvSm",
     required_extensions=["Sm", "Sv57"],
     march_extensions=[],
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svsm_sv57(test_data: TestData) -> list[TestChunk]:
     return _make_svsm(test_data, SV57)
@@ -221,7 +217,6 @@ def make_svsm_sv57(test_data: TestData) -> list[TestChunk]:
     "SvSm",
     required_extensions=["Sm", "Sv32", "NORUN"],
     march_extensions=[],
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svsm_sv32_sbe(test_data: TestData) -> list[TestChunk]:
     return _t_mstatus_sbe(test_data, SV32)
@@ -233,7 +228,6 @@ def make_svsm_sv32_sbe(test_data: TestData) -> list[TestChunk]:
     "SvSm",
     required_extensions=["Sm", "Sv39", "NORUN"],
     march_extensions=[],
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svsm_sv39_sbe(test_data: TestData) -> list[TestChunk]:
     return _t_mstatus_sbe(test_data, SV39)
@@ -245,7 +239,6 @@ def make_svsm_sv39_sbe(test_data: TestData) -> list[TestChunk]:
     "SvSm",
     required_extensions=["Sm", "Sv48", "NORUN"],
     march_extensions=[],
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svsm_sv48_sbe(test_data: TestData) -> list[TestChunk]:
     return _t_mstatus_sbe(test_data, SV48)
@@ -257,7 +250,6 @@ def make_svsm_sv48_sbe(test_data: TestData) -> list[TestChunk]:
     "SvSm",
     required_extensions=["Sm", "Sv57", "NORUN"],
     march_extensions=[],
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svsm_sv57_sbe(test_data: TestData) -> list[TestChunk]:
     return _t_mstatus_sbe(test_data, SV57)
@@ -266,7 +258,6 @@ def make_svsm_sv57_sbe(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "SvSm",
     required_extensions=["Sm", "S"],
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svsm_mstatus_tvm(test_data: TestData) -> list[TestChunk]:
     chunk = test_data.begin_test_chunk("sv_mstatus_tvm_test")

@@ -339,8 +339,6 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
     "ZicsrF",
     required_extensions=["Zicsr", "F"],
     march_extensions=["F", "D", "Zfh"],
-    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_zicsrf(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZicsrF unprivileged floating-point fcsr extension."""

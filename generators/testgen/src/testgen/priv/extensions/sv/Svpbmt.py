@@ -117,7 +117,6 @@ def _make_svpbmt(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     "Svpbmt",
     required_extensions=["Sv39", "Svpbmt"],
     march_extensions=["Svpbmt"],
-    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svpbmt_sv39(test_data: TestData) -> list[TestChunk]:
     return _make_svpbmt(test_data, SV39)
@@ -127,7 +126,6 @@ def make_svpbmt_sv39(test_data: TestData) -> list[TestChunk]:
     "Svpbmt",
     required_extensions=["Sv48", "Svpbmt"],
     march_extensions=["Svpbmt"],
-    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svpbmt_sv48(test_data: TestData) -> list[TestChunk]:
     return _make_svpbmt(test_data, SV48)
@@ -137,7 +135,6 @@ def make_svpbmt_sv48(test_data: TestData) -> list[TestChunk]:
     "Svpbmt",
     required_extensions=["Sv57", "Svpbmt"],
     march_extensions=["Svpbmt"],
-    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svpbmt_sv57(test_data: TestData) -> list[TestChunk]:
     return _make_svpbmt(test_data, SV57)

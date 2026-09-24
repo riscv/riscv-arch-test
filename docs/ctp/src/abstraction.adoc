@@ -23,7 +23,7 @@ Fundamental design considerations are:
 
 The boot sequence boots to the lowest available privilege mode sufficient to run the tests.  Tests may define the BOOT_TO_MMODE or BOOT_TO_SMODE symbols to force booting to M-mode or S-mode, respectively, if the DUT supports those modes.  If neither symbol is defined, the boot sequence boots to U-mode if supported, and M-mode (possibly custom) otherwise. Note that hypervisor tests should define BOOT_TO_SMODE to boot into S (effectively HS)-mode and then are responsible for setting up and switching to VS/VU mode if desired.
 
-In the ACT framework, BOOT_TO_MMODE is defined when REQUIRED_EXTENSIONS contains Sm.  BOOT_TO_SMODE is defined when REQUIRED_EXTENSIONS contains S. Otherwise, neither symbol is defined.  Hence, privileged tests that specify Sm, S, or U will boot into these modes, respectively.  Unprivileged tests run in U-mode if supported, and in M-mode (possibly custom) otherwise.  Another consequence is that if the UDB contains STANDARD_SM_SUPPORTED, then the trap handler is enabled even for unprivileged tests, helping produce graceful error messages for illegal instructions.  However, a simple core such as an RV32I microcontroller may not enable STANDARD_SM_SUPPORTED and will not set up a trap handler.
+In the ACT framework, the test generator defines BOOT_TO_MMODE when the extensions a test requires or compiles with include Sm or an Sm* extension.  Otherwise, it defines BOOT_TO_SMODE when they include S, H, or an Ss*, Sv*, or Sh* extension. Otherwise, neither symbol is defined.  Alternatives such as `[Sm, U]` in REQUIRED_EXTENSIONS do not select a mode.  Hence, privileged tests that specify Sm, S, or U will boot into these modes, respectively.  Unprivileged tests run in U-mode if supported, and in M-mode (possibly custom) otherwise.  Another consequence is that if the UDB contains STANDARD_SM_SUPPORTED, then the trap handler is enabled even for unprivileged tests, helping produce graceful error messages for illegal instructions.  However, a simple core such as an RV32I microcontroller may not enable STANDARD_SM_SUPPORTED and will not set up a trap handler.
 
 === Controlling Parameters
 
@@ -332,9 +332,3 @@ remove mention of RVTEST_VECTOR  from vector code
 Test generator:
     Any test that lists Sm in REQUIRED_EXTENSIONS adds STANDARD_SM_SUPPORTED as a parameter (outdated; as of 9/16/26 it adds BOOT_TO_MMODE)
     DONE *** edit generators/testgen/src/testgen/io/templates.py/generate_defines_from_extensions to define these boot_TO_*.  DONE Drop RVTEST_FP and tweak where it was used (hopefully removed)
-
-    Restore this code when fully transitioned to S-SBI
-        if any(ext in ext_components for ext in ["H", "S"]):
-            extra_defines.append("#define BOOT_TO_SMODE")
-        elif any(ext in ext_components for ext in ["Sm"]):
-            extra_defines.append("#define BOOT_TO_MMODE")

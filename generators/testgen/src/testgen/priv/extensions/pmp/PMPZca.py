@@ -283,7 +283,6 @@ def _make_zc_chunk(test_data: TestData, subset: str) -> TestChunk:
 
 @add_priv_test_generator(
     "PMPZca",
-    extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zca", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'"],
 )
@@ -293,7 +292,6 @@ def make_pmpzca_off(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "PMPZca",
-    extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zca", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_NA4_SUPPORTED: true"],
 )
@@ -306,7 +304,6 @@ def make_pmpzca_na4(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "PMPZca",
-    extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zca", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
 )
@@ -319,7 +316,6 @@ def make_pmpzca_napot(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "PMPZca",
-    extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zca", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'"],
 )
@@ -329,7 +325,6 @@ def make_pmpzca_legal(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "PMPZca",
-    extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zca", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true"],
 )
@@ -342,7 +337,6 @@ def make_pmpzca_tor(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "PMPZca",
-    extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zcb", "Sm"],
     march_extensions=["Zca", "Zcb"],
     params=["NUM_PMP_ENTRIES: '>0'"],
@@ -353,7 +347,6 @@ def make_pmpzca_zcb(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "PMPZca",
-    extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zcd", "Sm"],
     march_extensions=["Zca", "Zcd"],
     params=["NUM_PMP_ENTRIES: '>0'"],
@@ -364,7 +357,6 @@ def make_pmpzca_zcd(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "PMPZca",
-    extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zcf", "Sm"],
     march_extensions=["Zca", "Zcf"],
     params=["MXLEN: 32", "NUM_PMP_ENTRIES: '>0'"],

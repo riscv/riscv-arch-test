@@ -8,7 +8,7 @@
 
 """Generate direct virtual-memory access sequences."""
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 
 from testgen.asm.helpers import write_sigupd
 from testgen.data.state import TestData
@@ -41,6 +41,13 @@ def virtual_address(
     ]
 
 
+def mode_switch(mode: str, driver_mode: str | None) -> tuple[list[str], list[str]]:
+    """Return the T-SBI calls that enter ``mode`` from ``driver_mode`` and return."""
+    if driver_mode is None or mode == driver_mode:
+        return [], []
+    return [f"RVTEST_TSBI_GOTO_{mode.upper()}"], [f"RVTEST_TSBI_GOTO_{driver_mode.upper()}"]
+
+
 def add_rwx_test(
     test_data: TestData,
     sv: SvMode,
@@ -49,39 +56,51 @@ def add_rwx_test(
     level: int,
     name: str,
     *,
-    direct_address: bool = False,
-    enter: Sequence[str] = (),
-    leave: Sequence[str] = (),
-    setup: tuple[str, ...] = (),
-    cleanup: tuple[str, ...] = (),
-    reset_setup_after_store: bool = False,
+    driver_mode: str | None = None,
+    address: Sequence[str] | None = None,
+    setup: Sequence[str] = (),
+    cleanup: Sequence[str] = (),
+    repeat_setup: bool = False,
     physical_fetch: bool = False,
     include_exec: bool = True,
+    coverpoints: Mapping[str, str] | None = None,
+    covergroup: str | None = None,
 ) -> list[str]:
-    """Add native records and code for one virtual-memory access test."""
+    """Add native records and code for one virtual-memory access test.
+
+    ``address`` replaces the default sequence that builds ``va`` in a5. ``repeat_setup`` reruns ``setup`` after
+    the store and the load, because a trap taken in M-mode changes mstatus.MPP.
+    """
     assert test_data.test_chunk is not None
-    coverpoint = f"cp_{test_data.test_chunk.split_name}"
+    default_coverpoint = f"cp_{test_data.test_chunk.split_name}"
     operations = ("store", "load", "exec") if include_exec else ("store", "load")
     labels = {
-        operation: test_data.add_testcase(f"{name}_{operation}", coverpoint, test_data.testsuite).removesuffix(":")
+        operation: test_data.add_testcase(
+            f"{name}_{operation}",
+            (coverpoints or {}).get(operation, default_coverpoint),
+            covergroup or test_data.testsuite,
+        ).removesuffix(":")
         for operation in operations
     }
+    enter, leave = mode_switch(mode, driver_mode)
+    repeated = setup if repeat_setup else ()
     lines = [
-        *([f"LI(a5, {va})"] if direct_address else virtual_address(sv, va, level)),
-        *setup,
+        *(virtual_address(sv, va, level) if address is None else address),
         *enter,
+        *setup,
         "addi a2, a2, 16",
         "",
         "// Store",
         f"{labels['store']}:",
         "sw a2, 20(a5)",
         "nop",
-        *([*setup] if reset_setup_after_store else []),
+        *repeated,
         "",
         "// Load",
         f"{labels['load']}:",
         "lw a3, 20(a5)",
         "nop",
+        *repeated,
     ]
     if include_exec:
         lines.extend(
@@ -94,10 +113,10 @@ def add_rwx_test(
                 "nop",
             ]
         )
-    if leave:
-        lines.extend(["", *leave])
     if cleanup:
         lines.extend(["", *cleanup])
+    if leave:
+        lines.extend(["", *leave])
     lines.extend(
         ["", write_sigupd(12, test_data, label=labels["store"]), write_sigupd(13, test_data, label=labels["load"])]
     )

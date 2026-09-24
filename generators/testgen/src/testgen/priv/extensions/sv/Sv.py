@@ -52,7 +52,10 @@ def level_header(sv: SvMode, level: int) -> list[str]:
     return ["", f"// {sv.page_names[level]} page at level {level}", ""]
 
 
-def _mstatus_setup(kind: str) -> tuple[str, ...]:
+MPRV_CLEANUP = ("LI(t0, MSTATUS_MPRV)", "csrc mstatus, t0")
+
+
+def mstatus_setup(kind: str) -> tuple[str, ...]:
     if kind == "mprv_s":
         return (
             "LI(t0, MSTATUS_MPRV)",
@@ -65,9 +68,9 @@ def _mstatus_setup(kind: str) -> tuple[str, ...]:
     if kind == "mprv_u":
         return ("LI(t0, MSTATUS_MPRV)", "csrs mstatus, t0", "LI(t0, 0x1800)", "csrc mstatus, t0")
     if kind == "mprv_sum_set":
-        return (*_mstatus_setup("mprv_s"), "LI(t0, MSTATUS_SUM)", "csrs mstatus, t0")
+        return (*mstatus_setup("mprv_s"), "LI(t0, MSTATUS_SUM)", "csrs mstatus, t0")
     if kind == "mprv_sum_unset":
-        return (*_mstatus_setup("mprv_s"), "LI(t0, MSTATUS_SUM)", "csrc mstatus, t0")
+        return (*mstatus_setup("mprv_s"), "LI(t0, MSTATUS_SUM)", "csrc mstatus, t0")
     raise ValueError(f"Unknown mstatus setup: {kind}")
 
 
@@ -141,32 +144,12 @@ def emit_access(
 ) -> list[str]:
     if style in ("rw_byte", "rw_word", "x_only"):
         return _extreme_access(test_data, sv, name, va, mode, style, driver_mode)
-    direct_address = style == "direct"
     setup: tuple[str, ...] = ()
     cleanup: tuple[str, ...] = ()
-    enter_lower_mode = True
-    physical_fetch = False
-    include_exec = True
-    reset_setup_after_store = False
-    if style == "mprv_s":
-        setup, enter_lower_mode, physical_fetch = _mstatus_setup("mprv_s"), False, True
-    elif style == "mprv_u":
-        setup, enter_lower_mode, physical_fetch = _mstatus_setup("mprv_u"), False, True
-    elif style == "mprv_sum_set":
-        setup, enter_lower_mode, physical_fetch = _mstatus_setup("mprv_sum_set"), False, True
-    elif style == "mprv_sum_unset":
-        setup, enter_lower_mode, physical_fetch, reset_setup_after_store = (
-            _mstatus_setup("mprv_sum_unset"),
-            False,
-            True,
-            True,
-        )
+    if style.startswith("mprv_"):
+        setup, cleanup = mstatus_setup(style), MPRV_CLEANUP
     elif style == "sum":
         setup = ("LI(t0, MSTATUS_SUM)", "csrs sstatus, t0")
-    elif style == "sl":
-        include_exec = False
-    if not enter_lower_mode:
-        cleanup = ("LI(t0, MSTATUS_MPRV)", "csrc mstatus, t0")
     return add_rwx_test(
         test_data,
         sv,
@@ -174,14 +157,13 @@ def emit_access(
         va,
         level,
         name,
-        direct_address=direct_address,
-        enter=([] if mode == driver_mode else [f"RVTEST_TSBI_GOTO_{mode.upper()}"]) if enter_lower_mode else (),
-        leave=([] if mode == driver_mode else [f"RVTEST_TSBI_GOTO_{driver_mode.upper()}"]) if enter_lower_mode else (),
+        driver_mode=driver_mode,
+        address=[f"LI(a5, {va})"] if style == "direct" else None,
         setup=setup,
         cleanup=cleanup,
-        reset_setup_after_store=reset_setup_after_store,
-        physical_fetch=physical_fetch,
-        include_exec=include_exec,
+        repeat_setup=style == "mprv_sum_unset",
+        physical_fetch=style.startswith("mprv_"),
+        include_exec=style != "sl",
     ) + (_add_rsw_readback(test_data, sv, level, name) if style == "rsw" else [])
 
 

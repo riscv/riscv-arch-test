@@ -8,6 +8,8 @@
 
 """Generate direct virtual-memory access sequences."""
 
+from collections.abc import Sequence
+
 from testgen.asm.helpers import write_sigupd
 from testgen.data.state import TestData
 from testgen.priv.extensions.sv.page_tables import SvMode
@@ -48,7 +50,8 @@ def add_rwx_test(
     name: str,
     *,
     direct_address: bool = False,
-    enter_lower_mode: bool = True,
+    enter: Sequence[str] = (),
+    leave: Sequence[str] = (),
     setup: tuple[str, ...] = (),
     cleanup: tuple[str, ...] = (),
     reset_setup_after_store: bool = False,
@@ -66,7 +69,7 @@ def add_rwx_test(
     lines = [
         *([f"LI(a5, {va})"] if direct_address else virtual_address(sv, va, level)),
         *setup,
-        *([f"RVTEST_GOTO_LOWER_MODE {mode}"] if enter_lower_mode else []),
+        *enter,
         "addi a2, a2, 16",
         "",
         "// Store",
@@ -91,8 +94,8 @@ def add_rwx_test(
                 "nop",
             ]
         )
-    if enter_lower_mode:
-        lines.extend(["", "RVTEST_GOTO_MMODE"])
+    if leave:
+        lines.extend(["", *leave])
     if cleanup:
         lines.extend(["", *cleanup])
     lines.extend(

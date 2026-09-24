@@ -6,7 +6,9 @@
 ci_enabled: true
 # Smstateen will be added back once sail starts supporting Sscsrind too
 # Sdtrig* not yet supported in Sail reference
-exclude_extensions: "Smstateen,SdtrigSm,SdtrigS,SdtrigU"
+# ZicfissU: Spike treats every shadow stack access as a store, so SSPOPCHK from a shadow stack page
+# with pte.D=0 raises a store/AMO page fault under Svade instead of reading it
+exclude_extensions: "Smstateen,SdtrigSm,SdtrigS,SdtrigU,ZicfissU"
 install_script: ".github/scripts/install-spike.sh"
 apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"
 shards: 1

@@ -18,7 +18,7 @@
 #define SIGUPD_COUNT 13
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 #define TRAP_SIGUPD_COUNT 30
 
 // Include framework macros
@@ -35,7 +35,6 @@ RVTEST_BEGIN
 
 
 main:
-  LI(a2, 0x800) // Test signature initialization
 
 // Virtual addresses for code and test regions
 
@@ -49,12 +48,17 @@ main:
   SUPERPAGE_PTE_SETUP_SV39(rvtest_code_begin, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL2)
   sfence.vma
 
-// Set up the code-region save area.
-  csrr a0, mscratch
+// The boot tables identity map the test image, but that mapping is not user
+// accessible, so the code is mapped again at va_rvtest_code_begin. Registering
+// that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
+// to can fetch from.
+  LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL2)
 
   SATP_SETUP_RV64(sv39) // Enable address translation.
   sfence.vma
+
+  LI(a2, 0x800) // Test signature initialization
 
 
 // 4KB page at level 0
@@ -66,7 +70,7 @@ main:
   sfence.vma
 
   LI(a5, va_data)
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -84,7 +88,7 @@ Sv_cp_sv39_nleaf_pte_level0_Umode_test1_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv39_nleaf_pte_level0_Umode_test1_store, Sv_cp_sv39_nleaf_pte_level0_Umode_test1_store_str)
@@ -124,9 +128,9 @@ rvtest_slvl1_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_cp_sv39_nleaf_pte_level0_Umode_test1_store_str: .string "\"test: 178; cg: Sv; cp: cp_sv39_nleaf_pte_level0_Umode; bin: test1_store\""
-Sv_cp_sv39_nleaf_pte_level0_Umode_test1_load_str: .string "\"test: 179; cg: Sv; cp: cp_sv39_nleaf_pte_level0_Umode; bin: test1_load\""
-Sv_cp_sv39_nleaf_pte_level0_Umode_test1_exec_str: .string "\"test: 180; cg: Sv; cp: cp_sv39_nleaf_pte_level0_Umode; bin: test1_exec\""
+Sv_cp_sv39_nleaf_pte_level0_Umode_test1_store_str: .string "\"test: 160; cg: Sv; cp: cp_sv39_nleaf_pte_level0_Umode; bin: test1_store\""
+Sv_cp_sv39_nleaf_pte_level0_Umode_test1_load_str: .string "\"test: 161; cg: Sv; cp: cp_sv39_nleaf_pte_level0_Umode; bin: test1_load\""
+Sv_cp_sv39_nleaf_pte_level0_Umode_test1_exec_str: .string "\"test: 162; cg: Sv; cp: cp_sv39_nleaf_pte_level0_Umode; bin: test1_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -4,7 +4,7 @@
 
 # SsstrictSm, unknown
 # Smstateen Sail does not yet support 1P13 bit
-# Sdtrig* not yet implemented in Sail
+# Sdtrig* not yet implemented in Sail (https://github.com/riscv/sail-riscv/issues/222)
 ci_enabled: true
 exclude_extensions: "SsstrictSm,Smstateen,SdtrigSm,SdtrigS,SdtrigU"
 exclude_configs:

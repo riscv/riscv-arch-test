@@ -354,6 +354,34 @@
   // Note: _ms and _su are shared implementations
   // used for multiple privilege modes
 
+  // A memory-mapped write reaches mip only eventually. After clearing an
+  // interrupt source, poll mip until the pending bit reads 0, for at most
+  // RVMODEL_INTERRUPT_LATENCY iterations, so the interrupt is not taken again
+  // when the test next enables it. The _SU flavor reads mip through T-SBI.
+  .macro RVTEST_WAIT_MIP_CLEAR_M mask
+    LI(a2, RVMODEL_INTERRUPT_LATENCY)
+    1:
+    csrr a0, mip
+    andi a0, a0, \mask
+    beqz a0, 2f // pending bit is clear
+    beqz a2, 2f // latency exhausted
+    addi a2, a2, -1
+    j 1b
+    2:
+  .endm
+
+  .macro RVTEST_WAIT_MIP_CLEAR_SU mask
+    LI(a2, RVMODEL_INTERRUPT_LATENCY)
+    1:
+    RVTEST_TSBI_CSR_READ(CSR_MIP) // a0 = mip; a2 is preserved
+    andi a0, a0, \mask
+    beqz a0, 2f // pending bit is clear
+    beqz a2, 2f // latency exhausted
+    addi a2, a2, -1
+    j 1b
+    2:
+  .endm
+
   // Flavors to run from M-mode
 
   #ifdef STANDARD_SM_SUPPORTED
@@ -402,6 +430,7 @@
         LA(a1, RVMODEL_MTIMECMP_ADDRESS)
         li a2, -1 // all 1s
         sw a2, 4(a1)      // don't bother with lower bits, which stay at 0
+        RVTEST_WAIT_MIP_CLEAR_M 0x80 // mip.MTIP
       #endif
       ret
 
@@ -419,6 +448,7 @@
       #ifdef RVMODEL_MSIP_ADDRESS
         LA(a1, RVMODEL_MSIP_ADDRESS)
         sw zero, 0(a1) // normal way to clear MSI is to write a 0 to MSIP
+        RVTEST_WAIT_MIP_CLEAR_M 0x8 // mip.MSIP
       #elif defined(RVMODEL_CLR_MSW_INT_M)
         RVMODEL_CLR_MSW_INT_M(a0, a1) // if normal way isn't supported, use platform-specific method
       #endif
@@ -589,6 +619,7 @@
         LA(a1, RVMODEL_MTIMECMP_ADDRESS)
         li a2, -1 // all 1s
         RVTEST_TSBI_SWP4 // sw a2, 4(a1)      // don't bother with lower bits, which stay at 0
+        RVTEST_WAIT_MIP_CLEAR_SU 0x80 // mip.MTIP
       #endif
       ret
 
@@ -607,6 +638,7 @@
         LA(a1, RVMODEL_MSIP_ADDRESS)
         li a2, 0
         RVTEST_TSBI_SW // sw a2, 0(a1) // normal way to clear MSI is to write a 0 to MSIP
+        RVTEST_WAIT_MIP_CLEAR_SU 0x8 // mip.MSIP
       #elif defined(RVMODEL_CLR_MSW_INT)
         RVMODEL_CLR_MSW_INT(a0, a1) // if normal way isn't supported, use platform-specific method
       #endif

@@ -322,9 +322,3 @@ The following macros are defined for developer convenience to access the T-SBI a
 * RVTEST_TSBI_SW: performs `sw a2, 0(a1)` with machine-mode privileges.  Used to write memory-mapped I/O such as `mtimecmp` or `msip`.
 * RVTEST_TSBI_SWP4: performs `sw a2, 4(a1)` with machine-mode privileges.  Used to write memory-mapped I/O such as `mtimecmph`.
 * RVTEST_TSBI_SD: performs `sd a2, 0(a1)` with machine-mode privileges.  Used to write memory-mapped I/O such as `mtimecmp` or `msip`. RV64 only.
-
-TODO
-
-testgen/src/testgen/io/templates.py format_params needs to accept STANDARD_SM_SUPPORTED parameter when available.  How to deal with UDB? (Released in UDB 4/29/26).
-
-remove mention of RVTEST_VECTOR  from vector code

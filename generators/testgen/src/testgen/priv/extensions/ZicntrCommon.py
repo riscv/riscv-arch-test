@@ -45,8 +45,11 @@ def _access_counter(
             *access(f"{name}h", "h"),
             "#endif",
         ]
+    # Access only the hpmcounters the configuration implements: an unimplemented counter may trap or
+    # return a constant (norm:hpm_unimplemented_counter_access), so no reference signature fits both.
+    # UDB_HPM_COUNTER_EN_<n> comes from the HPM_COUNTER_EN parameter of the UDB config.
     return [
-        "#ifdef ZIHPM_SUPPORTED",
+        f"#if defined(ZIHPM_SUPPORTED) && defined(UDB_HPM_COUNTER_EN_{i})",
         *access(f"hpmcounter{i}", ""),
         "#if __riscv_xlen == 32",
         *access(f"hpmcounter{i}h", "h"),

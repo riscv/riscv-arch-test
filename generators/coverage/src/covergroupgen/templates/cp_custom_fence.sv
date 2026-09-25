@@ -15,3 +15,12 @@
         bins fence_hint3      = {32'h0200000f}; // fence with rd = x0, rs1 = x0, fm = 0, pred != W, succ = 0 is a hint
         bins fence_tso_r_r    = {32'h8110000f}; // fence.tso with r, r should behave as fence
     }
+
+    // Every pred x succ combination with fm = 0 and rd = rs1 = x0.
+    // Reserved settings execute as a fence; pred = 0 or succ = 0 are HINTs (pred = W, succ = 0 is PAUSE).
+    cp_custom_fence_pred_succ : coverpoint ins.current.insn[27:20] iff (ins.current.insn[31:28] == 4'b0000 &
+                                                                        ins.current.insn[19:15] == 5'b00000 &
+                                                                        ins.current.insn[11:7] == 5'b00000 &
+                                                                        ins.trap == 0) {
+        bins pred_succ[] = {[0:255]}; // insn[27:24] = pred (IORW), insn[23:20] = succ (IORW)
+    }

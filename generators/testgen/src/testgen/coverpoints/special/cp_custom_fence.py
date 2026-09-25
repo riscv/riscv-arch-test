@@ -45,6 +45,29 @@ def add_fence_tests(cases: list[tuple[str, str, bool]], test_data: TestData) -> 
     return lines
 
 
+def fence_set(bits: int) -> str:
+    """Return the IORW mnemonic for a 4-bit FENCE predecessor or successor set."""
+    return "".join(c for c, b in zip("iorw", (8, 4, 2, 1)) if bits & b) or "0"
+
+
+def add_pred_succ_tests(test_data: TestData) -> list[str]:
+    """Add one FENCE with fm = 0 and rd = rs1 = x0 for every pred x succ combination.
+
+    Reserved settings execute as a FENCE, and pred = 0 or succ = 0 are HINTs, so none may trap.
+    Encoded as .word because the assembler rejects empty sets.
+    """
+    lines = ["# Testcase cp_custom_fence_pred_succ (all pred x succ with fm = 0, rd = rs1 = x0)"]
+    for pred_succ in range(256):
+        pred, succ = pred_succ >> 4, pred_succ & 0xF
+        lines.extend(
+            [
+                test_data.add_testcase(f"pred_succ[{pred_succ}]", "cp_custom_fence_pred_succ"),
+                f".word {(pred_succ << 20) | 0x0F:#010x}    # pred = {fence_set(pred)}, succ = {fence_set(succ)}",
+            ]
+        )
+    return lines
+
+
 @add_coverpoint_generator("cp_custom_fence")
 def make_custom_fence(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for fence coverpoints."""
@@ -86,5 +109,9 @@ def make_custom_fence(instr_name: str, instr_type: str, coverpoint: str, test_da
     tc.code.extend(add_fence_tests(HINT_FENCES, test_data))
 
     test_data.int_regs.return_registers([1, 2])
+    fixed_chunk = test_data.end_test_chunk()
 
-    return [test_data.end_test_chunk()]
+    tc = test_data.begin_test_chunk()
+    tc.code.extend(add_pred_succ_tests(test_data))
+
+    return [fixed_chunk, test_data.end_test_chunk()]

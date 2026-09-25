@@ -124,13 +124,13 @@ covergroup SsstrictU_instr_cg with function sample(ins_t ins);
     cp_privileged_rd:     cross priv_mode_u, privileged_rd;
     cp_privileged_rs2:    cross priv_mode_u, privileged_rs2;
     cp_reserved:          cross priv_mode_u, reserved;
-    cp_upperreg_rs1:      cross priv_mode_u, upperreg_rs1;
-    cp_upperreg_rs2:      cross priv_mode_u, upperreg_rs2;
-    cp_upperreg_rd:       cross priv_mode_u, upperreg_rd;
-    cp_upperreg_imm_rd:   cross priv_mode_u, upperreg_imm_rd;
-    cp_upperreg_imm_rs1:  cross priv_mode_u, upperreg_imm_rs1;
-    cp_upperreg_fmv_rs1 : cross priv_mode_u, upperreg_fmv_rs1;
-    cp_upperreg_fmv_rd :  cross priv_mode_u, upperreg_fmv_rd;
+    cp_upperreg_rs1:      cross priv_mode_u, upper_reg_instrs, rs1_16_31, rd_1_15, rs2_1_15;
+    cp_upperreg_rs2:      cross priv_mode_u, upper_reg_instrs, rs2_16_31, rs1_1_15, rd_1_15;
+    cp_upperreg_rd:       cross priv_mode_u, upper_reg_instrs, rd_16_31, rs1_1_15, rs2_1_15;
+    cp_upperreg_imm_rd:   cross priv_mode_u, upper_reg_addi, imm_0s_1s, rd_16_31, rs1_1_15;
+    cp_upperreg_imm_rs1:  cross priv_mode_u, upper_reg_addi, imm_0s_1s, rs1_16_31, rd_1_15;
+    cp_upperreg_fmv_rs1 : cross priv_mode_u, upper_reg_fmv, rs1_16_31, rd_1_15;
+    cp_upperreg_fmv_rd :  cross priv_mode_u, upper_reg_fmv, rd_16_31, rs1_1_15;
     cp_amocas_odd :       cross priv_mode_u, amocas_odd;
 
     // ── Vector coverpoints crossed with priv_mode_u ──────────────────

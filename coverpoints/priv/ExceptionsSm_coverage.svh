@@ -183,12 +183,12 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
             bins aligned    = {2'b00};
             bins misaligned = {2'b10};
         }
-        `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
+        `ifdef UDB_MXLEN_64 // RV64 physical addresses have 56 bits; an RV32 address zero-extends into 34
             i_phys_address_nonexistent: coverpoint ({{ins.current.imm + ins.current.rs1_val}[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
                 // auto fill 1/0 for the physical address being valid
             }
         `else
-            i_phys_address_nonexistent: coverpoint ({{ins.current.imm + ins.current.rs1_val}[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            i_phys_address_nonexistent: coverpoint ({{ins.current.imm + ins.current.rs1_val}[31:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
                 // auto fill 1/0 for the physical address being valid
             }
         `endif

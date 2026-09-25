@@ -228,7 +228,7 @@ covergroup PMPU_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
     wildcard bins napot_lwxr_0111 = {54'b00011111????????????????????????????????????????_?????1};
   }
 
-  `ifdef UDB_PMP_GRANULARITY_2
+  `ifdef UDB_PMP_NA4_SUPPORTED
     // pmpcfg_i.L = 0, pmpcfg_i.A = NA4, all legal pmpcfg_i.XWR, pmpaddr_i = `NON_STANDARD_REGION
     cfg_A_na4: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
       wildcard bins na4_lwxr_0000 = {54'b????????????????????????????????????????00010000_100000};
@@ -265,7 +265,7 @@ covergroup PMPU_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
   cp_cfg_A_napot_lw: cross priv_mode_u, cfg_A_napot, read_instr_lw, addr_offset_napot ;
   cp_cfg_A_napot_sw: cross priv_mode_u, cfg_A_napot, write_instr_sw, addr_offset_napot ;
 
-  `ifdef UDB_PMP_GRANULARITY_2
+  `ifdef UDB_PMP_NA4_SUPPORTED
     // Access at start of address, that address - 4, just beyond top of the region.
     cp_cfg_A_na4_jalr: cross priv_mode_u, cfg_A_na4, exec_instr, addr_offset_na4 ;
     cp_cfg_A_na4_lw: cross priv_mode_u, cfg_A_na4, read_instr_lw, addr_offset_na4 ;

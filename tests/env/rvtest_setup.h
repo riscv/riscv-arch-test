@@ -1061,11 +1061,12 @@
         #endif
       #endif
 
-      // Enable all performance counters if they exist
-      // This is reserved if mcountinhibit is not implemented, and might trap or have unspecified behavior
-      //   *** need to define a UDB parameter MCOUNTINHIBIT_IMPLEMENTED to determine whether mcountinhibit is implemented
-      //   see https://github.com/riscv/riscv-isa-manual/issues/2964
-      csrw mcountinhibit, zero
+      // Enable all performance counters if they exist.
+      // mcountinhibit is optional and accessing the CSR is reserved
+      // if it is not implemented.
+      #ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
+        csrw mcountinhibit, zero
+      #endif
 
       // Initialize counter event selectors to 0.  They must be implemented.
       csrw mhpmevent3, zero

@@ -1,47 +1,67 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  - name: Svinval_split_fine_grained
-    coverpoint: [""]
-
+  # However, unlike SFENCE.VMA, SINVAL.VMA instructions are only ordered with respect to
+  # SFENCE.VMA, SFENCE.W.INVAL, and SFENCE.INVAL.IR instructions as defined below.
   - name: Svinval_sinval_vma_invalidates_same_as_sfence_vma
-    coverpoint: [""]
+    coverpoint: ["Svinval_cg/cr_svinival"]
 
+  # The SFENCE.INVAL.IR instruction guarantees that any previous SINVAL.VMA instructions
+  # executed by the current hart are ordered before subsequent implicit references by
+  # that hart to the memory-management data structures.
   - name: Svinval_sfence_w_inval_orders_before_sinval_vma
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Svinval_cg/cr_svinival",
+        "ordering is not observable in single-hart signature tests",
+      ]
 
+  # the values of rs1 and rs2 for the SFENCE.VMA are the same as those used in the
+  # SINVAL.VMA,
   - name: Svinval_sequence_rs1_rs2
-    coverpoint: [""]
+    coverpoint: ["Svinval_cg/cr_svinival", "TODO: rs1/rs2 other than x0"]
 
-  - name: Svinval_sequence_reads_writes_before
-    coverpoint: [""]
+  # reads and writes prior to the SFENCE.W.INVAL are considered to be those prior to the
+  # SFENCE.VMA,
+  - names:
+      [
+        Svinval_sequence_reads_writes_before,
+        Svinval_sequence_reads_writes_after,
+      ]
+    coverpoint:
+      ["Not tested: ordering is not observable in single-hart signature tests"]
 
-  - name: Svinval_sequence_reads_writes_after
-    coverpoint: [""]
-
-  - name: Svinval_hinval_vvma_gvma
-    coverpoint: [""]
-
-  - name: Svinval_hinval_gvma_uses_vmid
-    coverpoint: [""]
-
+  # In particular, an attempt to execute any of these instructions in U-mode always
+  # raises an illegal-instruction exception.
   - name: Svinval_illegal_instruction_u_mode
-    coverpoint: [""]
+    coverpoint: ["Svinval_cg/cr_svinival"]
 
-  - name: Svinval_illegal_instruction_tvm
-    coverpoint: [""]
-
-  - name: Svinval_virtual_instruction_vu_vs
-    coverpoint: [""]
-
-  - name: Svinval_virtual_instruction_vtvms
-    coverpoint: [""]
-
+  # raises an illegal-instruction exception.
   - name: Svinval_sfence_w_inval_inval_u_mode
-    coverpoint: [""]
+    coverpoint: ["Svinval_cg/cr_svinival"]
 
-  - name: Svinval_sfence_w_inval_inval_vu_mode
-    coverpoint: [""]
-
+  # SFENCE.W.INVAL and SFENCE.INVAL.IR are unaffected by the mstatus.TVM and
+  # hstatus.VTVM fields and hence are always permitted in S-mode and VS-mode.
   - name: Svinval_sfence_w_inval_inval_s_vs_mode
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Svinval_cg/cr_svinival",
+        "SvinvalSm_cg/cr_svinival",
+        "TODO: test in hypervisor tests",
+      ]
+
+  # These have the same semantics as SINVAL.VMA, except that they combine with
+  # SFENCE.W.INVAL and SFENCE.INVAL.IR to replace HFENCE.VVMA and HFENCE.GVMA,
+  # respectively, instead of SFENCE.VMA.
+  - names:
+      [
+        Svinval_hinval_vvma_gvma,
+        Svinval_hinval_gvma_uses_vmid,
+        Svinval_virtual_instruction_vu_vs,
+        Svinval_virtual_instruction_vtvms,
+        Svinval_sfence_w_inval_inval_vu_mode,
+      ]
+    coverpoint:
+      [
+        "TODO: test in hypervisor tests (SvinvalH_cg/cr_svinivalH has no tests yet)",
+      ]

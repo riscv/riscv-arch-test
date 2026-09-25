@@ -94,7 +94,7 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
     bins straddle_second_third = {(`PMP_NAPOT_REGION_START + 2*`g_napot - 2) & `PMP_ADDR_LOWMASK};
   }
 
-  `ifdef UDB_PMP_GRANULARITY_2
+  `ifdef UDB_PMP_NA4_SUPPORTED
     addr_in_consecutive_na4: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
       bins straddle_first_second = {(`PMP_REGION_START + 2) & `PMP_ADDR_LOWMASK};
       bins straddle_second_third = {(`PMP_REGION_START + 6) & `PMP_ADDR_LOWMASK};
@@ -116,7 +116,7 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
     bins just_above_pmp = {(`PMP_NAPOT_REGION_START + `g_napot) & `PMP_ADDR_LOWMASK};     // just outside region
   }
 
-  `ifdef UDB_PMP_GRANULARITY_2
+  `ifdef UDB_PMP_NA4_SUPPORTED
     addr_adjacent_to_na4_boundary: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
       // NA4 region (4 bytes): (PMP_REGION_START, PMP_REGION_START + 4)
       bins just_before_start     = {(`PMP_REGION_START - 2) & `PMP_ADDR_LOWMASK};
@@ -173,7 +173,7 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
     bins tor_lxwr = { 8'b10001111}; // TOR region with LXWR 1111
   }
 
-  `ifdef UDB_PMP_GRANULARITY_2
+  `ifdef UDB_PMP_NA4_SUPPORTED
     cfg_consecutive_na4: coverpoint (ins.current.csr[CSR_PMPCFG0][23:0]) {
       bins locked_na4_regions = {24'b100100001001011110010111};
     }
@@ -213,7 +213,7 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
   cp_misaligned_tor: cross priv_mode_m, cfg_consecutive_tor, pmpaddr_consecutive_tor, addr_in_consecutive_regions, exec_c_instr;
   cp_cret_tor: cross priv_mode_m, tor_setup, tor_region, exec_c_instr, addr_adjacent_to_pmp_boundary_tor;
 
-  `ifdef UDB_PMP_GRANULARITY_2
+  `ifdef UDB_PMP_NA4_SUPPORTED
     cp_misaligned_na4: cross priv_mode_m, cfg_consecutive_na4, pmpaddr_consecutive_na4, addr_in_consecutive_na4, exec_c_instr;
     cp_cret_na4: cross priv_mode_m, na4_setup, na4_region, exec_c_instr, addr_adjacent_to_na4_boundary;
   `endif

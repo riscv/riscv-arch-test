@@ -115,6 +115,7 @@ The following top-level keys are recognized. No other keys are permitted
 | `REQUIRED_EXTENSIONS`  | list of strings or lists of strings | **Yes**  | Extensions required by this test. A nested list indicates at least one of the extensions in the sublist must be present. |
 | `FORBIDDEN_EXTENSIONS` | list of strings                     | No       | Extensions that the DUT must NOT implement for the test to be selected.                                                  |
 | `MARCH`                | string                              | **Yes**  | The `-march` string passed to the compiler, such as `rv32i_zba` or `rv64ifd_zfh`.                                        |
+| `MIN_HARTS`            | positive integer                    | No       | Minimum number of harts required by the test. Defaults to `1`.                                                           |
 | `params`               | mapping                             | No       | Parameter constraints that must match the DUT's UDB configuration for the test to be selected.                           |
 
 #### `REQUIRED_EXTENSIONS`
@@ -172,6 +173,17 @@ MARCH: rv${XLEN}i_zicsr
 
 The framework substitutes the actual XLEN value (32 or 64) at compile time
 based on the DUT configuration.
+
+#### `MIN_HARTS`
+
+An optional minimum number of harts required by the test:
+
+```yaml
+MIN_HARTS: 2
+```
+
+The framework selects the test when the DUT configuration's `harts` value is at
+least `MIN_HARTS`. Both values default to `1` when omitted.
 
 #### `params`
 

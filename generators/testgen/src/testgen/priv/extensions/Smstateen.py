@@ -7,7 +7,7 @@
 """Smstateen privileged extension test generator."""
 
 from testgen.asm.csr import csr_walk_test
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import arch_block, comment_banner
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -623,7 +623,7 @@ def _generate_se0_controls_sstateen0(test_data: TestData, *, se0: int) -> list[s
 @add_priv_test_generator(
     "Smstateen",
     required_extensions=["Smstateen"],
-    march_extensions=["Smstateen", "Zcmt", "Zfinx"],
+    march_extensions=["Smstateen"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_smstateen(test_data: TestData) -> list[TestChunk]:
@@ -680,7 +680,7 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
 
     # cp_jvt_access — only when Zcmt is present (covers S-mode and U-mode)
     tc.code.append("#ifdef ZCMT_SUPPORTED")
-    tc.code.extend(_generate_jvt(test_data))
+    tc.code.extend(arch_block(_generate_jvt(test_data), "zcmt"))
     tc.code.append("#endif  // ZCMT_SUPPORTED")
 
     # cp_context — only when Sdtrig is present
@@ -741,10 +741,13 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
 
     # cp_fcsr, cp_fcsr_ro_zero, cp_fcsr_lower, cp_fcsr_lower_fp_instrs — only when Zfinx present
     tc.code.append("#ifdef ZFINX_SUPPORTED")
-    tc.code.extend(_generate_fcsr_ro_zero(test_data))
-    tc.code.extend(_generate_fcsr(test_data))
-    tc.code.extend(_generate_fcsr_lower(test_data))
-    tc.code.extend(_generate_fcsr_lower_fp_instrs(test_data))
+    fcsr_lines = [
+        *_generate_fcsr_ro_zero(test_data),
+        *_generate_fcsr(test_data),
+        *_generate_fcsr_lower(test_data),
+        *_generate_fcsr_lower_fp_instrs(test_data),
+    ]
+    tc.code.extend(arch_block(fcsr_lines, "zfinx"))
     tc.code.append("#endif  // ZFINX_SUPPORTED")
 
     test_chunks.append(test_data.end_test_chunk())

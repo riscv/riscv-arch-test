@@ -747,10 +747,11 @@ def _write_extension_files(
             effew = ""
     instr_keys = _get_sorted_instr_keys(tp, arch) if per_sew else sorted(tp.keys())
 
-    header_tmpl = "header_vector" if vector else "header"
-    # Priv vector archs (SsstrictV, ExceptionsV*) don't expand per-SEW so the
-    # EFFVSEW gate doesn't apply — use the non-vector sample header/end.
+    # Priv vector archs (SsstrictV, ExceptionsV*, MisalignV) don't expand per-SEW, so
+    # neither the EFFEW defines in header_vector nor the EFFVSEW gate in the vector
+    # sample header/end apply — use the non-vector templates for them.
     use_vector_sample = vector and bool(effew)
+    header_tmpl = "header_vector" if use_vector_sample else "header"
     sample_header_tmpl = "covergroup_sample_header_vector" if use_vector_sample else "covergroup_sample_header"
     sample_end_tmpl = "covergroup_sample_end_vector" if use_vector_sample else "covergroup_sample_end"
 

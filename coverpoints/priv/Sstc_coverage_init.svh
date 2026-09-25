@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SstcS_cg = new();         SstcS_cg.set_inst_name("obj_SstcS");
+    Sstc_cg = new();         Sstc_cg.set_inst_name("obj_Sstc");

@@ -224,8 +224,8 @@
 `ifdef SSSTRICTV_COVERAGE
   `include "SsstrictV_coverage.svh"
 `endif
-`ifdef SSTCS_COVERAGE
-  `include "SstcS_coverage.svh"
+`ifdef SSTC_COVERAGE
+  `include "Sstc_coverage.svh"
 `endif
 `ifdef SSTCSM_COVERAGE
   `include "SstcSm_coverage.svh"

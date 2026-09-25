@@ -73,13 +73,6 @@ covergroup InterruptsHSm_m_cg with function sample(ins_t ins);
     }
     cp_nohint_m: cross priv_mode_m, set_mie, mie_vs, hvip_all, hideleg_none;
 
-    `ifdef RVMODEL_SET_GUEST_EXT_INT
-        sgei_pending : coverpoint ((ins.prev.csr[CSR_HGEIP] & ins.prev.csr[CSR_HGEIE]) != 0) {
-            bins pending = {1};
-        }
-        cp_mip_gilen: cross priv_mode_m, csrr, mip, sgei_pending;
-    `endif
-
     // Enter VS or VU mode with one M-level or S-level interrupt pending and mideleg = 0 or 1s, sampled at the
     // T-SBI call: an ecall with a0 = TSBI_GOTO_VSMODE (4) or TSBI_GOTO_VUMODE (5) (CTP abstraction.adoc)
     tsbi_goto_vs : coverpoint ins.prev.x_wdata[10] {

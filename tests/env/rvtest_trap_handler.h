@@ -2214,6 +2214,9 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x31A) // menvcfgh
         #endif
         TSBI_CSR_INSTR_TABLE(0x344) // mip
+        #ifdef SMAIA_SUPPORTED
+        TSBI_CSR_INSTR_TABLE(0x35C) // mtopei: claims the top machine external interrupt from an IMSIC
+        #endif
         TSBI_CSR_INSTR_TABLE(0x747) // mseccfg
         TSBI_CSR_INSTR_TABLE(0x320) // mcountinhibit
         //TSBI_CSR_INSTR_TABLE(0xB00) // mcycle - shouldn't be changed below M-mode

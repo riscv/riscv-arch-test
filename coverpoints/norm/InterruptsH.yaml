@@ -25,8 +25,7 @@ normative_rule_definitions:
 
   # Simultaneous interrupts destined for HS-mode are taken in the order SEI, SSI, STI, SGEI, VSEI, VSSI, VSTI
   - names: [hsint_priority]
-    coverpoint:
-      ["InterruptsH_hs_cg/cp_priority_{en_vsi, deleg_vsi, s, sgei, sgei_s}"]
+    coverpoint: ["InterruptsH_hs_cg/cp_priority_{en_vsi, deleg_vsi, s}"]
 
   # hie and hip are views of mie and mip; vsie and vsip show the delegated VS-level bits as S-level bits
   - names:
@@ -51,22 +50,6 @@ normative_rule_definitions:
   # An interrupt writes zero to htinst
   - names: [H_trap_xtinst_interrupt, htinst_val]
     coverpoint: ["InterruptsH_hs_cg/cp_htinst"]
-
-  # hip.SGEIP is 1 when hgeip & hgeie is nonzero
-  - names:
-      [
-        hip_sgeip_sgeie_acc,
-        hip_sgeip_sgeie_op,
-        hgeip_op,
-        hgeie_op,
-        hgeip_hgeie_fields,
-        hgeip_bit_op,
-      ]
-    coverpoint: ["InterruptsH_hs_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
-
-  # hstatus.VGEIN selects the hgeip bit that drives hip.VSEIP
-  - names: [hstatus_vgein_op, hip_vseip_vseie_op]
-    coverpoint: ["InterruptsH_hs_cg/cp_{trigger_vsei_hgeip, hgeip0}"]
 
   # In the guest, HS-mode takes the undelegated VS-level interrupts first, then VS-mode takes the delegated ones
   # as S-level causes
@@ -93,10 +76,6 @@ normative_rule_definitions:
         "InterruptsH_hs_cg/cp_hip_write",
         "H_hscsr_cg/cp_hcsrwalk",
       ]
-
-  # When VGEIN=0, no guest external interrupt source is selected for VS-level external interrupts
-  - names: [hstatus_vgein_zero]
-    coverpoint: ["InterruptsH_hs_cg/cp_hgeip0"]
 
   # Shlcofideleg makes hideleg bit 13 writable; while it is zero, vsip.LCOFIP and vsie.LCOFIE are read-only zero,
   # and otherwise they alias sip.LCOFIP and sie.LCOFIE

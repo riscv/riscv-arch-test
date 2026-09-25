@@ -19,7 +19,7 @@
 # Perform boot operations. Can be empty or left undefined unless needed for
 # DUT-specific behavior such as turning on a memory controller or
 # initializing custom state.
-//#define RVMODEL_BOOT
+// RVMODEL_BOOT is defined with the interrupt controllers below when Smaia is supported
 
 // Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
 // if defined.  For most DUTs, the default should work and this macro
@@ -113,6 +113,83 @@
 #define CLINT_BASE_ADDRESS 0x02000000
 #define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 
+#ifdef SMAIA_SUPPORTED
+
+/* With Smaia, Spike replaces the PLIC with an APLIC in MSI mode feeding an IMSIC per hart. The M-level interrupt
+ * file is at IMSIC_M_FILE and the S-level file at IMSIC_S_FILE, followed by one guest interrupt file per 4 KiB
+ * page; GEILEN is 31 (riscv/platform.h), whatever the XLEN. Writing an interrupt identity to a file's seteipnum_le
+ * register (offset 0) makes it pending. The macros below use identity IMSIC_EIID, which RVMODEL_BOOT enables in
+ * the M-level file and in every guest file. */
+#define IMSIC_M_FILE           0x24000000
+#define IMSIC_S_FILE           0x28000000
+#define IMSIC_GUEST_FILE(_GEI) (IMSIC_S_FILE + ((_GEI) << 12))
+#define IMSIC_GEILEN           31
+#define IMSIC_EIID             1
+#define IMSIC_EIDELIVERY       0x70  /* indirect register numbers, AIA section 3.8 */
+#define IMSIC_EITHRESHOLD      0x72
+#define IMSIC_EIE0             0xC0
+
+/* Enable delivery of identity IMSIC_EIID with no threshold in the file reached through _SEL and _REG
+ * (miselect and mireg, or vsiselect and vsireg). */
+#define IMSIC_ENABLE_FILE(_SEL, _REG) \
+  li t0, IMSIC_EIDELIVERY;  csrw _SEL, t0; li t1, 1; csrw _REG, t1; \
+  li t0, IMSIC_EITHRESHOLD; csrw _SEL, t0; csrw _REG, zero; \
+  li t0, IMSIC_EIE0;        csrw _SEL, t0; li t1, 1 << IMSIC_EIID; csrs _REG, t1;
+
+#if defined(H_SUPPORTED) && defined(SSAIA_SUPPORTED)
+  /* hstatus.VGEIN selects the guest file that vsiselect and vsireg reach; walk it over 1..IMSIC_GEILEN */
+  #define IMSIC_ENABLE_GUEST_FILES \
+    csrr t2, hstatus; \
+    li t3, 1; \
+    1: slli t0, t3, 12; csrw hstatus, t0; \
+    IMSIC_ENABLE_FILE(vsiselect, vsireg) \
+    addi t3, t3, 1; li t0, IMSIC_GEILEN; bleu t3, t0, 1b; \
+    csrw hstatus, t2;
+#else
+  #define IMSIC_ENABLE_GUEST_FILES
+#endif
+
+#define RVMODEL_BOOT \
+  IMSIC_ENABLE_FILE(miselect, mireg) \
+  IMSIC_ENABLE_GUEST_FILES
+
+/* Machine external interrupt: pend IMSIC_EIID in the M-level file, and claim it through mtopei to clear.
+ * RVMODEL_CLR_MEXT_INT runs below M-mode, so it claims through the T-SBI. */
+#define RVMODEL_SET_MEXT_INT(_R1, _R2) \
+  li _R1, IMSIC_EIID;                  \
+  li _R2, IMSIC_M_FILE;                \
+  sw _R1, 0(_R2);
+
+#define RVMODEL_CLR_MEXT_INT_M(_R1, _R2) \
+  csrw mtopei, zero;
+
+#define RVMODEL_CLR_MEXT_INT(_R1, _R2) \
+  RVTEST_TSBI_CSR_WRITE(CSR_MTOPEI, 0)
+
+/* Supervisor external interrupts use the software-writable mip.SEIP, the default when RVMODEL_SET/CLR_SEXT_INT
+ * are left undefined. */
+
+/* Guest external interrupt _GEI: pend IMSIC_EIID in guest file _GEI, which makes hgeip bit _GEI read 1.
+ * To clear, claim it through vstopei with hstatus.VGEIN = _GEI, then restore hstatus.  Below M-mode the
+ * vstopei access needs mstateen0.IMSIC = 1.  vsiselect is left untouched. */
+#if defined(H_SUPPORTED) && defined(SSAIA_SUPPORTED)
+  #define RVMODEL_SET_GUEST_EXT_INT(_GEI, _R1, _R2) \
+    li _R1, IMSIC_EIID;                            \
+    LI(_R2, IMSIC_GUEST_FILE(_GEI));               \
+    sw _R1, 0(_R2);
+
+  #define RVMODEL_CLR_GUEST_EXT_INT(_GEI, _R1, _R2) \
+    csrr _R1, hstatus;                             \
+    li _R2, HSTATUS_VGEIN;                         \
+    csrc hstatus, _R2;                             \
+    li _R2, (_GEI) << 12;                          \
+    csrs hstatus, _R2;                             \
+    csrw vstopei, zero;                            \
+    csrw hstatus, _R1;
+#endif
+
+#else // SMAIA_SUPPORTED: PLIC
+
 #define PLIC_BASE_ADDRESS    0x0c000000
 #define PLIC_ENABLE_ADDRESS  0x0c002000
 #define PLIC_THRESH_ADDRESS  0x0c200000
@@ -181,5 +258,7 @@
   li _R2, PLIC_SCLAIM_ADDRESS;                    \
   lw _R1, 0(_R2);                               \
   sw _R1, 0(_R2);
+
+#endif // SMAIA_SUPPORTED
 
 #endif // _RVMODEL_MACROS_H

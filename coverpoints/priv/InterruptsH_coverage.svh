@@ -159,62 +159,6 @@ covergroup InterruptsH_hs_cg with function sample(ins_t ins);
     }
     cp_htinst: cross priv_mode_hs, set_sie, htinst_nonzero, int_enabled;
 
-    // Guest external interrupts need the optional RVMODEL_SET_GUEST_EXT_INT hook
-    `ifdef RVMODEL_SET_GUEST_EXT_INT
-        sgei_pending : coverpoint ((ins.prev.csr[CSR_HGEIP] & ins.prev.csr[CSR_HGEIE]) != 0) {
-            bins pending = {1};
-        }
-        hie_write_sgeie : coverpoint ins.current.rs1_val[12];
-        hie_1444 : coverpoint ins.prev.csr[CSR_HIE][12:0] {
-            bins sgei_vs = {13'h1444};
-        }
-        sip_s_pending : coverpoint {ins.prev.csr[CSR_SIP][9], ins.prev.csr[CSR_SIP][5], ins.prev.csr[CSR_SIP][1]} {
-            bins sei  = {3'b100};
-            bins sti  = {3'b010};
-            bins ssi  = {3'b001};
-        }
-        sip_s_none : coverpoint {ins.prev.csr[CSR_SIP][9], ins.prev.csr[CSR_SIP][5], ins.prev.csr[CSR_SIP][1]} {
-            bins none = {3'b000};
-        }
-        cp_trigger_sgei:    cross priv_mode_hs, csrrw, hie, hie_write_sgeie, sstatus_sie, sgei_pending;
-        cp_priority_sgei:   cross priv_mode_hs, set_sie, sgei_pending, hie_1444, sie_ones, sip_s_none, hvip_all,
-                                  hideleg_none;
-        cp_priority_sgei_s: cross priv_mode_hs, set_sie, sgei_pending, hie_1444, sie_ones, sip_s_pending, hvip_all,
-                                  hideleg_none;
-
-        // Each guest external interrupt i enabled alone, with hgeip = 0, bit i or every implemented bit
-        hgeie_bit : coverpoint $clog2(ins.prev.csr[CSR_HGEIE]) iff ($onehot(ins.prev.csr[CSR_HGEIE])) {
-            bins b[] = {[1:`UDB_NUM_EXTERNAL_GUEST_INTERRUPTS]};
-        }
-        hgeip_vs_hgeie : coverpoint (ins.prev.csr[CSR_HGEIP] == 0 ? 0 : ins.prev.csr[CSR_HGEIP] == ins.prev.csr[CSR_HGEIE] ? 1 : 2) {
-            bins none = {0};
-            bins i    = {1};
-            bins all  = {2};
-        }
-        cp_hgeie: cross priv_mode_hs, csrr, hip, hgeie_bit, hgeip_vs_hgeie;
-
-        // hstatus.VGEIN = i selects hgeip bit i into hip.VSEIP, whatever hgeie holds
-        vgein : coverpoint ins.prev.csr[CSR_HSTATUS][17:12] {
-            bins b[] = {[1:`UDB_NUM_EXTERNAL_GUEST_INTERRUPTS]};
-        }
-        vgein_zero : coverpoint ins.prev.csr[CSR_HSTATUS][17:12] {
-            bins zero = {0};
-        }
-        hgeip_vs_vgein : coverpoint (ins.prev.csr[CSR_HGEIP] == 0 ? 0 :
-                                     ins.prev.csr[CSR_HGEIP] == (1 << ins.prev.csr[CSR_HSTATUS][17:12]) ? 1 :
-                                     ins.prev.csr[CSR_HGEIP][ins.prev.csr[CSR_HSTATUS][17:12]] ? 3 : 2) {
-            bins none   = {0};
-            bins i      = {1};
-            bins others = {2};
-        }
-        hgeie_vgein : coverpoint ins.prev.csr[CSR_HGEIE][ins.prev.csr[CSR_HSTATUS][17:12]];
-        hgeip_nonzero : coverpoint (ins.prev.csr[CSR_HGEIP] != 0) {
-            bins nonzero = {1};
-        }
-        cp_trigger_vsei_hgeip: cross priv_mode_hs, csrr, hip, vgein, hgeip_vs_vgein, hgeie_vgein;
-        cp_hgeip0:             cross priv_mode_hs, csrr, hip, vgein_zero, hgeip_nonzero, sgei_pending;
-    `endif
-
     // The T-SBI calls that enter U, VS and VU mode: an ecall with a0 = TSBI_GOTO_UMODE (3), TSBI_GOTO_VSMODE (4)
     // or TSBI_GOTO_VUMODE (5), the function IDs of the T-SBI interface (CTP abstraction.adoc)
     ecall : coverpoint ins.current.insn {

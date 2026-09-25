@@ -170,6 +170,10 @@
         `cover_info("//      InterruptsH - Enabled");
         `include "InterruptsH_coverage_init.svh"
     `endif
+    `ifdef COVER_INTERRUPTSHGEI
+        `cover_info("//      InterruptsHGei - Enabled");
+        `include "InterruptsHGei_coverage_init.svh"
+    `endif
     `ifdef COVER_INTERRUPTSHSM
         `cover_info("//      InterruptsHSm - Enabled");
         `include "InterruptsHSm_coverage_init.svh"

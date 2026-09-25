@@ -130,6 +130,9 @@
     `ifdef COVER_INTERRUPTSH
         interruptsh_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_INTERRUPTSHGEI
+        interruptshgei_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_INTERRUPTSHSM
         interruptshsm_sample(hart, issue, ins);
     `endif

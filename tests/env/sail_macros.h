@@ -142,6 +142,10 @@
   li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear MEXT interrupt */ \
 
+// Sail clears from M-mode the same way, so drop any DUT-specific M-mode clear (such as an IMSIC mtopei claim)
+// and let check_defines.h point RVMODEL_CLR_MEXT_INT_M at the Sail clear above.
+#undef RVMODEL_CLR_MEXT_INT_M
+
 #undef RVMODEL_SET_MSW_INT
 #define RVMODEL_SET_MSW_INT(_R1, _R2)        \
   li _R1, 1;                 \
@@ -168,6 +172,8 @@
   li _R1, (1 << 9);               \
   li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear SEXT interrupt */ \
+
+#undef RVMODEL_CLR_SEXT_INT_M
 
 #undef RVMODEL_SET_SSW_INT
 #define RVMODEL_SET_SSW_INT(_R1, _R2)        \

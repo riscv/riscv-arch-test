@@ -90,21 +90,6 @@ def _mcsr_tests(test_data: TestData) -> list[str]:
         write_sigupd(check_reg, test_data),
         "csrw hvip, zero",
         "csrw mie, zero",
-        "#ifdef UDB_SGEI_INTR_IMPL",
-        comment_banner("cp_mip_gilen", "With guest external interrupt 1 pending and enabled in hgeie, read mip"),
-        f"LI(x{tmp_reg}, 2)",
-        f"csrw hgeie, x{tmp_reg}",
-        "RVMODEL_SET_GUEST_EXT_INT(1, a1, a2)",
-        f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
-        f"LI(x{tmp_reg}, MIP_HS_MASK)",
-        test_data.add_testcase("hgeip_1", "cp_mip_gilen", _CG),
-        f"csrr x{check_reg}, mip",
-        f"and x{check_reg}, x{check_reg}, x{tmp_reg}",
-        write_sigupd(check_reg, test_data),
-        "RVMODEL_CLR_GUEST_EXT_INT(1, a1, a2)",
-        f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
-        "csrw hgeie, zero",
-        "#endif // UDB_SGEI_INTR_IMPL",
     ]
     test_data.int_regs.return_registers([tmp_reg, check_reg])
     return lines

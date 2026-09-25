@@ -1,0 +1,31 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # mip holds hip.SGEIP, read from M-mode with a guest external interrupt pending
+  - names: [mip_mie_vs, mip_mie_alias]
+    coverpoint: ["InterruptsHGei_m_cg/cp_mip_gilen"]
+
+  # Simultaneous interrupts destined for HS-mode are taken in the order SEI, SSI, STI, SGEI, VSEI, VSSI, VSTI
+  - names: [hsint_priority]
+    coverpoint: ["InterruptsHGei_hs_cg/cp_priority_{sgei, sgei_s}"]
+
+  # hip.SGEIP is 1 when hgeip & hgeie is nonzero
+  - names:
+      [
+        hip_sgeip_sgeie_acc,
+        hip_sgeip_sgeie_op,
+        hgeip_op,
+        hgeie_op,
+        hgeip_hgeie_fields,
+        hgeip_bit_op,
+      ]
+    coverpoint: ["InterruptsHGei_hs_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
+
+  # hstatus.VGEIN selects the hgeip bit that drives hip.VSEIP
+  - names: [hstatus_vgein_op, hip_vseip_vseie_op]
+    coverpoint: ["InterruptsHGei_hs_cg/cp_{trigger_vsei_hgeip, hgeip0}"]
+
+  # When VGEIN=0, no guest external interrupt source is selected for VS-level external interrupts
+  - names: [hstatus_vgein_zero]
+    coverpoint: ["InterruptsHGei_hs_cg/cp_hgeip0"]

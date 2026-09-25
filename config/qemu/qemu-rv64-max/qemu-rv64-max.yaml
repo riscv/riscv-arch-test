@@ -435,8 +435,8 @@ params:
   VSTVEC_MODES: [0, 1]
   HSTATEEN_ENVCFG_TYPE: rw
   IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
-  # GEILEN is 0 (QEMU's virt machine without AIA; sail.json geilen = 0), but the UDB schema requires at least 1
-  NUM_EXTERNAL_GUEST_INTERRUPTS: 1
+  # GEILEN is 7: run_cmd.txt selects aia=aplic-imsic,aia-guests=7, the most QEMU's virt machine allows
+  NUM_EXTERNAL_GUEST_INTERRUPTS: 7
   REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION: true
   REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION: true
   REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT: true

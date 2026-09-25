@@ -59,30 +59,53 @@ covergroup ExceptionsSv_cg with function sample(ins_t ins);
         bins invalid = {8'b00000000}; // invalid
     }
 
-    d_phys_address: coverpoint ins.current.phys_adr_d[11:0] {
-        // check that fault occurs on the last halfword of the first page and the first halfword of the second page
+    // stval holds the virtual address of the part of a misaligned access or fetch that faults:
+    // the last halfword of the first page or the start of the second page
+    fault_address: coverpoint ins.current.csr[CSR_STVAL][11:0] {
         bins first  = {12'b111111111110};
         bins second = {12'b000000000000};
+    }
+    lw_page_fault: coverpoint ins.current.csr[CSR_SCAUSE][31:0] {
+        bins load_page_fault = {32'd13};
+    }
+    sw_page_fault: coverpoint ins.current.csr[CSR_SCAUSE][31:0] {
+        bins store_page_fault = {32'd15};
+    }
+    jalr_page_fault: coverpoint ins.current.csr[CSR_SCAUSE][31:0] {
+        bins instr_page_fault = {32'd12};
     }
 
     i_page_table_entry_bad: coverpoint ins.current.pte_i[7:0] {
         bins invalid = {8'b00000000}; // invalid
     }
 
-    i_phys_address: coverpoint ins.current.phys_adr_i[11:0] {
-        // check that fault occurs on the last halfword of the first page and the first halfword of the second page
-        bins first  = {12'b111111111110};
-        bins second = {12'b000000000000};
-    }
 
 
     // Main Coverpoints
     cp_instr_page_fault_s:           cross priv_mode_s, instr_page_fault;
     cp_load_page_fault_s:            cross priv_mode_s, load_page_fault;
     cp_store_page_fault_s:           cross priv_mode_s, store_page_fault;
-    cp_misaligned_load_page_fault_s: cross priv_mode_s, d_page_table_entry_bad, d_phys_address, lw;
-    cp_misaligned_store_page_fault_s:cross priv_mode_s, d_page_table_entry_bad, d_phys_address, sw;
-    cp_misaligned_inst_page_fault_s: cross priv_mode_s, i_page_table_entry_bad, i_phys_address, jalr;
+    // A misaligned lw or sw raises address-misaligned before translation when the hart does not support
+    // misaligned accesses and gives that exception high priority, and stval = 0 does not show which part faulted
+    `ifdef UDB_MISALIGNED_LDST
+        `define EXCEPTIONSSV_MISALIGNED_PAGE_FAULT
+    `elsif UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_LOW
+        `define EXCEPTIONSSV_MISALIGNED_PAGE_FAULT
+    `endif
+    `ifdef EXCEPTIONSSV_MISALIGNED_PAGE_FAULT
+        `ifdef UDB_REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT
+            cp_misaligned_load_page_fault_s:  cross priv_mode_s, d_page_table_entry_bad, fault_address, lw_page_fault, lw;
+        `endif
+        `ifdef UDB_REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT
+            cp_misaligned_store_page_fault_s: cross priv_mode_s, d_page_table_entry_bad, fault_address, sw_page_fault, sw;
+        `endif
+    `endif
+    // Without Zca, the jalr raises instruction-address-misaligned instead of fetching the target
+    `ifdef ZCA_SUPPORTED
+        `ifdef UDB_REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT
+            cp_misaligned_inst_page_fault_s: cross priv_mode_s, i_page_table_entry_bad, fault_address, jalr_page_fault, jalr;
+        `endif
+    `endif
     cp_instr_page_fault_u:           cross priv_mode_u, instr_page_fault;
     cp_load_page_fault_u:            cross priv_mode_u, load_page_fault;
     cp_store_page_fault_u:           cross priv_mode_u, store_page_fault;

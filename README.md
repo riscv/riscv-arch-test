@@ -387,12 +387,12 @@ AI is particularly helpful for troubleshooting configuration mismatches, but of 
 Once the configuration files accurately reflect your design, remaining mismatches may come from:
 
 - DUT errors, in which your DUT does not conform to the specification. Fix it, or disable support for the extension in your config file.
-- ACT errors, such as producing uncompilable tests for a certain configuration, or testing a features whose behavior should be UNSPECIFIED. [Open an ACT issue](https://github.com/riscv/riscv-arch-test/issues/new).
+- ACT errors, such as producing uncompilable tests for a certain configuration, or testing a feature whose behavior should be UNSPECIFIED. [Open an ACT issue](https://github.com/riscv/riscv-arch-test/issues/new).
 - Parameter errors, in which the specification permits one of several behaviors. Your design has one behavior and the reference model expects a different behavior, and the configuration file lacks a parameter to choose the behavior. [Open a request for a new UDB parameter](https://github.com/riscv/riscv-unified-db/issues).
 - Reference errors, in which the expected behavior is well-defined by the spec but is not produced by Sail. [Open a Sail issue](https://github.com/riscv/sail-riscv/issues/new).
-- Specification ambiguities, in which it is unclear whether the DUT behavior is legal or not. [Open a ISA Manual clarification issue](https://github.com/riscv/riscv-isa-manual/issues).
+- Specification ambiguities, in which it is unclear whether the DUT behavior is legal or not. [Open an ISA Manual clarification issue](https://github.com/riscv/riscv-isa-manual/issues).
 
-Each of these repositories are maintained by volunteers. If you are seeking commercial support, many companies offer paid design verification services.
+Each of these repositories is maintained by volunteers. If you are seeking commercial support, many companies offer paid design verification services.
 
 #### Debug Flag
 

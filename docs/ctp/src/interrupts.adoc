@@ -10,7 +10,7 @@ These tests are run on any configuration with machine mode that supports interru
 [[t-InterruptsSm-coverpoints]]
 .InterruptsSm Coverpoints
 ,===
-https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=399538825#gid=399538825[Google Sheet Testplan]
+https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=0#gid=0[Google Sheet Testplan]
 ,===
 
 include::norm/InterruptsSm_norm_rules.adoc[]
@@ -32,7 +32,7 @@ These tests are run on any configuration with supervisor mode that supports inte
 [[t-InterruptsS-coverpoints]]
 .InterruptsS Coverpoints
 ,===
-https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=664673151#gid=664673151[Google Sheet Testplan]
+https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=1560685057#gid=1560685057[Google Sheet Testplan]
 ,===
 
 
@@ -70,7 +70,7 @@ These tests are run from machine mode when the Sstc supervisor timer compare ext
 [[t-SstcSm-coverpoints]]
 .SstcSm Coverpoints
 ,===
-https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=347804969#gid=347804969[Google Sheet Testplan]
+https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=2013711018#gid=2013711018[Google Sheet Testplan]
 ,===
 
 include::norm/SstcSm_norm_rules.adoc[]
@@ -82,7 +82,7 @@ These tests are run from supervisor and user mode when the Sstc supervisor timer
 [[t-SstcS-coverpoints]]
 .SstcS Coverpoints
 ,===
-https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=347804969#gid=347804969[Google Sheet Testplan]
+https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=618999433#gid=618999433[Google Sheet Testplan]
 ,===
 
 include::norm/SstcS_norm_rules.adoc[]

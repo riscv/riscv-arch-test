@@ -101,9 +101,9 @@
     #ifdef STANDARD_SM_SUPPORTED
       RVTEST_TSBI_GOTO_MMODE
       #ifdef S_SUPPORTED
+        // Exact reverse of the prolog order (M, S, V).
         #ifdef H_SUPPORTED
           RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code
-          RVTEST_TRAP_EPILOG H        // actual h-mode prolog/epilog/handler code
         #endif
         RVTEST_TRAP_EPILOG S          // actual s-mode prolog/epilog/handler code
       #endif
@@ -949,22 +949,132 @@
         csrw medeleg, zero  // don't delegate exceptions (until S-mode handler is set up)
       #endif
 
-      // initialize trap CSRs to known values
-      csrw mepc, zero
-      csrw mtval, zero
-      csrw mcause, zero
-
       // Set up trap handlers for all modes
       // S and H-mode setup could be deferred to RVTEST_BOOT_TO_SMODE, but that is upsetting the linker
       // and there is no harm setting up all the trap handlers here
       RVTEST_TRAP_PROLOG M
       #ifdef S_SUPPORTED
+        // Order matches INSTANTIATE_MODE_MACRO: M, S, V. There is no HS-mode
+        // prolog: HS uses the S-mode trap CSRs, so the S prolog covers both and
+        // also saves hedeleg and hgatp when H is supported.
         RVTEST_TRAP_PROLOG S
         #ifdef H_SUPPORTED
-          RVTEST_TRAP_PROLOG H
           RVTEST_TRAP_PROLOG V
         #endif
       #endif
+
+      // Initialize every mode's trap CSRs to known values. Their reset values are
+      // UNSPECIFIED, and a test may read one before its first trap into that mode.
+      // This follows the prologs so that a CSR the hart lacks traps into the M-mode
+      // handler instead of looping on an uninitialized mtvec.
+      csrw mepc, zero
+      csrw mtval, zero
+      csrw mcause, zero
+      #ifdef S_SUPPORTED
+        csrw sepc, zero
+        csrw stval, zero
+        csrw scause, zero
+        #ifdef H_SUPPORTED
+          csrw mtval2, zero
+          csrw mtinst, zero
+          csrw htval, zero
+          csrw htinst, zero
+          csrw vsepc, zero
+          csrw vstval, zero
+          csrw vscause, zero
+        #endif
+      #endif
+
+    #ifdef H_SUPPORTED
+      // Initialize HS-mode CSRs.
+      //
+      // hstatus to a known state:
+      //   SPV   = 0: last trap did not come from a virtual mode
+      //   SPVP  = 0: HLV/HSV check guest accesses as VU until a test says otherwise
+      //   HU    = 0: no hypervisor loads/stores from U-mode
+      //   VGEIN = 0: no guest external interrupt selected
+      //   VTVM  = 0: guest may use sfence.vma and satp
+      //   VTW   = 0: guest wfi does not trap
+      //   VTSR  = 0: guest sret does not trap
+      //   VSBE  = 0: VS-mode is little endian
+      //   VSXL  = 64: VS-mode XLEN is 64 (RV64 only)
+      // Tests that need any of these set them themselves.
+      LI(t0, HSTATUS_SPV | HSTATUS_SPVP | HSTATUS_HU | HSTATUS_VGEIN | \
+             HSTATUS_VTVM | HSTATUS_VTW | HSTATUS_VTSR | HSTATUS_VSBE)
+      csrc hstatus, t0
+      #if __riscv_xlen == 64
+        LI(t0, HSTATUS_VSXL)
+        csrc hstatus, t0
+        LI(t0, 0x0000000200000000)  // VSXL = 2
+        csrs hstatus, t0
+      #endif
+
+      // vsstatus gets the same known state as mstatus: every field zero, UXL = 64
+      // on RV64, and FS/VS dirty when supported (as INIT_FLOAT_VECTOR_STATE does
+      // for mstatus), since a guest's FP and vector use is gated by both.
+      li t0, 0
+      #if __riscv_xlen == 64
+        LI(t0, 0x0000000200000000)  // UXL = 2
+      #endif
+      #if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)
+        LI(t1, SSTATUS_FS)
+        or t0, t0, t1
+      #endif
+      #ifdef ZVL32B_SUPPORTED
+        LI(t1, SSTATUS_VS)
+        or t0, t0, t1
+      #endif
+      csrw vsstatus, t0
+
+      // The guest's time offset starts at zero.
+      csrw htimedelta, zero
+      #if __riscv_xlen == 32
+        csrw htimedeltah, zero
+      #endif
+
+      // Delegate nothing to VS-mode by default: a guest trap goes to HS-mode,
+      // where the framework's trap handler is, unless a test opts in by writing
+      // hedeleg/hideleg itself. hedeleg is also cleared by RVTEST_TRAP_PROLOG S,
+      // which saves the incoming value; this keeps hideleg consistent with it.
+      csrw hideleg, zero
+      csrw hvip, zero     // no guest-visible interrupts pending at boot
+      csrw hgeie, zero    // no guest external interrupts enabled
+
+      // The remaining interrupt CSRs need no write. hie is a view of mie and hip a
+      // view of mip (VSSIP aliases hvip.VSSIP), both cleared in RVTEST_BOOT_TO_MMODE;
+      // vsie and vsip are views of hie and hip through hideleg, which is zero; and
+      // hgatp is zeroed by RVTEST_TRAP_PROLOG S along with the other xSATPs.
+
+      // Make counters readable from VS/VU. hcounteren gates guest counter
+      // access the same way mcounteren gates HS-mode's, so leaving it at 0
+      // makes every guest rdcycle/rdtime an illegal instruction.
+      li t0, -1
+      csrw hcounteren, t0
+
+      // henvcfg mirrors senvcfg: unprivileged configuration enabled, privileged
+      // features off until a test turns them on. henvcfg gates the guest's view,
+      // so a feature disabled here stays disabled however senvcfg is set.
+      #ifdef S1P12P0_OR_LATER_SUPPORTED
+        li t0, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE
+        csrw henvcfg, t0
+      #endif
+
+      // hstateen0 gives the guest the same state sstateen0 gives HS-mode:
+      // hstateen0.SE0 = 1: VS-mode may access sstateen0
+      // hstateen0.ENVCFG = 1: VS-mode may access senvcfg
+      // hstateen0.JVT = 1, FCSR = 1: as for sstateen0 above
+      #ifdef SSSTATEEN_SUPPORTED
+        #if __riscv_xlen == 64
+          li t0, HSTATEEN_SSTATEEN | HSTATEEN0_SENVCFG
+          csrs hstateen0, t0
+        #else
+          li t0, HSTATEENH_SSTATEEN | HSTATEEN0H_SENVCFG
+          csrs hstateen0h, t0
+        #endif
+        li t0, HSTATEEN0_JVT | HSTATEEN0_FCSR
+        csrs hstateen0, t0
+      #endif
+    #endif // H_SUPPORTED
 
     rvtest_boot_to_mmode_csr_init:
       // Initialize M-mode CSRs
@@ -1301,6 +1411,7 @@
       li t0, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE
       csrw senvcfg, t0
     #endif
+
 
     // Boot into S-mode
     RVTEST_TSBI_GOTO_SMODE

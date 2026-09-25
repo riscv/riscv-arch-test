@@ -19,7 +19,7 @@ _CG = "SstcSm_cg"
 
 @add_priv_test_generator(
     "SstcSm",
-    required_extensions=["Sm", "S", "Sstc"],
+    required_extensions=["Sm", "Sstc"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_sstcsm(test_data: TestData) -> list[TestChunk]:
@@ -29,6 +29,6 @@ def make_sstcsm(test_data: TestData) -> list[TestChunk]:
         comment_banner("SstcSm", "Supervisor timer (Sstc) stimecmp access tests from M-mode"),
         "",
     ]
-    tc.code += tm_tests(test_data, _CG, "Sm")
-    tc.code += stce_tests(test_data, _CG, "Sm")
+    tc.code += tm_tests(test_data, _CG, "machine")
+    tc.code += stce_tests(test_data, _CG, "machine")
     return [test_data.end_test_chunk()]

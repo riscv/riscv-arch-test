@@ -214,8 +214,8 @@
     `ifdef COVER_SSSTRICTV
         ssstrictv_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_SSTCS
-        sstcs_sample(hart, issue, ins);
+    `ifdef COVER_SSTC
+        sstc_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SSTCSM
         sstcsm_sample(hart, issue, ins);

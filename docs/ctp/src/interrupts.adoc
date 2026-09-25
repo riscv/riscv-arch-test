@@ -75,12 +75,12 @@ https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxC
 
 include::norm/SstcSm_norm_rules.adoc[]
 
-==== SstcS Supervisor Timer Compare Interrupts
+==== Sstc Supervisor Timer Compare Interrupts
 
 These tests are run from supervisor and user mode when the Sstc supervisor timer compare extension is supported.
 
-[[t-SstcS-coverpoints]]
-.SstcS Coverpoints
+[[t-Sstc-coverpoints]]
+.Sstc Coverpoints
 ,===
 https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=618999433#gid=618999433[Google Sheet Testplan]
 ,===

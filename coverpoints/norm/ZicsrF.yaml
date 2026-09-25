@@ -3,82 +3,107 @@
 normative_rule_definitions:
   - name: csrrc_op
     coverpoint: ["Zicsr_csrrc_cg/{cp_rs1, cp_rd, cp_rs1_edges}"]
-  - name: csrrci_op
-    coverpoint: ["Zicsr_csrrci_cg/{cp_rd, cp_uimm_5}"]
+  # The insn:csrrwi[], insn:csrrsi[], and insn:csrrci[] variants are similar to
+  # insn:csrrw[], insn:csrrs[], and insn:csrrc[] respectively, except they update the CSR
+  # using an XLEN-bit value obtained by zero-extending a 5-bit unsigned immediate
+  # (uimm[4:0]) field encoded in the rs1 field instead of a value from an integer
+  # register. For insn:csrrsi[] and insn:csrrci[], if the uimm[4:0] field is zero, then
+  # these instructions will not write to the CSR, and shall not cause any of the side
+  # effects that might otherwise occur on a CSR write, nor raise illegal-instruction
+  # exceptions on accesses to read-only CSRs. For insn:csrrwi[], if rd=x0, then the
+  # instruction shall not read the CSR and shall not cause any of the side effects that
+  # might occur on a CSR read. Both insn:csrrsi[] and insn:csrrci[] will always read the
+  # CSR and cause any read side effects regardless of rd and rs1 fields.
+  - name: csrrwi_csrrsi_csrrci_ops
+    coverpoint:
+      [
+        "Zicsr_csrrci_cg/{cp_rd, cp_uimm_5}",
+        "Zicsr_csrrsi_cg/{cp_rd, cp_uimm_5}",
+        "Zicsr_csrrwi_cg/{cp_rd, cp_uimm_5}",
+      ]
   - name: csrrs_op
     coverpoint: ["Zicsr_csrrs_cg/{cp_rs1, cp_rd, cp_rs1_edges}"]
-  - name: csrrsi_op
-    coverpoint: ["Zicsr_csrrsi_cg/{cp_rd, cp_uimm_5}"]
   - name: csrrw_op
     coverpoint: ["Zicsr_csrrw_cg/{cp_rs1, cp_rd, cp_rs1_edges}"]
-  - name: csrrwi_op
-    coverpoint: ["Zicsr_csrrwi_cg/{cp_rd, cp_uimm_5}"]
 
-  # The floating-point control and status register, fcsr, is a RISC-V control and
-  # status register (CSR). It is a 32-bit read/write register that selects the
-  # dynamic rounding mode for floating-point arithmetic operations and holds the
-  # accrued exception flags, as shown in .
-  - names: [fscr_sz, fcsr_acc]
-    coverpoint: ["ZicsrF_cg/{cp_fcsr_access, cp_fcsr_walk}"]
+  # The floating-point CSR, csr:fcsr[], is a 32-bit read/write register that selects the
+  # dynamic rounding mode for floating-point arithmetic operations and holds the accrued
+  # exception flags, as shown in .
+  - name: fcsr_op_sz_acc
+    coverpoint:
+      [
+        "ZicsrF_cg/{cp_fcsr_access, cp_fcsr_walk}",
+        "ZicsrF_cg/cp_fflags_set, F_fadd_s_cg/cp_csr_frm",
+      ]
 
-  # The floating-point control and status register, fcsr, is a RISC-V control and
-  # status register (CSR). It is a 32-bit read/write register that selects the
-  # dynamic rounding mode for floating-point arithmetic operations and holds the
-  # accrued exception flags, as shown in . Bits 31&#8212;&#8203;8 of the fcsr are
-  # reserved for other standard extensions. If these extensions are not present,
-  # implementations shall ignore writes to these bits and supply a zero value when
-  # read. Standard software should preserve the contents of these bits.
-  - name: fcsr_op
+  # Bits 31&#8205;&#8211;&#8205;8 of the csr:fcsr[] are reserved for other standard
+  # extensions. If these extensions are not present, implementations shall ignore writes
+  # to these bits and supply a zero value when read. Standard software should preserve the
+  # contents of these bits.
+  - name: fcsr_rsv
     coverpoint: ["ZicsrF_cg/cp_fflags_set, F_fadd_s_cg/cp_csr_frm"]
 
-  # The fields within the fcsr can also be accessed individually through different
+  # The fields within the csr:fcsr[] can also be accessed individually through different
   # CSR addresses, and separate assembler pseudoinstructions are defined for these
-  # accesses. The FRRM instruction reads the Rounding Mode field frm (fcsr bits
-  # 7&#8212;&#8203;5) and copies it into the least-significant three bits of integer
-  # register rd, with zero in all other bits. FSRM swaps the value in frm by copying
-  # the original value into integer register rd, and then writing a new value
-  # obtained from the three least-significant bits of integer register rs1 into frm.
-  # FRFLAGS and FSFLAGS are defined analogously for the Accrued Exception Flags
-  # field fflags (fcsr bits 4&#8212;&#8203;0).
-  - names: [fcsr_frm_sz, fcsr_frm_acc]
-    coverpoint: ["ZicsrF_cg/{cp_fcsr_access, cp_fcsr_frm_write, cp_frm_write}"]
+  # accesses. The insn:frrm[] instruction reads the Rounding Mode field csr:frm[]
+  # (csr:fcsr[] bits 7&#8205;&#8211;&#8205;5) and copies it into the least-significant
+  # three bits of integer register rd, with zero in all other bits. insn:fsrm[] swaps the
+  # value in csr:frm[] by copying the original value into integer register rd, and then
+  # writing a new value obtained from the three least-significant bits of integer register
+  # rs1 into csr:frm[]. insn:frflags[] and insn:fsflags[] are defined analogously for the
+  # Accrued Exception Flags field csr:fflags[] (csr:fcsr[] bits 4&#8205;&#8211;&#8205;0).
+  - name: fflags_frm_op_sz_acc
+    coverpoint:
+      [
+        "ZicsrF_cg/{cp_fcsr_access, cp_fcsr_frm_write, cp_frm_write}",
+        "F_fadd_s_cg/cp_csr_frm",
+        "ZicsrF_cg/{cp_fcsr_access, cp_fcsr_fflags_write, cp_fflags_write}",
+      ]
 
-  # The fields within the fcsr can also be accessed individually through different
-  # CSR addresses, and separate assembler pseudoinstructions are defined for these
-  # accesses. The FRRM instruction reads the Rounding Mode field frm (fcsr bits
-  # 7&#8212;&#8203;5) and copies it into the least-significant three bits of integer
-  # register rd, with zero in all other bits. FSRM swaps the value in frm by copying
-  # the original value into integer register rd, and then writing a new value
-  # obtained from the three least-significant bits of integer register rs1 into frm.
-  # FRFLAGS and FSFLAGS are defined analogously for the Accrued Exception Flags
-  # field fflags (fcsr bits 4&#8212;&#8203;0). Rounding Mode|Mnemonic|Meaning ===
-  # 000|RNE|Round to Nearest, ties to Even¶001|RTZ|Round towards Zero¶010|RDN|Round
-  # Down (towards −∞)¶011|RUP|Round Up (towards +∞)¶100|RMM|Round to Nearest, ties
-  # to Max Magnitude¶101||Reserved for future use.¶110||Reserved for future
-  # use.¶111|DYN|In instruction&#8217;s rm field, selects dynamic rounding mode; In
-  # Rounding Mode register, reserved. === Floating-point operations use either a
-  # static rounding mode encoded in the instruction, or a dynamic rounding mode held
-  # in frm. Rounding modes are encoded as shown in
-  # &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the instruction's rm field
-  # selects the dynamic rounding mode held in frm
-  - name: fcsr_frm_op
-    coverpoint: ["F_fadd_s_cg/cp_csr_frm"]
+  # Rounding Mode|Mnemonic|Meaning === 000|RNE|Round to Nearest, ties to
+  # Even¶001|RTZ|Round towards Zero¶010|RDN|Round Down (towards −∞)¶011|RUP|Round Up
+  # (towards +∞)¶100|RMM|Round to Nearest, ties to Max Magnitude¶101||Reserved for future
+  # use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field, selects
+  # dynamic rounding mode; In Rounding Mode register, reserved. ===
+  - name: dyn_round_enc
+    coverpoint:
+      ["F_fadd_s_cg/cp_csr_frm", "ZicsrF_cg/cp_underflow_after_rounding_*"]
+  # Floating-point operations use either a static rounding mode encoded in the
+  # instruction, or a dynamic rounding mode held in frm. Rounding modes are encoded as
+  # shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the instruction's rm
+  # field selects the dynamic rounding mode held in frm
+  - name: roundingmode_dynamic
+    coverpoint:
+      ["F_fadd_s_cg/cp_csr_frm", "ZicsrF_cg/cp_underflow_after_rounding_*"]
 
-  # The fields within the fcsr can also be accessed individually through different
-  # CSR addresses, and separate assembler pseudoinstructions are defined for these
-  # accesses. The FRRM instruction reads the Rounding Mode field frm (fcsr bits
-  # 7&#8212;&#8203;5) and copies it into the least-significant three bits of integer
-  # register rd, with zero in all other bits. FSRM swaps the value in frm by copying
-  # the original value into integer register rd, and then writing a new value
-  # obtained from the three least-significant bits of integer register rs1 into frm.
-  # FRFLAGS and FSFLAGS are defined analogously for the Accrued Exception Flags
-  # field fflags (fcsr bits 4&#8212;&#8203;0). The accrued exception flags indicate
-  # the exception conditions that have arisen on any floating-point arithmetic
-  # instruction since the field was last reset by software, as shown in
-  # &lt;&lt;bitdef&gt;&gt;
+  # The accrued exception flags indicate the exception conditions that have arisen on any
+  # floating-point arithmetic instruction since the field was last reset by software, as
+  # shown in &lt;&lt;bitdef&gt;&gt;
   - name: fcsr_fflags_op
     coverpoint:
       ["ZicsrF_cg/{cp_fcsr_access, cp_fcsr_fflags_write, cp_fflags_write}"]
 
+  # insn:fmadd.s[] multiplies the values in rs1 and rs2, adds the value in rs3, and writes
+  # the final result to rd. insn:fmadd.s[] computes (rs1×rs2)+rs3.
   - name: fmadd-s_op
+    coverpoint: ["ZicsrF_cg/cp_underflow_after_rounding_*"]
+  # Floating-point fused multiply-add (FMA) instructions require a new standard
+  # instruction format. R4-type instructions specify three source registers (rs1, rs2, and
+  # rs3) and a destination register (rd). This format is only used by the floating-point
+  # fused multiply-add instructions.
+  - name: fma_rs3
+    coverpoint: ["ZicsrF_cg/cp_underflow_after_rounding_*"]
+  # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00)
+  # for all instructions in the ext:f[] extension.
+  - name: F_fmt_single
+    coverpoint: ["ZicsrF_cg/cp_underflow_after_rounding_*"]
+  # The fused multiply-add instructions must set the invalid operation exception flag when
+  # the multiplicands are ∞ and zero, even when the addend is a quiet NaN.
+  - name: fma_nv_flag
+    coverpoint: ["ZicsrF_cg/cp_underflow_after_rounding_*"]
+  # Operations on subnormal numbers are handled in accordance with IEEE 754-2008.
+  - name: ieee_std_subnormal
+    coverpoint: ["ZicsrF_cg/cp_underflow_after_rounding_*"]
+  # In the parlance of IEEE 754-2008, tininess is detected after rounding.
+  - name: ieee_std_tininess
     coverpoint: ["ZicsrF_cg/cp_underflow_after_rounding_*"]

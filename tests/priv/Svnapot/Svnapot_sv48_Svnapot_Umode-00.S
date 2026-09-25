@@ -82,6 +82,7 @@ main:
   sfence.vma
 
   LI(a5, va_data)
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -99,6 +100,8 @@ Svnapot_cp_sv48_Svnapot_Umode_test1_access1_exec:
   jalr ra, a5, 0
   nop
 
+  RVTEST_TSBI_GOTO_SMODE
+
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv48_Svnapot_Umode_test1_access1_store, Svnapot_cp_sv48_Svnapot_Umode_test1_access1_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -107,6 +110,7 @@ Svnapot_cp_sv48_Svnapot_Umode_test1_access1_exec:
   RVTEST_SIGUPD(x2, x5, x4, x14, Svnapot_cp_sv48_Svnapot_Umode_test1_access1_exec, Svnapot_cp_sv48_Svnapot_Umode_test1_access1_exec_str)
 
   LI(a5, va_data+0x2000)
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -124,6 +128,8 @@ Svnapot_cp_sv48_Svnapot_Umode_test1_access2_exec:
   jalr ra, a5, 0
   nop
 
+  RVTEST_TSBI_GOTO_SMODE
+
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv48_Svnapot_Umode_test1_access2_store, Svnapot_cp_sv48_Svnapot_Umode_test1_access2_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -132,6 +138,7 @@ Svnapot_cp_sv48_Svnapot_Umode_test1_access2_exec:
   RVTEST_SIGUPD(x2, x5, x4, x14, Svnapot_cp_sv48_Svnapot_Umode_test1_access2_exec, Svnapot_cp_sv48_Svnapot_Umode_test1_access2_exec_str)
 
   LI(a5, va_data+0xF000)
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -148,6 +155,8 @@ Svnapot_cp_sv48_Svnapot_Umode_test1_access3_load:
 Svnapot_cp_sv48_Svnapot_Umode_test1_access3_exec:
   jalr ra, a5, 0
   nop
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv48_Svnapot_Umode_test1_access3_store, Svnapot_cp_sv48_Svnapot_Umode_test1_access3_store_str)

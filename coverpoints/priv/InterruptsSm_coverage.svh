@@ -208,13 +208,6 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         bins pending = {1'b1};
     }
 
-    // No enabled interrupt is pending. walking_mie_zero leaves every supported interrupt but one
-    // enabled, so this pins the disabled one as the only pending interrupt and keeps an enabled
-    // one from firing in its place.
-    mip_no_enabled_pending: coverpoint ((ins.current.csr[CSR_MIP][15:0] & ins.current.csr[CSR_MIE][15:0] & `SM_INT_MASK) == 16'h0) {
-        bins none = {1'b1};
-    }
-
     // Exactly two interrupts enabled: mie masked to the bits this config supports has exactly two
     // bits set. One bin per pair of supported interrupt bits: 3 for M only, 15 for M+S,
     // 21 for M+S+Sscofpmf, 36 for M+S+H, and 45 for M+S+H+Sscofpmf.
@@ -407,13 +400,7 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
                                              binsof(mip_walking.lcofip);
             ignore_bins lcofi_needs_mideleg = binsof(priv_mode_interrupts) intersect {3'b001} &&
                                                   binsof(mip_walking.lcofip) && binsof(mideleg_both.zeros);
-                // With sstatus.SIE set, a delegated LCOFI is taken on the csrrs that made it pending,
-                // so no later S-mode instruction retires with it still showing in mip.
-                ignore_bins lcofi_taken_at_once_in_s = binsof(priv_mode_interrupts) intersect {3'b001} &&
-                                                       binsof(mip_walking.lcofip) && binsof(mstatus_sie.one);
             `endif
-            // U-mode reaches neither sip.STIP (read-only) nor stimecmp, so an undelegated STI can
-            // only be raised for it from M and is taken on the mret.
             // Same for STI: sip.STIP is read-only and U cannot reach stimecmp, so every U-mode STI
             // is raised from M and taken on the mret, whatever mideleg says.
             ignore_bins u_cannot_raise_sti = binsof(priv_mode_interrupts) intersect {3'b000} &&
@@ -424,22 +411,11 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         cp_trigger_tsbi:        cross priv_mode_m, mret_insn, mstatus_mpp, mip_walking, mstatus_mpie, mstatus_sie, mideleg_both, mie_ones, mtvec_both {
             // MEI is the only interrupt with no mip write path: it is raised by a store to the
             // interrupt controller from whatever mode the test runs in, so it never sits pending
-            // across an mret. SEI reaches mip through T-SBI (MIP_SEIP) and is recorded here.
+            // across an mret. Every other interrupt can be written to mip through T-SBI for either
+            // mideleg value (MIP_SEIP, MIP_SSIP, LCOFI, and the SSI fallback when the DUT defines no
+            // RVMODEL_SET_SSW_INT). cp_trigger also records SSI and LCOFI when S writes sip itself
+            // or the DUT raises SSI through its interrupt controller.
             ignore_bins mei_has_no_mip_write = binsof(mip_walking) intersect {16'h0800};
-            // When delegated, sip.SSIP and sip.LCOFIP are read-write, so S-mode raises SSI and LCOFI
-            // itself and cp_trigger records them in S. Undelegated, both are read-only zero, so the
-            // interrupt must come from M and is taken on the mret into S, recorded here. U-mode has
-            // no sip access and keeps the T-SBI path for either mideleg value.
-            `ifdef S_SUPPORTED
-                ignore_bins ssi_is_direct_from_s =
-                    binsof(mstatus_mpp.S_mode) && binsof(mip_walking.ssip) &&
-                    binsof(mideleg_both.ones);
-                `ifdef SSCOFPMF_SUPPORTED
-                    ignore_bins lcofi_is_direct_from_s =
-                        binsof(mstatus_mpp.S_mode) && binsof(mip_walking.lcofip) &&
-                        binsof(mideleg_both.ones);
-                `endif
-            `endif
         }
     `endif
 
@@ -465,16 +441,12 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         }
         `ifdef U_SUPPORTED
             cp_trigger_sti_sstc_tsbi: cross priv_mode_m, mret_insn, mstatus_mpp, menvcfg_stce, mstatus_mpie, mstatus_sie, mie_ones, mideleg_both, mtvec_both, stimecmp_max_min {
-                // Complement of the cp_trigger_sti_sstc ignore above, so the two partition the space:
-                // only the U-mode STCE = 1 armed-timer case arrives through T-SBI and is recorded
-                // here, for either mideleg value. A delegated STI targets S, which is enabled while
-                // running in U whatever sstatus.SIE says, so it fires on the mret just as an
-                // undelegated one does.
-                ignore_bins direct = binsof(menvcfg_stce) intersect {0} || binsof(stimecmp_max_min.max)
-                                     `ifdef S_SUPPORTED
-                                         || binsof(mstatus_mpp.S_mode)
-                                     `endif
-                                     ;
+                `ifdef S_SUPPORTED
+                    // With STCE = 1, S-mode arms stimecmp itself, so no T-SBI mret returns to S
+                    // with the timer armed.
+                    ignore_bins s_writes_stimecmp = binsof(mstatus_mpp.S_mode) && binsof(menvcfg_stce) intersect {1} &&
+                                                    binsof(stimecmp_max_min.min);
+                `endif
             }
         `endif
     `endif
@@ -486,15 +458,13 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     }
     `ifdef U_SUPPORTED
         cp_enable_one_tsbi:     cross priv_mode_m, mret_insn, mstatus_mpp, mideleg_zeros, walking_mie_one, mip_matches_mie_one {
-            // MEI, SEI, and SSI are raised directly in S/U and covered by cp_enable_one.
-            // mideleg_zeros pins LCOFI undelegated, so sip.LCOFIP is read-only zero and an S-mode
-            // LCOFI reaches mip only through T-SBI, which is recorded here.
-            ignore_bins direct = binsof(walking_mie_one) intersect {16'h0800, 16'h0200, 16'h0002};
+            // As in cp_trigger_tsbi, MEI has no mip write path, so it never sits pending across an mret.
+            ignore_bins mei_has_no_mip_write = binsof(walking_mie_one) intersect {16'h0800};
         }
     `endif
     // No _tsbi twin: cp_enable_zero checks that the disabled interrupt does not fire, so the S/U
     // instruction retires with it pending and is observed directly.
-    cp_enable_zero:             cross priv_mode_interrupts, mideleg_zeros, mstatus_mie_one, walking_mie_zero, mip_matches_mie_zero, mip_no_enabled_pending;
+    cp_enable_zero:             cross priv_mode_interrupts, mideleg_zeros, mstatus_mie_one, walking_mie_zero, mip_matches_mie_zero;
     // In S/U, mie and mideleg are written through T-SBI, so the priority interrupts fire right after
     // the mret and are covered by the _tsbi crosses
     cp_priority_mip:            cross priv_mode_interrupts, mideleg_zeros, mstatus_mie_one, mie_ones, mip_pairs {

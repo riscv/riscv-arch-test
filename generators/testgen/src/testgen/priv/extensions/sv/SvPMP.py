@@ -89,8 +89,7 @@ def _make_pmp_on_pa(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                         "va_data",
                         level,
                         f"test{number}",
-                        enter=[] if mode == "Mmode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"],
-                        leave=[] if mode == "Mmode" else ["RVTEST_TSBI_GOTO_MMODE"],
+                        driver_mode="Mmode",
                     ),
                     "",
                 ]
@@ -142,8 +141,7 @@ def _make_pmp_on_pte(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     "va_data",
                     level,
                     f"test{number}",
-                    enter=[] if mode == "Mmode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"],
-                    leave=[] if mode == "Mmode" else ["RVTEST_TSBI_GOTO_MMODE"],
+                    driver_mode="Mmode",
                 ),
             ]
         )

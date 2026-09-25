@@ -14,13 +14,6 @@ covergroup Svbare_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-    mprv_mstatus: coverpoint ins.current.csr[CSR_MSTATUS][17] {
-        bins set = {1};
-    }
-    mpp_mstatus: coverpoint ins.prev.csr[CSR_MSTATUS][12:11] {
-        bins U_mode = {2'b00};
-        bins S_mode = {2'b01};
-    }
     read_acc: coverpoint ins.current.read_access {
         bins set = {1};
     }
@@ -42,9 +35,6 @@ covergroup Svbare_cg with function sample(ins_t ins);
     `endif
 
 
-    cp_satp_bare_mprv_load:  cross satp_bare, mprv_mstatus, mpp_mstatus, read_acc, priv_mode_m;
-    cp_satp_bare_mprv_store: cross satp_bare, mprv_mstatus, mpp_mstatus, write_acc, priv_mode_m;
-    cp_satp_bare_mprv_exec:  cross satp_bare, mprv_mstatus, mpp_mstatus, exec_acc, priv_mode_m;
     cp_satp_bare_load:       cross satp_bare, read_acc, priv_mode_s_u;
     cp_satp_bare_store:      cross satp_bare, write_acc, priv_mode_s_u;
     cp_satp_bare_exec:       cross satp_bare, exec_acc, priv_mode_s_u;

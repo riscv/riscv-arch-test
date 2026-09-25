@@ -8,6 +8,7 @@
 
 """Generate Svade A/D-bit page-fault tests."""
 
+from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.sv.access import add_rwx_test
@@ -21,7 +22,6 @@ _DA_CASES = (
     ("PTE.D set and PTE.A unset", ("PTE_D",), 3),
     ("Both PTE.D and PTE.A unset", (), 3),
 )
-_MARCH = ["I", "Zicsr", "Zifencei"]
 
 
 def _make_svade_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
@@ -32,7 +32,7 @@ def _make_svade_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
         mode,
         f"{sv.name}_Svade_{mode}",
         coverpoint="cp_ad_update",
-        setup_asm=(f"LI(t0, {mask})", f"csrc {csr}, t0 // Enable Svade"),
+        setup_asm=(f"LI(t0, {mask})", tsbi_call(f"csrc {csr}, t0")),
     )
 
     umode = mode == "Umode"
@@ -54,7 +54,16 @@ def _make_svade_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                     "sfence.vma",
                     "",
-                    *add_rwx_test(test_data, sv, mode, "va_data", level, f"test{number}"),
+                    *add_rwx_test(
+                        test_data,
+                        sv,
+                        mode,
+                        "va_data",
+                        level,
+                        f"test{number}",
+                        enter=[] if mode == "Smode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"],
+                        leave=[] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"],
+                    ),
                     "",
                 ]
             )
@@ -70,9 +79,9 @@ def _make_svade(test_data: TestData, sv: SvMode) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "Svade",
-    required_extensions=["I", "Sv32", "Svade"],
-    march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sv32", "Svade"],
+    march_extensions=["Svade"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svade_sv32(test_data: TestData) -> list[TestChunk]:
     return _make_svade(test_data, SV32)
@@ -80,9 +89,9 @@ def make_svade_sv32(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "Svade",
-    required_extensions=["I", "Sv39", "Svade"],
-    march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sv39", "Svade"],
+    march_extensions=["Svade"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svade_sv39(test_data: TestData) -> list[TestChunk]:
     return _make_svade(test_data, SV39)
@@ -90,9 +99,9 @@ def make_svade_sv39(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "Svade",
-    required_extensions=["I", "Sv48", "Svade"],
-    march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sv48", "Svade"],
+    march_extensions=["Svade"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svade_sv48(test_data: TestData) -> list[TestChunk]:
     return _make_svade(test_data, SV48)
@@ -100,9 +109,9 @@ def make_svade_sv48(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "Svade",
-    required_extensions=["I", "Sv57", "Svade"],
-    march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sv57", "Svade"],
+    march_extensions=["Svade"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svade_sv57(test_data: TestData) -> list[TestChunk]:
     return _make_svade(test_data, SV57)

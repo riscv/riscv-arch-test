@@ -1,0 +1,176 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # Two-stage translation in VS-mode and VU-mode, with either stage Bare or both
+  - names:
+      [H_vm_supported, H_vm_twostage, hgatp_mode_bare, hgatp_mode_bare_trans]
+    coverpoint:
+      [
+        "SvH_vsstage_cg/cp_vsatp_perm",
+        "SvH_gstage_cg/cp_hgatp_perm",
+        "SvH_twostage_cg/cp_twostage_perm",
+        "SvH_twostage_cg/cp_stage_both_bare",
+      ]
+
+  # G-stage leaves are checked as for U-mode with the Sv algorithm; the G bit is ignored; any exception is
+  # reported for the original access type
+  - names:
+      [
+        H_vm_gpatrans,
+        H_vm_gpapriv,
+        H_vm_gpa_g,
+        Svrsw60t59b_h_g_stage_reserved_bits,
+      ]
+    coverpoint:
+      [
+        "SvH_gstage_cg/cp_hgatp_perm",
+        "SvH_twostage_cg/cp_twostage_perm",
+        "SvH_twostage_cg/cp_implicit_gpf",
+      ]
+
+  # Guest physical addresses are 2 bits wider than the Sv mode's virtual addresses; the extra bits index the 16 KiB
+  # root table, and higher bits must be zero
+  - names: [hgatp_mode_x4]
+    coverpoint:
+      [
+        "SvH_gstage_cg/cp_hgatp_gpa_width",
+        "SvH_twostage_cg/cp_hgatp_sv32x4_gpa",
+      ]
+  - names: [hgatp_mode_sv39x4, hgatp_mode_sv48x4, hgatp_mode_sv57x4]
+    coverpoint: ["SvH_gstage_cg/cp_hgatp_gpa_width"]
+  - names: [hgatp_mode_sv32x4]
+    coverpoint: ["SvH_twostage_cg/cp_hgatp_sv32x4_gpa"]
+
+  # vsatp and hgatp MODE: an unsupported MODE is ignored or WARL for vsatp with V = 0, WARL for hgatp, and
+  # ignored for satp (vsatp) with V = 1
+  - names: [vsatp_mode_unsupported_v0, VSATP_MODE_UNSUPPORTED_V0_WARL]
+    coverpoint: ["SvH_csr_cg/cp_vsatp_mode_field"]
+  - names: [vsatp_mode_unsupported_v1, vsatp_op]
+    coverpoint: ["SvH_csr_cg/cp_satp_mode_field"]
+  - names: [hgatp_mode_sv, HGATP_MODE_WARL]
+    coverpoint: ["SvH_csr_cg/cp_hgatp_mode_field"]
+
+  # Implicit VS-stage page-table accesses use the G-stage; a guest-page fault on one writes a pseudoinstruction
+  - names:
+      [H_vm_gstagetrans, H_trap_xtinst_guestpage, H_trap_xtinst_guestpage_rw]
+    coverpoint: ["SvH_twostage_cg/cp_implicit_gpf"]
+
+  # Guest-page faults taken in HS-mode write htval and hstatus.GVA
+  - names:
+      [H_guest_page_fault, HTVAL_TRAPVAL, mtval2_htval_virtaddr, hstatus_gva_op]
+    coverpoint:
+      [
+        "SvH_gstage_cg/cp_hgatp_perm",
+        "SvH_twostage_cg/cp_twostage_perm",
+        "SvH_twostage_cg/cp_implicit_gpf",
+        "SvH_twostage_cg/cp_hgatp_sv32x4_gpa",
+      ]
+
+  # A fetch that straddles a page boundary reports the address of the faulting page
+  - names: [H_straddle]
+    coverpoint: ["SvH_twostage_cg/cp_straddle"]
+
+  # hedeleg can delegate page faults, but not guest-page faults, to VS-mode
+  - names: [hedeleg_op, H_trap_deleg]
+    coverpoint:
+      [
+        "SvH_twostage_cg/cp_hedeleg_page_fault",
+        "SvH_twostage_cg/cp_hedeleg_guest_page_fault",
+      ]
+
+  # vsstatus.MXR affects only the VS-stage; the HS-level MXR affects both stages
+  - names: [vsstatus_mxr_vm, sstatus_mxr_vm]
+    coverpoint:
+      [
+        "SvH_vsstage_cg/cp_vsstatus_mxr",
+        "SvH_gstage_cg/cp_hgatp_mxr",
+        "SvH_twostage_cg/cp_twostage_mxr",
+      ]
+
+  # vsstatus.SUM in VS-mode
+  - names: [vsstatus_op]
+    coverpoint: ["SvH_vsstage_cg/cp_vsatp_sum"]
+
+  # HLV, HLVX and HSV: hstatus.SPVP selects the privilege, vsstatus.SUM applies and sstatus.SUM does not,
+  # sstatus.MXR affects both stages and vsstatus.MXR the VS-stage, and HLVX needs execute permission
+  - names:
+      [
+        hlsv_priv,
+        hlsv_trans,
+        hlsv_sstatus_mxr,
+        hlsv_vsstatus_mxr,
+        hlsv_u_op,
+        hstatus_spvp_op,
+        vsatp_v0,
+      ]
+    coverpoint: ["SvH_hlv_cg/cp_hlv_priv", "SvH_hlv_cg/cp_hlv_mxr"]
+
+  # henvcfg.PBMTE gates Svpbmt in the VS-stage, and menvcfg.PBMTE in the G-stage
+  - names: [henvcfg_pbmte_op, Svpbmt_vsatp_stage_override_rule]
+    coverpoint: ["SvH_vsstage_cg/cp_vsatp_pbmt"]
+  - names: [menvcfg_pbmte_op, Svpbmt_hgatp_stage_override_rule]
+    coverpoint: ["SvH_gstage_cg/cp_hgatp_pbmt"]
+
+  # henvcfg.ADUE selects Svadu or Svade for the VS-stage, and menvcfg.ADUE for the G-stage
+  - names: [henvcfg_adue_op]
+    coverpoint:
+      ["SvH_vsstage_cg/cp_vsatp_adue", "SvH_twostage_cg/cp_twostage_adue"]
+  - names: [menvcfg_adue_op]
+    coverpoint:
+      ["SvH_gstage_cg/cp_hgatp_adue", "SvH_twostage_cg/cp_twostage_adue"]
+
+  # henvcfg.ADUE and henvcfg.PBMTE are writable only while menvcfg.ADUE and menvcfg.PBMTE are set
+  - names:
+      [
+        menvcfg_adue_henvcfg_adue_rdonly0,
+        menvcfg_pbmte_henvcfg_pbmte_rdonly0,
+        Svadu_hypervisor_adue_writable,
+      ]
+    coverpoint:
+      ["SvH_csr_cg/cp_henvcfg_menvcfg", "SvH_vsstage_cg/cp_vsatp_adue"]
+
+  # Svnapot in each stage, and reserved NAPOT encodings
+  - names: [Svnapot_hyp_gstage]
+    coverpoint:
+      [
+        "SvH_vsstage_cg/cp_vsatp_napot",
+        "SvH_gstage_cg/cp_hgatp_napot",
+        "SvH_twostage_cg/cp_twostage_napot",
+      ]
+
+  # VS-stage A bits must not be set speculatively
+  - names: [vs_stage_speculative_a_bit]
+    coverpoint:
+      ["Not tested: speculative execution is not architecturally observable"]
+
+  # hstatus.SPVP sets the effective privilege of the explicit accesses of HLV, HLVX and HSV
+  - names: [hstatus_spvp_virtls_op]
+    coverpoint: ["SvH_hlv_cg/cp_hlv_priv"]
+
+  # For Sv32x4, Sv39x4, Sv48x4 and Sv57x4, the root page table is 16 KiB and aligned to 16 KiB
+  - names: [hgatp_root_pt_sz_align]
+    coverpoint:
+      [
+        "SvH_gstage_cg/cp_hgatp_gpa_width",
+        "SvH_twostage_cg/cp_hgatp_sv32x4_gpa",
+      ]
+
+  # Writing hgatp does not order page-table updates before later G-stage translations
+  - names: [hgatp_op_hfence_gvma]
+    coverpoint:
+      [
+        "Not tested: no behavior is required; tests execute hfence.gvma after writing hgatp",
+      ]
+
+  # With V=0, SFENCE.VMA takes an HS-level address and ASID and orders only HS-level address translation
+  - names: [sfence_vma_v0]
+    coverpoint: ["Sv_sfence_cg/cp_ins (Sv tests on an H hart run with V=0)"]
+
+  # With V=1, SFENCE.VMA takes a guest virtual address and a VS-level ASID and orders VS-stage translation for the
+  # current VMID
+  - names: [sfence_vma_v1]
+    coverpoint:
+      [
+        "Not tested: TODO change a VS-stage leaf, execute sfence.vma in VS-mode, and check that the next guest access uses the new leaf",
+      ]

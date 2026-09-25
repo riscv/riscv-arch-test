@@ -13,5 +13,6 @@ normative_rule_definitions:
   # If the Hypervisor (H) extension is also implemented, then bits 60-59 of the G-stage
   # PTEs are reserved for use by supervisor software and are ignored by the
   # implementation.
+  # SvH accesses through G-stage leaves with bit 59 or 60 set; the trace has no PTEs, so the bin records the access
   - name: Svrsw60t59b_h_g_stage_reserved_bits
-    coverpoint: ["TODO: test in hypervisor tests"]
+    coverpoint: ["SvH_gstage_cg/cp_hgatp_perm"]

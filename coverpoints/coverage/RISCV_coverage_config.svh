@@ -182,6 +182,12 @@
 `ifdef SDTRIGSM_COVERAGE
   `include "SdtrigSm_coverage.svh"
 `endif
+`ifdef SHTVALA_COVERAGE
+  `include "Shtvala_coverage.svh"
+`endif
+`ifdef SHVSTVALA_COVERAGE
+  `include "Shvstvala_coverage.svh"
+`endif
 `ifdef SM_COVERAGE
   `include "Sm_coverage.svh"
 `endif
@@ -265,6 +271,9 @@
 `endif
 `ifdef SVH_COVERAGE
   `include "SvH_coverage.svh"
+`endif
+`ifdef SVHSM_COVERAGE
+  `include "SvHSm_coverage.svh"
 `endif
 `ifdef SVPMP_COVERAGE
   `include "SvPMP_coverage.svh"

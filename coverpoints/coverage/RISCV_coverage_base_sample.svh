@@ -181,6 +181,12 @@
     `ifdef COVER_SDTRIGSM
         sdtrigsm_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SHTVALA
+        shtvala_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SHVSTVALA
+        shvstvala_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SM
         sm_sample(hart, issue, ins);
     `endif
@@ -264,6 +270,9 @@
     `endif
     `ifdef COVER_SVH
         svh_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SVHSM
+        svhsm_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SVPMP
         svpmp_sample(hart, issue, ins);

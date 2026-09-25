@@ -238,6 +238,14 @@
         `cover_info("//      SdtrigSm - Enabled");
         `include "SdtrigSm_coverage_init.svh"
     `endif
+    `ifdef COVER_SHTVALA
+        `cover_info("//      Shtvala - Enabled");
+        `include "Shtvala_coverage_init.svh"
+    `endif
+    `ifdef COVER_SHVSTVALA
+        `cover_info("//      Shvstvala - Enabled");
+        `include "Shvstvala_coverage_init.svh"
+    `endif
     `ifdef COVER_SM
         `cover_info("//      Sm - Enabled");
         `include "Sm_coverage_init.svh"
@@ -349,6 +357,10 @@
     `ifdef COVER_SVH
         `cover_info("//      SvH - Enabled");
         `include "SvH_coverage_init.svh"
+    `endif
+    `ifdef COVER_SVHSM
+        `cover_info("//      SvHSm - Enabled");
+        `include "SvHSm_coverage_init.svh"
     `endif
     `ifdef COVER_SVPMP
         `cover_info("//      SvPMP - Enabled");

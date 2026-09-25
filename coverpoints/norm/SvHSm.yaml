@@ -1,0 +1,40 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # MPRV with MPV = 1 translates M-mode loads and stores through both stages, where vsstatus.SUM replaces the
+  # HS-level SUM and the HS-level MXR covers both stages
+  - names: [mstatus_mprv_hypervisor, vsatp_v0]
+    coverpoint:
+      [
+        "SvHSm_mprv_cg/cp_vsatp_mprv_effects",
+        "SvHSm_mprv_cg/cp_hgatp_mprv_effects",
+        "SvHSm_mprv_cg/cp_mprv_sum",
+        "SvHSm_mprv_cg/cp_mprv_mxr",
+      ]
+
+  # MPRV does not affect HLV and HSV
+  - names: [mstatus_mprv_hlsv]
+    coverpoint: ["SvHSm_mprv_cg/cp_hgatp_mprv_effects"]
+
+  # Guest page faults and guest-page faults taken in M-mode write mtval2, mtinst, mstatus.GVA and mstatus.MPV
+  - names:
+      [
+        H_guest_page_fault,
+        MTVAL2_TRAPVAL,
+        mtval2_trapval_vstrans,
+        mtval2_htval_virtaddr,
+        mstatus_gva_op,
+        mstatus_mpv_op,
+        H_trap_xtinst_guestpage,
+      ]
+    coverpoint:
+      ["SvHSm_trap_cg/cp_guest_page_fault_m", "SvHSm_trap_cg/cp_implicit_gpf_m"]
+
+  # For a misaligned access or a variable-length instruction fetch that takes a guest-page fault, a nonzero mtval2
+  # corresponds to the faulting portion of the access that mtval indicates
+  - names: [mtval2_trapval_other]
+    coverpoint:
+      [
+        "Not tested: TODO misaligned loads and stores, and fetches that straddle a page, whose second page has an invalid G-stage leaf, taken into M-mode",
+      ]

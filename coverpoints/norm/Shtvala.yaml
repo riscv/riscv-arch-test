@@ -1,0 +1,21 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # If the Shtvala extension is implemented, htval must be written with the faulting guest
+  # physical address in all circumstances permitted by the ISA: that of the final access, which
+  # corresponds to the virtual address in stval, or that of an implicit VS-stage PTE read, for
+  # which htinst holds a pseudoinstruction.
+  - names:
+      [
+        shtvala_htval_faulting_gpa,
+        HTVAL_TRAPVAL,
+        mtval2_htval_virtaddr,
+        H_trap_xtinst_guestpage,
+      ]
+    coverpoint:
+      [
+        "Shtvala_cg/cp_load_guest_page_fault",
+        "Shtvala_cg/cp_store_guest_page_fault",
+        "Shtvala_cg/cp_instr_guest_page_fault",
+      ]

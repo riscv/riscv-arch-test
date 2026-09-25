@@ -390,12 +390,6 @@ normative_rule_definitions:
   - name: Zicsr_write_ro
     coverpoint: ["S_scsr_cg/cp_scsr_access checks this if applicable"]
 
-  # 0x7B0-0x7BF are only visible to debug mode. Implementations should raise
-  # illegal-instruction exceptions on machine-mode access to the latter set of
-  # registers.
-  - name: Zicsr_debug-illegal
-    coverpoint: ["S_scsr_cg/cp_csr_insufficient_priv"]
-
   # For forward compatibility, implementations that do not furnish these fields must
   # make them read-only zero. These fields are labeled WPRI in the register
   # descriptions.

@@ -22,12 +22,6 @@ normative_rule_definitions:
   - name: Zicsr_illegal_acc
     coverpoint: ["U_ucsr_cg/cp_csr_ro"]
 
-  # 0x7B0-0x7BF are only visible to debug mode. Implementations should raise
-  # illegal-instruction exceptions on machine-mode access to the latter set of
-  # registers.
-  - name: Zicsr_debug-illegal
-    coverpoint: ["U_ucsr_cg/cp_csr_insufficient_priv"]
-
   # The ECALL instruction is used to make a service request to the execution
   # environment.
   - name: ecall_op

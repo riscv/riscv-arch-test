@@ -188,7 +188,7 @@ normative_rule_definitions:
   - name: supervisor_timer_scheduling
     coverpoint:
       [
-        "OUT-OF-SCOPE: too vague if handled by software setting STIP. Tested by InterruptsSstc_cg/cp_supervisor_sti when Sstc implemented",
+        "InterruptsSm_cg/cp_trigger_sti_sstc when Sstc implemented. Too vague if handled by software setting STIP.",
       ]
 
   # The sscratch CSR is an SXLEN-bit read/write register, dedicated for use by the
@@ -389,12 +389,6 @@ normative_rule_definitions:
   # case writes to the read-only bits are ignored.
   - name: Zicsr_write_ro
     coverpoint: ["S_scsr_cg/cp_scsr_access checks this if applicable"]
-
-  # 0x7B0-0x7BF are only visible to debug mode. Implementations should raise
-  # illegal-instruction exceptions on machine-mode access to the latter set of
-  # registers.
-  - name: Zicsr_debug-illegal
-    coverpoint: ["S_scsr_cg/cp_csr_insufficient_priv"]
 
   # For forward compatibility, implementations that do not furnish these fields must
   # make them read-only zero. These fields are labeled WPRI in the register

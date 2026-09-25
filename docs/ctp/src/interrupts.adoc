@@ -10,7 +10,7 @@ These tests are run on any configuration with machine mode that supports interru
 [[t-InterruptsSm-coverpoints]]
 .InterruptsSm Coverpoints
 ,===
-https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=399538825#gid=399538825[Google Sheet Testplan]
+https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=0#gid=0[Google Sheet Testplan]
 ,===
 
 include::norm/InterruptsSm_norm_rules.adoc[]
@@ -32,7 +32,7 @@ These tests are run on any configuration with supervisor mode that supports inte
 [[t-InterruptsS-coverpoints]]
 .InterruptsS Coverpoints
 ,===
-https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=664673151#gid=664673151[Google Sheet Testplan]
+https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=1560685057#gid=1560685057[Google Sheet Testplan]
 ,===
 
 
@@ -63,16 +63,26 @@ https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7
 
 include::norm/InterruptsU_norm_rules.adoc[]
 
-==== InterruptsSstc Supervisor Timer Compare Interrupts
+==== SstcSm Machine Supervisor Timer Compare
 
-These tests are run when the Sstc supervisor timer compare extension is supported.
+These tests are run from machine mode when the Sstc supervisor timer compare extension is supported.
 
-[[t-InterruptsSstc-coverpoints]]
-.InterruptsSstc Coverpoints
+[[t-SstcSm-coverpoints]]
+.SstcSm Coverpoints
 ,===
-https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=347804969#gid=347804969[Google Sheet Testplan]
+https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=2013711018#gid=2013711018[Google Sheet Testplan]
 ,===
 
-include::norm/InterruptsSstc_norm_rules.adoc[]
+include::norm/SstcSm_norm_rules.adoc[]
 
-TODO: beef up testing stimecmp values, behavior near wraparound
+==== Sstc Supervisor Timer Compare
+
+These tests are run from supervisor and user mode when the Sstc supervisor timer compare extension is supported.
+
+[[t-Sstc-coverpoints]]
+.Sstc Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=618999433#gid=618999433[Google Sheet Testplan]
+,===
+
+include::norm/Sstc_norm_rules.adoc[]

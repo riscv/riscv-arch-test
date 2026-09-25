@@ -481,7 +481,7 @@
   jal rvtest_set_sstc_int_ms     /* Trigger supervisor timer interrupt with Sstc */
 
 #define RVTEST_CLR_SSTC_INT_M \
-  jal rvtest_clr_sstc_int_ms     /* Clear supervisor timer interrupt with Sstc */
+  jal rvtest_clr_sstc_int_m      /* Clear supervisor timer interrupt with Sstc */
 
 #define RVTEST_SET_STIME_INT_M \
   jal rvtest_set_stime_int_m     /* Trigger supervisor timer interrupt */
@@ -531,7 +531,7 @@
   jal rvtest_set_sstc_int_ms     /* Trigger supervisor timer interrupt with Sstc */
 
 #define RVTEST_CLR_SSTC_INT_S \
-  jal rvtest_clr_sstc_int_ms     /* Clear supervisor timer interrupt with Sstc */
+  jal rvtest_clr_sstc_int_s      /* Clear supervisor timer interrupt with Sstc */
 
 #define RVTEST_SET_STIME_INT_S \
   jal rvtest_set_stime_int_su     /* Trigger supervisor timer interrupt */

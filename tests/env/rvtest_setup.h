@@ -354,6 +354,34 @@
   // Note: _ms and _su are shared implementations
   // used for multiple privilege modes
 
+  // A write to msip, mtimecmp, or stimecmp reaches mip only eventually. After
+  // clearing an interrupt source, poll mip until the pending bit reads 0, for at most
+  // RVMODEL_INTERRUPT_LATENCY iterations, so the interrupt is not taken again
+  // when the test next enables it. The _SU flavor reads mip through T-SBI.
+  .macro RVTEST_WAIT_MIP_CLEAR_M mask
+    LI(a2, RVMODEL_INTERRUPT_LATENCY)
+    1:
+    csrr a0, mip
+    andi a0, a0, \mask
+    beqz a0, 2f // pending bit is clear
+    beqz a2, 2f // latency exhausted
+    addi a2, a2, -1
+    j 1b
+    2:
+  .endm
+
+  .macro RVTEST_WAIT_MIP_CLEAR_SU mask
+    LI(a2, RVMODEL_INTERRUPT_LATENCY)
+    1:
+    RVTEST_TSBI_CSR_READ(CSR_MIP) // a0 = mip; a2 is preserved
+    andi a0, a0, \mask
+    beqz a0, 2f // pending bit is clear
+    beqz a2, 2f // latency exhausted
+    addi a2, a2, -1
+    j 1b
+    2:
+  .endm
+
   // Flavors to run from M-mode
 
   #ifdef STANDARD_SM_SUPPORTED
@@ -402,6 +430,7 @@
         LA(a1, RVMODEL_MTIMECMP_ADDRESS)
         li a2, -1 // all 1s
         sw a2, 4(a1)      // don't bother with lower bits, which stay at 0
+        RVTEST_WAIT_MIP_CLEAR_M 0x80 // mip.MTIP
       #endif
       ret
 
@@ -419,6 +448,7 @@
       #ifdef RVMODEL_MSIP_ADDRESS
         LA(a1, RVMODEL_MSIP_ADDRESS)
         sw zero, 0(a1) // normal way to clear MSI is to write a 0 to MSIP
+        RVTEST_WAIT_MIP_CLEAR_M 0x8 // mip.MSIP
       #elif defined(RVMODEL_CLR_MSW_INT_M)
         RVMODEL_CLR_MSW_INT_M(a0, a1) // if normal way isn't supported, use platform-specific method
       #endif
@@ -472,13 +502,31 @@
         ret
 
       // Clear STI using Sstc.  Assumes menvcfg.STCE=1
-      rvtest_clr_sstc_int_ms:
+      rvtest_clr_sstc_int_m:
         li a1, -1 // all 1s
         #if UDB_MXLEN == 32
+          // Upper word first, which is what actually clears STI; the lower word then makes the
+          // 64-bit stimecmp read all 1s as it does on RV64, and is never transiently armed.
           csrw stimecmph, a1 // set upper word of stimecmp to all 1s to clear STI
+          csrw stimecmp, a1  // and the lower word, so the whole register is all 1s
         #else
           csrw stimecmp, a1 // set stimecmp to all 1s to clear STI
         #endif
+        RVTEST_WAIT_MIP_CLEAR_M 0x20 // mip.STIP
+        ret
+
+      // Clear STI from S-mode using Sstc.  Assumes menvcfg.STCE=1
+      rvtest_clr_sstc_int_s:
+        li a1, -1 // all 1s
+        #if UDB_MXLEN == 32
+          // Upper word first, which is what actually clears STI; the lower word then makes the
+          // 64-bit stimecmp read all 1s as it does on RV64, and is never transiently armed.
+          csrw stimecmph, a1 // set upper word of stimecmp to all 1s to clear STI
+          csrw stimecmp, a1  // and the lower word, so the whole register is all 1s
+        #else
+          csrw stimecmp, a1 // set stimecmp to all 1s to clear STI
+        #endif
+        RVTEST_WAIT_MIP_CLEAR_SU 0x20 // mip.STIP
         ret
     #endif // SSTC_SUPPORTED
 
@@ -586,6 +634,7 @@
         LA(a1, RVMODEL_MTIMECMP_ADDRESS)
         li a2, -1 // all 1s
         RVTEST_TSBI_SWP4 // sw a2, 4(a1)      // don't bother with lower bits, which stay at 0
+        RVTEST_WAIT_MIP_CLEAR_SU 0x80 // mip.MTIP
       #endif
       ret
 
@@ -604,6 +653,7 @@
         LA(a1, RVMODEL_MSIP_ADDRESS)
         li a2, 0
         RVTEST_TSBI_SW // sw a2, 0(a1) // normal way to clear MSI is to write a 0 to MSIP
+        RVTEST_WAIT_MIP_CLEAR_SU 0x8 // mip.MSIP
       #elif defined(RVMODEL_CLR_MSW_INT)
         RVMODEL_CLR_MSW_INT(a0, a1) // if normal way isn't supported, use platform-specific method
       #endif
@@ -738,9 +788,11 @@
         li a1, -1 // all 1s
         #if UDB_MXLEN == 32
           RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMPH) // set upper word of stimecmp to all 1s to clear STI
+          RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMP)  // and the lower word, so the whole register is all 1s
         #else
           RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMP) // set stimecmp to all 1s to clear STI
         #endif
+        RVTEST_WAIT_MIP_CLEAR_SU 0x20 // mip.STIP
         ret
     #endif // SSTC_SUPPORTED
   #endif // S_SUPPORTED
@@ -1347,10 +1399,10 @@
     // medeleg[17] = 0: reserved
     // medeleg[18] = 1: delegate software check
     // medeleg[19] = 1: delegate hardware check
-    // mideleg[20] = 1: delegate instruction guest-page fault
-    // mideleg[21] = 1: delegate load guest-page fault
+    // medeleg[20] = 1: delegate instruction guest-page fault
+    // medeleg[21] = 1: delegate load guest-page fault
     // medeleg[22] = 1: delegate virtual instruction
-    // mideleg[23] = 1: delegate store guest-page fault
+    // medeleg[23] = 1: delegate store guest-page fault
     // higher bits are reserved or custom
     li t0, 0x0FCB5FF
     csrw medeleg, t0

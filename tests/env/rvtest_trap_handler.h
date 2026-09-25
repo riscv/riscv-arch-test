@@ -104,10 +104,12 @@
 //    TSBI_GOTO_UMODE  (a0=3)          — Switch caller to U-mode
 //    TSBI_GOTO_VSMODE (a0=4)          — Switch caller to VS-mode (H required)
 //    TSBI_GOTO_VUMODE (a0=5)          — Switch caller to VU-mode (H required)
-//      The three GOTO ops above also relocate the resume address when a test
-//      runs with translation on and has registered a code alias for its code
-//      region (see TSBI_RELOCATE_EPC).
+//      All five GOTO ops relocate the resume address when a test runs with
+//      translation on and has registered a code alias for its code region
+//      (see TSBI_RELOCATE_EPC).
 //    TSBI_ECALL_TEST  (a0=0x73)       — Test ecall path; returns xEPC in a0
+//    TSBI_ECALL_RECORD (a0=6)         — Record the ecall in the trap signature like any
+//                                       other exception and return past it
 //    CSR_ACCESS       (a0=CSR opcode) — Execute CSR instruction; rd must be a0
 //    TSBI_LW/LWP4/LD  (a0=load opcode) — Load from physical address a1 into a0
 //    TSBI_SW/SWP4/SD  (a0=store opcode)— Store a2 to physical address a1
@@ -115,14 +117,22 @@
 //
 //  Dispatch hierarchy:
 //    M-mode handler:  handles all operations directly
-//    S-mode handler:  handles ECALL_TEST, GOTO_S/U, S-mode CSR_ACCESS locally;
-//                     forwards GOTO_M/VS/VU, M-mode CSR_ACCESS, and loads/stores to M-mode via ecall
+//    S-mode handler:  handles ECALL_TEST, ECALL_RECORD, GOTO_S/U/VS/VU, S-mode CSR_ACCESS locally;
+//                     forwards GOTO_M, M-mode CSR_ACCESS, and loads/stores to M-mode via ecall
+//    VS-mode handler: receives calls from VU-mode when hedeleg[8]=1. It handles
+//                     ECALL_TEST, ECALL_RECORD and GOTO_VS/VU locally and forwards everything
+//                     else to HS-mode via ecall. A forwarded GOTO_M/S/U (or legacy
+//                     a0=0 call) leaves the guest: the HS handler recognizes the
+//                     ecall at tsbi_Vforward_goto_ecall and resumes the VU caller
+//                     instead of the VS handler. An ecall from VS-mode (cause 10)
+//                     always goes to HS-mode because hedeleg[10] is read-only 0.
 //
 //  Two limits apply to calls made from a guest (V=1):
 //    - GOTO_S/U and the GOTO_M forwarding resume the caller by jumping to xEPC,
 //      which is a guest virtual address, while the hart is already in host
 //      context. That only lands on the caller when the guest's VS-stage and
-//      G-stage maps are identity, which is what the H tests set up.
+//      G-stage maps are identity, or when the test registered the guest code
+//      alias it runs in (see TSBI_RELOCATE_EPC).
 //    - CSR_ACCESS dispatches on the CSR number in the caller's encoding, so an
 //      S-mode CSR name from a guest (sstatus 0x100, say) is executed by the HS
 //      handler and changes HOST state, not the guest's. A guest that wants its
@@ -196,8 +206,9 @@
 // Dispatch order in the handler:
 //   1. If (a0-1) < 5  -> GOTO_xMODE      (a0 in range [1..5])
 //   2. If a0 == 0x73  -> ECALL_TEST      (exact match on ecall encoding)
-//   3. If a0[6:0]==0x73 && a0[14:12]!=0 -> CSR_ACCESS (SYSTEM opcode with funct3)
-//   4. Otherwise       -> RESERVED        (return -1)
+//   3. If a0 == 6     -> ECALL_RECORD    (recorded like any other exception)
+//   4. If a0[6:0]==0x73 && a0[14:12]!=0 -> CSR_ACCESS (SYSTEM opcode with funct3)
+//   5. Otherwise       -> RESERVED        (return -1)
 //==============================================================================
 
 // a0 values for TSBI_GOTO_xMODE.  ALT_GOTO_MMODE is used by RVTEST_GOTO_DELEGATED_MMODE
@@ -208,6 +219,7 @@
 #define TSBI_GOTO_VSMODE    0x00000004
 #define TSBI_GOTO_VUMODE    0x00000005
 #define TSBI_ECALL_TEST     0x00000073
+#define TSBI_ECALL_RECORD   0x00000006
 #define TSBI_LW             0x0005a503
 #define TSBI_LWP4           0x0045a503
 #define TSBI_LD             0x0005b503
@@ -246,7 +258,7 @@
 //   - MPP_*:     mstatus.MPP field values (bits 12:11)
 //   - *_LSB:     bit positions of key mstatus/hstatus fields
 //
-// The trap signature word 0 packs: mode(1:0), entry_size(5:2), vector(10:6),
+// The trap signature word 0 packs: mode(1:0), entry size in bytes(5:2), vector(10:6),
 // xIE(11), xIP(12), xstatus(30:13). See RVTEST_TRAP_HANDLER for full encoding.
 //==============================================================================
 
@@ -435,7 +447,7 @@
 //
 // Each direction checks that xEPC really lies in the mapping it is moving out of, so
 // a test that registers an alias but resumes somewhere else is left alone, as is one
-// that never registers an alias. Uses T2-T4; a0 = GOTO operation code.
+// that never registers an alias. Uses T1-T4 and T6; a0 = GOTO operation code.
 //
 // M and S service different callers, so they get different halves:
 //   M handles GOTO_UMODE, whose caller runs in the code region, and it is the only
@@ -444,9 +456,50 @@
 //     mstatus.TVM is set.
 //   S only ever services callers already in U-mode, which reach it because
 //     ecall-from-U is delegated, so it only moves them back out of the alias.
+//
+// A guest (VS or VU) runs its code in the alias registered in code_bgn of the VS
+// save area, if any, which a test registers while its VS-stage and G-stage maps it.
+// Both handlers move a caller entering the guest (GOTO_VSMODE/VUMODE from M, HS or
+// U) from the code region to that alias, and a caller leaving it (GOTO_M/S/UMODE
+// with mstatus.MPV or hstatus.SPV set) back. Calls within the guest stay put.
 .macro TSBI_RELOCATE_EPC __MODE__
 // Without S-mode there is no satp, and no S save area to register an alias in.
 #ifdef S_SUPPORTED
+  #ifdef H_SUPPORTED
+        li      T2, TSBI_GOTO_VSMODE
+        sltu    T2, a0, T2
+        xori    T2, T2, 1                            // T2 = 1 if the caller is going to VS or VU
+    .ifc \__MODE__ , M
+      #if (UDB_MXLEN==64)
+        csrr    T3, CSR_MSTATUS
+        srli    T3, T3, 32+MPV_LSB
+      #else
+        csrr    T3, CSR_MSTATUSH
+        srli    T3, T3, MPV_LSB
+      #endif
+    .else
+        csrr    T3, CSR_HSTATUS
+        srli    T3, T3, MPV_LSB                      // hstatus.SPV is at the MPV position
+    .endif
+        andi    T3, T3, 1                            // T3 = 1 if the caller is in VS or VU
+        beq     T2, T3, 7f                           // not entering or leaving the guest
+        LA(     T6, Vtramptbl_sv)
+        LREG    T1, code_bgn_off(T6)                 // T1 = registered guest code alias
+        LREG    T6, code_seg_siz(T6)                 // T6 = code region size
+        LA(     T4, rvtest_code_begin)
+        beq     T1, T4, 9f                           // no alias registered
+        bnez    T2, 6f                               // entering: code region -> alias
+        mv      T2, T1                               // leaving: alias -> code region
+        mv      T1, T4
+        mv      T4, T2
+6:      csrr    T2, CSR_XEPC
+        sub     T2, T2, T4                           // T2 = offset into the mapping left
+        bgtu    T2, T6, 9f                           // caller is not in that mapping
+        add     T2, T2, T1
+        csrw    CSR_XEPC, T2
+        j       9f
+7:      bnez    T2, 9f                               // within the guest: nothing to do
+  #endif
         LA(     T2, Mtramptbl_sv)
         LREG    T3, code_bgn_off+sv_area_sz(T2)      // T3 = registered code alias
         LREG    T2, code_bgn_off(T2)                 // T2 = rvtest_code_begin
@@ -695,6 +748,7 @@
 //   RVTEST_TSBI_GOTO_MMODE              // switch to M-mode, clobbers a0
 //   RVTEST_TSBI_GOTO_UMODE              // switch to U-mode, clobbers a0
 //   RVTEST_TSBI_ECALL_TEST              // test ecall path, result in a0
+//   RVTEST_TSBI_ECALL_RECORD            // ecall recorded in the trap signature
 //   RVTEST_TSBI_CSR_ACCESS 0x30002573   // read mstatus into a0
 //
 // CLOBBERS: a0 (operation code / return value), a1 (CSR_ACCESS argument only)
@@ -741,6 +795,14 @@
   li   a0, TSBI_ECALL_TEST                      // a0 = 0x73 (ECALL_TEST operation code)
   ecall                                          // trap to handler; handler reads xEPC into a0
   // a0 now contains the address of the ecall instruction above
+  .option pop
+.endm
+
+.macro RVTEST_TSBI_ECALL_RECORD
+  .option push
+  .option norvc                                  // ensure consistent code size
+  li   a0, TSBI_ECALL_RECORD                    // a0 = 6 (ECALL_RECORD operation code)
+  ecall                                          // handler records the trap and returns past the ecall
   .option pop
 .endm
 
@@ -1102,19 +1164,10 @@
 #endif
 // RVMODEL_CLR_SEXT_INT has no default: when undefined, rvtest_clr_sext_int_* clear mip.SEIP instead
 
-// VS-mode interrupt defaults
-#ifndef RVMODEL_SET_VSW_INT
-        #define  RVMODEL_SET_VSW_INT     RVTEST_DFLT_INT_HNDLR  // VS-mode SW interrupt set: abort
-#endif
-#ifndef RVMODEL_CLR_VSW_INT
-        #define  RVMODEL_CLR_VSW_INT     RVTEST_DFLT_INT_HNDLR  // VS-mode SW interrupt clear: abort
-#endif
-#ifndef RVMODEL_CLR_VTIMER_INT
-        #define  RVMODEL_CLR_VTIMER_INT  RVTEST_DFLT_INT_HNDLR  // VS-mode timer interrupt clear: abort
-#endif
-#ifndef RVMODEL_CLR_VEXT_INT
-        #define  RVMODEL_CLR_VEXT_INT    RVTEST_DFLT_INT_HNDLR  // VS-mode ext interrupt clear: abort
-#endif
+// VS-level interrupts need no RVMODEL macros: they are raised and cleared through
+// hvip (RVTEST_SET/CLR_VS*_INT_* in utils.h). A guest external interrupt (hgeip bit
+// _GEI) can only be raised by the platform, through the optional
+// RVMODEL_SET_GUEST_EXT_INT(_GEI, _R1, _R2) and RVMODEL_CLR_GUEST_EXT_INT(_GEI, _R1, _R2).
 
 
 //==============================================================================
@@ -1542,6 +1595,7 @@ common_\__MODE__\()entry:                       // common entry for all traps in
 //      touches a0/a1):
 //      a. a0 in [1..5] -> GOTO_xMODE (set MPP/MPV, bump mepc, mret)
 //      b. a0 == 0x73   -> ECALL_TEST (return xEPC in a0, bump mepc)
+//         a0 == 6      -> ECALL_RECORD (record the trap signature, bump mepc)
 //      c. a0[6:0]==0x73 && a0[14:12]!=0 -> CSR_ACCESS (execute dynamic CSR instr)
 //      d. Otherwise    -> RESERVED (return -1 in a0)
 //   5. If not an SBI call: fall through to normal trap signature recording
@@ -1608,6 +1662,8 @@ tsbi_\__MODE__\()dispatch:
         // --- Check for ECALL_TEST (a0 == 0x00000073) ---
         LI(     T2, TSBI_ECALL_TEST)              // T2 = 0x73 (ECALL_TEST operation code)
         beq     a0, T2, tsbi_\__MODE__\()ecall_test // if caller_a0 == 0x73 -> ECALL_TEST handler
+        LI(     T2, TSBI_ECALL_RECORD)
+        beq     a0, T2, \__MODE__\()trapsig_ptr_upd // ECALL_RECORD -> record it like any other exception
 
         // Otherwise consult dispatch table
         j tsbi_\__MODE__\()instr_dispatch
@@ -1759,14 +1815,16 @@ tsbi_\__MODE__\()goto_vu:
 .endif  // --------- END M-MODE T-SBI DISPATCH ---------
 
 //==============================================================================
-// T-SBI DISPATCH — S-MODE
+// T-SBI DISPATCH — S-MODE AND VS-MODE
 //
 // The S-mode handler receives ecalls delegated from U-mode (when medeleg[8]=1).
-// It implements a subset of T-SBI operations locally and forwards the rest
-// to M-mode by making another ecall.
+// The VS-mode handler receives ecalls from VU-mode delegated to it by
+// hedeleg[8]=1. Each implements a subset of T-SBI operations locally and
+// forwards the rest to the next more privileged handler by making another ecall.
 //
 // LOCAL HANDLING (S-mode can service these directly):
 //   - ECALL_TEST:  return sepc in a0 (sepc = U-mode ecall address)
+//   - ECALL_RECORD: record the trap signature and return past the ecall
 //   - GOTO_SMODE:  set sstatus.SPP=1 (return to S-mode via sret)
 //   - GOTO_UMODE:  set sstatus.SPP=0 (return to U-mode via sret)
 //   - CSR_ACCESS for S/U-mode CSRs: execute locally (CSR addr[9:8] != 11)
@@ -1780,14 +1838,23 @@ tsbi_\__MODE__\()goto_vu:
 //   - CSR_ACCESS for M-mode CSRs: needs M-mode privilege (CSR addr[9:8] == 11)
 //   - LW/LWP4/LD/SW/SWP4/SD: physical memory-mapped I/O access needs M-mode
 //
+// VS-MODE HANDLER:
+//   - ECALL_TEST, ECALL_RECORD, GOTO_VSMODE (vsstatus.SPP=1) and GOTO_VUMODE
+//     (vsstatus.SPP=0) are handled locally.
+//   - GOTO_MMODE/SMODE/UMODE and the legacy a0=0 call leave the guest, which
+//     only HS-mode can do: tsbi_Vforward_goto makes the call from
+//     tsbi_Vforward_goto_ecall, where the HS handler resumes the VU caller.
+//   - Everything else is forwarded to HS-mode, which returns to the VS handler.
+//
 // FORWARDING MECHANISM:
-//   The S-mode handler restores all handler temporary registers, then executes
-//   ecall. This traps to M-mode with cause=CAUSE_SUPERVISOR_ECALL (9).
+//   The handler restores all handler temporary registers, then executes
+//   ecall. This traps to M-mode with cause=CAUSE_SUPERVISOR_ECALL (9), or from
+//   VS-mode to HS-mode with cause=CAUSE_VIRTUAL_SUPERVISOR_ECALL (10).
 //   The caller's a0/a1/a2 pass through unchanged because:
 //   - a0/a1/a2 are never touched by the handler (its temporaries are
 //     T1..T6 = x6..x9, x14, x15)
-//   M-mode's T-SBI dispatch sees the S-mode ecall, detects a0!=0 and a0 as
-//   a valid SBI op, and handles it directly.
+//   The more privileged handler's T-SBI dispatch sees the ecall, detects a0!=0
+//   and a0 as a valid SBI op, and handles it directly.
 //
 // CALLER's a0/a1 HANDLING:
 //   Same as M-mode: the caller's a0 (operation code) and a1 (argument) remain
@@ -1795,22 +1862,49 @@ tsbi_\__MODE__\()goto_vu:
 //   directly and results are returned by writing a0.
 //==============================================================================
 
-.ifc \__MODE__ ,  S                              // ----- BEGIN S-MODE ONLY SECTION -----
+.ifnc \__MODE__ ,  M                             // ----- BEGIN S-MODE AND VS-MODE SECTION -----
 
-\__MODE__\()goto_schk:                           // S-mode ecall check entry
+\__MODE__\()goto_schk:                           // ecall check entry
         LI(T4,(1<<(UDB_MXLEN-1))+((1<<12)-1))        // T4 = int_bit + cause[11:0] mask
         and     T4, T4, T5                        // T4 = masked xcause
-        addi    T3, T4, -CAUSE_USER_ECALL          // T3 = masked_cause - 8 (U-mode ecall = cause 8)
+        addi    T3, T4, -CAUSE_USER_ECALL          // T3 = masked_cause - 8 (U-mode or VU-mode ecall = cause 8)
         beqz    T3, \__MODE__\()tsbi_candidate    // U-mode ecall -> T-SBI candidate
+  .ifc \__MODE__ , S
   #ifdef H_SUPPORTED
         // A guest's ecall arrives here as cause 10
         // HS-mode is the execution environment for VS and VU
         addi    T3, T4, -CAUSE_VIRTUAL_SUPERVISOR_ECALL  // VS-mode ecall = cause 10
-        beqz    T3, \__MODE__\()tsbi_candidate    // VS-mode ecall -> T-SBI candidate
-  #endif
+        bnez    T3, \__MODE__\()trapsig_ptr_upd   // not an ecall we service -> normal trap sig recording
+        csrr    T3, CSR_XEPC
+        LA(     T2, tsbi_Vforward_goto_ecall)
+        bne     T3, T2, \__MODE__\()tsbi_candidate // an ordinary call from VS-mode
+
+        // The VS handler forwarded a VU caller's GOTO_M/S/U: resume that caller at vsepc,
+        // and undo the VU->VS trap as the VS handler's sret would have (vsstatus.SIE = SPIE,
+        // SPIE = 1, SPP = 0) and as a VU->HS trap would have left hstatus (SPVP = 0).
+        csrr    T3, CSR_VSEPC
+        csrw    CSR_XEPC, T3
+        csrr    T3, CSR_VSSTATUS
+        andi    T2, T3, SSTATUS_SPIE
+        srli    T2, T2, 4                          // SPIE moved to the SIE position
+        andi    T3, T3, ~(SSTATUS_SIE | SSTATUS_SPP)
+        ori     T3, T3, SSTATUS_SPIE
+        or      T3, T3, T2
+        csrw    CSR_VSSTATUS, T3
+        LI(     T3, HSTATUS_SPVP)
+        csrc    CSR_HSTATUS, T3
+  #else
         j       \__MODE__\()trapsig_ptr_upd       // not an ecall we service -> normal trap sig recording
+  #endif
+  .else
+        j       \__MODE__\()trapsig_ptr_upd       // not an ecall we service -> normal trap sig recording
+  .endif
 \__MODE__\()tsbi_candidate:
+  .ifc \__MODE__ , S
         beqz    a0, \__MODE__\()rtn2smode          // a0==0 -> legacy GOTO_SMODE -> rtn2smode handler
+  .else
+        beqz    a0, tsbi_\__MODE__\()forward_goto  // a0==0 -> legacy GOTO_SMODE, which HS-mode performs
+  .endif
 
         //--- T-SBI dispatch: caller's a0 is live in its register ---
 tsbi_\__MODE__\()dispatch:
@@ -1825,11 +1919,16 @@ tsbi_\__MODE__\()dispatch:
         // Check for ECALL_TEST (a0 == 0x73)
         LI(     T2, TSBI_ECALL_TEST)              // T2 = 0x73
         beq     a0, T2, tsbi_\__MODE__\()ecall_test // match -> ECALL_TEST handler
+        LI(     T2, TSBI_ECALL_RECORD)
+        beq     a0, T2, \__MODE__\()trapsig_ptr_upd // ECALL_RECORD -> record it like any other exception
 
+  .ifc \__MODE__ , V
+        j       tsbi_\__MODE__\()forward           // everything else is serviced by HS-mode
+  .else
         // Check for LOAD/STORE (a0[6:0] == 0?00011): physical memory access needs M-mode
         andi    T2, a0, 0x5F                       // T2 = a0[6:0] ignoring bit 5 (LOAD=0x03, STORE=0x23)
         li      T4, 0x03                            // T4 = LOAD opcode with bit 5 cleared
-        beq     T2, T4, tsbi_\__MODE__\()forward_to_m // LOAD/STORE -> forward to M-mode
+        beq     T2, T4, tsbi_\__MODE__\()forward   // LOAD/STORE -> forward to M-mode
 
         // Check for CSR_ACCESS
         andi    T2, a0, 0x7F                       // T2 = a0[6:0]
@@ -1846,15 +1945,16 @@ tsbi_\__MODE__\()reserved:                        // Unrecognized SBI operation
         addi    T3, T3, 4                            // skip ecall
         csrw    CSR_XEPC, T3                         // sepc += 4
         j       resto_\__MODE__\()rtn              // sret to caller with a0 = -1
+  .endif
 
-        //--- S-mode ECALL_TEST ---
+        //--- ECALL_TEST ---
 tsbi_\__MODE__\()ecall_test:
         csrr    a0, CSR_XEPC                       // a0 = sepc = U-mode ecall address
         addi    T3, a0, 4                            // skip ecall
         csrw    CSR_XEPC, T3                         // sepc += 4
         j       resto_\__MODE__\()rtn              // sret to caller with a0 = ecall address
 
-        //--- S-mode GOTO_xMODE dispatch ---
+        //--- GOTO_xMODE dispatch ---
         //
         // sret leaves HS-mode for the mode named by two bits: sstatus.SPP picks
         // the privilege level and, when H is present, hstatus.SPV picks whether
@@ -1864,11 +1964,22 @@ tsbi_\__MODE__\()ecall_test:
         //   SPV=0 SPP=1 -> HS      SPV=1 SPP=1 -> VS
         //   SPV=0 SPP=0 -> U       SPV=1 SPP=0 -> VU
         //
+        // The VS handler's sret can only reach VS (vsstatus.SPP=1) and VU (SPP=0).
+        //
 tsbi_\__MODE__\()goto_mode:
+  .ifc \__MODE__ , V
+        li      T2, TSBI_GOTO_VSMODE
+        bltu    a0, T2, tsbi_\__MODE__\()forward_goto // GOTO_M/S/U -> HS-mode resumes the caller
+  .endif
         // a0 still holds the caller's operation code
         csrr    T4, CSR_XEPC                        // T4 = sepc (caller's ecall address)
         addi    T4, T4, 4                            // skip ecall
         csrw    CSR_XEPC, T4                         // sepc += 4
+  .ifc \__MODE__ , V
+        li      T2, TSBI_GOTO_VSMODE                 // GOTO_VSMODE: return to the guest's supervisor mode
+        beq     a0, T2, tsbi_\__MODE__\()goto_s
+        j       tsbi_\__MODE__\()goto_u              // GOTO_VUMODE: return to the guest's user mode
+  .else
         TSBI_RELOCATE_EPC \__MODE__                  // move between code region and its alias if needed
 
         li      T2, TSBI_GOTO_MMODE                  // can't handle GOTO_MMODE from S-mode
@@ -1880,28 +1991,34 @@ tsbi_\__MODE__\()goto_mode:
         li      T2, TSBI_GOTO_UMODE                  // GOTO_UMODE: return to U-mode
         beq     a0, T2, tsbi_\__MODE__\()goto_u
 
-  #ifdef H_SUPPORTED
+    #ifdef H_SUPPORTED
         li      T2, TSBI_GOTO_VSMODE                 // GOTO_VSMODE: return to VS-mode
         beq     a0, T2, tsbi_\__MODE__\()goto_vs
         li      T2, TSBI_GOTO_VUMODE                 // GOTO_VUMODE: return to VU-mode
         beq     a0, T2, tsbi_\__MODE__\()goto_vu
-  #endif
+    #endif
 
         li      a0, TSBI_RESERVED_RET                // shouldn't reach here, return -1
         j       resto_\__MODE__\()rtn
+  .endif
 
-tsbi_\__MODE__\()goto_s:                          // Return to HS/S-mode via sret
+tsbi_\__MODE__\()goto_s:                          // Return to HS/S-mode (VS-mode for the VS handler) via sret
         LI(     T3, SSTATUS_SPP)                   // T3 = SPP bit mask (bit 8)
         csrs    CSR_XSTATUS, T3                     // set sstatus.SPP = 1 (sret -> S-mode)
+  .ifc \__MODE__ , S
         RVTEST_SET_SPV 0, T3                        // leave virtual mode
+  .endif
         j       resto_\__MODE__\()rtn              // sret returns to HS-mode at sepc
 
-tsbi_\__MODE__\()goto_u:                          // Return to U-mode via sret
+tsbi_\__MODE__\()goto_u:                          // Return to U-mode (VU-mode for the VS handler) via sret
         LI(     T3, SSTATUS_SPP)                   // T3 = SPP bit mask
         csrc    CSR_XSTATUS, T3                     // clear sstatus.SPP = 0 (sret -> U-mode)
+  .ifc \__MODE__ , S
         RVTEST_SET_SPV 0, T3                        // leave virtual mode
+  .endif
         j       resto_\__MODE__\()rtn              // sret returns to U-mode at sepc
 
+  .ifc \__MODE__ , S
   #ifdef H_SUPPORTED
 tsbi_\__MODE__\()goto_vs:                         // Return to VS-mode via sret
         LI(     T3, SSTATUS_SPP)                   // T3 = SPP bit mask
@@ -1915,13 +2032,14 @@ tsbi_\__MODE__\()goto_vu:                         // Return to VU-mode via sret
         RVTEST_SET_SPV 1, T3                        // enter virtual mode
         j       resto_\__MODE__\()rtn              // sret returns to VU-mode at sepc
   #endif
+  .endif
 
-        //--- S-mode forwarding to M-mode ---
-        // Restore all handler regs and ecall. M-mode handler processes the request.
+        //--- Forwarding to the next more privileged handler (M-mode, or HS-mode for VS) ---
+        // Restore all handler regs and ecall. That handler processes the request.
         // The caller's a0 (SBI opcode) and a1 (SBI argument) are still live in
-        // their registers — the handler never modified them — so they pass to
-        // M-mode without any reload.
-tsbi_\__MODE__\()forward_to_m:
+        // their registers — the handler never modified them — so they pass
+        // without any reload.
+tsbi_\__MODE__\()forward:
         csrr    T3, CSR_XEPC                        // T3 = sepc (caller's ecall address)
         addi    T3, T3, 4                            // skip past the caller's ecall
         csrw    CSR_XEPC, T3                         // sepc += 4 so the sret below resumes after it
@@ -1932,11 +2050,12 @@ tsbi_\__MODE__\()forward_to_m:
         LREG    T5, trap_sv_off+5*REGWIDTH(sp)    // restore T5 (x14)
         LREG    T6, trap_sv_off+6*REGWIDTH(sp)    // restore T6 (x15)
         LREG    sp, trap_sv_off+7*REGWIDTH(sp)    // restore original sp (undo the xSCRATCH swap)
-        ecall                                      // trap to M-mode with a0/a1 intact
-        // For CSR_ACCESS: M-mode executes the CSR op and mrets back here in S-mode with the
+        ecall                                      // trap to M-mode (HS-mode from VS) with a0/a1 intact
+        // For CSR_ACCESS: the handler executes the CSR op and returns back here with the
         //   result in a0; sret returns to the caller (sepc was bumped past its ecall already).
         sret                                       // sret back to the caller
 
+  .ifc \__MODE__ , S
         //--- S-mode forwarding of GOTO_MMODE to M-mode ---
         // Same forwarding as above, but the caller must RESUME IN M-MODE, so the plain sret path
         // cannot be used: the M-mode handler sets MPP=M and mrets back to the instruction after
@@ -1954,9 +2073,8 @@ tsbi_\__MODE__\()forward_goto_m:
         ecall                                      // trap to M-mode; M sets MPP=M and mrets back HERE in M-mode
         csrr    a0, CSR_XEPC                       // caller's ecall+4 (bumped before forwarding)
         jr      a0                                 // continue at the caller, in M-mode
-                                                   // NB: for a caller in VS/VU this xEPC is a guest
-                                                   // virtual address, so this only returns to the
-                                                   // caller under an identity guest map
+                                                   // A caller in VS/VU returns to the code region
+                                                   // (TSBI_RELOCATE_EPC) or its identity guest map
 
         //--- S-mode CSR_ACCESS ---
 tsbi_\__MODE__\()csr_access:
@@ -1966,18 +2084,29 @@ tsbi_\__MODE__\()csr_access:
         andi    T2, T2, 0x3                         // T2 = CSR_addr[11:10] (2 MSBs of CSR address)
         li      T4, 3                               // T4 = 3 (M-mode CSR indicator: addr[11:10]==11)
         bne     T2, T4, 11f                         // S/U CSR -> handle locally below
-        j       tsbi_\__MODE__\()forward_to_m       // M-mode CSR -> forward to the M-mode handler
+        j       tsbi_\__MODE__\()forward            // M-mode CSR -> forward to the M-mode handler
 11:
         // S-mode or U-mode CSR: find and execute the approved instruction locally.
         // Executed in HS context, so a guest asking for an S-mode CSR name gets the
         // host register; a guest must name the vs* CSR to reach its own copy.
         j       tsbi_\__MODE__\()instr_dispatch
+  .else
+        //--- VS-mode forwarding of a call that leaves the guest ---
+        // The HS handler recognizes an ecall from tsbi_Vforward_goto_ecall and resumes
+        // the VU caller (at vsepc, not yet bumped) instead of returning here.
+tsbi_\__MODE__\()forward_goto:
+        LREG    T1, trap_sv_off+1*REGWIDTH(sp)    // restore T1 (x6)
+        LREG    T2, trap_sv_off+2*REGWIDTH(sp)    // restore T2 (x7)
+        LREG    T3, trap_sv_off+3*REGWIDTH(sp)    // restore T3 (x8)
+        LREG    T4, trap_sv_off+4*REGWIDTH(sp)    // restore T4 (x9)
+        LREG    T5, trap_sv_off+5*REGWIDTH(sp)    // restore T5 (x14)
+        LREG    T6, trap_sv_off+6*REGWIDTH(sp)    // restore T6 (x15)
+        LREG    sp, trap_sv_off+7*REGWIDTH(sp)    // restore original sp (undo the xSCRATCH swap)
+tsbi_\__MODE__\()forward_goto_ecall:
+        ecall                                      // HS-mode never returns here
+  .endif
 
-.endif  // --------- END S-MODE T-SBI DISPATCH ---------
-
-//==============================================================================
-// T-SBI DISPATCH — VS-MODE
-// TODO DH 7/7/26: is another T-SBI required for VS-mode trap handler?
+.endif  // --------- END S-MODE AND VS-MODE T-SBI DISPATCH ---------
 
 //==============================================================================
 // M-MODE FORWARDED ECALL HANDLING (TODO)
@@ -2009,9 +2138,10 @@ tsbi_\__MODE__\()handle_forwarded:
 // The T-SBI dispatch mechanism uses a table of known instructions to avoid self-modifying code.
 // It searches the table and jumps to a matching instruction, which is followed by a ret to return to the caller.
 // It expects the intended instruction in a0. The instruction can use a1 and a2,
-// and return a result in a0.
+// and return a result in a0. The VS handler forwards every such call to HS-mode.
 //==============================================================================
 
+.ifnc \__MODE__ , V
 tsbi_\__MODE__\()instr_dispatch:
         LA(     T2, tsbi_instr_table)             // T2 = instruction table base
 1:
@@ -2032,6 +2162,7 @@ tsbi_\__MODE__\()instr_found:
         addi    T3, T3, 4                        // skip past ecall
         csrw    CSR_XEPC, T3                     // xepc += 4
         j       resto_\__MODE__\()rtn           // restore handler regs and xret
+.endif
 
 .ifc \__MODE__ , M
 
@@ -2140,7 +2271,9 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x243) // vstval
         TSBI_CSR_INSTR_TABLE(0x244) // vsip
         TSBI_CSR_INSTR_TABLE(0x280) // vsatp
+        TSBI_CSR_INSTR_TABLE(0x24D) // vstimecmp
   #if (UDB_MXLEN==32)
+        TSBI_CSR_INSTR_TABLE(0x25D) // vstimecmph
         TSBI_CSR_INSTR_TABLE(0x612) // hedelegh
         TSBI_CSR_INSTR_TABLE(0x615) // htimedeltah
         TSBI_CSR_INSTR_TABLE(0x618) // hvienh
@@ -2178,9 +2311,10 @@ tsbi_instr_table:
 // or a genuine ecall exception that should be recorded in the signature).
 //
 // This section:
-//   1. Calculates the trap signature entry size (3, 4, or 5 words)
+//   1. Calculates the trap signature entry size (3, 4, or 6 words)
 //   2. Pre-increments the trap signature pointer and checks for overrun
-//   3. Records: vect+mode word, xcause, xepc/xip, xtval/intID
+//   3. Records: vect+mode word, xcause, xepc/xip, xtval/intID, and on M and
+//      HS exception entries of a hypervisor build, mtval2/htval and mtinst/htinst
 //   4. For exceptions: relocates xEPC and bumps past the trapping instruction
 //   5. For interrupts: dispatches to interrupt clearing routines
 //   6. Restores registers and returns via xret
@@ -2197,30 +2331,14 @@ tsbi_instr_table:
         li      T2, 3*REGWIDTH                    // cause < timer -> SW or timer int (3 words)
         j       \__MODE__\()trap_sig_sv            // go to pointer update
 
-\__MODE__\()xcpt_sig_sv:                          // exception: check for hypervisor (5-word entry)
-// An exception entry carries one extra word on a hypervisor build: the second
-// trap value (mtval2 / htval, the faulting guest physical address). M decides at
-// run time from misa.H, which a test can clear. xtinst is deliberately not
-// recorded: its value is implementation-defined (UDB TINST_VALUE_ON_*), so a
-// legal DUT may disagree with the reference model.
-.ifc \__MODE__ , M
+\__MODE__\()xcpt_sig_sv:                          // exception: check for hypervisor (6-word entry)
+// An M or HS exception entry carries two extra words on a hypervisor build: the
+// second trap value (mtval2 / htval) and the trap instruction (mtinst / htinst).
+// VS-mode has neither register.
+.ifnc \__MODE__ , V
 #ifdef H_SUPPORTED
-        csrr    T1, CSR_MISA
-        slli    T1, T1, UDB_MXLEN-8             // shift H bit into msb
-        bgez    T1, \__MODE__\()trap_sig_sv     // no hypervisor mode, keep std width
-        li      T2, 5*REGWIDTH                  // Hmode implemented &  Mmode trap, override preinc to be 5*regsz
+        li      T2, 6*REGWIDTH
 #endif
-.else
-  .ifc \__MODE__ , V
-        // VS-mode has no second trap value: htval belongs to HS.
-  .else
-#ifdef H_SUPPORTED
-        // S/HS decides at build time, not from misa.H: misa is an M-mode CSR, so this
-        // handler cannot read it. An H build therefore requires misa.H to stay set for
-        // as long as the S/HS handler can be entered; the H CSR reads below assume it too.
-        li      T2, 5*REGWIDTH                    // S/HS on a hypervisor build: 5-word exception entries
-#endif
-  .endif
 .endif
 
 \__MODE__\()trap_sig_sv:                          // compute pointer offset to M-mode's shared trap_sigptr
@@ -2276,12 +2394,21 @@ tsbi_instr_table:
 //---------- Trap Signature Word 0: vect+mode+status ----------
 // Packed format:
 //   bits  1: 0 = mode (MMODE_SIG=3, SMODE_SIG=1, VMODE_SIG=2)
-//   bits  5: 2 = entry size in words
+//   bits  5: 2 = entry size in bytes (bits 1:0 of the size are zero)
 //   bits 10: 6 = vector number (compressed from 12*N to 5 bits)
 //   bit    11 = xIE[cause] (interrupt enable for this cause)
 //   bit    12 = xIP[cause] (interrupt pending for this cause)
 //   bits 30:13 = xstatus[17:0] (filtered: XS,FS,VS and WPRI bits 4,2,0 cleared)
 //              = GVA/MPV/SPVP in place of xstatus[16:14] on M-mode and HS-mode traps
+//                (zero on VS-mode traps; xstatus there is vsstatus, whose SIE,
+//                SPIE and SPP are recorded as usual)
+// Remaining words:
+//   word 1 = xcause
+//   word 2 = xEPC (segment-relative when untranslated) or xIP for an interrupt
+//   word 3 = xtval, or the interrupt ID for an external interrupt
+//   word 4 = mtval2 / htval       (M and HS exceptions on a hypervisor build)
+//   word 5 = mtinst / htinst      (M and HS exceptions on a hypervisor build;
+//                                  a transformed instruction is recorded as zero)
 
 sv_\__MODE__\()vect:
         LREG    T3, xtvec_new_off(sp)              // T3 = actual trampoline table address
@@ -2297,12 +2424,24 @@ sv_\__MODE__\()vect:
         li      T3, 0xf                             // T3 = mask for cause[3:0]
         and     T3, T5, T3                          // T3 = cause number (low 4 bits)
         csrr    T4, CSR_XIE                         // T4 = xIE register
+  .ifc \__MODE__ , S
+    #ifdef H_SUPPORTED
+        csrr    T2, CSR_HIE                         // the VS-level and SGEI enables are in hie,
+        or      T4, T4, T2                          //   which never shares a bit with sie
+    #endif
+  .endif
         srl     T4, T4, T3                          // shift xIE so cause bit is at position 0
         andi    T4, T4, 1                           // T4 = xIE[cause] (0 or 1)
         slli    T4, T4, 11                          // position at bit 11
         or      T6, T6, T4                          // merge xIE bit
 
         csrr    T4, CSR_XIP                         // T4 = xIP register
+  .ifc \__MODE__ , S
+    #ifdef H_SUPPORTED
+        csrr    T2, CSR_HIP                         // the VS-level and SGEI pending bits are in hip
+        or      T4, T4, T2
+    #endif
+  .endif
         srl     T4, T4, T3                          // shift xIP so cause bit is at position 0
         andi    T4, T4, 1                           // T4 = xIP[cause] (0 or 1)
         slli    T4, T4, 12                          // position at bit 12
@@ -2452,30 +2591,26 @@ common_\__MODE__\()excpt_handler:
         csrr    T2, CSR_SATP
         srli    T2, T2, MODE_LSB
         bnez    T2, sv_\__MODE__\()epc
-        // A guest with vsatp=Bare under an active G-stage has a guest physical
-        // xEPC, which must not be relocated either, but VS-mode cannot read
-        // hgatp to find out. Such a guest is not supported here yet.
+        // With vsatp=Bare, xEPC is a guest physical address, which VS-mode relocates
+        // against the segments of its own save area. A guest running at a G-stage
+        // alias registers it there (code_bgn), so VS-mode never has to read hgatp.
   .endif
 
 // --- Offset adjustment for physical addresses ---
-// A fault deliberately triggered at an address outside every test segment — the
-// model's access-fault probe address (RVMODEL_ACCESS_FAULT_ADDRESS, used by the
-// instruction/load/store access-fault tests) or a null (0) fetch target — has an
+// A fault deliberately triggered at an address outside every test segment — in
+// the model's access-fault region (the 128 bytes at RVMODEL_ACCESS_FAULT_ADDRESS,
+// used by the instruction access-fault tests) or a null (0) fetch target — has an
 // xEPC that cannot be expressed as a segment-relative offset. Record such an
 // xEPC raw and skip the segment relocation below, which would otherwise fall
 // through to abort_test on the out-of-range EPC. These are fixed constants,
 // identical on the DUT and the reference model, so the raw value is
-// deterministic. This is ALWAYS safe (a normal in-segment EPC never equals the
-// probe address or 0), so it is unconditional. It used to be gated behind
-// SKIP_MEPC — but the generators no longer emit that define, so keeping the
-// gate silently compiled this skip out and every access-fault test aborted on
-// its first deliberate probe (EPC=0 is outside vmem/code/data -> abort_test).
+// deterministic. A normal in-segment EPC is never in the fault region or 0.
 vmem_adj_\__MODE__\()epc:
         #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
                 LI(     T2, RVMODEL_ACCESS_FAULT_ADDRESS)
-                beq     T3, T2, sv_\__MODE__\()epc
-                addi    T2, T2, 2
-                beq     T3, T2, sv_\__MODE__\()epc
+                sub     T2, T3, T2
+                sltiu   T2, T2, 128                   // xEPC in the access-fault region
+                bnez    T2, sv_\__MODE__\()epc
         #endif
                 beqz    T3, sv_\__MODE__\()epc
         LREG    T2, vmem_bgn_off(T4)                  // check if EPC is in vmem segment
@@ -2522,28 +2657,39 @@ skpsv_\__MODE__\()epc:
         j skp_adj_\__MODE__\()epc
 
 adj_\__MODE__\()epc_rtn:
-#ifdef ZCA_SUPPORTED
+#if defined(ZCA_SUPPORTED) || defined(H_SUPPORTED)
         // Advance xEPC past the trapping instruction by its true width.
-        // Read the low halfword of the instruction at xEPC (T3), in the
-        // addressing/permission context of the code that trapped, then
-        // advance 4 (bits[1:0]==0b11) or 2 (compressed).
-        // xEPC is >=2-byte aligned, so lhu cannot misalign-fault.
+        // Read the instruction at xEPC (T3) into T6, in the addressing/permission
+        // context of the code that trapped: its low halfword gives the width, 4
+        // (bits[1:0]==0b11) or 2 (compressed), and the M and HS handlers of a
+        // hypervisor build read the high halfword too, for the mtinst/htinst word.
+        // xEPC is >=2-byte aligned, so lhu cannot misalign-fault, and the high
+        // halfword of an instruction that was fetched is readable.
   .ifc \__MODE__ , M
         // M-mode has no translation of its own. Use MPRV so the load is
         // performed with MPP's privilege + translation (resolves a virtual
         // xEPC). SUM lets an effective-S load reach U pages; MXR lets the
         // load read execute-only (R=0,X=1) pages. Relies on mstatus.MPP
         // still holding the trapped privilege (don't write MPP before here).
-        csrr    T6, CSR_MSTATUS                      // save full mstatus
+        csrr    T4, CSR_MSTATUS                      // save full mstatus
         li      T2, (1 << MPRV_LSB) | (1 << SUM_LSB) | (1 << MXR_LSB)
         csrs    CSR_MSTATUS, T2
-        lhu     T2, 0(T3)                            // fetch via trapped context
-        csrw    CSR_MSTATUS, T6                      // restore mstatus verbatim
+        lhu     T6, 0(T3)                            // fetch via trapped context
+    #ifdef H_SUPPORTED
+        andi    T2, T6, 3
+        addi    T2, T2, -3
+        bnez    T2, 5f                               // compressed: one halfword
+        lhu     T2, 2(T3)
+        slli    T2, T2, 16
+        or      T6, T6, T2                           // T6 = 32-bit instruction
+5:
+    #endif
+        csrw    CSR_MSTATUS, T4                      // restore mstatus verbatim
   .else
         // Below M: the load already runs in the trapped privilege with the
         // active satp, so no MPRV. Still need SUM (read U pages) and MXR
         // (read execute-only pages).
-        csrr    T6, CSR_SSTATUS                      // save full sstatus
+        csrr    T4, CSR_SSTATUS                      // save full sstatus
         li      T2, (1 << SUM_LSB) | (1 << MXR_LSB)
         csrs    CSR_SSTATUS, T2
 #if defined(H_SUPPORTED)
@@ -2551,24 +2697,39 @@ adj_\__MODE__\()epc_rtn:
         csrr    T2, CSR_HSTATUS
         slli    T2, T2, UDB_MXLEN-MPV_LSB-1          // hstatus.SPV into the sign bit
         bgez    T2, 2f                               // SPV=0 -> ordinary S/HS trap -> plain lhu
-        hlvx.hu T2, (T3)                             // fetch through the guest's translation
+        hlvx.hu T6, (T3)                             // fetch through the guest's translation
+        andi    T2, T6, 3
+        addi    T2, T2, -3
+        bnez    T2, 5f                               // compressed: one halfword
+        addi    T2, T3, 2
+        hlvx.hu T2, (T2)
         j       4f
 2:
   .endif
 #endif
-        lhu     T2, 0(T3)
+        lhu     T6, 0(T3)
 #if defined(H_SUPPORTED)
   .ifnc \__MODE__ , V
-4:
+        andi    T2, T6, 3
+        addi    T2, T2, -3
+        bnez    T2, 5f                               // compressed: one halfword
+        lhu     T2, 2(T3)
+4:      slli    T2, T2, 16
+        or      T6, T6, T2                           // T6 = 32-bit instruction
+5:
   .endif
 #endif
-        csrw    CSR_SSTATUS, T6                      // restore sstatus verbatim
+        csrw    CSR_SSTATUS, T4                      // restore sstatus verbatim
   .endif
-        andi    T2, T2, 3                            // bits[1:0]
+  #ifdef ZCA_SUPPORTED
+        andi    T2, T6, 3                            // bits[1:0]
         addi    T2, T2, 1                            // ==4 iff bits were 0b11
         srli    T2, T2, 2                            // 1 if 32-bit, 0 if compressed
         addi    T2, T2, 1                            // 2 (32-bit) or 1 (compressed)
         slli    T2, T2, 1                            // advance = 4 or 2
+  #else
+        li      T2, 4                                // IALIGN=32 requires a 4-byte advance
+  #endif
 #else
         li      T2, 4                                // IALIGN=32 requires a 4-byte advance
 #endif
@@ -2583,32 +2744,85 @@ sv_\__MODE__\()tval:
 
 skp_\__MODE__\()tval:
 
-// --- Hypervisor-specific field: second trap value (word 4) ---
+// --- Hypervisor-specific fields: second trap value (word 4) and trap instruction (word 5) ---
 // This must match the entry width chosen in \__MODE__\()xcpt_sig_sv above:
-// reserving five words and writing four leaves one word of the trap signature
+// reserving six words and writing fewer leaves a word of the trap signature
 // unwritten, which reads back as the fill pattern and mismatches.
-  .ifc \__MODE__ , M
-        #ifdef H_SUPPORTED
-        csrr    T3, CSR_MISA            // skip mtval2 save if hypervisor is not enabled (misa[7] (H)-1)
-        slli    T3, T3, UDB_MXLEN-7-1
-        bgez    T3, 1f
-
+  .ifnc \__MODE__ , V
+    #ifdef H_SUPPORTED
+      .ifc \__MODE__ , M
         sv_\__MODE__\()Mtval2:
         csrr    T3, CSR_MTVAL2
-        TRAP_SIGUPD(T4, T3, 4, sv_\__MODE__\()Mtval2, sv_Mtval2_str) // write word 4: mtval2
-      #endif
-  .else
-    .ifnc \__MODE__ , V
-      #ifdef H_SUPPORTED
-        // HS-mode is where a guest's traps land, so htval holds the faulting
-        // guest physical address, shifted right by 2. It reads as zero for a
-        // trap that did not come from a guest, which is what makes the fixed
-        // five-word entry safe for ordinary S-mode traps.
+        LI(     T2, 1)                               // zero is always legal in mtval2
+      .else
         sv_\__MODE__\()Htval2:
         csrr    T3, CSR_HTVAL
-        TRAP_SIGUPD(T4, T3, 4, sv_\__MODE__\()Htval2, sv_Htval2_str) // write word 4: htval
+      #ifdef SHTVALA_SUPPORTED
+        LI(     T2, 0xB00000)                        // Shtvala: a guest-page fault (20, 21, 23)
+        srl     T2, T2, T5                           // must write the guest physical address
+        andi    T2, T2, 1
+        xori    T2, T2, 1
+      #else
+        LI(     T2, 1)                               // zero is always legal in htval
       #endif
-    .endif
+      .endif
+      .ifc \__MODE__ , M
+        TRAP_SIGUPD_ZERO(T4, T3, 4, T2, sv_\__MODE__\()Mtval2, sv_Mtval2_str) // write word 4: mtval2
+        csrr    T3, CSR_MTINST
+      .else
+        TRAP_SIGUPD_ZERO(T4, T3, 4, T2, sv_\__MODE__\()Htval2, sv_Htval2_str) // write word 4: htval
+        csrr    T3, CSR_HTINST
+      .endif
+        // Record a transformation of the trapping instruction (T6) as zero, which is always legal
+        // (hypervisor.adoc tinst values; cmo.adoc for CBOs): loads, stores, AMOs, HLV/HSV and CBOs on
+        // causes 4-7, 13, 15, 21 and 23. Bits 1:0 = 01 mark a transformed compressed instruction.
+        LI(     T2, 0xA0A0F0)                        // causes 4-7, 13, 15, 21, 23
+        srl     T2, T2, T5
+        andi    T2, T2, 1
+        beqz    T2, 7f
+        andi    T2, T6, 3
+        addi    T2, T2, -3
+        beqz    T2, 6f
+        andi    T2, T3, 3                            // compressed trapping instruction
+        addi    T2, T2, -1
+        bnez    T2, 7f                               // not a transformed compressed instruction
+        j       8f
+6:      andi    T4, T6, 0x5B                         // LOAD, LOAD-FP, STORE and STORE-FP -> 0x03
+        LI(     T2, 0x03)
+        bne     T4, T2, 5f
+        LI(     T2, 0x00007FFF)                      // load: funct3, rd, opcode
+        andi    T4, T6, 0x20
+        beqz    T4, 4f
+        LI(     T2, 0x01F0707F)                      // store: rs2, funct3, opcode
+        j       4f
+5:      andi    T4, T6, 0x7F
+        LI(     T2, 0x2F)                            // AMO
+        beq     T4, T2, 3f
+        LI(     T2, 0x0F)                            // CBO
+        beq     T4, T2, 3f
+        LI(     T2, 0x73)                            // HLV, HLVX, HSV
+        bne     T4, T2, 7f
+3:      LI(     T2, 0xFFF07FFF)                      // every field but rs1
+4:      and     T2, T2, T6                           // transformation with Addr. Offset = 0
+        LI(     T4, ~0xF8000)
+        and     T4, T4, T3                           // recorded value without Addr. Offset
+        bne     T4, T2, 7f
+8:      LI(     T3, 0)
+7:
+        // A pseudoinstruction is required only when mtval2/htval is nonzero
+      .ifc \__MODE__ , M
+        csrr    T2, CSR_MTVAL2
+      .else
+        csrr    T2, CSR_HTVAL
+      .endif
+        seqz    T2, T2
+        sv_\__MODE__\()tinst:
+      .ifc \__MODE__ , M
+        TRAP_SIGUPD_ZERO(T4, T3, 5, T2, sv_\__MODE__\()tinst, sv_Mtinst_str) // write word 5: mtinst
+      .else
+        TRAP_SIGUPD_ZERO(T4, T3, 5, T2, sv_\__MODE__\()tinst, sv_Htinst_str) // write word 5: htinst
+      .endif
+    #endif
   .endif
 
 1:
@@ -2649,7 +2863,24 @@ common_\__MODE__\()int_handler:
         andi    T2, T5, INT_CAUSE_MSK                // T2 = cause[4:0] (interrupt cause index)
         sll     T3, T3, T2                           // T3 = 1 << cause (bit mask for this interrupt)
         csrrc   T4, CSR_XIE, T3                      // read xIE, then clear this interrupt's enable bit
+  .ifc \__MODE__ , S
+    #ifdef H_SUPPORTED
+        // HS-mode takes the VS-level interrupts that hideleg does not delegate, and SGEI.
+        // Their enables and pending bits are in hie and hip, not sie and sip, and only
+        // hip.VSSIP (an alias of hvip.VSSIP) is writable.
+        csrrc   T4, CSR_HIE, T3
+        csrrc   T6, CSR_HIP, T3
         csrrc   T3, CSR_XIP, T3                      // read xIP, then attempt to clear pending bit
+        or      T3, T3, T6                           // record sip | hip
+    #else
+        csrrc   T3, CSR_XIP, T3                      // read xIP, then attempt to clear pending bit
+    #endif
+  .else
+        // mie and mip hold the VS-level bits. In the VS handler, sie and sip are vsie
+        // and vsip, where VS-level interrupts are causes 1, 5 and 9 and vsip.SSIP is an
+        // alias of hvip.VSSIP.
+        csrrc   T3, CSR_XIP, T3                      // read xIP, then attempt to clear pending bit
+  .endif
 
 sv_\__MODE__\()ip:
         TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()ip, sv_\__MODE__\()ip_str) // write word 2: xIP
@@ -2699,6 +2930,21 @@ spcl_\__MODE__\()dispatch:
 
 clrint_\__MODE__\()tbl:
 #if defined(H_SUPPORTED)
+  .ifc \__MODE__ , V
+        // VS-mode sees the VS-level interrupts that hideleg delegates as causes 1, 5 and 9
+        .dword  0                                    // cause  0: reserved -> abort
+        .dword  \__MODE__\()clr_Vsw_int              // cause  1: VS-mode software interrupt
+        .dword  0                                    // cause  2: never delegated to VS-mode
+        .dword  0                                    // cause  3: never delegated to VS-mode
+        .dword  0                                    // cause  4: reserved -> abort
+        .dword  \__MODE__\()clr_Vtmr_int             // cause  5: VS-mode timer interrupt
+        .dword  0                                    // cause  6: never delegated to VS-mode
+        .dword  0                                    // cause  7: never delegated to VS-mode
+        .dword  0                                    // cause  8: reserved -> abort
+        .dword  \__MODE__\()clr_Vext_int             // cause  9: VS-mode external interrupt
+        .dword  0                                    // cause 10: never delegated to VS-mode
+        .dword  0                                    // cause 11: never delegated to VS-mode
+  .else
         .dword  0                                    // cause  0: reserved -> abort
         .dword  \__MODE__\()clr_Ssw_int              // cause  1: S-mode software interrupt
         .dword  \__MODE__\()clr_Vsw_int              // cause  2: VS-mode software interrupt
@@ -2711,6 +2957,7 @@ clrint_\__MODE__\()tbl:
         .dword  \__MODE__\()clr_Sext_int             // cause  9: S-mode external interrupt
         .dword  \__MODE__\()clr_Vext_int             // cause 10: VS-mode external interrupt
         .dword  \__MODE__\()clr_Mext_int             // cause 11: M-mode external interrupt
+  .endif
 #else
   #if defined(S_SUPPORTED)
         .dword  0                                    // cause  0: reserved
@@ -2741,7 +2988,11 @@ clrint_\__MODE__\()tbl:
   #endif
 #endif
 
+#if defined(H_SUPPORTED)
+        .dword  \__MODE__\()clr_Sgei_int             // cause 12: supervisor guest external interrupt
+#else
         .dword  1                                    // cause 12: SGEI -> default return
+#endif
         .dword  \__MODE__\()clr_Lcof_int             // cause 13: local counter overflow interrupt
  .rept NUM_SPECD_INTCAUSES-0xE
         .dword  1                                    // causes 14..23: reserved -> default return
@@ -2872,20 +3123,42 @@ excpt_\__MODE__\()hndlr_tbl:
 
 #endif
 
-\__MODE__\()clr_Vsw_int:                             // VS-mode software interrupt
-        RVMODEL_CLR_VSW_INT
-        la      T2, resto_\__MODE__\()rtn
-        jr      T2
+#ifdef H_SUPPORTED
+// VS-level interrupts are raised through hvip, which M-mode and HS-mode clear
+// directly and the VS handler clears through T-SBI. A VS-level timer interrupt
+// from vstimecmp or a guest external interrupt from hgeip stays pending; the
+// handler has already masked it in hie (vsie).
+\__MODE__\()clr_Vsw_int:                             // VS-level software interrupt: hvip.VSSIP
+        CLR_INT_ENTER
+  .ifc \__MODE__ , V
+        RVTEST_CLR_VSSW_INT_U
+  .else
+        RVTEST_CLR_VSSW_INT_M
+  .endif
+        CLR_INT_RETURN \__MODE__
 
-\__MODE__\()clr_Vtmr_int:                            // VS-mode timer interrupt
-        RVMODEL_CLR_VTIMER_INT
-        la      T2, resto_\__MODE__\()rtn
-        jr      T2
+\__MODE__\()clr_Vtmr_int:                            // VS-level timer interrupt: hvip.VSTIP
+        CLR_INT_ENTER
+  .ifc \__MODE__ , V
+        RVTEST_CLR_VSTIME_INT_U
+  .else
+        RVTEST_CLR_VSTIME_INT_M
+  .endif
+        CLR_INT_RETURN \__MODE__
 
-\__MODE__\()clr_Vext_int:                            // VS-mode external interrupt: clear + save intID
-        RVMODEL_CLR_VEXT_INT
-        la      T2, resto_\__MODE__\()rtn
+\__MODE__\()clr_Vext_int:                            // VS-level external interrupt: hvip.VSEIP
+        CLR_INT_ENTER
+  .ifc \__MODE__ , V
+        RVTEST_CLR_VSEXT_INT_U
+  .else
+        RVTEST_CLR_VSEXT_INT_M
+  .endif
+        CLR_INT_RETURN \__MODE__
+
+\__MODE__\()clr_Sgei_int:                            // guest external interrupt: hgeip stays set until
+        la      T2, resto_\__MODE__\()rtn            //   RVMODEL_CLR_GUEST_EXT_INT; hie.SGEIE is masked
         jr      T2
+#endif
 
 \__MODE__\()clr_Lcof_int:                            // local counter overflow interrupt: xIP.LCOFIP already cleared
         la      T2, resto_\__MODE__\()rtn

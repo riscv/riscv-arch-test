@@ -8,13 +8,33 @@
 
 """Shared assembly generation for Sv tests."""
 
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.assembly import DATA_REGION
-from testgen.priv.extensions.sv.page_tables import PteFlags, SvMode, create_page_mapping
+from testgen.priv.extensions.sv.page_tables import (
+    SV32X4,
+    SV39X4,
+    VS_SV32,
+    VS_SV39,
+    PteFlags,
+    SvMode,
+    create_page_mapping,
+    write_pte,
+)
+
+# G-stage and VS-stage modes of the two-stage tests on each XLEN
+XLEN_STAGES = ((64, SV39X4, VS_SV39), (32, SV32X4, VS_SV32))
+
+
+def per_xlen(build: Callable[[SvMode, SvMode], list[str]]) -> list[str]:
+    """The lines ``build(g, vs)`` emits for each XLEN's G-stage and VS-stage modes, under ``#if __riscv_xlen``."""
+    lines = []
+    for xlen, g, vs in XLEN_STAGES:
+        lines.extend(["#if __riscv_xlen == 64" if xlen == 64 else "#else", *build(g, vs)])
+    return [*lines, "#endif"]
 
 
 def begin_sv_test(
@@ -79,6 +99,105 @@ def begin_sv_test(
         chunk.code.extend(["", sig_init])
     chunk.code.append("")
     return chunk
+
+
+def set_atp(mode: SvMode, reg: int, tmp: int) -> list[str]:
+    """Write ``mode``'s MODE and root table to its CSR (satp, vsatp or hgatp), using two scratch registers."""
+    return [
+        f"LI(x{reg}, {mode.atp_mode:#x})",
+        f"LA(x{tmp}, {mode.page_table_label(mode.levels - 1)})",
+        f"srli x{tmp}, x{tmp}, 12",
+        f"or x{tmp}, x{tmp}, x{reg}",
+        f"csrw {mode.atp_csr}, x{tmp}",
+    ]
+
+
+def guest_translation_setup(test_data: TestData, g: SvMode | None, vs: SvMode | None, priv_mode: str) -> list[str]:
+    """Identity map the test image in both stages, map the guest code alias, register it in the V save area, and
+    turn on hgatp and vsatp.  A None stage stays Bare.  The alias is user accessible when ``priv_mode`` is "VUmode".
+    """
+    alias = vs or g
+    if alias is None:
+        raise ValueError("A guest code alias needs a VS-stage or G-stage translation mode")
+    reg, tmp, spare = test_data.int_regs.get_registers(3)
+    regs = (reg, tmp, spare)
+    shift = alias.page_offset_bits(alias.levels - 1)
+    lines = ["// Identity map the test image in both stages"]
+    for label in ("rvtest_code_begin", "rvtest_data_begin", "rvtest_sig_end"):
+        for mode, flags in ((g, PteFlags(user=True)), (vs, PteFlags())):
+            if mode is not None:
+                lines.extend(
+                    write_pte(
+                        mode,
+                        level=mode.levels - 1,
+                        flags=flags,
+                        virtual_address=label,
+                        physical_address=label,
+                        regs=regs,
+                        va_is_label=True,
+                        superpage=True,
+                    )
+                )
+    lines.append("// Map the code region again at the guest alias")
+    if g is not None:
+        lines.extend(
+            write_pte(
+                g,
+                level=g.levels - 1,
+                flags=PteFlags(user=True),
+                virtual_address=g.code_va,
+                physical_address="rvtest_code_begin",
+                regs=regs,
+                superpage=True,
+            )
+        )
+    if vs is not None:
+        lines.extend(
+            write_pte(
+                vs,
+                level=vs.levels - 1,
+                flags=PteFlags(user=priv_mode == "VUmode"),
+                virtual_address=vs.code_va,
+                physical_address="rvtest_code_begin" if g is None else g.code_va,
+                regs=regs,
+                pa_is_label=g is None,
+                superpage=True,
+            )
+        )
+    lines.extend(
+        [
+            "// Register the alias of rvtest_code_begin",
+            f"LI(x{reg}, (({alias.code_va}) >> {shift}) << {shift})",
+            f"LA(x{tmp}, rvtest_code_begin)",
+            f"slli x{tmp}, x{tmp}, {alias.xlen - shift}",
+            f"srli x{tmp}, x{tmp}, {alias.xlen - shift}",
+            f"or x{reg}, x{reg}, x{tmp}",
+            f"LA(x{tmp}, Vtramptbl_sv)",
+            f"SREG x{reg}, code_bgn_off(x{tmp})",
+            "",
+        ]
+    )
+    lines.extend(["csrw hgatp, zero"] if g is None else set_atp(g, reg, tmp))
+    lines.extend(["csrw vsatp, zero"] if vs is None else set_atp(vs, reg, tmp))
+    lines.extend(["hfence.gvma", "hfence.vvma"])
+    test_data.int_regs.return_registers(list(regs))
+    return lines
+
+
+def guest_translation_teardown(test_data: TestData) -> list[str]:
+    """Turn guest translation off and unregister the guest code alias."""
+    reg, tmp = test_data.int_regs.get_registers(2)
+    lines = [
+        "csrw vsatp, zero",
+        "csrw hgatp, zero",
+        "hfence.gvma",
+        "hfence.vvma",
+        f"LA(x{reg}, rvtest_code_begin)",
+        f"LA(x{tmp}, Vtramptbl_sv)",
+        f"SREG x{reg}, code_bgn_off(x{tmp})",
+    ]
+    test_data.int_regs.return_registers([reg, tmp])
+    return lines
 
 
 def keep_image_mapped(sv: SvMode) -> list[str]:

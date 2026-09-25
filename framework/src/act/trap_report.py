@@ -97,6 +97,7 @@ class TrapEntry:
     xtval: int | None
     int_id: int | None
     mtval2: int | None
+    mtinst: int | None
     xstatus_bits: int
     xie_bit: bool
     xip_bit: bool
@@ -217,9 +218,9 @@ def _decode_all_traps(
 
         mode = MODE_NAMES.get(mode_raw, f"Unknown({mode_raw})")
 
-        # Entry size should be 3, 4, or 5 REGWIDTH words, and an exact multiple of
+        # Entry size should be 3, 4, or 6 REGWIDTH words, and an exact multiple of
         # REGWIDTH: the deadbeef fill pattern otherwise truncates to a valid size.
-        if entry_bytes % regwidth or entry_size not in (3, 4, 5):
+        if entry_bytes % regwidth or entry_size not in (3, 4, 6):
             break
         if pos + entry_size > len(raw_words):
             break
@@ -234,6 +235,7 @@ def _decode_all_traps(
         xtval: int | None = None
         int_id: int | None = None
         mtval2: int | None = None
+        mtinst: int | None = None
         test_label: str | None = None
 
         if is_interrupt:
@@ -247,8 +249,9 @@ def _decode_all_traps(
             test_label = _find_nearest_label(xepc, sorted_addrs, symbols)
             if entry_size >= 4:
                 xtval = raw_words[pos + 3]
-            if entry_size == 5:
+            if entry_size == 6:
                 mtval2 = raw_words[pos + 4]
+                mtinst = raw_words[pos + 5]
 
         entries.append(
             TrapEntry(
@@ -262,6 +265,7 @@ def _decode_all_traps(
                 xtval=xtval,
                 int_id=int_id,
                 mtval2=mtval2,
+                mtinst=mtinst,
                 xstatus_bits=xstatus_bits,
                 xie_bit=xie_bit,
                 xip_bit=xip_bit,
@@ -290,7 +294,8 @@ def _decode_xstatus(status_bits: int, mode: str) -> str:
     word0 bits [28:27] (xstatus 15:14). In the S/HS handler on a hypervisor build,
     hstatus[8:6] (SPVP, SPV, GVA) are OR'd into word0 bits [29:27] (xstatus 16:14).
     Bit 15 is therefore MPV on an M-mode entry and SPV on an S/HS one; ``mode`` is
-    the entry's MODE_NAMES string.
+    the entry's MODE_NAMES string. A VS-mode entry holds vsstatus, which has only the
+    supervisor fields.
     """
     # Skip WPRI bit 0
     sie = (status_bits >> 1) & 1
@@ -301,6 +306,8 @@ def _decode_xstatus(status_bits: int, mode: str) -> str:
     # Skip UBE bit 6 (not relevant to trap)
     mpie = (status_bits >> 7) & 1
     spp = (status_bits >> 8) & 1
+    if mode == "VS":
+        return f"SIE={sie}, SPIE={spie}, SPP={spp}"
     # Skip VS bits 9-10 (not relevant to trap)
     mpp = (status_bits >> 11) & 0x3
     # Skip FS bits 13-14 (not relevant to trap)
@@ -345,9 +352,12 @@ def _format_trap_report(entries: list[TrapEntry], test_name: str, xlen: int) -> 
         if entry.int_id is not None:
             lines.append(f"  IntID:   {_format_hex(entry.int_id, xlen)}")
         if entry.mtval2 is not None:
-            # Word 4 is mtval2 in an M-mode entry and htval in an S/HS one.
+            # Words 4 and 5 are mtval2 and mtinst in an M-mode entry, htval and htinst in an S/HS one.
             label = "MTVAL2" if entry.mode == "M" else "HTVAL "
             lines.append(f"  {label}:  {_format_hex(entry.mtval2, xlen)}")
+        if entry.mtinst is not None:
+            label = "MTINST" if entry.mode == "M" else "HTINST"
+            lines.append(f"  {label}:  {_format_hex(entry.mtinst, xlen)}")
 
         lines.append(f"  Status:  {_decode_xstatus(entry.xstatus_bits, entry.mode)}")
         lines.append(f"  XIE[cause]: {int(entry.xie_bit)}  XIP[cause]: {int(entry.xip_bit)}")

@@ -24,6 +24,7 @@
 #define SAIL_MTIMECMP_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0x4000)
 #define SAIL_MTIME_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0xBFF8)
 #define SAIL_SIG_ADDRESS (SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS + 0x4)
+#define SAIL_SIG_GUEST_ADDRESS (SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS + 0x8)
 
 // Don't use invisible trap emulation for expected result generation
 #undef RVTEST_EMULATE_TIME_CSR
@@ -179,5 +180,23 @@
   li _R1, (1 << 1);               \
   li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear SSW interrupt */ \
+
+##### Guest External Interrupts #####
+// Only when the DUT defines them, because the tests are gated on them. The Sail
+// config's extensions.H.geilen must match the DUT's GEILEN.
+#ifdef RVMODEL_SET_GUEST_EXT_INT
+#undef RVMODEL_SET_GUEST_EXT_INT
+#define RVMODEL_SET_GUEST_EXT_INT(_GEI, _R1, _R2)        \
+  li _R1, (1 << 31) | (_GEI);               \
+  li _R2, SAIL_SIG_GUEST_ADDRESS;    \
+  sw _R1, 0(_R2)            ; /* Set hgeip bit _GEI */ \
+
+#undef RVMODEL_CLR_GUEST_EXT_INT
+#define RVMODEL_CLR_GUEST_EXT_INT(_GEI, _R1, _R2)        \
+  li _R1, (_GEI);               \
+  li _R2, SAIL_SIG_GUEST_ADDRESS;    \
+  sw _R1, 0(_R2)            ; /* Clear hgeip bit _GEI */ \
+
+#endif
 
 #endif // _SAIL_MACROS_H

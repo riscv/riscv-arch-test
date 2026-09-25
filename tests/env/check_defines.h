@@ -131,6 +131,15 @@
   #endif
 #endif
 
+##### Guest External Interrupts #####
+// RVMODEL_SET_GUEST_EXT_INT / RVMODEL_CLR_GUEST_EXT_INT are optional: without them no
+// guest external interrupt tests run.
+#ifdef RVMODEL_SET_GUEST_EXT_INT
+  #ifndef RVMODEL_CLR_GUEST_EXT_INT
+    #error "RVMODEL_SET_GUEST_EXT_INT is defined but RVMODEL_CLR_GUEST_EXT_INT is not. Define both in rvmodel_macros.h."
+  #endif
+#endif
+
 ##### Configuration Limitations #####
 #if UDB_NUM_PMP_ENTRIES > 0
   #ifndef UDB_PMP_NAPOT_SUPPORTED

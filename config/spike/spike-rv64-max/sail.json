@@ -555,7 +555,7 @@
 
     "H": {
       "supported": true,
-      "geilen": 63,
+      "geilen": 0,
       "guest_page_fault_writes_htval": true,
       "hgatp_modes": {
         "Sv32x4": false,

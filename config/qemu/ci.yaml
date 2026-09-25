@@ -27,13 +27,26 @@ ci_enabled: true
 #     on RV32 the IMSIC bit is writable although Sail does not model IMSIC
 # ZawrsU and ZawrsS fail on qemu due to stval mismatching, filed QEMU issue https://gitlab.com/qemu-project/qemu/-/work_items/4080
 # Sdtrig*: Sail does not implement Sdtrig yet (https://github.com/riscv/sail-riscv/issues/222)
-# H: mstatus.MPV and mstatus.GVA read back as zero after being written from M-mode
-#    even with misa.H set, so mret never enters VS/VU: a guest's ecall is reported
-#    as cause 9/8 instead of 10, and a hypervisor CSR access from VS raises an
-#    illegal instruction instead of a virtual instruction exception. QEMU made both
-#    fields read-only in commit 18645f1957 ("target/riscv/csr.c: do not allow mstatus
-#    MPV/GVA writes", v11.1.0), which is what a test needs to write to enter a guest.
-exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H"
+# H and every other hypervisor suite except ZicntrHSm, Shcounterenw, Shvstvecd, Shvsatpa and Shgatpa:
+#    mstatus.MPV and GVA are read-only from M-mode (QEMU commit 18645f1957, v11.1.0), so mret
+#    never enters VS/VU (https://gitlab.com/qemu-project/qemu/-/work_items/4588). QEMU 11.1.1 also:
+#    - lets every vsstatus bit be written (https://gitlab.com/qemu-project/qemu/-/work_items/4589)
+#    - keeps vsepc[0] (https://gitlab.com/qemu-project/qemu/-/work_items/4420)
+#    - passes vsip bit 2 through to hvip.VSSIP (https://gitlab.com/qemu-project/qemu/-/work_items/4590)
+#    - keeps hgatp.PPN[1:0] (https://gitlab.com/qemu-project/qemu/-/work_items/4591)
+#    - ignores an hgatp write with an unsupported MODE, VMID and PPN included
+#      (https://gitlab.com/qemu-project/qemu/-/work_items/4597)
+#    - keeps the reserved henvcfg.CBIE = 0b10, as for menvcfg (https://gitlab.com/qemu-project/qemu/-/work_items/4216)
+#    - makes hedeleg[19] read-only zero (https://gitlab.com/qemu-project/qemu/-/work_items/4592)
+#    - drops hvip.VSTIP writes from M-mode while menvcfg.STCE = henvcfg.STCE = 1
+#      (https://gitlab.com/qemu-project/qemu/-/work_items/4593)
+#    - leaves mstatus.GVA = 0 on an HLV/HSV fault taken in M-mode
+#      (https://gitlab.com/qemu-project/qemu/-/work_items/4594)
+#    - raises instruction page faults instead of load page faults for HLVX
+#      (https://gitlab.com/qemu-project/qemu/-/work_items/4595)
+#    InterruptsHSm also needs a writable mip.LCOFIP (https://gitlab.com/qemu-project/qemu/-/work_items/3969).
+#    qemu-rv32-max: the max CPU does not implement Zicfilp on RV32, so henvcfg.LPE is read-only zero.
+exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H,HSm,ExceptionsH,ExceptionsHSm,ExceptionsHF,ExceptionsHV,InterruptsH,InterruptsHSm,SstcH,SstcHSm,ZicntrH,SvinvalH,SvinvalHSm,Shvstvala,Shtvala,SvH,SvHSm,PMPH,SvHZicbo"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"
 shards: 1

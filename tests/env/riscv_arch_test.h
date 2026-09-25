@@ -49,6 +49,10 @@
   #define UDB_VSTI_INTR_IMPL
   #define UDB_VSSI_INTR_IMPL
 #endif
+// hgeip is read-only, so only the platform can raise a guest external interrupt.
+#if defined(H_SUPPORTED) && defined(RVMODEL_SET_GUEST_EXT_INT)
+  #define UDB_SGEI_INTR_IMPL
+#endif
 
 #ifndef RVTEST_SELFCHECK
   #include "sail_macros.h"

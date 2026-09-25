@@ -3,7 +3,7 @@
 
   "address_translation_pmms": ["off"],
 
-  "isa": "rv32imafdcbvus_zicbom_zicbop_zicboz_zicntr_zicond_zicsr_zihintpause_zihpm_zimop_zawrs_zfa_zfbfmin_zfh_zkr_zcb_zcmop_zba_zbb_zbs_zvbb_zvbc_zvfbfmin_zvfbfwma_zvfh_zvkg_zvkned_zvknhb_zvksed_zvksh_sdtrig_smaia_smcntrpmf_smstateen_ssaia_sscofpmf_sstc_svadu_svinval_svvptc_zifencei_zabha_zbc_zkne_zknd_zknh_zbkb_zbkc_zbkx_zksed_zksh_zacas_zicfilp_zicfiss_ssqosid_ssdbltrp_smrnmi",
+  "isa": "rv32imafdcbvhus_zicbom_zicbop_zicboz_zicntr_zicond_zicsr_zihintpause_zihpm_zimop_zawrs_zfa_zfbfmin_zfh_zkr_zcb_zcmop_zba_zbb_zbs_zvbb_zvbc_zvfbfmin_zvfbfwma_zvfh_zvkg_zvkned_zvknhb_zvksed_zvksh_sdtrig_smaia_smcntrpmf_smstateen_ssaia_sscofpmf_sstc_svadu_svinval_svvptc_zifencei_zabha_zbc_zkne_zknd_zknh_zbkb_zbkc_zbkx_zksed_zksh_zacas_zicfilp_zicfiss_ssqosid_ssdbltrp_smrnmi",
 
   "all_inst_addr_trigger": "false",
   "cancel_lr_on_trap": false,
@@ -13,7 +13,7 @@
   "clear_tinst_on_cbo_inval": false,
   "enable_pmp_na4": false,
   "enable_pmp_tor": true,
-  "guest_interrupt_count": 5,
+  "guest_interrupt_count": 31, // GEILEN: hgeie bits 31:1 are writable
   "indexed_nmi": false,
 
   "memmap": {
@@ -55,17 +55,20 @@
       "poke_mask": "0x80fe7faa"
     },
     "mie": {
-      "mask": "0x2aaa", // ensuring that all non writable bits remain as read only 0
-      "poke_mask": "0x2aaa"
+      "mask": "0x3eee", // ensuring that all non writable bits remain as read only 0
+      "poke_mask": "0x3eee"
     },
     "mip": {
-      "mask": "0x2222", // determines what bits of mip can be set by M-mode software [SEIP, STIP, SSIP]
-      "poke_mask": "0x2aaa" //determines what bits of mip can be set by simulator injecting external events
+      "mask": "0x2226", // determines what bits of mip can be set by M-mode software [LCOFIP, SEIP, STIP, VSSIP, SSIP]
+      "poke_mask": "0x3eee" //determines what bits of mip can be set by simulator injecting external events
     },
     "mideleg": {
-      "mask": "0x3666" // determines what bits of mideleg can be set by M-mode software [SEIP, STIP, SSIP]
+      "mask": "0x3666" // [LCOFIP, SEIP, STIP, SSIP] writable; H makes SGEIP, VSEIP, VSTIP and VSSIP read-only one
     },
     "stvec": {
+      "mask": "0xFFFFFFFD" // don't allow setting MODE field to 2 (reserved)
+    },
+    "vstvec": {
       "mask": "0xFFFFFFFD" // don't allow setting MODE field to 2 (reserved)
     },
     "mcounteren": {
@@ -73,6 +76,12 @@
     },
     "scounteren": {
       "mask": "0x000007FF"
+    },
+    "hcounteren": {
+      "mask": "0x000007FF"
+    },
+    "hstatus": {
+      "mask": "0x0073f3c0" // VSBE read-only zero: VS-mode is little-endian (VS_MODE_ENDIANNESS)
     }
   },
 

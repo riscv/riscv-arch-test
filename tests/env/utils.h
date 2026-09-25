@@ -61,9 +61,14 @@
 #endif
 
 // Execute an sfence.vma if supported by the DUT. Primarily used in PMP tests.
+// A hypervisor test also synchronizes guest translations with the PMP settings (hypervisor.adoc,
+// "Memory-Management Fences").
 .macro RVTEST_SFENCE_VMA_IF_SUPPORTED
   #if defined(SV32_SUPPORTED) || defined(SV39_SUPPORTED)
     sfence.vma
+  #endif
+  #ifdef H_SUPPORTED
+    hfence.gvma
   #endif
 .endm
 
@@ -601,14 +606,41 @@
 #define RVTEST_CLR_SEXT_INT_U \
   jal rvtest_clr_sext_int_su     /* Clear supervisor external interrupt */
 
+// VS-level interrupts, raised through hvip. M-mode and HS-mode write hvip directly with the _M
+// flavor; U-mode, VS-mode and VU-mode use the _U flavor, which goes through T-SBI.
 
-// V-mode interrupts not yet supported in Sail reference model
-// Define as empty to prevent assembly errors
-#define RVTEST_SET_VSW_INT
-#define RVTEST_CLR_VSW_INT
-#define RVTEST_SET_VEXT_INT
-#define RVTEST_CLR_VEXT_INT
+#define RVTEST_SET_VSSW_INT_M   li a1, MIP_VSSIP; csrs CSR_HVIP, a1  /* Trigger VS-level software interrupt */
+#define RVTEST_CLR_VSSW_INT_M   li a1, MIP_VSSIP; csrc CSR_HVIP, a1  /* Clear VS-level software interrupt */
+#define RVTEST_SET_VSTIME_INT_M li a1, MIP_VSTIP; csrs CSR_HVIP, a1  /* Trigger VS-level timer interrupt */
+#define RVTEST_CLR_VSTIME_INT_M li a1, MIP_VSTIP; csrc CSR_HVIP, a1  /* Clear VS-level timer interrupt */
+#define RVTEST_SET_VSEXT_INT_M  li a1, MIP_VSEIP; csrs CSR_HVIP, a1  /* Trigger VS-level external interrupt */
+#define RVTEST_CLR_VSEXT_INT_M  li a1, MIP_VSEIP; csrc CSR_HVIP, a1  /* Clear VS-level external interrupt */
+
+#define RVTEST_SET_VSSW_INT_U   RVTEST_TSBI_CSR_SET(CSR_HVIP, MIP_VSSIP)
+#define RVTEST_CLR_VSSW_INT_U   RVTEST_TSBI_CSR_CLEAR(CSR_HVIP, MIP_VSSIP)
+#define RVTEST_CLR_VSTIME_INT_U RVTEST_TSBI_CSR_CLEAR(CSR_HVIP, MIP_VSTIP)
+#define RVTEST_CLR_VSEXT_INT_U  RVTEST_TSBI_CSR_CLEAR(CSR_HVIP, MIP_VSEIP)
+
+// VS-level timer interrupt through vstimecmp (Sstc), which is compared with time + htimedelta.
+// Assume menvcfg.STCE = 1 and henvcfg.STCE = 1.
+
+#define RVTEST_SET_VSSTC_INT_SOON_M \
+  jal rvtest_set_vsstc_int_soon_ms    /* Trigger VS-level timer interrupt with Sstc after a delay */
+
+#define RVTEST_SET_VSSTC_INT_M \
+  jal rvtest_set_vsstc_int_ms         /* Trigger VS-level timer interrupt with Sstc */
+
+#define RVTEST_CLR_VSSTC_INT_M \
+  jal rvtest_clr_vsstc_int_m          /* Clear VS-level timer interrupt with Sstc */
+
+#define RVTEST_SET_VSSTC_INT_SOON_S \
+  jal rvtest_set_vsstc_int_soon_ms    /* Trigger VS-level timer interrupt with Sstc after a delay */
+
+#define RVTEST_SET_VSSTC_INT_S \
+  jal rvtest_set_vsstc_int_ms         /* Trigger VS-level timer interrupt with Sstc */
+
+#define RVTEST_CLR_VSSTC_INT_S \
+  jal rvtest_clr_vsstc_int_s          /* Clear VS-level timer interrupt with Sstc */
 
 // Timer interrupts (no parameters)
 #define RVTEST_CLR_STIMER_INT
-#define RVTEST_CLR_VTIMER_INT

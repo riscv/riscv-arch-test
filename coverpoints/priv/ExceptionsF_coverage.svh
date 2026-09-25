@@ -115,7 +115,7 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
 endgroup
 
 function void exceptionsf_sample(int hart, int issue, ins_t ins);
-    //$display("Mstatus FS: %b, frmIllegal: %b, op: %b, fmrBits: %b, imm: %b", get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "fs")[1:0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "frm")[2:0],  ins.current.insn[6:0], ins.current.insn[14:12], ins.current.insn[31:27]);
+    //$display("Mstatus FS: %b, frmIllegal: %b, op: %b, fmrBits: %b, imm: %b", ins.current.csr[CSR_MSTATUS][14:13], ins.current.csr[CSR_FCSR][7:5],  ins.current.insn[6:0], ins.current.insn[14:12], ins.current.insn[31:27]);
     ExceptionsF_cg.sample(ins);
 
 

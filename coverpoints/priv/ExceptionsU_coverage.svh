@@ -148,6 +148,6 @@ endgroup
 function void exceptionsu_sample(int hart, int issue, ins_t ins);
     ExceptionsU_cg.sample(ins);
 
-    //$display("Instruction is: PC %h: %h = %s (rd = %h rs1 = %h rs2 = %h) trap = %b mode = %b (old mode %b) mstatus %h (old mstatus %h).  Retired: %d",ins.current.pc_rdata, ins.current.insn, ins.current.disass, ins.current.rd_val, ins.current.rs1_val, ins.current.rs2_val, ins.current.trap, ins.current.mode, ins.prev.mode, get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mstatus"), get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mstatus"), get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "minstret", "minstret"));
+    //$display("Instruction is: PC %h: %h = %s (rd = %h rs1 = %h rs2 = %h) trap = %b mode = %b (old mode %b) mstatus %h (old mstatus %h).  Retired: %d",ins.current.pc_rdata, ins.current.insn, ins.current.disass, ins.current.rd_val, ins.current.rs1_val, ins.current.rs2_val, ins.current.trap, ins.current.mode, ins.prev.mode, ins.current.csr[CSR_MSTATUS], ins.prev.csr[CSR_MSTATUS], ins.current.csr[CSR_MINSTRET]);
 
 endfunction

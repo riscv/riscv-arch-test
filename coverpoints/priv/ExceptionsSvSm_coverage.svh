@@ -99,7 +99,14 @@ covergroup ExceptionsSvSm_cg with function sample(ins_t ins);
                 // auto fill 1/0 for the physical address being valid
             }
         `endif
-        cp_misaligned_priority_m:       cross priv_mode_m, memops, d_virt_adr_misaligned, d_phys_address_nonexistent, d_page_table_entry_invalid;
+        cp_misaligned_priority_m:       cross priv_mode_m, memops, d_virt_adr_misaligned, d_phys_address_nonexistent, d_page_table_entry_invalid {
+            `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
+                `ifndef UDB_MISALIGNED_LDST
+                    // The misaligned exception is raised before translation, so there is no PTE or physical address
+                    ignore_bins misaligned_before_translation = binsof(d_virt_adr_misaligned.misaligned);
+                `endif
+            `endif
+        }
     `endif
 endgroup
 

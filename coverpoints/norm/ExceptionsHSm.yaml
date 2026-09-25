@@ -1,0 +1,40 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # With medeleg = 0, every exception from VS and VU goes to M-mode whatever hedeleg holds
+  - names: [H_trap_deleg, hedeleg_op]
+    coverpoint: ["ExceptionsHSm_cg/cp_hedeleg_*"]
+
+  # A trap into M-mode writes mstatus.MPP/MPIE/MIE and MPV/GVA
+  - names: [H_trap_m_csrwrites, mstatus_mpv_op, mstatus_gva_op]
+    coverpoint:
+      ["ExceptionsHSm_cg/cp_ecall_to_m", "ExceptionsHSm_cg/cp_ebreak_to_m"]
+
+  # hlv, hlvx and hsv in M-mode whatever hstatus.HU holds, and at misaligned and access-fault addresses; a fault
+  # sets mstatus.GVA
+  - names: [hlsv_op, mstatus_gva_op]
+    coverpoint:
+      [
+        "ExceptionsHSm_cg/cp_loadstore_priv",
+        "ExceptionsHSm_cg/cp_hlv_address_misaligned",
+        "ExceptionsHSm_cg/cp_hsv_address_misaligned",
+        "ExceptionsHSm_cg/cp_hlv_access_fault",
+        "ExceptionsHSm_cg/cp_hsv_access_fault",
+      ]
+
+  # Priority of access fault and address misaligned for hlv and hsv in M-mode
+  - names: [H_exception_priority]
+    coverpoint: ["ExceptionsHSm_cg/cp_priority"]
+
+  # Exceptions from VS-mode taken into M-mode write mtval2 = 0 and mtinst
+  - names:
+      [
+        mtval2_op,
+        mtinst_op,
+        H_trap_xtinst,
+        H_trap_xtinst_exception,
+        H_trap_xtinst_val,
+        H_trap_xtinst_zero_ok,
+      ]
+    coverpoint: ["ExceptionsHSm_cg/cp_xtinst_*"]

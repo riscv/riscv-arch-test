@@ -1,0 +1,34 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # With V = 1, mstatus.VS and vsstatus.VS are both in effect: either set to Off makes vector instructions illegal
+  - names:
+      [
+        vsstatus_vs_op2,
+        vsstatus_vs_op_off,
+        vsstatus_vs_mstatus_vs_op_off,
+        mstatus_vs_op_off,
+        H_illegalinst_xstatus_fs_vs,
+      ]
+    coverpoint: ["ExceptionsHV_cg/cp_exceptionsHV_vs"]
+
+  # Vector state changes set mstatus.VS, and vsstatus.VS when V = 1, to Dirty
+  - names:
+      [vsstatus_vs_op_active, mstatus_vs_op_active, mstatus_vs_op_initial_clean]
+    coverpoint:
+      [
+        "ExceptionsHV_cg/cp_exceptionsHV_vs",
+        "ExceptionsHV_cg/cp_vsstatus_vs_set_dirty_arithmetic",
+        "ExceptionsHV_cg/cp_vsstatus_vs_set_dirty_csr",
+      ]
+
+  # With V = 1, vsstatus.VS and the HS-level sstatus.VS are both in effect: either set to Off makes vector
+  # instructions illegal, and changing vector state sets both to Dirty
+  - names: [vsstatus_vs_op]
+    coverpoint:
+      [
+        "ExceptionsHV_cg/cp_exceptionsHV_vs",
+        "ExceptionsHV_cg/cp_vsstatus_vs_set_dirty_arithmetic",
+        "ExceptionsHV_cg/cp_vsstatus_vs_set_dirty_csr",
+      ]

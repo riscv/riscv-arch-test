@@ -1,0 +1,90 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # medeleg sends exceptions to HS-mode, and hedeleg further delegates those from VS and VU (not HS and U) to VS-mode
+  - names:
+      [hedeleg_op, H_trap_deleg, hedeleg_bits_required, hedeleg_bit0_ialign32]
+    coverpoint: ["ExceptionsH_cg/cp_hedeleg_*"]
+
+  # A trap into HS-mode writes sstatus.SPP/SPIE/SIE and hstatus.SPV/GVA, and writes SPVP only for traps from V = 1
+  - names: [H_trap_hs_csrwrites, hstatus_spv_op, hstatus_spvp_op]
+    coverpoint: ["ExceptionsH_cg/cp_ecall_to_hs"]
+
+  # A trap into VS-mode writes vsstatus.SPP/SPIE/SIE and goes through vstvec
+  - names: [H_trap_vs_csrwrites, vstvec_op]
+    coverpoint: ["ExceptionsH_cg/cp_ecall_to_vs", "ExceptionsH_cg/cp_vstvec"]
+
+  # Virtual-instruction exceptions from VS-mode and VU-mode
+  - names:
+      [
+        H_cause,
+        H_cause_virtual_instruction,
+        H_virtinst_xtval,
+        H_virtinst_vs_nonhighctr_h0_m1,
+        H_virtinst_vs32_highctr_h0_m1,
+        H_virtinst_vu_nonhighctr_h0_s0_m1,
+        H_virtinst_vu32_highctr_h0_s0_m1,
+        H_virtinst_vu_vs_hinst,
+        H_virtinst_vu_vs_nonhigh_allowedhs_tvm0,
+        H_virtinst_vu_vs32_high_allowedhs_tvm0,
+        H_virtinst_vu_wfi_tw0,
+        H_virtinst_vu_sret_sfence,
+        H_virtinst_vu_nonhigh_supervisor_allowedhs_tvm0,
+        H_virtinst_vs_sret_vtsr1,
+        H_virtinst_vs_sfence_sinval_satp_vtvm1,
+        hstatus_vtsr_op,
+        hstatus_vtvm_op,
+        hlsv_virtinst,
+        hfence-vvma_hfence-gvma_exceptions,
+      ]
+    coverpoint:
+      [
+        "ExceptionsH_cg/cp_virtual_instr_vs_*",
+        "ExceptionsH_cg/cp_virtual_instr_vu_*",
+      ]
+
+  # WFI in VS-mode with hstatus.VTW = 1 traps unless it completes within an implementation-specific time
+  - names: [hstatus_vtw_op, H_virtinst_wfi_vtw1_tw0]
+    coverpoint: ["ExceptionsH_cg/cp_virtual_instr_vs_wfi"]
+
+  # hlv, hlvx and hsv raise virtual instruction when V = 1 and illegal instruction in U-mode when hstatus.HU = 0
+  - names: [hstatus_hu_op, hlsv_virtinst, hlsv_illegalinst]
+    coverpoint:
+      ["ExceptionsH_cg/cp_loadstore_priv", "ExceptionsH_cg/cp_priority"]
+
+  # Priority of illegal instruction, virtual instruction, access fault and address misaligned
+  - names: [H_exception_priority]
+    coverpoint: ["ExceptionsH_cg/cp_priority"]
+
+  # An hlv or hsv fault taken into HS-mode sets hstatus.GVA
+  - names: [hstatus_gva_op]
+    coverpoint: ["ExceptionsH_cg/cp_hstatus_gva"]
+
+  # Exceptions from VS-mode taken into HS-mode write htval and htinst
+  - names:
+      [
+        htval_op,
+        htinst_op,
+        H_trap_xtinst,
+        H_trap_xtinst_exception,
+        H_trap_xtinst_val,
+        H_trap_xtinst_zero_ok,
+      ]
+    coverpoint: ["ExceptionsH_cg/cp_xtinst_*"]
+
+  # The Addr. Offset field of a transformed instruction is the faulting virtual address minus the original one,
+  # nonzero only for a misaligned access
+  - names: [H_tinst_addr_offset]
+    coverpoint:
+      [
+        "Not tested: TODO misaligned loads and stores from VS-mode whose second page faults, on a configuration that writes transformed instructions to htinst; every configuration writes zero",
+      ]
+
+  # WFI in VS-mode with hstatus.VTW=1 and mstatus.TW=0 may raise virtual instruction even with a globally-disabled
+  # interrupt pending
+  - names: [VTW_VIRTINSTR]
+    coverpoint:
+      [
+        "Not tested: with a globally-disabled interrupt pending, WFI may trap or complete, so neither outcome can be required",
+      ]

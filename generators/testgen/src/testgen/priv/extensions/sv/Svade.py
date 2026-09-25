@@ -61,8 +61,7 @@ def _make_svade_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                         "va_data",
                         level,
                         f"test{number}",
-                        enter=[] if mode == "Smode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"],
-                        leave=[] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"],
+                        driver_mode="Smode",
                     ),
                     "",
                 ]

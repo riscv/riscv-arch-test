@@ -52,11 +52,20 @@
     `ifdef COVER_EXCEPTIONSSV
         exceptionssv_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_EXCEPTIONSSVSM
+        exceptionssvsm_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_EXCEPTIONSSVZAAMO
         exceptionssvzaamo_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_EXCEPTIONSSVZAAMOSM
+        exceptionssvzaamosm_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_EXCEPTIONSSVZALRSC
         exceptionssvzalrsc_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_EXCEPTIONSSVZALRSCSM
+        exceptionssvzalrscsm_sample(hart, issue, ins);
     `endif
     `ifdef COVER_EXCEPTIONSU
         exceptionsu_sample(hart, issue, ins);

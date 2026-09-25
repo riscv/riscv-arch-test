@@ -63,16 +63,26 @@ https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7
 
 include::norm/InterruptsU_norm_rules.adoc[]
 
-==== InterruptsSstc Supervisor Timer Compare Interrupts
+==== SstcSm Machine Supervisor Timer Compare Interrupts
 
-These tests are run when the Sstc supervisor timer compare extension is supported.
+These tests are run from machine mode when the Sstc supervisor timer compare extension is supported.
 
-[[t-InterruptsSstc-coverpoints]]
-.InterruptsSstc Coverpoints
+[[t-SstcSm-coverpoints]]
+.SstcSm Coverpoints
 ,===
 https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=347804969#gid=347804969[Google Sheet Testplan]
 ,===
 
-include::norm/InterruptsSstc_norm_rules.adoc[]
+include::norm/SstcSm_norm_rules.adoc[]
 
-TODO: beef up testing stimecmp values, behavior near wraparound
+==== SstcS Supervisor Timer Compare Interrupts
+
+These tests are run from supervisor and user mode when the Sstc supervisor timer compare extension is supported.
+
+[[t-SstcS-coverpoints]]
+.SstcS Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=347804969#gid=347804969[Google Sheet Testplan]
+,===
+
+include::norm/SstcS_norm_rules.adoc[]

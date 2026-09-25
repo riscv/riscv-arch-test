@@ -224,6 +224,12 @@
 `ifdef SSSTRICTV_COVERAGE
   `include "SsstrictV_coverage.svh"
 `endif
+`ifdef SSTCS_COVERAGE
+  `include "SstcS_coverage.svh"
+`endif
+`ifdef SSTCSM_COVERAGE
+  `include "SstcSm_coverage.svh"
+`endif
 `ifdef SSTVALA_COVERAGE
   `include "Sstvala_coverage.svh"
 `endif

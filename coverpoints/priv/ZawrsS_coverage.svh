@@ -87,7 +87,7 @@ covergroup ZawrsS_cg with function sample(ins_t ins);
     mstatus_sie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
         bins one = {1};
     }
-    mie_zeros: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")) {
+    mie_zeros: coverpoint (ins.current.csr[CSR_MIE]) {
         bins zeros = {0}; // zero in all 6 interrupt enable bits
     }
     `ifdef SSTC_SUPPORTED
@@ -104,7 +104,7 @@ covergroup ZawrsS_cg with function sample(ins_t ins);
         hstatus_vtw_enabled: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtw")) {
             bins one = {1};
         }
-        hedeleg_zeros: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hedeleg", "hedeleg")) {
+        hedeleg_zeros: coverpoint (ins.current.csr[CSR_HEDELEG]) {
             bins zeros = {0}; // zero in all 6 interrupt enable bits
         }
     `endif

@@ -89,12 +89,13 @@ covergroup ExceptionsSvSm_cg with function sample(ins_t ins);
 
     // Access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        // The data accesses use an offset into the faulting region, which is at least 128 bytes
         `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
-            d_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            d_phys_address_nonexistent: coverpoint ((ins.current.phys_adr_d - `RVMODEL_ACCESS_FAULT_ADDRESS) < 128) {
                 // auto fill 1/0 for the physical address being valid
             }
         `else
-            d_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            d_phys_address_nonexistent: coverpoint ((ins.current.phys_adr_d - `RVMODEL_ACCESS_FAULT_ADDRESS) < 128) {
                 // auto fill 1/0 for the physical address being valid
             }
         `endif

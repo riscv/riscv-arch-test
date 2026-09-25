@@ -16,7 +16,10 @@ normative_rule_definitions:
   - name: M_access_all_lower_priv_CSRs
     coverpoint:
       [
-        "Sm_mcsr_cg/cp_scsr_from_m, SmF_cg/cp_fcsr_access, SmV_cg/cp_vcsrrswc, H_mcsr_cg/cp_hcsr_access",
+        "Sm_mcsr_cg/cp_scsr_from_m",
+        "SmF_cg/cp_fcsr_access",
+        "SmV_cg/cp_vcsrrswc",
+        "HSm_mcsr_cg/cp_hcsr_access",
       ]
 
   # The misa CSR is a WARL read-write register

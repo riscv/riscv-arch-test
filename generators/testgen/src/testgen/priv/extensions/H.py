@@ -1,552 +1,361 @@
 ##################################
-# priv/extensions/H.py
+# H.py
 #
-# H privileged extension test generator: HS, VS and VU-mode trap handler,
-# T-SBI, and two-stage address translation.
+# H hypervisor extension tests that run in HS, VS, U and VU modes.
+# David_Harris@hmc.edu 24 September 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""H extension test generator: the HS/VS/VU trap handler, T-SBI and two-stage translation paths."""
+"""H hypervisor extension test generator.
 
-from testgen.asm.helpers import write_sigupd
+The suite boots to HS-mode.  The HS-mode handler takes traps from U, VS and VU (hedeleg = 0).
+Tests that need mstatus.TVM = 1 are in HSm.
+"""
+
+from testgen.asm.csr import csr_access_test, gen_csr_read_sigupd
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.HCommon import (
+    H_HS_CSRS,
+    H_M_CSRS,
+    H_VS_CSRS,
+    HSTATUS_MASK,
+    REPLICA_ATP_GATE,
+    REPLICAS,
+    HCsr,
+    gated,
+    guest_page_fault_tests,
+    hcsr_tests,
+    hlv_tests,
+    replica_read,
+    replica_write,
+    sret_tests,
+)
+from testgen.priv.extensions.S import scause_write_tests, sstatus_sd_tests
 from testgen.priv.registry import add_priv_test_generator
 
-_CG = "H_cg"
-INDENT = "  "
+HS_CG = "H_hscsr_cg"
+VS_CG = "H_vscsr_cg"
+U_CG = "H_ucsr_cg"
+INST_CG = "H_inst_cg"
 
-# Both stages map TEST_GIB identity so every guest address is numerically what
-# HS-mode sees. HOLE_GIB is mapped by the VS-stage and deliberately not by the
-# G-stage, so a guest access to it faults in the G-stage and nowhere else.
-# ALIAS_GIB is a second, non-identity VS-stage view of TEST_GIB: code running
-# there has a guest virtual PC that is not its own physical address.
-_TEST_GIB = 0x80000000
-_HOLE_GIB = 0x40000000
-_ALIAS_GIB = 0xC0000000
+# The accesses of csraccesses: csrrw all 1s, csrrw 0s, csrrs all 1s, csrrc all 1s, csrr
+CSR_OPS = [
+    ("csrrw1", "csrrw x{rd}, {csr}, x{ones}"),
+    ("csrrw0", "csrrw x{rd}, {csr}, x0"),
+    ("csrrs_all", "csrrs x{rd}, {csr}, x{ones}"),
+    ("csrrc_all", "csrrc x{rd}, {csr}, x{ones}"),
+    ("csrr", "csrr x{rd}, {csr}"),
+]
 
-# G-stage PTEs are always checked as user accesses, so PTE_U must be set.
-_G_PERMS = "(PTE_V | PTE_R | PTE_W | PTE_X | PTE_U | PTE_A | PTE_D)"
-# VS-stage pages belong to the guest supervisor, so PTE_U is clear.
-_VS_PERMS = "(PTE_V | PTE_R | PTE_W | PTE_X | PTE_A | PTE_D)"
-# The same pages as VU-mode sees them.
-_VU_PERMS = "(PTE_V | PTE_R | PTE_W | PTE_X | PTE_U | PTE_A | PTE_D)"
-
-# Bits the hypervisor spec requires to read as zero. hedeleg: environment call
-# from HS/VS/M (9, 10, 11), double trap (16) and the guest-page faults and
-# virtual instruction exception (20-23), which are only ever taken in HS-mode.
-# hideleg: the S-level interrupts (1, 5, 9) and SGEI (12); only the VS-level
-# interrupts 2, 6 and 10 are writable.
-_HEDELEG_RO_ZERO = hex(sum(1 << b for b in (9, 10, 11, 16, 20, 21, 22, 23)))
-_HIDELEG_RO_ZERO = hex(sum(1 << b for b in (1, 5, 9, 12)))
-
-# Bits the spec requires to be writable. hedeleg: the exceptions that can be taken
-# in VS/VU mode, less bit 0, whose presence depends on IALIGN. hideleg: the VS-level
-# interrupts, which a hypervisor must be able to delegate to the guest.
-_HEDELEG_WRITABLE = hex(sum(1 << b for b in (1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 15, 18, 19)))
-_HIDELEG_WRITABLE = hex(sum(1 << b for b in (2, 6, 10)))
+# HS and VS H CSRs, which VS-mode and VU-mode cannot access
+HS_VS_CSRS = [*H_HS_CSRS, HCsr("hgeip"), *H_VS_CSRS, HCsr("vscause")]
+# High halves of H CSRs, illegal on RV64, where the assembler knows only their numbers
+H_UPPER_CSRS = [
+    HCsr(f"CSR_{name}", gate="__riscv_xlen == 64") for name in ("HEDELEGH", "HTIMEDELTAH", "HENVCFGH", "VSTIMECMPH")
+]
+S_REPLICATED_CSRS = [
+    HCsr(name) for name in ("sstatus", "sie", "stvec", "sscratch", "sepc", "scause", "stval", "sip", "satp")
+]
+S_UNREPLICATED_CSRS = [
+    HCsr("scounteren"),
+    HCsr("senvcfg", gate="defined(S1P12P0_OR_LATER_SUPPORTED)"),
+    HCsr("scountinhibit", gate="defined(SSCCFG_SUPPORTED)"),
+]
 
 
-def _gen_ecall_test(test_data: TestData, check: int, temp: int, bin_name: str) -> list[str]:
-    """RVTEST_TSBI_ECALL_TEST, checking it returns the ecall's own address."""
-    label = test_data.add_testcase(bin_name, "cp_tsbi_ecall", _CG)
-    site = label.rstrip(":") + "_site"
-    return [
-        label,
-        f"{site}:",
-        f"{INDENT}RVTEST_TSBI_ECALL_TEST",
-        f"{INDENT}LA(x{temp}, {site})",
-        f"{INDENT}sub x{check}, a0, x{temp}",
-        write_sigupd(check, test_data),
+def _csr_trap_ops(test_data: TestData, csr: HCsr, covergroup: str, coverpoint: str) -> list[str]:
+    """Perform each CSR_OPS access to a CSR that is expected to trap; rd must keep its known value."""
+    ones, rd = test_data.int_regs.get_registers(2)
+    lines = [*csr.setup, f"LI(x{ones}, -1)"]
+    for op, fmt in CSR_OPS:
+        lines.extend(
+            [
+                f"LI(x{rd}, 42)",
+                test_data.add_testcase(f"{csr.name}_{op}", coverpoint, covergroup),
+                fmt.format(rd=rd, csr=csr.name, ones=ones),
+                write_sigupd(rd, test_data),
+            ]
+        )
+    test_data.int_regs.return_registers([ones, rd])
+    return gated([*lines, *csr.restore], csr.gate)
+
+
+def _vgein_tests(test_data: TestData) -> list[str]:
+    """hstatus.VGEIN holds each value from 0 through GEILEN; larger values are WLRL, so they are not written."""
+    save_reg, val_reg, mask_reg, check_reg = test_data.int_regs.get_registers(4)
+    mask = HSTATUS_MASK | (0x3F << 12)
+    lines = [
+        comment_banner("cp_hstatus_vgein", "Write hstatus.VGEIN = 0, 1, GEILEN-1 and GEILEN"),
+        f"csrr x{save_reg}, hstatus",
+        f"LI(x{mask_reg}, {HSTATUS_MASK:#x} | HSTATUS_VGEIN)",
     ]
+    for name, value in (
+        ("zero", "0"),
+        ("one", "1"),
+        ("geilen_m1", "(UDB_NUM_EXTERNAL_GUEST_INTERRUPTS - 1)"),
+        ("geilen", "UDB_NUM_EXTERNAL_GUEST_INTERRUPTS"),
+    ):
+        body = [
+            f"LI(x{val_reg}, HSTATUS_VGEIN)",
+            f"csrc hstatus, x{val_reg}",
+            f"csrr x{val_reg}, hstatus",
+            *([] if value == "0" else [f"LI(x{check_reg}, {value} << 12)", f"or x{val_reg}, x{val_reg}, x{check_reg}"]),
+            test_data.add_testcase(name, "cp_hstatus_vgein", HS_CG),
+            f"csrw hstatus, x{val_reg}",
+            gen_csr_read_sigupd(check_reg, ("hstatus", mask), test_data, mask_reg),
+        ]
+        lines.extend(body if name == "zero" else gated(body, "UDB_NUM_EXTERNAL_GUEST_INTERRUPTS >= 1"))
+    lines.append(f"csrw hstatus, x{save_reg}")
+    test_data.int_regs.return_registers([save_reg, val_reg, mask_reg, check_reg])
+    return lines
 
 
-def _gen_hs_csr_tests(test_data: TestData, check: int, temp: int) -> list[str]:
-    """HS-mode hypervisor CSR access, before anything has entered a guest."""
-    code = [
-        "",
-        "/////////////////////////////////",
-        "// HS-mode hypervisor CSR access",
-        "//",
-        "// These run first, so they also show that the H trap prolog left the",
-        "// hypervisor CSRs in a sane state rather than, say, ORing a stale",
-        "// pointer into hgatp.",
-        "/////////////////////////////////",
-        "",
-        test_data.add_testcase("bare", "cp_hgatp_mode", _CG),
-        f"{INDENT}csrr x{check}, hgatp",
-        f"{INDENT}srli x{check}, x{check}, MODE_LSB   # hgatp.MODE, whatever XLEN says that is",
-        write_sigupd(check, test_data),
-        "",
-        test_data.add_testcase("clear", "cp_hstatus_spv", _CG),
-        f"{INDENT}csrr x{check}, hstatus",
-        f"{INDENT}LI(x{temp}, HSTATUS_SPV)",
-        f"{INDENT}and x{check}, x{check}, x{temp}   # SPV must be 0: we have never left HS-mode",
-        write_sigupd(check, test_data),
-        "",
-        "# hedeleg and hideleg are WARL. Writing all ones and masking to the bits the",
-        "# spec requires to read as zero must leave zero, and masking to the bits it",
-        "# requires to be writable must leave that mask; the bits in between are an",
-        "# implementation choice and are not checked.",
-        f"{INDENT}LI(x{temp}, -1)",
-        test_data.add_testcase("ro_zero_bits", "cp_hedeleg_warl", _CG),
-        f"{INDENT}csrw hedeleg, x{temp}",
-        f"{INDENT}csrr x{check}, hedeleg",
-        f"{INDENT}LI(x{temp}, {_HEDELEG_RO_ZERO})",
-        f"{INDENT}and x{check}, x{check}, x{temp}",
-        write_sigupd(check, test_data),
-        test_data.add_testcase("required_writable_bits", "cp_hedeleg_warl", _CG),
-        f"{INDENT}csrr x{check}, hedeleg",
-        f"{INDENT}LI(x{temp}, {_HEDELEG_WRITABLE})",
-        f"{INDENT}and x{check}, x{check}, x{temp}   # must read back as the mask itself",
-        write_sigupd(check, test_data),
-        f"{INDENT}csrw hedeleg, x0",
-        "",
-        f"{INDENT}LI(x{temp}, -1)",
-        test_data.add_testcase("ro_zero_bits", "cp_hideleg_warl", _CG),
-        f"{INDENT}csrw hideleg, x{temp}",
-        f"{INDENT}csrr x{check}, hideleg",
-        f"{INDENT}LI(x{temp}, {_HIDELEG_RO_ZERO})",
-        f"{INDENT}and x{check}, x{check}, x{temp}",
-        write_sigupd(check, test_data),
-        test_data.add_testcase("required_writable_bits", "cp_hideleg_warl", _CG),
-        f"{INDENT}csrr x{check}, hideleg",
-        f"{INDENT}LI(x{temp}, {_HIDELEG_WRITABLE})",
-        f"{INDENT}and x{check}, x{check}, x{temp}   # must read back as the mask itself",
-        write_sigupd(check, test_data),
-        f"{INDENT}csrw hideleg, x0",
+def _replica_tests(test_data: TestData) -> list[str]:
+    """S CSRs and their VS replicas accessed from HS-mode and from VS-mode, and read back in M-mode."""
+    save_s, save_vs, mask_reg, val_reg = test_data.int_regs.get_registers(4)
+    lines = [
+        comment_banner(
+            "cp_replica (HS-mode)",
+            "M-mode writes different values to an S CSR and its VS replica.  HS-mode reads both, writes new\n"
+            "values and reads them back.  M-mode reads both again",
+        )
     ]
-    return code
+    for rep in REPLICAS:
+        mask = [f"LI(x{mask_reg}, {rep.mask:#x})"] if rep.mask else []
+        body = [
+            "RVTEST_TSBI_GOTO_MMODE",
+            f"LI(x{val_reg}, MIP_VS_MASK)",
+            f"csrw hideleg, x{val_reg}",
+            f"csrr x{save_s}, {rep.s}",
+            f"csrr x{save_vs}, {rep.vs}",
+            *replica_write(test_data, rep, rep.s, rep.values[0], val_reg),
+            *replica_write(test_data, rep, rep.vs, rep.values[1], val_reg),
+            *mask,
+            "RVTEST_TSBI_GOTO_SMODE",
+            *replica_read(test_data, rep, rep.s, mask_reg, f"hs_{rep.s}_init", HS_CG),
+            *replica_read(test_data, rep, rep.vs, mask_reg, f"hs_{rep.vs}_init", HS_CG),
+            *replica_write(test_data, rep, rep.s, rep.values[2], val_reg),
+            *replica_write(test_data, rep, rep.vs, rep.values[3], val_reg),
+            *replica_read(test_data, rep, rep.s, mask_reg, f"hs_{rep.s}", HS_CG),
+            *replica_read(test_data, rep, rep.vs, mask_reg, f"hs_{rep.vs}", HS_CG),
+            "RVTEST_TSBI_GOTO_MMODE",
+            *replica_read(test_data, rep, rep.s, mask_reg, f"hs_{rep.s}_m", HS_CG),
+            *replica_read(test_data, rep, rep.vs, mask_reg, f"hs_{rep.vs}_m", HS_CG),
+            f"csrw {rep.s}, x{save_s}",
+            f"csrw {rep.vs}, x{save_vs}",
+            "csrw hideleg, zero",
+            "RVTEST_TSBI_GOTO_SMODE",
+        ]
+        lines.extend(gated(body, REPLICA_ATP_GATE) if rep.s == "satp" else body)
+
+    lines.append(
+        comment_banner(
+            "cp_replica (VS-mode)",
+            "M-mode writes different values to an S CSR and its VS replica.  VS-mode reads the S CSR name,\n"
+            "writes a new value and reads it back, which reaches the replica.  M-mode reads both.  VS-mode\n"
+            "ecalls go to M-mode so that no trap into HS-mode changes sepc, scause, stval or sstatus",
+        )
+    )
+    for rep in REPLICAS:
+        # vsatp stays Bare while VS-mode runs
+        values = (
+            ("rvtest_Sroot_pg_tbl", None, None) if rep.s == "satp" else (rep.values[0], rep.values[1], rep.values[3])
+        )
+        s_init, vs_init, vs_new = values
+        body = [
+            "RVTEST_TSBI_GOTO_MMODE",
+            f"LI(x{val_reg}, 1 << CAUSE_VIRTUAL_SUPERVISOR_ECALL)",
+            f"csrc medeleg, x{val_reg}",
+            f"LI(x{val_reg}, MIP_VS_MASK)",
+            f"csrw hideleg, x{val_reg}",
+            f"csrr x{save_s}, {rep.s}",
+            f"csrr x{save_vs}, {rep.vs}",
+            *replica_write(test_data, rep, rep.s, s_init, val_reg),
+            *replica_write(test_data, rep, rep.vs, vs_init, val_reg),
+            *([f"LI(x{mask_reg}, {rep.mask:#x})"] if rep.mask else []),
+            "RVTEST_TSBI_GOTO_VSMODE",
+            *replica_read(test_data, rep, rep.s, mask_reg, f"vs_{rep.s}_init", VS_CG),
+            *replica_write(test_data, rep, rep.s, vs_new, val_reg),
+            *replica_read(test_data, rep, rep.s, mask_reg, f"vs_{rep.s}", VS_CG),
+            "RVTEST_TSBI_GOTO_MMODE",
+            *replica_read(test_data, rep, rep.s, mask_reg, f"vs_{rep.s}_m", VS_CG),
+            *replica_read(test_data, rep, rep.vs, mask_reg, f"vs_{rep.vs}_m", VS_CG),
+            f"csrw {rep.s}, x{save_s}",
+            f"csrw {rep.vs}, x{save_vs}",
+            "csrw hideleg, zero",
+            f"LI(x{val_reg}, 1 << CAUSE_VIRTUAL_SUPERVISOR_ECALL)",
+            f"csrs medeleg, x{val_reg}",
+            "RVTEST_TSBI_GOTO_SMODE",
+        ]
+        lines.extend(gated(body, REPLICA_ATP_GATE) if rep.s == "satp" else body)
+
+    test_data.int_regs.return_registers([save_s, save_vs, mask_reg, val_reg])
+    return lines
 
 
-def _gen_tsbi_from_hs_tests(test_data: TestData, check: int, temp: int) -> list[str]:
-    """T-SBI calls made from HS-mode, which reach M-mode as cause 9."""
-    return [
-        "",
-        "/////////////////////////////////",
-        "// T-SBI from HS-mode",
-        "//",
-        "// An ecall from HS-mode is cause 9, which RVTEST_BOOT_TO_SMODE leaves",
-        "// undelegated so it reaches the M-mode handler. ECALL_TEST returns the",
-        "// ecall's own address, four bytes past this label because the macro",
-        "// loads a0 first.",
-        "/////////////////////////////////",
-        "",
-        *_gen_ecall_test(test_data, check, temp, "from_hs"),
-        "",
-        "# Read an M-mode CSR from HS-mode through the T-SBI. The handler runs the",
-        "# csrr while servicing our ecall, so mstatus.MPP must read back as S.",
-        test_data.add_testcase("mstatus_mpp_from_hs", "cp_tsbi_csr_read", _CG),
-        f"{INDENT}RVTEST_TSBI_CSR_READ(CSR_MSTATUS)",
-        f"{INDENT}srli x{check}, a0, MPP_LSB",
-        f"{INDENT}andi x{check}, x{check}, 0x3",
-        write_sigupd(check, test_data),
+def _vs_csr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
+    """CSR accesses from VS-mode."""
+    tc = test_data.new_test_chunk(test_chunks, "vscsr")
+    tc.section_header = comment_banner(
+        "cp_hcsr_inaccessible, cp_hcsr_virtualinstructionfault, cp_illegalupper",
+        "In VS-mode, access each Machine-level H CSR (illegal instruction), each HS and VS H CSR (virtual\n"
+        "instruction when the access is legal in HS-mode), and on RV64 each high-half H CSR (illegal)",
+    )
+    tc.code.append("RVTEST_TSBI_GOTO_VSMODE")
+    for csr in H_M_CSRS:
+        tc.code.extend(_csr_trap_ops(test_data, csr, VS_CG, "cp_hcsr_inaccessible"))
+    for csr in HS_VS_CSRS:
+        tc.code.extend(_csr_trap_ops(test_data, csr, VS_CG, "cp_hcsr_virtualinstructionfault"))
+    for csr in H_UPPER_CSRS:
+        tc.code.extend(_csr_trap_ops(test_data, csr, VS_CG, "cp_illegalupper"))
+    tc.code.append("RVTEST_TSBI_GOTO_SMODE")
+
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.section_header = comment_banner("cp_nonreplica", "In VS-mode, access each S CSR that has no VS replica")
+    tc.code.append("RVTEST_TSBI_GOTO_VSMODE")
+    for csr in S_UNREPLICATED_CSRS:
+        tc.code.extend(gated(csr_access_test(test_data, (csr.name, csr.mask), VS_CG, "cp_nonreplica"), csr.gate))
+    tc.code.extend([*sstatus_sd_tests(test_data, VS_CG, "cp_vsstatus_sd_write", uxl=False), "RVTEST_TSBI_GOTO_SMODE"])
+
+
+def _user_csr_tests(test_data: TestData, test_chunks: list[TestChunk], mode: str) -> None:
+    """Every H CSR and S CSR access traps from U-mode and VU-mode."""
+    tc = test_data.new_test_chunk(test_chunks, f"{mode}csr")
+    tc.section_header = comment_banner(
+        "cp_hcsr_inaccessible, cp_hcsr_inaccessible_u, cp_hcsr_virtualinstructionfault, cp_illegalupper, cp_scsr",
+        f"In {mode.upper()}-mode, access each H CSR, each S CSR, and on RV64 each high-half H CSR.  Each\n"
+        "access raises illegal instruction, or virtual instruction from VU-mode when HS-mode could perform it",
+    )
+    tc.code.append(f"RVTEST_TSBI_GOTO_{mode.upper()}MODE")
+    for csr in H_M_CSRS:
+        tc.code.extend(_csr_trap_ops(test_data, csr, U_CG, "cp_hcsr_inaccessible"))
+    for csr in HS_VS_CSRS:
+        coverpoint = "cp_hcsr_virtualinstructionfault" if mode == "vu" else "cp_hcsr_inaccessible_u"
+        tc.code.extend(_csr_trap_ops(test_data, csr, U_CG, coverpoint))
+    for csr in H_UPPER_CSRS:
+        tc.code.extend(_csr_trap_ops(test_data, csr, U_CG, "cp_illegalupper"))
+    for csr in [*S_REPLICATED_CSRS, *S_UNREPLICATED_CSRS]:
+        tc.code.extend(_csr_trap_ops(test_data, csr, U_CG, "cp_scsr"))
+    tc.code.append("RVTEST_TSBI_GOTO_SMODE")
+
+
+def _xret_tests(test_data: TestData) -> list[str]:
+    """Illegal mret and sret, and sret from HS-mode and VS-mode.
+
+    After each sret, a read of mscratch traps into HS-mode and the trap record shows the mode reached.
+    """
+    lines = [
+        comment_banner("cp_mret_illegal, cp_sret_illegal", "Execute mret in HS, VS and VU modes and sret in VU-mode"),
+        test_data.add_testcase("hs", "cp_mret_illegal", INST_CG),
+        "mret",
+        "RVTEST_TSBI_GOTO_VSMODE",
+        test_data.add_testcase("vs", "cp_mret_illegal", INST_CG),
+        "mret",
+        "RVTEST_TSBI_GOTO_VUMODE",
+        test_data.add_testcase("vu", "cp_mret_illegal", INST_CG),
+        "mret",
+        test_data.add_testcase("vu", "cp_sret_illegal", INST_CG),
+        "sret",
+        "RVTEST_TSBI_GOTO_SMODE",
+        *sret_tests(test_data, INST_CG, "cp_sret_hs", "s"),
     ]
-
-
-def _gen_hlv_hsv_tests(test_data: TestData, check: int, temp: int) -> list[str]:
-    """hlv/hsv from HS-mode with both translation stages Bare."""
-    return [
-        "",
-        "/////////////////////////////////",
-        "// Hypervisor load/store from HS-mode",
-        "//",
-        "// hlv/hsv access guest memory with the translation the guest would see.",
-        "// Both stages are Bare here, so this is a plain physical access, but the",
-        "// instructions only decode when H is present and they take the HS-mode",
-        "// permission path.",
-        "/////////////////////////////////",
-        "",
-        f"{INDENT}LA(x{temp}, H_guest_scratch)",
-        f"{INDENT}LI(x{check}, 0x5AA5)",
-        test_data.add_testcase("roundtrip", "cp_hlv_hsv", _CG),
-        "#if __riscv_xlen == 32",
-        f"{INDENT}hsv.w x{check}, (x{temp})",
-        f"{INDENT}LI(x{check}, 0)",
-        f"{INDENT}hlv.w x{check}, (x{temp})",
-        "#else",
-        f"{INDENT}hsv.d x{check}, (x{temp})",
-        f"{INDENT}LI(x{check}, 0)",
-        f"{INDENT}hlv.d x{check}, (x{temp})",
-        "#endif",
-        write_sigupd(check, test_data),
-        "",
-        "# The same round trip with hstatus.SPVP=1, which makes hlv/hsv check the",
-        "# access as VS-mode rather than VU-mode.",
-        f"{INDENT}LI(x{temp}, HSTATUS_SPVP)",
-        f"{INDENT}csrs hstatus, x{temp}",
-        f"{INDENT}LA(x{temp}, H_guest_scratch)",
-        f"{INDENT}LI(x{check}, 0xA55A)",
-        test_data.add_testcase("roundtrip_spvp", "cp_hlv_hsv", _CG),
-        "#if __riscv_xlen == 32",
-        f"{INDENT}hsv.w x{check}, (x{temp})",
-        f"{INDENT}LI(x{check}, 0)",
-        f"{INDENT}hlv.w x{check}, (x{temp})",
-        "#else",
-        f"{INDENT}hsv.d x{check}, (x{temp})",
-        f"{INDENT}LI(x{check}, 0)",
-        f"{INDENT}hlv.d x{check}, (x{temp})",
-        "#endif",
-        write_sigupd(check, test_data),
-        f"{INDENT}LI(x{temp}, HSTATUS_SPVP)",
-        f"{INDENT}csrc hstatus, x{temp}",
-    ]
-
-
-def _gen_vsmode_tests(test_data: TestData, check: int, temp: int) -> list[str]:
-    """Enter VS-mode, trap out of it, and come back through the T-SBI."""
-    code = [
-        "",
-        "/////////////////////////////////",
-        "// VS-mode",
-        "//",
-        "// TSBI_GOTO_VSMODE puts the hart in VS-mode. Everything below runs with",
-        "// V=1 until the guest asks to come back.",
-        "/////////////////////////////////",
-        "",
-        f"{INDENT}RVTEST_TSBI_GOTO_VSMODE",
-        "",
-        "# In VS-mode the S-mode CSR names alias to the VS-mode CSRs, so this",
-        "# writes vsstatus. Reading the same bit back in HS-mode below shows the",
-        "# two really are different registers.",
-        f"{INDENT}LI(x{temp}, SSTATUS_SPP)",
-        test_data.add_testcase("spp_set", "cp_vsstatus_alias", _CG),
-        f"{INDENT}csrs sstatus, x{temp}",
-        f"{INDENT}csrr x{check}, sstatus",
-        f"{INDENT}and x{check}, x{check}, x{temp}",
-        write_sigupd(check, test_data),
-        "",
-        "# Accessing an HS-mode CSR from VS-mode raises a virtual instruction",
-        "# exception (cause 22). The check register keeps its pre-trap value,",
-        "# which is how we know the instruction never completed.",
-        f"{INDENT}LI(x{check}, -1)",
-        test_data.add_testcase("hs_csr_from_vs", "cp_virtual_instruction", _CG),
-        f"{INDENT}csrr x{check}, hgatp",
-        write_sigupd(check, test_data),
-        "",
-        "# An ecall from VS-mode is cause 10. Whether it is delegated to HS-mode",
-        "# or taken in M-mode is a WARL property of medeleg, so both handlers have",
-        "# to recognise it as a T-SBI call for this to work on every DUT.",
-        *_gen_ecall_test(test_data, check, temp, "from_vs"),
-        "",
-        f"{INDENT}RVTEST_TSBI_GOTO_SMODE   # leave the guest",
-        "",
-        "# Back in HS-mode: the SPP the guest set went to vsstatus, which HS can read",
-        "# directly. Comparing the two registers is what shows they are distinct --",
-        "# reading sstatus.SPP alone would prove nothing, since the sret that returned",
-        "# us to HS-mode always clears it.",
-        test_data.add_testcase("spp_not_in_hs", "cp_vsstatus_alias", _CG),
-        f"{INDENT}csrr x{check}, sstatus",
-        f"{INDENT}csrr x{temp}, vsstatus",
-        f"{INDENT}xor x{check}, x{check}, x{temp}",
-        f"{INDENT}LI(x{temp}, SSTATUS_SPP)",
-        f"{INDENT}and x{check}, x{check}, x{temp}",
-        f"{INDENT}sltu x{check}, x0, x{check}   # 1 = the guest's SPP stayed in vsstatus",
-        write_sigupd(check, test_data),
-        "",
-        "# GOTO_SMODE had to clear hstatus.SPV to get us out of the guest; had it",
-        "# only set sstatus.SPP, the sret would have gone straight back into VS.",
-        test_data.add_testcase("after_vs_trap", "cp_hstatus_spv", _CG),
-        f"{INDENT}csrr x{check}, hstatus",
-        f"{INDENT}LI(x{temp}, HSTATUS_SPV)",
-        f"{INDENT}and x{check}, x{check}, x{temp}",
-        f"{INDENT}sltu x{check}, x0, x{check}",
-        write_sigupd(check, test_data),
-    ]
-    return code
-
-
-def _gen_vumode_tests(test_data: TestData, check: int, temp: int) -> list[str]:
-    """Enter VU-mode and reach HS-mode and M-mode through the T-SBI."""
-    return [
-        "",
-        "/////////////////////////////////",
-        "// VU-mode",
-        "//",
-        "// A VU ecall is cause 8, the same as a U-mode one, so HS-mode services it.",
-        "/////////////////////////////////",
-        "",
-        f"{INDENT}RVTEST_TSBI_GOTO_VUMODE",
-        "",
-        "# A supervisor CSR is a virtual instruction exception from VU-mode, not an",
-        "# illegal instruction, which is what shows this really is VU and not U.",
-        f"{INDENT}LI(x{check}, -1)",
-        test_data.add_testcase("s_csr_from_vu", "cp_virtual_instruction", _CG),
-        f"{INDENT}csrr x{check}, sscratch",
-        write_sigupd(check, test_data),
-        "",
-        *_gen_ecall_test(test_data, check, temp, "from_vu"),
-        "",
-        "# An HS-mode CSR, read by the HS handler while it services this call. The trap",
-        "# from VU set hstatus.SPV and cleared SPVP, so this reads back SPV alone.",
-        test_data.add_testcase("hstatus_from_vu", "cp_tsbi_csr_read", _CG),
-        f"{INDENT}RVTEST_TSBI_CSR_READ(CSR_HSTATUS)",
-        f"{INDENT}LI(x{temp}, HSTATUS_SPV | HSTATUS_SPVP)",
-        f"{INDENT}and x{check}, a0, x{temp}",
-        write_sigupd(check, test_data),
-        "",
-        "# An M-mode CSR, which the HS handler forwards to M-mode. M-mode services it",
-        "# for HS-mode's ecall, so mstatus.MPP reads back as S.",
-        test_data.add_testcase("mstatus_mpp_from_vu", "cp_tsbi_csr_read", _CG),
-        f"{INDENT}RVTEST_TSBI_CSR_READ(CSR_MSTATUS)",
-        f"{INDENT}srli x{check}, a0, MPP_LSB",
-        f"{INDENT}andi x{check}, x{check}, 0x3",
-        write_sigupd(check, test_data),
-        "",
-        f"{INDENT}RVTEST_TSBI_GOTO_SMODE   # leave the guest",
-        "",
-        test_data.add_testcase("after_vu_trap", "cp_hstatus_spv", _CG),
-        f"{INDENT}csrr x{check}, hstatus",
-        f"{INDENT}LI(x{temp}, HSTATUS_SPV)",
-        f"{INDENT}and x{check}, x{check}, x{temp}",
-        f"{INDENT}sltu x{check}, x0, x{check}",
-        write_sigupd(check, test_data),
-    ]
-
-
-def _gen_twostage_setup(test_data: TestData, check: int, temp: int, base: int) -> list[str]:
-    """Build the G-stage and VS-stage page tables and turn both stages on."""
-    return [
-        "",
-        "/////////////////////////////////",
-        "// Two-stage address translation",
-        "//",
-        f"// G-stage:  GPA 0x{_TEST_GIB:08X} -> PA  0x{_TEST_GIB:08X}   (identity gigapage)",
-        f"// VS-stage: VA  0x{_TEST_GIB:08X} -> GPA 0x{_TEST_GIB:08X}   (identity gigapage)",
-        f"//           VA  0x{_HOLE_GIB:08X} -> GPA 0x{_HOLE_GIB:08X}   (no G-stage entry: faults)",
-        f"//           VA  0x{_ALIAS_GIB:08X} -> GPA 0x{_TEST_GIB:08X}   (non-identity view)",
-        "/////////////////////////////////",
-        "",
-        "# The VS-stage macros take their VA as an immediate, so the three windows are",
-        "# fixed constants, which only works while the image really does live in the",
-        f"# 0x{_TEST_GIB:08X} gigapage. Derive that gigapage from rvtest_code_begin and stop",
-        "# the test if a link script ever moves the image somewhere else.",
-        f"{INDENT}LA(x{base}, rvtest_code_begin)",
-        f"{INDENT}srli x{base}, x{base}, 30",
-        f"{INDENT}slli x{base}, x{base}, 30   # align down to the 1 GiB the image sits in",
-        f"{INDENT}LI(x{check}, 0x{_TEST_GIB:08X})",
-        f"{INDENT}bne x{base}, x{check}, abort_test",
-        "",
-        f"{INDENT}G_PTE_SETUP_PA_REG(sv39x4, x{base}, {_G_PERMS}, 0x{_TEST_GIB:08X}, LEVEL2)",
-        f"{INDENT}VS_PTE_SETUP(sv39, GPA, 0x{_TEST_GIB:08X}, {_VS_PERMS}, 0x{_TEST_GIB:08X}, LEVEL2)",
-        f"{INDENT}VS_PTE_SETUP(sv39, GPA, 0x{_HOLE_GIB:08X}, {_VS_PERMS}, 0x{_HOLE_GIB:08X}, LEVEL2)",
-        f"{INDENT}VS_PTE_SETUP(sv39, GPA, 0x{_TEST_GIB:08X}, {_VS_PERMS}, 0x{_ALIAS_GIB:08X}, LEVEL2)",
-        f"{INDENT}HGATP_SETUP(sv39x4)",
-        # The trailing comment must not contain the tokens PA or GPA: they are
-        # object-like macros, and cpp expands them inside a `#` assembler
-        # comment because it has no idea the line is a comment.
-        f"{INDENT}VSATP_SETUP(sv39, PA)   # the guest root table is named by its physical address",
-        f"{INDENT}hfence.gvma",
-        f"{INDENT}hfence.vvma",
-        f"{INDENT}sfence.vma",
-        "",
-        "# Both stages are live, but HS-mode is unaffected: the G-stage only",
-        "# applies with V=1. Record the modes so a mismatch below points at",
-        "# hgatp/vsatp rather than at anything the guest did.",
-        test_data.add_testcase("sv39x4", "cp_hgatp_mode", _CG),
-        f"{INDENT}csrr x{check}, hgatp",
-        f"{INDENT}srli x{check}, x{check}, MODE_LSB",
-        write_sigupd(check, test_data),
-        "",
-        test_data.add_testcase("sv39", "cp_vsatp_mode", _CG),
-        f"{INDENT}csrr x{check}, vsatp",
-        f"{INDENT}srli x{check}, x{check}, MODE_LSB",
-        write_sigupd(check, test_data),
-    ]
-
-
-def _gen_twostage_guest(test_data: TestData, check: int, temp: int, addr: int) -> list[str]:
-    """Run the guest under both translation stages and trap it three ways."""
-    alias_delta = _ALIAS_GIB - _TEST_GIB
-    ident_label = test_data.add_testcase("load_store", "cp_twostage_access", _CG)
-    code = [
-        "",
-        f"{INDENT}RVTEST_TSBI_GOTO_VSMODE",
-        "",
-        "# A load and store through both stages. Reaching the next instruction at",
-        "# all means the guest's fetches are translating too.",
-        f"{INDENT}LA(x{addr}, H_guest_data)",
-        f"{INDENT}LI(x{check}, 0x1234ABCD)",
-        ident_label,
-        f"{INDENT}SREG x{check}, 0(x{addr})",
-        f"{INDENT}LI(x{check}, 0)",
-        f"{INDENT}LREG x{check}, 0(x{addr})",
-        write_sigupd(check, test_data),
-        "",
-        "# An exception whose xEPC is a guest virtual address. The HS handler has",
-        "# to read this instruction's low halfword to learn its width, which means",
-        "# reading at a guest VA.",
-        f"{INDENT}LI(x{check}, -1)",
-        test_data.add_testcase("translated_guest", "cp_virtual_instruction", _CG),
-        f"{INDENT}csrr x{check}, hgatp",
-        write_sigupd(check, test_data),
-        "",
-        "# Jump to the aliased view, where the guest's PC is no longer its own",
-        "# physical address. A host-side load at xEPC now reads the wrong memory.",
-        f"{INDENT}LA(x{addr}, 1f)",
-        f"{INDENT}LI(x{temp}, 0x{alias_delta:08X})",
-        f"{INDENT}add x{addr}, x{addr}, x{temp}",
-        f"{INDENT}jr x{addr}",
-        "1:",
-        f"{INDENT}LI(x{check}, -1)",
-        test_data.add_testcase("non_identity_guest_va", "cp_virtual_instruction", _CG),
-        f"{INDENT}csrr x{check}, hgatp",
-        f"{INDENT}addi x{check}, x{check}, 2   # the handler resumed here, four bytes past the csrr",
-        write_sigupd(check, test_data),
-        "",
-        "# The same thing with an instruction chosen so that a short skip is",
-        "# visible rather than merely wrong. 0x000024F3 is 'csrr x9, 0x000', whose",
-        "# upper halfword is 0x0000 -- the defined illegal compressed encoding. A",
-        "# handler that misreads the width resumes two bytes in, lands on that",
-        "# halfword and takes a second trap that shows up in the trap signature.",
-        f"{INDENT}LI(x{check}, -1)",
-        test_data.add_testcase("non_identity_guest_va", "cp_illegal_instruction", _CG),
-        f"{INDENT}.word 0x000024F3   # csrr x9, 0x000: an unimplemented CSR, so it always traps",
-        f"{INDENT}addi x{check}, x{check}, 3",
-        write_sigupd(check, test_data),
-        "",
-        f"{INDENT}LA(x{addr}, 2f)   # an alias address, since PC is in the alias window",
-        f"{INDENT}LI(x{temp}, 0x{alias_delta:08X})",
-        f"{INDENT}sub x{addr}, x{addr}, x{temp}",
-        f"{INDENT}jr x{addr}",
-        "2:",
-        "",
-        f"# A guest-page fault. 0x{_HOLE_GIB:08X} resolves in the VS-stage and has no",
-        "# G-stage entry, so this load raises a load guest-page fault (cause 21)",
-        "# and htval takes the faulting guest physical address, shifted right by 2.",
-        f"{INDENT}LI(x{addr}, 0x{_HOLE_GIB:08X})",
-        f"{INDENT}LI(x{check}, -1)",
-        test_data.add_testcase("load", "cp_guest_page_fault", _CG),
-        f"{INDENT}LREG x{check}, 0(x{addr})",
-        write_sigupd(check, test_data),
-        "",
-        "# The same hole written instead of read: a store guest-page fault (cause 23),",
-        "# which htval records the same way.",
-        f"{INDENT}LI(x{addr}, 0x{_HOLE_GIB:08X})",
-        f"{INDENT}LI(x{check}, 0x5A5A)",
-        test_data.add_testcase("store", "cp_guest_page_fault", _CG),
-        f"{INDENT}SREG x{check}, 0(x{addr})",
-        write_sigupd(check, test_data),
-        "",
-        f"{INDENT}RVTEST_TSBI_GOTO_SMODE   # back to HS-mode",
-        "",
-        "# The faulting guest physical address is not read back here. htval is",
-        "# per-trap state and every trap into HS-mode rewrites it, including the",
-        "# ecall that just brought us out of the guest, so by the time HS-mode code",
-        "# runs the fault's htval is already gone. The framework captures it while",
-        "# it is still live, in word 4 of the trap signature entry. What is",
-        "# checkable here is the other half of the rule: htval reads as zero after",
-        "# a trap whose cause does not define it.",
-        test_data.add_testcase("zero_after_ecall", "cp_htval", _CG),
-        f"{INDENT}csrr x{check}, htval",
-        write_sigupd(check, test_data),
-    ]
-    return code
-
-
-def _gen_twostage_vu(test_data: TestData, check: int, temp: int, addr: int) -> list[str]:
-    """Run VU-mode under both translation stages."""
-    return [
-        "",
-        "/////////////////////////////////",
-        "// Two-stage translation from VU-mode",
-        "//",
-        "// VU-mode can only execute VS-stage pages with PTE_U set, which VS-mode can",
-        "// never execute, so the identity and hole mappings are rewritten here, after",
-        "// the VS-mode tests, rather than shared with them.",
-        "/////////////////////////////////",
-        "",
-        f"{INDENT}VS_PTE_SETUP(sv39, GPA, 0x{_TEST_GIB:08X}, {_VU_PERMS}, 0x{_TEST_GIB:08X}, LEVEL2)",
-        f"{INDENT}VS_PTE_SETUP(sv39, GPA, 0x{_HOLE_GIB:08X}, {_VU_PERMS}, 0x{_HOLE_GIB:08X}, LEVEL2)",
-        f"{INDENT}hfence.vvma",
-        f"{INDENT}RVTEST_TSBI_GOTO_VUMODE",
-        "",
-        f"{INDENT}LA(x{addr}, H_guest_data)",
-        f"{INDENT}LI(x{check}, 0x5678DCBA)",
-        test_data.add_testcase("load_store_vu", "cp_twostage_access", _CG),
-        f"{INDENT}SREG x{check}, 0(x{addr})",
-        f"{INDENT}LI(x{check}, 0)",
-        f"{INDENT}LREG x{check}, 0(x{addr})",
-        write_sigupd(check, test_data),
-        "",
-        "# The HS handler reads this ecall's width through the guest's translation at",
-        "# VU privilege, which only works because the page is a user page.",
-        *_gen_ecall_test(test_data, check, temp, "from_vu_translated"),
-        "",
-        f"{INDENT}LI(x{addr}, 0x{_HOLE_GIB:08X})",
-        f"{INDENT}LI(x{check}, -1)",
-        test_data.add_testcase("load_vu", "cp_guest_page_fault", _CG),
-        f"{INDENT}LREG x{check}, 0(x{addr})",
-        write_sigupd(check, test_data),
-        "",
-        f"{INDENT}RVTEST_TSBI_GOTO_SMODE   # back to HS-mode",
-    ]
-
-
-def _gen_twostage_teardown(test_data: TestData, check: int) -> list[str]:
-    """Turn both stages off again so the epilogs run with a plain machine state."""
-    return [
-        "",
-        "# Show hgatp is writable back to Bare on the way out.",
-        f"{INDENT}csrw vsatp, zero",
-        test_data.add_testcase("back_to_bare", "cp_hgatp_mode", _CG),
-        f"{INDENT}csrw hgatp, zero",
-        f"{INDENT}csrr x{check}, hgatp",
-        f"{INDENT}hfence.gvma",
-        write_sigupd(check, test_data),
-    ]
-
-
-# Invisible trap emulation cannot yet handle traps from VS or VU mode, so
-# check_defines.h rejects it on a hypervisor build. It is enabled whenever the
-# time CSR is emulated, which is what TIME_CSR_IMPLEMENTED=false means.
-_PARAMS = ["TIME_CSR_IMPLEMENTED: true"]
+    save_reg, temp_reg, rd = test_data.int_regs.get_registers(3)
+    lines.extend(
+        [
+            comment_banner(
+                "cp_sret_vs",
+                "Execute sret in VS-mode with vsstatus.SPP = {0, 1}, vsstatus.SPIE = {0, 1} and\n"
+                "hstatus.VTSR = {0, 1}.  VTSR = 1 raises virtual instruction",
+            ),
+            "RVTEST_TSBI_GOTO_VSMODE",
+            f"csrr x{save_reg}, sstatus",
+        ]
+    )
+    for vtsr in (0, 1):
+        lines.append(f"RVTEST_TSBI_CSR_{'SET' if vtsr else 'CLEAR'}(CSR_HSTATUS, HSTATUS_VTSR)")
+        for spp in (0, 1):
+            for spie in (0, 1):
+                name = f"spp{spp}_spie{spie}_vtsr{vtsr}"
+                bits = " | ".join(bit for bit, on in (("SSTATUS_SPP", spp), ("SSTATUS_SPIE", spie)) if on) or "0"
+                lines.extend(
+                    [
+                        f"LI(x{temp_reg}, SSTATUS_SPP | SSTATUS_SPIE)",
+                        f"csrc sstatus, x{temp_reg}",
+                        f"LI(x{temp_reg}, {bits})",
+                        f"csrs sstatus, x{temp_reg}",
+                        f"LA(x{temp_reg}, 1f)",
+                        f"csrw sepc, x{temp_reg}",
+                        test_data.add_testcase(name, "cp_sret_vs", INST_CG),
+                        "sret",
+                        "1:",
+                        f"LI(x{rd}, 42)",
+                        test_data.add_testcase(f"{name}_mode", "cp_sret_vs", INST_CG),
+                        f"csrr x{rd}, mscratch",
+                        write_sigupd(rd, test_data),
+                        "RVTEST_TSBI_GOTO_VSMODE",
+                        f"LI(x{temp_reg}, SSTATUS_SPP | SSTATUS_SPIE | SSTATUS_SIE)",
+                        test_data.add_testcase(f"{name}_vsstatus", "cp_sret_vs", INST_CG),
+                        f"csrr x{rd}, sstatus",
+                        f"and x{rd}, x{rd}, x{temp_reg}",
+                        write_sigupd(rd, test_data),
+                    ]
+                )
+    lines.extend(
+        [
+            "RVTEST_TSBI_CSR_CLEAR(CSR_HSTATUS, HSTATUS_VTSR)",
+            f"csrw sstatus, x{save_reg}",
+            "RVTEST_TSBI_GOTO_SMODE",
+        ]
+    )
+    test_data.int_regs.return_registers([save_reg, temp_reg, rd])
+    return lines
 
 
 @add_priv_test_generator(
     "H",
     required_extensions=["H"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    params=_PARAMS,
+    # VS and VU traps need the visible trap handler
+    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_h(test_data: TestData) -> list[TestChunk]:
-    """Generate the HS, VS and VU-mode trap handler and T-SBI tests."""
+    """Generate tests for the H hypervisor testsuite."""
     test_chunks: list[TestChunk] = []
+    hcsr_tests(test_data, test_chunks, [*H_HS_CSRS, *H_VS_CSRS], HS_CG)
 
-    check, temp = test_data.int_regs.get_registers(2)
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.section_header = comment_banner(
+        "cp_hcsr_inaccessible", "Access each Machine-level H CSR from HS-mode; each raises illegal instruction"
+    )
+    for csr in H_M_CSRS:
+        tc.code.extend(_csr_trap_ops(test_data, csr, HS_CG, "cp_hcsr_inaccessible"))
 
-    tc = test_data.begin_test_chunk("hsmode")
-    tc.code.extend(_gen_hs_csr_tests(test_data, check, temp))
-    tc.code.extend(_gen_tsbi_from_hs_tests(test_data, check, temp))
-    tc.code.extend(_gen_hlv_hsv_tests(test_data, check, temp))
-    tc.code.extend(_gen_vsmode_tests(test_data, check, temp))
-    tc.code.extend(_gen_vumode_tests(test_data, check, temp))
-    tc.raw_data.extend([".p2align 3", "H_guest_scratch:", "  .dword 0"])
+    tc = test_data.new_test_chunk(test_chunks, "hscsr_fields")
+    tc.code.extend([*_vgein_tests(test_data), *scause_write_tests(test_data, "vscause", HS_CG)])
+
+    tc = test_data.new_test_chunk(test_chunks, "replica")
+    tc.code.extend(_replica_tests(test_data))
+
+    _vs_csr_tests(test_data, test_chunks)
+    _user_csr_tests(test_data, test_chunks, "u")
+    _user_csr_tests(test_data, test_chunks, "vu")
+
+    tc = test_data.new_test_chunk(test_chunks, "inst")
+    tc.code.extend([*hlv_tests(test_data, tc, INST_CG, ("hs", "u")), *_xret_tests(test_data)])
+
+    tc = test_data.new_test_chunk(test_chunks, "trap")
+    tc.code.extend(
+        [
+            comment_banner(
+                "cp_guest_page_fault",
+                "In HS-mode, hlv.w and hsv.w raise guest-page faults on the final translation and on an\n"
+                "implicit VS-stage access; the trap records hold htval and htinst",
+            ),
+            *guest_page_fault_tests(test_data, INST_CG),
+        ]
+    )
+
     test_chunks.append(test_data.end_test_chunk())
-
-    test_data.int_regs.return_registers([check, temp])
-    return test_chunks
-
-
-@add_priv_test_generator(
-    "H",
-    required_extensions=["H"],
-    extra_defines=["#define BOOT_TO_SMODE"],
-    params=[*_PARAMS, "MXLEN: 64"],
-)
-def make_h_twostage(test_data: TestData) -> list[TestChunk]:
-    """Generate the two-stage translation tests (Sv39x4 G-stage over Sv39 VS-stage)."""
-    test_chunks: list[TestChunk] = []
-
-    check, temp, addr, base = test_data.int_regs.get_registers(4)
-
-    tc = test_data.begin_test_chunk("twostage")
-    tc.code.extend(_gen_twostage_setup(test_data, check, temp, base))
-    tc.code.extend(_gen_twostage_guest(test_data, check, temp, addr))
-    tc.code.extend(_gen_twostage_vu(test_data, check, temp, addr))
-    tc.code.extend(_gen_twostage_teardown(test_data, check))
-    tc.raw_data.extend([".p2align 3", "H_guest_data:", "  .dword 0"])
-    test_chunks.append(test_data.end_test_chunk())
-
-    test_data.int_regs.return_registers([check, temp, addr, base])
     return test_chunks

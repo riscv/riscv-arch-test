@@ -1,0 +1,129 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # Machine-level H CSRs are accessible from M-mode and hold zero
+  - names:
+      [mtval2_sz, mtval2_acc, MTVAL2_WARL, mtinst_sz, mtinst_acc, MTINST_WARL]
+    coverpoint:
+      [
+        "HSm_mcsr_cg/cp_hcsr_access_zero/mtval2",
+        "HSm_mcsr_cg/cp_hcsr_access_zero/mtinst",
+      ]
+
+  # HS and VS CSRs are accessible from M-mode
+  - names: [H_vscsrs_acc_m_hs]
+    coverpoint:
+      [
+        "HSm_mcsr_cg/cp_hcsr_access",
+        "HSm_mcsr_cg/cp_hcsr_access_zero",
+        "HSm_mcsr_cg/cp_hcsr_access_masked",
+        "HSm_mcsr_cg/cp_hcsrwalk",
+        "HSm_mcsr_cg/cp_atpwalk1",
+        "HSm_mcsr_cg/cp_atpwalk0",
+      ]
+
+  # With V=0, S CSRs and their VS replicas are separate registers
+  - names: [H_vscsrs_v0]
+    coverpoint: ["HSm_mcsr_cg/cp_replica"]
+
+  # mtval is not read-only zero with H
+  - names: [H_mtval_nrz]
+    coverpoint: ["HSm_mcsr_cg/cp_mtvala"]
+
+  # mstatus.TVM traps satp and hgatp accesses in HS-mode
+  - names: [mstatus_tvm_hs, hgatp_tvm_illegal]
+    coverpoint: ["HSm_tvm_cg/cp_tvm_hs"]
+
+  # mstatus.TVM does not affect VS-mode
+  - names: [mstatus_modes]
+    coverpoint: ["HSm_tvm_cg/cp_tvm_vs"]
+
+  # hstatus.VTVM traps satp accesses and sfence.vma in VS-mode
+  - names: [hstatus_vtvm_op, H_virtinst_vs_sfence_sinval_satp_vtvm1]
+    coverpoint: ["HSm_tvm_cg/cp_tvm_vs", "HSm_tvm_cg/cp_sfence"]
+
+  # hfence.vvma and hfence.gvma in M-mode and HS-mode, and TVM
+  - names:
+      [
+        hfence-vvma_hfence-gvma_op,
+        hfence-vvma_mode,
+        hfence-gvma_mode,
+        hfence-vvma_tvm,
+        hfence-vvma_hfence-gvma_exceptions,
+      ]
+    coverpoint: ["HSm_tvm_cg/cp_hfence"]
+
+  # mret uses MPV to enter a virtual mode
+  - names: [mstatus_mpv_op, mret_h]
+    coverpoint: ["HSm_inst_cg/cp_mret_m"]
+
+  # sret from M-mode uses SPV
+  - names: [sret_h, sret_v0, hstatus_spv_sret]
+    coverpoint: ["HSm_inst_cg/cp_sret_m"]
+
+  # Hypervisor virtual-machine loads and stores from M-mode
+  - names: [hlsv_mode, hlsv_op, hlvx-wu_valid32]
+    coverpoint:
+      ["HSm_inst_cg/cp_hlv", "HSm_inst_cg/cp_hlvx", "HSm_inst_cg/cp_hsv"]
+
+  # Guest-page faults taken into M-mode write mtval2 and mtinst
+  - names:
+      [
+        H_guest_page_fault,
+        mtval2_op,
+        mtinst_op,
+        H_trap_xtinst,
+        H_trap_xtinst_exception,
+        H_trap_xtinst_val,
+        H_trap_xtinst_guestpage,
+      ]
+    coverpoint: ["HSm_inst_cg/cp_guest_page_fault"]
+
+  # mtval2 must be able to hold zero and may hold only a subset of other 2-bit-shifted guest physical addresses
+  - names: [mtval2_val]
+    coverpoint: ["HSm_mcsr_cg/cp_hcsr_access_zero/mtval2"]
+
+  # The Ssdbltrp extension requires mtval2
+  - names: [mtval2_Ssdbltrp]
+    coverpoint:
+      ["Not tested: TODO an Ssdbltrp double trap into M-mode that reads mtval2"]
+
+  # The hypervisor extension is enabled by setting misa bit 7
+  - names: [misa_h_op]
+    coverpoint:
+      [
+        "Not tested: TODO read misa.H, and with MUTABLE_MISA_H clear it and check that hypervisor CSRs and instructions raise illegal instruction",
+      ]
+
+  # hfence.gvma is valid in HS-mode with mstatus.TVM=0 and in M-mode, and orders prior stores before G-stage
+  # implicit reads; a nonzero rs1 selects one guest physical address and a nonzero rs2 one VMID
+  - names: [hfence-gvma_op]
+    coverpoint:
+      [
+        "HSm_tvm_cg/cp_hfence",
+        "SvH_gstage_cg/cp_hgatp_perm (hfence.gvma with rs1 = rs2 = x0 after each G-stage leaf change)",
+        "Not tested: TODO hfence.gvma with rs1 or rs2 nonzero",
+      ]
+
+  # hfence.gvma ignores rs2 bits above VMIDMAX and unimplemented VMID bits
+  - names: [hfence-gvma_vmid]
+    coverpoint:
+      [
+        "Not tested: TODO hfence.gvma with reserved and unimplemented VMID bits set in rs2 after changing a G-stage leaf",
+      ]
+
+  # hfence.vvma ignores rs2 bits above ASIDMAX and unimplemented ASID bits
+  - names: [hfence-vvma_asid]
+    coverpoint:
+      [
+        "Not tested: TODO hfence.vvma with reserved and unimplemented ASID bits set in rs2 after changing a VS-stage leaf",
+      ]
+
+  # hfence.vvma need not order implicit reads under a different hgatp.VMID; a nonzero rs1 selects one guest
+  # virtual address and a nonzero rs2 one ASID
+  - names: [hfence-vvma_limits]
+    coverpoint:
+      [
+        "Not tested: TODO hfence.vvma with rs1 = a guest virtual address or rs2 = an ASID after changing a VS-stage leaf",
+      ]

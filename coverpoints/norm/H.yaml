@@ -1,0 +1,360 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # HS CSRs are accessible from HS-mode
+  - names:
+      [
+        hstatus_sz,
+        hstatus_acc,
+        hstatus_op,
+        hedeleg_sz,
+        hedeleg_acc,
+        HEDELEG_WARL,
+        hideleg_sz,
+        hideleg_acc,
+        HIDELEG_WARL,
+        hvip_sz,
+        hvip_acc,
+        HVIP_WARL,
+        hip_hie_sz,
+        hip_hie_acc,
+        HIP_WARL,
+        HIE_WARL,
+        hip_acc,
+        hie_acc,
+        hgeip_sz,
+        hgeip_acc,
+        hgeip_op,
+        hgeie_sz,
+        hgeie_acc,
+        hgeie_op,
+        HGEIE_WARL,
+        GEILEN,
+        henvcfg_sz,
+        henvcfg_acc,
+        henvcfg_op,
+        hcounteren_sz,
+        hcounteren_acc,
+        HCOUNTEREN_WARL,
+        htimedelta_sz,
+        htimedelta_acc,
+        htval_sz,
+        htval_acc,
+        HTVAL_WARL,
+        htinst_sz,
+        htinst_acc,
+        HTINST_WARL,
+        hgatp_sz,
+        hgatp_acc,
+        hgatp_op,
+        hgatp_mode_sv,
+        hgatp_ppn_op,
+        HGATP_VMID,
+        hedelegh_sz,
+        hedelegh_acc,
+        hedelegh_op,
+        henvcfgh_sz,
+        henvcfgh_acc,
+        henvcfgh_op,
+        htimedeltah_sz,
+        htimedeltah_acc,
+        htimedeltah_op,
+      ]
+    coverpoint:
+      [
+        "H_hscsr_cg/cp_hcsr_access",
+        "H_hscsr_cg/cp_hcsr_access_zero",
+        "H_hscsr_cg/cp_hcsr_access_masked",
+        "H_hscsr_cg/cp_hcsr_access_ro",
+        "H_hscsr_cg/cp_hcsrwalk",
+        "H_hscsr_cg/cp_hcsrwalk_masked",
+        "H_hscsr_cg/cp_atpwalk1/hgatp",
+        "H_hscsr_cg/cp_atpwalk0/hgatp",
+      ]
+
+  # VS CSRs are accessible from HS-mode
+  - names:
+      [
+        H_vscsrs_acc_m_hs,
+        vsstatus_sz,
+        vsstatus_acc,
+        vsip_vsie_sz,
+        vsip_vsie_acc,
+        VSIP_WARL,
+        VSIE_WARL,
+        vstvec_sz,
+        vstvec_acc,
+        vsscratch_sz,
+        vsscratch_acc,
+        vspec_sz,
+        vspec_acc,
+        VSEPC_WARL,
+        vstval_sz,
+        vstval_acc,
+        VSTVAL_WARL,
+        vsatp_sz,
+        vsatp_acc,
+        vsatp_asidlen,
+        vstimecmp_sz,
+        vstimecmp_acc,
+      ]
+    coverpoint:
+      [
+        "H_hscsr_cg/cp_hcsr_access",
+        "H_hscsr_cg/cp_hcsr_access_zero",
+        "H_hscsr_cg/cp_hcsrwalk",
+        "H_hscsr_cg/cp_atpwalk1/vsatp",
+        "H_hscsr_cg/cp_atpwalk0/vsatp",
+      ]
+
+  # Machine-level H CSRs are inaccessible below M-mode
+  - names: [mtval2_acc, mtinst_acc]
+    coverpoint:
+      [
+        "H_hscsr_cg/cp_hcsr_inaccessible",
+        "H_vscsr_cg/cp_hcsr_inaccessible",
+        "H_ucsr_cg/cp_hcsr_inaccessible",
+      ]
+
+  # hstatus.VGEIN holds 0 through GEILEN
+  - names: [hstatus_vgein_op, HSTATUS_VGEIN_WLRL]
+    coverpoint: ["H_hscsr_cg/cp_hstatus_vgein"]
+
+  # vscause holds each exception and interrupt code
+  - names: [vscause_sz, vscause_acc, VSCAUSE_WLRL]
+    coverpoint:
+      [
+        "H_hscsr_cg/cp_vscause_write_exception",
+        "H_hscsr_cg/cp_vscause_write_interrupt",
+      ]
+
+  # With V=0, S CSRs and their VS replicas are separate registers
+  - names: [H_vscsrs_v0, vsstatus_v0]
+    coverpoint: ["H_hscsr_cg/cp_replica"]
+
+  # With V=1, S CSR names access the VS replicas
+  - names:
+      [
+        H_vscsrs_sub,
+        H_vscsrs_v1,
+        vsstatus_op,
+        vsip_vsie_op,
+        vstvec_op,
+        vsscratch_op,
+        vspec_op,
+        vscause_op,
+        vstval_op,
+        vsatp_op,
+      ]
+    coverpoint: ["H_vscsr_cg/cp_replica"]
+
+  # S CSRs without VS replicas are accessed normally with V=1
+  - names: [H_scsrs_nomatch]
+    coverpoint: ["H_vscsr_cg/cp_nonreplica"]
+
+  # HS and VS CSRs raise virtual instruction from VS-mode
+  - names: [H_csrs_hs_not_vs, H_vscsrs_acc_vs, H_cause_virtual_instruction]
+    coverpoint: ["H_vscsr_cg/cp_hcsr_virtualinstructionfault"]
+
+  # High-half H CSRs are illegal when XLEN > 32
+  - names: [H_illegal_high_half]
+    coverpoint: ["H_vscsr_cg/cp_illegalupper", "H_ucsr_cg/cp_illegalupper"]
+
+  # H and S CSRs are inaccessible from U-mode
+  - names: [H_vscsrs_acc_u]
+    coverpoint: ["H_ucsr_cg/cp_hcsr_inaccessible_u", "H_ucsr_cg/cp_scsr"]
+
+  # VU-mode accesses to H and S CSRs that HS-mode could perform raise virtual instruction
+  - names:
+      [
+        H_virtinst_vu_vs_nonhigh_allowedhs_tvm0,
+        H_virtinst_vu_nonhigh_supervisor_allowedhs_tvm0,
+      ]
+    coverpoint:
+      ["H_ucsr_cg/cp_hcsr_virtualinstructionfault", "H_ucsr_cg/cp_scsr"]
+
+  # vsstatus.SD and XS summarize FS, VS and XS as VS-mode sees them
+  - names: [vsstatus_sd_xs_op]
+    coverpoint: ["H_vscsr_cg/cp_vsstatus_sd_write"]
+
+  # Hypervisor virtual-machine loads and stores from HS-mode and from U-mode with hstatus.HU = 1
+  - names: [hlsv_mode, hlsv_op, hstatus_hu_op, hlvx-wu_valid32]
+    coverpoint: ["H_inst_cg/cp_hlv", "H_inst_cg/cp_hlvx", "H_inst_cg/cp_hsv"]
+
+  # mret raises illegal instruction below M-mode
+  - names: [mret_in_S_mode, mret_in_U_mode]
+    coverpoint: ["H_inst_cg/cp_mret_illegal"]
+
+  # sret in VU-mode raises virtual instruction
+  - names: [H_virtinst_vu_sret_sfence]
+    coverpoint: ["H_inst_cg/cp_sret_illegal"]
+
+  # sret from HS-mode uses SPV
+  - names: [sret_v0, hstatus_spv_sret]
+    coverpoint: ["H_inst_cg/cp_sret_hs"]
+
+  # sret from VS-mode; hstatus.VTSR traps it
+  - names: [sret_v1, hstatus_vtsr_op, H_virtinst_vs_sret_vtsr1]
+    coverpoint: ["H_inst_cg/cp_sret_vs"]
+
+  # Guest-page faults taken into HS-mode write htval and htinst
+  - names:
+      [
+        H_guest_page_fault,
+        htval_op,
+        htinst_op,
+        H_trap_xtinst,
+        H_trap_xtinst_exception,
+        H_trap_xtinst_val,
+        H_trap_xtinst_guestpage,
+      ]
+    coverpoint: ["H_inst_cg/cp_guest_page_fault"]
+
+  # When V=1 and XLEN=32, an invalid access to a high-half CSR raises virtual instruction if the same access to its
+  # low-half partner is HS-qualified (RV32 high-half bins)
+  - names: [H_cause_virtual_instruction_high]
+    coverpoint:
+      [
+        "H_vscsr_cg/cp_hcsr_virtualinstructionfault",
+        "H_ucsr_cg/cp_hcsr_virtualinstructionfault",
+        "ZicntrH_cg/cp_hcounteren_access_vs",
+        "ZicntrH_cg/cp_hcounteren_access_vu",
+      ]
+
+  # htval must be able to hold zero and may hold only a subset of other 2-bit-shifted guest physical addresses
+  - names: [htval_val]
+    coverpoint: ["H_hscsr_cg/cp_hcsr_access_zero/htval"]
+
+  # vsatp holds a 22-bit PPN for VSXLEN=32 and a 44-bit PPN for VSXLEN=64
+  - names: [vsatp_ppn_sv32_sz, vsatp_ppn_sv39_sv48_sv57_sz]
+    coverpoint:
+      [
+        "H_hscsr_cg/cp_atpwalk1/vsatp",
+        "H_hscsr_cg/cp_atpwalk0/vsatp",
+        "HSm_mcsr_cg/cp_atpwalk1/vsatp",
+        "HSm_mcsr_cg/cp_atpwalk0/vsatp",
+      ]
+
+  # The least-significant VMID bits are implemented first; VMIDMAX is 7 for Sv32x4 and 14 otherwise
+  - names: [hgatp_vmid_lsbs]
+    coverpoint:
+      [
+        "H_hscsr_cg/cp_atpwalk1/hgatp",
+        "H_hscsr_cg/cp_atpwalk0/hgatp",
+        "HSm_mcsr_cg/cp_atpwalk1/hgatp",
+        "HSm_mcsr_cg/cp_atpwalk0/hgatp",
+      ]
+
+  # An implementation that supports only the defined paged schemes and Bare may make hgatp.PPN[1:0] read-only zero
+  - names: [hgatp_ppn_acc]
+    coverpoint:
+      [
+        "Not tested: PPN[1:0] may be read-only zero or writable, and no UDB parameter records the choice",
+      ]
+
+  # GEILEN may be zero, in which case VGEIN may be read-only zero
+  - names: [hstatus_vgein_acc]
+    coverpoint:
+      [
+        "Not tested: every H configuration has GEILEN of at least 1, and with GEILEN = 0 zero is the only legal VGEIN",
+      ]
+
+  # hstatus.VSXL sets VSXLEN, which may differ from HSXLEN, and vsstatus.UXL sets the VU-mode XLEN; both are WARL,
+  # may be read-only, and take the widest supported width when the XLEN they depend on widens
+  - names:
+      [
+        HSXLEN,
+        VSXLEN,
+        hstatus_vsxl_op,
+        hstatus_vsxl_32,
+        hstatus_vsxl_64,
+        HSTATUS_VSXL_64_WARL,
+        VSXL_RO,
+        hstatus_vsxl_change,
+        vsstatus_uxl_op,
+        VSSTATUS_UXL_WARL,
+        vsstatus_uxl_change,
+      ]
+    coverpoint:
+      [
+        "Not tested: XLEN-changing VSXL and UXL are out of scope, so tests run with VSXLEN = HSXLEN = MXLEN",
+      ]
+
+  # hstatus.VSBE sets the endianness of VS-mode explicit accesses and of VS-level page-table accesses; it may be
+  # read-only, and vsstatus.UBE may be a read-only copy of it
+  - names:
+      [
+        HSTATUS_VSBE_WARL,
+        hstatus_vsbe_op,
+        hstatus_vsbe_implicit,
+        hstatus_vsbe_acc,
+        VSSTATUS_UBE,
+      ]
+    coverpoint:
+      [
+        "Not tested: big-endian VS-mode and VU-mode accesses; the reference model has no big-endian support",
+      ]
+
+  # The hypervisor extension depends on RV32I or RV64I, not RV32E or RV64E
+  - names: [H_requires_i]
+    coverpoint:
+      [
+        "Not tested: configuration requirement; the I suite tests registers x16 through x31",
+      ]
+
+  # henvcfg.FIOM = 1 makes FENCE and AMO ordering of device I/O with V=1 also order main memory
+  - names: [henvcfg_fiom_op, henvcfg_fiom_order]
+    coverpoint:
+      [
+        "Not tested: ordering of I/O and memory accesses is not observable in single-hart signature tests",
+      ]
+
+  # henvcfg.LPE enables Zicfilp in VS-mode
+  - names: [henvcfg_lpe_op]
+    coverpoint:
+      [
+        "Not tested: TODO landing-pad checks in VS-mode with henvcfg.LPE = 0 and 1",
+      ]
+
+  # Zicfilp adds vsstatus.SPELP, which holds the previous ELP on traps into VS-mode
+  - names: [vsstatus_spelp_op]
+    coverpoint:
+      [
+        "Not tested: TODO check vsstatus.SPELP after traps into VS-mode and after sret in VS-mode with Zicfilp enabled",
+      ]
+
+  # henvcfg.SSE activates Zicfiss in VS-mode
+  - names: [henvcfg_sse_op]
+    coverpoint:
+      [
+        "Not tested: TODO shadow-stack instructions in VS-mode and VU-mode with henvcfg.SSE = 0 and 1",
+      ]
+
+  # With Ssnpm, henvcfg.PMM enables pointer masking for VS-mode; PMM is read-only zero without Ssnpm and on RV32
+  - names: [henvcfg_pmm_op]
+    coverpoint:
+      [
+        "Not tested: TODO pointer-masked loads and stores in VS-mode with each henvcfg.PMM value",
+      ]
+
+  # With Ssdbltrp, henvcfg.DTE = 0 disables Ssdbltrp for VS-mode and makes vsstatus.SDT read-only zero
+  - names: [henvcfg_dte_op]
+    coverpoint:
+      [
+        "Not tested: TODO write vsstatus.SDT and take a trap into VS-mode with henvcfg.DTE = 0 and 1",
+      ]
+
+  # Ssdbltrp adds vsstatus.SDT for double traps in VS-mode
+  - names: [vsstatus_sdt_op]
+    coverpoint:
+      [
+        "Not tested: TODO take traps into VS-mode with vsstatus.SDT = 0 and 1 and check the double trap",
+      ]
+
+  # With Ssdbltrp, sret from HS-mode into VU-mode and sret in VS-mode clear vsstatus.SDT
+  - names: [sret_dt]
+    coverpoint:
+      [
+        "Not tested: TODO check vsstatus.SDT after sret from HS-mode into VU-mode and after sret in VS-mode",
+      ]

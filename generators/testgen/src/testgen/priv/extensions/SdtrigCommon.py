@@ -321,8 +321,8 @@ def _etrigger_codes_to_test(mode: str, cross_priv: bool = False) -> tuple[int, .
     if cross_priv:
         if mode == "S":
             codes.add(12)  # TODO: re-add for U once it passes on spike
-        elif mode == "U": # TODO: remove once U mode page fault test is properly added
-            codes.difference_update((13,15))
+        elif mode == "U":  # TODO: remove once U mode page fault test is properly added
+            codes.difference_update((13, 15))
 
     return tuple(sorted(codes))
 

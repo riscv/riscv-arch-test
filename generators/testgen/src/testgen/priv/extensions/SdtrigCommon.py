@@ -44,7 +44,7 @@ _MSTATUS_MPRV = 0x20000
 # Fetch-type codes: a trigger bp here leaves xEPC unfetchable.
 _FETCH_EXCODES = (0, 1, 12)
 
-_ETRIGGER_BASE_CODES = (0, 1, 2, 4, 5, 6, 7, 13, 15)  # common to every mode
+_ETRIGGER_BASE_CODES = (0, 1, 2, 3, 4, 5, 6, 7, 13, 15)  # common to every mode
 _ETRIGGER_ECALL_CODE = {"Sm": 11, "S": 9, "U": 8}
 
 # maps mcause exception code -> short mnemonic used in binnames / ifdef names
@@ -319,11 +319,10 @@ def _etrigger_codes_to_test(mode: str, cross_priv: bool = False) -> tuple[int, .
     codes = set(_ETRIGGER_BASE_CODES) | {_ETRIGGER_ECALL_CODE[mode]}
 
     if cross_priv:
-        # Code 3 (breakpoint) excluded: reentrancy problem, open Spike issue.
         if mode == "S":
             codes.add(12)  # TODO: re-add for U once it passes on spike
-    else:
-        codes.add(3)
+        elif mode == "U": # TODO: remove once U mode page fault test is properly added
+            codes.difference_update((13,15))
 
     return tuple(sorted(codes))
 

@@ -1980,6 +1980,7 @@ tsbi_instr_table:
         //TSBI_CSR_INSTR_TABLE(0x105) // stvec
         TSBI_CSR_INSTR_TABLE(0x106) // scounteren
         TSBI_CSR_INSTR_TABLE(0x10A) // senvcfg
+        TSBI_CSR_INSTR_TABLE(0x143) // stval
         TSBI_CSR_INSTR_TABLE(0x144) // sip
         TSBI_CSR_INSTR_TABLE(0x14D) // stimecmp
         #if (UDB_MXLEN==32)

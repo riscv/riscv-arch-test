@@ -325,13 +325,6 @@
 // be expressed in REGWIDTH (not 8*8) so the offset also matches the emitted
 // .data layout on RV32, where REGWIDTH is 4.
 #define rvmodel_sv_off  (trap_sv_off+8*(REGWIDTH))    // offset to RVMODEL macro scratch area (8 regs)
-
-// RVTEST_GOTO_LOWER_MODE register save: the upper 4 slots of the M-mode
-// rvmodel_sv area hold T1, T2, T4 and the macro's pointer register (T3) so the
-// macro can restore them after the mret into the target mode. This cannot
-// overlap an RVMODEL macro invocation: neither can be active while
-// RVTEST_GOTO_LOWER_MODE executes.
-#define goto_lower_sv_off (rvmodel_sv_off+4*(REGWIDTH)) // GOTO_LOWER_MODE T1/T2/T4/T3 save slots
 #define int_clr_sv_off  (rvmodel_sv_off+8*(REGWIDTH))   // a0/a1/a2 save slots for interrupt clearing routines
 
 
@@ -2901,8 +2894,7 @@ rvtest_\__MODE__\()end:                            // epilog is done for this mo
 \__MODE__\()trapreg_sv:    .fill   8, REGWIDTH, 0xdeadbeef                   // handler reg save: ra scratch (slot 0), T1..T6 (1-6), sp (7)
 
 // rvmodel_sv is shared scratch space. The fast trap handlers use slot 0 as the
-// invisible-trap handoff marker and slots 2-3 to save a1 and a2. Slots 4-7 of
-// the M-mode copy save T1, T2, T4, and T3 for RVTEST_GOTO_LOWER_MODE.
+// invisible-trap handoff marker and slots 2-3 to save a1 and a2.
 \__MODE__\()rvmodel_sv:    .fill   8, REGWIDTH, 0xdeadbeef                   // RVMODEL/T-SBI scratch area
 \__MODE__\()int_clr_sv:    .fill   4, REGWIDTH, 0xdeadbeef                   // a0-a2 save across interrupt clearing
 \__MODE__\()sv_area_end:                           // end marker (used for size calculation assertions)

@@ -39,7 +39,7 @@ def make_cp_imm_edges_c_branch(
     def gap(num_bytes: int) -> list[str]:
         if num_bytes == 0:
             return [f"{INDENT}# no gap to check"]
-        return [f"c.li x{temp}, 7 # wrong target or not taken" for _ in range(num_bytes // 2)]
+        return [f".rept {num_bytes // 2}", f"c.li x{temp}, 7 # wrong target or not taken", ".endr"]
 
     tc.code.append(f"LI(x{rs1}, {0 if instr_name == 'c.beqz' else 1}) # branch is taken")
 

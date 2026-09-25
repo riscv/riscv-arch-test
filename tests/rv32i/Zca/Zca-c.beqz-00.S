@@ -273,7 +273,9 @@ cp_imm_edges_c_branch_fwd_b_2:
   c.li x15, 1 # success code
 Zca_c_beqz_cg_cp_imm_edges_c_branch_b_4:
   c.beqz x10, cp_imm_edges_c_branch_fwd_b_4
+  .rept 1
   c.li x15, 7 # wrong target or not taken
+  .endr
 cp_imm_edges_c_branch_fwd_b_4:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_beqz_cg_cp_imm_edges_c_branch_b_4, Zca_c_beqz_cg_cp_imm_edges_c_branch_b_4_str)
@@ -282,9 +284,9 @@ cp_imm_edges_c_branch_fwd_b_4:
   c.li x15, 1 # success code
 Zca_c_beqz_cg_cp_imm_edges_c_branch_b_8:
   c.beqz x10, cp_imm_edges_c_branch_fwd_b_8
+  .rept 3
   c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
+  .endr
 cp_imm_edges_c_branch_fwd_b_8:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_beqz_cg_cp_imm_edges_c_branch_b_8, Zca_c_beqz_cg_cp_imm_edges_c_branch_b_8_str)
@@ -293,13 +295,9 @@ cp_imm_edges_c_branch_fwd_b_8:
   c.li x15, 1 # success code
 Zca_c_beqz_cg_cp_imm_edges_c_branch_b_16:
   c.beqz x10, cp_imm_edges_c_branch_fwd_b_16
+  .rept 7
   c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
+  .endr
 cp_imm_edges_c_branch_fwd_b_16:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_beqz_cg_cp_imm_edges_c_branch_b_16, Zca_c_beqz_cg_cp_imm_edges_c_branch_b_16_str)
@@ -308,21 +306,9 @@ cp_imm_edges_c_branch_fwd_b_16:
   c.li x15, 1 # success code
 Zca_c_beqz_cg_cp_imm_edges_c_branch_b_32:
   c.beqz x10, cp_imm_edges_c_branch_fwd_b_32
+  .rept 15
   c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
+  .endr
 cp_imm_edges_c_branch_fwd_b_32:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_beqz_cg_cp_imm_edges_c_branch_b_32, Zca_c_beqz_cg_cp_imm_edges_c_branch_b_32_str)
@@ -331,37 +317,9 @@ cp_imm_edges_c_branch_fwd_b_32:
   c.li x15, 1 # success code
 Zca_c_beqz_cg_cp_imm_edges_c_branch_b_64:
   c.beqz x10, cp_imm_edges_c_branch_fwd_b_64
+  .rept 31
   c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
+  .endr
 cp_imm_edges_c_branch_fwd_b_64:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_beqz_cg_cp_imm_edges_c_branch_b_64, Zca_c_beqz_cg_cp_imm_edges_c_branch_b_64_str)
@@ -370,69 +328,9 @@ cp_imm_edges_c_branch_fwd_b_64:
   c.li x15, 1 # success code
 Zca_c_beqz_cg_cp_imm_edges_c_branch_b_128:
   c.beqz x10, cp_imm_edges_c_branch_fwd_b_128
+  .rept 63
   c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
+  .endr
 cp_imm_edges_c_branch_fwd_b_128:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_beqz_cg_cp_imm_edges_c_branch_b_128, Zca_c_beqz_cg_cp_imm_edges_c_branch_b_128_str)
@@ -456,7 +354,9 @@ cp_imm_edges_c_branch_bwd_done_b_m2:
   c.j cp_imm_edges_c_branch_bwd_src_b_m4
 cp_imm_edges_c_branch_bwd_b_m4:
   c.j cp_imm_edges_c_branch_bwd_done_b_m4 # correct target
+  .rept 1
   c.li x15, 7 # wrong target or not taken
+  .endr
 cp_imm_edges_c_branch_bwd_src_b_m4:
 Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m4:
   c.beqz x10, cp_imm_edges_c_branch_bwd_b_m4
@@ -470,9 +370,9 @@ cp_imm_edges_c_branch_bwd_done_b_m4:
   c.j cp_imm_edges_c_branch_bwd_src_b_m8
 cp_imm_edges_c_branch_bwd_b_m8:
   c.j cp_imm_edges_c_branch_bwd_done_b_m8 # correct target
+  .rept 3
   c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
+  .endr
 cp_imm_edges_c_branch_bwd_src_b_m8:
 Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m8:
   c.beqz x10, cp_imm_edges_c_branch_bwd_b_m8
@@ -486,13 +386,9 @@ cp_imm_edges_c_branch_bwd_done_b_m8:
   c.j cp_imm_edges_c_branch_bwd_src_b_m16
 cp_imm_edges_c_branch_bwd_b_m16:
   c.j cp_imm_edges_c_branch_bwd_done_b_m16 # correct target
+  .rept 7
   c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
+  .endr
 cp_imm_edges_c_branch_bwd_src_b_m16:
 Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m16:
   c.beqz x10, cp_imm_edges_c_branch_bwd_b_m16
@@ -506,21 +402,9 @@ cp_imm_edges_c_branch_bwd_done_b_m16:
   c.j cp_imm_edges_c_branch_bwd_src_b_m32
 cp_imm_edges_c_branch_bwd_b_m32:
   c.j cp_imm_edges_c_branch_bwd_done_b_m32 # correct target
+  .rept 15
   c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
+  .endr
 cp_imm_edges_c_branch_bwd_src_b_m32:
 Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m32:
   c.beqz x10, cp_imm_edges_c_branch_bwd_b_m32
@@ -534,37 +418,9 @@ cp_imm_edges_c_branch_bwd_done_b_m32:
   c.j cp_imm_edges_c_branch_bwd_src_b_m64
 cp_imm_edges_c_branch_bwd_b_m64:
   c.j cp_imm_edges_c_branch_bwd_done_b_m64 # correct target
+  .rept 31
   c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
+  .endr
 cp_imm_edges_c_branch_bwd_src_b_m64:
 Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m64:
   c.beqz x10, cp_imm_edges_c_branch_bwd_b_m64
@@ -578,69 +434,9 @@ cp_imm_edges_c_branch_bwd_done_b_m64:
   c.j cp_imm_edges_c_branch_bwd_src_b_m128
 cp_imm_edges_c_branch_bwd_b_m128:
   c.j cp_imm_edges_c_branch_bwd_done_b_m128 # correct target
+  .rept 63
   c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
+  .endr
 cp_imm_edges_c_branch_bwd_src_b_m128:
 Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m128:
   c.beqz x10, cp_imm_edges_c_branch_bwd_b_m128
@@ -654,133 +450,9 @@ cp_imm_edges_c_branch_bwd_done_b_m128:
   c.j cp_imm_edges_c_branch_bwd_src_b_m256
 cp_imm_edges_c_branch_bwd_b_m256:
   c.j cp_imm_edges_c_branch_bwd_done_b_m256 # correct target
+  .rept 127
   c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
-  c.li x15, 7 # wrong target or not taken
+  .endr
 cp_imm_edges_c_branch_bwd_src_b_m256:
 Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m256:
   c.beqz x10, cp_imm_edges_c_branch_bwd_b_m256

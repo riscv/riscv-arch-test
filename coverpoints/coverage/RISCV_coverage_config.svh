@@ -128,6 +128,12 @@
 `ifdef I_COVERAGE
   `include "I_coverage.svh"
 `endif
+`ifdef INTERRUPTSH_COVERAGE
+  `include "InterruptsH_coverage.svh"
+`endif
+`ifdef INTERRUPTSHSM_COVERAGE
+  `include "InterruptsHSm_coverage.svh"
+`endif
 `ifdef M_COVERAGE
   `include "M_coverage.svh"
 `endif
@@ -235,6 +241,12 @@
 `endif
 `ifdef SSTC_COVERAGE
   `include "Sstc_coverage.svh"
+`endif
+`ifdef SSTCH_COVERAGE
+  `include "SstcH_coverage.svh"
+`endif
+`ifdef SSTCHSM_COVERAGE
+  `include "SstcHSm_coverage.svh"
 `endif
 `ifdef SSTCSM_COVERAGE
   `include "SstcSm_coverage.svh"

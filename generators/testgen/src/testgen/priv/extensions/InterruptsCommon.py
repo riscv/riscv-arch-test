@@ -1,7 +1,7 @@
 ##################################
 # priv/extensions/InterruptsCommon.py
 #
-# Shared interrupt test generation for InterruptsS and InterruptsSm.
+# Shared interrupt test generation for InterruptsS, InterruptsSm, InterruptsH and InterruptsHSm.
 # David_Harris@hmc.edu 6 September 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
@@ -12,7 +12,7 @@
 from collections.abc import Callable
 from itertools import combinations
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -42,6 +42,9 @@ def guard_symbol(int_type: str) -> str:
 # Types missing here have no trigger macros yet; their UDB_<int>_INTR_IMPL guard is never defined.
 int_macro = {"MEI": "MEXT", "MTI": "MTIME", "MSI": "MSW", "SEI": "SEXT", "STI": "STIME", "SSI": "SSW"}
 int_macro |= {name: name for name in ["LCOFI", *reg_ints, *sstc_ints]}
+# The same for the VS-level interrupts, which drive hvip.  Only the H suites raise them.  HS-mode writes hvip
+# directly, as M-mode does, so it uses the _M macros.
+vs_int_macro = {"VSEI": "VSEXT", "VSTI": "VSTIME", "VSSI": "VSSW"}
 
 # RVTEST_SET/CLR_<name>_INT_<priv> for the register-triggered interrupts. M-mode writes mip and sip
 # directly, S-mode writes sip directly and mip through T-SBI, and U-mode uses T-SBI for both.
@@ -556,3 +559,54 @@ def emit_interrupts(
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks
+
+
+def interrupt_xtinst_tests(test_data: TestData, covergroup: str, priv: str) -> list[str]:
+    """cp_mtinst (priv M) or cp_htinst (priv S): an interrupt taken into M-mode or HS-mode writes zero to xtinst.
+
+    Each interrupt is made pending with the global enable clear and xtinst holding the pseudoinstruction for an
+    implicit VS-stage access, which a trap may write there.  Setting the global enable takes the interrupt, and
+    xtinst is read after the handler returns.  sie and hie each keep only their own interrupts' bits.
+    """
+    machine = priv == "M"
+    xtinst, status, enable = ("mtinst", "mstatus", "MSTATUS_MIE") if machine else ("htinst", "sstatus", "SSTATUS_SIE")
+    ie_csrs = ["mie"] if machine else ["sie", "hie"]
+    types = [*machine_ints, "SEI", "STI", "SSI", "LCOFI"] if machine else ["SEI", "STI", "SSI", *vs_int_macro, "LCOFI"]
+    coverpoint = f"cp_{xtinst}"
+    tmp_reg = test_data.int_regs.get_register()
+    lines = [
+        comment_banner(
+            coverpoint, f"Take each interrupt into {'M' if machine else 'HS'}-mode with {xtinst} nonzero; it reads 0"
+        ),
+        f"csrw {'mideleg' if machine else 'hideleg'}, zero",
+    ]
+    macros = int_macro | vs_int_macro
+    for int_type in types:
+        macro = f"{macros[int_type]}_INT_{'M' if int_type in vs_int_macro else priv}"
+        guard = guard_symbol(int_type)
+        lines.extend(
+            [
+                f"#ifdef {guard}",
+                "#if __riscv_xlen == 64",
+                f"LI(x{tmp_reg}, 0x3000)",
+                "#else",
+                f"LI(x{tmp_reg}, 0x2000)",
+                "#endif",
+                f"csrw {xtinst}, x{tmp_reg}",
+                f"LI(x{tmp_reg}, {1 << int_bit[int_type]:#x})",
+                *[f"csrw {ie}, x{tmp_reg}" for ie in ie_csrs],
+                f"RVTEST_SET_{macro}",
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
+                test_data.add_testcase(int_type.lower(), coverpoint, covergroup),
+                f"csrsi {status}, {enable}",
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
+                f"csrci {status}, {enable}",
+                f"csrr x{tmp_reg}, {xtinst}",
+                write_sigupd(tmp_reg, test_data),
+                f"RVTEST_CLR_{macro}",
+                *[f"csrw {ie}, zero" for ie in ie_csrs],
+                f"#endif // {guard}",
+            ]
+        )
+    test_data.int_regs.return_register(tmp_reg)
+    return lines

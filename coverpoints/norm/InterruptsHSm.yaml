@@ -1,0 +1,31 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # mideleg bits 10, 6 and 2, and bit 12 when GEILEN > 0, are read-only one; M-mode never takes those interrupts
+  - names: [mideleg_acc_h]
+    coverpoint: ["InterruptsHSm_m_cg/cp_{mideleg, nohint_m}"]
+
+  # mip and mie hold the hip and hie bits
+  - names: [mip_mie_vs, mip_mie_alias]
+    coverpoint: ["InterruptsHSm_m_cg/cp_{mie, mip, mie_gilen, mip_gilen}"]
+
+  # hie.SGEIE is writable when guest external interrupts can become pending
+  - names: [hie_acc]
+    coverpoint: ["InterruptsHSm_m_cg/cp_mie_gilen"]
+
+  # In VS-mode and VU-mode, M-mode takes the M-level interrupts and the undelegated S-level ones; HS-mode takes
+  # the S-level interrupts that mideleg delegates
+  - names: [intr_mip_mie_op, hideleg_hs]
+    coverpoint: ["InterruptsHSm_m_cg/cp_mideleg_mip_{vs, vu}"]
+
+  # An interrupt writes zero to mtinst
+  - names: [H_trap_xtinst_interrupt, mtinst_val]
+    coverpoint: ["InterruptsHSm_m_cg/cp_mtinst"]
+
+  # For bits of mideleg that are zero, the corresponding bits in hideleg, hip and hie are read-only zero
+  - names: [mideleg_hroz]
+    coverpoint:
+      [
+        "Not tested: mideleg bits 10, 6 and 2 are read-only one, so the rule is observable only for hideleg bit 13 with Shlcofideleg, which UDB and the reference model do not describe, or for SGEI with GEILEN = 0, which no H configuration has",
+      ]

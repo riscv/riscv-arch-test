@@ -1,0 +1,54 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # Below M-mode, vstimecmp needs menvcfg.STCE = 1 and mcounteren.TM = 1
+  - names: [menvcfg_stce_zero_op, mcounteren_tm_clr, mcounteren_tm_set]
+    coverpoint: ["SstcH_hs_cg/cp_hs_vstimecmp_{accessible, accesses}"]
+
+  # In VS-mode, stimecmp is vstimecmp; henvcfg.STCE = 0 or hcounteren.TM = 0 makes it a virtual instruction
+  - names:
+      [
+        henvcfg_stce_op,
+        henvcfg_stce_zero_op,
+        hcounteren_acc,
+        menvcfg_stce_zero_op,
+        mcounteren_tm_clr,
+        mcounteren_tm_set,
+      ]
+    coverpoint: ["SstcH_vs_cg/cp_vs_stimecmp_{accessible, accesses}"]
+
+  # vstimecmp by its own address raises virtual instruction in VS-mode when HS-mode could access it
+  - names:
+      [
+        H_vscsrs_acc_vs,
+        H_virtinst_vu_vs_nonhigh_allowedhs_tvm0,
+        H_virtinst_vu_vs32_high_allowedhs_tvm0,
+      ]
+    coverpoint: ["SstcH_vs_cg/cp_vs_vstimecmp_inaccessible"]
+
+  # In VU-mode, stimecmp and vstimecmp raise virtual instruction when HS-mode could access them
+  - names:
+      [
+        H_virtinst_vu_nonhigh_supervisor_allowedhs_tvm0,
+        H_virtinst_vu32_high_supervisor_allowedhs_tvm0,
+        H_virtinst_vu_vs_nonhigh_allowedhs_tvm0,
+        H_virtinst_vu_vs32_high_allowedhs_tvm0,
+      ]
+    coverpoint: ["SstcH_vu_cg/cp_vu_timecmp_inaccessible"]
+
+  # U-mode accesses to stimecmp and vstimecmp raise illegal instruction
+  - names: [H_vscsrs_acc_u]
+    coverpoint: ["SstcH_u_cg/cp_u_timecmp_inaccessible"]
+
+  # The vstimecmp interrupt is taken under the usual enable and delegation rules
+  - names: [hip_vstip_enable, hip_vstip_defined_v0, hideleg_op]
+    coverpoint: ["SstcH_hs_cg/cp_vstimecmp_int"]
+
+  # The Sstc extension adds the STCE bit to henvcfg
+  - names: [henvcfg_stce]
+    coverpoint: ["SstcH_vs_cg/cp_vs_stimecmp_accessible"]
+
+  # When the Sstc extension is not implemented, henvcfg.STCE is read-only zero
+  - names: [henvcfg_stce_rdonly0]
+    coverpoint: ["Not tested: needs an H implementation without Sstc"]

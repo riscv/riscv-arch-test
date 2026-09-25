@@ -31,6 +31,10 @@ covergroup Zcb_c_lbu_cg with function sample(ins_t ins);
         // RS1 register assignment
     }
 
+    cp_uimm_2 : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
+        bins uimm[] = {[0:3]}; // 2-bit byte offsets for c.lbu and c.sb
+    }
+
 endgroup
 // ---------------------
 covergroup Zcb_c_lh_cg with function sample(ins_t ins);
@@ -52,6 +56,10 @@ covergroup Zcb_c_lh_cg with function sample(ins_t ins);
         // RS1 register assignment
     }
 
+    cp_uimm_2h : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
+        bins uimm[] = {0, 2}; // halfword offsets for c.lh, c.lhu, and c.sh
+    }
+
 endgroup
 // ---------------------
 covergroup Zcb_c_lhu_cg with function sample(ins_t ins);
@@ -71,6 +79,10 @@ covergroup Zcb_c_lhu_cg with function sample(ins_t ins);
 
     cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
+    }
+
+    cp_uimm_2h : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
+        bins uimm[] = {0, 2}; // halfword offsets for c.lh, c.lhu, and c.sh
     }
 
 endgroup
@@ -171,6 +183,10 @@ covergroup Zcb_c_sb_cg with function sample(ins_t ins);
         // RS2 register assignment
     }
 
+    cp_uimm_2 : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
+        bins uimm[] = {[0:3]}; // 2-bit byte offsets for c.lbu and c.sb
+    }
+
 endgroup
 // ---------------------
 covergroup Zcb_c_sh_cg with function sample(ins_t ins);
@@ -220,6 +236,10 @@ covergroup Zcb_c_sh_cg with function sample(ins_t ins);
 
     cp_rs2_p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
+    }
+
+    cp_uimm_2h : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
+        bins uimm[] = {0, 2}; // halfword offsets for c.lh, c.lhu, and c.sh
     }
 
 endgroup

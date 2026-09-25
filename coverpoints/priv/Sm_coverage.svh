@@ -379,7 +379,10 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins debug_only[] = {[12'h7B0:12'h7BF]};
     }
     csr_ro: coverpoint ins.current.insn[31:20] {
-        bins readonly[] = {[12'hC00:12'hFFF]};
+        bins readonly_c[] = {[12'hC00:12'hCFF]};
+        bins readonly_d[] = {[12'hD00:12'hDFF]};
+        bins readonly_e[] = {[12'hE00:12'hEFF]};
+        bins readonly_f[] = {[12'hF00:12'hFFF]};
     }
 
     csrr: coverpoint ins.current.insn  {

@@ -53,8 +53,11 @@ main:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_code_begin, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL4)
   sfence.vma
 
-// Set up the code-region save area.
-  csrr a0, mscratch
+// The boot tables identity map the test image, but that mapping is not user
+// accessible, so the code is mapped again at va_rvtest_code_begin. Registering
+// that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
+// to can fetch from.
+  LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL4)
 
   SATP_SETUP_RV64(sv57) // Enable address translation.
@@ -86,11 +89,11 @@ SvPMPZicbo_cp_pmpcfg_write_pmpcfg0:
   slli a0, a0, 16
   srli a0, a0, 16
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
 SvPMPZicbo_cg_cp_pmp_zicbo_test1_cbo_zero:
   cbo.zero (a5)
   nop
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE
   .endif
 
   LA(x5, rvtest_slvl3_pg_tbl)
@@ -112,11 +115,11 @@ SvPMPZicbo_cg_cp_pmp_zicbo_test1_cbo_zero:
   slli a0, a0, 25
   srli a0, a0, 25
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
 SvPMPZicbo_cg_cp_pmp_zicbo_test2_cbo_zero:
   cbo.zero (a5)
   nop
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE
 
   LA(x5, rvtest_slvl2_pg_tbl)
   srl x5, x5, PMP_SHIFT
@@ -138,11 +141,11 @@ SvPMPZicbo_cg_cp_pmp_zicbo_test2_cbo_zero:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
 SvPMPZicbo_cg_cp_pmp_zicbo_test3_cbo_zero:
   cbo.zero (a5)
   nop
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE
 
   LA(x5, rvtest_slvl1_pg_tbl)
   srl x5, x5, PMP_SHIFT
@@ -165,11 +168,11 @@ SvPMPZicbo_cg_cp_pmp_zicbo_test3_cbo_zero:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
 SvPMPZicbo_cg_cp_pmp_zicbo_test4_cbo_zero:
   cbo.zero (a5)
   nop
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE
 
   LA(x5, rvtest_slvl0_pg_tbl)
   srl x5, x5, PMP_SHIFT
@@ -193,11 +196,11 @@ SvPMPZicbo_cg_cp_pmp_zicbo_test4_cbo_zero:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
 SvPMPZicbo_cg_cp_pmp_zicbo_test5_cbo_zero:
   cbo.zero (a5)
   nop
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test

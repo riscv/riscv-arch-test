@@ -239,6 +239,9 @@
 `ifdef SVPMPZICBO_COVERAGE
   `include "SvPMPZicbo_coverage.svh"
 `endif
+`ifdef SVSM_COVERAGE
+  `include "SvSm_coverage.svh"
+`endif
 `ifdef SVZICBO_COVERAGE
   `include "SvZicbo_coverage.svh"
 `endif
@@ -254,11 +257,17 @@
 `ifdef SVBARE_COVERAGE
   `include "Svbare_coverage.svh"
 `endif
+`ifdef SVBARESM_COVERAGE
+  `include "SvbareSm_coverage.svh"
+`endif
 `ifdef SVINVAL_COVERAGE
   `include "Svinval_coverage.svh"
 `endif
 `ifdef SVINVALH_COVERAGE
   `include "SvinvalH_coverage.svh"
+`endif
+`ifdef SVINVALSM_COVERAGE
+  `include "SvinvalSm_coverage.svh"
 `endif
 `ifdef SVNAPOT_COVERAGE
   `include "Svnapot_coverage.svh"

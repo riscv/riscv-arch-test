@@ -47,7 +47,8 @@ normative_rule_definitions:
       [
         "Svinval_cg/cr_svinival",
         "SvinvalSm_cg/cr_svinival",
-        "TODO: test in hypervisor tests",
+        "SvinvalH_cg/cp_svinval",
+        "SvinvalHSm_cg/cp_svinval_tvm",
       ]
 
   # These have the same semantics as SINVAL.VMA, except that they combine with
@@ -56,12 +57,15 @@ normative_rule_definitions:
   - names:
       [
         Svinval_hinval_vvma_gvma,
-        Svinval_hinval_gvma_uses_vmid,
         Svinval_virtual_instruction_vu_vs,
         Svinval_virtual_instruction_vtvms,
         Svinval_sfence_w_inval_inval_vu_mode,
       ]
+    coverpoint: ["SvinvalH_cg/cp_svinval", "SvinvalHSm_cg/cp_svinval_{m, tvm}"]
+
+  # HINVAL.GVMA uses VMIDs instead of ASIDs.
+  - name: Svinval_hinval_gvma_uses_vmid
     coverpoint:
       [
-        "TODO: test in hypervisor tests (SvinvalH_cg/cr_svinivalH has no tests yet)",
+        "Not tested: address-translation cache contents are not observable in signature tests",
       ]

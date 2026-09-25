@@ -1,0 +1,32 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # If the Shvstvecd extension is implemented, then vstvec.MODE must be capable of holding
+  # the value 0 (Direct).
+  - name: shvstvecd_vstvec_mode_direct
+    coverpoint:
+      [
+        "Shvstvecd_cg/cp_vstvec_vaddr_pc",
+        "Shvstvecd_cg/cp_vstvec_vaddr_scratch",
+      ]
+
+  # Furthermore, when vstvec.MODE=Direct, vstvec.BASE must be capable of holding any valid
+  # four-byte-aligned address.
+  - name: shvstvecd_vstvec_base_aligned_address
+    coverpoint:
+      [
+        "Shvstvecd_cg/cp_vstvec_vaddr_walk1",
+        "Shvstvecd_cg/cp_vstvec_vaddr_walk0",
+        "Shvstvecd_cg/cp_vstvec_vaddr_pc",
+        "Shvstvecd_cg/cp_vstvec_vaddr_scratch",
+      ]
+
+  # vstvec.BASE is a WARL field.  Its legal values are implementation-defined without Shvstvecd; with Shvstvecd,
+  # every four-byte-aligned address is legal, and the walks read each one back
+  - names: [VSTVEC_BASE_WARL]
+    coverpoint:
+      [
+        "Shvstvecd_cg/cp_vstvec_vaddr_walk1",
+        "Shvstvecd_cg/cp_vstvec_vaddr_walk0",
+      ]

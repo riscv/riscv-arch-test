@@ -1,0 +1,12 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # If the Shgatpa extension is implemented, then for each supported virtual memory scheme
+  # SvNN supported in satp, the corresponding hgatp SvNNx4 mode must be supported.
+  - name: shgatpa_satp_hgatp_mode_support
+    coverpoint: ["Shgatpa_cg/cp_shgatpa"]
+
+  # Furthermore, the hgatp mode Bare must also be supported.
+  - name: shgatpa_hgatp_bare_mode
+    coverpoint: ["Shgatpa_cg/cp_shgatpa"]

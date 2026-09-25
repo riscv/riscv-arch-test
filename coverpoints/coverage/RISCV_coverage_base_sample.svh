@@ -184,11 +184,23 @@
     `ifdef COVER_SDTRIGSM
         sdtrigsm_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SHCOUNTERENW
+        shcounterenw_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SHGATPA
+        shgatpa_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SHTVALA
         shtvala_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SHVSATPA
+        shvsatpa_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SHVSTVALA
         shvstvala_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SHVSTVECD
+        shvstvecd_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SM
         sm_sample(hart, issue, ins);
@@ -312,6 +324,9 @@
     `endif
     `ifdef COVER_SVINVALH
         svinvalh_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SVINVALHSM
+        svinvalhsm_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SVINVALSM
         svinvalsm_sample(hart, issue, ins);
@@ -498,6 +513,9 @@
     `endif
     `ifdef COVER_ZICNTRH
         zicntrh_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZICNTRHSM
+        zicntrhsm_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZICNTRS
         zicntrs_sample(hart, issue, ins);

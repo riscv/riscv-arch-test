@@ -1,0 +1,21 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # The counter-enable registers control the availability of the counters to lower
+  # privilege modes.
+  - names: [mcounteren_op, hcounteren_op, scounteren_op]
+    coverpoint:
+      [
+        "ZicntrHSm_cg/cp_mhscounteren_access_m (M-mode reads succeed for every counter-enable value)",
+      ]
+
+  # The counters are accessible from M-mode regardless of the counter-enable registers.
+  - name: zihpm_op_sz_mode_acc_priv
+    coverpoint: ["ZicntrHSm_cg/cp_mhscounteren_access_m"]
+
+  # Reading the time CSR in VS or VU mode returns the sum of the contents of htimedelta
+  # and the actual value of time.
+  - names: [htimedelta_op, htimedeltah_op]
+    coverpoint:
+      ["ZicntrHSm_cg/cp_delta_m (M-mode reads of time ignore htimedelta)"]

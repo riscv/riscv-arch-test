@@ -95,27 +95,11 @@ covergroup SvSm_mstatus_mprv_cg with function sample(ins_t ins);
     cp_mprv_store: cross mprv_mstatus, mpp_mstatus, write_acc, priv_mode_m, satp_mode; //ms.2
     cp_mprv_ins:   cross mprv_mstatus, mpp_mstatus, exec_acc,  priv_mode_m, satp_mode; //ms.2
 
-    PTE_upage_i: coverpoint ins.current.pte_i[7:0] { //ms.3 & 4
-        wildcard bins leaflvl_u = {8'b11?11111};
-    }
     PTE_upage_d: coverpoint ins.current.pte_d[7:0] { //ms.3 & 4
         wildcard bins leaflvl_u = {8'b11?11111};
     }
 
     `ifdef UDB_MXLEN_64
-        PageType_i: coverpoint ins.current.page_type_i {
-            `ifdef SV48_SUPPORTED
-                bins sv48_tera = {2'b11} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
-                bins sv48_giga = {2'b10} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
-                bins sv48_mega = {2'b01} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
-                bins sv48_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
-            `endif
-            `ifdef SV39_SUPPORTED
-                bins sv39_giga = {2'b10} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
-                bins sv39_mega = {2'b01} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
-                bins sv39_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
-            `endif
-        }
         PageType_d: coverpoint ins.current.page_type_d {
             `ifdef SV48_SUPPORTED
                 bins sv48_tera = {2'b11} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
@@ -130,10 +114,6 @@ covergroup SvSm_mstatus_mprv_cg with function sample(ins_t ins);
             `endif
         }
     `else
-        PageType_i: coverpoint ins.current.page_type_i {
-            bins sv32_mega = {2'b01} iff (ins.current.csr[CSR_SATP][31] == 1'b1);
-            bins sv32_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][31] == 1'b1);
-        }
         PageType_d: coverpoint ins.current.page_type_d {
             bins sv32_mega = {2'b01} iff (ins.current.csr[CSR_SATP][31] == 1'b1);
             bins sv32_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][31] == 1'b1);
@@ -159,11 +139,12 @@ covergroup SvSm_mstatus_mprv_cg with function sample(ins_t ins);
         ignore_bins ig1 = binsof(mpp_mstatus.U_mode);
         ignore_bins ig5 = binsof(sum_sstatus.set);
     }
-    cp_mprv_upage_smode_sumunset_noexec: cross mprv_mstatus, mpp_mstatus, exec_acc, priv_mode_m, PageType_i, sum_sstatus { //ms.3
+    // MPRV does not translate instruction fetch, so the fetch has no page type to cross with
+    cp_mprv_upage_smode_sumunset_noexec: cross mprv_mstatus, mpp_mstatus, exec_acc, priv_mode_m, satp_mode, sum_sstatus { //ms.3
         ignore_bins ig1 = binsof(mpp_mstatus.U_mode);
         ignore_bins ig3 = binsof(sum_sstatus.set);
     }
-    cp_mprv_upage_smode_sumset_exec: cross mprv_mstatus, mpp_mstatus, exec_acc, priv_mode_m, PageType_i, sum_sstatus  { //ms.4
+    cp_mprv_upage_smode_sumset_exec: cross mprv_mstatus, mpp_mstatus, exec_acc, priv_mode_m, satp_mode, sum_sstatus { //ms.4
         ignore_bins ig1 = binsof(mpp_mstatus.U_mode);
         ignore_bins ig3 = binsof(sum_sstatus.notset);
     }

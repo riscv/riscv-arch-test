@@ -20,7 +20,7 @@ covergroup SvinvalSm_cg with function sample(ins_t ins);
         wildcard bins sinval_vma      = {SINVAL_VMA};
         wildcard bins sfence_vma      = {SFENCE_VMA}; // not essential, but might as well cross it
     }
-    cp_tvm : coverpoint ins.prev.csr[CSR_MSTATUS][20] {
+    cp_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm")[0] {
         bins zero = {0};
         bins set  = {1};
     }

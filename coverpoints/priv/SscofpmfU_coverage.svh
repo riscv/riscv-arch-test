@@ -19,12 +19,12 @@ covergroup SscofpmfU_cg with function sample(ins_t ins);
 
     `ifdef S_SUPPORTED
 
-        sie_lcofi: coverpoint ins.current.csr[CSR_SIE][13] {}
-        sip_lcofi: coverpoint ins.current.csr[CSR_SIP][13] {}
-        sip_lcofi_one: coverpoint ins.current.csr[CSR_SIP][13] {
+        sie_lcofi: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sie", "lcofie")[0] {}
+        sip_lcofi: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sip", "lcofip")[0] {}
+        sip_lcofi_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sip", "lcofip")[0] {
                 bins one = {1};
         }
-        sip_lcofi_zero: coverpoint ins.current.csr[CSR_SIP][13] {
+        sip_lcofi_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sip", "lcofip")[0] {
             bins zero = {0};
         }
 
@@ -37,15 +37,15 @@ covergroup SscofpmfU_cg with function sample(ins_t ins);
                 bins to_u = {0};
         }
     `else
-        lcofi_ip_one: coverpoint ins.current.csr[CSR_MIP][13] {
+        lcofi_ip_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "lcofip")[0] {
                 bins one  = {1};
         }
-        lcofi_ip_zero: coverpoint ins.current.csr[CSR_MIP][13] {
+        lcofi_ip_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "lcofip")[0] {
                 bins zero  = {0};
         }
 
-        lcofi_ip: coverpoint ins.current.csr[CSR_MIP][13] {}
-        lcofi_ie: coverpoint ins.current.csr[CSR_MIE][13] {}
+        lcofi_ip: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "lcofip")[0] {}
+        lcofi_ie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "lcofie")[0] {}
     `endif
 
     cp_uinh_inhibits_umode:    cross priv_mode_u, mhpmevent_xinh_combos, mhpmevent_of_zero;

@@ -96,6 +96,9 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   `XLEN_BITS val;
   val = traceDataQ[hart][issue][prev].csr[addr];
 
+  // A field named after the CSR selects the whole register
+  if (field == name) return val;
+
   // If the field is defined/found, shift and mask the value to be returned
   if (name == "dcsr") begin
     case(field)
@@ -408,6 +411,11 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "menvcfgh") begin
     case(field)
+      "adue" : val = (val >> 29) & 32'h1;
+      "cde" : val = (val >> 28) & 32'h1;
+      "dte" : val = (val >> 27) & 32'h1;
+      "pbmte" : val = (val >> 30) & 32'h1;
+      "pmm" : val = val & 32'h3;
 `ifdef UDB_MXLEN_32
       "stce" : val = (val >> 31) & 32'h1;
 `endif
@@ -416,6 +424,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "mideleg") begin
     case(field)
+      "lcofip" : val = (val >> 13) & 'h1;
       "meip" : val = (val >> 11) & 'h1;
       "msip" : val = (val >> 3) & 'h1;
       "mtip" : val = (val >> 7) & 'h1;
@@ -431,8 +440,9 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "mie") begin
     case(field)
+      "lcofie" : val = (val >> 13) & 'h1;
       "meie" : val = (val >> 11) & 'h1;
-      "msee" : val = (val >> 3) & 'h1;
+      "msie" : val = (val >> 3) & 'h1;
       "mtie" : val = (val >> 7) & 'h1;
       "seie" : val = (val >> 9) & 'h1;
       "sgeie" : val = (val >> 12) & 'h1;
@@ -446,6 +456,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "mip") begin
     case(field)
+      "lcofip" : val = (val >> 13) & 'h1;
       "meip" : val = (val >> 11) & 'h1;
       "msip" : val = (val >> 3) & 'h1;
       "mtip" : val = (val >> 7) & 'h1;
@@ -495,6 +506,9 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "mbe" : val = (val >> 37) & 64'h1;
 `endif
       "mie" : val = (val >> 3) & 'h1;
+`ifdef UDB_MXLEN_64
+      "mpelp" : val = (val >> 41) & 64'h1;
+`endif
       "mpie" : val = (val >> 7) & 'h1;
       "mpp" : val = (val >> 11) & 'h3;
       "mprv" : val = (val >> 17) & 'h1;
@@ -512,6 +526,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "sd" : val = (val >> 63) & 64'h1;
 `endif
       "sie" : val = (val >> 1) & 'h1;
+      "spelp" : val = (val >> 23) & 'h1;
       "spie" : val = (val >> 5) & 'h1;
       "spp" : val = (val >> 8) & 'h1;
       "sum" : val = (val >> 18) & 'h1;
@@ -537,6 +552,9 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `endif
 `ifdef UDB_MXLEN_32
       "mbe" : val = (val >> 5) & 32'h1;
+`endif
+`ifdef UDB_MXLEN_32
+      "mpelp" : val = (val >> 9) & 32'h1;
 `endif
 `ifdef UDB_MXLEN_32
       "mpv" : val = (val >> 7) & 32'h1;
@@ -799,6 +817,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "sie") begin
     case(field)
+      "lcofie" : val = (val >> 13) & 'h1;
       "seie" : val = (val >> 9) & 'h1;
       "ssie" : val = (val >> 1) & 'h1;
       "stie" : val = (val >> 5) & 'h1;
@@ -807,6 +826,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "sip") begin
     case(field)
+      "lcofip" : val = (val >> 13) & 'h1;
       "seip" : val = (val >> 9) & 'h1;
       "ssip" : val = (val >> 1) & 'h1;
       "stip" : val = (val >> 5) & 'h1;
@@ -824,6 +844,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "sd" : val = (val >> 63) & 64'h1;
 `endif
       "sie" : val = (val >> 1) & 'h1;
+      "spelp" : val = (val >> 23) & 'h1;
       "spie" : val = (val >> 5) & 'h1;
       "spp" : val = (val >> 8) & 'h1;
       "sum" : val = (val >> 18) & 'h1;
@@ -831,7 +852,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `ifdef UDB_MXLEN_64
       "uxl" : val = (val >> 32) & 64'h3;
 `endif
-      "vs" : val = (val >> 23) & 'h3;
+      "vs" : val = (val >> 9) & 'h3;
       "xs" : val = (val >> 15) & 'h3;
       default: val = 0; // Todo: error
     endcase
@@ -1018,6 +1039,425 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
         "fcsr"   : val = (val >> 1) & 'h1;
         "jvt"    : val = (val >> 2) & 'h1;
         default: val = 0;
+    endcase
+  end
+  if (name == "mstateen0") begin
+    case(field)
+      "c" : val = val & 'h1;
+      "fcsr" : val = (val >> 1) & 'h1;
+      "jvt" : val = (val >> 2) & 'h1;
+`ifdef UDB_MXLEN_64
+      "ctr" : val = (val >> 54) & 64'h1;
+      "srmcfg" : val = (val >> 55) & 64'h1;
+      "p1p13" : val = (val >> 56) & 64'h1;
+      "context" : val = (val >> 57) & 64'h1;
+      "imsic" : val = (val >> 58) & 64'h1;
+      "aia" : val = (val >> 59) & 64'h1;
+      "csrind" : val = (val >> 60) & 64'h1;
+      "envcfg" : val = (val >> 62) & 64'h1;
+      "se0" : val = (val >> 63) & 64'h1;
+`endif
+      default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "mstateen0h") begin
+    case(field)
+`ifdef UDB_MXLEN_32
+      "ctr" : val = (val >> 22) & 32'h1;
+      "srmcfg" : val = (val >> 23) & 32'h1;
+      "p1p13" : val = (val >> 24) & 32'h1;
+      "context" : val = (val >> 25) & 32'h1;
+      "imsic" : val = (val >> 26) & 32'h1;
+      "aia" : val = (val >> 27) & 32'h1;
+      "csrind" : val = (val >> 28) & 32'h1;
+      "envcfg" : val = (val >> 30) & 32'h1;
+      "se0" : val = (val >> 31) & 32'h1;
+`endif
+      default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "pmpcfg4") begin
+    case(field)
+`ifdef UDB_MXLEN_32
+      "pmp16cfg_a" : val = (val >> 3) & 32'h3;
+      "pmp16cfg_l" : val = (val >> 7) & 32'h1;
+      "pmp16cfg_xwr" : val = val & 32'h7;
+      "pmp17cfg_a" : val = (val >> 11) & 32'h3;
+      "pmp17cfg_l" : val = (val >> 15) & 32'h1;
+      "pmp17cfg_xwr" : val = (val >> 8) & 32'h7;
+      "pmp18cfg_a" : val = (val >> 19) & 32'h3;
+      "pmp18cfg_l" : val = (val >> 23) & 32'h1;
+      "pmp18cfg_xwr" : val = (val >> 16) & 32'h7;
+      "pmp19cfg_a" : val = (val >> 27) & 32'h3;
+      "pmp19cfg_l" : val = (val >> 31) & 32'h1;
+      "pmp19cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+`ifdef UDB_MXLEN_64
+      "pmp16cfg_a" : val = (val >> 3) & 64'h3;
+      "pmp16cfg_l" : val = (val >> 7) & 64'h1;
+      "pmp16cfg_xwr" : val = val & 64'h7;
+      "pmp17cfg_a" : val = (val >> 11) & 64'h3;
+      "pmp17cfg_l" : val = (val >> 15) & 64'h1;
+      "pmp17cfg_xwr" : val = (val >> 8) & 64'h7;
+      "pmp18cfg_a" : val = (val >> 19) & 64'h3;
+      "pmp18cfg_l" : val = (val >> 23) & 64'h1;
+      "pmp18cfg_xwr" : val = (val >> 16) & 64'h7;
+      "pmp19cfg_a" : val = (val >> 27) & 64'h3;
+      "pmp19cfg_l" : val = (val >> 31) & 64'h1;
+      "pmp19cfg_xwr" : val = (val >> 24) & 64'h7;
+      "pmp20cfg_a" : val = (val >> 35) & 64'h3;
+      "pmp20cfg_l" : val = (val >> 39) & 64'h1;
+      "pmp20cfg_xwr" : val = (val >> 32) & 64'h7;
+      "pmp21cfg_a" : val = (val >> 43) & 64'h3;
+      "pmp21cfg_l" : val = (val >> 47) & 64'h1;
+      "pmp21cfg_xwr" : val = (val >> 40) & 64'h7;
+      "pmp22cfg_a" : val = (val >> 51) & 64'h3;
+      "pmp22cfg_l" : val = (val >> 55) & 64'h1;
+      "pmp22cfg_xwr" : val = (val >> 48) & 64'h7;
+      "pmp23cfg_a" : val = (val >> 59) & 64'h3;
+      "pmp23cfg_l" : val = (val >> 63) & 64'h1;
+      "pmp23cfg_xwr" : val = (val >> 56) & 64'h7;
+`endif
+      default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "pmpcfg5") begin
+    case(field)
+`ifdef UDB_MXLEN_32
+      "pmp20cfg_a" : val = (val >> 3) & 32'h3;
+      "pmp20cfg_l" : val = (val >> 7) & 32'h1;
+      "pmp20cfg_xwr" : val = val & 32'h7;
+      "pmp21cfg_a" : val = (val >> 11) & 32'h3;
+      "pmp21cfg_l" : val = (val >> 15) & 32'h1;
+      "pmp21cfg_xwr" : val = (val >> 8) & 32'h7;
+      "pmp22cfg_a" : val = (val >> 19) & 32'h3;
+      "pmp22cfg_l" : val = (val >> 23) & 32'h1;
+      "pmp22cfg_xwr" : val = (val >> 16) & 32'h7;
+      "pmp23cfg_a" : val = (val >> 27) & 32'h3;
+      "pmp23cfg_l" : val = (val >> 31) & 32'h1;
+      "pmp23cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+      default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "pmpcfg6") begin
+    case(field)
+`ifdef UDB_MXLEN_32
+      "pmp24cfg_a" : val = (val >> 3) & 32'h3;
+      "pmp24cfg_l" : val = (val >> 7) & 32'h1;
+      "pmp24cfg_xwr" : val = val & 32'h7;
+      "pmp25cfg_a" : val = (val >> 11) & 32'h3;
+      "pmp25cfg_l" : val = (val >> 15) & 32'h1;
+      "pmp25cfg_xwr" : val = (val >> 8) & 32'h7;
+      "pmp26cfg_a" : val = (val >> 19) & 32'h3;
+      "pmp26cfg_l" : val = (val >> 23) & 32'h1;
+      "pmp26cfg_xwr" : val = (val >> 16) & 32'h7;
+      "pmp27cfg_a" : val = (val >> 27) & 32'h3;
+      "pmp27cfg_l" : val = (val >> 31) & 32'h1;
+      "pmp27cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+`ifdef UDB_MXLEN_64
+      "pmp24cfg_a" : val = (val >> 3) & 64'h3;
+      "pmp24cfg_l" : val = (val >> 7) & 64'h1;
+      "pmp24cfg_xwr" : val = val & 64'h7;
+      "pmp25cfg_a" : val = (val >> 11) & 64'h3;
+      "pmp25cfg_l" : val = (val >> 15) & 64'h1;
+      "pmp25cfg_xwr" : val = (val >> 8) & 64'h7;
+      "pmp26cfg_a" : val = (val >> 19) & 64'h3;
+      "pmp26cfg_l" : val = (val >> 23) & 64'h1;
+      "pmp26cfg_xwr" : val = (val >> 16) & 64'h7;
+      "pmp27cfg_a" : val = (val >> 27) & 64'h3;
+      "pmp27cfg_l" : val = (val >> 31) & 64'h1;
+      "pmp27cfg_xwr" : val = (val >> 24) & 64'h7;
+      "pmp28cfg_a" : val = (val >> 35) & 64'h3;
+      "pmp28cfg_l" : val = (val >> 39) & 64'h1;
+      "pmp28cfg_xwr" : val = (val >> 32) & 64'h7;
+      "pmp29cfg_a" : val = (val >> 43) & 64'h3;
+      "pmp29cfg_l" : val = (val >> 47) & 64'h1;
+      "pmp29cfg_xwr" : val = (val >> 40) & 64'h7;
+      "pmp30cfg_a" : val = (val >> 51) & 64'h3;
+      "pmp30cfg_l" : val = (val >> 55) & 64'h1;
+      "pmp30cfg_xwr" : val = (val >> 48) & 64'h7;
+      "pmp31cfg_a" : val = (val >> 59) & 64'h3;
+      "pmp31cfg_l" : val = (val >> 63) & 64'h1;
+      "pmp31cfg_xwr" : val = (val >> 56) & 64'h7;
+`endif
+      default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "pmpcfg7") begin
+    case(field)
+`ifdef UDB_MXLEN_32
+      "pmp28cfg_a" : val = (val >> 3) & 32'h3;
+      "pmp28cfg_l" : val = (val >> 7) & 32'h1;
+      "pmp28cfg_xwr" : val = val & 32'h7;
+      "pmp29cfg_a" : val = (val >> 11) & 32'h3;
+      "pmp29cfg_l" : val = (val >> 15) & 32'h1;
+      "pmp29cfg_xwr" : val = (val >> 8) & 32'h7;
+      "pmp30cfg_a" : val = (val >> 19) & 32'h3;
+      "pmp30cfg_l" : val = (val >> 23) & 32'h1;
+      "pmp30cfg_xwr" : val = (val >> 16) & 32'h7;
+      "pmp31cfg_a" : val = (val >> 27) & 32'h3;
+      "pmp31cfg_l" : val = (val >> 31) & 32'h1;
+      "pmp31cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+      default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "pmpcfg8") begin
+    case(field)
+`ifdef UDB_MXLEN_32
+      "pmp32cfg_a" : val = (val >> 3) & 32'h3;
+      "pmp32cfg_l" : val = (val >> 7) & 32'h1;
+      "pmp32cfg_xwr" : val = val & 32'h7;
+      "pmp33cfg_a" : val = (val >> 11) & 32'h3;
+      "pmp33cfg_l" : val = (val >> 15) & 32'h1;
+      "pmp33cfg_xwr" : val = (val >> 8) & 32'h7;
+      "pmp34cfg_a" : val = (val >> 19) & 32'h3;
+      "pmp34cfg_l" : val = (val >> 23) & 32'h1;
+      "pmp34cfg_xwr" : val = (val >> 16) & 32'h7;
+      "pmp35cfg_a" : val = (val >> 27) & 32'h3;
+      "pmp35cfg_l" : val = (val >> 31) & 32'h1;
+      "pmp35cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+`ifdef UDB_MXLEN_64
+      "pmp32cfg_a" : val = (val >> 3) & 64'h3;
+      "pmp32cfg_l" : val = (val >> 7) & 64'h1;
+      "pmp32cfg_xwr" : val = val & 64'h7;
+      "pmp33cfg_a" : val = (val >> 11) & 64'h3;
+      "pmp33cfg_l" : val = (val >> 15) & 64'h1;
+      "pmp33cfg_xwr" : val = (val >> 8) & 64'h7;
+      "pmp34cfg_a" : val = (val >> 19) & 64'h3;
+      "pmp34cfg_l" : val = (val >> 23) & 64'h1;
+      "pmp34cfg_xwr" : val = (val >> 16) & 64'h7;
+      "pmp35cfg_a" : val = (val >> 27) & 64'h3;
+      "pmp35cfg_l" : val = (val >> 31) & 64'h1;
+      "pmp35cfg_xwr" : val = (val >> 24) & 64'h7;
+      "pmp36cfg_a" : val = (val >> 35) & 64'h3;
+      "pmp36cfg_l" : val = (val >> 39) & 64'h1;
+      "pmp36cfg_xwr" : val = (val >> 32) & 64'h7;
+      "pmp37cfg_a" : val = (val >> 43) & 64'h3;
+      "pmp37cfg_l" : val = (val >> 47) & 64'h1;
+      "pmp37cfg_xwr" : val = (val >> 40) & 64'h7;
+      "pmp38cfg_a" : val = (val >> 51) & 64'h3;
+      "pmp38cfg_l" : val = (val >> 55) & 64'h1;
+      "pmp38cfg_xwr" : val = (val >> 48) & 64'h7;
+      "pmp39cfg_a" : val = (val >> 59) & 64'h3;
+      "pmp39cfg_l" : val = (val >> 63) & 64'h1;
+      "pmp39cfg_xwr" : val = (val >> 56) & 64'h7;
+`endif
+      default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "pmpcfg9") begin
+    case(field)
+`ifdef UDB_MXLEN_32
+      "pmp36cfg_a" : val = (val >> 3) & 32'h3;
+      "pmp36cfg_l" : val = (val >> 7) & 32'h1;
+      "pmp36cfg_xwr" : val = val & 32'h7;
+      "pmp37cfg_a" : val = (val >> 11) & 32'h3;
+      "pmp37cfg_l" : val = (val >> 15) & 32'h1;
+      "pmp37cfg_xwr" : val = (val >> 8) & 32'h7;
+      "pmp38cfg_a" : val = (val >> 19) & 32'h3;
+      "pmp38cfg_l" : val = (val >> 23) & 32'h1;
+      "pmp38cfg_xwr" : val = (val >> 16) & 32'h7;
+      "pmp39cfg_a" : val = (val >> 27) & 32'h3;
+      "pmp39cfg_l" : val = (val >> 31) & 32'h1;
+      "pmp39cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+      default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "pmpcfg10") begin
+    case(field)
+`ifdef UDB_MXLEN_32
+      "pmp40cfg_a" : val = (val >> 3) & 32'h3;
+      "pmp40cfg_l" : val = (val >> 7) & 32'h1;
+      "pmp40cfg_xwr" : val = val & 32'h7;
+      "pmp41cfg_a" : val = (val >> 11) & 32'h3;
+      "pmp41cfg_l" : val = (val >> 15) & 32'h1;
+      "pmp41cfg_xwr" : val = (val >> 8) & 32'h7;
+      "pmp42cfg_a" : val = (val >> 19) & 32'h3;
+      "pmp42cfg_l" : val = (val >> 23) & 32'h1;
+      "pmp42cfg_xwr" : val = (val >> 16) & 32'h7;
+      "pmp43cfg_a" : val = (val >> 27) & 32'h3;
+      "pmp43cfg_l" : val = (val >> 31) & 32'h1;
+      "pmp43cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+`ifdef UDB_MXLEN_64
+      "pmp40cfg_a" : val = (val >> 3) & 64'h3;
+      "pmp40cfg_l" : val = (val >> 7) & 64'h1;
+      "pmp40cfg_xwr" : val = val & 64'h7;
+      "pmp41cfg_a" : val = (val >> 11) & 64'h3;
+      "pmp41cfg_l" : val = (val >> 15) & 64'h1;
+      "pmp41cfg_xwr" : val = (val >> 8) & 64'h7;
+      "pmp42cfg_a" : val = (val >> 19) & 64'h3;
+      "pmp42cfg_l" : val = (val >> 23) & 64'h1;
+      "pmp42cfg_xwr" : val = (val >> 16) & 64'h7;
+      "pmp43cfg_a" : val = (val >> 27) & 64'h3;
+      "pmp43cfg_l" : val = (val >> 31) & 64'h1;
+      "pmp43cfg_xwr" : val = (val >> 24) & 64'h7;
+      "pmp44cfg_a" : val = (val >> 35) & 64'h3;
+      "pmp44cfg_l" : val = (val >> 39) & 64'h1;
+      "pmp44cfg_xwr" : val = (val >> 32) & 64'h7;
+      "pmp45cfg_a" : val = (val >> 43) & 64'h3;
+      "pmp45cfg_l" : val = (val >> 47) & 64'h1;
+      "pmp45cfg_xwr" : val = (val >> 40) & 64'h7;
+      "pmp46cfg_a" : val = (val >> 51) & 64'h3;
+      "pmp46cfg_l" : val = (val >> 55) & 64'h1;
+      "pmp46cfg_xwr" : val = (val >> 48) & 64'h7;
+      "pmp47cfg_a" : val = (val >> 59) & 64'h3;
+      "pmp47cfg_l" : val = (val >> 63) & 64'h1;
+      "pmp47cfg_xwr" : val = (val >> 56) & 64'h7;
+`endif
+      default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "pmpcfg11") begin
+    case(field)
+`ifdef UDB_MXLEN_32
+      "pmp44cfg_a" : val = (val >> 3) & 32'h3;
+      "pmp44cfg_l" : val = (val >> 7) & 32'h1;
+      "pmp44cfg_xwr" : val = val & 32'h7;
+      "pmp45cfg_a" : val = (val >> 11) & 32'h3;
+      "pmp45cfg_l" : val = (val >> 15) & 32'h1;
+      "pmp45cfg_xwr" : val = (val >> 8) & 32'h7;
+      "pmp46cfg_a" : val = (val >> 19) & 32'h3;
+      "pmp46cfg_l" : val = (val >> 23) & 32'h1;
+      "pmp46cfg_xwr" : val = (val >> 16) & 32'h7;
+      "pmp47cfg_a" : val = (val >> 27) & 32'h3;
+      "pmp47cfg_l" : val = (val >> 31) & 32'h1;
+      "pmp47cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+      default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "pmpcfg12") begin
+    case(field)
+`ifdef UDB_MXLEN_32
+      "pmp48cfg_a" : val = (val >> 3) & 32'h3;
+      "pmp48cfg_l" : val = (val >> 7) & 32'h1;
+      "pmp48cfg_xwr" : val = val & 32'h7;
+      "pmp49cfg_a" : val = (val >> 11) & 32'h3;
+      "pmp49cfg_l" : val = (val >> 15) & 32'h1;
+      "pmp49cfg_xwr" : val = (val >> 8) & 32'h7;
+      "pmp50cfg_a" : val = (val >> 19) & 32'h3;
+      "pmp50cfg_l" : val = (val >> 23) & 32'h1;
+      "pmp50cfg_xwr" : val = (val >> 16) & 32'h7;
+      "pmp51cfg_a" : val = (val >> 27) & 32'h3;
+      "pmp51cfg_l" : val = (val >> 31) & 32'h1;
+      "pmp51cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+`ifdef UDB_MXLEN_64
+      "pmp48cfg_a" : val = (val >> 3) & 64'h3;
+      "pmp48cfg_l" : val = (val >> 7) & 64'h1;
+      "pmp48cfg_xwr" : val = val & 64'h7;
+      "pmp49cfg_a" : val = (val >> 11) & 64'h3;
+      "pmp49cfg_l" : val = (val >> 15) & 64'h1;
+      "pmp49cfg_xwr" : val = (val >> 8) & 64'h7;
+      "pmp50cfg_a" : val = (val >> 19) & 64'h3;
+      "pmp50cfg_l" : val = (val >> 23) & 64'h1;
+      "pmp50cfg_xwr" : val = (val >> 16) & 64'h7;
+      "pmp51cfg_a" : val = (val >> 27) & 64'h3;
+      "pmp51cfg_l" : val = (val >> 31) & 64'h1;
+      "pmp51cfg_xwr" : val = (val >> 24) & 64'h7;
+      "pmp52cfg_a" : val = (val >> 35) & 64'h3;
+      "pmp52cfg_l" : val = (val >> 39) & 64'h1;
+      "pmp52cfg_xwr" : val = (val >> 32) & 64'h7;
+      "pmp53cfg_a" : val = (val >> 43) & 64'h3;
+      "pmp53cfg_l" : val = (val >> 47) & 64'h1;
+      "pmp53cfg_xwr" : val = (val >> 40) & 64'h7;
+      "pmp54cfg_a" : val = (val >> 51) & 64'h3;
+      "pmp54cfg_l" : val = (val >> 55) & 64'h1;
+      "pmp54cfg_xwr" : val = (val >> 48) & 64'h7;
+      "pmp55cfg_a" : val = (val >> 59) & 64'h3;
+      "pmp55cfg_l" : val = (val >> 63) & 64'h1;
+      "pmp55cfg_xwr" : val = (val >> 56) & 64'h7;
+`endif
+      default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "pmpcfg13") begin
+    case(field)
+`ifdef UDB_MXLEN_32
+      "pmp52cfg_a" : val = (val >> 3) & 32'h3;
+      "pmp52cfg_l" : val = (val >> 7) & 32'h1;
+      "pmp52cfg_xwr" : val = val & 32'h7;
+      "pmp53cfg_a" : val = (val >> 11) & 32'h3;
+      "pmp53cfg_l" : val = (val >> 15) & 32'h1;
+      "pmp53cfg_xwr" : val = (val >> 8) & 32'h7;
+      "pmp54cfg_a" : val = (val >> 19) & 32'h3;
+      "pmp54cfg_l" : val = (val >> 23) & 32'h1;
+      "pmp54cfg_xwr" : val = (val >> 16) & 32'h7;
+      "pmp55cfg_a" : val = (val >> 27) & 32'h3;
+      "pmp55cfg_l" : val = (val >> 31) & 32'h1;
+      "pmp55cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+      default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "pmpcfg14") begin
+    case(field)
+`ifdef UDB_MXLEN_32
+      "pmp56cfg_a" : val = (val >> 3) & 32'h3;
+      "pmp56cfg_l" : val = (val >> 7) & 32'h1;
+      "pmp56cfg_xwr" : val = val & 32'h7;
+      "pmp57cfg_a" : val = (val >> 11) & 32'h3;
+      "pmp57cfg_l" : val = (val >> 15) & 32'h1;
+      "pmp57cfg_xwr" : val = (val >> 8) & 32'h7;
+      "pmp58cfg_a" : val = (val >> 19) & 32'h3;
+      "pmp58cfg_l" : val = (val >> 23) & 32'h1;
+      "pmp58cfg_xwr" : val = (val >> 16) & 32'h7;
+      "pmp59cfg_a" : val = (val >> 27) & 32'h3;
+      "pmp59cfg_l" : val = (val >> 31) & 32'h1;
+      "pmp59cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+`ifdef UDB_MXLEN_64
+      "pmp56cfg_a" : val = (val >> 3) & 64'h3;
+      "pmp56cfg_l" : val = (val >> 7) & 64'h1;
+      "pmp56cfg_xwr" : val = val & 64'h7;
+      "pmp57cfg_a" : val = (val >> 11) & 64'h3;
+      "pmp57cfg_l" : val = (val >> 15) & 64'h1;
+      "pmp57cfg_xwr" : val = (val >> 8) & 64'h7;
+      "pmp58cfg_a" : val = (val >> 19) & 64'h3;
+      "pmp58cfg_l" : val = (val >> 23) & 64'h1;
+      "pmp58cfg_xwr" : val = (val >> 16) & 64'h7;
+      "pmp59cfg_a" : val = (val >> 27) & 64'h3;
+      "pmp59cfg_l" : val = (val >> 31) & 64'h1;
+      "pmp59cfg_xwr" : val = (val >> 24) & 64'h7;
+      "pmp60cfg_a" : val = (val >> 35) & 64'h3;
+      "pmp60cfg_l" : val = (val >> 39) & 64'h1;
+      "pmp60cfg_xwr" : val = (val >> 32) & 64'h7;
+      "pmp61cfg_a" : val = (val >> 43) & 64'h3;
+      "pmp61cfg_l" : val = (val >> 47) & 64'h1;
+      "pmp61cfg_xwr" : val = (val >> 40) & 64'h7;
+      "pmp62cfg_a" : val = (val >> 51) & 64'h3;
+      "pmp62cfg_l" : val = (val >> 55) & 64'h1;
+      "pmp62cfg_xwr" : val = (val >> 48) & 64'h7;
+      "pmp63cfg_a" : val = (val >> 59) & 64'h3;
+      "pmp63cfg_l" : val = (val >> 63) & 64'h1;
+      "pmp63cfg_xwr" : val = (val >> 56) & 64'h7;
+`endif
+      default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "pmpcfg15") begin
+    case(field)
+`ifdef UDB_MXLEN_32
+      "pmp60cfg_a" : val = (val >> 3) & 32'h3;
+      "pmp60cfg_l" : val = (val >> 7) & 32'h1;
+      "pmp60cfg_xwr" : val = val & 32'h7;
+      "pmp61cfg_a" : val = (val >> 11) & 32'h3;
+      "pmp61cfg_l" : val = (val >> 15) & 32'h1;
+      "pmp61cfg_xwr" : val = (val >> 8) & 32'h7;
+      "pmp62cfg_a" : val = (val >> 19) & 32'h3;
+      "pmp62cfg_l" : val = (val >> 23) & 32'h1;
+      "pmp62cfg_xwr" : val = (val >> 16) & 32'h7;
+      "pmp63cfg_a" : val = (val >> 27) & 32'h3;
+      "pmp63cfg_l" : val = (val >> 31) & 32'h1;
+      "pmp63cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+      default: val = 0; // Todo: error
     endcase
   end
   return val;

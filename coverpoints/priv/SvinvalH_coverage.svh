@@ -28,10 +28,10 @@ covergroup SvinvalH_cg with function sample(ins_t ins);
         bins VS_mode    = {3'b101};
         bins VU_mode    = {3'b100};
     }
-    cp_tvm : coverpoint ins.prev.csr[CSR_MSTATUS][20] {
+    cp_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm")[0] {
     }
 
-    cp_vtvm : coverpoint ins.prev.csr[CSR_HSTATUS][20] { // hstatus.VTVM
+    cp_vtvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtvm")[0] { // hstatus.VTVM
     }
 
     cr_svinivalH : cross cp_instr, cp_priv, cp_tvm, cp_vtvm {

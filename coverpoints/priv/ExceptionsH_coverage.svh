@@ -386,26 +386,26 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
     // COUNTER ENABLE COVERPOINTS
     // ============================================================================
 
-    scounteren_enabled_ir: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "scounteren", "counteren")[2]) {
+    scounteren_enabled_ir: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "scounteren", "ir")[0]) {
         bins enabled = {1};
     }
 
 
-    scounteren_disabled_ir: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "scounteren", "counteren")[2]) {
+    scounteren_disabled_ir: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "scounteren", "ir")[0]) {
         bins disabled = {0};
     }
 
 
-    hcounteren_enabled_ir: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hcounteren", "counteren")[2]) {
+    hcounteren_enabled_ir: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hcounteren", "ir")[0]) {
         bins enabled = {1};
     }
 
-    hcounteren_disabled_ir: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hcounteren", "counteren")[2]) {
+    hcounteren_disabled_ir: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hcounteren", "ir")[0]) {
         bins disabled = {0};
     }
 
 
-    mcounteren_enabled_ir: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcounteren", "counteren")[2]) {
+    mcounteren_enabled_ir: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcounteren", "ir")[0]) {
         bins enabled = {1};
     }
 

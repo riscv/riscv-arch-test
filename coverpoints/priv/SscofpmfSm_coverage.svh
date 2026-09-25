@@ -43,20 +43,20 @@ covergroup SscofpmfSm_cg with function sample(ins_t ins);
     }
 
     `ifdef UDB_MXLEN_64
-        mhpmevent_inhibits_zero_state: coverpoint (ins.current.csr[CSR_MHPMEVENT3][62:58] == 5'b00000) {
+        mhpmevent_inhibits_zero_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mhpmevent3", "mhpmevent3")[62:58] == 5'b00000) {
                 bins yes = {1};
         }
     `else
-        mhpmevent_inhibits_zero_state: coverpoint (ins.current.csr[CSR_MHPMEVENT3H][30:26] == 5'b00000) {
+        mhpmevent_inhibits_zero_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mhpmevent3h", "mhpmevent3h")[30:26] == 5'b00000) {
                 bins yes = {1};
         }
     `endif
 
-    mcounteren_all_ones_state: coverpoint (ins.current.csr[CSR_MCOUNTEREN][31:3] == '1) {
+    mcounteren_all_ones_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "enable")[28:0] == '1) {
             bins yes = {1};
     }
 
-    mcounteren_stimulus_pattern_state: coverpoint (ins.current.csr[CSR_MCOUNTEREN][31:3]) {
+    mcounteren_stimulus_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "enable")[28:0]) {
         bins all_zeros = {29'h0};
         bins all_ones  = {29'h1FFFFFFF};
         bins walking[] = {29'h1, 29'h2, 29'h4, 29'h8, 29'h10, 29'h20, 29'h40, 29'h80,
@@ -82,28 +82,28 @@ covergroup SscofpmfSm_cg with function sample(ins_t ins);
             bins checker_odd  = {29'b0_1010_1010_1010_1010_1010_1010_1010}; // odd-indexed OF bits set
     }
 
-    lcofi_ip_one: coverpoint ins.current.csr[CSR_MIP][13] {
+    lcofi_ip_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "lcofip")[0] {
             bins one  = {1};
     }
-    lcofi_ip_zero: coverpoint ins.current.csr[CSR_MIP][13] {
+    lcofi_ip_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "lcofip")[0] {
                 bins zero  = {0};
     }
-    lcofi_ip: coverpoint ins.current.csr[CSR_MIP][13] {}
-    lcofi_ie: coverpoint ins.current.csr[CSR_MIE][13] {}
-    lcofi_mideleg: coverpoint ins.current.csr[CSR_MIDELEG][13] {}
+    lcofi_ip: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "lcofip")[0] {}
+    lcofi_ie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "lcofie")[0] {}
+    lcofi_mideleg: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "lcofip")[0] {}
 
-    mstatus_mie_set: coverpoint ins.prev.csr[CSR_MSTATUS][3] {
+    mstatus_mie_set: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
             bins one = {1};
     }
-    mstatus_sie_set: coverpoint ins.prev.csr[CSR_MSTATUS][1] {
+    mstatus_sie_set: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0] {
             bins one = {1};
     }
 
-    mie_state: coverpoint (ins.current.csr[CSR_MIE][15:0]) {
+    mie_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")[15:0]) {
             bins all_zeros = {16'b0};
             wildcard bins all_ones = {16'b??1?1???1???1???};
     }
-    mip_other_pending: coverpoint {ins.current.csr[CSR_MIP][11], ins.current.csr[CSR_MIP][7], ins.current.csr[CSR_MIP][3]} {
+    mip_other_pending: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "meip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "msip")[0]} {
             bins none = {3'b000};
             bins meip = {3'b100};
             bins mtip = {3'b010};

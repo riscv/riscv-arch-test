@@ -16,7 +16,7 @@
     `define UDB_NUM_TRIGGERS 2
 `endif
 
-triggernum: coverpoint ins.current.csr[CSR_TSELECT] {
+triggernum: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tselect", "tselect") {
     type_option.weight = 0;
     bins all_triggers[] = {[0:`UDB_NUM_TRIGGERS-1]};
 }

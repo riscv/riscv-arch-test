@@ -389,23 +389,28 @@ def customize_template(templates: dict[str, str], name: str, arch: str = "", ins
         raise ValueError(msg)
 
     arch_prefix = re.sub(r"\d+$", "", arch)
-    result = (
-        templates[name]
-        .replace("INSTRNODOT", instr.replace(".", "_"))
-        .replace("INSTR", instr)
-        .replace("ARCHPREFIXUPPER", arch_prefix.upper())
-        .replace("ARCHPREFIX", arch_prefix)
-        .replace("ARCHUPPER", arch.upper())
-        .replace("ARCHCASE", arch)
-        .replace("ARCH", arch.lower())
-    )
-    if effew:
-        result = (
-            result.replace("TWOEFFEW", str(2 * int(effew)))
-            .replace("EFFEW", str(int(effew)))
-            .replace("EFFVSEW", str(int(math.log2(int(effew))) - 3))
+
+    def substitute(text: str) -> str:
+        text = (
+            text.replace("INSTRNODOT", instr.replace(".", "_"))
+            .replace("INSTR", instr)
+            .replace("ARCHPREFIXUPPER", arch_prefix.upper())
+            .replace("ARCHPREFIX", arch_prefix)
+            .replace("ARCHUPPER", arch.upper())
+            .replace("ARCHCASE", arch)
+            .replace("ARCH", arch.lower())
         )
-    return result
+        if effew:
+            text = (
+                text.replace("TWOEFFEW", str(2 * int(effew)))
+                .replace("EFFEW", str(int(effew)))
+                .replace("EFFVSEW", str(int(math.log2(int(effew))) - 3))
+            )
+        return text
+
+    # CSR address constants such as CSR_INSTRET contain placeholder text but are never placeholders
+    parts = re.split(r"(\bCSR_\w+)", templates[name])
+    return "".join(part if i % 2 else substitute(part) for i, part in enumerate(parts))
 
 
 def _get_effew(arch: str) -> str:

@@ -15,15 +15,15 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
     option.per_instance = 0;
 
     // building blocks for the main coverpoints
-    mstatus_FS_zero: coverpoint ins.prev.csr[CSR_MSTATUS][14:13] {
+    mstatus_FS_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs")[1:0] {
         bins disabled = {2'b00};
     }
-    mstatus_FS_status: coverpoint ins.prev.csr[CSR_MSTATUS][14:13] {
+    mstatus_FS_status: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs")[1:0] {
         bins fs_initial = {2'b01};
         bins fs_clean   = {2'b10};
         bins fs_dirty   = {2'b11};
     }
-    frm_legal: coverpoint ins.prev.csr[CSR_FCSR][7:5] {
+    frm_legal: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "frm")[2:0] {
         bins legal_frm = {3'b000, 3'b001, 3'b010, 3'b011, 3'b100};
     }
     instrs: coverpoint ins.current.insn {
@@ -58,15 +58,15 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
         `endif
     }
     csr_accesses: coverpoint ins.current.insn {
-        wildcard bins csrrw_fcsr   = {32'b000000000011_?????_001_?????_1110011};
-        wildcard bins csrrw_frm    = {32'b000000000010_?????_001_?????_1110011};
-        wildcard bins csrrw_fflags = {32'b000000000001_?????_001_?????_1110011};
-        wildcard bins csrrs_fcsr   = {32'b000000000011_?????_010_?????_1110011};
-        wildcard bins csrrs_frm    = {32'b000000000010_?????_010_?????_1110011};
-        wildcard bins csrrs_fflags = {32'b000000000001_?????_010_?????_1110011};
-        wildcard bins csrrc_fcsr   = {32'b000000000011_?????_011_?????_1110011};
-        wildcard bins csrrc_frm    = {32'b000000000010_?????_011_?????_1110011};
-        wildcard bins csrrc_fflags = {32'b000000000001_?????_011_?????_1110011};
+        wildcard bins csrrw_fcsr   = {CSRRW} iff (ins.current.insn[31:20] == CSR_FCSR);
+        wildcard bins csrrw_frm    = {CSRRW} iff (ins.current.insn[31:20] == CSR_FRM);
+        wildcard bins csrrw_fflags = {CSRRW} iff (ins.current.insn[31:20] == CSR_FFLAGS);
+        wildcard bins csrrs_fcsr   = {CSRRS} iff (ins.current.insn[31:20] == CSR_FCSR);
+        wildcard bins csrrs_frm    = {CSRRS} iff (ins.current.insn[31:20] == CSR_FRM);
+        wildcard bins csrrs_fflags = {CSRRS} iff (ins.current.insn[31:20] == CSR_FFLAGS);
+        wildcard bins csrrc_fcsr   = {CSRRC} iff (ins.current.insn[31:20] == CSR_FCSR);
+        wildcard bins csrrc_frm    = {CSRRC} iff (ins.current.insn[31:20] == CSR_FRM);
+        wildcard bins csrrc_fflags = {CSRRC} iff (ins.current.insn[31:20] == CSR_FFLAGS);
     }
     loadops: coverpoint ins.current.insn {
         wildcard bins flw = {FLW};
@@ -115,7 +115,7 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
 endgroup
 
 function void exceptionsf_sample(int hart, int issue, ins_t ins);
-    //$display("Mstatus FS: %b, frmIllegal: %b, op: %b, fmrBits: %b, imm: %b", ins.current.csr[CSR_MSTATUS][14:13], ins.current.csr[CSR_FCSR][7:5],  ins.current.insn[6:0], ins.current.insn[14:12], ins.current.insn[31:27]);
+    //$display("Mstatus FS: %b, frmIllegal: %b, op: %b, fmrBits: %b, imm: %b", get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "fs")[1:0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "frm")[2:0],  ins.current.insn[6:0], ins.current.insn[14:12], ins.current.insn[31:27]);
     ExceptionsF_cg.sample(ins);
 
 

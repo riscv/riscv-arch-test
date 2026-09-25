@@ -84,7 +84,7 @@
         wildcard bins sc3_not_lpad  = {3'b0_?_?};
         wildcard bins sc4_lpl_zero_no_match_required = {3'b1_0_1};
     }
-    sw_check_exc: coverpoint ins.current.csr[12'h342] {
+    sw_check_exc: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause") {
         bins cause_18 = {18};
     }
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS

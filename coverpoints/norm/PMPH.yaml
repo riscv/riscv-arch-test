@@ -1,0 +1,58 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # PMP checks the supervisor physical address in every virtualization mode
+  - names: [H_pmp, pmp_check_priv_modes]
+    coverpoint:
+      [
+        "PMPH_cg/{cp_cfg_X,cp_cfg_R,cp_cfg_W}",
+        "PMPH_cg/{cp_cfg_A_off_jalr,cp_cfg_A_off_lw,cp_cfg_A_off_sw}",
+        "PMPH_cg/{cp_cfg_A_napot_jalr,cp_cfg_A_napot_lw,cp_cfg_A_napot_sw}",
+        "PMPH_cg/{cp_cfg_A_na4_jalr,cp_cfg_A_na4_lw,cp_cfg_A_na4_sw}",
+        "PMPH_cg/{cp_cfg_A_tor_jalr,cp_cfg_A_tor_lw,cp_cfg_A_tor_sw}",
+        "PMPH_guest_cg/cp_pmp_after_translation",
+      ]
+
+  # PMP fault types from VS-mode and VU-mode
+  - names:
+      [
+        pmp_exec_fault,
+        pmp_load_fault,
+        pmp_store_fault,
+        pmp_rwx_check,
+        pmp_access_fault_exception,
+      ]
+    coverpoint:
+      [
+        "PMPH_cg/{cp_cfg_X,cp_cfg_R,cp_cfg_W}",
+        "PMPH_hlv_cg/{cp_pmp_hlv,cp_pmp_hsv}",
+      ]
+
+  # MPRV with MPV = 1 gives M-mode loads and stores VS or VU privilege
+  - names: [mstatus_mprv_hypervisor]
+    coverpoint: ["PMPH_cg/{cp_mprv_jalr,cp_mprv_lw,cp_mprv_sw}"]
+
+  # PMP CSRs are inaccessible from VS-mode and VU-mode
+  - names: [pmp_csr_mode]
+    coverpoint:
+      [
+        "PMPH_cg/{cp_pmpaddr_access_vs,cp_pmpcfg_access_vs}",
+        "PMPH_cg/{cp_pmpaddr_access_vu,cp_pmpcfg_access_vu}",
+      ]
+
+  # HLV and HSV have VS or VU privilege, so PMP checks them even from M-mode
+  - names: [hlsv_priv]
+    coverpoint: ["PMPH_hlv_cg/{cp_pmp_hlv,cp_pmp_hsv}"]
+
+  # HLVX needs both read and execute permission from PMP
+  - names: [hlsv_u_op]
+    coverpoint: ["PMPH_hlv_cg/cp_pmp_hlvx"]
+
+  # PMP checks the implicit page-table reads of both stages
+  - names: [pmp_with_paging, pmp_check_pagetable_access, H_vm_gstagetrans]
+    coverpoint: ["PMPH_guest_cg/cp_pmp_pt", "PMPH_hlv_cg/cp_pmp_hlv_pt"]
+
+  # Page and guest-page faults take priority over an access fault on the final address
+  - names: [H_exception_priority, pmp_violation_precise_trap]
+    coverpoint: ["PMPH_guest_cg/{cp_pmp_pf_priority,cp_pmp_pt_priority}"]

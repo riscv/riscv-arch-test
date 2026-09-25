@@ -202,6 +202,10 @@
         `cover_info("//      PMPF - Enabled");
         `include "PMPF_coverage_init.svh"
     `endif
+    `ifdef COVER_PMPH
+        `cover_info("//      PMPH - Enabled");
+        `include "PMPH_coverage_init.svh"
+    `endif
     `ifdef COVER_PMPS
         `cover_info("//      PMPS - Enabled");
         `include "PMPS_coverage_init.svh"
@@ -361,6 +365,10 @@
     `ifdef COVER_SVHSM
         `cover_info("//      SvHSm - Enabled");
         `include "SvHSm_coverage_init.svh"
+    `endif
+    `ifdef COVER_SVHZICBO
+        `cover_info("//      SvHZicbo - Enabled");
+        `include "SvHZicbo_coverage_init.svh"
     `endif
     `ifdef COVER_SVPMP
         `cover_info("//      SvPMP - Enabled");

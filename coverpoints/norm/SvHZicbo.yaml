@@ -1,0 +1,76 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # henvcfg enables CBOs in VS-mode and VU-mode; a disabled HS-qualified CBO raises virtual instruction
+  - names:
+      [
+        henvcfg_cbie,
+        cbo-inval_h-mode_veq1_op,
+        cbo-inval,
+        henvcfg_cbcfe,
+        cbo-clean_cbo-flush,
+        henvcfg_cbze,
+        cbo-zero_basedon_xenvcfg-CBZE,
+      ]
+    coverpoint:
+      [
+        "SvHZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}",
+        "SvHZicbo_envcfg_cg/{cp_cbcfe_vs,cp_cbcfe_vu}",
+        "SvHZicbo_envcfg_cg/{cp_cbze_vs,cp_cbze_vu}",
+      ]
+
+  # CBO permission and faults under two-stage translation
+  - names:
+      [
+        cbm_access,
+        cbm_unperm_fault,
+        cbz_access,
+        cbz_unperm_fault,
+        H_vm_twostage,
+      ]
+    coverpoint: ["SvHZicbo_cg/{cp_vs_pte,cp_vs_gpa,cp_g_pte}"]
+
+  # With ADUE = 0, a clear A bit, or a clear D bit for cbo.zero, raises a fault in either stage
+  - names:
+      [
+        cbm_unperm_translate,
+        cbz_unperm_translate,
+        Svadu_disabled_hw_update_falls_back_to_svade,
+      ]
+    coverpoint: ["SvHZicbo_cg/{cp_vs_pte,cp_g_pte}"]
+
+  # vsstatus.SUM lets VS-mode CBOs reach user pages; G-stage accesses are user accesses
+  - names: [sstatus_sum_op, H_vm_gpapriv]
+    coverpoint: ["SvHZicbo_cg/{cp_vs_sum,cp_g_pte}"]
+
+  # Guest-page faults write mtval2, with a pseudoinstruction in mtinst for implicit VS-stage accesses
+  - names:
+      [
+        MTVAL2_TRAPVAL,
+        mtval2_trapval_vstrans,
+        H_trap_xtinst_guestpage,
+        fault_excep_csr,
+      ]
+    coverpoint: ["SvHZicbo_cg/{cp_vs_gpa,cp_vs_gpa_implicit,cp_g_pte}"]
+
+  # PMA and PMP apply to the supervisor physical address
+  - names: [pma_chk_paddr, H_pmp]
+    coverpoint: ["SvHZicbo_cg/{cp_vs_gpa,cp_g_pa,cp_pmp}"]
+
+  # henvcfg.CBIE is a WARL field whose encoding 0b10 is reserved; it is read-only zero without Zicbom
+  - names: [HENVCFG_CBIE_WARL]
+    coverpoint:
+      [
+        "H_hscsr_cg/cp_hcsrwalk_masked",
+        "HSm_mcsr_cg/cp_hcsrwalk_masked",
+        "SvHZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}",
+      ]
+
+  # CBO.INVAL in VS-mode or VU-mode performs a flush when HS-mode's enable selects one, and otherwise follows
+  # henvcfg.CBIE: 0b01 flushes and 0b11 invalidates
+  - names: [cbo-inval_h-mode_op]
+    coverpoint:
+      [
+        "Not tested: TODO store to a block, execute cbo.inval in VS-mode and VU-mode with menvcfg.CBIE or henvcfg.CBIE = 01, and check that a load returns the stored data",
+      ]

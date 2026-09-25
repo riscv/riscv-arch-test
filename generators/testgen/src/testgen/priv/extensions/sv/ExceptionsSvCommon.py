@@ -15,7 +15,7 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.sv.access import add_rwx_test, mode_switch, virtual_address
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
-from testgen.priv.extensions.sv.page_tables import PteFlags, SvMode, create_leaf_pte, create_page_mapping
+from testgen.priv.extensions.sv.page_tables import PteFlags, SvMode, create_page_mapping
 from testgen.priv.extensions.sv.Sv import MPRV_CLEANUP, mstatus_setup
 
 # medeleg[9] would delegate the S-mode ecall that T-SBI uses to enter M-mode.
@@ -176,10 +176,18 @@ def _make_mode_test(
         saved_medeleg, medeleg_value = test_data.int_regs.get_registers(2, reg_range=[8, 9])
         setup_asm = (f"csrr x{saved_medeleg}, medeleg",)
     if target.mprv and target.operation == "rwx":
-        # MPRV does not affect instruction fetches. If it did, fetching from the identity-mapped
-        # test image would fault on this V=0 PTE.
+        # MPRV does not affect instruction fetches. If it did, fetching the target routine
+        # through its invalid identity PTE would fault.
         identity = PteFlags(valid=False, user=target.effective_mode == "Umode")
-        setup_asm = (*setup_asm, create_leaf_pte(sv, level=sv.levels - 1, flags=identity, virtual_address="0x80000000"))
+        level = sv.levels - 1
+        setup_asm = (
+            *setup_asm,
+            "LA(a0, rvtest_data_1)",
+            f"LI(a1, {identity})",
+            f"LA(t1, {sv.page_table_label(level)})",
+            "LA(a3, rvtest_data_1)",
+            f"PTE_SETUP_COMMON(a0, a1, t0, t1, a3, LEVEL{level})",
+        )
         setup_asm = (*setup_asm, "sfence.vma")
 
     suffix = target.mode[0].lower()

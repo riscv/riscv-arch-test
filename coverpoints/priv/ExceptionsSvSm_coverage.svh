@@ -32,10 +32,6 @@ covergroup ExceptionsSvSm_cg with function sample(ins_t ins);
     store_page_fault: coverpoint (ins.current.csr[CSR_MCAUSE][31:0] == 32'd15) {
         // auto fill 0/1
     }
-    i_phys_adr_misaligned: coverpoint ins.current.phys_adr_i[1:0] {
-        bins aligned    = {2'b00};
-        bins misaligned = {2'b10};
-    }
     i_page_table_entry_invalid: coverpoint ins.current.pte_i[0] {
         // auto fill valid bit 0/1
     }
@@ -75,7 +71,7 @@ covergroup ExceptionsSvSm_cg with function sample(ins_t ins);
             bins storeaccessfault_enabled = {16'b0000_0000_1000_0000};
         `endif
     }
-    jalr: coverpoint ins.current.insn {
+    jalr: coverpoint ins.prev.insn {
         wildcard bins jalr = {JALR};
     }
 
@@ -84,8 +80,8 @@ covergroup ExceptionsSvSm_cg with function sample(ins_t ins);
     cp_instr_page_fault_m: cross priv_mode_m, mstatus_mprv_one, mstatus_mpp, jalr;
     cp_load_page_fault_m:  cross priv_mode_m, mstatus_mprv_one, mstatus_mpp, load_page_fault;
     cp_store_page_fault_m: cross priv_mode_m, mstatus_mprv_one, mstatus_mpp, store_page_fault;
-    cp_medeleg_m:          cross priv_mode_m, memops, d_page_table_entry_invalid, medeleg_walk;
-    cp_medeleg_fetch_m:    cross priv_mode_m, jalr,   i_page_table_entry_invalid, medeleg_walk;
+    cp_medeleg_m:          cross priv_mode_m, mstatus_mprv_one, mstatus_mpp, memops, d_page_table_entry_invalid, medeleg_walk;
+    cp_medeleg_fetch_m:    cross priv_mode_m, mstatus_mprv_one, mstatus_mpp, medeleg_walk, jalr;
     cp_medeleg_s:          cross priv_mode_s, memops, d_page_table_entry_invalid, medeleg_walk;
     cp_medeleg_fetch_s:    cross priv_mode_s, jalr,   i_page_table_entry_invalid, medeleg_walk;
     cp_medeleg_u:          cross priv_mode_u, memops, d_page_table_entry_invalid, medeleg_walk;
@@ -94,22 +90,16 @@ covergroup ExceptionsSvSm_cg with function sample(ins_t ins);
     // Access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
-            i_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_i[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
-                // auto fill 1/0 for the physical address being valid
-            }
             d_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
                 // auto fill 1/0 for the physical address being valid
             }
         `else
-            i_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_i[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
-                // auto fill 1/0 for the physical address being valid
-            }
             d_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
                 // auto fill 1/0 for the physical address being valid
             }
         `endif
         cp_misaligned_priority_m:       cross priv_mode_m, memops, d_virt_adr_misaligned, d_phys_address_nonexistent, d_page_table_entry_invalid;
-        cp_misaligned_priority_fetch_m: cross priv_mode_m, jalr,   i_phys_adr_misaligned, i_phys_address_nonexistent, i_page_table_entry_invalid, mstatus_mprv_one, mstatus_mpp;
+        cp_misaligned_priority_fetch_m: cross priv_mode_m, jalr,   mstatus_mprv_one, mstatus_mpp;
     `endif
 endgroup
 

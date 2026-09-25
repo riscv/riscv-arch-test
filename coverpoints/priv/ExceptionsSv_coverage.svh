@@ -50,7 +50,7 @@ covergroup ExceptionsSv_cg with function sample(ins_t ins);
     sw: coverpoint ins.current.insn {
         wildcard bins sw = {SW};
     }
-    jalr: coverpoint ins.current.insn {
+    jalr: coverpoint ins.prev.insn {
         wildcard bins jalr = {JALR};
     }
 

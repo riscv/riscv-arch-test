@@ -60,7 +60,11 @@ main:
   sfence.vma
 
   csrr x8, medeleg
-  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), 0x80000000, LEVEL2)
+  LA(a0, rvtest_data_1)
+  LI(a1, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R)
+  LA(t1, rvtest_Sroot_pg_tbl)
+  LA(a3, rvtest_data_1)
+  PTE_SETUP_COMMON(a0, a1, t0, t1, a3, LEVEL2)
   sfence.vma
 
   LI(a2, 0x800) // Test signature initialization

@@ -99,7 +99,6 @@ covergroup ExceptionsSvSm_cg with function sample(ins_t ins);
             }
         `endif
         cp_misaligned_priority_m:       cross priv_mode_m, memops, d_virt_adr_misaligned, d_phys_address_nonexistent, d_page_table_entry_invalid;
-        cp_misaligned_priority_fetch_m: cross priv_mode_m, jalr,   mstatus_mprv_one, mstatus_mpp;
     `endif
 endgroup
 

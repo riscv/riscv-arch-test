@@ -99,7 +99,7 @@
   // mscratch and other M-mode CSRs, so every entry path must switch to M-mode first.
   cleanup_epilogs:
     #ifdef STANDARD_SM_SUPPORTED
-      RVTEST_GOTO_MMODE
+      RVTEST_TSBI_GOTO_MMODE
       #ifdef S_SUPPORTED
         #ifdef H_SUPPORTED
           RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code
@@ -109,6 +109,49 @@
       #endif
       RVTEST_TRAP_EPILOG M            // actual m-mode prolog/epilog/handler code
     #endif
+
+  #ifndef RVTEST_NOSIG
+    // Check the regular signature offset to make sure the correct number of
+    // signature updates occurred.
+    check_regular_sig_offset:
+      LA(     T1, signature_base)
+      sub     T1, DEFAULT_SIG_REG, T1
+      LA(     T3, final_sig_offset)
+    #ifdef RVTEST_SELFCHECK
+      LREG    DEFAULT_TEMP_REG, 0(T3)
+      beq     DEFAULT_TEMP_REG, T1, check_regular_sig_offset_done
+    #else
+      SREG    T1, 0(T3)
+      beq     x0, x0, check_regular_sig_offset_done
+    #endif
+
+      // Print only the expected and actual offsets for this framework error.
+      LA(a0, failstr)
+      call rvmodel_io_write_str
+      LA(a0, begin_debugstr)
+      call rvmodel_io_write_str
+      LA(a0, regular_sig_offset_header)
+      call rvmodel_io_write_str
+      LA(a0, regular_sig_offset_actual_str)
+      call rvmodel_io_write_str
+      mv      a0, T1
+      li      a1, UDB_MXLEN
+      jal     ra, failedtest_hex_to_str
+      LA(a0, ascii_buffer)
+      call rvmodel_io_write_str
+      LA(a0, regular_sig_offset_expected_str)
+      call rvmodel_io_write_str
+      LA(T3, final_sig_offset)
+      LREG    a0, 0(T3)
+      li      a1, UDB_MXLEN
+      jal     ra, failedtest_hex_to_str
+      LA(a0, ascii_buffer)
+      call rvmodel_io_write_str
+      LA(a0, endstr)
+      call rvmodel_io_write_str
+      call rvmodel_halt_fail
+    check_regular_sig_offset_done:
+  #endif
 
   #ifdef STANDARD_SM_SUPPORTED
     check_trap_sig_overflow:
@@ -204,6 +247,14 @@
   // .data (scratch, begin_signature, etc.) have identical addresses in both
   // the .elf and .sig.elf builds.
   .pushsection .text.rvmodel,"ax",@progbits
+
+  // Instantiate invisible trap handler if required
+  #ifdef STANDARD_SM_SUPPORTED
+    #ifdef RVTEST_INVISIBLE_TRAP_HANDLER
+      RVTEST_INVISIBLE_TRAP_HANDLER_CODE
+    #endif
+  #endif
+
   // Model specific boot code
   rvmodel_boot:
     #ifdef RVMODEL_BOOT
@@ -295,46 +346,404 @@
     RVMODEL_HALT_FAIL
     j . // Explicit non-returning tail if the macro returns (it should not)
 
-  // ***DH 4/8/26 check this is proper gating
+  //////////////////////
+  // Interrupt functions
+  // All these functions can touch a0 and a1 and a2
+  //////////////////////
+
+  // Note: _ms and _su are shared implementations
+  // used for multiple privilege modes
+
+  // Flavors to run from M-mode
+
   #ifdef STANDARD_SM_SUPPORTED
-    rvtest_set_msw_int:
-      RVMODEL_SET_MSW_INT(a0, a1)
+
+    rvtest_set_mtime_int_soon_m:
+      #if defined(RVMODEL_MTIME_ADDRESS) && defined(RVMODEL_MTIMECMP_ADDRESS) && defined(RVMODEL_TIMER_INT_SOON_DELAY)
+        LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
+        #if UDB_MXLEN == 32
+          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          li a0, -1
+          sw a0, 4(a1) // mtimecmp high word = all 1s so the split update cannot fire early
+          LA(a1, RVMODEL_MTIME_ADDRESS)
+          lw a0, 0(a1) // read mtime low word
+          add a0, a0, a2 // add delay to mtime low word
+          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          sw a0, 0(a1) // write to mtimecmp low word
+          mv a2, a0 // Save mtimecmp low word
+          LA(a1, RVMODEL_MTIME_ADDRESS)
+          lw a0, 4(a1) // read mtime high word
+          LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
+          bgeu a2, a1, 1f // skip if didn't wrap
+          addi a0, a0, 1 // increment mtime high word
+          1:
+          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          sw a0, 4(a1) // write to mtimecmp high word
+        #else
+          LA(a1, RVMODEL_MTIME_ADDRESS)
+          ld a0, 0(a1) // read mtime
+          add a0, a2, a0 // add delay to mtime
+          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          sd a0, 0(a1) // write to mtimecmp
+        #endif
+      #endif
       ret
 
-    rvtest_clr_msw_int:
-      RVMODEL_CLR_MSW_INT(a0, a1)
+    rvtest_set_mtime_int_m:
+      #ifdef RVMODEL_MTIMECMP_ADDRESS
+        LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+        sw zero, 4(a1)
+        sw zero, 0(a1)
+      #endif
       ret
 
-    rvtest_set_mext_int:
-      RVMODEL_SET_MEXT_INT(a0, a1)
+    rvtest_clr_mtime_int_m:
+      #ifdef RVMODEL_MTIMECMP_ADDRESS
+        LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+        li a2, -1 // all 1s
+        sw a2, 4(a1)      // don't bother with lower bits, which stay at 0
+      #endif
       ret
 
-    rvtest_clr_mext_int:
-      RVMODEL_CLR_MEXT_INT(a0, a1)
+    rvtest_set_msw_int_m:
+      #ifdef RVMODEL_MSIP_ADDRESS
+        LA(a1, RVMODEL_MSIP_ADDRESS)
+        li a2, 1
+        sw a2, 0(a1) // normal way to set MSI is to write a 1 to MSIP
+      #elif defined(RVMODEL_SET_MSW_INT)
+        RVMODEL_SET_MSW_INT(a0, a1) // if normal way isn't supported, use platform-specific method
+      #endif
+      ret
+
+    rvtest_clr_msw_int_m:
+      #ifdef RVMODEL_MSIP_ADDRESS
+        LA(a1, RVMODEL_MSIP_ADDRESS)
+        sw zero, 0(a1) // normal way to clear MSI is to write a 0 to MSIP
+      #elif defined(RVMODEL_CLR_MSW_INT_M)
+        RVMODEL_CLR_MSW_INT_M(a0, a1) // if normal way isn't supported, use platform-specific method
+      #endif
+      ret
+
+    rvtest_set_mext_int_m:
+      #ifdef RVMODEL_SET_MEXT_INT
+        RVMODEL_SET_MEXT_INT(a0, a1) // platform-specific interrupt controller
+      #endif
+      ret
+
+    rvtest_clr_mext_int_m:
+      #ifdef RVMODEL_CLR_MEXT_INT_M
+        RVMODEL_CLR_MEXT_INT_M(a0, a1) // platform-specific interrupt controller
+      #endif
+      ret
+
+    #ifdef SSTC_SUPPORTED
+      rvtest_set_sstc_int_soon_m:
+        #if defined(RVMODEL_MTIME_ADDRESS) && defined(RVMODEL_TIMER_INT_SOON_DELAY)
+          LA(a1, RVMODEL_MTIME_ADDRESS)
+          LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
+          #if UDB_MXLEN == 32
+            li a0, -1
+            csrw stimecmph, a0 // stimecmp high word = all 1s so the split update cannot fire early
+            lw a0, 0(a1) // read mtime low word
+            add a1, a0, a2 // add delay to mtime low word
+            csrw stimecmp, a1 // write low word of timer compare
+            mv a2, a1 // save stimecmp low word
+            LA(a1, RVMODEL_MTIME_ADDRESS)
+            lw a0, 4(a1) // read mtime high word
+            LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
+            bgeu a2, a1, 1f // skip if didn't wrap
+            addi a0, a0, 1 // increment mtime high word
+            1:
+            csrw stimecmph, a0 // write high word of timer compare
+          #else
+            ld a0, 0(a1) // read mtime
+            add a1, a2, a0 // add delay to mtime
+            csrw stimecmp, a1 // write to timer compare
+          #endif
+        #endif
+        ret
+
+      // Set STI using Sstc.  Assumes menvcfg.STCE=1
+      rvtest_set_sstc_int_ms:
+        #if UDB_MXLEN == 32
+          csrw stimecmph, zero // clear upper word of stimecmp
+        #endif
+        csrw stimecmp, zero // clear stimecmp, set STI
+        ret
+
+      // Clear STI using Sstc.  Assumes menvcfg.STCE=1
+      rvtest_clr_sstc_int_ms:
+        li a1, -1 // all 1s
+        #if UDB_MXLEN == 32
+          csrw stimecmph, a1 // set upper word of stimecmp to all 1s to clear STI
+        #else
+          csrw stimecmp, a1 // set stimecmp to all 1s to clear STI
+        #endif
+        ret
+    #endif // SSTC_SUPPORTED
+
+    #ifdef S_SUPPORTED
+      rvtest_set_stime_int_m:
+        li a1, 1<<5 // STIP bit
+        csrs mip, a1        // Trigger mip.STIP
+        ret
+
+      rvtest_clr_stime_int_m:
+        li a1, 1<<5 // STIP bit
+        csrc mip, a1        // Clear mip.STIP
+        ret
+
+      rvtest_set_ssw_int_m:
+        // trigger with platform-specific interrupt controller if it exists, otherwise with mip.SSIP
+        #ifdef RVMODEL_SET_SSW_INT
+          RVMODEL_SET_SSW_INT(a0, a1)
+        #else
+          csrsi mip, 1<<1 // Trigger mip.SSIP
+        #endif
+        ret
+
+      rvtest_clr_ssw_int_m:
+        // clear using both platform-specific interrupt controller if it exists and mip.SSIP
+        #ifdef RVMODEL_CLR_SSW_INT_M
+          RVMODEL_CLR_SSW_INT_M(a0, a1)
+        #endif
+        csrci mip, 1<<1             /* Always called from M-mode; mip.SSIP must be cleared via mip */
+        ret
+
+      rvtest_set_sext_int_m:
+        // trigger with platform-specific interrupt controller if it exists, otherwise with mip.SEIP
+        #ifdef RVMODEL_SET_SEXT_INT
+          RVMODEL_SET_SEXT_INT(a0, a1)
+        #else
+          li a1, 1<<9 // SEIP bit
+          csrs mip, a1        // Trigger mip.SEIP
+        #endif
+        ret
+
+      rvtest_clr_sext_int_m:
+        // clear both platform-specific interrupt controller if it exists and mip.SEIP
+        #ifdef RVMODEL_CLR_SEXT_INT_M
+          RVMODEL_CLR_SEXT_INT_M(a0, a1)
+        #endif
+        li a1, 1<<9 // SEIP bit
+        csrc mip, a1 // clear mip.SEIP
+        ret
+    #endif // S_SUPPORTED
+  #endif
+
+  // Flavors to run from supervisor mode
+
+  #ifdef STANDARD_SM_SUPPORTED
+
+    rvtest_set_mtime_int_soon_su:
+      #if defined(RVMODEL_MTIME_ADDRESS) && defined(RVMODEL_MTIMECMP_ADDRESS) && defined(RVMODEL_TIMER_INT_SOON_DELAY)
+        LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
+        #if UDB_MXLEN == 32
+          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          li a2, -1
+          RVTEST_TSBI_SWP4 // sw a2, 4(a1) // mtimecmp high word = all 1s so the split update cannot fire early
+          LA(a1, RVMODEL_MTIME_ADDRESS)
+          LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
+          RVTEST_TSBI_LW // lw a0, 0(a1) // read mtime low word
+          add a2, a0, a2 // add delay to mtime low word
+          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          RVTEST_TSBI_SW // sw a2, 0(a1) // write to mtimecmp low word
+          LA(a1, RVMODEL_MTIME_ADDRESS)
+          RVTEST_TSBI_LWP4 // lw a0, 4(a1) // read mtime high word
+          LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
+          bgeu a2, a1, 1f // skip if didn't wrap
+          addi a0, a0, 1 // increment mtime high word
+          1:
+          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          mv a2, a0 // Save mtimecmp high word
+          RVTEST_TSBI_SWP4 // sw a2, 4(a1) // write to mtimecmp high word
+        #else
+          LA(a1, RVMODEL_MTIME_ADDRESS)
+          RVTEST_TSBI_LD // ld a0, 0(a1) // read mtime
+          add a2, a2, a0 // add delay to mtime
+          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          RVTEST_TSBI_SD // sd a2, 0(a1) // write to mtimecmp
+        #endif
+      #endif
+      ret
+
+
+    rvtest_set_mtime_int_su:
+      #ifdef RVMODEL_MTIMECMP_ADDRESS
+        LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+        li a2, 0 // store zero
+        #if UDB_MXLEN == 32
+          RVTEST_TSBI_SW // sw a2, 0(a1)
+          RVTEST_TSBI_SWP4 // sw a2, 4(a1)
+        #else
+          RVTEST_TSBI_SD // sd a2, 0(a1)
+        #endif
+      #endif
+      ret
+
+    rvtest_clr_mtime_int_su:
+      #ifdef RVMODEL_MTIMECMP_ADDRESS
+        LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+        li a2, -1 // all 1s
+        RVTEST_TSBI_SWP4 // sw a2, 4(a1)      // don't bother with lower bits, which stay at 0
+      #endif
+      ret
+
+    rvtest_set_msw_int_su:
+      #ifdef RVMODEL_MSIP_ADDRESS
+        LA(a1, RVMODEL_MSIP_ADDRESS)
+        li a2, 1
+        RVTEST_TSBI_SW // sw a2, 0(a1) // normal way to set MSI is to write a 1 to MSIP
+      #elif defined(RVMODEL_SET_MSW_INT)
+        RVMODEL_SET_MSW_INT(a0, a1) // if normal way isn't supported, use platform-specific method
+      #endif
+      ret
+
+    rvtest_clr_msw_int_su:
+      #ifdef RVMODEL_MSIP_ADDRESS
+        LA(a1, RVMODEL_MSIP_ADDRESS)
+        li a2, 0
+        RVTEST_TSBI_SW // sw a2, 0(a1) // normal way to clear MSI is to write a 0 to MSIP
+      #elif defined(RVMODEL_CLR_MSW_INT)
+        RVMODEL_CLR_MSW_INT(a0, a1) // if normal way isn't supported, use platform-specific method
+      #endif
+      ret
+
+    rvtest_set_mext_int_su:
+      #ifdef RVMODEL_SET_MEXT_INT
+        RVMODEL_SET_MEXT_INT(a0, a1) // platform-specific interrupt controller
+      #endif
+      ret
+
+    rvtest_clr_mext_int_su:
+      #ifdef RVMODEL_CLR_MEXT_INT
+        RVMODEL_CLR_MEXT_INT(a0, a1) // platform-specific interrupt controller
+      #endif
       ret
   #endif
 
   #ifdef S_SUPPORTED
-    rvtest_set_ssw_int:
-      RVMODEL_SET_SSW_INT(a0, a1)
+    #ifdef SSTC_SUPPORTED
+      rvtest_set_sstc_int_soon_s:
+        #if defined(RVMODEL_MTIME_ADDRESS) && defined(RVMODEL_TIMER_INT_SOON_DELAY)
+          LA(a1, RVMODEL_MTIME_ADDRESS)
+          LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
+          #if UDB_MXLEN == 32
+            li a0, -1
+            csrw stimecmph, a0 // stimecmp high word = all 1s so the split update cannot fire early
+            RVTEST_TSBI_LW // lw a0, 0(a1) // read mtime low word
+            add a0, a0, a2 // add delay to mtime low word
+            csrw stimecmp, a0 // write low word of timer compare
+            mv a2, a0 // save stimecmp low word
+            RVTEST_TSBI_LWP4 // lw a0, 4(a1) // read mtime high word
+            LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
+            bgeu a2, a1, 1f // skip if didn't wrap
+            addi a0, a0, 1 // increment mtime high word
+            1:
+            csrw stimecmph, a0 // write high word of timer compare
+          #else
+            RVTEST_TSBI_LD // ld a0, 0(a1) // read mtime
+            add a1, a2, a0 // add delay to mtime
+            csrw stimecmp, a1 // write to timer compare
+          #endif
+        #endif
+        ret
+    #endif // SSTC_SUPPORTED
+
+    rvtest_set_stime_int_su:
+      RVTEST_TSBI_CSR_SET(CSR_MIP, 1<<5) // set mip.STIP
       ret
 
-    rvtest_clr_ssw_int:
-      RVMODEL_CLR_SSW_INT(a0, a1)
-      li a0, 2
-      csrc mip, a0              /* Always called from M-mode; mip.SSIP must be cleared via mip */
+    rvtest_clr_stime_int_su:
+      RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<5) // clear mip.STIP
       ret
 
-    rvtest_set_sext_int:
-      RVMODEL_SET_SEXT_INT(a0, a1)
+    rvtest_set_ssw_int_su:
+      // trigger with platform-specific interrupt controller if it exists, otherwise with mip.SSIP.
+      // sip.SSIP is read-only zero unless SSI is delegated, so write mip.SSIP through T-SBI,
+      // which works whether or not mideleg.SSI is set.
+      #ifdef RVMODEL_SET_SSW_INT
+        RVMODEL_SET_SSW_INT(a0, a1)
+      #else
+        RVTEST_TSBI_CSR_SET(CSR_MIP, 1<<1) // set mip.SSIP
+      #endif
       ret
 
-    rvtest_clr_sext_int:
-      RVMODEL_CLR_SEXT_INT(a0, a1)
-      LI(a0, 512)
-      csrc sip, a0 // clear sip.SEIP
+    rvtest_clr_ssw_int_su:
+      // clear using both platform-specific interrupt controller if it exists and mip.SSIP
+      #ifdef RVMODEL_CLR_SSW_INT
+        RVMODEL_CLR_SSW_INT(a0, a1)
+      #endif
+      RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<1) // clear mip.SSIP
       ret
-  #endif
+
+    rvtest_set_sext_int_su:
+      // trigger with platform-specific interrupt controller if it exists, otherwise with mip.SEIP
+      #ifdef RVMODEL_SET_SEXT_INT
+        RVMODEL_SET_SEXT_INT(a0, a1)
+      #else
+        RVTEST_TSBI_CSR_SET(CSR_MIP, 1<<9) // set mip.SEIP
+      #endif
+      ret
+
+    rvtest_clr_sext_int_su:
+      // clear both platform-specific interrupt controller if it exists and mip.SEIP
+      #ifdef RVMODEL_CLR_SEXT_INT
+        RVMODEL_CLR_SEXT_INT(a0, a1)
+      #endif
+      RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<9) // clear mip.SEIP
+      ret
+
+    // Flavors to run from user mode
+
+    #ifdef SSTC_SUPPORTED
+      rvtest_set_sstc_int_soon_u:
+        #if defined(RVMODEL_MTIME_ADDRESS) && defined(RVMODEL_TIMER_INT_SOON_DELAY)
+          LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
+          #if UDB_MXLEN == 32
+            li a1, -1
+            RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMPH) // stimecmp high word = all 1s so the split update cannot fire early
+            LA(a1, RVMODEL_MTIME_ADDRESS)
+            RVTEST_TSBI_LW // lw a0, 0(a1) // read mtime low word
+            add a2, a0, a2 // stimecmp low word = mtime low word + delay
+            mv a1, a2
+            RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMP) // write low word of timer compare
+            LA(a1, RVMODEL_MTIME_ADDRESS)
+            RVTEST_TSBI_LWP4 // lw a0, 4(a1) // read mtime high word
+            LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
+            bgeu a2, a1, 1f // skip if didn't wrap
+            addi a0, a0, 1 // increment mtime high word
+            1:
+            mv a1, a0
+            RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMPH) // write high word of timer compare
+          #else
+            LA(a1, RVMODEL_MTIME_ADDRESS)
+            RVTEST_TSBI_LD // ld a0, 0(a1) // read mtime
+            add a1, a2, a0 // add delay to mtime
+            RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMP) // write timer compare
+          #endif
+        #endif
+        ret
+
+      // Set STI using Sstc.  Assumes menvcfg.STCE=1
+      rvtest_set_sstc_int_u:
+        #if UDB_MXLEN == 32
+          RVTEST_TSBI_CSR_WRITE(CSR_STIMECMPH, 0) // clear upper word of stimecmp
+        #endif
+        RVTEST_TSBI_CSR_WRITE(CSR_STIMECMP, 0) // clear stimecmp, set STI
+        ret
+
+      // Clear STI using Sstc.  Assumes menvcfg.STCE=1
+      rvtest_clr_sstc_int_u:
+        li a1, -1 // all 1s
+        #if UDB_MXLEN == 32
+          RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMPH) // set upper word of stimecmp to all 1s to clear STI
+        #else
+          RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMP) // set stimecmp to all 1s to clear STI
+        #endif
+        ret
+    #endif // SSTC_SUPPORTED
+  #endif // S_SUPPORTED
 
   nop // Padding to ensure valid memory at the edge of the section
 
@@ -379,6 +788,11 @@
     .dword 0xDEAD001DFFE2BEEF, 0xDEAD001EFFE1BEEF
     .dword 0xDEAD001FFFE0BEEF, 0xDEAD0020FFDFBEEF
     .dword 0xDEAD0021FFDEBEEF
+
+  // Temporary memory for RVTEST_SIGUPD_F.
+  .p2align 4
+  fp_sigupd_temp:
+    .dword 0xDEADF001FFFEBEEF, 0xDEADF002FFFDBEEF
 
   // Global counter of the number of traps taken, incremented by every mode's
   // trap handler. Lives in .data (NOT the signature region) so it does not
@@ -473,9 +887,11 @@
         // Initialize remaining signature region to known value for initial pass
         .fill SIGUPD_COUNT*(SIG_STRIDE>>2),4,0xdeadbeef
 
-      // Fixed diagnostic slot for the final trap signature byte count.
-      // sig_modify.py inserts the final_trap_sig_offset label after this canary
-      // in self-checking builds, where the raw signature data is included.
+      // Fixed diagnostic slots for the final signature offsets.
+      final_sig_offset_canary:
+        FINAL_SIG_OFFSET_CANARY
+      final_sig_offset:
+        .fill (REGWIDTH>>2),4,0xdeadbeef
       final_trap_sig_offset_canary:
         FINAL_TRAP_OFFSET_CANARY
       final_trap_sig_offset:
@@ -645,11 +1061,12 @@
         #endif
       #endif
 
-      // Enable all performance counters if they exist
-      // This is reserved if mcountinhibit is not implemented, and might trap or have unspecified behavior
-      //   *** need to define a UDB parameter MCOUNTINHIBIT_IMPLEMENTED to determine whether mcountinhibit is implemented
-      //   see https://github.com/riscv/riscv-isa-manual/issues/2964
-      csrw mcountinhibit, zero
+      // Enable all performance counters if they exist.
+      // mcountinhibit is optional and accessing the CSR is reserved
+      // if it is not implemented.
+      #ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
+        csrw mcountinhibit, zero
+      #endif
 
       // Initialize counter event selectors to 0.  They must be implemented.
       csrw mhpmevent3, zero
@@ -715,6 +1132,20 @@
         csrw mhpmevent30h, zero
         csrw mhpmevent31h, zero
         #endif
+      #endif
+
+      #ifdef RVMODEL_MTIMECMP_ADDRESS
+        // Initialize mtimecmp to all 1s so that it does not generate a timer interrupt prematurely
+        LA(t0, RVMODEL_MTIMECMP_ADDRESS)
+        addi t1, zero, -1
+        sw t1, 0(t0)
+        sw t1, 4(t0)
+      #endif
+
+      #ifdef RVMODEL_MSIP_ADDRESS
+        // Initialize msip to 0 to avoid generating a software interrupt prematurely
+        LA(t0, RVMODEL_MSIP_ADDRESS)
+        sw zero, 0(t0)
       #endif
 
       // make counters accessible to a lower privilege mode if one exists
@@ -786,7 +1217,9 @@
     // Delegate exceptions to S-mode, except those that must be directed to M-mode
     // medeleg[0] = 1: delegate instruction address misaligned exception
     // medeleg[1] = 1: delegate instruction access fault exception
-    // medeleg[2] = 1: delegate illegal instruction exception
+    // medeleg[2] = 1: logically delegate illegal instruction exceptions to S-mode.
+    //                 See RVTEST_SAVE_MEDELEG_ILLEGAL and RVTEST_RESTORE_MEDELEG_ILLEGAL
+    //                 in rvtest_trap_handler.h for details on medeleg[2] emulation.
     // medeleg[3] = 1: delegate breakpoint exception
     // medeleg[4] = 1: delegate load address misaligned exception
     // medeleg[5] = 1: delegate load access fault exception
@@ -810,7 +1243,6 @@
     // mideleg[23] = 1: delegate store guest-page fault
     // higher bits are reserved or custom
     li t0, 0x0FCB5FF
-    li t0, 0x0FCB0FF # *** dh 4/24/26 temporary don't delegate any ecalls until SBI forwarding is implemented
     csrw medeleg, t0
 
     // Delegate supervisor interrupts to S-mode. Do not delege M-mode interrupts.

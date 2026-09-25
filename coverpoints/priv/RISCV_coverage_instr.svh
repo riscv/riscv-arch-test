@@ -236,14 +236,6 @@
         wildcard bins fmv_w_x = {32'b1111000_00000_?????_000_?????_1010011};
     }
 
-    upperreg_rs1 : cross upper_reg_instrs, rs1_16_31, rd_1_15, rs2_1_15;
-    upperreg_rs2 : cross upper_reg_instrs, rs2_16_31, rs1_1_15, rd_1_15;
-    upperreg_rd : cross upper_reg_instrs, rd_16_31, rs1_1_15, rs2_1_15;
-    upperreg_imm_rd : cross upper_reg_addi, imm_0s_1s, rd_16_31, rs1_1_15;
-    upperreg_imm_rs1 : cross upper_reg_addi, imm_0s_1s, rs1_16_31, rd_1_15;
-    upperreg_fmv_rs1 : cross upper_reg_fmv, rs1_16_31, rd_1_15;
-    upperreg_fmv_rd : cross upper_reg_fmv, rd_16_31, rs1_1_15;
-
     amocas_odd : coverpoint ins.current.insn {
         wildcard bins amocas_d_odd_rd  = {32'b00101????????????_011_????1_0101111};
         wildcard bins amocas_q_odd_rd  = {32'b00101????????????_100_????1_0101111};

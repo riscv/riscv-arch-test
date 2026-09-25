@@ -1,6 +1,28 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  - name: fcvt-d-h_op
+    # If
+    # the D extension is present, FCVT.D.H or FCVT.H.D converts a
+    # half-precision floating-point number to a double-precision
+    # floating-point number, or vice-versa, respectively
+    # FCVT.S.D rounds according to the RM field; FCVT.D.S will
+    # never round
+    coverpoint:
+      [
+        "ZfhminD_fcvt_d_h_cg/{cp_fs1, cp_fd, cp_fs1_edges_H, cp_csr_fflags_v, cp_fs1_badNB_D_H}",
+      ]
+  - name: fcvt-h-d_op
+    # If
+    # the D extension is present, FCVT.D.H or FCVT.H.D converts a
+    # half-precision floating-point number to a double-precision
+    # floating-point number, or vice-versa, respectively
+    # FCVT.S.D rounds according to the RM field; FCVT.D.S will
+    # never round
+    coverpoint:
+      [
+        "ZfhminD_fcvt_h_d_cg/{cp_fs1, cp_fd, cr_fs1_edges_frm_D, cp_frm_2, cp_csr_fflags_voun, cp_csr_frm, cp_NaNBox_D_H}",
+      ]
   - name: fcvt-h-s_op
     # FCVT.S.H or
     # FCVT.H.S converts a half-precision floating-point number to a

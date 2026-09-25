@@ -65,20 +65,11 @@
 # MTIME is not implemented on this DUT. Comment out to prevent testing them.
 //#define RVMODEL_MTIME_ADDRESS    0x0200BFF8
 //#define RVMODEL_MTIMECMP_ADDRESS 0x02004000
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
+#define RVMODEL_TIMER_INT_SOON_DELAY 10000
 
 ##### Machine Interrupts #####
 
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)
 #define RVMODEL_CLR_MEXT_INT(_R1, _R2)
-#define RVMODEL_SET_MSW_INT(_R1, _R2)
-#define RVMODEL_CLR_MSW_INT(_R1, _R2)
-
-##### Supervisor Interrupts #####
-
-#define RVMODEL_SET_SEXT_INT(_R1, _R2)
-#define RVMODEL_CLR_SEXT_INT(_R1, _R2)
-#define RVMODEL_SET_SSW_INT(_R1, _R2)
-#define RVMODEL_CLR_SSW_INT(_R1, _R2)
 
 #endif // _RVMODEL_MACROS_H

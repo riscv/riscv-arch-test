@@ -10,6 +10,8 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
+    ZfhminD_fcvt_d_h_cg = new(); ZfhminD_fcvt_d_h_cg.set_inst_name("obj_ZfhminD_fcvt_d_h");
+    ZfhminD_fcvt_h_d_cg = new(); ZfhminD_fcvt_h_d_cg.set_inst_name("obj_ZfhminD_fcvt_h_d");
     ZfhminD_fcvt_h_s_cg = new(); ZfhminD_fcvt_h_s_cg.set_inst_name("obj_ZfhminD_fcvt_h_s");
     ZfhminD_fcvt_s_h_cg = new(); ZfhminD_fcvt_s_h_cg.set_inst_name("obj_ZfhminD_fcvt_s_h");
     ZfhminD_flh_cg = new(); ZfhminD_flh_cg.set_inst_name("obj_ZfhminD_flh");

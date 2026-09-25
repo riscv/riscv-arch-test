@@ -638,11 +638,9 @@ def _gen_instrs(
             covergroup_lines.append('    `include "general/RISCV_coverage_ssstrictv_helpers.svh"\n')
 
         # Coverpoint entries (skip metadata columns: sample_*, RV32, RV64, EFFEW*)
-        # VCS requires coverpoints to be declared before they are referenced by cross coverpoints.
-        # Some templates embed cross definitions (for example, *_frm templates), so prioritize
-        # cp_frm_* declarations first, then regular coverpoints, then explicit cross templates.
-        frm_coverpoints = {"cp_frm_2", "cp_frm_3", "cp_frm_4"}
-        ordered_cps = sorted(cps, key=lambda cp: (0 if cp in frm_coverpoints else 2 if cp.startswith("cr_") else 1, cp))
+        # VCS requires coverpoints to be declared before cross references.
+        early_cps = {"cp_frm_2", "cp_frm_3", "cp_frm_4", "std_vec"}
+        ordered_cps = sorted(cps, key=lambda cp: (0 if cp in early_cps else 2 if cp.startswith("cr_") else 1, cp))
         # Per-operand cross filtering depends only on the instruction, so resolve
         # its operand presence and max LMUL once rather than per coverpoint.
         has_vd, has_vs1, has_vs2 = _operand_presence(_instr_type)
@@ -749,10 +747,11 @@ def _write_extension_files(
             effew = ""
     instr_keys = _get_sorted_instr_keys(tp, arch) if per_sew else sorted(tp.keys())
 
-    header_tmpl = "header_vector" if vector else "header"
-    # Priv vector archs (SsstrictV, ExceptionsV*) don't expand per-SEW so the
-    # EFFVSEW gate doesn't apply — use the non-vector sample header/end.
+    # Priv vector archs (SsstrictV, ExceptionsV*, MisalignV) don't expand per-SEW, so
+    # neither the EFFEW defines in header_vector nor the EFFVSEW gate in the vector
+    # sample header/end apply — use the non-vector templates for them.
     use_vector_sample = vector and bool(effew)
+    header_tmpl = "header_vector" if use_vector_sample else "header"
     sample_header_tmpl = "covergroup_sample_header_vector" if use_vector_sample else "covergroup_sample_header"
     sample_end_tmpl = "covergroup_sample_end_vector" if use_vector_sample else "covergroup_sample_end"
 

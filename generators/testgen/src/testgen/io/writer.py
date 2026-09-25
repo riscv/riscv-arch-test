@@ -53,9 +53,9 @@ def write_test_file(
     file_idx: int = 0,
     extra_defines: list[str] | None = None,
     split_name: str | None = None,
-) -> None:
+) -> Path:
     """
-    Write a single test file.
+    Write a single test file and return its path.
 
     Args:
         test_config: Test configuration
@@ -74,9 +74,16 @@ def write_test_file(
 
     # Combine data from all test chunks
     data_values = [v for tc in test_chunks for v in tc.data_values]
+    raw_data = [line for tc in test_chunks for line in tc.raw_data]
     vector_data_labels = [label for tc in test_chunks for label in tc.vector_labels]
     data_strings = [s for tc in test_chunks for s in tc.data_strings]
     sigupd_count = SIGUPD_MARGIN + sum(tc.sigupd_count for tc in test_chunks)
+    trap_sigupd_count = sum(tc.trap_sigupd_count for tc in test_chunks)
+    extra_defines = list(extra_defines or [])
+    if trap_sigupd_count:
+        extra_defines.append(f"#define TRAP_SIGUPD_COUNT {trap_sigupd_count}")
+    if any("RVTEST_TEST_CSR" in line for tc in test_chunks for line in tc.code):
+        extra_defines.append("#define RVTEST_USES_TEST_CSR")
 
     # Construct filename and paths
     if instr_name is not None:
@@ -86,8 +93,11 @@ def write_test_file(
     else:
         filename = f"{testsuite}-{file_idx:02d}.S"
     test_file = output_dir / filename
-    arch_dir = f"rv{test_config.xlen}{'e' if test_config.E_ext else 'i'}" if test_config.xlen else ""
-    test_file_relative = Path(arch_dir) / testsuite / filename if arch_dir else Path(testsuite) / filename
+    if instr_name is None:
+        arch_dir = f"rv{test_config.xlen}" if test_config.xlen else ""
+    else:
+        arch_dir = f"rv{test_config.xlen}{'e' if test_config.E_ext else 'i'}"
+    test_file_relative = Path(arch_dir) / testsuite / filename
 
     # Test header
     header = insert_header_template(test_config, test_file_relative, sigupd_count, extra_defines, instr_name)
@@ -111,6 +121,9 @@ def write_test_file(
     # Test footer
     test_data_section = generate_test_data_section(data_values, test_config.xlen, test_config.flen)
     test_data_section += generate_vector_data_section(vector_data_labels)
+    if raw_data:
+        raw_data_lines = "\n".join(raw_data).splitlines()
+        test_data_section += "\n" + "\n".join(indent_asm(line) for line in raw_data_lines)
     test_string_section = generate_test_string_section(data_strings)
     footer = insert_footer_template(test_data_section, test_string_section)
 
@@ -120,3 +133,5 @@ def write_test_file(
     # Write test file if different from existing file. This avoids unnecessary rebuilds.
     if not test_file.exists() or test_file.read_text() != test_string:
         test_file.write_text(test_string)
+
+    return test_file

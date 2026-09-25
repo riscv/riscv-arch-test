@@ -125,6 +125,8 @@ jobs:
             const staleLabel = "Stale";
             const needsAuthor = "status: needs-author";
             const needsReview = "status: needs-review";
+            const approved = "status: approved";
+            const automaticStatuses = new Set([needsAuthor, needsReview, approved]);
             const fixInPr = "status: fix-in-pr";
             const { owner, repo } = context.repo;
             const repositoryName = `${owner}/${repo}`;
@@ -234,11 +236,13 @@ jobs:
                 labels.add("dependencies");
               }
 
-              if (labels.size > 0) {
+              const existingLabels = new Set((await getLabels(pull_number)).map(({ name }) => name));
+              const labelsToAdd = [...labels].filter((label) => !existingLabels.has(label));
+              if (labelsToAdd.length > 0) {
                 await github.rest.issues.addLabels({
                   ...context.repo,
                   issue_number: pull_number,
-                  labels: [...labels],
+                  labels: labelsToAdd,
                 });
               }
             }
@@ -267,25 +271,42 @@ jobs:
               );
             }
 
-            async function changesRequestedOnHead(pullRequest) {
+            async function reviewStatusOnHead(pullRequest) {
               const reviews = await github.paginate(github.rest.pulls.listReviews, {
                 ...context.repo,
                 pull_number: pullRequest.number,
                 per_page: 100,
               });
-              const latestReviews = new Map();
+              const reviewerStatus = new Map();
+              reviews.sort((first, second) =>
+                (first.submitted_at ?? "").localeCompare(second.submitted_at ?? ""),
+              );
               for (const review of reviews) {
                 if (!review.submitted_at || !review.user) {
                   continue;
                 }
-                const latestReview = latestReviews.get(review.user.login);
-                if (!latestReview || review.submitted_at > latestReview.submitted_at) {
-                  latestReviews.set(review.user.login, review);
+                const status = reviewerStatus.get(review.user.login);
+                if (review.state === "CHANGES_REQUESTED") {
+                  reviewerStatus.set(review.user.login, {
+                    changesRequested: true,
+                    commitId: review.commit_id,
+                  });
+                } else if (review.state === "APPROVED" || review.state === "DISMISSED") {
+                  reviewerStatus.set(review.user.login, {
+                    changesRequested: false,
+                    approved: review.state === "APPROVED" && review.commit_id === pullRequest.head.sha,
+                  });
+                } else if (!status) {
+                  reviewerStatus.set(review.user.login, { changesRequested: false });
                 }
               }
-              return [...latestReviews.values()].some(
-                (review) => review.state === "CHANGES_REQUESTED" && review.commit_id === pullRequest.head.sha,
-              );
+              return {
+                changesRequested: [...reviewerStatus.values()].some((status) => status.changesRequested),
+                needsAuthor: [...reviewerStatus.values()].some(
+                  (status) => status.changesRequested && status.commitId === pullRequest.head.sha,
+                ),
+                approved: [...reviewerStatus.values()].some((status) => status.approved),
+              };
             }
 
             async function hasCommitSinceNeedsAuthor(pullRequest) {
@@ -314,10 +335,14 @@ jobs:
 
               const labels = await getLabels(pullRequest.number);
               const statusLabels = labels.map(({ name }) => name).filter((name) => name.startsWith(statusPrefix));
-              if (await changesRequestedOnHead(pullRequest)) {
+              const reviewStatus = await reviewStatusOnHead(pullRequest);
+              const canUpdateStatus = statusLabels.every((status) => automaticStatuses.has(status));
+              if (reviewStatus.needsAuthor && canUpdateStatus) {
                 await setStatus(pullRequest.number, needsAuthor);
               } else if (statusLabels.includes(needsAuthor) && (await hasCommitSinceNeedsAuthor(pullRequest))) {
                 await setStatus(pullRequest.number, needsReview);
+              } else if (reviewStatus.approved && canUpdateStatus) {
+                await setStatus(pullRequest.number, approved);
               } else if (statusLabels.length === 0) {
                 await setStatus(pullRequest.number, needsReview);
               }

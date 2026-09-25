@@ -10,6 +10,11 @@
 from dataclasses import dataclass, field
 
 
+def trap_sigupd_count(expected_traps: int = 0) -> int:
+    """Return the trap-signature allocation for the expected trap count."""
+    return ((10 + expected_traps * 6 + 4) // 5) * 5
+
+
 @dataclass
 class TestChunk:
     """A test chunk — an unsplittable group of one or more testcases.
@@ -21,15 +26,17 @@ class TestChunk:
     Attributes:
         code: Assembly code for this test chunk, as a list of lines (joined with
               newlines when the file is written).
-        data_values: Values for .data section
-        data_strings: Debug strings for .data section
+        section_header: Optional banner comment before a coverpoint section
+        data_values: Values for the generated test data section
+        raw_data: Lines to add directly to the test data section
+        data_strings: Debug strings for the test data section
         vector_labels: Values for vector registers given in (label, data, sew) triples
         sigupd_count: Number of signature updates
+        trap_sigupd_count: Trap-handler signature allocation for this chunk's file
         num_testcases: Number of individual testcases (for split counting)
         split_name: Optional named-split marker. A non-None value starts a new
                     named file group (unless the current group already has the
                     same name); subsequent None chunks stay in that group.
-        section_header: Optional banner comment before a coverpoint section
         start_sig_reg: Signature pointer register expected at the start of this chunk
         start_data_reg: Data pointer register expected at the start of this chunk
         end_sig_reg: Signature pointer register in use at the end of this chunk
@@ -37,13 +44,15 @@ class TestChunk:
     """
 
     code: list[str] = field(default_factory=list)
+    section_header: str | None = None
     data_values: list[int] = field(default_factory=list)
+    raw_data: list[str] = field(default_factory=list)
     data_strings: list[str] = field(default_factory=list)
     vector_labels: list[tuple[str, list[int], int]] = field(default_factory=list)
     sigupd_count: int = 0
+    trap_sigupd_count: int = 0
     num_testcases: int = 0
     split_name: str | None = None
-    section_header: str | None = None
     start_sig_reg: int = 2
     start_data_reg: int = 3
     end_sig_reg: int = 2

@@ -25,7 +25,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up mise
-        uses: jdx/mise-action@3c2e0cf82a5b2e5249f0d3635a4d83d0ae861518 # v4
+        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
 
       - run: git submodule update --init docs/docs-resources
 
@@ -120,10 +120,11 @@ jobs:
           release_args=(
             --title "$release_name"
             --notes "$release_body"
-            --latest
           )
           if [ "$PRERELEASE" = "true" ]; then
             release_args+=(--prerelease)
+          else
+            release_args+=(--latest)
           fi
 
           gh release create "$tag_name" \
@@ -170,4 +171,4 @@ jobs:
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5

@@ -11,24 +11,15 @@ implemented_extensions:
   - { name: C, version: "= 2.0" }
   - { name: D, version: "= 2.2.0" }
   - { name: F, version: "= 2.2.0" }
-  - { name: H, version: "= 1.0.0" }
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
   - { name: Q, version: "= 2.2.0" }
   - { name: S, version: "= 1.13.0" }
   - { name: Sdext, version: "= 1.0.0" }
   - { name: Sdtrig, version: "= 1.0.0" }
-  - { name: Sha, version: "= 1.0.0" }
-  - { name: Shcounterenw, version: "= 1.0.0" }
-  - { name: Shgatpa, version: "= 1.0.0" }
-  - { name: Shtvala, version: "= 1.0.0" }
-  - { name: Shvsatpa, version: "= 1.0.0" }
-  - { name: Shvstvala, version: "= 1.0.0" }
-  - { name: Shvstvecd, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.13.0" }
   - { name: Smaia, version: "= 1.0.0" }
   - { name: Smcdeleg, version: "= 1.0.0" }
-  - { name: Smcntrpmf, version: "= 1.0.0" }
   - { name: Smcsrind, version: "= 1.0.0" }
   - { name: Smctr, version: "= 1.0.0" }
   - { name: Smdbltrp, version: "= 1.0.0" }
@@ -42,8 +33,7 @@ implemented_extensions:
   - { name: Sscounterenw, version: "= 1.0.0" }
   - { name: Sscsrind, version: "= 1.0.0" }
   - { name: Ssctr, version: "= 1.0.0" }
-  - { name: Ssdbltrp, version: "= 1.0.0" }
-  - { name: Ssqosid, version: "= 1.0.0" }
+  # - { name: Ssdbltrp, version: "= 1.0.0" } # Imperas exposes mtval2 (0x34b) with this enabled and H absent
   - { name: Ssstateen, version: "= 1.0.0" }
   - { name: Ssstrict, version: "= 1.0.0" }
   - { name: Sstc, version: "= 1.0.0" }
@@ -361,90 +351,6 @@ params:
       true,
       true,
     ]
-  # H params
-  MUTABLE_MISA_H: false
-  VSXLEN: [32]
-  VUXLEN: [32]
-  VMID_WIDTH: 7
-  VS_MODE_ENDIANNESS: little
-  VU_MODE_ENDIANNESS: little
-  GSTAGE_MODE_BARE: true
-  VSSTAGE_MODE_BARE: true
-  VSTVEC_MODES: [0, 1]
-  HSTATEEN_ENVCFG_TYPE: rw
-  IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
-  NUM_EXTERNAL_GUEST_INTERRUPTS: 31
-  REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION: true
-  REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION: true
-  REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT: true
-  REPORT_GPA_IN_TVAL_ON_INSTRUCTION_GUEST_PAGE_FAULT: true
-  REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT: true
-  REPORT_GPA_IN_TVAL_ON_LOAD_GUEST_PAGE_FAULT: true
-  REPORT_GPA_IN_TVAL_ON_STORE_AMO_GUEST_PAGE_FAULT: true
-  REPORT_VA_IN_VSTVAL_ON_BREAKPOINT: true
-  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
-  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED: true
-  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT: true
-  REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT: true
-  REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED: true
-  REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT: true
-  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT: true
-  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED: true
-  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT: true
-  SV32_VSMODE_TRANSLATION: true
-  SV32X4_TRANSLATION: true
-  TINST_VALUE_ON_BREAKPOINT: "always zero"
-  TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED: "always zero"
-  TINST_VALUE_ON_LOAD_ACCESS_FAULT: "always zero"
-  TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED: "always zero"
-  TINST_VALUE_ON_LOAD_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_MCALL: "always zero"
-  TINST_VALUE_ON_SCALL: "always zero"
-  TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT: "always zero"
-  TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED: "always zero"
-  TINST_VALUE_ON_STORE_AMO_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_UCALL: "always zero"
-  TINST_VALUE_ON_VIRTUAL_INSTRUCTION: "always zero"
-  TINST_VALUE_ON_VSCALL: "always zero"
-  TRAP_ON_ECALL_FROM_VS: true
-  HCOUNTENABLE_EN:
-    [
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-    ]
   # Zicfilp params
   REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK: true
   REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK: true
@@ -461,22 +367,15 @@ params:
   DCSR_STOPCOUNT_TYPE: rw
   DCSR_STOPTIME_TYPE: rw
   HCONTEXT_AVAILABLE: true
-  HSTATEEN_CONTEXT_TYPE: rw
   MCONTEXT_AVAILABLE: true
-  # Ssqosid params
-  MCID_WIDTH: 12
-  RCID_WIDTH: 12
   # Smstateen params
   MSTATEEN_ENVCFG_TYPE: rw
   MSTATEEN_CONTEXT_TYPE: rw
   # Csrind params
-  HSTATEEN_CSRIND_TYPE: rw
   MSTATEEN_CSRIND_TYPE: rw
   # AIA params
-  HSTATEEN_AIA_TYPE: rw
   MSTATEEN_AIA_TYPE: rw
   MSTATEEN_IMSIC_TYPE: rw
-  HSTATEEN_IMSIC_TYPE: rw
   # Smctr params
   MCTRCTL_CORSWAPINH_IMPLEMENTED: true
   MCTRCTL_CUSTOM_IMPLEMENTED: false

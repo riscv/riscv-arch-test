@@ -101,7 +101,7 @@
 // Interrupt latency configuration
 #define RVMODEL_INTERRUPT_LATENCY 1
 
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
+#define RVMODEL_TIMER_INT_SOON_DELAY 5000
 
 #define SIG_ADDRESS  (0xC000000 + 0x4)  /* Address of memory mapped simple interrupt generator */
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)        \
@@ -116,17 +116,6 @@
   sw _R1, 0(_R2)            ; /* Clear MEXT interrupt */ \
 
 #define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
-#define RVMODEL_SET_MSW_INT(_R1, _R2)        \
-  li _R1, 1;                 \
-  li _R2, RVMODEL_MSIP_ADDRESS;              \
-  sw _R1, 0(_R2);
-
-
-#define RVMODEL_CLR_MSW_INT(_R1, _R2)        \
-  li _R2, RVMODEL_MSIP_ADDRESS;              \
-  sw zero, 0(_R2);
-
-
 
 ##### Supervisor Interrupts #####
 

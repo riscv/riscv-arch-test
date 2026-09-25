@@ -2134,6 +2134,15 @@ endgroup
 // ---------------------
 covergroup Zvbb16_vwsll_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vwsll.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -2284,15 +2293,6 @@ covergroup Zvbb16_vwsll_vi_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -2375,6 +2375,15 @@ endgroup
 // ---------------------
 covergroup Zvbb16_vwsll_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -2615,15 +2624,6 @@ covergroup Zvbb16_vwsll_vv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -2696,6 +2696,15 @@ endgroup
 // ---------------------
 covergroup Zvbb16_vwsll_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vwsll.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -2879,15 +2888,6 @@ covergroup Zvbb16_vwsll_vx_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max

@@ -287,13 +287,13 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "Zama16b_cg"
 
-    addr_reg, base_reg = test_data.int_regs.get_registers(2)
     # amocas.q operates on register pairs: its rd and rs2 must be EVEN-numbered
     # registers (each names the pair reg, reg+1), otherwise the assembler
-    # rejects the operands. Allocate even pairs for src/dest so the same
-    # registers are legal for every AMO mnemonic in the sweep, incl. amocas.q.
+    # rejects the operands. Allocate pairs before scalar registers so both pairs
+    # remain available in the limited privileged register set.
     src_reg = test_data.int_regs.get_register_pair()
     dest_reg = test_data.int_regs.get_register_pair()
+    addr_reg, base_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(

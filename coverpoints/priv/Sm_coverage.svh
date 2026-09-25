@@ -730,6 +730,8 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             bins satp = {CSR_SATP};
         }
         mstatus_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
+            bins tvm_0 = {0};
+            bins tvm_1 = {1};
         }
 
         cp_scsr_from_m :            cross priv_mode_m, scsrname, csraccesses;

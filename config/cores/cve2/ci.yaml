@@ -4,7 +4,8 @@
 
 ci_enabled: true
 # Sm excluded: Insufficient WARL configuration options.
-exclude_extensions: "Sm"
+# ExceptionsSm: Sail incorrectly requires Zihpm for machine HPM CSRs (https://github.com/riscv/sail-riscv/issues/1967)
+exclude_extensions: "Sm,ExceptionsSm"
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cve2.sh"
 setup_script: ".github/scripts/setup-cve2.sh"

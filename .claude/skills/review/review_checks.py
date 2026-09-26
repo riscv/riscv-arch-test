@@ -1,0 +1,351 @@
+#!/usr/bin/env -S uv run
+# SPDX-License-Identifier: Apache-2.0
+#
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "ruamel-yaml>=0.18.16",
+# ]
+# ///
+"""
+Mechanical review checks for one ACT suite.
+
+Usage:
+  review_checks.py <Suite> [--udb-param-dir DIR] [--ref-rv32 CFG] [--ref-rv64 CFG]
+
+Run from the repository root after `EXTENSIONS=<Suite> make tests`. The trap and
+coverage sections use build outputs in work/ when they exist (trap reports need DEBUG=True).
+Every line printed is a lead to verify, not a confirmed finding.
+"""
+
+import argparse
+import json
+import re
+import subprocess
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+from ruamel.yaml import YAML
+
+ROOT = Path.cwd()
+PRIV_GEN_DIR = ROOT / "generators/testgen/src/testgen/priv/extensions"
+GATE_RE = re.compile(r"^\s*[#`](?:ifdef|ifndef|elsif)\s+(\w+)|defined\s*\(\s*(\w+)\s*\)", re.MULTILINE)
+DEFINE_RE = re.compile(r"^\s*[#`]define\s+(\w+)", re.MULTILINE)
+BOOT_RE = re.compile(r"#define\s+(?:RVTEST_)?BOOT_TO_([MSU])MODE")
+CG_RE = re.compile(r"\b([A-Za-z0-9][\w.]*_cg)\b")
+
+
+def section(title: str, lines: list[str]) -> None:
+    print(f"\n== {title}")
+    for line in lines or ["ok"]:
+        print(f"  {line}")
+
+
+def rel(path: Path) -> str:
+    return str(path.relative_to(ROOT))
+
+
+def find_generator(suite: str) -> list[Path]:
+    pattern = re.compile(rf'add_priv_test_generator\(\s*"{re.escape(suite)}"')
+    return [p for p in PRIV_GEN_DIR.rglob("*.py") if pattern.search(p.read_text())]
+
+
+def find_tests(suite: str) -> list[Path]:
+    return sorted(ROOT.glob(f"tests/priv/{suite}/*.S")) + sorted(ROOT.glob(f"tests/rv*/{suite}/*.S"))
+
+
+def find_coverage_files(covergroups: set[str]) -> list[Path]:
+    files = []
+    for svh in ROOT.glob("coverpoints/**/*.svh"):
+        text = svh.read_text(errors="replace")
+        if any(re.search(rf"\bcovergroup\s+{cg}\b", text) for cg in covergroups):
+            files.append(svh)
+    return files
+
+
+def check_sources(suite: str, generators: list[Path], tests: list[Path], covergroups: set[str]) -> list[str]:
+    out = []
+    unpriv = bool(list(ROOT.glob(f"testplans/{suite}.csv")))
+    if not generators and not unpriv:
+        out.append(f"no generator registers {suite!r} and no testplans/{suite}.csv exists")
+        if tests:
+            out.append(f"tests/.../{suite}/ is stale generated output; run `make clean tests` before reviewing")
+    if not tests:
+        out.append(f"no generated tests found; run `EXTENSIONS={suite} make tests`")
+    defined = {
+        cg for f in ROOT.glob("coverpoints/**/*.svh") for cg in re.findall(r"\bcovergroup\s+(\w+)", f.read_text())
+    }
+    for cg in sorted(covergroups - defined):
+        out.append(f"tests reference covergroup {cg}, which no coverpoint file defines")
+    return out
+
+
+def check_suite_type(suite: str, tests: list[Path], generators: list[Path]) -> list[str]:
+    out = []
+    texts = {t: t.read_text(errors="replace") for t in tests}
+    boots = {m for text in texts.values() for m in BOOT_RE.findall(text)}
+    if not boots:
+        boots = {m for g in generators for m in BOOT_RE.findall(g.read_text())}
+    if len(boots) > 1:
+        out.append(f"test files boot to different modes: {sorted(boots)}")
+    boot = next(iter(boots)) if len(boots) == 1 else None
+    priv = bool(list(ROOT.glob(f"tests/priv/{suite}/*.S"))) or bool(generators)
+    m_name = suite.startswith("Sm") or suite.endswith("Sm") or "PMP" in suite
+    su_name = suite.startswith(("Ss", "Sv", "Su")) or suite.endswith(("S", "U"))
+    if priv and boot is None:
+        out.append("privileged suite has no BOOT_TO_*MODE define")
+    if boot == "M" and not m_name:
+        out.append("boots to M-mode, but the name does not mark it as an M-mode suite")
+    if boot in ("S", "U") and m_name:
+        out.append(f"boots to {boot}-mode, but the name marks it as an M-mode suite")
+    if boot in ("S", "U") and not su_name:
+        out.append(f"boots to {boot}-mode, but the name does not follow the S/U suite naming rules")
+    for path, text in texts.items():
+        name = rel(path)
+        if boot in ("S", "U") and "RVTEST_TSBI_GOTO_MMODE" in text:
+            out.append(f"{name}: RVTEST_TSBI_GOTO_MMODE in a suite that boots to {boot}-mode")
+        if not priv and "RVTEST_TSBI_" in text:
+            out.append(f"{name}: RVTEST_TSBI_* call in an unprivileged suite")
+        if re.search(r"\bRVTEST_GOTO_(?:MMODE|LOWER_MODE)\b", text):
+            out.append(f"{name}: legacy RVTEST_GOTO_* macro")
+    return out
+
+
+def check_coverpoint_text(cov_files: list[Path]) -> list[str]:
+    out = []
+    commented = re.compile(
+        r"^\s*//\s*(?:wildcard\s+|ignore_|illegal_)?bins\b|^\s*//\s*\w+\s*:\s*(?:cross|coverpoint)\b"
+    )
+    for f in cov_files:
+        lines = f.read_text(errors="replace").splitlines()
+        for n, line in enumerate(lines, 1):
+            if commented.search(line):
+                out.append(f"{rel(f)}:{n}: commented-out bin or coverpoint")
+            elif re.search(r"\bignore_bins\b", line) and "//" not in line and "//" not in lines[n - 2]:
+                out.append(f"{rel(f)}:{n}: ignore_bins without a reason comment on it or the line before")
+    return out
+
+
+def known_defines() -> set[str]:
+    names: set[str] = set()
+    for pattern in (
+        "work/*/rvtest_config.h",
+        "work/*/rvtest_config.svh",
+        "tests/env/*.h",
+        "framework/src/act/fcov/**/*.svh",
+    ):
+        for f in ROOT.glob(pattern):
+            names.update(DEFINE_RE.findall(f.read_text(errors="replace")))
+    return names
+
+
+def check_guards(files: list[Path], udb_params: dict[str, set[str]]) -> list[str]:
+    known = known_defines()
+    if not any(ROOT.glob("work/*/rvtest_config.h")):
+        return ["no work/*/rvtest_config.h yet; build any config once so extension macros can be checked"]
+    out = []
+    for f in files:
+        text = f.read_text(errors="replace")
+        for m in GATE_RE.finditer(text):
+            name = m.group(1) or m.group(2)
+            if name in known or name.startswith(("RVMODEL_", "__")):
+                continue
+            if name.startswith("UDB_") and any(name[4:].startswith(p) for p in udb_params):
+                continue
+            line = text.count("\n", 0, m.start()) + 1
+            out.append(f"{rel(f)}:{line}: guard {name} is not defined by any config or header (typo?)")
+    return sorted(set(out))
+
+
+def defining_extensions(node: object) -> set[str]:
+    """Collect every extension name in a UDB definedBy expression."""
+    exts: set[str] = set()
+    if isinstance(node, dict):
+        ext = node.get("extension")
+        if isinstance(ext, dict) and isinstance(ext.get("name"), str):
+            exts.add(ext["name"])
+        for value in node.values():
+            exts |= defining_extensions(value)
+    elif isinstance(node, list):
+        for value in node:
+            exts |= defining_extensions(value)
+    return exts
+
+
+def load_udb_params(param_dir: Path | None) -> dict[str, set[str]]:
+    """Map each UDB parameter to the extensions that define it."""
+    if param_dir is not None:
+        yaml = YAML(typ="safe", pure=True)
+        params: dict[str, set[str]] = {}
+        for f in param_dir.glob("*.yaml"):
+            data = yaml.load(f.read_text())
+            params[data["name"]] = defining_extensions(data.get("definedBy", {}))
+        return params
+    gemdir = ROOT / "framework/src/act/data"
+    result = subprocess.run(
+        ["bundle", "exec", "udb", "list", "parameters", "-f", "json"],
+        cwd=gemdir,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return {
+        e["name"]: set(re.findall(r"\b([A-Z][A-Za-z0-9]*)\s*(?:>=|<=|==|>|<)", e.get("exts", "")))
+        for e in json.loads(result.stdout)
+    }
+
+
+def check_params(suite: str, tests: list[Path], files: list[Path], udb_params: dict[str, set[str]]) -> list[str]:
+    out = []
+    required: set[str] = set()
+    for t in tests:
+        m = re.search(r"#\s*REQUIRED_EXTENSIONS:\s*\[(.*)\]", t.read_text(errors="replace"))
+        if m:
+            required.update(re.findall(r"'(\w+)'", m.group(1)))
+    required -= {"I", "E"}
+    # Focus on the extension the suite is named after; base modes (Sm, S, U) define dozens of parameters.
+    prefixes = sorted((e for e in required if suite.startswith(e)), key=len, reverse=True)
+    if prefixes:
+        required = {prefixes[0]}
+    used = set()
+    for f in files:
+        for token in set(re.findall(r"\bUDB_(\w+)", f.read_text(errors="replace"))):
+            used.update(p for p in udb_params if token == p or token.startswith(p + "_"))
+    mapped: set[str] = set()
+    param_yaml = ROOT / f"coverpoints/param/{suite}.yaml"
+    if param_yaml.exists():
+        data = YAML(typ="safe", pure=True).load(param_yaml.read_text()) or {}
+        mapped = {d["name"] for d in data.get("parameter_definitions", []) if "name" in d}
+    else:
+        out.append(f"no {rel(param_yaml)}")
+    applicable = {p for p, exts in udb_params.items() if exts & required}
+    out.append(f"extensions checked for parameters: {', '.join(sorted(required)) or 'none'}")
+    unhandled = sorted(applicable - used - mapped)
+    if unhandled:
+        out.append(
+            f"{len(unhandled)} parameters defined by these extensions are neither used nor mapped: {', '.join(unhandled)}"
+        )
+    for p in sorted(used - mapped):
+        if "XLEN" not in p:
+            out.append(f"{p}: used as UDB_{p}*, but missing from the param mapping")
+    for p in sorted(mapped - set(udb_params)):
+        out.append(f"{p}: in the param mapping, but not a UDB parameter")
+    return out
+
+
+def expand_braces(ref: str) -> list[str]:
+    m = re.search(r"\{([^}]*)\}", ref)
+    if not m:
+        return [ref]
+    return [x for alt in m.group(1).split(",") for x in expand_braces(ref[: m.start()] + alt.strip() + ref[m.end() :])]
+
+
+def check_norm(suite: str) -> list[str]:
+    norm = ROOT / f"coverpoints/norm/{suite}.yaml"
+    if not norm.exists():
+        return [f"no {rel(norm)}"]
+    data = YAML(typ="safe", pure=True).load(norm.read_text()) or {}
+    all_cov = "\n".join(f.read_text(errors="replace") for f in ROOT.glob("coverpoints/**/*.svh"))
+    out, empty = [], 0
+    for rule in data.get("normative_rule_definitions", []):
+        refs = [r for r in rule.get("coverpoint", []) if r and r.strip()]
+        if not refs:
+            empty += 1
+        for ref in refs:
+            m = re.match(r"\s*(\w+_cg/\w*(?:\{[^}]*\}\w*)?)", ref)
+            if not m:
+                continue  # free text such as OUT-OF-SCOPE or an explanation
+            for full in expand_braces(m.group(1)):
+                cp = full.split("/")[-1]
+                if not re.search(rf"\b{re.escape(cp)}\s*:", all_cov):
+                    out.append(f"{rule.get('name')}: coverpoint {full} not found in coverpoints/")
+    if empty:
+        out.append(f"{empty} rules have no coverpoint (TODO)")
+    return out
+
+
+def trap_sequence(path: Path) -> list[str]:
+    seq, mode, cause = [], "", ""
+    for line in path.read_text(errors="replace").splitlines():
+        if m := re.match(r"\s*Mode:\s*(\S+)", line):
+            mode = m.group(1)
+        elif m := re.match(r"\s*XCAUSE:\s*\S+\s*\((.*)\)", line):
+            cause = m.group(1)
+        elif m := re.match(r"\s*XEPC:\s*\S+\s*\((.*)\)", line):
+            seq.append(f"{mode}:{cause}@{m.group(1)}")
+    return seq
+
+
+def check_traps(suite: str, priv: bool, ref32: str, ref64: str) -> list[str]:
+    reports: dict[str, dict[str, Path]] = defaultdict(dict)
+    for f in ROOT.glob(f"work/*/build/*/{suite}/*.sig.trap_report"):
+        reports[f.parts[len(ROOT.parts) + 1]][f.name] = f
+    if not reports:
+        return ["no trap reports; build with DEBUG=True"]
+    out = []
+    for cfg, tests in sorted(reports.items()):
+        for name, path in sorted(tests.items()):
+            seq = trap_sequence(path)
+            if not priv and seq:
+                out.append(f"{cfg}/{name}: {len(seq)} traps in an unprivileged suite, first {seq[0]}")
+                continue
+            ref = ref32 if "RV32" in path.read_text(errors="replace").splitlines()[0] else ref64
+            if cfg == ref or name not in reports.get(ref, {}):
+                continue
+            ref_seq = trap_sequence(reports[ref][name])
+            if seq != ref_seq:
+                i = next((k for k, (a, b) in enumerate(zip(seq, ref_seq)) if a != b), min(len(seq), len(ref_seq)))
+                got = seq[i] if i < len(seq) else "end"
+                want = ref_seq[i] if i < len(ref_seq) else "end"
+                out.append(f"{cfg}/{name}: differs from {ref} at trap #{i}: {got} vs {want}")
+    return out
+
+
+def check_coverage(suite: str, covergroups: set[str]) -> list[str]:
+    out = []
+    summaries = list(ROOT.glob("work/*/reports/*_summary.txt"))
+    if not summaries:
+        return ["no coverage reports; run `make coverage EXTENSIONS=<Suite>`"]
+    for f in summaries:
+        for line in f.read_text(errors="replace").splitlines():
+            fields = line.split()
+            if len(fields) >= 2 and fields[0] in covergroups and fields[1].endswith("%") and fields[1] != "100.00%":
+                out.append(f"{f.parts[len(ROOT.parts)]}: {fields[0]} {fields[1]} (see {suite}_uncovered.txt)")
+    return out
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("suite")
+    parser.add_argument("--udb-param-dir", type=Path, help="spec/std/isa/param of a riscv-unified-db checkout")
+    parser.add_argument("--ref-rv32", default="sail-rv32-max")
+    parser.add_argument("--ref-rv64", default="sail-rv64-max")
+    args = parser.parse_args()
+    if not (ROOT / "generators/testgen").is_dir():
+        print("run from the riscv-arch-test repository root", file=sys.stderr)
+        return 2
+
+    suite = args.suite
+    generators = find_generator(suite)
+    tests = find_tests(suite)
+    covergroups = {cg.replace(".", "_") for t in tests for cg in CG_RE.findall(t.read_text(errors="replace"))}
+    cov_files = find_coverage_files(covergroups)
+    udb_params = load_udb_params(args.udb_param_dir)
+    priv = bool(generators) or bool(list(ROOT.glob(f"tests/priv/{suite}/*.S")))
+
+    print(f"Suite {suite}: {len(tests)} tests, generators {[rel(g) for g in generators]}")
+    print(f"Coverage files: {[rel(f) for f in cov_files]}")
+    section("Sources", check_sources(suite, generators, tests, covergroups))
+    section("Suite type", check_suite_type(suite, tests, generators))
+    section("Coverpoint text", check_coverpoint_text(cov_files))
+    section("Guard names", check_guards(tests + cov_files + generators, udb_params))
+    section("UDB parameters", check_params(suite, tests, tests + cov_files + generators, udb_params))
+    section("Normative-rule mapping", check_norm(suite))
+    section("Coverage", check_coverage(suite, covergroups))
+    section("Traps (reference model under each config)", check_traps(suite, priv, args.ref_rv32, args.ref_rv64))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

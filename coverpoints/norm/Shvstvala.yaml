@@ -6,16 +6,12 @@ normative_rule_definitions:
   # in Sstvala for stval.  Each exception is delegated to VS-mode by hedeleg.  Virtual-instruction
   # exceptions are never taken in VS-mode.
   - names: [Shvstvala_vstval_written, hedeleg_op]
+    # Representative coverpoints; also the other Shvstvala_cg coverpoints, one for each exception that
+    # writes vstval
     coverpoint:
       [
         "Shvstvala_cg/cp_load_access_fault",
-        "Shvstvala_cg/cp_store_access_fault",
-        "Shvstvala_cg/cp_instr_access_fault",
-        "Shvstvala_cg/cp_load_address_misaligned",
         "Shvstvala_cg/cp_store_address_misaligned",
-        "Shvstvala_cg/cp_instr_adr_misaligned_jalr",
         "Shvstvala_cg/cp_illegal_instruction",
-        "Shvstvala_cg/cp_load_page_fault",
-        "Shvstvala_cg/cp_store_page_fault",
         "Shvstvala_cg/cp_instr_page_fault",
       ]

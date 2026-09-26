@@ -1,0 +1,463 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
+---
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+#
+# UDB architecture configuration for the XuanTie OpenC910, as released open source and
+# instantiated by the SoC testbench that ships with it.
+#
+# Every non-obvious value below carries the RTL or user-manual text it came from, with
+# a permalink pinned to T-head-Semi/openc910 commit
+# b91c90914c19f114d35c8f6b73408eb241ed847c.  Where the user manual is quoted it is the
+# Chinese original (doc/玄铁C910用户手册_20240627.pdf) followed by a translation.
+#
+# The ISA is FIXED: OpenC910 has no feature knobs, so there is exactly one
+# configuration.  The RTL instantiates two cores but core 1 is held in permanent reset
+# by the SoC wrapper, so ACT sees one hart.
+#   Quote: ".pad_core1_rst_b   (1'b0         ),"
+#   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/smart_run/logical/common/cpu_sub_system_axi.v#L327
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: c910-openc910
+description: XuanTie OpenC910 (open-source release) in its bundled SoC testbench
+
+implemented_extensions:
+  # misa = 0x800000000094112D, read only.  A(0) C(2) D(3) F(5) I(8) M(12) S(18) U(20)
+  # X(23), MXL=2.  Note bit 6 (G) is 0 even though the manual calls the core RV64GC -
+  # recorded as a discrepancy, see ~/reviews/act-ports/c910-discrepancies.md.
+  #   Quote: "assign extensions[25:0] = {2'b0, 2'b10, misa_vector, 1'b1, 4'b0100,
+  #                                      4'b0001, 4'b0001, misa_hypervisor, 3'b010, 4'b1101};"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L1736-L1738
+  #   Quote (user manual 16.1.2.2, p.322): "C910 支持的指令集架构为 RV64GC，对应的 MISA
+  #   寄存器复位值为 0x800000000094112d。…… C910 不支持动态配置 MISA 寄存器，对该寄存器
+  #   进行写操作不产生任何效果。"
+  #   ("The ISA C910 supports is RV64GC; the corresponding MISA reset value is
+  #   0x800000000094112d. ... C910 does not support dynamic configuration of MISA;
+  #   writes to this register have no effect.")
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
+  - { name: A, version: "= 2.1.0" }
+  - { name: Zaamo, version: "= 1.0.0" }
+  - { name: Zalrsc, version: "= 1.0.0" }
+  - { name: F, version: "= 2.2.0" }
+  - { name: D, version: "= 2.2.0" }
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zcd, version: "= 1.0.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  # fence.i is decoded in the MISC-MEM opcode alongside fence.
+  #   Quote: "32'b0000_0000_0000_00000_001_00000_0001111 : ... // fence.i"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/idu/rtl/ct_idu_id_decd.v#L1634
+  - { name: Zifencei, version: "= 2.0.0" }
+  # cycle, time and instret are all present.  `time` is implemented natively, reading
+  # the system counter the SoC brings in on pad_cpu_sys_cnt, so no emulation is needed.
+  #   Quote: "TIME : data_out[63:0] = biu_hpcp_time[63:0];"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/pmu/rtl/ct_hpcp_top.v#L4185
+  - { name: Zicntr, version: "= 2.0" }
+  # hpmcounter3..31 are decoded as unprivileged read-only aliases and are gated by
+  # mcounteren (for S) and mcounteren & scounteren (for U) in the standard way, which
+  # is what Zihpm actually requires.  Only 3..18 are backed by real counters; see
+  # HPM_COUNTER_EN below.
+  #   Quote: "assign regs_iui_scnt_inv = ucnt_addr_hit && !mcnten_hit || ... ;
+  #           assign regs_iui_ucnt_inv = ucnt_addr_hit && !(mcnten_hit && scnten_hit);"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L4065-L4068
+  - { name: Zihpm, version: "= 2.0.0" }
+  - { name: U, version: "= 1.0.0" }
+  # S and Sm are declared at 1.11.0, NOT 1.12.0.  OpenC910 implements privileged
+  # specification 1.10: mconfigptr (0xF15), menvcfg (0x30A), menvcfgh (0x31A),
+  # mseccfg (0x747), mtinst (0x34A), mtval2 (0x34B), senvcfg (0x10A) and mstatush
+  # (0x310) are all absent from the CSR decoder and raise illegal instruction, while
+  # mcountinhibit (0x320) IS present.  1.11.0 is the lowest version UDB offers.
+  # Declaring 1.12 would make ACT's trap handler read mstatush on every trap and every
+  # trap would then take a nested trap.
+  #   The decoder is the casez at
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_iui.v#L809-L1078
+  #   ("MCNTIHBT : addr_inv = 1'b0;" at L906 is mcountinhibit; there is no 0x30A,
+  #    0x31A, 0x310, 0x34A, 0x34B, 0x10A or 0xF15 case, and the custom wildcard ranges
+  #    do not cover 0x747.)
+  - { name: S, version: "= 1.11.0" }
+  - { name: Sm, version: "= 1.11.0" }
+  # satp.MODE accepts only 0 (Bare) and 8 (Sv39).  Sv48/Sv57 are not implemented.
+  #   Quote: "else if(satp_write_en && cp0_mmu_wdata[62:60] == 3'b0)
+  #             satp_mode[3:0] <= {cp0_mmu_wdata[63],3'b0};"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/mmu/rtl/ct_mmu_regs.v#L634-L635
+  - { name: Sv39, version: "= 1.0.0" }
+  - { name: Svbare, version: "= 1.0.0" }
+  # NOT declared, although the behaviour is exactly Svade's: UDB defines Svade only
+  # for Sm >= 1.12 and this hart is Sm 1.11, so `udb validate cfg` rejects it.  The
+  # behaviour is still expressed to the reference model through "Svade": true in
+  # sail.json.  The page table walker raises a page fault when A is clear, or when D
+  # is clear on a store, and never updates the PTE itself.
+  #   Quote: "|| !ptw_flg[5]                   // A bit volation
+  #           || !ptw_flg[6] && ptw_store_type // D bit volation"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/mmu/rtl/ct_mmu_ptw.v#L678-L679
+  #   Quote (user manual 6.2.4.5): "D 位为 0 时，对此页面进行写操作会触发 Page Fault
+  #   (Store) 异常，通过软件在异常服务程序中操控 D 位来维护 D 位"
+  #   ("When the D bit is 0, a write to this page raises a Page Fault (Store)
+  #   exception; software maintains the D bit inside the exception handler.")
+  # Deliberately NOT declared, each for a measured reason:
+  #   B / Zba / Zbb / Zbs / Zbc  - C910's bit manipulation is the XuanTie custom
+  #     XTheadBa/Bb/Bs set in the custom-0 opcode, gated by mxstatus.THEADISAEE which
+  #     RVMODEL_BOOT clears.  A repo-wide grep for sh1add, rev8, orc.b, clmul, zext.h
+  #     over C910_RTL_FACTORY/gen_rtl returns nothing.
+  #   Zicbom / Zicbop / Zicboz - the MISC-MEM opcode decodes only funct3 000 (fence)
+  #     and 001 (fence.i); funct3 010, the CBO encoding, falls through to the illegal
+  #     default.  The cache maintenance instructions are XTheadCmo customs.
+  #   Zfh / Zfhmin - half-precision flh/fsh and the .h arithmetic ops ARE decoded
+  #     (ct_idu_id_decd.v:1272, 1307, 1699-1810) but they are not advertised in misa
+  #     and predate the ratified Zfh, so they are neither declared nor tested.
+  #   Sstc - stimecmp (0x14D) is not in the CSR decoder; the supervisor timer compare
+  #     is the memory-mapped CLINT STIMECMP instead.
+  #   Sscofpmf - no scountovf (0xDA0), no LCOFI; overflow is a custom interrupt 17.
+  #   Svnapot / Svpbmt / Svinval - not implemented; with mxstatus.MAEE set the PTE's
+  #     high bits are XuanTie attributes instead, which RVMODEL_BOOT disables.
+  #   Sstvala - stval is hardwired 0 for load and store/AMO access faults, so the
+  #     extension's requirement is not met.  See xtval_nonzero in sail.json.
+  #   Zicclsm - misaligned loads and stores are handled in hardware, but misaligned
+  #     atomics always trap, so the pair is not declared as a unit.
+
+params:
+  # ---------------- A ----------------
+  # Misaligned atomics ALWAYS raise cause 6, regardless of mxstatus.MM.
+  #   Quote: "assign ld_ag_expt_misalign_no_page = ld_ag_unalign
+  #             && (ld_ag_atomic || ld_ag_inst_vls || ld_ag_ld_inst && !cp0_lsu_mm);"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/lsu/rtl/ct_lsu_ld_ag.v#L1204-L1208
+  MISALIGNED_AMO: false
+  LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
+  LRSC_FAIL_ON_VA_SYNONYM: false
+  LRSC_MISALIGNED_BEHAVIOR: "always raise misaligned exception"
+  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+  MUTABLE_MISA_A: false
+
+  # ---------------- M ----------------
+  MUTABLE_MISA_M: false
+
+  # ---------------- F / D ----------------
+  MUTABLE_MISA_F: false
+  MUTABLE_MISA_D: false
+  # mstatus.FS is a real two-bit field, writable from mstatus and sstatus, and the
+  # hardware sets it to Dirty precisely on FP activity.
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L1603-L1614
+  HW_MSTATUS_FS_DIRTY_UPDATE: precise
+  MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3]
+
+  # ---------------- C ----------------
+  MUTABLE_MISA_C: false
+
+  # ---------------- Zicntr ----------------
+  TIME_CSR_IMPLEMENTED: true
+
+  # ---------------- U ----------------
+  MUTABLE_MISA_U: false
+  # mstatus.UBE/SBE/MBE are inside hardwired-zero fields, so the hart is
+  # little-endian only.
+  #   Quote: "assign mstatus_value[63:0]  = {sd, 23'b0, mpv, 3'b0, sxl[1:0], uxl[1:0],
+  #            7'b0, vs[1:0], tsr, tw, tvm, mxr, sum, mprv, xs[1:0], fs[1:0],
+  #            mpp[1:0], 2'b0, spp, mpie, 1'b0, spie, 1'b0, mie_bit, 1'b0, sie_bit, 1'b0};"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L1712-L1715
+  U_MODE_ENDIANNESS: little
+  UXLEN: [64]
+  TRAP_ON_ECALL_FROM_U: true
+
+  # ---------------- S ----------------
+  MUTABLE_MISA_S: false
+  # satp.ASID is 16 bits.
+  #   Quote: "parameter ASID_WIDTH = 16;"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/mmu/rtl/ct_mmu_regs.v#L233
+  ASID_WIDTH: 16
+  S_MODE_ENDIANNESS: little
+  SXLEN: [64]
+  # stval/mtval follow user manual Table 5.2 (5.2.1, p.39): the faulting virtual
+  # address for causes 1, 4, 6, 12, 13 and 15; the instruction encoding for cause 2;
+  # and ZERO for cause 3 (breakpoint), cause 5 (load access fault) and cause 7
+  # (store/AMO access fault).  The zero rows are confirmed in RTL:
+  #   Quote: "ld_da_wb_mt_value_ori[PA_WIDTH-1:0] = {PA_WIDTH{1'b0}};" on the access
+  #   fault path
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/lsu/rtl/ct_lsu_ld_da.v#L1571-L1579
+  REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_BREAKPOINT: false
+  REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT: false
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT: false
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION: true
+  STVAL_WIDTH: 64
+  # mcounteren and scounteren are plain 32-bit registers with every bit writable.
+  #   Quote: "mcnten_reg[31:0] <= iui_regs_src0[31:0];" / "scnten_reg[31:0] <= iui_regs_src0[31:0];"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L1949
+  # Bits 19-31 are declared false here ONLY because UDB refuses an enable bit for a
+  # counter that HPM_COUNTER_EN says does not exist.  On the DUT those bits really are
+  # writable even though mhpmcounter19-31 read 0 - recorded as a discrepancy.
+  SCOUNTENABLE_EN:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  # stvec mirrors mtvec: BASE is bits 63:2 (fully writable), MODE bit 0 is writable and
+  # MODE bit 1 reads as zero.  Both Direct and Vectored are supported; in Vectored mode
+  # the offset is ADDED (BASE + 4*cause) and applies to interrupts only, so the base
+  # only needs 4-byte alignment.
+  #   Quote: "assign stvec_value[63:0] = {stvec_base[61:0], 1'b0, stvec_mode[0]};"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L2260
+  #   Quote: "assign expt_virtual_pc[PC_WIDTH-2:0] = (expt_mode[0] && int_vld)
+  #             ? ({cp0_ifu_vbr[PC_WIDTH-1:2],1'b0} + {33'b0,rtu_ifu_xx_expt_vec[4:0],1'b0})
+  #             : {cp0_ifu_vbr[PC_WIDTH-1:2],1'b0};"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/ifu/rtl/ct_ifu_vector.v#L225-L228
+  STVEC_MODES: [0, 1]
+  STVEC_BASE_ALIGNMENT_VECTORED: 4
+  SATP_MODE_BARE: true
+  TRAP_ON_ECALL_FROM_S: true
+  # mstatus.VS is hardwired 0 - there is no vector unit.
+  #   Quote: "assign vs[1:0] = 2'b0;"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L1541
+  MSTATUS_VS_LEGAL_VALUES: [0]
+
+  # ---------------- Sm ----------------
+  MXLEN: 64
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_EBREAK: true
+  # marchid and mimpid both read 0.
+  #   Quote: "assign marchid_value[63:0] = 64'b0;" / "assign mimpid_value[63:0] = 64'b0;"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L1466
+  MARCHID_IMPLEMENTED: false
+  MIMPID_IMPLEMENTED: false
+  # mvendorid = 0x5B7 = T-Head's JEDEC id: bank = 0x5B7 >> 7 = 0xB, offset = 0x5B7 & 0x7F = 0x37.
+  #   Quote: "assign mvendorid_value[63:0] = 64'h5B7;"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L1455
+  VENDOR_ID_BANK: 0xB
+  VENDOR_ID_OFFSET: 0x37
+  # Misaligned ordinary loads and stores are handled in hardware because mxstatus.MM
+  # resets to 1 and RVMODEL_BOOT leaves it set.
+  #   Quote: "mm <= 1'b1;" (reset) and "assign cp0_lsu_mm = mm;"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L2686
+  #   Quote (user manual 16.1.7.1, p.330): "MM-非对齐访问使能位：…… 当 MM 为 1 时，
+  #   支持非对齐访问，硬件处理非对齐访问。（C910 默认值为 1）"
+  #   ("MM - misaligned access enable: ... when MM is 1 misaligned accesses are
+  #   supported and handled by hardware. (The C910 default is 1.)")
+  MISALIGNED_LDST: true
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0
+  # C910 handles misaligned accesses in hardware; the order in which the halves are
+  # visible is not documented, so "custom" rather than sequential_bytes.
+  MISALIGNED_SPLIT_STRATEGY: custom
+  TRAP_ON_ILLEGAL_WLRL: false
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  # NOTE: this is true for every CSR address the decoder does not recognise, but eight
+  # wildcard ranges reserved for XuanTie customs (0x7C0-0x7FF, 0xBC0-0xBFF, 0xFC0-0xFFF,
+  # 0x5C0-0x5FF, 0x9C0-0x9FF, 0xDC0-0xDFF, 0x800-0x8FF, 0xCC0-0xCFF) are accepted
+  # wholesale and read 0, so an unimplemented address inside one of them does NOT trap.
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_iui.v#L881-L898
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
+  MTVAL_WIDTH: 64
+  # Physical addresses are 40 bits.
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/mmu/rtl/ct_mmu_regs.v#L652-L653
+  PHYS_ADDR_WIDTH: 40
+  PMA_GRANULARITY: 12
+  M_MODE_ENDIANNESS: little
+  MISA_CSR_IMPLEMENTED: true
+  MTVEC_ACCESS: rw
+  MTVEC_MODES: [0, 1]
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  MTVEC_BASE_ALIGNMENT_VECTORED: 4
+  # "custom" rather than "retain": writing mtvec.MODE = 2 or 3 does not leave mtvec
+  # unchanged, it stores the value and reads MODE back with bit 1 dropped (2 reads as
+  # 0, 3 reads as 1), which UDB has no exact encoding for.
+  #   Quote: "mtvec_mode[1:0] <= iui_regs_src0[1:0];" but
+  #          "assign mtvec_value[63:0] = {mtvec_base[61:0], 1'b0, mtvec_mode[0]};"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L1918-L1933
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
+  # PMP: 8 entries.  pmpcfg2 and pmpaddr8-15 are legal addresses but hardwired 0.
+  #   Quote: "`define PMP_REGION_8"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cpu/rtl/cpu_cfig.h#L160
+  # The architecture requires the *apparent* count to be 0, 16 or 64, and C910 obeys
+  # that: pmpcfg2 and pmpaddr8-15 are legal CSR addresses that read 0 and ignore
+  # writes rather than trapping.  So 16 entries exist, 8 are usable.
+  #   Quote: "assign pmpcfg2_value[63:0] = 64'b0;" and
+  #          "assign pmpaddr8_value[ADDR_WIDTH-1:0] = {ADDR_WIDTH{1'b0}};"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/pmp/rtl/ct_pmp_regs.v#L393
+  NUM_PMP_ENTRIES: 16
+  NUM_USABLE_PMP_ENTRIES: 8
+  # Smallest supported region is 4 KB, i.e. spec G = 10; UDB stores G+2 = 12.
+  #   Quote: the NAPOT size decode begins at "//4KB" and has no smaller case
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/pmp/rtl/ct_pmp_comp_hit.v#L98
+  #   Quote (user manual 6.3.2.2, p.54): "因为 C910 PMP 表项粒度最低支持 4KB，因此
+  #   bit[8:0] 不会用于地址鉴权逻辑。"
+  #   ("because the C910 PMP entry granularity supports 4KB at minimum, bit[8:0] is not
+  #   used by the address authorization logic.")
+  PMP_GRANULARITY: 12
+  PMP_TOR_SUPPORTED: true
+  PMP_NAPOT_SUPPORTED: true
+  # NA4 is decoded but permanently forced to miss.
+  #   Quote: "assign mmu_na4_addr_match   = 1'b0;"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/pmp/rtl/ct_pmp_comp_hit.v#L89
+  #   Quote (user manual 6.3.1, p.51): "支持 OFF、TOR、NAPOT 三种地址匹配模式，不支持
+  #   NA4 匹配模式"
+  #   ("Supports the three address matching modes OFF, TOR and NAPOT; does not support
+  #   the NA4 matching mode.")
+  PMP_NA4_SUPPORTED: false
+  # 16 hardware event counters: mhpmcounter3..18 are real, 19..31 read 0 and ignore
+  # writes.  All counters are 64 bits wide.
+  #   Quote: "`define HPCP_CNT_NUM_16"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cpu/rtl/cpu_cfig.h#L286
+  #   Quote: "reg [63:0] counter;"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/pmu/rtl/ct_hpcp_cnt.v#L50
+  HPM_COUNTER_EN:
+    [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  HPM_EVENTS: [0]
+  # mcountinhibit (0x320) exists with CY (bit 0), IR (bit 2) and HPM3..31 (bits 31:3);
+  # bit 1 is read-only zero, as the architecture requires.
+  #   Quote: "assign mcntinhbt_value[63:0] = {32'b0,hpm[28:0], ir, 1'b0, cy};"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/pmu/rtl/ct_hpcp_top.v#L2563
+  MCOUNTINHIBIT_IMPLEMENTED: true
+  COUNTINHIBIT_EN:
+    [
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  MCOUNTENABLE_EN:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]

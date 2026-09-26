@@ -1,0 +1,141 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# CI configuration for the XuanTie OpenC910
+
+# DISABLED IN CI: the core is too slow for a GitHub runner.
+#
+# OpenC910 verilates to a large model that runs at roughly 1.8k cycles/s per CPU, and the
+# tests are long: a typical I test is about 38k cycles, an FP test about 200k.  On this
+# project's 32-core machine the full 538-test run takes about 90 minutes at -j20; on a
+# 2-core runner individual tests exceed run-c910.sh's 300s per-test ceiling and the job
+# fails on timeouts rather than on anything the core got wrong.  Raising the ceiling would
+# only convert those into a job that runs for hours.
+#
+# Everything below is kept so the configuration stays reviewable and can be run by hand:
+#   make c910-openc910
+# Measured locally: 538 selected, 486 pass, 52 fail; with the exclusions below, 219/219.
+ci_enabled: false
+
+# Exclusions are by test-suite directory, the only granularity EXCLUDE_EXTENSIONS
+# supports, so a suite with one failing test loses all its passing tests too. That is
+# expensive here: D and F are excluded for 20 failures between them and take 180 passing
+# tests with them, and PMPSm, Sm and Sv are excluded for 11 failures and take 85.
+#
+# Measured on T-head-Semi/openc910 @ b91c909, verilated with Verilator 5.036 and run in
+# the SoC testbench from smart_run/ (with the three ACT testbench patches from
+# .github/scripts/setup-c910.sh applied): 538 tests selected, 486 pass, 52 fail.
+# EVERY ONE of the 52 also PASSES on config/sail/sail-rv64-max - the same suites were
+# run there, 593 unprivileged and 235 privileged tests, all passing - so none of them is
+# an ACT framework or test-generation problem.
+# With the exclusions below applied, 219 tests are selected and all 219 pass.
+#
+# Full analysis, with RTL and user-manual citations for each item, is in
+# ~/reviews/act-ports/c910-discrepancies.md.
+#
+#   D              9 of 116 fail, F 11 of 84 fail. Two floating-point families, both
+#   F              of them genuine IEEE-754/RISC-V divergences:
+#                  (a) 16 tests - fmadd/fmsub/fnmadd/fnmsub in both .s and .d - fail on
+#                      fflags when the result is subnormal and rounding is rup/rdn.
+#                      MEASURED: fflags reads 0x01 (NX) where 0x03 (NX|UF) is required,
+#                      e.g. fmadd.d with fs1 = 0x8010000000000000,
+#                      fs3 = 0x000FFFFFFFFFFFFF, frm = rup. The result value is correct;
+#                      the underflow flag is simply never raised by the FMA unit.
+#                  (b) 4 tests - fmin.s, fmax.s, fmin.d, fmax.d - fail on the signalling
+#                      NaN edge (0x7F800001 / 0x7FF0000000000001). MEASURED: C910
+#                      returns the canonical quiet NaN (0x7FC00000 / 0x7FF8...0) where
+#                      the architecture requires the OTHER operand. This is the
+#                      pre-2.2 fmin/fmax behaviour; F spec 2.2 changed it so that a
+#                      single NaN operand - quiet or signalling - returns the non-NaN
+#                      operand with NV set, and only two NaNs give the canonical NaN.
+#                  Everything else in D and F passes, including all conversions,
+#                  classification, comparison, sign injection and the whole
+#                  MisalignF/MisalignD/SmF/UF/ZicsrF/PMPF set.
+#
+#   ExceptionsF    1 of 1, 1 of 1, 4 of 4, 1 of 1 and 1 of 1 fail respectively - the
+#   ExceptionsS    whole family - and all five have the SAME single root cause:
+#   ExceptionsSm   C910's load access fault from a bus error is IMPRECISE. The tests
+#   ExceptionsU    load from RVMODEL_ACCESS_FAULT_ADDRESS (0x0200_0000, the SoC's AXI
+#   ExceptionsZc   error responder); the fault is taken correctly with mcause 5 and
+#                  mtval = 0x02000000, but xepc points 12 to 32 bytes PAST the faulting
+#                  load, so every subsequent trap in the recorded stream is off by one.
+#                  MEASURED with a directed probe: a marker register written immediately
+#                  after the faulting load is already updated when the handler runs.
+#                  The user manual admits this in 5.2.3 (p.39) - the load access fault is
+#                  listed as imprecise. The privileged spec requires synchronous
+#                  exceptions to be precise.
+#
+#   ExceptionsSv   4 of 4 and 3 of 3 fail. Same imprecise-load root cause, plus a second
+#   ExceptionsSvZalrsc
+#                  one visible here: a plain sw/sd to the error responder raises NO
+#                  exception at all (the write is posted and the AXI SLVERR is dropped;
+#                  MEASURED with sw, sd, a fence and 64 nops - no trap, mip stays 0), so
+#                  where the test expects mcause 7 the DUT delivers the preceding late
+#                  load's mcause 5. ExceptionsSvZaamo and ExceptionsZaamo pass, because
+#                  an AMO to that address does fault - for the unrelated reason that
+#                  C910 requires AMOs to target cacheable memory.
+#
+#   ExceptionsZalrsc
+#                  1 of 1 fails. A misaligned LR raises mcause 6 (store/AMO address
+#                  misaligned) instead of mcause 4 (load address misaligned). C910
+#                  classifies LR with the AMOs: ct_lsu_ld_ag.v:1204-1208 puts
+#                  ld_ag_atomic - which covers LR - on the same misalignment path as the
+#                  AMOs, and ct_lsu_ld_dc.v:1244-1248 assigns cause 6 to all of them.
+#
+#   PMPSm          2 of 36 fail (PMPSm_grain-00 at cp_grain bin
+#                  zeros_write_NAPOT_read_NAPOT, PMPSm_grain_check-00 at cp_grain_check
+#                  bin readback), and both are the same WARL deviation. pmpaddr stores
+#                  only bits [37:9] and reads bits [8:0] back as zero unconditionally
+#                  (ct_pmp_regs.v:408,520). The smallest supported region is 4 KB, so
+#                  G = 10 and the spec requires pmpaddr[8:0] to read as ALL ONES when
+#                  pmpcfg.A = NAPOT. MEASURED: writing 0x000401FF (a 4 KB NAPOT region)
+#                  reads back 0x00040000; writing all-ones reads back 0x3FFFFFFE00.
+#                  The matching logic is correct - the region really is enforced at
+#                  4 KB - so this is purely a read-back defect, but it defeats the
+#                  standard write-all-ones probe for the granularity. The other 34
+#                  PMPSm tests pass, as do all of PMPS, PMPU, PMPZca, PMPZaamo and PMPF.
+#
+#   PMPZalrsc      1 of 1 fails, on mcause. Same LR-classified-as-AMO issue as
+#                  ExceptionsZalrsc: a PMP-denied LR reports cause 7 rather than 5.
+#
+#   Sm             6 of 27 fail:
+#                  - Sm_xret-00 (cp_mret, mpp_01_mprv_1_mpie_0_mie_0_rval): mret does
+#                    not clear mstatus.MPRV when MPP != M. That rule was added in
+#                    privileged spec 1.12; C910 implements 1.10 and its mret only
+#                    assigns MPP <- 0 (ct_cp0_regs.v:1624). A version gap, not a bug,
+#                    and not fixable from the config.
+#                  - Sm_mcsr_walk-00 (mstatus_set_bit_12_mpp_legal) and Sm_mcsr_walk-02
+#                    (mip_set_bit_0): WARL walk differences in mstatus.MPP and in the
+#                    reserved low bit of mip.
+#                  - Sm_mcsr_access-00 (mip_csrrw1): MEASURED mip reads back 0x222
+#                    (SSIP, STIP, SEIP) where the model expects 0x2A2, i.e. C910's MTIP
+#                    is not software-settable. Standard-conforming for MTIP, but the
+#                    platform has no memory-mapped mtime for the model to agree with.
+#                  - Sm_mcsr_cntr-00 (cp_mcycle_wraparound): mcycle wraparound.
+#                  - Sm_shadow-00 (cp_shadow, sip_mip_1s): the sip/mip shadow differs,
+#                    because C910 gates the CLINT's SSIP/STIP through mxstatus.CLINTEE
+#                    and adds custom interrupts 16 (ECC) and 17 (counter overflow).
+#
+#   Sv             3 of 33 fail. Two are Sv_sv39_canonical_{S,U}mode-00 on mtval:
+#                  MEASURED, a store to the non-canonical VA 0x8000000140009014 gives
+#                  stval = 0x0000000140009014 - the hardware-written xtval is truncated
+#                  to the 40-bit address width, so bit 63, the very bit that made the
+#                  address non-canonical, is lost. (A CSR write to mtval does store all
+#                  64 bits, so no single UDB width value describes the register.)
+#                  The third, Sv_sv39_upage_mstatus_sum_set_Smode-00, fails at
+#                  bin test1_exec.
+#
+#   SvPMP          2 of 4 fail (cp_sv39_pmp_on_pte_{S,U}mode, bin test2_load): a PMP
+#                  violation on a page-table entry read. C910 reports cause 5 with
+#                  mtval 0 for PMP load violations (MEASURED), where a bus-error load
+#                  fault reports the address - the DUT is internally inconsistent about
+#                  xtval for the same cause, so no configuration value fits both.
+#
+#   ZicntrS        1 of 1 and 1 of 1 fail. ZicntrU-00 fails at
+#   ZicntrU        cp_mcounter_inc_inaccessible: the counter advanced by 0x275 where
+#                  0x26F was expected, i.e. C910's minstret counts six more instructions
+#                  across the trap than the reference model. ZicntrSm passes.
+exclude_extensions: "D,F,ExceptionsF,ExceptionsS,ExceptionsSm,ExceptionsSv,ExceptionsSvZalrsc,ExceptionsU,ExceptionsZalrsc,ExceptionsZc,PMPSm,PMPZalrsc,Sm,Sv,SvPMP,ZicntrS,ZicntrU"
+
+apt_packages: "autoconf flex bison help2man libfl-dev libelf-dev ccache patch"
+install_script: ".github/scripts/install-c910.sh"
+setup_script: ".github/scripts/setup-c910.sh"

@@ -11,7 +11,6 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
     _MSTATUS_SUM,
-    CP_UXL_CLEAR,
     HIGH_VA,
     LEVELS_BELOW_ROOT,
     MODE_GUARDS,
@@ -133,7 +132,7 @@ def make_ssnpm(test_data: TestData) -> list[TestChunk]:
                         prefix,
                         test_data,
                         regs,
-                        cp=CP_UXL_CLEAR,
+                        cp="cp_pmm_uxl_clear",
                         cg=COVERGROUP,
                         pmm_csr="senvcfg",
                         pmm_shift=_SENVCFG_PMM,

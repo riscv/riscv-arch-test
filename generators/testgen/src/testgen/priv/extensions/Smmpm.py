@@ -11,8 +11,6 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
     _PMM_FIELD_SHIFT,
-    CP_SXL_CLEAR,
-    CP_UXL_CLEAR,
     PMM_CONFIGS,
     _mprv_img_tables,
     alloc_pm_regs_paired,
@@ -87,8 +85,8 @@ def make_smmpm(test_data: TestData) -> list[TestChunk]:
 
     # Writing SXL or UXL to 32 must clear menvcfg.PMM, which governs S (SXL) or U without S (UXL).
     checks = [
-        ("#ifdef S_SUPPORTED", "UDB_SXLEN_32", "sxl", CP_SXL_CLEAR, "menvcfg", _MSTATUS_SXL_SHIFT),
-        ("#ifndef S_SUPPORTED", "UDB_UXLEN_32", "uxl", CP_UXL_CLEAR, "menvcfg", _MSTATUS_UXL_SHIFT),
+        ("#ifdef S_SUPPORTED", "UDB_SXLEN_32", "sxl", "cp_pmm_sxl_clear", "menvcfg", _MSTATUS_SXL_SHIFT),
+        ("#ifndef S_SUPPORTED", "UDB_UXLEN_32", "uxl", "cp_pmm_uxl_clear", "menvcfg", _MSTATUS_UXL_SHIFT),
     ]
     for mode_guard, xlen_guard, tag, cp, pmm_csr, status_shift in checks:
         lines.extend(["#ifdef U_SUPPORTED", mode_guard, f"#ifdef {xlen_guard}"])

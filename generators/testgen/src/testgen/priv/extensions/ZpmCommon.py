@@ -20,7 +20,7 @@ from testgen.data.state import TestData
 
 # ── Constants ──────────────────────────────────────────────────────────────
 
-UPPER_PATTERNS: list[int] = [
+UPPER_PATTERNS = [
     0x0000,  # no tag: masking is a no-op, the control case
     0x0001,  # bit 48   -- stripped by PMLEN=16 only
     0x0100,  # bit 56   -- stripped by PMLEN=16 only
@@ -31,15 +31,15 @@ UPPER_PATTERNS: list[int] = [
     0xFF00,  # bits 63:56 -- fully stripped by PMLEN=16, partially by PMLEN=7
 ]
 
-PMM_CONFIGS: list[tuple[int, int, str]] = [
+PMM_CONFIGS = [
     (0b00, 0, "pmm00"),
     (0b10, 7, "pmm10"),
     (0b11, 16, "pmm11"),
 ]
 
-VALUE_OLD: int = 0xABCD_1234_ABCD_1234
-VALUE_NEW: int = 0xA5A5_A5A5_A5A5_A5A5
-SENTINEL: int = 0x1BAD_0BAD_1BAD_0BAD
+VALUE_OLD = 0xABCD_1234_ABCD_1234
+VALUE_NEW = 0xA5A5_A5A5_A5A5_A5A5
+SENTINEL = 0x1BAD_0BAD_1BAD_0BAD
 
 _MSTATUS_MXR = 1 << 19
 _MSTATUS_SUM = 1 << 18
@@ -47,16 +47,6 @@ _MSTATUS_FS_DIRTY = 3 << 13
 _MSTATUS_VS_DIRTY = 3 << 9
 
 CP_MASKING = "cp_pmlen_masking"
-CP_MISALIGN = "cp_pmlen_misaligned_word"
-CP_MXR = "cp_pmm_mxr"
-CP_JALR = "cp_pmm_jalr"
-CP_FAULT = "cp_hardware_csr_writes_fault"
-CP_CSR = "cp_pm_csr_software_access"
-CP_UXL_CLEAR = "cp_pmm_uxl_clear"
-CP_SXL_CLEAR = "cp_pmm_sxl_clear"
-CP_MPRV_MPP_M = "cp_pm_mprv_mpp_m"
-CP_MPRV_MPP_U_S = "cp_pm_mprv_mpp_u_s"
-CP_MPRV_MPP_U_NO_S = "cp_pm_mprv_mpp_u_no_s"
 
 # envcfg (menvcfg/senvcfg) field positions shared by every mode-entry prelude
 # that needs to grant cbo.*/prefetch.*/Zicfiss permission to the next lower
@@ -66,34 +56,32 @@ _ENVCFG_CBCFE_SHIFT = 6
 _ENVCFG_CBZE_SHIFT = 7
 _ENVCFG_SSE_BIT = 1 << 3
 
-READS: list[str] = ["lb", "lbu", "lh", "lhu", "lw", "lwu", "ld"]
-WRITES: list[tuple[str, str]] = [("sb", "lbu"), ("sh", "lhu"), ("sw", "lw"), ("sd", "ld")]
+READS = ["lb", "lbu", "lh", "lhu", "lw", "lwu", "ld"]
+WRITES = [("sb", "lbu"), ("sh", "lhu"), ("sw", "lw"), ("sd", "ld")]
 AMO_OPS = ["swap", "add", "xor", "and", "or", "min", "max", "minu", "maxu"]
-RV64A_AMOS: list[tuple[str, str]] = [(f"amo{op}.{w}", "lw" if w == "w" else "ld") for op in AMO_OPS for w in ("w", "d")]
-ZABHA_AMOS: list[tuple[str, str]] = [
-    (f"amo{op}.{w}", "lbu" if w == "b" else "lhu") for op in AMO_OPS for w in ("b", "h")
-]
-ZACAS_AMOS: list[str] = ["amocas.w", "amocas.d", "amocas.q"]
-FP_READS: list[tuple[str, str, str]] = [
+RV64A_AMOS = [(f"amo{op}.{w}", "lw" if w == "w" else "ld") for op in AMO_OPS for w in ("w", "d")]
+ZABHA_AMOS = [(f"amo{op}.{w}", "lbu" if w == "b" else "lhu") for op in AMO_OPS for w in ("b", "h")]
+ZACAS_AMOS = ["amocas.w", "amocas.d", "amocas.q"]
+FP_READS = [
     ("flw", "F_SUPPORTED", "fmv.w.x"),
     ("fld", "D_SUPPORTED", "fmv.d.x"),
 ]  # TODO :Add flq & fsq when Q is supported.
-FP_WRITES: list[tuple[str, str, str, str]] = [
+FP_WRITES = [
     ("fsw", "lw", "F_SUPPORTED", "fmv.w.x"),
     ("fsd", "ld", "D_SUPPORTED", "fmv.d.x"),
 ]
-ZCA_READS_CL: list[str] = ["c.lw", "c.ld"]
-ZCA_WRITES_CS: list[tuple[str, str]] = [("c.sw", "lw"), ("c.sd", "ld")]
-ZCA_READS_SP: list[str] = ["c.lwsp", "c.ldsp"]
-ZCA_WRITES_SP: list[tuple[str, str]] = [("c.swsp", "lw"), ("c.sdsp", "ld")]
+ZCA_READS_CL = ["c.lw", "c.ld"]
+ZCA_WRITES_CS = [("c.sw", "lw"), ("c.sd", "ld")]
+ZCA_READS_SP = ["c.lwsp", "c.ldsp"]
+ZCA_WRITES_SP = [("c.swsp", "lw"), ("c.sdsp", "ld")]
 
-ZICBOM_OPS: list[str] = ["cbo.clean", "cbo.flush", "cbo.inval"]
-ZICBOP_OPS: list[str] = ["prefetch.r", "prefetch.w", "prefetch.i"]
+ZICBOM_OPS = ["cbo.clean", "cbo.flush", "cbo.inval"]
+ZICBOP_OPS = ["prefetch.r", "prefetch.w", "prefetch.i"]
 ZICFISS_AMOS: list[
     tuple[str, str, int]
 ] = []  # TODO : Add all zicfiss instructions including amo and push, pop instructions.
 
-VEC_READS: list[tuple[str, int, str]] = [
+VEC_READS = [
     ("vle8.v", 8, "vle8.v v2, (x{a})"),
     ("vle16.v", 16, "vle16.v v2, (x{a})"),
     ("vle32.v", 32, "vle32.v v2, (x{a})"),
@@ -111,7 +99,7 @@ VEC_READS: list[tuple[str, int, str]] = [
     ("vl1r.v", 64, "vl1r.v v2, (x{a})"),
     ("vlseg2e32.v", 32, "vlseg2e32.v v2, (x{a})"),
 ]
-VEC_WRITES: list[tuple[str, int, str, str]] = [
+VEC_WRITES = [
     ("vse8.v", 8, "vse8.v v2, (x{a})", "lbu"),
     ("vse16.v", 16, "vse16.v v2, (x{a})", "lhu"),
     ("vse32.v", 32, "vse32.v v2, (x{a})", "lw"),
@@ -132,10 +120,10 @@ _NONLEAF_PERMS = "PTE_V"  # non-leaf PTEs must have ONLY V set
 _LEAF_PERMS_U = "PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V"  # U-accessible data page
 _LEAF_PERMS_S = "PTE_D | PTE_A | PTE_W | PTE_R | PTE_V"  # S-accessible only (no U)
 
-LEVELS_BELOW_ROOT: dict[str, int] = {"sv39": 2, "sv48": 3, "sv57": 4}
-IDENTITY_VPN_SHIFT: dict[str, int] = {"sv39": 30, "sv48": 39, "sv57": 48}
+LEVELS_BELOW_ROOT = {"sv39": 2, "sv48": 3, "sv57": 4}
+IDENTITY_VPN_SHIFT = {"sv39": 30, "sv48": 39, "sv57": 48}
 
-HIGH_VA: dict[str, int] = {
+HIGH_VA = {
     "sv39": 0xFFFF_FFC0_0000_0000,
     "sv48": 0xFFFF_8000_0000_0000,
     # sv57 reuses sv48's boundary rather than its own tighter one (bit 56
@@ -144,8 +132,8 @@ HIGH_VA: dict[str, int] = {
     "sv57": 0xFFFF_8000_0000_0000,
 }
 
-MODES: list[str] = ["bare", "sv39", "sv48", "sv57"]
-MODE_GUARDS: dict[str, str | None] = {m: None if m == "bare" else f"{m.upper()}_SUPPORTED" for m in MODES}
+MODES = ["bare", "sv39", "sv48", "sv57"]
+MODE_GUARDS = {m: None if m == "bare" else f"{m.upper()}_SUPPORTED" for m in MODES}
 
 # ── MPRV pass (Smmpm-specific) ──────────
 
@@ -157,7 +145,7 @@ _MPP_M, _MPP_S, _MPP_U = 0b11, 0b01, 0b00
 _PMM_FIELD_SHIFT = 32
 
 # Limited upper patterns for MPRV testing (per testplan)
-_MPRV_UPPER_PATTERNS: list[int] = [0x0000, 0x0001, 0x0200]
+_MPRV_UPPER_PATTERNS = [0x0000, 0x0001, 0x0200]
 
 
 # ── Config / Regs ──────────────────────────────────────────────────────────
@@ -352,7 +340,7 @@ def pass_g_csr_writes(
             [
                 f"csrr x{regs.tmp}, {csr} # save the csr's value before clobbering it",
                 f"LI(x{regs.chk}, {hex(pattern)})",
-                test_data.add_testcase(f"{prefix}_csrw_{csr}", CP_CSR, cg),
+                test_data.add_testcase(f"{prefix}_csrw_{csr}", "cp_pm_csr_software_access", cg),
                 gen_csr_write_sigupd(regs.chk, csr, test_data),
                 f"csrw {csr}, x{regs.tmp} # restore before any later trap needs this CSR",
             ]
@@ -1055,8 +1043,10 @@ def pass_c_misaligned(cfg: object | None, prefix: str, test_data: TestData, regs
                 f"LI(x{regs.tmp}, {hex(upper << 48)})",
                 f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
                 f"addi x{regs.a}, x{regs.a}, 1   # force a misaligned effective address",
-                *_probe_load("lw", _tid(f"{prefix}_mis", upper, "lw"), test_data, regs, CP_MISALIGN, cg),
-                *_probe_store("sw", "lw", _tid(f"{prefix}_mis", upper, "sw"), test_data, regs, CP_MISALIGN, cg),
+                *_probe_load("lw", _tid(f"{prefix}_mis", upper, "lw"), test_data, regs, "cp_pmlen_misaligned_word", cg),
+                *_probe_store(
+                    "sw", "lw", _tid(f"{prefix}_mis", upper, "sw"), test_data, regs, "cp_pmlen_misaligned_word", cg
+                ),
             ]
         )
     return lines
@@ -1088,8 +1078,8 @@ def pass_d_mxr(
             [
                 f"LI(x{regs.tmp}, {hex(upper << 48)})",
                 f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
-                *_probe_load("lw", _tid(f"{prefix}_mxr", upper, "lw"), test_data, regs, CP_MXR, cg),
-                *_probe_store("sw", "lw", _tid(f"{prefix}_mxr", upper, "sw"), test_data, regs, CP_MXR, cg),
+                *_probe_load("lw", _tid(f"{prefix}_mxr", upper, "lw"), test_data, regs, "cp_pmm_mxr", cg),
+                *_probe_store("sw", "lw", _tid(f"{prefix}_mxr", upper, "sw"), test_data, regs, "cp_pmm_mxr", cg),
             ]
         )
     return lines
@@ -1106,7 +1096,7 @@ def pass_e_jalr(cfg: object | None, prefix: str, test_data: TestData, regs: Regs
                 f"LI(x{regs.tmp}, {hex(upper << 48)})",
                 f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
                 f"li x{regs.chk}, 0   # the pad sets this to 1 if the fetch succeeded",
-                test_data.add_testcase(_tid(f"{prefix}_mxr{mxr}", upper, "jalr"), CP_JALR, cg),
+                test_data.add_testcase(_tid(f"{prefix}_mxr{mxr}", upper, "jalr"), "cp_pmm_jalr", cg),
                 *_fixed(f"jalr ra, 0(x{regs.a})"),
                 write_sigupd(regs.chk, test_data),
             ]
@@ -1127,12 +1117,12 @@ def pass_f_fault_address(cfg: object | None, prefix: str, test_data: TestData, r
                 f"LI(x{regs.tmp}, {hex(upper << 48)})",
                 f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
                 *_sentinel(regs),
-                test_data.add_testcase(_tid(f"{prefix}_flt", upper, "lw"), CP_FAULT, cg),
+                test_data.add_testcase(_tid(f"{prefix}_flt", upper, "lw"), "cp_hardware_csr_writes_fault", cg),
                 *_fixed(f"lw x{regs.chk}, 0(x{regs.a})"),
                 write_sigupd(regs.chk, test_data),
                 f"LI(x{regs.data}, {hex(VALUE_NEW)})",
                 *_sentinel(regs),
-                test_data.add_testcase(_tid(f"{prefix}_flt", upper, "sw"), CP_FAULT, cg),
+                test_data.add_testcase(_tid(f"{prefix}_flt", upper, "sw"), "cp_hardware_csr_writes_fault", cg),
                 *_fixed(f"sw x{regs.data}, 0(x{regs.a})"),
                 write_sigupd(regs.chk, test_data),
             ]

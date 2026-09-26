@@ -1337,6 +1337,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED",
+            "#ifdef UDB_COUNTINHIBIT_EN_0 // mcountinhibit.CY may be read-only zero",
             f"LI(x{r1}, 0b1)        # inhibit mcycle",
             f"csrw mcountinhibit, x{r1}        # inhibit mcycle",
             f"csrr x{r1}, mcycle        # read mcycle",
@@ -1345,6 +1346,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             f"csrr x{r2}, mcycle        # read mcycle again",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be 0",
             write_sigupd(r2, test_data),
+            "#endif // UDB_COUNTINHIBIT_EN_0",
         ]
     )
 
@@ -1359,6 +1361,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     )
     lines.extend(
         [
+            "#ifdef UDB_COUNTINHIBIT_EN_2 // mcountinhibit.IR may be read-only zero",
             f"LI(x{r1}, 0b100)        # inhibit minstret",
             f"csrw mcountinhibit, x{r1}        # inhibit minstret",
             f"csrr x{r1}, minstret        # read minstret",
@@ -1367,6 +1370,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             f"csrr x{r2}, minstret        # read minstret again",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be 0",
             write_sigupd(r2, test_data),
+            "#endif // UDB_COUNTINHIBIT_EN_2",
             "#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED",
         ]
     )

@@ -2,17 +2,81 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
-  # henvcfg enables CBOs in VS-mode and VU-mode; a disabled HS-qualified CBO raises virtual instruction
-  - names:
+  # The Zicbom extension adds the CBIE (Cache Block Invalidate instruction Enable) WARL
+  # field to henvcfg. The CBIE field controls execution of the cache block invalidate
+  # instruction (CBO.INVAL) in privilege modes VS and VU. The encoding 0b10 is reserved.
+  # When the Zicbom extension is not implemented, CBIE is read-only zero.
+  - name: henvcfg_cbie
+    coverpoint:
       [
-        henvcfg_cbie,
-        cbo-inval_h-mode_veq1_op,
-        cbo-inval,
-        henvcfg_cbcfe,
-        cbo-clean_cbo-flush,
-        henvcfg_cbze,
-        cbo-zero_basedon_xenvcfg-CBZE,
+        "SvHZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}",
+        "SvHZicbo_envcfg_cg/{cp_cbcfe_vs,cp_cbcfe_vu}",
+        "SvHZicbo_envcfg_cg/{cp_cbze_vs,cp_cbze_vu}",
+        "H_hscsr_cg/cp_hcsrwalk_masked",
+        "HSm_mcsr_cg/cp_hcsrwalk_masked",
       ]
+  # When V=1, if the CBO.INVAL instruction is not HS-qualified, it raises an
+  # illegal-instruction exception. If the instruction is HS-qualified and the CBIE field
+  # is set to 0b01 or 0b11, the instruction is enabled for execution; otherwise, it raises
+  # a virtual-instruction exception.
+  - name: cbo-inval_h_mode_veq1_op
+    coverpoint:
+      [
+        "SvHZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}",
+        "SvHZicbo_envcfg_cg/{cp_cbcfe_vs,cp_cbcfe_vu}",
+        "SvHZicbo_envcfg_cg/{cp_cbze_vs,cp_cbze_vu}",
+      ]
+  # A insn:cbo.inval[] instruction executes or raises either an illegal-instruction
+  # exception or a virtual-instruction exception based on the state of the
+  # csr:envcfg[cbie] fields:
+  - name: cbo-inval
+    coverpoint:
+      [
+        "SvHZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}",
+        "SvHZicbo_envcfg_cg/{cp_cbcfe_vs,cp_cbcfe_vu}",
+        "SvHZicbo_envcfg_cg/{cp_cbze_vs,cp_cbze_vu}",
+      ]
+  # The Zicbom extension adds the CBCFE (Cache Block Clean and Flush instruction Enable)
+  # field to henvcfg. When V=1, if the CBO.CLEAN and CBO.FLUSH instructions are not
+  # HS-qualified, they raise an illegal-instruction exception. If the instructions are
+  # HS-qualified and the CBCFE field is set to 1, the instructions are enabled for
+  # execution; otherwise, if the CBCFE field is set to 0, they raise a virtual-instruction
+  # exception. When the Zicbom extension is not implemented, CBCFE is read-only zero.
+  - name: henvcfg_cbcfe
+    coverpoint:
+      [
+        "SvHZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}",
+        "SvHZicbo_envcfg_cg/{cp_cbcfe_vs,cp_cbcfe_vu}",
+        "SvHZicbo_envcfg_cg/{cp_cbze_vs,cp_cbze_vu}",
+      ]
+  # A insn:cbo.clean[] or insn:cbo.flush[] instruction executes or raises an
+  # illegal-instruction or virtual-instruction exception based on the state of the
+  # csr:envcfg[cbcfe] bits:
+  - name: cbo-clean_cbo-flush
+    coverpoint:
+      [
+        "SvHZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}",
+        "SvHZicbo_envcfg_cg/{cp_cbcfe_vs,cp_cbcfe_vu}",
+        "SvHZicbo_envcfg_cg/{cp_cbze_vs,cp_cbze_vu}",
+      ]
+  # The Zicboz extension adds the CBZE (Cache Block Zero instruction enable) field to
+  # henvcfg. The CBZE field applies to execution of the cache block zero instruction
+  # (CBO.ZERO) in privilege modes VS and VU, and only when the instruction is
+  # HS-qualified. If the instruction is not HS-qualified, it raises an illegal-instruction
+  # exception. If the instruction is HS-qualified and the CBZE field is set to 1, the
+  # instruction is enabled for execution; otherwise, if the CBZE field is set to 0, it
+  # raises a virtual-instruction exception. When the Zicboz extension is not implemented,
+  # CBZE is read-only zero.
+  - name: henvcfg_cbze
+    coverpoint:
+      [
+        "SvHZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}",
+        "SvHZicbo_envcfg_cg/{cp_cbcfe_vs,cp_cbcfe_vu}",
+        "SvHZicbo_envcfg_cg/{cp_cbze_vs,cp_cbze_vu}",
+      ]
+  # Finally, a insn:cbo.zero[] instruction executes or raises an illegal-instruction or
+  # virtual-instruction exception based on the state of the csr:envcfg[cbze] bits:
+  - name: cbo-zero_basedon_xenvcfg_cbze
     coverpoint:
       [
         "SvHZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}",
@@ -36,18 +100,18 @@ normative_rule_definitions:
       [
         cbm_unperm_translate,
         cbz_unperm_translate,
-        Svadu_disabled_hw_update_falls_back_to_svade,
+        Svadu_disabled_hw_update_falls_back_to_Svade,
       ]
     coverpoint: ["SvHZicbo_cg/{cp_vs_pte,cp_g_pte}"]
 
   # vsstatus.SUM lets VS-mode CBOs reach user pages; G-stage accesses are user accesses
-  - names: [sstatus_sum_op, H_vm_gpapriv]
+  - names: [sstatus_sum, H_vm_gpapriv]
     coverpoint: ["SvHZicbo_cg/{cp_vs_sum,cp_g_pte}"]
 
   # Guest-page faults write mtval2, with a pseudoinstruction in mtinst for implicit VS-stage accesses
   - names:
       [
-        MTVAL2_TRAPVAL,
+        mtval2_trapval,
         mtval2_trapval_vstrans,
         H_trap_xtinst_guestpage,
         fault_excep_csr,
@@ -58,18 +122,21 @@ normative_rule_definitions:
   - names: [pma_chk_paddr, H_pmp]
     coverpoint: ["SvHZicbo_cg/{cp_vs_gpa,cp_g_pa,cp_pmp}"]
 
-  # henvcfg.CBIE is a WARL field whose encoding 0b10 is reserved; it is read-only zero without Zicbom
-  - names: [HENVCFG_CBIE_WARL]
+  # If CBO.INVAL is enabled in HS-mode to perform a flush operation, then when the
+  # instruction is enabled in VS- or VU-mode it performs a flush operation, even if CBIE
+  # is set to 0b11. Otherwise, when the instruction is enabled for execution, its behavior
+  # depends on the CBIE encoding, as follows:
+  - name: cbo-inval_h_mode_enabled_op
     coverpoint:
       [
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "HSm_mcsr_cg/cp_hcsrwalk_masked",
-        "SvHZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}",
+        "Not tested: TODO store to a block, execute cbo.inval in VS-mode and VU-mode with menvcfg.CBIE or henvcfg.CBIE = 01, and check that a load returns the stored data",
       ]
-
-  # CBO.INVAL in VS-mode or VU-mode performs a flush when HS-mode's enable selects one, and otherwise follows
-  # henvcfg.CBIE: 0b01 flushes and 0b11 invalidates
-  - names: [cbo-inval_h-mode_op]
+  - name: cbo-inval_h_mode_flush_enc
+    coverpoint:
+      [
+        "Not tested: TODO store to a block, execute cbo.inval in VS-mode and VU-mode with menvcfg.CBIE or henvcfg.CBIE = 01, and check that a load returns the stored data",
+      ]
+  - name: cbo-inval_h_mode_inval_enc
     coverpoint:
       [
         "Not tested: TODO store to a block, execute cbo.inval in VS-mode and VU-mode with menvcfg.CBIE or henvcfg.CBIE = 01, and check that a load returns the stored data",

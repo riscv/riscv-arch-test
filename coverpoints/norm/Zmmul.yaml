@@ -3,7 +3,10 @@
 normative_rule_definitions:
   - name: mul_op
     coverpoint: ["M_mul_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
-  - names: [mulh_op, mulhu_op, mulhsu_op]
+  # insn:mulh[], insn:mulhu[], and insn:mulhsu[] perform the same multiplication but
+  # return the upper XLEN bits of the full 2×XLEN-bit product, for signed×signed,
+  # unsigned×unsigned, and rs1×unsigned rs2 multiplication.
+  - name: mulh_mulhu_mulhsu_op
     coverpoint:
       [
         "{M_mulh_cg, M_mulhu_cg, M_mulhsu_cg}/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}}",

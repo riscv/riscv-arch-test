@@ -3,6 +3,7 @@
 # CI configuration for Sail reference model
 
 ci_enabled: true
+# Sdtrig*: Sail does not implement Sdtrig yet (https://github.com/riscv/sail-riscv/issues/222)
 exclude_extensions: "SdtrigSm,SdtrigS,SdtrigU"
 shards: 1
 config_shards:

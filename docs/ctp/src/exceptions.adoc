@@ -72,9 +72,6 @@ https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXP
 
 include::norm/ExceptionsZaamo_norm_rules.adoc[]
 
-[NOTE]
-ExceptionsZaamo also covers Zama16b.
-
 ==== ExceptionsZc Compressed Instruction Exceptions
 
 These additional exception tests are run on configurations with compressed instructions (C, Zca, Zcb, etc.).  They attempt to test all compressed loads and stores, but may throw an illegal instruction fault on compressed subword load/store if Zcb is not supported.
@@ -118,7 +115,17 @@ https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXP
 
 include::norm/ExceptionsSv_norm_rules.adoc[]
 
-==== ExceptionsSvZalrsc  Virtual Memory LR/SC Exceptions
+==== ExceptionsSvSm Virtual Memory Exceptions with M-mode State
+
+[[t-ExceptionsSvSm-coverpoints]]
+.ExceptionsSvSm Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=136053911#gid=136053911[Google Sheet Testplan]
+,===
+
+include::norm/ExceptionsSvSm_norm_rules.adoc[]
+
+==== ExceptionsSvZalrsc Virtual Memory LR/SC Exceptions
 
 [[t-ExceptionsSvZalrsc-coverpoints]]
 .ExceptionsSvZalrsc Coverpoints
@@ -127,6 +134,16 @@ https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXP
 ,===
 
 include::norm/ExceptionsSvZalrsc_norm_rules.adoc[]
+
+==== ExceptionsSvZalrscSm Virtual Memory LR/SC Exceptions with M-mode State
+
+[[t-ExceptionsSvZalrscSm-coverpoints]]
+.ExceptionsSvZalrscSm Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=684920534#gid=684920534[Google Sheet Testplan]
+,===
+
+// include::norm/ExceptionsSvZalrscSm_norm_rules.adoc[]
 
 ==== ExceptionsSvZaamo Virtual Memory AMO Exceptions
 
@@ -137,3 +154,13 @@ https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXP
 ,===
 
 include::norm/ExceptionsSvZaamo_norm_rules.adoc[]
+
+==== ExceptionsSvZaamoSm Virtual Memory AMO Exceptions with M-mode State
+
+[[t-ExceptionsSvZaamoSm-coverpoints]]
+.ExceptionsSvZaamoSm Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=572779753#gid=572779753[Google Sheet Testplan]
+,===
+
+// include::norm/ExceptionsSvZaamoSm_norm_rules.adoc[]

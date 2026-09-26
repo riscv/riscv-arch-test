@@ -13,10 +13,15 @@ normative_rule_definitions:
       ["TODO"]
       # The optional li a0, 0, stack pointer adjustment and optional ret must only be committed only when it is certain that the entire POP/POPRET instruction will commit.
   - name: Zcmp_push_sp_commit
-    coverpoint:
-      ["TODO"]
-      # The stack pointer adjustment must only be committed only when it is certain that the entire PUSH instruction will commit.
+    coverpoint: ["TODO"]
+  # Correct execution requires that sp refers to idempotent memory (also see ), because
+  # the core must be able to handle traps detected during the sequence. The entire
+  # insn:push[]/insn:pop[] sequence is re-executed after returning from the trap handler,
+  # and multiple traps are possible during the sequence.
+  - name: Zcmp_reexecute
+    coverpoint: ["TODO"]
+  # If a trap occurs during the sequence then xEPC is updated with the PC of the
+  # instruction, xTVAL (if not read-only-zero) updated with the bad address if it was an
+  # access fault and xCAUSE updated with the type of trap.
   - name: Zcmp_trap
-    coverpoint:
-      ["TODO"]
-      # Correct execution requires that sp refers to idempotent memory (also see ), because the core must be able to handle traps detected during the sequence. The entire PUSH/POP sequence is re-executed after returning from the trap handler, and multiple traps are possible during the sequence. | If a trap occurs during the sequence then xEPC is updated with the PC of the instruction, xTVAL (if not read-only-zero) updated with the bad address if it was an access fault and xCAUSE updated with the type of trap.
+    coverpoint: ["TODO"]

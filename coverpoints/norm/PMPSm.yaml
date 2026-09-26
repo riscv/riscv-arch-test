@@ -7,7 +7,7 @@ normative_rule_definitions:
   - name: pmp_access_fault_exception
     coverpoint:
       [
-        "PMPSm_cg/{cp_misaligned_na4_wrap, cp_misaligned_tor_wrap,cp_misaligned_napot, cp_misaligned_na4, cp_misaligned_tor, cp_cfg_A_off_all, cp_cfg_A_napot_all, cp_na4_boundary, cp_tor_boundary, cp_tor_doubleregionfail",
+        "PMPSm_cg/{cp_misaligned_na4_wrap, cp_misaligned_tor_wrap,cp_misaligned_napot, cp_misaligned_na4, cp_misaligned_tor, cp_cfg_A_off_all, cp_cfg_A_napot_all, cp_na4_boundary, cp_tor_boundary, cp_tor_doubleregionfail}",
       ]
 
   # &lt;&lt;pmpcfg&gt;&gt; shows the layout of a PMP configuration register. The R,

@@ -4,12 +4,12 @@
 normative_rule_definitions:
   # The maximum size in bits of a vector element that any operation can produce or
   # consume, ELEN {ge} 8, which must be a power of 2.
-  - name: ELEN
+  - name: elen
     coverpoint: [""]
 
   # The number of bits in a single vector register, VLEN {ge} ELEN, which must be a
   # power of 2, and must be no greater than 2^16^.
-  - name: VLEN
+  - name: vlen
     coverpoint: [""]
 
   # A small implementation supporting ELEN=32 requires only seven bits of state in
@@ -34,10 +34,15 @@ normative_rule_definitions:
   - name: vreg_count
     coverpoint: [""]
 
-  # A vector context status field, VS, is added to mstatus[10:9] and shadowed in
-  # sstatus[10:9]. It is defined analogously to the floating-point context status
-  # field, FS.
-  - name: mstatus-vs_op
+  # The csr::[vs] field encodes the status of the vector extension state, including the
+  # vector registers v0&amp;#8205;&amp;#8211;&amp;#8205;v31 and the CSRs csr:vcsr[],
+  # csr:vxrm[], csr:vxsat[], csr:vstart[], csr:vl[], csr:vtype[], and csr:vlenb[].
+  - name: mstatus_vs_op
+    coverpoint: [""]
+  # A vector context status field, csr::[vs], is added to csr:mstatus[][10:9] and shadowed
+  # in csr:sstatus[][10:9]. It is defined analogously to the floating-point context status
+  # field, csr::[fs].
+  - name: mstatus_vs_sstatus_vs_op
     coverpoint: [""]
 
   # When mstatus.VS is set to Initial or Clean, executing any instruction that
@@ -47,16 +52,16 @@ normative_rule_definitions:
   - name: mstatus_vs_op_initial_clean
     coverpoint: [""]
 
-  # When V=1, both vsstatus.VS and mstatus.VS are in effect: attempts to execute any
-  # vector instruction, or to access the vector CSRs, raise an illegal-instruction
+  # When V=1, both csr:vsstatus[vs] and csr:mstatus[vs] are in effect: attempts to execute
+  # any vector instruction, or to access the vector CSRs, raise an illegal-instruction
   # exception when either field is set to Off.
-  - name: vsstatus-vs_mstatus_vs_op_off
+  - name: vsstatus_vs_mstatus_vs_op_off
     coverpoint: [""]
 
-  # When the hypervisor extension is present, a vector context status field, VS, is
-  # added to vsstatus[10:9]. It is defined analogously to the floating-point context
-  # status field, FS.
-  - names: [vsstatus_vs_sz, vsstatus_vs_acc]
+  # When the hypervisor extension is present, a vector context status field, csr::[vs], is
+  # added to csr:vsstatus[][10:9]. It is defined analogously to the floating-point context
+  # status field, csr::[fs].
+  - name: vsstatus_vs_sz_acc
     coverpoint: [""]
 
   # Attempts to execute any vector instruction, or to access the vector CSRs, raise
@@ -64,35 +69,17 @@ normative_rule_definitions:
   - name: mstatus_vs_op_off
     coverpoint: [""]
 
-  # When V=1 and neither vsstatus.VS nor mstatus.VS is set to Off, executing any
-  # instruction that changes vector state, including the vector CSRs, will change
-  # both mstatus.VS and vsstatus.VS to Dirty.
-  - name: mstatus_vs_op_active
-    coverpoint: [""]
-
-  # A vector context status field, VS, is added to mstatus[10:9] and shadowed in
-  # sstatus[10:9]. It is defined analogously to the floating-point context status
-  # field, FS.
-  - name: sstatus_vs_op
+  # When V=1 and neither csr:vsstatus[vs] nor csr:mstatus[vs] is set to Off, executing any
+  # instruction that changes vector state, including the vector CSRs, will change both
+  # csr:mstatus[vs] and csr:vsstatus[vs] to Dirty.
+  - name: vsstatus_vs_mstatus_vs_op_active
     coverpoint: [""]
 
   # Similarly, when V=1, both vsstatus.VS and the HS-level sstatus.VS are in effect.
   # Attempts to execute a vector instruction when either field is 0 (Off) raise an
   # illegal-instruction exception. Modifying the vector state when V=1 causes both
   # fields to be set to 3 (Dirty).
-  - name: vsstatus_vs_op2
-    coverpoint: [""]
-
-  # When V=1, both vsstatus.VS and mstatus.VS are in effect: attempts to execute any
-  # vector instruction, or to access the vector CSRs, raise an illegal-instruction
-  # exception when either field is set to Off.
-  - name: vsstatus_vs_op_off
-    coverpoint: [""]
-
-  # When V=1 and neither vsstatus.VS nor mstatus.VS is set to Off, executing any
-  # instruction that changes vector state, including the vector CSRs, will change
-  # both mstatus.VS and vsstatus.VS to Dirty.
-  - name: vsstatus_vs_op_active
+  - name: vsstatus_vs_op
     coverpoint: [""]
 
   # If vsstatus.VS is Dirty, vsstatus.SD is 1; otherwise, vsstatus.SD is set in
@@ -100,9 +87,13 @@ normative_rule_definitions:
   - name: vsstatus_sd_op_vs
     coverpoint: [""]
 
-  # If mstatus.VS is Dirty, mstatus.SD is 1; otherwise, mstatus.SD is set in
-  # accordance with existing specifications.
-  - name: mstatus-sd_op
+  # summarizes whether either the csr::[fs], csr::[vs], or csr::[xs] fields signal the
+  # presence of some dirty state that will require saving extended user context to memory.
+  - name: mstatus_sd_summary_op
+    coverpoint: [""]
+  # If csr:mstatus[vs] is Dirty, csr:mstatus[sd] is 1; otherwise, csr:mstatus[sd] is set
+  # in accordance with existing specifications.
+  - name: mstatus_sd_vs_dirty_op
     coverpoint: [""]
 
   # If mstatus.VS is Dirty, mstatus.SD is 1; otherwise, mstatus.SD is set in
@@ -124,17 +115,16 @@ normative_rule_definitions:
   - name: vsstatus_vs_exists
     coverpoint: [""]
 
-  # The read-only XLEN-wide vector type CSR, vtype provides the default type used to
+  # The read-only XLEN-wide vector type CSR, csr:vtype[] provides the default type used to
   # interpret the contents of the vector register file, and can only be updated by
-  # vset{i}vl{i} instructions.
-  - names: [vtype_sz, vtype_op]
+  # insn:vsetvli[], insn:vsetivli[], and insn:vsetvl[] instructions.
+  - name: vtype_sz_acc_op
     coverpoint: [""]
 
-  # The vtype register has five fields, vill, vma, vta, vsew[2:0], and vlmul[2:0].
-  # Bits vtype[XLEN-2:8] should be written with zero, and non-zero values in this
-  # field are reserved.
-  - names:
-      [vtype_vill_sz, vtype_vma_sz, vtype_vta_sz, vtype_vsew_sz, vtype_vlmul_sz]
+  # The csr:vtype[] register has five fields, csr::[vill], csr::[vma], csr::[vta],
+  # csr::[vsew], and csr::[vlmul]. Bits csr:vtype[][XLEN-2:8] should be written with zero,
+  # and non-zero values in this field are reserved.
+  - name: vtype_fields_sz
     coverpoint: [""]
 
   # The value in vsew sets the dynamic selected element width (SEW). By default, a
@@ -174,51 +164,44 @@ normative_rule_definitions:
     coverpoint: [""]
 
   # LMUL is set by the signed vlmul field in vtype (i.e., LMUL = 2vlmul[2:0]).
-  - name: LMUL
+  - name: lmul
     coverpoint: [""]
 
   # The derived value VLMAX = LMUL*VLEN/SEW represents the maximum number of
   # elements that can be operated on with a single vector instruction given the
   # current SEW and LMUL settings as shown in the table below.
-  - name: VLMAX
+  - name: vlmax
     coverpoint: [""]
 
   # Instructions specifying an LMUL=2 vector register group with an odd-numbered
   # vector register are reserved.
-  - name: vreg_offgroup_LMUL2_rsv
+  - name: vreg_offgroup_lmul2_rsv
     coverpoint: [""]
 
   # instructions specifying an LMUL=4 vector register group using vector register
   # numbers that are not multiples of four are reserved.
-  - name: vreg_offgroup_LMUL4_rsv
+  - name: vreg_offgroup_lmul4_rsv
     coverpoint: [""]
 
   # instructions specifying an LMUL=8 vector register group using register numbers
   # that are not multiples of eight are reserved.
-  - name: vreg_offgroup_LMUL8_rsv
+  - name: vreg_offgroup_lmul8_rsv
     coverpoint: [""]
 
   # Mask registers are always contained in a single vector register, regardless of
   # LMUL.
-  - name: vreg_mask_LMUL_indp
+  - name: vreg_mask_lmul_indp
     coverpoint: [""]
 
   # These two bits modify the behavior of destination tail elements and destination
-  # inactive masked-off elements respectively during the execution of vector
-  # instructions. The tail and inactive sets contain element positions that are not
-  # receiving new results during a vector operation, as defined in .
-  - name: vtype_vta_op
-    coverpoint: [""]
-
-  # These two bits modify the behavior of destination tail elements and destination
-  # inactive masked-off elements respectively during the execution of vector
-  # instructions. The tail and inactive sets contain element positions that are not
-  # receiving new results during a vector operation, as defined in .
-  - name: vtype_vma_op
+  # inactive masked-off elements respectively during the execution of vector instructions.
+  # The tail and inactive sets contain element positions that are not receiving new
+  # results during a vector operation, as defined in .
+  - name: vtype_vta_vma_op
     coverpoint: [""]
 
   # All systems must support all four options:
-  - names: [vtype_vta_val, vtype_vma_val]
+  - name: vtype_vta_vma_val
     coverpoint: [""]
 
   # Mask destination tail elements are always treated as tail-agnostic, regardless
@@ -266,14 +249,14 @@ normative_rule_definitions:
   - name: vl_op
     coverpoint: [""]
 
-  # The XLEN-bit-wide read-only CSR vlenb holds the value VLEN/8, i.e., the vector
+  # The XLEN-bit-wide read-only CSR csr:vlenb[] holds the value VLEN/8, i.e., the vector
   # register length in bytes.
-  - names: [vlenb_op, vlenb_acc]
+  - name: vlenb_acc_op
     coverpoint: [""]
 
-  # The XLEN-bit-wide read-write vstart CSR specifies the index of the first element
+  # The XLEN-bit-wide read-write csr:vstart[] CSR specifies the index of the first element
   # to be executed by a vector instruction, as described in .
-  - names: [vstart_acc, vstart_sz]
+  - name: vstart_acc_sz
     coverpoint: [""]
 
   # All vector instructions are defined to begin execution with the element number
@@ -308,10 +291,10 @@ normative_rule_definitions:
   - name: vstart_vtype_dep
     coverpoint: [""]
 
-  # The vector fixed-point rounding-mode register holds a two-bit read-write
-  # rounding-mode field in the least-significant bits (vxrm[1:0]). The upper bits,
-  # vxrm[XLEN-1:2], should be written as zeros.
-  - names: [vxrm_acc, vxrm_sz, vxrm_val]
+  # The vector fixed-point rounding-mode register holds a two-bit read-write rounding-mode
+  # field in the least-significant bits (csr:vxrm[][1:0]). The upper bits,
+  # csr:vxrm[][XLEN-1:2], should be written as zeros.
+  - name: vxrm_val_sz_acc
     coverpoint: [""]
 
   # The vector fixed-point rounding-mode is given a separate CSR address to allow
@@ -326,19 +309,20 @@ normative_rule_definitions:
   - name: vxrm_op
     coverpoint: [""]
 
-  # The vxsat CSR has a single read-write least-significant bit (vxsat[0]) that
-  # indicates if a fixed-point instruction has had to saturate an output value to
-  # fit into a destination format. Bits vxsat[XLEN-1:1] should be written as zeros.
-  - names: [vxsat_op, vxsat_acc, vxsat_sz]
+  # The csr:vxsat[] CSR has a single read-write least-significant bit (csr:vxsat[][0])
+  # that indicates if a fixed-point instruction has had to saturate an output value to fit
+  # into a destination format. The remaining bits, csr:vxsat[][XLEN-1:1], should be
+  # written as zeros.
+  - name: vxsat_op_acc_sz
     coverpoint: [""]
 
   # The vxsat bit is mirrored in vcsr.
   - name: vcsr_vxsat_op
     coverpoint: [""]
 
-  # The vxrm and vxsat separate CSRs can also be accessed via fields in the
-  # XLEN-bit-wide vector control and status CSR, vcsr.
-  - names: [vcsr_vxsat_acc, vcsr_vxrm_acc]
+  # The csr:vxrm[] and csr:vxsat[] separate CSRs can also be accessed via fields in the
+  # XLEN-bit-wide vector control and status CSR, csr:vcsr[].
+  - name: vcsr_vxrm_vxsat_acc
     coverpoint: [""]
 
   # When LMUL=1, elements are simply packed in order from the least-significant to
@@ -374,41 +358,25 @@ normative_rule_definitions:
   - name: vreg_scalar_lmul_indp
     coverpoint: [""]
 
-  # Each vector operand has an effective element width (EEW) and an effective LMUL
-  # (EMUL) that is used to determine the size and location of all the elements
-  # within a vector register group. By default, for most operands of most
-  # instructions, EEW=SEW and EMUL=LMUL.
-  - name: EEW
-    coverpoint: [""]
-
-  # Each vector operand has an effective element width (EEW) and an effective LMUL
-  # (EMUL) that is used to determine the size and location of all the elements
-  # within a vector register group. By default, for most operands of most
-  # instructions, EEW=SEW and EMUL=LMUL.
-  - name: EMUL
+  # Each vector operand has an effective element width (EEW) and an effective LMUL (EMUL)
+  # that is used to determine the size and location of all the elements within a vector
+  # register group. By default, for most operands of most instructions, EEW=SEW and
+  # EMUL=LMUL.
+  - name: eew_emul
     coverpoint: [""]
 
   # EEW/EMUL = SEW/LMUL.
-  - name: EMUL_SEW_LMUL_dep
+  - name: eew_emul_sew_lmul_dep
     coverpoint: [""]
 
-  # EEW/EMUL = SEW/LMUL.
-  - name: EEW_SEW_LMUL_dep
-    coverpoint: [""]
-
-  # Narrowing instructions have a source operand that has EEW=2*SEW and EMUL=2*LMUL
-  # but with a destination where EEW=SEW and EMUL=LMUL.
-  - name: vnarrowing_EEW
-    coverpoint: [""]
-
-  # Narrowing instructions have a source operand that has EEW=2*SEW and EMUL=2*LMUL
-  # but with a destination where EEW=SEW and EMUL=LMUL.
-  - name: vnarrowing_EMUL
+  # Narrowing instructions have a source operand that has EEW=2*SEW and EMUL=2*LMUL but
+  # with a destination where EEW=SEW and EMUL=LMUL.
+  - name: vnarrowing_eew_emul
     coverpoint: [""]
 
   # Using other than the lowest-numbered vector register to specify a vector
   # register group is a reserved encoding.
-  - name: EMUL_offgroup_rsv
+  - name: emul_offgroup_rsv
     coverpoint: [""]
 
   # A vector register cannot be used to provide source operands with more than one
@@ -417,7 +385,7 @@ normative_rule_definitions:
   # being read with two or more different EEWs, including when the vector register
   # appears at different positions within two or more vector register groups, is
   # reserved.
-  - name: vreg_source_EEW_rsv
+  - name: vreg_source_eew_rsv
     coverpoint: [""]
 
   # A destination vector register group can overlap a source vector register group
@@ -446,20 +414,25 @@ normative_rule_definitions:
   # reserved. For example, a widening operation that produces a widened vector
   # register group result when LMUL=8 is reserved as this would imply a result
   # EMUL=16.
-  - name: EMUL_rsv
+  - name: emul_rsv
     coverpoint: [""]
 
   # Widened scalar values, e.g., input and output to a widening reduction operation,
   # are held in the first element of a vector register and have EMUL=1.
-  - name: vreg_scalar_EMUL
+  - name: vreg_scalar_emul
     coverpoint: [""]
 
-  # Element operations that are masked off (inactive) never generate exceptions. The
-  # destination vector register elements corresponding to masked-off elements are
+  # Element operations that are masked off (inactive) never generate exceptions.
+  - name: vmask_inactive_op
+    coverpoint: [""]
+  # The destination vector register elements corresponding to masked-off elements are
   # handled with either a mask-undisturbed or mask-agnostic policy depending on the
-  # setting of the vma bit in vtype Where available, masking is encoded in a
-  # single-bit vm field in the instruction (inst[25]).
-  - name: vmask_op
+  # setting of the csr::[vma] bit in csr:vtype[]
+  - name: vmask_agn_op
+    coverpoint: [""]
+  # Where available, masking is encoded in a single-bit vm field in the instruction
+  # (inst[25]).
+  - name: vmask_vm_enc
     coverpoint: [""]
 
   # The mask value used to control execution of a masked vector instruction is
@@ -514,31 +487,37 @@ normative_rule_definitions:
   - name: vtype_vstart_op
     coverpoint: [""]
 
-  # The new vtype value is encoded in the immediate fields of vsetvli and vsetivli,
-  # and in the rs2 register for vsetvl. The read-only XLEN-wide vector type CSR,
-  # vtype provides the default type used to interpret the contents of the vector
-  # register file, and can only be updated by vset{i}vl{i} instructions.
+  # The new csr:vtype[] value is encoded in the immediate fields of insn:vsetvli[] and
+  # insn:vsetivli[], and in the rs2 register for insn:vsetvl[].
   - name: vtype_acc
     coverpoint: [""]
 
-  # If the vtype value is not supported by the implementation, then the vill bit is
-  # set in vtype, the remaining bits in vtype are set to zero A vtype value with
-  # vill set is treated as an unsupported configuration. Implementations must
-  # consider all bits of the vtype value to determine if the configuration is
-  # supported. An unsupported value in any location within the vtype value must
-  # result in vill being set.
-  - name: vtype_vill_set
+  # If the csr:vtype[] value is not supported by the implementation, then the csr::[vill]
+  # bit is set in csr:vtype[], the remaining bits in csr:vtype[] are set to zero
+  - name: vtype_vill_val
+    coverpoint: [""]
+  # A csr:vtype[] value with csr::[vill] set is treated as an unsupported configuration.
+  - name: vtype_vill_val_vill
+    coverpoint: [""]
+  # Implementations must consider all bits of the csr:vtype[] value to determine if the
+  # configuration is supported. An unsupported value in any location within the
+  # csr:vtype[] value must result in csr::[vill] being set.
+  - name: vtype_vill_all_bits
     coverpoint: [""]
 
-  # When rs1 is not x0, the AVL is an unsigned integer held in the x register
-  # specified by rs1, and the new vl value is also written to the x register
-  # specified by rd. When rs1=x0 but rd≠x0, the maximum unsigned integer value (~0)
-  # is used as the AVL, and the resulting VLMAX is written to vl and also to the x
-  # register specified by rd. When rs1=x0 and rd=x0, the instructions operate as if
-  # the current vector length in vl is used as the AVL, and the resulting value is
-  # written to vl, but not to a destination register. This form can only be used
-  # when VLMAX and hence vl is not actually changed by the new SEW/LMUL ratio.
+  # When rs1 is not x0, the AVL is an unsigned integer held in the x register specified by
+  # rs1, and the new csr:vl[] value is also written to the x register specified by rd.
   - name: vsetvl_op
+    coverpoint: [""]
+  # When rs1=x0 but rd≠x0, the maximum unsigned integer value (~0) is used as the AVL, and
+  # the resulting VLMAX is written to vl and also to the x register specified by rd.
+  - name: vsetvl_op_rs1_x0_rd_nx0
+    coverpoint: [""]
+  # When rs1=x0 and rd=x0, the instructions operate as if the current vector length in
+  # csr:vl[] is used as the AVL, and the resulting value is written to csr:vl[], but not
+  # to a destination register. This form can only be used when VLMAX and hence csr:vl[] is
+  # not actually changed by the new SEW/LMUL ratio.
+  - name: vsetvl_op_rs1_x0_rd_x0
     coverpoint: [""]
 
   # Use of the instructions with a new SEW/LMUL ratio that would result in a change
@@ -552,15 +531,18 @@ normative_rule_definitions:
   - name: vsetivli_op
     coverpoint: [""]
 
-  # The vset{i}vl{i} instructions first set VLMAX according to their vtype argument,
-  # then set vl obeying the following constraints: vl = AVL if AVL ≤ VLMAX ceil(AVL
-  # / 2) ≤ vl ≤ VLMAX if AVL &lt; (2 * VLMAX) vl = VLMAX if AVL ≥ (2 * VLMAX)
-  # Deterministic on any given implementation for same input AVL and VLMAX values
-  # These specific properties follow from the prior rules: vl = 0 if AVL = 0 vl &gt;
-  # 0 if AVL &gt; 0 vl ≤ VLMAX vl ≤ AVL a value read from vl when used as the AVL
-  # argument to vset{i}vl{i} results in the same value in vl, provided the resultant
-  # VLMAX equals the value of VLMAX at the time that vl was read
-  - name: vl_val
+  # The insn:vset*[] instructions first set VLMAX according to their csr:vtype[] argument,
+  # then set csr:vl[] obeying the following constraints:
+  - name: vl_val_lead_in
+    coverpoint: [""]
+  # csr:vl[] = AVL if AVL ≤ VLMAX ceil(AVL / 2) ≤ vl ≤ VLMAX if AVL &lt; (2 * VLMAX)
+  # csr:vl[] = VLMAX if AVL ≥ (2 * VLMAX) Deterministic on any given implementation for
+  # same input AVL and VLMAX values These specific properties follow from the prior rules:
+  # csr:vl[] = 0 if AVL = 0 csr:vl[] &gt; 0 if AVL &gt; 0 csr:vl[] ≤ VLMAX csr:vl[] ≤ AVL
+  # a value read from csr:vl[] when used as the AVL argument to insn:vset*[] results in
+  # the same value in csr:vl[], provided the resultant VLMAX equals the value of VLMAX at
+  # the time that csr:vl[] was read
+  - name: vl_val_list
     coverpoint: [""]
 
   # All vector loads and stores may generate and accept a non-zero vstart value.
@@ -590,7 +572,7 @@ normative_rule_definitions:
   # Vector memory unit-stride and constant-stride operations directly encode EEW of
   # the data to be transferred statically in the instruction to reduce the number of
   # vtype changes when accessing memory in a mixed-width routine.
-  - name: vector_ls_strided_EEW
+  - name: vector_ls_strided_eew
     coverpoint: [""]
 
   # For loads, the vd register will hold the first field loaded from the segment.
@@ -631,7 +613,7 @@ normative_rule_definitions:
 
   # Indexed operations use the explicit EEW encoding in the instruction to set the
   # size of the indices used, and use SEW/LMUL to specify the data width.
-  - name: vector_ls_indexed_EEW
+  - name: vector_ls_indexed_eew
     coverpoint: [""]
 
   # Implementations must provide vector loads and stores with EEWs corresponding to
@@ -651,12 +633,12 @@ normative_rule_definitions:
   # XLEN before adding to the base effective address. If the vector offset elements
   # are wider than XLEN, the least-significant XLEN bits are used in the address
   # calculation.
-  - name: vector_ls_XLEN_dep
+  - name: vector_ls_xlen_dep
     coverpoint: [""]
 
   # If the implementation does not support the EEW of the offset elements, the
   # instruction is reserved.
-  - name: vector_ls_EEW_rsv
+  - name: vector_ls_eew_rsv
     coverpoint: [""]
 
   # Vector unit-stride and constant-stride memory accesses do not guarantee ordering
@@ -692,29 +674,24 @@ normative_rule_definitions:
 
   # Vector loads and stores have an EEW encoded directly in the instruction. The
   # corresponding EMUL is calculated as EMUL = (EEW/SEW)*LMUL.
-  - name: vector_ls_EEW
-    coverpoint: [""]
-
-  # Vector loads and stores have an EEW encoded directly in the instruction. The
-  # corresponding EMUL is calculated as EMUL = (EEW/SEW)*LMUL.
-  - name: vector_ls_EMUL
+  - name: vector_ls_eew_emul
     coverpoint: [""]
 
   # If the EMUL would be out of range (EMUL&gt;8 or EMUL&lt;1/8), the instruction
   # encoding is reserved.
-  - name: vector_ls_EMUL_rsv
+  - name: vector_ls_emul_rsv
     coverpoint: [""]
 
   # The vector register groups must have legal register specifiers for the selected
   # EMUL, otherwise the instruction encoding is reserved.
-  - name: vector_ls_EMUL_offgroup_rsv
+  - name: vector_ls_emul_offgroup_rsv
     coverpoint: [""]
 
   # Vector unit-stride and constant-stride use the EEW/EMUL encoded in the
   # instruction for the data values, while vector indexed loads and stores use the
   # EEW/EMUL encoded in the instruction for the index values and the SEW/LMUL
   # encoded in vtype for the data values.
-  - name: vector_ls_indexed_EMUL
+  - name: vector_ls_indexed_eew_emul
     coverpoint: [""]
 
   # The mew bit (inst[28]) when set is expected to be used to encode expanded memory
@@ -731,11 +708,7 @@ normative_rule_definitions:
     coverpoint: [""]
 
   # Negative and zero strides are supported.
-  - name: vector_ls_neg_stride
-    coverpoint: [""]
-
-  # Negative and zero strides are supported.
-  - name: vector_ls_zero_stride
+  - name: vector_ls_neg_zero_stride
     coverpoint: [""]
 
   # Element accesses within a constant-stride instruction are unordered with respect
@@ -747,7 +720,7 @@ normative_rule_definitions:
   # fewer memory operations than the number of active elements, and may perform
   # different numbers of memory operations across different dynamic executions of
   # the same static instruction.
-  - name: vector_ls_constant-stride_x0
+  - name: vector_ls_constant_stride_x0
     coverpoint: [""]
 
   # The unit-stride fault-only-first load instructions are used to vectorize loops
@@ -783,21 +756,22 @@ normative_rule_definitions:
   - name: vector_ff_interrupt_behavior
     coverpoint: [""]
 
-  # The three-bit nf field in the vector instruction encoding is an unsigned integer
-  # that contains one less than the number of fields per segment, NFIELDS. Each
-  # field will be held in successively numbered vector register groups. When
+  # The three-bit nf field in the vector instruction encoding is an unsigned integer that
+  # contains one less than the number of fields per segment, NFIELDS.
+  - name: nfields
+    coverpoint: [""]
+  # Each field will be held in successively numbered vector register groups. When
   # EMUL&gt;1, each field will occupy a vector register group held in multiple
-  # successively numbered vector registers, and the vector register group for each
-  # field must follow the usual vector register alignment constraints (e.g., when
-  # EMUL=2 and NFIELDS=4, each field&#8217;s vector register group must start at an
-  # even vector register, but does not have to start at a multiple of 8 vector
-  # register number).
-  - name: NFIELDS
+  # successively numbered vector registers, and the vector register group for each field
+  # must follow the usual vector register alignment constraints (e.g., when EMUL=2 and
+  # NFIELDS=4, each field&#8217;s vector register group must start at an even vector
+  # register, but does not have to start at a multiple of 8 vector register number).
+  - name: nfields_op
     coverpoint: [""]
 
   # The EMUL setting must be such that EMUL * NFIELDS ≤ 8, otherwise the instruction
   # encoding is reserved.
-  - name: EMUL_NFIELDS_rsv
+  - name: emul_nfields_rsv
     coverpoint: [""]
 
   # If the vector register numbers accessed by the segment load or store would
@@ -867,18 +841,13 @@ normative_rule_definitions:
   - name: vector_ls_seg_indexed_op
     coverpoint: [""]
 
-  # The data vector register group has EEW=SEW, EMUL=LMUL, while the index vector
-  # register group has EEW encoded in the instruction with EMUL=(EEW/SEW)*LMUL.
-  - name: vector_ls_seg_indexed_EMUL_op
-    coverpoint: [""]
-
-  # The data vector register group has EEW=SEW, EMUL=LMUL, while the index vector
-  # register group has EEW encoded in the instruction with EMUL=(EEW/SEW)*LMUL.
-  - name: vector_ls_seg_indexed_EEW_op
+  # The data vector register group has EEW=SEW, EMUL=LMUL, while the index vector register
+  # group has EEW encoded in the instruction with EMUL=(EEW/SEW)*LMUL.
+  - name: vector_ls_seg_indexed_eew_emul_op
     coverpoint: [""]
 
   # The EMUL * NFIELDS ≤ 8 constraint applies to the data vector register group.
-  - name: vector_ls_seg_indexed_EMUL_NFIELDS_val
+  - name: vector_ls_seg_indexed_emul_nfields_val
     coverpoint: [""]
 
   # For vector indexed segment loads, the destination vector register groups cannot
@@ -889,7 +858,7 @@ normative_rule_definitions:
 
   # The load instructions have an EEW encoded in the mew and width fields following
   # the pattern of regular unit-stride loads.
-  - name: vector_ls_seg_wholereg_EEW
+  - name: vector_ls_seg_wholereg_eew
     coverpoint: [""]
 
   # NFIELDS indicates the number of vector registers to transfer, numbered
@@ -934,7 +903,7 @@ normative_rule_definitions:
     coverpoint: [""]
 
   # Vector memory instructions follow RVWMO at the instruction level.
-  - name: vector_ls_RVWMO
+  - name: vector_ls_rvwmo
     coverpoint: [""]
 
   # Except for vector indexed-ordered loads and stores, element operations are
@@ -944,7 +913,7 @@ normative_rule_definitions:
 
   # Vector indexed-ordered loads and stores read and write elements from/to memory
   # in element order respectively, obeying RVWMO at the element level.
-  - name: vector_ls_indexed_ordered_RVWMO
+  - name: vector_ls_indexed_ordered_rvwmo
     coverpoint: [""]
 
   # Instructions affected by the vector length register vl have a control dependency
@@ -974,7 +943,7 @@ normative_rule_definitions:
     coverpoint: [""]
 
   # the vector register group operand is specified by vs2.
-  - names: [vop-vx_vreg_vs2, vop-vi_vreg_vs2]
+  - name: vop-vx_vop-vi_vreg_vs2
     coverpoint: [""]
 
   # For integer operations, the scalar can be a 5-bit immediate, imm[4:0], encoded
@@ -1004,7 +973,7 @@ normative_rule_definitions:
   # If FLEN &gt; SEW, the value in the f registers is checked for a valid NaN-boxed
   # value, in which case the least-significant SEW bits of the f register are used,
   # else the canonical NaN value is used.
-  - name: vfop_freg_NaNbox_lsb_sewbits
+  - name: vfop_freg_nanbox_lsb_sewbits
     coverpoint: [""]
 
   # Vector instructions where any floating-point vector operand's EEW is not a
@@ -1018,7 +987,7 @@ normative_rule_definitions:
   # not supported in these extensions, and so operands narrower than XLEN bits are
   # not checked for a NaN box; bits XLEN-1:EEW are ignored. For RV32_Zdinx, EEW=64
   # scalar arguments are supplied by an x-register pair.
-  - name: V_Zfinx_fp_scalar
+  - name: V_zinx_fp_scalar
     coverpoint: [""]
 
   # Vector arithmetic instructions are masked under control of the vm field.
@@ -1031,10 +1000,10 @@ normative_rule_definitions:
     coverpoint: [""]
 
   # A few instructions are provided to convert double-width source vectors into
-  # single-width destination vectors. These instructions convert a vector register
-  # group specified by vs2 with EEW/EMUL=2*SEW/2*LMUL to a vector register group
-  # with the current SEW/LMUL setting.
-  - names: [vnop_vd_eew_emul, vnop_vs2_eew_emul]
+  # single-width destination vectors. These instructions convert a vector register group
+  # specified by vs2 with EEW/EMUL=2*SEW/2*LMUL to a vector register group with the
+  # current SEW/LMUL setting.
+  - name: vnop_vd_vs2_eew_emul
     coverpoint: [""]
 
   # Where there is a second source vector register group (specified by vs1), this
@@ -1043,7 +1012,7 @@ normative_rule_definitions:
     coverpoint: [""]
 
   # Vector integer add and subtract are provided.
-  - names: [vadd_op, vsub_op]
+  - name: vadd_vsub_op
     coverpoint: [""]
 
   # Reverse-subtract instructions are also provided for the vector-scalar forms.
@@ -1053,70 +1022,64 @@ normative_rule_definitions:
   # The widening add/subtract instructions are provided in both signed and unsigned
   # variants, depending on whether the narrower source operands are first sign- or
   # zero-extended before forming the double-width sum.
-  - names: [vwaddu_op, vwadd_op, vwsubu_op, vwsub_op]
+  - name: vwaddu_vwadd_vwsubu_vwsub_op
     coverpoint: [""]
 
-  # The vector integer extension instructions zero- or sign-extend a source vector
-  # integer operand with EEW less than SEW to fill SEW-sized elements in the
-  # destination.
-  - names: [vsext_op, vzext_op]
+  # The vector integer extension instructions zero- or sign-extend a source vector integer
+  # operand with EEW less than SEW to fill SEW-sized elements in the destination.
+  - name: vsext_vzext_op
     coverpoint: [""]
 
   # The EEW of the source is 1/2, 1/4, or 1/8 of SEW, while EMUL of the source is
   # (EEW/SEW)*LMUL.
-  - names: [vsext_vs_eew_emul, vzext_vs_eew_emul]
+  - name: vsext_vzext_vs_eew_emul
     coverpoint: [""]
 
   # The destination has EEW equal to SEW and EMUL equal to LMUL.
-  - names: [vsext_vd_eew_emul, vzext_vd_eew_emul]
+  - name: vsext_vzext_vd_eew_emul
     coverpoint: [""]
 
-  # If the source EEW is not a supported width, or source EMUL would be below the
-  # minimum legal LMUL, the instruction encoding is reserved.
-  - names: [vsext_ill_eew_emul_rsv, vzext_ill_eew_emul_rsv]
+  # If the source EEW is not a supported width, or source EMUL would be below the minimum
+  # legal LMUL, the instruction encoding is reserved.
+  - name: vsext_vzext_ill_eew_emul_rsv
     coverpoint: [""]
 
   # The carry inputs and outputs are represented using the mask register layout as
-  # described in &lt;&lt;sec-mask-register-layout&gt;&gt;. Due to encoding
-  # constraints, the carry input must come from the implicit v0 register,
-  - names: [vmadc_carry_v0, vmsbc_carry_v0, vadc_carry_v0, vsbc_carry_v0]
+  # described in &lt;&lt;sec-mask-register-layout&gt;&gt;. Due to encoding constraints,
+  # the carry input must come from the implicit v0 register,
+  - name: vmadc_vmsbc_vadc_vsbc_carry_v0
     coverpoint: [""]
 
-  # vadc and vsbc add or subtract the source operands and the carry-in or borrow-in,
-  # and write the result to vector register vd.
-  - names: [vadc_op, vsbc_op]
+  # insn:vadc[] and insn:vsbc[] add or subtract the source operands and the carry-in or
+  # borrow-in, and write the result to vector register vd.
+  - name: vadc_vsbc_op
     coverpoint: [""]
 
-  # These instructions are encoded as masked instructions (vm=0), but they operate
-  # on and write back all body elements.
-  - names: [vadc_masked_write_all_elem, vsbc_masked_write_all_elem]
+  # These instructions are encoded as masked instructions (vm=0), but they operate on and
+  # write back all body elements.
+  - name: vadc_vsbc_masked_write_all_elem
     coverpoint: [""]
 
   # Encodings corresponding to the unmasked versions (vm=1) are reserved.
-  - names: [vadc_unmasked_rsv, vsbc_unmasked_rsv]
+  - name: vadc_vsbc_unmasked_rsv
     coverpoint: [""]
 
-  # vmadc and vmsbc add or subtract the source operands, optionally add the carry-in
-  # or subtract the borrow-in if masked (vm=0), and write the resulting carry-out or
-  # borrow-out back to mask register vd. If unmasked (vm=1), there is no carry-in or
-  # borrow-in.
-  - name: vmadc_op
+  # insn:vmadc[] and insn:vmsbc[] add or subtract the source operands, optionally add the
+  # carry-in or subtract the borrow-in if masked (vm=0), and write the resulting carry-out
+  # or borrow-out back to mask register vd.
+  - name: vmadc_vmsbc_op_masked
     coverpoint: [""]
-
-  # vmadc and vmsbc add or subtract the source operands, optionally add the carry-in
-  # or subtract the borrow-in if masked (vm=0), and write the resulting carry-out or
-  # borrow-out back to mask register vd. If unmasked (vm=1), there is no carry-in or
-  # borrow-in.
-  - name: vmsbc_op
+  # If unmasked (vm=1), there is no carry-in or borrow-in.
+  - name: vmadc_vmsbc_op_unmasked
     coverpoint: [""]
 
   # These instructions operate on and write back all body elements, even if masked.
-  - names: [vmadc_masked_write_all_elem, vmsbc_masked_write_all_elem]
+  - name: vmadc_vmsbc_masked_write_all_elem
     coverpoint: [""]
 
   # Because these instructions produce a mask value, they always operate with a
   # tail-agnostic policy.
-  - names: [vmadc_tail_agnostic, vmsbc_tail_agnostic]
+  - name: vmadc_vmsbc_tail_agnostic
     coverpoint: [""]
 
   # For vmsbc, the borrow is defined to be 1 iff the difference, prior to
@@ -1124,172 +1087,111 @@ normative_rule_definitions:
   - name: vmsbc_borrow_neg
     coverpoint: [""]
 
-  # For vadc and vsbc, the instruction encoding is reserved if the destination
-  # vector register is v0.
-  - names: [vadc_vd_v0_rsv, vsbc_vd_v0_rsv]
+  # For insn:vadc[] and insn:vsbc[], the instruction encoding is reserved if the
+  # destination vector register is v0.
+  - name: vadc_vsbc_vd_v0_rsv
     coverpoint: [""]
 
-  # # Bitwise logical operations. vand.vv vd, vs2, vs1, vm # Vector-vector vand.vx
-  # vd, vs2, rs1, vm # vector-scalar vand.vi vd, vs2, imm, vm # vector-immediate
-  # vor.vv vd, vs2, vs1, vm # Vector-vector vor.vx vd, vs2, rs1, vm # vector-scalar
-  # vor.vi vd, vs2, imm, vm # vector-immediate vxor.vv vd, vs2, vs1, vm #
-  # Vector-vector vxor.vx vd, vs2, rs1, vm # vector-scalar vxor.vi vd, vs2, imm, vm
-  # # vector-immediate
-  - names: [vand_op, vor_op, vxor_op]
+  # # Bitwise logical operations. vand.vv vd, vs2, vs1, vm # Vector-vector vand.vx vd,
+  # vs2, rs1, vm # vector-scalar vand.vi vd, vs2, imm, vm # vector-immediate vor.vv vd,
+  # vs2, vs1, vm # Vector-vector vor.vx vd, vs2, rs1, vm # vector-scalar vor.vi vd, vs2,
+  # imm, vm # vector-immediate vxor.vv vd, vs2, vs1, vm # Vector-vector vxor.vx vd, vs2,
+  # rs1, vm # vector-scalar vxor.vi vd, vs2, imm, vm # vector-immediate
+  - name: vand_vor_vxor_op
     coverpoint: [""]
 
-  # A full set of vector shift instructions are provided, including logical shift
-  # left (sll), and logical (zero-extending srl) and arithmetic (sign-extending sra)
-  # shift right. The data to be shifted is in the vector register group specified by
-  # vs2 and the shift amount value can come from a vector register group vs1, a
-  # scalar integer register rs1, or a zero-extended 5-bit immediate.
-  - names: [vsll_op, vsrl_op, vsra_op]
+  # A full set of vector shift instructions are provided, including logical shift left
+  # (insn:sll[]), and logical (zero-extending insn:srl[]) and arithmetic (sign-extending
+  # insn:sra[]) shift right. The data to be shifted is in the vector register group
+  # specified by vs2 and the shift amount value can come from a vector register group vs1,
+  # a scalar integer register rs1, or a zero-extended 5-bit immediate.
+  - name: vsll_vsrl_vsra_op
     coverpoint: [""]
 
-  # Only the low lg2(SEW) bits of the shift-amount value are used to control the
-  # shift amount.
-  - names: [vsll_shamt, vsrl_shamt, vsra_shamt]
+  # Only the low lg2(SEW) bits of the shift-amount value are used to control the shift
+  # amount.
+  - name: vsll_vsrl_vsra_shamt
     coverpoint: [""]
 
-  # The narrowing right shifts extract a smaller field from a wider operand and have
-  # both zero-extending (srl) and sign-extending (sra) forms. The shift amount can
-  # come from a vector register group, or a scalar x register, or a zero-extended
+  # The narrowing right shifts extract a smaller field from a wider operand and have both
+  # zero-extending (insn:srl[]) and sign-extending (insn:sra[]) forms. The shift amount
+  # can come from a vector register group, or a scalar x register, or a zero-extended
   # 5-bit immediate.
-  - names: [vnsrl_op, vnsra_op]
+  - name: vnsrl_vnsra_op
     coverpoint: [""]
 
-  # The low lg2(2*SEW) bits of the shift-amount value are used (e.g., the low 6 bits
-  # for a SEW=64-bit to SEW=32-bit narrowing operation).
-  - names: [vnsrl_shamt, vnsra_shamt]
+  # The low lg2(2*SEW) bits of the shift-amount value are used (e.g., the low 6 bits for a
+  # SEW=64-bit to SEW=32-bit narrowing operation).
+  - name: vnsrl_vnsra_shamt
     coverpoint: [""]
 
-  # The following integer compare instructions write 1 to the destination mask
-  # register element if the comparison evaluates to true, and 0 otherwise. The
-  # destination mask vector is always held in a single vector register, with a
-  # layout of elements as described in &lt;&lt;sec-mask-register-layout&gt;&gt;.
-  - names:
-      [
-        vmseq_op,
-        vmsne_op,
-        vmsltu_op,
-        vmslt_op,
-        vmsleu_op,
-        vmsle_op,
-        vmsgtu_op,
-        vmsgt_op,
-      ]
+  # The following integer compare instructions write 1 to the destination mask register
+  # element if the comparison evaluates to true, and 0 otherwise. The destination mask
+  # vector is always held in a single vector register, with a layout of elements as
+  # described in &lt;&lt;sec-mask-register-layout&gt;&gt;.
+  - name: vmseq_vmsne_vmsltu_vmslt_vmsleu_vmsle_vmsgtu_vmsgt_op
     coverpoint: [""]
 
   # The destination mask vector register may be the same as the source vector mask
   # register (v0).
-  - names:
-      [
-        vmseq_vd_v0_legal,
-        vmsne_vd_v0_legal,
-        vmsltu_vd_v0_legal,
-        vmslt_vd_v0_legal,
-        vmsleu_vd_v0_legal,
-        vmsle_vd_v0_legal,
-        vmsgtu_vd_v0_legal,
-        vmsgt_vd_v0_legal,
-      ]
+  - name: vmseq_vmsne_vmsltu_vmslt_vmsleu_vmsle_vmsgtu_vmsgt_vd_v0_legal
     coverpoint: [""]
 
   # Compares effectively AND in the mask under a mask-undisturbed policy if the
   # destination register is v0,
-  - names:
-      [
-        vmseq_maskundisturbed,
-        vmsne_maskundisturbed,
-        vmsltu_maskundisturbed,
-        vmslt_maskundisturbed,
-        vmsleu_maskundisturbed,
-        vmsle_maskundisturbed,
-        vmsgtu_maskundisturbed,
-        vmsgt_maskundisturbed,
-      ]
+  - name: vmseq_vmsne_vmsltu_vmslt_vmsleu_vmsle_vmsgtu_vmsgt_maskundisturbed
     coverpoint: [""]
 
-  # Compares write mask registers, and so always operate under a tail-agnostic
-  # policy.
-  - names:
-      [
-        vmseq_tail_agnostic,
-        vmsne_tail_agnostic,
-        vmsltu_tail_agnostic,
-        vmslt_tail_agnostic,
-        vmsleu_tail_agnostic,
-        vmsle_tail_agnostic,
-        vmsgtu_tail_agnostic,
-        vmsgt_tail_agnostic,
-      ]
+  # Compares write mask registers, and so always operate under a tail-agnostic policy.
+  - name: vmseq_vmsne_vmsltu_vmslt_vmsleu_vmsle_vmsgtu_vmsgt_tail_agnostic
     coverpoint: [""]
 
   # Signed and unsigned integer minimum and maximum instructions are supported.
-  - names: [vminu_op, vmin_op, vmaxu_op, vmax_op]
+  - name: vminu_vmin_vmaxu_vmax_op
     coverpoint: [""]
 
-  # The single-width multiply instructions perform a SEW-bit*SEW-bit multiply to
-  # generate a 2*SEW-bit product, then return one half of the product in the
-  # SEW-bit-wide destination. The mul versions write the low word of the product to
-  # the destination register, while the mulh versions write the high word of the
-  # product to the destination register.
-  - names: [vmul_op, vmulh_op, vmulhu_op, vmulhsu_op]
+  # The single-width multiply instructions perform a SEW-bit*SEW-bit multiply to generate
+  # a 2*SEW-bit product, then return one half of the product in the SEW-bit-wide
+  # destination. The mul versions write the low half of the product to the destination
+  # register, while the mulh versions write the high half of the product to the
+  # destination register.
+  - name: vmul_vmulh_vmulhu_vmulhsu_op
     coverpoint: [""]
 
-  # The divide and remainder instructions are equivalent to the RISC-V standard
-  # scalar integer multiply/divides, with the same results for extreme inputs.
-  - names: [vdivu_op, vdiv_op, vremu_op, vrem_op]
+  # The divide and remainder instructions are equivalent to the RISC-V standard scalar
+  # integer multiply/divides, with the same results for extreme inputs.
+  - name: vdivu_vdiv_vremu_vrem_op
     coverpoint: [""]
 
-  # The widening integer multiply instructions return the full 2*SEW-bit product
-  # from an SEW-bit*SEW-bit multiply.
-  - names: [vwmul_op, vwmulu_op, vwmulsu_op]
+  # The widening integer multiply instructions return the full 2*SEW-bit product from an
+  # SEW-bit*SEW-bit multiply.
+  - name: vwmul_vwmulu_vwmulsu_op
     coverpoint: [""]
 
-  # The integer multiply-add instructions are destructive and are provided in two
-  # forms, one that overwrites the addend or minuend (vmacc, vnmsac) and one that
-  # overwrites the first multiplicand (vmadd, vnmsub). The low half of the product
-  # is added or subtracted from the third operand.
-  - name: vmacc_op
+  # The integer multiply-add instructions are destructive and are provided in two forms,
+  # one that overwrites the addend or minuend (insn:vmacc[], insn:vnmsac[]) and one that
+  # overwrites the first multiplicand (insn:vmadd[], insn:vnmsub[]).
+  - name: vmacc_vnmsac_vmadd_vnmsub_op
+    coverpoint: [""]
+  # The low half of the product is added or subtracted from the third operand.
+  - name: vmacc_vnmsac_vmadd_vnmsub_op_lowhalf
     coverpoint: [""]
 
-  # The integer multiply-add instructions are destructive and are provided in two
-  # forms, one that overwrites the addend or minuend (vmacc, vnmsac) and one that
-  # overwrites the first multiplicand (vmadd, vnmsub). The low half of the product
-  # is added or subtracted from the third operand.
-  - name: vnmsac_op
+  # The widening integer multiply-add instructions add the full 2*SEW-bit product from a
+  # SEW-bit*SEW-bit multiply to a 2*SEW-bit value and produce a 2*SEW-bit result.
+  - name: vwmaccu_vwmacc_vwmaccsu_vwmaccus_op
     coverpoint: [""]
 
-  # The integer multiply-add instructions are destructive and are provided in two
-  # forms, one that overwrites the addend or minuend (vmacc, vnmsac) and one that
-  # overwrites the first multiplicand (vmadd, vnmsub). The low half of the product
-  # is added or subtracted from the third operand.
-  - name: vmadd_op
-    coverpoint: [""]
-
-  # The integer multiply-add instructions are destructive and are provided in two
-  # forms, one that overwrites the addend or minuend (vmacc, vnmsac) and one that
-  # overwrites the first multiplicand (vmadd, vnmsub). The low half of the product
-  # is added or subtracted from the third operand.
-  - name: vnmsub_op
-    coverpoint: [""]
-
-  # The widening integer multiply-add instructions add the full 2*SEW-bit product
-  # from a SEW-bit*SEW-bit multiply to a 2*SEW-bit value and produce a 2*SEW-bit
-  # result.
-  - names: [vwmaccu_op, vwmacc_op, vwmaccsu_op, vwmaccus_op]
-    coverpoint: [""]
-
-  # The vector integer merge instructions combine two source operands based on a
-  # mask. The vmerge instructions are encoded as masked instructions (vm=0). The
-  # instructions combine two sources as follows. At elements where the mask value is
-  # zero, the first operand is copied to the destination element, otherwise the
-  # second operand is copied to the destination element. The first operand is always
-  # a vector register group specified by vs2. The second operand is a vector
-  # register group specified by vs1 or a scalar x register specified by rs1 or a
-  # 5-bit sign-extended immediate.
+  # The vector integer merge instructions combine two source operands based on a mask.
   - name: vmerge_op
+    coverpoint: [""]
+  # The insn:vmerge[] instructions are encoded as masked instructions (vm=0). The
+  # instructions combine two sources as follows. At elements where the mask value is zero,
+  # the first operand is copied to the destination element, otherwise the second operand
+  # is copied to the destination element. The first operand is always a vector register
+  # group specified by vs2. The second operand is a vector register group specified by vs1
+  # or a scalar x register specified by rs1 or a 5-bit sign-extended immediate.
+  - name: vmerge_op_mask
     coverpoint: [""]
 
   # Unlike regular arithmetic instructions, the merge operates on all body elements
@@ -1310,99 +1212,58 @@ normative_rule_definitions:
     coverpoint: [""]
 
   # Saturating forms of integer add and subtract are provided, for both signed and
-  # unsigned integers. If the result would overflow the destination, the result is
-  # replaced with the closest representable value, and the vxsat bit is set.
-  - name: vsaddu_op
+  # unsigned integers.
+  - name: vsaddu_vsadd_vssubu_vssub_op
+    coverpoint: [""]
+  # If the result would overflow the destination, the result is replaced with the closest
+  # representable value, and the csr:vxsat[] bit is set.
+  - name: vsaddu_vsadd_vssubu_vssub_op_overflow_vxsat_op_vsaddsub
     coverpoint: [""]
 
-  # Saturating forms of integer add and subtract are provided, for both signed and
-  # unsigned integers. If the result would overflow the destination, the result is
-  # replaced with the closest representable value, and the vxsat bit is set.
-  - name: vsadd_op
+  # The averaging add and subtract instructions right shift the result by one bit and
+  # round off the result according to the setting in csr:vxrm[]. Computation is performed
+  # in infinite precision before rounding and truncating.
+  - name: vaaddu_vaadd_vasubu_vasub_op
+    coverpoint: [""]
+  # For insn:vasub[] and insn:vasubu[], overflow is ignored and the result wraps around.
+  - name: vasub_vasubu_op_overflow
     coverpoint: [""]
 
-  # Saturating forms of integer add and subtract are provided, for both signed and
-  # unsigned integers. If the result would overflow the destination, the result is
-  # replaced with the closest representable value, and the vxsat bit is set.
-  - name: vssubu_op
-    coverpoint: [""]
-
-  # Saturating forms of integer add and subtract are provided, for both signed and
-  # unsigned integers. If the result would overflow the destination, the result is
-  # replaced with the closest representable value, and the vxsat bit is set.
-  - name: vssub_op
-    coverpoint: [""]
-
-  # If the result would overflow the destination, the result is replaced with the
-  # closest representable value, and the vxsat bit is set.
-  - name: vxsat_op_vsaddsub
-    coverpoint: [""]
-
-  # The averaging add and subtract instructions right shift the result by one bit
-  # and round off the result according to the setting in vxrm. Computation is
-  # performed in infinite precision before rounding and truncating. For vasub and
-  # vasubu, overflow is ignored and the result wraps around.
-  - name: vaaddu_op
-    coverpoint: [""]
-
-  # The averaging add and subtract instructions right shift the result by one bit
-  # and round off the result according to the setting in vxrm. Computation is
-  # performed in infinite precision before rounding and truncating. For vasub and
-  # vasubu, overflow is ignored and the result wraps around.
-  - name: vaadd_op
-    coverpoint: [""]
-
-  # The averaging add and subtract instructions right shift the result by one bit
-  # and round off the result according to the setting in vxrm. Computation is
-  # performed in infinite precision before rounding and truncating. For vasub and
-  # vasubu, overflow is ignored and the result wraps around.
-  - name: vasubu_op
-    coverpoint: [""]
-
-  # The averaging add and subtract instructions right shift the result by one bit
-  # and round off the result according to the setting in vxrm. Computation is
-  # performed in infinite precision before rounding and truncating. For vasub and
-  # vasubu, overflow is ignored and the result wraps around.
-  - name: vasub_op
-    coverpoint: [""]
-
-  # The signed fractional multiply instruction produces a 2*SEW product of the two
-  # SEW inputs, then shifts the result right by SEW-1 bits, rounding these bits
-  # according to vxrm, then saturates the result to fit into SEW bits. If the result
-  # causes saturation, the vxsat bit is set.
+  # The signed fractional multiply instruction produces a 2*SEW product of the two SEW
+  # inputs, then shifts the result right by SEW-1 bits, rounding these bits according to
+  # csr:vxrm[], then saturates the result to fit into SEW bits.
   - name: vsmul_op
     coverpoint: [""]
-
-  # If the result causes saturation, the vxsat bit is set.
+  # If the result causes saturation, the csr:vxsat[] bit is set.
   - name: vxsat_op_vsmul
     coverpoint: [""]
 
-  # These instructions shift the input value right, and round off the shifted out
-  # bits according to vxrm. The scaling right shifts have both zero-extending
-  # (vssrl) and sign-extending (vssra) forms. The data to be shifted is in the
-  # vector register group specified by vs2 and the shift amount value can come from
-  # a vector register group vs1, a scalar integer register rs1, or a zero-extended
-  # 5-bit immediate.
-  - names: [vssrl_op, vssra_op]
+  # These instructions shift the input value right, and round off the shifted out bits
+  # according to csr:vxrm[]. The scaling right shifts have both zero-extending
+  # (insn:vssrl[]) and sign-extending (insn:vssra[]) forms. The data to be shifted is in
+  # the vector register group specified by vs2 and the shift amount value can come from a
+  # vector register group vs1, a scalar integer register rs1, or a zero-extended 5-bit
+  # immediate.
+  - name: vssrl_vssra_op
     coverpoint: [""]
 
-  # Only the low lg2(SEW) bits of the shift-amount value are used to control the
-  # shift amount.
-  - names: [vssrl_shamt, vssra_shamt]
+  # Only the low lg2(SEW) bits of the shift-amount value are used to control the shift
+  # amount.
+  - name: vssrl_vssra_shamt
     coverpoint: [""]
 
-  # The vnclip instructions are used to pack a fixed-point value into a narrower
-  # destination. The instructions support rounding, scaling, and saturation into the
-  # final destination format. The source data is in the vector register group
-  # specified by vs2. The scaling shift amount value can come from a vector register
-  # group vs1, a scalar integer register rs1, or a zero-extended 5-bit immediate.
-  - names: [vnclipu_op, vnclip_op]
+  # The insn:vnclip[] instructions are used to pack a fixed-point value into a narrower
+  # destination. The instructions support rounding, scaling, and saturation into the final
+  # destination format. The source data is in the vector register group specified by vs2.
+  # The scaling shift amount value can come from a vector register group vs1, a scalar
+  # integer register rs1, or a zero-extended 5-bit immediate.
+  - name: vnclipu_vnclip_op
     coverpoint: [""]
 
-  # The low lg2(2*SEW) bits of the vector or scalar shift-amount value (e.g., the
-  # low 6 bits for a SEW=64-bit to SEW=32-bit narrowing operation) are used to
-  # control the right shift amount, which provides the scaling.
-  - names: [vnclipu_shamt, vnclip_shamt]
+  # The low lg2(2*SEW) bits of the vector or scalar shift-amount value (e.g., the low 6
+  # bits for a SEW=64-bit to SEW=32-bit narrowing operation) are used to control the right
+  # shift amount, which provides the scaling.
+  - name: vnclipu_vnclip_shamt
     coverpoint: [""]
 
   # For vnclipu, the shifted rounded source value is treated as an unsigned integer
@@ -1424,32 +1285,31 @@ normative_rule_definitions:
 
   # If the EEW of a vector floating-point operand does not correspond to a supported
   # IEEE floating-point type, the instruction encoding is reserved.
-  - name: V_fp_EEW_IEEE_nsupported_rsv
+  - name: V_fp_eew_ieee_nsupported_rsv
     coverpoint: [""]
 
   # If the floating-point unit status field mstatus.FS is Off then any attempt to
   # execute a vector floating-point instruction will raise an illegal-instruction
   # exception.
-  - name: mstatus_FS_off_V_fp_ill
+  - name: mstatus_fs_off_V_fp_ill
     coverpoint: [""]
 
   # Any vector floating-point instruction that modifies any floating-point extension
   # state (i.e., floating-point CSRs or f registers) must set mstatus.FS to Dirty.
-  - name: mstatus_FS_dirty_V_fp
+  - name: mstatus_fs_dirty_V_fp
     coverpoint: [""]
 
-  # If the hypervisor extension is implemented and V=1, the vsstatus.FS field is
-  # additionally in effect for vector floating-point instructions. If vsstatus.FS or
-  # mstatus.FS is Off then any attempt to execute a vector floating-point
-  # instruction will raise an illegal-instruction exception.
-  - names:
-      [vsstatus_FS_off_hypervisor_V_fp_ill, mstatus_FS_off_hypervisor_V_fp_ill]
+  # If the hypervisor extension is implemented and V=1, the csr:vsstatus[fs] field is
+  # additionally in effect for vector floating-point instructions. If csr:vsstatus[fs] or
+  # csr:mstatus[fs] is Off then any attempt to execute a vector floating-point instruction
+  # will raise an illegal-instruction exception.
+  - name: vsstatus_mstatus_fs_off_hypervisor_V_fp_ill
     coverpoint: [""]
 
-  # Any vector floating-point instruction that modifies any floating-point extension
-  # state (i.e., floating-point CSRs or f registers) must set both mstatus.FS and
-  # vsstatus.FS to Dirty.
-  - names: [vsstatus_FS_dirty_hypervisor_V_fp, mstatus_FS_dirty_hypervisor_V_fp]
+  # Any vector floating-point instruction that modifies any floating-point extension state
+  # (i.e., floating-point CSRs or f registers) must set both csr:mstatus[fs] and
+  # csr:vsstatus[fs] to Dirty.
+  - name: vsstatus_mstatus_fs_dirty_hypervisor_V_fp
     coverpoint: [""]
 
   # A vector floating-point exception at any active floating-point element sets the
@@ -1458,11 +1318,11 @@ normative_rule_definitions:
   - name: fflags_op_V_fp
     coverpoint: [""]
 
-  # # Floating-point add vfadd.vv vd, vs2, vs1, vm # Vector-vector vfadd.vf vd, vs2,
-  # rs1, vm # vector-scalar # Floating-point subtract vfsub.vv vd, vs2, vs1, vm #
-  # Vector-vector vfsub.vf vd, vs2, rs1, vm # Vector-scalar vd[i] = vs2[i] - f[rs1]
-  # vfrsub.vf vd, vs2, rs1, vm # Scalar-vector vd[i] = f[rs1] - vs2[i]
-  - names: [vfadd_op, vfsub_op, vfrsub_op]
+  # # Floating-point add vfadd.vv vd, vs2, vs1, vm # Vector-vector vfadd.vf vd, vs2, rs1,
+  # vm # vector-scalar # Floating-point subtract vfsub.vv vd, vs2, vs1, vm # Vector-vector
+  # vfsub.vf vd, vs2, rs1, vm # Vector-scalar vd[i] = vs2[i] - f[rs1] vfrsub.vf vd, vs2,
+  # rs1, vm # Scalar-vector vd[i] = f[rs1] - vs2[i]
+  - name: vfadd_vfsub_vfrsub_op
     coverpoint: [""]
 
   # # Widening FP add/subtract, 2*SEW = SEW +/- SEW vfwadd.vv vd, vs2, vs1, vm #
@@ -1474,12 +1334,12 @@ normative_rule_definitions:
   - name: vfwadd_op
     coverpoint: [""]
 
-  # # Floating-point multiply vfmul.vv vd, vs2, vs1, vm # Vector-vector vfmul.vf vd,
-  # vs2, rs1, vm # vector-scalar # Floating-point divide vfdiv.vv vd, vs2, vs1, vm #
+  # # Floating-point multiply vfmul.vv vd, vs2, vs1, vm # Vector-vector vfmul.vf vd, vs2,
+  # rs1, vm # vector-scalar # Floating-point divide vfdiv.vv vd, vs2, vs1, vm #
   # Vector-vector vfdiv.vf vd, vs2, rs1, vm # vector-scalar # Reverse floating-point
-  # divide vector = scalar / vector vfrdiv.vf vd, vs2, rs1, vm # scalar-vector,
-  # vd[i] = f[rs1]/vs2[i]
-  - names: [vfmul_op, vfdiv_op, vfrdiv_op]
+  # divide vector = scalar / vector vfrdiv.vf vd, vs2, rs1, vm # scalar-vector, vd[i] =
+  # f[rs1]/vs2[i]
+  - name: vfmul_vfdiv_vfrdiv_op
     coverpoint: [""]
 
   # # Widening floating-point multiply vfwmul.vv vd, vs2, vs1, vm # vector-vector
@@ -1487,26 +1347,15 @@ normative_rule_definitions:
   - name: vfwmul_op
     coverpoint: [""]
 
-  # All four varieties of fused multiply-add are provided, and in two destructive
-  # forms that overwrite one of the operands, either the addend or the first
-  # multiplicand.
-  - names:
-      [
-        vfmacc_op,
-        vfnmacc_op,
-        vfmsac_op,
-        vfnmsac_op,
-        vfmadd_op,
-        vfnmadd_op,
-        vfmsub_op,
-        vfnmsub_op,
-      ]
+  # All four varieties of fused multiply-add are provided, and in two destructive forms
+  # that overwrite one of the operands, either the addend or the first multiplicand.
+  - name: vfmacc_vfnmacc_vfmsac_vfnmsac_vfmadd_vfnmadd_vfmsub_vfnmsub_op
     coverpoint: [""]
 
-  # The widening floating-point fused multiply-add instructions all overwrite the
-  # wide addend with the result. The multiplier inputs are all SEW wide, while the
-  # addend and destination is 2*SEW bits wide.
-  - names: [vfwmacc_op, vfwnmacc_op, vfwmsac_op, vfwnmsac_op]
+  # The widening floating-point fused multiply-add instructions all overwrite the wide
+  # addend with the result. The multiplier inputs are all SEW wide, while the addend and
+  # destination is 2*SEW bits wide.
+  - name: vfwmacc_vfwnmacc_vfwmsac_vfwnmsac_op
     coverpoint: [""]
 
   # # Floating-point square root vfsqrt.v vd, vs2, vm # Vector-vector square root
@@ -1514,157 +1363,136 @@ normative_rule_definitions:
     coverpoint: [""]
 
   # This is a unary vector-vector instruction that returns an estimate of 1/sqrt(x)
-  # accurate to 7 bits. For the non-exceptional cases, the low bit of the exponent
-  # and the six high bits of significand (after the leading one) are concatenated
-  # and used to address the following table. The output of the table becomes the
-  # seven high bits of the result significand (after the leading one); the remainder
-  # of the result significand is zero. Subnormal inputs are normalized and the
-  # exponent adjusted appropriately before the lookup. The output exponent is chosen
-  # to make the result approximate the reciprocal of the square root of the
-  # argument. More precisely, the result is computed as follows. Let the normalized
-  # input exponent be equal to the input exponent if the input is normal, or 0 minus
-  # the number of leading zeros in the significand otherwise. If the input is
-  # subnormal, the normalized input significand is given by shifting the input
-  # significand left by 1 minus the normalized input exponent, discarding the
-  # leading 1 bit. The output exponent equals floor((3*B - 1 - the normalized input
-  # exponent) / 2), where B is the exponent bias. The output sign equals the input
-  # sign.
+  # accurate to 7 bits.
   - name: vfrsqrt7_op
     coverpoint: [""]
-
-  # This is a unary vector-vector instruction that returns an estimate of 1/x
-  # accurate to 7 bits. For the non-exceptional cases, the seven high bits of
-  # significand (after the leading one) are used to address the following table. The
-  # output of the table becomes the seven high bits of the result significand (after
-  # the leading one); the remainder of the result significand is zero. Subnormal
-  # inputs are normalized and the exponent adjusted appropriately before the lookup.
-  # The output exponent is chosen to make the result approximate the reciprocal of
-  # the argument, and subnormal outputs are denormalized accordingly. More
-  # precisely, the result is computed as follows. Let the normalized input exponent
+  # For the non-exceptional cases, the low bit of the exponent and the six high bits of
+  # significand (after the leading one) are concatenated and used to address the following
+  # table. The output of the table becomes the seven high bits of the result significand
+  # (after the leading one); the remainder of the result significand is zero. Subnormal
+  # inputs are normalized and the exponent adjusted appropriately before the lookup. The
+  # output exponent is chosen to make the result approximate the reciprocal of the square
+  # root of the argument.
+  - name: vfrsqrt7_op_unex
+    coverpoint: [""]
+  # More precisely, the result is computed as follows. Let the normalized input exponent
   # be equal to the input exponent if the input is normal, or 0 minus the number of
-  # leading zeros in the significand otherwise. The normalized output exponent
-  # equals (2*B - 1 - the normalized input exponent). If the normalized output
-  # exponent is outside the range [-1, 2*B], the result corresponds to one of the
-  # exceptional cases in the table above. If the input is subnormal, the normalized
+  # leading zeros in the significand otherwise. If the input is subnormal, the normalized
   # input significand is given by shifting the input significand left by 1 minus the
-  # normalized input exponent, discarding the leading 1 bit. Otherwise, the
-  # normalized input significand equals the input significand. The following table
-  # gives the seven MSBs of the normalized output significand as a function of the
-  # seven MSBs of the normalized input significand; the other bits of the normalized
-  # output significand are zero. If the normalized output exponent is 0 or -1, the
-  # result is subnormal: the output exponent is 0, and the output significand is
-  # given by concatenating a 1 bit to the left of the normalized output significand,
-  # then shifting that quantity right by 1 minus the normalized output exponent.
-  # Otherwise, the output exponent equals the normalized output exponent, and the
-  # output significand equals the normalized output significand. The output sign
-  # equals the input sign.
+  # normalized input exponent, discarding the leading 1 bit. The output exponent equals
+  # floor((3*B - 1 - the normalized input exponent) / 2), where B is the exponent bias.
+  # The output sign equals the input sign.
+  - name: vfrsqrt7_op_precise
+    coverpoint: [""]
+
+  # This is a unary vector-vector instruction that returns an estimate of 1/x accurate to
+  # 7 bits.
   - name: vfrec7_op
     coverpoint: [""]
-
-  # The vector floating-point vfmin and vfmax instructions have the same behavior as
-  # the corresponding scalar floating-point instructions in version 2.2 of the
-  # RISC-V F/D/Q extension: they perform the minimumNumber or maximumNumber
-  # operation on active elements.
-  - names: [vfmin_op, vfmax_op]
+  # For the non-exceptional cases, the seven high bits of significand (after the leading
+  # one) are used to address the following table. The output of the table becomes the
+  # seven high bits of the result significand (after the leading one); the remainder of
+  # the result significand is zero. Subnormal inputs are normalized and the exponent
+  # adjusted appropriately before the lookup. The output exponent is chosen to make the
+  # result approximate the reciprocal of the argument, and subnormal outputs are
+  # denormalized accordingly.
+  - name: vfrec7_op_unex
+    coverpoint: [""]
+  # More precisely, the result is computed as follows. Let the normalized input exponent
+  # be equal to the input exponent if the input is normal, or 0 minus the number of
+  # leading zeros in the significand otherwise. The normalized output exponent equals (2*B
+  # - 1 - the normalized input exponent). If the normalized output exponent is outside the
+  # range [-1, 2*B], the result corresponds to one of the exceptional cases in the table
+  # above.
+  - name: vfrec7_op_precise
+    coverpoint: [""]
+  # If the input is subnormal, the normalized input significand is given by shifting the
+  # input significand left by 1 minus the normalized input exponent, discarding the
+  # leading 1 bit. Otherwise, the normalized input significand equals the input
+  # significand. The following table gives the seven MSBs of the normalized output
+  # significand as a function of the seven MSBs of the normalized input significand; the
+  # other bits of the normalized output significand are zero.
+  - name: vfrec7_op_subnorm
+    coverpoint: [""]
+  # If the normalized output exponent is 0 or -1, the result is subnormal: the output
+  # exponent is 0, and the output significand is given by concatenating a 1 bit to the
+  # left of the normalized output significand, then shifting that quantity right by 1
+  # minus the normalized output exponent. Otherwise, the output exponent equals the
+  # normalized output exponent, and the output significand equals the normalized output
+  # significand. The output sign equals the input sign.
+  - name: vfrec7_op_output
     coverpoint: [""]
 
-  # Vector versions of the scalar sign-injection instructions. The result takes all
-  # bits except the sign bit from the vector vs2 operands.
-  - names: [vfsgnj_op, vfsgnjn_op, vfsgnjx_op]
+  # The vector floating-point insn:vfmin[] and insn:vfmax[] instructions have the same
+  # behavior as the corresponding scalar floating-point instructions in the ext:f[],
+  # ext:d[], and ext:q[] extensions: they perform the IEEE 754-2019 minimumNumber or
+  # maximumNumber operation on active elements.
+  - name: vfmin_vfmax_op
+    coverpoint: [""]
+
+  # Vector versions of the scalar sign-injection instructions. The result takes all bits
+  # except the sign bit from the vector vs2 operands.
+  - name: vfsgnj_vfsgnjn_vfsgnjx_op
     coverpoint: [""]
 
   # These vector FP compare instructions compare two source operands and write the
   # comparison result to a mask register.
-  - names: [vmfeq_op, vmfne_op, vmflt_op, vmfle_op, vmfgt_op, vmfge_op]
+  - name: vmfeq_vmfne_vmflt_vmfle_vmfgt_vmfge_op
     coverpoint: [""]
 
-  # The destination mask vector is always held in a single vector register, with a
-  # layout of elements as described in &lt;&lt;sec-mask-register-layout&gt;&gt;.
-  - names:
-      [
-        vmfeq_vd_single_vreg,
-        vmfne_vd_single_vreg,
-        vmflt_vd_single_vreg,
-        vmfle_vd_single_vreg,
-        vmfgt_vd_single_vreg,
-        vmfge_vd_single_vreg,
-      ]
+  # The destination mask vector is always held in a single vector register, with a layout
+  # of elements as described in &lt;&lt;sec-mask-register-layout&gt;&gt;.
+  - name: vmfeq_vmfne_vmflt_vmfle_vmfgt_vmfge_vd_single_vreg
     coverpoint: [""]
 
   # The destination mask vector register may be the same as the source vector mask
   # register (v0).
-  - names:
-      [
-        vmfeq_vd_eq_v0,
-        vmfne_vd_eq_v0,
-        vmflt_vd_eq_v0,
-        vmfle_vd_eq_v0,
-        vmfgt_vd_eq_v0,
-        vmfge_vd_eq_v0,
-      ]
+  - name: vmfeq_vmfne_vmflt_vmfle_vmfgt_vmfge_vd_eq_v0
     coverpoint: [""]
 
-  # Compares write mask registers, and so always operate under a tail-agnostic
-  # policy.
-  - names:
-      [
-        vmfeq_tail_agnostic,
-        vmfne_tail_agnostic,
-        vmflt_tail_agnostic,
-        vmfle_tail_agnostic,
-        vmfgt_tail_agnostic,
-        vmfge_tail_agnostic,
-      ]
+  # Compares write mask registers, and so always operate under a tail-agnostic policy.
+  - name: vmfeq_vmfne_vmflt_vmfle_vmfgt_vmfge_tail_agnostic
     coverpoint: [""]
 
-  # vmfeq and vmfne raise the invalid operation exception only on signaling NaN
-  # inputs.
-  - names: [vmfeq_sNaN_invalid, vmfne_sNaN_invalid]
+  # insn:vmfeq[] and insn:vmfne[] raise the invalid operation exception only on signaling
+  # NaN inputs.
+  - name: vmfeq_vmfne_snan_invalid
     coverpoint: [""]
 
-  # vmflt, vmfle, vmfgt, and vmfge raise the invalid operation exception on both
-  # signaling and quiet NaN inputs.
-  - names:
-      [
-        vmflt_sqNaN_invalid,
-        vmfle_sqNaN_invalid,
-        vmfgt_sqNaN_invalid,
-        vmfge_sqNaN_invalid,
-      ]
+  # insn:vmflt[], insn:vmfle[], insn:vmfgt[], and insn:vmfge[] raise the invalid operation
+  # exception on both signaling and quiet NaN inputs.
+  - name: vmflt_vmfle_vmfgt_vmfge_sqnan_invalid
     coverpoint: [""]
 
   # vmfne writes 1 to the destination element when either operand is NaN,
-  - name: vmfne_vdval1_NaN
+  - name: vmfne_vdval1_nan
     coverpoint: [""]
 
   # whereas the other compares write 0 when either operand is NaN.
-  - names:
-      [
-        vmfeq_vdval0_NaN,
-        vmflt_vdval0_NaN,
-        vmfle_vdval0_NaN,
-        vmfgt_vdval0_NaN,
-        vmfge_vdval0_NaN,
-      ]
+  - name: vmfeq_vmflt_vmfle_vmfgt_vmfge_vdval0_nan
     coverpoint: [""]
 
-  # This is a unary vector-vector instruction that operates in the same way as the
-  # scalar classify instruction. The 10-bit mask produced by this instruction is
-  # placed in the least-significant bits of the result elements. The upper (SEW-10)
-  # bits of the result are filled with zeros.
+  # This is a unary vector-vector instruction that operates in the same way as the scalar
+  # classify instruction.
   - name: vfclass_op
+    coverpoint: [""]
+  # The 10-bit mask produced by this instruction is placed in the least-significant bits
+  # of the result elements. The upper (SEW-10) bits of the result are filled with zeros.
+  - name: vfclass_op_result
     coverpoint: [""]
 
   # The instruction is only defined for SEW=16b and above, so the result will always
   # fit in the destination elements.
-  - name: vfclass_SEWge16
+  - name: vfclass_sewge16
     coverpoint: [""]
 
-  # A vector-scalar floating-point merge instruction is provided, At elements where
-  # the mask value is zero, the first vector operand is copied to the destination
-  # element, otherwise a scalar floating-point register value is copied to the
-  # destination element.
+  # A vector-scalar floating-point merge instruction is provided,
   - name: vfmerge_op
+    coverpoint: [""]
+  # At elements where the mask value is zero, the first vector operand is copied to the
+  # destination element, otherwise a scalar floating-point register value is copied to the
+  # destination element.
+  - name: vfmerge_op_mask
     coverpoint: [""]
 
   # operates on all body elements from vstart up to the current vector length in vl
@@ -1683,12 +1511,17 @@ normative_rule_definitions:
   - name: vfmv_vs2_nv0_rsv
     coverpoint: [""]
 
-  # Conversion operations are provided to convert to and from floating-point values
-  # and unsigned and signed integers, where both source and destination are SEW
-  # wide. The conversions follow the same rules on exceptional conditions as the
-  # scalar conversion instructions. The conversions use the dynamic rounding mode in
-  # frm, except for the rtz variants, which round towards zero.
+  # Conversion operations are provided to convert to and from floating-point values and
+  # unsigned and signed integers, where both source and destination are SEW wide.
   - name: vfcvt_op
+    coverpoint: [""]
+  # The conversions follow the same rules on exceptional conditions as the scalar
+  # conversion instructions.
+  - name: vfcvt_op_exceptions
+    coverpoint: [""]
+  # The conversions use the dynamic rounding mode in csr:frm[], except for the rtz
+  # variants, which round towards zero.
+  - name: vfcvt_op_frm
     coverpoint: [""]
 
   # A set of conversion instructions is provided to convert between narrower integer
@@ -1711,16 +1544,18 @@ normative_rule_definitions:
   - name: vfncvt_vreg_constr
     coverpoint: [""]
 
-  # Vector reduction operations take a vector register group of elements and a
-  # scalar held in element 0 of a vector register, and perform a reduction using
-  # some binary operator, to produce a scalar result in element 0 of a vector
-  # register. The scalar input and output operands are held in element 0 of a single
-  # vector register, not a vector register group, so any vector register can be the
-  # scalar source or destination of a vector reduction regardless of LMUL setting.
+  # Vector reduction operations take a vector register group of elements and a scalar held
+  # in element 0 of a vector register group, and perform a reduction using some binary
+  # operator, to produce a scalar result in element 0 of a vector register group.
+  - name: vreduction_scalar_def
+    coverpoint: [""]
+  # The scalar input and output operands are held in element 0 of a group with EMUL =
+  # ceil(EEW/VLEN), regardless of LMUL setting.
+  - name: vreduction_scalar_disregard_lmul
+    coverpoint: [""]
   # Inactive elements from the source vector register group are excluded from the
-  # reduction, but the scalar operand is always included regardless of the mask
-  # values.
-  - name: vreduction_scalar
+  # reduction, but the scalar operand is always included regardless of the mask values.
+  - name: vreduction_scalar_disregard_maskval
     coverpoint: [""]
 
   # The destination vector register can overlap the source operands, including the
@@ -1731,7 +1566,7 @@ normative_rule_definitions:
   # The other elements in the destination vector register ( 0 &lt; index &lt;
   # VLEN/SEW) are considered the tail and are managed with the current tail
   # agnostic/undisturbed policy.
-  - name: vreduction_tail_agnostic
+  - name: vreduction_tail_policy
     coverpoint: [""]
 
   # If vl=0, no operation is performed and the destination register is not updated.
@@ -1747,53 +1582,40 @@ normative_rule_definitions:
   - name: vreduction_vstart_n0_ill
     coverpoint: [""]
 
-  # All operands and results of single-width reduction instructions have the same
-  # SEW width.
-  - names:
-      [
-        vredsum_op,
-        vredmaxu_op,
-        vredmax_op,
-        vredminu_op,
-        vredmin_op,
-        vredand_op,
-        vredor_op,
-        vredxor_op,
-      ]
+  # All operands and results of single-width reduction instructions have the same SEW
+  # width.
+  - name: vredsum_vredmaxu_vredmax_vredminu_vredmin_vredand_vredor_vredxor_op
     coverpoint: [""]
 
   # Overflows wrap around on arithmetic sums.
-  - names:
-      [
-        vredsum_overflow,
-        vredmaxu_overflow,
-        vredmax_overflow,
-        vredminu_overflow,
-        vredmin_overflow,
-        vredand_overflow,
-        vredor_overflow,
-        vredxor_overflow,
-      ]
+  - name: vredsum_vredmaxu_vredmax_vredminu_vredmin_vredand_vredor_vredxor_overflow
     coverpoint: [""]
 
-  # The unsigned vwredsumu.vs instruction zero-extends the SEW-wide vector elements
-  # before summing them, then adds the 2*SEW-width scalar element, and stores the
-  # result in a 2*SEW-width scalar element. For both vwredsumu.vs and vwredsum.vs,
-  # overflows wrap around.
+  # The unsigned insn:vwredsumu.vs[] instruction zero-extends the SEW-wide vector elements
+  # before summing them, then adds the 2*SEW-width scalar element, and stores the result
+  # in a 2*SEW-width scalar element.
   - name: vwredsumu_op
     coverpoint: [""]
+  # For both insn:vwredsumu.vs[] and insn:vwredsum.vs[], overflows wrap around.
+  - name: vwredsumu_vwredsum_op_overflow
+    coverpoint: [""]
 
-  # The vwredsum.vs instruction sign-extends the SEW-wide vector elements before
-  # summing them. For both vwredsumu.vs and vwredsum.vs, overflows wrap around.
+  # The insn:vwredsum.vs[] instruction sign-extends the SEW-wide vector elements before
+  # summing them.
   - name: vwredsum_op
     coverpoint: [""]
 
-  # The vfredosum instruction must sum the floating-point values in element order,
-  # starting with the scalar in vs1[0] where each addition operates identically to
-  # the scalar floating-point instructions in terms of raising exception flags and
-  # generating or propagating special values. When the operation is masked (vm=0),
-  # the masked-off elements do not affect the result or the exception flags.
+  # The insn:vfredosum[] instruction must sum the floating-point values in element order,
+  # starting with the scalar in vs1[0]
   - name: vfredosum_op
+    coverpoint: [""]
+  # where each addition operates identically to the scalar floating-point instructions in
+  # terms of raising exception flags and generating or propagating special values.
+  - name: vfredosum_op_exceptions
+    coverpoint: [""]
+  # When the operation is masked (vm=0), the masked-off elements do not affect the result
+  # or the exception flags.
+  - name: vfredosum_maskoff
     coverpoint: [""]
 
   # The implementation must produce a result equivalent to a reduction tree composed
@@ -1825,29 +1647,25 @@ normative_rule_definitions:
   - name: vfredusum_redtree
     coverpoint: [""]
 
-  # The vfredmin and vfredmax instructions reduce the scalar argument in vs1[0] and
-  # active elements in vs2 using the minimumNumber and maximumNumber operations,
-  # respectively.
-  - names: [vfredmin_op, vfredmax_op]
+  # The insn:vfredmin[] and insn:vfredmax[] instructions reduce the scalar argument in
+  # vs1[0] and active elements in vs2 using the IEEE 754-2019 minimumNumber and
+  # maximumNumber operations, respectively.
+  - name: vfredmin_vfredmax_op
     coverpoint: [""]
 
-  # Widening forms of the sum reductions are provided that read and write a
-  # double-width reduction result. The reduction of the SEW-width elements is
-  # performed as in the single-width reduction case, with the elements in vs2
-  # promoted to 2*SEW bits before adding to the 2*SEW-bit accumulator.
-  - name: vfwredosum_op
+  # Widening forms of the sum reductions are provided that read and write a double-width
+  # reduction result.
+  - name: vfwredosum_vfwredusum_op
     coverpoint: [""]
-
-  # Widening forms of the sum reductions are provided that read and write a
-  # double-width reduction result. The reduction of the SEW-width elements is
-  # performed as in the single-width reduction case, with the elements in vs2
-  # promoted to 2*SEW bits before adding to the 2*SEW-bit accumulator.
-  - name: vfwredusum_op
+  # The reduction of the SEW-width elements is performed as in the single-width reduction
+  # case, with the elements in vs2 promoted to 2*SEW bits before adding to the 2*SEW-bit
+  # accumulator.
+  - name: vfwredosum_vfwredusum_op_reduction
     coverpoint: [""]
 
   # Vector mask-register logical operations operate on mask registers. Each element
   # in a mask register is a single bit,
-  - name: vmask_maskreg
+  - name: vmask_maskreg_def
     coverpoint: [""]
 
   # The destination vector register may be the same as either source vector
@@ -1873,25 +1691,14 @@ normative_rule_definitions:
   - name: vmasklogical_tail_agnostic
     coverpoint: [""]
 
-  # vmand.mm vd, vs2, vs1 # vd.mask[i] = vs2.mask[i] &amp;&amp; vs1.mask[i]
-  # vmnand.mm vd, vs2, vs1 # vd.mask[i] = !(vs2.mask[i] &amp;&amp; vs1.mask[i])
-  # vmandn.mm vd, vs2, vs1 # vd.mask[i] = vs2.mask[i] &amp;&amp; !vs1.mask[i]
-  # vmxor.mm vd, vs2, vs1 # vd.mask[i] = vs2.mask[i] ^^ vs1.mask[i] vmor.mm vd, vs2,
-  # vs1 # vd.mask[i] = vs2.mask[i] || vs1.mask[i] vmnor.mm vd, vs2, vs1 # vd.mask[i]
-  # = !(vs2.mask[i] || vs1.mask[i]) vmorn.mm vd, vs2, vs1 # vd.mask[i] = vs2.mask[i]
-  # || !vs1.mask[i] vmxnor.mm vd, vs2, vs1 # vd.mask[i] = !(vs2.mask[i] ^^
-  # vs1.mask[i])
-  - names:
-      [
-        vmand_op,
-        vmnand_op,
-        vmandn_op,
-        vmxor_op,
-        vmor_op,
-        vmnor_op,
-        vmorn_op,
-        vmxnor_op,
-      ]
+  # vmand.mm vd, vs2, vs1 # vd.mask[i] = vs2.mask[i] &amp;&amp; vs1.mask[i] vmnand.mm vd,
+  # vs2, vs1 # vd.mask[i] = !(vs2.mask[i] &amp;&amp; vs1.mask[i]) vmandn.mm vd, vs2, vs1 #
+  # vd.mask[i] = vs2.mask[i] &amp;&amp; !vs1.mask[i] vmxor.mm vd, vs2, vs1 # vd.mask[i] =
+  # vs2.mask[i] ^^ vs1.mask[i] vmor.mm vd, vs2, vs1 # vd.mask[i] = vs2.mask[i] ||
+  # vs1.mask[i] vmnor.mm vd, vs2, vs1 # vd.mask[i] = !(vs2.mask[i] || vs1.mask[i])
+  # vmorn.mm vd, vs2, vs1 # vd.mask[i] = vs2.mask[i] || !vs1.mask[i] vmxnor.mm vd, vs2,
+  # vs1 # vd.mask[i] = !(vs2.mask[i] ^^ vs1.mask[i])
+  - name: vmand_vmnand_vmandn_vmxor_vmor_vmnor_vmorn_vmxnor_op
     coverpoint: [""]
 
   # The source operand is a single vector register holding mask register values as
@@ -1899,11 +1706,14 @@ normative_rule_definitions:
   - name: vcpop_vs_single_vreg
     coverpoint: [""]
 
-  # The vcpop.m instruction counts the number of mask elements of the active
+  # The insn:vcpop.m[] instruction counts the number of mask elements of the active
   # elements of the vector source mask register that have the value 1 and writes the
-  # result to a scalar x register. The operation can be performed under a mask, in
-  # which case only the masked elements are counted.
+  # result to a scalar x register.
   - name: vcpop_op
+    coverpoint: [""]
+  # The operation can be performed under a mask, in which case only the masked elements
+  # are counted.
+  - name: vcpop_op_mask
     coverpoint: [""]
 
   # The vcpop.m instruction writes x[rd] even if vl=0 (with the value 0, since no
@@ -2015,15 +1825,23 @@ normative_rule_definitions:
   - name: vmsof_vreg_constr
     coverpoint: [""]
 
-  # The viota.m instruction reads a source vector mask register and writes to each
-  # element of the destination vector register group the sum of all the bits of
-  # elements in the mask register whose index is less than the element, e.g., a
-  # parallel prefix sum of the mask values. This instruction can be masked, in which
-  # case only the enabled elements contribute to the sum. The result value is
-  # zero-extended to fill the destination element if SEW is wider than the result.
-  # If the result value would overflow the destination SEW, the least-significant
-  # SEW bits are retained.
+  # The insn:viota.m[] instruction reads a source vector mask register and writes to each
+  # element of the destination vector register group the sum of all the bits of elements
+  # in the mask register whose index is less than the element, e.g., a parallel prefix sum
+  # of the mask values.
   - name: viota_op
+    coverpoint: [""]
+  # This instruction can be masked, in which case only the enabled elements contribute to
+  # the sum.
+  - name: viota_op_masked
+    coverpoint: [""]
+  # The result value is zero-extended to fill the destination element if SEW is wider than
+  # the result.
+  - name: viota_op_zext
+    coverpoint: [""]
+  # If the result value would overflow the destination SEW, the least-significant SEW bits
+  # are retained.
+  - name: viota_op_overflow
     coverpoint: [""]
 
   # Traps on viota.m are always reported with a vstart of 0,
@@ -2039,13 +1857,21 @@ normative_rule_definitions:
   - name: viota_vreg_constr
     coverpoint: [""]
 
-  # The vid.v instruction writes each element's index to the destination vector
-  # register group, from 0 to vl-1. The instruction can be masked. Masking does not
-  # change the index value written to active elements. The result value is
-  # zero-extended to fill the destination element if SEW is wider than the result.
-  # If the result value would overflow the destination SEW, the least-significant
-  # SEW bits are retained.
+  # The insn:vid.v[] instruction writes each element's index to the destination vector
+  # register group, from 0 to csr:vl[]-1.
   - name: vid_op
+    coverpoint: [""]
+  # The instruction can be masked. Masking does not change the index value written to
+  # active elements.
+  - name: vid_op_mask
+    coverpoint: [""]
+  # The result value is zero-extended to fill the destination element if SEW is wider than
+  # the result.
+  - name: vid_op_zext
+    coverpoint: [""]
+  # If the result value would overflow the destination SEW, the least-significant SEW bits
+  # are retained.
+  - name: vid_op_overflow
     coverpoint: [""]
 
   # The vs2 field of the instruction must be set to v0, otherwise the encoding is
@@ -2053,8 +1879,8 @@ normative_rule_definitions:
   - name: vid_vs2_nv0_rsv
     coverpoint: [""]
 
-  # The instructions ignore LMUL and vector register groups.
-  - names: [vmv-x-s_ignoreLMUL, vmv-s-x_ignoreLMUL]
+  # The instructions ignore LMUL; EMUL is computed as ceil(EEW/VLEN).
+  - name: vmv-x-s_vmv-s-x_ignorelmul
     coverpoint: [""]
 
   # The vmv.x.s instruction copies a single SEW-wide element from index 0 of the
@@ -2064,8 +1890,8 @@ normative_rule_definitions:
   - name: vmv-x-s_op
     coverpoint: [""]
 
-  # vmv.x.s performs its operation even if vstart {ge} vl or vl=0.
-  - names: [vmv-x-s_vstart_ge_vl, vmv-x-s_vl0]
+  # insn:vmv.x.s[] performs its operation even if csr:vstart[] ≥ csr:vl[] or csr:vl[]=0.
+  - name: vmv-x-s_vstartgevl_vl0
     coverpoint: [""]
 
   # The vmv.s.x instruction copies the scalar integer register to element 0 of the
@@ -2082,13 +1908,13 @@ normative_rule_definitions:
   - name: vmv-s-x_vstart_ge_vl
     coverpoint: [""]
 
-  # The encodings corresponding to the masked versions (vm=0) of vmv.x.s and vmv.s.x
-  # are reserved.
-  - names: [vmv-s-x_masked_rsv, vmv-x-s_masked_rsv]
+  # The encodings corresponding to the masked versions (vm=0) of insn:vmv.x.s[] and
+  # insn:vmv.s.x[] are reserved.
+  - name: vmv-s-x_vmv-x-s_masked_rsv
     coverpoint: [""]
 
-  # The instructions ignore LMUL and vector register groups.
-  - names: [vfmv-f-s_ignoreLMUL, vfmv-s-f_ignoreLMUL]
+  # The instructions ignore LMUL; EMUL is computed as ceil(EEW/VLEN).
+  - name: vfmv-f-s_vfmv-s-f_ignorelmul
     coverpoint: [""]
 
   # The vfmv.f.s instruction copies a single SEW-wide element from index 0 of the
@@ -2113,32 +1939,17 @@ normative_rule_definitions:
   - name: vfmv-s-f_masked_rsv
     coverpoint: [""]
 
-  # For all of the vslideup, vslidedown, v[f]slide1up, and v[f]slide1down
-  # instructions, if vstart {ge} vl, the instruction performs no operation and
-  # leaves the destination vector register unchanged.
-  - names:
-      [
-        vslideup_vstart_ge_vl,
-        vslidedown_vstart_ge_vl,
-        vslide1up_vstart_ge_vl,
-        vslide1down_vstart_ge_vl,
-        vfslide1up_vstart_ge_vl,
-        vfslide1down_vstart_ge_vl,
-      ]
+  # For all of the insn:vslideup[], insn:vslidedown[], insn:vslide1up[],
+  # insn:vfslide1up[], insn:vslide1down[], and insn:vfslide1down[] instructions, if
+  # csr:vstart[] ≥ csr:vl[], the instruction performs no operation and leaves the
+  # destination vector register unchanged.
+  - name: vslide_vstart_ge_vl
     coverpoint: [""]
 
   # The slide instructions may be masked, with mask element i controlling whether
-  # destination element i is written. The mask undisturbed/agnostic policy is
-  # followed for inactive elements.
-  - names:
-      [
-        vslideup_mask,
-        vslidedown_mask,
-        vslide1up_mask,
-        vslide1down_mask,
-        vfslide1up_mask,
-        vfslide1down_mask,
-      ]
+  # destination element i is written. The mask undisturbed/agnostic policy is followed for
+  # inactive elements.
+  - name: vslide_mask
     coverpoint: [""]
 
   # For vslideup, the value in vl specifies the maximum number of destination
@@ -2155,26 +1966,32 @@ normative_rule_definitions:
   - name: vslideup_vreg_constr
     coverpoint: [""]
 
-  # For vslidedown, the value in vl specifies the maximum number of destination
-  # elements that are written. The remaining elements past vl are handled according
-  # to the current tail policy (&lt;&lt;sec-agnostic&gt;&gt;). The start index
-  # (OFFSET) for the source can be either specified using an unsigned integer in the
-  # x register specified by rs1, or a 5-bit immediate, zero-extended to XLEN bits.
-  # If XLEN &gt; SEW, OFFSET is not truncated to SEW bits.
+  # For insn:vslidedown[], the value in csr:vl[] specifies the maximum number of
+  # destination elements that are written. The remaining elements past csr:vl[] are
+  # handled according to the current tail policy (&lt;&lt;sec-agnostic&gt;&gt;).
   - name: vslidedown_op
     coverpoint: [""]
+  # The start index (OFFSET) for the source can be either specified using an unsigned
+  # integer in the x register specified by rs1, or a 5-bit immediate, zero-extended to
+  # XLEN bits. If XLEN &gt; SEW, OFFSET is not truncated to SEW bits.
+  - name: vslidedown_op_src
+    coverpoint: [""]
 
-  # The vslide1up instruction places the x register argument at location 0 of the
-  # destination vector register group, provided that element 0 is active, otherwise
-  # the destination element update follows the current mask agnostic/undisturbed
-  # policy. If XLEN &lt; SEW, the value is sign-extended to SEW bits. If XLEN &gt;
-  # SEW, the least-significant bits are copied over and the high XLEN-SEW bits are
-  # ignored. The remaining active vl-1 elements are copied over from index i in the
-  # source vector register group to index i+1 in the destination vector register
-  # group. The vl register specifies the maximum number of destination vector
-  # register elements updated with source values, and remaining elements past vl are
-  # handled according to the current tail policy (&lt;&lt;sec-agnostic&gt;&gt;).
+  # The insn:vslide1up[] instruction places the x register argument at location 0 of the
+  # destination vector register group, provided that element 0 is active, otherwise the
+  # destination element update follows the current mask agnostic/undisturbed policy. If
+  # XLEN &lt; SEW, the value is sign-extended to SEW bits. If XLEN &gt; SEW, the
+  # least-significant bits are copied over and the high XLEN-SEW bits are ignored.
   - name: vslide1up-vx_op
+    coverpoint: [""]
+  # The remaining active csr:vl[]-1 elements are copied over from index i in the source
+  # vector register group to index i+1 in the destination vector register group.
+  - name: vslide1up-vx_op_rem_elem
+    coverpoint: [""]
+  # The csr:vl[] register specifies the maximum number of destination vector register
+  # elements updated with source values, and remaining elements past csr:vl[] are handled
+  # according to the current tail policy (&lt;&lt;sec-agnostic&gt;&gt;).
+  - name: vslide1up-vx_op_vl
     coverpoint: [""]
 
   # The vslide1up instruction requires that the destination vector register group
@@ -2188,18 +2005,23 @@ normative_rule_definitions:
   - name: vslide1up-vf_op
     coverpoint: [""]
 
-  # The vslide1down instruction copies the first vl-1 active elements values from
-  # index i+1 in the source vector register group to index i in the destination
-  # vector register group. The vl register specifies the maximum number of
-  # destination vector register elements written with source values, and remaining
-  # elements past vl are handled according to the current tail policy
-  # (&lt;&lt;sec-agnostic&gt;&gt;). The vslide1down instruction places the x
-  # register argument at location vl-1 in the destination vector register, provided
-  # that element vl-1 is active, otherwise the destination element update follows
-  # the current mask agnostic/undisturbed policy. If XLEN &lt; SEW, the value is
-  # sign-extended to SEW bits. If XLEN &gt; SEW, the least-significant bits are
-  # copied over and the high SEW-XLEN bits are ignored.
+  # The insn:vslide1down[] instruction copies the first csr:vl[]-1 active elements values
+  # from index i+1 in the source vector register group to index i in the destination
+  # vector register group.
   - name: vslide1down-vx_op
+    coverpoint: [""]
+  # The csr:vl[] register specifies the maximum number of destination vector register
+  # elements written with source values, and remaining elements past csr:vl[] are handled
+  # according to the current tail policy (&lt;&lt;sec-agnostic&gt;&gt;).
+  - name: vslide1down-vx_op_vl
+    coverpoint: [""]
+  # The insn:vslide1down[] instruction places the x register argument at location
+  # csr:vl[]-1 in the destination vector register, provided that element csr:vl[]-1 is
+  # active, otherwise the destination element update follows the current mask
+  # agnostic/undisturbed policy. If XLEN &lt; SEW, the value is sign-extended to SEW bits.
+  # If XLEN &gt; SEW, the least-significant bits are copied over and the high SEW-XLEN
+  # bits are ignored.
+  - name: vslide1down-vx_op_details
     coverpoint: [""]
 
   # The vfslide1down instruction is defined analogously to vslide1down, but sources
@@ -2208,26 +2030,26 @@ normative_rule_definitions:
     coverpoint: [""]
 
   # The index values in the second vector are treated as unsigned integers.
-  - names: [vrgather_vs2_uint, vrgatherei16_vs2_uint]
+  - name: vrgather_vrgatherei16_vs2_uint
     coverpoint: [""]
 
-  # The source vector can be read at any index &lt; VLMAX regardless of vl.
-  - names: [vrgather_vs_ignore_vl, vrgatherei16_vs_ignore_vl]
+  # The source vector can be read at any index &lt; VLMAX regardless of csr:vl[].
+  - name: vrgather_vrgatherei16_vs_ignore_vl
     coverpoint: [""]
 
   # The maximum number of elements to write to the destination register is given by
-  # vl,
-  - names: [vrgather_vl, vrgatherei16_vl]
+  # csr:vl[],
+  - name: vrgather_vrgatherei16_vl
     coverpoint: [""]
 
-  # and the remaining elements past vl are handled according to the current tail
+  # and the remaining elements past csr:vl[] are handled according to the current tail
   # policy (&lt;&lt;sec-agnostic&gt;&gt;).
-  - names: [vrgather_tail, vrgatherei16_tail]
+  - name: vrgather_vrgatherei16_tail
     coverpoint: [""]
 
-  # The operation can be masked, and the mask undisturbed/agnostic policy is
-  # followed for inactive elements.
-  - names: [vrgather_mask, vrgatherei16_mask]
+  # The operation can be masked, and the mask undisturbed/agnostic policy is followed for
+  # inactive elements.
+  - name: vrgather_vrgatherei16_mask
     coverpoint: [""]
 
   # The vrgather.vv form uses SEW/LMUL for both the data and indices.
@@ -2239,24 +2061,23 @@ normative_rule_definitions:
   - name: vrgatherei16-vv_sew_lmul
     coverpoint: [""]
 
-  # If an element index is out of range ( vs1[i] {ge} VLMAX ) then zero is returned
-  # for the element value.
-  - names: [vrgather_id_ge_VLMAX, vrgatherei16_id_ge_VLMAX]
+  # If an element index is out of range ( vs1[i] ≥ VLMAX ) then zero is returned for the
+  # element value.
+  - name: vrgather_vrgatherei16_id_ge_vlmax
     coverpoint: [""]
 
-  # Vector-scalar and vector-immediate forms of the register gather are also
-  # provided. These read one element from the source vector at the given index, and
-  # write this value to the active elements of the destination vector register. The
-  # index value in the scalar register and the immediate, zero-extended to XLEN
-  # bits, are treated as unsigned integers. If XLEN &gt; SEW, the index value is not
-  # truncated to SEW bits.
-  - names: [vrgather-vx_op, vrgather-vi_op]
+  # Vector-scalar and vector-immediate forms of the register gather are also provided.
+  # These read one element from the source vector at the given index, and write this value
+  # to the active elements of the destination vector register. The index value in the
+  # scalar register and the immediate, zero-extended to XLEN bits, are treated as unsigned
+  # integers. If XLEN &gt; SEW, the index value is not truncated to SEW bits.
+  - name: vrgather-vx_vrgather-vi_op
     coverpoint: [""]
 
-  # For any vrgather instruction, the destination vector register group cannot
-  # overlap with the source vector register groups, otherwise the instruction
-  # encoding is reserved.
-  - names: [vrgather_vreg_constr, vrgatherei16_vreg_constr]
+  # For any insn:vrgather[] instruction, the destination vector register group cannot
+  # overlap with the source vector register groups, otherwise the instruction encoding is
+  # reserved.
+  - name: vrgather_vrgatherei16_vreg_constr
     coverpoint: [""]
 
   # The vector mask register specified by vs1 indicates which of the first vl
@@ -2318,15 +2139,15 @@ normative_rule_definitions:
   - name: vmv-nr-r_unaligned_rsv
     coverpoint: [""]
 
-  # On a trap during a vector instruction (caused by either a synchronous exception
-  # or an asynchronous interrupt), the existing *epc CSR is written with a pointer
-  # to the trapping vector instruction, while the vstart CSR contains the element
-  # index on which the trap was taken.
-  - names: [epc_op_V_trap, vstart_op_V_trap]
+  # On a trap during a vector instruction (caused by either a synchronous exception or an
+  # asynchronous interrupt), the existing csr:*epc[] CSR is written with a pointer to the
+  # trapping vector instruction, while the csr:vstart[] CSR contains the element index on
+  # which the trap was taken.
+  - name: epc_vstart_op_V_trap
     coverpoint: [""]
 
   # Any of these extensions can be added to base ISAs with XLEN=32 or XLEN=64.
-  - name: Zve_XLEN
+  - name: Zve_xlen
     coverpoint: [""]
 
   # The Zve32f and Zve64x extensions depend on the Zve32x extension.
@@ -2381,16 +2202,12 @@ normative_rule_definitions:
   - name: Zve32x_dependent_Zicsr
     coverpoint: [""]
 
-  # The Zve32f and Zve64f extensions depend upon the F extension, and implement all
-  # vector floating-point instructions (&lt;&lt;sec-vector-float&gt;&gt;) for
-  # floating-point operands with EEW=32. Vector single-width floating-point
-  # reduction operations (&lt;&lt;sec-vector-float-reduce&gt;&gt;) for EEW=32 are
-  # supported.
-  - names: [Zve32f_dependent_F, Zve64f_dependent_F]
+  # The ext:zve32f[] extension depends on the ext:zve32x[] and ext:f[] extensions.
+  - name: Zve32f_Zve64f_dependent_F
     coverpoint: [""]
 
   # The misa.v bit is set for implementations providing misa and supporting V.
-  - name: misa-V_op
+  - name: misa_v_op
     coverpoint: [""]
 
   # The V vector extension has precise traps.
@@ -2406,19 +2223,35 @@ normative_rule_definitions:
     coverpoint: [""]
 
   # The V extension supports the vector configuration instructions
-  # (&lt;&lt;sec-vector-config&gt;&gt;). The V extension supports all vector load
-  # and store instructions (&lt;&lt;sec-vector-memory&gt;&gt;), except the V
-  # extension does not support EEW=64 for index values when XLEN=32. The V extension
-  # supports all vector integer instructions (&lt;&lt;sec-vector-integer&gt;&gt;).
+  # (&lt;&lt;sec-vector-config&gt;&gt;).
+  - name: V_instr_config
+    coverpoint: [""]
+  # The V extension supports all vector load and store instructions
+  # (&lt;&lt;sec-vector-memory&gt;&gt;), except the V extension does not support EEW=64
+  # for index values when XLEN=32.
+  - name: V_instr_ls_eew64_nsupported_xlen32
+    coverpoint: [""]
+  # The V extension supports all vector integer instructions
+  # (&lt;&lt;sec-vector-integer&gt;&gt;).
+  - name: V_instr_int
+    coverpoint: [""]
   # The V extension supports all vector fixed-point arithmetic instructions
-  # (&lt;&lt;sec-vector-fixed-point&gt;&gt;). The V extension supports all vector
-  # integer single-width and widening reduction operations
-  # (&lt;&lt;sec-vector-integer-reduce&gt;&gt;,
-  # &lt;&lt;sec-vector-integer-reduce-widen&gt;&gt;). The V extension supports all
-  # vector mask instructions (&lt;&lt;sec-vector-mask&gt;&gt;). The V extension
-  # supports all vector permutation instructions
-  # (&lt;&lt;sec-vector-permute&gt;&gt;).
-  - name: V_instr
+  # (&lt;&lt;sec-vector-fixed-point&gt;&gt;).
+  - name: V_instr_fixedpt
+    coverpoint: [""]
+  # The V extension supports all vector integer single-width and widening reduction
+  # operations (&lt;&lt;sec-vector-integer-reduce&gt;&gt;,
+  # &lt;&lt;sec-vector-integer-reduce-widen&gt;&gt;).
+  - name: V_instr_red
+    coverpoint: [""]
+  # The V extension supports all vector mask instructions
+  # (&lt;&lt;sec-vector-mask&gt;&gt;).
+  - name: V_instr_mask
+    coverpoint: [""]
+  # The V extension supports all vector permutation instructions
+  # (&lt;&lt;sec-vector-integer-permute&gt;&gt;,
+  # &lt;&lt;sec-vector-float-permute&gt;&gt;).
+  - name: V_instr_perm
     coverpoint: [""]
 
   # The V extension depends upon the F and D extensions, and implements all vector
@@ -2434,16 +2267,19 @@ normative_rule_definitions:
   - name: Zvfhmin_dependent_Zve32f
     coverpoint: [""]
 
-  # When the Zvfh extension is implemented, all instructions in
+  # When the ext:zvfh[] extension is implemented, all instructions in
   # &lt;&lt;sec-vector-float&gt;&gt;, &lt;&lt;sec-vector-float-reduce&gt;&gt;,
-  # &lt;&lt;sec-vector-float-reduce-widen&gt;&gt;,
-  # &lt;&lt;sec-vector-float-move&gt;&gt;, &lt;&lt;sec-vfslide1up&gt;&gt;, and
-  # &lt;&lt;sec-vfslide1down&gt;&gt; become defined when SEW=16. Additionally,
-  # conversions between 8-bit integers and binary16 values are provided. The
-  # floating-point-to-integer narrowing conversions (vfncvt[.rtz].x[u].f.w) and
-  # integer-to-floating-point widening conversions (vfwcvt.f.x[u].v) become defined
-  # when SEW=8.
+  # &lt;&lt;sec-vector-float-reduce-widen&gt;&gt;, &lt;&lt;sec-vector-float-move&gt;&gt;,
+  # &lt;&lt;sec-vfslide1up&gt;&gt;, and &lt;&lt;sec-vfslide1down&gt;&gt; become defined
+  # when SEW=16.
   - name: Zvfh_instr
+    coverpoint: [""]
+  # Additionally, conversions between 8-bit integers and binary16 values are provided. The
+  # floating-point-to-integer narrowing conversions (insn:vfncvt.x.f.w[],
+  # insn:vfncvt.xu.f.w[], insn:vfncvt.rtz.x.f.w[], and insn:vfncvt.rtz.xu.f.w[]) and
+  # integer-to-floating-point widening conversions (insn:vfwcvt.f.x.v[] and
+  # insn:vfwcvt.f.xu.v[]) become defined when SEW=8.
+  - name: Zvfh_instr_cvt
     coverpoint: [""]
 
   # The EEW=16 floating-point operands of these instructions use the binary16
@@ -2515,7 +2351,7 @@ normative_rule_definitions:
   # Vector floating-point instructions require the presence of base scalar
   # floating-point extensions corresponding to the supported vector floating-point
   # element widths.
-  - name: Vf_requrires_Vx
+  - name: vf_requires_vx
     coverpoint: [""]
 
   # so these instructions all operate on single vector registers regardless of the

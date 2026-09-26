@@ -12,6 +12,7 @@ AGENTS.md rules (LI/LA macros, register clobbering, PR hygiene, prek) also apply
 Take a critical view and assume nothing is correct.
 Be especially skeptical of code that looks AI-generated.
 Such code can tweak tests and expectations until they pass, instead of testing what the spec requires.
+Also watch for search-and-replace type errors in new commits.
 
 **Out of scope:** XLEN and endianness don't need to be exercised, although tests that are otherwise in scope may touch them. Custom instruction and CSR space is out of scope.
 

@@ -19,11 +19,11 @@ normative_rule_definitions:
       # takes the one's complement of rd'/rs1' and writes the result to the same register.
   - name: c-sb_op
     coverpoint:
-      ["Zcb_c_sb_cg/{cp_rs1_p, cp_rs2_p, cp_uimm_2}"]
+      ["Zcb_c_sb_cg/{cp_rs1_p, cp_rs2_p, cp_rs2_edges, cp_uimm_2}"]
       # stores the least significant byte of rs2' to the memory address formed by adding rs1' to the zero extended immediate uimm.
   - name: c-sh_op
     coverpoint:
-      ["Zcb_c_sh_cg/{cp_rs1_p, cp_rs2_p, cp_uimm_2h}"]
+      ["Zcb_c_sh_cg/{cp_rs1_p, cp_rs2_p, cp_rs2_edges, cp_uimm_2h}"]
       # stores the least significant halfword of rs2' to the memory address formed by adding rs1' to the zero extended immediate uimm.
   - name: c-zext-b_op
     coverpoint:

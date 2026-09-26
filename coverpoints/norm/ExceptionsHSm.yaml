@@ -6,14 +6,43 @@ normative_rule_definitions:
   - names: [H_trap_deleg, hedeleg_op]
     coverpoint: ["ExceptionsHSm_cg/cp_hedeleg_*"]
 
-  # A trap into M-mode writes mstatus.MPP/MPIE/MIE and MPV/GVA
-  - names: [H_trap_m_csrwrites, mstatus_mpv_op, mstatus_gva_op]
+  # When a trap is taken into M-mode, virtualization mode V gets set to 0, and fields MPV
+  # and MPP in mstatus (or mstatush) are set according to . A trap into M-mode also writes
+  # fields GVA, MPIE, and MIE in mstatus/mstatush and writes CSRs mepc, mcause, mtval,
+  # mtval2, and mtinst.
+  - name: H_trap_m_csrwrites
     coverpoint:
       ["ExceptionsHSm_cg/cp_ecall_to_m", "ExceptionsHSm_cg/cp_ebreak_to_m"]
+  # The MPV bit (Machine Previous Virtualization Mode) is written by the implementation
+  # whenever a trap is taken into M-mode. Just as the MPP field is set to the (nominal)
+  # privilege mode at the time of the trap, the MPV bit is set to the value of the
+  # virtualization mode V at the time of the trap. When an MRET instruction is executed,
+  # the virtualization mode V is set to MPV, unless MPP=3, in which case V remains 0.
+  - name: mstatus_mpv_op
+    coverpoint:
+      ["ExceptionsHSm_cg/cp_ecall_to_m", "ExceptionsHSm_cg/cp_ebreak_to_m"]
+  # Field GVA (Guest Virtual Address) is written by the implementation whenever a trap is
+  # taken into M-mode. For any trap (breakpoint, address misaligned, access fault, page
+  # fault, or guest-page fault) that writes a guest virtual address to mtval, GVA is set
+  # to 1. For any other trap into M-mode, GVA is set to 0.
+  - name: mstatus_gva_op
+    coverpoint:
+      [
+        "ExceptionsHSm_cg/cp_ecall_to_m",
+        "ExceptionsHSm_cg/cp_ebreak_to_m",
+        "ExceptionsHSm_cg/cp_loadstore_priv",
+        "ExceptionsHSm_cg/cp_hlv_address_misaligned",
+        "ExceptionsHSm_cg/cp_hsv_address_misaligned",
+        "ExceptionsHSm_cg/cp_hlv_access_fault",
+        "ExceptionsHSm_cg/cp_hsv_access_fault",
+      ]
 
-  # hlv, hlvx and hsv in M-mode whatever hstatus.HU holds, and at misaligned and access-fault addresses; a fault
-  # sets mstatus.GVA
-  - names: [hlsv_op, mstatus_gva_op]
+  # For every RV32I or RV64I load instruction, LB, LBU, LH, LHU, LW, LWU, and LD, there is
+  # a corresponding virtual-machine load instruction: HLV.B, HLV.BU, HLV.H, HLV.HU, HLV.W,
+  # HLV.WU, and HLV.D. For every RV32I or RV64I store instruction, SB, SH, SW, and SD,
+  # there is a corresponding virtual-machine store instruction: HSV.B, HSV.H, HSV.W, and
+  # HSV.D. Instructions HLV.WU, HLV.D, and HSV.D are not valid for RV32, of course.
+  - name: hlsv_op
     coverpoint:
       [
         "ExceptionsHSm_cg/cp_loadstore_priv",
@@ -27,14 +56,49 @@ normative_rule_definitions:
   - names: [H_exception_priority]
     coverpoint: ["ExceptionsHSm_cg/cp_priority"]
 
-  # Exceptions from VS-mode taken into M-mode write mtval2 = 0 and mtinst
-  - names:
-      [
-        mtval2_op,
-        mtinst_op,
-        H_trap_xtinst,
-        H_trap_xtinst_exception,
-        H_trap_xtinst_val,
-        H_trap_xtinst_zero_ok,
-      ]
+  # The mtval2 register is an MXLEN-bit read/write register formatted as shown in . When a
+  # trap is taken into M-mode, mtval2 is written with additional exception-specific
+  # information, alongside mtval, to assist software in handling the trap.
+  - name: mtval2_sz_acc_op
+    coverpoint: ["ExceptionsHSm_cg/cp_xtinst_*"]
+  # The mtinst register is an MXLEN-bit read/write register formatted as shown in . When a
+  # trap is taken into M-mode, mtinst is written with a value that, if nonzero, provides
+  # information about the instruction that trapped, to assist software in handling the
+  # trap. The values that may be written to mtinst on a trap are documented in .
+  - name: mtinst_sz_acc_op
+    coverpoint: ["ExceptionsHSm_cg/cp_xtinst_*"]
+  # On any trap into M-mode or HS-mode, one of these values is written automatically into
+  # the appropriate trap instruction CSR, mtinst or htinst:
+  - name: H_trap_xtinst
+    coverpoint: ["ExceptionsHSm_cg/cp_xtinst_*"]
+  # On a synchronous exception, if a nonzero value is written, one of the following shall
+  # be true about the value:
+  - name: H_trap_xtinst_exception_lead_in
+    coverpoint: ["ExceptionsHSm_cg/cp_xtinst_*"]
+  # Bit 0 is 1, and replacing bit 1 with 1 makes the value into a valid encoding of a
+  # standard instruction. In this case, the instruction that trapped is the same kind as
+  # indicated by the register value, and the register value is the transformation of the
+  # trapping instruction, as defined later. For example, if bits 1:0 are binary 11 and the
+  # register value is the encoding of a standard LW (load word) instruction, then the
+  # trapping instruction is LW, and the register value is the transformation of the
+  # trapping LW instruction. Bit 0 is 1, and replacing bit 1 with 1 makes the value into
+  # an instruction encoding that is explicitly designated for a custom instruction (not an
+  # unused reserved encoding). This is a custom value. The instruction that trapped is a
+  # non-standard instruction. The interpretation of a custom value is not otherwise
+  # specified by this standard. The value is one of the special pseudoinstructions defined
+  # later, all of which have bits 1:0 equal to 00.
+  - name: H_trap_xtinst_exception_list
+    coverpoint: ["ExceptionsHSm_cg/cp_xtinst_*"]
+  # shows the values that may be automatically written to the trap instruction register
+  # for each standard exception cause. For exceptions that prevent the fetching of an
+  # instruction, only zero or a pseudoinstruction value may be written. A custom value may
+  # be automatically written only if the instruction that traps is non-standard. A future
+  # standard or extension may permit other values to be written, chosen from the set of
+  # allowed values established earlier.
+  - name: H_trap_xtinst_val
+    coverpoint: ["ExceptionsHSm_cg/cp_xtinst_*"]
+  # Except when a pseudoinstruction value is required (described later), the value written
+  # to mtinst or htinst may always be zero, indicating that the hardware is providing no
+  # information in the register for this particular trap.
+  - name: H_trap_xtinst_zero_ok
     coverpoint: ["ExceptionsHSm_cg/cp_xtinst_*"]

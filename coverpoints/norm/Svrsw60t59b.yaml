@@ -4,7 +4,7 @@ normative_rule_definitions:
   # If the Svrsw60t59b extension is implemented, then bits 60-59 of the page table
   # entries (PTEs) are reserved for use by supervisor software and are ignored by the
   # implementation.
-  - names: [Svrsw60t59b_reserved_bits_60_59, Svrsw60t59b_depends_on_sv39]
+  - names: [Svrsw60t59b_reserved_bits_60_59, Svrsw60t59b_depends_on_Sv39]
     coverpoint:
       [
         "TODO: set PTE bits 60:59 in leaf PTEs and check that accesses do not fault",
@@ -14,5 +14,5 @@ normative_rule_definitions:
   # PTEs are reserved for use by supervisor software and are ignored by the
   # implementation.
   # SvH accesses through G-stage leaves with bit 59 or 60 set; the trace has no PTEs, so the bin records the access
-  - name: Svrsw60t59b_h_g_stage_reserved_bits
+  - name: Svrsw60t59b_H_g_stage_reserved_bits
     coverpoint: ["SvH_gstage_cg/cp_hgatp_perm"]

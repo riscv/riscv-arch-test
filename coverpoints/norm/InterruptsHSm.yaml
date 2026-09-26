@@ -3,7 +3,7 @@
 
 normative_rule_definitions:
   # mideleg bits 10, 6 and 2, and bit 12 when GEILEN > 0, are read-only one; M-mode never takes those interrupts
-  - names: [mideleg_acc_h]
+  - name: mideleg_acc_H
     coverpoint: ["InterruptsHSm_m_cg/cp_{mideleg, nohint_m}"]
 
   # mip and mie hold the hip and hie bits

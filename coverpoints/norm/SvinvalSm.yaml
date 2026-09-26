@@ -18,5 +18,5 @@ normative_rule_definitions:
   # When csr::[tvm]=0, these operations are permitted in S-mode. csr::[tvm] is read-only
   # 0 when S-mode is not supported or if csr:satp[mode] is read-only 0; otherwise, it
   # must be writable.
-  - names: [mstatus_tvm_op, MSTATUS_TVM_WARL]
+  - names: [mstatus_tvm_op, mstatus_tvm_warl]
     coverpoint: ["SvinvalSm_cg/cr_svinival"]

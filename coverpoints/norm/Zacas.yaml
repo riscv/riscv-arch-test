@@ -54,10 +54,20 @@ normative_rule_definitions:
     coverpoint: ["ExceptionsZaamo_cg/{cp_amo_address_misaligned}"]
 
   - name: Zacas_amocas_mem_op_success_aq_rl
-    coverpoint: ["Zacas_amocas_w_cg/cp_custom_aqrl"]
+    coverpoint:
+      [
+        "Zacas_amocas_w_cg/cp_custom_aqrl",
+        "Zacas_amocas_d_cg/cp_custom_aqrl",
+        "Zacas_amocas_q_cg/cp_custom_aqrl",
+      ]
 
   - name: Zacas_amocas_mem_op_fail_aq_rl
-    coverpoint: ["Zacas_amocas_w_cg/cp_custom_aqrl"]
+    coverpoint:
+      [
+        "Zacas_amocas_w_cg/cp_custom_aqrl",
+        "Zacas_amocas_d_cg/cp_custom_aqrl",
+        "Zacas_amocas_q_cg/cp_custom_aqrl",
+      ]
 
   - name: Zacas_amocas_w_permission
     coverpoint: [""]

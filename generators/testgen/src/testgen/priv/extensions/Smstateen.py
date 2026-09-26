@@ -490,14 +490,14 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# cp_fcsr_lower_fp_instrs
+# cp_fcsr_fp_instrs
 #   Cross: priv_mode_s_u × misa_F × mstateen0_fcsr_bit × fp_instrs
 #   S-mode and U-mode only.
 # ---------------------------------------------------------------------------
 
 
 def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
-    coverpoint = "cp_fcsr_lower_fp_instrs"
+    coverpoint = "cp_fcsr_fp_instrs"
     covergroup = "Smstateen_cg"
 
     lines = [
@@ -739,7 +739,7 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
     )
     tc.code.append("#endif  // SCTR_SUPPORTED")
 
-    # cp_fcsr, cp_fcsr_ro_zero, cp_fcsr_lower, cp_fcsr_lower_fp_instrs — only when Zfinx present
+    # cp_fcsr, cp_fcsr_ro_zero, cp_fcsr_lower, cp_fcsr_fp_instrs — only when Zfinx present
     tc.code.append("#ifdef ZFINX_SUPPORTED")
     fcsr_lines = [
         *_generate_fcsr_ro_zero(test_data),

@@ -28,6 +28,8 @@ def tsbi_call(instr: str) -> str:
     """
 
     normalized_instr = _normalize_instr(instr)
+    if normalized_instr.lower() == "sfence.vma":
+        return f"{INDENT}RVTEST_TSBI_SFENCE_VMA # T-SBI call to execute instruction: {instr}"
     rs1 = get_rs1(normalized_instr)
     rs2 = get_rs2(normalized_instr)
     rd = get_rd(normalized_instr)

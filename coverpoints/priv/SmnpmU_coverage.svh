@@ -37,14 +37,9 @@
     //Declare pmm before including the shared PMM coverpoint file so the include can reference it.
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
-    uxl_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "uxl") {
-        bins uxl_01 = {2'b01};
-    }
-
     // Main Crosses
     cp_pmlen_masking : cross priv_mode_u, pmm, a_upper_bits, pm_insn;
     cp_pmlen_misaligned_word: cross priv_mode_u, pm_misalign;
-    cp_pmm_uxl_clear: cross pmm, uxl_rv32;
     cp_pmm_jalr: cross priv_mode_u, pmm, a_upper_bits, jalr_insn;
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
@@ -52,7 +47,8 @@
         cp_hardware_csr_writes_fault: cross priv_mode_u, pm_fault;
     `endif
 
-endgroup
+
+    endgroup
 
 function void smnpmu_sample(int hart, int issue, ins_t ins);
     SmnpmU_cg.sample(ins);

@@ -6,7 +6,8 @@
 ci_enabled: true
 # Smstateen will be added back once sail starts supporting Sscsrind too
 # Sdtrig* not yet supported in Sail reference (https://github.com/riscv/sail-riscv/issues/222)
-exclude_extensions: "Smstateen,SdtrigSm,SdtrigS,SdtrigU"
+# Ssnpm,Smmpm,SmnpmS,SmnpmU : Failing due to mismatch in stval/mtval ,Issue Link (https://github.com/riscv/sail-riscv/issues/1962)
+exclude_extensions: "Smstateen,SdtrigSm,SdtrigS,SdtrigU,Ssnpm,Smmpm,SmnpmS,SmnpmU"
 install_script: ".github/scripts/install-spike.sh"
 apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"
 shards: 1

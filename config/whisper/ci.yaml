@@ -5,8 +5,9 @@
 # SsstrictSm, unknown
 # Smstateen Sail does not yet support 1P13 bit
 # Sdtrig* not yet implemented in Sail (https://github.com/riscv/sail-riscv/issues/222)
+# Ssnpm,Smmpm,SmnpmS,SmnpmU : Failing due to mismatch in stval/mtval ,Issue Link (https://github.com/riscv/sail-riscv/issues/1962)
 ci_enabled: true
-exclude_extensions: "SsstrictSm,Smstateen,SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions: "SsstrictSm,Smstateen,SdtrigSm,SdtrigS,SdtrigU,Ssnpm,Smmpm,SmnpmS,SmnpmU"
 exclude_configs:
   - whisper-rv32-max-spike-ref
   - whisper-rv64-max-spike-ref

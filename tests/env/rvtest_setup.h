@@ -101,9 +101,9 @@
     #ifdef STANDARD_SM_SUPPORTED
       RVTEST_TSBI_GOTO_MMODE
       #ifdef S_SUPPORTED
+        // Exact reverse of the prolog order (M, S, V).
         #ifdef H_SUPPORTED
           RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code
-          RVTEST_TRAP_EPILOG H        // actual h-mode prolog/epilog/handler code
         #endif
         RVTEST_TRAP_EPILOG S          // actual s-mode prolog/epilog/handler code
       #endif
@@ -354,6 +354,34 @@
   // Note: _ms and _su are shared implementations
   // used for multiple privilege modes
 
+  // A write to msip, mtimecmp, or stimecmp reaches mip only eventually. After
+  // clearing an interrupt source, poll mip until the pending bit reads 0, for at most
+  // RVMODEL_INTERRUPT_LATENCY iterations, so the interrupt is not taken again
+  // when the test next enables it. The _SU flavor reads mip through T-SBI.
+  .macro RVTEST_WAIT_MIP_CLEAR_M mask
+    LI(a2, RVMODEL_INTERRUPT_LATENCY)
+    1:
+    csrr a0, mip
+    andi a0, a0, \mask
+    beqz a0, 2f // pending bit is clear
+    beqz a2, 2f // latency exhausted
+    addi a2, a2, -1
+    j 1b
+    2:
+  .endm
+
+  .macro RVTEST_WAIT_MIP_CLEAR_SU mask
+    LI(a2, RVMODEL_INTERRUPT_LATENCY)
+    1:
+    RVTEST_TSBI_CSR_READ(CSR_MIP) // a0 = mip; a2 is preserved
+    andi a0, a0, \mask
+    beqz a0, 2f // pending bit is clear
+    beqz a2, 2f // latency exhausted
+    addi a2, a2, -1
+    j 1b
+    2:
+  .endm
+
   // Flavors to run from M-mode
 
   #ifdef STANDARD_SM_SUPPORTED
@@ -402,6 +430,7 @@
         LA(a1, RVMODEL_MTIMECMP_ADDRESS)
         li a2, -1 // all 1s
         sw a2, 4(a1)      // don't bother with lower bits, which stay at 0
+        RVTEST_WAIT_MIP_CLEAR_M 0x80 // mip.MTIP
       #endif
       ret
 
@@ -419,6 +448,7 @@
       #ifdef RVMODEL_MSIP_ADDRESS
         LA(a1, RVMODEL_MSIP_ADDRESS)
         sw zero, 0(a1) // normal way to clear MSI is to write a 0 to MSIP
+        RVTEST_WAIT_MIP_CLEAR_M 0x8 // mip.MSIP
       #elif defined(RVMODEL_CLR_MSW_INT_M)
         RVMODEL_CLR_MSW_INT_M(a0, a1) // if normal way isn't supported, use platform-specific method
       #endif
@@ -472,13 +502,31 @@
         ret
 
       // Clear STI using Sstc.  Assumes menvcfg.STCE=1
-      rvtest_clr_sstc_int_ms:
+      rvtest_clr_sstc_int_m:
         li a1, -1 // all 1s
         #if UDB_MXLEN == 32
+          // Upper word first, which is what actually clears STI; the lower word then makes the
+          // 64-bit stimecmp read all 1s as it does on RV64, and is never transiently armed.
           csrw stimecmph, a1 // set upper word of stimecmp to all 1s to clear STI
+          csrw stimecmp, a1  // and the lower word, so the whole register is all 1s
         #else
           csrw stimecmp, a1 // set stimecmp to all 1s to clear STI
         #endif
+        RVTEST_WAIT_MIP_CLEAR_M 0x20 // mip.STIP
+        ret
+
+      // Clear STI from S-mode using Sstc.  Assumes menvcfg.STCE=1
+      rvtest_clr_sstc_int_s:
+        li a1, -1 // all 1s
+        #if UDB_MXLEN == 32
+          // Upper word first, which is what actually clears STI; the lower word then makes the
+          // 64-bit stimecmp read all 1s as it does on RV64, and is never transiently armed.
+          csrw stimecmph, a1 // set upper word of stimecmp to all 1s to clear STI
+          csrw stimecmp, a1  // and the lower word, so the whole register is all 1s
+        #else
+          csrw stimecmp, a1 // set stimecmp to all 1s to clear STI
+        #endif
+        RVTEST_WAIT_MIP_CLEAR_SU 0x20 // mip.STIP
         ret
     #endif // SSTC_SUPPORTED
 
@@ -586,6 +634,7 @@
         LA(a1, RVMODEL_MTIMECMP_ADDRESS)
         li a2, -1 // all 1s
         RVTEST_TSBI_SWP4 // sw a2, 4(a1)      // don't bother with lower bits, which stay at 0
+        RVTEST_WAIT_MIP_CLEAR_SU 0x80 // mip.MTIP
       #endif
       ret
 
@@ -604,6 +653,7 @@
         LA(a1, RVMODEL_MSIP_ADDRESS)
         li a2, 0
         RVTEST_TSBI_SW // sw a2, 0(a1) // normal way to clear MSI is to write a 0 to MSIP
+        RVTEST_WAIT_MIP_CLEAR_SU 0x8 // mip.MSIP
       #elif defined(RVMODEL_CLR_MSW_INT)
         RVMODEL_CLR_MSW_INT(a0, a1) // if normal way isn't supported, use platform-specific method
       #endif
@@ -738,12 +788,78 @@
         li a1, -1 // all 1s
         #if UDB_MXLEN == 32
           RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMPH) // set upper word of stimecmp to all 1s to clear STI
+          RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMP)  // and the lower word, so the whole register is all 1s
         #else
           RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMP) // set stimecmp to all 1s to clear STI
         #endif
+        RVTEST_WAIT_MIP_CLEAR_SU 0x20 // mip.STIP
         ret
     #endif // SSTC_SUPPORTED
   #endif // S_SUPPORTED
+
+  // VS-level timer through vstimecmp, which is compared with time + htimedelta.
+  // Assumes menvcfg.STCE = 1 and henvcfg.STCE = 1. The _ms routines run in M-mode or HS-mode,
+  // and the _m and _s ones in the mode they name. Every caller implements the time CSR, which
+  // HS-mode reads with mcounteren.TM = 1.
+  #if defined(H_SUPPORTED) && defined(SSTC_SUPPORTED) && defined(STANDARD_SM_SUPPORTED)
+    rvtest_set_vsstc_int_soon_ms:
+      #if UDB_MXLEN == 32
+        li a0, -1
+        csrw vstimecmph, a0 // vstimecmp high word = all 1s so the split update cannot fire early
+      1:
+        csrr a2, timeh
+        csrr a0, time
+        csrr a1, timeh
+        bne a1, a2, 1b // timeh changed between the reads
+        csrr a1, htimedelta
+        add a0, a0, a1
+        sltu a1, a0, a1 // carry
+        add a2, a2, a1
+        LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
+        add a0, a0, a1
+        sltu a1, a0, a1 // carry
+        add a2, a2, a1
+        csrw vstimecmp, a0
+        csrr a1, htimedeltah
+        add a2, a2, a1
+        csrw vstimecmph, a2
+      #else
+        csrr a0, time
+        csrr a1, htimedelta
+        add a0, a0, a1
+        LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
+        add a0, a0, a1
+        csrw vstimecmp, a0
+      #endif
+      ret
+
+    // time + htimedelta >= 0 always holds (unsigned), so vstimecmp = 0 raises VSTIP at once
+    rvtest_set_vsstc_int_ms:
+      #if UDB_MXLEN == 32
+        csrw vstimecmph, zero
+      #endif
+      csrw vstimecmp, zero
+      ret
+
+    // All 1s in vstimecmp clears VSTIP unless time + htimedelta is all 1s
+    rvtest_clr_vsstc_int_m:
+      li a1, -1
+      #if UDB_MXLEN == 32
+        csrw vstimecmph, a1 // upper word first, which is what clears VSTIP
+      #endif
+      csrw vstimecmp, a1
+      RVTEST_WAIT_MIP_CLEAR_M 0x40 // mip.VSTIP
+      ret
+
+    rvtest_clr_vsstc_int_s:
+      li a1, -1
+      #if UDB_MXLEN == 32
+        csrw vstimecmph, a1 // upper word first, which is what clears VSTIP
+      #endif
+      csrw vstimecmp, a1
+      RVTEST_WAIT_MIP_CLEAR_SU 0x40 // mip.VSTIP
+      ret
+  #endif
 
   nop // Padding to ensure valid memory at the edge of the section
 
@@ -840,6 +956,17 @@
       .p2align 12
       rvtest_Vroot_pg_tbl:
         .zero(4096)              // 4KB page table
+      // Lower-level G-stage and VS-stage tables, enough for a kilopage under Sv32x4/Sv32 or Sv39x4/Sv39
+      rvtest_hlvl0_pg_tbl:
+        .zero(4096)
+      rvtest_vlvl0_pg_tbl:
+        .zero(4096)
+      #if __riscv_xlen == 64
+        rvtest_hlvl1_pg_tbl:
+          .zero(4096)
+        rvtest_vlvl1_pg_tbl:
+          .zero(4096)
+      #endif
     #endif
   #endif
 
@@ -949,22 +1076,132 @@
         csrw medeleg, zero  // don't delegate exceptions (until S-mode handler is set up)
       #endif
 
-      // initialize trap CSRs to known values
-      csrw mepc, zero
-      csrw mtval, zero
-      csrw mcause, zero
-
       // Set up trap handlers for all modes
       // S and H-mode setup could be deferred to RVTEST_BOOT_TO_SMODE, but that is upsetting the linker
       // and there is no harm setting up all the trap handlers here
       RVTEST_TRAP_PROLOG M
       #ifdef S_SUPPORTED
+        // Order matches INSTANTIATE_MODE_MACRO: M, S, V. There is no HS-mode
+        // prolog: HS uses the S-mode trap CSRs, so the S prolog covers both and
+        // also saves hedeleg and hgatp when H is supported.
         RVTEST_TRAP_PROLOG S
         #ifdef H_SUPPORTED
-          RVTEST_TRAP_PROLOG H
           RVTEST_TRAP_PROLOG V
         #endif
       #endif
+
+      // Initialize every mode's trap CSRs to known values. Their reset values are
+      // UNSPECIFIED, and a test may read one before its first trap into that mode.
+      // This follows the prologs so that a CSR the hart lacks traps into the M-mode
+      // handler instead of looping on an uninitialized mtvec.
+      csrw mepc, zero
+      csrw mtval, zero
+      csrw mcause, zero
+      #ifdef S_SUPPORTED
+        csrw sepc, zero
+        csrw stval, zero
+        csrw scause, zero
+        #ifdef H_SUPPORTED
+          csrw mtval2, zero
+          csrw mtinst, zero
+          csrw htval, zero
+          csrw htinst, zero
+          csrw vsepc, zero
+          csrw vstval, zero
+          csrw vscause, zero
+        #endif
+      #endif
+
+    #ifdef H_SUPPORTED
+      // Initialize HS-mode CSRs.
+      //
+      // hstatus to a known state:
+      //   SPV   = 0: last trap did not come from a virtual mode
+      //   SPVP  = 0: HLV/HSV check guest accesses as VU until a test says otherwise
+      //   HU    = 0: no hypervisor loads/stores from U-mode
+      //   VGEIN = 0: no guest external interrupt selected
+      //   VTVM  = 0: guest may use sfence.vma and satp
+      //   VTW   = 0: guest wfi does not trap
+      //   VTSR  = 0: guest sret does not trap
+      //   VSBE  = 0: VS-mode is little endian
+      //   VSXL  = 64: VS-mode XLEN is 64 (RV64 only)
+      // Tests that need any of these set them themselves.
+      LI(t0, HSTATUS_SPV | HSTATUS_SPVP | HSTATUS_HU | HSTATUS_VGEIN | \
+             HSTATUS_VTVM | HSTATUS_VTW | HSTATUS_VTSR | HSTATUS_VSBE)
+      csrc hstatus, t0
+      #if __riscv_xlen == 64
+        LI(t0, HSTATUS_VSXL)
+        csrc hstatus, t0
+        LI(t0, 0x0000000200000000)  // VSXL = 2
+        csrs hstatus, t0
+      #endif
+
+      // vsstatus gets the same known state as mstatus: every field zero, UXL = 64
+      // on RV64, and FS/VS dirty when supported (as INIT_FLOAT_VECTOR_STATE does
+      // for mstatus), since a guest's FP and vector use is gated by both.
+      li t0, 0
+      #if __riscv_xlen == 64
+        LI(t0, 0x0000000200000000)  // UXL = 2
+      #endif
+      #if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)
+        LI(t1, SSTATUS_FS)
+        or t0, t0, t1
+      #endif
+      #ifdef ZVL32B_SUPPORTED
+        LI(t1, SSTATUS_VS)
+        or t0, t0, t1
+      #endif
+      csrw vsstatus, t0
+
+      // The guest's time offset starts at zero.
+      csrw htimedelta, zero
+      #if __riscv_xlen == 32
+        csrw htimedeltah, zero
+      #endif
+
+      // Delegate nothing to VS-mode by default: a guest trap goes to HS-mode,
+      // where the framework's trap handler is, unless a test opts in by writing
+      // hedeleg/hideleg itself. hedeleg is also cleared by RVTEST_TRAP_PROLOG S,
+      // which saves the incoming value; this keeps hideleg consistent with it.
+      csrw hideleg, zero
+      csrw hvip, zero     // no guest-visible interrupts pending at boot
+      csrw hgeie, zero    // no guest external interrupts enabled
+
+      // The remaining interrupt CSRs need no write. hie is a view of mie and hip a
+      // view of mip (VSSIP aliases hvip.VSSIP), both cleared in RVTEST_BOOT_TO_MMODE;
+      // vsie and vsip are views of hie and hip through hideleg, which is zero; and
+      // hgatp is zeroed by RVTEST_TRAP_PROLOG S along with the other xSATPs.
+
+      // Make counters readable from VS/VU. hcounteren gates guest counter
+      // access the same way mcounteren gates HS-mode's, so leaving it at 0
+      // makes every guest rdcycle/rdtime an illegal instruction.
+      li t0, -1
+      csrw hcounteren, t0
+
+      // henvcfg mirrors senvcfg: unprivileged configuration enabled, privileged
+      // features off until a test turns them on. henvcfg gates the guest's view,
+      // so a feature disabled here stays disabled however senvcfg is set.
+      #ifdef S1P12P0_OR_LATER_SUPPORTED
+        li t0, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE
+        csrw henvcfg, t0
+      #endif
+
+      // hstateen0 gives the guest the same state sstateen0 gives HS-mode:
+      // hstateen0.SE0 = 1: VS-mode may access sstateen0
+      // hstateen0.ENVCFG = 1: VS-mode may access senvcfg
+      // hstateen0.JVT = 1, FCSR = 1: as for sstateen0 above
+      #ifdef SSSTATEEN_SUPPORTED
+        #if __riscv_xlen == 64
+          li t0, HSTATEEN_SSTATEEN | HSTATEEN0_SENVCFG
+          csrs hstateen0, t0
+        #else
+          li t0, HSTATEENH_SSTATEEN | HSTATEEN0H_SENVCFG
+          csrs hstateen0h, t0
+        #endif
+        li t0, HSTATEEN0_JVT | HSTATEEN0_FCSR
+        csrs hstateen0, t0
+      #endif
+    #endif // H_SUPPORTED
 
     rvtest_boot_to_mmode_csr_init:
       // Initialize M-mode CSRs
@@ -1237,10 +1474,10 @@
     // medeleg[17] = 0: reserved
     // medeleg[18] = 1: delegate software check
     // medeleg[19] = 1: delegate hardware check
-    // mideleg[20] = 1: delegate instruction guest-page fault
-    // mideleg[21] = 1: delegate load guest-page fault
+    // medeleg[20] = 1: delegate instruction guest-page fault
+    // medeleg[21] = 1: delegate load guest-page fault
     // medeleg[22] = 1: delegate virtual instruction
-    // mideleg[23] = 1: delegate store guest-page fault
+    // medeleg[23] = 1: delegate store guest-page fault
     // higher bits are reserved or custom
     li t0, 0x0FCB5FF
     csrw medeleg, t0
@@ -1301,6 +1538,7 @@
       li t0, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE
       csrw senvcfg, t0
     #endif
+
 
     // Boot into S-mode
     RVTEST_TSBI_GOTO_SMODE

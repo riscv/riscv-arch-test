@@ -53,8 +53,9 @@ normative_rule_definitions:
   # For the purposes of writing the mtinst or htinst register on a trap, the
   # following standard transformation is defined for cache-block management
   # instructions and cache-block zero instructions:
+  # SvHZicbo CBOs from VS-mode and VU-mode trap into M-mode, and the trap handler checks mtinst
   - name: H_trans_cache
-    coverpoint: ["TODO: Hypervisor tests"]
+    coverpoint: ["SvHZicbo_cg/{cp_vs_pte,cp_g_pte,cp_g_pa}"]
 
   # A cbo.clean instruction performs a clean operation on the cache block whose
   # effective address is the base address specified in rs1.

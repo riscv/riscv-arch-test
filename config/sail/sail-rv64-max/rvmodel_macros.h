@@ -140,4 +140,18 @@
   li _R2, SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear SSW interrupt */ \
 
+##### Guest External Interrupts #####
+
+// hgeip bits 1 to GEILEN (sail.json extensions.H.geilen) are set through the simple interrupt generator
+#define SIG_GUEST_ADDRESS  (0xC000000 + 0x8)
+#define RVMODEL_SET_GUEST_EXT_INT(_GEI, _R1, _R2)        \
+  li _R1, (1 << 31) | (_GEI);               \
+  li _R2, SIG_GUEST_ADDRESS;    \
+  sw _R1, 0(_R2)            ; /* Set hgeip bit _GEI */ \
+
+#define RVMODEL_CLR_GUEST_EXT_INT(_GEI, _R1, _R2)        \
+  li _R1, (_GEI);               \
+  li _R2, SIG_GUEST_ADDRESS;    \
+  sw _R1, 0(_R2)            ; /* Clear hgeip bit _GEI */ \
+
 #endif // _RVMODEL_MACROS_H

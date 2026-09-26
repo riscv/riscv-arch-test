@@ -2,6 +2,7 @@
 //
 // RISC-V Architectural Functional Coverage Covergroups
 //
+// Svinval instructions in HS, VS, U and VU modes with mstatus.TVM = 0 and hstatus.VTVM = 0, 1.
 // Written: Julia Gong jgong@g.hmc.edu November 10, 2025
 //
 // Copyright (C) 2025 Harvey Mudd College
@@ -14,33 +15,26 @@
 covergroup SvinvalH_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
-    cp_instr : coverpoint ins.current.insn {
-        wildcard bins sfence_inval_ir = {SFENCE_INVAL_IR};
+
+    svinval: coverpoint ins.current.insn {
         wildcard bins sfence_w_inval  = {SFENCE_W_INVAL};
         wildcard bins sinval_vma      = {SINVAL_VMA};
+        wildcard bins sfence_inval_ir = {SFENCE_INVAL_IR};
         wildcard bins hinval_vvma     = {HINVAL_VVMA};
         wildcard bins hinval_gvma     = {HINVAL_GVMA};
     }
-    cp_priv : coverpoint {ins.prev.mode_virt, ins.prev.mode} {
-        bins M_mode     = {3'b011};
-        bins S_mode     = {3'b001};
-        bins U_mode     = {3'b000};
-        bins VS_mode    = {3'b101};
-        bins VU_mode    = {3'b100};
+    mstatus_tvm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
+        bins off = {0};
     }
-    cp_tvm : coverpoint ins.prev.csr[CSR_MSTATUS][20] {
+    hstatus_vtvm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtvm") {
+        bins off = {0};
+        bins on  = {1};
     }
 
-    cp_vtvm : coverpoint ins.prev.csr[CSR_HSTATUS][20] { // hstatus.VTVM
-    }
+    // mstatus.TVM = 1 and M-mode are in SvinvalHSm
+    cp_svinval: cross priv_mode_hs_vs_u_vu, svinval, mstatus_tvm, hstatus_vtvm;
+endgroup
 
-    cr_svinivalH : cross cp_instr, cp_priv, cp_tvm, cp_vtvm {
-        // each instruction executed in each privilege mode with each TVM
-    }
- endgroup
-
-// ---------------------
 function void svinvalh_sample(int hart, int issue, ins_t ins);
-
     SvinvalH_cg.sample(ins);
 endfunction

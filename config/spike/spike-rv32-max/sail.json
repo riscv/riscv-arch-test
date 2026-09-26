@@ -95,7 +95,7 @@
       // not exist.
       "delegatable_bits": {
         "len": 64,
-        "value": "0x0000_0000_000c_b3FE"
+        "value": "0x0000_0000_00fc_b7fe"
       }
     },
     "mideleg": {
@@ -555,7 +555,7 @@
 
     "H": {
       "supported": true,
-      "geilen": 31,
+      "geilen": 0,
       "guest_page_fault_writes_htval": true,
       "hgatp_modes": {
         "Sv32x4": true,

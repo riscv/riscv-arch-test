@@ -18,11 +18,19 @@ _OPERATIONS = (
     ("sfence_inval_ir", "sfence.inval.ir"),
     ("sfence_vma", "sfence.vma x0, x0"),
 )
+# The Svinval instructions with H: sfence.vma is covered by HSm
+H_OPERATIONS = (
+    *_OPERATIONS[:3],
+    ("hinval_vvma", "hinval.vvma x0, x0"),
+    ("hinval_gvma", "hinval.gvma x0, x0"),
+)
 
 
-def add_operations(test_data: TestData, number: int) -> list[str]:
+def add_operations(
+    test_data: TestData, number: int, operations: tuple[tuple[str, str], ...] = _OPERATIONS
+) -> list[str]:
     lines = []
-    for name, instruction in _OPERATIONS:
+    for name, instruction in operations:
         lines.extend(
             [
                 test_data.add_testcase(f"test{number}_{name}", "cp_svinval", f"{test_data.testsuite}_cg"),

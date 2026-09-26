@@ -15,15 +15,12 @@
 covergroup Sstvala_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
-    cause_instr_misaligned: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[5:0] {
-            bins set = {6'd0};
-    }
-
     stval_equals_vaddr_d:   coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.virt_adr_d {
             bins match = {1'b1};
     }
 
-    stval_equals_vaddr_i:   coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.virt_adr_i {
+    // A trap on a jalr target (a misaligned target or a fault fetching it) is in the jalr's record, and stval is the target
+    stval_equals_jalr_target: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ((ins.current.rs1_val + ins.current.imm) & ~1) {
             bins match = {1'b1};
     }
 
@@ -76,9 +73,6 @@ covergroup Sstvala_cg with function sample(ins_t ins);
     sw_insn: coverpoint ins.current.insn {
             wildcard bins sw = {SW};
     }
-    jalr_insn: coverpoint ins.prev.insn {
-            wildcard bins jalr = {JALR};
-    }
     jalr_insn_curr: coverpoint ins.current.insn {
             wildcard bins jalr = {JALR};
     }
@@ -88,8 +82,6 @@ covergroup Sstvala_cg with function sample(ins_t ins);
             bins ones  = {'1};
     }
 
-    vaddr_d_misaligned: coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] {
-    }
     cause_load_page_fault: coverpoint ins.current.csr[CSR_SCAUSE][5:0] {
             bins set = {6'd13};
     }
@@ -119,16 +111,24 @@ covergroup Sstvala_cg with function sample(ins_t ins);
 
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-    cp_load_access_fault:  cross priv_mode_s, illegal_data_address,  stval_equals_vaddr_d, medeleg_load_af,  lw_insn;
-    cp_store_access_fault: cross priv_mode_s, illegal_data_address,  stval_equals_vaddr_d, medeleg_store_af, sw_insn;
-    cp_instr_access_fault: cross priv_mode_s, illegal_instr_address, stval_equals_vaddr_i, medeleg_instr_af, jalr_insn_curr;
+    cp_load_access_fault:  cross priv_mode_s, illegal_data_address,  stval_equals_vaddr_d,     medeleg_load_af,  lw_insn;
+    cp_store_access_fault: cross priv_mode_s, illegal_data_address,  stval_equals_vaddr_d,     medeleg_store_af, sw_insn;
+    cp_instr_access_fault: cross priv_mode_s, illegal_instr_address, stval_equals_jalr_target, medeleg_instr_af, jalr_insn_curr;
     `endif
 
+    // Misaligned loads and stores to main memory raise no exception when the hart supports them
+    `ifndef UDB_MISALIGNED_LDST
+    vaddr_d_misaligned: coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] {
+    }
     cp_load_address_misaligned:  cross priv_mode_s, lw_insn, stval_equals_vaddr_d, vaddr_d_misaligned, medeleg_load_ma;
     cp_store_address_misaligned: cross priv_mode_s, sw_insn, stval_equals_vaddr_d, vaddr_d_misaligned, medeleg_store_ma;
+    `endif
 
     `ifndef ZCA_SUPPORTED
-    cp_instr_adr_misaligned_jalr: cross priv_mode_s, jalr_insn, cause_instr_misaligned, stval_equals_vaddr_i, medeleg_instr_ma;
+    cause_instr_misaligned: coverpoint ins.current.csr[CSR_SCAUSE][5:0] {
+            bins set = {6'd0};
+    }
+    cp_instr_adr_misaligned_jalr: cross priv_mode_s, jalr_insn_curr, cause_instr_misaligned, stval_equals_jalr_target, medeleg_instr_ma;
     `endif
 
     // -----------------------------------------------------------------------
@@ -140,9 +140,9 @@ covergroup Sstvala_cg with function sample(ins_t ins);
     // -----------------------------------------------------------------------
     // Page-fault crosses
     // -----------------------------------------------------------------------
-    cp_stval_load_page_fault:  cross priv_mode_s, lw_insn,        medeleg_load_pf,  pf_stval, cause_load_page_fault;
-    cp_stval_store_page_fault: cross priv_mode_s, sw_insn,        medeleg_store_pf, pf_stval, cause_store_page_fault;
-    cp_stval_instr_page_fault: cross priv_mode_s, jalr_insn_curr, medeleg_instr_pf, pf_stval, cause_instr_page_fault;
+    cp_stval_load_page_fault:  cross priv_mode_s, lw_insn,        medeleg_load_pf,  pf_stval, stval_equals_vaddr_d,     cause_load_page_fault;
+    cp_stval_store_page_fault: cross priv_mode_s, sw_insn,        medeleg_store_pf, pf_stval, stval_equals_vaddr_d,     cause_store_page_fault;
+    cp_stval_instr_page_fault: cross priv_mode_s, jalr_insn_curr, medeleg_instr_pf, pf_stval, stval_equals_jalr_target, cause_instr_page_fault;
 
 
 endgroup

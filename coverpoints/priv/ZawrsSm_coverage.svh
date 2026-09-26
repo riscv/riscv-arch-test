@@ -65,7 +65,7 @@ covergroup ZawrsSm_cg with function sample(ins_t ins);
         bins one = {1};
     }
 
-    mie_zeros: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")) {
+    mie_zeros: coverpoint (ins.current.csr[CSR_MIE]) {
         bins zeros = {0}; // zero in all 6 interrupt enable bits
     }
     mie_mtie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie")) {

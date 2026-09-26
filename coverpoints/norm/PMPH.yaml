@@ -4,13 +4,12 @@
 normative_rule_definitions:
   # PMP checks the supervisor physical address in every virtualization mode
   - names: [H_pmp, pmp_check_priv_modes]
+    # Representative coverpoints; also PMPH_cg/cp_cfg_W, cp_cfg_A_{off,napot,na4,tor}_{jalr,lw,sw} and
+    # cp_mprv_{jalr,sw}
     coverpoint:
       [
-        "PMPH_cg/{cp_cfg_X,cp_cfg_R,cp_cfg_W}",
-        "PMPH_cg/{cp_cfg_A_off_jalr,cp_cfg_A_off_lw,cp_cfg_A_off_sw}",
-        "PMPH_cg/{cp_cfg_A_napot_jalr,cp_cfg_A_napot_lw,cp_cfg_A_napot_sw}",
-        "PMPH_cg/{cp_cfg_A_na4_jalr,cp_cfg_A_na4_lw,cp_cfg_A_na4_sw}",
-        "PMPH_cg/{cp_cfg_A_tor_jalr,cp_cfg_A_tor_lw,cp_cfg_A_tor_sw}",
+        "PMPH_cg/{cp_cfg_X,cp_cfg_R}",
+        "PMPH_cg/cp_mprv_lw",
         "PMPH_guest_cg/cp_pmp_after_translation",
       ]
 
@@ -23,11 +22,9 @@ normative_rule_definitions:
         pmp_rwx_check,
         pmp_access_fault_exception,
       ]
+    # Representative coverpoints; also PMPH_hlv_cg/cp_pmp_hsv
     coverpoint:
-      [
-        "PMPH_cg/{cp_cfg_X,cp_cfg_R,cp_cfg_W}",
-        "PMPH_hlv_cg/{cp_pmp_hlv,cp_pmp_hsv}",
-      ]
+      ["PMPH_cg/{cp_cfg_X,cp_cfg_R,cp_cfg_W}", "PMPH_hlv_cg/cp_pmp_hlv"]
 
   # MPRV with MPV = 1 gives M-mode loads and stores VS or VU privilege
   - names: [mstatus_mprv_hypervisor]

@@ -172,14 +172,14 @@ def make_op(
     test_data: TestData,
     coverpoint: str,
     covergroup: str,
-    coverbin: str,
+    flag: str,
     comment: str,
 ) -> list[str]:
     """Helper to generate a fp instruction with a comment and check flags."""
     lines = [
         "",
         "csrwi fflags, 0 # reset flags",
-        test_data.add_testcase(coverbin, coverpoint, covergroup),
+        test_data.add_testcase(mnemonic, f"{coverpoint}_{flag}", covergroup),
         f"{mnemonic} f7, f{fs1}, f{fs2}           # {comment}",
         write_sigupd(7, test_data, "float"),
     ]
@@ -197,7 +197,7 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            "cp_fflags_set_m",
+            "cp_fflags_set_m_NV/DZ/OF/UF/NX",
             "Set each flag with different operations",
         )
     ]
@@ -218,13 +218,9 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
     lines.extend(make_op("fmul.s", 14, 14, test_data, coverpoint, covergroup, "UF", "tiny * tiny sets underflow flag"))
     lines.extend(make_op("fdiv.s", 11, 12, test_data, coverpoint, covergroup, "NX", "1 / 3 sets inexact flag"))
 
-    ######################################
-    coverpoint = "cp_underflow_after_rounding"
-    ######################################
-
     lines.append(
         comment_banner(
-            coverpoint,
+            "Underflow after rounding",
             "Check underflow flag is determined after rounding",
         )
     )

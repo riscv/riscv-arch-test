@@ -1,13 +1,18 @@
 normative_rule_definitions:
-  # mideleg holds trap delegation bits for individual interrupts, with the layout of
-  # bits matching those in the mip register
-  - name: mideleg_enc
+  - name: mideleg_enc_img
+    coverpoint: ["InterruptsSSm_cg/cp_interrupts_m"]
+  # csr:mideleg[] holds trap delegation bits for individual interrupts, with the layout of
+  # bits matching those in the csr:mip[] register
+  - name: mideleg_enc_txt
     coverpoint: ["InterruptsSSm_cg/cp_interrupts_m"]
 
-  # Global interrupt-enable bits, MIE and SIE, are provided for M-mode and S-mode
-  # respectively. When a hart is executing in privilege mode x, interrupts are
-  # globally enabled when xIE=1 and globally disabled when xIE=0.
-  - names: [mstatus_sie_op]
+  # Global interrupt-enable bits, csr::[mie] and csr::[sie], are provided for M-mode and
+  # S-mode respectively.
+  - name: mstatus_mie_sie_exist
+    coverpoint: ["InterruptsSSm_cg/cp_interrupts_m"]
+  # When a hart is executing in privilege mode x, interrupts are globally enabled when
+  # xIE=1 and globally disabled when xIE=0.
+  - name: mstatus_mie_sie_op
     coverpoint: ["InterruptsSSm_cg/cp_interrupts_m"]
 
   # Interrupts for lower-privilege modes, w&lt;x, are always globally disabled
@@ -19,21 +24,21 @@ normative_rule_definitions:
 
   # each privilege mode x that can respond to interrupts has a two-level stack of
   # interrupt-enable bits and privilege modes. xPIE holds the value of the
-  # interrupt-enable bit active prior to the trap, and xPP holds the previous
-  # privilege mode.
-  - names: [mstatus_xpie_op, mstatus_xpp_op]
+  # interrupt-enable bit active prior to the trap, and xPP holds the previous privilege
+  # mode.
+  - name: mstatus_xpie_xpp_op
     coverpoint: ["InterruptsSSm_cg/cp_interrupts_m"]
 
-  # Interrupt cause number i (as reported in CSR mcause, &lt;&lt;mcause&gt;&gt;)
-  # corresponds with bit i in both mip and mie. Bits 15:0 are allocated to standard
-  # interrupt causes only, while bits 16 and above are designated for platform use.
-  - name: mip_enc
+  # Interrupt cause number i (as reported in CSR csr:mcause[], &lt;&lt;mcause&gt;&gt;)
+  # corresponds with bit i in both csr:mip[] and csr:mie[]. Bits 15:0 are allocated to
+  # standard interrupt causes only, while bits 16 and above are designated for platform
+  # use.
+  - name: mip_mie_enc_txt
+    coverpoint: ["InterruptsSSm_cg/cp_interrupts_m"]
+  - name: mip_enc_img
     coverpoint: ["InterruptsSSm_cg/cp_interrupts_m"]
 
-  # Interrupt cause number i (as reported in CSR mcause, &lt;&lt;mcause&gt;&gt;)
-  # corresponds with bit i in both mip and mie. Bits 15:0 are allocated to standard
-  # interrupt causes only, while bits 16 and above are designated for platform use.
-  - name: mie_enc
+  - name: mie_enc_img
     coverpoint: ["InterruptsSSm_cg/cp_interrupts_m"]
 
   # An interrupt i will trap to M-mode (causing the privilege mode to change to
@@ -63,7 +68,7 @@ normative_rule_definitions:
 
   # Multiple simultaneous interrupts destined for M-mode are handled in the
   # following decreasing priority order: MEI, MSI, MTI, SEI, SSI, STI, LCOFI.
-  - name: intr_M_mode_pri
+  - name: intr_m_mode_pri
     coverpoint: ["InterruptsSSm_cg/cp_priority_{mip, mie}"]
 
   # Delegated interrupts result in the interrupt being masked at the delegator
@@ -74,10 +79,9 @@ normative_rule_definitions:
   - name: trap_del_intr_priv_lvl
     coverpoint: ["InterruptsSSm_cg/cp_interrupts_m"]
 
-  # If supervisor mode is implemented, bits mip.SEIP and mie.SEIE are the
-  # interrupt-pending and interrupt-enable bits for supervisor-level external
-  # interrupts.
-  - names: [mip_seip_op, mie_seie_op]
+  # If supervisor mode is implemented, bits csr:mip[seip] and csr:mie[seie] are the
+  # interrupt-pending and interrupt-enable bits for supervisor-level external interrupts.
+  - name: mip_seip_mie_seie_op
     coverpoint: ["InterruptsSSm_cg/cp_interrupts_m"]
 
   # SEIP is writable in mip
@@ -100,19 +104,16 @@ normative_rule_definitions:
   - name: mip_stip_no_stimecmp_acc
     coverpoint: ["InterruptsSSm_cg/cp_interrupts_m"]
 
-  # If supervisor mode is implemented, its mip.STIP and mie.STIE are the
-  # interrupt-pending and interrupt-enable bits for supervisor-level timer
-  # interrupts. If the stimecmp register is not implemented, STIP is writable in mip
+  # If supervisor mode is implemented, its csr:mip[stip] and csr:mie[stie] are the
+  # interrupt-pending and interrupt-enable bits for supervisor-level timer interrupts.
+  - name: mip_stip_mie_stie_op
+    coverpoint: ["InterruptsSSm_cg/cp_interrupts_m"]
   # may be written by M-mode software to deliver timer interrupts to S-mode.
-  - name: mip_stip_no_stimecmp_op
+  - name: mip_stip_no_stimecmp_mmode_write
     coverpoint: ["InterruptsSSm_cg/cp_interrupts_m"]
 
-  # If supervisor mode is implemented, its mip.STIP and mie.STIE are the
-  # interrupt-pending and interrupt-enable bits for supervisor-level timer
-  # interrupts. If the stimecmp (supervisor-mode timer compare) register is
-  # implemented, STIP is read-only in mip reflects the supervisor-level timer
-  # interrupt signal resulting from stimecmp.
-  - name: mip_stip_stimecmp_op
+  # reflects the supervisor-level timer interrupt signal resulting from csr:stimecmp[].
+  - name: mip_stip_reflects_stimecmp
     coverpoint: ["InterruptsSSm_cg/cp_interrupts_m"]
 
   # If the stimecmp (supervisor-mode timer compare) register is implemented, STIP is
@@ -125,20 +126,13 @@ normative_rule_definitions:
   - name: mip_stip_stimecmp_clr
     coverpoint: ["InterruptsSSm_cg/cp_interrupts_m"]
 
-  # If supervisor mode is implemented, its mip.STIP and mie.STIE are the
-  # interrupt-pending and interrupt-enable bits for supervisor-level timer
-  # interrupts.
-  - name: mip_stie_op
-    coverpoint: ["InterruptsSSm_cg/cp_interrupts_m"]
-
   # SSIP is writable in mip
   - name: mip_ssip_acc
     coverpoint: ["InterruptsSSm_cg/cp_interrupts_m"]
 
-  # If supervisor mode is implemented, bits mip.SSIP and mie.SSIE are the
-  # interrupt-pending and interrupt-enable bits for supervisor-level software
-  # interrupts.
-  - names: [mip_ssip_op, mie_ssie_op]
+  # If supervisor mode is implemented, bits csr:mip[ssip] and csr:mie[ssie] are the
+  # interrupt-pending and interrupt-enable bits for supervisor-level software interrupts.
+  - name: mip_ssip_mie_ssie_op
     coverpoint: ["InterruptsSSm_cg/cp_interrupts_m"]
 
   # SSIP is writable in mip may also be set to 1 by a platform-specific interrupt

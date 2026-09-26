@@ -141,13 +141,13 @@ covergroup SmV_cg with function sample(ins_t ins);
     }
 
     // attempt to set lmul to all values
-    vset_lmul: coverpoint ins.prev.insn[22:20] {
+    vset_lmul: coverpoint ins.current.insn[22:20] {
         // autofill 000-111, ignore 3'b100 (reserved)
         ignore_bins reserved = {3'b100};
     }
 
     // attempt to set sew to all values
-    vset_sew: coverpoint ins.prev.insn[25:23] {
+    vset_sew: coverpoint ins.current.insn[25:23] {
         // autofill 000-011
         ignore_bins reserved_100 = {3'b100};
         ignore_bins reserved_101 = {3'b101};

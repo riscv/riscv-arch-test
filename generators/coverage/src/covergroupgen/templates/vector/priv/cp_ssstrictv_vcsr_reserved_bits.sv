@@ -6,9 +6,9 @@
     // Verify vcsr reserved bits [XLEN-1:3] read back as zero after CSR write with non-zero upper bits
 
     csrw_vcsr: coverpoint ins.current.insn {
-        wildcard bins csrrw = {32'b000000001111_?????_001_?????_1110011};
-        wildcard bins csrrs = {32'b000000001111_?????_010_?????_1110011};
-        wildcard bins csrrc = {32'b000000001111_?????_011_?????_1110011};
+        wildcard bins csrrw = {CSRRW} iff (ins.current.insn[31:20] == CSR_VCSR);
+        wildcard bins csrrs = {CSRRS} iff (ins.current.insn[31:20] == CSR_VCSR);
+        wildcard bins csrrc = {CSRRC} iff (ins.current.insn[31:20] == CSR_VCSR);
     }
 
     rs1_upper_bits_nonzero: coverpoint (ins.current.rs1_val[`UDB_MXLEN-1:3] != 0) {

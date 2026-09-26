@@ -15,50 +15,50 @@ covergroup ExceptionsZc_cg with function sample(ins_t ins);
     option.per_instance = 0;
 
     // building blocks for the main coverpoints
-    loadops: coverpoint ins.current.insn[15:0] {
+    loadops: coverpoint ins.current.insn {
 
-        wildcard bins c_lw    = {16'b010_???_???_??_???_00};
-        wildcard bins c_lwsp  = {16'b010_?_?????_?????_10};
+        wildcard bins c_lw    = {C_LW};
+        wildcard bins c_lwsp  = {C_LWSP};
         `ifdef ZCB_SUPPORTED
-            wildcard bins c_lh    = {16'b100001_???_1?_???_00};
-            wildcard bins c_lhu   = {16'b100001_???_0?_???_00};
-            wildcard bins c_lbu   = {16'b100000_???_??_???_00};
+            wildcard bins c_lh    = {C_LH};
+            wildcard bins c_lhu   = {C_LHU};
+            wildcard bins c_lbu   = {C_LBU};
         `endif
         `ifdef ZCD_SUPPORTED
-            wildcard bins c_fld   = {16'b001_???_???_??_???_00};
-            wildcard bins c_fldsp = {16'b001_?_?????_?????_10};
+            wildcard bins c_fld   = {C_FLD};
+            wildcard bins c_fldsp = {C_FLDSP};
         `endif
         `ifdef ZCF_SUPPORTED // UDB_MXLEN_32
-            wildcard bins c_flw   = {16'b011_???_???_??_???_00};
-            wildcard bins c_flwsp = {16'b011_?_?????_?????_10};
+            wildcard bins c_flw   = {C_FLW};
+            wildcard bins c_flwsp = {C_FLWSP};
         `endif
 
         `ifdef UDB_MXLEN_64
-            wildcard bins c_ld   = {16'b011_???_???_??_???_00};
-            wildcard bins c_ldsp = {16'b011_?_?????_?????_10};
+            wildcard bins c_ld   = {C_LD};
+            wildcard bins c_ldsp = {C_LDSP};
         `endif
 
     }
 
-    storeops: coverpoint ins.current.insn[15:0] {
-        wildcard bins c_sw    = {16'b110_???_???_??_???_00};
-        wildcard bins c_swsp  = {16'b110_??????_?????_10};
+    storeops: coverpoint ins.current.insn {
+        wildcard bins c_sw    = {C_SW};
+        wildcard bins c_swsp  = {C_SWSP};
         `ifdef ZCB_SUPPORTED
-            wildcard bins c_sb    = {16'b100010_???_??_???_00};
-            wildcard bins c_sh    = {16'b100011_???_0?_???_00};
+            wildcard bins c_sb    = {C_SB};
+            wildcard bins c_sh    = {C_SH};
         `endif
         `ifdef ZCD_SUPPORTED
-            wildcard bins c_fsd   = {16'b101_???_???_??_???_00};
-            wildcard bins c_fsdsp = {16'b101_??????_?????_10};
+            wildcard bins c_fsd   = {C_FSD};
+            wildcard bins c_fsdsp = {C_FSDSP};
         `endif
         `ifdef ZCF_SUPPORTED // only supported in UDB_MXLEN_32
-            wildcard bins c_fsw   = {16'b111_???_???_??_???_00};
-            wildcard bins c_fswsp = {16'b111_??????_?????_10};
+            wildcard bins c_fsw   = {C_FSW};
+            wildcard bins c_fswsp = {C_FSWSP};
         `endif
 
         `ifdef UDB_MXLEN_64
-            wildcard bins c_sd   = {16'b111_???_???_??_???_00};
-            wildcard bins c_sdsp = {16'b111_??????_?????_10};
+            wildcard bins c_sd   = {C_SD};
+            wildcard bins c_sdsp = {C_SDSP};
         `endif
 
     }

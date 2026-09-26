@@ -175,7 +175,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 
     // ── Always-present feature coverpoints ───────────────────────────────
     `ifdef ZFINX_SUPPORTED
-        misa_F: coverpoint ins.current.csr[CSR_MISA][5] {
+        misa_F: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "misa", "exts")[5] {
             bins F_set   = {1'b1};
             bins F_clear = {1'b0};
         }
@@ -207,12 +207,12 @@ covergroup Smstateen_cg with function sample(ins_t ins);
     // cp_envcfg: Only present when Sm > 1.11 is supported
     `ifdef SM1P12P0_OR_LATER_SUPPORTED
       `ifdef UDB_MXLEN_64
-          envcfg_state: coverpoint ins.current.csr[CSR_MSTATEEN0][62] {
+          envcfg_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstateen0", "envcfg")[0] {
                   bins envcfg_disabled = {1'b0};
                   bins envcfg_enabled  = {1'b1};
           }
       `else
-          envcfg_state: coverpoint ins.current.csr[CSR_MSTATEEN0H][30] {
+          envcfg_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstateen0h", "envcfg")[0] {
                   bins envcfg_disabled = {1'b0};
                   bins envcfg_enabled  = {1'b1};
           }
@@ -261,7 +261,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 
 `ifdef SSQOSID_SUPPORTED
     `ifdef UDB_MXLEN_64
-        srmcfg_state: coverpoint ins.current.csr[CSR_MSTATEEN0][55] {
+        srmcfg_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstateen0", "srmcfg")[0] {
                 bins srmcfg_disabled = {1'b0};
                 bins srmcfg_enabled  = {1'b1};
         }
@@ -269,7 +269,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
                 wildcard bins srmcfg = {CSR_SRMCFG};
         }
     `else
-        srmcfg_state: coverpoint ins.current.csr[CSR_MSTATEEN0H][23] {
+        srmcfg_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstateen0h", "srmcfg")[0] {
                 bins srmcfg_disabled = {1'b0};
                 bins srmcfg_enabled  = {1'b1};
         }
@@ -299,14 +299,13 @@ covergroup Smstateen_cg with function sample(ins_t ins);
             bins sstateen0 = {CSR_SSTATEEN0};
     }
 
-    // SE0 is bit 63 of mstateen0 on RV64, bit 31 of mstateen0h on RV32
     `ifdef UDB_MXLEN_64
-        se0: coverpoint ins.current.csr[CSR_MSTATEEN0][63] {
+        se0: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstateen0", "se0")[0] {
                 bins se0_disabled = {1'b0};
                 bins se0_enabled  = {1'b1};
         }
     `else
-        se0: coverpoint ins.current.csr[CSR_MSTATEEN0H][31] {
+        se0: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstateen0h", "se0")[0] {
                 bins se0_disabled = {1'b0};
                 bins se0_enabled  = {1'b1};
         }

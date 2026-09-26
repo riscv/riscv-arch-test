@@ -1,2 +1,2 @@
-        "INSTR"     : begin
+        "@INSTR@"     : begin
         end

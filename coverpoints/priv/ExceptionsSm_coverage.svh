@@ -16,7 +16,7 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     // building blocks for the main coverpoints
     ecall: coverpoint ins.current.insn {
-        bins ecall  = {32'h00000073};
+        bins ecall  = {ECALL};
     }
     branch: coverpoint ins.current.insn {
         wildcard bins branch = {32'b???????_?????_?????_???_?????_1100011};
@@ -97,7 +97,7 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
     seed: coverpoint ins.current.insn[31:20] {
         bins seed = {CSR_SEED};
     }
-    mstatus_MIE: coverpoint ins.prev.csr[CSR_MSTATUS][3] {
+    mstatus_MIE: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
         // auto fills 1 and 0
     }
     pc_bit_1: coverpoint ins.current.pc_rdata[1] {
@@ -111,7 +111,7 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
     rs1_1_0: coverpoint ins.current.rs1_val[1:0] {
     }
     `ifdef S_SUPPORTED
-        medeleg_walk: coverpoint ins.current.csr[CSR_MEDELEG] {
+        medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg") {
             bins zeros                    = {16'b0000_0000_0000_0000};
             `ifndef ZCA_SUPPORTED
                 bins instrmisaligned_enabled  = {16'b0000_0000_0000_0001};
@@ -134,10 +134,10 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
             bins storepagefault_enabled   = {16'b1000_0000_0000_0000};
             wildcard bins ones            = {16'b1011_00?1_1111_111?};
         }
-        mstatus_SIE: coverpoint ins.prev.csr[CSR_MSTATUS][1] {
+        mstatus_SIE: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0] {
             // auto fills 1 and 0
         }
-        medeleg_b8: coverpoint ins.current.csr[CSR_MEDELEG][8] {
+        medeleg_b8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[8] {
             // auto fills 1 and 0: ecall from U-mode delegated to S-mode or not
         }
         jalr_target_bit1: coverpoint {ins.current.rs1_val + ins.current.imm}[1] {

@@ -374,8 +374,8 @@ def read_covergroup_templates(package: str = "covergroupgen.templates") -> dict[
 def customize_template(templates: dict[str, str], name: str, arch: str = "", instr: str = "", effew: str = "") -> str:
     """Look up a template by name and substitute placeholders.
 
-    Placeholders replaced: INSTRNODOT, INSTR, ARCHPREFIXUPPER, ARCHPREFIX,
-    ARCHUPPER, ARCHCASE, ARCH, and (if effew is set) TWOEFFEW, EFFEW, EFFVSEW.
+    Placeholders replaced: @INSTRNODOT@, @INSTR@, @ARCHPREFIXUPPER@, @ARCHPREFIX@,
+    @ARCHUPPER@, @ARCHCASE@, @ARCH@, and (if effew is set) @TWOEFFEW@, @EFFEW@, @EFFVSEW@.
     ARCHPREFIX is the arch with any trailing digits stripped (e.g. "Vx16" -> "Vx").
     """
     if name not in templates:
@@ -391,19 +391,19 @@ def customize_template(templates: dict[str, str], name: str, arch: str = "", ins
     arch_prefix = re.sub(r"\d+$", "", arch)
     result = (
         templates[name]
-        .replace("INSTRNODOT", instr.replace(".", "_"))
-        .replace("INSTR", instr)
-        .replace("ARCHPREFIXUPPER", arch_prefix.upper())
-        .replace("ARCHPREFIX", arch_prefix)
-        .replace("ARCHUPPER", arch.upper())
-        .replace("ARCHCASE", arch)
-        .replace("ARCH", arch.lower())
+        .replace("@INSTRNODOT@", instr.replace(".", "_"))
+        .replace("@INSTR@", instr)
+        .replace("@ARCHPREFIXUPPER@", arch_prefix.upper())
+        .replace("@ARCHPREFIX@", arch_prefix)
+        .replace("@ARCHUPPER@", arch.upper())
+        .replace("@ARCHCASE@", arch)
+        .replace("@ARCH@", arch.lower())
     )
     if effew:
         result = (
-            result.replace("TWOEFFEW", str(2 * int(effew)))
-            .replace("EFFEW", str(int(effew)))
-            .replace("EFFVSEW", str(int(math.log2(int(effew))) - 3))
+            result.replace("@TWOEFFEW@", str(2 * int(effew)))
+            .replace("@EFFEW@", str(int(effew)))
+            .replace("@EFFVSEW@", str(int(math.log2(int(effew))) - 3))
         )
     return result
 

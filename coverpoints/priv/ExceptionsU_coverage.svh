@@ -98,7 +98,7 @@ covergroup ExceptionsU_cg with function sample(ins_t ins);
     seed: coverpoint ins.current.insn[31:20] {
         bins seed = {CSR_SEED};
     }
-    mstatus_MIE: coverpoint ins.prev.csr[CSR_MSTATUS][3] {
+    mstatus_MIE: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
         // auto fills 1 and 0
     }
     pc_bit_1: coverpoint ins.current.pc_rdata[1] {

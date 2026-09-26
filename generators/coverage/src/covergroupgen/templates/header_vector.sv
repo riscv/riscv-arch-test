@@ -11,11 +11,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_ARCHUPPER
-`define COVER_ARCHPREFIXUPPERCUSTOMEFFEW
-`ifdef UDB_ELEN_EFFEW
-    `define SEW_EFFEW_EQ_ELEN
+`define COVER_@ARCHUPPER@
+`define COVER_@ARCHPREFIXUPPER@CUSTOM@EFFEW@
+`ifdef UDB_ELEN_@EFFEW@
+    `define SEW_@EFFEW@_EQ_ELEN
 `endif
-`ifdef UDB_ELEN_TWOEFFEW
-    `define SEW_EFFEW_EQ_ELEN_DIV_2
+`ifdef UDB_ELEN_@TWOEFFEW@
+    `define SEW_@EFFEW@_EQ_ELEN_DIV_2
 `endif

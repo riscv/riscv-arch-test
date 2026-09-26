@@ -32,7 +32,7 @@ covergroup Zicfilp_s_cg with function sample(ins_t ins);
                                 `SAMPLE_CURRENT, "menvcfg", "lpe") {
         bins disabled = {0};
     }
-    xtval_lpad: coverpoint ins.current.csr[12'h343] {
+    xtval_lpad: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mtval", "mtval") {
         bins code_2 = {2};
     }
 

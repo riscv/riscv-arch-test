@@ -21,11 +21,11 @@ covergroup ZicntrU_cg with function sample(ins_t ins);
         wildcard bins csrr = {CSRR};
         wildcard bins csrw = {CSRW};
     }
-    mcounteren_zeros: coverpoint ins.current.csr[CSR_MCOUNTEREN]{
+    mcounteren_zeros: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren"){
         bins zeros = {32'b0};
     }
 
-    counters_mcounteren: coverpoint {ins.current.insn[31:20], ins.current.csr[CSR_MCOUNTEREN][31:0] } {
+    counters_mcounteren: coverpoint {ins.current.insn[31:20], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[31:0] } {
         bins cycle_enabled         = {44'b110000000000_00000000000000000000000000000001};
         bins time_enabled          = {44'b110000000001_00000000000000000000000000000010};
         bins instret_enabled       = {44'b110000000010_00000000000000000000000000000100};

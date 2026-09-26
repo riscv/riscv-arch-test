@@ -106,10 +106,10 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
     csr_0x000: coverpoint ins.current.insn[31:20] {
         bins zero = {12'h000};
     }
-    mstatus_MIE: coverpoint ins.prev.csr[CSR_MSTATUS][3] {
+    mstatus_MIE: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
         // auto fills 1 and 0
     }
-    mstatus_SIE: coverpoint ins.prev.csr[CSR_MSTATUS][1] {
+    mstatus_SIE: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0] {
         // auto fills 1 and 0
     }
     pc_bit_1: coverpoint ins.current.pc_rdata[1] {
@@ -122,10 +122,10 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
     }
     rs1_1_0: coverpoint ins.current.rs1_val[1:0] {
     }
-    medeleg_illegalinstr_enabled: coverpoint ins.current.csr[CSR_MEDELEG][2] {
+    medeleg_illegalinstr_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[2] {
         bins enabled = {1};
     }
-    mtvec_stvec_ne: coverpoint {ins.current.csr[CSR_MTVEC] != ins.current.csr[CSR_STVEC]} {
+    mtvec_stvec_ne: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mtvec", "mtvec") != get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stvec", "stvec")} {
         bins notequal = {1};
     }
 
@@ -168,7 +168,7 @@ function void exceptionss_sample(int hart, int issue, ins_t ins);
 
 // $display("mode: %b, medel: %b, funct3: %b, rs1_1_0: %b, pc_1: %b, offset: %b ",
 //     ins.current.mode,
-//     ins.current.csr[CSR_MEDELEG],
+//     get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg"),
 //     ins.current.insn[14:12],
 //     ins.current.rs1_val[1:0],
 //     ins.current.pc_rdata[1],

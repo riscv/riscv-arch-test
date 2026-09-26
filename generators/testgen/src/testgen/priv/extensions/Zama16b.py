@@ -31,11 +31,10 @@ _LOAD_OPS: list[tuple[str, int, bool, str | None]] = [
     # RV64-only integer loads
     ("lwu", 4, False, "#if __riscv_xlen == 64"),
     ("ld", 8, False, "#if __riscv_xlen == 64"),
-    # Floating-point loads
+    # Floating-point loads (fld only on RV64: the granule covers F/D/Q loads of at most XLEN bits)
     ("flh", 2, True, "#ifdef ZFH_SUPPORTED"),
     ("flw", 4, True, "#ifdef F_SUPPORTED"),
-    ("fld", 8, True, "#ifdef D_SUPPORTED"),
-    # ("flq", 16, True, "#ifdef Q_SUPPORTED"),
+    ("fld", 8, True, "#if defined(D_SUPPORTED) && __riscv_xlen == 64"),
 ]
 
 _STORE_OPS: list[tuple[str, int, bool, str | None]] = [
@@ -45,11 +44,10 @@ _STORE_OPS: list[tuple[str, int, bool, str | None]] = [
     ("sw", 4, False, None),
     # RV64-only integer store
     ("sd", 8, False, "#if __riscv_xlen == 64"),
-    # Floating-point stores
+    # Floating-point stores (fsd only on RV64: the granule covers F/D/Q stores of at most XLEN bits)
     ("fsh", 2, True, "#ifdef ZFH_SUPPORTED"),
     ("fsw", 4, True, "#ifdef F_SUPPORTED"),
-    ("fsd", 8, True, "#ifdef D_SUPPORTED"),
-    # ("fsq", 16, True, "#ifdef Q_SUPPORTED"),
+    ("fsd", 8, True, "#if defined(D_SUPPORTED) && __riscv_xlen == 64"),
 ]
 
 _AMO_OPS: list[tuple[str, int, str]] = [
@@ -101,6 +99,17 @@ _AMO_OPS: list[tuple[str, int, str]] = [
 
 
 _SCRATCH_INIT_WORDS = [0x44556677, 0x00112233, 0x89ABCDEF, 0x01234567]
+_SCRATCH_BYTES = b"".join(w.to_bytes(4, "little") for w in _SCRATCH_INIT_WORDS)
+
+
+def _scratch_operand(offset: int, size: int) -> list[int]:
+    """Value the scratch pattern holds at [offset, offset+size), low register first."""
+    raw = int.from_bytes(_SCRATCH_BYTES[offset : offset + size], "little")
+    if size == 16:
+        return [raw & ((1 << 64) - 1), raw >> 64]
+    if size == 4 and raw >> 31:
+        raw -= 1 << 32  # amocas.w compares a sign-extended word
+    return [raw]
 
 
 def _emit_scratch_init(base_reg: int, data_reg: int) -> list[str]:
@@ -112,6 +121,10 @@ def _emit_scratch_init(base_reg: int, data_reg: int) -> list[str]:
             f"sw x{data_reg}, {i * 4}(x{base_reg})",
         ]
     return out
+
+
+def _size_coverpoint(size: int) -> str:
+    return f"cp_zama16b_{size}byte"
 
 
 def _emit_sig_dump(base_reg: int, check_reg: int, test_data: TestData) -> list[str]:
@@ -126,7 +139,7 @@ def _emit_sig_dump(base_reg: int, check_reg: int, test_data: TestData) -> list[s
 
 
 def _generate_load_tests(test_data: TestData) -> list[str]:
-    """Generate per-instruction load tests matching SV coverpoint names (cp_<mnemonic>_load)."""
+    """Generate per-instruction load tests."""
     covergroup = "Zama16b_cg"
     addr_reg, dest_reg, sentinel_reg, base_reg = test_data.int_regs.get_registers(4)
     fp_reg = test_data.float_regs.get_register()  # allocate one FP reg for load result
@@ -153,7 +166,7 @@ def _generate_load_tests(test_data: TestData) -> list[str]:
             prev_guard = guard
 
         bin_name = mnemonic.replace(".", "_")
-        coverpoint = f"cp_{bin_name}_load"
+        coverpoint = _size_coverpoint(size)
 
         for offset in range(16 - size + 1):
             lines.extend(
@@ -192,9 +205,7 @@ def _generate_load_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_store_tests(test_data: TestData) -> list[str]:
-    """Generate per-instruction store tests matching SV coverpoint names (cp_<mnemonic>_store).
-
-    For each store instruction, sweep offsets [0, 16 - size]. The scratch region
+    """For each store instruction, sweep offsets [0, 16 - size]. The scratch region
     is re-initialized before each store; after each store all 16 bytes are written
     to the signature so the exact bytes modified by the store are visible.
     """
@@ -224,7 +235,7 @@ def _generate_store_tests(test_data: TestData) -> list[str]:
             prev_guard = guard
 
         bin_name = mnemonic.replace(".", "_")
-        coverpoint = f"cp_{bin_name}_store"
+        coverpoint = _size_coverpoint(size)
 
         # FP needs a value preloaded into f{fp_reg} once per guard block (matches the FP store width).
         if is_fp and guard != last_fp_preload_guard:
@@ -276,8 +287,7 @@ def _generate_store_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_amo_tests(test_data: TestData) -> list[str]:
-    """Generate per-instruction AMO tests matching SV coverpoint names (cp_<mnemonic>_amo).
-
+    """
     AMOs have no immediate offset — the address is in rs1 directly.
     Base address is 16-byte aligned; rs1 is set to base + offset for
     each offset in [0, 16 - size]. Scratch is re-initialized before each
@@ -317,7 +327,7 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
             prev_guard = guard
 
         bin_name = mnemonic.replace(".", "_")
-        coverpoint = f"cp_{bin_name}_amo"
+        coverpoint = _size_coverpoint(size)
 
         for offset in range(16 - size + 1):
             lines.append(
@@ -328,16 +338,29 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
             lines.extend(_emit_scratch_init(base_reg, src_reg))
 
             # Compute effective address after re-init
-            lines.extend(
+            setup = [
+                f"addi x{addr_reg}, x{base_reg}, {offset}   # effective address = base + {offset}",
+                f"LI(x{src_reg}, 0xABC)                      # value AMO will write into memory",
+            ]
+            if size == 16:
+                setup.append(f"LI(x{src_reg + 1}, 0xDEF)                  # upper half of the 128-bit source")
+            if mnemonic.startswith("amocas"):
+                # amocas compares rd against memory, so preload it with the scratch
+                # pattern; otherwise the compare fails and nothing is written
+                for k, value in enumerate(_scratch_operand(offset, size)):
+                    setup.append(f"LI(x{dest_reg + k}, {value:#x})   # amocas compare operand")
+            setup.extend(
                 [
-                    f"addi x{addr_reg}, x{base_reg}, {offset}   # effective address = base + {offset}",
-                    f"LI(x{src_reg}, 0xABC)                      # value AMO will write into memory",
                     test_data.add_testcase(f"{bin_name}_off{offset}", coverpoint, covergroup),
                     f"{mnemonic} x{dest_reg}, x{src_reg}, (x{addr_reg})",
                 ]
             )
+            lines.extend(setup)
 
             # Dump all 16 bytes to signature — shows exactly which bytes the AMO touched
+            lines.append(write_sigupd(dest_reg, test_data))
+            if size == 16:
+                lines.append(write_sigupd(dest_reg + 1, test_data))
             lines.extend(_emit_sig_dump(base_reg, dest_reg, test_data))
 
     if prev_guard is not None:

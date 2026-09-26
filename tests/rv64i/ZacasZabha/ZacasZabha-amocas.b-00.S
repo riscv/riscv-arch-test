@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 688
+#define SIGUPD_COUNT 696
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -4602,6 +4602,62 @@ ZacasZabha_amocas_b_cg_cp_align_byte_b7:
   RVTEST_SIGUPD(x16, x8, x7, x30, ZacasZabha_amocas_b_cg_cp_align_byte_b7, ZacasZabha_amocas_b_cg_cp_align_byte_b7_str)
 
 
+/////////////////////////////////
+// cp_custom_amo_aqrl
+/////////////////////////////////
+
+# Testcase cp_custom_aqrl (ordering suffix = '')
+  RVTEST_TESTDATA_LOAD_INT(x15, x19) # load value in memory: x19 = 0x41dcfff36e7dd595
+  RVTEST_TESTDATA_LOAD_INT(x15, x30) # load rs2: x30 = 0x2ee59f3dfc3d281d
+  LA(x31, scratch) # load base address into rs1
+  SREG x19, 0(x31) # store value into memory at address in rs1
+ZacasZabha_amocas_b_cg_cp_custom_aqrl:
+  amocas.b x24, x30, (x31) # perform operation
+  # Check if x24 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x24, ZacasZabha_amocas_b_cg_cp_custom_aqrl, ZacasZabha_amocas_b_cg_cp_custom_aqrl_str)
+  LREG x31, 0(x31) # Load the updated value from memory
+  # Check if x31 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x31, ZacasZabha_amocas_b_cg_cp_custom_aqrl, ZacasZabha_amocas_b_cg_cp_custom_aqrl_str)
+
+# Testcase cp_custom_aqrl (ordering suffix = '.aq')
+  RVTEST_TESTDATA_LOAD_INT(x15, x17) # load value in memory: x17 = 0xa491823691a7bc9c
+  RVTEST_TESTDATA_LOAD_INT(x15, x20) # load rs2: x20 = 0x2c97f215b73708aa
+  LA(x5, scratch) # load base address into rs1
+  SREG x17, 0(x5) # store value into memory at address in rs1
+ZacasZabha_amocas_b_cg_cp_custom_aqrl_aq:
+  amocas.b.aq x6, x20, (x5) # perform operation
+  # Check if x6 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x6, ZacasZabha_amocas_b_cg_cp_custom_aqrl_aq, ZacasZabha_amocas_b_cg_cp_custom_aqrl_aq_str)
+  LREG x5, 0(x5) # Load the updated value from memory
+  # Check if x5 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x5, ZacasZabha_amocas_b_cg_cp_custom_aqrl_aq, ZacasZabha_amocas_b_cg_cp_custom_aqrl_aq_str)
+
+# Testcase cp_custom_aqrl (ordering suffix = '.rl')
+  RVTEST_TESTDATA_LOAD_INT(x15, x25) # load value in memory: x25 = 0xb60f0d1e77024ea5
+  RVTEST_TESTDATA_LOAD_INT(x15, x9) # load rs2: x9 = 0xb36b17090478852c
+  LA(x21, scratch) # load base address into rs1
+  SREG x25, 0(x21) # store value into memory at address in rs1
+ZacasZabha_amocas_b_cg_cp_custom_aqrl_rl:
+  amocas.b.rl x6, x9, (x21) # perform operation
+  # Check if x6 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x6, ZacasZabha_amocas_b_cg_cp_custom_aqrl_rl, ZacasZabha_amocas_b_cg_cp_custom_aqrl_rl_str)
+  LREG x21, 0(x21) # Load the updated value from memory
+  # Check if x21 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x21, ZacasZabha_amocas_b_cg_cp_custom_aqrl_rl, ZacasZabha_amocas_b_cg_cp_custom_aqrl_rl_str)
+
+# Testcase cp_custom_aqrl (ordering suffix = '.aqrl')
+  RVTEST_TESTDATA_LOAD_INT(x15, x12) # load value in memory: x12 = 0x72224e3bf7c98364
+  RVTEST_TESTDATA_LOAD_INT(x15, x17) # load rs2: x17 = 0xd105bf9a4c4d51de
+  LA(x10, scratch) # load base address into rs1
+  SREG x12, 0(x10) # store value into memory at address in rs1
+ZacasZabha_amocas_b_cg_cp_custom_aqrl_aqrl:
+  amocas.b.aqrl x14, x17, (x10) # perform operation
+  # Check if x14 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x14, ZacasZabha_amocas_b_cg_cp_custom_aqrl_aqrl, ZacasZabha_amocas_b_cg_cp_custom_aqrl_aqrl_str)
+  LREG x10, 0(x10) # Load the updated value from memory
+  # Check if x10 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x10, ZacasZabha_amocas_b_cg_cp_custom_aqrl_aqrl, ZacasZabha_amocas_b_cg_cp_custom_aqrl_aqrl_str)
+
   mv x2, x16 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -5289,6 +5345,14 @@ RVTEST_DATA_BEGIN
 .dword 0x9602f72975f07484
 .dword 0x6eb224db35672ce6
 .dword 0xac237f77d855b70e
+.dword 0x41dcfff36e7dd595
+.dword 0x2ee59f3dfc3d281d
+.dword 0xa491823691a7bc9c
+.dword 0x2c97f215b73708aa
+.dword 0xb60f0d1e77024ea5
+.dword 0xb36b17090478852c
+.dword 0x72224e3bf7c98364
+.dword 0xd105bf9a4c4d51de
 
 // Testcase strings
 ZacasZabha_amocas_b_cg_cp_rs1_nx0_b1_equal_str: .string "\"test: 1; cg: ZacasZabha_amocas.b_cg; cp: cp_rs1_nx0; bin: b1_equal\""
@@ -5630,6 +5694,10 @@ ZacasZabha_amocas_b_cg_cp_align_byte_b4_str: .string "\"test: 336; cg: ZacasZabh
 ZacasZabha_amocas_b_cg_cp_align_byte_b5_str: .string "\"test: 337; cg: ZacasZabha_amocas.b_cg; cp: cp_align_byte; bin: b5\""
 ZacasZabha_amocas_b_cg_cp_align_byte_b6_str: .string "\"test: 338; cg: ZacasZabha_amocas.b_cg; cp: cp_align_byte; bin: b6\""
 ZacasZabha_amocas_b_cg_cp_align_byte_b7_str: .string "\"test: 339; cg: ZacasZabha_amocas.b_cg; cp: cp_align_byte; bin: b7\""
+ZacasZabha_amocas_b_cg_cp_custom_aqrl_str: .string "\"test: 340; cg: ZacasZabha_amocas.b_cg; cp: cp_custom_aqrl; bin: \""
+ZacasZabha_amocas_b_cg_cp_custom_aqrl_aq_str: .string "\"test: 341; cg: ZacasZabha_amocas.b_cg; cp: cp_custom_aqrl; bin: .aq\""
+ZacasZabha_amocas_b_cg_cp_custom_aqrl_rl_str: .string "\"test: 342; cg: ZacasZabha_amocas.b_cg; cp: cp_custom_aqrl; bin: .rl\""
+ZacasZabha_amocas_b_cg_cp_custom_aqrl_aqrl_str: .string "\"test: 343; cg: ZacasZabha_amocas.b_cg; cp: cp_custom_aqrl; bin: .aqrl\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

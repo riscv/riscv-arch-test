@@ -35,6 +35,9 @@ def make_memval(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs2val=val)
         elif instr_type == "L":
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], temp_val=val)
+        elif instr_type in ("A", "AP"):
+            # For AMOs, rs1val holds the value written to memory before the operation
+            params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=val)
         else:
             raise ValueError(f"cp_memval coverpoint not supported for instruction type: {instr_type} in {instr_name}")
         desc = f"{coverpoint} (memory value = {val:#x})"

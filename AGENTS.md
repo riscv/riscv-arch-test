@@ -92,3 +92,7 @@
 - By default, ACT stops after the first failed build task and cancels active tasks. The `succeeded` value counts DAG tasks, not tests. Use `-k` to continue independent tasks.
 - To test one suite across simulators, use `EXTENSIONS=<suite> DEBUG=True make -k sail spike whisper qemu imperas cvw`. Each failing simulator log names the first divergent testcase on its `bin:` line.
 - Simulator (not RTL) tests normally finish in seconds. If they run for much longer, inspect the simulation for a hang.
+
+## Reviewing
+
+See .claude/skills/review/SKILL.md

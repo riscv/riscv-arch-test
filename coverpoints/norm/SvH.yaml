@@ -20,7 +20,7 @@ normative_rule_definitions:
         H_vm_gpatrans,
         H_vm_gpapriv,
         H_vm_gpa_g,
-        Svrsw60t59b_h_g_stage_reserved_bits,
+        Svrsw60t59b_H_g_stage_reserved_bits,
       ]
     coverpoint:
       [
@@ -37,18 +37,18 @@ normative_rule_definitions:
         "SvH_gstage_cg/cp_hgatp_gpa_width",
         "SvH_twostage_cg/cp_hgatp_sv32x4_gpa",
       ]
-  - names: [hgatp_mode_sv39x4, hgatp_mode_sv48x4, hgatp_mode_sv57x4]
+  - names: [hgatp_mode_sv39x4, hgatp_mode_sv48x4, hgatp_mode_Sv57x4]
     coverpoint: ["SvH_gstage_cg/cp_hgatp_gpa_width"]
   - names: [hgatp_mode_sv32x4]
     coverpoint: ["SvH_twostage_cg/cp_hgatp_sv32x4_gpa"]
 
-  # vsatp and hgatp MODE: an unsupported MODE is ignored or WARL for vsatp with V = 0, WARL for hgatp, and
-  # ignored for satp (vsatp) with V = 1
-  - names: [vsatp_mode_unsupported_v0, VSATP_MODE_UNSUPPORTED_V0_WARL]
+  # When V=0, a write to vsatp with an unsupported MODE value is either ignored as it is
+  # for satp, or the fields of vsatp are treated as WARL in the normal way.
+  - name: vsatp_mode_unsupported_v0
     coverpoint: ["SvH_csr_cg/cp_vsatp_mode_field"]
-  - names: [vsatp_mode_unsupported_v1, vsatp_op]
+  - names: [vsatp_mode_unsupported_v1, vsatp_sz_acc_op]
     coverpoint: ["SvH_csr_cg/cp_satp_mode_field"]
-  - names: [hgatp_mode_sv, HGATP_MODE_WARL]
+  - names: [hgatp_mode_Sv, hgatp_mode_warl]
     coverpoint: ["SvH_csr_cg/cp_hgatp_mode_field"]
 
   # Implicit VS-stage page-table accesses use the G-stage; a guest-page fault on one writes a pseudoinstruction
@@ -58,7 +58,7 @@ normative_rule_definitions:
 
   # Guest-page faults taken in HS-mode write htval and hstatus.GVA
   - names:
-      [H_guest_page_fault, HTVAL_TRAPVAL, mtval2_htval_virtaddr, hstatus_gva_op]
+      [H_guest_page_fault, htval_trapval, mtval2_htval_virtaddr, hstatus_gva_op]
     coverpoint:
       [
         "SvH_gstage_cg/cp_hgatp_perm",
@@ -89,7 +89,7 @@ normative_rule_definitions:
       ]
 
   # vsstatus.SUM in VS-mode
-  - names: [vsstatus_op]
+  - name: vsstatus_sz_acc_op
     coverpoint: ["SvH_vsstage_cg/cp_vsatp_sum"]
 
   # HLV, HLVX and HSV: hstatus.SPVP selects the privilege, vsstatus.SUM applies and sstatus.SUM does not,

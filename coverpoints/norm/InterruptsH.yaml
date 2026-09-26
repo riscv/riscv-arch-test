@@ -2,25 +2,87 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
-  # hvip raises the VS-level interrupts in hip; HS-mode takes one only when it is enabled in hie and sstatus.SIE
-  # and not delegated by hideleg
-  - names:
-      [
-        hvip_op,
-        hvip_acc,
-        hip_op,
-        hie_op,
-        hideleg_op,
-        hideleg_hs,
-        hip_vseip_vseie_op,
-        hip_vstip_vstie_op,
-        hip_vstip_acc,
-        hip_vssip_vssie_op,
-      ]
+  # Register hvip is an HSXLEN-bit read/write register that a hypervisor can write to
+  # indicate virtual interrupts intended for VS-mode. Bits of hvip that are not writable
+  # are read-only zeros.
+  - name: hvip_sz_op
     coverpoint: ["InterruptsH_hs_cg/cp_trigger_{vsei, vsti, vssi}"]
+  # The standard portion (bits 15:0) of hvip is formatted as shown in . Bits VSEIP, VSTIP,
+  # and VSSIP of hvip are writable. Setting VSEIP=1 in hvip asserts a VS-level external
+  # interrupt; setting VSTIP asserts a VS-level timer interrupt; and setting VSSIP asserts
+  # a VS-level software interrupt.
+  - name: hvip_acc
+    coverpoint: ["InterruptsH_hs_cg/cp_trigger_{vsei, vsti, vssi}"]
+  # The hip register indicates pending VS-level and hypervisor-specific interrupts
+  - name: hip_op
+    coverpoint: ["InterruptsH_hs_cg/cp_trigger_{vsei, vsti, vssi}"]
+  # hie contains enable bits for the same interrupts
+  - name: hie_op
+    coverpoint: ["InterruptsH_hs_cg/cp_trigger_{vsei, vsti, vssi}"]
+  # An interrupt that has been delegated to HS-mode (using mideleg) is further delegated
+  # to VS-mode if the corresponding hideleg bit is set.
+  - name: hideleg_op
+    coverpoint:
+      [
+        "InterruptsH_hs_cg/cp_trigger_{vsei, vsti, vssi}",
+        "InterruptsH_hs_cg/cp_{hideleg_hip_vs, hideleg_hie_vs, hip_hie_vs, sie_vs}",
+        "InterruptsH_hs_cg/cp_{hideleg_hip_vu, hideleg_hie_vu, hip_hie_vu}",
+      ]
+  # An interrupt i will trap to HS-mode whenever all of the following are true: (a) either
+  # the current operating mode is HS-mode and the SIE bit in the sstatus register is set,
+  # or the current operating mode has less privilege than HS-mode; (b) bit i is set in
+  # both sip and sie, or in both hip and hie; and (c) bit i is not set in hideleg.
+  - name: hideleg_hs
+    coverpoint:
+      [
+        "InterruptsH_hs_cg/cp_trigger_{vsei, vsti, vssi}",
+        "InterruptsH_hs_cg/cp_{hideleg_hip_vs, hideleg_hie_vs, hip_hie_vs, sie_vs}",
+        "InterruptsH_hs_cg/cp_{hideleg_hip_vu, hideleg_hie_vu, hip_hie_vu}",
+        "InterruptsH_hs_cg/cp_vsint_disabled_u",
+      ]
+  # Bits hip.VSEIP and hie.VSEIE are the interrupt-pending and interrupt-enable bits for
+  # VS-level external interrupts. VSEIP is read-only in hip, and is the logical-OR of
+  # these interrupt sources:
+  - name: hip_vseip_vseie_op
+    coverpoint:
+      [
+        "InterruptsH_hs_cg/cp_trigger_{vsei, vsti, vssi}",
+        "InterruptsH_hs_cg/cp_{trigger_vsei_hgeip, hgeip0}",
+      ]
+  # Bits csr:hip[vstip] and csr:hie[vstie] are the interrupt-pending and interrupt-enable
+  # bits for VS-level timer interrupts.
+  - name: hip_vstip_vstie_acc_op
+    coverpoint:
+      [
+        "InterruptsH_hs_cg/cp_trigger_{vsei, vsti, vssi}",
+        "InterruptsH_hs_cg/cp_trigger_vsti",
+        "InterruptsH_hs_cg/cp_hip_write",
+        "H_hscsr_cg/cp_hcsrwalk",
+      ]
+  # csr::[vstip] is read-only in csr:hip[], and is the logical-OR of csr:hvip[vstip] and,
+  # when the ext:sstc[] extension is implemented, the timer interrupt signal resulting
+  # from csr:vstimecmp[].
+  - name: hip_vstip_acc
+    coverpoint: ["InterruptsH_hs_cg/cp_trigger_{vsei, vsti, vssi}"]
+  # Bits hip.VSSIP and hie.VSSIE are the interrupt-pending and interrupt-enable bits for
+  # VS-level software interrupts. VSSIP in hip is an alias (writable) of the same bit in
+  # hvip.
+  - name: hip_vssip_vssie_op
+    coverpoint:
+      [
+        "InterruptsH_hs_cg/cp_trigger_{vsei, vsti, vssi}",
+        "InterruptsH_hs_cg/cp_hip_write",
+      ]
 
-  # Only hip.VSSIP is writable, as an alias of hvip.VSSIP
-  - names: [hip_acc, HIP_WARL, hip_vssip_vssie_op]
+  # If bit i of sie is read-only zero, the same bit in register hip may be writable or may
+  # be read-only. When bit i in hip is writable, a pending interrupt i can be cleared by
+  # writing 0 to this bit. If interrupt i can become pending in hip but bit i in hip is
+  # read-only, then either the interrupt can be cleared by clearing bit i of hvip, or the
+  # implementation must provide some other mechanism for clearing the pending interrupt
+  # (which may involve a call to the execution environment).
+  - name: hip_acc
+    coverpoint: ["InterruptsH_hs_cg/cp_hip_write"]
+  - name: hip_img
     coverpoint: ["InterruptsH_hs_cg/cp_hip_write"]
 
   # Simultaneous interrupts destined for HS-mode are taken in the order SEI, SSI, STI, SGEI, VSEI, VSSI, VSTI
@@ -28,71 +90,118 @@ normative_rule_definitions:
     coverpoint:
       ["InterruptsH_hs_cg/cp_priority_{en_vsi, deleg_vsi, s, sgei, sgei_s}"]
 
-  # hie and hip are views of mie and mip; vsie and vsip show the delegated VS-level bits as S-level bits
-  - names:
+  # Bits SGEIP, VSEIP, VSTIP, and VSSIP in mip are aliases for the same bits in hypervisor
+  # CSR hip, while SGEIE, VSEIE, VSTIE, and VSSIE in mie are aliases for the same bits in
+  # hie.
+  - name: mip_mie_alias
+    coverpoint: ["InterruptsH_hs_cg/cp_{hie, hip, vsie, vsip, vsie_from_hie}"]
+  # For each writable bit in sie, the corresponding bit shall be read-only zero in both
+  # hip and hie. Hence, the nonzero bits in sie and hie are always mutually exclusive, and
+  # likewise for sip and hip.
+  - name: sie_hip_hie_mutex
+    coverpoint: ["InterruptsH_hs_cg/cp_{hie, hip, vsie, vsip, vsie_from_hie}"]
+  # The vsip and vsie registers are VSXLEN-bit read/write registers that are VS-mode’s
+  # versions of supervisor CSRs sip and sie, formatted as shown in and respectively. When
+  # V=1, vsip and vsie substitute for the usual sip and sie, so instructions that normally
+  # read or modify sip/sie actually access vsip/vsie instead. However, interrupts directed
+  # to HS-level continue to be indicated in the HS-level sip register, not in vsip, when
+  # V=1.
+  - name: vsip_vsie_sz_acc_op
+    coverpoint:
       [
-        mip_mie_alias,
-        sie_hip_hie_mutex,
-        vsip_vsie_op,
-        vsip_vsie_sei,
-        vsip_vsie_sti,
-        vsip_vsie_ssi,
+        "InterruptsH_hs_cg/cp_{hie, hip, vsie, vsip, vsie_from_hie}",
+        "InterruptsH_hs_cg/cp_{hideleg_hip_vs, hideleg_hie_vs, hip_hie_vs, sie_vs}",
+        "InterruptsH_hs_cg/cp_{hideleg_hip_vu, hideleg_hie_vu, hip_hie_vu}",
       ]
+  # When bit 10 of hideleg is zero, vsip.SEIP and vsie.SEIE are read-only zeros. Else,
+  # vsip.SEIP and vsie.SEIE are aliases of hip.VSEIP and hie.VSEIE.
+  - name: vsip_vsie_sei
+    coverpoint: ["InterruptsH_hs_cg/cp_{hie, hip, vsie, vsip, vsie_from_hie}"]
+  # When bit 6 of hideleg is zero, vsip.STIP and vsie.STIE are read-only zeros. Else,
+  # vsip.STIP and vsie.STIE are aliases of hip.VSTIP and hie.VSTIE.
+  - name: vsip_vsie_sti
+    coverpoint: ["InterruptsH_hs_cg/cp_{hie, hip, vsie, vsip, vsie_from_hie}"]
+  # When bit 2 of hideleg is zero, vsip.SSIP and vsie.SSIE are read-only zeros. Else,
+  # vsip.SSIP and vsie.SSIE are aliases of hip.VSSIP and hie.VSSIE.
+  - name: vsip_vsie_ssi
     coverpoint: ["InterruptsH_hs_cg/cp_{hie, hip, vsie, vsip, vsie_from_hie}"]
 
-  # hideleg bits 10, 6 and 2 are writable and bits 12, 9, 5 and 1 are read-only zero
-  - names: [hideleg_acc, HIDELEG_WARL]
+  # Register hideleg is an HSXLEN-bit read/write register, formatted as shown in
+  # &lt;&lt;norm:hideleg_img&gt;&gt;.
+  - name: hideleg_sz_acc
+    coverpoint: ["InterruptsH_hs_cg/cp_hideleg"]
+  # Among bits 15:0 of hideleg, bits 10, 6, and 2 (corresponding to the standard VS-level
+  # interrupts) are writable, and bits 12, 9, 5, and 1 (corresponding to the standard
+  # S-level interrupts) are read-only zeros.
+  - name: hideleg_acc
+    coverpoint: ["InterruptsH_hs_cg/cp_hideleg"]
+  - name: hideleg_img
     coverpoint: ["InterruptsH_hs_cg/cp_hideleg"]
 
   # hie.SGEIE is writable when guest external interrupts can become pending
-  - names: [hie_acc, HIE_WARL]
+  - names: [hie_acc, hie_img]
     coverpoint: ["InterruptsH_hs_cg/cp_hie_gilen"]
 
   # An interrupt writes zero to htinst
   - names: [H_trap_xtinst_interrupt, htinst_val]
     coverpoint: ["InterruptsH_hs_cg/cp_htinst"]
 
-  # hip.SGEIP is 1 when hgeip & hgeie is nonzero
-  - names:
-      [
-        hip_sgeip_sgeie_acc,
-        hip_sgeip_sgeie_op,
-        hgeip_op,
-        hgeie_op,
-        hgeip_hgeie_fields,
-        hgeip_bit_op,
-      ]
+  # Bits hip.SGEIP and hie.SGEIE are the interrupt-pending and interrupt-enable bits for
+  # guest external interrupts at supervisor level (HS-level). SGEIP is read-only in hip,
+  # and is 1 if and only if the bitwise logical-AND of CSRs hgeip and hgeie is nonzero in
+  # any bit. (See .)
+  - name: hip_sgeip_sgeie_acc_op
+    coverpoint: ["InterruptsH_hs_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
+  # The hgeip register is an HSXLEN-bit read-only register, formatted as shown in
+  # &lt;&lt;hgeipreg&gt;&gt;, that indicates pending guest external interrupts for this
+  # hart.
+  - name: hgeip_sz_acc_op
+    coverpoint: ["InterruptsH_hs_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
+  # The hgeie register is an HSXLEN-bit read/write register, formatted as shown in
+  # &lt;&lt;norm:hgeie_img&gt;&gt;, that contains enable bits for the guest external
+  # interrupts at this hart.
+  - name: hgeie_sz_acc_op
+    coverpoint: ["InterruptsH_hs_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
+  # Register hgeie selects the subset of guest external interrupts that cause a
+  # supervisor-level (HS-level) guest external interrupt. The enable bits in hgeie do not
+  # affect the VS-level external interrupt signal selected from hgeip by hstatus.VGEIN.
+  - name: hgeie_op
+    coverpoint: ["InterruptsH_hs_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
+  # Guest external interrupt number i corresponds with bit i in both hgeip and hgeie.
+  - name: hgeip_hgeie_fields
+    coverpoint: ["InterruptsH_hs_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
+  # Each bit of hgeip summarizes all pending interrupts directed to one virtual hart, as
+  # collected and reported by an interrupt controller.
+  - name: hgeip_bit_op
     coverpoint: ["InterruptsH_hs_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
 
-  # hstatus.VGEIN selects the hgeip bit that drives hip.VSEIP
-  - names: [hstatus_vgein_op, hip_vseip_vseie_op]
+  # The VGEIN (Virtual Guest External Interrupt Number) field selects a guest external
+  # interrupt source for VS-level external interrupts.
+  - name: hstatus_vgein_op
     coverpoint: ["InterruptsH_hs_cg/cp_{trigger_vsei_hgeip, hgeip0}"]
 
-  # In the guest, HS-mode takes the undelegated VS-level interrupts first, then VS-mode takes the delegated ones
-  # as S-level causes
-  - names: [hideleg_op, hideleg_hs, hideleg_trans, vsip_vsie_op]
+  # When a virtual supervisor external interrupt (code 10) is delegated to VS-mode, it is
+  # automatically translated by the machine into a supervisor external interrupt (code 9)
+  # for VS-mode, including the value written to vscause on an interrupt trap. Likewise, a
+  # virtual supervisor timer interrupt (6) is translated into a supervisor timer interrupt
+  # (5) for VS-mode, and a virtual supervisor software interrupt (2) is translated into a
+  # supervisor software interrupt (1) for VS-mode.
+  - name: hideleg_trans
     coverpoint:
       [
         "InterruptsH_hs_cg/cp_{hideleg_hip_vs, hideleg_hie_vs, hip_hie_vs, sie_vs}",
         "InterruptsH_hs_cg/cp_{hideleg_hip_vu, hideleg_hie_vu, hip_hie_vu}",
+        "InterruptsH_hs_cg/cp_vsint_vectored",
       ]
 
-  # A vectored vstvec receives VS-level interrupts at BASE + 4 x the S-level cause
-  - names: [VSTVEC_MODE_WARL, vstvec_op, hideleg_trans]
+  - name: vstvec_img
     coverpoint: ["InterruptsH_hs_cg/cp_vsint_vectored"]
-
-  # Interrupts delegated to VS-mode are not taken in U-mode
-  - names: [hideleg_hs]
-    coverpoint: ["InterruptsH_hs_cg/cp_vsint_disabled_u"]
-
-  # hip.VSTIP and hie.VSTIE are the pending and enable bits for VS-level timer interrupts
-  - names: [hip_vstip_vstie_acc]
-    coverpoint:
-      [
-        "InterruptsH_hs_cg/cp_trigger_vsti",
-        "InterruptsH_hs_cg/cp_hip_write",
-        "H_hscsr_cg/cp_hcsrwalk",
-      ]
+  # The vstvec register is a VSXLEN-bit read/write register that is VS-mode’s version of
+  # supervisor register stvec, formatted as shown in . When V=1, vstvec substitutes for
+  # the usual stvec, so instructions that normally read or modify stvec actually access
+  # vstvec instead. When V=0, vstvec does not directly affect the behavior of the machine.
+  - name: vstvec_sz_acc_op
+    coverpoint: ["InterruptsH_hs_cg/cp_vsint_vectored"]
 
   # When VGEIN=0, no guest external interrupt source is selected for VS-level external interrupts
   - names: [hstatus_vgein_zero]

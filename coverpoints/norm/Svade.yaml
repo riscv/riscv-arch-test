@@ -3,7 +3,7 @@
 normative_rule_definitions:
   # The Svade extension: when a virtual page is accessed and the A bit is clear, or is
   # written and the D bit is clear, a page-fault exception is raised.
-  - name: svade_access_ad_bit_clear
+  - name: Svade_access_ad_bit_clear
     coverpoint:
       [
         "Svade_cg/Abit_unset_{exec,read,write}_{s,u}",
@@ -12,7 +12,7 @@ normative_rule_definitions:
 
   # When hardware updating of A/D bits is disabled, the Svade extension, which mandates
   # exceptions when A/D bits need be set, instead takes effect.
-  - name: Svadu_disabled_hw_update_falls_back_to_svade
+  - name: Svadu_disabled_hw_update_falls_back_to_Svade
     coverpoint:
       [
         "Svade_cg/Abit_unset_{exec,read,write}_{s,u}",

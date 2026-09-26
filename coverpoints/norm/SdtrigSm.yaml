@@ -180,34 +180,50 @@ normative_rule_definitions:
         "SdtrigSm_combined_accesses_cg/cp_sdtrig_cm_pop_push",
       ]
 
-  # For the purposes of debug triggers, two classes of cache operations must match
-  # as stores: Cache operations that enable software to maintain coherence between
-  # otherwise non-coherent implicit and explicit memory accesses. Cache operations
-  # that perform block writes of constant data.
-  - name: Sdtrig_caches_stores
+  # For the purposes of debug triggers, two classes of cache operations must match as
+  # stores:
+  - name: Sdtrig_caches_stores_1
+    coverpoint:
+      [
+        "SdtrigSm_cache_operations_cg/cp_sdtrig_cache_zicbom",
+        "SdtrigSm_cache_operations_cg/cp_sdtrig_cache_zicboz",
+      ]
+  # Cache operations that enable software to maintain coherence between otherwise
+  # non-coherent implicit and explicit memory accesses.
+  - name: Sdtrig_caches_stores_2
+    coverpoint:
+      [
+        "SdtrigSm_cache_operations_cg/cp_sdtrig_cache_zicbom",
+        "SdtrigSm_cache_operations_cg/cp_sdtrig_cache_zicboz",
+      ]
+  # Cache operations that perform block writes of constant data.
+  - name: Sdtrig_caches_stores_3
     coverpoint:
       [
         "SdtrigSm_cache_operations_cg/cp_sdtrig_cache_zicbom",
         "SdtrigSm_cache_operations_cg/cp_sdtrig_cache_zicboz",
       ]
 
-  # Only triggers with size=0 and select=0 will match. Since cache operations affect
-  # multiple addresses, there are multiple possible values to compare against.
-  # Implementations must implement one of the following options.
+  # Only triggers with {mcontrol6-size}=0 and {mcontrol6-select}=0 will match. Since cache
+  # operations affect multiple addresses, there are multiple possible values to compare
+  # against. Implementations must implement one of the following options.
   - name: Sdtrig_cache_compare
     coverpoint:
       [
         "SdtrigSm_cache_operations_cg/cp_sdtrig_cache_zicbom",
         "SdtrigSm_cache_operations_cg/cp_sdtrig_cache_zicboz",
       ]
-
-  # . Every address from the effective address rounded down to the nearest cache
-  # block boundary (inclusive) to the effective address rounded up to the nearest
-  # cache block boundary (exclusive) is a compare value. . The effective address
-  # rounded down to the nearest cache block boundary is a compare value. . The
-  # effective address of the instruction is a compare value.
+  # Every address from the effective address rounded down to the nearest cache block
+  # boundary (inclusive) to the effective address rounded up to the nearest cache block
+  # boundary (exclusive) is a compare value. The effective address rounded down to the
+  # nearest cache block boundary is a compare value. The effective address of the
+  # instruction is a compare value.
   - name: Sdtrig_cache_compare_opts
-    coverpoint: ["Implementation may choose among several options; not tested"]
+    coverpoint:
+      [
+        "SdtrigSm_cache_operations_cg/cp_sdtrig_cache_zicbom",
+        "SdtrigSm_cache_operations_cg/cp_sdtrig_cache_zicboz",
+      ]
 
   # Cache operations encoded as HINTs do not match debug triggers.
   - name: Sdtrig_cache_hints
@@ -379,14 +395,15 @@ normative_rule_definitions:
     coverpoint:
       ["Tmexttrigger relies on implementation-specific external inputs"]
 
-  # This trigger is disabled.
+  # This trigger is disabled. In this state, {csr-tdata2} and {csr-tdata3} can be written
+  # with any value that is supported for any of the types this trigger implements. The
+  # remaining bits in this register, except for {tdata1-dmode}, are ignored.
   - name: Sdtrig_tdata1_type_disabled
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
-
-  # In this state, tdata2 and tdata3 can be written with any value that is supported
-  # for any of the types this trigger implements.
-  - name: Sdtrig_tdata1_disabled_write
-    coverpoint: ["WARL write-any-read-legal behavior not separately tested"]
+    coverpoint:
+      [
+        "Descriptive spec text with no separately testable behavior",
+        "WARL write-any-read-legal behavior not separately tested",
+      ]
 
   # Other values are reserved for future use.
   - name: Sdtrig_tdata1_type_rsv
@@ -1597,11 +1614,16 @@ normative_rule_definitions:
         "SdtrigSm_textra_cg/cp_sdtrig_textra_double_context",
       ]
 
-  # This trigger will only match or fire if: the mode is VS-mode or VU-mode and ASID
-  # in vsatp equals the lower ASIDMAX (defined in the Privileged Spec) bits of
-  # svalue. in all other modes, ASID in satp equals the lower ASIDMAX (defined in
-  # the Privileged Spec) bits of svalue.
-  - name: Sdtrig_textra32_sselect_asid
+  # This trigger will only match or fire if:
+  - name: Sdtrig_textra32_sselect_asid1
+    coverpoint: ["SdtrigSm_textra_cg/cp_sdtrig_textra_asid"]
+  # the mode is VS-mode or VU-mode and ASID in vsatp equals the lower ASIDMAX (defined in
+  # the Privileged Spec) bits of {textra32-svalue}.
+  - name: Sdtrig_textra32_sselect_asid2
+    coverpoint: ["SdtrigSm_textra_cg/cp_sdtrig_textra_asid"]
+  # in all other modes, ASID in satp equals the lower ASIDMAX (defined in the Privileged
+  # Spec) bits of {textra32-svalue}.
+  - name: Sdtrig_textra32_sselect_asid3
     coverpoint: ["SdtrigSm_textra_cg/cp_sdtrig_textra_asid"]
 
   # This field should be tied to 0 when S-mode is not supported.

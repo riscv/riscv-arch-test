@@ -2,7 +2,7 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
-  - name: zbs_single_bit_functionality
+  - name: Zbs_single_bit_functionality
     coverpoint: [""]
 
   - name: bclr_enc
@@ -11,7 +11,11 @@ normative_rule_definitions:
   - name: bclr_op
     coverpoint: ["Zbs_bclr_cg/cr_rs1_rs2_edges"]
 
-  - name: bclri_enc
+  # Encoding (RV32)
+  - name: bclri_rv32_enc
+    coverpoint: ["Zbs_bclri_cg/cr_rs1_imm_edges_uimm"]
+  # Encoding (RV64)
+  - name: bclri_rv64_enc
     coverpoint: ["Zbs_bclri_cg/cr_rs1_imm_edges_uimm"]
 
   - name: bclri_op
@@ -23,7 +27,11 @@ normative_rule_definitions:
   - name: bext_op
     coverpoint: ["Zbs_bext_cg/cr_rs1_rs2_edges"]
 
-  - name: bexti_enc
+  # Encoding (RV32)
+  - name: bexti_rv32_enc
+    coverpoint: ["Zbs_bexti_cg/cr_rs1_imm_edges_uimm"]
+  # Encoding (RV64)
+  - name: bexti_rv64_enc
     coverpoint: ["Zbs_bexti_cg/cr_rs1_imm_edges_uimm"]
 
   - name: bexti_op
@@ -35,7 +43,11 @@ normative_rule_definitions:
   - name: binv_op
     coverpoint: ["Zbs_binv_cg/cr_rs1_rs2_edges"]
 
-  - name: binvi_enc
+  # Encoding (RV32)
+  - name: binvi_rv32_enc
+    coverpoint: ["Zbs_binvi_cg/cr_rs1_imm_edges_uimm"]
+  # Encoding (RV64)
+  - name: binvi_rv64_enc
     coverpoint: ["Zbs_binvi_cg/cr_rs1_imm_edges_uimm"]
 
   - name: binvi_op
@@ -47,7 +59,11 @@ normative_rule_definitions:
   - name: bset_op
     coverpoint: ["Zbs_bset_cg/cr_rs1_rs2_edges"]
 
-  - name: bseti_enc
+  # Encoding (RV32)
+  - name: bseti_rv32_enc
+    coverpoint: ["Zbs_bseti_cg/cr_rs1_imm_edges_uimm"]
+  # Encoding (RV64)
+  - name: bseti_rv64_enc
     coverpoint: ["Zbs_bseti_cg/cr_rs1_imm_edges_uimm"]
 
   - name: bseti_op

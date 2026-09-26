@@ -50,6 +50,14 @@
         `cover_info("//      ExceptionsH - Enabled");
         `include "ExceptionsH_coverage_init.svh"
     `endif
+    `ifdef COVER_EXCEPTIONSHF
+        `cover_info("//      ExceptionsHF - Enabled");
+        `include "ExceptionsHF_coverage_init.svh"
+    `endif
+    `ifdef COVER_EXCEPTIONSHSM
+        `cover_info("//      ExceptionsHSm - Enabled");
+        `include "ExceptionsHSm_coverage_init.svh"
+    `endif
     `ifdef COVER_EXCEPTIONSHV
         `cover_info("//      ExceptionsHV - Enabled");
         `include "ExceptionsHV_coverage_init.svh"
@@ -146,13 +154,25 @@
         `cover_info("//      F - Enabled");
         `include "F_coverage_init.svh"
     `endif
-    `ifdef COVER_HV
-        `cover_info("//      HV - Enabled");
-        `include "HV_coverage_init.svh"
+    `ifdef COVER_H
+        `cover_info("//      H - Enabled");
+        `include "H_coverage_init.svh"
+    `endif
+    `ifdef COVER_HSM
+        `cover_info("//      HSm - Enabled");
+        `include "HSm_coverage_init.svh"
     `endif
     `ifdef COVER_I
         `cover_info("//      I - Enabled");
         `include "I_coverage_init.svh"
+    `endif
+    `ifdef COVER_INTERRUPTSH
+        `cover_info("//      InterruptsH - Enabled");
+        `include "InterruptsH_coverage_init.svh"
+    `endif
+    `ifdef COVER_INTERRUPTSHSM
+        `cover_info("//      InterruptsHSm - Enabled");
+        `include "InterruptsHSm_coverage_init.svh"
     `endif
     `ifdef COVER_M
         `cover_info("//      M - Enabled");
@@ -297,6 +317,14 @@
     `ifdef COVER_SSTC
         `cover_info("//      Sstc - Enabled");
         `include "Sstc_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSTCH
+        `cover_info("//      SstcH - Enabled");
+        `include "SstcH_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSTCHSM
+        `cover_info("//      SstcHSm - Enabled");
+        `include "SstcHSm_coverage_init.svh"
     `endif
     `ifdef COVER_SSTCSM
         `cover_info("//      SstcSm - Enabled");

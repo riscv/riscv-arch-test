@@ -11,7 +11,10 @@ from dataclasses import dataclass, field
 
 
 def trap_sigupd_count(expected_traps: int = 0) -> int:
-    """Return the trap-signature allocation for the expected trap count."""
+    """Return the trap-signature allocation for the expected trap count.
+
+    Each trap takes six words, the size of the largest entry (an M or HS exception on a hypervisor build).
+    """
     return ((10 + expected_traps * 6 + 4) // 5) * 5
 
 

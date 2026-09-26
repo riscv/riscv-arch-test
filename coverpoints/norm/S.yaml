@@ -116,7 +116,10 @@ normative_rule_definitions:
 
   # Interrupts to S-mode take priority over any interrupts to lower privilege modes.
   - name: s_interrupt_priority
-    coverpoint: ["TODO: move to hypervisor VS interrupts"]
+    coverpoint:
+      [
+        "InterruptsH_hs_cg/cp_{hideleg_hip_vs, hideleg_hie_vs, hideleg_hip_vu, hideleg_hie_vu}",
+      ]
 
   # Each individual bit in register sip may be writable or may be read-only.
   - name: sip_acc

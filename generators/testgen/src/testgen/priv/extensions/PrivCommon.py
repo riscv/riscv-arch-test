@@ -172,6 +172,7 @@ def addr_value_tests(test_data: TestData, csr_name: str, covergroup: str) -> lis
         f"csrr x{save_reg}, {csr_name}      # Save CSR",
         "",
         f"# Testcase: {csr_name} = current pc",
+        ".p2align 2    # a 4-byte-aligned pc keeps xtvec.MODE = Direct",
         f"auipc x{walk_reg}, 0",
         test_data.add_testcase("pc", f"cp_{csr_name}_vaddr_pc", covergroup),
         f"csrw {csr_name}, x{walk_reg}    # directly follows the auipc so the value is this csrw's pc - 4",
@@ -339,3 +340,44 @@ def priv_inst_trap_tests(
         instr = f"{name}    # test {name} instruction"
         lines.extend([test_data.add_testcase(name, coverpoint, covergroup), instr])
     return lines
+
+
+# htimedelta values: the negative ones make time + htimedelta wrap modulo 2^64
+HTIMEDELTAS = {
+    "zero": 0,
+    "pos_2p30": 1 << 30,
+    "pos_2p60": 1 << 60,
+    "neg_2p30": -(1 << 30),
+    "neg_2p60": -(1 << 60),
+}
+
+
+def write64(csr: str, value: int, reg: int) -> list[str]:
+    """Write a 64-bit value to a CSR, and to its upper-half CSR first on RV32."""
+    value &= (1 << 64) - 1
+    return [
+        "#if __riscv_xlen == 64",
+        f"LI(x{reg}, {value:#x})",
+        f"csrw {csr}, x{reg}",
+        "#else",
+        f"LI(x{reg}, {value >> 32:#x})",
+        f"csrw {csr}h, x{reg}",
+        f"LI(x{reg}, {value & 0xFFFFFFFF:#x})",
+        f"csrw {csr}, x{reg}",
+        "#endif",
+    ]
+
+
+def read_time(lo: int, hi: int, tmp: int) -> list[str]:
+    """Read time into lo, and on RV32 timeh into hi, reading again if timeh changes between the reads."""
+    return [
+        "#if __riscv_xlen == 64",
+        f"csrr x{lo}, time",
+        "#else",
+        "1:",
+        f"csrr x{hi}, timeh",
+        f"csrr x{lo}, time",
+        f"csrr x{tmp}, timeh",
+        f"bne x{hi}, x{tmp}, 1b    # timeh changed between the reads",
+        "#endif",
+    ]

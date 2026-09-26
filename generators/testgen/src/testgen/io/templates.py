@@ -67,6 +67,10 @@ def insert_header_template(
         all_extensions = flat_ext_components
         march = generate_march_string(all_extensions, xlen)
     all_defines = [*(extra_defines or []), *generate_defines_from_extensions(all_extensions)]
+    # Opt in to the hypervisor only for suites that require H. A suite that lists H
+    # in march_extensions just needs the assembler to accept H CSR names.
+    if "H" in flat_ext_components:
+        all_defines.append("#define RVTEST_HYPERVISOR")
     if not EXPERIMENTAL_EXTENSIONS.isdisjoint(all_extensions):
         all_defines.append("#define RVTEST_EXPERIMENTAL")
     # Replace placeholders

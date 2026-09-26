@@ -26,7 +26,8 @@ ci_enabled: true
 # ZawrsU and ZawrsS fail on qemu due to stval mismatching, filed QEMU issue https://gitlab.com/qemu-project/qemu/-/work_items/4080
 exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU"
 # qemu-rv32-mu, qemu-rv64-mu: U-mode cbo.zero/clean/flush/inval raise illegal-instruction without S-mode
-#   because check_zicbo_envcfg() also requires senvcfg, which does not exist (QEMU issue to be filed)
+#   because check_zicbo_envcfg() also requires senvcfg, which does not exist
+#   (https://gitlab.com/qemu-project/qemu/-/work_items/4596)
 # qemu-rv64-m, qemu-rv64-mu: mstatus.SXL/UXL read as 64-bit when S/U are not implemented
 #   (https://gitlab.com/qemu-project/qemu/-/work_items/4456)
 exclude_configs:

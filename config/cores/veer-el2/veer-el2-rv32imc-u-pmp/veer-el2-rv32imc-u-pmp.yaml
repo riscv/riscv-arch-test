@@ -1,0 +1,308 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
+
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+# UDB Architecture Configuration for the CHIPS Alliance VeeR EL2 core.
+#
+# Written against Cores-VeeR-EL2 commit 925f3a34bdadc8f28b12a70cfb73e043b0f5ef3d.
+# Every parameter below cites the supporting text and a permalink to the original.
+# Sources, in order of preference: the PRM markdown under docs/source/ (the source of
+# the published "RISC-V VeeR EL2 Programmer's Reference Manual", Revision 1.9), then
+# configs/veer.config, then the RTL under design/.
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: veer-el2-rv32imc-u-pmp
+description: CHIPS Alliance VeeR EL2 - RV32IMC with U-mode and 64 PMP entries
+
+# misa reads 0x4000_1104: MXL=1 (RV32), plus C (bit 2), I (bit 8) and M (bit 12).
+#   Quote: "0x301 | MRW | misa | ISA and extensions (**Note:** writes ignored) | 0x4000_1104"
+#   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/csrs.md#L15
+# Quote: "RV32IMC-compliant RISC-V core with branch predictor"
+#   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/overview.md
+# The bundled tests are built -march=rv32imc_zicsr_zifencei, confirming Zicsr and Zifencei.
+#   Quote: "ABI = -mabi=ilp32 -march=rv32imc_zicsr_zifencei"
+#   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/tools/Makefile#L23
+# There is no A, no F/D, no bit-manipulation and no U-mode in EL2: configs/veer.config
+# contains no atomic_enable, bitmanip_* or user_mode knob, so this IS the maximum
+# feature set for this core.
+implemented_extensions:
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  # Zihpm: the unprivileged hpmcounter3..6 shadows exist in the U-mode build, which is what
+  # Zihpm provides. Confirmed empirically by the UDB feature extractor and in the CSR decode.
+  #   Quote: "csr_hpmc3 ... csr_hpmc6" (and their high halves) in the M+U decode table
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/csrdecode_mu
+  # NOTE: only 3..6 exist; 7..31 do not, so Zihpm is implemented only in part.
+  - { name: Zihpm, version: "= 2.0" }
+  - { name: Zifencei, version: "= 2.0" }
+  # U-mode is optional in EL2 and enabled here (-set user_mode=1), which is the maximum
+  # ratified feature set. Smepmp is deliberately left off.
+  #   Quote: "Originally, VeeR EL2 only implemented machine mode, and user mode support was
+  #   added for the Caliptra project. By default the VeeR EL2 Core is configured in machine
+  #   mode only, so to enable user mode, use the `-set` option"
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/user-mode.md#L3
+  - { name: U, version: "= 1.0.0" }
+  # VeeR EL2 implements privileged spec 1.11, not 1.12: mstatush, which 1.12 added, does
+  # not exist on this core, and ACT's trap handler correctly skips it for Sm < 1.12.
+  #   Quote: "The RISC-V Instruction Set Manual Volume II: Privileged Architecture |
+  #   20190608-Priv-MSU-Ratified | Specification ratified"
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/intro.md
+  # (The 20211203 / 1.12 document is cited separately, but only as the reference for PMP.)
+  - { name: Sm, version: "= 1.11.0" }
+
+params:
+  # XLEN
+  # Quote: "VeeR EL2 is a machine-mode (M-mode) only, 32-bit CPU core"
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/overview.md
+  MXLEN: 32
+  # Quote (32-bit physical address space, 16 regions of 256 MB):
+  #   "The VeeR EL2 core has a 32-bit address space which is divided into 16 fixed
+  #    regions of 256 MB each."
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/memory-map.md
+  PHYS_ADDR_WIDTH: 32
+
+  # MISA: implemented but read-only ("writes ignored"), so no extension can be
+  # turned off through misa. In the user-mode build misa reads 0x4010_1104 (U bit 20 set);
+  # note the PRM CSR table and configs/veer.config both still say 0x4000_1104
+  # unconditionally, which is stale for this build, so the RTL is cited as authoritative.
+  #   Quote: "({32{csr_misa}}      & 32'h40101104) |"
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L2945
+  #   Quote: "misa | ISA and extensions (**Note:** writes ignored) | 0x4000_1104"
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/csrs.md#L15
+  MISA_CSR_IMPLEMENTED: true
+  MUTABLE_MISA_M: false
+  MUTABLE_MISA_C: false
+  MUTABLE_MISA_U: false
+
+  # Endianness: RISC-V little-endian; EL2 implements no mstatus.MBE/SBE/UBE fields.
+  M_MODE_ENDIANNESS: little
+  U_MODE_ENDIANNESS: little
+  UXLEN: [32]
+
+  # Trap behavior.
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_ECALL_FROM_U: true
+  TRAP_ON_EBREAK: true
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  # !VERIFIED - the PRM does not state what an access to an unimplemented CSR does.
+  # Set to true (the ordinary RISC-V behaviour) pending an RTL read of
+  # design/dec/dec_decode_ctl.sv; if wrong it shows up as a Zicsr discrepancy.
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  TRAP_ON_ILLEGAL_WLRL: false
+
+  # MTVAL reporting. !VERIFIED for EL2 in detail: the PRM has no section enumerating
+  # which exceptions write mtval. These values follow the RISC-V defaults implemented
+  # by the TLU (design/dec/dec_tlu_ctl.sv); mismatches surface as Sm discrepancies.
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true # majority behaviour; EL2 leaves mtval 0 for illegal CSR accesses - see el2-discrepancies.md
+  MTVAL_WIDTH: 32
+
+  # Misaligned load/store: handled in hardware for ordinary (idempotent) memory.
+  #   Quote: "The core performs a misalignment check during the address calculation."
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/memory-map.md#L355
+  # Known deviation, accepted for this configuration: misaligned accesses to
+  # side-effect regions raise a misaligned exception where the priv spec recommends an
+  # access fault.
+  #   Quote: "The RISC-V Privileged specification recommends that misaligned accesses
+  #   to regions with potential side-effects should trigger an access fault exception,
+  #   instead of a misaligned exception ... Note that VeeR EL2 triggers a misaligned
+  #   exception in this case."
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/memory-map.md#L1060
+  MISALIGNED_LDST: true
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0 # no A extension in EL2
+  MISALIGNED_SPLIT_STRATEGY: custom
+
+  # Machine ID CSRs.
+  #   Quote: "0xF11 | MRO | mvendorid | Vendor ID | 0x0000_0045"
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/csrs.md#L20
+  # UDB splits mvendorid into (BANK << 7) | OFFSET; 0x45 has no continuation bytes.
+  VENDOR_ID_BANK: 0x0
+  VENDOR_ID_OFFSET: 0x45
+  #   Quote: "0xF12 | MRO | marchid | Architecture ID | 0x0000_0010"
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/csrs.md#L25
+  MARCHID_IMPLEMENTED: true
+  ARCH_ID_VALUE: 0x10
+  #   Quote: "0xF13 | MRO | mimpid | Implementation ID | 0x0000_0004"
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/csrs.md#L30
+  MIMPID_IMPLEMENTED: true
+  IMP_ID_VALUE: 0x4
+
+  # MTVEC. The TLU stores bits [31:2] and bit [0], dropping bit 1, so both Direct
+  # (MODE=0) and Vectored (MODE=1) are representable and BASE is 4-byte aligned.
+  #   Quote: "assign mtvec_ns[30:0] = {dec_csr_wrdata_wb[31:2], dec_csr_wrdata_wb[0]} ;"
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/dec_tlu_ctl.sv#L1145
+  # Vectored mode is used by the PRM's own interrupt example.
+  #   Quote: "trap_vector:            // Interrupt trap starts here when MTVEC[mode]=1"
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/external-interrupts.md#L963
+  MTVEC_MODES: [0, 1]
+  MTVEC_ACCESS: rw
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom # bit 1 of a write is discarded, not retained
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  MTVEC_BASE_ALIGNMENT_VECTORED: 4
+
+  # Sm parameters.
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  # No PMA hardware: region attributes come from mrac, whose granularity is one
+  # 256 MB region, but the natural access granule on the 64-bit AHB/AXI bus is 8 bytes.
+  PMA_GRANULARITY: 3
+  # core implements 1.11, so UDB does not define the parameter for this config.
+
+  # PMP: EL2 implements RISC-V PMP, configurable to 0, 16 or 64 entries; 64 is the
+  # maximum and is what the RTL is built with (-set pmp_entries=64). OFF/TOR/NA4/NAPOT
+  # are all supported. Smepmp is available but deliberately not enabled or tested.
+  #   Quote: "OFF / TOR / NA4 / NAPOT"
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/physical-memory-protection.md
+  # The granule is hardwired to G=0 (4-byte) in the RTL, not a config knob; UDB encodes
+  # PMP_GRANULARITY as G+2.
+  #   Quote: "parameter PMP_GRANULARITY = 0,  // TODO: Move to veer.config"
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/el2_pmp.sv#L23
+  NUM_PMP_ENTRIES: 64
+  NUM_USABLE_PMP_ENTRIES: 64
+  PMP_GRANULARITY: 2
+  PMP_TOR_SUPPORTED: true
+  PMP_NA4_SUPPORTED: true
+  PMP_NAPOT_SUPPORTED: true
+
+  # Hardware performance monitors: mhpmcounter3-6 / mhpmevent3-6 only (4 counters).
+  #   Quote: "0xB03 ... mhpmcounter3" through "0xB06 ... mhpmcounter6"
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/csrs.md
+  HPM_EVENTS: [0]
+  HPM_COUNTER_EN:
+    [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+
+  # mcountinhibit (0x320) DOES exist on EL2 - it replaced EH1's non-standard mgpmc.
+  #   Quote: "replaces the non-standard mgpmc register of the previous VeeR generation."
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/performance.md
+  MCOUNTINHIBIT_IMPLEMENTED: true
+
+  # mcounteren (0x306) DOES exist in this U-mode build - it is decoded in csrdecode_mu and
+  # implemented under `ifdef RV_USER_MODE, with CY, IR and HPM3..HPM6 writable and TM
+  # read-only zero (there is no time CSR on EL2).
+  #   Quote: "rvdffs #(6) mcounteren_ff (.*, ... .din({dec_csr_wrdata_r[6:2], dec_csr_wrdata_r[0]}))"
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv
+  # Only bits 3..6 are marked writable here. The core also makes CY (0) and IR (2)
+  # writable, but UDB requires MCOUNTENABLE_EN[0:2] to be false unless Zicntr is
+  # implemented, and EL2 cannot claim Zicntr: it has the cycle and instret shadows but no
+  # time CSR at all. sail.json carries the core's full mask (0x7D) so the reference model
+  # matches the hardware.
+  MCOUNTENABLE_EN:
+    [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+
+  # mcountinhibit exists on EL2. Bit 1 (TM) is read-only zero per the spec; bits 3..6
+  # track the four implemented mhpmcounters, and 7..31 do not exist.
+  COUNTINHIBIT_EN:
+    [
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]

@@ -2431,12 +2431,9 @@ data_adj_\__MODE__\()epc:
 oos_\__MODE__\()epc:
 #ifdef RVTEST_ALLOW_OOS_FETCH_EPC
         csrr    T2, CSR_XCAUSE
-        LI(     T6, CAUSE_FETCH_ACCESS)
-        beq     T2, T6, sv_\__MODE__\()epc
-        LI(     T6, CAUSE_FETCH_PAGE_FAULT)
-        beq     T2, T6, sv_\__MODE__\()epc
-        LI(     T6, CAUSE_FETCH_GUEST_PAGE_FAULT)
-        beq     T2, T6, sv_\__MODE__\()epc
+        LI(     T6, CAUSE_FETCH_ACCESS | CAUSE_FETCH_PAGE_FAULT | CAUSE_FETCH_GUEST_PAGE_FAULT)
+        and      T2, T2, T6
+        bnez     T2, sv_\__MODE__\()epc
 #endif
         j       abort_test                            // runaway EPC -> abort
 

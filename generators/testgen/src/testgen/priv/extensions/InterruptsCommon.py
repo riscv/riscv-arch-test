@@ -10,24 +10,27 @@
 """Shared interrupt test generators"""
 
 from collections.abc import Callable
+from dataclasses import dataclass
 from itertools import combinations
 
+from testgen.asm.csr import write_stce
 from testgen.asm.helpers import comment_banner
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 
 machine_ints = {"MEI": 11, "MTI": 7, "MSI": 3}
-supervisor_ints = {"LCOFI": 13, "SEI": 9, "STI": 5, "SSI": 1, "VSEI": 10, "VSTI": 6, "VSSI": 2}
+supervisor_ints = {"LCOFI": 13, "SEI": 9, "STI": 5, "SSI": 1}
 # Interrupts raised by writing a pending bit directly instead of through the platform (cp_trigger_reg)
 reg_ints = {"MIP_SEIP": 9, "MIP_SSIP": 1, "SIP_SSIP": 1, "SIP_LCOFIP": 13}
-# STI raised through stimecmp with menvcfg.STCE = 0 or 1 (cp_trigger_sti_sstc)
+# STI raised through stimecmp with menvcfg.STCE = 1, and with STCE = 0, where the same stimecmp
+# write must not raise it (cp_trigger_sti_sstc)
 sstc_ints = {"SSTC_STCE0": 5, "SSTC_STCE1": 5}
 # mip/mie bit position of every interrupt type
 int_bit = machine_ints | supervisor_ints | reg_ints | sstc_ints
 # Guard symbol and coverpoint for types that do not use the UDB_<int>_INTR_IMPL / cp_trigger defaults
 int_guard = {"MIP_SEIP": "UDB_SEI_INTR_IMPL", "MIP_SSIP": "UDB_SSI_INTR_IMPL", "SIP_SSIP": "UDB_SSI_INTR_IMPL"}
-int_guard |= {"SIP_LCOFIP": "UDB_LCOFI_INTR_IMPL"}
+int_guard |= {"LCOFI": "SSCOFPMF_SUPPORTED", "SIP_LCOFIP": "SSCOFPMF_SUPPORTED"}
 int_guard |= {name: "SSTC_SUPPORTED" for name in sstc_ints}
 int_coverpoint = {name: "cp_trigger_reg" for name in reg_ints}
 int_coverpoint |= {name: "cp_trigger_sti_sstc" for name in sstc_ints}
@@ -39,101 +42,36 @@ def guard_symbol(int_type: str) -> str:
 
 
 # RVTEST_SET/CLR_<name>_INT_<priv> macro name (tests/env/utils.h) for each interrupt type.
-# Types missing here have no trigger macros yet; their UDB_<int>_INTR_IMPL guard is never defined.
 int_macro = {"MEI": "MEXT", "MTI": "MTIME", "MSI": "MSW", "SEI": "SEXT", "STI": "STIME", "SSI": "SSW"}
 int_macro |= {name: name for name in ["LCOFI", *reg_ints, *sstc_ints]}
-
-# RVTEST_SET/CLR_<name>_INT_<priv> for the register-triggered interrupts. M-mode writes mip and sip
-# directly, S-mode writes sip directly and mip through T-SBI, and U-mode uses T-SBI for both.
-REG_TRIGGER_DEFINES = [
-    "#define RVTEST_SET_MIP_SEIP_INT_M li a1, 1<<9; csrs mip, a1",
-    "#define RVTEST_CLR_MIP_SEIP_INT_M li a1, 1<<9; csrc mip, a1",
-    "#define RVTEST_SET_MIP_SSIP_INT_M csrsi mip, 1<<1",
-    "#define RVTEST_CLR_MIP_SSIP_INT_M csrci mip, 1<<1",
-    "#define RVTEST_SET_SIP_SSIP_INT_M csrsi sip, 1<<1",
-    "#define RVTEST_CLR_SIP_SSIP_INT_M csrci sip, 1<<1",
-    "#define RVTEST_SET_MIP_SEIP_INT_S RVTEST_TSBI_CSR_SET(CSR_MIP, 1<<9)",
-    "#define RVTEST_CLR_MIP_SEIP_INT_S RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<9)",
-    "#define RVTEST_SET_MIP_SSIP_INT_S RVTEST_TSBI_CSR_SET(CSR_MIP, 1<<1)",
-    "#define RVTEST_CLR_MIP_SSIP_INT_S RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<1)",
-    "#define RVTEST_SET_SIP_SSIP_INT_S csrsi sip, 1<<1",
-    "#define RVTEST_CLR_SIP_SSIP_INT_S csrci sip, 1<<1",
-    "#define RVTEST_SET_MIP_SEIP_INT_U RVTEST_TSBI_CSR_SET(CSR_MIP, 1<<9)",
-    "#define RVTEST_CLR_MIP_SEIP_INT_U RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<9)",
-    "#define RVTEST_SET_MIP_SSIP_INT_U RVTEST_TSBI_CSR_SET(CSR_MIP, 1<<1)",
-    "#define RVTEST_CLR_MIP_SSIP_INT_U RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<1)",
-    "#define RVTEST_SET_SIP_SSIP_INT_U RVTEST_TSBI_CSR_SET(CSR_SIP, 1<<1)",
-    "#define RVTEST_CLR_SIP_SSIP_INT_U RVTEST_TSBI_CSR_CLEAR(CSR_SIP, 1<<1)",
-    # LCOFI has no platform source, so it is raised through the LCOFIP pending bit. mip.LCOFIP is
-    # M-only and works whatever mideleg says, so the plain LCOFI type always goes through mip, the
-    # way MIP_SSIP does. sip.LCOFIP is the second flavour below, exactly as SIP_SSIP is for SSI.
-    "#define RVTEST_SET_LCOFI_INT_M li a1, 1<<13; csrs mip, a1",
-    "#define RVTEST_CLR_LCOFI_INT_M li a1, 1<<13; csrc mip, a1",
-    "#define RVTEST_SET_LCOFI_INT_S RVTEST_TSBI_CSR_SET(CSR_MIP, 1<<13)",
-    "#define RVTEST_CLR_LCOFI_INT_S RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<13)",
-    "#define RVTEST_SET_LCOFI_INT_U RVTEST_TSBI_CSR_SET(CSR_MIP, 1<<13)",
-    "#define RVTEST_CLR_LCOFI_INT_U RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<13)",
-    # sip.LCOFIP is read-write, unlike sip.STIP and sip.SEIP, so S-mode raises LCOFI itself with no
-    # T-SBI call. Like SIP_SSIP it only reaches mip when mideleg.LCOFI is set; the mideleg = 0 half
-    # of the sweep writes a read-only-zero field and raises nothing, which is the point of having
-    # both flavours. U-mode has no sip access and marshals the sip write through T-SBI.
-    "#define RVTEST_SET_SIP_LCOFIP_INT_M li a1, 1<<13; csrs sip, a1",
-    "#define RVTEST_CLR_SIP_LCOFIP_INT_M li a1, 1<<13; csrc sip, a1",
-    "#define RVTEST_SET_SIP_LCOFIP_INT_S li a1, 1<<13; csrs sip, a1",
-    "#define RVTEST_CLR_SIP_LCOFIP_INT_S li a1, 1<<13; csrc sip, a1",
-    "#define RVTEST_SET_SIP_LCOFIP_INT_U RVTEST_TSBI_CSR_SET(CSR_SIP, 1<<13)",
-    "#define RVTEST_CLR_SIP_LCOFIP_INT_U RVTEST_TSBI_CSR_CLEAR(CSR_SIP, 1<<13)",
-]
-
-# RVTEST_SET/CLR_SSTC_STCE<n>_INT_<priv>: write menvcfg.STCE, then raise STI through stimecmp; clearing
-# also restores STCE = 0. menvcfg is M-only, so S and U always reach STCE through T-SBI. stimecmp is
-# S-accessible exactly when STCE = 1, which is the point of Sstc: S-mode writes it directly there and
-# only falls back to T-SBI for STCE = 0. U-mode has no stimecmp access either way. On RV32 the STCE
-# bit is in menvcfgh.
-SSTC_TRIGGER_DEFINES = [
-    "#if __riscv_xlen == 64",
-    "#define RVTEST_SET_SSTC_STCE0_INT_M li a1, 1<<63; csrc menvcfg, a1; RVTEST_SET_SSTC_INT_M",
-    "#define RVTEST_SET_SSTC_STCE1_INT_M li a1, 1<<63; csrs menvcfg, a1; RVTEST_SET_SSTC_INT_M",
-    "#define RVTEST_CLR_SSTC_STCE0_INT_M RVTEST_CLR_SSTC_INT_M; li a1, 1<<63; csrc menvcfg, a1",
-    "#define RVTEST_CLR_SSTC_STCE1_INT_M RVTEST_CLR_SSTC_INT_M; li a1, 1<<63; csrc menvcfg, a1",
-    "#define RVTEST_SET_SSTC_STCE0_INT_S RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, 1<<63); RVTEST_SET_SSTC_INT_U",
-    "#define RVTEST_SET_SSTC_STCE1_INT_S RVTEST_TSBI_CSR_SET(CSR_MENVCFG, 1<<63); RVTEST_SET_SSTC_INT_S",
-    "#define RVTEST_CLR_SSTC_STCE0_INT_S RVTEST_CLR_SSTC_INT_U; RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, 1<<63)",
-    "#define RVTEST_CLR_SSTC_STCE1_INT_S RVTEST_CLR_SSTC_INT_S; RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, 1<<63)",
-    "#define RVTEST_SET_SSTC_STCE1_INT_U RVTEST_TSBI_CSR_SET(CSR_MENVCFG, 1<<63); RVTEST_SET_SSTC_INT_U",
-    "#define RVTEST_CLR_SSTC_STCE1_INT_U RVTEST_CLR_SSTC_INT_U; RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, 1<<63)",
-    "#else",
-    "#define RVTEST_SET_SSTC_STCE0_INT_M li a1, 1<<31; csrc menvcfgh, a1; RVTEST_SET_SSTC_INT_M",
-    "#define RVTEST_SET_SSTC_STCE1_INT_M li a1, 1<<31; csrs menvcfgh, a1; RVTEST_SET_SSTC_INT_M",
-    "#define RVTEST_CLR_SSTC_STCE0_INT_M RVTEST_CLR_SSTC_INT_M; li a1, 1<<31; csrc menvcfgh, a1",
-    "#define RVTEST_CLR_SSTC_STCE1_INT_M RVTEST_CLR_SSTC_INT_M; li a1, 1<<31; csrc menvcfgh, a1",
-    "#define RVTEST_SET_SSTC_STCE0_INT_S RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, 1<<31); RVTEST_SET_SSTC_INT_U",
-    "#define RVTEST_SET_SSTC_STCE1_INT_S RVTEST_TSBI_CSR_SET(CSR_MENVCFGH, 1<<31); RVTEST_SET_SSTC_INT_S",
-    "#define RVTEST_CLR_SSTC_STCE0_INT_S RVTEST_CLR_SSTC_INT_U; RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, 1<<31)",
-    "#define RVTEST_CLR_SSTC_STCE1_INT_S RVTEST_CLR_SSTC_INT_S; RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, 1<<31)",
-    "#define RVTEST_SET_SSTC_STCE1_INT_U RVTEST_TSBI_CSR_SET(CSR_MENVCFGH, 1<<31); RVTEST_SET_SSTC_INT_U",
-    "#define RVTEST_CLR_SSTC_STCE1_INT_U RVTEST_CLR_SSTC_INT_U; RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, 1<<31)",
-    "#endif",
-    # STCE = 0 leaves stimecmp M-only, so the U macros are the S ones. The STCE = 1 pair is
-    # defined per XLEN above, because there S writes stimecmp directly and U cannot.
-    "#define RVTEST_SET_SSTC_STCE0_INT_U RVTEST_SET_SSTC_STCE0_INT_S",
-    "#define RVTEST_CLR_SSTC_STCE0_INT_U RVTEST_CLR_SSTC_STCE0_INT_S",
-]
 
 # Privilege needed to access a CSR, keyed by name prefix, and privilege held by each test mode.
 # HS-mode can reach h* and vs* CSRs directly; VS-mode reaches only its own s* aliases.
 _CSR_LEVEL = {"m": 3, "h": 2, "vs": 2, "s": 1}
 _MODE_LEVEL = {"M": 3, "S": 2, "VS": 1, "U": 0, "VU": 0}
 
-# Mode each suite boots into, and the preprocessor symbol required for each test mode.
-# InterruptsS requires S and therefore U, so only the virtualized modes need a guard there.
-_BOOT_MODE = {"InterruptsSm": "M", "InterruptsS": "S"}
-_MODE_GUARD = {
-    "InterruptsSm": {"M": None, "S": "S_SUPPORTED", "U": "U_SUPPORTED", "VS": "H_SUPPORTED", "VU": "H_SUPPORTED"},
-    "InterruptsS": {"S": None, "U": None, "VS": "H_SUPPORTED", "VU": "H_SUPPORTED"},
-}
 
-Generator = Callable[[TestData, list[TestChunk], str, str], None]
+@dataclass(frozen=True)
+class InterruptSuite:
+    """Per-suite setup shared by the interrupt coverpoint generators."""
+
+    name: str
+    boot: str  # mode the suite boots into and returns to after each case
+    types: list[str]  # interrupts raised by cp_enable
+    priority_types: list[str]  # interrupts paired by cp_priority
+    ip: str  # pending CSR
+    ie: str  # enable CSR
+    status: dict  # global enable written in the boot mode: csr, mask, field
+    wfi: dict  # cp_wfi timer: guard, timer macro, ie (name, mask), ip (csr, name, mask), stce
+    deleg: list[str]  # default delegation setup before each case
+
+    @property
+    def covergroup(self) -> str:
+        """Covergroup that samples this suite's testcases."""
+        return f"{self.name}_cg"
+
+
+Generator = Callable[[TestData, list[TestChunk], InterruptSuite, str], None]
 
 
 def _csr_level(instr: str) -> int:
@@ -155,97 +93,40 @@ def csr_access(instr: str, mode: str) -> str:
     return instr if _MODE_LEVEL[mode] >= _csr_level(instr) else tsbi_call(instr)
 
 
-def guard_open(suite: str, priv: str) -> list[str]:
-    """#ifdef line for tests that run in ``priv``, or nothing when the mode is always present."""
-    guard = _MODE_GUARD[suite][priv]
-    return [f"#ifdef {guard}"] if guard else []
-
-
-def guard_close(suite: str, priv: str) -> list[str]:
-    """Matching #endif for guard_open; must be emitted in the same test chunk."""
-    guard = _MODE_GUARD[suite][priv]
-    return [f"#endif // {guard}"] if guard else []
-
-
-def mode_enter(suite: str, priv: str) -> list[str]:
+def mode_enter(suite: InterruptSuite, priv: str) -> list[str]:
     """Switch from the suite's boot mode into ``priv``.
 
     Emitted at the start of every chunk because chunks may be split into separate files,
     each of which boots afresh. Clobbers a0 only.
     """
-    if priv == _BOOT_MODE[suite]:
+    if priv == suite.boot:
         return []
     return [f"RVTEST_TSBI_GOTO_{priv}MODE # enter {priv}-mode"]
 
 
-def mode_exit(suite: str, priv: str) -> list[str]:
+def mode_exit(suite: InterruptSuite, priv: str) -> list[str]:
     """Return from ``priv`` to the suite's boot mode at the end of a chunk. Clobbers a0 only."""
-    boot = _BOOT_MODE[suite]
-    if priv == boot:
+    if priv == suite.boot:
         return []
-    return [f"RVTEST_TSBI_GOTO_{boot}MODE # return to {boot}-mode"]
+    return [f"RVTEST_TSBI_GOTO_{suite.boot}MODE # return to {suite.boot}-mode"]
 
 
-# Per-suite setup shared by cp_enable and cp_priority: the interrupts to raise, the pending and enable
-# CSRs, the global enable written in the suite's boot mode, and the default delegation setup.
-# InterruptsSm clears mideleg so every interrupt is enabled by mie alone.
-_SETUP = {
-    "InterruptsSm": {
-        "types": [*machine_ints, *supervisor_ints],
-        # MEI and SEI usually share one PLIC source, so priority pairs raise SEI through mip.SEIP instead
-        "priority_types": ["MEI", "MTI", "MSI", "MIP_SEIP", "STI", "SSI", "LCOFI"],
-        "ip": "mip",
-        "ie": "mie",
-        "status": {"csr": "mstatus", "mask": 0x88, "field": "MIE"},
-        # cp_wfi: wake on the machine timer, enabled by mie.MTIE, pending in mip.MTIP
-        "wfi": {
-            "guard": "UDB_MTI_INTR_IMPL",
-            "timer": "MTIME",
-            "ie": ("MTIE", 0x80),
-            "ip": ("mip", "MTIP", 0x80),
-            "stce": False,
-        },
-        "deleg": ["#ifdef S_SUPPORTED", "csrw mideleg, zero # mideleg = zeros", "#endif // S_SUPPORTED"],
-    },
-    "InterruptsS": {
-        "types": [*supervisor_ints],
-        "priority_types": ["SEI", "STI", "SSI", "LCOFI"],
-        "ip": "sip",
-        "ie": "sie",
-        "status": {"csr": "sstatus", "mask": 0x22, "field": "SIE"},
-        # cp_wfi: wake on the Sstc supervisor timer, enabled by sie.STIE, pending in sip.STIP
-        "wfi": {
-            "guard": "SSTC_SUPPORTED",
-            "timer": "SSTC",
-            "ie": ("STIE", 0x20),
-            "ip": ("sip", "STIP", 0x20),
-            "stce": True,
-        },
-        "deleg": [],
-    },
-}
-
-
-def _generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite: str, priv: str) -> None:
+def generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str) -> None:
     """Raise each interrupt with only its enable bit set, then with every enable bit but its own."""
 
     ######################################
     coverpoint = "cp_enable"
     ######################################
-    setup = _SETUP[suite]
-    ie = setup["ie"]
-    status = setup["status"]
-    tc = test_data.new_test_chunk(test_chunks, "enable")
+    ie = suite.ie
+    status = suite.status
+    tc = test_data.new_test_chunk(test_chunks, f"enable_{priv}")
     tc.section_header = comment_banner(
         coverpoint,
         f"Enable each interrupt in {priv} mode with {status['csr']}.{status['field']} = 1, {ie} = only/others",
     )
-    tc.code += guard_open(suite, priv)
     tmp_reg = test_data.int_regs.get_register()
 
-    for int_type in setup["types"]:
-        if int_type not in int_macro:
-            continue  # no RVTEST_SET/CLR macros for this interrupt yet
+    for int_type in suite.types:
         macro = int_macro[int_type]
         guard = guard_symbol(int_type)
         bit = int_bit[int_type]
@@ -253,12 +134,12 @@ def _generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite
         for enable, ie_val in [("only", 1 << bit), ("others", ~(1 << bit))]:
             tc.code += [
                 f"#ifdef {guard}",
-                *setup["deleg"],
+                *suite.deleg,
                 f"LI(x{tmp_reg}, {status['mask']:#x})",
                 f"csrs {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = 1",
                 f"LI(x{tmp_reg}, {ie_val})",
                 f"csrw {ie}, x{tmp_reg} # {ie} = {int_type} {enable}",
-                test_data.add_testcase(f"priv_{priv}_{int_type}_{ie}_{enable}", coverpoint, f"{suite}_cg"),
+                test_data.add_testcase(f"priv_{priv}_{int_type}_{ie}_{enable}", coverpoint, suite.covergroup),
                 *mode_enter(suite, priv),
                 f"RVTEST_SET_{macro}_INT_{priv} # Set the interrupt",
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
@@ -269,7 +150,6 @@ def _generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite
             ]
 
     test_data.int_regs.return_register(tmp_reg)
-    tc.code += guard_close(suite, priv)
 
 
 def _raise(raised: list[str], pair: list[str], op: str, priv: str) -> list[str]:
@@ -290,28 +170,28 @@ def _raise(raised: list[str], pair: list[str], op: str, priv: str) -> list[str]:
     return lines
 
 
-def generate_cp_priority(test_data: TestData, test_chunks: list[TestChunk], suite: str, priv: str, vary: str) -> None:
+def generate_cp_priority(
+    test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str, vary: str
+) -> None:
     """Raise pairs of interrupts so the higher priority one is taken first.
 
     ``vary`` is the CSR that distinguishes the pair: "ip" (pair pending, all enabled), "ie" (all pending,
     pair enabled), or "mideleg" (pair pending and enabled, one of the pair delegated).
     """
-    setup = _SETUP[suite]
-    ie = setup["ie"]
-    status = setup["status"]
-    csr = {"ip": setup["ip"], "ie": ie, "mideleg": "mideleg"}[vary]
+    ie = suite.ie
+    status = suite.status
+    csr = {"ip": suite.ip, "ie": ie, "mideleg": "mideleg"}[vary]
     ######################################
     coverpoint = f"cp_priority_{csr}"
     ######################################
-    tc = test_data.new_test_chunk(test_chunks, f"priority_{csr}")
+    tc = test_data.new_test_chunk(test_chunks, f"priority_{csr}_{priv}")
     tc.section_header = comment_banner(
         coverpoint,
         f"Priority of pairs of interrupts distinguished by {csr} in {priv} mode that are otherwise enabled and pending",
     )
-    tc.code += guard_open(suite, priv)
     tmp_reg = test_data.int_regs.get_register()
 
-    types = setup["priority_types"]
+    types = suite.priority_types
     # delegated interrupts are only taken in S-mode with sstatus.SIE set
     status_mask = status["mask"] | 0x22 if vary == "mideleg" else status["mask"]
     # Only S-level interrupts can be delegated; the register-triggered ones share their bit positions
@@ -335,7 +215,7 @@ def generate_cp_priority(test_data: TestData, test_chunks: list[TestChunk], suit
                 if member in delegatable:
                     delegations.append(member)
         for deleg in delegations:
-            deleg_lines = setup["deleg"]
+            deleg_lines = suite.deleg
             bin_name = f"priv_{priv}_{first}_{second}"
             if deleg is not None:
                 deleg_lines = [
@@ -353,7 +233,7 @@ def generate_cp_priority(test_data: TestData, test_chunks: list[TestChunk], suit
                 f"csrs {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = 1",
                 f"LI(x{tmp_reg}, 0)",
                 f"csrw {ie}, x{tmp_reg} # {ie} = 0",
-                test_data.add_testcase(bin_name, coverpoint, f"{suite}_cg"),
+                test_data.add_testcase(bin_name, coverpoint, suite.covergroup),
                 *mode_enter(suite, priv),
                 *_raise(raised, pair, "SET", priv),
                 # enable after everything is pending so the pair is arbitrated together, not raced by latency
@@ -368,47 +248,34 @@ def generate_cp_priority(test_data: TestData, test_chunks: list[TestChunk], suit
             ]
 
     test_data.int_regs.return_register(tmp_reg)
-    tc.code += guard_close(suite, priv)
 
 
-def _generate_cp_priority_pending(test_data: TestData, test_chunks: list[TestChunk], suite: str, priv: str) -> None:
+def generate_cp_priority_pending(
+    test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str
+) -> None:
     """Priority of pending interrupts: pair pending, all enabled."""
     generate_cp_priority(test_data, test_chunks, suite, priv, "ip")
 
 
-def _generate_cp_priority_enable(test_data: TestData, test_chunks: list[TestChunk], suite: str, priv: str) -> None:
+def generate_cp_priority_enable(
+    test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str
+) -> None:
     """Priority of enabled interrupts: all pending, pair enabled."""
     generate_cp_priority(test_data, test_chunks, suite, priv, "ie")
 
 
-def write_stce(enable: bool, mode: str, tmp_reg: int) -> list[str]:
-    """Set or clear menvcfg.STCE (menvcfgh on RV32) from ``mode``, through T-SBI when below M."""
-    op = "csrs" if enable else "csrc"
-    return [
-        f"LI(x{tmp_reg}, 1)",
-        "#if __riscv_xlen == 64",
-        f"slli x{tmp_reg}, x{tmp_reg}, 63 # STCE in msb",
-        csr_access(f"{op} menvcfg, x{tmp_reg} # menvcfg.STCE = {int(enable)}", mode),
-        "#else",
-        f"slli x{tmp_reg}, x{tmp_reg}, 31 # STCE in msb",
-        csr_access(f"{op} menvcfgh, x{tmp_reg} # menvcfgh.STCE = {int(enable)}", mode),
-        "#endif",
-    ]
+def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str) -> None:
+    """WFI waits for a timer interrupt whether or not the interrupt is globally enabled.
 
-
-def _generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: str, priv: str) -> None:
-    """WFI waits for a timer interrupt whether or not the interrupt is globally enabled."""
+    Not for U-mode when S-mode is implemented: U-mode WFI then traps after a bounded time (cp_wfi_timeout).
+    """
 
     ######################################
     coverpoint = "cp_wfi"
     ######################################
-    setup = _SETUP[suite]
-    wfi = setup["wfi"]
-    boot = _BOOT_MODE[suite]
-    # With S-mode implemented, U-mode WFI traps after a bounded time (cp_wfi_timeout), so it cannot wait
-    if priv == "U" and boot == "S":
-        return
-    status = setup["status"]
+    wfi = suite.wfi
+    boot = suite.boot
+    status = suite.status
     ie_name, ie_mask = wfi["ie"]
     ip_csr, ip_name, ip_mask = wfi["ip"]
     tc = test_data.new_test_chunk(test_chunks, f"wfi_{priv}")
@@ -416,7 +283,6 @@ def _generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: s
         coverpoint,
         f"WFI until the timer interrupt in {priv} mode with {status['csr']}.{status['field']} = 0/1",
     )
-    tc.code += guard_open(suite, priv)
     if priv == "U":
         tc.code.append("#ifndef S_SUPPORTED // U-mode WFI only waits when S-mode is not implemented")
     count_reg, tmp_reg = test_data.int_regs.get_registers(2)
@@ -431,15 +297,15 @@ def _generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: s
             taken = enable == 1 or priv != boot
             tc.code += [
                 f"#ifdef {wfi['guard']}",
-                *setup["deleg"],
-                *(write_stce(True, boot, tmp_reg) if wfi["stce"] else []),
+                *suite.deleg,
+                *(write_stce(test_data, True, boot) if wfi["stce"] else []),
                 f"LI(x{tmp_reg}, 0x200000)",
                 csr_access(f"{twcmd} mstatus, x{tmp_reg} # mstatus.TW = {tw}", boot),
                 f"LI(x{tmp_reg}, {status['mask']:#x})",
                 f"{enablecmd} {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = {enable}",
                 f"LI(x{tmp_reg}, {ie_mask:#x})",
-                f"csrw {setup['ie']}, x{tmp_reg} # {setup['ie']}.{ie_name} = 1",
-                test_data.add_testcase(f"priv_{priv}_tw_{tw}_{status['field']}_{enable}", coverpoint, f"{suite}_cg"),
+                f"csrw {suite.ie}, x{tmp_reg} # {suite.ie}.{ie_name} = 1",
+                test_data.add_testcase(f"priv_{priv}_tw_{tw}_{status['field']}_{enable}", coverpoint, suite.covergroup),
                 *mode_enter(suite, priv),
                 # Below M-mode the SOON macro reaches the timer through T-SBI traps; RVMODEL_TIMER_INT_SOON_DELAY
                 # is sized so the interrupt cannot fire before those return and the trap count is sampled.
@@ -478,10 +344,11 @@ def _generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: s
     test_data.int_regs.return_registers([count_reg, tmp_reg])
     if priv == "U":
         tc.code.append("#endif // S_SUPPORTED")
-    tc.code += guard_close(suite, priv)
 
 
-def _generate_cp_wfi_timeout(test_data: TestData, test_chunks: list[TestChunk], suite: str, priv: str) -> None:
+def generate_cp_wfi_timeout(
+    test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str
+) -> None:
     """With nothing pending, WFI below M-mode times out and traps as an illegal instruction.
 
     mstatus.TW = 1 makes any lower mode trap; with S-mode implemented, U-mode traps even with TW = 0.
@@ -490,18 +357,13 @@ def _generate_cp_wfi_timeout(test_data: TestData, test_chunks: list[TestChunk], 
     ######################################
     coverpoint = "cp_wfi_timeout"
     ######################################
-    if priv == "M":
-        return  # the timeout does not apply to M-mode
-    setup = _SETUP[suite]
-    boot = _BOOT_MODE[suite]
-    status = setup["status"]
-    ie_name, ie_mask = setup["wfi"]["ie"]
+    status = suite.status
+    ie_name, ie_mask = suite.wfi["ie"]
     tc = test_data.new_test_chunk(test_chunks, f"wfi_timeout_{priv}")
     tc.section_header = comment_banner(
         coverpoint,
-        f"WFI timeout in {priv} mode with {status['csr']}.{status['field']} = 0/1 x {setup['ie']}.{ie_name} = 0/1",
+        f"WFI timeout in {priv} mode with {status['csr']}.{status['field']} = 0/1 x {suite.ie}.{ie_name} = 0/1",
     )
-    tc.code += guard_open(suite, priv)
     tmp_reg = test_data.int_regs.get_register()
 
     for tw in [1, 0] if priv == "U" else [1]:
@@ -516,13 +378,13 @@ def _generate_cp_wfi_timeout(test_data: TestData, test_chunks: list[TestChunk], 
                         else []
                     ),
                     f"LI(x{tmp_reg}, 0x200000)",
-                    csr_access(f"{twcmd} mstatus, x{tmp_reg} # mstatus.TW = {tw}", boot),
+                    csr_access(f"{twcmd} mstatus, x{tmp_reg} # mstatus.TW = {tw}", suite.boot),
                     f"LI(x{tmp_reg}, {status['mask']:#x})",
                     f"{enablecmd} {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = {enable}",
                     f"LI(x{tmp_reg}, {ie * ie_mask:#x})",
-                    f"csrw {setup['ie']}, x{tmp_reg} # {setup['ie']}.{ie_name} = {ie}",
+                    f"csrw {suite.ie}, x{tmp_reg} # {suite.ie}.{ie_name} = {ie}",
                     test_data.add_testcase(
-                        f"priv_{priv}_tw_{tw}_{status['field']}_{enable}_{ie_name}_{ie}", coverpoint, f"{suite}_cg"
+                        f"priv_{priv}_tw_{tw}_{status['field']}_{enable}_{ie_name}_{ie}", coverpoint, suite.covergroup
                     ),
                     *mode_enter(suite, priv),
                     "wfi # nothing is pending, so this times out and traps as an illegal instruction",
@@ -532,27 +394,15 @@ def _generate_cp_wfi_timeout(test_data: TestData, test_chunks: list[TestChunk], 
                 ]
 
     test_data.int_regs.return_register(tmp_reg)
-    tc.code += guard_close(suite, priv)
-
-
-# Coverpoints common to both suites, in emission order; each suite prepends its own cp_trigger.
-SHARED_GENERATORS: list[Generator] = [
-    _generate_cp_enable,
-    _generate_cp_priority_pending,
-    _generate_cp_priority_enable,
-    _generate_cp_wfi,
-    _generate_cp_wfi_timeout,
-]
 
 
 def emit_interrupts(
-    test_data: TestData, test_chunks: list[TestChunk], suite: str, privs: list[str], generators: list[Generator]
+    test_data: TestData, suite: InterruptSuite, priv: str, generators: list[Generator]
 ) -> list[TestChunk]:
-    """Run each coverpoint generator for every privilege mode, keeping each coverpoint's chunks contiguous."""
-
+    """Run each coverpoint generator for one privilege mode."""
+    test_chunks: list[TestChunk] = []
     for generate in generators:
-        for priv in privs:
-            generate(test_data, test_chunks, suite, priv)
+        generate(test_data, test_chunks, suite, priv)
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

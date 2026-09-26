@@ -8,6 +8,7 @@
 
 """Functions for generating Zawrs tests in all priv modes"""
 
+from testgen.asm.csr import write_stce
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
@@ -21,22 +22,6 @@ def m_csr(priv: str, instr: str) -> str:
 def s_csr(priv: str, instr: str) -> str:
     """S-mode CSR instruction; a T-SBI call when the test runs in U-mode."""
     return instr if priv != "U" else tsbi_call(instr)
-
-
-def _menvcfg_stce(priv: str, r: int, enable: bool) -> list[str]:
-    """menvcfg.STCE (bit 63 on RV64, bit 31 of menvcfgh on RV32); an M-mode CSR reached via T-SBI below M-mode."""
-    op = "csrs" if enable else "csrc"
-    return [
-        f"# {'Enable' if enable else 'Disable'} menvcfg.STCE",
-        f"LI(x{r}, 1)",
-        "#if __riscv_xlen == 64",
-        f"slli x{r}, x{r}, 63",
-        m_csr(priv, f"{op} menvcfg, x{r}"),
-        "#else",
-        f"slli x{r}, x{r}, 31",
-        m_csr(priv, f"{op} menvcfgh, x{r}"),
-        "#endif",
-    ]
 
 
 def _read_trap_count_helper(r_temp: int) -> list[str]:
@@ -100,7 +85,7 @@ def wrs_resume_helper(
                 "#ifdef SSTC_SUPPORTED",
                 "# Enable Sstc (menvcfg.STCE) so stimecmp drives sip.STIP, then disarm the comparator",
                 "# so whatever stimecmp held before does not raise STIP once STIE is set",
-                *_menvcfg_stce(priv, r_temp, True),
+                *write_stce(test_data, True, priv),
                 f"RVTEST_CLR_SSTC_INT_{priv}",
                 "#endif",
             ]
@@ -217,7 +202,7 @@ def wrs_resume_helper(
             [
                 "#ifdef SSTC_SUPPORTED",
                 "# Restore the boot value of menvcfg.STCE so mip.STIP is writable again",
-                *_menvcfg_stce(priv, r_temp, False),
+                *write_stce(test_data, False, priv),
                 "#endif",
             ]
         )

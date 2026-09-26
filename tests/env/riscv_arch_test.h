@@ -15,15 +15,11 @@
 
 // UDB_{MEI,MTI,MSI}_INTR_IMPL record whether the platform can raise each machine interrupt.
 // They must be derived HERE, from the DUT's own macros and before sail_macros.h runs, because
-// that header overrides RVMODEL_SET_MEXT_INT and RVMODEL_SET_MSW_INT for the signature build
-// only -- deriving them afterwards would put a different set of testcases in the reference ELF
-// than in the DUT ELF. mip.MEIP/MTIP/MSIP are all read-only, so a platform with no mechanism
-// cannot raise the interrupt at all and rvtest_set_{mext,mtime,msw}_int_m silently do nothing,
-// which surfaces as a test expecting one interrupt and being given the next one instead.
-// A platform with no external interrupt controller says so with RVMODEL_NO_MEXT_CONTROLLER,
-// because there is no address-shaped macro to key on the way there is for the timer and MSIP.
+// that header defines RVMODEL_SET_MEXT_INT for the signature build whether or not the DUT does --
+// deriving them afterwards would put a different set of testcases in the reference ELF than in
+// the DUT ELF.
 // TODO: take these from riscv-unified-db once it carries the parameters (riscv-unified-db#1963).
-#if defined(RVMODEL_SET_MEXT_INT) && !defined(RVMODEL_NO_MEXT_CONTROLLER)
+#ifdef RVMODEL_SET_MEXT_INT
   #define UDB_MEI_INTR_IMPL
 #endif
 #ifdef RVMODEL_MTIMECMP_ADDRESS
@@ -36,16 +32,11 @@
 // The supervisor-level ones need no platform support: rvtest_set_{sext,ssw}_int_* fall back to
 // mip.SEIP / mip.SSIP when the platform defines no controller macro, and rvtest_set_stime_int_*
 // always uses mip.STIP. All three are writable, so S-mode interrupts are raisable wherever
-// S-mode exists. Same for the VS-level ones under H.
+// S-mode exists.
 #ifdef S_SUPPORTED
   #define UDB_SEI_INTR_IMPL
   #define UDB_STI_INTR_IMPL
   #define UDB_SSI_INTR_IMPL
-#endif
-#ifdef H_SUPPORTED
-  #define UDB_VSEI_INTR_IMPL
-  #define UDB_VSTI_INTR_IMPL
-  #define UDB_VSSI_INTR_IMPL
 #endif
 
 #ifndef RVTEST_SELFCHECK

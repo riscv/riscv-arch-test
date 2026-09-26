@@ -601,6 +601,132 @@
 #define RVTEST_CLR_SEXT_INT_U \
   jal rvtest_clr_sext_int_su     /* Clear supervisor external interrupt */
 
+// Interrupts raised by writing a pending bit directly instead of through the platform.
+// M-mode writes mip and sip directly, S-mode writes sip directly and mip through T-SBI,
+// and U-mode writes both through T-SBI.
+
+#define RVTEST_SET_MIP_SEIP_INT_M \
+  li a1, MIP_SEIP; csrs mip, a1     /* Trigger supervisor external interrupt through mip.SEIP */
+
+#define RVTEST_CLR_MIP_SEIP_INT_M \
+  li a1, MIP_SEIP; csrc mip, a1     /* Clear mip.SEIP */
+
+#define RVTEST_SET_MIP_SEIP_INT_S \
+  RVTEST_TSBI_CSR_SET(CSR_MIP, MIP_SEIP)
+
+#define RVTEST_CLR_MIP_SEIP_INT_S \
+  RVTEST_TSBI_CSR_CLEAR(CSR_MIP, MIP_SEIP)
+
+#define RVTEST_SET_MIP_SEIP_INT_U RVTEST_SET_MIP_SEIP_INT_S
+#define RVTEST_CLR_MIP_SEIP_INT_U RVTEST_CLR_MIP_SEIP_INT_S
+
+#define RVTEST_SET_MIP_SSIP_INT_M \
+  csrsi mip, MIP_SSIP               /* Trigger supervisor software interrupt through mip.SSIP */
+
+#define RVTEST_CLR_MIP_SSIP_INT_M \
+  csrci mip, MIP_SSIP               /* Clear mip.SSIP */
+
+#define RVTEST_SET_MIP_SSIP_INT_S \
+  RVTEST_TSBI_CSR_SET(CSR_MIP, MIP_SSIP)
+
+#define RVTEST_CLR_MIP_SSIP_INT_S \
+  RVTEST_TSBI_CSR_CLEAR(CSR_MIP, MIP_SSIP)
+
+#define RVTEST_SET_MIP_SSIP_INT_U RVTEST_SET_MIP_SSIP_INT_S
+#define RVTEST_CLR_MIP_SSIP_INT_U RVTEST_CLR_MIP_SSIP_INT_S
+
+// sip.SSIP only reaches mip when mideleg.SSI is set
+#define RVTEST_SET_SIP_SSIP_INT_M \
+  csrsi sip, MIP_SSIP               /* Trigger supervisor software interrupt through sip.SSIP */
+
+#define RVTEST_CLR_SIP_SSIP_INT_M \
+  csrci sip, MIP_SSIP               /* Clear sip.SSIP */
+
+#define RVTEST_SET_SIP_SSIP_INT_S RVTEST_SET_SIP_SSIP_INT_M
+#define RVTEST_CLR_SIP_SSIP_INT_S RVTEST_CLR_SIP_SSIP_INT_M
+
+#define RVTEST_SET_SIP_SSIP_INT_U \
+  RVTEST_TSBI_CSR_SET(CSR_SIP, MIP_SSIP)
+
+#define RVTEST_CLR_SIP_SSIP_INT_U \
+  RVTEST_TSBI_CSR_CLEAR(CSR_SIP, MIP_SSIP)
+
+// LCOFI has no platform source, so it is always raised through a pending bit.
+// mip.LCOFIP is M-only and works whatever mideleg says.
+#define RVTEST_SET_LCOFI_INT_M \
+  li a1, MIP_LCOFIP; csrs mip, a1   /* Trigger local counter overflow interrupt through mip.LCOFIP */
+
+#define RVTEST_CLR_LCOFI_INT_M \
+  li a1, MIP_LCOFIP; csrc mip, a1   /* Clear mip.LCOFIP */
+
+#define RVTEST_SET_LCOFI_INT_S \
+  RVTEST_TSBI_CSR_SET(CSR_MIP, MIP_LCOFIP)
+
+#define RVTEST_CLR_LCOFI_INT_S \
+  RVTEST_TSBI_CSR_CLEAR(CSR_MIP, MIP_LCOFIP)
+
+#define RVTEST_SET_LCOFI_INT_U RVTEST_SET_LCOFI_INT_S
+#define RVTEST_CLR_LCOFI_INT_U RVTEST_CLR_LCOFI_INT_S
+
+// sip.LCOFIP is writable from S-mode, but like sip.SSIP it only reaches mip when mideleg.LCOFI is set
+#define RVTEST_SET_SIP_LCOFIP_INT_M \
+  li a1, MIP_LCOFIP; csrs sip, a1   /* Trigger local counter overflow interrupt through sip.LCOFIP */
+
+#define RVTEST_CLR_SIP_LCOFIP_INT_M \
+  li a1, MIP_LCOFIP; csrc sip, a1   /* Clear sip.LCOFIP */
+
+#define RVTEST_SET_SIP_LCOFIP_INT_S RVTEST_SET_SIP_LCOFIP_INT_M
+#define RVTEST_CLR_SIP_LCOFIP_INT_S RVTEST_CLR_SIP_LCOFIP_INT_M
+
+#define RVTEST_SET_SIP_LCOFIP_INT_U \
+  RVTEST_TSBI_CSR_SET(CSR_SIP, MIP_LCOFIP)
+
+#define RVTEST_CLR_SIP_LCOFIP_INT_U \
+  RVTEST_TSBI_CSR_CLEAR(CSR_SIP, MIP_LCOFIP)
+
+// Supervisor timer interrupt through stimecmp with menvcfg.STCE = 0 or 1; clearing also
+// restores STCE = 0. menvcfg is M-only, so S and U reach STCE through T-SBI. stimecmp is
+// S-accessible only when STCE = 1, so S writes it directly then and through T-SBI otherwise.
+// U has no stimecmp access either way.
+#if UDB_MXLEN == 64
+  #define RVTEST_CSR_STCE CSR_MENVCFG
+  #define RVTEST_STCE     MENVCFG_STCE
+#else
+  #define RVTEST_CSR_STCE CSR_MENVCFGH
+  #define RVTEST_STCE     MENVCFGH_STCE
+#endif
+
+#define RVTEST_SET_SSTC_STCE0_INT_M \
+  li a1, RVTEST_STCE; csrc RVTEST_CSR_STCE, a1; RVTEST_SET_SSTC_INT_M
+
+#define RVTEST_SET_SSTC_STCE1_INT_M \
+  li a1, RVTEST_STCE; csrs RVTEST_CSR_STCE, a1; RVTEST_SET_SSTC_INT_M
+
+#define RVTEST_CLR_SSTC_STCE0_INT_M \
+  RVTEST_CLR_SSTC_INT_M; li a1, RVTEST_STCE; csrc RVTEST_CSR_STCE, a1
+
+#define RVTEST_CLR_SSTC_STCE1_INT_M RVTEST_CLR_SSTC_STCE0_INT_M
+
+#define RVTEST_SET_SSTC_STCE0_INT_S \
+  RVTEST_TSBI_CSR_CLEAR(RVTEST_CSR_STCE, RVTEST_STCE); RVTEST_SET_SSTC_INT_U
+
+#define RVTEST_SET_SSTC_STCE1_INT_S \
+  RVTEST_TSBI_CSR_SET(RVTEST_CSR_STCE, RVTEST_STCE); RVTEST_SET_SSTC_INT_S
+
+#define RVTEST_CLR_SSTC_STCE0_INT_S \
+  RVTEST_CLR_SSTC_INT_U; RVTEST_TSBI_CSR_CLEAR(RVTEST_CSR_STCE, RVTEST_STCE)
+
+#define RVTEST_CLR_SSTC_STCE1_INT_S \
+  RVTEST_CLR_SSTC_INT_S; RVTEST_TSBI_CSR_CLEAR(RVTEST_CSR_STCE, RVTEST_STCE)
+
+#define RVTEST_SET_SSTC_STCE0_INT_U RVTEST_SET_SSTC_STCE0_INT_S
+#define RVTEST_CLR_SSTC_STCE0_INT_U RVTEST_CLR_SSTC_STCE0_INT_S
+
+#define RVTEST_SET_SSTC_STCE1_INT_U \
+  RVTEST_TSBI_CSR_SET(RVTEST_CSR_STCE, RVTEST_STCE); RVTEST_SET_SSTC_INT_U
+
+#define RVTEST_CLR_SSTC_STCE1_INT_U RVTEST_CLR_SSTC_STCE0_INT_S
+
 
 // V-mode interrupts not yet supported in Sail reference model
 // Define as empty to prevent assembly errors

@@ -13,12 +13,14 @@ from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.InterruptsCommon import (
-    REG_TRIGGER_DEFINES,
-    SHARED_GENERATORS,
-    SSTC_TRIGGER_DEFINES,
+    Generator,
+    InterruptSuite,
     emit_interrupts,
-    guard_close,
-    guard_open,
+    generate_cp_enable,
+    generate_cp_priority_enable,
+    generate_cp_priority_pending,
+    generate_cp_wfi,
+    generate_cp_wfi_timeout,
     guard_symbol,
     int_coverpoint,
     int_macro,
@@ -30,11 +32,23 @@ from testgen.priv.extensions.InterruptsCommon import (
 )
 from testgen.priv.registry import add_priv_test_generator
 
-SUITE = "InterruptsS"
-COVERGROUP = f"{SUITE}_cg"
+# Boots to S-mode, which requires S and therefore U.
+SUITE = InterruptSuite(
+    name="InterruptsS",
+    boot="S",
+    types=[*supervisor_ints],
+    priority_types=["SEI", "STI", "SSI", "LCOFI"],
+    ip="sip",
+    ie="sie",
+    status={"csr": "sstatus", "mask": 0x22, "field": "SIE"},
+    # cp_wfi: wake on the Sstc supervisor timer, enabled by sie.STIE, pending in sip.STIP
+    wfi={"guard": "SSTC_SUPPORTED", "timer": "SSTC", "ie": ("STIE", 0x20), "ip": ("sip", "STIP", 0x20), "stce": True},
+    deleg=[],
+)
+COVERGROUP = SUITE.covergroup
 
 
-def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], suite: str, priv: str) -> None:
+def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str) -> None:
     """Trigger each interrupt across stvec.MODE and sstatus.SIE."""
 
     ######################################
@@ -45,12 +59,9 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
         banner,
         f"Trigger each interrupt in {priv} mode with sie=1s x stvec.MODE=DIRECT/VECTORED x sstatus.SIE=0/1",
     )
-    tc.code += guard_open(suite, priv)
     tmp_reg = test_data.int_regs.get_register()
 
     for int_type in [*supervisor_ints, *reg_ints, *sstc_ints]:
-        if int_type not in int_macro:
-            continue  # no RVTEST_SET/CLR macros for this interrupt yet
         if priv == "U" and int_type == "SSTC_STCE0":
             # Arming Sstc from U mode goes through T-SBI.  This suite boots to S mode with
             # medeleg delegating U-mode ecalls, so the S-mode handler services the request and
@@ -70,12 +81,11 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                 enablecmd = "csrs" if enable == 1 else "csrc"
                 tc.code += [
                     f"#ifdef {guard}",
+                    f"#ifdef UDB_STVEC_MODES_{mode}",
                     f"LI(x{tmp_reg}, -1)",
                     f"csrw sie, x{tmp_reg} # sie = 1s",
-                    f"#ifdef UDB_STVEC_MODES_{mode}",
                     f"LI(x{tmp_reg}, 1)",
                     f"{modecmd} stvec, x{tmp_reg} # stvec.mode = {mode}",
-                    "#endif // stvec.MODE",
                     f"LI(x{tmp_reg}, 0x22) # SIE, SPIE",
                     f"{enablecmd} sstatus, x{tmp_reg} # sstatus.SIE = {enable}",
                     test_data.add_testcase(
@@ -88,24 +98,42 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
                     f"RVTEST_CLR_{macro}_INT_{priv} # Clear the interrupt if the handler hasn't done so",
                     *mode_exit(suite, priv),
+                    f"#endif // UDB_STVEC_MODES_{mode}",
                     f"#endif // {guard}",
                     "",
                 ]
 
     test_data.int_regs.return_register(tmp_reg)
-    tc.code += guard_close(suite, priv)
 
 
-@add_priv_test_generator(
-    SUITE,
-    required_extensions=["S"],
-    extra_defines=[*REG_TRIGGER_DEFINES, *SSTC_TRIGGER_DEFINES, "#define BOOT_TO_SMODE"],
-)
-def make_interruptss(test_data: TestData) -> list[TestChunk]:
-    """Generate tests for InterruptsS interrupt behavior that does not rely on M-mode."""
-    test_chunks: list[TestChunk] = []
-    generators = [_generate_cp_trigger_s, *SHARED_GENERATORS]
+# Coverpoints for each test mode. U-mode has no cp_wfi because U-mode WFI traps after a bounded
+# time when S-mode is implemented (cp_wfi_timeout).
+_GENERATORS: dict[str, list[Generator]] = {
+    "S": [
+        _generate_cp_trigger_s,
+        generate_cp_enable,
+        generate_cp_priority_pending,
+        generate_cp_priority_enable,
+        generate_cp_wfi,
+        generate_cp_wfi_timeout,
+    ],
+    "U": [
+        _generate_cp_trigger_s,
+        generate_cp_enable,
+        generate_cp_priority_pending,
+        generate_cp_priority_enable,
+        generate_cp_wfi_timeout,
+    ],
+}
 
-    emit_interrupts(test_data, test_chunks, SUITE, ["S", "U"], generators)  # + "VS", "VU"
 
-    return test_chunks
+@add_priv_test_generator(SUITE.name, required_extensions=["S"], extra_defines=["#define BOOT_TO_SMODE"])
+def make_interruptss_s(test_data: TestData) -> list[TestChunk]:
+    """InterruptsS tests that run in S-mode."""
+    return emit_interrupts(test_data, SUITE, "S", _GENERATORS["S"])
+
+
+@add_priv_test_generator(SUITE.name, required_extensions=["S"], extra_defines=["#define BOOT_TO_SMODE"])
+def make_interruptss_u(test_data: TestData) -> list[TestChunk]:
+    """InterruptsS tests that run in U-mode."""
+    return emit_interrupts(test_data, SUITE, "U", _GENERATORS["U"])

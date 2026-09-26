@@ -49,10 +49,4 @@
   #define SM1P12P0_OR_LATER_SUPPORTED
 #endif
 
-// UDB_LCOFI_INTR_IMPL: the local counter overflow interrupt is implied by Sscofpmf rather than
-// being a separate UDB parameter like the other UDB_*_INTR_IMPL interrupt implementation flags.
-#ifdef SSCOFPMF_SUPPORTED
-  #define UDB_LCOFI_INTR_IMPL
-#endif
-
 #endif // DERIVED_CONFIG_H

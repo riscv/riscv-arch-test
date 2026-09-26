@@ -9,17 +9,20 @@
 
 """InterruptsSm privileged extension test generator for interrupts relying on M-mode."""
 
+from testgen.asm.csr import write_stce
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.InterruptsCommon import (
-    REG_TRIGGER_DEFINES,
-    SHARED_GENERATORS,
-    SSTC_TRIGGER_DEFINES,
+    Generator,
+    InterruptSuite,
     emit_interrupts,
+    generate_cp_enable,
     generate_cp_priority,
-    guard_close,
-    guard_open,
+    generate_cp_priority_enable,
+    generate_cp_priority_pending,
+    generate_cp_wfi,
+    generate_cp_wfi_timeout,
     guard_symbol,
     int_coverpoint,
     int_macro,
@@ -29,15 +32,35 @@ from testgen.priv.extensions.InterruptsCommon import (
     reg_ints,
     sstc_ints,
     supervisor_ints,
-    write_stce,
 )
 from testgen.priv.registry import add_priv_test_generator
 
-SUITE = "InterruptsSm"
-COVERGROUP = f"{SUITE}_cg"
+# Boots to M-mode. mideleg is cleared before each case so every interrupt is enabled by mie alone.
+SUITE = InterruptSuite(
+    name="InterruptsSm",
+    boot="M",
+    types=[*machine_ints, *supervisor_ints],
+    # MEI and SEI usually share one PLIC source, so priority pairs raise SEI through mip.SEIP instead
+    priority_types=["MEI", "MTI", "MSI", "MIP_SEIP", "STI", "SSI", "LCOFI"],
+    ip="mip",
+    ie="mie",
+    status={"csr": "mstatus", "mask": 0x88, "field": "MIE"},
+    # cp_wfi: wake on the machine timer, enabled by mie.MTIE, pending in mip.MTIP
+    wfi={
+        "guard": "UDB_MTI_INTR_IMPL",
+        "timer": "MTIME",
+        "ie": ("MTIE", 0x80),
+        "ip": ("mip", "MTIP", 0x80),
+        "stce": False,
+    },
+    deleg=["#ifdef S_SUPPORTED", "csrw mideleg, zero # mideleg = zeros", "#endif // S_SUPPORTED"],
+)
+COVERGROUP = SUITE.covergroup
 
 
-def _generate_cp_trigger_sm(test_data: TestData, test_chunks: list[TestChunk], suite: str, priv: str) -> None:
+def _generate_cp_trigger_sm(
+    test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str
+) -> None:
     """Trigger each interrupt across mideleg, mtvec.MODE, mstatus.SIE, and mstatus.MIE."""
 
     ######################################
@@ -49,12 +72,9 @@ def _generate_cp_trigger_sm(test_data: TestData, test_chunks: list[TestChunk], s
         f"Trigger each interrupt in {priv} mode with mie=1s x mideleg = zeros/ones x mtvec.MODE=DIRECT/VECTORED"
         " x mstatus.SIE=0/1 x mstatus.MIE=0/1",
     )
-    tc.code += guard_open(suite, priv)
     tmp_reg = test_data.int_regs.get_register()
 
     for int_type in [*machine_ints, *supervisor_ints, *reg_ints, *sstc_ints]:
-        if int_type not in int_macro:
-            continue  # no RVTEST_SET/CLR macros for this interrupt yet
         macro = int_macro[int_type]
         guard = guard_symbol(int_type)
         cp = int_coverpoint.get(int_type, "cp_trigger")
@@ -75,14 +95,13 @@ def _generate_cp_trigger_sm(test_data: TestData, test_chunks: list[TestChunk], s
                         tc.code += [
                             f"#ifdef {guard}",
                             *case_open,
+                            f"#ifdef UDB_MTVEC_MODES_{mode}",
                             *write_open,
                             f"LI(x{tmp_reg}, {mideleg})",
                             f"csrw mideleg, x{tmp_reg} # mideleg = {delegstr}",
                             *write_close,
-                            f"#ifdef UDB_MTVEC_MODES_{mode}",
                             f"LI(x{tmp_reg}, 1)",
                             f"{modecmd} mtvec, x{tmp_reg} # mtvec.mode = {mode}",
-                            "#endif // mtvec.MODE",
                             # The trap handler clears the taken interrupt's xIE bit, so re-enable before every case
                             f"LI(x{tmp_reg}, -1)",
                             f"csrw mie, x{tmp_reg} # mie = 1s",
@@ -100,28 +119,30 @@ def _generate_cp_trigger_sm(test_data: TestData, test_chunks: list[TestChunk], s
                             f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
                             f"RVTEST_CLR_{macro}_INT_{priv} # Clear the interrupt if the handler hasn't done so",
                             *mode_exit(suite, priv),
+                            f"#endif // UDB_MTVEC_MODES_{mode}",
                             *case_close,
                             f"#endif // {guard}",
                             "",
                         ]
 
     test_data.int_regs.return_register(tmp_reg)
-    tc.code += guard_close(suite, priv)
 
 
-def _generate_cp_priority_mideleg(test_data: TestData, test_chunks: list[TestChunk], suite: str, priv: str) -> None:
+def _generate_cp_priority_mideleg(
+    test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str
+) -> None:
     """Priority of delegated interrupts: pair pending and enabled, one of them delegated."""
     generate_cp_priority(test_data, test_chunks, suite, priv, "mideleg")
 
 
-def _generate_cp_write_stip_sstc(test_data: TestData, test_chunks: list[TestChunk], suite: str, priv: str) -> None:
+def _generate_cp_write_stip_sstc(
+    test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str
+) -> None:
     """With menvcfg.STCE = 1, mip.STIP follows stimecmp and ignores writes (M-mode only)."""
 
     ######################################
     coverpoint = "cp_write_stip_sstc"
     ######################################
-    if priv != "M":
-        return
     tc = test_data.new_test_chunk(test_chunks, "write_stip_sstc")
     tc.section_header = comment_banner(
         coverpoint, "With menvcfg.STCE = 1, write stimecmp = 0s/1s x mip.STIP = 0/1 and read STIP back"
@@ -132,14 +153,14 @@ def _generate_cp_write_stip_sstc(test_data: TestData, test_chunks: list[TestChun
         "#ifdef SSTC_SUPPORTED",
         "csrw mideleg, zero # mideleg = zeros",
         "csrw mie, zero # mie = 0 so a pending STIP is not taken",
-        *write_stce(True, "M", tmp_reg),
+        *write_stce(test_data, True, priv),
     ]
     for stimecmp, stimecmp_macro in [("zeros", "SET"), ("ones", "CLR")]:
         for stip, stip_macro in [(0, "CLR"), (1, "SET")]:
             tc.code += [
-                f"RVTEST_{stimecmp_macro}_SSTC_INT_M # stimecmp = {stimecmp}",
-                test_data.add_testcase(f"priv_M_stimecmp_{stimecmp}_STIP_{stip}", coverpoint, COVERGROUP),
-                f"RVTEST_{stip_macro}_STIME_INT_M # Write mip.STIP = {stip}",
+                f"RVTEST_{stimecmp_macro}_SSTC_INT_{priv} # stimecmp = {stimecmp}",
+                test_data.add_testcase(f"priv_{priv}_stimecmp_{stimecmp}_STIP_{stip}", coverpoint, COVERGROUP),
+                f"RVTEST_{stip_macro}_STIME_INT_{priv} # Write mip.STIP = {stip}",
                 f"csrr x{tmp_reg}, mip # mip.STIP = 1 only when stimecmp = 0s",
                 f"andi x{tmp_reg}, x{tmp_reg}, 0x20 # STIP",
                 write_sigupd(tmp_reg, test_data),
@@ -150,21 +171,44 @@ def _generate_cp_write_stip_sstc(test_data: TestData, test_chunks: list[TestChun
     test_data.int_regs.return_register(tmp_reg)
 
 
-@add_priv_test_generator(
-    SUITE,
-    required_extensions=["Sm"],
-    extra_defines=[*REG_TRIGGER_DEFINES, *SSTC_TRIGGER_DEFINES, "#define BOOT_TO_MMODE"],
-)
-def make_interruptssm(test_data: TestData) -> list[TestChunk]:
-    """Generate InterruptsSm tests: interrupt behavior that relies on M-mode, including delegation."""
-    test_chunks: list[TestChunk] = []
-    generators = [
+# Coverpoints for each test mode. cp_write_stip_sstc is M-only; cp_wfi_timeout does not apply to M-mode.
+_GENERATORS: dict[str, list[Generator]] = {
+    "M": [
         _generate_cp_trigger_sm,
-        *SHARED_GENERATORS,
+        generate_cp_enable,
+        generate_cp_priority_pending,
+        generate_cp_priority_enable,
+        generate_cp_wfi,
         _generate_cp_priority_mideleg,
         _generate_cp_write_stip_sstc,
-    ]
+    ],
+}
+_GENERATORS["S"] = _GENERATORS["U"] = [
+    _generate_cp_trigger_sm,
+    generate_cp_enable,
+    generate_cp_priority_pending,
+    generate_cp_priority_enable,
+    generate_cp_wfi,
+    generate_cp_wfi_timeout,
+    _generate_cp_priority_mideleg,
+]
 
-    emit_interrupts(test_data, test_chunks, SUITE, ["M", "S", "U"], generators)  # + "VS", "VU"
 
-    return test_chunks
+# One generator per test mode, each requiring the extension for its mode, so no test file is
+# compiled away entirely on a target without that mode.
+@add_priv_test_generator(SUITE.name, required_extensions=["Sm"], extra_defines=["#define BOOT_TO_MMODE"])
+def make_interruptssm_m(test_data: TestData) -> list[TestChunk]:
+    """InterruptsSm tests that run in M-mode."""
+    return emit_interrupts(test_data, SUITE, "M", _GENERATORS["M"])
+
+
+@add_priv_test_generator(SUITE.name, required_extensions=["Sm", "S"], extra_defines=["#define BOOT_TO_MMODE"])
+def make_interruptssm_s(test_data: TestData) -> list[TestChunk]:
+    """InterruptsSm tests that run in S-mode."""
+    return emit_interrupts(test_data, SUITE, "S", _GENERATORS["S"])
+
+
+@add_priv_test_generator(SUITE.name, required_extensions=["Sm", "U"], extra_defines=["#define BOOT_TO_MMODE"])
+def make_interruptssm_u(test_data: TestData) -> list[TestChunk]:
+    """InterruptsSm tests that run in U-mode."""
+    return emit_interrupts(test_data, SUITE, "U", _GENERATORS["U"])

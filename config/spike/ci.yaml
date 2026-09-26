@@ -6,7 +6,9 @@
 ci_enabled: true
 # Smstateen will be added back once sail starts supporting Sscsrind too
 # Sdtrig* not yet supported in Sail reference (https://github.com/riscv/sail-riscv/issues/222)
-exclude_extensions: "Smstateen,SdtrigSm,SdtrigS,SdtrigU"
+# Sm: with H, mideleg reads bit 12 (SGEI) as 1 although GEILEN = 0 without Ssaia; the spec makes it
+#    read-only one only when GEILEN is nonzero (riscv/csrs.cc mideleg_csr_t::read)
+exclude_extensions: "Smstateen,SdtrigSm,SdtrigS,SdtrigU,Sm"
 install_script: ".github/scripts/install-spike.sh"
 apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"
 shards: 1

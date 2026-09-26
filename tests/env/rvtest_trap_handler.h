@@ -220,6 +220,27 @@
 
 #define TSBI_RESERVED_RET   (-1)                 // return value for unrecognized operations
 
+//==============================================================================
+// SDTRIG TRIGGER-BREAKPOINT CONTRACT (a1)
+//
+// A Sdtrig trigger (etrigger or itrigger) with action=0 REPLACES the original
+// exception with a breakpoint (xcause=3, xtval=0), while xEPC is left wherever
+// the original exception left it. The handler's fetch-fault case (resume at
+// ra instead of probing *xEPC) is selected by xcause, so the trigger erases
+// the only clue it had: a trigger breakpoint on a fetch-type cause leaves
+// xEPC unfetchable, and the normal width probe (lhu 0(xEPC)) would fault
+// inside the handler.
+//
+// The test knows which exception it is about to raise, so it leaves a1 as a
+// note for the handler: SKIP (xEPC is fine, just don't record it) or FETCH
+// (xEPC is garbage, resume at ra). The handler CONSUMES the note (a1 = NONE
+// on return), so it applies to the very next breakpoint only -- a second or
+// re-entrant breakpoint sees NONE and is treated as an ordinary one.
+//==============================================================================
+#define SDTRIG_BP_NONE   0   // no note, or already consumed -> ordinary breakpoint path
+#define SDTRIG_BP_SKIP   1   // xEPC is a real, fetchable instruction -> keep the advance, drop word 2
+#define SDTRIG_BP_FETCH  2   // xEPC is unfetchable -> resume at ra, skip the probe entirely
+
 #ifndef _VA_SZ_
   #if UDB_MXLEN==32
     #define _VA_SZ_ 32                           // RV32: 32-bit virtual address
@@ -2050,12 +2071,14 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x320) // mcountinhibit
         //TSBI_CSR_INSTR_TABLE(0xB00) // mcycle - shouldn't be changed below M-mode
         //TSBI_CSR_INSTR_TABLE(0xB02) // minstret - shouldn't be changed below M-mode
-        // S-mode dispatch executes these entries locally for U-mode calls.
+        TSBI_CSR_INSTR_TABLE(0x343) // mtval
+        // TODO: Move the following to the S-mode dispatch when it is implemented
         TSBI_CSR_INSTR_TABLE(0x100) // sstatus
         TSBI_CSR_INSTR_TABLE(0x104) // sie
         //TSBI_CSR_INSTR_TABLE(0x105) // stvec
         TSBI_CSR_INSTR_TABLE(0x106) // scounteren
         TSBI_CSR_INSTR_TABLE(0x10A) // senvcfg
+        TSBI_CSR_INSTR_TABLE(0x143) // stval
         TSBI_CSR_INSTR_TABLE(0x144) // sip
         TSBI_CSR_INSTR_TABLE(0x14D) // stimecmp
         #if (UDB_MXLEN==32)
@@ -2269,8 +2292,34 @@ sv_\__MODE__\()cause:
 //==============================================================================
 
 common_\__MODE__\()excpt_handler:
-        csrr    T3, CSR_XEPC                         // T3 = xEPC (faulting instruction address)
-        mv      T4, sp                               // T4 = this mode's save area (for relocation lookup)
+
+#ifdef SDTRIG_TRIGGER_BP_HANDLING
+        // Sdtrig: trigger-generated breakpoints; must run before EPC relocation (VA paths skip it)
+        li      T2, CAUSE_BREAKPOINT
+        bne     T5, T2, sdtrig_\__MODE__\()bp_done    // not a breakpoint
+  .ifc \__MODE__ , M
+        csrr    T2, tdata1                  // tselect still selects the trigger under test
+        srli    T2, T2, UDB_MXLEN-4         // tdata1.type
+        li      T6, 4                       // 4 = itrigger: xEPC is the original handler's entry, return untouched
+        beq     T2, T6, skp_adj_\__MODE__\()epc
+        li      T6, 5                       // 5 = etrigger; any other type is an ordinary breakpoint
+        bne     T2, T6, sdtrig_\__MODE__\()bp_done
+  .endif
+        // etrigger bp: original cause is lost, so use the test's a1 note (SDTRIG_BP_*)
+        li      T2, SDTRIG_BP_FETCH
+        beq     a1, T2, sdtrig_\__MODE__\()bp_fetch
+        li      T2, SDTRIG_BP_SKIP
+        bne     a1, T2, sdtrig_\__MODE__\()bp_done    // a1==NONE -> ordinary breakpoint
+        li      a1, SDTRIG_BP_NONE                    // consume
+        j       skpsv_\__MODE__\()epc                 // keep the advance, drop word 2 only
+sdtrig_\__MODE__\()bp_fetch:
+        li      a1, SDTRIG_BP_NONE                    // consume
+        csrw    CSR_XEPC, ra                          // resume at the jalr's link
+        j       skp_adj_\__MODE__\()epc               // xEPC unreadable -- skip the probe too
+sdtrig_\__MODE__\()bp_done:
+#endif
+        csrr    T3, CSR_XEPC                          // T3 = xEPC (faulting instruction address)
+        mv      T4, sp                                // T4 = this mode's save area (for relocation lookup)
 
 // --- EPC relocation logic ---
 // Determines whether xEPC needs to be offset-adjusted based on the trapping
@@ -2404,11 +2453,12 @@ adj_\__MODE__\()epc:
         sub     T3, T3, T2                            // T3 = EPC - segment_begin (relocated offset)
 
 sv_\__MODE__\()epc:
-#ifdef SDTRIG_IMPRECISE_XEPC
-        csrr    T2, CSR_XCAUSE                        // breakpoint-trigger epc differs across DUTs (trigger fires
-        LI(     T6, CAUSE_BREAKPOINT)                 //   at a slightly different instr) -> don't record xEPC for
-        beq     T2, T6, skpsv_\__MODE__\()epc         //   mcause==3, else self-check mismatches on word 2
-#endif
+// Remove this code section if the trap handler changes done are fine
+// #ifdef SDTRIG_IMPRECISE_XEPC
+//         csrr    T2, CSR_XCAUSE                        // breakpoint-trigger epc differs across DUTs (trigger fires
+//         LI(     T6, CAUSE_BREAKPOINT)                 //   at a slightly different instr) -> don't record xEPC for
+//         beq     T2, T6, skpsv_\__MODE__\()epc         //   mcause==3, else self-check mismatches on word 2
+// #endif
         TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()epc, sv_\__MODE__\()epc_str) // write word 2: xEPC
 skpsv_\__MODE__\()epc:
         csrr    T3, CSR_XEPC                          // re-read xEPC (T3 was modified by relocation)

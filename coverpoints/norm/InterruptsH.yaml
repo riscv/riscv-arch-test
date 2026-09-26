@@ -22,53 +22,46 @@ normative_rule_definitions:
   # An interrupt that has been delegated to HS-mode (using mideleg) is further delegated
   # to VS-mode if the corresponding hideleg bit is set.
   - name: hideleg_op
+    # Representative coverpoints; hideleg with each VS-level interrupt pending or enabled, entering
+    # VS and VU
     coverpoint:
       [
-        "InterruptsH_hs_cg/cp_trigger_{vsei, vsti, vssi}",
-        "InterruptsH_hs_cg/cp_{hideleg_hip_vs, hideleg_hie_vs, hip_hie_vs, sie_vs}",
-        "InterruptsH_hs_cg/cp_{hideleg_hip_vu, hideleg_hie_vu, hip_hie_vu}",
+        "InterruptsH_hs_cg/cp_{hideleg_hip_vs, hideleg_hie_vs, hideleg_hip_vu, hideleg_hie_vu}",
       ]
   # An interrupt i will trap to HS-mode whenever all of the following are true: (a) either
   # the current operating mode is HS-mode and the SIE bit in the sstatus register is set,
   # or the current operating mode has less privilege than HS-mode; (b) bit i is set in
   # both sip and sie, or in both hip and hie; and (c) bit i is not set in hideleg.
   - name: hideleg_hs
+    # Representative coverpoints; raised in HS-mode with sstatus.SIE, hideleg and hie = 0/1, and
+    # entering VS, VU and U
     coverpoint:
       [
-        "InterruptsH_hs_cg/cp_trigger_{vsei, vsti, vssi}",
-        "InterruptsH_hs_cg/cp_{hideleg_hip_vs, hideleg_hie_vs, hip_hie_vs, sie_vs}",
-        "InterruptsH_hs_cg/cp_{hideleg_hip_vu, hideleg_hie_vu, hip_hie_vu}",
-        "InterruptsH_hs_cg/cp_vsint_disabled_u",
+        "InterruptsH_hs_cg/cp_{trigger_vsei, hideleg_hip_vs, hideleg_hip_vu, vsint_disabled_u}",
       ]
   # Bits hip.VSEIP and hie.VSEIE are the interrupt-pending and interrupt-enable bits for
   # VS-level external interrupts. VSEIP is read-only in hip, and is the logical-OR of
   # these interrupt sources:
   - name: hip_vseip_vseie_op
-    coverpoint: ["InterruptsH_hs_cg/cp_trigger_{vsei, vsti, vssi}"]
+    coverpoint: ["InterruptsH_hs_cg/cp_{trigger_vsei, hip_write}"]
   # Bits csr:hip[vstip] and csr:hie[vstie] are the interrupt-pending and interrupt-enable
   # bits for VS-level timer interrupts.
   - name: hip_vstip_vstie_acc_op
     coverpoint:
       [
-        "InterruptsH_hs_cg/cp_trigger_{vsei, vsti, vssi}",
-        "InterruptsH_hs_cg/cp_trigger_vsti",
-        "InterruptsH_hs_cg/cp_hip_write",
+        "InterruptsH_hs_cg/cp_{trigger_vsti, hip_write}",
         "H_hscsr_cg/cp_hcsrwalk",
       ]
   # csr::[vstip] is read-only in csr:hip[], and is the logical-OR of csr:hvip[vstip] and,
   # when the ext:sstc[] extension is implemented, the timer interrupt signal resulting
   # from csr:vstimecmp[].
   - name: hip_vstip_acc
-    coverpoint: ["InterruptsH_hs_cg/cp_trigger_{vsei, vsti, vssi}"]
+    coverpoint: ["InterruptsH_hs_cg/cp_{trigger_vsti, hip_write}"]
   # Bits hip.VSSIP and hie.VSSIE are the interrupt-pending and interrupt-enable bits for
   # VS-level software interrupts. VSSIP in hip is an alias (writable) of the same bit in
   # hvip.
   - name: hip_vssip_vssie_op
-    coverpoint:
-      [
-        "InterruptsH_hs_cg/cp_trigger_{vsei, vsti, vssi}",
-        "InterruptsH_hs_cg/cp_hip_write",
-      ]
+    coverpoint: ["InterruptsH_hs_cg/cp_{trigger_vssi, hip_write}"]
 
   # If bit i of sie is read-only zero, the same bit in register hip may be writable or may
   # be read-only. When bit i in hip is writable, a pending interrupt i can be cleared by
@@ -89,12 +82,12 @@ normative_rule_definitions:
   # CSR hip, while SGEIE, VSEIE, VSTIE, and VSSIE in mie are aliases for the same bits in
   # hie.
   - name: mip_mie_alias
-    coverpoint: ["InterruptsH_hs_cg/cp_{hie, hip, vsie, vsip, vsie_from_hie}"]
+    coverpoint: ["InterruptsH_hs_cg/cp_{hie, hip}"]
   # For each writable bit in sie, the corresponding bit shall be read-only zero in both
   # hip and hie. Hence, the nonzero bits in sie and hie are always mutually exclusive, and
   # likewise for sip and hip.
   - name: sie_hip_hie_mutex
-    coverpoint: ["InterruptsH_hs_cg/cp_{hie, hip, vsie, vsip, vsie_from_hie}"]
+    coverpoint: ["InterruptsH_hs_cg/cp_hip_write", "H_hscsr_cg/cp_hcsrwalk"]
   # The vsip and vsie registers are VSXLEN-bit read/write registers that are VS-mode’s
   # versions of supervisor CSRs sip and sie, formatted as shown in and respectively. When
   # V=1, vsip and vsie substitute for the usual sip and sie, so instructions that normally
@@ -102,24 +95,22 @@ normative_rule_definitions:
   # to HS-level continue to be indicated in the HS-level sip register, not in vsip, when
   # V=1.
   - name: vsip_vsie_sz_acc_op
+    # Representative coverpoints; vsie and vsip through hideleg, and undelegated interrupts on entry
+    # to VS-mode
     coverpoint:
-      [
-        "InterruptsH_hs_cg/cp_{hie, hip, vsie, vsip, vsie_from_hie}",
-        "InterruptsH_hs_cg/cp_{hideleg_hip_vs, hideleg_hie_vs, hip_hie_vs, sie_vs}",
-        "InterruptsH_hs_cg/cp_{hideleg_hip_vu, hideleg_hie_vu, hip_hie_vu}",
-      ]
+      ["InterruptsH_hs_cg/cp_{vsie, vsip, vsie_from_hie, hideleg_hip_vs}"]
   # When bit 10 of hideleg is zero, vsip.SEIP and vsie.SEIE are read-only zeros. Else,
   # vsip.SEIP and vsie.SEIE are aliases of hip.VSEIP and hie.VSEIE.
   - name: vsip_vsie_sei
-    coverpoint: ["InterruptsH_hs_cg/cp_{hie, hip, vsie, vsip, vsie_from_hie}"]
+    coverpoint: ["InterruptsH_hs_cg/cp_{vsie, vsip, vsie_from_hie}"]
   # When bit 6 of hideleg is zero, vsip.STIP and vsie.STIE are read-only zeros. Else,
   # vsip.STIP and vsie.STIE are aliases of hip.VSTIP and hie.VSTIE.
   - name: vsip_vsie_sti
-    coverpoint: ["InterruptsH_hs_cg/cp_{hie, hip, vsie, vsip, vsie_from_hie}"]
+    coverpoint: ["InterruptsH_hs_cg/cp_{vsie, vsip, vsie_from_hie}"]
   # When bit 2 of hideleg is zero, vsip.SSIP and vsie.SSIE are read-only zeros. Else,
   # vsip.SSIP and vsie.SSIE are aliases of hip.VSSIP and hie.VSSIE.
   - name: vsip_vsie_ssi
-    coverpoint: ["InterruptsH_hs_cg/cp_{hie, hip, vsie, vsip, vsie_from_hie}"]
+    coverpoint: ["InterruptsH_hs_cg/cp_{vsie, vsip, vsie_from_hie}"]
 
   # Register hideleg is an HSXLEN-bit read/write register, formatted as shown in
   # &lt;&lt;norm:hideleg_img&gt;&gt;.
@@ -148,12 +139,10 @@ normative_rule_definitions:
   # (5) for VS-mode, and a virtual supervisor software interrupt (2) is translated into a
   # supervisor software interrupt (1) for VS-mode.
   - name: hideleg_trans
+    # Representative coverpoints; delegated VS-level interrupts taken in VS and VU, and through a
+    # vectored vstvec
     coverpoint:
-      [
-        "InterruptsH_hs_cg/cp_{hideleg_hip_vs, hideleg_hie_vs, hip_hie_vs, sie_vs}",
-        "InterruptsH_hs_cg/cp_{hideleg_hip_vu, hideleg_hie_vu, hip_hie_vu}",
-        "InterruptsH_hs_cg/cp_vsint_vectored",
-      ]
+      ["InterruptsH_hs_cg/cp_{hip_hie_vs, hip_hie_vu, vsint_vectored}"]
 
   - name: vstvec_img
     coverpoint: ["InterruptsH_hs_cg/cp_vsint_vectored"]

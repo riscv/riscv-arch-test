@@ -30,7 +30,8 @@ normative_rule_definitions:
   # supervisor-level (HS-level) guest external interrupt. The enable bits in hgeie do not
   # affect the VS-level external interrupt signal selected from hgeip by hstatus.VGEIN.
   - name: hgeie_op
-    coverpoint: ["InterruptsHGei_hs_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
+    coverpoint:
+      ["InterruptsHGei_hs_cg/cp_{trigger_sgei, hgeie, trigger_vsei_hgeip}"]
   # Guest external interrupt number i corresponds with bit i in both hgeip and hgeie.
   - name: hgeip_hgeie_fields
     coverpoint: ["InterruptsHGei_hs_cg/cp_{trigger_sgei, hgeie, hgeip0}"]

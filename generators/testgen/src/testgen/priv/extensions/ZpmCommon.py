@@ -41,20 +41,7 @@ VALUE_OLD = 0xABCD_1234_ABCD_1234
 VALUE_NEW = 0xA5A5_A5A5_A5A5_A5A5
 SENTINEL = 0x1BAD_0BAD_1BAD_0BAD
 
-_MSTATUS_MXR = 1 << 19
-_MSTATUS_SUM = 1 << 18
-_MSTATUS_FS_DIRTY = 3 << 13
-_MSTATUS_VS_DIRTY = 3 << 9
-
 CP_MASKING = "cp_pmlen_masking"
-
-# envcfg (menvcfg/senvcfg) field positions shared by every mode-entry prelude
-# that needs to grant cbo.*/prefetch.*/Zicfiss permission to the next lower
-# privilege level.
-_ENVCFG_CBIE_SHIFT = 4
-_ENVCFG_CBCFE_SHIFT = 6
-_ENVCFG_CBZE_SHIFT = 7
-_ENVCFG_SSE_BIT = 1 << 3
 
 READS = ["lb", "lbu", "lh", "lhu", "lw", "lwu", "ld"]
 WRITES = [("sb", "lbu"), ("sh", "lhu"), ("sw", "lw"), ("sd", "ld")]
@@ -135,14 +122,8 @@ HIGH_VA = {
 MODES = ["bare", "sv39", "sv48", "sv57"]
 MODE_GUARDS = {m: None if m == "bare" else f"{m.upper()}_SUPPORTED" for m in MODES}
 
-# ── MPRV pass (Smmpm-specific) ──────────
-
-_MSTATUS_MPRV = 1 << 17
-_MSTATUS_MPP_SHIFT = 11
-_MPP_M, _MPP_S, _MPP_U = 0b11, 0b01, 0b00
-
 # PMM field bit position (common across mseccfg/menvcfg/senvcfg)
-_PMM_FIELD_SHIFT = 32
+_PMM_SHIFT = 32
 
 # Limited upper patterns for MPRV testing (per testplan)
 _MPRV_UPPER_PATTERNS = [0x0000, 0x0001, 0x0200]
@@ -207,17 +188,17 @@ def free_pm_regs(test_data: TestData, regs: Regs) -> None:
 # ── Assembly Helpers ───────────────────────────────────────────────────────
 
 
-def _tid(prefix: str, upper: int, mnemonic: str) -> str:
+def _binname(prefix: str, upper: int, mnemonic: str) -> str:
     return f"{prefix}_up{upper:04X}_{mnemonic.replace('.', '_')}"
 
 
 # ── Factoring helpers (PMM / FS+VS / JALR pad / data pages) ────────────────
 
 
-def csr_op(op: str, csr: str, value: int, tmp: int, tsbi: bool = False) -> list[str]:
-    """csrs/csrc/csrw *csr* with *value*, directly or through a T-SBI call."""
+def csr_op(op: str, csr: str, value: str, tmp: int, tsbi: bool = False) -> list[str]:
+    """csrs/csrc/csrw *csr* with *value* (an assembler expression), directly or through a T-SBI call."""
     instr = f"{op} {csr}, x{tmp}"
-    return [f"LI(x{tmp}, {hex(value)})", tsbi_call(instr) if tsbi else instr]
+    return [f"LI(x{tmp}, {value})", tsbi_call(instr) if tsbi else instr]
 
 
 def csr_read(csr: str, dst: int, tsbi: bool = False) -> list[str]:
@@ -225,11 +206,11 @@ def csr_read(csr: str, dst: int, tsbi: bool = False) -> list[str]:
     return [tsbi_call(instr) if tsbi else instr]
 
 
-def set_pmm_field(csr: str, shift: int, val: int, pmlen: int, tmp: int, tsbi: bool = False) -> list[str]:
-    """Clear then set the 2-bit PMM field in *csr* at *shift*."""
-    lines = [f"# {csr}.PMM={val:#04b} PMLEN={pmlen}", *csr_op("csrc", csr, 0b11 << shift, tmp, tsbi)]
+def set_pmm_field(csr: str, val: int, pmlen: int, tmp: int, tsbi: bool = False) -> list[str]:
+    """Clear then set the 2-bit PMM field in *csr*."""
+    lines = [f"# {csr}.PMM={val:#04b} PMLEN={pmlen}", *csr_op("csrc", csr, f"{csr.upper()}_PMM", tmp, tsbi)]
     if val:
-        lines.extend(csr_op("csrs", csr, val << shift, tmp, tsbi))
+        lines.extend(csr_op("csrs", csr, hex(val << _PMM_SHIFT), tmp, tsbi))
     return lines
 
 
@@ -256,7 +237,7 @@ def satp_clear(regs: Regs, tsbi: bool = False) -> list[str]:
 
 def enable_fp_vector_state(
     regs: Regs,
-    extra_bits: int = 0,
+    extra_bits: str | None = None,
     extra_comment: str | None = None,
     status_csr: str = "mstatus",
     tsbi: bool = False,
@@ -266,7 +247,8 @@ def enable_fp_vector_state(
     *extra_bits* is ORed into the same status write (e.g. SUM for Ssnpm).
     *extra_comment* replaces the default one-line comment when supplied.
     """
-    bits = _MSTATUS_FS_DIRTY | _MSTATUS_VS_DIRTY | extra_bits
+    prefix = status_csr.upper()
+    bits = f"{prefix}_FS | {prefix}_VS" + (f" | {extra_bits}" if extra_bits else "")
     if extra_comment is not None:
         comment = extra_comment
     else:
@@ -347,16 +329,17 @@ def _mprv_img_tables(mode: str) -> list[str]:
     return [f"rvtest_mprv_slvl{i}_pg_tbl_{mode}" for i in range(LEVELS_BELOW_ROOT[mode] - 1, -1, -1)]
 
 
-def set_mprv(enable: bool, mpp: int, tmp: int) -> list[str]:
+def set_mprv(enable: bool, tmp: int, mpp: str = "PRV_M") -> list[str]:
+    """Set MPRV=1 with MPP=*mpp* (a PRV_* name), or clear MPRV. mstatus.MPP is bits 12:11."""
     if enable:
         return [
-            f"LI(x{tmp}, {hex(0b11 << _MSTATUS_MPP_SHIFT)})",
+            f"LI(x{tmp}, MSTATUS_MPP)",
             f"csrc mstatus, x{tmp}",
-            f"LI(x{tmp}, {hex((mpp << _MSTATUS_MPP_SHIFT) | _MSTATUS_MPRV)})",
+            f"LI(x{tmp}, MSTATUS_MPRV | ({mpp} << 11))",
             f"csrs mstatus, x{tmp}",
         ]
     return [
-        f"LI(x{tmp}, {hex(_MSTATUS_MPRV)})",
+        f"LI(x{tmp}, MSTATUS_MPRV)",
         f"csrc mstatus, x{tmp}",
     ]
 
@@ -365,7 +348,7 @@ def set_sum(enable: bool, tmp: int) -> list[str]:
     op = "csrs" if enable else "csrc"
     return [
         f"# mstatus.SUM = {int(enable)}",
-        f"LI(x{tmp}, {hex(_MSTATUS_SUM)})",
+        f"LI(x{tmp}, MSTATUS_SUM)",
         f"{op} mstatus, x{tmp}",
     ]
 
@@ -478,7 +461,8 @@ def enable_envcfg_cbo_sse(regs: Regs, csr: str = "menvcfg", tsbi: bool = False) 
       first cascading the same fields through menvcfg down to senvcfg
       (Ssnpm).
     """
-    cbo_fields = (0b11 << _ENVCFG_CBIE_SHIFT) | (1 << _ENVCFG_CBCFE_SHIFT) | (1 << _ENVCFG_CBZE_SHIFT) | _ENVCFG_SSE_BIT
+    p = csr.upper()
+    cbo_fields = f"{p}_CBIE | {p}_CBCFE | {p}_CBZE | {p}_SSE"
     return [
         f"# {csr}: let the probes run cbo.*/prefetch.* (CBIE=11, CBCFE=1, CBZE=1)",
         "# and the Zicfiss shadow-stack atomics (SSE=1)",
@@ -491,12 +475,11 @@ def enable_cascaded_envcfg_cbo_sse(regs: Regs) -> list[str]:
     shadow-stack atomics, cascading the grant through menvcfg (via T-SBI)
     down to senvcfg (directly). Used by Ssnpm, which configures from S-mode.
     """
-    cbo_fields = (0b11 << _ENVCFG_CBIE_SHIFT) | (1 << _ENVCFG_CBCFE_SHIFT) | (1 << _ENVCFG_CBZE_SHIFT) | _ENVCFG_SSE_BIT
     return [
         "# Let U-mode run cbo.*/prefetch.* (CBIE=11, CBCFE=1, CBZE=1) and the Zicfiss",
         "# shadow-stack atomics (SSE=1). menvcfg gates senvcfg, so both are written.",
-        *csr_op("csrs", "menvcfg", _ENVCFG_SSE_BIT, regs.tmp, tsbi=True),
-        *csr_op("csrs", "senvcfg", cbo_fields, regs.tmp),
+        *csr_op("csrs", "menvcfg", "MENVCFG_SSE", regs.tmp, tsbi=True),
+        *csr_op("csrs", "senvcfg", "SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE | SENVCFG_SSE", regs.tmp),
     ]
 
 
@@ -638,32 +621,32 @@ def _sentinel(regs: Regs) -> list[str]:
     return [f"LI(x{regs.chk}, {hex(SENTINEL)})"]
 
 
-def _probe_load(mn: str, tid: str, test_data: TestData, regs: Regs, cp: str, cg: str) -> list[str]:
+def _probe_load(mn: str, binname: str, test_data: TestData, regs: Regs, cp: str, cg: str) -> list[str]:
     return [
         *_seed(regs),
         *_sentinel(regs),
-        test_data.add_testcase(tid, cp, cg),
+        test_data.add_testcase(binname, cp, cg),
         f"{mn} x{regs.chk}, 0(x{regs.a})",
         write_sigupd(regs.chk, test_data),
     ]
 
 
-def _probe_store(mn: str, readback: str, tid: str, test_data: TestData, regs: Regs, cp: str, cg: str) -> list[str]:
+def _probe_store(mn: str, readback: str, binname: str, test_data: TestData, regs: Regs, cp: str, cg: str) -> list[str]:
     return [
         *_seed(regs),
         f"LI(x{regs.data}, {hex(VALUE_NEW)})",
-        test_data.add_testcase(tid, cp, cg),
+        test_data.add_testcase(binname, cp, cg),
         f"{mn} x{regs.data}, 0(x{regs.a})",
         f"{readback} x{regs.chk}, 0(x{regs.base})",
         write_sigupd(regs.chk, test_data),
     ]
 
 
-def _probe_amo(mn: str, readback: str, tid: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
+def _probe_amo(mn: str, readback: str, binname: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
     return [
         *_seed(regs),
         f"LI(x{regs.data}, {hex(VALUE_NEW)})",
-        test_data.add_testcase(tid, CP_MASKING, cg),
+        test_data.add_testcase(binname, CP_MASKING, cg),
         f"{mn} x{regs.chk}, x{regs.data}, (x{regs.a})",  # capture old value
         write_sigupd(regs.chk, test_data),  # sigupd the AMO result
         f"{readback} x{regs.chk}, 0(x{regs.base})",
@@ -671,7 +654,7 @@ def _probe_amo(mn: str, readback: str, tid: str, test_data: TestData, regs: Regs
     ]
 
 
-def _probe_zacas(mn: str, tid: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
+def _probe_zacas(mn: str, binname: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
     """ZACAS probe: handles amocas.w/d (single registers) and amocas.q (register pairs)."""
     if mn == "amocas.q":
         dest_lo, dest_hi = regs.chk, regs.tmp
@@ -683,7 +666,7 @@ def _probe_zacas(mn: str, tid: str, test_data: TestData, regs: Regs, cg: str) ->
             f"LI(x{dest_hi}, 0)                  # comparand.hi matches the seeded value",
             f"LI(x{src_lo}, {hex(VALUE_NEW)})",
             f"LI(x{src_hi}, {hex(VALUE_NEW)})",
-            test_data.add_testcase(tid, CP_MASKING, cg),
+            test_data.add_testcase(binname, CP_MASKING, cg),
             f"{mn} x{dest_lo}, x{src_lo}, (x{regs.a})",
             f"ld x{dest_lo}, 0(x{regs.base})",
             f"ld x{dest_hi}, 8(x{regs.base})",
@@ -696,78 +679,80 @@ def _probe_zacas(mn: str, tid: str, test_data: TestData, regs: Regs, cg: str) ->
         *_seed(regs),
         f"LI(x{dest_reg}, {hex(VALUE_OLD)})   # comparand matches the seeded value",
         f"LI(x{src_reg}, {hex(VALUE_NEW)})",
-        test_data.add_testcase(tid, CP_MASKING, cg),
+        test_data.add_testcase(binname, CP_MASKING, cg),
         f"{mn} x{dest_reg}, x{src_reg}, (x{regs.a})",
         f"ld x{dest_reg}, 0(x{regs.base})",
         write_sigupd(dest_reg, test_data),
     ]
 
 
-def _probe_fp_load(mn: str, mv: str, tid: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
+def _probe_fp_load(mn: str, mv: str, binname: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
     return [
         *_seed(regs),
         *_sentinel(regs),
         f"{mv} f{regs.fp}, x{regs.chk}   # poison the FP destination",
-        test_data.add_testcase(tid, CP_MASKING, cg),
+        test_data.add_testcase(binname, CP_MASKING, cg),
         f"{mn} f{regs.fp}, 0(x{regs.a})",
         f"fmv.x.{mv.split('.')[1]} x{regs.chk}, f{regs.fp}",
         write_sigupd(regs.chk, test_data),
     ]
 
 
-def _probe_fp_store(mn: str, readback: str, mv: str, tid: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
+def _probe_fp_store(
+    mn: str, readback: str, mv: str, binname: str, test_data: TestData, regs: Regs, cg: str
+) -> list[str]:
     return [
         *_seed(regs),
         f"LI(x{regs.data}, {hex(VALUE_NEW)})",
         f"{mv} f{regs.fp}, x{regs.data}",
-        test_data.add_testcase(tid, CP_MASKING, cg),
+        test_data.add_testcase(binname, CP_MASKING, cg),
         f"{mn} f{regs.fp}, 0(x{regs.a})",
         f"{readback} x{regs.chk}, 0(x{regs.base})",
         write_sigupd(regs.chk, test_data),
     ]
 
 
-def _probe_c_load_cl(mn: str, tid: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
+def _probe_c_load_cl(mn: str, binname: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
     return [
         *_seed(regs),
         *_sentinel(regs),
-        test_data.add_testcase(tid, CP_MASKING, cg),
+        test_data.add_testcase(binname, CP_MASKING, cg),
         *arch_block([f"{mn} x{regs.chk}, 0(x{regs.a})"], "zca"),
         write_sigupd(regs.chk, test_data),
     ]
 
 
-def _probe_c_store_cs(mn: str, readback: str, tid: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
+def _probe_c_store_cs(mn: str, readback: str, binname: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
     return [
         *_seed(regs),
         f"LI(x{regs.data}, {hex(VALUE_NEW)})",
-        test_data.add_testcase(tid, CP_MASKING, cg),
+        test_data.add_testcase(binname, CP_MASKING, cg),
         *arch_block([f"{mn} x{regs.data}, 0(x{regs.a})"], "zca"),
         f"{readback} x{regs.chk}, 0(x{regs.base})",
         write_sigupd(regs.chk, test_data),
     ]
 
 
-def _probe_c_load_sp(mn: str, tid: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
+def _probe_c_load_sp(mn: str, binname: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
     return [
         *_seed(regs),
         *_sentinel(regs),
         f"mv x{regs.tmp}, sp",
         f"mv sp, x{regs.a}",
-        test_data.add_testcase(tid, CP_MASKING, cg),
+        test_data.add_testcase(binname, CP_MASKING, cg),
         *arch_block([f"{mn} x{regs.chk}, 0(sp)"], "zca"),
         f"mv sp, x{regs.tmp}",
         write_sigupd(regs.chk, test_data),
     ]
 
 
-def _probe_c_store_sp(mn: str, readback: str, tid: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
+def _probe_c_store_sp(mn: str, readback: str, binname: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
     return [
         *_seed(regs),
         f"LI(x{regs.data}, {hex(VALUE_NEW)})",
         f"mv x{regs.tmp}, sp",
         f"mv sp, x{regs.a}",
-        test_data.add_testcase(tid, CP_MASKING, cg),
+        test_data.add_testcase(binname, CP_MASKING, cg),
         *arch_block([f"{mn} x{regs.data}, 0(sp)"], "zca"),
         f"mv sp, x{regs.tmp}",
         f"{readback} x{regs.chk}, 0(x{regs.base})",
@@ -775,14 +760,14 @@ def _probe_c_store_sp(mn: str, readback: str, tid: str, test_data: TestData, reg
     ]
 
 
-def _probe_cd_load_sp(tid: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
+def _probe_cd_load_sp(binname: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
     return [
         *_seed(regs),
         *_sentinel(regs),
         f"fmv.d.x f{regs.fp_c}, x{regs.chk}",
         f"mv x{regs.tmp}, sp",
         f"mv sp, x{regs.a}",
-        test_data.add_testcase(tid, CP_MASKING, cg),
+        test_data.add_testcase(binname, CP_MASKING, cg),
         *arch_block([f"c.fldsp f{regs.fp_c}, 0(sp)"], "zca", "zcd"),
         f"mv sp, x{regs.tmp}",
         f"fmv.x.d x{regs.chk}, f{regs.fp_c}",
@@ -790,14 +775,14 @@ def _probe_cd_load_sp(tid: str, test_data: TestData, regs: Regs, cg: str) -> lis
     ]
 
 
-def _probe_cd_store_sp(tid: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
+def _probe_cd_store_sp(binname: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
     return [
         *_seed(regs),
         f"LI(x{regs.data}, {hex(VALUE_NEW)})",
         f"fmv.d.x f{regs.fp_c}, x{regs.data}",
         f"mv x{regs.tmp}, sp",
         f"mv sp, x{regs.a}",
-        test_data.add_testcase(tid, CP_MASKING, cg),
+        test_data.add_testcase(binname, CP_MASKING, cg),
         *arch_block([f"c.fsdsp f{regs.fp_c}, 0(sp)"], "zca", "zcd"),
         f"mv sp, x{regs.tmp}",
         f"ld x{regs.chk}, 0(x{regs.base})",
@@ -805,10 +790,10 @@ def _probe_cd_store_sp(tid: str, test_data: TestData, regs: Regs, cg: str) -> li
     ]
 
 
-def _probe_cbo(mn: str, tid: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
+def _probe_cbo(mn: str, binname: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
     return [
         *_seed(regs),
-        test_data.add_testcase(tid, CP_MASKING, cg),
+        test_data.add_testcase(binname, CP_MASKING, cg),
         f"{mn} 0(x{regs.a})",
         f"ld x{regs.chk}, 0(x{regs.base})",
         write_sigupd(regs.chk, test_data),
@@ -823,13 +808,15 @@ def _vset(sew: int, regs: Regs) -> list[str]:
     ]
 
 
-def _probe_vec_load(mn: str, sew: int, template: str, tid: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
+def _probe_vec_load(
+    mn: str, sew: int, template: str, binname: str, test_data: TestData, regs: Regs, cg: str
+) -> list[str]:
     return [
         *_seed(regs),
         *_sentinel(regs),
         *_vset(sew, regs),
         f"vmv.v.x v2, x{regs.chk}   # poison the destination vector",
-        test_data.add_testcase(tid, CP_MASKING, cg),
+        test_data.add_testcase(binname, CP_MASKING, cg),
         template.format(a=regs.a),
         f"vmv.x.s x{regs.chk}, v2",
         "csrw vstart, x0",
@@ -838,14 +825,14 @@ def _probe_vec_load(mn: str, sew: int, template: str, tid: str, test_data: TestD
 
 
 def _probe_vec_store(
-    mn: str, sew: int, template: str, readback: str, tid: str, test_data: TestData, regs: Regs, cg: str
+    mn: str, sew: int, template: str, readback: str, binname: str, test_data: TestData, regs: Regs, cg: str
 ) -> list[str]:
     return [
         *_seed(regs),
         f"LI(x{regs.data}, {hex(VALUE_NEW)})",
         *_vset(sew, regs),
         f"vmv.v.x v2, x{regs.data}",
-        test_data.add_testcase(tid, CP_MASKING, cg),
+        test_data.add_testcase(binname, CP_MASKING, cg),
         template.format(a=regs.a),
         "csrw vstart, x0",
         f"{readback} x{regs.chk}, 0(x{regs.base})",
@@ -854,7 +841,7 @@ def _probe_vec_store(
 
 
 def _probe_zicfiss(
-    mn: str, readback: str, funct3: int, tid: str, test_data: TestData, regs: Regs, cg: str
+    mn: str, readback: str, funct3: int, binname: str, test_data: TestData, regs: Regs, cg: str
 ) -> list[str]:
     """Zicfiss shadow-stack AMO through a tagged pointer (kept for parity;
     ZICFISS_AMOS is currently empty across all four extensions, TODO : Add them"""
@@ -862,7 +849,7 @@ def _probe_zicfiss(
         *_seed(regs),
         f"LI(x{regs.data}, {hex(VALUE_NEW)})",
         *_sentinel(regs),
-        test_data.add_testcase(tid, CP_MASKING, cg),
+        test_data.add_testcase(binname, CP_MASKING, cg),
         (
             f".insn r 0x2f, {funct3:#x}, 0x24, x{regs.chk}, x{regs.a}, x{regs.data}"
             f"   # {mn} x{regs.chk}, x{regs.data}, (x{regs.a})"
@@ -914,26 +901,26 @@ def pass_a_all_instructions(cfg: object | None, prefix: str, test_data: TestData
         )
 
         for mn in READS:
-            lines.extend(_probe_load(mn, _tid(prefix, upper, mn), test_data, regs, CP_MASKING, cg))
+            lines.extend(_probe_load(mn, _binname(prefix, upper, mn), test_data, regs, CP_MASKING, cg))
         for mn, rb in WRITES:
-            lines.extend(_probe_store(mn, rb, _tid(prefix, upper, mn), test_data, regs, CP_MASKING, cg))
+            lines.extend(_probe_store(mn, rb, _binname(prefix, upper, mn), test_data, regs, CP_MASKING, cg))
 
         lines.append("#ifdef ZAAMO_SUPPORTED")
         for mn, rb in RV64A_AMOS:
-            lines.extend(_probe_amo(mn, rb, _tid(prefix, upper, mn), test_data, regs, cg))
+            lines.extend(_probe_amo(mn, rb, _binname(prefix, upper, mn), test_data, regs, cg))
         lines.append("#ifdef ZABHA_SUPPORTED")
         for mn, rb in ZABHA_AMOS:
-            lines.extend(_probe_amo(mn, rb, _tid(prefix, upper, mn), test_data, regs, cg))
+            lines.extend(_probe_amo(mn, rb, _binname(prefix, upper, mn), test_data, regs, cg))
         lines.extend(["#endif // ZABHA_SUPPORTED", "#ifdef ZACAS_SUPPORTED"])
         for mn in ZACAS_AMOS:
-            lines.extend(_probe_zacas(mn, _tid(prefix, upper, mn), test_data, regs, cg))
+            lines.extend(_probe_zacas(mn, _binname(prefix, upper, mn), test_data, regs, cg))
         lines.extend(["#endif // ZACAS_SUPPORTED", "#endif // ZAAMO_SUPPORTED"])
 
         for mn, guard, mv in FP_READS:
             lines.extend(
                 [
                     f"#ifdef {guard}",
-                    *_probe_fp_load(mn, mv, _tid(prefix, upper, mn), test_data, regs, cg),
+                    *_probe_fp_load(mn, mv, _binname(prefix, upper, mn), test_data, regs, cg),
                     f"#endif // {guard}",
                 ]
             )
@@ -941,25 +928,25 @@ def pass_a_all_instructions(cfg: object | None, prefix: str, test_data: TestData
             lines.extend(
                 [
                     f"#ifdef {guard}",
-                    *_probe_fp_store(mn, rb, mv, _tid(prefix, upper, mn), test_data, regs, cg),
+                    *_probe_fp_store(mn, rb, mv, _binname(prefix, upper, mn), test_data, regs, cg),
                     f"#endif // {guard}",
                 ]
             )
 
         lines.append("#ifdef ZCA_SUPPORTED")
         for mn in ZCA_READS_CL:
-            lines.extend(_probe_c_load_cl(mn, _tid(prefix, upper, mn), test_data, regs, cg))
+            lines.extend(_probe_c_load_cl(mn, _binname(prefix, upper, mn), test_data, regs, cg))
         for mn, rb in ZCA_WRITES_CS:
-            lines.extend(_probe_c_store_cs(mn, rb, _tid(prefix, upper, mn), test_data, regs, cg))
+            lines.extend(_probe_c_store_cs(mn, rb, _binname(prefix, upper, mn), test_data, regs, cg))
         for mn in ZCA_READS_SP:
-            lines.extend(_probe_c_load_sp(mn, _tid(prefix, upper, mn), test_data, regs, cg))
+            lines.extend(_probe_c_load_sp(mn, _binname(prefix, upper, mn), test_data, regs, cg))
         for mn, rb in ZCA_WRITES_SP:
-            lines.extend(_probe_c_store_sp(mn, rb, _tid(prefix, upper, mn), test_data, regs, cg))
+            lines.extend(_probe_c_store_sp(mn, rb, _binname(prefix, upper, mn), test_data, regs, cg))
         lines.extend(
             [
                 "#ifdef ZCD_SUPPORTED",
-                *_probe_cd_load_sp(_tid(prefix, upper, "c.fldsp"), test_data, regs, cg),
-                *_probe_cd_store_sp(_tid(prefix, upper, "c.fsdsp"), test_data, regs, cg),
+                *_probe_cd_load_sp(_binname(prefix, upper, "c.fldsp"), test_data, regs, cg),
+                *_probe_cd_store_sp(_binname(prefix, upper, "c.fsdsp"), test_data, regs, cg),
                 "#endif // ZCD_SUPPORTED",
                 "#endif // ZCA_SUPPORTED",
             ]
@@ -967,47 +954,47 @@ def pass_a_all_instructions(cfg: object | None, prefix: str, test_data: TestData
 
         lines.append("#ifdef ZICFISS_SUPPORTED")
         for mn, rb, f3 in ZICFISS_AMOS:
-            lines.extend(_probe_zicfiss(mn, rb, f3, _tid(prefix, upper, mn), test_data, regs, cg))
+            lines.extend(_probe_zicfiss(mn, rb, f3, _binname(prefix, upper, mn), test_data, regs, cg))
         lines.append("#endif // ZICFISS_SUPPORTED")
 
         lines.extend(
             [
                 "#ifdef ZICBOZ_SUPPORTED",
-                *_probe_cbo("cbo.zero", _tid(prefix, upper, "cbo.zero"), test_data, regs, cg),
+                *_probe_cbo("cbo.zero", _binname(prefix, upper, "cbo.zero"), test_data, regs, cg),
                 "#endif // ZICBOZ_SUPPORTED",
             ]
         )
 
         lines.append("#ifdef ZICBOM_SUPPORTED")
         for mn in ZICBOM_OPS:
-            lines.extend(_probe_cbo(mn, _tid(prefix, upper, mn), test_data, regs, cg))
+            lines.extend(_probe_cbo(mn, _binname(prefix, upper, mn), test_data, regs, cg))
         lines.append("#endif // ZICBOM_SUPPORTED")
 
         lines.append("#ifdef ZICBOP_SUPPORTED")
         for mn in ZICBOP_OPS:
-            lines.extend(_probe_cbo(mn, _tid(prefix, upper, mn), test_data, regs, cg))
+            lines.extend(_probe_cbo(mn, _binname(prefix, upper, mn), test_data, regs, cg))
         lines.append("#endif // ZICBOP_SUPPORTED")
 
         lines.append("#ifdef ZVL32B_SUPPORTED")
         for mn, sew, template in VEC_READS:
             if sew > 32:
                 continue
-            lines.extend(_probe_vec_load(mn, sew, template, _tid(prefix, upper, mn), test_data, regs, cg))
+            lines.extend(_probe_vec_load(mn, sew, template, _binname(prefix, upper, mn), test_data, regs, cg))
         for mn, sew, template, rb in VEC_WRITES:
             if sew > 32:
                 continue
-            lines.extend(_probe_vec_store(mn, sew, template, rb, _tid(prefix, upper, mn), test_data, regs, cg))
+            lines.extend(_probe_vec_store(mn, sew, template, rb, _binname(prefix, upper, mn), test_data, regs, cg))
         lines.append("#endif // ZVL32B_SUPPORTED")
 
         lines.append("#ifdef ZVE64X_SUPPORTED")
         for mn, sew, template in VEC_READS:
             if sew <= 32:
                 continue
-            lines.extend(_probe_vec_load(mn, sew, template, _tid(prefix, upper, mn), test_data, regs, cg))
+            lines.extend(_probe_vec_load(mn, sew, template, _binname(prefix, upper, mn), test_data, regs, cg))
         for mn, sew, template, rb in VEC_WRITES:
             if sew <= 32:
                 continue
-            lines.extend(_probe_vec_store(mn, sew, template, rb, _tid(prefix, upper, mn), test_data, regs, cg))
+            lines.extend(_probe_vec_store(mn, sew, template, rb, _binname(prefix, upper, mn), test_data, regs, cg))
         lines.append("#endif // ZVE64X_SUPPORTED")
 
     return lines
@@ -1021,9 +1008,11 @@ def pass_c_misaligned(cfg: object | None, prefix: str, test_data: TestData, regs
                 f"LI(x{regs.tmp}, {hex(upper << 48)})",
                 f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
                 f"addi x{regs.a}, x{regs.a}, 1   # force a misaligned effective address",
-                *_probe_load("lw", _tid(f"{prefix}_mis", upper, "lw"), test_data, regs, "cp_pmlen_misaligned_word", cg),
+                *_probe_load(
+                    "lw", _binname(f"{prefix}_mis", upper, "lw"), test_data, regs, "cp_pmlen_misaligned_word", cg
+                ),
                 *_probe_store(
-                    "sw", "lw", _tid(f"{prefix}_mis", upper, "sw"), test_data, regs, "cp_pmlen_misaligned_word", cg
+                    "sw", "lw", _binname(f"{prefix}_mis", upper, "sw"), test_data, regs, "cp_pmlen_misaligned_word", cg
                 ),
             ]
         )
@@ -1033,7 +1022,7 @@ def pass_c_misaligned(cfg: object | None, prefix: str, test_data: TestData, regs
 def set_mxr(enable: bool, tmp: int, status_csr: str = "sstatus", tsbi: bool = False) -> list[str]:
     """MXR gates pointer masking off entirely when set in priv modes below M"""
     op = "csrs" if enable else "csrc"
-    return [f"# {status_csr}.MXR = {int(enable)}", *csr_op(op, status_csr, _MSTATUS_MXR, tmp, tsbi)]
+    return [f"# {status_csr}.MXR = {int(enable)}", *csr_op(op, status_csr, f"{status_csr.upper()}_MXR", tmp, tsbi)]
 
 
 def pass_d_mxr(
@@ -1056,8 +1045,8 @@ def pass_d_mxr(
             [
                 f"LI(x{regs.tmp}, {hex(upper << 48)})",
                 f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
-                *_probe_load("lw", _tid(f"{prefix}_mxr", upper, "lw"), test_data, regs, "cp_pmm_mxr", cg),
-                *_probe_store("sw", "lw", _tid(f"{prefix}_mxr", upper, "sw"), test_data, regs, "cp_pmm_mxr", cg),
+                *_probe_load("lw", _binname(f"{prefix}_mxr", upper, "lw"), test_data, regs, "cp_pmm_mxr", cg),
+                *_probe_store("sw", "lw", _binname(f"{prefix}_mxr", upper, "sw"), test_data, regs, "cp_pmm_mxr", cg),
             ]
         )
     return lines
@@ -1074,7 +1063,7 @@ def pass_e_jalr(cfg: object | None, prefix: str, test_data: TestData, regs: Regs
                 f"LI(x{regs.tmp}, {hex(upper << 48)})",
                 f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
                 f"li x{regs.chk}, 0   # the pad sets this to 1 if the fetch succeeded",
-                test_data.add_testcase(_tid(f"{prefix}_mxr{mxr}", upper, "jalr"), "cp_pmm_jalr", cg),
+                test_data.add_testcase(_binname(f"{prefix}_mxr{mxr}", upper, "jalr"), "cp_pmm_jalr", cg),
                 f"jalr ra, 0(x{regs.a})",
                 write_sigupd(regs.chk, test_data),
             ]
@@ -1095,12 +1084,12 @@ def pass_f_fault_address(cfg: object | None, prefix: str, test_data: TestData, r
                 f"LI(x{regs.tmp}, {hex(upper << 48)})",
                 f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
                 *_sentinel(regs),
-                test_data.add_testcase(_tid(f"{prefix}_flt", upper, "lw"), "cp_hardware_csr_writes_fault", cg),
+                test_data.add_testcase(_binname(f"{prefix}_flt", upper, "lw"), "cp_hardware_csr_writes_fault", cg),
                 f"lw x{regs.chk}, 0(x{regs.a})",
                 write_sigupd(regs.chk, test_data),
                 f"LI(x{regs.data}, {hex(VALUE_NEW)})",
                 *_sentinel(regs),
-                test_data.add_testcase(_tid(f"{prefix}_flt", upper, "sw"), "cp_hardware_csr_writes_fault", cg),
+                test_data.add_testcase(_binname(f"{prefix}_flt", upper, "sw"), "cp_hardware_csr_writes_fault", cg),
                 f"sw x{regs.data}, 0(x{regs.a})",
                 write_sigupd(regs.chk, test_data),
             ]
@@ -1125,8 +1114,8 @@ def pass_b_sign_extension(
         lines.extend(
             [
                 *_tag_address(upper, regs),
-                *_probe_load("ld", _tid(f"{prefix}_hi", upper, "ld"), test_data, regs, CP_MASKING, cg),
-                *_probe_store("sd", "ld", _tid(f"{prefix}_hi", upper, "sd"), test_data, regs, CP_MASKING, cg),
+                *_probe_load("ld", _binname(f"{prefix}_hi", upper, "ld"), test_data, regs, CP_MASKING, cg),
+                *_probe_store("sd", "ld", _binname(f"{prefix}_hi", upper, "sd"), test_data, regs, CP_MASKING, cg),
             ]
         )
     lines.extend(_load_base(mode, "lo", regs))
@@ -1142,7 +1131,6 @@ def pass_clear_on_xlen_change(
     cp: str,
     cg: str,
     pmm_csr: str,
-    pmm_shift: int,
     status_csr: str,
     status_shift: int,
     rv32_val: int = 0b01,
@@ -1168,7 +1156,7 @@ def pass_clear_on_xlen_change(
             comment_banner(f"{prefix}: {status_csr} field=01 must clear {pmm_csr}.PMM"),
             "",
             f"csrr x{regs.chk}, {pmm_csr}",
-            f"srli x{regs.chk}, x{regs.chk}, {pmm_shift}",
+            f"srli x{regs.chk}, x{regs.chk}, {_PMM_SHIFT}",
             f"andi x{regs.chk}, x{regs.chk}, 0x3",
             test_data.add_testcase(f"{prefix}_before", cp, cg),
             write_sigupd(regs.chk, test_data),
@@ -1179,7 +1167,7 @@ def pass_clear_on_xlen_change(
             f"csrs {status_csr}, x{regs.tmp}",
             "",
             f"csrr x{regs.chk}, {pmm_csr}",
-            f"srli x{regs.chk}, x{regs.chk}, {pmm_shift}",
+            f"srli x{regs.chk}, x{regs.chk}, {_PMM_SHIFT}",
             f"andi x{regs.chk}, x{regs.chk}, 0x3",
             test_data.add_testcase(f"{prefix}_after", cp, cg),
             write_sigupd(regs.chk, test_data),
@@ -1199,7 +1187,7 @@ def pass_clear_on_xlen_change(
 
 
 def _mprv_lw_sw_probe(
-    mpp: int,
+    mpp: str,
     cp: str,
     prefix: str,
     test_data: TestData,
@@ -1219,32 +1207,31 @@ def _mprv_lw_sw_probe(
                 f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
                 *_seed(regs),
                 *_sentinel(regs),
-                *set_mprv(True, mpp, regs.tmp),
-                test_data.add_testcase(_tid(prefix, upper, "lw"), cp, cg),
+                *set_mprv(True, regs.tmp, mpp),
+                test_data.add_testcase(_binname(prefix, upper, "lw"), cp, cg),
                 f"lw x{regs.chk}, 0(x{regs.a})",
                 write_sigupd(regs.chk, test_data),
                 *_seed(regs),
                 f"LI(x{regs.data}, {hex(VALUE_NEW)})",
-                *set_mprv(True, mpp, regs.tmp),
-                test_data.add_testcase(_tid(prefix, upper, "sw"), cp, cg),
+                *set_mprv(True, regs.tmp, mpp),
+                test_data.add_testcase(_binname(prefix, upper, "sw"), cp, cg),
                 f"sw x{regs.data}, 0(x{regs.a})",
-                *set_mprv(True, mpp, regs.tmp),
+                *set_mprv(True, regs.tmp, mpp),
                 f"lw x{regs.chk}, 0(x{regs.base})",
                 write_sigupd(regs.chk, test_data),
             ]
         )
-    lines.extend(set_mprv(False, 0, regs.tmp))
+    lines.extend(set_mprv(False, regs.tmp))
     return lines
 
 
 def _mprv_satp_loop(
-    mpp: int,
+    mpp: str,
     mpp_name: str,
     cp: str,
     mxr_val: int,
     mseccfg_pmm: int,
     menvcfg_pmm: int,
-    pmm_shift: int,
     test_data: TestData,
     regs: Regs,
     cg: str,
@@ -1256,7 +1243,7 @@ def _mprv_satp_loop(
     """
     lines = []
     for senvcfg_pmm, senvcfg_pmlen, _ in PMM_CONFIGS:
-        lines.extend(set_pmm_field("senvcfg", pmm_shift, senvcfg_pmm, senvcfg_pmlen, regs.tmp))
+        lines.extend(set_pmm_field("senvcfg", senvcfg_pmm, senvcfg_pmlen, regs.tmp))
 
         for satp_mode in ["bare", "sv39"]:
             prefix = (
@@ -1277,7 +1264,6 @@ def pass_i_mprv_mxr_pmm_loop(
     regs: Regs,
     cg: str,
     sv39_data_map: list[str],
-    pmm_shift: int = _PMM_FIELD_SHIFT,
 ) -> list[str]:
     """MPRV=1 test with nested loops over MXR, mseccfg.PMM, menvcfg.PMM, senvcfg.PMM, MPP, satp.MODE, upper patterns.
 
@@ -1321,7 +1307,7 @@ def pass_i_mprv_mxr_pmm_loop(
 
         # Loop over mseccfg.PMM (M-mode setting)
         for mseccfg_pmm, mseccfg_pmlen, _ in PMM_CONFIGS:
-            lines.extend(set_pmm_field("mseccfg", pmm_shift, mseccfg_pmm, mseccfg_pmlen, regs.tmp))
+            lines.extend(set_pmm_field("mseccfg", mseccfg_pmm, mseccfg_pmlen, regs.tmp))
 
             # Loop over menvcfg.PMM
             for menvcfg_pmm, menvcfg_pmlen, _ in PMM_CONFIGS:
@@ -1331,22 +1317,21 @@ def pass_i_mprv_mxr_pmm_loop(
                 )
                 lines.extend(
                     [
-                        *set_pmm_field("menvcfg", pmm_shift, menvcfg_pmm, menvcfg_pmlen, regs.tmp),
+                        *set_pmm_field("menvcfg", menvcfg_pmm, menvcfg_pmlen, regs.tmp),
                         # MPP=M: always runs, no SATP at all (satp is S-mode CSR)
                         f"LA(x{regs.base}, pm_lo_page)",
-                        *_mprv_lw_sw_probe(_MPP_M, "cp_pm_mprv_mpp_m", prefix_m, test_data, regs, cg),
+                        *_mprv_lw_sw_probe("PRV_M", "cp_pm_mprv_mpp_m", prefix_m, test_data, regs, cg),
                         # MPP=U: no S_SUPPORTED guard on the MPP itself.
                         # senvcfg only exists / is programmed when S_SUPPORTED.
                         # SATP only when S_SUPPORTED. Map was already built once above.
                         "#ifdef S_SUPPORTED",
                         *_mprv_satp_loop(
-                            _MPP_U,
+                            "PRV_U",
                             "mppu",
                             "cp_pm_mprv_mpp_u_s",
                             mxr_val,
                             mseccfg_pmm,
                             menvcfg_pmm,
-                            pmm_shift,
                             test_data,
                             regs,
                             cg,
@@ -1355,18 +1340,17 @@ def pass_i_mprv_mxr_pmm_loop(
                         # MPP=U when S is NOT supported: no senvcfg, no SATP
                         "#ifndef S_SUPPORTED",
                         f"LA(x{regs.base}, pm_lo_page)",
-                        *_mprv_lw_sw_probe(_MPP_U, "cp_pm_mprv_mpp_u_no_s", prefix_u_nos, test_data, regs, cg),
+                        *_mprv_lw_sw_probe("PRV_U", "cp_pm_mprv_mpp_u_no_s", prefix_u_nos, test_data, regs, cg),
                         "#endif // !S_SUPPORTED",
                         # MPP=S: only when S_SUPPORTED; SATP in {Bare, Sv39}
                         "#ifdef S_SUPPORTED",
                         *_mprv_satp_loop(
-                            _MPP_S,
+                            "PRV_S",
                             "mpps",
                             "cp_pm_mprv_mpp_u_s",
                             mxr_val,
                             mseccfg_pmm,
                             menvcfg_pmm,
-                            pmm_shift,
                             test_data,
                             regs,
                             cg,
@@ -1377,16 +1361,16 @@ def pass_i_mprv_mxr_pmm_loop(
 
     lines.extend(
         [
-            *set_pmm_field("mseccfg", pmm_shift, 0b00, 0, regs.tmp),
-            *set_pmm_field("menvcfg", pmm_shift, 0b00, 0, regs.tmp),
+            *set_pmm_field("mseccfg", 0b00, 0, regs.tmp),
+            *set_pmm_field("menvcfg", 0b00, 0, regs.tmp),
             "#ifdef S_SUPPORTED",
-            *set_pmm_field("senvcfg", pmm_shift, 0b00, 0, regs.tmp),
+            *set_pmm_field("senvcfg", 0b00, 0, regs.tmp),
             *set_mxr(False, regs.tmp, "mstatus"),
             *set_sum(False, regs.tmp),
             "#endif // S_SUPPORTED",
-            *set_mprv(False, 0, regs.tmp),
+            *set_mprv(False, regs.tmp),
             "# restore mstatus.MPP = M; set_mprv(False, ...) only clears MPRV",
-            f"LI(x{regs.tmp}, {hex(0b11 << _MSTATUS_MPP_SHIFT)})",
+            f"LI(x{regs.tmp}, MSTATUS_MPP)",
             f"csrs mstatus, x{regs.tmp}",
         ]
     )

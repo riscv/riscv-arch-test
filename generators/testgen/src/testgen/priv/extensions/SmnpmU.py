@@ -26,7 +26,6 @@ from testgen.priv.extensions.ZpmCommon import (
 from testgen.priv.registry import add_priv_test_generator
 
 COVERGROUP = "SmnpmU_cg"
-_MENVCFG_PMM = 32
 
 
 @add_priv_test_generator(
@@ -54,7 +53,7 @@ def make_smnpmu(test_data: TestData) -> list[TestChunk]:
         lines.extend(
             [
                 comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), physical addresses"),
-                *set_pmm_field("menvcfg", _MENVCFG_PMM, pmm, pmlen, regs.tmp, tsbi=True),
+                *set_pmm_field("menvcfg", pmm, pmlen, regs.tmp, tsbi=True),
                 f"LA(x{regs.base}, pm_lo_page)",
                 *pass_a_all_instructions(None, prefix, test_data, regs, COVERGROUP),
                 *pass_c_misaligned(None, prefix, test_data, regs, COVERGROUP),
@@ -63,7 +62,7 @@ def make_smnpmu(test_data: TestData) -> list[TestChunk]:
             ]
         )
 
-    lines.extend(set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp, tsbi=True))
+    lines.extend(set_pmm_field("menvcfg", 0b00, 0, regs.tmp, tsbi=True))
     tc.code = lines
     chunks = [test_data.end_test_chunk()]
 

@@ -10,7 +10,6 @@ from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
-    _MSTATUS_SUM,
     HIGH_VA,
     LEVELS_BELOW_ROOT,
     MODE_GUARDS,
@@ -41,7 +40,6 @@ from testgen.priv.extensions.ZpmCommon import (
 from testgen.priv.registry import add_priv_test_generator
 
 COVERGROUP = "Ssnpm_cg"
-_SENVCFG_PMM = 32
 
 
 @add_priv_test_generator(
@@ -83,7 +81,7 @@ def make_ssnpm(test_data: TestData) -> list[TestChunk]:
                 "pm_utext_begin:",
                 *jalr_pad_asm(regs),
                 *enable_cascaded_envcfg_cbo_sse(regs),
-                *enable_fp_vector_state(regs, extra_bits=_MSTATUS_SUM, status_csr="sstatus"),
+                *enable_fp_vector_state(regs, extra_bits="SSTATUS_SUM", status_csr="sstatus"),
             ]
         )
         if not is_bare:
@@ -100,7 +98,7 @@ def make_ssnpm(test_data: TestData) -> list[TestChunk]:
             lines.extend(
                 [
                     comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), satp={mode.upper()}"),
-                    *set_pmm_field("senvcfg", _SENVCFG_PMM, pmm, pmlen, regs.tmp, tsbi=True),
+                    *set_pmm_field("senvcfg", pmm, pmlen, regs.tmp, tsbi=True),
                     *set_mxr(False, regs.tmp, tsbi=True),
                     f"LA(x{regs.base}, pm_lo_page)",
                     *pass_a_all_instructions(None, prefix, test_data, regs, COVERGROUP),
@@ -126,7 +124,7 @@ def make_ssnpm(test_data: TestData) -> list[TestChunk]:
             prefix = f"{label}_{mode}"
             lines.extend(
                 [
-                    *set_pmm_field("senvcfg", _SENVCFG_PMM, pmm, pmlen, regs.tmp),
+                    *set_pmm_field("senvcfg", pmm, pmlen, regs.tmp),
                     *pass_clear_on_xlen_change(
                         None,
                         prefix,
@@ -135,7 +133,6 @@ def make_ssnpm(test_data: TestData) -> list[TestChunk]:
                         cp="cp_pmm_uxl_clear",
                         cg=COVERGROUP,
                         pmm_csr="senvcfg",
-                        pmm_shift=_SENVCFG_PMM,
                         status_csr="sstatus",
                         status_shift=32,
                         ifdef_guard="UDB_UXLEN_32",
@@ -145,7 +142,7 @@ def make_ssnpm(test_data: TestData) -> list[TestChunk]:
 
         lines.extend(
             [
-                *set_pmm_field("senvcfg", _SENVCFG_PMM, 0b00, 0, regs.tmp),
+                *set_pmm_field("senvcfg", 0b00, 0, regs.tmp),
                 *set_mxr(False, regs.tmp),
                 ".p2align 12",
                 "pm_utext_end:",

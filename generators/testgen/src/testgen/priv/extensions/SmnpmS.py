@@ -38,7 +38,6 @@ from testgen.priv.extensions.ZpmCommon import (
 from testgen.priv.registry import add_priv_test_generator
 
 COVERGROUP = "SmnpmS_cg"
-_MENVCFG_PMM = 32
 
 
 @add_priv_test_generator(
@@ -78,7 +77,7 @@ def make_smnpms(test_data: TestData) -> list[TestChunk]:
             prefix = f"{label}_{mode}"
             lines.extend(
                 [
-                    *set_pmm_field("menvcfg", _MENVCFG_PMM, pmm, pmlen, regs.tmp, tsbi=True),
+                    *set_pmm_field("menvcfg", pmm, pmlen, regs.tmp, tsbi=True),
                     f"LA(x{regs.base}, pm_lo_page)",
                     *pass_a_all_instructions(None, prefix, test_data, regs, COVERGROUP),
                 ]
@@ -99,7 +98,7 @@ def make_smnpms(test_data: TestData) -> list[TestChunk]:
 
         lines.extend(
             [
-                *set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp, tsbi=True),
+                *set_pmm_field("menvcfg", 0b00, 0, regs.tmp, tsbi=True),
                 *set_mxr(False, regs.tmp),
             ]
         )

@@ -10,7 +10,6 @@ from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
-    _PMM_FIELD_SHIFT,
     PMM_CONFIGS,
     _mprv_img_tables,
     alloc_pm_regs_paired,
@@ -66,7 +65,7 @@ def make_smmpm(test_data: TestData) -> list[TestChunk]:
         lines.extend(
             [
                 comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), M-mode"),
-                *set_pmm_field("mseccfg", _PMM_FIELD_SHIFT, pmm, pmlen, regs.tmp),
+                *set_pmm_field("mseccfg", pmm, pmlen, regs.tmp),
                 "#ifdef S_SUPPORTED",
                 *set_mxr(False, regs.tmp, "mstatus"),
                 "#endif // S_SUPPORTED",
@@ -93,7 +92,7 @@ def make_smmpm(test_data: TestData) -> list[TestChunk]:
         for pmm, pmlen, label in PMM_CONFIGS:
             lines.extend(
                 [
-                    *set_pmm_field(pmm_csr, _PMM_FIELD_SHIFT, pmm, pmlen, regs.tmp),
+                    *set_pmm_field(pmm_csr, pmm, pmlen, regs.tmp),
                     *pass_clear_on_xlen_change(
                         None,
                         f"{label}_{tag}",
@@ -102,7 +101,6 @@ def make_smmpm(test_data: TestData) -> list[TestChunk]:
                         cp=cp,
                         cg=COVERGROUP,
                         pmm_csr=pmm_csr,
-                        pmm_shift=_PMM_FIELD_SHIFT,
                         status_csr="mstatus",
                         status_shift=status_shift,
                     ),
@@ -110,7 +108,7 @@ def make_smmpm(test_data: TestData) -> list[TestChunk]:
             )
         lines.extend(
             [
-                *set_pmm_field(pmm_csr, _PMM_FIELD_SHIFT, 0b00, 0, regs.tmp),
+                *set_pmm_field(pmm_csr, 0b00, 0, regs.tmp),
                 f"#endif // {xlen_guard}",
                 f"#endif // {mode_guard.split()[1]}",
                 "#endif // U_SUPPORTED",
@@ -121,8 +119,8 @@ def make_smmpm(test_data: TestData) -> list[TestChunk]:
         [
             # MPRV test using nested loop structure from testplan
             # Only tests Bare and Sv39 modes with limited upper bit patterns
-            *pass_i_mprv_mxr_pmm_loop(test_data, regs, COVERGROUP, sv39_data_map, _PMM_FIELD_SHIFT),
-            *set_pmm_field("mseccfg", _PMM_FIELD_SHIFT, 0b00, 0, regs.tmp),
+            *pass_i_mprv_mxr_pmm_loop(test_data, regs, COVERGROUP, sv39_data_map),
+            *set_pmm_field("mseccfg", 0b00, 0, regs.tmp),
             "#ifdef S_SUPPORTED",
             *set_mxr(False, regs.tmp, "mstatus"),
             "#endif // S_SUPPORTED",

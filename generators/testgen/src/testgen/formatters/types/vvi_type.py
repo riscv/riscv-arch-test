@@ -7,6 +7,7 @@
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
+    compute_egs_vlen,
     handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
@@ -20,7 +21,9 @@ from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
 
-vvi_config = InstructionTypeConfig(required_params={"vd", "immval", "vs2"}, imm_bits=5, vector_data=VectorTypeConfig())
+vvi_config = InstructionTypeConfig(
+    required_params={"vd", "immval", "vs2"}, imm_bits=5, imm_signed=True, vector_data=VectorTypeConfig()
+)
 vviu_config = InstructionTypeConfig(
     required_params={"vd", "immval", "vs2"}, imm_bits=5, imm_signed=False, vector_data=VectorTypeConfig()
 )
@@ -29,6 +32,12 @@ vwi_config = InstructionTypeConfig(
     imm_bits=5,
     imm_signed=False,
     vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2_top")}, widened_regs={"vs2"}),
+)
+wvi_config = InstructionTypeConfig(
+    required_params={"vd", "immval", "vs2"},
+    imm_bits=5,
+    imm_signed=False,
+    vector_data=VectorTypeConfig(overlap_constraints={("vd_bottom", "vs2")}, widened_regs={"vd"}),
 )
 vvim_config = InstructionTypeConfig(
     required_params={"vd", "immval", "vs2", "maskval"},
@@ -46,6 +55,15 @@ vvip_config = InstructionTypeConfig(
 )
 vvip_down_config = InstructionTypeConfig(
     required_params={"vd", "immval", "vs2"}, imm_bits=5, imm_signed=False, vector_data=VectorTypeConfig()
+)
+vvi_egs4_config = InstructionTypeConfig(
+    required_params={"vd", "immval", "vs2"}, imm_bits=5, imm_signed=False, vector_data=VectorTypeConfig(egs=4)
+)
+vvi_sm_egs8_config = InstructionTypeConfig(
+    required_params={"vd", "immval", "vs2"},
+    imm_bits=5,
+    imm_signed=False,
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}, egs=8),
 )
 
 
@@ -68,6 +86,13 @@ def format_vwi(
     instr_str: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
     return format_vvi_like_type(instr_str, test_data, params, "VWI", widen={"vs2"})
+
+
+@add_instruction_formatter("WVI", wvi_config)
+def format_wvi(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    return format_vvi_like_type(instr_str, test_data, params, "WVI", widen={"vd"})
 
 
 @add_instruction_formatter("VVIM", vvim_config)
@@ -104,6 +129,20 @@ def format_vvip_down(
     return format_vvi_like_type(instr_str, test_data, params, "VVIP_DOWN", enable_vs2_preload=True)
 
 
+@add_instruction_formatter("VVI_EGS4", vvi_egs4_config)
+def format_vvi_egs4(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    return format_vvi_like_type(instr_str, test_data, params, "VVI_EGS4", egs=4)
+
+
+@add_instruction_formatter("VVI_SM_EGS8", vvi_sm_egs8_config)
+def format_vvi_sm_egs8(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    return format_vvi_like_type(instr_str, test_data, params, "VVI_SM_EGS8", egs=8)
+
+
 def format_vvi_like_type(
     instr_str: str,
     test_data: TestData,
@@ -112,6 +151,7 @@ def format_vvi_like_type(
     *,
     widen: set[str] | None = None,
     enable_vs2_preload: bool = False,
+    egs: int = 1,
 ) -> tuple[list[str], list[str], list[str]]:
     assert params.immval is not None, f"immval must be provided for {type_name}-type instructions"
     assert params.vs2 is not None and params.vs2_val_pointer is not None, (
@@ -123,6 +163,9 @@ def format_vvi_like_type(
     assert params.temp_reg is not None, f"temp_reg must be provided for {type_name}-type instructions"
     assert params.sew is not None, f"sew must be provided for {type_name}-type instructions"
     assert params.lmul is not None, f"lmul must be provided for {type_name}-type instructions"
+    assert not isinstance(params.vl, int) or params.vl % egs == 0, (
+        f"params.vl must be a multiple of {egs} for EGS={egs} instruction, got: {params.vl}"
+    )
     assert test_data.test_chunk is not None, f"format_{type_name.lower()}_type must be used with an active TestChunk"
 
     if widen is None:
@@ -149,8 +192,8 @@ def format_vvi_like_type(
     vs2_vl = params.vl if params.vector_suite == "base" or not enable_vs2_preload else "vlmax"
 
     to_load = [
-        VectorLoad(reg="vd", widen="vd" in widen, vl=vd_vl, no_fractional_load=True),
-        VectorLoad(reg="vs2", widen="vs2" in widen, vl=vs2_vl),
+        VectorLoad(reg="vd", widen="vd" in widen, vl=vd_vl, no_fractional_load=True, egs=egs),
+        VectorLoad(reg="vs2", widen="vs2" in widen, vl=vs2_vl, egs=egs),
     ]
 
     load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
@@ -174,12 +217,13 @@ def format_vvi_like_type(
         sig_lmul = params.lmul * (2 if "vd" in widen else 1)
         check = [*write_sigupd_v_len(test_data, params, sig_lmul, widen_vd="vd" in widen)]
     else:
-        check = [*write_sigupd_v(test_data, params, widen_vd="vd" in widen)]
+        check = [*write_sigupd_v(test_data, params, widen_vd="vd" in widen, egs=egs)]
 
     # This can only be released after sigupd
     if params.maskval:
         test_data.vec_regs.return_register(0)
 
-    handle_parameter_exclusions(params.lmul, setup, check)
+    min_vlen = compute_egs_vlen(params.sew, params.lmul, egs)
+    handle_parameter_exclusions(params.lmul, setup, check, min_vlen=min_vlen)
 
     return (setup, test, check)

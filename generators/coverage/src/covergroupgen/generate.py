@@ -120,6 +120,8 @@ def _sew_variants_for(arch: str) -> list[str] | None:
         return ["16", "32", "64"]  # SEW 8 is not supported for vector floating point
     if "Zvknhb" in arch:
         return ["32", "64"]
+    if "Zvbc" in arch:
+        return ["64"]
     return None
 
 

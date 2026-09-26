@@ -278,7 +278,7 @@ include::norm/Zvbb_norm_rules.adoc[]
 
 Zvbc only applies to SEW=64.
 
-include::{testplansdir}/Zvbc64.adoc[]
+include::{testplansdir}/Zvbc.adoc[]
 
 include::norm/Zvbc_norm_rules.adoc[]
 

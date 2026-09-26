@@ -350,7 +350,8 @@ jobs:
               }
 
               const canUpdateStatus =
-                statusLabelState.changedSinceLabel || statusLabels.every((status) => automaticStatuses.has(status));
+                statusLabelState.changedSinceLabel ||
+                (!statusLabelState.manuallyLabeled && statusLabels.every((status) => automaticStatuses.has(status)));
               if (reviewStatus.needsAuthor && canUpdateStatus) {
                 await setStatus(pullRequest.number, needsAuthor);
               } else if (reviewStatus.changesRequested && canUpdateStatus) {

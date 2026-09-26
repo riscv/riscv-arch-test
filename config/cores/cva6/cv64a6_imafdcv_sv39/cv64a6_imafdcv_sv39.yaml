@@ -1,0 +1,541 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
+---
+# UDB architecture configuration for CVA6 + Ara (the PULP vector processor).
+#
+# Written against, and every citation below permalinked to:
+#   Ara  pulp-platform/ara  @ 34bd3bc152421b4601a7bf3d6e8e91ffb545c99e
+#   CVA6 pulp-platform/cva6 @ 99eac9a649001bdf5b8f9da52e0ca73d5c48db1c  (tag pulp-v2.0.0-alpha.1)
+# CVA6 lives inside Ara as the hardware/deps/cva6 submodule; CVA6 links point at the
+# cva6 repository, where the same files are rooted at core/.
+#
+# cv64a6_imafdcv_sv39 is the only CVA6 configuration Ara attaches to, so the name is
+# forced rather than chosen.  Quote: "bender_common_targs := -t rtl -t cv64a6_imafdcv_sv39 ..."
+#   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/Makefile#L112
+#
+# Built at nr_lanes=4, vlen=512.  VLEN is an independent -G parameter of the build and
+# 512 is ~15x cheaper in wall clock than Ara's 4096 default for the same coverage.
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: cv64a6_imafdcv_sv39
+description: CVA6 (cv64a6_imafdcv_sv39) with the Ara vector unit, 4 lanes, VLEN 512
+
+implemented_extensions:
+  # misa is read-only and reports A, C, D, F, I, M, S, U, V with MXL=2, i.e.
+  # 0x8000_0000_0034_112D.  Quote: "riscv::CSR_MISA: csr_rdata = IsaCode;"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L601
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L308
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
+
+  # A, Zaamo and Zalrsc are NOT declared.  misa.A reads 1, because CVA6ConfigAExtEn = 1,
+  # but atomics do not work in this SoC: the L2 sits behind an axi_atop_filter, so every
+  # AXI atomic is turned into an error before it reaches memory.  Measured: amoadd.d
+  # returns 0 and leaves memory unchanged while raising no fault, and sc.d reports failure
+  # in rd yet commits the store.  The configuration describes what the DUT can do, so the
+  # extension is left out rather than declared and then excluded suite by suite; misa.A
+  # reading 1 without working atomics is recorded as discrepancy D3 instead.
+  #   Quote: "localparam CVA6ConfigAExtEn = 1;"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/cv64a6_imafdcv_sv39_config_pkg.sv#L29
+  #   Quote: "// The L2 memory does not support atomics"
+  #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_soc.sv#L191
+  #   Quote: "# Atomics are messy, since there is currently no memory region capable of
+  #     handling them"
+  #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/apps/common/riscv_tests.mk#L30
+
+  # F and D: RVF = RVD = CVA6ConfigRVF = 1.  Half precision is off (CVA6ConfigF16En = 0),
+  # so no Zfh/Zfhmin and, on the vector side, no Zvfh/Zvfhmin.
+  #   Quote: "localparam CVA6ConfigRVF = 1;" / "localparam CVA6ConfigF16En = 0;"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/cv64a6_imafdcv_sv39_config_pkg.sv#L17
+  - { name: F, version: "= 2.2.0" }
+  - { name: D, version: "= 2.2.0" }
+
+  # C, and its RV64 decomposition Zca + Zcd.  Zcb/Zcmp/Zcmt are all off.
+  #   Quote: "localparam CVA6ConfigCExtEn = 1;" / "localparam CVA6ConfigZcbExtEn = 0;"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/cv64a6_imafdcv_sv39_config_pkg.sv#L25
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zcd, version: "= 1.0.0" }
+
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zifencei, version: "= 2.0.0" }
+
+  # Zicntr is NOT declared.  cycle and instret exist, but the time CSR is declared in
+  # riscv_pkg and then never handled in the csr_regfile read case, so it falls through
+  # to read_access_exception; and the Ara SoC has no mtime device to emulate it from
+  # (RVMODEL_MTIME_ADDRESS is therefore left undefined in rvmodel_macros.h).
+  #   Quote: "riscv::CSR_CYCLE: if (CVA6Cfg.RVZicntr) csr_rdata = cycle_q[CVA6Cfg.XLEN-1:0];"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L674
+
+  # Zihpm: RVZihpm = 1 and the unprivileged hpmcounter3..31 shadows all read without
+  # trapping, but only six counters physically exist, so 9..31 are read-only zero.
+  # HPM_COUNTER_EN below records exactly that.
+  #   Quote: "localparam int unsigned MHPMCounterNum = 6;"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/ariane_pkg.sv#L592
+  - { name: Zihpm, version: "= 2.0.0" }
+
+  # V 1.0, ratified, supplied by Ara.  vtype has the 1.0 layout with fractional LMUL and
+  # the 1.0-only instructions (vsetivli, vcpop.m, vfredusum, vrgatherei16) are decoded.
+  #   Quote: "Ara ... supports the RISC-V Vector Extension, version 1.0"
+  #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/README.md#L6
+  - { name: V, version: "= 1.0.0" }
+  - { name: Zve32x, version: "= 1.0.0" }
+  - { name: Zve32f, version: "= 1.0.0" }
+  - { name: Zve64x, version: "= 1.0.0" }
+  - { name: Zve64f, version: "= 1.0.0" }
+  - { name: Zve64d, version: "= 1.0.0" }
+  # VLEN = 512 at this build, so every Zvl*b up to and including Zvl512b holds.
+  - { name: Zvl32b, version: "= 1.0.0" }
+  - { name: Zvl64b, version: "= 1.0.0" }
+  - { name: Zvl128b, version: "= 1.0.0" }
+  - { name: Zvl256b, version: "= 1.0.0" }
+  - { name: Zvl512b, version: "= 1.0.0" }
+
+  # U and S: RVS = RVU = 1.
+  #   Quote: "RVS: bit'(1)," / "RVU: bit'(1),"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/cv64a6_imafdcv_sv39_config_pkg.sv#L118
+  - { name: U, version: "= 1.0.0" }
+  - { name: S, version: "= 1.12.0" }
+
+  # Sm 1.12, not 1.11: menvcfg (0x30A) and mconfigptr (0xF15) are both decoded.
+  #   Quote: "riscv::CSR_MCONFIGPTR: csr_rdata = '0;  // not implemented"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L662
+  #   Quote: "riscv::CSR_MENVCFG: if (CVA6Cfg.RVU) fiom_d = csr_wdata[0];"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1670
+  - { name: Sm, version: "= 1.12.0" }
+
+  # Sv39 is the single non-bare satp mode: satp writes are dropped unless the mode field
+  # equals ModeOff or CVA6Cfg.MODE_SV, and MODE_SV is Sv39 for this configuration.
+  #   Quote: "if (config_pkg::vm_mode_t'(satp.mode) == config_pkg::ModeOff ||
+  #            config_pkg::vm_mode_t'(satp.mode) == CVA6Cfg.MODE_SV) satp_d = satp;"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1369
+  - { name: Sv39, version: "= 1.0.0" }
+  - { name: Svbare, version: "= 1.0.0" }
+
+  # Svade, not Svadu: the page table walker never writes A or D back.  It raises a page
+  # fault and leaves the bits to software.
+  #   Quote: "the access flag since we let the access flag be managed by SW. if (!pte.x || !pte.a) begin state_d = PROPAGATE_ERROR;"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/cva6_mmu/cva6_ptw.sv#L450
+  #   Quote: "// the same applies if the dirty flag is not set / if (lsu_is_store_i && (!pte.w || !pte.d))"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/cva6_mmu/cva6_ptw.sv#L475
+  - { name: Svade, version: "= 1.0.0" }
+
+  # Sstvala / Sstvecd: TvalEn = 1 so stval is written with the faulting address, and
+  # stvec accepts mode 0 (direct) as well as mode 1.
+  #   Quote: "localparam CVA6ConfigTvalEn = 1;"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/cv64a6_imafdcv_sv39_config_pkg.sv#L67
+  #   Quote: "stvec_d = clic_mode_o ? {csr_wdata[CVA6Cfg.XLEN-1:2], 2'b11} : {csr_wdata[CVA6Cfg.XLEN-1:2], 1'b0, csr_wdata[0]};"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1323
+  - { name: Sstvala, version: "= 1.0.0" }
+  - { name: Sstvecd, version: "= 1.0.0" }
+
+  # Sscounterenw: every implemented scounteren bit is writable - the write is an
+  # unmasked assignment of csr_wdata[31:0].
+  #   Quote: "riscv::CSR_SCOUNTEREN: if (CVA6Cfg.RVS) scounteren_d = {{CVA6Cfg.XLEN - 32{1'b0}}, csr_wdata[31:0]};"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1325
+  - { name: Sscounterenw, version: "= 1.0.0" }
+
+  # Ssu64xl: sstatus.UXL is in the S-mode read mask but not in SMODE_STATUS_WRITE_MASK,
+  # so UXLEN is fixed at 64.
+  #   Quote: "| riscv::SSTATUS_UXL" (read mask) and a write mask that omits it
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/ariane_pkg.sv#L125
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/ariane_pkg.sv#L129
+  - { name: Ssu64xl, version: "= 1.0.0" }
+
+  # Not implemented, and deliberately absent:
+  #   B / Zb* : "localparam CVA6ConfigBExtEn = 0;"
+  #   Zicond  : "localparam CVA6ConfigRVZiCond = 0;"
+  #   H       : "localparam CVA6ConfigHExtEn = 0;"
+  #   Zcb / Zcmp / Zcmt, Zfa, Zfh, Zicbom/Zicbop/Zicboz, Svinval, Svnapot, Svpbmt,
+  #   Sv48, Sv57, Sstc, mseccfg/Smepmp - no decode or CSR support anywhere in the tree.
+  #   PMP    : the Ara SoC overrides CVA6's NrPMPEntries to 0, so no PMP extension is
+  #            claimed.  Quote: "cfg.NrPMPEntries          = 0;"
+  #            https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_soc.sv#L462
+
+params:
+  # No A params: with Zaamo and Zalrsc undeclared, MISALIGNED_AMO, the LRSC_* parameters
+  # and MUTABLE_MISA_A are not defined for this configuration.
+  # misa is write-ignored, so no misa bit is mutable.
+  #   Quote: "riscv::CSR_MISA: ;"  (the write case body is empty)
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1535
+  MUTABLE_MISA_M: false
+  MUTABLE_MISA_F: false
+  MUTABLE_MISA_D: false
+  MUTABLE_MISA_C: false
+  MUTABLE_MISA_V: false
+  MUTABLE_MISA_U: false
+  MUTABLE_MISA_S: false
+
+  # ---------------------------------------------------------------- F/D params
+  # mstatus.FS is set to Dirty by the hardware in the same cycle the FP instruction
+  # commits, and all four states are writable (the M-mode write is unmasked).
+  #   Quote: "mstatus_d.fs = riscv::Dirty;"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1929
+  HW_MSTATUS_FS_DIRTY_UPDATE: precise
+  MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3]
+
+  # ---------------------------------------------------------------- U params
+  # UBE is hardwired to 0 and there is no MBE/SBE, so every mode is little-endian only.
+  #   Quote: "mstatus_d.ube   = 1'b0;  // CVA6 is little-endian"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1565
+  U_MODE_ENDIANNESS: little
+  UXLEN: [64]
+  TRAP_ON_ECALL_FROM_U: true
+
+  # ---------------------------------------------------------------- S params
+  # ASID_WIDTH: CVA6's ASID_WIDTH for a 64-bit Sv39 configuration is 16.  Writes are
+  # masked down to that width so software can discover it.
+  #   Quote: "satp.asid = satp.asid & {{(CVA6Cfg.ASIDW - CVA6Cfg.ASID_WIDTH) {1'b0}}, {CVA6Cfg.ASID_WIDTH{1'b1}}};"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1367
+  # (ASID_WIDTH = 16 for XLEN == 64: "cfg.ASID_WIDTH = (CVA6Cfg.XLEN == 64) ? 16 : 1;"
+  #  https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/build_config_pkg.sv#L43 )
+  ASID_WIDTH: 16
+  S_MODE_ENDIANNESS: little
+  SXLEN: [64]
+  # TvalEn = 1, so every trap that has a faulting address reports it in [ms]tval.
+  REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION: true
+  STVAL_WIDTH: 64
+  # scounteren: in hardware every one of bits 0..31 is writable, because the write is
+  # an unmasked assignment of csr_wdata[31:0].  UDB will not accept that: it requires a
+  # scounteren bit to be disabled unless the counter behind it exists, so bits 0..2 must
+  # be false (no Zicntr, see above) and bits 9..31 must be false (only six HPM counters).
+  # The values below are what UDB permits; the divergence from the RTL is recorded in
+  # the discrepancy notes rather than hidden.
+  SCOUNTENABLE_EN:
+    [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  # stvec: bit 1 is forced to 0 and bit 0 comes from the write data, so modes 0 and 1
+  # are supported and the vectored base keeps its full 4-byte alignment (unlike mtvec).
+  STVEC_MODES: [0, 1]
+  STVEC_BASE_ALIGNMENT_VECTORED: 4
+  SATP_MODE_BARE: true
+  TRAP_ON_ECALL_FROM_S: true
+
+  # ---------------------------------------------------------------- Sm params
+  MXLEN: 64
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_EBREAK: true
+  # mvendorid is the OpenHW Group JEDEC id 0x0602, i.e. bank 0xC ((0x602 >> 7) = 12)
+  # and offset 0x2 (0x602 & 0x7F).  marchid is 3 (Ariane).  mimpid reads zero.
+  #   Quote: "localparam logic [31:0] OPENHWGROUP_MVENDORID = 32'h0602;"
+  #          "localparam logic [31:0] ARIANE_MARCHID = 32'd3;"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/ariane_pkg.sv#L57
+  #   Quote: "riscv::CSR_MIMPID: csr_rdata = '0;  // not implemented"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L660
+  MARCHID_IMPLEMENTED: true
+  ARCH_ID_VALUE: 3
+  MIMPID_IMPLEMENTED: false
+  VENDOR_ID_BANK: 0xC
+  VENDOR_ID_OFFSET: 0x2
+  # mconfigptr reads zero.
+  #   Quote: "riscv::CSR_MCONFIGPTR: csr_rdata = '0;  // not implemented"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L662
+  CONFIG_PTR_ADDRESS: 0
+  # MISALIGNED_LDST records only whether a misaligned scalar access TRAPS, and on this
+  # DUT it does not: measured, a misaligned load or store leaves mcause untouched.  It
+  # does not follow that the access works - it does not.  A misaligned access that
+  # crosses an 8-byte boundary returns the first doubleword shifted and zero-filled
+  # instead of the bytes from the next doubleword, a misaligned store corrupts the
+  # first doubleword and never writes the second, and some offsets trip a CVA6 RTL
+  # assertion that kills the simulation.  See discrepancy D13 in
+  # ~/reviews/act-ports/cva6-ara-discrepancies.md.  `true` is the value that matches
+  # the observable "no trap" behaviour, but it is not the right declaration: a misaligned
+  # access on this DUT neither traps nor works, and "supported" is the stronger of those
+  # two claims.  Declared false, which deselects the Misalign suites rather than running
+  # tests the hardware cannot satisfy.  The silent data corruption is recorded as
+  # discrepancy D13 instead.
+  MISALIGNED_LDST: false
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low
+  # MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE and MISALIGNED_SPLIT_STRATEGY are gated on
+  # MISALIGNED_LDST being true, so they are not defined for this configuration.
+  TRAP_ON_ILLEGAL_WLRL: false
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
+  MTVAL_WIDTH: 64
+  PMA_GRANULARITY: 12
+  # PLEN = 56 for XLEN == 64.
+  #   Quote: "cfg.PLEN = (CVA6Cfg.XLEN == 32) ? 34 : 56;"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/build_config_pkg.sv#L38
+  PHYS_ADDR_WIDTH: 56
+  M_MODE_ENDIANNESS: little
+  MISA_CSR_IMPLEMENTED: true
+  MTVEC_ACCESS: rw
+  # mtvec supports direct AND vectored (DirectVecOnly = 0), but in vectored mode CVA6
+  # forces bits [7:1] to zero, i.e. it imposes a 256-byte base alignment that the spec
+  # does not require.  Getting this wrong makes the reference model pick a different
+  # trap vector than the DUT and every test dies in the trap handler.
+  #   Quote: "mtvec_d = {csr_wdata[CVA6Cfg.XLEN-1:2], 1'b0, DirVecOnly};
+  #           // we are in vector mode, this implementation requires the additional
+  #           // alignment constraint of 64 * 4 bytes
+  #           if (DirVecOnly) mtvec_d = {csr_wdata[CVA6Cfg.XLEN-1:8], 7'b0, DirVecOnly};"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1613
+  #   Quote: "DirectVecOnly: bit'(0),"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/cv64a6_imafdcv_sv39_config_pkg.sv#L127
+  MTVEC_MODES: [0, 1]
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  MTVEC_BASE_ALIGNMENT_VECTORED: 256
+  # Mode bit 1 is unconditionally cleared on write, so a write of mode 2 or 3 lands as
+  # mode 0 or 1 rather than being discarded.
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
+  # PMP: the SoC overrides CVA6's 8 entries down to 0.
+  #   Quote: "cfg.NrPMPEntries          = 0;"
+  #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_soc.sv#L462
+  # With zero entries UDB treats every other PMP parameter (NUM_USABLE_PMP_ENTRIES,
+  # PMP_GRANULARITY, PMP_{NA4,NAPOT,TOR}_SUPPORTED) as inapplicable, so they are omitted.
+  NUM_PMP_ENTRIES: 0
+  # Six hardware performance counters, mhpmcounter3..mhpmcounter8.  Counters 9..31 are
+  # decoded and read back as zero rather than trapping, which is what "not enabled"
+  # means here.
+  #   Quote: "localparam int unsigned MHPMCounterNum = 6;"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/ariane_pkg.sv#L592
+  #   Quote: "if( (addr_i >= csr_addr_t'(riscv::CSR_MHPM_COUNTER_3)) && (addr_i < ( csr_addr_t'(riscv::CSR_MHPM_COUNTER_3) + MHPMCounterNum)) )"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/perf_counters.sv#L158
+  HPM_COUNTER_EN:
+    [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  HPM_EVENTS: [0]
+  MCOUNTINHIBIT_IMPLEMENTED: true
+  # mcountinhibit: bit 0 (CY) and bits 2..8 are writable; bit 1 (TM) is forced to zero,
+  # which is correct because there is no time counter to inhibit.
+  #   Quote: "mcountinhibit_d = {csr_wdata[MHPMCounterNum+2:2], 1'b0, csr_wdata[0]};"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1676
+  COUNTINHIBIT_EN:
+    [
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  # mcounteren: same story as scounteren - the RTL write is unmasked
+  #   ("riscv::CSR_MCOUNTEREN: if (CVA6Cfg.RVU) mcounteren_d = {{CVA6Cfg.XLEN - 32{1'b0}}, csr_wdata[31:0]};"
+  #    https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1635 )
+  # but UDB requires every enabled bit to have a counter behind it.
+  MCOUNTENABLE_EN:
+    [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+
+  # ---------------------------------------------------------------- Vector params
+  # VLEN and ELEN.  VLEN is a build-time -G parameter of the Verilator model and this
+  # config is built with vlen=512; ELEN is 64 for the RV64 Ara.
+  #   Quote (the build): "-GVLEN=$(vlen)" with "vlen ?= 4096" overridden to 512
+  #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/Makefile#L191
+  #   Verified at run time: vlenb reads 0x40 (64 bytes = 512 bits).
+  VLEN: 512
+  ELEN: 64
+  SEW_MIN: 8
+  # mstatus.VS is a full four-state field, written unmasked from M-mode, and set to
+  # Dirty in the cycle a vector instruction commits.
+  #   Quote: "mstatus_d.vs = riscv::Dirty;"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1936
+  MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
+  HW_MSTATUS_VS_DIRTY_UPDATE: precise
+  # vtype resets with vill set, which is the reset value the V spec recommends.
+  #   Quote: "`FF(csr_vtype_q, csr_vtype_d, '{vill: 1'b1, default: '0})"
+  #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_dispatcher.sv#L80
+  FOLLOW_VTYPE_RESET_RECOMMENDATION: true
+  # vl = min(AVL, VLMAX): the only clamp applied is a saturate to vlmax, so when
+  # VLMAX < AVL < 2*VLMAX the result is VLMAX, not ceil(AVL/2).
+  #   Quote: "csr_vl_d = ((|acc_req_i.rs1[$bits(acc_req_i.rs1)-1:$bits(csr_vl_d)]) ||
+  #           (vlen_t'(acc_req_i.rs1) > vlmax)) ? vlmax : vlen_t'(acc_req_i.rs1);"
+  #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_dispatcher.sv#L680
+  RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX: VLMAX
+  # Fractional LMUL 1/2, 1/4 and 1/8 are all decoded, and the legality check is exactly
+  # the spec's LMUL >= SEW/ELEN rule, so nothing beyond the required set is supported.
+  #   Quote: "LMUL_1_2: vlmax >>= 1; LMUL_1_4: vlmax >>= 2; LMUL_1_8: vlmax >>= 3;"
+  #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_dispatcher.sv#L663
+  SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED: "no_unrequired_supported"
+  # A reserved vtype sets vill and zeroes the rest of vtype, and zeroes vl.
+  #   Quote: "csr_vtype_d = '{vill: 1'b1, vsew: EW8, vlmul: LMUL_1, default: '0}; csr_vl_d = '0;"
+  #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_dispatcher.sv#L650
+  VILL_SET_ON_RESERVED_VTYPE: true
+  # vsetvl{i} with rd=x0 and rs1=x0 simply keeps the old vl.  Ara does NOT set vill in
+  # that case, even when the new SEW/LMUL ratio changes VLMAX - which the spec reserves.
+  #   Quote: "if (insn.vsetvl_type.rs1 == '0 && insn.vsetvl_type.rd == '0) begin
+  #           // Do not update the vector length
+  #           csr_vl_d = csr_vl_q;"
+  #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_dispatcher.sv#L673
+  RESERVED_VSET_X0X0_VILL_SET: "never"
+  RESERVED_VSET_X0X0_VLMAX_CHANGE: "always"
+  # Indexed load/store index EEW is not restricted below ELEN = XLEN = 64.
+  VECTOR_LS_INDEX_MAX_EEW: "XLEN"
+  # Misaligned vector element accesses are NOT legal.  Measured: vle64.v from
+  # scratch+1 raises mcause 2 (illegal instruction) with mtval 0, rather than
+  # completing or raising a load-address-misaligned exception.
+  VECTOR_LS_MISALIGNED_LEGAL: false
+  # Whole-register vector loads DO tolerate misalignment, unlike element accesses:
+  # measured, vl1re64.v from scratch+1 retired with no exception.
+  VECTOR_LS_WHOLEREG_MISALIGNED_LEGAL: true
+  VECTOR_LOAD_PAST_TRAP: false
+  VECTOR_LS_SEG_PARTIAL_ACCESS: false
+  # Fault-only-first: on a fault at element > 0 Ara trims vl to the faulting element
+  # and does not write anything past the trim point.
+  #   Quote: "// In case of exception, modify vstart or vl, depending if the insn ...
+  #           csr_vl_d = ara_resp.exception_vstart;"
+  #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_dispatcher.sv#L3107
+  VECTOR_FF_UPDATE_PAST_TRIM: "update_none"
+  VECTOR_FF_SEG_EXCEPTION_PARTIAL_LOAD: "no_subsegment_loaded"
+  VECTOR_LOAD_SEG_FF_OVERWRITE_ELEMENTS_AFTER_FAULT: "no_overwrite"
+  VECTOR_FF_NO_EXCEPTION_TRIM: false
+  # vstart is a plain register with no stride restriction: any value can be written and
+  # is honoured, so every vstart is legal.
+  #   Quote: "riscv::CSR_VSTART: begin csr_vstart_d = vlen_t'(acc_req_i.rs1);"
+  #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_dispatcher.sv#L3492
+  LEGAL_VSTART: "1_stride"
+  # vfredusum: Ara reduces with a balanced binary tree at full SEW precision and uses
+  # the additive identity for inactive lanes.
+  VFREDUSUM_NAN: "no_change"
+  VFREDUSUM_NODE_ROUNDING_BEHAVIOR: "SEW_precision"
+  VFREDUSUM_INACTIVE_NODE_ELEMENT_BEHAVIOR: "additive_identity"
+  VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR: "additive_identity"
+  # No hypervisor extension, so there is no vsstatus CSR at all.
+  VSSTATUS_VS_EXISTS: false
+  # Vector traps are precise; there is no imprecise-trap control CSR.
+  IMPRECISE_VECTOR_TRAP_SETTABLE: false

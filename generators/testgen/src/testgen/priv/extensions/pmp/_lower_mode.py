@@ -1,11 +1,11 @@
 ##################################
 # priv/extensions/pmp/_lower_mode.py
 #
-# PMPS and PMPU: PMP configured in M mode and probed from S or U mode.
+# PMPS, PMPU and PMPH: PMP configured in M mode and probed from S, U, VS or VU mode.
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""The PMPS and PMPU suites, which differ only in the mode the probes run from."""
+"""The PMPS, PMPU and PMPH suites, which differ in the modes the probes run from."""
 
 from dataclasses import dataclass
 
@@ -39,20 +39,15 @@ from testgen.priv.extensions.pmp.probes import (
 class Mode:
     """The lower privilege mode a suite probes from."""
 
-    letter: str  # "S" | "U"
+    letter: str  # "S" | "U" | "VS" | "VU"
     mpp: str  # mstatus.MPP encoding of the mode
-
-    @property
-    def prefix(self) -> str:
-        return f"pmp{self.letter.lower()}"
-
-    @property
-    def suite(self) -> str:
-        return f"PMP{self.letter}"
+    mpv: bool = False  # mstatus.MPV: the mode is virtualized
 
 
 S_MODE = Mode("S", "(1 << 11)")
 U_MODE = Mode("U", "0")
+VS_MODE = Mode("VS", "(1 << 11)", mpv=True)
+VU_MODE = Mode("VU", "0", mpv=True)
 
 
 def _make_cfg_a_off_chunk(test_data: TestData, mode: Mode) -> TestChunk:
@@ -72,7 +67,7 @@ def _make_cfg_a_off_chunk(test_data: TestData, mode: Mode) -> TestChunk:
         "RVTEST_TSBI_GOTO_MMODE",
     ]
     chunk.section_header = comment_banner(
-        f"{mode.suite} cp_cfg_A_off",
+        f"{test_data.testsuite} cp_cfg_A_off",
         f"{{jalr, sw, lw}} from {mode.letter} mode at a region whose entry has A = OFF, XWR = 000 and pmpaddr = all ones; all succeed.",
     )
     chunk.code.extend(body)
@@ -85,7 +80,7 @@ def _make_cfg_xwr_chunk(test_data: TestData, mode: Mode, *, locked: bool) -> Tes
     cases = LOCKED_LXWR_CASES if locked else UNLOCKED_LXWR_CASES
     chunk = test_data.begin_test_chunk(name)
     chunk.section_header = comment_banner(
-        f"{mode.suite} cp_cfg_X and cp_cfg_RW",
+        f"{test_data.testsuite} cp_cfg_X and cp_cfg_RW",
         f"Every load and store width plus a jalr from {mode.letter} mode at the start of a NAPOT region, "
         f"L = {int(locked)}, each legal XWR.",
     )
@@ -113,19 +108,19 @@ def _make_csr_access_chunk(test_data: TestData, mode: Mode) -> TestChunk:
     low = mode.letter.lower()
     chunk = test_data.begin_test_chunk("csr_access")
     chunk.section_header = comment_banner(
-        f"{mode.suite} cp_pmpaddr_access_{low} and cp_pmpcfg_access_{low}",
+        f"{test_data.testsuite} cp_pmpaddr_access_{low} and cp_pmpcfg_access_{low}",
         f"Write every pmpaddr and pmpcfg CSR from {mode.letter} mode; each traps with an illegal instruction.",
     )
     chunk.code.extend(
         [
             "RVTEST_PMP_SET_BACKGROUND x4",
             "",
-            test_data.add_testcase("write_all", f"cp_pmpaddr_access_{low}", mode.suite),
+            test_data.add_testcase("write_all", f"cp_pmpaddr_access_{low}", test_data.testsuite),
             f"// Write all ones to every pmpaddr CSR from {mode.letter} mode",
             "LI(x4, -1)",
             *_csr_walk("pmpaddri", "CSR_PMPADDR0", 64, test_data.current_testcase_label, mode),
             "",
-            test_data.add_testcase("write_all", f"cp_pmpcfg_access_{low}", mode.suite),
+            test_data.add_testcase("write_all", f"cp_pmpcfg_access_{low}", test_data.testsuite),
             f"// Write all ones to every pmpcfg CSR from {mode.letter} mode",
             *_csr_walk("pmpcfgi", "CSR_PMPCFG0", 16, test_data.current_testcase_label, mode),
         ]
@@ -151,6 +146,7 @@ def _make_mprv_chunk(test_data: TestData, mode: Mode, part: int) -> TestChunk:
         "RVTEST_PMP_SET_BACKGROUND x4",
         "",
     ]
+    fields = "MPP/MPV" if mode.mpv else "MPP"
     n = 0
     for lock in (0, 1):
         body.extend(["", *set_pmpaddr("napot", 0), *set_pmpcfg(0, f"PMPREGION_LXWR_{lock}{xwr}")])
@@ -161,13 +157,13 @@ def _make_mprv_chunk(test_data: TestData, mode: Mode, part: int) -> TestChunk:
             body.extend(
                 [
                     "",
-                    f"// PMP configuration {n}: mstatus.MPRV = {mprv}, mstatus.MPP = {mode.letter} mode, L = {lock}, XWR = {xwr}",
-                    *gen_rwx_mprv(test_data, f"lock{lock}_mprv{mprv}", "cp_mprv", bits),
+                    f"// PMP configuration {n}: mstatus.MPRV = {mprv}, mstatus.{fields} = {mode.letter} mode, L = {lock}, XWR = {xwr}",
+                    *gen_rwx_mprv(test_data, f"lock{lock}_mprv{mprv}", "cp_mprv", bits, mpv=mode.mpv),
                 ]
             )
     chunk.section_header = comment_banner(
-        f"{mode.suite} cp_mprv",
-        f"{{jalr, sw, lw}} from M mode with mstatus.MPRV = {{0, 1}} and MPP = {mode.letter}, region L = {{0, 1}}, XWR = {xwr}.",
+        f"{test_data.testsuite} cp_mprv",
+        f"{{jalr, sw, lw}} from M mode with mstatus.MPRV = {{0, 1}} and {fields} = {mode.letter}, region L = {{0, 1}}, XWR = {xwr}.",
     )
     chunk.code.extend(body)
     chunk.raw_data.extend(REGION_BLOBS["napot_pad"])
@@ -183,7 +179,7 @@ def _make_legal_chunk(test_data: TestData, mode: Mode, amode: str, part: int | N
     generator = {"na4": gen_rwx_na4, "napot": gen_rwx_napot, "tor": gen_rwx_legal}[amode]
     chunk = test_data.begin_test_chunk(name)
     chunk.section_header = comment_banner(
-        f"{mode.suite} cp_cfg_A_{amode}",
+        f"{test_data.testsuite} cp_cfg_A_{amode}",
         f"{{jalr, sw, lw}} from {mode.letter} mode at and around a {amode.upper()} region, L = 0, each legal XWR.",
     )
     chunk.code.extend(

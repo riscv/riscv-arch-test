@@ -266,7 +266,9 @@ def wrs_no_mie_helper(
                 f"LI(x{r_temp}, 0xAA)",
                 m_csr(priv, f"csrs mstatus, x{r_temp}"),
                 "# Set all M mode interrupts pending",
+                "#ifdef UDB_MEI_INTR_IMPL",
                 f"RVTEST_SET_MEXT_INT_{priv}",
+                "#endif",
                 f"RVTEST_SET_MSW_INT_{priv}",
                 f"RVTEST_SET_MTIME_INT_{priv}",
             ]
@@ -336,7 +338,9 @@ def wrs_no_mie_helper(
         lines.extend(
             [
                 "# Clear M mode interrupts",
+                "#ifdef UDB_MEI_INTR_IMPL",
                 f"RVTEST_CLR_MEXT_INT_{priv}",
+                "#endif",
                 f"RVTEST_CLR_MSW_INT_{priv}",
                 f"RVTEST_CLR_MTIME_INT_{priv}",
             ]

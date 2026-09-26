@@ -1,0 +1,34 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # hip.VSTIP is hvip.VSTIP OR the vstimecmp comparison, which counts only when menvcfg.STCE and henvcfg.STCE are set
+  - names:
+      [
+        hip_vstip_acc,
+        hip_vstip_defined_v0,
+        henvcfg_stce_op,
+        henvcfg_stce_zero_op,
+        menvcfg_stce_zero_op,
+        menvcfg_stce_zero_vstip,
+      ]
+    coverpoint: ["SstcHSm_m_cg/cp_vstip"]
+
+  # VSTIP is set while (time + htimedelta) mod 2^64 >= vstimecmp, unsigned
+  - names:
+      [
+        hip_vstip_op,
+        hip_vstip_vstimecmp_op,
+        hip_vstip_clear,
+        htimedelta_sz_acc_op,
+        htimedeltah_sz_acc_op,
+      ]
+    coverpoint: ["SstcHSm_m_cg/cp_htimedelta"]
+
+  # vstimecmp is a 64-bit register, with vstimecmph holding the upper half on RV32
+  - names: [vstimecmp_exist, vstimecmp_sz, vstimecmp_acc]
+    coverpoint: ["SstcHSm_m_cg/cp_m_vstimecmp_{accessible, accesses}"]
+
+  # The vstimecmp interrupt is taken under the usual enable and delegation rules
+  - names: [hip_vstip_enable, hideleg_op]
+    coverpoint: ["SstcHSm_m_cg/cp_vstimecmp_int"]

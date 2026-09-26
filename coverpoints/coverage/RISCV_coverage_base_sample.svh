@@ -40,6 +40,12 @@
     `ifdef COVER_EXCEPTIONSH
         exceptionsh_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_EXCEPTIONSHF
+        exceptionshf_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_EXCEPTIONSHSM
+        exceptionshsm_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_EXCEPTIONSHV
         exceptionshv_sample(hart, issue, ins);
     `endif
@@ -112,11 +118,20 @@
     `ifdef COVER_F
         f_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_HV
-        hv_sample(hart, issue, ins);
+    `ifdef COVER_H
+        h_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_HSM
+        hsm_sample(hart, issue, ins);
     `endif
     `ifdef COVER_I
         i_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_INTERRUPTSH
+        interruptsh_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_INTERRUPTSHSM
+        interruptshsm_sample(hart, issue, ins);
     `endif
     `ifdef COVER_M
         m_sample(hart, issue, ins);
@@ -138,6 +153,9 @@
     `endif
     `ifdef COVER_PMPF
         pmpf_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_PMPH
+        pmph_sample(hart, issue, ins);
     `endif
     `ifdef COVER_PMPS
         pmps_sample(hart, issue, ins);
@@ -165,6 +183,12 @@
     `endif
     `ifdef COVER_SDTRIGSM
         sdtrigsm_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SHTVALA
+        shtvala_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SHVSTVALA
+        shvstvala_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SM
         sm_sample(hart, issue, ins);
@@ -226,6 +250,12 @@
     `ifdef COVER_SSTC
         sstc_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SSTCH
+        sstch_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSTCHSM
+        sstchsm_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SSTCSM
         sstcsm_sample(hart, issue, ins);
     `endif
@@ -243,6 +273,12 @@
     `endif
     `ifdef COVER_SVH
         svh_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SVHSM
+        svhsm_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SVHZICBO
+        svhzicbo_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SVPMP
         svpmp_sample(hart, issue, ins);

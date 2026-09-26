@@ -47,6 +47,13 @@
 #define SETIE_SRC2      0x4 /* enable source 2 (bit 2) */
 
 #define RVMODEL_BOOT \
+  /* ---- IMSIC: let the APLIC deliver directly to the M-level and S-level files (eidelivery = 0x40000000) ---- */ \
+  li      t0, IMSIC_EIDELIVERY; \
+  li      t1, 0x40000000; \
+  csrw    miselect, t0; \
+  csrw    mireg, t1; \
+  csrw    siselect, t0; \
+  csrw    sireg, t1; \
   /* ---- Machine APLIC domain: source 1 -> MEXT ---- */ \
   li      t1, ADDR_SOURCECFG1; /* setting up for APLIC */\
   li      t2, SM_EDGE1; \
@@ -85,7 +92,64 @@
   sw      zero, 0(t1); \
   li      t1, ADDR_S_SETIE0; /* Enables source 2 */ \
   li      t2, SETIE_SRC2; \
-  sw      t2, 0(t1);
+  sw      t2, 0(t1); \
+  /* ---- IMSIC: enable the guest interrupt files ---- */ \
+  IMSIC_ENABLE_GUEST_FILES
+
+/* Whisper's IMSIC (whisper.json "imsic") serves only the guest external interrupts; the APLIC above delivers MEXT
+ * and SEXT directly. The M-level interrupt file is at IMSIC_M_FILE and the S-level file at IMSIC_S_FILE, followed
+ * by one guest interrupt file per 4 KiB page; GEILEN is guest_interrupt_count in whisper.json, which
+ * UDB_NUM_EXTERNAL_GUEST_INTERRUPTS matches. Writing an interrupt identity to a file's seteipnum_le register
+ * (offset 0) makes it pending. The macros below use identity IMSIC_EIID, which RVMODEL_BOOT enables in every guest
+ * file. */
+#define IMSIC_M_FILE           0x24000000
+#define IMSIC_S_FILE           0x28000000
+#define IMSIC_GUEST_FILE(_GEI) (IMSIC_S_FILE + ((_GEI) << 12))
+#define IMSIC_GEILEN           UDB_NUM_EXTERNAL_GUEST_INTERRUPTS
+#define IMSIC_EIID             1
+#define IMSIC_EIDELIVERY       0x70  /* indirect register numbers, AIA section 3.8 */
+#define IMSIC_EITHRESHOLD      0x72
+#define IMSIC_EIE0             0xC0
+
+/* Enable delivery of identity IMSIC_EIID with no threshold in the file reached through _SEL and _REG
+ * (miselect and mireg, or vsiselect and vsireg). */
+#define IMSIC_ENABLE_FILE(_SEL, _REG) \
+  li t0, IMSIC_EIDELIVERY;  csrw _SEL, t0; li t1, 1; csrw _REG, t1; \
+  li t0, IMSIC_EITHRESHOLD; csrw _SEL, t0; csrw _REG, zero; \
+  li t0, IMSIC_EIE0;        csrw _SEL, t0; li t1, 1 << IMSIC_EIID; csrs _REG, t1;
+
+#if defined(H_SUPPORTED) && defined(SSAIA_SUPPORTED)
+  /* hstatus.VGEIN selects the guest file that vsiselect and vsireg reach; walk it over 1..IMSIC_GEILEN */
+  #define IMSIC_ENABLE_GUEST_FILES \
+    csrr t2, hstatus; \
+    li t3, 1; \
+    1: slli t0, t3, 12; csrw hstatus, t0; \
+    IMSIC_ENABLE_FILE(vsiselect, vsireg) \
+    addi t3, t3, 1; li t0, IMSIC_GEILEN; bleu t3, t0, 1b; \
+    csrw hstatus, t2;
+#else
+  #define IMSIC_ENABLE_GUEST_FILES
+#endif
+
+/* Guest external interrupt _GEI: pend IMSIC_EIID in guest file _GEI, which makes hgeip bit _GEI read 1.
+ * To clear, claim it through vstopei with hstatus.VGEIN = _GEI, then restore hstatus.  Below M-mode the
+ * vstopei access needs mstateen0.IMSIC = 1.  vsiselect is left untouched. */
+#if defined(H_SUPPORTED) && defined(SSAIA_SUPPORTED)
+  #define RVMODEL_SET_GUEST_EXT_INT(_GEI, _R1, _R2) \
+    li _R1, IMSIC_EIID;                            \
+    LI(_R2, IMSIC_GUEST_FILE(_GEI));               \
+    sw _R1, 0(_R2);
+
+  #define RVMODEL_CLR_GUEST_EXT_INT(_GEI, _R1, _R2) \
+    csrr _R1, hstatus;                             \
+    li _R2, HSTATUS_VGEIN;                         \
+    csrc hstatus, _R2;                             \
+    li _R2, (_GEI) << 12;                          \
+    csrs hstatus, _R2;                             \
+    csrw vstopei, zero;                            \
+    csrw hstatus, _R1;
+#endif
+
 
 // Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
 // if defined.  For most DUTs, the default should work and this macro

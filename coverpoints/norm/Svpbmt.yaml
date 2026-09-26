@@ -63,10 +63,13 @@ normative_rule_definitions:
 
   # if hgatp.MODE is not equal to zero, non-zero G-stage PTE PBMT bits override the
   # attributes in the PMA to produce an intermediate set of attributes.
-  - names:
-      [
-        Svpbmt_hgatp_stage_override_rule,
-        Svpbmt_vsatp_stage_override_rule,
-        menvcfg_pbmte_henvcfg_pbmte_rdonly0,
-      ]
-    coverpoint: ["TODO: test in hypervisor tests"]
+  # SvH accesses through G-stage and VS-stage leaves with each PBMT value; the attributes themselves are not
+  # observable in single-hart signature tests
+  - name: Svpbmt_hgatp_stage_override_rule
+    coverpoint: ["SvH_gstage_cg/cp_hgatp_pbmt"]
+  - name: Svpbmt_vsatp_stage_override_rule
+    coverpoint: ["SvH_vsstage_cg/cp_vsatp_pbmt"]
+
+  # for implementations with the hypervisor extension, henvcfg.PBMTE is read-only zero if menvcfg.PBMTE is zero.
+  - name: menvcfg_pbmte_henvcfg_pbmte_rdonly0
+    coverpoint: ["SvH_csr_cg/cp_henvcfg_menvcfg"]

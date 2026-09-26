@@ -6,7 +6,12 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Common exception test generation"""
+"""Common exception test generation.
+
+A setup argument holds lines emitted before each testcase, such as initializing xtval.
+"""
+
+from collections.abc import Sequence
 
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
@@ -94,7 +99,9 @@ def generate_instr_adr_misaligned_jal_tests(test_data: TestData, covergroup: str
     return lines
 
 
-def generate_instr_adr_misaligned_jalr_tests(test_data: TestData, covergroup: str) -> list[str]:
+def generate_instr_adr_misaligned_jalr_tests(
+    test_data: TestData, covergroup: str, *, setup: Sequence[str] = ()
+) -> list[str]:
     coverpoint = "cp_instr_adr_misaligned_jalr"
     addr_reg = test_data.int_regs.get_register()
 
@@ -115,6 +122,7 @@ def generate_instr_adr_misaligned_jalr_tests(test_data: TestData, covergroup: st
             lines.extend(
                 [
                     f"\n# rs1[1:0]={rs1_lsb:02b}, offset[1:0]={offset_lsb:02b}",
+                    *setup,
                     ".p2align 2",
                     f"auipc x{addr_reg}, 0 # PC+0 addr_reg = PC",
                     f"addi x{addr_reg}, x{addr_reg}, {base_off} # PC+4 addr_reg[1:0] = rs1_lsb",
@@ -132,14 +140,21 @@ def generate_instr_adr_misaligned_jalr_tests(test_data: TestData, covergroup: st
     return lines
 
 
-def generate_instr_access_fault_tests(test_data: TestData, covergroup: str) -> list[str]:
+def generate_instr_access_fault_tests(
+    test_data: TestData,
+    covergroup: str,
+    *,
+    address: str = "RVMODEL_ACCESS_FAULT_ADDRESS",
+    setup: Sequence[str] = (),
+) -> list[str]:
     coverpoint = "cp_instr_access_fault"
     addr_reg = test_data.int_regs.get_register()
 
     lines = [
         "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(coverpoint, "Instruction Access Fault"),
-        f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+        f"LA(x{addr_reg}, {address})",
+        *setup,
         test_data.add_testcase("instr_access_fault", coverpoint, covergroup),
         f"jalr x1, 0(x{addr_reg})",
         "#endif",
@@ -167,14 +182,160 @@ def generate_ecall_tests(
     return lines
 
 
-def generate_illegal_instruction_tests(test_data: TestData, covergroup: str) -> list[str]:
+def generate_delegated_fault_tests(
+    test_data: TestData, tag: str, coverpoint: str, covergroup: str, regs: tuple[int, int, int]
+) -> list[str]:
+    """Raise each exception whose delegation a medeleg or hedeleg walk checks.
+
+    regs holds the address, store data and load destination registers.
+    """
+    addr_reg, data_reg, check_reg = regs
+    lines: list[str] = []
+    # Instruction misaligned: one aligned and one misaligned jalr target next to the access-fault
+    # address.  Also tests priority of misaligned and access faults.  Simple misalignment tests
+    # are in generate_instr_adr_misaligned_*_tests and are not repeated here.
+    lines.extend(
+        [
+            "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+            test_data.add_testcase(f"instrmisaligned_{tag}", coverpoint, covergroup),
+            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"jalr x1, 0(x{addr_reg})  # aligned target",
+            f"jalr x1, 2(x{addr_reg})  # misaligned target",
+            "#endif",
+        ]
+    )
+
+    # Instruction access fault
+    lines.extend(
+        [
+            "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+            test_data.add_testcase(f"instraccessfault_{tag}", coverpoint, covergroup),
+            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"jalr x1, 0(x{addr_reg})",
+            "#endif",
+        ]
+    )
+
+    # Illegal instruction zeros
+    lines.extend(
+        [
+            test_data.add_testcase(f"illegalinstr_zeros_{tag}", coverpoint, covergroup),
+            ".p2align 2",
+            ".word 0x00000000",
+        ]
+    )
+
+    # Illegal instruction ones
+    lines.extend(
+        [
+            test_data.add_testcase(f"illegalinstr_ones_{tag}", coverpoint, covergroup),
+            ".p2align 2",
+            ".word 0xFFFFFFFF",
+        ]
+    )
+
+    # Ebreak
+    lines.extend(
+        [
+            test_data.add_testcase(f"ebreak_{tag}", coverpoint, covergroup),
+            "ebreak",
+        ]
+    )
+
+    # Load misaligned
+    lines.extend([test_data.add_testcase(f"loadmisaligned_{tag}", coverpoint, covergroup), f"LA(x{addr_reg}, scratch)"])
+    for offset in range(8):
+        for op in ["lw", "lh", "lhu", "lb", "lbu"]:
+            lines.append(f"{op} x{check_reg}, {offset}(x{addr_reg})")
+        lines.extend(
+            [
+                "#if __riscv_xlen == 64",
+                f" ld x{check_reg}, {offset}(x{addr_reg})",
+                f" lwu x{check_reg}, {offset}(x{addr_reg})",
+                "#endif",
+            ]
+        )
+
+    # Load access fault
+    lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
+    lines.extend(
+        [
+            test_data.add_testcase(f"loadaccessfault_{tag}", coverpoint, covergroup),
+            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+        ]
+    )
+    for op in ["lw", "lh", "lhu", "lb", "lbu"]:
+        lines.append(f"{op} x{check_reg}, 0(x{addr_reg})")
+    lines.extend(
+        [
+            "#if __riscv_xlen == 64",
+            f" ld x{check_reg}, 0(x{addr_reg})",
+            f" lwu x{check_reg}, 0(x{addr_reg})",
+            "#endif",
+            "#endif",
+        ]
+    )
+
+    # Store misaligned
+    lines.extend(
+        [
+            test_data.add_testcase(f"storemisaligned_{tag}", coverpoint, covergroup),
+            f"LI(x{data_reg}, 0xDECAFCAB)",
+            f"LA(x{addr_reg}, scratch)",
+        ]
+    )
+    for offset in range(8):
+        for op in ["sw", "sh", "sb"]:
+            lines.append(f"{op} x{data_reg}, {offset}(x{addr_reg})")
+        lines.extend(
+            [
+                "#if __riscv_xlen == 64",
+                f" sd x{data_reg}, {offset}(x{addr_reg})",
+                "#endif",
+            ]
+        )
+
+    # Store access fault
+    lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
+    lines.extend(
+        [
+            test_data.add_testcase(f"storeaccessfault_{tag}", coverpoint, covergroup),
+            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LI(x{data_reg}, 0xADDEDCAB)",
+        ]
+    )
+    for op in ["sw", "sh", "sb"]:
+        lines.append(f"{op} x{data_reg}, 0(x{addr_reg})")
+    lines.extend(
+        [
+            "#if __riscv_xlen == 64",
+            f" sd x{data_reg}, 0(x{addr_reg})",
+            "#endif",
+            "#endif",
+        ]
+    )
+
+    lines.extend(
+        [
+            test_data.add_testcase(f"ecall_{tag}", coverpoint, covergroup),
+            "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
+            "# ecall returns xepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
+            write_sigupd(10, test_data),
+        ]
+    )
+    return lines
+
+
+def generate_illegal_instruction_tests(test_data: TestData, covergroup: str, *, setup: Sequence[str] = ()) -> list[str]:
     coverpoint = "cp_illegal_instruction"
 
     lines = [
         comment_banner(coverpoint, "Illegal Instruction"),
+        *setup,
         ".p2align 2",
         test_data.add_testcase("illegal_0x00000000", coverpoint, covergroup),
         ".word 0x00000000",
+        *setup,
         ".p2align 2",
         test_data.add_testcase("illegal_0xFFFFFFFF", coverpoint, covergroup),
         ".word 0xFFFFFFFF",
@@ -242,6 +403,7 @@ def add_load_misaligned_test(
     covergroup: str,
     *,
     use_sentinel: bool = True,
+    setup: Sequence[str] = (),
 ) -> list[str]:
     """Generate a single load-misaligned testcase."""
     addr_reg, check_reg = test_data.int_regs.get_registers(2)
@@ -254,6 +416,7 @@ def add_load_misaligned_test(
         t_lines.append(f"LI(x{check_reg}, 0xB0BACAFE)")
     t_lines.extend(
         [
+            *setup,
             test_data.add_testcase(f"{op}_off{offset}", coverpoint, covergroup),
             f"{op} x{check_reg}, 0(x{addr_reg})",
             write_sigupd(check_reg, test_data),
@@ -270,6 +433,8 @@ def add_store_misaligned_test(
     test_data: TestData,
     coverpoint: str,
     covergroup: str,
+    *,
+    setup: Sequence[str] = (),
 ) -> list[str]:
     addr_reg, data_reg, check_reg = test_data.int_regs.get_registers(3)
 
@@ -277,6 +442,7 @@ def add_store_misaligned_test(
         f"LI(x{data_reg}, 0xDEADBEEF)",
         f"LA(x{addr_reg}, scratch)",
         f"addi x{addr_reg}, x{addr_reg}, {offset}",
+        *setup,
         test_data.add_testcase(f"{op}_off{offset}", coverpoint, covergroup),
         f"{op} x{data_reg}, 0(x{addr_reg})",
         # Read back scratch memory to verify store result
@@ -300,6 +466,7 @@ def generate_load_address_misaligned_tests(
     covergroup: str,
     *,
     use_sentinel: bool = True,
+    setup: Sequence[str] = (),
 ) -> list[str]:
     """Generate load-misaligned testcases for all load ops and offsets 0-7."""
     coverpoint = "cp_load_address_misaligned"
@@ -311,21 +478,27 @@ def generate_load_address_misaligned_tests(
         for op in load_ops:
             lines.append(f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b})")
             lines.extend(
-                add_load_misaligned_test(op, offset, test_data, coverpoint, covergroup, use_sentinel=use_sentinel)
+                add_load_misaligned_test(
+                    op, offset, test_data, coverpoint, covergroup, use_sentinel=use_sentinel, setup=setup
+                )
             )
 
         lines.append("#if __riscv_xlen == 64")
         for op in ["lwu", "ld"]:
             lines.append(f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b})")
             lines.extend(
-                add_load_misaligned_test(op, offset, test_data, coverpoint, covergroup, use_sentinel=use_sentinel)
+                add_load_misaligned_test(
+                    op, offset, test_data, coverpoint, covergroup, use_sentinel=use_sentinel, setup=setup
+                )
             )
         lines.append("#endif")
 
     return lines
 
 
-def generate_store_address_misaligned_tests(test_data: TestData, covergroup: str) -> list[str]:
+def generate_store_address_misaligned_tests(
+    test_data: TestData, covergroup: str, *, setup: Sequence[str] = ()
+) -> list[str]:
     coverpoint = "cp_store_address_misaligned"
     lines = [comment_banner(coverpoint, "Store Address Misaligned")]
 
@@ -334,11 +507,11 @@ def generate_store_address_misaligned_tests(test_data: TestData, covergroup: str
     for offset in range(8):
         for op in store_ops:
             lines.append(f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b})")
-            lines.extend(add_store_misaligned_test(op, offset, test_data, coverpoint, covergroup))
+            lines.extend(add_store_misaligned_test(op, offset, test_data, coverpoint, covergroup, setup=setup))
 
         lines.append("\n#if __riscv_xlen == 64")
         lines.append(f"\n# Testcase: sd with offset {offset} (LSBs: {offset:03b})")
-        lines.extend(add_store_misaligned_test("sd", offset, test_data, coverpoint, covergroup))
+        lines.extend(add_store_misaligned_test("sd", offset, test_data, coverpoint, covergroup, setup=setup))
         lines.append("\n#endif")
 
     return lines
@@ -349,6 +522,8 @@ def generate_load_access_fault_tests(
     covergroup: str,
     *,
     use_sigupd: bool = True,
+    address: str = "RVMODEL_ACCESS_FAULT_ADDRESS",
+    setup: Sequence[str] = (),
 ) -> list[str]:
     """Generate load-access-fault testcases."""
     coverpoint = "cp_load_access_fault"
@@ -360,11 +535,12 @@ def generate_load_access_fault_tests(
 
     for op in load_ops:
         lines.append(f"\n# Testcase: {op} access fault")
-        lines.append(f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)")
+        lines.append(f"LA(x{addr_reg}, {address})")
         if use_sigupd:
             lines.append(f"LI(x{check_reg}, 0xB0BACAFE)")
         lines.extend(
             [
+                *setup,
                 test_data.add_testcase(f"{op}_fault", coverpoint, covergroup),
                 f"{op} x{check_reg}, 0(x{addr_reg})",
             ]
@@ -375,11 +551,12 @@ def generate_load_access_fault_tests(
     lines.extend(["", "#if __riscv_xlen == 64"])
     for op in ["lwu", "ld"]:
         lines.append(f"\n# Testcase: {op} access fault")
-        lines.append(f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)")
+        lines.append(f"LA(x{addr_reg}, {address})")
         if use_sigupd:
             lines.append(f"LI(x{check_reg}, 0xB0BACAFE)")
         lines.extend(
             [
+                *setup,
                 test_data.add_testcase(f"{op}_fault", coverpoint, covergroup),
                 f"{op} x{check_reg}, 0(x{addr_reg})",
             ]
@@ -392,7 +569,13 @@ def generate_load_access_fault_tests(
     return lines
 
 
-def generate_store_access_fault_tests(test_data: TestData, covergroup: str) -> list[str]:
+def generate_store_access_fault_tests(
+    test_data: TestData,
+    covergroup: str,
+    *,
+    address: str = "RVMODEL_ACCESS_FAULT_ADDRESS",
+    setup: Sequence[str] = (),
+) -> list[str]:
     coverpoint = "cp_store_access_fault"
     addr_reg, data_reg = test_data.int_regs.get_registers(2)
 
@@ -405,8 +588,9 @@ def generate_store_access_fault_tests(test_data: TestData, covergroup: str) -> l
         lines.extend(
             [
                 f"\n# Testcase: {op} access fault",
-                f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+                f"LI(x{addr_reg}, {address})",
                 f"LI(x{data_reg}, {test_values[op]})",
+                *setup,
                 test_data.add_testcase(f"{op}_fault", coverpoint, covergroup),
                 f"{op} x{data_reg}, 0(x{addr_reg})",
             ]
@@ -417,8 +601,9 @@ def generate_store_access_fault_tests(test_data: TestData, covergroup: str) -> l
             "",
             "#if __riscv_xlen == 64",
             "\n# Testcase: sd access fault",
-            f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LI(x{addr_reg}, {address})",
             f"LI(x{data_reg}, {test_values['sd']})",
+            *setup,
             test_data.add_testcase("sd_fault", coverpoint, covergroup),
             f"sd x{data_reg}, 0(x{addr_reg})",
             "",

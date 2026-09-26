@@ -99,12 +99,12 @@ RVA23_TEST_SUITES = frozenset(
         "U",
         "S",
         "H",
-        "HV",
         "UV",
         "UF",
         # Exceptions Tests
         "ExceptionsF",
         "ExceptionsH",
+        "ExceptionsHF",
         "ExceptionsHV",
         "ExceptionsS",
         "ExceptionsSv",
@@ -121,6 +121,7 @@ RVA23_TEST_SUITES = frozenset(
         "ExceptionsZicboU",
         # Interrupts Tests
         "InterruptsH",
+        "InterruptsHGei",
         "InterruptsS",
         "InterruptsU",
         # Za extensions
@@ -131,6 +132,7 @@ RVA23_TEST_SUITES = frozenset(
         "ZawrsU",
         # Zi extensions
         "Zic64bZicboz",
+        "ZicntrH",
         "ZicntrS",
         "ZicntrU",
         "ZicsrF",
@@ -146,6 +148,7 @@ RVA23_TEST_SUITES = frozenset(
         "Shgatpa",
         "Shlcofideleg",
         "Shtvala",
+        "Shvsatpa",
         "Shvstvala",
         "Shvstvecd",
         # Ss extensions
@@ -163,7 +166,6 @@ RVA23_TEST_SUITES = frozenset(
         "Sv",
         "Svade",
         "Svadu",
-        "SvaduH",
         "SvaduPMP",
         "Svbare",
         "SvH",

@@ -266,7 +266,9 @@ def wrs_no_mie_helper(
                 f"LI(x{r_temp}, 0xAA)",
                 m_csr(priv, f"csrs mstatus, x{r_temp}"),
                 "# Set all M mode interrupts pending",
+                "#ifdef UDB_MEI_INTR_IMPL",
                 f"RVTEST_SET_MEXT_INT_{priv}",
+                "#endif",
                 f"RVTEST_SET_MSW_INT_{priv}",
                 f"RVTEST_SET_MTIME_INT_{priv}",
             ]
@@ -336,7 +338,9 @@ def wrs_no_mie_helper(
         lines.extend(
             [
                 "# Clear M mode interrupts",
+                "#ifdef UDB_MEI_INTR_IMPL",
                 f"RVTEST_CLR_MEXT_INT_{priv}",
+                "#endif",
                 f"RVTEST_CLR_MSW_INT_{priv}",
                 f"RVTEST_CLR_MTIME_INT_{priv}",
             ]
@@ -468,7 +472,8 @@ def wrs_timeout_helper(
     lines = [comment_banner(coverpoint, "\n".join(description))]
 
     if virtualized:
-        lines.append("#ifdef H_SUPPORTED")
+        # VS and VU traps need the visible trap handler, which a config that emulates time does not use
+        lines.append("#if defined(H_SUPPORTED) && defined(UDB_TIME_CSR_IMPLEMENTED)")
     for mode in mode_list:
         for tw_val in tw_list:
             lines.extend(
@@ -523,6 +528,6 @@ def wrs_timeout_helper(
                 lines.append(f"RVTEST_TSBI_GOTO_{priv}MODE")
 
     if virtualized:
-        lines.append("#endif // H_SUPPORTED")
+        lines.append("#endif")
     test_data.int_regs.return_registers([r_cause, r_temp, r_temp2])
     return lines

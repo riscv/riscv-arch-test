@@ -37,20 +37,19 @@ S_VADDR_CSRS = {
 # senvcfg CBIE/PMM reserved values are handled with warl_fields in the walk test below
 
 
-def _generate_scause_tests(test_data: TestData) -> list[str]:
-    """Generate tests for scause CSR."""
-    covergroup = "S_scause_cg"
+def scause_write_tests(test_data: TestData, csr: str = "scause", covergroup: str = "S_scause_cg") -> list[str]:
+    """Write each exception and interrupt cause to scause, or to vscause from HS-mode."""
     save_reg, check_reg, temp_reg = test_data.int_regs.get_registers(3)
 
     ######################################
-    coverpoint = "cp_scause_write_exception"
+    coverpoint = f"cp_{csr}_write_exception"
     ######################################
     lines = [
         comment_banner(
             coverpoint,
             "with interrupt = 0: test writing each exception cause",
         ),
-        f"csrr x{save_reg}, scause     # save CSR before testing it",
+        f"csrr x{save_reg}, {csr}     # save CSR before testing it",
     ]
 
     for i in range(32):
@@ -60,17 +59,17 @@ def _generate_scause_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 "",
-                f"# Testcase: set scause to exception cause {i}",
+                f"# Testcase: set {csr} to exception cause {i}",
                 f"LI(x{check_reg}, {i})",
                 test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
-                gen_csr_write_sigupd(check_reg, "scause", test_data),
+                gen_csr_write_sigupd(check_reg, csr, test_data),
             ]
         )
         if gated:
             lines.append("#endif")
 
     ######################################
-    coverpoint = "cp_scause_write_interrupt"
+    coverpoint = f"cp_{csr}_write_interrupt"
     ######################################
 
     lines.extend(
@@ -90,28 +89,26 @@ def _generate_scause_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 "",
-                f"# Testcase: set scause to interrupt cause {i}",
+                f"# Testcase: set {csr} to interrupt cause {i}",
                 f"LI(x{check_reg}, {i})",
                 f"or x{check_reg}, x{check_reg}, x{temp_reg}          # set interrupt bit",
                 test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
-                gen_csr_write_sigupd(check_reg, "scause", test_data),
+                gen_csr_write_sigupd(check_reg, csr, test_data),
             ]
         )
         if gated:
             lines.append("#endif")
 
-    lines.append(f"\ncsrw scause, x{save_reg}       # restore CSR")
+    lines.append(f"\ncsrw {csr}, x{save_reg}       # restore CSR")
 
     test_data.int_regs.return_registers([save_reg, check_reg, temp_reg])
     return lines
 
 
-def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
-    """Generate sstatus SD field write tests."""
-    ######################################
-    covergroup = "S_sstatus_cg"
-    coverpoint = "cp_sstatus_sd_write"
-    ######################################
+def sstatus_sd_tests(
+    test_data: TestData, covergroup: str = "S_sstatus_cg", coverpoint: str = "cp_sstatus_sd_write", *, uxl: bool = True
+) -> list[str]:
+    """Write sstatus with each SD, FS, XS and VS, then with each UXL if uxl (cp_sxlen_ge_uxlen)."""
     save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5)
 
     lines = [
@@ -157,45 +154,46 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
 
     lines.append(f"\ncsrw sstatus, x{save_reg}    # restore CSR")
 
-    coverpoint = "cp_sxlen_ge_uxlen"  # For SS1P13 extension.
-    lines.extend(
-        [
-            "",
-            "#ifdef S1P13P0_OR_LATER_SUPPORTED",
-            "#if __riscv_xlen == 64",
-            comment_banner(
-                coverpoint,
-                "Ss1p13: from S-mode attempt to set sstatus.UXL = 1 and UXL = 2.\n"
-                "UXL=2 must be silently rejected when SXLEN=32 (UXLEN <= SXLEN).",
-            ),
-            f"csrr x{save_reg}, sstatus",
-            "",
-        ]
-    )
-
-    for uxl, label in ((1, "uxlen32"), (2, "uxlen64")):
+    if uxl:
+        coverpoint = "cp_sxlen_ge_uxlen"  # For SS1P13 extension.
         lines.extend(
             [
                 "",
-                f"# Testcase: Ss1p13 attempt to set sstatus.UXL = {uxl} ({label})",
-                f"csrr x{check_reg}, sstatus                     # read current sstatus into GPR",
-                f"LI(x{reg2}, {~(3 << 32) & 0xFFFFFFFFFFFFFFFF})  # mask to clear UXL bits [33:32]",
-                f"and x{check_reg}, x{check_reg}, x{reg2}         # clear UXL bits [33:32]",
-                f"LI(x{reg2}, {uxl << 32})                        # UXL={uxl} shifted into position [33:32]",
-                f"or x{check_reg}, x{check_reg}, x{reg2}          # OR in desired UXL value",
-                test_data.add_testcase(f"uxl_attempt_{uxl}", coverpoint, covergroup),
-                gen_csr_write_sigupd(check_reg, "sstatus", test_data),
+                "#ifdef S1P13P0_OR_LATER_SUPPORTED",
+                "#if __riscv_xlen == 64",
+                comment_banner(
+                    coverpoint,
+                    "Ss1p13: from S-mode attempt to set sstatus.UXL = 1 and UXL = 2.\n"
+                    "UXL=2 must be silently rejected when SXLEN=32 (UXLEN <= SXLEN).",
+                ),
+                f"csrr x{save_reg}, sstatus",
+                "",
             ]
         )
 
-    lines.extend(
-        [
-            "",
-            f"csrw sstatus, x{save_reg}        # restore sstatus after Ss1p13 UXL tests",
-            "#endif // UDB_MXLEN_64",
-            "#endif // S1P13P0_OR_LATER_SUPPORTED",
-        ]
-    )
+        for value, label in ((1, "uxlen32"), (2, "uxlen64")):
+            lines.extend(
+                [
+                    "",
+                    f"# Testcase: Ss1p13 attempt to set sstatus.UXL = {value} ({label})",
+                    f"csrr x{check_reg}, sstatus                     # read current sstatus into GPR",
+                    f"LI(x{reg2}, {~(3 << 32) & 0xFFFFFFFFFFFFFFFF})  # mask to clear UXL bits [33:32]",
+                    f"and x{check_reg}, x{check_reg}, x{reg2}         # clear UXL bits [33:32]",
+                    f"LI(x{reg2}, {value << 32})                        # UXL={value} shifted into position [33:32]",
+                    f"or x{check_reg}, x{check_reg}, x{reg2}          # OR in desired UXL value",
+                    test_data.add_testcase(f"uxl_attempt_{value}", coverpoint, covergroup),
+                    gen_csr_write_sigupd(check_reg, "sstatus", test_data),
+                ]
+            )
+
+        lines.extend(
+            [
+                "",
+                f"csrw sstatus, x{save_reg}        # restore sstatus after Ss1p13 UXL tests",
+                "#endif // UDB_MXLEN_64",
+                "#endif // S1P13P0_OR_LATER_SUPPORTED",
+            ]
+        )
 
     test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
     return lines
@@ -396,8 +394,8 @@ def make_s(test_data: TestData) -> list[TestChunk]:
     tc = test_data.begin_test_chunk()
 
     tc.code.extend(_generate_srets_tests(test_data))
-    tc.code.extend(_generate_scause_tests(test_data))
-    tc.code.extend(_generate_sstatus_sd_tests(test_data))
+    tc.code.extend(scause_write_tests(test_data))
+    tc.code.extend(sstatus_sd_tests(test_data))
     tc.code.extend(
         priv_inst_trap_tests(
             test_data,

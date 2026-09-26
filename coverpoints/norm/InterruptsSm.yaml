@@ -172,7 +172,7 @@ normative_rule_definitions:
   # MEIP is read-only in mip, and is set and cleared by a platform-specific
   # interrupt controller.
   - name: mip_meip_rdonly
-    coverpoint: ["Sm_cg/cp_mcsr_access/mip", "InterruptsSm_cg/cp_trigger"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mip", "InterruptsSm_cg/cp_trigger"]
 
   # Bits csr:mip[mtip] and csr:mie[mtie] are the interrupt-pending and interrupt-enable
   # bits for machine timer interrupts.
@@ -182,7 +182,7 @@ normative_rule_definitions:
   # MTIP is read-only in the mip register, and is cleared by writing to the
   # memory-mapped machine-mode timer compare register.
   - name: mip_mtip_rdonly
-    coverpoint: ["Sm_cg/cp_mcsr_access/mip", "InterruptsSm_cg/cp_trigger"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mip", "InterruptsSm_cg/cp_trigger"]
 
   # Bits csr:mip[msip] and csr:mie[msie] are the interrupt-pending and interrupt-enable
   # bits for machine-level software interrupts.
@@ -192,7 +192,7 @@ normative_rule_definitions:
   # MSIP is read-only in mip, and is written by accesses to memory-mapped control
   # registers, which are used to provide machine-level interprocessor interrupts.
   - name: mip_msip_rdonly
-    coverpoint: ["Sm_cg/cp_mcsr_access/mip", "InterruptsSm_cg/cp_trigger"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mip", "InterruptsSm_cg/cp_trigger"]
 
   # A hart's memory-mapped csr:msip[] register is a 32-bit read/write register
   - name: msip_sz_acc

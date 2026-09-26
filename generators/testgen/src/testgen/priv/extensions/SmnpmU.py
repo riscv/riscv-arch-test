@@ -12,9 +12,7 @@ from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
     PMM_CONFIGS,
     alloc_pm_regs_paired,
-    data_pm_lo_page,
-    enable_envcfg_cbo_sse,
-    enable_fp_vector_state,
+    data_page,
     free_pm_regs,
     jalr_pad_asm,
     pass_a_all_instructions,
@@ -41,11 +39,9 @@ def make_smnpmu(test_data: TestData) -> list[TestChunk]:
     tc = test_data.begin_test_chunk()
     lines = [
         ".pushsection .data",
-        *data_pm_lo_page(),
+        *data_page("pm_lo_page"),
         ".popsection",
         *jalr_pad_asm(regs),
-        *enable_envcfg_cbo_sse(regs, csr="menvcfg", tsbi=True),
-        *enable_fp_vector_state(regs, tsbi=True),
     ]
 
     for pmm, pmlen, label in PMM_CONFIGS:

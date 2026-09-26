@@ -16,11 +16,8 @@ from testgen.priv.extensions.ZpmCommon import (
     PMM_CONFIGS,
     _pte_chain_asm,
     alloc_pm_regs_paired,
-    data_pm_hi_page,
-    data_pm_lo_page,
+    data_page,
     data_slvl_tables,
-    enable_envcfg_cbo_sse,
-    enable_fp_vector_state,
     free_pm_regs,
     jalr_pad_asm,
     pass_a_all_instructions,
@@ -54,15 +51,13 @@ def make_smnpms(test_data: TestData) -> list[TestChunk]:
         tc = test_data.begin_test_chunk(split_name=mode)
         guard, is_bare = MODE_GUARDS[mode], mode == "bare"
         lines = [] if not guard else [f"#ifdef {guard}"]
-        lines.extend([".pushsection .data", *data_pm_lo_page()])
+        lines.extend([".pushsection .data", *data_page("pm_lo_page")])
         if not is_bare:
-            lines.extend([*data_pm_hi_page(), *data_slvl_tables(mode)])
+            lines.extend([*data_page("pm_hi_page"), *data_slvl_tables(mode)])
         lines.extend(
             [
                 ".popsection",
                 *jalr_pad_asm(regs),
-                *enable_envcfg_cbo_sse(regs, "menvcfg", tsbi=True),
-                *enable_fp_vector_state(regs, status_csr="sstatus"),
             ]
         )
         if not is_bare:

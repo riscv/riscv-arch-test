@@ -14,7 +14,6 @@ from testgen.priv.extensions.ZpmCommon import (
     _mprv_img_tables,
     alloc_pm_regs_paired,
     build_data_only_u_map_asm,
-    enable_fp_vector_state,
     free_pm_regs,
     jalr_pad_asm,
     mprv_data_section,
@@ -58,7 +57,6 @@ def make_smmpm(test_data: TestData) -> list[TestChunk]:
         ),
         "",
         *jalr_pad_asm(regs),
-        *enable_fp_vector_state(regs),
     ]
     for pmm, pmlen, label in PMM_CONFIGS:
         prefix = f"{label}_mmode"

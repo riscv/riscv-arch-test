@@ -18,11 +18,9 @@ from testgen.priv.extensions.ZpmCommon import (
     _pte_chain_asm,
     alloc_pm_regs_paired,
     build_finegrained_text_map_asm,
-    data_pm_hi_page,
-    data_pm_lo_page,
+    csr_op,
+    data_page,
     data_slvl_tables,
-    enable_cascaded_envcfg_cbo_sse,
-    enable_fp_vector_state,
     free_pm_regs,
     jalr_pad_asm,
     pass_a_all_instructions,
@@ -65,11 +63,11 @@ def make_ssnpm(test_data: TestData) -> list[TestChunk]:
         tc = test_data.begin_test_chunk(split_name=mode)
         guard, is_bare = MODE_GUARDS[mode], mode == "bare"
         lines = [] if not guard else [f"#ifdef {guard}"]
-        lines.extend([".pushsection .data", *data_pm_lo_page()])
+        lines.extend([".pushsection .data", *data_page("pm_lo_page")])
         if not is_bare:
             lines.extend(
                 [
-                    *data_pm_hi_page(),
+                    *data_page("pm_hi_page"),
                     *data_slvl_tables(mode),
                     *data_slvl_tables(mode, label_prefix="pm_img_slvl"),
                 ]
@@ -80,8 +78,8 @@ def make_ssnpm(test_data: TestData) -> list[TestChunk]:
                 ".p2align 12",
                 "pm_utext_begin:",
                 *jalr_pad_asm(regs),
-                *enable_cascaded_envcfg_cbo_sse(regs),
-                *enable_fp_vector_state(regs, extra_bits="SSTATUS_SUM", status_csr="sstatus"),
+                "# sstatus.SUM = 1: S-mode setup code touches the U-accessible data pages",
+                *csr_op("csrs", "sstatus", "SSTATUS_SUM", regs.tmp),
             ]
         )
         if not is_bare:

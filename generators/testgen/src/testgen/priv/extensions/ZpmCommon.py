@@ -44,10 +44,10 @@ SENTINEL = 0x1BAD_0BAD_1BAD_0BAD
 CP_MASKING = "cp_pmlen_masking"
 
 READS = ["lb", "lbu", "lh", "lhu", "lw", "lwu", "ld"]
-WRITES = [("sb", "lbu"), ("sh", "lhu"), ("sw", "lw"), ("sd", "ld")]
+WRITES = [("sb", "lbu"), ("sh", "lhu"), ("sw", "lwu"), ("sd", "ld")]
 AMO_OPS = ["swap", "add", "xor", "and", "or", "min", "max", "minu", "maxu"]
-RV64A_AMOS = [(f"amo{op}.{w}", "lw" if w == "w" else "ld") for op in AMO_OPS for w in ("w", "d")]
-ZABHA_AMOS = [(f"amo{op}.{w}", "lbu" if w == "b" else "lhu") for op in AMO_OPS for w in ("b", "h")]
+RV64A_AMOS = [(f"amo{op}.{size}", readback) for op in AMO_OPS for size, readback in (("w", "lw"), ("d", "ld"))]
+ZABHA_AMOS = [(f"amo{op}.{size}", readback) for op in AMO_OPS for size, readback in (("b", "lbu"), ("h", "lhu"))]
 ZACAS_AMOS = ["amocas.w", "amocas.d", "amocas.q"]
 FP_READS = [
     ("flw", "F_SUPPORTED", "fmv.w.x"),
@@ -235,27 +235,6 @@ def satp_clear(regs: Regs, tsbi: bool = False) -> list[str]:
     return [f"li x{regs.tmp}, 0", tsbi_call(f"csrw satp, x{regs.tmp}"), tsbi_call("sfence.vma")]
 
 
-def enable_fp_vector_state(
-    regs: Regs,
-    extra_bits: str | None = None,
-    extra_comment: str | None = None,
-    status_csr: str = "mstatus",
-    tsbi: bool = False,
-) -> list[str]:
-    """Enable FS/VS dirty so FP and vector probes are legal.
-
-    *extra_bits* is ORed into the same status write (e.g. SUM for Ssnpm).
-    *extra_comment* replaces the default one-line comment when supplied.
-    """
-    prefix = status_csr.upper()
-    bits = f"{prefix}_FS | {prefix}_VS" + (f" | {extra_bits}" if extra_bits else "")
-    if extra_comment is not None:
-        comment = extra_comment
-    else:
-        comment = "# FP and vector state must be enabled for the FP/vector probes to be legal."
-    return ["", comment, *csr_op("csrs", status_csr, bits, regs.tmp, tsbi)]
-
-
 def jalr_pad_asm(regs: Regs) -> list[str]:
     return [
         "j pm_jalr_pad_end",
@@ -274,14 +253,6 @@ def data_page(label: str, value: int = VALUE_OLD) -> list[str]:
         f"{label}: .dword {hex(value)}",
         ".zero 4088",
     ]
-
-
-def data_pm_lo_page() -> list[str]:
-    return data_page("pm_lo_page")
-
-
-def data_pm_hi_page() -> list[str]:
-    return data_page("pm_hi_page")
 
 
 def data_slvl_tables(mode: str, label_prefix: str = "rvtest_slvl") -> list[str]:
@@ -356,7 +327,7 @@ def set_sum(enable: bool, tmp: int) -> list[str]:
 def mprv_data_section() -> list[str]:
     lines = [
         ".pushsection .data",
-        *data_pm_lo_page(),
+        *data_page("pm_lo_page"),
         *data_page("mprv_page"),
     ]
     for mode, guard in [
@@ -445,45 +416,6 @@ def build_data_only_u_map_asm(mode: str, img_tables: list[str], test_data: TestD
     )
     test_data.int_regs.return_registers([r0, r1, r6, s0, s1, s2])
     return lines
-
-
-# ── envcfg (menvcfg/senvcfg) setup helper ──────────────────────────────────
-
-
-def enable_envcfg_cbo_sse(regs: Regs, csr: str = "menvcfg", tsbi: bool = False) -> list[str]:
-    """Grant the next-lower privilege level permission to run cbo.*/
-    prefetch.* and the Zicfiss shadow-stack atomics.
-
-    Pass the *envcfg CSR that actually gates the mode the probes run in:
-    - "menvcfg" when the probes run in S-mode with no lower level to cascade
-      through (SmnpmS, and M-mode-only Smmpm doesn't need this at all).
-    - "senvcfg" when the probes run in U-mode; the caller is responsible for
-      first cascading the same fields through menvcfg down to senvcfg
-      (Ssnpm).
-    """
-    p = csr.upper()
-    cbo_fields = f"{p}_CBIE | {p}_CBCFE | {p}_CBZE | {p}_SSE"
-    return [
-        f"# {csr}: let the probes run cbo.*/prefetch.* (CBIE=11, CBCFE=1, CBZE=1)",
-        "# and the Zicfiss shadow-stack atomics (SSE=1)",
-        *csr_op("csrs", csr, cbo_fields, regs.tmp, tsbi),
-    ]
-
-
-def enable_cascaded_envcfg_cbo_sse(regs: Regs) -> list[str]:
-    """Grant U-mode permission to run cbo.*/prefetch.* and the Zicfiss
-    shadow-stack atomics, cascading the grant through menvcfg (via T-SBI)
-    down to senvcfg (directly). Used by Ssnpm, which configures from S-mode.
-    """
-    return [
-        "# Let U-mode run cbo.*/prefetch.* (CBIE=11, CBCFE=1, CBZE=1) and the Zicfiss",
-        "# shadow-stack atomics (SSE=1). menvcfg gates senvcfg, so both are written.",
-        *csr_op("csrs", "menvcfg", "MENVCFG_SSE", regs.tmp, tsbi=True),
-        *csr_op("csrs", "senvcfg", "SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE | SENVCFG_SSE", regs.tmp),
-    ]
-
-
-# ── Page-table helpers (ported verbatim, previously missing from ZpmCommon) ─
 
 
 def _pte_chain_asm(mode: str, va: int, leaf_label: str, leaf_perms: str = _LEAF_PERMS_U) -> list[str]:

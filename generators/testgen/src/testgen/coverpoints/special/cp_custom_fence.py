@@ -27,8 +27,6 @@ HINT_FENCES = [
     ("fence_hint0b", ".word 0x0301000f    # fence with rd = x0, rs1 != x0, fm = 0, succ = 0 is a hint", False),
     ("fence_hint1a", ".word 0x0030008f    # fence with rd != x0, rs1 = x0, fm = 0, pred = 0 is a hint", True),
     ("fence_hint1b", ".word 0x0300008f    # fence with rd != x0, rs1 = x0, fm = 0, succ = 0 is a hint", True),
-    ("fence_hint2", ".word 0x0020000f    # fence with rd = x0, rs1 = x0, fm = 0, pred = 0, succ != 0 is a hint", False),
-    ("fence_hint3", ".word 0x0200000f    # fence with rd = x0, rs1 = x0, fm = 0, pred != W, succ = 0 is a hint", False),
 ]
 
 
@@ -38,10 +36,33 @@ def add_fence_tests(cases: list[tuple[str, str, bool]], test_data: TestData) -> 
     for bin_name, instruction, checks_rd in cases:
         if checks_rd:
             lines.append(f"LI(x1, {SENTINEL})")
-        lines.extend([test_data.add_testcase(bin_name, "cp_custom_fence"), instruction])
+        lines.extend([test_data.add_testcase(bin_name, "cp_custom_fence_reserved"), instruction])
         if checks_rd:
             lines.append(write_sigupd(1, test_data))
         lines.append("")
+    return lines
+
+
+def fence_set(bits: int) -> str:
+    """Return the IORW mnemonic for a 4-bit FENCE predecessor or successor set."""
+    return "".join(c for c, b in zip("iorw", (8, 4, 2, 1)) if bits & b) or "0"
+
+
+def add_pred_succ_tests(test_data: TestData) -> list[str]:
+    """Add one FENCE with fm = 0 and rd = rs1 = x0 for every pred x succ combination.
+
+    Reserved settings execute as a FENCE, and pred = 0 or succ = 0 are HINTs, so none may trap.
+    Encoded as .word because the assembler rejects empty sets.
+    """
+    lines = ["# Testcase cp_custom_fence_pred_succ (all pred x succ with fm = 0, rd = rs1 = x0)"]
+    for pred_succ in range(256):
+        pred, succ = pred_succ >> 4, pred_succ & 0xF
+        lines.extend(
+            [
+                test_data.add_testcase(f"{fence_set(pred)}_{fence_set(succ)}", "cp_custom_fence_pred_succ"),
+                f".word {(pred_succ << 20) | 0x0F:#010x}    # fence {fence_set(pred)}, {fence_set(succ)}",
+            ]
+        )
     return lines
 
 
@@ -52,23 +73,10 @@ def make_custom_fence(instr_name: str, instr_type: str, coverpoint: str, test_da
         raise ValueError(f"cp_custom_fence generator only supports fence instruction, got {instr_name}")
 
     tc = test_data.begin_test_chunk()
-    # Regular fences
     tc.code.extend(
         [
-            "# Testcase cp_custom_fence (regular fences)",
-            test_data.add_testcase("fence", "cp_custom_fence"),
-            "fence",
-            test_data.add_testcase("fence_rw_rw", "cp_custom_fence"),
-            "fence rw, rw",
-            "",
-        ]
-    )
-
-    # fence.tso
-    tc.code.extend(
-        [
-            "# Testcase cp_custom_fence (fence.tso)",
-            test_data.add_testcase("fence_tso_rw_rw", "cp_custom_fence"),
+            "# Testcase cp_custom_fence_reserved (fence.tso)",
+            test_data.add_testcase("fence_tso_rw_rw", "cp_custom_fence_reserved"),
             "fence.tso",
             "",
         ]
@@ -79,12 +87,16 @@ def make_custom_fence(instr_name: str, instr_type: str, coverpoint: str, test_da
     if asm:
         tc.code.append(asm)
 
-    tc.code.append("# Testcase cp_custom_fence (reserved fence encodings)")
+    tc.code.append("# Testcase cp_custom_fence_reserved (reserved fm and nonzero rd or rs1)")
     tc.code.extend(add_fence_tests(RESERVED_FENCES, test_data))
 
-    tc.code.append("# Testcase cp_custom_fence (hint fence encodings)")
+    tc.code.append("# Testcase cp_custom_fence_reserved (hints with nonzero rd or rs1)")
     tc.code.extend(add_fence_tests(HINT_FENCES, test_data))
 
     test_data.int_regs.return_registers([1, 2])
+    fixed_chunk = test_data.end_test_chunk()
 
-    return [test_data.end_test_chunk()]
+    tc = test_data.begin_test_chunk()
+    tc.code.extend(add_pred_succ_tests(test_data))
+
+    return [fixed_chunk, test_data.end_test_chunk()]

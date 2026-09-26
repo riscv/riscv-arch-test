@@ -17,7 +17,8 @@ include::{testplansdir}/I.adoc[]
 |cp_imm_edges_20bit|27|20-bit variant of <<t-immediate-edge-definitions>> for `lui` and `auipc`.
 |cp_imm_edges_jal|23|20-bit positive and negative jump offsets for `jal`.  Note that testing the full 20-bit range takes a large amount of program memory, so tests may cover a subset of this range.
 |cp_align_{byte/hword/word}|8/4/2|Alignment of naturally-aligned load/store operand within doubleword in memory
-|cp_custom_fence|3|Test that fence, fence rw,rw, and fence.tso all execute without trapping.
+|cp_custom_fence_pred_succ|256|Every fence pred and succ set with fm = 0 and rd = rs1 = x0 executes without trapping, including the HINT encodings with pred = 0 or succ = 0.
+|cp_custom_fence_reserved|9|`fence.tso`, reserved fm values, and fences and HINTs with nonzero rd or rs1 execute without trapping.
 |===
 
 <<t-I-normative-rules>> summarizes the normative rules in the RV{32/64}I specification and the unprivileged coverpoints that check they have been exercised.  Privileged coverpoints related to integer instructions are described in the relevant parts of Privileged Test Plan such as <<Sm Machine-Mode CSRs and Instructions, Sm>> and <<ExceptionsSm Machine-Mode Exceptions, ExceptionsSm>>. In particular, `ebreak` and `ecall` are only tested in the Privileged test plan because their behavior is UNSPECIFIED without an `mtvec` trap vector CSR. Reserved behaviors are checked in <<Ssstrict>>. Note that the testplans always test the following fundamental capabilities, even if no normative rule is cited:
@@ -29,6 +30,6 @@ include::{testplansdir}/I.adoc[]
 
 include::norm/I_norm_rules.adoc[]
 
-Standard hints are mostly covered by testing integer instructions with rd = `x0`.  `fence` hints are covered by the `cp_custom_fence` coverpoint. Ratified hints such as Zihintpause and Zihintntl are covered in <<Zi*  Additional Unpriv Extensions>>. Semihosting hints are not standardized or tested. Custom hints are not explicitly tested but the corresponding instructions are executed with rd = `x0`.
+Standard hints are mostly covered by testing integer instructions with rd = `x0`.  `fence` hints are covered by the `cp_custom_fence_pred_succ` and `cp_custom_fence_reserved` coverpoints. Ratified hints such as Zihintpause and Zihintntl are covered in <<Zi*  Additional Unpriv Extensions>>. Semihosting hints are not standardized or tested. Custom hints are not explicitly tested but the corresponding instructions are executed with rd = `x0`.
 
 include::norm/rv64_norm_rules.adoc[]

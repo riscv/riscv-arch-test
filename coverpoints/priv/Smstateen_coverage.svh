@@ -247,15 +247,18 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 `endif
 
     // ── Sm1p13 + Hypervisor dependent coverpoints (cp_p1p13) ─────────────
+// hedelegh exists only on RV32, where P1P13 is bit 24 of mstateen0h
 `ifdef SM1P13P0_OR_LATER_SUPPORTED
-    p1p13_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "p1p13") {
-        bins p1p13_disabled = {1'b0};
-        bins p1p13_enabled  = {1'b1};
-    }
     `ifdef H_SUPPORTED
-        hedelegh_csr: coverpoint ins.current.insn[31:20] {
-            wildcard bins hedelegh = {CSR_HEDELEGH};
-        }
+        `ifdef UDB_MXLEN_32
+            p1p13_state: coverpoint ins.current.csr[CSR_MSTATEEN0H][24] {
+                bins p1p13_disabled = {1'b0};
+                bins p1p13_enabled  = {1'b1};
+            }
+            hedelegh_csr: coverpoint ins.current.insn[31:20] {
+                wildcard bins hedelegh = {CSR_HEDELEGH};
+            }
+        `endif
     `endif
 `endif
 
@@ -355,7 +358,9 @@ covergroup Smstateen_cg with function sample(ins_t ins);
     // Row 13: Sm1p13 + Hypervisor only
 `ifdef SM1P13P0_OR_LATER_SUPPORTED
     `ifdef H_SUPPORTED
-        cp_p1p13: cross csrops, p1p13_state, hedelegh_csr, priv_mode_m_maybes_u;
+        `ifdef UDB_MXLEN_32
+            cp_p1p13: cross csrops, p1p13_state, hedelegh_csr, priv_mode_m_maybes_u;
+        `endif
     `endif
 `endif
 

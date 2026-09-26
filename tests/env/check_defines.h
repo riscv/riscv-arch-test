@@ -27,7 +27,7 @@
   #define RVTEST_INVISIBLE_TRAP_HANDLER
 #endif
 
-#if defined(RVTEST_INVISIBLE_TRAP_HANDLER) && defined(H_SUPPORTED)
+#if defined(RVTEST_INVISIBLE_TRAP_HANDLER) && defined(RVTEST_HYPERVISOR)
   #error "Invisible trap emulation does not support traps from VS or VU mode yet."
 #endif
 

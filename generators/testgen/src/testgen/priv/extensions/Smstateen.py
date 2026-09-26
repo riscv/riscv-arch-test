@@ -698,7 +698,8 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
     tc.code.append("#endif  // SDTRIG_SUPPORTED")
 
     # cp_p1p13 — only when Sm1p13 + Hypervisor present
-    tc.code.append("#if defined(SM1P13P0_OR_LATER_SUPPORTED) && defined(H_SUPPORTED)")
+    # hedelegh exists only on RV32
+    tc.code.append("#if defined(SM1P13P0_OR_LATER_SUPPORTED) && defined(H_SUPPORTED) && __riscv_xlen == 32")
     tc.code.extend(
         _generate_bit_controlled(
             test_data,
@@ -709,7 +710,7 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
             csrs=["hedelegh"],
         )
     )
-    tc.code.append("#endif  // SM1P13P0_OR_LATER_SUPPORTED && H_SUPPORTED")
+    tc.code.append("#endif")
 
     # cp_srmcfg — only when Ssqosid is present
     tc.code.append("#ifdef SSQOSID_SUPPORTED")

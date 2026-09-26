@@ -2700,12 +2700,15 @@ adj_\__MODE__\()epc_rtn:
         csrr    T2, CSR_HSTATUS
         slli    T2, T2, UDB_MXLEN-MPV_LSB-1          // hstatus.SPV into the sign bit
         bgez    T2, 2f                               // SPV=0 -> ordinary S/HS trap -> plain lhu
+        .option push
+        .option arch, +h                             // tests without h in their march still assemble hlvx
         hlvx.hu T6, (T3)                             // fetch through the guest's translation
         andi    T2, T6, 3
         addi    T2, T2, -3
         bnez    T2, 5f                               // compressed: one halfword
         addi    T2, T3, 2
         hlvx.hu T2, (T2)
+        .option pop
         j       4f
 2:
   .endif

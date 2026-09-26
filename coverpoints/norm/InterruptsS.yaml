@@ -213,7 +213,8 @@ normative_rule_definitions:
   - name: mip_ssip_intr_ctrl
     coverpoint:
       [
-        "InterruptsS_cg/cp_trigger_reg, Platform specific interrupt controller not tested",
+        "InterruptsS_cg/cp_trigger_reg",
+        "Untestable: platform-specific interrupt controller",
       ]
 
   # The SPP bit indicates the privilege level at which a hart was executing before

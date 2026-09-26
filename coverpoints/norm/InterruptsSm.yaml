@@ -200,7 +200,11 @@ normative_rule_definitions:
 
   # bits 31--1 read as zero and bit 0 contains the MSIP bit.
   - name: msip_enc
-    coverpoint: ["InterruptsSm_cg/cp_trigger, TODO read and record MSIP reg"]
+    coverpoint:
+      [
+        "InterruptsSm_cg/cp_trigger",
+        "TODO: read back the msip register and check that bits 31:1 are zero",
+      ]
 
   # When the memory-mapped msip register changes, it is guaranteed to be reflected
   # in mip.MSIP eventually, but not necessarily immediately.
@@ -289,7 +293,8 @@ normative_rule_definitions:
   - name: mip_ssip_intr_ctrl
     coverpoint:
       [
-        "InterruptsSm_cg/cp_trigger_reg, Platform specific interrupt controller not tested",
+        "InterruptsSm_cg/cp_trigger_reg",
+        "Untestable: platform-specific interrupt controller",
       ]
 
   # An interrupt i will trap to M-mode (causing the privilege mode to change to

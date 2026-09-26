@@ -10,7 +10,11 @@ normative_rule_definitions:
   - name: Ssqosid_srmcfg_introduced
     coverpoint: [""]
 
-  - name: Ssqosid_metadata_used_by_controllers
+  # The RCID and MCID accompany each request made by the hart to shared resource
+  # controllers. The RCID is used to determine the resource allocations (e.g., cache
+  # occupancy limits, memory bandwidth limits, etc.) to enforce. The MCID is used to
+  # identify a counter to monitor resource usage.
+  - name: Ssqosid_rcid_mcid_accompany_requests
     coverpoint: [""]
 
   - name: Ssqosid_cbqri_spec
@@ -19,13 +23,10 @@ normative_rule_definitions:
   - name: Ssqosid_srmcfg_register_size
     coverpoint: [""]
 
-  - name: Ssqosid_rcid_mcid_accompany_requests
-    coverpoint: [""]
-
   - name: Ssqosid_srmcfg_csr_applies_to_all_modes
     coverpoint: [""]
 
-  - name: Ssqosid_smstateen_srmcfg_requires_mstateen0
+  - name: Ssqosid_Smstateen_srmcfg_requires_mstateen0
     coverpoint: [""]
 
   - name: Ssqosid_srmcfg_access_illegal_instruction

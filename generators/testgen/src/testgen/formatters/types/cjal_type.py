@@ -9,7 +9,11 @@ from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
 
-cjal_config = InstructionTypeConfig(required_params={"temp_reg", "temp_val", "immval"}, imm_bits=11)
+cjal_config = InstructionTypeConfig(
+    required_params={"temp_reg", "temp_val", "immval"},
+    optional_params={"rd"},  # the link register is fixed by the encoding, not drawn
+    imm_bits=11,
+)
 
 
 @add_instruction_formatter("CJAL", cjal_config)

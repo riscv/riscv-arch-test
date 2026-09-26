@@ -7,7 +7,6 @@
 
 """Compare register values coverpoint generators (cmp_rd_rs1_val_eq, cmp_rd_rs1_val_lsb, cmp_rd_rs1_val_hw, cmp_rd_rs1_val_w, cmp_rd_rs1_pair_partial_val, cmp_rd_sign_ext)."""
 
-from testgen.asm.helpers import load_int_reg
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.random import random_range
 from testgen.data.state import TestData, return_testcase_registers
@@ -54,18 +53,13 @@ def generate_cmp_testcase(
     if params.rd is None or params.rs1 is None or params.rs2 is None:
         raise ValueError("Could not allocate registers for CAS instruction")
 
-    rd = params.rd
-
-    params.rdval = rd_val
+    params.rdval = rd_val if load_rd else None
     params.rs1val = rs1_val
 
     # Begin testcase
     tc = test_data.begin_test_chunk()
     tc.code.append(f"# Testcase {desc}")
     label_line = test_data.add_testcase(bin_name, coverpoint)
-
-    if load_rd and not is_pair:
-        tc.code.append(load_int_reg("rd compare value", rd, rd_val, test_data))
 
     # Generate instruction, setup, test, and check tc.code
     setup, test, check = format_instruction(instr_name, instr_type, test_data, params)

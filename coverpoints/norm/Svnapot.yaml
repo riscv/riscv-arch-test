@@ -36,8 +36,4 @@ normative_rule_definitions:
   # If the hypervisor extension is also implemented, Svnapot is also supported in G-stage translation.
   - name: Svnapot_hyp_gstage
     coverpoint:
-      [
-        "SvH_vsstage_cg/cp_vsatp_napot",
-        "SvH_gstage_cg/cp_hgatp_napot",
-        "SvH_twostage_cg/cp_twostage_napot",
-      ]
+      ["SvH_gstage_cg/cp_hgatp_napot", "SvH_twostage_cg/cp_twostage_napot"]

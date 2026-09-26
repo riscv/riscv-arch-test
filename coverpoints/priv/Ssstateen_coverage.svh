@@ -51,7 +51,6 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
       }
     `endif
 
-    // SE0 is bit 63 of mstateen0 on RV64, bit 31 of mstateen0h on RV32
     `ifdef UDB_MXLEN_64
         se0_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstateen0", "se0")[0] {
                 bins se0_enabled  = {1'b1};

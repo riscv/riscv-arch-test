@@ -55,24 +55,24 @@ covergroup EndianS_cg with function sample(ins_t ins);
         // all word offsets
     }
     `ifdef UDB_MXLEN_64
-        mstatus_mbe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mbe")[0] { // mbe is mstatus[37] in RV64
+        mstatus_mbe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mbe")[0] {
         }
     `else
-        mstatus_mbe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatush", "mbe")[0] { // mbe is mstatush[5] in RV32
+        mstatus_mbe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatush", "mbe")[0] {
         }
     `endif
     `ifdef UDB_MXLEN_64
-        mstatus_sbe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "sbe")[0] { // sbe is mstatus[36] in RV64
+        mstatus_sbe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "sbe")[0] {
         }
     `else
-        mstatus_sbe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatush", "sbe")[0] { // sbe is mstatush[4] in RV32
+        mstatus_sbe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatush", "sbe")[0] {
         }
     `endif
-    sstatus_ube: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sstatus", "ube")[0] { // ube is mstatus[6]
+    sstatus_ube: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sstatus", "ube")[0] {
     }
-    mstatus_mprv: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mprv")[0] { // mprv is mstatus[17]
+    mstatus_mprv: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mprv")[0] {
     }
-    mstatus_mpp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mpp")[1:0] { // mpp is mstatus[12:11]
+    mstatus_mpp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mpp")[1:0] {
         bins S_Mode = {2'b01};
         bins M_Mode = {2'b11};
     }

@@ -414,11 +414,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "adue" : val = (val >> 29) & 32'h1;
       "cde" : val = (val >> 28) & 32'h1;
       "dte" : val = (val >> 27) & 32'h1;
-      "pbmte" : val = (val >> 30) & 32'h1;
-      "pmm" : val = val & 32'h3;
-`ifdef UDB_MXLEN_32
       "stce" : val = (val >> 31) & 32'h1;
-`endif
       default: val = 0; // Todo: error
     endcase
   end
@@ -762,10 +758,22 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   if (name == "satp") begin
     case(field)
 `ifdef UDB_MXLEN_32
+      "asid" : val = (val >> 22) & 32'h1ff;
+`endif
+`ifdef UDB_MXLEN_64
+      "asid" : val = (val >> 44) & 64'hffff;
+`endif
+`ifdef UDB_MXLEN_32
       "mode" : val = (val >> 31) & 32'h1;
 `endif
 `ifdef UDB_MXLEN_64
       "mode" : val = (val >> 60) & 64'hf;
+`endif
+`ifdef UDB_MXLEN_32
+      "ppn" : val = val & 32'h3fffff;
+`endif
+`ifdef UDB_MXLEN_64
+      "ppn" : val = val & 64'hfffffffffff;
 `endif
       default: val = 0; // Todo: error
     endcase

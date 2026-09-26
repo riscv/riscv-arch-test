@@ -41,7 +41,7 @@ covergroup Sv_satp_cg with function sample(ins_t ins);
     }
 
     Scause: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
-        bins illegal_ins  = {2};
+        bins illegal_ins  = {ILLEGAL_INSTRUCTION};
         bins no_exception = {0};
     }
 
@@ -320,13 +320,13 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
         bins set = {1};
     }
     load_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
-        bins load_page_fault = {13};
+        bins load_page_fault = {LOAD_PAGE_FAULT};
     }
     ins_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
-        bins ins_page_fault = {12};
+        bins ins_page_fault = {INSTRUCTION_PAGE_FAULT};
     }
     store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
-        bins store_amo_page_fault = {15};
+        bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT};
     }
     Nopagefault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval"){
         bins no_fault  = {64'd0};
@@ -801,13 +801,13 @@ covergroup Sv_add_feature_cg with function sample(ins_t ins);
             bins set = {1};
         }
         load_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
-            bins load_page_fault = {13};
+            bins load_page_fault = {LOAD_PAGE_FAULT};
         }
         ins_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
-            bins ins_page_fault = {12};
+            bins ins_page_fault = {INSTRUCTION_PAGE_FAULT};
         }
         store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
-            bins store_amo_page_fault = {15};
+            bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT};
         }
 
         //pte.17

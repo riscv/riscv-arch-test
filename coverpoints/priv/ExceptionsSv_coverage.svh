@@ -17,13 +17,13 @@ covergroup ExceptionsSv_cg with function sample(ins_t ins);
 
     // building blocks for the main coverpoints
 
-    instr_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") == 12) {
+    instr_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") == INSTRUCTION_PAGE_FAULT) {
         // auto fill 0/1
     }
-    load_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") == 13) {
+    load_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") == LOAD_PAGE_FAULT) {
         // auto fill 0/1
     }
-    store_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") == 15) {
+    store_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") == STORE_AMO_PAGE_FAULT) {
         // auto fill 0/1
     }
     i_virt_adr_misaligned: coverpoint ins.current.virt_adr_i[1:0] {

@@ -85,7 +85,7 @@
         wildcard bins sc4_lpl_zero_no_match_required = {3'b1_0_1};
     }
     sw_check_exc: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause") {
-        bins cause_18 = {18};
+        bins software_check = {SOFTWARE_CHECK};
     }
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         pc_fault_addr: coverpoint ins.current.pc_rdata {

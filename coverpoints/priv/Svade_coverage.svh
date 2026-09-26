@@ -80,13 +80,13 @@ covergroup Svade_cg with function sample(ins_t ins);
         bins set = {1};
     }
     ins_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
-        bins ins_page_fault = {12} iff (ins.current.trap);
+        bins ins_page_fault = {INSTRUCTION_PAGE_FAULT} iff (ins.current.trap);
     }
     load_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
-        bins load_page_fault = {13} iff (ins.current.trap);
+        bins load_page_fault = {LOAD_PAGE_FAULT} iff (ins.current.trap);
     }
     store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
-        bins store_amo_page_fault = {15} iff (ins.current.trap);
+        bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT} iff (ins.current.trap);
     }
 
     `ifdef UDB_MXLEN_64

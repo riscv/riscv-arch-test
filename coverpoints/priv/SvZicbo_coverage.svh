@@ -150,14 +150,14 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
     `endif
 
     store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause") iff (ins.trap == 1) {
-        bins store_amo_page_fault = {64'd15};
+        bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT};
     }
     // Only reachable when the DUT has an address that faults: its sole bin is the
     // store/AMO access fault cause, and its only consumers are the guarded
     // cp_*_to_nonexistent_pa_cbo_* crosses below.
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         store_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause") iff (ins.trap == 1) {
-            bins store_amo_access_fault = {64'd7};
+            bins store_amo_access_fault = {STORE_AMO_ACCESS_FAULT};
         }
     `endif
     sum_sstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sstatus", "sum")[0]{

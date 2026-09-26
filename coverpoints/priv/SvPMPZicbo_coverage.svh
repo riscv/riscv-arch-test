@@ -43,7 +43,7 @@ covergroup SvPMPZicbo_cg with function sample(ins_t ins);
     `endif
 
     store_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause") {
-        bins store_acc_fault = {64'd7};
+        bins store_acc_fault = {STORE_AMO_ACCESS_FAULT};
     }
 
     cbo_ins: coverpoint ins.current.insn {

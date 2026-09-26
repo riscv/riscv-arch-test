@@ -45,7 +45,7 @@ covergroup SvSm_mstatus_mprv_cg with function sample(ins_t ins);
         bins set = {1};
     }
     Mcause: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") {
-        bins illegal_ins = {2};
+        bins illegal_ins = {ILLEGAL_INSTRUCTION};
     }
     cp_ins: coverpoint ins.current.insn {
         wildcard bins csrrs  = {CSRRS} iff (ins.current.insn[31:20] == CSR_SATP);
@@ -141,10 +141,10 @@ covergroup SvSm_mstatus_mprv_cg with function sample(ins_t ins);
     `endif
 
     load_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") {
-        bins load_page_fault = {13};
+        bins load_page_fault = {LOAD_PAGE_FAULT};
     }
     store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") {
-        bins store_amo_page_fault = {15};
+        bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT};
     }
     sum_sstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "sum")[0] {
         bins notset = {0};

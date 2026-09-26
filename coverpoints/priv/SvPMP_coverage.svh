@@ -95,13 +95,13 @@ covergroup SvPMP_cg with function sample(ins_t ins);
     }
 
     load_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause") {
-        bins load_acc_fault = {64'd5};
+        bins load_acc_fault = {LOAD_ACCESS_FAULT};
     }
     store_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause") {
-        bins store_acc_fault = {64'd7};
+        bins store_acc_fault = {STORE_AMO_ACCESS_FAULT};
     }
     ins_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause") {
-        bins ins_acc_fault  = {64'd1};
+        bins ins_acc_fault  = {INSTRUCTION_ACCESS_FAULT};
     }
 
     lw: coverpoint ins.current.insn {

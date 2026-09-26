@@ -1,0 +1,60 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# CI configuration for the CHIPS Alliance VeeR family: VeeR EH1
+
+ci_enabled: true
+
+# Exclusions are by test-suite directory, the only granularity EXCLUDE_EXTENSIONS supports.
+# Each entry records the specific measured reason, on Cores-VeeR-EH1 @ d04b1c7a.
+# Current state: 125 tests selected, 108 pass, 17 fail. Full analysis in the PR description.
+#
+#   Sm            13 of 27 fail, in three modes.
+#                 (a) Trap count mismatch (Sm_mcsr_walk-03..10): the reference model records a
+#                     trap signature of 0x3080 bytes where the core records none, i.e. the two
+#                     disagree about which CSR accesses trap. Needs per-test triage.
+#                 (b) mtval mismatch (Sm_inst-00): see ExceptionsSm below.
+#                 (c) Value mismatch (Sm_mcsr_access-00, Sm_mcsr_cntr-00, Sm_mcsr_walk-02/-11):
+#                     mip is pin-driven and read-only to software, so a written bit reads back 0
+#                     (expected 0x80, got 0x0), and a mcycle write does not stick (expected 0,
+#                     got 1).
+#
+#   ExceptionsSm  1 of 4 fail: mtval mismatch. The core writes a value into mtval where the
+#                 reference model expects 0 (expected 0x0, got 0x31a4). mtval population is
+#                 undocumented in the PRM, so the REPORT_VA_IN_MTVAL_ON_* parameters in the UDB
+#                 config are set from the RISC-V defaults and at least one of them is wrong for
+#                 this core.
+#
+#   ExceptionsZc  1 of 1 fails: same mtval mismatch as ExceptionsSm.
+#
+#   Zifencei      1 of 1 fails, and fence.i does NOT trap - it retires normally and the next fetch
+#                 simply returns the stale instruction. The VeeR testbench models instruction and
+#                 data memory as two independent arrays, both loaded from program.hex at time 0
+#                 (tb_top.sv:422), and stores reach only the data array, so self-modifying code can
+#                 never be fetched. Zifencei-fence.i-00 reads x24=0x4 where 0x8 is expected.
+#                 Proven not to be a stale I-cache: rebuilding with -set icache_enable=0 fails
+#                 identically, and the testbench's imem instance is tied off with .HWDATA(64'h0).
+#                 EH1 also documents a real fence.i I/D-ordering deviation
+#                 (docs/source/compliance-test-suite-failures.md, I-FENCE.I-01), so this cannot be
+#                 attributed to the core until the testbench mirrors stores into instruction memory.
+#
+#   I             1 of 39 fail: I-fence-00, because FENCE.TSO IS NOT IMPLEMENTED.
+#                 fence.tso (encoding 0x8330000f, i.e. FENCE with fm=1000, pred=RW, succ=RW)
+#                 raises an illegal instruction on VeeR EH1. Plain fence is fine: 0x0ff0000f
+#                 and 0x0330000f both execute and retire. The cause is the decode table, which
+#                 hardcodes the fm field to zero so fm=1000 matches no pattern:
+#                     fence =   [0000........00000000000000001111]
+#                     https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/design/dec/decode#L56
+#                 This is a conformance bug, not an optional feature. The unprivileged spec says:
+#                     "The fence.tso instruction was incorrectly described as optional in 2019.
+#                      However, fence.tso is encoded within the standard fence encoding such that
+#                      implementations must treat it as a simple global fence if they do not
+#                      support TSO optimizations."
+#                 with the companion note that "it is correct to ignore the fm field and implement
+#                 fence.tso as fence[RW,RW]". So the minimum conforming behaviour is to ignore fm.
+#                 Excluding the whole suite to silence one test also drops 38 passing tests, the cost
+#                 of having no per-test exclusion mechanism; a per-test skip would be preferable.
+exclude_extensions: "Sm,ExceptionsSm,ExceptionsZc,Zifencei,I"
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache"
+install_script: ".github/scripts/install-veer-eh1.sh"
+setup_script: ".github/scripts/setup-veer-eh1.sh"

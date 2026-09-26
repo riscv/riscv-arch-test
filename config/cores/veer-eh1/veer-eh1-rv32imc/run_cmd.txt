@@ -1,0 +1,1 @@
+run-veer-eh1.sh --stub 0x1000 --elf

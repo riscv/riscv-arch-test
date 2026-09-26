@@ -4,7 +4,7 @@ normative_rule_definitions:
   # However, unlike SFENCE.VMA, SINVAL.VMA instructions are only ordered with respect to
   # SFENCE.VMA, SFENCE.W.INVAL, and SFENCE.INVAL.IR instructions as defined below.
   - name: Svinval_sinval_vma_invalidates_same_as_sfence_vma
-    coverpoint: ["Svinval_cg/cr_svinival"]
+    coverpoint: ["Svinval_cg/cp_svinval"]
 
   # The SFENCE.INVAL.IR instruction guarantees that any previous SINVAL.VMA instructions
   # executed by the current hart are ordered before subsequent implicit references by
@@ -12,14 +12,14 @@ normative_rule_definitions:
   - name: Svinval_sfence_w_inval_orders_before_sinval_vma
     coverpoint:
       [
-        "Svinval_cg/cr_svinival",
+        "Svinval_cg/cp_svinval",
         "ordering is not observable in single-hart signature tests",
       ]
 
   # the values of rs1 and rs2 for the SFENCE.VMA are the same as those used in the
   # SINVAL.VMA,
   - name: Svinval_sequence_rs1_rs2
-    coverpoint: ["Svinval_cg/cr_svinival", "TODO: rs1/rs2 other than x0"]
+    coverpoint: ["Svinval_cg/cp_svinval", "TODO: rs1/rs2 other than x0"]
 
   # reads and writes prior to the SFENCE.W.INVAL are considered to be those prior to the
   # SFENCE.VMA,
@@ -34,19 +34,19 @@ normative_rule_definitions:
   # In particular, an attempt to execute any of these instructions in U-mode always
   # raises an illegal-instruction exception.
   - name: Svinval_illegal_instruction_u_mode
-    coverpoint: ["Svinval_cg/cr_svinival"]
+    coverpoint: ["Svinval_cg/cp_svinval"]
 
   # raises an illegal-instruction exception.
   - name: Svinval_sfence_w_inval_inval_u_mode
-    coverpoint: ["Svinval_cg/cr_svinival"]
+    coverpoint: ["Svinval_cg/cp_svinval"]
 
   # SFENCE.W.INVAL and SFENCE.INVAL.IR are unaffected by the mstatus.TVM and
   # hstatus.VTVM fields and hence are always permitted in S-mode and VS-mode.
   - name: Svinval_sfence_w_inval_inval_s_vs_mode
     coverpoint:
       [
-        "Svinval_cg/cr_svinival",
-        "SvinvalSm_cg/cr_svinival",
+        "Svinval_cg/cp_svinval",
+        "SvinvalSm_cg/cp_svinval",
         "TODO: test in hypervisor tests",
       ]
 

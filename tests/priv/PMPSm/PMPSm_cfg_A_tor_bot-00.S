@@ -31,7 +31,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_cfg_A_tor_bot
+// cp_cfg_A_tor_bot_L0_x, cp_cfg_A_tor_bot_L0_w, cp_cfg_A_tor_bot_L0_r, cp_cfg_A_tor_bot_L1_x, cp_cfg_A_tor_bot_L1_w and cp_cfg_A_tor_bot_L1_r
 //   {sw, lw, jalr} at pmpaddr0-4, pmpaddr0, pmpaddr1-4 and pmpaddr1 with entry 1 = L, TOR, XR and entry 0 = OFF, unlocked then locked.
 /////////////////////////////////
 
@@ -71,82 +71,82 @@ RVTEST_BEGIN
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
   addi a5, a5, -4
-PMPSm_cp_cfg_A_tor_bot_unlocked_1_sw_botm4:
+PMPSm_cg_cp_cfg_A_tor_bot_L0_w_unlocked_1_sw_botm4:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_unlocked_1_sw_botm4, PMPSm_cp_cfg_A_tor_bot_unlocked_1_sw_botm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L0_w_unlocked_1_sw_botm4, PMPSm_cg_cp_cfg_A_tor_bot_L0_w_unlocked_1_sw_botm4_str)
   addi a5, a5, 4
-PMPSm_cp_cfg_A_tor_bot_unlocked_2_sw_bot:
+PMPSm_cg_cp_cfg_A_tor_bot_L0_w_unlocked_2_sw_bot:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_unlocked_2_sw_bot, PMPSm_cp_cfg_A_tor_bot_unlocked_2_sw_bot_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L0_w_unlocked_2_sw_bot, PMPSm_cg_cp_cfg_A_tor_bot_L0_w_unlocked_2_sw_bot_str)
   add a5, a5, t0
   addi a5, a5, 4
-PMPSm_cp_cfg_A_tor_bot_unlocked_3_sw_topm4:
+PMPSm_cg_cp_cfg_A_tor_bot_L0_w_unlocked_3_sw_topm4:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_unlocked_3_sw_topm4, PMPSm_cp_cfg_A_tor_bot_unlocked_3_sw_topm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L0_w_unlocked_3_sw_topm4, PMPSm_cg_cp_cfg_A_tor_bot_L0_w_unlocked_3_sw_topm4_str)
   addi a5, a5, 4
-PMPSm_cp_cfg_A_tor_bot_unlocked_4_sw_top:
+PMPSm_cg_cp_cfg_A_tor_bot_L0_w_unlocked_4_sw_top:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_unlocked_4_sw_top, PMPSm_cp_cfg_A_tor_bot_unlocked_4_sw_top_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L0_w_unlocked_4_sw_top, PMPSm_cg_cp_cfg_A_tor_bot_L0_w_unlocked_4_sw_top_str)
 
 // Load probes
   LA(a5, TEST_FOR_EXECUTION)
   addi a5, a5, -4
-PMPSm_cp_cfg_A_tor_bot_unlocked_5_lw_botm4:
+PMPSm_cg_cp_cfg_A_tor_bot_L0_r_unlocked_5_lw_botm4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_unlocked_5_lw_botm4, PMPSm_cp_cfg_A_tor_bot_unlocked_5_lw_botm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L0_r_unlocked_5_lw_botm4, PMPSm_cg_cp_cfg_A_tor_bot_L0_r_unlocked_5_lw_botm4_str)
   addi a5, a5, 4
-PMPSm_cp_cfg_A_tor_bot_unlocked_6_lw_bot:
+PMPSm_cg_cp_cfg_A_tor_bot_L0_r_unlocked_6_lw_bot:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_unlocked_6_lw_bot, PMPSm_cp_cfg_A_tor_bot_unlocked_6_lw_bot_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L0_r_unlocked_6_lw_bot, PMPSm_cg_cp_cfg_A_tor_bot_L0_r_unlocked_6_lw_bot_str)
   add a5, a5, t0
   addi a5, a5, 4
-PMPSm_cp_cfg_A_tor_bot_unlocked_7_lw_topm4:
+PMPSm_cg_cp_cfg_A_tor_bot_L0_r_unlocked_7_lw_topm4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_unlocked_7_lw_topm4, PMPSm_cp_cfg_A_tor_bot_unlocked_7_lw_topm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L0_r_unlocked_7_lw_topm4, PMPSm_cg_cp_cfg_A_tor_bot_L0_r_unlocked_7_lw_topm4_str)
   addi a5, a5, 4
-PMPSm_cp_cfg_A_tor_bot_unlocked_8_lw_top:
+PMPSm_cg_cp_cfg_A_tor_bot_L0_r_unlocked_8_lw_top:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_unlocked_8_lw_top, PMPSm_cp_cfg_A_tor_bot_unlocked_8_lw_top_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L0_r_unlocked_8_lw_top, PMPSm_cg_cp_cfg_A_tor_bot_L0_r_unlocked_8_lw_top_str)
 
 // Execute probes
   LA(a4, TEST_FOR_EXECUTION)
   addi a4, a4, -4
   LA(ra, 1f)
-PMPSm_cp_cfg_A_tor_bot_unlocked_9_jalr_botm4:
+PMPSm_cg_cp_cfg_A_tor_bot_L0_x_unlocked_9_jalr_botm4:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_unlocked_9_jalr_botm4, PMPSm_cp_cfg_A_tor_bot_unlocked_9_jalr_botm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L0_x_unlocked_9_jalr_botm4, PMPSm_cg_cp_cfg_A_tor_bot_L0_x_unlocked_9_jalr_botm4_str)
   addi a4, a4, 4
   LA(ra, 2f)
-PMPSm_cp_cfg_A_tor_bot_unlocked_10_jalr_bot:
+PMPSm_cg_cp_cfg_A_tor_bot_L0_x_unlocked_10_jalr_bot:
   jalr x0, 0(a4)
 2:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_unlocked_10_jalr_bot, PMPSm_cp_cfg_A_tor_bot_unlocked_10_jalr_bot_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L0_x_unlocked_10_jalr_bot, PMPSm_cg_cp_cfg_A_tor_bot_L0_x_unlocked_10_jalr_bot_str)
   add a4, a4, t0
   addi a4, a4, 4
   LA(ra, 3f)
-PMPSm_cp_cfg_A_tor_bot_unlocked_11_jalr_topm4:
+PMPSm_cg_cp_cfg_A_tor_bot_L0_x_unlocked_11_jalr_topm4:
   jalr x0, 0(a4)
 3:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_unlocked_11_jalr_topm4, PMPSm_cp_cfg_A_tor_bot_unlocked_11_jalr_topm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L0_x_unlocked_11_jalr_topm4, PMPSm_cg_cp_cfg_A_tor_bot_L0_x_unlocked_11_jalr_topm4_str)
   addi a4, a4, 4
   LA(ra, 4f)
-PMPSm_cp_cfg_A_tor_bot_unlocked_12_jalr_top:
+PMPSm_cg_cp_cfg_A_tor_bot_L0_x_unlocked_12_jalr_top:
   jalr x0, 0(a4)
 4:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_unlocked_12_jalr_top, PMPSm_cp_cfg_A_tor_bot_unlocked_12_jalr_top_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L0_x_unlocked_12_jalr_top, PMPSm_cg_cp_cfg_A_tor_bot_L0_x_unlocked_12_jalr_top_str)
 
 // PMP configuration 2: pmpcfg1 = L, TOR, XR; pmpcfg0 = OFF, locked
   LI(x4, PMPREGION_UPPER_BOUND|PMPREGION_LOWER_BOUND)
@@ -160,82 +160,82 @@ PMPSm_cp_cfg_A_tor_bot_unlocked_12_jalr_top:
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
   addi a5, a5, -4
-PMPSm_cp_cfg_A_tor_bot_locked_1_sw_botm4:
+PMPSm_cg_cp_cfg_A_tor_bot_L1_w_locked_1_sw_botm4:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_locked_1_sw_botm4, PMPSm_cp_cfg_A_tor_bot_locked_1_sw_botm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L1_w_locked_1_sw_botm4, PMPSm_cg_cp_cfg_A_tor_bot_L1_w_locked_1_sw_botm4_str)
   addi a5, a5, 4
-PMPSm_cp_cfg_A_tor_bot_locked_2_sw_bot:
+PMPSm_cg_cp_cfg_A_tor_bot_L1_w_locked_2_sw_bot:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_locked_2_sw_bot, PMPSm_cp_cfg_A_tor_bot_locked_2_sw_bot_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L1_w_locked_2_sw_bot, PMPSm_cg_cp_cfg_A_tor_bot_L1_w_locked_2_sw_bot_str)
   add a5, a5, t0
   addi a5, a5, 4
-PMPSm_cp_cfg_A_tor_bot_locked_3_sw_topm4:
+PMPSm_cg_cp_cfg_A_tor_bot_L1_w_locked_3_sw_topm4:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_locked_3_sw_topm4, PMPSm_cp_cfg_A_tor_bot_locked_3_sw_topm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L1_w_locked_3_sw_topm4, PMPSm_cg_cp_cfg_A_tor_bot_L1_w_locked_3_sw_topm4_str)
   addi a5, a5, 4
-PMPSm_cp_cfg_A_tor_bot_locked_4_sw_top:
+PMPSm_cg_cp_cfg_A_tor_bot_L1_w_locked_4_sw_top:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_locked_4_sw_top, PMPSm_cp_cfg_A_tor_bot_locked_4_sw_top_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L1_w_locked_4_sw_top, PMPSm_cg_cp_cfg_A_tor_bot_L1_w_locked_4_sw_top_str)
 
 // Load probes
   LA(a5, TEST_FOR_EXECUTION)
   addi a5, a5, -4
-PMPSm_cp_cfg_A_tor_bot_locked_5_lw_botm4:
+PMPSm_cg_cp_cfg_A_tor_bot_L1_r_locked_5_lw_botm4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_locked_5_lw_botm4, PMPSm_cp_cfg_A_tor_bot_locked_5_lw_botm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L1_r_locked_5_lw_botm4, PMPSm_cg_cp_cfg_A_tor_bot_L1_r_locked_5_lw_botm4_str)
   addi a5, a5, 4
-PMPSm_cp_cfg_A_tor_bot_locked_6_lw_bot:
+PMPSm_cg_cp_cfg_A_tor_bot_L1_r_locked_6_lw_bot:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_locked_6_lw_bot, PMPSm_cp_cfg_A_tor_bot_locked_6_lw_bot_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L1_r_locked_6_lw_bot, PMPSm_cg_cp_cfg_A_tor_bot_L1_r_locked_6_lw_bot_str)
   add a5, a5, t0
   addi a5, a5, 4
-PMPSm_cp_cfg_A_tor_bot_locked_7_lw_topm4:
+PMPSm_cg_cp_cfg_A_tor_bot_L1_r_locked_7_lw_topm4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_locked_7_lw_topm4, PMPSm_cp_cfg_A_tor_bot_locked_7_lw_topm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L1_r_locked_7_lw_topm4, PMPSm_cg_cp_cfg_A_tor_bot_L1_r_locked_7_lw_topm4_str)
   addi a5, a5, 4
-PMPSm_cp_cfg_A_tor_bot_locked_8_lw_top:
+PMPSm_cg_cp_cfg_A_tor_bot_L1_r_locked_8_lw_top:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_locked_8_lw_top, PMPSm_cp_cfg_A_tor_bot_locked_8_lw_top_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L1_r_locked_8_lw_top, PMPSm_cg_cp_cfg_A_tor_bot_L1_r_locked_8_lw_top_str)
 
 // Execute probes
   LA(a4, TEST_FOR_EXECUTION)
   addi a4, a4, -4
   LA(ra, 1f)
-PMPSm_cp_cfg_A_tor_bot_locked_9_jalr_botm4:
+PMPSm_cg_cp_cfg_A_tor_bot_L1_x_locked_9_jalr_botm4:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_locked_9_jalr_botm4, PMPSm_cp_cfg_A_tor_bot_locked_9_jalr_botm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L1_x_locked_9_jalr_botm4, PMPSm_cg_cp_cfg_A_tor_bot_L1_x_locked_9_jalr_botm4_str)
   addi a4, a4, 4
   LA(ra, 2f)
-PMPSm_cp_cfg_A_tor_bot_locked_10_jalr_bot:
+PMPSm_cg_cp_cfg_A_tor_bot_L1_x_locked_10_jalr_bot:
   jalr x0, 0(a4)
 2:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_locked_10_jalr_bot, PMPSm_cp_cfg_A_tor_bot_locked_10_jalr_bot_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L1_x_locked_10_jalr_bot, PMPSm_cg_cp_cfg_A_tor_bot_L1_x_locked_10_jalr_bot_str)
   add a4, a4, t0
   addi a4, a4, 4
   LA(ra, 3f)
-PMPSm_cp_cfg_A_tor_bot_locked_11_jalr_topm4:
+PMPSm_cg_cp_cfg_A_tor_bot_L1_x_locked_11_jalr_topm4:
   jalr x0, 0(a4)
 3:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_locked_11_jalr_topm4, PMPSm_cp_cfg_A_tor_bot_locked_11_jalr_topm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L1_x_locked_11_jalr_topm4, PMPSm_cg_cp_cfg_A_tor_bot_L1_x_locked_11_jalr_topm4_str)
   addi a4, a4, 4
   LA(ra, 4f)
-PMPSm_cp_cfg_A_tor_bot_locked_12_jalr_top:
+PMPSm_cg_cp_cfg_A_tor_bot_L1_x_locked_12_jalr_top:
   jalr x0, 0(a4)
 4:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_locked_12_jalr_top, PMPSm_cp_cfg_A_tor_bot_locked_12_jalr_top_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_bot_L1_x_locked_12_jalr_top, PMPSm_cg_cp_cfg_A_tor_bot_L1_x_locked_12_jalr_top_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -267,30 +267,30 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMPSm_cp_cfg_A_tor_bot_unlocked_1_sw_botm4_str: .string "\"test: 1; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: unlocked_1_sw_bot-4\""
-PMPSm_cp_cfg_A_tor_bot_unlocked_2_sw_bot_str: .string "\"test: 2; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: unlocked_2_sw_bot\""
-PMPSm_cp_cfg_A_tor_bot_unlocked_3_sw_topm4_str: .string "\"test: 3; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: unlocked_3_sw_top-4\""
-PMPSm_cp_cfg_A_tor_bot_unlocked_4_sw_top_str: .string "\"test: 4; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: unlocked_4_sw_top\""
-PMPSm_cp_cfg_A_tor_bot_unlocked_5_lw_botm4_str: .string "\"test: 5; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: unlocked_5_lw_bot-4\""
-PMPSm_cp_cfg_A_tor_bot_unlocked_6_lw_bot_str: .string "\"test: 6; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: unlocked_6_lw_bot\""
-PMPSm_cp_cfg_A_tor_bot_unlocked_7_lw_topm4_str: .string "\"test: 7; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: unlocked_7_lw_top-4\""
-PMPSm_cp_cfg_A_tor_bot_unlocked_8_lw_top_str: .string "\"test: 8; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: unlocked_8_lw_top\""
-PMPSm_cp_cfg_A_tor_bot_unlocked_9_jalr_botm4_str: .string "\"test: 9; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: unlocked_9_jalr_bot-4\""
-PMPSm_cp_cfg_A_tor_bot_unlocked_10_jalr_bot_str: .string "\"test: 10; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: unlocked_10_jalr_bot\""
-PMPSm_cp_cfg_A_tor_bot_unlocked_11_jalr_topm4_str: .string "\"test: 11; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: unlocked_11_jalr_top-4\""
-PMPSm_cp_cfg_A_tor_bot_unlocked_12_jalr_top_str: .string "\"test: 12; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: unlocked_12_jalr_top\""
-PMPSm_cp_cfg_A_tor_bot_locked_1_sw_botm4_str: .string "\"test: 13; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: locked_1_sw_bot-4\""
-PMPSm_cp_cfg_A_tor_bot_locked_2_sw_bot_str: .string "\"test: 14; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: locked_2_sw_bot\""
-PMPSm_cp_cfg_A_tor_bot_locked_3_sw_topm4_str: .string "\"test: 15; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: locked_3_sw_top-4\""
-PMPSm_cp_cfg_A_tor_bot_locked_4_sw_top_str: .string "\"test: 16; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: locked_4_sw_top\""
-PMPSm_cp_cfg_A_tor_bot_locked_5_lw_botm4_str: .string "\"test: 17; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: locked_5_lw_bot-4\""
-PMPSm_cp_cfg_A_tor_bot_locked_6_lw_bot_str: .string "\"test: 18; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: locked_6_lw_bot\""
-PMPSm_cp_cfg_A_tor_bot_locked_7_lw_topm4_str: .string "\"test: 19; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: locked_7_lw_top-4\""
-PMPSm_cp_cfg_A_tor_bot_locked_8_lw_top_str: .string "\"test: 20; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: locked_8_lw_top\""
-PMPSm_cp_cfg_A_tor_bot_locked_9_jalr_botm4_str: .string "\"test: 21; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: locked_9_jalr_bot-4\""
-PMPSm_cp_cfg_A_tor_bot_locked_10_jalr_bot_str: .string "\"test: 22; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: locked_10_jalr_bot\""
-PMPSm_cp_cfg_A_tor_bot_locked_11_jalr_topm4_str: .string "\"test: 23; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: locked_11_jalr_top-4\""
-PMPSm_cp_cfg_A_tor_bot_locked_12_jalr_top_str: .string "\"test: 24; cg: PMPSm; cp: cp_cfg_A_tor_bot; bin: locked_12_jalr_top\""
+PMPSm_cg_cp_cfg_A_tor_bot_L0_w_unlocked_1_sw_botm4_str: .string "\"test: 1; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L0_w; bin: unlocked_1_sw_bot-4\""
+PMPSm_cg_cp_cfg_A_tor_bot_L0_w_unlocked_2_sw_bot_str: .string "\"test: 2; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L0_w; bin: unlocked_2_sw_bot\""
+PMPSm_cg_cp_cfg_A_tor_bot_L0_w_unlocked_3_sw_topm4_str: .string "\"test: 3; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L0_w; bin: unlocked_3_sw_top-4\""
+PMPSm_cg_cp_cfg_A_tor_bot_L0_w_unlocked_4_sw_top_str: .string "\"test: 4; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L0_w; bin: unlocked_4_sw_top\""
+PMPSm_cg_cp_cfg_A_tor_bot_L0_r_unlocked_5_lw_botm4_str: .string "\"test: 5; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L0_r; bin: unlocked_5_lw_bot-4\""
+PMPSm_cg_cp_cfg_A_tor_bot_L0_r_unlocked_6_lw_bot_str: .string "\"test: 6; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L0_r; bin: unlocked_6_lw_bot\""
+PMPSm_cg_cp_cfg_A_tor_bot_L0_r_unlocked_7_lw_topm4_str: .string "\"test: 7; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L0_r; bin: unlocked_7_lw_top-4\""
+PMPSm_cg_cp_cfg_A_tor_bot_L0_r_unlocked_8_lw_top_str: .string "\"test: 8; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L0_r; bin: unlocked_8_lw_top\""
+PMPSm_cg_cp_cfg_A_tor_bot_L0_x_unlocked_9_jalr_botm4_str: .string "\"test: 9; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L0_x; bin: unlocked_9_jalr_bot-4\""
+PMPSm_cg_cp_cfg_A_tor_bot_L0_x_unlocked_10_jalr_bot_str: .string "\"test: 10; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L0_x; bin: unlocked_10_jalr_bot\""
+PMPSm_cg_cp_cfg_A_tor_bot_L0_x_unlocked_11_jalr_topm4_str: .string "\"test: 11; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L0_x; bin: unlocked_11_jalr_top-4\""
+PMPSm_cg_cp_cfg_A_tor_bot_L0_x_unlocked_12_jalr_top_str: .string "\"test: 12; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L0_x; bin: unlocked_12_jalr_top\""
+PMPSm_cg_cp_cfg_A_tor_bot_L1_w_locked_1_sw_botm4_str: .string "\"test: 13; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L1_w; bin: locked_1_sw_bot-4\""
+PMPSm_cg_cp_cfg_A_tor_bot_L1_w_locked_2_sw_bot_str: .string "\"test: 14; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L1_w; bin: locked_2_sw_bot\""
+PMPSm_cg_cp_cfg_A_tor_bot_L1_w_locked_3_sw_topm4_str: .string "\"test: 15; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L1_w; bin: locked_3_sw_top-4\""
+PMPSm_cg_cp_cfg_A_tor_bot_L1_w_locked_4_sw_top_str: .string "\"test: 16; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L1_w; bin: locked_4_sw_top\""
+PMPSm_cg_cp_cfg_A_tor_bot_L1_r_locked_5_lw_botm4_str: .string "\"test: 17; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L1_r; bin: locked_5_lw_bot-4\""
+PMPSm_cg_cp_cfg_A_tor_bot_L1_r_locked_6_lw_bot_str: .string "\"test: 18; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L1_r; bin: locked_6_lw_bot\""
+PMPSm_cg_cp_cfg_A_tor_bot_L1_r_locked_7_lw_topm4_str: .string "\"test: 19; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L1_r; bin: locked_7_lw_top-4\""
+PMPSm_cg_cp_cfg_A_tor_bot_L1_r_locked_8_lw_top_str: .string "\"test: 20; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L1_r; bin: locked_8_lw_top\""
+PMPSm_cg_cp_cfg_A_tor_bot_L1_x_locked_9_jalr_botm4_str: .string "\"test: 21; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L1_x; bin: locked_9_jalr_bot-4\""
+PMPSm_cg_cp_cfg_A_tor_bot_L1_x_locked_10_jalr_bot_str: .string "\"test: 22; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L1_x; bin: locked_10_jalr_bot\""
+PMPSm_cg_cp_cfg_A_tor_bot_L1_x_locked_11_jalr_topm4_str: .string "\"test: 23; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L1_x; bin: locked_11_jalr_top-4\""
+PMPSm_cg_cp_cfg_A_tor_bot_L1_x_locked_12_jalr_top_str: .string "\"test: 24; cg: PMPSm_cg; cp: cp_cfg_A_tor_bot_L1_x; bin: locked_12_jalr_top\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

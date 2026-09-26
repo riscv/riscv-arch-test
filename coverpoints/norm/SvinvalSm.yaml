@@ -4,12 +4,12 @@ normative_rule_definitions:
   # An attempt to execute SINVAL.VMA or HINVAL.GVMA in S-mode or HS-mode when
   # mstatus.TVM=1 also raises an illegal-instruction exception.
   - name: Svinval_illegal_instruction_tvm
-    coverpoint: ["SvinvalSm_cg/cr_svinival"]
+    coverpoint: ["SvinvalSm_cg/cp_svinval"]
 
   # SFENCE.W.INVAL and SFENCE.INVAL.IR are unaffected by the mstatus.TVM and
   # hstatus.VTVM fields and hence are always permitted in S-mode and VS-mode.
   - name: Svinval_sfence_w_inval_inval_s_vs_mode
-    coverpoint: ["SvinvalSm_cg/cr_svinival"]
+    coverpoint: ["SvinvalSm_cg/cp_svinval"]
 
   # The csr::[tvm] (Trap Virtual Memory) bit is a WARL field that supports intercepting
   # supervisor virtual-memory management operations. When csr::[tvm]=1, attempts to read
@@ -19,4 +19,4 @@ normative_rule_definitions:
   # 0 when S-mode is not supported or if csr:satp[mode] is read-only 0; otherwise, it
   # must be writable.
   - names: [mstatus_tvm_op, mstatus_tvm_warl]
-    coverpoint: ["SvinvalSm_cg/cr_svinival"]
+    coverpoint: ["SvinvalSm_cg/cp_svinval"]

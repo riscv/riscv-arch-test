@@ -25,6 +25,7 @@ from testgen.priv.extensions.pmp.helpers import (
     zero_pmp_regs,
 )
 from testgen.priv.extensions.pmp.probes import (
+    cross_by_access,
     gen_compressed_execute,
     gen_zca,
     gen_zcb,
@@ -157,9 +158,10 @@ def _region_body(test_data: TestData, amode: str, misaligned: bool) -> list[str]
     )
     if misaligned and amode == "napot":
         calls += ["REGIONSTART", "REGIONSTART + REGION_SIZE"]
+    # cp_misaligned_<amode> samples jumps both inside the regions and straddling their boundaries.
     prefix = "misaligned" if misaligned else "aligned"
     for n, target in enumerate(calls, start=1):
-        lines.extend(gen_compressed_execute(test_data, f"region{n}", f"cp_{prefix}_{amode}", target))
+        lines.extend(gen_compressed_execute(test_data, f"{prefix}_region{n}", f"cp_misaligned_{amode}", target))
     return lines
 
 
@@ -242,7 +244,7 @@ def _make_region_chunk(test_data: TestData, amode: str, misaligned: bool) -> Tes
     else:
         test_cases = f"An uncompressed jalr inside each of the first two of three consecutive {amode.upper()} regions, the third locked with XWR = 000."
     chunk = test_data.begin_test_chunk(f"{prefix}_{amode}")
-    chunk.section_header = comment_banner(f"cp_{prefix}_{amode}", test_cases)
+    chunk.section_header = comment_banner(f"cp_misaligned_{amode}", test_cases)
     chunk.code.extend(_region_body(test_data, amode, misaligned))
     chunk.raw_data.extend(_misaligned_data(amode) if misaligned else _aligned_data(amode))
     return test_data.end_test_chunk()
@@ -264,19 +266,23 @@ _ZC_TEST_CASES = {
 }
 
 
+#: No PMPZca cross samples c.jalr into a single region, so those probes name its coverpoint.
+_LEGAL_CROSSES = cross_by_access(execute="exec_c_instr", load="cp_cfg_R", store="cp_cfg_W")
+
+
 def _make_legal_chunk(test_data: TestData) -> TestChunk:
     chunk = test_data.begin_test_chunk("legal_lwrx")
-    chunk.section_header = comment_banner("cp_cfg_RW", _ZCA_LEGAL_TEST_CASES)
-    chunk.code.extend(lxwr_walk_body(test_data, LOCKED_LXWR_CASES, "napot", gen_zca, "cp_cfg_RW"))
+    chunk.section_header = comment_banner("cp_cfg_R and cp_cfg_W", _ZCA_LEGAL_TEST_CASES)
+    chunk.code.extend(lxwr_walk_body(test_data, LOCKED_LXWR_CASES, "napot", gen_zca, _LEGAL_CROSSES))
     chunk.raw_data.extend(make_exec_region((TOR_REGION_WORDS, "c.nop\nc.nop")))
     return test_data.end_test_chunk()
 
 
 def _make_zc_chunk(test_data: TestData, subset: str) -> TestChunk:
     chunk = test_data.begin_test_chunk(f"{subset}_legal_lxwr")
-    chunk.section_header = comment_banner("cp_cfg_RW", _ZC_TEST_CASES[subset])
+    chunk.section_header = comment_banner("cp_cfg_R and cp_cfg_W", _ZC_TEST_CASES[subset])
     generator = {"zcb": gen_zcb, "zcd": gen_zcd, "zcf": gen_zcf}[subset]
-    chunk.code.extend(lxwr_walk_body(test_data, LOCKED_LXWR_CASES, "napot", generator, "cp_cfg_RW"))
+    chunk.code.extend(lxwr_walk_body(test_data, LOCKED_LXWR_CASES, "napot", generator, _LEGAL_CROSSES))
     chunk.raw_data.extend(make_exec_region())
     return test_data.end_test_chunk()
 

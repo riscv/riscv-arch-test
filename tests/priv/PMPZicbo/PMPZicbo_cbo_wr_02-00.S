@@ -30,7 +30,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_cbo
+// cp_cbo_zero, cp_cbo_clean, cp_cbo_flush and cp_cbo_inval
 //   cbo.zero/clean/flush/inval against a locked page-sized NAPOT region with WR = 01.
 /////////////////////////////////
 
@@ -75,22 +75,22 @@ RVTEST_BEGIN
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a4, TEST_FOR_EXECUTION)
-PMPZicbo_cp_cbo_entry0_lxwr1001_1_cbo_zero:
+PMPZicbo_cg_cp_cbo_zero_entry0_lxwr1001_1_cbo_zero:
   cbo.zero (a4)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_cbo_entry0_lxwr1001_1_cbo_zero, PMPZicbo_cp_cbo_entry0_lxwr1001_1_cbo_zero_str)
-PMPZicbo_cp_cbo_entry0_lxwr1001_2_cbo_clean:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_cbo_zero_entry0_lxwr1001_1_cbo_zero, PMPZicbo_cg_cp_cbo_zero_entry0_lxwr1001_1_cbo_zero_str)
+PMPZicbo_cg_cp_cbo_clean_entry0_lxwr1001_2_cbo_clean:
   cbo.clean (a4)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_cbo_entry0_lxwr1001_2_cbo_clean, PMPZicbo_cp_cbo_entry0_lxwr1001_2_cbo_clean_str)
-PMPZicbo_cp_cbo_entry0_lxwr1001_3_cbo_flush:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_cbo_clean_entry0_lxwr1001_2_cbo_clean, PMPZicbo_cg_cp_cbo_clean_entry0_lxwr1001_2_cbo_clean_str)
+PMPZicbo_cg_cp_cbo_flush_entry0_lxwr1001_3_cbo_flush:
   cbo.flush (a4)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_cbo_entry0_lxwr1001_3_cbo_flush, PMPZicbo_cp_cbo_entry0_lxwr1001_3_cbo_flush_str)
-PMPZicbo_cp_cbo_entry0_lxwr1001_4_cbo_inval:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_cbo_flush_entry0_lxwr1001_3_cbo_flush, PMPZicbo_cg_cp_cbo_flush_entry0_lxwr1001_3_cbo_flush_str)
+PMPZicbo_cg_cp_cbo_inval_entry0_lxwr1001_4_cbo_inval:
   cbo.inval (a4)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_cbo_entry0_lxwr1001_4_cbo_inval, PMPZicbo_cp_cbo_entry0_lxwr1001_4_cbo_inval_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_cbo_inval_entry0_lxwr1001_4_cbo_inval, PMPZicbo_cg_cp_cbo_inval_entry0_lxwr1001_4_cbo_inval_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -115,10 +115,10 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMPZicbo_cp_cbo_entry0_lxwr1001_1_cbo_zero_str: .string "\"test: 5; cg: PMPZicbo; cp: cp_cbo; bin: entry0_lxwr1001_1_cbo.zero\""
-PMPZicbo_cp_cbo_entry0_lxwr1001_2_cbo_clean_str: .string "\"test: 6; cg: PMPZicbo; cp: cp_cbo; bin: entry0_lxwr1001_2_cbo.clean\""
-PMPZicbo_cp_cbo_entry0_lxwr1001_3_cbo_flush_str: .string "\"test: 7; cg: PMPZicbo; cp: cp_cbo; bin: entry0_lxwr1001_3_cbo.flush\""
-PMPZicbo_cp_cbo_entry0_lxwr1001_4_cbo_inval_str: .string "\"test: 8; cg: PMPZicbo; cp: cp_cbo; bin: entry0_lxwr1001_4_cbo.inval\""
+PMPZicbo_cg_cp_cbo_zero_entry0_lxwr1001_1_cbo_zero_str: .string "\"test: 5; cg: PMPZicbo_cg; cp: cp_cbo_zero; bin: entry0_lxwr1001_1_cbo.zero\""
+PMPZicbo_cg_cp_cbo_clean_entry0_lxwr1001_2_cbo_clean_str: .string "\"test: 6; cg: PMPZicbo_cg; cp: cp_cbo_clean; bin: entry0_lxwr1001_2_cbo.clean\""
+PMPZicbo_cg_cp_cbo_flush_entry0_lxwr1001_3_cbo_flush_str: .string "\"test: 7; cg: PMPZicbo_cg; cp: cp_cbo_flush; bin: entry0_lxwr1001_3_cbo.flush\""
+PMPZicbo_cg_cp_cbo_inval_entry0_lxwr1001_4_cbo_inval_str: .string "\"test: 8; cg: PMPZicbo_cg; cp: cp_cbo_inval; bin: entry0_lxwr1001_4_cbo.inval\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

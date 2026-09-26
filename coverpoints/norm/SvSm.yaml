@@ -41,7 +41,7 @@ normative_rule_definitions:
   # must be writable.
   - names: [mstatus_tvm_op, mstatus_tvm_warl]
     coverpoint:
-      ["SvSm_mstatus_mprv_cg/cp_tvm_exception_s", "SvinvalSm_cg/cr_svinival"]
+      ["SvSm_mstatus_mprv_cg/cp_tvm_exception_s", "SvinvalSm_cg/cp_svinval"]
 
   # The csr::[mbe], csr::[sbe], and csr::[ube] bits in csr:mstatus[] and csr:mstatush[]
   # are WARL fields that control the endianness of memory accesses other than instruction

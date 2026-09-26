@@ -11,6 +11,7 @@
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
+from testgen.priv.extensions.sv.access import Crosses, cross_names
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
     SV32,
@@ -32,10 +33,29 @@ from testgen.priv.extensions.sv.Sv import (
 )
 from testgen.priv.registry import add_priv_test_generator
 
+MPRV_CG = "SvSm_mstatus_mprv_cg"
+_MPRV = Crosses(MPRV_CG, "cp_mprv_store", "cp_mprv_load", "cp_mprv_ins")
+_UPAGE_MPRV = {
+    "set": Crosses(
+        MPRV_CG,
+        "cp_mprv_upage_smode_sumset_write",
+        "cp_mprv_upage_smode_sumset_read",
+        "cp_mprv_upage_smode_sumset_exec",
+    ),
+    "unset": Crosses(
+        MPRV_CG,
+        "cp_mprv_upage_smode_sumunset_nowrite",
+        "cp_mprv_upage_smode_sumunset_noread",
+        "cp_mprv_upage_smode_sumunset_noexec",
+    ),
+}
+# No cross samples a fetch from a page with a big-endian PTE, so it names the coverpoint for mstatus.SBE.
+_SBE = Crosses(MPRV_CG, "cp_mstatus_sbe_write", "cp_mstatus_sbe_read", "sbe_mstatus")
+
 
 def _t_mstatus_mprv(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     for mode in ("Smode", "Umode"):
-        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_mstatus_mprv_{mode}")
+        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_mstatus_mprv_{mode}", coverpoint=cross_names(_MPRV))
         style = "mprv_s" if mode == "Smode" else "mprv_u"
         for number, level in enumerate(sv.levels_desc, start=1):
             permissions = PteFlags(user=mode == "Umode")
@@ -46,7 +66,9 @@ def _t_mstatus_mprv(test_data: TestData, test_chunks: list[TestChunk], sv: SvMod
                     *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                     "sfence.vma",
                     "",
-                    *emit_access(test_data, sv, level, style, f"test{number}", "va_data", "Mmode", "Mmode"),
+                    *emit_access(
+                        test_data, sv, level, style, f"test{number}", "va_data", "Mmode", "Mmode", crosses=_MPRV
+                    ),
                     "",
                 ]
             )
@@ -60,8 +82,9 @@ def _t_upage_mprv(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode)
         ("upage_mprv_set_sum_set", "mprv_sum_set", 0),
         ("upage_mprv_set_sum_unset", "mprv_sum_unset", 2),
     ):
-        chunk = begin_sv_test(test_data, sv, "Smode", f"{sv.name}_{topic}_Smode")
         sum_state = "set" if faults_per_case == 0 else "unset"
+        crosses = _UPAGE_MPRV[sum_state]
+        chunk = begin_sv_test(test_data, sv, "Smode", f"{sv.name}_{topic}_Smode", coverpoint=cross_names(crosses))
         expected = "No Fault" if faults_per_case == 0 else "Load & Store page fault"
         for number, level in enumerate(sv.levels_desc, start=1):
             chunk.code.extend(
@@ -75,7 +98,9 @@ def _t_upage_mprv(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode)
                     ),
                     "sfence.vma",
                     "",
-                    *emit_access(test_data, sv, level, style, f"test{number}", "va_data", "Mmode", "Mmode"),
+                    *emit_access(
+                        test_data, sv, level, style, f"test{number}", "va_data", "Mmode", "Mmode", crosses=crosses
+                    ),
                     "",
                 ]
             )
@@ -123,6 +148,7 @@ def _t_mstatus_sbe(test_data: TestData, sv: SvMode) -> list[TestChunk]:
             sv,
             "Smode",
             f"{sv.name}_{topic}_Smode",
+            coverpoint="cp_mstatus_sbe_write, cp_mstatus_sbe_read",
             setup_asm=_sbe_setup(sv, with_sum),
         )
         chunk.code.extend([*change_pte_to_be(sv), *_identity_pte_to_be(sv)])
@@ -147,6 +173,7 @@ def _t_mstatus_sbe(test_data: TestData, sv: SvMode) -> list[TestChunk]:
                         "va_data",
                         "Smode",
                         "Mmode",
+                        crosses=_SBE,
                     ),
                     "",
                 ]
@@ -270,7 +297,7 @@ def make_svsm_sv57_sbe(test_data: TestData) -> list[TestChunk]:
 )
 def make_svsm_mstatus_tvm(test_data: TestData) -> list[TestChunk]:
     chunk = test_data.begin_test_chunk("sv_mstatus_tvm_test")
-    chunk.section_header = comment_banner("cp_satp_access")
+    chunk.section_header = comment_banner("cp_access_m")
     chunk.code.extend(["main:", "LI(a0, MSTATUS_TVM)", "csrs mstatus, a0", *satp_csr_read(test_data, "tvm", "mstatus")])
     chunk.code.extend(
         [

@@ -31,7 +31,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_priority
+// cp_priority_jalr, cp_priority_lw and cp_priority_sw
 //   {jalr, sw, lw} at the last word of each of seven nested NAPOT regions cycling the six legal XWR; the smallest matching region decides.
 /////////////////////////////////
 
@@ -87,21 +87,21 @@ RVTEST_BEGIN
   RVTEST_FENCEI
   LA(a4, (TEST_FOR_EXECUTION + 1 * PMP_NAPOT_REGION_BYTES - 4))
   LA(ra, 1f)
-PMPSm_cp_priority_region0_lxwr1000_1_jalr:
+PMPSm_cg_cp_priority_jalr_region0_lxwr1000_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region0_lxwr1000_1_jalr, PMPSm_cp_priority_region0_lxwr1000_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_jalr_region0_lxwr1000_1_jalr, PMPSm_cg_cp_priority_jalr_region0_lxwr1000_1_jalr_str)
   LA(a5, (TEST_FOR_EXECUTION + 1 * PMP_NAPOT_REGION_BYTES - 4))
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_priority_region0_lxwr1000_2_sw:
+PMPSm_cg_cp_priority_sw_region0_lxwr1000_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region0_lxwr1000_2_sw, PMPSm_cp_priority_region0_lxwr1000_2_sw_str)
-PMPSm_cp_priority_region0_lxwr1000_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_sw_region0_lxwr1000_2_sw, PMPSm_cg_cp_priority_sw_region0_lxwr1000_2_sw_str)
+PMPSm_cg_cp_priority_lw_region0_lxwr1000_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region0_lxwr1000_3_lw, PMPSm_cp_priority_region0_lxwr1000_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_lw_region0_lxwr1000_3_lw, PMPSm_cg_cp_priority_lw_region0_lxwr1000_3_lw_str)
 
 // PMP configuration 2: access the last word of region 1 (size 2x), permissions 1101
   RVTEST_SFENCE_VMA_IF_SUPPORTED
@@ -109,21 +109,21 @@ PMPSm_cp_priority_region0_lxwr1000_3_lw:
   RVTEST_FENCEI
   LA(a4, (TEST_FOR_EXECUTION + 2 * PMP_NAPOT_REGION_BYTES - 4))
   LA(ra, 1f)
-PMPSm_cp_priority_region1_lxwr1101_1_jalr:
+PMPSm_cg_cp_priority_jalr_region1_lxwr1101_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region1_lxwr1101_1_jalr, PMPSm_cp_priority_region1_lxwr1101_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_jalr_region1_lxwr1101_1_jalr, PMPSm_cg_cp_priority_jalr_region1_lxwr1101_1_jalr_str)
   LA(a5, (TEST_FOR_EXECUTION + 2 * PMP_NAPOT_REGION_BYTES - 4))
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_priority_region1_lxwr1101_2_sw:
+PMPSm_cg_cp_priority_sw_region1_lxwr1101_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region1_lxwr1101_2_sw, PMPSm_cp_priority_region1_lxwr1101_2_sw_str)
-PMPSm_cp_priority_region1_lxwr1101_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_sw_region1_lxwr1101_2_sw, PMPSm_cg_cp_priority_sw_region1_lxwr1101_2_sw_str)
+PMPSm_cg_cp_priority_lw_region1_lxwr1101_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region1_lxwr1101_3_lw, PMPSm_cp_priority_region1_lxwr1101_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_lw_region1_lxwr1101_3_lw, PMPSm_cg_cp_priority_lw_region1_lxwr1101_3_lw_str)
 
 // PMP configuration 3: access the last word of region 2 (size 4x), permissions 1011
   RVTEST_SFENCE_VMA_IF_SUPPORTED
@@ -131,21 +131,21 @@ PMPSm_cp_priority_region1_lxwr1101_3_lw:
   RVTEST_FENCEI
   LA(a4, (TEST_FOR_EXECUTION + 4 * PMP_NAPOT_REGION_BYTES - 4))
   LA(ra, 1f)
-PMPSm_cp_priority_region2_lxwr1011_1_jalr:
+PMPSm_cg_cp_priority_jalr_region2_lxwr1011_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region2_lxwr1011_1_jalr, PMPSm_cp_priority_region2_lxwr1011_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_jalr_region2_lxwr1011_1_jalr, PMPSm_cg_cp_priority_jalr_region2_lxwr1011_1_jalr_str)
   LA(a5, (TEST_FOR_EXECUTION + 4 * PMP_NAPOT_REGION_BYTES - 4))
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_priority_region2_lxwr1011_2_sw:
+PMPSm_cg_cp_priority_sw_region2_lxwr1011_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region2_lxwr1011_2_sw, PMPSm_cp_priority_region2_lxwr1011_2_sw_str)
-PMPSm_cp_priority_region2_lxwr1011_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_sw_region2_lxwr1011_2_sw, PMPSm_cg_cp_priority_sw_region2_lxwr1011_2_sw_str)
+PMPSm_cg_cp_priority_lw_region2_lxwr1011_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region2_lxwr1011_3_lw, PMPSm_cp_priority_region2_lxwr1011_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_lw_region2_lxwr1011_3_lw, PMPSm_cg_cp_priority_lw_region2_lxwr1011_3_lw_str)
 
 // PMP configuration 4: access the last word of region 3 (size 8x), permissions 1100
   RVTEST_SFENCE_VMA_IF_SUPPORTED
@@ -153,21 +153,21 @@ PMPSm_cp_priority_region2_lxwr1011_3_lw:
   RVTEST_FENCEI
   LA(a4, (TEST_FOR_EXECUTION + 8 * PMP_NAPOT_REGION_BYTES - 4))
   LA(ra, 1f)
-PMPSm_cp_priority_region3_lxwr1100_1_jalr:
+PMPSm_cg_cp_priority_jalr_region3_lxwr1100_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region3_lxwr1100_1_jalr, PMPSm_cp_priority_region3_lxwr1100_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_jalr_region3_lxwr1100_1_jalr, PMPSm_cg_cp_priority_jalr_region3_lxwr1100_1_jalr_str)
   LA(a5, (TEST_FOR_EXECUTION + 8 * PMP_NAPOT_REGION_BYTES - 4))
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_priority_region3_lxwr1100_2_sw:
+PMPSm_cg_cp_priority_sw_region3_lxwr1100_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region3_lxwr1100_2_sw, PMPSm_cp_priority_region3_lxwr1100_2_sw_str)
-PMPSm_cp_priority_region3_lxwr1100_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_sw_region3_lxwr1100_2_sw, PMPSm_cg_cp_priority_sw_region3_lxwr1100_2_sw_str)
+PMPSm_cg_cp_priority_lw_region3_lxwr1100_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region3_lxwr1100_3_lw, PMPSm_cp_priority_region3_lxwr1100_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_lw_region3_lxwr1100_3_lw, PMPSm_cg_cp_priority_lw_region3_lxwr1100_3_lw_str)
 
 // PMP configuration 5: access the last word of region 4 (size 16x), permissions 1001
   RVTEST_SFENCE_VMA_IF_SUPPORTED
@@ -175,21 +175,21 @@ PMPSm_cp_priority_region3_lxwr1100_3_lw:
   RVTEST_FENCEI
   LA(a4, (TEST_FOR_EXECUTION + 16 * PMP_NAPOT_REGION_BYTES - 4))
   LA(ra, 1f)
-PMPSm_cp_priority_region4_lxwr1001_1_jalr:
+PMPSm_cg_cp_priority_jalr_region4_lxwr1001_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region4_lxwr1001_1_jalr, PMPSm_cp_priority_region4_lxwr1001_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_jalr_region4_lxwr1001_1_jalr, PMPSm_cg_cp_priority_jalr_region4_lxwr1001_1_jalr_str)
   LA(a5, (TEST_FOR_EXECUTION + 16 * PMP_NAPOT_REGION_BYTES - 4))
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_priority_region4_lxwr1001_2_sw:
+PMPSm_cg_cp_priority_sw_region4_lxwr1001_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region4_lxwr1001_2_sw, PMPSm_cp_priority_region4_lxwr1001_2_sw_str)
-PMPSm_cp_priority_region4_lxwr1001_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_sw_region4_lxwr1001_2_sw, PMPSm_cg_cp_priority_sw_region4_lxwr1001_2_sw_str)
+PMPSm_cg_cp_priority_lw_region4_lxwr1001_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region4_lxwr1001_3_lw, PMPSm_cp_priority_region4_lxwr1001_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_lw_region4_lxwr1001_3_lw, PMPSm_cg_cp_priority_lw_region4_lxwr1001_3_lw_str)
 
 // PMP configuration 6: access the last word of region 5 (size 32x), permissions 1111
   RVTEST_SFENCE_VMA_IF_SUPPORTED
@@ -197,21 +197,21 @@ PMPSm_cp_priority_region4_lxwr1001_3_lw:
   RVTEST_FENCEI
   LA(a4, (TEST_FOR_EXECUTION + 32 * PMP_NAPOT_REGION_BYTES - 4))
   LA(ra, 1f)
-PMPSm_cp_priority_region5_lxwr1111_1_jalr:
+PMPSm_cg_cp_priority_jalr_region5_lxwr1111_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region5_lxwr1111_1_jalr, PMPSm_cp_priority_region5_lxwr1111_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_jalr_region5_lxwr1111_1_jalr, PMPSm_cg_cp_priority_jalr_region5_lxwr1111_1_jalr_str)
   LA(a5, (TEST_FOR_EXECUTION + 32 * PMP_NAPOT_REGION_BYTES - 4))
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_priority_region5_lxwr1111_2_sw:
+PMPSm_cg_cp_priority_sw_region5_lxwr1111_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region5_lxwr1111_2_sw, PMPSm_cp_priority_region5_lxwr1111_2_sw_str)
-PMPSm_cp_priority_region5_lxwr1111_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_sw_region5_lxwr1111_2_sw, PMPSm_cg_cp_priority_sw_region5_lxwr1111_2_sw_str)
+PMPSm_cg_cp_priority_lw_region5_lxwr1111_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region5_lxwr1111_3_lw, PMPSm_cp_priority_region5_lxwr1111_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_lw_region5_lxwr1111_3_lw, PMPSm_cg_cp_priority_lw_region5_lxwr1111_3_lw_str)
 
 // PMP configuration 7: access the last word of region 6 (size 64x), permissions 1000
   RVTEST_SFENCE_VMA_IF_SUPPORTED
@@ -219,21 +219,21 @@ PMPSm_cp_priority_region5_lxwr1111_3_lw:
   RVTEST_FENCEI
   LA(a4, (TEST_FOR_EXECUTION + 64 * PMP_NAPOT_REGION_BYTES - 4))
   LA(ra, 1f)
-PMPSm_cp_priority_region6_lxwr1000_1_jalr:
+PMPSm_cg_cp_priority_jalr_region6_lxwr1000_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region6_lxwr1000_1_jalr, PMPSm_cp_priority_region6_lxwr1000_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_jalr_region6_lxwr1000_1_jalr, PMPSm_cg_cp_priority_jalr_region6_lxwr1000_1_jalr_str)
   LA(a5, (TEST_FOR_EXECUTION + 64 * PMP_NAPOT_REGION_BYTES - 4))
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_priority_region6_lxwr1000_2_sw:
+PMPSm_cg_cp_priority_sw_region6_lxwr1000_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region6_lxwr1000_2_sw, PMPSm_cp_priority_region6_lxwr1000_2_sw_str)
-PMPSm_cp_priority_region6_lxwr1000_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_sw_region6_lxwr1000_2_sw, PMPSm_cg_cp_priority_sw_region6_lxwr1000_2_sw_str)
+PMPSm_cg_cp_priority_lw_region6_lxwr1000_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_region6_lxwr1000_3_lw, PMPSm_cp_priority_region6_lxwr1000_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_lw_region6_lxwr1000_3_lw, PMPSm_cg_cp_priority_lw_region6_lxwr1000_3_lw_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -260,27 +260,27 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMPSm_cp_priority_region0_lxwr1000_1_jalr_str: .string "\"test: 204; cg: PMPSm; cp: cp_priority; bin: region0_lxwr1000_1_jalr\""
-PMPSm_cp_priority_region0_lxwr1000_2_sw_str: .string "\"test: 205; cg: PMPSm; cp: cp_priority; bin: region0_lxwr1000_2_sw\""
-PMPSm_cp_priority_region0_lxwr1000_3_lw_str: .string "\"test: 206; cg: PMPSm; cp: cp_priority; bin: region0_lxwr1000_3_lw\""
-PMPSm_cp_priority_region1_lxwr1101_1_jalr_str: .string "\"test: 207; cg: PMPSm; cp: cp_priority; bin: region1_lxwr1101_1_jalr\""
-PMPSm_cp_priority_region1_lxwr1101_2_sw_str: .string "\"test: 208; cg: PMPSm; cp: cp_priority; bin: region1_lxwr1101_2_sw\""
-PMPSm_cp_priority_region1_lxwr1101_3_lw_str: .string "\"test: 209; cg: PMPSm; cp: cp_priority; bin: region1_lxwr1101_3_lw\""
-PMPSm_cp_priority_region2_lxwr1011_1_jalr_str: .string "\"test: 210; cg: PMPSm; cp: cp_priority; bin: region2_lxwr1011_1_jalr\""
-PMPSm_cp_priority_region2_lxwr1011_2_sw_str: .string "\"test: 211; cg: PMPSm; cp: cp_priority; bin: region2_lxwr1011_2_sw\""
-PMPSm_cp_priority_region2_lxwr1011_3_lw_str: .string "\"test: 212; cg: PMPSm; cp: cp_priority; bin: region2_lxwr1011_3_lw\""
-PMPSm_cp_priority_region3_lxwr1100_1_jalr_str: .string "\"test: 213; cg: PMPSm; cp: cp_priority; bin: region3_lxwr1100_1_jalr\""
-PMPSm_cp_priority_region3_lxwr1100_2_sw_str: .string "\"test: 214; cg: PMPSm; cp: cp_priority; bin: region3_lxwr1100_2_sw\""
-PMPSm_cp_priority_region3_lxwr1100_3_lw_str: .string "\"test: 215; cg: PMPSm; cp: cp_priority; bin: region3_lxwr1100_3_lw\""
-PMPSm_cp_priority_region4_lxwr1001_1_jalr_str: .string "\"test: 216; cg: PMPSm; cp: cp_priority; bin: region4_lxwr1001_1_jalr\""
-PMPSm_cp_priority_region4_lxwr1001_2_sw_str: .string "\"test: 217; cg: PMPSm; cp: cp_priority; bin: region4_lxwr1001_2_sw\""
-PMPSm_cp_priority_region4_lxwr1001_3_lw_str: .string "\"test: 218; cg: PMPSm; cp: cp_priority; bin: region4_lxwr1001_3_lw\""
-PMPSm_cp_priority_region5_lxwr1111_1_jalr_str: .string "\"test: 219; cg: PMPSm; cp: cp_priority; bin: region5_lxwr1111_1_jalr\""
-PMPSm_cp_priority_region5_lxwr1111_2_sw_str: .string "\"test: 220; cg: PMPSm; cp: cp_priority; bin: region5_lxwr1111_2_sw\""
-PMPSm_cp_priority_region5_lxwr1111_3_lw_str: .string "\"test: 221; cg: PMPSm; cp: cp_priority; bin: region5_lxwr1111_3_lw\""
-PMPSm_cp_priority_region6_lxwr1000_1_jalr_str: .string "\"test: 222; cg: PMPSm; cp: cp_priority; bin: region6_lxwr1000_1_jalr\""
-PMPSm_cp_priority_region6_lxwr1000_2_sw_str: .string "\"test: 223; cg: PMPSm; cp: cp_priority; bin: region6_lxwr1000_2_sw\""
-PMPSm_cp_priority_region6_lxwr1000_3_lw_str: .string "\"test: 224; cg: PMPSm; cp: cp_priority; bin: region6_lxwr1000_3_lw\""
+PMPSm_cg_cp_priority_jalr_region0_lxwr1000_1_jalr_str: .string "\"test: 204; cg: PMPSm_cg; cp: cp_priority_jalr; bin: region0_lxwr1000_1_jalr\""
+PMPSm_cg_cp_priority_sw_region0_lxwr1000_2_sw_str: .string "\"test: 205; cg: PMPSm_cg; cp: cp_priority_sw; bin: region0_lxwr1000_2_sw\""
+PMPSm_cg_cp_priority_lw_region0_lxwr1000_3_lw_str: .string "\"test: 206; cg: PMPSm_cg; cp: cp_priority_lw; bin: region0_lxwr1000_3_lw\""
+PMPSm_cg_cp_priority_jalr_region1_lxwr1101_1_jalr_str: .string "\"test: 207; cg: PMPSm_cg; cp: cp_priority_jalr; bin: region1_lxwr1101_1_jalr\""
+PMPSm_cg_cp_priority_sw_region1_lxwr1101_2_sw_str: .string "\"test: 208; cg: PMPSm_cg; cp: cp_priority_sw; bin: region1_lxwr1101_2_sw\""
+PMPSm_cg_cp_priority_lw_region1_lxwr1101_3_lw_str: .string "\"test: 209; cg: PMPSm_cg; cp: cp_priority_lw; bin: region1_lxwr1101_3_lw\""
+PMPSm_cg_cp_priority_jalr_region2_lxwr1011_1_jalr_str: .string "\"test: 210; cg: PMPSm_cg; cp: cp_priority_jalr; bin: region2_lxwr1011_1_jalr\""
+PMPSm_cg_cp_priority_sw_region2_lxwr1011_2_sw_str: .string "\"test: 211; cg: PMPSm_cg; cp: cp_priority_sw; bin: region2_lxwr1011_2_sw\""
+PMPSm_cg_cp_priority_lw_region2_lxwr1011_3_lw_str: .string "\"test: 212; cg: PMPSm_cg; cp: cp_priority_lw; bin: region2_lxwr1011_3_lw\""
+PMPSm_cg_cp_priority_jalr_region3_lxwr1100_1_jalr_str: .string "\"test: 213; cg: PMPSm_cg; cp: cp_priority_jalr; bin: region3_lxwr1100_1_jalr\""
+PMPSm_cg_cp_priority_sw_region3_lxwr1100_2_sw_str: .string "\"test: 214; cg: PMPSm_cg; cp: cp_priority_sw; bin: region3_lxwr1100_2_sw\""
+PMPSm_cg_cp_priority_lw_region3_lxwr1100_3_lw_str: .string "\"test: 215; cg: PMPSm_cg; cp: cp_priority_lw; bin: region3_lxwr1100_3_lw\""
+PMPSm_cg_cp_priority_jalr_region4_lxwr1001_1_jalr_str: .string "\"test: 216; cg: PMPSm_cg; cp: cp_priority_jalr; bin: region4_lxwr1001_1_jalr\""
+PMPSm_cg_cp_priority_sw_region4_lxwr1001_2_sw_str: .string "\"test: 217; cg: PMPSm_cg; cp: cp_priority_sw; bin: region4_lxwr1001_2_sw\""
+PMPSm_cg_cp_priority_lw_region4_lxwr1001_3_lw_str: .string "\"test: 218; cg: PMPSm_cg; cp: cp_priority_lw; bin: region4_lxwr1001_3_lw\""
+PMPSm_cg_cp_priority_jalr_region5_lxwr1111_1_jalr_str: .string "\"test: 219; cg: PMPSm_cg; cp: cp_priority_jalr; bin: region5_lxwr1111_1_jalr\""
+PMPSm_cg_cp_priority_sw_region5_lxwr1111_2_sw_str: .string "\"test: 220; cg: PMPSm_cg; cp: cp_priority_sw; bin: region5_lxwr1111_2_sw\""
+PMPSm_cg_cp_priority_lw_region5_lxwr1111_3_lw_str: .string "\"test: 221; cg: PMPSm_cg; cp: cp_priority_lw; bin: region5_lxwr1111_3_lw\""
+PMPSm_cg_cp_priority_jalr_region6_lxwr1000_1_jalr_str: .string "\"test: 222; cg: PMPSm_cg; cp: cp_priority_jalr; bin: region6_lxwr1000_1_jalr\""
+PMPSm_cg_cp_priority_sw_region6_lxwr1000_2_sw_str: .string "\"test: 223; cg: PMPSm_cg; cp: cp_priority_sw; bin: region6_lxwr1000_2_sw\""
+PMPSm_cg_cp_priority_lw_region6_lxwr1000_3_lw_str: .string "\"test: 224; cg: PMPSm_cg; cp: cp_priority_lw; bin: region6_lxwr1000_3_lw\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -18,7 +18,7 @@
 #define SIGUPD_COUNT 46
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 #define TRAP_SIGUPD_COUNT 110
 
 // Include framework macros
@@ -35,7 +35,6 @@ RVTEST_BEGIN
 
 
 main:
-  LI(a2, 0x800) // Test signature initialization
 
 // Virtual addresses for code and test regions
 
@@ -49,12 +48,17 @@ main:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL3)
   sfence.vma
 
-// Set up the code-region save area.
-  csrr a0, mscratch
+// The boot tables identity map the test image, but that mapping is not user
+// accessible, so the code is mapped again at va_rvtest_code_begin. Registering
+// that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
+// to can fetch from.
+  LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL3)
 
   SATP_SETUP_RV64(sv48) // Enable address translation.
   sfence.vma
+
+  LI(a2, 0x800) // Test signature initialization
 
 
 // 512GB page at level 3
@@ -69,8 +73,7 @@ main:
   srli a0, a0, 25
   add a5, a5, a0
   LI(t0, MSTATUS_SUM)
-  csrs mstatus, t0
-  RVTEST_GOTO_LOWER_MODE Smode
+  csrs sstatus, t0
   addi a2, a2, 16
 
 // Store
@@ -87,8 +90,6 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test1_load:
 Sv_cp_sv48_spage_mstatus_sum_set_Smode_test1_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test1_store, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test1_store_str)
@@ -110,8 +111,7 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test1_exec:
   srli a0, a0, 25
   add a5, a5, a0
   LI(t0, MSTATUS_SUM)
-  csrs mstatus, t0
-  RVTEST_GOTO_LOWER_MODE Smode
+  csrs sstatus, t0
   addi a2, a2, 16
 
 // Store
@@ -128,8 +128,6 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test2_load:
 Sv_cp_sv48_spage_mstatus_sum_set_Smode_test2_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test2_store, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test2_store_str)
@@ -151,8 +149,7 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test2_exec:
   srli a0, a0, 25
   add a5, a5, a0
   LI(t0, MSTATUS_SUM)
-  csrs mstatus, t0
-  RVTEST_GOTO_LOWER_MODE Smode
+  csrs sstatus, t0
   addi a2, a2, 16
 
 // Store
@@ -169,8 +166,6 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test3_load:
 Sv_cp_sv48_spage_mstatus_sum_set_Smode_test3_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test3_store, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test3_store_str)
@@ -193,8 +188,7 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test3_exec:
   srli a0, a0, 34
   add a5, a5, a0
   LI(t0, MSTATUS_SUM)
-  csrs mstatus, t0
-  RVTEST_GOTO_LOWER_MODE Smode
+  csrs sstatus, t0
   addi a2, a2, 16
 
 // Store
@@ -211,8 +205,6 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test4_load:
 Sv_cp_sv48_spage_mstatus_sum_set_Smode_test4_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test4_store, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test4_store_str)
@@ -235,8 +227,7 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test4_exec:
   srli a0, a0, 34
   add a5, a5, a0
   LI(t0, MSTATUS_SUM)
-  csrs mstatus, t0
-  RVTEST_GOTO_LOWER_MODE Smode
+  csrs sstatus, t0
   addi a2, a2, 16
 
 // Store
@@ -253,8 +244,6 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test5_load:
 Sv_cp_sv48_spage_mstatus_sum_set_Smode_test5_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test5_store, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test5_store_str)
@@ -277,8 +266,7 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test5_exec:
   srli a0, a0, 34
   add a5, a5, a0
   LI(t0, MSTATUS_SUM)
-  csrs mstatus, t0
-  RVTEST_GOTO_LOWER_MODE Smode
+  csrs sstatus, t0
   addi a2, a2, 16
 
 // Store
@@ -295,8 +283,6 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test6_load:
 Sv_cp_sv48_spage_mstatus_sum_set_Smode_test6_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test6_store, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test6_store_str)
@@ -320,8 +306,7 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test6_exec:
   srli a0, a0, 43
   add a5, a5, a0
   LI(t0, MSTATUS_SUM)
-  csrs mstatus, t0
-  RVTEST_GOTO_LOWER_MODE Smode
+  csrs sstatus, t0
   addi a2, a2, 16
 
 // Store
@@ -338,8 +323,6 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test7_load:
 Sv_cp_sv48_spage_mstatus_sum_set_Smode_test7_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test7_store, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test7_store_str)
@@ -363,8 +346,7 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test7_exec:
   srli a0, a0, 43
   add a5, a5, a0
   LI(t0, MSTATUS_SUM)
-  csrs mstatus, t0
-  RVTEST_GOTO_LOWER_MODE Smode
+  csrs sstatus, t0
   addi a2, a2, 16
 
 // Store
@@ -381,8 +363,6 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test8_load:
 Sv_cp_sv48_spage_mstatus_sum_set_Smode_test8_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test8_store, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test8_store_str)
@@ -406,8 +386,7 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test8_exec:
   srli a0, a0, 43
   add a5, a5, a0
   LI(t0, MSTATUS_SUM)
-  csrs mstatus, t0
-  RVTEST_GOTO_LOWER_MODE Smode
+  csrs sstatus, t0
   addi a2, a2, 16
 
 // Store
@@ -424,8 +403,6 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test9_load:
 Sv_cp_sv48_spage_mstatus_sum_set_Smode_test9_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test9_store, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test9_store_str)
@@ -450,8 +427,7 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test9_exec:
   srli a0, a0, 52
   add a5, a5, a0
   LI(t0, MSTATUS_SUM)
-  csrs mstatus, t0
-  RVTEST_GOTO_LOWER_MODE Smode
+  csrs sstatus, t0
   addi a2, a2, 16
 
 // Store
@@ -468,8 +444,6 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test10_load:
 Sv_cp_sv48_spage_mstatus_sum_set_Smode_test10_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test10_store, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test10_store_str)
@@ -494,8 +468,7 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test10_exec:
   srli a0, a0, 52
   add a5, a5, a0
   LI(t0, MSTATUS_SUM)
-  csrs mstatus, t0
-  RVTEST_GOTO_LOWER_MODE Smode
+  csrs sstatus, t0
   addi a2, a2, 16
 
 // Store
@@ -512,8 +485,6 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test11_load:
 Sv_cp_sv48_spage_mstatus_sum_set_Smode_test11_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test11_store, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test11_store_str)
@@ -538,8 +509,7 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test11_exec:
   srli a0, a0, 52
   add a5, a5, a0
   LI(t0, MSTATUS_SUM)
-  csrs mstatus, t0
-  RVTEST_GOTO_LOWER_MODE Smode
+  csrs sstatus, t0
   addi a2, a2, 16
 
 // Store
@@ -556,8 +526,6 @@ Sv_cp_sv48_spage_mstatus_sum_set_Smode_test12_load:
 Sv_cp_sv48_spage_mstatus_sum_set_Smode_test12_exec:
   jalr ra, a5, 0
   nop
-
-  RVTEST_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test12_store, Sv_cp_sv48_spage_mstatus_sum_set_Smode_test12_store_str)
@@ -600,42 +568,42 @@ rvtest_slvl2_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test1_store_str: .string "\"test: 556; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test1_store\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test1_load_str: .string "\"test: 557; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test1_load\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test1_exec_str: .string "\"test: 558; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test1_exec\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test2_store_str: .string "\"test: 559; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test2_store\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test2_load_str: .string "\"test: 560; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test2_load\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test2_exec_str: .string "\"test: 561; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test2_exec\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test3_store_str: .string "\"test: 562; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test3_store\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test3_load_str: .string "\"test: 563; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test3_load\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test3_exec_str: .string "\"test: 564; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test3_exec\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test4_store_str: .string "\"test: 565; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test4_store\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test4_load_str: .string "\"test: 566; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test4_load\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test4_exec_str: .string "\"test: 567; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test4_exec\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test5_store_str: .string "\"test: 568; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test5_store\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test5_load_str: .string "\"test: 569; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test5_load\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test5_exec_str: .string "\"test: 570; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test5_exec\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test6_store_str: .string "\"test: 571; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test6_store\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test6_load_str: .string "\"test: 572; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test6_load\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test6_exec_str: .string "\"test: 573; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test6_exec\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test7_store_str: .string "\"test: 574; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test7_store\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test7_load_str: .string "\"test: 575; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test7_load\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test7_exec_str: .string "\"test: 576; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test7_exec\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test8_store_str: .string "\"test: 577; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test8_store\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test8_load_str: .string "\"test: 578; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test8_load\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test8_exec_str: .string "\"test: 579; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test8_exec\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test9_store_str: .string "\"test: 580; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test9_store\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test9_load_str: .string "\"test: 581; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test9_load\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test9_exec_str: .string "\"test: 582; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test9_exec\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test10_store_str: .string "\"test: 583; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test10_store\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test10_load_str: .string "\"test: 584; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test10_load\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test10_exec_str: .string "\"test: 585; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test10_exec\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test11_store_str: .string "\"test: 586; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test11_store\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test11_load_str: .string "\"test: 587; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test11_load\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test11_exec_str: .string "\"test: 588; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test11_exec\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test12_store_str: .string "\"test: 589; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test12_store\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test12_load_str: .string "\"test: 590; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test12_load\""
-Sv_cp_sv48_spage_mstatus_sum_set_Smode_test12_exec_str: .string "\"test: 591; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test12_exec\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test1_store_str: .string "\"test: 532; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test1_store\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test1_load_str: .string "\"test: 533; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test1_load\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test1_exec_str: .string "\"test: 534; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test1_exec\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test2_store_str: .string "\"test: 535; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test2_store\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test2_load_str: .string "\"test: 536; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test2_load\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test2_exec_str: .string "\"test: 537; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test2_exec\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test3_store_str: .string "\"test: 538; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test3_store\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test3_load_str: .string "\"test: 539; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test3_load\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test3_exec_str: .string "\"test: 540; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test3_exec\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test4_store_str: .string "\"test: 541; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test4_store\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test4_load_str: .string "\"test: 542; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test4_load\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test4_exec_str: .string "\"test: 543; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test4_exec\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test5_store_str: .string "\"test: 544; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test5_store\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test5_load_str: .string "\"test: 545; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test5_load\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test5_exec_str: .string "\"test: 546; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test5_exec\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test6_store_str: .string "\"test: 547; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test6_store\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test6_load_str: .string "\"test: 548; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test6_load\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test6_exec_str: .string "\"test: 549; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test6_exec\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test7_store_str: .string "\"test: 550; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test7_store\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test7_load_str: .string "\"test: 551; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test7_load\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test7_exec_str: .string "\"test: 552; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test7_exec\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test8_store_str: .string "\"test: 553; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test8_store\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test8_load_str: .string "\"test: 554; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test8_load\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test8_exec_str: .string "\"test: 555; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test8_exec\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test9_store_str: .string "\"test: 556; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test9_store\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test9_load_str: .string "\"test: 557; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test9_load\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test9_exec_str: .string "\"test: 558; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test9_exec\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test10_store_str: .string "\"test: 559; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test10_store\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test10_load_str: .string "\"test: 560; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test10_load\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test10_exec_str: .string "\"test: 561; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test10_exec\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test11_store_str: .string "\"test: 562; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test11_store\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test11_load_str: .string "\"test: 563; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test11_load\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test11_exec_str: .string "\"test: 564; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test11_exec\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test12_store_str: .string "\"test: 565; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test12_store\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test12_load_str: .string "\"test: 566; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test12_load\""
+Sv_cp_sv48_spage_mstatus_sum_set_Smode_test12_exec_str: .string "\"test: 567; cg: Sv; cp: cp_sv48_spage_mstatus_sum_set_Smode; bin: test12_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

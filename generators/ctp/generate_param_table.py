@@ -28,7 +28,6 @@ UDB parameters are loaded via the `udb list parameters` CLI command (from the ud
 import argparse
 import json
 import re
-import shutil
 import subprocess
 import sys
 import time
@@ -103,11 +102,8 @@ def load_yaml(path: Path) -> dict[str, Any]:
         return parse_malformed_yaml(text)
 
 
-def _ensure_udb_installed() -> None:
+def _ensure_udb_installed() -> Path:
     """Ensure the UDB gem is installed via bundler, installing if necessary."""
-    if shutil.which("udb") is not None:
-        return
-
     gemfile = Path(__file__).resolve().parent.parent.parent / "framework" / "src" / "act" / "data" / "Gemfile"
     if not gemfile.exists():
         print(
@@ -138,20 +134,19 @@ def _ensure_udb_installed() -> None:
                 print(f"'bundle install' attempt {attempt} failed. Retrying in {backoff}s...")
                 time.sleep(backoff)
 
-    if shutil.which("udb") is None:
-        print("Error: 'udb' command still not found after 'bundle install'.", file=sys.stderr)
-        sys.exit(2)
+    return gemfile
 
 
 def load_udb_params() -> dict[str, dict[str, Any]]:
     """Load all UDB parameter definitions via the `udb list parameters` CLI command."""
-    _ensure_udb_installed()
+    gemfile = _ensure_udb_installed()
     try:
         result = subprocess.run(
-            ["udb", "list", "parameters", "-f", "json"],
+            ["bundle", "exec", "udb", "list", "parameters", "-f", "json"],
             check=True,
             capture_output=True,
             text=True,
+            cwd=gemfile.parent,
         )
     except FileNotFoundError:
         print("Error: 'udb' command not found. Install the udb gem (see README).", file=sys.stderr)

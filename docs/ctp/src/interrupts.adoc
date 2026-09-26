@@ -19,7 +19,7 @@ TODO: coverpoints will need to ignore bins with mie.msie nonzero:
   # If a system has only one hart, or if a platform standard supports the delivery
   # of machine-level interprocessor interrupts through external interrupts (MEI)
   # instead, then mip.MSIP and mie.MSIE may both be read-only zeros.
-  - name: mie_msie_maybe_rdonly0
+  - name: mip_msip_mie_msie_maybe_rdonly0
 TODO: mip.MSIP update time
   # When the memory-mapped msip register changes, it is guaranteed to be reflected
   # in mip.MSIP eventually, but not necessarily immediately.
@@ -63,16 +63,26 @@ https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7
 
 include::norm/InterruptsU_norm_rules.adoc[]
 
-==== InterruptsSstc Supervisor Timer Compare Interrupts
+==== SstcSm Machine Supervisor Timer Compare
 
-These tests are run when the Sstc supervisor timer compare extension is supported.
+These tests are run from machine mode when the Sstc supervisor timer compare extension is supported.
 
-[[t-InterruptsSstc-coverpoints]]
-.InterruptsSstc Coverpoints
+[[t-SstcSm-coverpoints]]
+.SstcSm Coverpoints
 ,===
-https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=347804969#gid=347804969[Google Sheet Testplan]
+https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=2013711018#gid=2013711018[Google Sheet Testplan]
 ,===
 
-include::norm/InterruptsSstc_norm_rules.adoc[]
+include::norm/SstcSm_norm_rules.adoc[]
 
-TODO: beef up testing stimecmp values, behavior near wraparound
+==== Sstc Supervisor Timer Compare
+
+These tests are run from supervisor and user mode when the Sstc supervisor timer compare extension is supported.
+
+[[t-Sstc-coverpoints]]
+.Sstc Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=618999433#gid=618999433[Google Sheet Testplan]
+,===
+
+include::norm/Sstc_norm_rules.adoc[]

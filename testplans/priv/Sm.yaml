@@ -11,7 +11,7 @@ coverpoints:
       - mcause (WLRL), mstatus/h (WPRI), menvcfg/h (WPRI), mseccfg/h (WPRI) could be weird/hard to model
   - name: cp_mcsrwalk
     goal: Walking 1s and 0s in each writeable M-mode CSR
-    description: "Set and clear each bit of each writable M-mode CSR to exercise bitfields: mstatus, medeleg, mideleg, mie, mtvec, mcounteren, mscratch, mepc, mcause, mtval, mip, menvcfg, mseccfg.  For RV32 also mstatush, medelegh, menvcfgh, mseccfgh, mcountinhibit, mhpmevent31:3..  misa is fussy to model and is tested in cp_misa* instead.."
+    description: "Set and clear each bit of each writable M-mode CSR to exercise bitfields: mstatus, medeleg, mideleg, mie, mtvec, mcounteren, mscratch, mepc, mcause, mtval, mip, menvcfg, mseccfg.  For RV32 also mstatush, medelegh, menvcfgh, mseccfgh, mcountinhibit, mhpmevent31:3..  misa is fussy to model and is tested in cp_misa* instead.  Iterations that write a reserved mstatus.MPP, menvcfg.CBIE, or menvcfg/mseccfg.PMM value check the other bits exactly and only check that the field reads back a legal value."
     expectation: Writable bits match reference model.
     bins: 14 regs * (64 set + 64 clear)
   - name: cp_misa_mxl
@@ -95,7 +95,7 @@ coverpoints:
     rules:
       - sepc should be pointing two instructions ahead.
   - name: cp_scsr_from_m
-    description: "If S supported, read/write/set/clear each S-mode CSR: sstatus, scause, sie, stvec, scounteren, senvcfg, sscratch, sip, excluding bit 33 of senvcfg as it results in an invalid PMM field.  sepc and stval are not tested because it is hard to express what values are legal."
+    description: "If S supported, read/write/set/clear each S-mode CSR: sstatus, scause, sie, stvec, scounteren, senvcfg, sscratch, sip.  sepc and stval are not tested because it is hard to express what values are legal."
   - name: cp_satp_from_m
     description: If S is supported, read satp with mstatus.TVM=0/1
     expectation: shouldn't trap on either TVM.  Value is not predictable.

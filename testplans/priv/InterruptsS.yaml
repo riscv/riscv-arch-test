@@ -1,0 +1,128 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: InterruptsS
+source: https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=1560685057#gid=1560685057
+description: |
+  Tests run if S exists (and don't use MTI/MSI/MEI that are outside supervisor-mode spec)
+  Boot to SMODE, run tests in each supported priv mode of <S,U,VS,VU>
+  Reference model needs to know if each of the types of interrupts are supported
+  menvcfg.STCE = 0 unless otherwise stated
+  mideleg boots with 1s below M-mode and does not change
+  stvec.MODE uses boot value
+  RVTEST_SET_MTI_INT writes mtimecmp = 0 (with tsbi if necessary)
+  Define ways to cause all of the interrupts that are standard as much as possible, only need RV macros for special stuff
+setup:
+  columns:
+    - S
+    - U
+    - VS
+    - VU
+  steps:
+    - step: setup_interrupts_s
+      S: |-
+        mideleg boots with all non-M interrupts delegated
+        write sstatus.SIE= {0/1}
+        write sie = 1s
+        write stvec.MODE = {00, 01} if each supported
+      U: Same as S
+      VS: "***"
+      VU: "***"
+    - step: trigger_interrupts <type>
+      S: |-
+        RVTEST_SET_<type>_INT
+        RVTEST_IDLE_FOR_INTERRUPT to wait for interrupt
+        RVTEST_CLR_<type>_INT
+      U: Same as but with priv = U
+    - step: Coverpoint
+      S: |-
+        mideleg<typ> = 1 if UDB_<TYPE>_DELEGATION_SUPPORTED
+        sie<type> = 1 if UDB_<TYPE>_SUPPORTED
+        sstatus.SIE = {0/1}
+      U: Same as S
+    - step: Expectation
+      S: <type> pending if UDB_<TYPE>_SUPPORTED, trap if SIE = 1
+      U: pending and trap if UDB_<TYPE>_SUPPORTED
+coverpoints:
+  - name: cp_trigger
+    goal: Assert each interrupt
+    description: |-
+      For <type> = {LCOFI, STI, SSI, SEI, VSTI, VSEI, VSSI}
+      setup_interrupts_s
+      trigger_interrupts_<type>
+    expectation: |-
+      in S mode, supported interrupt will fire if SIE = 1
+      SIE should not affect result in lower modes
+    bins: 4 priv * 7 int * 2 SIE * 2 vecMODE
+    rules:
+      - mstatus_xie_intr_en_dis
+      - mstatus_xpie_op
+  - name: cp_trigger_reg
+    description: Same as cp_trigger, but use mip.SEIP, mip.SSIP, and sip.SSIP rather than macros.
+    expectation: same as above
+    bins: 4 priv * 3 int * 2 SIE * 2 vecMODE
+  - name: cp_trigger_sti_sstc
+    goal: STI with SSTC
+    description: |-
+      if SSTC_SUPPORTED:
+      setup_interrupts_s
+      write menvcfg.STCE = {0/1}
+      trigger_interrupts_SSTC
+    expectation: |-
+      STI trigger if
+      in S mode, all 3 enables are true
+      in lower mode, STCE and STIE are true (SIE does not matter)
+    bins: 4 priv * 2 STCE * 2 SIE * 2 vecMODE
+  - name: cp_enable
+    goal: Enables control interrupts
+    description: |-
+      write sstatus.SIE = 1
+      For <type> in <types above>:
+      sie = {1 in type, 1s everywhere except type}
+      RVTEST_SET_<type>_INT
+      RVTEST_IDLE_FOR_INT
+      RVTEST_CLR_<type>_INT
+    expectation: Interrupt if sie and sip match
+    bins: 4 priv * 2 sie * 7 int
+  - name: cp_priority_sip
+    goal: Priority of pending interrupts
+    description: |-
+      write sstatus.SIE = 1
+      write sie = 0s
+      RVTEST_SET_<type>_INT (7 choose 2) pairs of sip.<TYPE1, TYPE2>
+      write sie = 1s
+      RVTEST_IDLE_FOR_INT
+      RVTEST_CLR_<type>_INT for both
+    expectation: highest priority pending interrupt will fire
+    bins: 21 int * 4 priv
+  - name: cp_priority_sie
+    goal: Priority of enabled interrupts
+    description: |-
+      write sstatus.SIE = 1
+      write sie = 0s
+      RVTEST_SET_<type>_INT for all 7 types
+      write sie with two ones for all (7 choose 2) pairs
+      RVTEST_IDLE_FOR_INT
+      RVTEST_CLR_<type>_INT for all
+    expectation: highest priority enabled interrupt will fire
+    bins: 21 int * 4 priv
+  - name: cp_wfi
+    goal: WFI waits until timer interrupt
+    description: |-
+      Do not test in U mode.
+      if SSTC_SUPPORTED:
+      write mstatus.TW = 0
+      write sstatus.SIE = {0/1}
+      write sie.STIE = 1
+      RVTEST_SET_SSTC_INT_SOON
+      do {
+        WFI instruction
+      } until STI has fired (see Zawrs)
+      RVTEST_CLR_SSTC_INT
+    expectation: Wait for timer interrupt.  MIE and SIE not affect results.
+    bins: 4 priv * 2 SIE
+  - name: cp_wfi_timeout
+    goal: WFI waits until timeout
+    description: |-
+      write mstatus.TW = 1 (also 0 in U-mode if S_SUPPORTED)
+      write sie.STIE = {0/1}
+      write sstatus.SIE = {0/1}
+      WFI instruction

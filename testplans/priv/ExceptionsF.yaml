@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: ExceptionsF
+source: https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=1241522932#gid=1241522932
+coverpoints:
+  - name: cp_mstatus_fs_illegal_instr
+    goal: Illegal Instruction
+    description: Executing a floating-point instruction when mstatus.FS=00
+    expectation: causes illegal instruction exception.
+    bins: 19 instructions selected for testing
+  - name: cp_mstatus_fs_csr_access
+    goal: Illegal Instruction
+    description: Access (read, write, set, clear) fcsr, fflags, frm when mstatus.FS=00
+    expectation: causes illegal instruction exception.
+    bins: 3 instructions * 3 CSRs
+  - name: cp_mstatus_fs_legal
+    goal: legal instruction
+    description: |-
+      Executing a floating-point instruction when mstatus.FS=01, 10, 11
+      cross with legal frm values
+    expectation: does not cause an illegal instruction exception
+    bins: 3 FS * 19 instructions * 5 legal frm values
+  - name: cp_load_address_misaligned
+    goal: misaligned load
+    description: Execute flw with all 4 lsbs in address.  If supported, also do flh, fld, flq.
+    expectation: might cause misaligned load fault
+    bins: 16 addresses * up to 4 instructions
+  - name: cp_load_access_fault
+    goal: load access fault
+    description: Execute flw from access fault address.  If supported, also do flh, fld, flq
+    expectation: load access fault
+    bins: up to 4 instructions
+  - name: cp_store_address_misaligned
+    goal: misaligned store
+    description: Execute fsw with all 4 lsbs in address.  If supported, also do fsh, fsd, fsq.
+    expectation: might cause misaligned load fault
+    bins: 16 addresses * up to 4 instructions
+  - name: cp_store_access_fault
+    goal: store access fault
+    description: Execute fsw from access fault address.  If supported, also do fsh, fsd, fsq.
+    expectation: load access fault
+    bins: up to 4 instructions

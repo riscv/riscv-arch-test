@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Shtvala
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1365004927#gid=1365004927
+notes: |
+  Following tests are done in from VU and VS-modes into HS-mode
+coverpoints:
+  - heading: Initialize htval to some random value before each test
+  - name: cp_load_guest_page_fault
+    goal: Fault writes GPA >> 2 to htval
+    description: Cause load guest-page fault
+    expectation: htval written with GPA
+    bins: "1"
+    rules:
+      - htval must be written with the faulting guest physical address in all circumstances permitted by the ISA
+  - name: cp_store_guest_page_fault
+    goal: Fault writes GPA >> 2 to htval
+    description: Cause store guest-page fault
+    expectation: htval written with GPA
+    bins: "1"
+  - name: cp_instr_guest_page_fault
+    goal: Fault writes GPA >> 2 to htval
+    description: Cause fetch guest-page fault
+    expectation: htval written with GPA
+    bins: "1"

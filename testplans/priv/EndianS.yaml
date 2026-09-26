@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: EndianS
+source: https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=561554401#gid=561554401
+coverpoints:
+  - name: cp_mstatus_sbe_endianness_*
+    goal: Read from memory in an endian fashion in supervisor mode.
+    description: Run test in supervisor mode. For each endianness given by mstatus.SBE, sd 0x0102030405060708 to scratch, and also write all subwords with sw, sh, sb. For each endianness (independent), ld, lw, lwu, lh, lhu, lb, lbu it back. In RV32, use mstatush and don't need the doubles.
+    notes: |-
+      restore endianness to normal afterward
+      SBE
+  - name: cp_mstatus_mprv_sbe_endianness_*
+    goal: Read from memory in an endian fashion based on MBE and SBE for systems with supervisor mode.
+    description: Run test in machine mode. Each endianness is a cross-product of MPRV = 0/1, MPP = 01/11, MBE = 0/1, SBE = 0/1 (16 bins).  For each endianness, sd 0x0102030405060708 to scratch, and also write all subwords with sw, sh, sb. For each endianness (independent), ld, lw, lwu, lh, lhu, lb, lbu it back. In RV32, use mstatush and don't need the doubles.
+    notes: |-
+      restore endianness to normal afterward
+      MPRV, MBE, SBE
+  - name: cp_sstatus_ube_endianness_*
+    goal: Read from memory in an endian fashion
+    description: Run test in user mode. For each endianness given in sstatus.UBE, sd 0x0102030405060708 to scratch, and also write all subwords with sw, sh, sb. For each endianness (independent), ld, lw, lwu, lh, lhu, lb, lbu it back.  In RV32, use mstatush and don't need the doubles.
+    notes: |-
+      restore endianness to normal afterward
+      UBE

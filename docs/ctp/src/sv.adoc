@@ -9,13 +9,14 @@ Coverpoints that need M-mode state (`mstatus.MPRV`, `mstatus.TVM`, `mstatus.SBE`
 are in the `Sm` suites: SvSm, SvbareSm and SvinvalSm.
 The PMP suites (SvPMP, SvPMPZicbo, SvaduPMP) boot to M-mode because they program PMP entries.
 
-[[t-Sv-coverpoints]]
-.Sv Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1688601426#gid=1688601426[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/Sv.adoc[]
 
 include::norm/Sv_norm_rules.adoc[]
+
+*UDB Parameters:*
+
+* REPORT_VA_IN_{MTVAL/STVAL}ON_{INSTRUCTION/LOAD/STORE_AMO}PAGE_FAULT affects result in {MTVAL,STVAL} during page-fault exceptions, such as coverpoints TODO
+* TODO other coverpoints at least SATP_MODE_BARE, TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY
 
 ==== SvSm Virtual Memory with M-mode State
 
@@ -23,26 +24,13 @@ Covers `mstatus.MPRV` accesses, `mstatus.TVM` trapping of `satp` and `SFENCE.VMA
 page-table accesses, and M-mode access to `satp`. The `mstatus.SBE` tests are generated but not run until a
 big-endian configuration is available.
 
-[[t-SvSm-coverpoints]]
-.SvSm Coverpoints
-,===
-See the SvSm sheet of the Sv testplan.
-,===
+include::{testplansdir}/priv/SvSm.adoc[]
 
 include::norm/SvSm_norm_rules.adoc[]
 
-*UDB Parameters:*
-
-* REPORT_VA_IN_{MTVAL/STVAL}ON_{INSTRUCTION/LOAD/STORE_AMO}PAGE_FAULT affects result in {MTVAL,STVAL} during page-fault exceptions, such as coverpoints TODO
-* TODO other coverpoints at least SATP_MODE_BARE, TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY
-
 ==== Svbare Virtual Memory Off
 
-[[t-Svbare-coverpoints]]
-.Svbare Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1237201823#gid=1237201823[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/Svbare.adoc[]
 
 include::norm/Svbare_norm_rules.adoc[]
 
@@ -59,32 +47,20 @@ include::norm/SvbareSm_norm_rules.adoc[]
 
 ==== SvPMP VirtMem + PMP
 
-[[t-SvPMP-coverpoints]]
-.SvPMP Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=726223656#gid=726223656[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/SvPMP.adoc[]
 
 include::norm/SvPMP_norm_rules.adoc[]
 
 ==== SvZicbo VirtMem + CBOM/CBOZ
 
-[[t-SvZicbo-coverpoints]]
-.SvZicbo Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=45572429#gid=45572429[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/SvZicbo.adoc[]
 
 include::norm/SvZicbo_norm_rules.adoc[]
 
 
 ==== SvPMPZicbo VirtMem + PMP + CBOM/CBOZ
 
-[[t-SvPMPZicbo-coverpoints]]
-.SvPMPZicbo Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1563579846#gid=1563579846[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/SvPMPZicbo.adoc[]
 
 include::norm/SvPMPZicbo_norm_rules.adoc[]
 
@@ -93,11 +69,7 @@ include::norm/SvPMPZicbo_norm_rules.adoc[]
 
 The Svinval extension defines instructions to update memory management tables for virtual memory and optionally for PMP. Their effect is system-dependent, so these tests simply check that the instructions run.
 
-[[t-Svinval-coverpoints]]
-.Svinval Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1M78FrWvnva08vg-_5ejIkTZBhW1z5mW7NkYjl5lXH5g/edit?gid=1987812700#gid=1987812700[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/Svinval.adoc[]
 
 include::norm/Svinval_norm_rules.adoc[]
 
@@ -115,50 +87,34 @@ include::norm/SvinvalSm_norm_rules.adoc[]
 
 ==== Svade A/D Bit Page Fault Exception
 
-[[t-Svade-coverpoints]]
-.Svade Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1346750896#gid=1346750896[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/Svade.adoc[]
 
 include::norm/Svade_norm_rules.adoc[]
 
 ==== Svadu A/D Bit Hardware Update
 
-[[t-Svadu-coverpoints]]
-.Svadu Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1484908158#gid=1484908158[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/Svadu.adoc[]
 
 include::norm/Svadu_norm_rules.adoc[]
 
 ==== Svadu A/D Bit Hardware Update + PMP
 
-[[t-SvaduPMP-coverpoints]]
-.SvaduPMP Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1568813008#gid=1568813008[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/SvaduPMP.adoc[]
 
 include::norm/SvaduPMP_norm_rules.adoc[]
 
 ==== Svpbmt Page-Based Memory Types
 
-[[t-Svpbmt-coverpoints]]
-.Svpbmt Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=375458051#gid=375458051[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/Svpbmt.adoc[]
 
 include::norm/Svpbmt_norm_rules.adoc[]
 
 ==== Svnapot Naturally-Aligned Power-of-Two Page Sizes
 
-[[t-Svnapot-coverpoints]]
-.Svnapot Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=375458051#gid=375458051[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/Svnapot.adoc[]
 
 include::norm/Svnapot_norm_rules.adoc[]
+
+==== Svukte User Kernel Translation Enable
+
+include::{testplansdir}/priv/Svukte.adoc[]

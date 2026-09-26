@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Za64rs
+source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=910803819#gid=910803819
+coverpoints:
+  - name: cp_za64rs
+    goal: reservation set size
+    description: For each offset in [0, 64] that is a multiple of 4, lr.w from base address that a multiple of 64 and then sc.w to an address with that offset from base
+    expectation: sc success code in rd matches reference model, succeeding for small offsets and failing for large offsets (definitely for 64, optionally smaller)
+    bins: "17"
+    rules:
+      - Reservation sets are contiguous, naturally aligned, and a maximum of 64 bytes.
+  - heading: "Note:"
+  - heading: Can borrow tests from sc.w unprivileged test

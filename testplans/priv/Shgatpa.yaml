@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Shgatpa
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=262220701#gid=262220701
+coverpoints:
+  - heading: Following tests are done in M-mode
+  - name: cp_shgatpa
+    goal: Check all values writable to hgatp.mode
+    description: |-
+      RV32: write hgatp.mode = 0/1
+      RV64: write hgatp.mode = 0, 8, 9, 10
+    expectation: Matches reference model, which should accept same values as satp.mode
+    bins: 2 or 4
+    rules:
+      - For each supported virtual memory scheme SvNN supported in satp, the corresponding hgatp SvNNx4 mode must be supported. The hgatp mode Bare must also be supported.

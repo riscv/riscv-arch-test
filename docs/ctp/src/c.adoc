@@ -3,7 +3,7 @@
 
 The C extension is subdivided into Zca, Zcf, and Zcd.  All configurations supporting C contain Zca.  RV32CF configurations also contain Zcf, and RV{32/64}CD configurations also contain Zcd.  A configuration supporting C should test all of the applicable Zc* extensions.
 
-<<t-C-priv-normative-rules>> summarizes normative rules relating to compressed instructions affecting privileged behavior. ***update
+<<t-ExceptionsZc-normative-rules>> summarizes normative rules relating to compressed instructions affecting privileged behavior. ***update
 
 ==== Zca Compressed Extension
 
@@ -18,6 +18,7 @@ Modified coverpoints for Zc* are summarized in <<t-Zc-modified-coverpoints>>.  A
 [[t-Zc-modified-coverpoints]]
 .Zc Modified Coverpoints
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Modified Coverpoint|Bins|Definition
 |cp_asm_count_nop|1|Number of times the canonical `c.nop` form is executed in the test with imm == 0, must be greater than 0.

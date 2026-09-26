@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Shvstvecd
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1109621355#gid=1109621355
+coverpoints:
+  - heading: Following tests are done in M-mode
+  - name: cp_shvstvecd
+    goal: Check vstvec.MODE can be 0 and when it is, vstvec.base can hold valid 4-byte aligned addresses
+    description: Write vstvec = RAM_BASE_ADDR, RAM_BASE_ADDR+4
+    expectation: vstvec gets value written
+    bins: "2"
+    rules:
+      - vstvec.MODE must be capable of holding the value 0 (Direct). When vstvec.MODE=Direct, vstvec.BASE must be capable of holding any valid four-byte-aligned address.

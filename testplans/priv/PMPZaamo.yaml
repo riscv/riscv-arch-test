@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: PMPZaamo
+source: https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=343093009#gid=343093009
+coverpoints:
+  - heading: "See PMPM for general information.\nTests run in M mode.\nIn this suite, amo = amoswap.w, amoadd.w, amoxor.w, amoadd.w, amoor.w, amomin.w, amomax.w, amominu.w, amomaxu.w\nIn RV64, add .d flavors\nSome loads/stores throw illegal instruction trap if not supported"
+  - name: cp_cfg_RW
+    goal: The R, W, ...bits, when set, indicate that the PMP entry permits read, write
+    description: |-
+      Check that WR bits control write/read access for every type of amo.
+      Attempt all accesses with pmpcfg_i.L=1, all legal pmpcfg_i.XWR
+      Observe proper access faults for restricted read/write regions
+    bins: 6 XWR * (9/16 AMOs)

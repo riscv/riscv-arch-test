@@ -1,0 +1,214 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Zicfilp_common_reference
+title: Zicfilp Common Coverpoints
+source: https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?gid=1319034416#gid=1319034416
+coverpoints:
+  - heading: "In this sheet:\nIndirect_CT = { JALR, C.JR, C.JALR }  (if C implemented)\nlink_reg = { x1, x5, x7 }\nnon_link_reg = all other GPRs\nELP = { NO_LP_EXPECTED, LP_EXPECTED }\n\n\nThis sheet serves as the common reference for all Zicfilp privilege-mode \nspecific sheets (M-mode, S-mode, U-mode). It contains the full specification \nof all shared coverpoints with complete descriptions, expectations, bins, \nand normative rules.\n\nZicfilp provides forward-edge control-flow integrity by requiring that\nindirect control transfers target an LPAD instruction when LP_EXPECTED is set.\nxLPE (Landing Pad Enable) is privilege-mode dependent:\nIf S-mode implemented:\n    M-mode  => mseccfg.MLPE\n    S/HS    => menvcfg.LPE\n    VS      => henvcfg.LPE\n    U/VU    => senvcfg.LPE\n\nIf S-mode not implemented:\n    M-mode  => mseccfg.MLPE\n    U-mode  => envcfg.LPE\n\nGeneral Test Environment:\n- Zicsr implemented.\n- No higher-priority exception injected unless explicitly stated."
+  - name: cp_zicfilp_indirect_elp_state_update
+    goal: Verify correct update of ELP state on execution of indirect control-transfer instructions based on rs1 category, privilege mode, and xLPE enable state.
+    description: |-
+      Test Case: Execute Indirect_CT instructions in each supported privilege mode under the following configurations:
+      1.  xLPE=1
+      2.  xLPE=0
+
+
+      Execute instruction  with rs1 ∈  all 31registers excluding  x0
+        -  indirect jump destination={LPAD, NON-LPAD  }
+      -  for JALR the destination rd=random
+    expectation: |-
+      software check exception if applicable
+      .
+
+      .
+    bins: |-
+      31 rs1 registers ×
+        2  LPEs×
+        3 indirect_CT types x2 destinations
+    id: zicflip_lpad_expected
+    rules:
+      - "[[norm:zicflip_lpad_expected]]"
+      - "[norm:zicflip_indirect_branch_lpad]"
+  - name: cp_zicfilp_lpad_zero_label_bypass
+    goal: Verify that LPAD with LPL=0 bypasses label comparison during landing pad validation.
+    description: |-
+      Test Environment:
+       xLPE=1,
+      execute an indirect control transfer (Indirect_CT) using rs1 != {x1,x5,x7} so that ELP=LP_EXPECTED.
+      Target an LPAD instruction whose encoded LPL=0. Execute with arbitrary values in x7.
+    expectation: Indirect branch shall succeed without software-check exception. LPAD label comparison shall be bypassed when LPL=0.
+    bins: N Indirect_CT types × N privilege modes × target_LPL_zero
+    id: zicflip_lpad_imm_enc
+    rules:
+      - norm:zicflip_lpad_imm_enc
+  - name: cp_zicfilp_lpad_valid_execution
+    goal: Verify that a valid LPAD instruction satisfies landing pad validation when ELP=LP_EXPECTED.
+    description: |-
+      Test Environment:
+       xLPE=1,
+      execute an indirect control transfer (Indirect_CT) using rs1 != {x1,x5,x7} so that ELP=LP_EXPECTED.
+      Then execute a properly aligned LPAD instruction at the target address under two conditions: (1) LPL=0, (2) LPL matches x7[31:12].
+    expectation: No software-check exception shall be raised. After LPAD retirement, ELP shall be set to NO_LP_EXPECTED.
+    bins: 2 (LPL={0,match}) × N Indirect_CT types × N privilege modes
+    id: zicflip_elp_lpad_expected
+    rules:
+      - "[norm:zicflip_elp_lpad_expected]"
+  - name: cp_zicfilp_lpad_missing_instruction_exception
+    goal: Verify that execution of a non-LPAD instruction when ELP=LP_EXPECTED raises a software-check exception.
+    description: |-
+      Test Environment:
+       xLPE=1,
+      execute an indirect control transfer (Indirect_CT) using rs1 != {x1,x5,x7} so that ELP=LP_EXPECTED.
+      At the target address, execute an instruction that is not LPAD.
+    expectation: A software-check exception (cause=18) shall be raised. xtval shall indicate landing pad fault (code=2). ELP shall remain LP_EXPECTED.
+    bins: N Indirect_CT types × N privilege modes
+    id: zicflip_elp_lpad_expected
+    rules:
+      - "[norm:zicflip_elp_lpad_expected]"
+  - name: cp_zicfilp_lpad_label_mismatch
+    goal: Verify software-check exception for LPAD label mismatch
+    description: |-
+      xLPE=1,
+      execute an indirect control transfer (rs1 != {x1,x5,x7}) so that ELP=LP_EXPECTED.
+      Load x7 with a label using LUI, then execute LPAD with nonzero LPL that does not match x7[31:12].
+    expectation: Software-check exception (cause=18) shall be raised. xtval shall indicate "landing pad fault (code=2)".
+    bins: Instruction type × rs1 category × ELP × N privilege modes
+    id: zicflip_elp_lpad_expected
+  - name: cp_zicfilp_lpad_label_match_mismatch
+    goal: Verify LPAD label matching and mismatching behavior
+    description: "Load label value (e.g, 0xABCDE) into x7 using LUI. Execute indirect branch to LPAD instruction with: (1) matching LPL, (2) mismatching LPL, (3) branch to non-LPAD instruction, (4) branch to LPAD without initializing x7."
+    expectation: If expected landing pad label in x7 matches LPAD immediate label, no exception. Otherwise, software-check exception occurs.
+    bins: 4 (Instruction type × rs1 category × ELP × N privilege modes)
+    id: zicflip_lpad_label
+    rules:
+      - "[norm:zicflip_lpad_label]"
+  - name: cp_zicfilp_lpad_label_exception_delivery
+    goal: Verify software-check exception delivery and correct privilege-mode handling on LPAD label mismatch
+    description: |-
+      Test Environment:
+      Load x7 with a known label, execute indirect branch to set ELP=LP_EXPECTED.
+      Execute aligned LPAD with mismatched LPL.
+    expectation: Software-check exception (cause=18) delivered to the correct privilege mode (U or M). xtval="landing pad fault (code=2)".
+    bins: Instruction type × rs1 category × ELP × N privilege modes
+    id: |-
+      zicflip_lpad_enabled_exception
+      zicflip_lpad_label_exception
+      lpad_sw_exception
+      cfi_sstatus_spelp_op
+    rules:
+      - "[norm:zicflip_lpad_enabled_exception]"
+      - "[norm:zicflip_lpad_label_exception]"
+      - "[[norm:lpad_sw_exception]]"
+      - "[norm:cfi_sstatus_spelp_op]"
+  - name: cp_disabled_zicfilp
+    goal: Verify behavior when Zicfilp is disabled
+    description: |-
+      Test Environment:
+       but explicitly disabled at the tested privilege mode (xLPE=0),
+      execute LPAD instructions or indirect branches targeting LPAD.
+    expectation: No exception is raised; LPAD acts as a nop.
+    bins: 1 × N privilege modes
+    id: zicflip_lpad_enabled_instr_allowed
+    rules:
+      - "[norm:zicflip_lpad_enabled_instr_allowed]"
+  - name: cp_lpad_no_sw_exception_elp_clear_zicfilp
+    goal: Verify that ELP updates to NO_LP_EXPECTED after executing a valid LPAD
+    description: |-
+      Test Environment:
+      Execute an indirect branch (JALR/C.JALR) with rs1 != {x1,x5,x7} to set ELP=LP_EXPECTED.
+      Target address is 4-byte aligned, and x7[31:12] matches the expected LPL.
+    expectation: No software-check exception is raised. ELP is updated to NO_LP_EXPECTED after LPAD execution
+    bins: Instruction type × rs1 category × ELP × N privilege modes
+    id: zicflip_lpad_sw_exception
+    rules:
+      - "[norm:zicflip_lpad_no_sw_exception]"
+  - name: cp_exception_priority_zicfilp
+    goal: Verify the priority of exceptions
+    description: |-
+      Test Environment:
+      xLPE=1.
+      (1) Execute an Indirect_CT with rs1 != {x1,x5,x7} targeting RVMODEL_ACCESS_FAULT_ADDRESS: the instruction access fault is taken, not the software-check exception, and xPELP records LP_EXPECTED.
+      (2) Target an illegal instruction: the software-check exception is taken, not an illegal-instruction exception.
+    expectation: Instruction access fault (cause=1) is taken in preference to the software-check exception, and the software-check exception is taken in preference to an illegal-instruction exception (cause=2).
+    bins: N privilege modes x {instruction access fault at the target, illegal instruction at the target}
+    id: |-
+      Zicfilp_forward_trap_async_exception
+      Zicfilp_exception_priority
+    rules:
+      - "[norm:Zicfilp_forward_trap_async_exception]"
+      - "[norm:Zicfilp_exception_priority]"
+  - heading: The gray test are duplicates of other test and are excluded.
+  - heading: The yellow coverpoints are excluded because they apply to debug
+  - name: cp_lpad_misaligned_address_exception_zicfilp
+    goal: Verify exception for misaligned PC
+    description: |-
+      Test Case
+      Execute indirect branch to set ELP=LP_EXPECTED, then execute LPAD at misaligned address (not 4-byte aligned)
+    expectation: Software-check exception raised (cause=18), xtval="landing pad fault (code=2)", ELP unchanged
+    bins: Instruction type  × rs1 category (non-link register) × ELP)xpriv mode
+    id: zicflip_elp_lpad_expected
+    rules:
+      - "[norm:zicflip_elp_lpad_expected]"
+      - "Redundant: Not a certification case. Instruction-address misalignment generates an instruction-address-misaligned exception, which has higher architectural priority and is not specific to the landing pad validation rule. This is not a distinct normative requirement of [[norm:zicflip_elp_lpad_expected]]"
+  - name: cp_lpad_alignment_exception_zicflip
+    goal: Verify operation of LPAD instruction
+    description: |-
+      Test Case
+       Execute indirect branch (rs1 ≠ x1,x5,x7) in U-mode to set ELP=LP_EXPECTED, force PC %4 ≠ 0 for LPAD
+    expectation: |-
+      Software-check exception (cause=18), xtval="landing pad fault (code=2)
+      delivered to U or M mode"
+    bins: Instruction type  × rs1 category (non-link register) × ELP)xpriv mode
+    id: |-
+      zicflip_lpad_enabled_exception
+      zicflip_lpad_alignment_exception
+      lpad_sw_exception]
+      lpad_sw_exception
+    rules:
+      - "[norm:zicflip_lpad_enabled_exception]"
+      - "[norm:zicflip_lpad_alignment_exception]"
+      - "[[norm:lpad_sw_exception]]"
+      - "Redundant: Misaligned PC exceptions are already handled by standard ISA trap mechanisms. This is negative testing"
+  - name: cp_elp_state_preservation_debug_zicfilp
+    goal: |-
+      Verify Debug Mode saves and
+       restores previous ELP via dcsr.PELP
+    description: |-
+      Test Case
+      Execute indirect branch to set ELP=LP_EXPECTED,
+      enter Debug Mode using EBREAK instruction
+    expectation: |-
+      Debug mode entered, dcsr.pelp stores previous ELP value,
+      after exiting debug mode, ELP restored correctly
+    bins: |-
+      Origin mode U ×
+      Debug entry × ELP state
+    id: dcsr-pelp_op
+    rules:
+      - "[norm:dcsr-pelp_op]"
+      - Should be added in Debug testplan when we will start writing Debug testplans
+  - name: cp_pelp_debug_mode_zicflip
+    goal: Verify ELP on Debug Mode entry
+    description: |-
+      Test Case
+      Execute indirect branch in U-mode to set ELP=LP_EXPECTED, execute EBREAK to enter Debug Mode
+    expectation: dcsr.pelp = LP_EXPECTED and ELP set to NO_LP_EXPECTED
+    bins: Debug entry × Initial ELP state
+    id: norm:Zicfilp_pelp_debug_mode
+    rules:
+      - "[norm:Zicfilp_pelp_debug_mode]"
+      - Should be added in Debug testplan when we will start writing Debug testplans
+  - name: cp_pelp_debug_mode_r_zicflip
+    goal: Verify ELP on resuming from Debug Mode
+    description: |-
+      Test Case
+      Resume from Debug Mode with senvcfg.LPE=1
+      Test Case
+      Resume from Debug Mode with senvcfg.LPE=0
+    expectation: |-
+      ELP restored from dcsr.pelp for 1
+      ELP set to NO_LP_EXPECTED for 0
+    bins: Resume privilege × LPE disabled/enabled
+    id: norm:Zicfilp_pelp_debug_mode
+    rules:
+      - "[norm:Zicfilp_pelp_debug_mode]"
+      - Should be added in Debug testplan when we will start writing Debug testplans

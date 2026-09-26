@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SvaduH
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=530717859#gid=530717859
+coverpoints:
+  - heading: Develop as part of virtual memory
+  - name: vsatp_svadu
+    goal: Verify SVADU
+    description: |-
+      Environment: If unsupported, menvcfg.ADUE must=0.
+      Test Case: Read ADUE.
+    expectation: Always 0 if not implemented.
+    bins: —

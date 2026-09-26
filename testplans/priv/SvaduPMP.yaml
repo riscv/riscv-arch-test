@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SvaduPMP
+source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1568813008#gid=1568813008
+coverpoints:
+  - name: |-
+      Abit_unset_pmpW_unset_exec
+      Abit_unset_pmpW_unset_read
+      Abit_unset_pmpW_unset_write
+    goal: Verify that PMP permissions are checked during hardware update of PTE.A
+    description: |-
+      With menfcfg.ADUE = {0/1}: Check that page tables are accessed with S permission during hardware page table hardware A bit update.
+      Set up VM page table with PMP.W=0 pointing to page in default region.
+      Leaf page tables have full access, AD = 00
+      With satp pointing to each top-level page table, {lw/sw/jalr} to some virtual address.
+      Expect store access fault on all 3 instructions when W = 0 iff Svadu enabled, because it attempts to write A bit and doesn't have access
+    expectation: |-
+      If ADUE = 0: load/store/fetch page fault
+      If ADUE = 1 and PMP W = 0, store access fault from HPTW trying to update PTE
+      If ADUE = 1 and PMP W = 1, no fault
+    bins: 2 ADUE * 3 page tables * 3 types of access
+    notes: AD ->  accessed (A) and dirty (D) bit. The A bit indicates the virtual page has been read, written, or fetched from since the last time the A bit was cleared. The D bit indicates the virtual page has been written since the last time the D bit was cleared.... To assign look at page 135
+  - name: Dbit_unset_pmpW_unset_write
+    goal: Verify that PMP permissions are checked during hardware update of PTE.D
+    description: |-
+      With menfcfg.ADUE = {0/1}: Check that page tables are accessed with S permission during hardware page table hardware D bit update.
+      Set up VM page table with PMP.W=0 pointing to page in default region.
+      Leaf page tables have full access, AD = 10
+      With satp pointing to each top-level page table, {sw} to some virtual address.
+      Expect store access fault on sw when W = 0 iff Svadu enabled, because it attempts to write D bit and doesn't have access
+    expectation: |-
+      If ADUE = 0: load/store/fetch page fault
+      If ADUE = 1 and PMP W = 0, store access fault from HPTW trying to update PTE
+      If ADUE = 1 and PMP W = 1, no fault
+    bins: 2 ADUE * 3 page tables * 3 types of access

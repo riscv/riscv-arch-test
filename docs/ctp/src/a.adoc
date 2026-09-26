@@ -29,6 +29,7 @@ include::{testplansdir}/Zalrsc.adoc[]
 [[t-Zalrsc-coverpoint-definitions]]
 .Zalrsc Coverpoint Definitions
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Coverpoint|Bins|Definition
 3+^|cp_custom_lr coverpoints
@@ -47,4 +48,4 @@ The spec imposes no requirements on reservation set form, including alignment, N
 
 TODO: On implementations that support the C extension, compressed forms of the
 I instructions permitted inside constrained LR/SC sequences, as
-described in <<sec:lrscseq>>, are also permitted.
+described in https://riscv.github.io/riscv-isa-manual/snapshot/spec/index.html#sec:lrscseq[the ISA manual], are also permitted.

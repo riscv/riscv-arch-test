@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: EndianU
+source: https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=0#gid=0
+coverpoints:
+  - name: cp_mstatus_ube_endianness_*
+    goal: Read from memory in an endian fashion
+    description: Run in user mode. For each endianness, sd 0x0102030405060708 to scratch, and also write all subwords with sw, sh, sb. For each endianness (independent), ld, lw, lwu, lh, lhu, lb, lbu it back.  In RV32, don't need the doubles.
+    notes: |-
+      restore endianness to normal afterward
+      UBE
+  - name: cp_mstatus_mprv_ube_endianness_*
+    goal: Read from memory in an endian fashion
+    description: Run in machine mode. Each endianness is a cross-product of MPRV = 0/1, MPP = 00/11, MBE = 0/1, UBE = 0/1 (16 bins).  Run test in machine mode. For each endianness, sd 0x0102030405060708 to scratch, and also write all subwords with sw, sh, sb. For each endianness (independent), ld, lw, lwu, lh, lhu, lb, lbu it back.  In RV32, don't need the doubles.
+    notes: |-
+      restore endianness to normal afterward
+      MPRV
+  - heading: UXL is not always modifiable, so there is no way to write coverpoints for different values

@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SvinvalH
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=292965592#gid=292965592
+coverpoints:
+  - name: cp_svinval
+    goal: Svinval instructions trap appropriately.
+    description: Test all Svinval instructions { sfence.w.inval, sfence.inval.ir, sinval.vma, hinval.vvma, hinval.gvma} in each privilege mode {M/HS/VS/U/VU} with TVM = {0/1} and VTVM = {0/1}
+    expectation: Instruction executes or throws illegal instruction trap.  Doesn't try to check that anything is actually invalidated.
+    bins: 5 instructions x 5 privilege modes x 2 TVM * 2 VTVM

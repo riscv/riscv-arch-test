@@ -8,6 +8,7 @@ include::{testplansdir}/I.adoc[]
 [[t-I-modified-coverpoints]]
 .I Modified Coverpoints
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Modified Coverpoint|Bins|Definition
 |cp_rs1_nx0|31|The rs1 register number used in the instruction, excluding x0.  x0 is hardwired to 0, which results in potentially access faults for loads, stores, and jalr.

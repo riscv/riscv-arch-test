@@ -3,83 +3,54 @@
 
 ==== PMPSm
 
-[[t-PMPSm-coverpoints]]
-.PMPSm Coverpoints
-
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1474055416#gid=1474055416[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/PMPSm.adoc[]
 
 include::norm/PMPSm_norm_rules.adoc[]
 
 
 ==== PMPS
 
-[[t-PMPS-coverpoints]]
-.PMPS Coverpoints
+include::{testplansdir}/priv/PMPS.adoc[]
 
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1908943019#gid=1908943019[Google Sheet Testplan]
-,===
+include::norm/PMPS_norm_rules.adoc[]
 
 
 ==== PMPU
 
-[[t-PMPU-coverpoints]]
-.PMPU Coverpoints
-
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=2072825600#gid=2072825600[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/PMPU.adoc[]
 
 include::norm/PMPU_norm_rules.adoc[]
 
 ==== PMPF
 
-[[t-PMPF-coverpoints]]
-.PMPF Coverpoints
+include::{testplansdir}/priv/PMPF.adoc[]
 
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1472001893#gid=1472001893[Google Sheet Testplan]
-,===
+include::norm/PMPF_norm_rules.adoc[]
 
 
 ==== PMPZca
 
-[[t-PMPZca-coverpoints]]
-.PMPZca Coverpoints
+include::{testplansdir}/priv/PMPZca.adoc[]
 
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1336315481#gid=1336315481[Google Sheet Testplan]
-,===
+include::norm/PMPZca_norm_rules.adoc[]
 
 
 
 ==== PMPZicbo
 
-[[t-PMPZicbo-coverpoints]]
-.PMPZicbo Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1958410505#gid=1958410505[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/PMPZicbo.adoc[]
 
 include::norm/PMPZicbo_norm_rules.adoc[]
 
 ==== PMPZaamo
 
-[[t-PMPZaamo-coverpoints]]
-.PMPZaamo Coverpoints
+include::{testplansdir}/priv/PMPZaamo.adoc[]
 
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=343093009#gid=343093009[Google Sheet Testplan]
-,===
+include::norm/PMPZaamo_norm_rules.adoc[]
 
 
 ==== PMPZalrsc
 
-[[t-PMPZalrsc-coverpoints]]
-.PMPZalrsc Coverpoints
+include::{testplansdir}/priv/PMPZalrsc.adoc[]
 
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=613653829#gid=613653829[Google Sheet Testplan]
-,===
+include::norm/PMPZalrsc_norm_rules.adoc[]

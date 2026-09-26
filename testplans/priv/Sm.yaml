@@ -1,0 +1,116 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Sm
+source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1563313604#gid=1563313604
+coverpoints:
+  - name: cp_mcsr_access
+    goal: Access to all M-mode CSRs
+    description: csr read, write all 1s, write all 0s, set all 1s, clear all 1s, write back initial value of each register below plus read-only mvendorid, marchid, mimpid, mhartid, mconfigptr
+    expectation: Traps on writes to read-only registers.  Otherwise writable bits match reference model.
+    bins: (14+5) regs * 6 ops
+    rules:
+      - mcause (WLRL), mstatus/h (WPRI), menvcfg/h (WPRI), mseccfg/h (WPRI) could be weird/hard to model
+  - name: cp_mcsrwalk
+    goal: Walking 1s and 0s in each writeable M-mode CSR
+    description: "Set and clear each bit of each writable M-mode CSR to exercise bitfields: mstatus, medeleg, mideleg, mie, mtvec, mcounteren, mscratch, mepc, mcause, mtval, mip, menvcfg, mseccfg.  For RV32 also mstatush, medelegh, menvcfgh, mseccfgh, mcountinhibit, mhpmevent31:3..  misa is fussy to model and is tested in cp_misa* instead.  Iterations that write a reserved mstatus.MPP, menvcfg.CBIE, or menvcfg/mseccfg.PMM value check the other bits exactly and only check that the field reads back a legal value."
+    expectation: Writable bits match reference model.
+    bins: 14 regs * (64 set + 64 clear)
+  - name: cp_misa_mxl
+    goal: misa.MXL
+    description: Attempt to write all four values to misa.MXL, clear, set..  Read back
+    expectation: matches MXLEN and does not change
+    bins: "7"
+    rules:
+      - Other MISA bits are unpredictable and thus not tested.
+  - name: cp_misa_dependencies
+    description: |-
+      Attempt to write I, E = 1.  E should read 0 if I reads 1
+      Attempt to write I, E = 0.  One should read 1
+      Attempt to write F=0, D=1.  D should read 0 if F reads 0
+      Attempt to write F = 1, D = 0, Q = 1. Q should read 0 if D reads 0
+      Attempt to write S = 1, U = 0.  S should read 0 if U = 0
+      Attempt to write H = 1, S = 0.  H should read 0 if S = 0
+      Attempt to write H = 1, S = 1, U = 0.  H should read 0 if U = 0
+    expectation: See tests
+    bins: "7"
+  - name: cp_misa_clear_c
+    description: Attempt to clear C when subsequent instruction is not a multiple of 2.  C should not change.
+    expectation: C should not change
+    bins: "1"
+  - name: cp_csrr_insufficient_priv
+    goal: Debug registers should be inaccessible from M-mode
+    description: Read Debug CSRS 7B0-7BF
+    expectation: Illegal Instruction
+    bins: "16"
+  - name: cp_csrw_readonly
+    goal: Read-only registers should trap when written
+    description: Write read-only CSRs (C00-FFF)
+    expectation: Illegal Instruction
+    bins: 1024 CSRs
+  - name: cp_cntr_access
+    goal: Access to all 32 counters
+    description: csr_read, write nonzero, write 0, set nonzero, clear all for each of for mcycle, minstret, mhpmcounter31...3. If RV32 is supported, also do mcycleh, minstreth, mhpmcounterh31...3.  Read back value and check if it is within some threshold of the written value (because counters will continue to increment).
+    expectation: Writable bits match reference model.
+    bins: 32 regs * 6 ops
+  - name: cp_mtime_write
+    goal: Writing memory-mapped MTIME shows up in time CSR
+    description: If Zicntr is supported, Write walking 1s and 0s to memory-mapped mtime, read back from time CSR
+    expectation: Time reflects memory-mapped mtime. Difference should be small.
+    rules:
+      - Presently just writing one value
+  - name: cp_inhibit
+    goal: mcountinhibit prevents counting
+    description: With mcountinhibit[2/0] = {0, 1}, read mcycle and minstret multiple times and check whether they increment.
+    expectation: Count when not inhibited, remain constant when inhibited
+    bins: "2"
+  - name: cp_mcause_write
+    goal: Legal values can be written to mcause
+    description: |-
+      with interrupt = 1: 0-13
+      with interrupt = 0: 0-23
+    expectation: writes mcause
+    bins: 81 values
+  - name: cp_mstatus_sd_write
+    goal: FS/VS/XS combinations can be written and SD is true when any are dirty.
+    description: Write 1 and 0 to SD with FS/VS/XS all 0.  Write cross-product of all bits of SD/ FS/ VS/XS.  128 bins of writes.
+    expectation: FS =1 iff any of FS/VS/XS are dirty.
+    bins: 2 SD * 4 FS * 4 VS * 4 XS = 128
+  - name: cp_mprivinst
+    goal: ecall and ebreak cause traps
+    description: Execute ecall and ebreak in machine mode
+    expectation: ecall and breakpoint exceptions
+    bins: "2"
+  - name: cp_mret
+    goal: mret returns and affects status bits
+    description: Execute mret in machine mode with cross-product of values written to mstatus.MPP/ MPRV/ MPIE/MIE.  Return to machine mode and MIE = 1 after each mret.
+    bins: 2 MPRV * 2 MIPE * 2 MIE = 8
+  - name: cp_sret
+    goal: sret returns and affects status bits
+    description: Execute sret in machine mode with cross-product of mstatus.SPP/MPRV/TSR/SPIE/SIE
+    expectation: Illegal instruction if TSR
+    bins: 2 SPP * 2 MPRV * 2 TSR * 2 SPIE * 2 SIE = 32
+  - name: cp_sret_s
+    description: |-
+      If S_SUPPORTED:
+      Execute sret in supervisor mode with cross-product of all values of sstatus.SPP/SPIE/SIE, mstatus.TSR.  Return to supervisor mode after each sret. This differs from cp_sret_s in S that doesn't turn on mstatus.TSR (which would require illegal instructions not to be delegated in S mode to avoid a sret trap loop).
+    rules:
+      - sepc should be pointing two instructions ahead.
+  - name: cp_scsr_from_m
+    description: "If S supported, read/write/set/clear each S-mode CSR: sstatus, scause, sie, stvec, scounteren, senvcfg, sscratch, sip.  sepc and stval are not tested because it is hard to express what values are legal."
+  - name: cp_satp_from_m
+    description: If S is supported, read satp with mstatus.TVM=0/1
+    expectation: shouldn't trap on either TVM.  Value is not predictable.
+  - name: cp_satp_from_s
+    description: If S is supported, read satp with mstatus.TVM=0/1 from S mode
+  - name: cp_shadow
+    goal: Check subset
+    description: |-
+      If S_supported:
+      Write all zeros and all 1s to mstatus, mie, mip.  Read back sstatus, sie, sip. Write all 0s and all 1s to sstatus, sie, sip.  Read back mstatus/mie/mip.
+  - name: cp_shadow_deleg
+    goal: Delegation affects shadowing
+    description: With delegation on and off, write mip/mie, read back sip/sie.  Write sip/sie, read back mip/mie
+  - name: cp_shadow_deleg_walk
+    description: With walking 1s in mideleg, mip/mie = 1s, read back sip/sie
+  - heading: Sm does not access unsupported lower privilege mode CSRs because they are reserved if not implemented, and their behavior is UNSPECIFIED.
+  - heading: If F is mutable, zeroing it should also zero D and Q and V. Same with D zeroing Q and V. Zeroing U should zero S.
+  - heading: Writing misa may increase IALIGN, e.g., by disabling the "C" extension. If an instruction that would write misa increases IALIGN, and the subsequent instruction’s address is not IALIGN-bit aligned, the write to misa is suppressed, leaving misa unchanged."

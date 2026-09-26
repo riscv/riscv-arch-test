@@ -1,0 +1,874 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Sv
+source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1688601426#gid=1688601426
+coverpoints:
+  - heading: "General Test Environment (Sv):\n- T-SBI suite: boots to S-mode (BOOT_TO_SMODE) and drives the test from the boot identity map. The page under test is mapped at va_data. S-mode accesses run from the identity map. U-mode accesses use RVTEST_TSBI_GOTO_UMODE / RVTEST_TSBI_GOTO_SMODE; the handler moves execution to the U-accessible code alias va_rvtest_code_begin (registered with SAVE_AREA_SETUP) and back. menvcfg is written through T-SBI CSR calls. Page faults are delegated to S-mode, so causes are sampled from scause/stval.\n- Run for every supported translation mode: Sv32 on RV32; Sv39, Sv48 and Sv57 on RV64, as selected by the UDB configuration.\n- Coverpoints that need M-mode are in the SvSm sheet."
+  - name: satp_asid_PPN
+    goal: Verify the satp ASID and PPN fields hold zero and non-zero values
+    description: "S-mode: read satp before translation is enabled (all fields 0). Then write satp with the current MODE, PPN = the identity-mapped root page table and ASID = 0, followed by writes with ASID bits set. Read satp back after each write."
+    expectation: satp[59:0] (satp[30:0] on RV32) reads 0 before translation is enabled and the written non-zero ASID/PPN afterwards.
+    bins: |-
+      satp_asid_PPN {all_zero, not_zero}
+      = 2 bins on RV64, 2 on RV32
+    id: satp_sz satp_acc satp_op satp_mode
+    rules:
+      - "[norm:satp_sz] [norm:satp_acc] [norm:satp_op] [norm:satp_mode]"
+  - name: asid_length
+    goal: Verify every implemented ASID bit is writable (determine ASIDLEN)
+    description: "S-mode, with satp.MODE set and PPN = root page table: write ASID = all ones and read it back, then walk a single 1 through each ASID bit (16 bits on RV64, 9 on RV32), reading satp back each time."
+    expectation: Implemented ASID bits (the ASIDLEN least-significant bits) read back as written; unimplemented bits read 0.
+    bins: |-
+      asid_length {values}
+      = 1 bins on RV64, 1 on RV32
+    id: ASIDLEN
+    rules:
+      - "[norm:ASIDLEN]"
+  - name: cp_access_u
+    goal: Verify satp is not accessible from U-mode
+    description: With mstatus.TVM=0, switch to U-mode with RVTEST_TSBI_GOTO_UMODE and execute csrrw, csrrs and csrrc on satp, then return with RVTEST_TSBI_GOTO_SMODE.
+    expectation: Illegal-instruction exception (scause = 2) for each access; satp is unchanged.
+    bins: |-
+      Scause x tvm_mstatus x mode {U-mode}
+      = 1 bins on RV64, 1 on RV32
+    id: satp_sz satp_acc satp_op satp_mode
+    rules:
+      - "[norm:satp_sz] [norm:satp_acc] [norm:satp_op] [norm:satp_mode]"
+  - name: cp_access_s
+    goal: Verify satp is readable and writable from S-mode with csrrw, csrrs and csrrc
+    description: "S-mode with mstatus.TVM=0 and scause cleared: csrrw satp with 4, csrrs with 8, csrrc with 4, reading satp back after each (satp.MODE stays Bare)."
+    expectation: No exception; each read returns the value produced by the write.
+    bins: |-
+      cp_ins x Scause x tvm_mstatus x mode {S-mode}
+      = 3 bins on RV64, 3 on RV32
+    id: satp_sz satp_acc satp_op satp_mode
+    rules:
+      - "[norm:satp_sz] [norm:satp_acc] [norm:satp_op] [norm:satp_mode]"
+  - name: cp_VA_i_mode
+    goal: Verify instruction fetch at the lowest and highest virtual addresses of the translation mode
+    description: "S-mode: map a 4 KiB execute-only page at VA 0 and at the highest aligned VA of the current mode (all ones); jump (jalr) to each and return."
+    expectation: No fault; execution runs at the extreme VA and returns.
+    bins: |-
+      mode_supported x VA_i
+      = 6 bins on RV64, 2 on RV32
+    id: satp_mode_sxlen32 satp_mode_sxlen64 satp_mode_sz satp_mode_acc satp_mode_op
+    rules:
+      - "[norm:satp_mode_sxlen32] [norm:satp_mode_sxlen64] [norm:satp_mode_sz] [norm:satp_mode_acc] [norm:satp_mode_op]"
+  - name: cp_VA_d_mode
+    goal: Verify loads and stores at the lowest and highest virtual addresses of the translation mode
+    description: "S-mode: map a 4 KiB read/write page at VA 0 and at the all-ones VA of the current mode; store and load a byte at each (a word at VA 0 for Sv32 and Sv39)."
+    expectation: No fault; each load returns the value stored.
+    bins: |-
+      mode_supported x VA_d
+      = 6 bins on RV64, 2 on RV32
+    id: satp_mode_sxlen32 satp_mode_sxlen64 satp_mode_sz satp_mode_acc satp_mode_op
+    rules:
+      - "[norm:satp_mode_sxlen32] [norm:satp_mode_sxlen64] [norm:satp_mode_sz] [norm:satp_mode_acc] [norm:satp_mode_op]"
+  - name: cp_ins
+    goal: Verify SFENCE.VMA executes in S-mode
+    description: Every Sv test executes sfence.vma x0, x0 in S-mode after each page-table update; the global-PTE test also executes sfence.vma x0, rs2 with the current ASID.
+    expectation: No exception.
+    bins: |-
+      cp_ins {sfence}
+      = 1 bins on RV64, 1 on RV32
+    id: satp_op_sfence_vma sfence_vma_op sfence_vma_ordering sfence_vma_invalidation sfence_vma_all_asid_va
+    rules:
+      - "[norm:satp_op_sfence_vma] [norm:sfence_vma_op] [norm:sfence_vma_ordering] [norm:sfence_vma_invalidation] [norm:sfence_vma_all_asid_va]"
+  - name: Nopagefault
+    goal: Verify stval holds 0 while no page fault has been taken
+    description: Sampled on every instruction of the Sv tests before a page fault writes stval.
+    expectation: stval = 0.
+    bins: |-
+      Nopagefault {no_fault}
+      = 1 bins on RV64, 1 on RV32
+  - name: cp_PTE_inv_exec_s_i
+    goal: Verify an invalid leaf PTE (V=0) raises an instruction page fault on an instruction fetch from S-mode
+    description: "S-mode: leaf PTE with V=0, R=W=X=1 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Jump (jalr) into the page through va_data."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_i_inv x PageType_i x ins_page_fault x exec_acc x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_inv_exec_u_i
+    goal: Verify an invalid leaf PTE (V=0) raises an instruction page fault on an instruction fetch from U-mode
+    description: "U-mode: leaf PTE with V=0, R=W=X=1 and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Jump (jalr) into the page through va_data."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_i_inv x PageType_i x ins_page_fault x exec_acc x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_inv_read_s_d
+    goal: Verify an invalid leaf PTE (V=0) raises a load page fault on a load from S-mode
+    description: "S-mode: leaf PTE with V=0, R=W=X=1 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_d_inv x PageType_d x load_page_fault x read_acc x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: sfence_vma_implicit_access Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:sfence_vma_implicit_access] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_inv_read_u_d
+    goal: Verify an invalid leaf PTE (V=0) raises a load page fault on a load from U-mode
+    description: "U-mode: leaf PTE with V=0, R=W=X=1 and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_d_inv x PageType_d x load_page_fault x read_acc x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_inv_write_s_d
+    goal: Verify an invalid leaf PTE (V=0) raises a store/AMO page fault on a store from S-mode
+    description: "S-mode: leaf PTE with V=0, R=W=X=1 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_d_inv x PageType_d x store_page_fault x write_acc x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_inv_write_u_d
+    goal: Verify an invalid leaf PTE (V=0) raises a store/AMO page fault on a store from U-mode
+    description: "U-mode: leaf PTE with V=0, R=W=X=1 and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_d_inv x PageType_d x store_page_fault x write_acc x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_res_rwx_s_i_exec
+    goal: Verify the reserved encoding W=1, R=0 raises an instruction page fault on an instruction fetch from S-mode
+    description: "S-mode: leaf PTE with W=1 and R=0 (once with X=1, once with X=0) and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Jump (jalr) into the page through va_data."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_i_res_rwx x PageType_i x ins_page_fault x exec_acc x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_res_rwx_u_i_exec
+    goal: Verify the reserved encoding W=1, R=0 raises an instruction page fault on an instruction fetch from U-mode
+    description: "U-mode: leaf PTE with W=1 and R=0 (once with X=1, once with X=0) and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Jump (jalr) into the page through va_data."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_i_res_rwx x PageType_i x ins_page_fault x exec_acc x mode {U-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_res_rwx_s_d_read
+    goal: Verify the reserved encoding W=1, R=0 raises a load page fault on a load from S-mode
+    description: "S-mode: leaf PTE with W=1 and R=0 (once with X=1, once with X=0) and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_d_res_rwx x PageType_d x load_page_fault x read_acc x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_res_rwx_u_d_read
+    goal: Verify the reserved encoding W=1, R=0 raises a load page fault on a load from U-mode
+    description: "U-mode: leaf PTE with W=1 and R=0 (once with X=1, once with X=0) and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_d_res_rwx x PageType_d x load_page_fault x read_acc x mode {U-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_res_rwx_s_d_write
+    goal: Verify the reserved encoding W=1, R=0 raises a store/AMO page fault on a store from S-mode
+    description: "S-mode: leaf PTE with W=1 and R=0 (once with X=1, once with X=0) and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_d_res_rwx x PageType_d x store_page_fault x write_acc x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_res_rwx_u_d_write
+    goal: Verify the reserved encoding W=1, R=0 raises a store/AMO page fault on a store from U-mode
+    description: "U-mode: leaf PTE with W=1 and R=0 (once with X=1, once with X=0) and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_d_res_rwx x PageType_d x store_page_fault x write_acc x mode {U-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_nonleaf_lvl0_s_i_exec
+    goal: Verify a level-0 pointer PTE (V=1, R=W=X=0) raises an instruction page fault on an instruction fetch from S-mode
+    description: "S-mode: level-0 PTE with V=1, R=W=X=0 and PTE.U=0, so the walk needs another level that does not exist. Jump (jalr) into the page through va_data."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_nonleaf_lvl0_i x kilo_page_i x mode x ins_page_fault x exec_acc x mode {S-mode}
+      = 3 bins on RV64, 1 on RV32
+    id: stval_op_faulting_addr
+    rules:
+      - "[norm:stval_op_faulting_addr]"
+  - name: cp_PTE_nonleaf_lvl0_u_i_exec
+    goal: Verify a level-0 pointer PTE (V=1, R=W=X=0) raises an instruction page fault on an instruction fetch from U-mode
+    description: "U-mode: level-0 PTE with V=1, R=W=X=0 and PTE.U=1, so the walk needs another level that does not exist. Jump (jalr) into the page through va_data."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_nonleaf_lvl0_i x kilo_page_i x mode x ins_page_fault x exec_acc x mode {U-mode}
+      = 3 bins on RV64, 1 on RV32
+    id: stval_op_faulting_addr
+    rules:
+      - "[norm:stval_op_faulting_addr]"
+  - name: cp_PTE_nonleaf_lvl0_s_d_read
+    goal: Verify a level-0 pointer PTE (V=1, R=W=X=0) raises a load page fault on a load from S-mode
+    description: "S-mode: level-0 PTE with V=1, R=W=X=0 and PTE.U=0, so the walk needs another level that does not exist. Load (lw) from the page through va_data."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_nonleaf_lvl0_d x kilo_page_d x mode x load_page_fault x read_acc x mode {S-mode}
+      = 3 bins on RV64, 1 on RV32
+    id: sfence_vma_implicit_access stval_op_faulting_addr
+    rules:
+      - "[norm:sfence_vma_implicit_access] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_nonleaf_lvl0_u_d_read
+    goal: Verify a level-0 pointer PTE (V=1, R=W=X=0) raises a load page fault on a load from U-mode
+    description: "U-mode: level-0 PTE with V=1, R=W=X=0 and PTE.U=1, so the walk needs another level that does not exist. Load (lw) from the page through va_data."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_nonleaf_lvl0_d x kilo_page_d x mode x load_page_fault x read_acc x mode {U-mode}
+      = 3 bins on RV64, 1 on RV32
+    id: stval_op_faulting_addr
+    rules:
+      - "[norm:stval_op_faulting_addr]"
+  - name: cp_PTE_nonleaf_lvl0_s_d_write
+    goal: Verify a level-0 pointer PTE (V=1, R=W=X=0) raises a store/AMO page fault on a store from S-mode
+    description: "S-mode: level-0 PTE with V=1, R=W=X=0 and PTE.U=0, so the walk needs another level that does not exist. Store (sw) to the page through va_data."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_nonleaf_lvl0_d x kilo_page_d x mode x store_page_fault x write_acc x mode {S-mode}
+      = 3 bins on RV64, 1 on RV32
+    id: stval_op_faulting_addr
+    rules:
+      - "[norm:stval_op_faulting_addr]"
+  - name: cp_PTE_nonleaf_lvl0_u_d_write
+    goal: Verify a level-0 pointer PTE (V=1, R=W=X=0) raises a store/AMO page fault on a store from U-mode
+    description: "U-mode: level-0 PTE with V=1, R=W=X=0 and PTE.U=1, so the walk needs another level that does not exist. Store (sw) to the page through va_data."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_nonleaf_lvl0_d x kilo_page_d x mode x store_page_fault x write_acc x mode {U-mode}
+      = 3 bins on RV64, 1 on RV32
+    id: stval_op_faulting_addr
+    rules:
+      - "[norm:stval_op_faulting_addr]"
+  - name: cp_spage_exec_s_i
+    goal: Verify an S-mode instruction fetch from a supervisor page succeeds when X=1, independent of SUM
+    description: "S-mode: supervisor leaf PTE (U=0) at every page-table level (4 KiB page and each superpage size of the Sv mode), with X=1 (RWX, X-only, RX). Run with sstatus.SUM=0 and SUM=1. Jump (jalr) into the page through va_data."
+    expectation: No fault; SUM has no effect on supervisor pages.
+    bins: |-
+      PTE_x_spage_i x PageType_i x exec_acc x sum_sstatus x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: satp_op_active Sv39_sxlen Sv39_va_sz Sv39_vpn_sz satp_ppn_sv39_sz Sv39_levels Sv39_page_offset_sz Sv39_LEVELS Sv39_PTESIZE Sv39_leaf_any_level Sv39_page_sizes Sv39_pte_count Sv39_pte_sz Sv39_pt_sz Sv39_pt_align Sv48_sxlen Sv48_va_sz Sv48_vpn_sz satp_ppn_sv48_sz Sv48_levels Sv48_page_offset_sz Sv48_LEVELS Sv48_PTESIZE Sv48_leaf_any_level Sv48_page_sizes Sv57_sxlen Sv57_va_sz Sv57_vpn_sz satp_ppn_sv57_sz Sv57_levels Sv57_page_offset_sz Sv57_LEVELS Sv57_PTESIZE Sv57_leaf_any_level Sv57_page_sizes
+    rules:
+      - "[norm:satp_op_active] [norm:Sv39_sxlen] [norm:Sv39_va_sz] [norm:Sv39_vpn_sz] [norm:satp_ppn_sv39_sz] [norm:Sv39_levels] [norm:Sv39_page_offset_sz] [norm:Sv39_LEVELS] [norm:Sv39_PTESIZE] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv39_pte_count] [norm:Sv39_pte_sz] [norm:Sv39_pt_sz] [norm:Sv39_pt_align] [norm:Sv48_sxlen] [norm:Sv48_va_sz] [norm:Sv48_vpn_sz] [norm:satp_ppn_sv48_sz] [norm:Sv48_levels] [norm:Sv48_page_offset_sz] [norm:Sv48_LEVELS] [norm:Sv48_PTESIZE] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_sxlen] [norm:Sv57_va_sz] [norm:Sv57_vpn_sz] [norm:satp_ppn_sv57_sz] [norm:Sv57_levels] [norm:Sv57_page_offset_sz] [norm:Sv57_LEVELS] [norm:Sv57_PTESIZE] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes]"
+  - name: cp_spage_noexec_s_i
+    goal: Verify an S-mode instruction fetch from a supervisor page with X=0 raises an instruction page fault
+    description: "S-mode: supervisor leaf PTE (U=0) at every page-table level (4 KiB page and each superpage size of the Sv mode), with X=0 (RW, R-only). Run with sstatus.SUM=0 and SUM=1. Jump (jalr) into the page through va_data."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_x_spage_i x PageType_i x ins_page_fault x exec_acc x sum_sstatus x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: fetch_page_fault_no_x Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:fetch_page_fault_no_x] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_spage_read_s_d
+    goal: Verify an S-mode load from a supervisor page succeeds when R=1, independent of SUM
+    description: "S-mode: supervisor leaf PTE (U=0) at every page-table level (4 KiB page and each superpage size of the Sv mode), with R=1 (RWX, RX, RW, R-only). Run with sstatus.SUM=0 and SUM=1. Load (lw) from the page through va_data."
+    expectation: No fault; SUM has no effect on supervisor pages.
+    bins: |-
+      PTE_rw_spage_d x PageType_d x read_acc x sum_sstatus x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: satp_op_active Sv39_sxlen Sv39_va_sz Sv39_vpn_sz satp_ppn_sv39_sz Sv39_levels Sv39_page_offset_sz Sv39_LEVELS Sv39_PTESIZE Sv39_leaf_any_level Sv39_page_sizes Sv39_pte_count Sv39_pte_sz Sv39_pt_sz Sv39_pt_align Sv48_sxlen Sv48_va_sz Sv48_vpn_sz satp_ppn_sv48_sz Sv48_levels Sv48_page_offset_sz Sv48_LEVELS Sv48_PTESIZE Sv48_leaf_any_level Sv48_page_sizes Sv57_sxlen Sv57_va_sz Sv57_vpn_sz satp_ppn_sv57_sz Sv57_levels Sv57_page_offset_sz Sv57_LEVELS Sv57_PTESIZE Sv57_leaf_any_level Sv57_page_sizes
+    rules:
+      - "[norm:satp_op_active] [norm:Sv39_sxlen] [norm:Sv39_va_sz] [norm:Sv39_vpn_sz] [norm:satp_ppn_sv39_sz] [norm:Sv39_levels] [norm:Sv39_page_offset_sz] [norm:Sv39_LEVELS] [norm:Sv39_PTESIZE] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv39_pte_count] [norm:Sv39_pte_sz] [norm:Sv39_pt_sz] [norm:Sv39_pt_align] [norm:Sv48_sxlen] [norm:Sv48_va_sz] [norm:Sv48_vpn_sz] [norm:satp_ppn_sv48_sz] [norm:Sv48_levels] [norm:Sv48_page_offset_sz] [norm:Sv48_LEVELS] [norm:Sv48_PTESIZE] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_sxlen] [norm:Sv57_va_sz] [norm:Sv57_vpn_sz] [norm:satp_ppn_sv57_sz] [norm:Sv57_levels] [norm:Sv57_page_offset_sz] [norm:Sv57_LEVELS] [norm:Sv57_PTESIZE] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes]"
+  - name: cp_spage_noread_s_d
+    goal: Verify an S-mode load from a supervisor page with R=0 raises a load page fault
+    description: "S-mode: supervisor leaf PTE (U=0) at every page-table level (4 KiB page and each superpage size of the Sv mode), with R=0 (X-only). Run with sstatus.SUM=0 and SUM=1. Load (lw) from the page through va_data."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_rw_spage_d x PageType_d x load_page_fault x read_acc x sum_sstatus x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: load_page_fault_no_r Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:load_page_fault_no_r] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_spage_write_s_d
+    goal: Verify an S-mode store from a supervisor page succeeds when W=1, independent of SUM
+    description: "S-mode: supervisor leaf PTE (U=0) at every page-table level (4 KiB page and each superpage size of the Sv mode), with W=1 (RWX, RW). Run with sstatus.SUM=0 and SUM=1. Store (sw) to the page through va_data."
+    expectation: No fault; SUM has no effect on supervisor pages.
+    bins: |-
+      PTE_rw_spage_d x PageType_d x write_acc x sum_sstatus x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: satp_op_active Sv39_sxlen Sv39_va_sz Sv39_vpn_sz satp_ppn_sv39_sz Sv39_levels Sv39_page_offset_sz Sv39_LEVELS Sv39_PTESIZE Sv39_leaf_any_level Sv39_page_sizes Sv39_pte_count Sv39_pte_sz Sv39_pt_sz Sv39_pt_align Sv48_sxlen Sv48_va_sz Sv48_vpn_sz satp_ppn_sv48_sz Sv48_levels Sv48_page_offset_sz Sv48_LEVELS Sv48_PTESIZE Sv48_leaf_any_level Sv48_page_sizes Sv57_sxlen Sv57_va_sz Sv57_vpn_sz satp_ppn_sv57_sz Sv57_levels Sv57_page_offset_sz Sv57_LEVELS Sv57_PTESIZE Sv57_leaf_any_level Sv57_page_sizes
+    rules:
+      - "[norm:satp_op_active] [norm:Sv39_sxlen] [norm:Sv39_va_sz] [norm:Sv39_vpn_sz] [norm:satp_ppn_sv39_sz] [norm:Sv39_levels] [norm:Sv39_page_offset_sz] [norm:Sv39_LEVELS] [norm:Sv39_PTESIZE] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv39_pte_count] [norm:Sv39_pte_sz] [norm:Sv39_pt_sz] [norm:Sv39_pt_align] [norm:Sv48_sxlen] [norm:Sv48_va_sz] [norm:Sv48_vpn_sz] [norm:satp_ppn_sv48_sz] [norm:Sv48_levels] [norm:Sv48_page_offset_sz] [norm:Sv48_LEVELS] [norm:Sv48_PTESIZE] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_sxlen] [norm:Sv57_va_sz] [norm:Sv57_vpn_sz] [norm:satp_ppn_sv57_sz] [norm:Sv57_levels] [norm:Sv57_page_offset_sz] [norm:Sv57_LEVELS] [norm:Sv57_PTESIZE] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes]"
+  - name: cp_spage_nowrite_s_d
+    goal: Verify an S-mode store from a supervisor page with W=0 raises a store/AMO page fault
+    description: "S-mode: supervisor leaf PTE (U=0) at every page-table level (4 KiB page and each superpage size of the Sv mode), with W=0 (X-only, RX, R-only). Run with sstatus.SUM=0 and SUM=1. Store (sw) to the page through va_data."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_rw_spage_d x PageType_d x store_page_fault x write_acc x sum_sstatus x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: store_page_fault_no_w Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:store_page_fault_no_w] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_spage_rwx_s_i_noexec
+    goal: Verify a U-mode instruction fetch from a supervisor page (U=0) raises an instruction page fault
+    description: "U-mode: supervisor leaf PTE (U=0) with R=W=X=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Jump (jalr) into the page through va_data."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_spage_i x PageType_i x ins_page_fault x exec_acc x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: fetch_page_fault_no_x Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:fetch_page_fault_no_x] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_spage_rwx_s_d_noread
+    goal: Verify a U-mode load from a supervisor page (U=0) raises a load page fault
+    description: "U-mode: supervisor leaf PTE (U=0) with R=W=X=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_spage_d x PageType_d x load_page_fault x read_acc x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: load_page_fault_no_r Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:load_page_fault_no_r] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_spage_rwx_s_d_nowrite
+    goal: Verify a U-mode store from a supervisor page (U=0) raises a store/AMO page fault
+    description: "U-mode: supervisor leaf PTE (U=0) with R=W=X=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_spage_d x PageType_d x store_page_fault x write_acc x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: store_page_fault_no_w Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:store_page_fault_no_w] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_upage_smode_sumunset_noexec_s
+    goal: Verify an S-mode instruction fetch from a user page (U=1) raises an instruction page fault when sstatus.SUM=0
+    description: "S-mode with sstatus.SUM=0: user leaf PTE (U=1) swept through RWX, X-only, RX, RW and R-only, at every page-table level (4 KiB page and each superpage size of the Sv mode). Jump (jalr) into the page through va_data."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_upage_i x PageType_i x ins_page_fault x exec_acc x sum_sstatus x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: sstatus_sum_sz sstatus_sum_acc sstatus_sum_op Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:sstatus_sum_sz] [norm:sstatus_sum_acc] [norm:sstatus_sum_op] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_upage_smode_sumunset_noread_s
+    goal: Verify an S-mode load from a user page (U=1) raises a load page fault when sstatus.SUM=0
+    description: "S-mode with sstatus.SUM=0: user leaf PTE (U=1) swept through RWX, X-only, RX, RW and R-only, at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_upage_d x PageType_d x load_page_fault x read_acc x sum_sstatus x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: sstatus_sum_sz sstatus_sum_acc sstatus_sum_op Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:sstatus_sum_sz] [norm:sstatus_sum_acc] [norm:sstatus_sum_op] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_upage_smode_sumunset_nowrite_s
+    goal: Verify an S-mode store from a user page (U=1) raises a store/AMO page fault when sstatus.SUM=0
+    description: "S-mode with sstatus.SUM=0: user leaf PTE (U=1) swept through RWX, X-only, RX, RW and R-only, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_upage_d x PageType_d x store_page_fault x write_acc x sum_sstatus x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: sstatus_sum_sz sstatus_sum_acc sstatus_sum_op Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:sstatus_sum_sz] [norm:sstatus_sum_acc] [norm:sstatus_sum_op] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_upage_smode_sumset_noexec_s
+    goal: Verify S-mode can never fetch from a user page, even with sstatus.SUM=1
+    description: "S-mode with sstatus.SUM=1: user leaf PTE (U=1) with X=1 (RWX, X-only, RX), at every page-table level (4 KiB page and each superpage size of the Sv mode). Jump (jalr) into the page."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_upage_i x PageType_i x ins_page_fault x exec_acc x sum_sstatus x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: sstatus_sum_sz sstatus_sum_acc sstatus_sum_op Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:sstatus_sum_sz] [norm:sstatus_sum_acc] [norm:sstatus_sum_op] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_upage_smode_sumset_read_s
+    goal: Verify an S-mode load from a user page succeeds when sstatus.SUM=1
+    description: "S-mode with sstatus.SUM=1: user leaf PTE (U=1) with R=1 (RWX, RX, RW, R-only), at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data."
+    expectation: No fault.
+    bins: |-
+      PTE_upage_d x PageType_d x read_acc x sum_sstatus x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: sstatus_sum_sz sstatus_sum_acc sstatus_sum_op Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes
+    rules:
+      - "[norm:sstatus_sum_sz] [norm:sstatus_sum_acc] [norm:sstatus_sum_op] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes]"
+  - name: cp_upage_smode_sumset_write_s
+    goal: Verify an S-mode store from a user page succeeds when sstatus.SUM=1
+    description: "S-mode with sstatus.SUM=1: user leaf PTE (U=1) with W=1 (RWX, RW), at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data."
+    expectation: No fault.
+    bins: |-
+      PTE_upage_d x PageType_d x write_acc x sum_sstatus x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: sstatus_sum_sz sstatus_sum_acc sstatus_sum_op Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes
+    rules:
+      - "[norm:sstatus_sum_sz] [norm:sstatus_sum_acc] [norm:sstatus_sum_op] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes]"
+  - name: cp_upage_umode_exec_u
+    goal: Verify a U-mode instruction fetch from a user page succeeds when X=1
+    description: "U-mode: user leaf PTE (U=1) with X=1 (RWX, X-only, RX), at every page-table level (4 KiB page and each superpage size of the Sv mode). Jump (jalr) into the page through va_data."
+    expectation: No fault.
+    bins: |-
+      PTE_x_upage_i x PageType_i x exec_acc x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: satp_op_active Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes
+    rules:
+      - "[norm:satp_op_active] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes]"
+  - name: cp_upage_umode_noexec_u
+    goal: Verify a U-mode instruction fetch from a user page with X=0 raises an instruction page fault
+    description: "U-mode: user leaf PTE (U=1) with X=0 (RW, R-only), at every page-table level (4 KiB page and each superpage size of the Sv mode). Jump (jalr) into the page through va_data."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_x_upage_i x PageType_i x ins_page_fault x exec_acc x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: fetch_page_fault_no_x Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:fetch_page_fault_no_x] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_upage_umode_read_u
+    goal: Verify a U-mode load from a user page succeeds when R=1
+    description: "U-mode: user leaf PTE (U=1) with R=1 (RWX, RX, RW, R-only), at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data."
+    expectation: No fault.
+    bins: |-
+      PTE_rw_upage_d x PageType_d x read_acc x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: satp_op_active Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes
+    rules:
+      - "[norm:satp_op_active] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes]"
+  - name: cp_upage_umode_noread_u
+    goal: Verify a U-mode load from a user page with R=0 raises a load page fault
+    description: "U-mode: user leaf PTE (U=1) with R=0 (X-only), at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_rw_upage_d x PageType_d x load_page_fault x read_acc x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: load_page_fault_no_r Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:load_page_fault_no_r] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_upage_umode_write_u
+    goal: Verify a U-mode store from a user page succeeds when W=1
+    description: "U-mode: user leaf PTE (U=1) with W=1 (RWX, RW), at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data."
+    expectation: No fault.
+    bins: |-
+      PTE_rw_upage_d x PageType_d x write_acc x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: satp_op_active Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes
+    rules:
+      - "[norm:satp_op_active] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes]"
+  - name: cp_upage_umode_nowrite_u
+    goal: Verify a U-mode store from a user page with W=0 raises a store/AMO page fault
+    description: "U-mode: user leaf PTE (U=1) with W=0 (X-only, RX, R-only), at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_rw_upage_d x PageType_d x store_page_fault x write_acc x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: store_page_fault_no_w Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:store_page_fault_no_w] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_xpage_mxrunset_read_s
+    goal: Verify an S-mode load from an execute-only page faults when sstatus.MXR=0
+    description: "S-mode: execute-only leaf PTE (R=W=0, X=1) with PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode); clear sstatus.MXR. Load (lw) through va_data (a store is also attempted)."
+    expectation: Load page fault (scause = 13); the store raises a store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_XnoRW_d x PageType_d x load_page_fault x read_acc x mxr_sstatus x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: sstatus_mxr_sz sstatus_mxr_acc sstatus_mxr_op sfence_vma_sum_mxr_effect Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:sstatus_mxr_sz] [norm:sstatus_mxr_acc] [norm:sstatus_mxr_op] [norm:sfence_vma_sum_mxr_effect] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_xpage_mxrunset_read_u
+    goal: Verify a U-mode load from an execute-only page faults when sstatus.MXR=0
+    description: "U-mode: execute-only leaf PTE (R=W=0, X=1) with PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode); clear sstatus.MXR. Load (lw) through va_data (a store is also attempted)."
+    expectation: Load page fault (scause = 13); the store raises a store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_XnoRW_d x PageType_d x load_page_fault x read_acc x mxr_sstatus x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: sstatus_mxr_sz sstatus_mxr_acc sstatus_mxr_op sfence_vma_sum_mxr_effect Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:sstatus_mxr_sz] [norm:sstatus_mxr_acc] [norm:sstatus_mxr_op] [norm:sfence_vma_sum_mxr_effect] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_xpage_mxrset_read_s
+    goal: Verify an S-mode load from an execute-only page succeeds when sstatus.MXR=1
+    description: "S-mode: execute-only leaf PTE (R=W=0, X=1) with PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode); set sstatus.MXR. Load (lw) through va_data (a store is also attempted)."
+    expectation: The load succeeds; the store still raises a store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_XnoRW_d x PageType_d x mxr_sstatus x read_acc x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: sstatus_mxr_sz sstatus_mxr_acc sstatus_mxr_op sfence_vma_sum_mxr_effect Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes
+    rules:
+      - "[norm:sstatus_mxr_sz] [norm:sstatus_mxr_acc] [norm:sstatus_mxr_op] [norm:sfence_vma_sum_mxr_effect] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes]"
+  - name: cp_xpage_mxrset_read_u
+    goal: Verify a U-mode load from an execute-only page succeeds when sstatus.MXR=1
+    description: "U-mode: execute-only leaf PTE (R=W=0, X=1) with PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode); set sstatus.MXR. Load (lw) through va_data (a store is also attempted)."
+    expectation: The load succeeds; the store still raises a store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_XnoRW_d x PageType_d x mxr_sstatus x read_acc x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: sstatus_mxr_sz sstatus_mxr_acc sstatus_mxr_op sfence_vma_sum_mxr_effect Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes
+    rules:
+      - "[norm:sstatus_mxr_sz] [norm:sstatus_mxr_acc] [norm:sstatus_mxr_op] [norm:sfence_vma_sum_mxr_effect] [norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes]"
+  - name: cp_PTE_DAU_nleaf_read_s
+    goal: Verify D, A or U set in a non-leaf PTE raises a load page fault on a load from S-mode
+    description: "S-mode: valid level-0 leaf PTE (PTE.U=0); in each non-leaf PTE above it, set D, then A, then U (one at a time). Load (lw) from the page through va_data. Requires privileged spec 1.12 or later."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_DAU_d x PageType_d x load_page_fault x mode {S-mode}
+      = 15 bins on RV64, 3 on RV32
+    id: Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_DAU_nleaf_read_u
+    goal: Verify D, A or U set in a non-leaf PTE raises a load page fault on a load from U-mode
+    description: "U-mode: valid level-0 leaf PTE (PTE.U=1); in each non-leaf PTE above it, set D, then A, then U (one at a time). Load (lw) from the page through va_data. Requires privileged spec 1.12 or later."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_DAU_d x PageType_d x load_page_fault x mode {U-mode}
+      = 15 bins on RV64, 3 on RV32
+    id: Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_DAU_nleaf_write_s
+    goal: Verify D, A or U set in a non-leaf PTE raises a store/AMO page fault on a store from S-mode
+    description: "S-mode: valid level-0 leaf PTE (PTE.U=0); in each non-leaf PTE above it, set D, then A, then U (one at a time). Store (sw) to the page through va_data. Requires privileged spec 1.12 or later."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_DAU_d x PageType_d x store_page_fault x mode {S-mode}
+      = 15 bins on RV64, 3 on RV32
+    id: Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_DAU_nleaf_write_u
+    goal: Verify D, A or U set in a non-leaf PTE raises a store/AMO page fault on a store from U-mode
+    description: "U-mode: valid level-0 leaf PTE (PTE.U=1); in each non-leaf PTE above it, set D, then A, then U (one at a time). Store (sw) to the page through va_data. Requires privileged spec 1.12 or later."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_DAU_d x PageType_d x store_page_fault x mode {U-mode}
+      = 15 bins on RV64, 3 on RV32
+    id: Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_DAU_nleaf_exec_s
+    goal: Verify D, A or U set in a non-leaf PTE raises an instruction page fault on an instruction fetch from S-mode
+    description: "S-mode: valid level-0 leaf PTE (PTE.U=0); in each non-leaf PTE above it, set D, then A, then U (one at a time). Jump (jalr) into the page through va_data. Requires privileged spec 1.12 or later."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_DAU_i x PageType_i x ins_page_fault x mode {S-mode}
+      = 15 bins on RV64, 3 on RV32
+    id: Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_DAU_nleaf_exec_u
+    goal: Verify D, A or U set in a non-leaf PTE raises an instruction page fault on an instruction fetch from U-mode
+    description: "U-mode: valid level-0 leaf PTE (PTE.U=1); in each non-leaf PTE above it, set D, then A, then U (one at a time). Jump (jalr) into the page through va_data. Requires privileged spec 1.12 or later."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_DAU_i x PageType_i x ins_page_fault x mode {U-mode}
+      = 15 bins on RV64, 3 on RV32
+    id: Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_misaligned_exec_s
+    goal: Verify a misaligned superpage raises an instruction page fault on an instruction fetch from S-mode
+    description: "S-mode: superpage leaf PTE (level 1 and above) with PTE.U=0 whose PPN has non-zero bits below the superpage size, at each superpage level. Jump (jalr) into the page through va_data."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_i x misaligned_PPN_i x ins_page_fault x exec_acc
+      = 5 bins on RV64, 1 on RV32
+    id: Sv39_superpage_align Sv39_superpage_align_fault Sv48_superpage_align Sv48_superpage_align_fault Sv57_superpage_align Sv57_superpage_align_fault stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_superpage_align] [norm:Sv39_superpage_align_fault] [norm:Sv48_superpage_align] [norm:Sv48_superpage_align_fault] [norm:Sv57_superpage_align] [norm:Sv57_superpage_align_fault] [norm:stval_op_faulting_addr]"
+  - name: cp_misaligned_exec_u
+    goal: Verify a misaligned superpage raises an instruction page fault on an instruction fetch from U-mode
+    description: "U-mode: superpage leaf PTE (level 1 and above) with PTE.U=1 whose PPN has non-zero bits below the superpage size, at each superpage level. Jump (jalr) into the page through va_data."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_i x misaligned_PPN_i x ins_page_fault x exec_acc
+      = 5 bins on RV64, 1 on RV32
+    id: Sv39_superpage_align Sv39_superpage_align_fault Sv48_superpage_align Sv48_superpage_align_fault Sv57_superpage_align Sv57_superpage_align_fault stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_superpage_align] [norm:Sv39_superpage_align_fault] [norm:Sv48_superpage_align] [norm:Sv48_superpage_align_fault] [norm:Sv57_superpage_align] [norm:Sv57_superpage_align_fault] [norm:stval_op_faulting_addr]"
+  - name: cp_misaligned_read_s
+    goal: Verify a misaligned superpage raises a load page fault on a load from S-mode
+    description: "S-mode: superpage leaf PTE (level 1 and above) with PTE.U=0 whose PPN has non-zero bits below the superpage size, at each superpage level. Load (lw) from the page through va_data."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_d x misaligned_PPN_d x load_page_fault x read_acc
+      = 5 bins on RV64, 1 on RV32
+    id: Sv39_superpage_align Sv39_superpage_align_fault Sv48_superpage_align Sv48_superpage_align_fault Sv57_superpage_align Sv57_superpage_align_fault stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_superpage_align] [norm:Sv39_superpage_align_fault] [norm:Sv48_superpage_align] [norm:Sv48_superpage_align_fault] [norm:Sv57_superpage_align] [norm:Sv57_superpage_align_fault] [norm:stval_op_faulting_addr]"
+  - name: cp_misaligned_read_u
+    goal: Verify a misaligned superpage raises a load page fault on a load from U-mode
+    description: "U-mode: superpage leaf PTE (level 1 and above) with PTE.U=1 whose PPN has non-zero bits below the superpage size, at each superpage level. Load (lw) from the page through va_data."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_d x misaligned_PPN_d x load_page_fault x read_acc
+      = 5 bins on RV64, 1 on RV32
+    id: Sv39_superpage_align Sv39_superpage_align_fault Sv48_superpage_align Sv48_superpage_align_fault Sv57_superpage_align Sv57_superpage_align_fault stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_superpage_align] [norm:Sv39_superpage_align_fault] [norm:Sv48_superpage_align] [norm:Sv48_superpage_align_fault] [norm:Sv57_superpage_align] [norm:Sv57_superpage_align_fault] [norm:stval_op_faulting_addr]"
+  - name: cp_misaligned_write_s
+    goal: Verify a misaligned superpage raises a store/AMO page fault on a store from S-mode
+    description: "S-mode: superpage leaf PTE (level 1 and above) with PTE.U=0 whose PPN has non-zero bits below the superpage size, at each superpage level. Store (sw) to the page through va_data."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_d x misaligned_PPN_d x store_page_fault x write_acc
+      = 5 bins on RV64, 1 on RV32
+    id: Sv39_superpage_align Sv39_superpage_align_fault Sv48_superpage_align Sv48_superpage_align_fault Sv57_superpage_align Sv57_superpage_align_fault stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_superpage_align] [norm:Sv39_superpage_align_fault] [norm:Sv48_superpage_align] [norm:Sv48_superpage_align_fault] [norm:Sv57_superpage_align] [norm:Sv57_superpage_align_fault] [norm:stval_op_faulting_addr]"
+  - name: cp_misaligned_write_u
+    goal: Verify a misaligned superpage raises a store/AMO page fault on a store from U-mode
+    description: "U-mode: superpage leaf PTE (level 1 and above) with PTE.U=1 whose PPN has non-zero bits below the superpage size, at each superpage level. Store (sw) to the page through va_data."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_d x misaligned_PPN_d x store_page_fault x write_acc
+      = 5 bins on RV64, 1 on RV32
+    id: Sv39_superpage_align Sv39_superpage_align_fault Sv48_superpage_align Sv48_superpage_align_fault Sv57_superpage_align Sv57_superpage_align_fault stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_superpage_align] [norm:Sv39_superpage_align_fault] [norm:Sv48_superpage_align] [norm:Sv48_superpage_align_fault] [norm:Sv57_superpage_align] [norm:Sv57_superpage_align_fault] [norm:stval_op_faulting_addr]"
+  - name: cp_canonical_read_s
+    goal: Verify a non-canonical virtual address raises a load page fault on a load from S-mode
+    description: "RV64 (Sv39/48/57), S-mode: va_data has bit 63 set, so its upper bits are not a sign extension of the top VA bit. Valid RWX leaf PTE with PTE.U=0 for the canonical part, at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_canonical_d x canonical_page_d x load_page_fault x read_acc
+      = 7 bins on RV64 (RV64 only)
+    id: Sv39_va_signext Sv48_va_signext Sv57_va_signext stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_va_signext] [norm:Sv48_va_signext] [norm:Sv57_va_signext] [norm:stval_op_faulting_addr]"
+  - name: cp_canonical_read_u
+    goal: Verify a non-canonical virtual address raises a load page fault on a load from U-mode
+    description: "RV64 (Sv39/48/57), U-mode: va_data has bit 63 set, so its upper bits are not a sign extension of the top VA bit. Valid RWX leaf PTE with PTE.U=1 for the canonical part, at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_canonical_d x canonical_page_d x load_page_fault x read_acc
+      = 7 bins on RV64 (RV64 only)
+    id: Sv39_va_signext Sv48_va_signext Sv57_va_signext stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_va_signext] [norm:Sv48_va_signext] [norm:Sv57_va_signext] [norm:stval_op_faulting_addr]"
+  - name: cp_canonical_write_s
+    goal: Verify a non-canonical virtual address raises a store/AMO page fault on a store from S-mode
+    description: "RV64 (Sv39/48/57), S-mode: va_data has bit 63 set, so its upper bits are not a sign extension of the top VA bit. Valid RWX leaf PTE with PTE.U=0 for the canonical part, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_canonical_d x canonical_page_d x store_page_fault x write_acc
+      = 7 bins on RV64 (RV64 only)
+    id: Sv39_va_signext Sv48_va_signext Sv57_va_signext stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_va_signext] [norm:Sv48_va_signext] [norm:Sv57_va_signext] [norm:stval_op_faulting_addr]"
+  - name: cp_canonical_write_u
+    goal: Verify a non-canonical virtual address raises a store/AMO page fault on a store from U-mode
+    description: "RV64 (Sv39/48/57), U-mode: va_data has bit 63 set, so its upper bits are not a sign extension of the top VA bit. Valid RWX leaf PTE with PTE.U=1 for the canonical part, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_canonical_d x canonical_page_d x store_page_fault x write_acc
+      = 7 bins on RV64 (RV64 only)
+    id: Sv39_va_signext Sv48_va_signext Sv57_va_signext stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_va_signext] [norm:Sv48_va_signext] [norm:Sv57_va_signext] [norm:stval_op_faulting_addr]"
+  - name: cp_canonical_exec_s
+    goal: Verify a non-canonical virtual address raises an instruction page fault on an instruction fetch from S-mode
+    description: "RV64 (Sv39/48/57), S-mode: va_data has bit 63 set, so its upper bits are not a sign extension of the top VA bit. Valid RWX leaf PTE with PTE.U=0 for the canonical part, at every page-table level (4 KiB page and each superpage size of the Sv mode). Jump (jalr) into the page through va_data."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_canonical_i x canonical_page_i x ins_page_fault x exec_acc
+      = 7 bins on RV64 (RV64 only)
+    id: Sv39_va_signext Sv48_va_signext Sv57_va_signext stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_va_signext] [norm:Sv48_va_signext] [norm:Sv57_va_signext] [norm:stval_op_faulting_addr]"
+  - name: cp_canonical_exec_u
+    goal: Verify a non-canonical virtual address raises an instruction page fault on an instruction fetch from U-mode
+    description: "RV64 (Sv39/48/57), U-mode: va_data has bit 63 set, so its upper bits are not a sign extension of the top VA bit. Valid RWX leaf PTE with PTE.U=1 for the canonical part, at every page-table level (4 KiB page and each superpage size of the Sv mode). Jump (jalr) into the page through va_data."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_canonical_i x canonical_page_i x ins_page_fault x exec_acc
+      = 7 bins on RV64 (RV64 only)
+    id: Sv39_va_signext Sv48_va_signext Sv57_va_signext stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_va_signext] [norm:Sv48_va_signext] [norm:Sv57_va_signext] [norm:stval_op_faulting_addr]"
+  - name: cp_rsw_pte
+    goal: Verify the RSW bits (PTE[9:8]) are ignored by the implementation
+    description: "S-mode and U-mode: leaf PTE with RSW = 01, 10 and 11, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store, load and fetch through va_data, then read the PTE back from the page table."
+    expectation: No fault; the PTE reads back with RSW unchanged.
+    bins: |-
+      RSW x mode
+      = 12 bins on RV64, 4 on RV32
+  - name: cp_global_read_s
+    goal: Verify a global mapping (G=1) survives an ASID-specific SFENCE.VMA for a load from S-mode
+    description: "S-mode: global leaf PTE (G=1) with PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data, execute sfence.vma x0, rs2 with the current ASID, then repeat the access."
+    expectation: No fault on either access.
+    bins: |-
+      global_PTE_d x PageType_d x read_acc
+      = 7 bins on RV64, 2 on RV32
+    id: sfence_vma_asid_only
+    rules:
+      - "[norm:sfence_vma_asid_only]"
+  - name: cp_global_read_u
+    goal: Verify a global mapping (G=1) survives an ASID-specific SFENCE.VMA for a load from U-mode
+    description: "U-mode: global leaf PTE (G=1) with PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data, execute sfence.vma x0, rs2 with the current ASID, then repeat the access."
+    expectation: No fault on either access.
+    bins: |-
+      global_PTE_d x PageType_d x read_acc
+      = 7 bins on RV64, 2 on RV32
+    id: sfence_vma_asid_only
+    rules:
+      - "[norm:sfence_vma_asid_only]"
+  - name: cp_global_write_s
+    goal: Verify a global mapping (G=1) survives an ASID-specific SFENCE.VMA for a store from S-mode
+    description: "S-mode: global leaf PTE (G=1) with PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data, execute sfence.vma x0, rs2 with the current ASID, then repeat the access."
+    expectation: No fault on either access.
+    bins: |-
+      global_PTE_d x PageType_d x write_acc
+      = 7 bins on RV64, 2 on RV32
+    id: sfence_vma_asid_only
+    rules:
+      - "[norm:sfence_vma_asid_only]"
+  - name: cp_global_write_u
+    goal: Verify a global mapping (G=1) survives an ASID-specific SFENCE.VMA for a store from U-mode
+    description: "U-mode: global leaf PTE (G=1) with PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data, execute sfence.vma x0, rs2 with the current ASID, then repeat the access."
+    expectation: No fault on either access.
+    bins: |-
+      global_PTE_d x PageType_d x write_acc
+      = 7 bins on RV64, 2 on RV32
+    id: sfence_vma_asid_only
+    rules:
+      - "[norm:sfence_vma_asid_only]"
+  - name: cp_global_exec_s
+    goal: Verify a global mapping (G=1) survives an ASID-specific SFENCE.VMA for an instruction fetch from S-mode
+    description: "S-mode: global leaf PTE (G=1) with PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Jump (jalr) into the page through va_data, execute sfence.vma x0, rs2 with the current ASID, then repeat the access."
+    expectation: No fault on either access.
+    bins: |-
+      global_PTE_i x PageType_i x exec_acc
+      = 7 bins on RV64, 2 on RV32
+    id: sfence_vma_asid_only
+    rules:
+      - "[norm:sfence_vma_asid_only]"
+  - name: cp_global_exec_u
+    goal: Verify a global mapping (G=1) survives an ASID-specific SFENCE.VMA for an instruction fetch from U-mode
+    description: "U-mode: global leaf PTE (G=1) with PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Jump (jalr) into the page through va_data, execute sfence.vma x0, rs2 with the current ASID, then repeat the access."
+    expectation: No fault on either access.
+    bins: |-
+      global_PTE_i x PageType_i x exec_acc
+      = 7 bins on RV64, 2 on RV32
+    id: sfence_vma_asid_only
+    rules:
+      - "[norm:sfence_vma_asid_only]"
+  - name: cp_svnapot_read_fault
+    goal: Verify PTE.N (bit 63) is reserved when Svnapot is not implemented, for a load
+    description: "RV64, S-mode: level-0 leaf PTE with N=1 and PPN[3:0]=1000. Load (lw) from the page through va_data."
+    expectation: "Without Svnapot: load page fault (scause = 13). With Svnapot the encoding is a valid 64 KiB NAPOT mapping and the access succeeds."
+    bins: svnapot_PTE_d x load_page_fault x read_acc x mode
+    id: Sv39_pte_svnapot_rsv
+    rules:
+      - "[norm:Sv39_pte_svnapot_rsv]"
+  - name: cp_svnapot_write_fault
+    goal: Verify PTE.N (bit 63) is reserved when Svnapot is not implemented, for a store
+    description: "RV64, S-mode: level-0 leaf PTE with N=1 and PPN[3:0]=1000. Store (sw) to the page through va_data."
+    expectation: "Without Svnapot: store/AMO page fault (scause = 15). With Svnapot the encoding is a valid 64 KiB NAPOT mapping and the access succeeds."
+    bins: svnapot_PTE_d x store_page_fault x write_acc x mode
+    id: Sv39_pte_svnapot_rsv
+    rules:
+      - "[norm:Sv39_pte_svnapot_rsv]"
+  - name: cp_svnapot_exec_fault
+    goal: Verify PTE.N (bit 63) is reserved when Svnapot is not implemented, for an instruction fetch
+    description: "RV64, S-mode: level-0 leaf PTE with N=1 and PPN[3:0]=1000. Jump (jalr) into the page through va_data."
+    expectation: "Without Svnapot: instruction page fault (scause = 12). With Svnapot the encoding is a valid 64 KiB NAPOT mapping and the access succeeds."
+    bins: svnapot_PTE_i x ins_page_fault x exec_acc x mode
+    id: Sv39_pte_svnapot_rsv
+    rules:
+      - "[norm:Sv39_pte_svnapot_rsv]"
+  - name: cp_svpbmt_read_fault
+    goal: Verify PBMT (bits 62:61) is reserved when menvcfg.PBMTE=0, for a load
+    description: "RV64, S-mode: clear menvcfg.PBMTE through T-SBI. Top-level leaf PTE with PBMT = 1, 2 and 3. Load (lw) from the page through va_data."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      svpbmt_PTE_d x load_page_fault x read_acc x mode x PBMTE_unset
+      = 9 bins on RV64 (RV64 only)
+    id: Sv39_pte_svpbmt_rsv menvcfg_pbmte_op
+    rules:
+      - "[norm:Sv39_pte_svpbmt_rsv] [norm:menvcfg_pbmte_op]"
+  - name: cp_svpbmt_write_fault
+    goal: Verify PBMT (bits 62:61) is reserved when menvcfg.PBMTE=0, for a store
+    description: "RV64, S-mode: clear menvcfg.PBMTE through T-SBI. Top-level leaf PTE with PBMT = 1, 2 and 3. Store (sw) to the page through va_data."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      svpbmt_PTE_d x store_page_fault x write_acc x mode x PBMTE_unset
+      = 9 bins on RV64 (RV64 only)
+    id: Sv39_pte_svpbmt_rsv menvcfg_pbmte_op
+    rules:
+      - "[norm:Sv39_pte_svpbmt_rsv] [norm:menvcfg_pbmte_op]"
+  - name: cp_svpbmt_exec_fault
+    goal: Verify PBMT (bits 62:61) is reserved when menvcfg.PBMTE=0, for an instruction fetch
+    description: "RV64, S-mode: clear menvcfg.PBMTE through T-SBI. Top-level leaf PTE with PBMT = 1, 2 and 3. Jump (jalr) into the page through va_data."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      svpbmt_PTE_i x ins_page_fault x exec_acc x mode x PBMTE_unset
+      = 9 bins on RV64 (RV64 only)
+    id: Sv39_pte_svpbmt_rsv menvcfg_pbmte_op
+    rules:
+      - "[norm:Sv39_pte_svpbmt_rsv] [norm:menvcfg_pbmte_op]"
+  - name: cp_reserved_read_fault
+    goal: Verify reserved PTE bits 60:54 raise a load page fault on a load
+    description: "RV64, S-mode: top-level leaf PTE with each of bits 60..54 set in turn. Load (lw) from the page through va_data."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      reserved_PTE_d x load_page_fault x read_acc x mode
+      = 21 bins on RV64 (RV64 only)
+    id: Sv39_pte_future_rsv
+    rules:
+      - "[norm:Sv39_pte_future_rsv]"
+  - name: cp_reserved_write_fault
+    goal: Verify reserved PTE bits 60:54 raise a store/AMO page fault on a store
+    description: "RV64, S-mode: top-level leaf PTE with each of bits 60..54 set in turn. Store (sw) to the page through va_data."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      reserved_PTE_d x store_page_fault x read_acc x mode
+      = 21 bins on RV64 (RV64 only)
+    id: Sv39_pte_future_rsv
+    rules:
+      - "[norm:Sv39_pte_future_rsv]"
+  - name: cp_reserved_exec_fault
+    goal: Verify reserved PTE bits 60:54 raise an instruction page fault on an instruction fetch
+    description: "RV64, S-mode: top-level leaf PTE with each of bits 60..54 set in turn. Jump (jalr) into the page through va_data."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      reserved_PTE_i x ins_page_fault x read_acc x mode
+      = 21 bins on RV64 (RV64 only)
+    id: Sv39_pte_future_rsv
+    rules:
+      - "[norm:Sv39_pte_future_rsv]"
+  - name: cp_read_nofault
+    goal: Verify a PTE with bits 63:54 all zero translates normally for a load
+    description: "S-mode and U-mode: loads through valid leaf PTEs whose extension and reserved bits 63:54 are zero (every Sv test)."
+    expectation: No fault.
+    bins: |-
+      zeros_PTE_d x read_acc x mode
+      = 3 bins on RV64 (RV64 only)
+  - name: cp_write_nofault
+    goal: Verify a PTE with bits 63:54 all zero translates normally for a store
+    description: "S-mode and U-mode: stores through valid leaf PTEs whose extension and reserved bits 63:54 are zero (every Sv test)."
+    expectation: No fault.
+    bins: |-
+      zeros_PTE_d x write_acc x mode
+      = 3 bins on RV64 (RV64 only)
+  - name: cp_exec_nofault
+    goal: Verify a PTE with bits 63:54 all zero translates normally for an instruction fetch
+    description: "S-mode and U-mode: instruction fetches through valid leaf PTEs whose extension and reserved bits 63:54 are zero (every Sv test)."
+    expectation: No fault.
+    bins: |-
+      zeros_PTE_i x exec_acc x mode
+      = 3 bins on RV64 (RV64 only)
+  - name: cp_svadu_disabled
+    goal: Verify translation with hardware A/D updating disabled (menvcfg.ADUE=0)
+    description: Sampled on accesses while menvcfg.ADUE (menvcfgh.ADUE on RV32) is 0, which holds in every Sv test.
+    expectation: A and D bits are not updated by hardware.
+    bins: |-
+      ADUE_unset x mode
+      = 3 bins on RV64, 1 on RV32
+    id: Svadu_disabled_hw_update_falls_back_to_svade
+    rules:
+      - "[norm:Svadu_disabled_hw_update_falls_back_to_svade]"

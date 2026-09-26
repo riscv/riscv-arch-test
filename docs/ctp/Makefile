@@ -86,7 +86,7 @@ endif
 ifdef UNRELIABLE_BUT_FASTER_INCREMENTAL_BUILDS
 WORKDIR_SETUP = \
     mkdir -p $@.workdir/src && \
-    ln -sfn $(patsubst %,../../../%,$(wildcard src/*.adoc)) $@.workdir/src/ && \
+    ln -sfn $(patsubst %,../../../%,$(wildcard src/*.adoc src/*.yml src/docinfo.html)) $@.workdir/src/ && \
     ln -sfn ../../../$(GENERATED_DIR)/testplans ../../../$(GENERATED_DIR)/norm ../../../$(GENERATED_DIR)/param $@.workdir/src/ && \
     ln -sfn ../../common ../../docs-resources $@.workdir/
 WORKDIR_TEARDOWN = mv $@.workdir/$@ $@
@@ -94,7 +94,7 @@ else
 WORKDIR_SETUP = \
     rm -rf $@.workdir && \
     mkdir -p $@.workdir/src && \
-    ln -sfn $(patsubst %,../../../%,$(wildcard src/*.adoc)) $@.workdir/src/ && \
+    ln -sfn $(patsubst %,../../../%,$(wildcard src/*.adoc src/*.yml src/docinfo.html)) $@.workdir/src/ && \
     ln -sfn ../../../$(GENERATED_DIR)/testplans ../../../$(GENERATED_DIR)/norm ../../../$(GENERATED_DIR)/param $@.workdir/src/ && \
     ln -sfn ../../common ../../docs-resources $@.workdir/
 
@@ -119,7 +119,7 @@ ASCIIDOCTOR_HTML := $(ENV) asciidoctor
 OPTIONS := --trace \
            -a compress \
            -a pdf-fontsdir=docs-resources/fonts \
-           -a pdf-theme=docs-resources/themes/riscv-pdf.yml \
+           -a pdf-theme=src/ctp-theme.yml \
            $(XTRA_ADOC_OPTS) \
            -a revnumber=${VERSION} \
            -a revremark=${REVMARK} \
@@ -161,14 +161,16 @@ $(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS) testplans normrules
 
 # Make CSV testplans into more readable asciidoc tables by
 # transposing them to one instruction per column, separating
-# into at most 10 instructions per page, and trimming unused
+# into at most 12 instructions per table, and trimming unused
 # coverpoints
-TESTPLANS := $(wildcard $(REPO_ROOT)/testplans/*)
+TESTPLANS := $(wildcard $(REPO_ROOT)/testplans/* $(REPO_ROOT)/testplans/priv/*.yaml $(REPO_ROOT)/coverpoints/norm/*.yaml)
 testplans: $(TESTPLANS)
 	@echo "Generating test plan tables..."
 	@if [ -d $(REPO_ROOT)/testplans ]; then \
 		rm -rf $(GENERATED_DIR)/testplans; \
-		$(PYTHON_RUNNER) $(REPO_ROOT)/generators/ctp/transpose_csv.py $(REPO_ROOT)/testplans $(GENERATED_DIR)/testplans 10; \
+		$(PYTHON_RUNNER) $(REPO_ROOT)/generators/ctp/transpose_csv.py $(REPO_ROOT)/testplans $(GENERATED_DIR)/testplans 12; \
+		$(PYTHON_RUNNER) $(REPO_ROOT)/generators/ctp/transpose_csv.py $(REPO_ROOT)/testplans/priv $(GENERATED_DIR)/testplans/priv 12; \
+		$(PYTHON_RUNNER) $(REPO_ROOT)/generators/ctp/generate_priv_testplans.py --plans $(REPO_ROOT)/testplans/priv --norm $(REPO_ROOT)/coverpoints/norm --coverage $(REPO_ROOT)/coverpoints/priv --out $(GENERATED_DIR)/testplans/priv; \
 	else \
 		echo "No test plans directory found in source."; \
 	fi

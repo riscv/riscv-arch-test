@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: ZicfilpU
+source: https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?gid=84584846#gid=84584846
+description: |
+  In this sheet, all Zicfilp tests from the Zicfilp_Common sheet are
+  re-executed in User Mode (U-mode).
+
+  Environment:
+  - Zicfilp extension enabled, Zicsr enabled.
+  - Landing Pad Enabled (LPE) controlled by:
+      senvcfg.LPE when S-mode is implemented
+      menvcfg.LPE when S-mode is not implemented
+  - Tests execute in U-mode.
+
+  Execution Notes:
+  - All indirect branch instructions (JALR, C.JALR, C.JR) are exercised
+    as in the Common sheet.
+  - LPAD behavior, label matching, immediate encoding, and software-check
+    exceptions are tested as per normative rules defined in the spec.
+  - ELP state is observed via sstatus.SPELP when S-mode is implemented, because U-mode software-check exceptions are delegated to S-mode (medeleg[18]=1 in the ACT4 boot code). When S-mode is not implemented the trap is taken in M-mode and ELP is observed via mstatus.MPELP (RV64) or mstatush.MPELP (RV32).
+    since U-mode traps are delivered to M-mode.
+  - Exception delivery target is U-mode; software-check exceptions are
+    delivered to U-mode privilege level.
+  - Trap entry and return coverpoints from the M-mode sheet are not
+    repeated here as they are M-mode specific by spec.
+  - All other assumptions, instruction types, and execution conditions
+    are identical to the Zicfilp_Common sheet.
+
+  Excluded (Debug testplan — separate file):
+  -
+  Excluded (Redundant — standard ISA traps already cover these):
+coverpoints: []

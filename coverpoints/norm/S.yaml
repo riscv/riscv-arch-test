@@ -190,7 +190,7 @@ normative_rule_definitions:
   - name: supervisor_timer_scheduling
     coverpoint:
       [
-        "InterruptsSm_cg/cp_trigger_sti_sstc when Sstc implemented. Too vague if handled by software setting STIP.",
+        "OUT-OF-SCOPE: too vague if handled by software setting STIP. Tested by InterruptsS_cg/cp_trigger_sti_sstc when Sstc implemented",
       ]
 
   # The sscratch CSR is an SXLEN-bit read/write register, dedicated for use by the

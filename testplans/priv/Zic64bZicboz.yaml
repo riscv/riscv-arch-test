@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Zic64bZicboz
+source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1677990180#gid=1677990180
+coverpoints:
+  - name: cp_zic64b
+    goal: Cache block zeros
+    description: "For each offset in range of [0, 64]: Write all 1s to 128 consecutive bytes, then do cbo with offset from 64-bit aligned base.  Read back words at offsets of 0, 60, 64, 124 from base."
+    expectation: Match ref model. Only 64 bytes written. When offset is 64, they are in the second block.
+    bins: "65"
+    rules:
+      - Cache blocks must be 64 bytes in size, naturally aligned in the address space.

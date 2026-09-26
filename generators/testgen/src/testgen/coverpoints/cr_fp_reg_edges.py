@@ -7,8 +7,8 @@
 
 """Floating point cross-product register edge value coverpoint generators (cr_fs1_fs2_edges, cr_fs1_fs2_edges_frm, etc.)."""
 
+from testgen.coverpoints.cp_fp_reg_edges import _fp_edges_for
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.data.edges import FLOAT_EDGES
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -18,18 +18,7 @@ from testgen.instructions.params import generate_random_params
 @add_coverpoint_generator("cr_fs1_fs2_edges")
 def make_cr_fs1_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for cross-product of fs1 and fs2 edge values."""
-    if coverpoint.endswith("_D"):
-        edges1 = FLOAT_EDGES.double
-        edges2 = FLOAT_EDGES.double
-    elif coverpoint.endswith("_H"):
-        edges1 = FLOAT_EDGES.half
-        edges2 = FLOAT_EDGES.half
-    elif coverpoint.endswith("_BF16"):
-        edges1 = FLOAT_EDGES.bf16
-        edges2 = FLOAT_EDGES.bf16
-    else:
-        edges1 = FLOAT_EDGES.single
-        edges2 = FLOAT_EDGES.single
+    edges1 = edges2 = _fp_edges_for(coverpoint, "cr_fs1_fs2_edges")
 
     cross_frm = "_frm" in coverpoint
 
@@ -55,18 +44,7 @@ def make_cr_fs1_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, tes
 @add_coverpoint_generator("cr_fs1_fs3_edges")
 def make_cr_fs1_fs3_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for cross-product of fs1 and fs3 edge values."""
-    if coverpoint.endswith("_D"):
-        edges1 = FLOAT_EDGES.double
-        edges2 = FLOAT_EDGES.double
-    elif coverpoint.endswith("_H"):
-        edges1 = FLOAT_EDGES.half
-        edges2 = FLOAT_EDGES.half
-    elif coverpoint.endswith("_BF16"):
-        edges1 = FLOAT_EDGES.bf16
-        edges2 = FLOAT_EDGES.bf16
-    else:
-        edges1 = FLOAT_EDGES.single
-        edges2 = FLOAT_EDGES.single
+    edges1 = edges2 = _fp_edges_for(coverpoint, "cr_fs1_fs3_edges")
 
     cross_frm = "_frm" in coverpoint
 

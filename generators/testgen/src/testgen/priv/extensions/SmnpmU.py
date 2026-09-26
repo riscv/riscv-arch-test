@@ -14,11 +14,11 @@ from testgen.priv.extensions.ZpmCommon import (
     alloc_pm_regs_paired,
     data_page,
     free_pm_regs,
+    generate_fault_address_tests,
+    generate_instruction_sweep_tests,
+    generate_jalr_tests,
+    generate_misaligned_tests,
     jalr_pad_asm,
-    pass_a_all_instructions,
-    pass_c_misaligned,
-    pass_e_jalr,
-    pass_f_fault_address,
     set_pmm_field,
 )
 from testgen.priv.registry import add_priv_test_generator
@@ -51,10 +51,10 @@ def make_smnpmu(test_data: TestData) -> list[TestChunk]:
                 comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), physical addresses"),
                 *set_pmm_field("menvcfg", pmm, pmlen, regs.tmp, tsbi=True),
                 f"LA(x{regs.base}, pm_lo_page)",
-                *pass_a_all_instructions(None, prefix, test_data, regs, COVERGROUP),
-                *pass_c_misaligned(None, prefix, test_data, regs, COVERGROUP),
-                *pass_e_jalr(None, prefix, test_data, regs, COVERGROUP),
-                *pass_f_fault_address(None, prefix, test_data, regs, COVERGROUP),
+                *generate_instruction_sweep_tests(prefix, test_data, regs, COVERGROUP),
+                *generate_misaligned_tests(prefix, test_data, regs, COVERGROUP),
+                *generate_jalr_tests(prefix, test_data, regs, COVERGROUP),
+                *generate_fault_address_tests(prefix, test_data, regs, COVERGROUP),
             ]
         )
 

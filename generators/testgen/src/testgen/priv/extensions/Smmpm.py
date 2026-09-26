@@ -15,16 +15,16 @@ from testgen.priv.extensions.ZpmCommon import (
     alloc_pm_regs_paired,
     build_data_only_u_map_asm,
     free_pm_regs,
+    generate_csr_write_tests,
+    generate_fault_address_tests,
+    generate_instruction_sweep_tests,
+    generate_jalr_tests,
+    generate_misaligned_tests,
+    generate_mprv_tests,
+    generate_mxr_tests,
+    generate_xlen_change_tests,
     jalr_pad_asm,
     mprv_data_section,
-    pass_a_all_instructions,
-    pass_c_misaligned,
-    pass_clear_on_xlen_change,
-    pass_d_mxr,
-    pass_e_jalr,
-    pass_f_fault_address,
-    pass_g_csr_writes,
-    pass_i_mprv_mxr_pmm_loop,
     set_mxr,
     set_pmm_field,
 )
@@ -68,15 +68,15 @@ def make_smmpm(test_data: TestData) -> list[TestChunk]:
                 *set_mxr(False, regs.tmp, "mstatus"),
                 "#endif // S_SUPPORTED",
                 f"LA(x{regs.base}, pm_lo_page)",
-                *pass_a_all_instructions(None, prefix, test_data, regs, COVERGROUP),
-                *pass_c_misaligned(None, prefix, test_data, regs, COVERGROUP),
-                *pass_e_jalr(None, prefix, test_data, regs, COVERGROUP),
-                *pass_f_fault_address(None, prefix, test_data, regs, COVERGROUP),
+                *generate_instruction_sweep_tests(prefix, test_data, regs, COVERGROUP),
+                *generate_misaligned_tests(prefix, test_data, regs, COVERGROUP),
+                *generate_jalr_tests(prefix, test_data, regs, COVERGROUP),
+                *generate_fault_address_tests(prefix, test_data, regs, COVERGROUP),
                 "#ifdef S_SUPPORTED",
-                *pass_d_mxr(None, prefix, test_data, regs, COVERGROUP, status_csr="mstatus"),
+                *generate_mxr_tests(prefix, test_data, regs, COVERGROUP, status_csr="mstatus"),
                 *set_mxr(False, regs.tmp, "mstatus"),
                 "#endif // S_SUPPORTED",
-                *pass_g_csr_writes(prefix, pmlen, test_data, regs, COVERGROUP, _CSR_TARGETS),
+                *generate_csr_write_tests(prefix, pmlen, test_data, regs, COVERGROUP, _CSR_TARGETS),
             ]
         )
 
@@ -91,8 +91,7 @@ def make_smmpm(test_data: TestData) -> list[TestChunk]:
             lines.extend(
                 [
                     *set_pmm_field(pmm_csr, pmm, pmlen, regs.tmp),
-                    *pass_clear_on_xlen_change(
-                        None,
+                    *generate_xlen_change_tests(
                         f"{label}_{tag}",
                         test_data,
                         regs,
@@ -117,7 +116,7 @@ def make_smmpm(test_data: TestData) -> list[TestChunk]:
         [
             # MPRV test using nested loop structure from testplan
             # Only tests Bare and Sv39 modes with limited upper bit patterns
-            *pass_i_mprv_mxr_pmm_loop(test_data, regs, COVERGROUP, sv39_data_map),
+            *generate_mprv_tests(test_data, regs, COVERGROUP, sv39_data_map),
             *set_pmm_field("mseccfg", 0b00, 0, regs.tmp),
             "#ifdef S_SUPPORTED",
             *set_mxr(False, regs.tmp, "mstatus"),

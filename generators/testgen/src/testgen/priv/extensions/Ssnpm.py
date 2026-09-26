@@ -22,14 +22,14 @@ from testgen.priv.extensions.ZpmCommon import (
     data_page,
     data_slvl_tables,
     free_pm_regs,
+    generate_fault_address_tests,
+    generate_instruction_sweep_tests,
+    generate_jalr_tests,
+    generate_misaligned_tests,
+    generate_mxr_tests,
+    generate_sign_extension_tests,
+    generate_xlen_change_tests,
     jalr_pad_asm,
-    pass_a_all_instructions,
-    pass_b_sign_extension,
-    pass_c_misaligned,
-    pass_clear_on_xlen_change,
-    pass_d_mxr,
-    pass_e_jalr,
-    pass_f_fault_address,
     satp_clear,
     satp_setup,
     set_mxr,
@@ -99,18 +99,18 @@ def make_ssnpm(test_data: TestData) -> list[TestChunk]:
                     *set_pmm_field("senvcfg", pmm, pmlen, regs.tmp, tsbi=True),
                     *set_mxr(False, regs.tmp, tsbi=True),
                     f"LA(x{regs.base}, pm_lo_page)",
-                    *pass_a_all_instructions(None, prefix, test_data, regs, COVERGROUP),
+                    *generate_instruction_sweep_tests(prefix, test_data, regs, COVERGROUP),
                 ]
             )
             if not is_bare:
-                lines.extend(pass_b_sign_extension(None, prefix, mode, test_data, regs, COVERGROUP))
+                lines.extend(generate_sign_extension_tests(prefix, mode, test_data, regs, COVERGROUP))
             lines.extend(
                 [
-                    *pass_c_misaligned(None, prefix, test_data, regs, COVERGROUP),
-                    *pass_e_jalr(None, prefix, test_data, regs, COVERGROUP, mxr=0),
-                    *pass_f_fault_address(None, prefix, test_data, regs, COVERGROUP),
-                    *pass_d_mxr(None, prefix, test_data, regs, COVERGROUP, tsbi=True),
-                    *pass_e_jalr(None, prefix, test_data, regs, COVERGROUP, mxr=1),
+                    *generate_misaligned_tests(prefix, test_data, regs, COVERGROUP),
+                    *generate_jalr_tests(prefix, test_data, regs, COVERGROUP, mxr=0),
+                    *generate_fault_address_tests(prefix, test_data, regs, COVERGROUP),
+                    *generate_mxr_tests(prefix, test_data, regs, COVERGROUP, tsbi=True),
+                    *generate_jalr_tests(prefix, test_data, regs, COVERGROUP, mxr=1),
                     *set_mxr(False, regs.tmp, tsbi=True),
                 ]
             )
@@ -123,8 +123,7 @@ def make_ssnpm(test_data: TestData) -> list[TestChunk]:
             lines.extend(
                 [
                     *set_pmm_field("senvcfg", pmm, pmlen, regs.tmp),
-                    *pass_clear_on_xlen_change(
-                        None,
+                    *generate_xlen_change_tests(
                         prefix,
                         test_data,
                         regs,

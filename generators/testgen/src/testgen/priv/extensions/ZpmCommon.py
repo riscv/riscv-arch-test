@@ -65,7 +65,7 @@ ZCA_WRITES_SP = [("c.swsp", "lw"), ("c.sdsp", "ld")]
 ZICBOM_OPS = ["cbo.clean", "cbo.flush", "cbo.inval"]
 ZICBOP_OPS = ["prefetch.r", "prefetch.w", "prefetch.i"]
 ZICFISS_AMOS: list[
-    tuple[str, str, int]
+    tuple[str, str]
 ] = []  # TODO : Add all zicfiss instructions including amo and push, pop instructions.
 
 VEC_READS = [
@@ -108,7 +108,6 @@ _LEAF_PERMS_U = "PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V"  # U-accessible 
 _LEAF_PERMS_S = "PTE_D | PTE_A | PTE_W | PTE_R | PTE_V"  # S-accessible only (no U)
 
 LEVELS_BELOW_ROOT = {"sv39": 2, "sv48": 3, "sv57": 4}
-IDENTITY_VPN_SHIFT = {"sv39": 30, "sv48": 39, "sv57": 48}
 
 HIGH_VA = {
     "sv39": 0xFFFF_FFC0_0000_0000,
@@ -201,11 +200,6 @@ def csr_op(op: str, csr: str, value: str, tmp: int, tsbi: bool = False) -> list[
     return [f"LI(x{tmp}, {value})", tsbi_call(instr) if tsbi else instr]
 
 
-def csr_read(csr: str, dst: int, tsbi: bool = False) -> list[str]:
-    instr = f"csrr x{dst}, {csr}"
-    return [tsbi_call(instr) if tsbi else instr]
-
-
 def set_pmm_field(csr: str, val: int, pmlen: int, tmp: int, tsbi: bool = False) -> list[str]:
     """Clear then set the 2-bit PMM field in *csr*."""
     lines = [f"# {csr}.PMM={val:#04b} PMLEN={pmlen}", *csr_op("csrc", csr, f"{csr.upper()}_PMM", tmp, tsbi)]
@@ -263,7 +257,7 @@ def data_slvl_tables(mode: str, label_prefix: str = "rvtest_slvl") -> list[str]:
     return lines
 
 
-def pass_g_csr_writes(
+def generate_csr_write_tests(
     prefix: str,
     pmlen: int,
     test_data: TestData,
@@ -549,14 +543,10 @@ def _seed(regs: Regs) -> list[str]:
     return [f"LI(x{regs.data}, {hex(VALUE_OLD)})", f"sd x{regs.data}, 0(x{regs.base})"]
 
 
-def _sentinel(regs: Regs) -> list[str]:
-    return [f"LI(x{regs.chk}, {hex(SENTINEL)})"]
-
-
 def _probe_load(mn: str, binname: str, test_data: TestData, regs: Regs, cp: str, cg: str) -> list[str]:
     return [
         *_seed(regs),
-        *_sentinel(regs),
+        f"LI(x{regs.chk}, {hex(SENTINEL)})",
         test_data.add_testcase(binname, cp, cg),
         f"{mn} x{regs.chk}, 0(x{regs.a})",
         write_sigupd(regs.chk, test_data),
@@ -621,7 +611,7 @@ def _probe_zacas(mn: str, binname: str, test_data: TestData, regs: Regs, cg: str
 def _probe_fp_load(mn: str, mv: str, binname: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
     return [
         *_seed(regs),
-        *_sentinel(regs),
+        f"LI(x{regs.chk}, {hex(SENTINEL)})",
         f"{mv} f{regs.fp}, x{regs.chk}   # poison the FP destination",
         test_data.add_testcase(binname, CP_MASKING, cg),
         f"{mn} f{regs.fp}, 0(x{regs.a})",
@@ -647,7 +637,7 @@ def _probe_fp_store(
 def _probe_c_load_cl(mn: str, binname: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
     return [
         *_seed(regs),
-        *_sentinel(regs),
+        f"LI(x{regs.chk}, {hex(SENTINEL)})",
         test_data.add_testcase(binname, CP_MASKING, cg),
         *arch_block([f"{mn} x{regs.chk}, 0(x{regs.a})"], "zca"),
         write_sigupd(regs.chk, test_data),
@@ -668,7 +658,7 @@ def _probe_c_store_cs(mn: str, readback: str, binname: str, test_data: TestData,
 def _probe_c_load_sp(mn: str, binname: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
     return [
         *_seed(regs),
-        *_sentinel(regs),
+        f"LI(x{regs.chk}, {hex(SENTINEL)})",
         f"mv x{regs.tmp}, sp",
         f"mv sp, x{regs.a}",
         test_data.add_testcase(binname, CP_MASKING, cg),
@@ -695,7 +685,7 @@ def _probe_c_store_sp(mn: str, readback: str, binname: str, test_data: TestData,
 def _probe_cd_load_sp(binname: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
     return [
         *_seed(regs),
-        *_sentinel(regs),
+        f"LI(x{regs.chk}, {hex(SENTINEL)})",
         f"fmv.d.x f{regs.fp_c}, x{regs.chk}",
         f"mv x{regs.tmp}, sp",
         f"mv sp, x{regs.a}",
@@ -740,12 +730,10 @@ def _vset(sew: int, regs: Regs) -> list[str]:
     ]
 
 
-def _probe_vec_load(
-    mn: str, sew: int, template: str, binname: str, test_data: TestData, regs: Regs, cg: str
-) -> list[str]:
+def _probe_vec_load(sew: int, template: str, binname: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
     return [
         *_seed(regs),
-        *_sentinel(regs),
+        f"LI(x{regs.chk}, {hex(SENTINEL)})",
         *_vset(sew, regs),
         f"vmv.v.x v2, x{regs.chk}   # poison the destination vector",
         test_data.add_testcase(binname, CP_MASKING, cg),
@@ -757,7 +745,7 @@ def _probe_vec_load(
 
 
 def _probe_vec_store(
-    mn: str, sew: int, template: str, readback: str, binname: str, test_data: TestData, regs: Regs, cg: str
+    sew: int, template: str, readback: str, binname: str, test_data: TestData, regs: Regs, cg: str
 ) -> list[str]:
     return [
         *_seed(regs),
@@ -772,20 +760,15 @@ def _probe_vec_store(
     ]
 
 
-def _probe_zicfiss(
-    mn: str, readback: str, funct3: int, binname: str, test_data: TestData, regs: Regs, cg: str
-) -> list[str]:
+def _probe_zicfiss(mn: str, readback: str, binname: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
     """Zicfiss shadow-stack AMO through a tagged pointer (kept for parity;
     ZICFISS_AMOS is currently empty across all four extensions, TODO : Add them"""
     return [
         *_seed(regs),
         f"LI(x{regs.data}, {hex(VALUE_NEW)})",
-        *_sentinel(regs),
+        f"LI(x{regs.chk}, {hex(SENTINEL)})",
         test_data.add_testcase(binname, CP_MASKING, cg),
-        (
-            f".insn r 0x2f, {funct3:#x}, 0x24, x{regs.chk}, x{regs.a}, x{regs.data}"
-            f"   # {mn} x{regs.chk}, x{regs.data}, (x{regs.a})"
-        ),
+        *arch_block([f"{mn} x{regs.chk}, x{regs.data}, (x{regs.a})"], "zicfiss"),
         f"{readback} x{regs.chk}, 0(x{regs.base})",
         write_sigupd(regs.chk, test_data),
     ]
@@ -818,10 +801,10 @@ def _tag_address(upper: int, regs: Regs, byte_offset: int = 0) -> list[str]:
     return lines
 
 
-# ── Common Pass Implementations ────────────────────────────────────────────
+# ── Common Test Generators ─────────────────────────────────────────────────
 
 
-def pass_a_all_instructions(cfg: object | None, prefix: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
+def generate_instruction_sweep_tests(prefix: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
     lines = []
     for upper in UPPER_PATTERNS:
         lines.extend(
@@ -885,8 +868,8 @@ def pass_a_all_instructions(cfg: object | None, prefix: str, test_data: TestData
         )
 
         lines.append("#ifdef ZICFISS_SUPPORTED")
-        for mn, rb, f3 in ZICFISS_AMOS:
-            lines.extend(_probe_zicfiss(mn, rb, f3, _binname(prefix, upper, mn), test_data, regs, cg))
+        for mn, rb in ZICFISS_AMOS:
+            lines.extend(_probe_zicfiss(mn, rb, _binname(prefix, upper, mn), test_data, regs, cg))
         lines.append("#endif // ZICFISS_SUPPORTED")
 
         lines.extend(
@@ -911,28 +894,28 @@ def pass_a_all_instructions(cfg: object | None, prefix: str, test_data: TestData
         for mn, sew, template in VEC_READS:
             if sew > 32:
                 continue
-            lines.extend(_probe_vec_load(mn, sew, template, _binname(prefix, upper, mn), test_data, regs, cg))
+            lines.extend(_probe_vec_load(sew, template, _binname(prefix, upper, mn), test_data, regs, cg))
         for mn, sew, template, rb in VEC_WRITES:
             if sew > 32:
                 continue
-            lines.extend(_probe_vec_store(mn, sew, template, rb, _binname(prefix, upper, mn), test_data, regs, cg))
+            lines.extend(_probe_vec_store(sew, template, rb, _binname(prefix, upper, mn), test_data, regs, cg))
         lines.append("#endif // ZVL32B_SUPPORTED")
 
         lines.append("#ifdef ZVE64X_SUPPORTED")
         for mn, sew, template in VEC_READS:
             if sew <= 32:
                 continue
-            lines.extend(_probe_vec_load(mn, sew, template, _binname(prefix, upper, mn), test_data, regs, cg))
+            lines.extend(_probe_vec_load(sew, template, _binname(prefix, upper, mn), test_data, regs, cg))
         for mn, sew, template, rb in VEC_WRITES:
             if sew <= 32:
                 continue
-            lines.extend(_probe_vec_store(mn, sew, template, rb, _binname(prefix, upper, mn), test_data, regs, cg))
+            lines.extend(_probe_vec_store(sew, template, rb, _binname(prefix, upper, mn), test_data, regs, cg))
         lines.append("#endif // ZVE64X_SUPPORTED")
 
     return lines
 
 
-def pass_c_misaligned(cfg: object | None, prefix: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
+def generate_misaligned_tests(prefix: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
     lines = [comment_banner(f"{prefix}: misaligned word accesses through a tagged pointer")]
     for upper in UPPER_PATTERNS:
         lines.extend(
@@ -957,8 +940,7 @@ def set_mxr(enable: bool, tmp: int, status_csr: str = "sstatus", tsbi: bool = Fa
     return [f"# {status_csr}.MXR = {int(enable)}", *csr_op(op, status_csr, f"{status_csr.upper()}_MXR", tmp, tsbi)]
 
 
-def pass_d_mxr(
-    cfg: object | None,
+def generate_mxr_tests(
     prefix: str,
     test_data: TestData,
     regs: Regs,
@@ -984,7 +966,7 @@ def pass_d_mxr(
     return lines
 
 
-def pass_e_jalr(cfg: object | None, prefix: str, test_data: TestData, regs: Regs, cg: str, mxr: int = 0) -> list[str]:
+def generate_jalr_tests(prefix: str, test_data: TestData, regs: Regs, cg: str, mxr: int = 0) -> list[str]:
     lines = [
         comment_banner(f"{prefix}: JALR through a tagged pointer, MXR={mxr} (fetch is never masked)"),
         f"LA(x{regs.base}, pm_jalr_pad)",
@@ -1004,7 +986,7 @@ def pass_e_jalr(cfg: object | None, prefix: str, test_data: TestData, regs: Regs
     return lines
 
 
-def pass_f_fault_address(cfg: object | None, prefix: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
+def generate_fault_address_tests(prefix: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
     lines = [
         comment_banner(f"{prefix}: masked address resolves to the model's access-fault address"),
         "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
@@ -1015,12 +997,12 @@ def pass_f_fault_address(cfg: object | None, prefix: str, test_data: TestData, r
             [
                 f"LI(x{regs.tmp}, {hex(upper << 48)})",
                 f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
-                *_sentinel(regs),
+                f"LI(x{regs.chk}, {hex(SENTINEL)})",
                 test_data.add_testcase(_binname(f"{prefix}_flt", upper, "lw"), "cp_hardware_csr_writes_fault", cg),
                 f"lw x{regs.chk}, 0(x{regs.a})",
                 write_sigupd(regs.chk, test_data),
                 f"LI(x{regs.data}, {hex(VALUE_NEW)})",
-                *_sentinel(regs),
+                f"LI(x{regs.chk}, {hex(SENTINEL)})",
                 test_data.add_testcase(_binname(f"{prefix}_flt", upper, "sw"), "cp_hardware_csr_writes_fault", cg),
                 f"sw x{regs.data}, 0(x{regs.a})",
                 write_sigupd(regs.chk, test_data),
@@ -1030,9 +1012,7 @@ def pass_f_fault_address(cfg: object | None, prefix: str, test_data: TestData, r
     return lines
 
 
-def pass_b_sign_extension(
-    cfg: object | None, prefix: str, mode: str, test_data: TestData, regs: Regs, cg: str
-) -> list[str]:
+def generate_sign_extension_tests(prefix: str, mode: str, test_data: TestData, regs: Regs, cg: str) -> list[str]:
     """ld/sd against an upper-half VA: only sign extension reproduces the base.
 
     For Sv39/Sv48/Sv57 modes where translation applies sign-extension instead
@@ -1054,8 +1034,7 @@ def pass_b_sign_extension(
     return lines
 
 
-def pass_clear_on_xlen_change(
-    cfg: object | None,
+def generate_xlen_change_tests(
     prefix: str,
     test_data: TestData,
     regs: Regs,
@@ -1138,7 +1117,7 @@ def _mprv_lw_sw_probe(
                 f"LI(x{regs.tmp}, {hex(upper << 48)})",
                 f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
                 *_seed(regs),
-                *_sentinel(regs),
+                f"LI(x{regs.chk}, {hex(SENTINEL)})",
                 *set_mprv(True, regs.tmp, mpp),
                 test_data.add_testcase(_binname(prefix, upper, "lw"), cp, cg),
                 f"lw x{regs.chk}, 0(x{regs.a})",
@@ -1191,7 +1170,7 @@ def _mprv_satp_loop(
     return lines
 
 
-def pass_i_mprv_mxr_pmm_loop(
+def generate_mprv_tests(
     test_data: TestData,
     regs: Regs,
     cg: str,

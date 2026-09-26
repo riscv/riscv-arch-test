@@ -1,7 +1,7 @@
 normative_rule_definitions:
   # The counter-enable (scounteren) CSR is a 32-bit register that controls the
   # availability of the hardware performance monitoring counters to U-mode.
-  - names: [scounteren_sz, scounteren_mode]
+  - name: scounteren
     coverpoint: ["S_scsr_cg/cp_scsr_access"]
 
   # scounteren must be implemented. However, any of the bits may be read-only zero,

@@ -95,13 +95,13 @@ covergroup Svpbmt_cg with function sample(ins_t ins);
         wildcard bins sw = {SW};
     }
 
-    ins_page_fault: coverpoint  ins.current.csr[CSR_MCAUSE][31:0] {
+    ins_page_fault: coverpoint  ins.current.csr[CSR_SCAUSE][31:0] {
         bins ins_page_fault = {32'd12} iff (ins.current.trap);
     }
-    load_page_fault: coverpoint  ins.current.csr[CSR_MCAUSE][31:0] {
+    load_page_fault: coverpoint  ins.current.csr[CSR_SCAUSE][31:0] {
         bins load_page_fault = {32'd13} iff (ins.current.trap);
     }
-    store_page_fault: coverpoint  ins.current.csr[CSR_MCAUSE][31:0] {
+    store_page_fault: coverpoint  ins.current.csr[CSR_SCAUSE][31:0] {
         bins store_amo_page_fault = {32'd15} iff (ins.current.trap);
     }
 

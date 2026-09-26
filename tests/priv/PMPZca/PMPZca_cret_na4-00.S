@@ -96,12 +96,15 @@ RVTEST_DATA_BEGIN
 
 // Test data
 
-#if __riscv_xlen == 32
-  .p2align 11
-#else
-  .p2align 10
-#endif
-  .skip 0x802
+  .p2align 12
+  .p2align (UDB_PMP_GRANULARITY)
+  .option push
+  .option norvc
+  .rept ((PMP_TOR_REGION_BYTES - 4) / 4)
+  jr ra
+  .endr
+  .option pop
+  c.nop
 TEST_FOR_EXECUTION_0:
   ret
 TEST_FOR_EXECUTION_1:

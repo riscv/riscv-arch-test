@@ -3,46 +3,36 @@ normative_rule_definitions:
   # to 1, the Zicfiss extension is activated in VU/U-mode. When the SSE field is 0,
   # the Zicfiss extension remains inactive in VU/U-mode, and the following rules
   # apply:
-  - names: [senvcfg-sse_Zicfiss]
+  - name: senvcfg_sse_Zicfiss
     coverpoint: [""]
 
-  # If the privilege mode is less than M and menvcfg.SSE is 0, an
-  # illegal-instruction exception is raised. Attempts to access the ssp CSR may
-  # result in either an illegal-instruction exception or a virtual-instruction
-  # exception, contingent upon the state of the x`envcfg.SSE` fields. The conditions
-  # are specified as follows:
-  - name: Zicfiss_ssp_below_m_mode
+  # If the privilege mode is less than M and csr:menvcfg[sse] is 0, an illegal-instruction
+  # exception is raised.
+  - name: Zicfiss_m_menvcfg_sse
+    coverpoint: [""]
+  # Attempts to access the csr:ssp[] CSR may result in either an illegal-instruction
+  # exception or a virtual-instruction exception, contingent upon the state of the
+  # csr:envcfg[sse] fields. The conditions are specified as follows:
+  - name: Zicfiss_ssp_csr
     coverpoint: [""]
 
-  # Otherwise, if in U-mode and senvcfg.SSE is 0, an illegal-instruction exception
-  # is raised. Attempts to access the ssp CSR may result in either an
-  # illegal-instruction exception or a virtual-instruction exception, contingent
-  # upon the state of the x`envcfg.SSE` fields. The conditions are specified as
-  # follows:
-  - name: Zicfiss_ssp_u_mode
+  # Otherwise, if in U-mode and csr:senvcfg[sse] is 0, an illegal-instruction exception is
+  # raised.
+  - name: Zicfiss_u_senvcfg_sse
     coverpoint: [""]
 
-  # Otherwise, if in VS-mode and henvcfg.SSE is 0, a virtual-instruction exception
-  # is raised. Attempts to access the ssp CSR may result in either an
-  # illegal-instruction exception or a virtual-instruction exception, contingent
-  # upon the state of the x`envcfg.SSE` fields. The conditions are specified as
-  # follows:
-  - name: Zicfiss_ssp_vs_mode
+  # Otherwise, if in VS-mode and csr:henvcfg[sse] is 0, a virtual-instruction exception is
+  # raised.
+  - name: Zicfiss_vs_henvcfg_sse
     coverpoint: [""]
 
-  # Otherwise, if in VU-mode and either henvcfg.SSE or senvcfg.SSE is 0, a
-  # virtual-instruction exception is raised. Attempts to access the ssp CSR may
-  # result in either an illegal-instruction exception or a virtual-instruction
-  # exception, contingent upon the state of the x`envcfg.SSE` fields. The conditions
-  # are specified as follows:
-  - name: Zicfiss_ssp_vu_mode
+  # Otherwise, if in VU-mode and csr:senvcfg[sse] is 0, a virtual-instruction exception is
+  # raised.
+  - name: Zicfiss_vu_senvcfg_sse
     coverpoint: [""]
 
-  # Otherwise, the access is allowed. Attempts to access the ssp CSR may result in
-  # either an illegal-instruction exception or a virtual-instruction exception,
-  # contingent upon the state of the x`envcfg.SSE` fields. The conditions are
-  # specified as follows:
-  - name: Zicfiss_ssp_hs_modes
+  # Otherwise, the access is allowed.
+  - name: Zicfiss_sse_access
     coverpoint: [""]
 
   # When S-mode is not implemented, then xSSE is 0 at both M and U privilege modes.
@@ -74,23 +64,36 @@ normative_rule_definitions:
     coverpoint: [""]
 
   # Memory mapped as an SS page cannot be written to by instructions other than
-  # SSAMOSWAP.W/D, SSPUSH, and C.SSPUSH. Attempts will raise a store/AMO
-  # access-fault exception. Access to a SS page using cache-block operation (CBO.*)
-  # instructions is not permitted. Such accesses will raise a store/AMO access-fault
-  # exception. Implicit accesses, including instruction fetches to an SS page, are
-  # not permitted. Such accesses will raise an access-fault exception appropriate to
-  # the access type. However, the shadow stack is readable by all instructions that
-  # only load from memory. If a shadow stack (SS) instruction raises an
-  # access-fault, page-fault, or guest-page-fault exception that is supposed to
-  # indicate the original instruction type (load or store/AMO), then the reported
-  # exception cause is respectively a store/AMO access fault (code 7), a store/AMO
-  # page fault (code 15), or a store/AMO guest-page fault (code 23). Should a shadow
-  # stack instruction access a page that is not designated as a shadow stack page
-  # and is not marked as read-only (pte.xwr=001), a store/AMO access-fault exception
-  # will be invoked. Conversely, if the page being accessed by a shadow stack
-  # instruction is a read-only page, a store/AMO page-fault exception will be
-  # triggered.
-  - name: ss_page_exceptions
+  # insn:ssamoswap.w[], insn:ssamoswap.d[], insn:sspush[], and insn:c.sspush[]. Attempts
+  # will raise a store/AMO access-fault exception.
+  - name: ssmp_ss_page_access_fault
+    coverpoint: [""]
+  # Access to a SS page using cache-block operation (insn:cbo.*[]) instructions is not
+  # permitted. Such accesses will raise a store/AMO access-fault exception.
+  - name: ssmp_ss_cache_block_access_fault
+    coverpoint: [""]
+  # Implicit accesses, including instruction fetches to an SS page, are not permitted.
+  # Such accesses will raise an access-fault exception appropriate to the access type.
+  - name: ssmp_ss_implicit_access_fault
+    coverpoint: [""]
+  # However, the shadow stack is readable by all instructions that only load from memory.
+  - name: ssmp_ss_load
+    coverpoint: [""]
+  # If a shadow stack (SS) instruction raises an access-fault, page-fault, or
+  # guest-page-fault exception that is supposed to indicate the original instruction type
+  # (load or store/AMO), then the reported exception cause is respectively a store/AMO
+  # access fault (code 7), a store/AMO page fault (code 15), or a store/AMO guest-page
+  # fault (code 23).
+  - name: ss_fault_exception_code
+    coverpoint: [""]
+  # Should a shadow stack instruction access a page that is not designated as a shadow
+  # stack page and is not marked as read-only (pte.xwr=0b001), a store/AMO access-fault
+  # exception will be invoked.
+  - name: ssmp_ss_page_illegal_access
+    coverpoint: [""]
+  # Conversely, if the page being accessed by a shadow stack instruction is a read-only
+  # page, a store/AMO page-fault exception will be triggered.
+  - name: ssmp_ss_read_only_page
     coverpoint: [""]
 
   # If the virtual address in ssp is not XLEN aligned, then the SSPUSH/

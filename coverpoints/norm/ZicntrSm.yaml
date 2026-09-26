@@ -20,5 +20,5 @@ normative_rule_definitions:
       ]
 
   # The counters are accessible from M-mode regardless of the counter-enable registers.
-  - name: zihpm_op_sz_mode_acc_priv
+  - name: Zihpm_op_sz_mode_acc_priv
     coverpoint: ["ZicntrSm_cg/{cp_mcounteren_access_m, cp_scounteren_access_m}"]

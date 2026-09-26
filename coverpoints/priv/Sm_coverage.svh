@@ -262,7 +262,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         // bins mcause     = {CSR_MCAUSE}; // WLRL field; tested with cp_mcause_write_exception and cp_mcause_write_interrupt
         bins mtval      = {CSR_MTVAL};
         bins mip        = {CSR_MIP};
-        bins mcountinhibit = {CSR_MCOUNTINHIBIT};
+        `ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
+            bins mcountinhibit = {CSR_MCOUNTINHIBIT};
+        `endif
         bins mhpmevent3 = {CSR_MHPMEVENT3};
         bins mhpmevent4 = {CSR_MHPMEVENT4};
         bins mhpmevent5 = {CSR_MHPMEVENT5};
@@ -377,7 +379,10 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins debug_only[] = {[12'h7B0:12'h7BF]};
     }
     csr_ro: coverpoint ins.current.insn[31:20] {
-        bins readonly[] = {[12'hC00:12'hFFF]};
+        bins readonly_c[] = {[12'hC00:12'hCFF]};
+        bins readonly_d[] = {[12'hD00:12'hDFF]};
+        bins readonly_e[] = {[12'hE00:12'hEFF]};
+        bins readonly_f[] = {[12'hF00:12'hFFF]};
     }
 
     csrr: coverpoint ins.current.insn  {
@@ -397,6 +402,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins ones = {'1};
     }
 
+    `ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
     old_mcountinhibit_cy: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "cy") {
         bins zero = {1'b0};
         `ifdef UDB_COUNTINHIBIT_EN_0
@@ -409,6 +415,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             bins one = {1'b1}; // only if counter can be inhibited
         `endif
     }
+    `endif
 
     mcycle: coverpoint ins.current.insn[31:20] {
         bins mcycle = {CSR_MCYCLE};
@@ -573,19 +580,19 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     // counters
     cp_cntr_access :            cross priv_mode_m, mcounters, cntraccesses;
-    cp_inhibit_mcycle :         cross priv_mode_m, csrr, mcycle, old_mcountinhibit_cy;
-    cp_inhibit_minstret :       cross priv_mode_m, csrr, minstret, old_mcountinhibit_ir;
+    `ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
+        cp_inhibit_mcycle :     cross priv_mode_m, csrr, mcycle, old_mcountinhibit_cy;
+        cp_inhibit_minstret :   cross priv_mode_m, csrr, minstret, old_mcountinhibit_ir;
+    `endif
 
     // misa
     cp_misa_mxl :               cross priv_mode_m, misa, misa_mxl_accesses;
     cp_misa_dependencies :      cross priv_mode_m, csrrw, misa, misa_dependencies;
     cp_misa_clear_c :           cross priv_mode_m, csrc, misa_c_0, pc_1;
 
-    `ifdef UDB_TIME_CSR_IMPLEMENTED
-        cp_mtime_write :        cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
-        `ifdef UDB_MXLEN_32
-            cp_mtimeh_write :   cross priv_mode_m, csrr,  timeh_csr; // assumes mtimeh has been written
-        `endif
+    cp_mtime_write :            cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
+    `ifdef UDB_MXLEN_32
+        cp_mtimeh_write :       cross priv_mode_m, csrr,  timeh_csr; // assumes mtimeh has been written
     `endif
 
     `ifdef SM1P13P0_OR_LATER_SUPPORTED
@@ -719,8 +726,15 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             bins sip = {CSR_SIP};
             bins sie = {CSR_SIE};
         }
+        satp : coverpoint ins.current.insn[31:20] {
+            bins satp = {CSR_SATP};
+        }
+        mstatus_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
+        }
 
         cp_scsr_from_m :            cross priv_mode_m, scsrname, csraccesses;
+        cp_satp_from_m :            cross priv_mode_m, csrr, satp, mstatus_tvm;
+        cp_satp_from_s :            cross priv_mode_s, csrr, satp, mstatus_tvm;
         cp_shadow :                 cross priv_mode_m, shadow, csrw_prev, rs1_prev, csrr;
         // sip/sie alias mip/mie only for delegated interrupts
         cp_shadow_deleg :           cross priv_mode_m, shadow_int, csrw_prev, csrr, mideleg_s;

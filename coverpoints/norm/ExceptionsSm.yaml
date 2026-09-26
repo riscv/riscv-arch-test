@@ -8,38 +8,54 @@ normative_rule_definitions:
       [
         "ExceptionsSm_cg/{cp_instr_adr_misaligned_branch, cp_instr_adr_misaligned_jal, cp_instr_adr_misaligned_jalr}",
       ]
-  # When a trap is taken into M-mode, mepc is written with the virtual address of
-  # the instruction that was interrupted or that encountered the exception.
-  # Otherwise, mepc is never written by the implementation, though it may be
-  # explicitly written by software.
+  # When a trap is taken into M-mode, mepc is written with the virtual address of the
+  # instruction that was interrupted or that encountered the exception. Otherwise, mepc is
+  # never written by the implementation, though it may be explicitly written by software.
   - name: mepc_op
-    coverpoint: ["ExceptionsSm/cp_illegal_instruction (etc)"]
+    coverpoint:
+      [
+        "ExceptionsSm/cp_illegal_instruction (etc)",
+        "ExceptionsSm_cg/{cp_instr_adr_misaligned_branch, cp_instr_access_fault, cp_illegal_instruction, cp_breakpoint, cp_load_address_misaligned, cp_load_access_fault, cp_store_address_misaligned, cp_store_access_fault, cp_ecall_m}",
+      ]
 
-  # When a trap is taken into M-mode, mcause is written with a code indicating the
-  # event that caused the trap. Otherwise, mcause is never written by the
-  # implementation, though it may be explicitly written by software.
+  # When a trap is taken into M-mode, mcause is written with a code indicating the event
+  # that caused the trap. Otherwise, mcause is never written by the implementation, though
+  # it may be explicitly written by software.
   - name: mcause_op
     coverpoint:
       [
         "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
       ]
 
-  # The Exception Code field contains a code identifying the last exception or
-  # interrupt.
+  # The Exception Code field contains a code identifying the last exception or interrupt.
   - name: mcause_exccode_op
     coverpoint:
       [
         "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
       ]
 
-  - name: mcause_exccode_enc
+  # Interrupt|Exception Code|Description === 1 1 1 1|0 1 2 3|Reserved Supervisor software
+  # interrupt Reserved Machine software interrupt¶1 1 1 1|4 5 6 7|Reserved Supervisor
+  # timer interrupt Reserved Machine timer interrupt¶1 1 1 1|8 9 10 11|Reserved Supervisor
+  # external interrupt Reserved Machine external interrupt¶1 1 1 1|12 13 14-15
+  # ≥16|Reserved Counter-overflow interrupt Reserved Designated for platform use¶0 0 0 0 0
+  # 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0|0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18
+  # 19 20-23 24-31 32-47 48-63 ≥64|Instruction address misaligned Instruction access fault
+  # Illegal instruction Breakpoint Load address misaligned Load access fault Store/AMO
+  # address misaligned Store/AMO access fault Environment call from U-mode Environment
+  # call from S-mode Reserved Environment call from M-mode Instruction page fault Load
+  # page fault Reserved Store/AMO page fault Double trap Reserved Software check Hardware
+  # error Reserved Designated for custom use Reserved Designated for custom use Reserved
+  # ===
+  - name: mcause_exccode_enc_img
     coverpoint:
       [
         "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
       ]
 
-  # Value|Name|Description === 0 1 ≥2|Direct Vectored ---|All traps set pc to BASE.
-  # Asynchronous interrupts set pc to BASE+4×cause. Reserved ===
+  # Value|Name|Description === 0|Direct|All traps set pc to
+  # csr::[base].¶1|Vectored|Asynchronous interrupts set pc to
+  # csr::[base]+4×cause.¶≥2|&#8201;&#8212;&#8201;|Reserved ===
   - name: mtvec_mode_enc
     coverpoint:
       [
@@ -60,7 +76,7 @@ normative_rule_definitions:
       ["TODO: add a coverpoint for exceptions using mtvec direct and vectored"]
 
   # By default, all traps at any privilege level are handled in machine mode
-  - name: trap_def_M_mode
+  - name: trap_def_m_mode
     coverpoint:
       [
         "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
@@ -113,35 +129,29 @@ normative_rule_definitions:
   # Loads and stores whose effective address is not naturally aligned to the
   # referenced datatype (i.e., the effective address is not divisible by the size of
   # the access in bytes) have behavior dependent on the EEI.
-  - name: MISALIGNED_LDST_EEI_DEPENDENT_BEHAVIOR
+  - name: misaligned_ldst_eei_dependent_behavior
     coverpoint:
       [
         "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
       ]
 
-  # misaligned loads and stores can be handled in hardware
-  - name: MISALIGNED_LDST_FULLY_HW_SUPPORTED
-    coverpoint:
-      [
-        "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
-      ]
-  # via an invisible trap into the execution environment implementation
-  - name: MISALIGNED_LDST_INVISIBLE_TRAP
-    coverpoint:
-      [
-        "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
-      ]
-
-  # combination of hardware and invisible trap depending on address.
-  - name: MISALIGNED_LDST_HW_OR_INVISIBLE_TRAP_FUNC_OF_ADDR
+  # misaligned loads and stores can be handled in hardware, or via an invisible trap into
+  # the execution environment implementation, or possibly a combination of hardware and
+  # invisible trap depending on address.
+  - name: misaligned_ldst_hw_support
     coverpoint:
       [
         "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
       ]
 
   # loads and stores that are not naturally aligned may either complete execution
-  # successfully or raise an exception.
-  - name: MISALIGNED_LDST_FULLY_HW_SUPPORTED_OR_VISIBLE_TRAP
+  # successfully or raise an exception. The exception raised can be either an
+  # address-misaligned exception or an access-fault exception. For a memory access that
+  # would otherwise be able to complete except for the misalignment, an access-fault
+  # exception can be raised instead of an address-misaligned exception if the misaligned
+  # access should not be emulated, e.g., if accesses to the memory region have side
+  # effects.
+  - name: misaligned_ldst_exc_type
     coverpoint:
       [
         "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
@@ -151,18 +161,7 @@ normative_rule_definitions:
   # invisibly, the EEI must define if exceptions caused by address misalignment
   # result in a contained trap (allowing software running inside the execution
   # environment to handle the trap) or a fatal trap (terminating execution).
-  - name: MISALIGNED_LDST_CONTAINED_OR_FATAL_TRAP
-    coverpoint:
-      [
-        "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
-      ]
-
-  # The exception raised can be either an address-misaligned exception or an
-  # access-fault exception. For a memory access that would otherwise be able to
-  # complete except for the misalignment, an access-fault exception can be raised
-  # instead of an address-misaligned exception if the misaligned access should not
-  # be emulated, e.g., if accesses to the memory region have side effects.
-  - name: ldst_addr_misaligned_or_access_fault_exc
+  - name: misaligned_ldst_contained_or_fatal_trap
     coverpoint:
       [
         "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
@@ -175,66 +174,32 @@ normative_rule_definitions:
         "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
       ]
 
-  # The ECALL instruction is used to make a service request to the execution
+  # The insn:ecall[] instruction is used to make a service request to the execution
   # environment.
-  - name: ecall_op
+  - name: ecall_service_request_op
+    coverpoint: ["ExceptionsSm_cg/cp_ecall_m"]
+  # The ECALL instruction is used to make a request to the supporting execution
+  # environment. When executed in U-mode, S-mode, or M-mode, it generates an
+  # environment-call-from-U-mode exception, environment-call-from-S-mode exception, or
+  # environment-call-from-M-mode exception, respectively, and performs no other operation.
+  - name: ecall_priv_mode_op
     coverpoint: ["ExceptionsSm_cg/cp_ecall_m"]
 
-  # The EBREAK instruction is used to return control to a debugging environment.
-  - name: ebreak_op
+  # The insn:ebreak[] instruction is used to return control to a debugging environment.
+  - name: ebreak_debug_env_op
     coverpoint: ["ExceptionsSm_cg/cp_breakpoint"]
-
-  # When a trap is taken into M-mode, mepc is written with the virtual address of
-  # the instruction that was interrupted or that encountered the exception.
-  # Otherwise, mepc is never written by the implementation, though it may be
-  # explicitly written by software.
-  - name: mepc_op
-    coverpoint:
-      [
-        "ExceptionsSm/{cp_instr_adr_misaligned_branch, cp_instr_access_fault, cp_illegal_instruction, cp_breakpoint, cp_load_address_misaligned, cp_load_access_fault, cp_store_address_misaligned, cp_store_access_fault, cp_ecall_m}",
-      ]
-
-  # When a trap is taken into M-mode, mcause is written with a code indicating the
-  # event that caused the trap. Otherwise, mcause is never written by the
-  # implementation, though it may be explicitly written by software.
-  - name: mcause_op
-    coverpoint:
-      [
-        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
-      ]
-
-  # The Exception Code field contains a code identifying the last exception or
-  # interrupt.
-  - name: mcause_exccode_op
-    coverpoint:
-      [
-        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
-      ]
-
-  - name: mcause_exccode_enc
-    coverpoint:
-      [
-        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
-      ]
-
-  # Value|Name|Description === 0 1 ≥2|Direct Vectored ---|All traps set pc to BASE.
-  # Asynchronous interrupts set pc to BASE+4×cause. Reserved ===
-  - name: mtvec_mode_enc
-    coverpoint: ["TODO show mtvec does not affect synchronous exceptions"]
-
-  # By default, all traps at any privilege level are handled in machine mode
-  - name: trap_def_M_mode
-    coverpoint:
-      [
-        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
-      ]
+  # The EBREAK instruction is used by debuggers to cause control to be transferred back to
+  # a debugging environment. Unless overridden by an external debug environment, EBREAK
+  # raises a breakpoint exception and performs no other operation.
+  - name: ebreak_debugger_transfer_op
+    coverpoint: ["ExceptionsSm_cg/cp_breakpoint"]
 
   # If an instruction may raise multiple synchronous exceptions, the decreasing
   # priority order of &lt;&lt;norm:exc_priority&gt;&gt; indicates which exception is
   # taken and reported in mcause. Load/store/AMO address-misaligned exceptions may
   # have either higher or lower priority than load/store/AMO page-fault and
   # access-fault exceptions.
-  - name: mcause_exccode_pri
+  - name: mcause_exccode_priority_order
     coverpoint:
       [
         "ExceptionsSm_cg/{cp_misaligned_priority_load, cp_misaligned_priority_store}",
@@ -256,10 +221,12 @@ normative_rule_definitions:
         "ExceptionsSm_cg/{cp_misaligned_priority_load, cp_misaligned_priority_store, cp_misaligned_priority_fetch}",
       ]
 
-  # medeleg has a bit position allocated for every synchronous exception shown in
-  # &lt;&lt;norm:mcause_exccode_enc_img&gt;&gt;, with the index of the bit position
-  # equal to the value returned in the mcause register
-  - name: medeleg_enc
+  - name: medeleg_enc_img
+    coverpoint: ["ExceptionsSm_cg/cp_medeleg_msu"]
+  # csr:medeleg[] has a bit position allocated for every synchronous exception shown in
+  # &lt;&lt;norm:mcause_exccode_enc_img&gt;&gt;, with the index of the bit position equal
+  # to the value returned in the csr:mcause[] register
+  - name: medeleg_enc_txt
     coverpoint: ["ExceptionsSm_cg/cp_medeleg_msu"]
 
   # When a trap is delegated to S-mode the scause register is written with the trap
@@ -268,7 +235,7 @@ normative_rule_definitions:
   # datum; the SPP field of mstatus is written with the active privilege mode at the
   # time of the trap; the SPIE field of mstatus is written with the value of the SIE
   # field at the time of the trap; and the SIE field of mstatus is cleared.
-  - name: trap_del_S_mode_op
+  - name: trap_del_s_mode_op
     coverpoint: ["ExceptionsSm_cg/cp_medeleg_msu"]
 
   # Traps never transition from a more-privileged mode to a less-privileged mode.
@@ -284,16 +251,15 @@ normative_rule_definitions:
   - name: trap_horiz
     coverpoint: ["ExceptionsSm_cg/cp_medeleg_msu"]
 
-  # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to
-  # the value of xIE; xIE is set to 0; and xPP is set to y.
-  - names: [mstatus_xpie_trap_op, mstatus_xie_trap_op, mstatus_xpp_trap_op]
+  # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to the
+  # value of xIE; xIE is set to 0; and xPP is set to y.
+  - name: mstatus_xpie_xie_xpp_trap_op
     coverpoint: ["ExceptionsSm_cg/cp_medeleg_msu_ecall"]
 
   # The SPP bit indicates the privilege level at which a hart was executing before
-  # entering supervisor mode. When a trap is taken, SPP is set to 0 if the trap
-  # originated from user mode, or 1 otherwise. When an SRET instruction (see ) is
-  # executed to return from the trap handler, the privilege level is set to user
-  # mode if the SPP bit is 0, or supervisor mode if the SPP bit is 1; SPP is then
-  # set to 0.
-  - names: [sstatus_spp_sz, sstatus_spp_acc, sstatus_spp_op]
+  # entering supervisor mode. When a trap is taken, SPP is set to 0 if the trap originated
+  # from user mode, or 1 otherwise. When an SRET instruction (see ) is executed to return
+  # from the trap handler, the privilege level is set to user mode if the SPP bit is 0, or
+  # supervisor mode if the SPP bit is 1; SPP is then set to 0.
+  - name: sstatus_spp
     coverpoint: ["ExceptionsSm_cg/cp_medeleg_msu_ecall"]

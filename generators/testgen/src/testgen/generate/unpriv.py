@@ -11,11 +11,7 @@
 import re
 from pathlib import Path
 
-from testgen.constants import (
-    INDENT,
-    TESTCASES_PER_FILE,
-    get_flen_for_extension,
-)
+from testgen.constants import INDENT, TESTCASES_PER_FILE, get_flen_for_extensions
 from testgen.coverpoints import generate_tests_for_coverpoint
 from testgen.data.config import TestConfig
 from testgen.data.registers import IntegerRegisterFile
@@ -23,6 +19,7 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, split_test_chunks
 from testgen.formatters.registry import get_instruction_type_config
 from testgen.instructions.vector import parse_vector_instruction_info
+from testgen.io.templates import canonicalize_extensions
 from testgen.io.testplans import read_testplan
 from testgen.io.writer import write_test_file
 
@@ -80,7 +77,8 @@ def generate_unpriv_extension_tests(
     output_dir.mkdir(parents=True, exist_ok=True)
     generated_files: set[Path] = set()
 
-    flen = get_flen_for_extension(testsuite)
+    ext_components, _ = canonicalize_extensions(testsuite, xlen, E_ext, sew=sew, instr_name=instructions[0].instr_name)
+    flen = get_flen_for_extensions(ext_components)
     test_config = TestConfig(xlen=xlen, flen=flen, testsuite=testsuite, E_ext=E_ext, sew=sew)
 
     # Iterate through each instruction in the testsuite; generate separate test files for each

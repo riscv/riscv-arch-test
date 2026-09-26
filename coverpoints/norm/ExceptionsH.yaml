@@ -1,0 +1,230 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # medeleg sends exceptions to HS-mode, and hedeleg further delegates those from VS and VU (not HS and U) to VS-mode
+  - names:
+      [hedeleg_op, H_trap_deleg, hedeleg_bits_required, hedeleg_bit0_ialign32]
+    coverpoint: ["ExceptionsH_cg/cp_hedeleg_*"]
+
+  # A trap into HS-mode writes sstatus.SPP/SPIE/SIE and hstatus.SPV/GVA, and writes SPVP only for traps from V = 1
+  - names: [H_trap_hs_csrwrites, hstatus_spv_op, hstatus_spvp_op]
+    coverpoint: ["ExceptionsH_cg/cp_ecall_to_hs"]
+
+  # A trap into VS-mode writes vsstatus.SPP/SPIE/SIE and goes through vstvec
+  - names: [H_trap_vs_csrwrites, vstvec_sz_acc_op]
+    coverpoint: ["ExceptionsH_cg/cp_ecall_to_vs", "ExceptionsH_cg/cp_vstvec"]
+
+  # The hypervisor extension augments the trap cause encoding. lists the possible M-mode
+  # and HS-mode trap cause codes when the hypervisor extension is implemented. Codes are
+  # added for VS-level interrupts (interrupts 2, 6, 10), for supervisor-level guest
+  # external interrupts (interrupt 12), for virtual-instruction exceptions (exception 22),
+  # and for guest-page faults (exceptions 20, 21, 23). Furthermore, environment calls from
+  # VS-mode are assigned cause 10, whereas those from HS-mode or S-mode use cause 9 as
+  # usual.
+  - name: H_cause
+    # Representative coverpoints; a VS-mode ecall (cause 10), a virtual-instruction exception (22),
+    # guest-page faults (20, 21, 23) and a VS-level external interrupt (10)
+    coverpoint:
+      [
+        "ExceptionsH_cg/cp_ecall_to_hs",
+        "ExceptionsH_cg/cp_virtual_instr_vs_execute_hypervisor",
+        "SvH_twostage_cg/cp_twostage_perm",
+        "InterruptsH_hs_cg/cp_trigger_vsei",
+      ]
+  # When V=1, a virtual-instruction exception (code 22) is normally raised instead of an
+  # illegal-instruction exception if the attempted instruction is HS-qualified but is
+  # prevented from executing when V=1 either due to insufficient privilege or because the
+  # instruction is expressly disabled by a supervisor or hypervisor CSR such as scounteren
+  # or hcounteren. An instruction is HS-qualified if it would be valid to execute in
+  # HS-mode (for some values of the instruction&#8217;s register operands), assuming
+  # fields TSR and TVM of CSR mstatus are both zero.
+  - name: H_cause_virtual_instruction
+    coverpoint:
+      [
+        "ExceptionsH_cg/cp_virtual_instr_vs_*",
+        "ExceptionsH_cg/cp_virtual_instr_vu_*",
+      ]
+  # On a virtual-instruction trap, mtval or stval is written the same as for an
+  # illegal-instruction trap.
+  - name: H_virtinst_xtval
+    coverpoint:
+      [
+        "ExceptionsH_cg/cp_virtual_instr_vs_*",
+        "ExceptionsH_cg/cp_virtual_instr_vu_*",
+      ]
+  # in VS-mode, attempts to access a non-high-half counter CSR when the corresponding bit
+  # in hcounteren is 0 and the same bit in mcounteren is 1;
+  - name: H_virtinst_vs_nonhighctr_h0_m1
+    coverpoint: ["ExceptionsH_cg/cp_virtual_instr_vs_instret"]
+  # in VS-mode, if XLEN=32, attempts to access a high-half counter CSR when the
+  # corresponding bit in hcounteren is 0 and the same bit in mcounteren is 1;
+  - name: H_virtinst_vs32_highctr_h0_m1
+    coverpoint: ["ExceptionsH_cg/cp_virtual_instr_vs_rv32_instreth_mcounter"]
+  # in VU-mode, attempts to access a non-high-half counter CSR when the corresponding bit
+  # in either hcounteren or scounteren is 0 and the same bit in mcounteren is 1;
+  - name: H_virtinst_vu_nonhighctr_h0_s0_m1
+    coverpoint: ["ExceptionsH_cg/cp_virtual_instr_vu_instret_{1, 2}"]
+  # in VU-mode, if XLEN=32, attempts to access a high-half counter CSR when the
+  # corresponding bit in either hcounteren or scounteren is 0 and the same bit in
+  # mcounteren is 1;
+  - name: H_virtinst_vu32_highctr_h0_s0_m1
+    coverpoint: ["ExceptionsH_cg/cp_virtual_instr_vu_rv32_instreth_{1, 2}"]
+  # in VS-mode or VU-mode, attempts to execute a hypervisor instruction (HLV, HLVX, HSV,
+  # or HFENCE);
+  - name: H_virtinst_vu_vs_hinst
+    coverpoint:
+      [
+        "ExceptionsH_cg/cp_virtual_instr_vs_execute_hypervisor",
+        "ExceptionsH_cg/cp_virtual_instr_vu_execute_h",
+      ]
+  # in VS-mode or VU-mode, attempts to access an implemented non-high-half hypervisor CSR
+  # or VS CSR when the same access (read/write) would be allowed in HS-mode, assuming
+  # mstatus.TVM=0;
+  - name: H_virtinst_vu_vs_nonhigh_allowedhs_tvm0
+    # Representative coverpoints; also ExceptionsH_cg/cp_virtual_instr_vs_mstatus_vsatp
+    coverpoint:
+      [
+        "ExceptionsH_cg/cp_virtual_instr_vs_{read_vstval_htval, mstatus_hgatp}",
+        "ExceptionsH_cg/cp_virtual_instr_vu_{read_vstval_htval, vsatp}",
+      ]
+  # in VS-mode or VU-mode, if XLEN=32, attempts to access an implemented high-half
+  # hypervisor CSR or high-half VS CSR when the same access (read/write) to the CSR's
+  # low-half partner would be allowed in HS-mode, assuming mstatus.TVM=0;
+  - name: H_virtinst_vu_vs32_high_allowedhs_tvm0
+    coverpoint: ["ExceptionsH_cg/cp_virtual_instr_{vs, vu}_rv32_hedelegh"]
+  # in VU-mode, attempts to execute WFI when mstatus.TW=0
+  - name: H_virtinst_vu_wfi_tw0
+    coverpoint: ["ExceptionsH_cg/cp_virtual_instr_vu_wfi"]
+  # or to execute a supervisor instruction (SRET or SFENCE);
+  - name: H_virtinst_vu_sret_sfence
+    coverpoint: ["ExceptionsH_cg/cp_virtual_instr_vu_{sret, sfence_vma}"]
+  # in VU-mode, attempts to access an implemented non-high-half supervisor CSR when the
+  # same access (read/write) would be allowed in HS-mode, assuming mstatus.TVM=0;
+  - name: H_virtinst_vu_nonhigh_supervisor_allowedhs_tvm0
+    coverpoint: ["ExceptionsH_cg/cp_virtual_instr_vu_{read_stval, satp}"]
+  # in VS-mode, attempts to execute SRET when hstatus.VTSR=1
+  - name: H_virtinst_vs_sret_vtsr1
+    coverpoint: ["ExceptionsH_cg/cp_virtual_instr_vs_sret"]
+  # in VS-mode, attempts to execute an SFENCE.VMA or SINVAL.VMA instruction or to access
+  # satp, when hstatus.VTVM=1.
+  - name: H_virtinst_vs_sfence_sinval_satp_vtvm1
+    coverpoint: ["ExceptionsH_cg/cp_virtual_instr_vs_{s_vma_instr, satp}"]
+  # When VTSR=1, an attempt in VS-mode to execute SRET raises a virtual-instruction
+  # exception.
+  - name: hstatus_vtsr_op
+    coverpoint: ["ExceptionsH_cg/cp_virtual_instr_vs_sret"]
+  # When VTVM=1, an attempt in VS-mode to execute SFENCE.VMA or SINVAL.VMA or to access
+  # CSR satp raises a virtual-instruction exception.
+  - name: hstatus_vtvm_op
+    coverpoint: ["ExceptionsH_cg/cp_virtual_instr_vs_{s_vma_instr, satp}"]
+  # Attempts to execute a virtual-machine load/store instruction (HLV, HLVX, or HSV) when
+  # V=1 cause a virtual-instruction exception.
+  - name: hlsv_virtinst
+    coverpoint:
+      [
+        "ExceptionsH_cg/cp_virtual_instr_vs_execute_hypervisor",
+        "ExceptionsH_cg/cp_virtual_instr_vu_execute_h",
+        "ExceptionsH_cg/cp_loadstore_priv",
+        "ExceptionsH_cg/cp_priority",
+      ]
+  # Attempts to execute HFENCE.VVMA or HFENCE.GVMA when V=1 cause a virtual-instruction
+  # exception, while attempts to do the same in U-mode cause an illegal-instruction
+  # exception. Attempting to execute HFENCE.GVMA in HS-mode when mstatus.TVM=1 also causes
+  # an illegal-instruction exception.
+  - name: hfence-vvma_hfence-gvma_exceptions
+    coverpoint:
+      [
+        "ExceptionsH_cg/cp_virtual_instr_vs_execute_hypervisor",
+        "ExceptionsH_cg/cp_virtual_instr_vu_execute_h",
+      ]
+
+  # WFI in VS-mode with hstatus.VTW = 1 traps unless it completes within an implementation-specific time
+  - names: [hstatus_vtw_op, H_virtinst_wfi_vtw1_tw0]
+    coverpoint: ["ExceptionsH_cg/cp_virtual_instr_vs_wfi"]
+
+  # Field HU (Hypervisor in U-mode) controls whether the virtual-machine load/store
+  # instructions, HLV, HLVX, and HSV, can be used also in U-mode. When HU=1, these
+  # instructions can be executed in U-mode the same as in HS-mode. When HU=0, all
+  # hypervisor instructions cause an illegal-instruction exception in U-mode.
+  - name: hstatus_hu_op
+    coverpoint:
+      ["ExceptionsH_cg/cp_loadstore_priv", "ExceptionsH_cg/cp_priority"]
+  # Attempts to execute one of these same instructions from U-mode when hstatus.HU=0 cause
+  # an illegal-instruction exception.
+  - name: hlsv_illegalinst
+    coverpoint:
+      ["ExceptionsH_cg/cp_loadstore_priv", "ExceptionsH_cg/cp_priority"]
+
+  # Priority of illegal instruction, virtual instruction, access fault and address misaligned
+  - names: [H_exception_priority]
+    coverpoint: ["ExceptionsH_cg/cp_priority"]
+
+  # An hlv or hsv fault taken into HS-mode sets hstatus.GVA, and other traps into HS-mode clear it
+  - names: [hstatus_gva_op]
+    coverpoint:
+      ["ExceptionsH_cg/cp_hstatus_gva", "ExceptionsH_cg/cp_ecall_to_hs"]
+
+  # The htval register is an HSXLEN-bit read/write register formatted as shown in . When a
+  # trap is taken into HS-mode, htval is written with additional exception-specific
+  # information, alongside stval, to assist software in handling the trap.
+  - name: htval_sz_acc_op
+    coverpoint: ["ExceptionsH_cg/cp_xtinst_*"]
+  # The htinst register is an HSXLEN-bit read/write register formatted as shown in . When
+  # a trap is taken into HS-mode, htinst is written with a value that, if nonzero,
+  # provides information about the instruction that trapped, to assist software in
+  # handling the trap. The values that may be written to htinst on a trap are documented
+  # in .
+  - name: htinst_sz_acc_op
+    coverpoint: ["ExceptionsH_cg/cp_xtinst_*"]
+  # On any trap into M-mode or HS-mode, one of these values is written automatically into
+  # the appropriate trap instruction CSR, mtinst or htinst:
+  - name: H_trap_xtinst
+    coverpoint: ["ExceptionsH_cg/cp_xtinst_*"]
+  # On a synchronous exception, if a nonzero value is written, one of the following shall
+  # be true about the value:
+  - name: H_trap_xtinst_exception_lead_in
+    coverpoint: ["ExceptionsH_cg/cp_xtinst_*"]
+  # Bit 0 is 1, and replacing bit 1 with 1 makes the value into a valid encoding of a
+  # standard instruction. In this case, the instruction that trapped is the same kind as
+  # indicated by the register value, and the register value is the transformation of the
+  # trapping instruction, as defined later. For example, if bits 1:0 are binary 11 and the
+  # register value is the encoding of a standard LW (load word) instruction, then the
+  # trapping instruction is LW, and the register value is the transformation of the
+  # trapping LW instruction. Bit 0 is 1, and replacing bit 1 with 1 makes the value into
+  # an instruction encoding that is explicitly designated for a custom instruction (not an
+  # unused reserved encoding). This is a custom value. The instruction that trapped is a
+  # non-standard instruction. The interpretation of a custom value is not otherwise
+  # specified by this standard. The value is one of the special pseudoinstructions defined
+  # later, all of which have bits 1:0 equal to 00.
+  - name: H_trap_xtinst_exception_list
+    coverpoint: ["ExceptionsH_cg/cp_xtinst_*"]
+  # shows the values that may be automatically written to the trap instruction register
+  # for each standard exception cause. For exceptions that prevent the fetching of an
+  # instruction, only zero or a pseudoinstruction value may be written. A custom value may
+  # be automatically written only if the instruction that traps is non-standard. A future
+  # standard or extension may permit other values to be written, chosen from the set of
+  # allowed values established earlier.
+  - name: H_trap_xtinst_val
+    coverpoint: ["ExceptionsH_cg/cp_xtinst_*"]
+  # Except when a pseudoinstruction value is required (described later), the value written
+  # to mtinst or htinst may always be zero, indicating that the hardware is providing no
+  # information in the register for this particular trap.
+  - name: H_trap_xtinst_zero_ok
+    coverpoint: ["ExceptionsH_cg/cp_xtinst_*"]
+
+  # The Addr. Offset field of a transformed instruction is the faulting virtual address minus the original one,
+  # nonzero only for a misaligned access
+  - names: [H_tinst_addr_offset]
+    coverpoint:
+      [
+        "Not tested: TODO misaligned loads and stores from VS-mode whose second page faults, on a configuration that writes transformed instructions to htinst; every configuration writes zero",
+      ]
+
+  # WFI in VS-mode with hstatus.VTW=1 and mstatus.TW=0 may raise virtual instruction even with a globally-disabled
+  # interrupt pending
+  - name: vtw_virtinstr
+    coverpoint:
+      [
+        "Not tested: with a globally-disabled interrupt pending, WFI may trap or complete, so neither outcome can be required",
+      ]

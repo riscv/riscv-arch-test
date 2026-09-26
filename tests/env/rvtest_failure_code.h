@@ -915,7 +915,7 @@
     //
     // Strategy: identify which trap signature word mismatched by examining the
     // failure string pointer. The string encodes both the mode (M/S/H/V) and
-    // the field (vect/cause/epc/tval/ip/intID/mtval2/mtinst). We compare
+    // the field (vect/cause/epc/tval/ip/intID/mtval2). We compare
     // against the known string addresses to determine the subtype, then report
     // the already-recorded expected/actual values from the common failure slots.
     //==========================================================================
@@ -1044,6 +1044,18 @@
         bne x6, x7, 1f
         li x8, 5
         li x9, 1
+        j trap_diag_field_identified
+    1:
+        la x7, sv_Htval2_str
+        bne x6, x7, 1f
+        li x8, 6                                     # subtype: second trap value (htval here)
+        li x9, 1                                     # mode: S/HS
+        j trap_diag_field_identified
+    1:
+        la x7, sv_Htinst_str
+        bne x6, x7, 1f
+        li x8, 7                                     # subtype: trap instruction (htinst here)
+        li x9, 1                                     # mode: S/HS
         j trap_diag_field_identified
     1:
 
@@ -1793,6 +1805,13 @@
         call rvmodel_io_write_str
         j failedtest_report_end
     1:
+        li a1, 7
+        bne a0, a1, 1f
+        // xtinst mismatch hints
+        LA(a0, trap_diag_hint_tinst_str)
+        call rvmodel_io_write_str
+        j failedtest_report_end
+    1:
         j failedtest_report_end
 
     //--------------------------------------------------------------
@@ -2097,7 +2116,8 @@
     //==========================================================================
     .p2align 4
     trap_diag_subtype:                           # 0=unknown, 1=vect, 2=cause, 3=epc, 4=tval,
-                                                 # 5=xip, 6=mtval2, 7=mtinst, 8=intID, 9=offset
+                                                 # 5=xip, 6=mtval2/htval, 7=mtinst/htinst,
+                                                 # 8=intID, 9=offset
         .word 0
     trap_diag_mode:                              # 0=M, 1=S, 2=HS, 3=VS
         .word 0
@@ -2356,8 +2376,12 @@
         .string "\"Mismatch in vstval value! Trap was being handled in VS-Mode.\"";
     sv_Mtval2_str:
         .string "\"Mismatch in mtval2 value! Trap was being handled in M-Mode.\"";
+    sv_Htval2_str:
+        .string "\"Mismatch in htval value! Trap was being handled in HS-Mode.\"";
     sv_Mtinst_str:
         .string "\"Mismatch in mtinst value! Trap was being handled in M-Mode.\"";
+    sv_Htinst_str:
+        .string "\"Mismatch in htinst value! Trap was being handled in HS-Mode.\"";
     sv_Mip_str:
         .string "\"Mismatch in mip value! Trap was being handled in M-Mode.\"";
     sv_Sip_str:
@@ -2486,9 +2510,9 @@
     trap_diag_field_ip_str:
         .string "XIP (trap signature word 2, interrupt)\n"
     trap_diag_field_tval2_str:
-        .string "MTVAL2 (trap signature word 4, hypervisor)\n"
+        .string "MTVAL2/HTVAL (trap signature word 4, hypervisor)\n"
     trap_diag_field_tinst_str:
-        .string "MTINST (trap signature word 5, hypervisor)\n"
+        .string "MTINST/HTINST (trap signature word 5, hypervisor)\n"
     trap_diag_field_intid_str:
         .string "External Interrupt ID (trap signature word 3)\n"
     trap_diag_field_unknown_str:
@@ -2528,6 +2552,11 @@
         .ascii  "RVCP: HINT: XIP mismatch means interrupt pending bits differ. Check: interrupt\n"
         .ascii  "RVCP:       controller configuration, RVMODEL interrupt set/clear macros, timer\n"
         .asciz  "RVCP:       configuration (mtime/mtimecmp), and delegation settings.\n"
+    trap_diag_hint_tinst_str:
+        .ascii  "RVCP: HINT: XTINST must be zero or the reference model's value. Zero is not\n"
+        .ascii  "RVCP:       allowed where the reference writes a pseudoinstruction for a\n"
+        .ascii  "RVCP:       guest-page fault on an implicit VS-stage page-table access,\n"
+        .asciz  "RVCP:       unless mtval2/htval is also zero.\n"
 
     tsbi_instr_not_found_str:
         .string "\nT-SBI ERROR: requested instruction not found in tsbi_instr_table: "

@@ -91,6 +91,46 @@
     2:                                                          ;
 #endif
 
+// TRAP_SIGUPD_ZERO(tempreg, sigreg, offset, zeroreg, instptr, strptr)
+// TRAP_SIGUPD for a trap CSR that may hold zero in place of the reference model's value.
+// In Self Check mode, zero in sigreg also matches when zeroreg is nonzero. Both compile
+// modes emit the same instructions so the signature and self-check ELFs have identical
+// code layout.
+#ifdef RVTEST_SELFCHECK
+  #define TRAP_SIGUPD_ZERO(_TMPREG, _R, _OFF, _ZREG, _INST_PTR, _STR_PTR) \
+    .option push                                                ;\
+    .option norvc                                               ;\
+    LREG _TMPREG, _OFF*REGWIDTH(T1)                             ;\
+    beq  _TMPREG, _R, 2f                                        ;\
+    bnez _R, 3f                                                 ;\
+    bnez _ZREG, 2f                                              ;\
+    3:                                                          ;\
+    mv   T1, _R                                                 ;\
+    mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
+    jal  T2, failedtest_trap_x7_x9                              ;\
+    RVTEST_WORD_PTR _INST_PTR                                   ;\
+    RVTEST_WORD_PTR _STR_PTR                                    ;\
+    .word CSR_XEPC                                              ;\
+    2:                                                          ;\
+    .option pop
+#else
+  #define TRAP_SIGUPD_ZERO(_TMPREG, _R, _OFF, _ZREG, _INST_PTR, _STR_PTR) \
+    .option push                                                ;\
+    .option norvc                                               ;\
+    SREG _R, _OFF*REGWIDTH(T1)                                  ;\
+    beq  x0, x0, 2f                                             ;\
+    nop                                                         ;\
+    nop                                                         ;\
+    mv   T1, _R                                                 ;\
+    mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
+    jal  T2, failedtest_trap_x7_x9                              ;\
+    RVTEST_WORD_PTR _INST_PTR                                   ;\
+    RVTEST_WORD_PTR _STR_PTR                                    ;\
+    .word CSR_XEPC                                              ;\
+    2:                                                          ;\
+    .option pop
+#endif
+
 // RVTEST_SIGUPD_FFLAGS(sigptr, linkreg, tempreg, instptr, strptr)
 // Reads fflags and compares/stores it to the signature at 0(sigptr).
 // In SELFCHECK mode, compares the value in fflags with the value in memory

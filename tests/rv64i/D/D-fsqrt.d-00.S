@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 280
+#define SIGUPD_COUNT 282
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -1092,6 +1092,19 @@ D_fsqrt_d_cg_cp_frm_2_brup:
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, D_fsqrt_d_cg_cp_frm_2_brup, D_fsqrt_d_cg_cp_frm_2_brup_str)
 
 /////////////////////////////////
+// cp_csr_fflags_vn
+/////////////////////////////////
+
+# Testcase cp_csr_fflags_vn (fflags = 10001)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs1: f10 = 0x9b90f9c5fa077386
+  fsflagsi 0b00000 # clear all fflags
+  csrsi fcsr, 0b10001 # set fflags
+D_fsqrt_d_cg_cp_csr_fflags_vn_b10001:
+  fsqrt.d f1, f10 # perform operation
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, D_fsqrt_d_cg_cp_csr_fflags_vn_b10001, D_fsqrt_d_cg_cp_csr_fflags_vn_b10001_str)
+
+/////////////////////////////////
 // cp_csr_frm
 /////////////////////////////////
 
@@ -1282,6 +1295,7 @@ RVTEST_DATA_BEGIN
 .dword 0x0cf84f75b2fb960e
 .dword 0xbf23649111949fa1
 .dword 0x9ffbaaef066a8cab
+.dword 0x9b90f9c5fa077386
 .dword 0x9af175a7a795e9f5
 .dword 0xdd527700bac2e5df
 .dword 0x35b47b46b82a22eb
@@ -1419,11 +1433,12 @@ D_fsqrt_d_cg_cp_frm_2_brmm_str: .string "\"test: 127; cg: D_fsqrt.d_cg; cp: cp_f
 D_fsqrt_d_cg_cp_frm_2_brne_str: .string "\"test: 128; cg: D_fsqrt.d_cg; cp: cp_frm_2; bin: brne\""
 D_fsqrt_d_cg_cp_frm_2_brtz_str: .string "\"test: 129; cg: D_fsqrt.d_cg; cp: cp_frm_2; bin: brtz\""
 D_fsqrt_d_cg_cp_frm_2_brup_str: .string "\"test: 130; cg: D_fsqrt.d_cg; cp: cp_frm_2; bin: brup\""
-D_fsqrt_d_cg_cp_csr_frm_rne_str: .string "\"test: 131; cg: D_fsqrt.d_cg; cp: cp_csr_frm; bin: rne\""
-D_fsqrt_d_cg_cp_csr_frm_rtz_str: .string "\"test: 132; cg: D_fsqrt.d_cg; cp: cp_csr_frm; bin: rtz\""
-D_fsqrt_d_cg_cp_csr_frm_rdn_str: .string "\"test: 133; cg: D_fsqrt.d_cg; cp: cp_csr_frm; bin: rdn\""
-D_fsqrt_d_cg_cp_csr_frm_rup_str: .string "\"test: 134; cg: D_fsqrt.d_cg; cp: cp_csr_frm; bin: rup\""
-D_fsqrt_d_cg_cp_csr_frm_rmm_str: .string "\"test: 135; cg: D_fsqrt.d_cg; cp: cp_csr_frm; bin: rmm\""
+D_fsqrt_d_cg_cp_csr_fflags_vn_b10001_str: .string "\"test: 131; cg: D_fsqrt.d_cg; cp: cp_csr_fflags_vn; bin: b10001\""
+D_fsqrt_d_cg_cp_csr_frm_rne_str: .string "\"test: 132; cg: D_fsqrt.d_cg; cp: cp_csr_frm; bin: rne\""
+D_fsqrt_d_cg_cp_csr_frm_rtz_str: .string "\"test: 133; cg: D_fsqrt.d_cg; cp: cp_csr_frm; bin: rtz\""
+D_fsqrt_d_cg_cp_csr_frm_rdn_str: .string "\"test: 134; cg: D_fsqrt.d_cg; cp: cp_csr_frm; bin: rdn\""
+D_fsqrt_d_cg_cp_csr_frm_rup_str: .string "\"test: 135; cg: D_fsqrt.d_cg; cp: cp_csr_frm; bin: rup\""
+D_fsqrt_d_cg_cp_csr_frm_rmm_str: .string "\"test: 136; cg: D_fsqrt.d_cg; cp: cp_csr_frm; bin: rmm\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

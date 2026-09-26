@@ -79,8 +79,15 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
         bins ones  = {'1};
     }
     ebreak: coverpoint ins.current.insn {
-        bins ebreak = {32'h00100073};
+        bins ebreak = {EBREAK};
     }
+    `ifdef ZCA_SUPPORTED
+        // 32-bit ebreak at 62 mod 64: the fetch straddles a 64-byte boundary. xtval must still
+        // be zero or the address of the ebreak, never the address of the second half of the fetch.
+        straddle64: coverpoint ins.current.pc_rdata[5:1] {
+            bins straddle64 = {5'b11111};
+        }
+    `endif
     adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0]  {
         // auto fills 000 through 111
     }
@@ -147,6 +154,9 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
     cp_illegal_instruction:                  cross priv_mode_m, illegalops;
     cp_illegal_instruction_seed:             cross priv_mode_m, csrops, rs1_zero, seed;
     cp_breakpoint:                           cross priv_mode_m, ebreak;
+    `ifdef ZCA_SUPPORTED
+        cp_ebreak_straddle64:                cross priv_mode_m, ebreak, straddle64;
+    `endif
     cp_load_address_misaligned:              cross priv_mode_m, loadops, adr_LSBs;
     cp_store_address_misaligned:             cross priv_mode_m, storeops, adr_LSBs;
     cp_ecall_m:                              cross priv_mode_m, ecall;
@@ -173,12 +183,12 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
             bins aligned    = {2'b00};
             bins misaligned = {2'b10};
         }
-        `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
+        `ifdef UDB_MXLEN_64 // RV64 physical addresses have 56 bits; an RV32 address zero-extends into 34
             i_phys_address_nonexistent: coverpoint ({{ins.current.imm + ins.current.rs1_val}[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
                 // auto fill 1/0 for the physical address being valid
             }
         `else
-            i_phys_address_nonexistent: coverpoint ({{ins.current.imm + ins.current.rs1_val}[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            i_phys_address_nonexistent: coverpoint ({{ins.current.imm + ins.current.rs1_val}[31:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
                 // auto fill 1/0 for the physical address being valid
             }
         `endif

@@ -10,13 +10,13 @@ normative_rule_definitions:
     coverpoint: ["SsstrictSm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}"]
 
   # The medelegh register does not exist when XLEN=64.
-  - name: MEDELEGH_OMIT_XLEN64
+  - name: medelegh_omit_xlen64
     coverpoint:
       ["SsstrictSm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}/medelegh"]
 
-  # When XLEN=32, menvcfgh is a 32-bit read/write register that aliases bits 63:32
-  # of menvcfg. The menvcfgh register does not exist when XLEN=64.
-  - names: [menvcfgh_sz, menvcfgh_acc, menvcfgh_op]
+  # When XLEN=32, menvcfgh is a 32-bit read/write register that aliases bits 63:32 of
+  # menvcfg. The menvcfgh register does not exist when XLEN=64.
+  - name: menvcfgh_sz_acc_op
     coverpoint:
       ["SsstrictSm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}/menvcfgh"]
 
@@ -26,9 +26,9 @@ normative_rule_definitions:
     coverpoint:
       ["SsstrictSm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}/mseccfgh"]
 
-  # For RV32 only, mstatush is a 32-bit read/write register formatted as shown in
-  # <<mstatushreg>>.
-  - names: [mstatush_sz, mstatush_acc]
+  # For RV32 only, csr:mstatush[] is a 32-bit read/write register formatted as shown in
+  # &lt;&lt;mstatushreg&gt;&gt;.
+  - name: mstatush_sz_acc
     coverpoint:
       ["SsstrictSm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}/mstatush"]
 

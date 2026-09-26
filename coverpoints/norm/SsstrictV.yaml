@@ -2,13 +2,13 @@
 
 normative_rule_definitions:
   # V reserved rules
-  - name: EMUL_NFIELDS_rsv
+  - name: emul_nfields_rsv
     coverpoint: ["TODO"]
-  - name: EMUL_offgroup_rsv
+  - name: emul_offgroup_rsv
     coverpoint: ["TODO"]
-  - name: EMUL_rsv
+  - name: emul_rsv
     coverpoint: ["TODO"]
-  - name: V_fp_EEW_IEEE_nsupported_rsv
+  - name: V_fp_eew_ieee_nsupported_rsv
     coverpoint: ["TODO"]
   - name: V_fp_eew_rsv
     coverpoint: ["TODO"]
@@ -18,17 +18,20 @@ normative_rule_definitions:
     coverpoint: ["TODO"]
   - name: egs_vl_rsv
     coverpoint: ["TODO"]
-  - name: vadc_unmasked_rsv
+  # Encodings corresponding to the unmasked versions (vm=1) are reserved.
+  - name: vadc_vsbc_unmasked_rsv
     coverpoint: ["TODO"]
-  - name: vadc_vd_v0_rsv
+  # For insn:vadc[] and insn:vsbc[], the instruction encoding is reserved if the
+  # destination vector register is v0.
+  - name: vadc_vsbc_vd_v0_rsv
     coverpoint: ["TODO"]
   - name: vcompress_masked_rsv
     coverpoint: ["TODO"]
-  - name: vector_ls_EEW_rsv
+  - name: vector_ls_eew_rsv
     coverpoint: ["TODO"]
-  - name: vector_ls_EMUL_offgroup_rsv
+  - name: vector_ls_emul_offgroup_rsv
     coverpoint: ["TODO"]
-  - name: vector_ls_EMUL_rsv
+  - name: vector_ls_emul_rsv
     coverpoint: ["TODO"]
   - name: vector_ls_ins_rsv
     coverpoint: ["TODO"]
@@ -52,29 +55,27 @@ normative_rule_definitions:
     coverpoint: ["TODO"]
   - name: vmv-nr-r_unaligned_rsv
     coverpoint: ["TODO"]
-  - name: vmv-s-x_masked_rsv
-    coverpoint: ["TODO"]
-  - name: vmv-x-s_masked_rsv
+  # The encodings corresponding to the masked versions (vm=0) of insn:vmv.x.s[] and
+  # insn:vmv.s.x[] are reserved.
+  - name: vmv-s-x_vmv-x-s_masked_rsv
     coverpoint: ["TODO"]
   - name: vmv_vs2_nv0_rsv
     coverpoint: ["TODO"]
-  - name: vreg_offgroup_LMUL2_rsv
+  - name: vreg_offgroup_lmul2_rsv
     coverpoint: ["TODO"]
-  - name: vreg_offgroup_LMUL4_rsv
+  - name: vreg_offgroup_lmul4_rsv
     coverpoint: ["TODO"]
-  - name: vreg_offgroup_LMUL8_rsv
+  - name: vreg_offgroup_lmul8_rsv
     coverpoint: ["TODO"]
   - name: vreg_overlap_rsv
     coverpoint: ["TODO"]
-  - name: vreg_source_EEW_rsv
+  - name: vreg_source_eew_rsv
     coverpoint: ["TODO"]
   - name: vreg_vmask_rsv
     coverpoint: ["TODO"]
-  - name: vsbc_unmasked_rsv
-    coverpoint: ["TODO"]
-  - name: vsbc_vd_v0_rsv
-    coverpoint: ["TODO"]
-  - name: vsext_ill_eew_emul_rsv
+  # If the source EEW is not a supported width, or source EMUL would be below the minimum
+  # legal LMUL, the instruction encoding is reserved.
+  - name: vsext_vzext_ill_eew_emul_rsv
     coverpoint: ["TODO"]
   - name: vstart_val_rsv
     coverpoint: ["TODO"]
@@ -84,8 +85,6 @@ normative_rule_definitions:
     coverpoint: ["TODO"]
   - name: vtype_vset_rsv
     coverpoint: ["TODO"]
-  - name: vzext_ill_eew_emul_rsv
-    coverpoint: ["TODO"]
 
   # Zvk* reserved rules
   - name: vclmul_sewn64_rsv
@@ -94,25 +93,21 @@ normative_rule_definitions:
     coverpoint: ["TODO"]
   - name: veccrypto_sew_rsv
     coverpoint: ["TODO"]
-  - name: veccrypto_vl_rsv
-    coverpoint: ["TODO"]
-  - name: veccrypto_vstart_rsv
+  # Instructions that violate the csr:vl[] or csr:vstart[] requirements are reserved.
+  - name: veccrypto_vl_vstart_rsv
     coverpoint: ["TODO"]
   - name: vghsh-vv_sewn32_rsv
     coverpoint: ["TODO"]
   - name: vgmul-vv_sewn32_rsv
     coverpoint: ["TODO"]
-  - name: vsha2ch-vv_Zvknha_sewn32_rsv
+  # ext:zvknha[]: SEW is any value other than 32
+  - name: vsha2chl-vv_Zvknha_sewn32_rsv
     coverpoint: ["TODO"]
-  - name: vsha2ch-vv_Zvknhb_sewn32or64_rsv
+  # ext:zvknhb[]: SEW is any value other than 32 or 64
+  - name: vsha2chl-vv_Zvknhb_sewn32or64_rsv
     coverpoint: ["TODO"]
-  - name: vsha2ch-vv_vdoverlapvs1vs2_rsv
-    coverpoint: ["TODO"]
-  - name: vsha2cl-vv_Zvknha_sewn32_rsv
-    coverpoint: ["TODO"]
-  - name: vsha2cl-vv_Zvknhb_sewn32or64_rsv
-    coverpoint: ["TODO"]
-  - name: vsha2cl-vv_vdoverlapvs1vs2_rsv
+  # The vd register group overlaps with either vs1 or vs2
+  - name: vsha2chl-vv_vdoverlapvs1vs2_rsv
     coverpoint: ["TODO"]
   - name: vsha2ms-vv_Zvknha_sewn32_rsv
     coverpoint: ["TODO"]

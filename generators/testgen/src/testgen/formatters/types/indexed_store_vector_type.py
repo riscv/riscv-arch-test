@@ -189,12 +189,19 @@ def format_vsxseg_like_type(
         else:
             assert isinstance(params.vl, int)
             setup.append(f"vsetivli x0, {params.vl}, e{index_eew}, m{get_lmul_flag(index_emul)}, tu, mu")
-        # Construct a factor that masks off the correct bits to align load to the SEW
-        sew_alignment_factor = -params.sew // 8
+        # Construct a factor that shifts an index so that the correct alignment is read
+        # This will not overflow the specified space as the vlmax calculation implicitly
+        # takes into account SEW
+        index_alignment_factor = params.sew // 8 * segments
+        # Turn this into a bit shift for the nearest power of 2
+        index_alignment_shift = index_alignment_factor.bit_length() - 1
+        if 2**index_alignment_shift < index_alignment_factor:
+            index_alignment_shift += 1
+
         setup.extend(
             [
                 f"vremu.vx v{params.vs2}, v{params.vs2}, x{params.temp_reg}",
-                f"vand.vi v{params.vs2}, v{params.vs2}, {sew_alignment_factor}",
+                f"vsll.vi v{params.vs2}, v{params.vs2}, {index_alignment_shift}",
             ]
         )
 

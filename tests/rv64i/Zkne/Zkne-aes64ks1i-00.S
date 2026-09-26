@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 133
+#define SIGUPD_COUNT 389
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -935,6 +935,1802 @@ Zkne_aes64ks1i_cg_cp_rnum_b10:
   # Check if x2 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x16, x5, x4, x2, Zkne_aes64ks1i_cg_cp_rnum_b10, Zkne_aes64ks1i_cg_cp_rnum_b10_str)
 
+/////////////////////////////////
+// cp_sbox_rs1
+/////////////////////////////////
+
+# Testcase cp_sbox_rs1 = 0
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0x0000000000000000
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b0:
+  aes64ks1i x13, x1, 3 # perform operation
+  # Check if x13 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x13, Zkne_aes64ks1i_cg_cp_sbox_rs1_b0, Zkne_aes64ks1i_cg_cp_sbox_rs1_b0_str)
+
+# Testcase cp_sbox_rs1 = 1
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs1: x12 = 0x0101010101010101
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b1:
+  aes64ks1i x29, x12, 9 # perform operation
+  # Check if x29 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x29, Zkne_aes64ks1i_cg_cp_sbox_rs1_b1, Zkne_aes64ks1i_cg_cp_sbox_rs1_b1_str)
+
+# Testcase cp_sbox_rs1 = 2
+  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load rs1: x19 = 0x0202020202020202
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b2:
+  aes64ks1i x31, x19, 3 # perform operation
+  # Check if x31 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x31, Zkne_aes64ks1i_cg_cp_sbox_rs1_b2, Zkne_aes64ks1i_cg_cp_sbox_rs1_b2_str)
+
+# Testcase cp_sbox_rs1 = 3
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load rs1: x8 = 0x0303030303030303
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b3:
+  aes64ks1i x12, x8, 9 # perform operation
+  # Check if x12 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x12, Zkne_aes64ks1i_cg_cp_sbox_rs1_b3, Zkne_aes64ks1i_cg_cp_sbox_rs1_b3_str)
+
+# Testcase cp_sbox_rs1 = 4
+  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs1: x21 = 0x0404040404040404
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b4:
+  aes64ks1i x13, x21, 5 # perform operation
+  # Check if x13 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x13, Zkne_aes64ks1i_cg_cp_sbox_rs1_b4, Zkne_aes64ks1i_cg_cp_sbox_rs1_b4_str)
+
+# Testcase cp_sbox_rs1 = 5
+  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0x0505050505050505
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b5:
+  aes64ks1i x2, x17, 9 # perform operation
+  # Check if x2 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x2, Zkne_aes64ks1i_cg_cp_sbox_rs1_b5, Zkne_aes64ks1i_cg_cp_sbox_rs1_b5_str)
+
+# Testcase cp_sbox_rs1 = 6
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0x0606060606060606
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b6:
+  aes64ks1i x18, x10, 3 # perform operation
+  # Check if x18 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x18, Zkne_aes64ks1i_cg_cp_sbox_rs1_b6, Zkne_aes64ks1i_cg_cp_sbox_rs1_b6_str)
+
+# Testcase cp_sbox_rs1 = 7
+  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0x0707070707070707
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b7:
+  aes64ks1i x20, x2, 4 # perform operation
+  # Check if x20 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x20, Zkne_aes64ks1i_cg_cp_sbox_rs1_b7, Zkne_aes64ks1i_cg_cp_sbox_rs1_b7_str)
+
+# Testcase cp_sbox_rs1 = 8
+  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs1: x24 = 0x0808080808080808
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b8:
+  aes64ks1i x28, x24, 1 # perform operation
+  # Check if x28 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x28, Zkne_aes64ks1i_cg_cp_sbox_rs1_b8, Zkne_aes64ks1i_cg_cp_sbox_rs1_b8_str)
+
+# Testcase cp_sbox_rs1 = 9
+  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load rs1: x7 = 0x0909090909090909
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b9:
+  aes64ks1i x11, x7, 4 # perform operation
+  # Check if x11 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x11, Zkne_aes64ks1i_cg_cp_sbox_rs1_b9, Zkne_aes64ks1i_cg_cp_sbox_rs1_b9_str)
+
+# Testcase cp_sbox_rs1 = 10
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0x0a0a0a0a0a0a0a0a
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b10:
+  aes64ks1i x23, x1, 7 # perform operation
+  # Check if x23 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x23, Zkne_aes64ks1i_cg_cp_sbox_rs1_b10, Zkne_aes64ks1i_cg_cp_sbox_rs1_b10_str)
+
+# Testcase cp_sbox_rs1 = 11
+  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load rs1: x6 = 0x0b0b0b0b0b0b0b0b
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b11:
+  aes64ks1i x19, x6, 7 # perform operation
+  # Check if x19 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x19, Zkne_aes64ks1i_cg_cp_sbox_rs1_b11, Zkne_aes64ks1i_cg_cp_sbox_rs1_b11_str)
+
+# Testcase cp_sbox_rs1 = 12
+  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs1: x20 = 0x0c0c0c0c0c0c0c0c
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b12:
+  aes64ks1i x18, x20, 7 # perform operation
+  # Check if x18 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x18, Zkne_aes64ks1i_cg_cp_sbox_rs1_b12, Zkne_aes64ks1i_cg_cp_sbox_rs1_b12_str)
+
+# Testcase cp_sbox_rs1 = 13
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs1: x9 = 0x0d0d0d0d0d0d0d0d
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b13:
+  aes64ks1i x6, x9, 6 # perform operation
+  # Check if x6 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x6, Zkne_aes64ks1i_cg_cp_sbox_rs1_b13, Zkne_aes64ks1i_cg_cp_sbox_rs1_b13_str)
+
+# Testcase cp_sbox_rs1 = 14
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs1: x12 = 0x0e0e0e0e0e0e0e0e
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b14:
+  aes64ks1i x29, x12, 10 # perform operation
+  # Check if x29 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x29, Zkne_aes64ks1i_cg_cp_sbox_rs1_b14, Zkne_aes64ks1i_cg_cp_sbox_rs1_b14_str)
+
+# Testcase cp_sbox_rs1 = 15
+  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs1: x20 = 0x0f0f0f0f0f0f0f0f
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b15:
+  aes64ks1i x30, x20, 9 # perform operation
+  # Check if x30 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x30, Zkne_aes64ks1i_cg_cp_sbox_rs1_b15, Zkne_aes64ks1i_cg_cp_sbox_rs1_b15_str)
+
+# Testcase cp_sbox_rs1 = 16
+  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load rs1: x6 = 0x1010101010101010
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b16:
+  aes64ks1i x24, x6, 2 # perform operation
+  # Check if x24 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x24, Zkne_aes64ks1i_cg_cp_sbox_rs1_b16, Zkne_aes64ks1i_cg_cp_sbox_rs1_b16_str)
+
+# Testcase cp_sbox_rs1 = 17
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs1: x13 = 0x1111111111111111
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b17:
+  aes64ks1i x25, x13, 8 # perform operation
+  # Check if x25 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x25, Zkne_aes64ks1i_cg_cp_sbox_rs1_b17, Zkne_aes64ks1i_cg_cp_sbox_rs1_b17_str)
+
+# Testcase cp_sbox_rs1 = 18
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs1: x13 = 0x1212121212121212
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b18:
+  aes64ks1i x20, x13, 8 # perform operation
+  # Check if x20 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x20, Zkne_aes64ks1i_cg_cp_sbox_rs1_b18, Zkne_aes64ks1i_cg_cp_sbox_rs1_b18_str)
+
+# Testcase cp_sbox_rs1 = 19
+  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs1: x31 = 0x1313131313131313
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b19:
+  aes64ks1i x20, x31, 3 # perform operation
+  # Check if x20 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x20, Zkne_aes64ks1i_cg_cp_sbox_rs1_b19, Zkne_aes64ks1i_cg_cp_sbox_rs1_b19_str)
+
+# Testcase cp_sbox_rs1 = 20
+  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs1: x28 = 0x1414141414141414
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b20:
+  aes64ks1i x22, x28, 10 # perform operation
+  # Check if x22 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x22, Zkne_aes64ks1i_cg_cp_sbox_rs1_b20, Zkne_aes64ks1i_cg_cp_sbox_rs1_b20_str)
+
+# Testcase cp_sbox_rs1 = 21
+  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs1: x28 = 0x1515151515151515
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b21:
+  aes64ks1i x27, x28, 1 # perform operation
+  # Check if x27 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x27, Zkne_aes64ks1i_cg_cp_sbox_rs1_b21, Zkne_aes64ks1i_cg_cp_sbox_rs1_b21_str)
+
+# Testcase cp_sbox_rs1 = 22
+  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs1: x29 = 0x1616161616161616
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b22:
+  aes64ks1i x22, x29, 3 # perform operation
+  # Check if x22 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x22, Zkne_aes64ks1i_cg_cp_sbox_rs1_b22, Zkne_aes64ks1i_cg_cp_sbox_rs1_b22_str)
+
+# Testcase cp_sbox_rs1 = 23
+  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs1: x20 = 0x1717171717171717
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b23:
+  aes64ks1i x7, x20, 1 # perform operation
+  # Check if x7 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x7, Zkne_aes64ks1i_cg_cp_sbox_rs1_b23, Zkne_aes64ks1i_cg_cp_sbox_rs1_b23_str)
+
+# Testcase cp_sbox_rs1 = 24
+  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs1: x30 = 0x1818181818181818
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b24:
+  aes64ks1i x23, x30, 6 # perform operation
+  # Check if x23 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x23, Zkne_aes64ks1i_cg_cp_sbox_rs1_b24, Zkne_aes64ks1i_cg_cp_sbox_rs1_b24_str)
+
+# Testcase cp_sbox_rs1 = 25
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs1: x15 = 0x1919191919191919
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b25:
+  aes64ks1i x19, x15, 1 # perform operation
+  # Check if x19 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x19, Zkne_aes64ks1i_cg_cp_sbox_rs1_b25, Zkne_aes64ks1i_cg_cp_sbox_rs1_b25_str)
+
+# Testcase cp_sbox_rs1 = 26
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0x1a1a1a1a1a1a1a1a
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b26:
+  aes64ks1i x26, x1, 7 # perform operation
+  # Check if x26 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x26, Zkne_aes64ks1i_cg_cp_sbox_rs1_b26, Zkne_aes64ks1i_cg_cp_sbox_rs1_b26_str)
+
+# Testcase cp_sbox_rs1 = 27
+  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs1: x21 = 0x1b1b1b1b1b1b1b1b
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b27:
+  aes64ks1i x7, x21, 9 # perform operation
+  # Check if x7 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x7, Zkne_aes64ks1i_cg_cp_sbox_rs1_b27, Zkne_aes64ks1i_cg_cp_sbox_rs1_b27_str)
+
+# Testcase cp_sbox_rs1 = 28
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs1: x13 = 0x1c1c1c1c1c1c1c1c
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b28:
+  aes64ks1i x2, x13, 10 # perform operation
+  # Check if x2 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x2, Zkne_aes64ks1i_cg_cp_sbox_rs1_b28, Zkne_aes64ks1i_cg_cp_sbox_rs1_b28_str)
+
+# Testcase cp_sbox_rs1 = 29
+  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs1: x31 = 0x1d1d1d1d1d1d1d1d
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b29:
+  aes64ks1i x12, x31, 4 # perform operation
+  # Check if x12 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x12, Zkne_aes64ks1i_cg_cp_sbox_rs1_b29, Zkne_aes64ks1i_cg_cp_sbox_rs1_b29_str)
+
+# Testcase cp_sbox_rs1 = 30
+  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs1: x29 = 0x1e1e1e1e1e1e1e1e
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b30:
+  aes64ks1i x6, x29, 0 # perform operation
+  # Check if x6 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x6, Zkne_aes64ks1i_cg_cp_sbox_rs1_b30, Zkne_aes64ks1i_cg_cp_sbox_rs1_b30_str)
+
+# Testcase cp_sbox_rs1 = 31
+  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs1: x21 = 0x1f1f1f1f1f1f1f1f
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b31:
+  aes64ks1i x23, x21, 10 # perform operation
+  # Check if x23 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x23, Zkne_aes64ks1i_cg_cp_sbox_rs1_b31, Zkne_aes64ks1i_cg_cp_sbox_rs1_b31_str)
+
+# Testcase cp_sbox_rs1 = 32
+  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load rs1: x19 = 0x2020202020202020
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b32:
+  aes64ks1i x10, x19, 9 # perform operation
+  # Check if x10 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x10, Zkne_aes64ks1i_cg_cp_sbox_rs1_b32, Zkne_aes64ks1i_cg_cp_sbox_rs1_b32_str)
+
+# Testcase cp_sbox_rs1 = 33
+  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs1: x29 = 0x2121212121212121
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b33:
+  aes64ks1i x14, x29, 8 # perform operation
+  # Check if x14 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x14, Zkne_aes64ks1i_cg_cp_sbox_rs1_b33, Zkne_aes64ks1i_cg_cp_sbox_rs1_b33_str)
+
+# Testcase cp_sbox_rs1 = 34
+  RVTEST_TESTDATA_LOAD_INT(x3, x22) # load rs1: x22 = 0x2222222222222222
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b34:
+  aes64ks1i x11, x22, 1 # perform operation
+  # Check if x11 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x11, Zkne_aes64ks1i_cg_cp_sbox_rs1_b34, Zkne_aes64ks1i_cg_cp_sbox_rs1_b34_str)
+
+# Testcase cp_sbox_rs1 = 35
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs1: x13 = 0x2323232323232323
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b35:
+  aes64ks1i x2, x13, 3 # perform operation
+  # Check if x2 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x2, Zkne_aes64ks1i_cg_cp_sbox_rs1_b35, Zkne_aes64ks1i_cg_cp_sbox_rs1_b35_str)
+
+# Testcase cp_sbox_rs1 = 36
+  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs1: x20 = 0x2424242424242424
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b36:
+  aes64ks1i x26, x20, 9 # perform operation
+  # Check if x26 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x26, Zkne_aes64ks1i_cg_cp_sbox_rs1_b36, Zkne_aes64ks1i_cg_cp_sbox_rs1_b36_str)
+
+# Testcase cp_sbox_rs1 = 37
+  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs1: x25 = 0x2525252525252525
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b37:
+  aes64ks1i x22, x25, 3 # perform operation
+  # Check if x22 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x22, Zkne_aes64ks1i_cg_cp_sbox_rs1_b37, Zkne_aes64ks1i_cg_cp_sbox_rs1_b37_str)
+
+# Testcase cp_sbox_rs1 = 38
+  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0x2626262626262626
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b38:
+  aes64ks1i x20, x17, 10 # perform operation
+  # Check if x20 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x20, Zkne_aes64ks1i_cg_cp_sbox_rs1_b38, Zkne_aes64ks1i_cg_cp_sbox_rs1_b38_str)
+
+# Testcase cp_sbox_rs1 = 39
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs1: x14 = 0x2727272727272727
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b39:
+  aes64ks1i x19, x14, 6 # perform operation
+  # Check if x19 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x19, Zkne_aes64ks1i_cg_cp_sbox_rs1_b39, Zkne_aes64ks1i_cg_cp_sbox_rs1_b39_str)
+
+# Testcase cp_sbox_rs1 = 40
+  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs1: x28 = 0x2828282828282828
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b40:
+  aes64ks1i x1, x28, 4 # perform operation
+  # Check if x1 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x1, Zkne_aes64ks1i_cg_cp_sbox_rs1_b40, Zkne_aes64ks1i_cg_cp_sbox_rs1_b40_str)
+
+# Testcase cp_sbox_rs1 = 41
+  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs1: x25 = 0x2929292929292929
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b41:
+  aes64ks1i x14, x25, 8 # perform operation
+  # Check if x14 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x14, Zkne_aes64ks1i_cg_cp_sbox_rs1_b41, Zkne_aes64ks1i_cg_cp_sbox_rs1_b41_str)
+
+# Testcase cp_sbox_rs1 = 42
+  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load rs1: x19 = 0x2a2a2a2a2a2a2a2a
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b42:
+  aes64ks1i x7, x19, 0 # perform operation
+  # Check if x7 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x7, Zkne_aes64ks1i_cg_cp_sbox_rs1_b42, Zkne_aes64ks1i_cg_cp_sbox_rs1_b42_str)
+
+# Testcase cp_sbox_rs1 = 43
+  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0x2b2b2b2b2b2b2b2b
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b43:
+  aes64ks1i x30, x17, 8 # perform operation
+  # Check if x30 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x30, Zkne_aes64ks1i_cg_cp_sbox_rs1_b43, Zkne_aes64ks1i_cg_cp_sbox_rs1_b43_str)
+
+# Testcase cp_sbox_rs1 = 44
+  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs1: x21 = 0x2c2c2c2c2c2c2c2c
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b44:
+  aes64ks1i x17, x21, 2 # perform operation
+  # Check if x17 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x17, Zkne_aes64ks1i_cg_cp_sbox_rs1_b44, Zkne_aes64ks1i_cg_cp_sbox_rs1_b44_str)
+
+# Testcase cp_sbox_rs1 = 45
+  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs1: x20 = 0x2d2d2d2d2d2d2d2d
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b45:
+  aes64ks1i x15, x20, 6 # perform operation
+  # Check if x15 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x15, Zkne_aes64ks1i_cg_cp_sbox_rs1_b45, Zkne_aes64ks1i_cg_cp_sbox_rs1_b45_str)
+
+# Testcase cp_sbox_rs1 = 46
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load rs1: x8 = 0x2e2e2e2e2e2e2e2e
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b46:
+  aes64ks1i x18, x8, 7 # perform operation
+  # Check if x18 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x18, Zkne_aes64ks1i_cg_cp_sbox_rs1_b46, Zkne_aes64ks1i_cg_cp_sbox_rs1_b46_str)
+
+# Testcase cp_sbox_rs1 = 47
+  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs1: x31 = 0x2f2f2f2f2f2f2f2f
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b47:
+  aes64ks1i x1, x31, 10 # perform operation
+  # Check if x1 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x1, Zkne_aes64ks1i_cg_cp_sbox_rs1_b47, Zkne_aes64ks1i_cg_cp_sbox_rs1_b47_str)
+
+# Testcase cp_sbox_rs1 = 48
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs1: x13 = 0x3030303030303030
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b48:
+  aes64ks1i x27, x13, 8 # perform operation
+  # Check if x27 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x27, Zkne_aes64ks1i_cg_cp_sbox_rs1_b48, Zkne_aes64ks1i_cg_cp_sbox_rs1_b48_str)
+
+# Testcase cp_sbox_rs1 = 49
+  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load rs1: x6 = 0x3131313131313131
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b49:
+  aes64ks1i x14, x6, 0 # perform operation
+  # Check if x14 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x14, Zkne_aes64ks1i_cg_cp_sbox_rs1_b49, Zkne_aes64ks1i_cg_cp_sbox_rs1_b49_str)
+
+# Testcase cp_sbox_rs1 = 50
+  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0x3232323232323232
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b50:
+  aes64ks1i x29, x17, 5 # perform operation
+  # Check if x29 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x29, Zkne_aes64ks1i_cg_cp_sbox_rs1_b50, Zkne_aes64ks1i_cg_cp_sbox_rs1_b50_str)
+
+# Testcase cp_sbox_rs1 = 51
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0x3333333333333333
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b51:
+  aes64ks1i x31, x1, 6 # perform operation
+  # Check if x31 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x31, Zkne_aes64ks1i_cg_cp_sbox_rs1_b51, Zkne_aes64ks1i_cg_cp_sbox_rs1_b51_str)
+
+# Testcase cp_sbox_rs1 = 52
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0x3434343434343434
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b52:
+  aes64ks1i x23, x26, 3 # perform operation
+  # Check if x23 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x23, Zkne_aes64ks1i_cg_cp_sbox_rs1_b52, Zkne_aes64ks1i_cg_cp_sbox_rs1_b52_str)
+
+# Testcase cp_sbox_rs1 = 53
+  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs1: x21 = 0x3535353535353535
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b53:
+  aes64ks1i x23, x21, 0 # perform operation
+  # Check if x23 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x23, Zkne_aes64ks1i_cg_cp_sbox_rs1_b53, Zkne_aes64ks1i_cg_cp_sbox_rs1_b53_str)
+
+# Testcase cp_sbox_rs1 = 54
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs1: x9 = 0x3636363636363636
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b54:
+  aes64ks1i x28, x9, 5 # perform operation
+  # Check if x28 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x28, Zkne_aes64ks1i_cg_cp_sbox_rs1_b54, Zkne_aes64ks1i_cg_cp_sbox_rs1_b54_str)
+
+# Testcase cp_sbox_rs1 = 55
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0x3737373737373737
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b55:
+  aes64ks1i x8, x26, 4 # perform operation
+  # Check if x8 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x8, Zkne_aes64ks1i_cg_cp_sbox_rs1_b55, Zkne_aes64ks1i_cg_cp_sbox_rs1_b55_str)
+
+# Testcase cp_sbox_rs1 = 56
+  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs1: x20 = 0x3838383838383838
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b56:
+  aes64ks1i x13, x20, 1 # perform operation
+  # Check if x13 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x13, Zkne_aes64ks1i_cg_cp_sbox_rs1_b56, Zkne_aes64ks1i_cg_cp_sbox_rs1_b56_str)
+
+# Testcase cp_sbox_rs1 = 57
+  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs1: x30 = 0x3939393939393939
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b57:
+  aes64ks1i x28, x30, 2 # perform operation
+  # Check if x28 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x28, Zkne_aes64ks1i_cg_cp_sbox_rs1_b57, Zkne_aes64ks1i_cg_cp_sbox_rs1_b57_str)
+
+# Testcase cp_sbox_rs1 = 58
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs1: x12 = 0x3a3a3a3a3a3a3a3a
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b58:
+  aes64ks1i x14, x12, 8 # perform operation
+  # Check if x14 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x14, Zkne_aes64ks1i_cg_cp_sbox_rs1_b58, Zkne_aes64ks1i_cg_cp_sbox_rs1_b58_str)
+
+# Testcase cp_sbox_rs1 = 59
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs1: x13 = 0x3b3b3b3b3b3b3b3b
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b59:
+  aes64ks1i x12, x13, 5 # perform operation
+  # Check if x12 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x12, Zkne_aes64ks1i_cg_cp_sbox_rs1_b59, Zkne_aes64ks1i_cg_cp_sbox_rs1_b59_str)
+
+# Testcase cp_sbox_rs1 = 60
+  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs1: x28 = 0x3c3c3c3c3c3c3c3c
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b60:
+  aes64ks1i x26, x28, 1 # perform operation
+  # Check if x26 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x26, Zkne_aes64ks1i_cg_cp_sbox_rs1_b60, Zkne_aes64ks1i_cg_cp_sbox_rs1_b60_str)
+
+# Testcase cp_sbox_rs1 = 61
+  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs1: x21 = 0x3d3d3d3d3d3d3d3d
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b61:
+  aes64ks1i x7, x21, 2 # perform operation
+  # Check if x7 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x7, Zkne_aes64ks1i_cg_cp_sbox_rs1_b61, Zkne_aes64ks1i_cg_cp_sbox_rs1_b61_str)
+
+# Testcase cp_sbox_rs1 = 62
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs1: x14 = 0x3e3e3e3e3e3e3e3e
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b62:
+  aes64ks1i x31, x14, 10 # perform operation
+  # Check if x31 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x31, Zkne_aes64ks1i_cg_cp_sbox_rs1_b62, Zkne_aes64ks1i_cg_cp_sbox_rs1_b62_str)
+
+# Testcase cp_sbox_rs1 = 63
+  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load rs1: x27 = 0x3f3f3f3f3f3f3f3f
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b63:
+  aes64ks1i x28, x27, 5 # perform operation
+  # Check if x28 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x28, Zkne_aes64ks1i_cg_cp_sbox_rs1_b63, Zkne_aes64ks1i_cg_cp_sbox_rs1_b63_str)
+
+# Testcase cp_sbox_rs1 = 64
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs1: x14 = 0x4040404040404040
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b64:
+  aes64ks1i x29, x14, 5 # perform operation
+  # Check if x29 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x29, Zkne_aes64ks1i_cg_cp_sbox_rs1_b64, Zkne_aes64ks1i_cg_cp_sbox_rs1_b64_str)
+
+# Testcase cp_sbox_rs1 = 65
+  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs1: x31 = 0x4141414141414141
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b65:
+  aes64ks1i x8, x31, 6 # perform operation
+  # Check if x8 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x8, Zkne_aes64ks1i_cg_cp_sbox_rs1_b65, Zkne_aes64ks1i_cg_cp_sbox_rs1_b65_str)
+
+# Testcase cp_sbox_rs1 = 66
+  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0x4242424242424242
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b66:
+  aes64ks1i x19, x2, 1 # perform operation
+  # Check if x19 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x19, Zkne_aes64ks1i_cg_cp_sbox_rs1_b66, Zkne_aes64ks1i_cg_cp_sbox_rs1_b66_str)
+
+# Testcase cp_sbox_rs1 = 67
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0x4343434343434343
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b67:
+  aes64ks1i x9, x26, 0 # perform operation
+  # Check if x9 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x9, Zkne_aes64ks1i_cg_cp_sbox_rs1_b67, Zkne_aes64ks1i_cg_cp_sbox_rs1_b67_str)
+
+# Testcase cp_sbox_rs1 = 68
+  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs1: x21 = 0x4444444444444444
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b68:
+  aes64ks1i x28, x21, 9 # perform operation
+  # Check if x28 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x28, Zkne_aes64ks1i_cg_cp_sbox_rs1_b68, Zkne_aes64ks1i_cg_cp_sbox_rs1_b68_str)
+
+# Testcase cp_sbox_rs1 = 69
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs1: x15 = 0x4545454545454545
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b69:
+  aes64ks1i x20, x15, 3 # perform operation
+  # Check if x20 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x20, Zkne_aes64ks1i_cg_cp_sbox_rs1_b69, Zkne_aes64ks1i_cg_cp_sbox_rs1_b69_str)
+
+# Testcase cp_sbox_rs1 = 70
+  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0x4646464646464646
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b70:
+  aes64ks1i x20, x18, 0 # perform operation
+  # Check if x20 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x20, Zkne_aes64ks1i_cg_cp_sbox_rs1_b70, Zkne_aes64ks1i_cg_cp_sbox_rs1_b70_str)
+
+# Testcase cp_sbox_rs1 = 71
+  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0x4747474747474747
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b71:
+  aes64ks1i x11, x2, 0 # perform operation
+  # Check if x11 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x11, Zkne_aes64ks1i_cg_cp_sbox_rs1_b71, Zkne_aes64ks1i_cg_cp_sbox_rs1_b71_str)
+
+# Testcase cp_sbox_rs1 = 72
+  RVTEST_TESTDATA_LOAD_INT(x3, x23) # load rs1: x23 = 0x4848484848484848
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b72:
+  aes64ks1i x31, x23, 1 # perform operation
+  # Check if x31 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x31, Zkne_aes64ks1i_cg_cp_sbox_rs1_b72, Zkne_aes64ks1i_cg_cp_sbox_rs1_b72_str)
+
+# Testcase cp_sbox_rs1 = 73
+  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load rs1: x27 = 0x4949494949494949
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b73:
+  aes64ks1i x22, x27, 1 # perform operation
+  # Check if x22 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x22, Zkne_aes64ks1i_cg_cp_sbox_rs1_b73, Zkne_aes64ks1i_cg_cp_sbox_rs1_b73_str)
+
+# Testcase cp_sbox_rs1 = 74
+  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0x4a4a4a4a4a4a4a4a
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b74:
+  aes64ks1i x30, x17, 6 # perform operation
+  # Check if x30 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x30, Zkne_aes64ks1i_cg_cp_sbox_rs1_b74, Zkne_aes64ks1i_cg_cp_sbox_rs1_b74_str)
+
+# Testcase cp_sbox_rs1 = 75
+  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs1: x24 = 0x4b4b4b4b4b4b4b4b
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b75:
+  aes64ks1i x25, x24, 0 # perform operation
+  # Check if x25 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x25, Zkne_aes64ks1i_cg_cp_sbox_rs1_b75, Zkne_aes64ks1i_cg_cp_sbox_rs1_b75_str)
+
+# Testcase cp_sbox_rs1 = 76
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs1: x9 = 0x4c4c4c4c4c4c4c4c
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b76:
+  aes64ks1i x31, x9, 9 # perform operation
+  # Check if x31 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x31, Zkne_aes64ks1i_cg_cp_sbox_rs1_b76, Zkne_aes64ks1i_cg_cp_sbox_rs1_b76_str)
+
+# Testcase cp_sbox_rs1 = 77
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs1: x13 = 0x4d4d4d4d4d4d4d4d
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b77:
+  aes64ks1i x11, x13, 6 # perform operation
+  # Check if x11 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x11, Zkne_aes64ks1i_cg_cp_sbox_rs1_b77, Zkne_aes64ks1i_cg_cp_sbox_rs1_b77_str)
+
+# Testcase cp_sbox_rs1 = 78
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0x4e4e4e4e4e4e4e4e
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b78:
+  aes64ks1i x28, x10, 4 # perform operation
+  # Check if x28 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x28, Zkne_aes64ks1i_cg_cp_sbox_rs1_b78, Zkne_aes64ks1i_cg_cp_sbox_rs1_b78_str)
+
+# Testcase cp_sbox_rs1 = 79
+  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs1: x24 = 0x4f4f4f4f4f4f4f4f
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b79:
+  aes64ks1i x28, x24, 7 # perform operation
+  # Check if x28 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x28, Zkne_aes64ks1i_cg_cp_sbox_rs1_b79, Zkne_aes64ks1i_cg_cp_sbox_rs1_b79_str)
+
+# Testcase cp_sbox_rs1 = 80
+  RVTEST_TESTDATA_LOAD_INT(x3, x22) # load rs1: x22 = 0x5050505050505050
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b80:
+  aes64ks1i x9, x22, 6 # perform operation
+  # Check if x9 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x9, Zkne_aes64ks1i_cg_cp_sbox_rs1_b80, Zkne_aes64ks1i_cg_cp_sbox_rs1_b80_str)
+
+# Testcase cp_sbox_rs1 = 81
+  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load rs1: x19 = 0x5151515151515151
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b81:
+  aes64ks1i x28, x19, 3 # perform operation
+  # Check if x28 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x28, Zkne_aes64ks1i_cg_cp_sbox_rs1_b81, Zkne_aes64ks1i_cg_cp_sbox_rs1_b81_str)
+
+# Testcase cp_sbox_rs1 = 82
+  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0x5252525252525252
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b82:
+  aes64ks1i x25, x18, 6 # perform operation
+  # Check if x25 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x25, Zkne_aes64ks1i_cg_cp_sbox_rs1_b82, Zkne_aes64ks1i_cg_cp_sbox_rs1_b82_str)
+
+# Testcase cp_sbox_rs1 = 83
+  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0x5353535353535353
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b83:
+  aes64ks1i x1, x17, 0 # perform operation
+  # Check if x1 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x1, Zkne_aes64ks1i_cg_cp_sbox_rs1_b83, Zkne_aes64ks1i_cg_cp_sbox_rs1_b83_str)
+
+# Testcase cp_sbox_rs1 = 84
+  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load rs1: x7 = 0x5454545454545454
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b84:
+  aes64ks1i x18, x7, 6 # perform operation
+  # Check if x18 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x18, Zkne_aes64ks1i_cg_cp_sbox_rs1_b84, Zkne_aes64ks1i_cg_cp_sbox_rs1_b84_str)
+
+# Testcase cp_sbox_rs1 = 85
+  RVTEST_TESTDATA_LOAD_INT(x3, x23) # load rs1: x23 = 0x5555555555555555
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b85:
+  aes64ks1i x22, x23, 4 # perform operation
+  # Check if x22 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x22, Zkne_aes64ks1i_cg_cp_sbox_rs1_b85, Zkne_aes64ks1i_cg_cp_sbox_rs1_b85_str)
+
+# Testcase cp_sbox_rs1 = 86
+  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs1: x21 = 0x5656565656565656
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b86:
+  aes64ks1i x8, x21, 0 # perform operation
+  # Check if x8 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x8, Zkne_aes64ks1i_cg_cp_sbox_rs1_b86, Zkne_aes64ks1i_cg_cp_sbox_rs1_b86_str)
+
+# Testcase cp_sbox_rs1 = 87
+  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs1: x30 = 0x5757575757575757
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b87:
+  aes64ks1i x10, x30, 0 # perform operation
+  # Check if x10 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x10, Zkne_aes64ks1i_cg_cp_sbox_rs1_b87, Zkne_aes64ks1i_cg_cp_sbox_rs1_b87_str)
+
+# Testcase cp_sbox_rs1 = 88
+  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0x5858585858585858
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b88:
+  aes64ks1i x30, x2, 9 # perform operation
+  # Check if x30 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x30, Zkne_aes64ks1i_cg_cp_sbox_rs1_b88, Zkne_aes64ks1i_cg_cp_sbox_rs1_b88_str)
+
+# Testcase cp_sbox_rs1 = 89
+  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load rs1: x6 = 0x5959595959595959
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b89:
+  aes64ks1i x12, x6, 10 # perform operation
+  # Check if x12 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x12, Zkne_aes64ks1i_cg_cp_sbox_rs1_b89, Zkne_aes64ks1i_cg_cp_sbox_rs1_b89_str)
+
+# Testcase cp_sbox_rs1 = 90
+  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs1: x29 = 0x5a5a5a5a5a5a5a5a
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b90:
+  aes64ks1i x2, x29, 10 # perform operation
+  # Check if x2 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x2, Zkne_aes64ks1i_cg_cp_sbox_rs1_b90, Zkne_aes64ks1i_cg_cp_sbox_rs1_b90_str)
+
+# Testcase cp_sbox_rs1 = 91
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs1: x14 = 0x5b5b5b5b5b5b5b5b
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b91:
+  aes64ks1i x24, x14, 5 # perform operation
+  # Check if x24 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x24, Zkne_aes64ks1i_cg_cp_sbox_rs1_b91, Zkne_aes64ks1i_cg_cp_sbox_rs1_b91_str)
+
+# Testcase cp_sbox_rs1 = 92
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0x5c5c5c5c5c5c5c5c
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b92:
+  aes64ks1i x6, x10, 3 # perform operation
+  # Check if x6 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x6, Zkne_aes64ks1i_cg_cp_sbox_rs1_b92, Zkne_aes64ks1i_cg_cp_sbox_rs1_b92_str)
+
+# Testcase cp_sbox_rs1 = 93
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0x5d5d5d5d5d5d5d5d
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b93:
+  aes64ks1i x29, x1, 3 # perform operation
+  # Check if x29 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x29, Zkne_aes64ks1i_cg_cp_sbox_rs1_b93, Zkne_aes64ks1i_cg_cp_sbox_rs1_b93_str)
+
+# Testcase cp_sbox_rs1 = 94
+  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0x5e5e5e5e5e5e5e5e
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b94:
+  aes64ks1i x19, x2, 7 # perform operation
+  # Check if x19 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x19, Zkne_aes64ks1i_cg_cp_sbox_rs1_b94, Zkne_aes64ks1i_cg_cp_sbox_rs1_b94_str)
+
+# Testcase cp_sbox_rs1 = 95
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load rs1: x8 = 0x5f5f5f5f5f5f5f5f
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b95:
+  aes64ks1i x24, x8, 9 # perform operation
+  # Check if x24 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x24, Zkne_aes64ks1i_cg_cp_sbox_rs1_b95, Zkne_aes64ks1i_cg_cp_sbox_rs1_b95_str)
+
+# Testcase cp_sbox_rs1 = 96
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs1: x14 = 0x6060606060606060
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b96:
+  aes64ks1i x28, x14, 1 # perform operation
+  # Check if x28 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x28, Zkne_aes64ks1i_cg_cp_sbox_rs1_b96, Zkne_aes64ks1i_cg_cp_sbox_rs1_b96_str)
+
+# Testcase cp_sbox_rs1 = 97
+  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs1: x24 = 0x6161616161616161
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b97:
+  aes64ks1i x10, x24, 9 # perform operation
+  # Check if x10 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x10, Zkne_aes64ks1i_cg_cp_sbox_rs1_b97, Zkne_aes64ks1i_cg_cp_sbox_rs1_b97_str)
+
+# Testcase cp_sbox_rs1 = 98
+  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0x6262626262626262
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b98:
+  aes64ks1i x26, x18, 5 # perform operation
+  # Check if x26 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x26, Zkne_aes64ks1i_cg_cp_sbox_rs1_b98, Zkne_aes64ks1i_cg_cp_sbox_rs1_b98_str)
+
+# Testcase cp_sbox_rs1 = 99
+  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0x6363636363636363
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b99:
+  aes64ks1i x27, x18, 10 # perform operation
+  # Check if x27 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x27, Zkne_aes64ks1i_cg_cp_sbox_rs1_b99, Zkne_aes64ks1i_cg_cp_sbox_rs1_b99_str)
+
+# Testcase cp_sbox_rs1 = 100
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs1: x13 = 0x6464646464646464
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b100:
+  aes64ks1i x6, x13, 1 # perform operation
+  # Check if x6 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x6, Zkne_aes64ks1i_cg_cp_sbox_rs1_b100, Zkne_aes64ks1i_cg_cp_sbox_rs1_b100_str)
+
+# Testcase cp_sbox_rs1 = 101
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs1: x12 = 0x6565656565656565
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b101:
+  aes64ks1i x9, x12, 1 # perform operation
+  # Check if x9 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x9, Zkne_aes64ks1i_cg_cp_sbox_rs1_b101, Zkne_aes64ks1i_cg_cp_sbox_rs1_b101_str)
+
+# Testcase cp_sbox_rs1 = 102
+  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load rs1: x27 = 0x6666666666666666
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b102:
+  aes64ks1i x1, x27, 2 # perform operation
+  # Check if x1 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x1, Zkne_aes64ks1i_cg_cp_sbox_rs1_b102, Zkne_aes64ks1i_cg_cp_sbox_rs1_b102_str)
+
+# Testcase cp_sbox_rs1 = 103
+  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0x6767676767676767
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b103:
+  aes64ks1i x17, x2, 2 # perform operation
+  # Check if x17 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x17, Zkne_aes64ks1i_cg_cp_sbox_rs1_b103, Zkne_aes64ks1i_cg_cp_sbox_rs1_b103_str)
+
+# Testcase cp_sbox_rs1 = 104
+  RVTEST_TESTDATA_LOAD_INT(x3, x23) # load rs1: x23 = 0x6868686868686868
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b104:
+  aes64ks1i x1, x23, 5 # perform operation
+  # Check if x1 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x1, Zkne_aes64ks1i_cg_cp_sbox_rs1_b104, Zkne_aes64ks1i_cg_cp_sbox_rs1_b104_str)
+
+# Testcase cp_sbox_rs1 = 105
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0x6969696969696969
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b105:
+  aes64ks1i x13, x26, 0 # perform operation
+  # Check if x13 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x13, Zkne_aes64ks1i_cg_cp_sbox_rs1_b105, Zkne_aes64ks1i_cg_cp_sbox_rs1_b105_str)
+
+# Testcase cp_sbox_rs1 = 106
+  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load rs1: x7 = 0x6a6a6a6a6a6a6a6a
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b106:
+  aes64ks1i x26, x7, 9 # perform operation
+  # Check if x26 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x26, Zkne_aes64ks1i_cg_cp_sbox_rs1_b106, Zkne_aes64ks1i_cg_cp_sbox_rs1_b106_str)
+
+# Testcase cp_sbox_rs1 = 107
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0x6b6b6b6b6b6b6b6b
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b107:
+  aes64ks1i x21, x10, 5 # perform operation
+  # Check if x21 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x21, Zkne_aes64ks1i_cg_cp_sbox_rs1_b107, Zkne_aes64ks1i_cg_cp_sbox_rs1_b107_str)
+
+# Testcase cp_sbox_rs1 = 108
+  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs1: x28 = 0x6c6c6c6c6c6c6c6c
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b108:
+  aes64ks1i x22, x28, 1 # perform operation
+  # Check if x22 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x22, Zkne_aes64ks1i_cg_cp_sbox_rs1_b108, Zkne_aes64ks1i_cg_cp_sbox_rs1_b108_str)
+
+# Testcase cp_sbox_rs1 = 109
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0x6d6d6d6d6d6d6d6d
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b109:
+  aes64ks1i x15, x26, 7 # perform operation
+  # Check if x15 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x15, Zkne_aes64ks1i_cg_cp_sbox_rs1_b109, Zkne_aes64ks1i_cg_cp_sbox_rs1_b109_str)
+
+# Testcase cp_sbox_rs1 = 110
+  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0x6e6e6e6e6e6e6e6e
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b110:
+  aes64ks1i x17, x18, 6 # perform operation
+  # Check if x17 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x17, Zkne_aes64ks1i_cg_cp_sbox_rs1_b110, Zkne_aes64ks1i_cg_cp_sbox_rs1_b110_str)
+
+# Testcase cp_sbox_rs1 = 111
+  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0x6f6f6f6f6f6f6f6f
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b111:
+  aes64ks1i x6, x18, 6 # perform operation
+  # Check if x6 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x6, Zkne_aes64ks1i_cg_cp_sbox_rs1_b111, Zkne_aes64ks1i_cg_cp_sbox_rs1_b111_str)
+
+# Testcase cp_sbox_rs1 = 112
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load rs1: x8 = 0x7070707070707070
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b112:
+  aes64ks1i x27, x8, 10 # perform operation
+  # Check if x27 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x27, Zkne_aes64ks1i_cg_cp_sbox_rs1_b112, Zkne_aes64ks1i_cg_cp_sbox_rs1_b112_str)
+
+# Testcase cp_sbox_rs1 = 113
+  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs1: x21 = 0x7171717171717171
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b113:
+  aes64ks1i x30, x21, 2 # perform operation
+  # Check if x30 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x30, Zkne_aes64ks1i_cg_cp_sbox_rs1_b113, Zkne_aes64ks1i_cg_cp_sbox_rs1_b113_str)
+
+# Testcase cp_sbox_rs1 = 114
+  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs1: x25 = 0x7272727272727272
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b114:
+  aes64ks1i x20, x25, 0 # perform operation
+  # Check if x20 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x20, Zkne_aes64ks1i_cg_cp_sbox_rs1_b114, Zkne_aes64ks1i_cg_cp_sbox_rs1_b114_str)
+
+# Testcase cp_sbox_rs1 = 115
+  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs1: x31 = 0x7373737373737373
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b115:
+  aes64ks1i x28, x31, 2 # perform operation
+  # Check if x28 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x28, Zkne_aes64ks1i_cg_cp_sbox_rs1_b115, Zkne_aes64ks1i_cg_cp_sbox_rs1_b115_str)
+
+# Testcase cp_sbox_rs1 = 116
+  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0x7474747474747474
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b116:
+  aes64ks1i x24, x17, 10 # perform operation
+  # Check if x24 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x24, Zkne_aes64ks1i_cg_cp_sbox_rs1_b116, Zkne_aes64ks1i_cg_cp_sbox_rs1_b116_str)
+
+# Testcase cp_sbox_rs1 = 117
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs1: x12 = 0x7575757575757575
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b117:
+  aes64ks1i x24, x12, 6 # perform operation
+  # Check if x24 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x24, Zkne_aes64ks1i_cg_cp_sbox_rs1_b117, Zkne_aes64ks1i_cg_cp_sbox_rs1_b117_str)
+
+# Testcase cp_sbox_rs1 = 118
+  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0x7676767676767676
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b118:
+  aes64ks1i x10, x18, 8 # perform operation
+  # Check if x10 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x10, Zkne_aes64ks1i_cg_cp_sbox_rs1_b118, Zkne_aes64ks1i_cg_cp_sbox_rs1_b118_str)
+
+# Testcase cp_sbox_rs1 = 119
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs1: x14 = 0x7777777777777777
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b119:
+  aes64ks1i x26, x14, 3 # perform operation
+  # Check if x26 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x26, Zkne_aes64ks1i_cg_cp_sbox_rs1_b119, Zkne_aes64ks1i_cg_cp_sbox_rs1_b119_str)
+
+# Testcase cp_sbox_rs1 = 120
+  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs1: x25 = 0x7878787878787878
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b120:
+  aes64ks1i x28, x25, 9 # perform operation
+  # Check if x28 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x28, Zkne_aes64ks1i_cg_cp_sbox_rs1_b120, Zkne_aes64ks1i_cg_cp_sbox_rs1_b120_str)
+
+# Testcase cp_sbox_rs1 = 121
+  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load rs1: x27 = 0x7979797979797979
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b121:
+  aes64ks1i x9, x27, 6 # perform operation
+  # Check if x9 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x9, Zkne_aes64ks1i_cg_cp_sbox_rs1_b121, Zkne_aes64ks1i_cg_cp_sbox_rs1_b121_str)
+
+# Testcase cp_sbox_rs1 = 122
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs1: x12 = 0x7a7a7a7a7a7a7a7a
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b122:
+  aes64ks1i x14, x12, 9 # perform operation
+  # Check if x14 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x14, Zkne_aes64ks1i_cg_cp_sbox_rs1_b122, Zkne_aes64ks1i_cg_cp_sbox_rs1_b122_str)
+
+# Testcase cp_sbox_rs1 = 123
+  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs1: x31 = 0x7b7b7b7b7b7b7b7b
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b123:
+  aes64ks1i x21, x31, 9 # perform operation
+  # Check if x21 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x21, Zkne_aes64ks1i_cg_cp_sbox_rs1_b123, Zkne_aes64ks1i_cg_cp_sbox_rs1_b123_str)
+
+# Testcase cp_sbox_rs1 = 124
+  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load rs1: x7 = 0x7c7c7c7c7c7c7c7c
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b124:
+  aes64ks1i x26, x7, 2 # perform operation
+  # Check if x26 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x26, Zkne_aes64ks1i_cg_cp_sbox_rs1_b124, Zkne_aes64ks1i_cg_cp_sbox_rs1_b124_str)
+
+# Testcase cp_sbox_rs1 = 125
+  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load rs1: x19 = 0x7d7d7d7d7d7d7d7d
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b125:
+  aes64ks1i x7, x19, 5 # perform operation
+  # Check if x7 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x7, Zkne_aes64ks1i_cg_cp_sbox_rs1_b125, Zkne_aes64ks1i_cg_cp_sbox_rs1_b125_str)
+
+# Testcase cp_sbox_rs1 = 126
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs1: x11 = 0x7e7e7e7e7e7e7e7e
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b126:
+  aes64ks1i x9, x11, 5 # perform operation
+  # Check if x9 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x9, Zkne_aes64ks1i_cg_cp_sbox_rs1_b126, Zkne_aes64ks1i_cg_cp_sbox_rs1_b126_str)
+
+# Testcase cp_sbox_rs1 = 127
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs1: x11 = 0x7f7f7f7f7f7f7f7f
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b127:
+  aes64ks1i x8, x11, 9 # perform operation
+  # Check if x8 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x8, Zkne_aes64ks1i_cg_cp_sbox_rs1_b127, Zkne_aes64ks1i_cg_cp_sbox_rs1_b127_str)
+
+# Testcase cp_sbox_rs1 = 128
+  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs1: x24 = 0x8080808080808080
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b128:
+  aes64ks1i x23, x24, 8 # perform operation
+  # Check if x23 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x23, Zkne_aes64ks1i_cg_cp_sbox_rs1_b128, Zkne_aes64ks1i_cg_cp_sbox_rs1_b128_str)
+
+# Testcase cp_sbox_rs1 = 129
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs1: x9 = 0x8181818181818181
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b129:
+  aes64ks1i x1, x9, 6 # perform operation
+  # Check if x1 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x1, Zkne_aes64ks1i_cg_cp_sbox_rs1_b129, Zkne_aes64ks1i_cg_cp_sbox_rs1_b129_str)
+
+# Testcase cp_sbox_rs1 = 130
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs1: x12 = 0x8282828282828282
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b130:
+  aes64ks1i x29, x12, 7 # perform operation
+  # Check if x29 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x29, Zkne_aes64ks1i_cg_cp_sbox_rs1_b130, Zkne_aes64ks1i_cg_cp_sbox_rs1_b130_str)
+
+# Testcase cp_sbox_rs1 = 131
+  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs1: x25 = 0x8383838383838383
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b131:
+  aes64ks1i x1, x25, 6 # perform operation
+  # Check if x1 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x1, Zkne_aes64ks1i_cg_cp_sbox_rs1_b131, Zkne_aes64ks1i_cg_cp_sbox_rs1_b131_str)
+
+# Testcase cp_sbox_rs1 = 132
+  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs1: x20 = 0x8484848484848484
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b132:
+  aes64ks1i x13, x20, 9 # perform operation
+  # Check if x13 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x13, Zkne_aes64ks1i_cg_cp_sbox_rs1_b132, Zkne_aes64ks1i_cg_cp_sbox_rs1_b132_str)
+
+# Testcase cp_sbox_rs1 = 133
+  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs1: x28 = 0x8585858585858585
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b133:
+  aes64ks1i x29, x28, 4 # perform operation
+  # Check if x29 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x29, Zkne_aes64ks1i_cg_cp_sbox_rs1_b133, Zkne_aes64ks1i_cg_cp_sbox_rs1_b133_str)
+
+# Testcase cp_sbox_rs1 = 134
+  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0x8686868686868686
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b134:
+  aes64ks1i x15, x17, 7 # perform operation
+  # Check if x15 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x15, Zkne_aes64ks1i_cg_cp_sbox_rs1_b134, Zkne_aes64ks1i_cg_cp_sbox_rs1_b134_str)
+
+# Testcase cp_sbox_rs1 = 135
+  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs1: x24 = 0x8787878787878787
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b135:
+  aes64ks1i x19, x24, 3 # perform operation
+  # Check if x19 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x19, Zkne_aes64ks1i_cg_cp_sbox_rs1_b135, Zkne_aes64ks1i_cg_cp_sbox_rs1_b135_str)
+
+# Testcase cp_sbox_rs1 = 136
+  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs1: x24 = 0x8888888888888888
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b136:
+  aes64ks1i x21, x24, 5 # perform operation
+  # Check if x21 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x21, Zkne_aes64ks1i_cg_cp_sbox_rs1_b136, Zkne_aes64ks1i_cg_cp_sbox_rs1_b136_str)
+
+# Testcase cp_sbox_rs1 = 137
+  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load rs1: x7 = 0x8989898989898989
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b137:
+  aes64ks1i x21, x7, 0 # perform operation
+  # Check if x21 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x21, Zkne_aes64ks1i_cg_cp_sbox_rs1_b137, Zkne_aes64ks1i_cg_cp_sbox_rs1_b137_str)
+
+# Testcase cp_sbox_rs1 = 138
+  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs1: x24 = 0x8a8a8a8a8a8a8a8a
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b138:
+  aes64ks1i x27, x24, 8 # perform operation
+  # Check if x27 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x27, Zkne_aes64ks1i_cg_cp_sbox_rs1_b138, Zkne_aes64ks1i_cg_cp_sbox_rs1_b138_str)
+
+# Testcase cp_sbox_rs1 = 139
+  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0x8b8b8b8b8b8b8b8b
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b139:
+  aes64ks1i x24, x2, 3 # perform operation
+  # Check if x24 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x24, Zkne_aes64ks1i_cg_cp_sbox_rs1_b139, Zkne_aes64ks1i_cg_cp_sbox_rs1_b139_str)
+
+# Testcase cp_sbox_rs1 = 140
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs1: x15 = 0x8c8c8c8c8c8c8c8c
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b140:
+  aes64ks1i x28, x15, 9 # perform operation
+  # Check if x28 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x28, Zkne_aes64ks1i_cg_cp_sbox_rs1_b140, Zkne_aes64ks1i_cg_cp_sbox_rs1_b140_str)
+
+# Testcase cp_sbox_rs1 = 141
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs1: x11 = 0x8d8d8d8d8d8d8d8d
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b141:
+  aes64ks1i x30, x11, 7 # perform operation
+  # Check if x30 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x30, Zkne_aes64ks1i_cg_cp_sbox_rs1_b141, Zkne_aes64ks1i_cg_cp_sbox_rs1_b141_str)
+
+# Testcase cp_sbox_rs1 = 142
+  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs1: x20 = 0x8e8e8e8e8e8e8e8e
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b142:
+  aes64ks1i x2, x20, 8 # perform operation
+  # Check if x2 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x2, Zkne_aes64ks1i_cg_cp_sbox_rs1_b142, Zkne_aes64ks1i_cg_cp_sbox_rs1_b142_str)
+
+# Testcase cp_sbox_rs1 = 143
+  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs1: x29 = 0x8f8f8f8f8f8f8f8f
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b143:
+  aes64ks1i x25, x29, 8 # perform operation
+  # Check if x25 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x25, Zkne_aes64ks1i_cg_cp_sbox_rs1_b143, Zkne_aes64ks1i_cg_cp_sbox_rs1_b143_str)
+
+# Testcase cp_sbox_rs1 = 144
+  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0x9090909090909090
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b144:
+  aes64ks1i x26, x18, 3 # perform operation
+  # Check if x26 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x26, Zkne_aes64ks1i_cg_cp_sbox_rs1_b144, Zkne_aes64ks1i_cg_cp_sbox_rs1_b144_str)
+
+# Testcase cp_sbox_rs1 = 145
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0x9191919191919191
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b145:
+  aes64ks1i x12, x1, 1 # perform operation
+  # Check if x12 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x12, Zkne_aes64ks1i_cg_cp_sbox_rs1_b145, Zkne_aes64ks1i_cg_cp_sbox_rs1_b145_str)
+
+# Testcase cp_sbox_rs1 = 146
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load rs1: x8 = 0x9292929292929292
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b146:
+  aes64ks1i x17, x8, 6 # perform operation
+  # Check if x17 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x17, Zkne_aes64ks1i_cg_cp_sbox_rs1_b146, Zkne_aes64ks1i_cg_cp_sbox_rs1_b146_str)
+
+# Testcase cp_sbox_rs1 = 147
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs1: x15 = 0x9393939393939393
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b147:
+  aes64ks1i x22, x15, 9 # perform operation
+  # Check if x22 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x22, Zkne_aes64ks1i_cg_cp_sbox_rs1_b147, Zkne_aes64ks1i_cg_cp_sbox_rs1_b147_str)
+
+# Testcase cp_sbox_rs1 = 148
+  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs1: x29 = 0x9494949494949494
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b148:
+  aes64ks1i x19, x29, 7 # perform operation
+  # Check if x19 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x19, Zkne_aes64ks1i_cg_cp_sbox_rs1_b148, Zkne_aes64ks1i_cg_cp_sbox_rs1_b148_str)
+
+# Testcase cp_sbox_rs1 = 149
+  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load rs1: x6 = 0x9595959595959595
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b149:
+  aes64ks1i x19, x6, 8 # perform operation
+  # Check if x19 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x19, Zkne_aes64ks1i_cg_cp_sbox_rs1_b149, Zkne_aes64ks1i_cg_cp_sbox_rs1_b149_str)
+
+# Testcase cp_sbox_rs1 = 150
+  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs1: x31 = 0x9696969696969696
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b150:
+  aes64ks1i x2, x31, 9 # perform operation
+  # Check if x2 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x2, Zkne_aes64ks1i_cg_cp_sbox_rs1_b150, Zkne_aes64ks1i_cg_cp_sbox_rs1_b150_str)
+
+# Testcase cp_sbox_rs1 = 151
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs1: x12 = 0x9797979797979797
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b151:
+  aes64ks1i x24, x12, 6 # perform operation
+  # Check if x24 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x24, Zkne_aes64ks1i_cg_cp_sbox_rs1_b151, Zkne_aes64ks1i_cg_cp_sbox_rs1_b151_str)
+
+# Testcase cp_sbox_rs1 = 152
+  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs1: x30 = 0x9898989898989898
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b152:
+  aes64ks1i x13, x30, 8 # perform operation
+  # Check if x13 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x13, Zkne_aes64ks1i_cg_cp_sbox_rs1_b152, Zkne_aes64ks1i_cg_cp_sbox_rs1_b152_str)
+
+# Testcase cp_sbox_rs1 = 153
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs1: x9 = 0x9999999999999999
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b153:
+  aes64ks1i x10, x9, 0 # perform operation
+  # Check if x10 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x10, Zkne_aes64ks1i_cg_cp_sbox_rs1_b153, Zkne_aes64ks1i_cg_cp_sbox_rs1_b153_str)
+
+# Testcase cp_sbox_rs1 = 154
+  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load rs1: x6 = 0x9a9a9a9a9a9a9a9a
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b154:
+  aes64ks1i x29, x6, 10 # perform operation
+  # Check if x29 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x29, Zkne_aes64ks1i_cg_cp_sbox_rs1_b154, Zkne_aes64ks1i_cg_cp_sbox_rs1_b154_str)
+
+# Testcase cp_sbox_rs1 = 155
+  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs1: x20 = 0x9b9b9b9b9b9b9b9b
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b155:
+  aes64ks1i x23, x20, 7 # perform operation
+  # Check if x23 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x23, Zkne_aes64ks1i_cg_cp_sbox_rs1_b155, Zkne_aes64ks1i_cg_cp_sbox_rs1_b155_str)
+
+# Testcase cp_sbox_rs1 = 156
+  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs1: x28 = 0x9c9c9c9c9c9c9c9c
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b156:
+  aes64ks1i x6, x28, 5 # perform operation
+  # Check if x6 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x6, Zkne_aes64ks1i_cg_cp_sbox_rs1_b156, Zkne_aes64ks1i_cg_cp_sbox_rs1_b156_str)
+
+# Testcase cp_sbox_rs1 = 157
+  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load rs1: x6 = 0x9d9d9d9d9d9d9d9d
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b157:
+  aes64ks1i x8, x6, 4 # perform operation
+  # Check if x8 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x8, Zkne_aes64ks1i_cg_cp_sbox_rs1_b157, Zkne_aes64ks1i_cg_cp_sbox_rs1_b157_str)
+
+# Testcase cp_sbox_rs1 = 158
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs1: x13 = 0x9e9e9e9e9e9e9e9e
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b158:
+  aes64ks1i x20, x13, 0 # perform operation
+  # Check if x20 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x20, Zkne_aes64ks1i_cg_cp_sbox_rs1_b158, Zkne_aes64ks1i_cg_cp_sbox_rs1_b158_str)
+
+# Testcase cp_sbox_rs1 = 159
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs1: x15 = 0x9f9f9f9f9f9f9f9f
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b159:
+  aes64ks1i x9, x15, 5 # perform operation
+  # Check if x9 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x9, Zkne_aes64ks1i_cg_cp_sbox_rs1_b159, Zkne_aes64ks1i_cg_cp_sbox_rs1_b159_str)
+
+# Testcase cp_sbox_rs1 = 160
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs1: x15 = 0xa0a0a0a0a0a0a0a0
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b160:
+  aes64ks1i x1, x15, 2 # perform operation
+  # Check if x1 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x1, Zkne_aes64ks1i_cg_cp_sbox_rs1_b160, Zkne_aes64ks1i_cg_cp_sbox_rs1_b160_str)
+
+# Testcase cp_sbox_rs1 = 161
+  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs1: x28 = 0xa1a1a1a1a1a1a1a1
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b161:
+  aes64ks1i x9, x28, 8 # perform operation
+  # Check if x9 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x9, Zkne_aes64ks1i_cg_cp_sbox_rs1_b161, Zkne_aes64ks1i_cg_cp_sbox_rs1_b161_str)
+
+# Testcase cp_sbox_rs1 = 162
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0xa2a2a2a2a2a2a2a2
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b162:
+  aes64ks1i x14, x26, 6 # perform operation
+  # Check if x14 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x14, Zkne_aes64ks1i_cg_cp_sbox_rs1_b162, Zkne_aes64ks1i_cg_cp_sbox_rs1_b162_str)
+
+# Testcase cp_sbox_rs1 = 163
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0xa3a3a3a3a3a3a3a3
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b163:
+  aes64ks1i x8, x10, 6 # perform operation
+  # Check if x8 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x8, Zkne_aes64ks1i_cg_cp_sbox_rs1_b163, Zkne_aes64ks1i_cg_cp_sbox_rs1_b163_str)
+
+# Testcase cp_sbox_rs1 = 164
+  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0xa4a4a4a4a4a4a4a4
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b164:
+  aes64ks1i x25, x18, 1 # perform operation
+  # Check if x25 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x25, Zkne_aes64ks1i_cg_cp_sbox_rs1_b164, Zkne_aes64ks1i_cg_cp_sbox_rs1_b164_str)
+
+# Testcase cp_sbox_rs1 = 165
+  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0xa5a5a5a5a5a5a5a5
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b165:
+  aes64ks1i x15, x18, 7 # perform operation
+  # Check if x15 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x15, Zkne_aes64ks1i_cg_cp_sbox_rs1_b165, Zkne_aes64ks1i_cg_cp_sbox_rs1_b165_str)
+
+# Testcase cp_sbox_rs1 = 166
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0xa6a6a6a6a6a6a6a6
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b166:
+  aes64ks1i x27, x10, 8 # perform operation
+  # Check if x27 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x27, Zkne_aes64ks1i_cg_cp_sbox_rs1_b166, Zkne_aes64ks1i_cg_cp_sbox_rs1_b166_str)
+
+# Testcase cp_sbox_rs1 = 167
+  RVTEST_TESTDATA_LOAD_INT(x3, x23) # load rs1: x23 = 0xa7a7a7a7a7a7a7a7
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b167:
+  aes64ks1i x6, x23, 4 # perform operation
+  # Check if x6 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x6, Zkne_aes64ks1i_cg_cp_sbox_rs1_b167, Zkne_aes64ks1i_cg_cp_sbox_rs1_b167_str)
+
+# Testcase cp_sbox_rs1 = 168
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0xa8a8a8a8a8a8a8a8
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b168:
+  aes64ks1i x1, x26, 7 # perform operation
+  # Check if x1 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x1, Zkne_aes64ks1i_cg_cp_sbox_rs1_b168, Zkne_aes64ks1i_cg_cp_sbox_rs1_b168_str)
+
+# Testcase cp_sbox_rs1 = 169
+  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0xa9a9a9a9a9a9a9a9
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b169:
+  aes64ks1i x12, x17, 8 # perform operation
+  # Check if x12 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x12, Zkne_aes64ks1i_cg_cp_sbox_rs1_b169, Zkne_aes64ks1i_cg_cp_sbox_rs1_b169_str)
+
+# Testcase cp_sbox_rs1 = 170
+  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs1: x20 = 0xaaaaaaaaaaaaaaaa
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b170:
+  aes64ks1i x2, x20, 4 # perform operation
+  # Check if x2 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x2, Zkne_aes64ks1i_cg_cp_sbox_rs1_b170, Zkne_aes64ks1i_cg_cp_sbox_rs1_b170_str)
+
+# Testcase cp_sbox_rs1 = 171
+  RVTEST_TESTDATA_LOAD_INT(x3, x22) # load rs1: x22 = 0xabababababababab
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b171:
+  aes64ks1i x17, x22, 4 # perform operation
+  # Check if x17 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x17, Zkne_aes64ks1i_cg_cp_sbox_rs1_b171, Zkne_aes64ks1i_cg_cp_sbox_rs1_b171_str)
+
+# Testcase cp_sbox_rs1 = 172
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0xacacacacacacacac
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b172:
+  aes64ks1i x11, x10, 5 # perform operation
+  # Check if x11 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x11, Zkne_aes64ks1i_cg_cp_sbox_rs1_b172, Zkne_aes64ks1i_cg_cp_sbox_rs1_b172_str)
+
+# Testcase cp_sbox_rs1 = 173
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs1: x12 = 0xadadadadadadadad
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b173:
+  aes64ks1i x22, x12, 5 # perform operation
+  # Check if x22 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x22, Zkne_aes64ks1i_cg_cp_sbox_rs1_b173, Zkne_aes64ks1i_cg_cp_sbox_rs1_b173_str)
+
+# Testcase cp_sbox_rs1 = 174
+  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load rs1: x6 = 0xaeaeaeaeaeaeaeae
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b174:
+  aes64ks1i x22, x6, 6 # perform operation
+  # Check if x22 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x22, Zkne_aes64ks1i_cg_cp_sbox_rs1_b174, Zkne_aes64ks1i_cg_cp_sbox_rs1_b174_str)
+
+# Testcase cp_sbox_rs1 = 175
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0xafafafafafafafaf
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b175:
+  aes64ks1i x20, x1, 5 # perform operation
+  # Check if x20 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x20, Zkne_aes64ks1i_cg_cp_sbox_rs1_b175, Zkne_aes64ks1i_cg_cp_sbox_rs1_b175_str)
+
+# Testcase cp_sbox_rs1 = 176
+  RVTEST_TESTDATA_LOAD_INT(x3, x23) # load rs1: x23 = 0xb0b0b0b0b0b0b0b0
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b176:
+  aes64ks1i x12, x23, 9 # perform operation
+  # Check if x12 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x12, Zkne_aes64ks1i_cg_cp_sbox_rs1_b176, Zkne_aes64ks1i_cg_cp_sbox_rs1_b176_str)
+
+# Testcase cp_sbox_rs1 = 177
+  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs1: x30 = 0xb1b1b1b1b1b1b1b1
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b177:
+  aes64ks1i x2, x30, 10 # perform operation
+  # Check if x2 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x2, Zkne_aes64ks1i_cg_cp_sbox_rs1_b177, Zkne_aes64ks1i_cg_cp_sbox_rs1_b177_str)
+
+# Testcase cp_sbox_rs1 = 178
+  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs1: x20 = 0xb2b2b2b2b2b2b2b2
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b178:
+  aes64ks1i x2, x20, 3 # perform operation
+  # Check if x2 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x2, Zkne_aes64ks1i_cg_cp_sbox_rs1_b178, Zkne_aes64ks1i_cg_cp_sbox_rs1_b178_str)
+
+# Testcase cp_sbox_rs1 = 179
+  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0xb3b3b3b3b3b3b3b3
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b179:
+  aes64ks1i x26, x17, 4 # perform operation
+  # Check if x26 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x26, Zkne_aes64ks1i_cg_cp_sbox_rs1_b179, Zkne_aes64ks1i_cg_cp_sbox_rs1_b179_str)
+
+# Testcase cp_sbox_rs1 = 180
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0xb4b4b4b4b4b4b4b4
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b180:
+  aes64ks1i x28, x1, 8 # perform operation
+  # Check if x28 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x28, Zkne_aes64ks1i_cg_cp_sbox_rs1_b180, Zkne_aes64ks1i_cg_cp_sbox_rs1_b180_str)
+
+# Testcase cp_sbox_rs1 = 181
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0xb5b5b5b5b5b5b5b5
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b181:
+  aes64ks1i x28, x26, 10 # perform operation
+  # Check if x28 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x28, Zkne_aes64ks1i_cg_cp_sbox_rs1_b181, Zkne_aes64ks1i_cg_cp_sbox_rs1_b181_str)
+
+# Testcase cp_sbox_rs1 = 182
+  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs1: x28 = 0xb6b6b6b6b6b6b6b6
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b182:
+  aes64ks1i x15, x28, 3 # perform operation
+  # Check if x15 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x15, Zkne_aes64ks1i_cg_cp_sbox_rs1_b182, Zkne_aes64ks1i_cg_cp_sbox_rs1_b182_str)
+
+# Testcase cp_sbox_rs1 = 183
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0xb7b7b7b7b7b7b7b7
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b183:
+  aes64ks1i x31, x26, 2 # perform operation
+  # Check if x31 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x31, Zkne_aes64ks1i_cg_cp_sbox_rs1_b183, Zkne_aes64ks1i_cg_cp_sbox_rs1_b183_str)
+
+# Testcase cp_sbox_rs1 = 184
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0xb8b8b8b8b8b8b8b8
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b184:
+  aes64ks1i x25, x26, 2 # perform operation
+  # Check if x25 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x25, Zkne_aes64ks1i_cg_cp_sbox_rs1_b184, Zkne_aes64ks1i_cg_cp_sbox_rs1_b184_str)
+
+# Testcase cp_sbox_rs1 = 185
+  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs1: x20 = 0xb9b9b9b9b9b9b9b9
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b185:
+  aes64ks1i x21, x20, 3 # perform operation
+  # Check if x21 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x21, Zkne_aes64ks1i_cg_cp_sbox_rs1_b185, Zkne_aes64ks1i_cg_cp_sbox_rs1_b185_str)
+
+# Testcase cp_sbox_rs1 = 186
+  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs1: x24 = 0xbabababababababa
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b186:
+  aes64ks1i x9, x24, 8 # perform operation
+  # Check if x9 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x9, Zkne_aes64ks1i_cg_cp_sbox_rs1_b186, Zkne_aes64ks1i_cg_cp_sbox_rs1_b186_str)
+
+# Testcase cp_sbox_rs1 = 187
+  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load rs1: x7 = 0xbbbbbbbbbbbbbbbb
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b187:
+  aes64ks1i x20, x7, 3 # perform operation
+  # Check if x20 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x20, Zkne_aes64ks1i_cg_cp_sbox_rs1_b187, Zkne_aes64ks1i_cg_cp_sbox_rs1_b187_str)
+
+# Testcase cp_sbox_rs1 = 188
+  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load rs1: x19 = 0xbcbcbcbcbcbcbcbc
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b188:
+  aes64ks1i x12, x19, 7 # perform operation
+  # Check if x12 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x12, Zkne_aes64ks1i_cg_cp_sbox_rs1_b188, Zkne_aes64ks1i_cg_cp_sbox_rs1_b188_str)
+
+# Testcase cp_sbox_rs1 = 189
+  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs1: x30 = 0xbdbdbdbdbdbdbdbd
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b189:
+  aes64ks1i x21, x30, 10 # perform operation
+  # Check if x21 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x21, Zkne_aes64ks1i_cg_cp_sbox_rs1_b189, Zkne_aes64ks1i_cg_cp_sbox_rs1_b189_str)
+
+# Testcase cp_sbox_rs1 = 190
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0xbebebebebebebebe
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b190:
+  aes64ks1i x29, x1, 1 # perform operation
+  # Check if x29 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x29, Zkne_aes64ks1i_cg_cp_sbox_rs1_b190, Zkne_aes64ks1i_cg_cp_sbox_rs1_b190_str)
+
+# Testcase cp_sbox_rs1 = 191
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0xbfbfbfbfbfbfbfbf
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b191:
+  aes64ks1i x22, x1, 5 # perform operation
+  # Check if x22 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x22, Zkne_aes64ks1i_cg_cp_sbox_rs1_b191, Zkne_aes64ks1i_cg_cp_sbox_rs1_b191_str)
+
+# Testcase cp_sbox_rs1 = 192
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0xc0c0c0c0c0c0c0c0
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b192:
+  aes64ks1i x23, x10, 1 # perform operation
+  # Check if x23 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x23, Zkne_aes64ks1i_cg_cp_sbox_rs1_b192, Zkne_aes64ks1i_cg_cp_sbox_rs1_b192_str)
+
+# Testcase cp_sbox_rs1 = 193
+  RVTEST_TESTDATA_LOAD_INT(x3, x22) # load rs1: x22 = 0xc1c1c1c1c1c1c1c1
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b193:
+  aes64ks1i x12, x22, 8 # perform operation
+  # Check if x12 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x12, Zkne_aes64ks1i_cg_cp_sbox_rs1_b193, Zkne_aes64ks1i_cg_cp_sbox_rs1_b193_str)
+
+# Testcase cp_sbox_rs1 = 194
+  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load rs1: x27 = 0xc2c2c2c2c2c2c2c2
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b194:
+  aes64ks1i x19, x27, 7 # perform operation
+  # Check if x19 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x19, Zkne_aes64ks1i_cg_cp_sbox_rs1_b194, Zkne_aes64ks1i_cg_cp_sbox_rs1_b194_str)
+
+# Testcase cp_sbox_rs1 = 195
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0xc3c3c3c3c3c3c3c3
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b195:
+  aes64ks1i x31, x26, 0 # perform operation
+  # Check if x31 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x31, Zkne_aes64ks1i_cg_cp_sbox_rs1_b195, Zkne_aes64ks1i_cg_cp_sbox_rs1_b195_str)
+
+# Testcase cp_sbox_rs1 = 196
+  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs1: x29 = 0xc4c4c4c4c4c4c4c4
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b196:
+  aes64ks1i x1, x29, 4 # perform operation
+  # Check if x1 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x1, Zkne_aes64ks1i_cg_cp_sbox_rs1_b196, Zkne_aes64ks1i_cg_cp_sbox_rs1_b196_str)
+
+# Testcase cp_sbox_rs1 = 197
+  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0xc5c5c5c5c5c5c5c5
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b197:
+  aes64ks1i x11, x17, 8 # perform operation
+  # Check if x11 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x11, Zkne_aes64ks1i_cg_cp_sbox_rs1_b197, Zkne_aes64ks1i_cg_cp_sbox_rs1_b197_str)
+
+# Testcase cp_sbox_rs1 = 198
+  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0xc6c6c6c6c6c6c6c6
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b198:
+  aes64ks1i x18, x2, 3 # perform operation
+  # Check if x18 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x18, Zkne_aes64ks1i_cg_cp_sbox_rs1_b198, Zkne_aes64ks1i_cg_cp_sbox_rs1_b198_str)
+
+# Testcase cp_sbox_rs1 = 199
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs1: x14 = 0xc7c7c7c7c7c7c7c7
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b199:
+  aes64ks1i x21, x14, 5 # perform operation
+  # Check if x21 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x21, Zkne_aes64ks1i_cg_cp_sbox_rs1_b199, Zkne_aes64ks1i_cg_cp_sbox_rs1_b199_str)
+
+# Testcase cp_sbox_rs1 = 200
+  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs1: x28 = 0xc8c8c8c8c8c8c8c8
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b200:
+  aes64ks1i x22, x28, 9 # perform operation
+  # Check if x22 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x22, Zkne_aes64ks1i_cg_cp_sbox_rs1_b200, Zkne_aes64ks1i_cg_cp_sbox_rs1_b200_str)
+
+# Testcase cp_sbox_rs1 = 201
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0xc9c9c9c9c9c9c9c9
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b201:
+  aes64ks1i x24, x26, 3 # perform operation
+  # Check if x24 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x24, Zkne_aes64ks1i_cg_cp_sbox_rs1_b201, Zkne_aes64ks1i_cg_cp_sbox_rs1_b201_str)
+
+# Testcase cp_sbox_rs1 = 202
+  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0xcacacacacacacaca
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b202:
+  aes64ks1i x22, x18, 4 # perform operation
+  # Check if x22 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x22, Zkne_aes64ks1i_cg_cp_sbox_rs1_b202, Zkne_aes64ks1i_cg_cp_sbox_rs1_b202_str)
+
+# Testcase cp_sbox_rs1 = 203
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs1: x12 = 0xcbcbcbcbcbcbcbcb
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b203:
+  aes64ks1i x19, x12, 3 # perform operation
+  # Check if x19 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x19, Zkne_aes64ks1i_cg_cp_sbox_rs1_b203, Zkne_aes64ks1i_cg_cp_sbox_rs1_b203_str)
+
+# Testcase cp_sbox_rs1 = 204
+  RVTEST_TESTDATA_LOAD_INT(x3, x23) # load rs1: x23 = 0xcccccccccccccccc
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b204:
+  aes64ks1i x15, x23, 0 # perform operation
+  # Check if x15 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x15, Zkne_aes64ks1i_cg_cp_sbox_rs1_b204, Zkne_aes64ks1i_cg_cp_sbox_rs1_b204_str)
+
+# Testcase cp_sbox_rs1 = 205
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs1: x12 = 0xcdcdcdcdcdcdcdcd
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b205:
+  aes64ks1i x30, x12, 2 # perform operation
+  # Check if x30 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x30, Zkne_aes64ks1i_cg_cp_sbox_rs1_b205, Zkne_aes64ks1i_cg_cp_sbox_rs1_b205_str)
+
+# Testcase cp_sbox_rs1 = 206
+  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs1: x29 = 0xcececececececece
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b206:
+  aes64ks1i x24, x29, 3 # perform operation
+  # Check if x24 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x24, Zkne_aes64ks1i_cg_cp_sbox_rs1_b206, Zkne_aes64ks1i_cg_cp_sbox_rs1_b206_str)
+
+# Testcase cp_sbox_rs1 = 207
+  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load rs1: x6 = 0xcfcfcfcfcfcfcfcf
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b207:
+  aes64ks1i x29, x6, 8 # perform operation
+  # Check if x29 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x29, Zkne_aes64ks1i_cg_cp_sbox_rs1_b207, Zkne_aes64ks1i_cg_cp_sbox_rs1_b207_str)
+
+# Testcase cp_sbox_rs1 = 208
+  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load rs1: x6 = 0xd0d0d0d0d0d0d0d0
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b208:
+  aes64ks1i x1, x6, 0 # perform operation
+  # Check if x1 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x1, Zkne_aes64ks1i_cg_cp_sbox_rs1_b208, Zkne_aes64ks1i_cg_cp_sbox_rs1_b208_str)
+
+# Testcase cp_sbox_rs1 = 209
+  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0xd1d1d1d1d1d1d1d1
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b209:
+  aes64ks1i x14, x18, 9 # perform operation
+  # Check if x14 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x14, Zkne_aes64ks1i_cg_cp_sbox_rs1_b209, Zkne_aes64ks1i_cg_cp_sbox_rs1_b209_str)
+
+# Testcase cp_sbox_rs1 = 210
+  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load rs1: x19 = 0xd2d2d2d2d2d2d2d2
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b210:
+  aes64ks1i x28, x19, 9 # perform operation
+  # Check if x28 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x28, Zkne_aes64ks1i_cg_cp_sbox_rs1_b210, Zkne_aes64ks1i_cg_cp_sbox_rs1_b210_str)
+
+# Testcase cp_sbox_rs1 = 211
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load rs1: x8 = 0xd3d3d3d3d3d3d3d3
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b211:
+  aes64ks1i x13, x8, 5 # perform operation
+  # Check if x13 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x13, Zkne_aes64ks1i_cg_cp_sbox_rs1_b211, Zkne_aes64ks1i_cg_cp_sbox_rs1_b211_str)
+
+# Testcase cp_sbox_rs1 = 212
+  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0xd4d4d4d4d4d4d4d4
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b212:
+  aes64ks1i x29, x18, 7 # perform operation
+  # Check if x29 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x29, Zkne_aes64ks1i_cg_cp_sbox_rs1_b212, Zkne_aes64ks1i_cg_cp_sbox_rs1_b212_str)
+
+# Testcase cp_sbox_rs1 = 213
+  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs1: x25 = 0xd5d5d5d5d5d5d5d5
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b213:
+  aes64ks1i x22, x25, 0 # perform operation
+  # Check if x22 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x22, Zkne_aes64ks1i_cg_cp_sbox_rs1_b213, Zkne_aes64ks1i_cg_cp_sbox_rs1_b213_str)
+
+# Testcase cp_sbox_rs1 = 214
+  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load rs1: x7 = 0xd6d6d6d6d6d6d6d6
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b214:
+  aes64ks1i x14, x7, 9 # perform operation
+  # Check if x14 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x14, Zkne_aes64ks1i_cg_cp_sbox_rs1_b214, Zkne_aes64ks1i_cg_cp_sbox_rs1_b214_str)
+
+# Testcase cp_sbox_rs1 = 215
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0xd7d7d7d7d7d7d7d7
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b215:
+  aes64ks1i x21, x1, 1 # perform operation
+  # Check if x21 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x21, Zkne_aes64ks1i_cg_cp_sbox_rs1_b215, Zkne_aes64ks1i_cg_cp_sbox_rs1_b215_str)
+
+# Testcase cp_sbox_rs1 = 216
+  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load rs1: x7 = 0xd8d8d8d8d8d8d8d8
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b216:
+  aes64ks1i x19, x7, 5 # perform operation
+  # Check if x19 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x19, Zkne_aes64ks1i_cg_cp_sbox_rs1_b216, Zkne_aes64ks1i_cg_cp_sbox_rs1_b216_str)
+
+# Testcase cp_sbox_rs1 = 217
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs1: x11 = 0xd9d9d9d9d9d9d9d9
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b217:
+  aes64ks1i x21, x11, 8 # perform operation
+  # Check if x21 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x21, Zkne_aes64ks1i_cg_cp_sbox_rs1_b217, Zkne_aes64ks1i_cg_cp_sbox_rs1_b217_str)
+
+# Testcase cp_sbox_rs1 = 218
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0xdadadadadadadada
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b218:
+  aes64ks1i x18, x10, 2 # perform operation
+  # Check if x18 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x18, Zkne_aes64ks1i_cg_cp_sbox_rs1_b218, Zkne_aes64ks1i_cg_cp_sbox_rs1_b218_str)
+
+# Testcase cp_sbox_rs1 = 219
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs1: x15 = 0xdbdbdbdbdbdbdbdb
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b219:
+  aes64ks1i x11, x15, 4 # perform operation
+  # Check if x11 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x11, Zkne_aes64ks1i_cg_cp_sbox_rs1_b219, Zkne_aes64ks1i_cg_cp_sbox_rs1_b219_str)
+
+# Testcase cp_sbox_rs1 = 220
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load rs1: x8 = 0xdcdcdcdcdcdcdcdc
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b220:
+  aes64ks1i x10, x8, 6 # perform operation
+  # Check if x10 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x10, Zkne_aes64ks1i_cg_cp_sbox_rs1_b220, Zkne_aes64ks1i_cg_cp_sbox_rs1_b220_str)
+
+# Testcase cp_sbox_rs1 = 221
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs1: x9 = 0xdddddddddddddddd
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b221:
+  aes64ks1i x6, x9, 8 # perform operation
+  # Check if x6 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x6, Zkne_aes64ks1i_cg_cp_sbox_rs1_b221, Zkne_aes64ks1i_cg_cp_sbox_rs1_b221_str)
+
+# Testcase cp_sbox_rs1 = 222
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs1: x14 = 0xdededededededede
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b222:
+  aes64ks1i x30, x14, 9 # perform operation
+  # Check if x30 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x30, Zkne_aes64ks1i_cg_cp_sbox_rs1_b222, Zkne_aes64ks1i_cg_cp_sbox_rs1_b222_str)
+
+# Testcase cp_sbox_rs1 = 223
+  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0xdfdfdfdfdfdfdfdf
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b223:
+  aes64ks1i x19, x17, 7 # perform operation
+  # Check if x19 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x19, Zkne_aes64ks1i_cg_cp_sbox_rs1_b223, Zkne_aes64ks1i_cg_cp_sbox_rs1_b223_str)
+
+# Testcase cp_sbox_rs1 = 224
+  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs1: x24 = 0xe0e0e0e0e0e0e0e0
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b224:
+  aes64ks1i x28, x24, 0 # perform operation
+  # Check if x28 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x28, Zkne_aes64ks1i_cg_cp_sbox_rs1_b224, Zkne_aes64ks1i_cg_cp_sbox_rs1_b224_str)
+
+# Testcase cp_sbox_rs1 = 225
+  RVTEST_TESTDATA_LOAD_INT(x3, x23) # load rs1: x23 = 0xe1e1e1e1e1e1e1e1
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b225:
+  aes64ks1i x8, x23, 10 # perform operation
+  # Check if x8 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x8, Zkne_aes64ks1i_cg_cp_sbox_rs1_b225, Zkne_aes64ks1i_cg_cp_sbox_rs1_b225_str)
+
+# Testcase cp_sbox_rs1 = 226
+  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0xe2e2e2e2e2e2e2e2
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b226:
+  aes64ks1i x30, x17, 9 # perform operation
+  # Check if x30 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x30, Zkne_aes64ks1i_cg_cp_sbox_rs1_b226, Zkne_aes64ks1i_cg_cp_sbox_rs1_b226_str)
+
+# Testcase cp_sbox_rs1 = 227
+  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs1: x24 = 0xe3e3e3e3e3e3e3e3
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b227:
+  aes64ks1i x21, x24, 2 # perform operation
+  # Check if x21 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x21, Zkne_aes64ks1i_cg_cp_sbox_rs1_b227, Zkne_aes64ks1i_cg_cp_sbox_rs1_b227_str)
+
+# Testcase cp_sbox_rs1 = 228
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0xe4e4e4e4e4e4e4e4
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b228:
+  aes64ks1i x7, x10, 2 # perform operation
+  # Check if x7 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x7, Zkne_aes64ks1i_cg_cp_sbox_rs1_b228, Zkne_aes64ks1i_cg_cp_sbox_rs1_b228_str)
+
+# Testcase cp_sbox_rs1 = 229
+  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs1: x20 = 0xe5e5e5e5e5e5e5e5
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b229:
+  aes64ks1i x30, x20, 0 # perform operation
+  # Check if x30 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x30, Zkne_aes64ks1i_cg_cp_sbox_rs1_b229, Zkne_aes64ks1i_cg_cp_sbox_rs1_b229_str)
+
+# Testcase cp_sbox_rs1 = 230
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0xe6e6e6e6e6e6e6e6
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b230:
+  aes64ks1i x15, x26, 1 # perform operation
+  # Check if x15 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x15, Zkne_aes64ks1i_cg_cp_sbox_rs1_b230, Zkne_aes64ks1i_cg_cp_sbox_rs1_b230_str)
+
+# Testcase cp_sbox_rs1 = 231
+  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs1: x29 = 0xe7e7e7e7e7e7e7e7
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b231:
+  aes64ks1i x10, x29, 7 # perform operation
+  # Check if x10 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x10, Zkne_aes64ks1i_cg_cp_sbox_rs1_b231, Zkne_aes64ks1i_cg_cp_sbox_rs1_b231_str)
+
+# Testcase cp_sbox_rs1 = 232
+  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load rs1: x27 = 0xe8e8e8e8e8e8e8e8
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b232:
+  aes64ks1i x18, x27, 5 # perform operation
+  # Check if x18 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x18, Zkne_aes64ks1i_cg_cp_sbox_rs1_b232, Zkne_aes64ks1i_cg_cp_sbox_rs1_b232_str)
+
+# Testcase cp_sbox_rs1 = 233
+  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load rs1: x19 = 0xe9e9e9e9e9e9e9e9
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b233:
+  aes64ks1i x23, x19, 9 # perform operation
+  # Check if x23 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x23, Zkne_aes64ks1i_cg_cp_sbox_rs1_b233, Zkne_aes64ks1i_cg_cp_sbox_rs1_b233_str)
+
+# Testcase cp_sbox_rs1 = 234
+  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0xeaeaeaeaeaeaeaea
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b234:
+  aes64ks1i x20, x2, 10 # perform operation
+  # Check if x20 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x20, Zkne_aes64ks1i_cg_cp_sbox_rs1_b234, Zkne_aes64ks1i_cg_cp_sbox_rs1_b234_str)
+
+# Testcase cp_sbox_rs1 = 235
+  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load rs1: x7 = 0xebebebebebebebeb
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b235:
+  aes64ks1i x21, x7, 0 # perform operation
+  # Check if x21 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x21, Zkne_aes64ks1i_cg_cp_sbox_rs1_b235, Zkne_aes64ks1i_cg_cp_sbox_rs1_b235_str)
+
+# Testcase cp_sbox_rs1 = 236
+  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load rs1: x27 = 0xecececececececec
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b236:
+  aes64ks1i x9, x27, 0 # perform operation
+  # Check if x9 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x9, Zkne_aes64ks1i_cg_cp_sbox_rs1_b236, Zkne_aes64ks1i_cg_cp_sbox_rs1_b236_str)
+
+# Testcase cp_sbox_rs1 = 237
+  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs1: x31 = 0xedededededededed
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b237:
+  aes64ks1i x19, x31, 8 # perform operation
+  # Check if x19 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x19, Zkne_aes64ks1i_cg_cp_sbox_rs1_b237, Zkne_aes64ks1i_cg_cp_sbox_rs1_b237_str)
+
+# Testcase cp_sbox_rs1 = 238
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0xeeeeeeeeeeeeeeee
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b238:
+  aes64ks1i x12, x10, 9 # perform operation
+  # Check if x12 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x12, Zkne_aes64ks1i_cg_cp_sbox_rs1_b238, Zkne_aes64ks1i_cg_cp_sbox_rs1_b238_str)
+
+# Testcase cp_sbox_rs1 = 239
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0xefefefefefefefef
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b239:
+  aes64ks1i x22, x26, 4 # perform operation
+  # Check if x22 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x22, Zkne_aes64ks1i_cg_cp_sbox_rs1_b239, Zkne_aes64ks1i_cg_cp_sbox_rs1_b239_str)
+
+# Testcase cp_sbox_rs1 = 240
+  RVTEST_TESTDATA_LOAD_INT(x3, x22) # load rs1: x22 = 0xf0f0f0f0f0f0f0f0
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b240:
+  aes64ks1i x17, x22, 6 # perform operation
+  # Check if x17 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x17, Zkne_aes64ks1i_cg_cp_sbox_rs1_b240, Zkne_aes64ks1i_cg_cp_sbox_rs1_b240_str)
+
+# Testcase cp_sbox_rs1 = 241
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0xf1f1f1f1f1f1f1f1
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b241:
+  aes64ks1i x20, x26, 7 # perform operation
+  # Check if x20 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x20, Zkne_aes64ks1i_cg_cp_sbox_rs1_b241, Zkne_aes64ks1i_cg_cp_sbox_rs1_b241_str)
+
+# Testcase cp_sbox_rs1 = 242
+  RVTEST_TESTDATA_LOAD_INT(x3, x22) # load rs1: x22 = 0xf2f2f2f2f2f2f2f2
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b242:
+  aes64ks1i x27, x22, 10 # perform operation
+  # Check if x27 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x27, Zkne_aes64ks1i_cg_cp_sbox_rs1_b242, Zkne_aes64ks1i_cg_cp_sbox_rs1_b242_str)
+
+# Testcase cp_sbox_rs1 = 243
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs1: x12 = 0xf3f3f3f3f3f3f3f3
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b243:
+  aes64ks1i x17, x12, 8 # perform operation
+  # Check if x17 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x17, Zkne_aes64ks1i_cg_cp_sbox_rs1_b243, Zkne_aes64ks1i_cg_cp_sbox_rs1_b243_str)
+
+# Testcase cp_sbox_rs1 = 244
+  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs1: x28 = 0xf4f4f4f4f4f4f4f4
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b244:
+  aes64ks1i x29, x28, 4 # perform operation
+  # Check if x29 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x29, Zkne_aes64ks1i_cg_cp_sbox_rs1_b244, Zkne_aes64ks1i_cg_cp_sbox_rs1_b244_str)
+
+# Testcase cp_sbox_rs1 = 245
+  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs1: x28 = 0xf5f5f5f5f5f5f5f5
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b245:
+  aes64ks1i x26, x28, 5 # perform operation
+  # Check if x26 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x26, Zkne_aes64ks1i_cg_cp_sbox_rs1_b245, Zkne_aes64ks1i_cg_cp_sbox_rs1_b245_str)
+
+# Testcase cp_sbox_rs1 = 246
+  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs1: x28 = 0xf6f6f6f6f6f6f6f6
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b246:
+  aes64ks1i x26, x28, 3 # perform operation
+  # Check if x26 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x26, Zkne_aes64ks1i_cg_cp_sbox_rs1_b246, Zkne_aes64ks1i_cg_cp_sbox_rs1_b246_str)
+
+# Testcase cp_sbox_rs1 = 247
+  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0xf7f7f7f7f7f7f7f7
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b247:
+  aes64ks1i x20, x18, 6 # perform operation
+  # Check if x20 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x20, Zkne_aes64ks1i_cg_cp_sbox_rs1_b247, Zkne_aes64ks1i_cg_cp_sbox_rs1_b247_str)
+
+# Testcase cp_sbox_rs1 = 248
+  RVTEST_TESTDATA_LOAD_INT(x3, x23) # load rs1: x23 = 0xf8f8f8f8f8f8f8f8
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b248:
+  aes64ks1i x1, x23, 10 # perform operation
+  # Check if x1 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x1, Zkne_aes64ks1i_cg_cp_sbox_rs1_b248, Zkne_aes64ks1i_cg_cp_sbox_rs1_b248_str)
+
+# Testcase cp_sbox_rs1 = 249
+  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs1: x30 = 0xf9f9f9f9f9f9f9f9
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b249:
+  aes64ks1i x9, x30, 7 # perform operation
+  # Check if x9 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x9, Zkne_aes64ks1i_cg_cp_sbox_rs1_b249, Zkne_aes64ks1i_cg_cp_sbox_rs1_b249_str)
+
+# Testcase cp_sbox_rs1 = 250
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load rs1: x8 = 0xfafafafafafafafa
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b250:
+  aes64ks1i x28, x8, 8 # perform operation
+  # Check if x28 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x28, Zkne_aes64ks1i_cg_cp_sbox_rs1_b250, Zkne_aes64ks1i_cg_cp_sbox_rs1_b250_str)
+
+# Testcase cp_sbox_rs1 = 251
+  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs1: x24 = 0xfbfbfbfbfbfbfbfb
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b251:
+  aes64ks1i x22, x24, 2 # perform operation
+  # Check if x22 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x22, Zkne_aes64ks1i_cg_cp_sbox_rs1_b251, Zkne_aes64ks1i_cg_cp_sbox_rs1_b251_str)
+
+# Testcase cp_sbox_rs1 = 252
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0xfcfcfcfcfcfcfcfc
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b252:
+  aes64ks1i x24, x26, 10 # perform operation
+  # Check if x24 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x24, Zkne_aes64ks1i_cg_cp_sbox_rs1_b252, Zkne_aes64ks1i_cg_cp_sbox_rs1_b252_str)
+
+# Testcase cp_sbox_rs1 = 253
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load rs1: x8 = 0xfdfdfdfdfdfdfdfd
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b253:
+  aes64ks1i x27, x8, 7 # perform operation
+  # Check if x27 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x27, Zkne_aes64ks1i_cg_cp_sbox_rs1_b253, Zkne_aes64ks1i_cg_cp_sbox_rs1_b253_str)
+
+# Testcase cp_sbox_rs1 = 254
+  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load rs1: x27 = 0xfefefefefefefefe
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b254:
+  aes64ks1i x9, x27, 8 # perform operation
+  # Check if x9 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x9, Zkne_aes64ks1i_cg_cp_sbox_rs1_b254, Zkne_aes64ks1i_cg_cp_sbox_rs1_b254_str)
+
+# Testcase cp_sbox_rs1 = 255
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0xffffffffffffffff
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b255:
+  aes64ks1i x14, x26, 7 # perform operation
+  # Check if x14 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x14, Zkne_aes64ks1i_cg_cp_sbox_rs1_b255, Zkne_aes64ks1i_cg_cp_sbox_rs1_b255_str)
+
   mv x2, x16 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -1067,6 +2863,262 @@ RVTEST_DATA_BEGIN
 .dword 0x688b71252c03b182
 .dword 0xf5414f06a265a6b6
 .dword 0x6f135407eb2e44e5
+.dword 0x0000000000000000
+.dword 0x0101010101010101
+.dword 0x0202020202020202
+.dword 0x0303030303030303
+.dword 0x0404040404040404
+.dword 0x0505050505050505
+.dword 0x0606060606060606
+.dword 0x0707070707070707
+.dword 0x0808080808080808
+.dword 0x0909090909090909
+.dword 0x0a0a0a0a0a0a0a0a
+.dword 0x0b0b0b0b0b0b0b0b
+.dword 0x0c0c0c0c0c0c0c0c
+.dword 0x0d0d0d0d0d0d0d0d
+.dword 0x0e0e0e0e0e0e0e0e
+.dword 0x0f0f0f0f0f0f0f0f
+.dword 0x1010101010101010
+.dword 0x1111111111111111
+.dword 0x1212121212121212
+.dword 0x1313131313131313
+.dword 0x1414141414141414
+.dword 0x1515151515151515
+.dword 0x1616161616161616
+.dword 0x1717171717171717
+.dword 0x1818181818181818
+.dword 0x1919191919191919
+.dword 0x1a1a1a1a1a1a1a1a
+.dword 0x1b1b1b1b1b1b1b1b
+.dword 0x1c1c1c1c1c1c1c1c
+.dword 0x1d1d1d1d1d1d1d1d
+.dword 0x1e1e1e1e1e1e1e1e
+.dword 0x1f1f1f1f1f1f1f1f
+.dword 0x2020202020202020
+.dword 0x2121212121212121
+.dword 0x2222222222222222
+.dword 0x2323232323232323
+.dword 0x2424242424242424
+.dword 0x2525252525252525
+.dword 0x2626262626262626
+.dword 0x2727272727272727
+.dword 0x2828282828282828
+.dword 0x2929292929292929
+.dword 0x2a2a2a2a2a2a2a2a
+.dword 0x2b2b2b2b2b2b2b2b
+.dword 0x2c2c2c2c2c2c2c2c
+.dword 0x2d2d2d2d2d2d2d2d
+.dword 0x2e2e2e2e2e2e2e2e
+.dword 0x2f2f2f2f2f2f2f2f
+.dword 0x3030303030303030
+.dword 0x3131313131313131
+.dword 0x3232323232323232
+.dword 0x3333333333333333
+.dword 0x3434343434343434
+.dword 0x3535353535353535
+.dword 0x3636363636363636
+.dword 0x3737373737373737
+.dword 0x3838383838383838
+.dword 0x3939393939393939
+.dword 0x3a3a3a3a3a3a3a3a
+.dword 0x3b3b3b3b3b3b3b3b
+.dword 0x3c3c3c3c3c3c3c3c
+.dword 0x3d3d3d3d3d3d3d3d
+.dword 0x3e3e3e3e3e3e3e3e
+.dword 0x3f3f3f3f3f3f3f3f
+.dword 0x4040404040404040
+.dword 0x4141414141414141
+.dword 0x4242424242424242
+.dword 0x4343434343434343
+.dword 0x4444444444444444
+.dword 0x4545454545454545
+.dword 0x4646464646464646
+.dword 0x4747474747474747
+.dword 0x4848484848484848
+.dword 0x4949494949494949
+.dword 0x4a4a4a4a4a4a4a4a
+.dword 0x4b4b4b4b4b4b4b4b
+.dword 0x4c4c4c4c4c4c4c4c
+.dword 0x4d4d4d4d4d4d4d4d
+.dword 0x4e4e4e4e4e4e4e4e
+.dword 0x4f4f4f4f4f4f4f4f
+.dword 0x5050505050505050
+.dword 0x5151515151515151
+.dword 0x5252525252525252
+.dword 0x5353535353535353
+.dword 0x5454545454545454
+.dword 0x5555555555555555
+.dword 0x5656565656565656
+.dword 0x5757575757575757
+.dword 0x5858585858585858
+.dword 0x5959595959595959
+.dword 0x5a5a5a5a5a5a5a5a
+.dword 0x5b5b5b5b5b5b5b5b
+.dword 0x5c5c5c5c5c5c5c5c
+.dword 0x5d5d5d5d5d5d5d5d
+.dword 0x5e5e5e5e5e5e5e5e
+.dword 0x5f5f5f5f5f5f5f5f
+.dword 0x6060606060606060
+.dword 0x6161616161616161
+.dword 0x6262626262626262
+.dword 0x6363636363636363
+.dword 0x6464646464646464
+.dword 0x6565656565656565
+.dword 0x6666666666666666
+.dword 0x6767676767676767
+.dword 0x6868686868686868
+.dword 0x6969696969696969
+.dword 0x6a6a6a6a6a6a6a6a
+.dword 0x6b6b6b6b6b6b6b6b
+.dword 0x6c6c6c6c6c6c6c6c
+.dword 0x6d6d6d6d6d6d6d6d
+.dword 0x6e6e6e6e6e6e6e6e
+.dword 0x6f6f6f6f6f6f6f6f
+.dword 0x7070707070707070
+.dword 0x7171717171717171
+.dword 0x7272727272727272
+.dword 0x7373737373737373
+.dword 0x7474747474747474
+.dword 0x7575757575757575
+.dword 0x7676767676767676
+.dword 0x7777777777777777
+.dword 0x7878787878787878
+.dword 0x7979797979797979
+.dword 0x7a7a7a7a7a7a7a7a
+.dword 0x7b7b7b7b7b7b7b7b
+.dword 0x7c7c7c7c7c7c7c7c
+.dword 0x7d7d7d7d7d7d7d7d
+.dword 0x7e7e7e7e7e7e7e7e
+.dword 0x7f7f7f7f7f7f7f7f
+.dword 0x8080808080808080
+.dword 0x8181818181818181
+.dword 0x8282828282828282
+.dword 0x8383838383838383
+.dword 0x8484848484848484
+.dword 0x8585858585858585
+.dword 0x8686868686868686
+.dword 0x8787878787878787
+.dword 0x8888888888888888
+.dword 0x8989898989898989
+.dword 0x8a8a8a8a8a8a8a8a
+.dword 0x8b8b8b8b8b8b8b8b
+.dword 0x8c8c8c8c8c8c8c8c
+.dword 0x8d8d8d8d8d8d8d8d
+.dword 0x8e8e8e8e8e8e8e8e
+.dword 0x8f8f8f8f8f8f8f8f
+.dword 0x9090909090909090
+.dword 0x9191919191919191
+.dword 0x9292929292929292
+.dword 0x9393939393939393
+.dword 0x9494949494949494
+.dword 0x9595959595959595
+.dword 0x9696969696969696
+.dword 0x9797979797979797
+.dword 0x9898989898989898
+.dword 0x9999999999999999
+.dword 0x9a9a9a9a9a9a9a9a
+.dword 0x9b9b9b9b9b9b9b9b
+.dword 0x9c9c9c9c9c9c9c9c
+.dword 0x9d9d9d9d9d9d9d9d
+.dword 0x9e9e9e9e9e9e9e9e
+.dword 0x9f9f9f9f9f9f9f9f
+.dword 0xa0a0a0a0a0a0a0a0
+.dword 0xa1a1a1a1a1a1a1a1
+.dword 0xa2a2a2a2a2a2a2a2
+.dword 0xa3a3a3a3a3a3a3a3
+.dword 0xa4a4a4a4a4a4a4a4
+.dword 0xa5a5a5a5a5a5a5a5
+.dword 0xa6a6a6a6a6a6a6a6
+.dword 0xa7a7a7a7a7a7a7a7
+.dword 0xa8a8a8a8a8a8a8a8
+.dword 0xa9a9a9a9a9a9a9a9
+.dword 0xaaaaaaaaaaaaaaaa
+.dword 0xabababababababab
+.dword 0xacacacacacacacac
+.dword 0xadadadadadadadad
+.dword 0xaeaeaeaeaeaeaeae
+.dword 0xafafafafafafafaf
+.dword 0xb0b0b0b0b0b0b0b0
+.dword 0xb1b1b1b1b1b1b1b1
+.dword 0xb2b2b2b2b2b2b2b2
+.dword 0xb3b3b3b3b3b3b3b3
+.dword 0xb4b4b4b4b4b4b4b4
+.dword 0xb5b5b5b5b5b5b5b5
+.dword 0xb6b6b6b6b6b6b6b6
+.dword 0xb7b7b7b7b7b7b7b7
+.dword 0xb8b8b8b8b8b8b8b8
+.dword 0xb9b9b9b9b9b9b9b9
+.dword 0xbabababababababa
+.dword 0xbbbbbbbbbbbbbbbb
+.dword 0xbcbcbcbcbcbcbcbc
+.dword 0xbdbdbdbdbdbdbdbd
+.dword 0xbebebebebebebebe
+.dword 0xbfbfbfbfbfbfbfbf
+.dword 0xc0c0c0c0c0c0c0c0
+.dword 0xc1c1c1c1c1c1c1c1
+.dword 0xc2c2c2c2c2c2c2c2
+.dword 0xc3c3c3c3c3c3c3c3
+.dword 0xc4c4c4c4c4c4c4c4
+.dword 0xc5c5c5c5c5c5c5c5
+.dword 0xc6c6c6c6c6c6c6c6
+.dword 0xc7c7c7c7c7c7c7c7
+.dword 0xc8c8c8c8c8c8c8c8
+.dword 0xc9c9c9c9c9c9c9c9
+.dword 0xcacacacacacacaca
+.dword 0xcbcbcbcbcbcbcbcb
+.dword 0xcccccccccccccccc
+.dword 0xcdcdcdcdcdcdcdcd
+.dword 0xcececececececece
+.dword 0xcfcfcfcfcfcfcfcf
+.dword 0xd0d0d0d0d0d0d0d0
+.dword 0xd1d1d1d1d1d1d1d1
+.dword 0xd2d2d2d2d2d2d2d2
+.dword 0xd3d3d3d3d3d3d3d3
+.dword 0xd4d4d4d4d4d4d4d4
+.dword 0xd5d5d5d5d5d5d5d5
+.dword 0xd6d6d6d6d6d6d6d6
+.dword 0xd7d7d7d7d7d7d7d7
+.dword 0xd8d8d8d8d8d8d8d8
+.dword 0xd9d9d9d9d9d9d9d9
+.dword 0xdadadadadadadada
+.dword 0xdbdbdbdbdbdbdbdb
+.dword 0xdcdcdcdcdcdcdcdc
+.dword 0xdddddddddddddddd
+.dword 0xdededededededede
+.dword 0xdfdfdfdfdfdfdfdf
+.dword 0xe0e0e0e0e0e0e0e0
+.dword 0xe1e1e1e1e1e1e1e1
+.dword 0xe2e2e2e2e2e2e2e2
+.dword 0xe3e3e3e3e3e3e3e3
+.dword 0xe4e4e4e4e4e4e4e4
+.dword 0xe5e5e5e5e5e5e5e5
+.dword 0xe6e6e6e6e6e6e6e6
+.dword 0xe7e7e7e7e7e7e7e7
+.dword 0xe8e8e8e8e8e8e8e8
+.dword 0xe9e9e9e9e9e9e9e9
+.dword 0xeaeaeaeaeaeaeaea
+.dword 0xebebebebebebebeb
+.dword 0xecececececececec
+.dword 0xedededededededed
+.dword 0xeeeeeeeeeeeeeeee
+.dword 0xefefefefefefefef
+.dword 0xf0f0f0f0f0f0f0f0
+.dword 0xf1f1f1f1f1f1f1f1
+.dword 0xf2f2f2f2f2f2f2f2
+.dword 0xf3f3f3f3f3f3f3f3
+.dword 0xf4f4f4f4f4f4f4f4
+.dword 0xf5f5f5f5f5f5f5f5
+.dword 0xf6f6f6f6f6f6f6f6
+.dword 0xf7f7f7f7f7f7f7f7
+.dword 0xf8f8f8f8f8f8f8f8
+.dword 0xf9f9f9f9f9f9f9f9
+.dword 0xfafafafafafafafa
+.dword 0xfbfbfbfbfbfbfbfb
+.dword 0xfcfcfcfcfcfcfcfc
+.dword 0xfdfdfdfdfdfdfdfd
+.dword 0xfefefefefefefefe
+.dword 0xffffffffffffffff
 
 // Testcase strings
 Zkne_aes64ks1i_cg_cp_rs1_b0_str: .string "\"test: 1; cg: Zkne_aes64ks1i_cg; cp: cp_rs1; bin: b0\""
@@ -1192,6 +3244,262 @@ Zkne_aes64ks1i_cg_cp_rnum_b7_str: .string "\"test: 120; cg: Zkne_aes64ks1i_cg; c
 Zkne_aes64ks1i_cg_cp_rnum_b8_str: .string "\"test: 121; cg: Zkne_aes64ks1i_cg; cp: cp_rnum; bin: b8\""
 Zkne_aes64ks1i_cg_cp_rnum_b9_str: .string "\"test: 122; cg: Zkne_aes64ks1i_cg; cp: cp_rnum; bin: b9\""
 Zkne_aes64ks1i_cg_cp_rnum_b10_str: .string "\"test: 123; cg: Zkne_aes64ks1i_cg; cp: cp_rnum; bin: b10\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b0_str: .string "\"test: 124; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b0\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b1_str: .string "\"test: 125; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b1\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b2_str: .string "\"test: 126; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b2\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b3_str: .string "\"test: 127; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b3\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b4_str: .string "\"test: 128; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b4\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b5_str: .string "\"test: 129; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b5\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b6_str: .string "\"test: 130; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b6\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b7_str: .string "\"test: 131; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b7\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b8_str: .string "\"test: 132; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b8\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b9_str: .string "\"test: 133; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b9\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b10_str: .string "\"test: 134; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b10\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b11_str: .string "\"test: 135; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b11\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b12_str: .string "\"test: 136; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b12\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b13_str: .string "\"test: 137; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b13\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b14_str: .string "\"test: 138; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b14\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b15_str: .string "\"test: 139; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b15\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b16_str: .string "\"test: 140; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b16\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b17_str: .string "\"test: 141; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b17\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b18_str: .string "\"test: 142; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b18\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b19_str: .string "\"test: 143; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b19\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b20_str: .string "\"test: 144; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b20\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b21_str: .string "\"test: 145; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b21\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b22_str: .string "\"test: 146; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b22\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b23_str: .string "\"test: 147; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b23\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b24_str: .string "\"test: 148; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b24\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b25_str: .string "\"test: 149; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b25\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b26_str: .string "\"test: 150; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b26\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b27_str: .string "\"test: 151; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b27\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b28_str: .string "\"test: 152; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b28\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b29_str: .string "\"test: 153; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b29\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b30_str: .string "\"test: 154; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b30\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b31_str: .string "\"test: 155; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b31\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b32_str: .string "\"test: 156; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b32\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b33_str: .string "\"test: 157; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b33\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b34_str: .string "\"test: 158; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b34\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b35_str: .string "\"test: 159; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b35\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b36_str: .string "\"test: 160; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b36\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b37_str: .string "\"test: 161; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b37\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b38_str: .string "\"test: 162; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b38\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b39_str: .string "\"test: 163; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b39\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b40_str: .string "\"test: 164; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b40\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b41_str: .string "\"test: 165; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b41\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b42_str: .string "\"test: 166; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b42\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b43_str: .string "\"test: 167; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b43\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b44_str: .string "\"test: 168; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b44\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b45_str: .string "\"test: 169; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b45\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b46_str: .string "\"test: 170; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b46\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b47_str: .string "\"test: 171; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b47\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b48_str: .string "\"test: 172; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b48\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b49_str: .string "\"test: 173; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b49\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b50_str: .string "\"test: 174; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b50\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b51_str: .string "\"test: 175; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b51\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b52_str: .string "\"test: 176; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b52\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b53_str: .string "\"test: 177; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b53\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b54_str: .string "\"test: 178; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b54\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b55_str: .string "\"test: 179; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b55\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b56_str: .string "\"test: 180; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b56\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b57_str: .string "\"test: 181; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b57\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b58_str: .string "\"test: 182; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b58\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b59_str: .string "\"test: 183; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b59\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b60_str: .string "\"test: 184; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b60\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b61_str: .string "\"test: 185; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b61\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b62_str: .string "\"test: 186; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b62\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b63_str: .string "\"test: 187; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b63\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b64_str: .string "\"test: 188; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b64\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b65_str: .string "\"test: 189; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b65\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b66_str: .string "\"test: 190; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b66\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b67_str: .string "\"test: 191; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b67\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b68_str: .string "\"test: 192; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b68\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b69_str: .string "\"test: 193; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b69\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b70_str: .string "\"test: 194; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b70\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b71_str: .string "\"test: 195; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b71\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b72_str: .string "\"test: 196; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b72\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b73_str: .string "\"test: 197; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b73\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b74_str: .string "\"test: 198; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b74\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b75_str: .string "\"test: 199; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b75\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b76_str: .string "\"test: 200; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b76\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b77_str: .string "\"test: 201; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b77\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b78_str: .string "\"test: 202; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b78\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b79_str: .string "\"test: 203; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b79\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b80_str: .string "\"test: 204; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b80\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b81_str: .string "\"test: 205; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b81\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b82_str: .string "\"test: 206; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b82\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b83_str: .string "\"test: 207; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b83\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b84_str: .string "\"test: 208; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b84\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b85_str: .string "\"test: 209; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b85\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b86_str: .string "\"test: 210; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b86\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b87_str: .string "\"test: 211; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b87\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b88_str: .string "\"test: 212; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b88\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b89_str: .string "\"test: 213; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b89\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b90_str: .string "\"test: 214; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b90\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b91_str: .string "\"test: 215; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b91\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b92_str: .string "\"test: 216; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b92\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b93_str: .string "\"test: 217; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b93\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b94_str: .string "\"test: 218; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b94\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b95_str: .string "\"test: 219; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b95\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b96_str: .string "\"test: 220; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b96\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b97_str: .string "\"test: 221; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b97\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b98_str: .string "\"test: 222; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b98\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b99_str: .string "\"test: 223; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b99\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b100_str: .string "\"test: 224; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b100\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b101_str: .string "\"test: 225; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b101\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b102_str: .string "\"test: 226; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b102\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b103_str: .string "\"test: 227; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b103\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b104_str: .string "\"test: 228; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b104\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b105_str: .string "\"test: 229; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b105\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b106_str: .string "\"test: 230; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b106\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b107_str: .string "\"test: 231; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b107\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b108_str: .string "\"test: 232; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b108\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b109_str: .string "\"test: 233; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b109\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b110_str: .string "\"test: 234; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b110\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b111_str: .string "\"test: 235; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b111\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b112_str: .string "\"test: 236; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b112\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b113_str: .string "\"test: 237; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b113\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b114_str: .string "\"test: 238; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b114\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b115_str: .string "\"test: 239; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b115\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b116_str: .string "\"test: 240; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b116\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b117_str: .string "\"test: 241; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b117\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b118_str: .string "\"test: 242; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b118\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b119_str: .string "\"test: 243; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b119\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b120_str: .string "\"test: 244; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b120\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b121_str: .string "\"test: 245; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b121\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b122_str: .string "\"test: 246; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b122\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b123_str: .string "\"test: 247; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b123\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b124_str: .string "\"test: 248; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b124\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b125_str: .string "\"test: 249; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b125\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b126_str: .string "\"test: 250; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b126\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b127_str: .string "\"test: 251; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b127\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b128_str: .string "\"test: 252; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b128\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b129_str: .string "\"test: 253; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b129\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b130_str: .string "\"test: 254; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b130\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b131_str: .string "\"test: 255; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b131\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b132_str: .string "\"test: 256; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b132\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b133_str: .string "\"test: 257; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b133\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b134_str: .string "\"test: 258; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b134\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b135_str: .string "\"test: 259; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b135\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b136_str: .string "\"test: 260; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b136\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b137_str: .string "\"test: 261; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b137\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b138_str: .string "\"test: 262; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b138\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b139_str: .string "\"test: 263; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b139\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b140_str: .string "\"test: 264; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b140\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b141_str: .string "\"test: 265; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b141\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b142_str: .string "\"test: 266; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b142\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b143_str: .string "\"test: 267; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b143\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b144_str: .string "\"test: 268; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b144\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b145_str: .string "\"test: 269; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b145\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b146_str: .string "\"test: 270; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b146\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b147_str: .string "\"test: 271; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b147\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b148_str: .string "\"test: 272; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b148\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b149_str: .string "\"test: 273; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b149\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b150_str: .string "\"test: 274; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b150\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b151_str: .string "\"test: 275; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b151\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b152_str: .string "\"test: 276; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b152\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b153_str: .string "\"test: 277; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b153\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b154_str: .string "\"test: 278; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b154\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b155_str: .string "\"test: 279; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b155\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b156_str: .string "\"test: 280; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b156\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b157_str: .string "\"test: 281; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b157\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b158_str: .string "\"test: 282; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b158\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b159_str: .string "\"test: 283; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b159\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b160_str: .string "\"test: 284; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b160\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b161_str: .string "\"test: 285; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b161\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b162_str: .string "\"test: 286; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b162\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b163_str: .string "\"test: 287; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b163\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b164_str: .string "\"test: 288; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b164\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b165_str: .string "\"test: 289; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b165\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b166_str: .string "\"test: 290; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b166\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b167_str: .string "\"test: 291; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b167\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b168_str: .string "\"test: 292; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b168\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b169_str: .string "\"test: 293; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b169\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b170_str: .string "\"test: 294; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b170\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b171_str: .string "\"test: 295; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b171\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b172_str: .string "\"test: 296; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b172\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b173_str: .string "\"test: 297; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b173\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b174_str: .string "\"test: 298; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b174\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b175_str: .string "\"test: 299; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b175\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b176_str: .string "\"test: 300; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b176\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b177_str: .string "\"test: 301; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b177\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b178_str: .string "\"test: 302; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b178\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b179_str: .string "\"test: 303; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b179\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b180_str: .string "\"test: 304; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b180\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b181_str: .string "\"test: 305; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b181\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b182_str: .string "\"test: 306; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b182\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b183_str: .string "\"test: 307; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b183\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b184_str: .string "\"test: 308; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b184\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b185_str: .string "\"test: 309; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b185\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b186_str: .string "\"test: 310; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b186\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b187_str: .string "\"test: 311; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b187\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b188_str: .string "\"test: 312; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b188\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b189_str: .string "\"test: 313; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b189\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b190_str: .string "\"test: 314; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b190\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b191_str: .string "\"test: 315; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b191\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b192_str: .string "\"test: 316; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b192\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b193_str: .string "\"test: 317; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b193\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b194_str: .string "\"test: 318; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b194\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b195_str: .string "\"test: 319; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b195\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b196_str: .string "\"test: 320; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b196\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b197_str: .string "\"test: 321; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b197\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b198_str: .string "\"test: 322; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b198\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b199_str: .string "\"test: 323; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b199\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b200_str: .string "\"test: 324; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b200\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b201_str: .string "\"test: 325; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b201\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b202_str: .string "\"test: 326; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b202\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b203_str: .string "\"test: 327; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b203\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b204_str: .string "\"test: 328; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b204\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b205_str: .string "\"test: 329; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b205\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b206_str: .string "\"test: 330; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b206\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b207_str: .string "\"test: 331; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b207\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b208_str: .string "\"test: 332; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b208\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b209_str: .string "\"test: 333; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b209\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b210_str: .string "\"test: 334; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b210\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b211_str: .string "\"test: 335; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b211\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b212_str: .string "\"test: 336; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b212\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b213_str: .string "\"test: 337; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b213\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b214_str: .string "\"test: 338; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b214\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b215_str: .string "\"test: 339; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b215\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b216_str: .string "\"test: 340; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b216\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b217_str: .string "\"test: 341; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b217\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b218_str: .string "\"test: 342; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b218\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b219_str: .string "\"test: 343; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b219\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b220_str: .string "\"test: 344; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b220\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b221_str: .string "\"test: 345; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b221\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b222_str: .string "\"test: 346; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b222\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b223_str: .string "\"test: 347; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b223\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b224_str: .string "\"test: 348; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b224\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b225_str: .string "\"test: 349; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b225\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b226_str: .string "\"test: 350; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b226\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b227_str: .string "\"test: 351; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b227\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b228_str: .string "\"test: 352; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b228\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b229_str: .string "\"test: 353; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b229\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b230_str: .string "\"test: 354; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b230\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b231_str: .string "\"test: 355; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b231\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b232_str: .string "\"test: 356; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b232\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b233_str: .string "\"test: 357; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b233\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b234_str: .string "\"test: 358; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b234\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b235_str: .string "\"test: 359; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b235\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b236_str: .string "\"test: 360; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b236\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b237_str: .string "\"test: 361; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b237\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b238_str: .string "\"test: 362; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b238\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b239_str: .string "\"test: 363; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b239\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b240_str: .string "\"test: 364; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b240\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b241_str: .string "\"test: 365; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b241\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b242_str: .string "\"test: 366; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b242\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b243_str: .string "\"test: 367; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b243\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b244_str: .string "\"test: 368; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b244\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b245_str: .string "\"test: 369; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b245\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b246_str: .string "\"test: 370; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b246\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b247_str: .string "\"test: 371; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b247\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b248_str: .string "\"test: 372; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b248\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b249_str: .string "\"test: 373; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b249\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b250_str: .string "\"test: 374; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b250\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b251_str: .string "\"test: 375; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b251\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b252_str: .string "\"test: 376; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b252\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b253_str: .string "\"test: 377; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b253\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b254_str: .string "\"test: 378; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b254\""
+Zkne_aes64ks1i_cg_cp_sbox_rs1_b255_str: .string "\"test: 379; cg: Zkne_aes64ks1i_cg; cp: cp_sbox_rs1; bin: b255\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -309,23 +309,32 @@ jobs:
               };
             }
 
-            async function hasCommitSinceNeedsAuthor(pullRequest) {
+            async function getStatusLabelState(pullRequest) {
               const events = await github.paginate(github.rest.issues.listEventsForTimeline, {
                 ...context.repo,
                 issue_number: pullRequest.number,
                 per_page: 100,
               });
-              let needsAuthorEventIndex = -1;
+              let statusLabelIndex = -1;
               for (let index = events.length - 1; index >= 0; index -= 1) {
-                if (events[index].event === "labeled" && events[index].label?.name === needsAuthor) {
-                  needsAuthorEventIndex = index;
+                if (events[index].event === "labeled" && events[index].label?.name?.startsWith(statusPrefix)) {
+                  statusLabelIndex = index;
                   break;
                 }
               }
-              return (
-                needsAuthorEventIndex !== -1 &&
-                events.slice(needsAuthorEventIndex + 1).some((event) => event.event === "committed")
-              );
+              const changedEvents = new Set([
+                "committed",
+                "head_ref_force_pushed",
+                "reviewed",
+                "review_dismissed",
+                "review_requested",
+                "review_request_removed",
+              ]);
+              return {
+                manuallyLabeled:
+                  statusLabelIndex !== -1 && events[statusLabelIndex].actor?.login !== "github-actions[bot]",
+                changedSinceLabel: events.slice(statusLabelIndex + 1).some((event) => changedEvents.has(event.event)),
+              };
             }
 
             async function reconcilePullRequest(pullRequest) {
@@ -336,13 +345,22 @@ jobs:
               const labels = await getLabels(pullRequest.number);
               const statusLabels = labels.map(({ name }) => name).filter((name) => name.startsWith(statusPrefix));
               const reviewStatus = await reviewStatusOnHead(pullRequest);
-              const canUpdateStatus = statusLabels.every((status) => automaticStatuses.has(status));
+              const statusLabelState = await getStatusLabelState(pullRequest);
+              if (statusLabelState.manuallyLabeled && !statusLabelState.changedSinceLabel) {
+                await addAreaLabels(pullRequest.number);
+                return;
+              }
+
+              const canUpdateStatus =
+                statusLabelState.changedSinceLabel || statusLabels.every((status) => automaticStatuses.has(status));
               if (reviewStatus.needsAuthor && canUpdateStatus) {
                 await setStatus(pullRequest.number, needsAuthor);
-              } else if (statusLabels.includes(needsAuthor) && (await hasCommitSinceNeedsAuthor(pullRequest))) {
+              } else if (reviewStatus.changesRequested && canUpdateStatus) {
                 await setStatus(pullRequest.number, needsReview);
               } else if (reviewStatus.approved && canUpdateStatus) {
                 await setStatus(pullRequest.number, approved);
+              } else if (statusLabelState.changedSinceLabel && canUpdateStatus) {
+                await setStatus(pullRequest.number, needsReview);
               } else if (statusLabels.length === 0) {
                 await setStatus(pullRequest.number, needsReview);
               }

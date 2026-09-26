@@ -13,14 +13,14 @@ normative_rule_definitions:
   # When CBIE is set to 0b01 or 0b11, and when enabled for execution in modes less
   # privileged than M, it behaves as follows:
   - name: menvcfg_cbie_cbo-inval_op_lead_in
-    coverpoint: ["ExceptionsZicboU_cg/cp_cbie"]
+    coverpoint: ["ExceptionsZicboU_cg/{cp_cbie, cp_cbo_inval_data}"]
   # 0b01&#8201;&#8212;&#8201;The instruction is executed and performs a flush operation,
   # even if configured by a mode less privileged than M to perform an invalidate
   # operation. 0b11&#8201;&#8212;&#8201;The instruction is executed and performs an
   # invalidate operation, unless configured by a mode less privileged than M to perform a
   # flush operation.
   - name: menvcfg_cbie_cbo-inval_op_list
-    coverpoint: ["ExceptionsZicboU_cg/cp_cbie"]
+    coverpoint: ["ExceptionsZicboU_cg/{cp_cbie, cp_cbo_inval_data}"]
 
   # A CBO.INVAL instruction executes or raises either an illegal-instruction
   # exception or a virtual-instruction exception based on the state of the

@@ -31,6 +31,11 @@ covergroup ExceptionsZicboU_cg with function sample(ins_t ins);
             }
             menvcfg_cbcfe: coverpoint ins.current.csr[CSR_MENVCFG][6] {
             }
+            // cbo.inval only executes with cbie enabled; 00 traps and 10 is reserved
+            menvcfg_cbie_enabled: coverpoint ins.current.csr[CSR_MENVCFG][5:4] {
+                bins flush = {2'b01};
+                bins inval = {2'b11};
+            }
         `endif
     `endif
     `ifdef ZICBOZ_SUPPORTED
@@ -69,6 +74,7 @@ covergroup ExceptionsZicboU_cg with function sample(ins_t ins);
         `ifdef ZICBOM_SUPPORTED
             cp_cbie:  cross cbo_inval,      menvcfg_cbie,  priv_mode_u;
             cp_cbcfe: cross cbo_flushclean, menvcfg_cbcfe, priv_mode_u;
+            cp_cbo_inval_data: cross cbo_inval, menvcfg_cbie_enabled, priv_mode_u;
         `endif
         `ifdef ZICBOZ_SUPPORTED
             cp_cbze:  cross cbo_zero,       menvcfg_cbze,  priv_mode_u;

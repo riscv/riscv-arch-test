@@ -69,8 +69,14 @@ normative_rule_definitions:
     coverpoint: ["Zca_c_slli_cg/{cp_rs1_nx0, cr_rs1_imm_edges_c}"]
   - name: c-slli_shamt5
     coverpoint: ["Zca_c_slli_cg/{cp_uimm_n0}"]
+  # insn:c.srai[] is defined analogously to insn:c.srli[], but instead performs an
+  # arithmetic right shift. It expands to insn:srai[rd′,rd′,shamt].
   - name: c-srai_op
-    coverpoint: ["Zca_c_srai_cg/{cp_rs1_p, cr_rs1_imm_edges_c}"]
+    coverpoint:
+      [
+        "Zca_c_srai_cg/{cp_rs1_p, cr_rs1_imm_edges_c}",
+        "N/A custom hints not certified",
+      ]
   - name: c-srli_op
     coverpoint: ["Zca_c_srli_cg/{cp_rs1_p, cr_rs1_imm_edges_c}"]
   - name: c-srli_shamt5
@@ -103,7 +109,6 @@ normative_rule_definitions:
     coverpoint: ["Zca_c_nop_cg/{cp_c_hint_nop}"]
   - name: c-slli_hint
     coverpoint: ["N/A custom hints not certified"]
+  # The insn:c.srli[] code points with shamt=0 are HINTs.
   - name: c-srli_hint
-    coverpoint: ["N/A custom hints not certified"]
-  - name: c-sra_hint
     coverpoint: ["N/A custom hints not certified"]

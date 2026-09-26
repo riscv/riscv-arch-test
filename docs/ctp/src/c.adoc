@@ -41,7 +41,7 @@ Modified coverpoints for Zc* are summarized in <<t-Zc-modified-coverpoints>>.  A
 
 include::norm/Zca_norm_rules.adoc[]
 
-*** check that c-lui_hint and c-sra_hint normative rules in table above get populated when
+*** check that c-lui_hint and c-srli_hint normative rules in table above get populated when
 https://github.com/RISC-V-Certification-Steering-Committee/riscv-isa-manual/pull/167/changes
 is merged.
 

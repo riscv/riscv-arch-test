@@ -1,14 +1,14 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  # The satp CSR is an SXLEN-bit read/write register, formatted as shown in  for
-  # SXLEN=32 and  for SXLEN=64, which controls supervisor-mode address translation and
-  # protection. This register holds the physical page number (PPN) of the root page
-  # table, i.e., its supervisor physical address divided by 4 KiB; an address space
-  # identifier (ASID), which facilitates address-translation fences on a per-address-
-  # space basis; and the MODE field, which selects the current address-translation
-  # scheme. Further details on the access to this register are described in .
-  - names: [satp_sz, satp_acc, satp_op, satp_mode]
+  # The satp CSR is an SXLEN-bit read/write register, formatted as shown in for SXLEN=32
+  # and for SXLEN=64, which controls supervisor-mode address translation and protection.
+  # This register holds the physical page number (PPN) of the root page table, i.e., its
+  # supervisor physical address divided by 4 KiB; an address space identifier (ASID),
+  # which facilitates address-translation fences on a per-address-space basis; and the
+  # MODE field, which selects the current address-translation scheme. Further details on
+  # the access to this register are described in .
+  - name: satp
     coverpoint: ["SvSm_satp_cg/cp_access_m"]
 
   # When csr::[mprv]=0, explicit memory accesses behave as normal, using the translation
@@ -39,14 +39,22 @@ normative_rule_definitions:
   # When csr::[tvm]=0, these operations are permitted in S-mode. csr::[tvm] is read-only
   # 0 when S-mode is not supported or if csr:satp[mode] is read-only 0; otherwise, it
   # must be writable.
-  - names: [mstatus_tvm_op, MSTATUS_TVM_WARL]
+  - names: [mstatus_tvm_op, mstatus_tvm_warl]
     coverpoint:
       ["SvSm_mstatus_mprv_cg/cp_tvm_exception_s", "SvinvalSm_cg/cr_svinival"]
 
   # The csr::[mbe], csr::[sbe], and csr::[ube] bits in csr:mstatus[] and csr:mstatush[]
-  # are WARL fields that control the endianness of memory accesses other than
-  # instruction fetches. Each may be read/write or read-only.
-  - names: [MSTATUS_SBE_WARL, MSTATUSH_SBE_WARL, mstatus_sbe_implicit]
+  # are WARL fields that control the endianness of memory accesses other than instruction
+  # fetches. Each may be read/write or read-only.
+  - name: mstatus_mstatush_xbe_warl
+    coverpoint:
+      [
+        "SvSm_mstatus_mprv_cg/cp_mstatus_sbe_{read,write}",
+        "NORUN: needs big-endian implicit page-table accesses",
+      ]
+  # For implicit accesses to supervisor-level memory management data structures, such as
+  # page tables, endianness is always controlled by csr::[sbe].
+  - name: mstatus_sbe_implicit
     coverpoint:
       [
         "SvSm_mstatus_mprv_cg/cp_mstatus_sbe_{read,write}",
@@ -56,7 +64,7 @@ normative_rule_definitions:
   # If mtval is written with a nonzero value when a breakpoint, address-misaligned,
   # access-fault, page-fault, or hardware-error exception occurs on an instruction
   # fetch, load, or store, then mtval will contain the faulting virtual address.
-  - name: mtval_vaddr_wr1
+  - name: mtval_vaddr_wr_faulting_addr
     coverpoint:
       [
         "SvSm_mstatus_mprv_cg/{load_page_fault,store_page_fault}",

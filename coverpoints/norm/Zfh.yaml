@@ -1,6 +1,15 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # For half-precision floating-point, the canonical NaN corresponds to the pattern 0x7e00.
+  - name: Zfh_canonical_nan
+    # Representative coverpoints; also the NaN-producing edge coverpoints of the other Zfh covergroups
+    coverpoint:
+      [
+        "{Zfh_fadd_h_cg, Zfh_fdiv_h_cg}/cr_fs1_fs2_edges_frm_H",
+        "Zfh_fsqrt_h_cg/cp_fs1_edges_H",
+        "Zfh_fmin_h_cg/cr_fs1_fs2_edges_H",
+      ]
   # insn:fadd.s[] and insn:fmul.s[] perform single-precision floating-point addition and
   # multiplication respectively, between rs1 and rs2
   - name: fadd-s_fmul-s_op
@@ -295,6 +304,15 @@ normative_rule_definitions:
       [
         "Zfh_flh_cg/{cp_rs1_nx0, cp_imm_edges, cp_fd, cp_NaNBox_S_H}",
         "Zfh_fsh_cg/{cp_rs1_nx0, cp_imm_edges, cp_fs2, cp_fs2_edges_H, cp_fs2_badNB_S_H}",
+      ]
+  # FLH and FSH do not modify the bits being transferred; in particular, the payloads of
+  # non-canonical NaNs are preserved. FLH NaN-boxes the result written to rd, whereas
+  # FSH ignores all but the lower 16 bits in rs2.
+  - name: fsh_flh_bits_maintained
+    coverpoint:
+      [
+        "Zfh_flh_cg/{cp_fd_edges_H, cp_NaNBox_S_H}",
+        "Zfh_fsh_cg/{cp_fs2_edges_H, cp_fs2_badNB_S_H}",
       ]
   # insn:fmadd.s[] multiplies the values in rs1 and rs2, adds the value in rs3, and writes
   # the final result to rd. insn:fmadd.s[] computes (rs1×rs2)+rs3.

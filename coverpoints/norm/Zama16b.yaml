@@ -2,6 +2,24 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
+  # The misaligned atomicity granule PMA optionally relaxes this alignment requirement. If present,
+  # the misaligned atomicity granule PMA specifies the size of a misaligned atomicity granule, a
+  # power-of-two number of bytes. The misaligned atomicity granule PMA applies only to AMOs; loads and
+  # stores defined in the base ISAs; loads and stores of no more than XLEN bits defined in the
+  # F, D, and Q extensions; the load-acquire and store-release instructions defined
+  # in the Zalasr extension; and compressed encodings of the foregoing loads and stores. For an
+  # instruction in that set, if all accessed bytes lie within the same misaligned atomicity granule,
+  # the instruction will not raise an exception for reasons of address alignment, and the instruction
+  # will give rise to only one memory operation for the purposes of RVWMO--i.e., it will execute
+  # atomically.
+  - name: misaligned_atomicity_granule_size
+    # Representative coverpoints; the other Zama16b_cg load, store, and AMO coverpoints
+    coverpoint:
+      [
+        "Zama16b_cg/{cp_lw_load, cp_sw_store, cp_amoadd_w_amo, cp_amoadd_d_amo}",
+        "atomicity OUT-OF-SCOPE for single hart",
+      ]
+
   # The Zama16b extension requires MAG16 support to main memory regions.
   - name: Zama16b_pma_mag_req
     coverpoint: [""]
@@ -10,6 +28,52 @@ normative_rule_definitions:
   # memory regions with both the coherence and cacheability PMAs is 16 bytes.
   - name: Zama16b_mag
     coverpoint: [""]
+
+  # The misaligned atomicity granule PMA provides constrained support for misaligned AMOs. This PMA,
+  # if present, specifies the size of a misaligned atomicity granule, a naturally aligned power-of-two
+  # number of bytes. Specific supported values for this PMA are represented by MAGNN, e.g., MAG16
+  # indicates the misaligned atomicity granule is at least 16 bytes.
+  - name: pma_mag_def
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # The misaligned atomicity granule PMA applies only to AMOs; loads and stores defined in the base
+  # ISAs; loads and stores of no more than XLEN bits defined in the F, D, and Q
+  # extensions; the load-acquire and store-release instructions defined in the Zalasr extension;
+  # and compressed encodings of the foregoing loads and stores.
+  - name: pma_mag_insts
+    # Representative coverpoints; the other Zama16b_cg load, store, and AMO coverpoints
+    coverpoint:
+      [
+        "Zama16b_cg/{cp_lw_load, cp_sw_store, cp_flw_load, cp_amoadd_w_amo}",
+        "TODO: compressed loads and stores within a 16-byte granule",
+      ]
+
+  # if all accessed bytes lie within the same misaligned atomicity granule, the instruction will not
+  # raise an exception for reasons of address alignment, and the instruction will give rise to only
+  # one memory operation for the purposes of RVWMO--i.e., it will execute atomically.
+  - name: pma_mag_op_within
+    # Representative coverpoints; the other Zama16b_cg load, store, and AMO coverpoints
+    coverpoint:
+      [
+        "Zama16b_cg/{cp_lh_load, cp_sw_store, cp_amoadd_w_amo, cp_amoswap_d_amo}",
+        "atomicity OUT-OF-SCOPE for single hart",
+      ]
+
+  # For regular loads and stores that access such a region or for which not all accessed bytes lie
+  # within the same atomicity granule, then either an exception is raised, or the access proceeds but
+  # is not guaranteed to be atomic.
+  - name: pma_mag_op_ldst
+    coverpoint:
+      ["TODO: misaligned loads and stores that cross a 16-byte boundary"]
+
+  # Vector memory accesses are also unaffected, so might execute non-atomically even when contained
+  # within a misaligned atomicity granule.
+  - name: pma_mag_op_vec
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+
+  # Implicit accesses are similarly unaffected by this PMA.
+  - name: pma_mag_op_implicit
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
 
   # Misaligned loads, stores and AMOs to those regions that do not cross a naturally
   # aligned 16-byte boundary are atomic.

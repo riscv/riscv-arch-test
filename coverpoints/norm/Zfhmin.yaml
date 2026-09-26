@@ -1,6 +1,21 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # The Zfhmin extension includes the following instructions from the Zfh extension:
+  # FLH, FSH, FMV.X.H, FMV.H.X, FCVT.S.H, and FCVT.H.S. If
+  # the D extension is present, the FCVT.D.H and FCVT.H.D instructions are also
+  # included. If the Q extension is present, the FCVT.Q.H and FCVT.H.Q
+  # instructions are additionally included.
+  - name: Zfhmin
+    # Representative coverpoints; also Zfhmin_{fmv_h_x, fcvt_s_h}_cg and ZfhminD_fcvt_{d_h, h_d}_cg
+    coverpoint:
+      [
+        "{Zfhmin_flh_cg, Zfhmin_fsh_cg, Zfhmin_fmv_x_h_cg, Zfhmin_fcvt_h_s_cg}/cp_asm_count",
+        "TODO: fcvt.q.h and fcvt.h.q need a Q test suite",
+      ]
+  # For half-precision floating-point, the canonical NaN corresponds to the pattern 0x7e00.
+  - name: Zfh_canonical_nan
+    coverpoint: ["Zfhmin_fcvt_h_s_cg/cp_fs1_edges"]
   # insn:fcvt.s.h[] or insn:fcvt.h.s[] converts a half-precision floating-point number to
   # a single-precision floating-point number, or vice-versa, respectively
   - name: fcvt-s-h_fcvt-h-s_op
@@ -24,6 +39,20 @@ normative_rule_definitions:
         "Zfhmin_flh_cg/{cp_rs1_nx0, cp_imm_edges, cp_fd, cp_NaNBox_S_H}",
         "Zfhmin_fsh_cg/{cp_rs1_nx0, cp_imm_edges, cp_fs2, cp_fs2_edges_H, cp_fs2_badNB_S_H}",
       ]
+  # FLH and FSH are only guaranteed to execute atomically if the effective address is
+  # naturally aligned.
+  - name: fsh_flh_atomic_align
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # FLH and FSH do not modify the bits being transferred; in particular, the payloads of
+  # non-canonical NaNs are preserved. FLH NaN-boxes the result written to rd, whereas
+  # FSH ignores all but the lower 16 bits in rs2.
+  - name: fsh_flh_bits_maintained
+    # cp_fs2_edges_H loads each fs2 value with flh, so it also checks flh of NaN payloads
+    coverpoint:
+      [
+        "Zfhmin_fsh_cg/{cp_fs2_edges_H, cp_fs2_badNB_S_H}",
+        "Zfhmin_flh_cg/cp_NaNBox_S_H",
+      ]
   # insn:fmv.d.x[] moves the double-precision value encoded in the IEEE 754-2008 encoding
   # from the integer register rs1 to the floating-point register rd
   - name: fmv-d-x_op
@@ -46,3 +75,8 @@ normative_rule_definitions:
   - name: fmv-x-h_op
     coverpoint:
       ["Zfhmin_fmv_x_h_cg/{cp_rd, cp_fs1, cp_fs1_edges_H, cp_fs1_badNB_S_H}"]
+  # FMV.X.H and FMV.H.X do not modify the bits being transferred; in particular, the
+  # payloads of non-canonical NaNs are preserved.
+  - name: fmv_half_bits_preserved
+    coverpoint:
+      ["Zfhmin_fmv_x_h_cg/cp_fs1_edges_H", "Zfhmin_fmv_h_x_cg/cp_rs1_edges"]

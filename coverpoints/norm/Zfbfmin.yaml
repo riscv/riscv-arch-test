@@ -1,6 +1,9 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # For BF16, the canonical NaN corresponds to the pattern 0x7fc0.
+  - name: bf16_canonical_nan
+    coverpoint: ["Zfbfmin_fcvt_bf16_s_cg/cp_fs1_edges"]
   - name: fcvt-bf16-s_op
     coverpoint:
       ["Zfbfmin_fcvt_bf16_s_cg/{cp_fs1, cp_fd, cp_fs1_edges, cp_NaNBox_S_H}"]
@@ -8,6 +11,6 @@ normative_rule_definitions:
   - name: fcvt-s-bf16_op
     coverpoint:
       [
-        "Zfbfmin_fcvt_bf16_s_cg/{cp_fs1, cp_fd, cp_fs1_edges_H, cp_fs1_badNB_S_H}",
+        "Zfbfmin_fcvt_s_bf16_cg/{cp_fs1, cp_fd, cp_fs1_edges_BF16, cp_fs1_badNB_S_H}",
       ]
       # Converts a BF16 value to an FP32 value. The conversion is exact.

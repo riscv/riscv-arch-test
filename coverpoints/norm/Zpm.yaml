@@ -7,10 +7,6 @@ normative_rule_definitions:
   - name: pm_ignore_upper_bits
     coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg}/cp_pmlen_masking"]
 
-  # Such tools can be applied in all privilege modes (U, S, and M).
-  - name: pm_all_priv_modes
-    coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg}/cp_pmlen_masking"]
-
   # The ignore transformation differs depending on whether it applies to a virtual
   # or physical address. For virtual addresses, it replaces the upper PMLEN bits
   # with the sign extension of the PMLEN+1st bit.
@@ -69,6 +65,10 @@ normative_rule_definitions:
   # the pointer masking setting that is applied only depends on the active privilege
   # mode, not on the address that is being masked.
   - name: pm_mode_only_dependency
+    coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg}/cp_pmlen_masking"]
+
+  # Unless otherwise specified, pointer masking applies to all explicit memory accesses.
+  - name: pm_explicit_accesses
     coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg}/cp_pmlen_masking"]
 
   # MPRV and SPVP affect pointer masking as well, causing the pointer masking
@@ -135,18 +135,6 @@ normative_rule_definitions:
   # A machine-level extension that provides pointer masking for M-mode.
   - name: smmpm_definition
     coverpoint: ["Smmpm_cg/cp_pmlen_masking"]
-
-  # An extension that indicates that there is pointer-masking support available in
-  # supervisor mode, with some facility provided in the supervisor execution
-  # environment to control pointer masking.
-  - name: sspm_definition
-    coverpoint: [""]
-
-  # An extension that indicates that there is pointer-masking support available in
-  # user mode, with some facility provided in the application execution environment
-  # to control pointer masking.
-  - name: supm_definition
-    coverpoint: [""]
 
   # Pointer masking only applies to RV64.
   - name: pm_rv64_only

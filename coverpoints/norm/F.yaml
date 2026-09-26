@@ -1,6 +1,24 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # The F extension adds computational instructions compliant with the IEEE 754-2008 arithmetic
+  # standard's binary32 format and operations.
+  - name: F_ieee_compliance
+    coverpoint:
+      [
+        "TODO: full IEEE 754-2008 binary32 compliance needs IBM FP coverpoints; F edge crosses give partial coverage",
+      ]
+  # The F extension depends on the Zicsr extension.
+  - name: F_depends_Zicsr
+    coverpoint: ["Definition, checked through UDB"]
+  # FLEN can be 32, 64, or 128 depending on which of the F, D, and Q extensions are
+  # supported.
+  - name: flen_def
+    coverpoint: ["Definition, checked through UDB"]
+  # These extensions, intended for lower-cost systems, are incompatible with the F and D
+  # extensions.
+  - name: Zfinx_Zdinx_incompatible_F_D
+    coverpoint: ["Definition, checked through UDB"]
   # insn:fadd.s[] and insn:fmul.s[] perform single-precision floating-point addition and
   # multiplication respectively, between rs1 and rs2
   - name: fadd-s_fmul-s_op
@@ -140,8 +158,40 @@ normative_rule_definitions:
         "F_fsqrt_s_cg/{cp_fs1, cp_fd, cp_fs1_edges, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
         "F_fsub_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm}",
       ]
+  # Except when otherwise stated, if the result of a floating-point operation is NaN, it is the
+  # canonical NaN.
+  - name: canonical_nan
+    # Representative coverpoints; also the NaN-producing edge coverpoints of the other F covergroups
+    coverpoint:
+      [
+        "{F_fadd_s_cg, F_fdiv_s_cg}/cr_fs1_fs2_edges_frm",
+        "F_fsqrt_s_cg/cp_fs1_edges",
+        "F_fmin_s_cg/cr_fs1_fs2_edges",
+      ]
+  # For single-precision floating-point, the canonical NaN has a positive sign and all significand
+  # bits clear except the MSB, the quiet bit. In other words, for single-precision floating-point, the
+  # canonical NaN corresponds to the pattern 0x7fc00000.
+  - name: F_canonical_nan
+    # Representative coverpoints; also the NaN-producing edge coverpoints of the other F covergroups
+    coverpoint:
+      [
+        "{F_fadd_s_cg, F_fdiv_s_cg}/cr_fs1_fs2_edges_frm",
+        "F_fsqrt_s_cg/cp_fs1_edges",
+        "F_fmin_s_cg/cr_fs1_fs2_edges",
+      ]
+  # All floating-point operations that perform rounding can select the rounding mode using the rm
+  # field with the encoding shown in the dyn_round_enc table.
+  - name: F_rm_field
+    # Representative coverpoints; also the cp_frm_* and cr_*_frm coverpoints of the other F covergroups
+    coverpoint:
+      [
+        "F_fadd_s_cg/cr_fs1_fs2_edges_frm",
+        "F_fmadd_s_cg/cr_fs1_fs2_edges_frm4",
+        "F_fsqrt_s_cg/cr_fs1_edges_frm",
+        "F_fcvt_w_s_cg/cr_fs1_edges_frm",
+      ]
   - name: fclass-s_op
-    # fThe FCLASS.S instruction examines the value in floating-point register rs1 and writes to integer register rd a 10-bit mask that indicates the class of the floating-point number. The format of the mask is described in . The corresponding bit in rd will be set if the property is true and clear otherwise. All other bits in rd are cleared. Note that exactly one bit in rd will be set. FCLASS.S does not set the floating-point exception flags.
+    # The FCLASS.S instruction examines the value in floating-point register rs1 and writes to integer register rd a 10-bit mask that indicates the class of the floating-point number. The format of the mask is described in . The corresponding bit in rd will be set if the property is true and clear otherwise. All other bits in rd are cleared. Note that exactly one bit in rd will be set. FCLASS.S does not set the floating-point exception flags.
     coverpoint: ["F_fclass_s_cg/{cp_rd, cp_fs1, cp_fs1_edges, cp_fclass}"]
   # insn:fcvt.w.s[] or insn:fcvt.l.s[] converts a floating-point number in floating-point
   # register rs1 to a signed 32-bit or 64-bit integer, respectively, in integer register
@@ -264,6 +314,14 @@ normative_rule_definitions:
         "F_flw_cg/{cp_rs1_nx0, cp_imm_edges, cp_fd}",
         "F_fsw_cg/{cp_rs1_nx0, cp_imm_edges, cp_fs2, cp_fs2_edges}",
       ]
+  # FLW and FSW are only guaranteed to execute atomically if the effective address is
+  # naturally aligned.
+  - name: fsw_flw_atomic_align
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # FLW and FSW do not modify the bits being transferred; in particular, the payloads of
+  # non-canonical NaNs are preserved.
+  - name: fsw_flw_bits_maintained
+    coverpoint: ["F_flw_cg/cp_fd_edges", "F_fsw_cg/cp_fs2_edges"]
   # insn:fmadd.s[] multiplies the values in rs1 and rs2, adds the value in rs3, and writes
   # the final result to rd. insn:fmadd.s[] computes (rs1×rs2)+rs3.
   - name: fmadd-s_op
@@ -301,6 +359,20 @@ normative_rule_definitions:
         "F_fmax_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_csr_fflags_v, cr_fs1_fs2_edges}",
         "F_fmin_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_csr_fflags_v, cr_fs1_fs2_edges}",
       ]
+  # For the purposes of these instructions only, the value −0.0 is considered to be less than the
+  # value +0.0
+  - name: fmin-s_fmax-s_zero_compare
+    coverpoint: ["{F_fmin_s_cg, F_fmax_s_cg}/cr_fs1_fs2_edges"]
+  # If both inputs are NaNs, the result is the canonical NaN
+  - name: fmin-s_fmax-s_both_nan_input
+    coverpoint: ["{F_fmin_s_cg, F_fmax_s_cg}/cr_fs1_fs2_edges"]
+  # If only one operand is a NaN, the result is the non-NaN operand
+  - name: fmin-s_fmax-s_one_nan_input
+    coverpoint: ["{F_fmin_s_cg, F_fmax_s_cg}/cr_fs1_fs2_edges"]
+  # Signaling NaN inputs set the invalid operation exception flag, even when the result is not NaN
+  - name: fmin-s_fmax-s_signaling_nan_nv
+    coverpoint:
+      ["{F_fmin_s_cg, F_fmax_s_cg}/{cr_fs1_fs2_edges, cp_csr_fflags_v}"]
   # insn:fmsub.s[] multiplies the values in rs1 and rs2, subtracts the value in rs3, and
   # writes the final result to rd. insn:fmsub.s[] computes (rs1×rs2)−rs3.
   - name: fmsub-s_op

@@ -5,7 +5,9 @@ normative_rule_definitions:
   - name: mhpmevent_inh_op
     coverpoint:
       [
-        "{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_minh_inhibits_mmode,cp_sinh_inhibits_smode,cp_uinh_inhibits_umode}",
+        "SscofpmfSm_cg/cp_minh_inhibits_mmode",
+        "SscofpmfS_cg/cp_sinh_inhibits_smode",
+        "SscofpmfU_cg/cp_uinh_inhibits_umode",
       ]
 
   - name: mhpmevent_of_op

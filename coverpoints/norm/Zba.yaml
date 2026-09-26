@@ -2,6 +2,17 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
+  # RV32|RV64|Mnemonic|Instruction ===
+  # |✓|add.uw rd, rs1, rs2|¶✓|✓|sh1add rd, rs1, rs2|¶|✓|sh1add.uw rd, rs1, rs2|
+  # ¶✓|✓|sh2add rd, rs1, rs2|¶|✓|sh2add.uw rd, rs1, rs2|¶✓|✓|sh3add rd, rs1, rs2|
+  # ¶|✓|sh3add.uw rd, rs1, rs2|¶|✓|slli.uw rd, rs1, imm| ===
+  - name: Zba_insns_tbl
+    # Representative coverpoints; also cp_asm_count of Zba_sh{1,2,3}add_uw_cg and Zba_slli_uw_cg
+    coverpoint:
+      [
+        "{Zba_sh1add_cg, Zba_sh2add_cg, Zba_sh3add_cg, Zba_add_uw_cg}/cp_asm_count",
+      ]
+
   - name: bitmanip_rv32_rv64
     coverpoint: ["Zba_sh1add_cg/cr_rs1_rs2_edges"]
 

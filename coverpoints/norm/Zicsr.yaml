@@ -25,3 +25,203 @@ normative_rule_definitions:
     coverpoint: ["Zicsr_csrrs_cg/{cp_rs1, cp_rd, cp_rs1_edges}"]
   - name: csrrw_op
     coverpoint: ["Zicsr_csrrw_cg/{cp_rs1, cp_rd, cp_rs1_edges}"]
+  # For both CSRRS and CSRRC, if rs1=x0, then the instruction will not write to
+  # the CSR at all, and so shall not cause any of the side effects that might otherwise occur on
+  # a CSR write, nor raise illegal-instruction exceptions on accesses to read-only CSRs. Both
+  # CSRRS and CSRRC always read the addressed CSR and cause any read side effects
+  # regardless of rs1 and rd fields. Note that if rs1 specifies a register other than x0, and
+  # that register holds a zero value, the instruction will not action any attendant per-field
+  # side effects, but will action any side effects caused by writing to the entire CSR.
+  - name: csrrs_csrrc_rs1_x0
+    coverpoint:
+      [
+        "Zicsr_csrrs_cg/cp_rs1",
+        "Zicsr_csrrc_cg/cp_rs1",
+        "Zicntr_csrrs_cg/cp_cntr",
+        "Zicntr_csrrc_cg/cp_cntr",
+      ]
+  # A CSRRW with rs1=x0 will attempt to write zero to the destination CSR.
+  - name: csrrw_rs1_x0
+    coverpoint: ["Zicsr_csrrw_cg/cp_rs1"]
+  # For CSRRSI and CSRRCI, if the uimm[4:0] field is zero, then these
+  # instructions will not write to the CSR, and shall not cause any of the side effects that
+  # might otherwise occur on a CSR write, nor raise illegal-instruction exceptions on accesses
+  # to read-only CSRs.
+  - name: csrrsi_csrrci_uimm_zero
+    coverpoint:
+      [
+        "Zicsr_csrrsi_cg/cp_uimm_5",
+        "Zicsr_csrrci_cg/cp_uimm_5",
+        "TODO: csrrsi and csrrci with uimm=0 on a read-only CSR must not trap",
+      ]
+  # For CSRRWI, if rd=x0, then the instruction shall not read the CSR and shall not
+  # cause any of the side effects that might occur on a CSR read.
+  - name: csrrwi_rd_x0
+    coverpoint:
+      [
+        "Zicsr_csrrwi_cg/cp_rd",
+        "Skipping the read is not observable: standard CSRs have no read side effects",
+      ]
+  # The CSR side-effects table summarizes the behavior of the CSR instructions with respect to
+  # whether they read and/or write the CSR.
+  - name: csr_side_effects
+    # Representative coverpoints; also Zicsr_csrrc_cg/cp_rs1 and Zicsr_csrrci_cg/cp_uimm_5
+    coverpoint:
+      [
+        "Zicsr_csrrw_cg/cp_rd",
+        "Zicsr_csrrs_cg/cp_rs1",
+        "Zicsr_csrrwi_cg/cp_rd",
+        "Zicsr_csrrsi_cg/cp_uimm_5",
+      ]
+  # CSRRS, CSRRSI, CSRRC, and CSRRCI only action side effects for
+  # fields for which the rs1 or uimm argument has at least one bit set corresponding to that
+  # field.
+  - name: csr_rs1_uimm_side_effect
+    coverpoint:
+      ["Untestable: no standard CSRs have side effects on field writes"]
+  # In particular, unless specified otherwise, a CSR access is performed after the execution
+  # of any prior instructions in program order whose behavior modifies or is modified by the
+  # CSR state and before the execution of any subsequent instructions in program order whose
+  # behavior modifies or is modified by the CSR state.
+  - name: csr_access_order
+    # Representative coverpoints; also the other ZicsrF_cg/cp_fflags_set_m_* coverpoints
+    coverpoint:
+      [
+        "ZicsrF_cg/{cp_fflags_set_m_NV, cp_fflags_set_m_NX}",
+        "F_fadd_s_cg/cp_csr_frm",
+      ]
+  # an explicit CSR read returns the CSR state before the execution of the instruction
+  - name: csrr_order
+    coverpoint:
+      [
+        "{Zicsr_csrrw_cg, Zicsr_csrrs_cg, Zicsr_csrrc_cg}/cp_rs1_edges",
+        "Sm_mcsr_cg/cp_minstret_wraparound",
+      ]
+  # an explicit CSR write suppresses and overrides any implicit writes or modifications to the
+  # same CSR by the same instruction.
+  - name: csrw_order
+    coverpoint: ["Sm_mcsr_cg/cp_minstret_wraparound"]
+  # Likewise, any side effects from an explicit CSR access are normally observed to occur
+  # synchronously in program order. Unless specified otherwise, the full consequences of any
+  # such side effects are observable by the very next instruction, and no consequences may be
+  # observed out-of-order by preceding instructions.
+  - name: csr_side_effects_synchronous
+    coverpoint:
+      [
+        "TODO: write a CSR whose write has a side effect and check the consequence from the very next instruction",
+      ]
+  # For the RVWMO memory consistency model, CSR accesses are weakly ordered by default, so
+  # other harts or devices may observe CSR accesses in an order different from program order.
+  - name: csr_weakly_ordered
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # In addition, CSR accesses are not ordered with respect to explicit memory accesses, unless
+  # a CSR access modifies the execution behavior of the instruction that performs the explicit
+  # memory access or unless a CSR access and an explicit memory access are ordered by either the
+  # syntactic dependencies defined by the memory model or the ordering requirements defined in
+  # Memory-Ordering PMAs.
+  - name: csr_memory_access_ordering
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # For the purposes of the FENCE instruction, CSR read accesses are classified as
+  # device input (I), and CSR write accesses are classified as device output (O).
+  - name: csr_fence_ordering
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # The hardware platform may define that accesses to certain CSRs are strongly ordered, as
+  # defined in Memory-Ordering PMAs. Accesses to strongly ordered CSRs have stronger ordering
+  # constraints with respect to accesses to both weakly ordered CSRs and accesses to
+  # memory-mapped I/O regions.
+  - name: csr_strongly_ordered
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+
+  # Privileged-architecture CSR conventions (CSR address mapping, field specifications,
+  # modulation, implicit reads, and CSRs wider than XLEN)
+
+  # Standard CSRs do not have side effects on reads but may have side effects on writes.
+  - name: Zicsr_no_read_side_effects
+    coverpoint:
+      [
+        "TODO: read each standard CSR repeatedly and check the reads change no state",
+      ]
+  # Instructions that access a non-existent CSR address are reserved.
+  - name: Zicsr_nonexistent_rsv
+    # Representative coverpoints; also SsstrictS_scsr_cg and other SsstrictU_ucsr_cg crosses
+    coverpoint:
+      [
+        "SsstrictSm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}",
+        "SsstrictU_ucsr_cg/cp_csrr",
+      ]
+  # Machine-mode standard read-write CSRs 0x7A0–0x7BF are reserved for use by the debug
+  # system. Of these CSRs, 0x7A0–0x7AF are accessible to machine mode, whereas
+  - name: Zicsr_debug_range
+    coverpoint:
+      [
+        "SdtrigSm_trig_module_reg_cg/{cp_csr_access_global, cp_csr_access_local}",
+      ]
+  # Implementations can return arbitrary bit patterns on the read of a WLRL field when the last
+  # write was of an illegal value, but the value returned should deterministically depend on
+  # the illegal written value and the value of the field prior to the write.
+  - name: Zicsr_wlrl_deterministic
+    coverpoint:
+      [
+        "Not tested - the value read after an illegal WLRL write is implementation-specific",
+      ]
+  # Some read/write CSR fields are only defined for a subset of bit encodings, but allow any
+  # value to be written while guaranteeing to return a legal value whenever read.
+  - name: Zicsr_warl_def
+    coverpoint:
+      ["Sm_mcsr_cg/{cp_mcsrwalk, cp_mcsrwalk_masked}", "S_scsr_cg/cp_scsrwalk"]
+  # Implementations can return any legal value on the read of a WARL field when the last write
+  # was of an illegal value, but the legal value returned should deterministically depend on
+  # the illegal written value and the architectural state of the hart.
+  - name: Zicsr_warl_deterministic
+    coverpoint:
+      [
+        "Not tested - the legal value returned after an illegal WARL write is implementation-specific; CSR walks check only that it is legal",
+      ]
+  # If a write to one CSR changes the set of legal values allowed for a field of a second CSR,
+  # then unless specified otherwise, the second CSR's field immediately gets an UNSPECIFIED
+  # value from among its new legal values. This is true even if the field's value before the
+  # write remains legal after the write; the value of the field may be changed in consequence
+  # of the write to the controlling CSR.
+  - name: Zicsr_field_modulation
+    coverpoint: ["Behavior is UNSPECIFIED by the specification; not tested"]
+  # A change to the value of a CSR for this reason is not a write to the affected CSR and thus
+  # does not trigger any side effects specified for that CSR.
+  - name: Zicsr_field_modulation_no_side_effects
+    coverpoint:
+      [
+        "TODO: write a controlling CSR so that a field of another CSR changes, and check that no write side effects of that CSR occur",
+      ]
+  # Unless otherwise specified, the value returned by an implicit read of a CSR is the same
+  # value that would have been returned by an explicit read of the CSR, using a CSR-access
+  # instruction in a sufficient privilege mode.
+  - name: Zicsr_implicit_read
+    # Representative coverpoints; also implicit reads of mtvec, satp, etc. in the priv suites
+    coverpoint: ["F_fadd_s_cg/cp_csr_frm", "Sm_mprivinst_cg/cp_mret"]
+  # If the width of a CSR is changed (for example, by changing SXLEN or UXLEN), the values of
+  # the writable fields and bits of the new-width CSR are, unless specified otherwise,
+  # determined from the previous-width CSR as though by this algorithm:
+  - name: Zicsr_width_modulation
+    coverpoint: ["XLEN-dependent behavior not tested; single XLEN assumed"]
+  # Changing the width of a CSR is not a read or write of the CSR and thus does not trigger any
+  # side effects.
+  - name: Zicsr_width_modulation_no_side_effects
+    coverpoint: ["XLEN-dependent behavior not tested; single XLEN assumed"]
+  # If a standard CSR is wider than XLEN bits, then an explicit read of the CSR returns the
+  # register's least-significant XLEN bits, and an explicit write to the CSR modifies only the
+  # register's least-significant XLEN bits, leaving the upper bits unchanged.
+  - name: Zicsr_wide_csr_access
+    coverpoint:
+      ["Sm_mcsr_cg/{cp_mcycle_wraparound, cp_minstret_wraparound} (RV32)"]
+  # The high-half CSR aliases bits 63:32 of its namesake 64-bit CSR, thus providing a way for
+  # RV32 software to read and modify the otherwise-unreachable 32 bits.
+  - name: Zicsr_high_half_alias
+    coverpoint:
+      [
+        "Sm_mcsr_cg/{cp_mtimeh_write, cp_mcycle_wraparound, cp_minstret_wraparound} (RV32)",
+      ]
+  # Standard high-half CSRs are accessible only when the base RISC-V instruction set is RV32
+  # (XLEN=32). For RV64 (when XLEN=64), the addresses of all standard high-half CSRs are
+  # reserved, so an attempt to access a high-half CSR typically raises an illegal-instruction
+  # exception.
+  - name: Zicsr_high_half_rv64_rsv
+    coverpoint: ["SsstrictSm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}"]

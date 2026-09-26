@@ -9,6 +9,16 @@ normative_rule_definitions:
   # f0&amp;#8205;&amp;#8211;&amp;#8205;f31, to 64 bits, i.e., FLEN=64.
   - name: D_flen_64
     coverpoint: ["D_fadd_d_cg/{cr_fs1_fs2_edges_frm_D}"] # one of many possible
+  # For double-precision floating-point, the canonical NaN corresponds to the pattern
+  # 0x7ff8000000000000.
+  - name: D_canonical_nan
+    # Representative coverpoints; also the NaN-producing edge coverpoints of the other D covergroups
+    coverpoint:
+      [
+        "{D_fadd_d_cg, D_fdiv_d_cg}/cr_fs1_fs2_edges_frm_D",
+        "D_fsqrt_d_cg/cp_fs1_edges_D",
+        "D_fmin_d_cg/cr_fs1_fs2_edges_D",
+      ]
   # insn:fld[] and insn:fsd[] are only guaranteed to execute atomically if the effective
   # address is naturally aligned and XLEN≥64.
   - name: fld_fsd_atomic_align

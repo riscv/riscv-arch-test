@@ -1,3 +1,88 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # All of these instructions work on 128-bit element groups comprised of four 32-bit elements.
+  - name: Zvkg_egw128b_elem32b
+    coverpoint:
+      [
+        "Zvkg_vghsh_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvkg_vgmul_vv_cg/cr_vl_lmul_egs4_sew32",
+      ]
+
+  # To help avoid side-channel timing attacks, these instructions shall be implemented with
+  # data-independent timing.
+  - name: Zvkg_dataindeptiming
+    coverpoint: ["Untestable: microarchitectural timing"]
+
+  # The number of element groups to be processed is vl/EGS. vl must be set to the number of SEW=32
+  # elements to be processed and therefore must be a multiple of EGS=4.
+  - name: Zvkg_vl
+    coverpoint:
+      [
+        "Zvkg_vghsh_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvkg_vgmul_vv_cg/cr_vl_lmul_egs4_sew32",
+      ]
+
+  # Likewise, vstart must be a multiple of EGS=4.
+  - name: Zvkg_vstart
+    coverpoint: ["TODO: execute with vstart set to a nonzero multiple of EGS=4"]
+
+  # This instruction treats all of the inputs and outputs as 128-bit polynomials and performs
+  # operations over GF[2]. It produces the next partial hash (Y_i+1) by adding the current partial
+  # hash (Y_i) to the cipher text block (X_i) and then multiplying (over GF(2^128)) this sum by the
+  # Hash Subkey (H).
+  - name: vghsh-vv_op
+    coverpoint:
+      [
+        "Zvkg_vghsh_vv_cg/{cr_vs2_vs1_edges_egs4, cr_vs1_vd_edges_egs4, cr_vs2_vd_edges_egs4, cr_vl_lmul_egs4_sew32}",
+      ]
+
+  # The multiplication over GF(2^128) is a carry-less multiply of two 128-bit polynomials modulo
+  # GHASH's irreducible polynomial (x^128 + x^7 + x^2 + x + 1).
+  - name: vghsh-vv_op_gf
+    coverpoint:
+      [
+        "Zvkg_vghsh_vv_cg/{cr_vs2_vs1_edges_egs4, cr_vs1_vd_edges_egs4, cr_vs2_vd_edges_egs4}",
+      ]
+
+  # The NIST specification (see Zvkg) orders the coefficients from left to right x_0 x_1 x_2 ...
+  # x_127 for a polynomial x_0 + x_1 u + x_2 u^2 + ... + x_127 u^127. This can be viewed as a
+  # collection of byte elements in memory with the byte containing the lowest coefficients (i.e.,
+  # 0,1,2,3,4,5,6,7) residing at the lowest memory address. Since the bits in the bytes are
+  # reversed, this instruction internally performs bit swaps within bytes to put the bits in the
+  # standard ordering (e.g., 7,6,5,4,3,2,1,0).
+  - name: vghsh-vv_op_coeff
+    coverpoint:
+      [
+        "Zvkg_vghsh_vv_cg/{cr_vs2_vs1_edges_egs4, cr_vs1_vd_edges_egs4, cr_vs2_vd_edges_egs4}",
+      ]
+
+  # This instruction must always be implemented such that its execution latency does not depend on
+  # the data being operated upon.
+  - name: vghsh-vv_exeindepdata
+    coverpoint: ["Untestable: microarchitectural timing"]
+
+  # This instruction treats all of the inputs and outputs as 128-bit polynomials and performs
+  # operations over GF[2]. It produces the product over GF(2^128) of the two 128-bit inputs.
+  - name: vgmul-vv_op
+    coverpoint:
+      ["Zvkg_vgmul_vv_cg/{cr_vs2_vd_edges_egs4, cr_vl_lmul_egs4_sew32}"]
+
+  # The multiplication over GF(2^128) is a carry-less multiply of two 128-bit polynomials modulo
+  # GHASH's irreducible polynomial (x^128 + x^7 + x^2 + x + 1).
+  - name: vgmul-vv_op_gf
+    coverpoint: ["Zvkg_vgmul_vv_cg/cr_vs2_vd_edges_egs4"]
+
+  # The NIST specification (see Zvkg) orders the coefficients from left to right x_0 x_1 x_2 ...
+  # x_127 for a polynomial x_0 + x_1 u + x_2 u^2 + ... + x_127 u^127. This can be viewed as a
+  # collection of byte elements in memory with the byte containing the lowest coefficients (i.e.,
+  # 0,1,2,3,4,5,6,7) residing at the lowest memory address. Since the bits in the bytes are
+  # reversed, This instruction internally performs bit swaps within bytes to put the bits in the
+  # standard ordering (e.g., 7,6,5,4,3,2,1,0).
+  - name: vgmul-vv_op_coeff
+    coverpoint: ["Zvkg_vgmul_vv_cg/cr_vs2_vd_edges_egs4"]
+
+  # This instruction must always be implemented such that its execution latency does not depend on
+  # the data being operated upon.
+  - name: vgmul-vv_exeindepdata
+    coverpoint: ["Untestable: microarchitectural timing"]

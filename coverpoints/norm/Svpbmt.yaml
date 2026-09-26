@@ -1,9 +1,28 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # In Sv39, Sv48, and Sv57, bits 62-61 of a leaf page table entry indicate the use of
+  # page-based memory types that override the PMA(s) for the associated memory pages.
+  - name: Svpbmt_pte_bits
+    # Representative coverpoints; also leaf_PTE_pbmt_{exec,write}_u
+    coverpoint:
+      [
+        "Svpbmt_cg/{leaf_PTE_pbmt_exec_s, leaf_PTE_pbmt_read_s, leaf_PTE_pbmt_write_s, leaf_PTE_pbmt_read_u}",
+      ]
+
   # The Svpbmt extension depends on the Sv39 extension
   - name: Svpbmt_depends_Sv39
     coverpoint: ["Svpbmt_cg/leaf_PTE_pbmt_{exec,read,write}_{s,u}"]
+
+  # Mode|Value|Requested Memory Attributes === PMA NC IO -|0 1 2 3|None Non-cacheable,
+  # idempotent, weakly-ordered (RVWMO), main memory Non-cacheable, non-idempotent,
+  # strongly-ordered (I/O ordering), I/O Reserved for future standard use ===
+  - name: Svpbmt_enc_tbl
+    # Representative coverpoints; also the other leaf_PTE_pbmt_{exec,read,write}_{s,u} and leaf_PTE_pbmt_reserved_enc_{exec,read,write}_{s,u}
+    coverpoint:
+      [
+        "Svpbmt_cg/{leaf_PTE_pbmt_read_s, leaf_PTE_pbmt_write_u, leaf_PTE_pbmt_reserved_enc_read_s, leaf_PTE_pbmt_reserved_enc_exec_u}",
+      ]
 
   # Until their use is defined by a standard extension, they must be cleared by software
   # for forward compatibility, or else a page-fault exception is raised.

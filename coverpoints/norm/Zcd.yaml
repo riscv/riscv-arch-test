@@ -1,6 +1,10 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # If the D extension is present, the C extension additionally depends upon the
+  # Zcd extension.
+  - name: C_dep_Zcd
+    coverpoint: ["Definition, checked through UDB"]
   - name: Zc_fp_regs
     # Use a representative coverpoint; applies to others too
     coverpoint: ["Zcd_c_fld_cg/{cp_fd_p}"]

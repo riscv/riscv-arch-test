@@ -19,6 +19,11 @@ normative_rule_definitions:
   - name: A_seq_cst_semantics
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 
+  # The A extension comprises the Zalrsc and Zaamo extensions, which are
+  # defined in the following sections.
+  - name: A_comprises
+    coverpoint: ["Definition, checked through UDB"]
+
   - name: lr-w_op
     coverpoint: ["Zalrsc_lr_w_cg/{cp_rs1_nx0, cp_rd}"]
 
@@ -65,14 +70,15 @@ normative_rule_definitions:
   - name: sc_intervening_sc_fail
     coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_after_sc"]
 
+  # An unsuccessful SC instruction does not give rise to any memory operations.
+  - name: rvwmo_sc_fail_no_memop
+    coverpoint: ["{Zalrsc_sc_w_cg, Zalrsc_sc_d_cg}/cp_custom_sc_after_sc"]
+
   - name: lr_sc_atomicity_axiom
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 
   - name: sc_not_observable_before_lr
     coverpoint: ["OUT-OF-SCOPE for single hart"]
-
-  - name: lr_sc_aq_rl_software_rule
-    coverpoint: ["Nothing to test"]
 
   - name: constrained_lrsc_loop_size
     coverpoint: ["Untested"]
@@ -94,3 +100,36 @@ normative_rule_definitions:
 
   - name: unconstrained_lrsc_no_progress
     coverpoint: ["Behavior is unconstrained"]
+
+  # If a hart H enters a constrained LR/SC loop, the execution environment must
+  # guarantee that one of the following events eventually occurs
+  - name: constrained_lrsc_forward_progress_intro
+    # The sc tests retry each constrained loop up to 100 times and require the sc to succeed
+    coverpoint:
+      [
+        "{Zalrsc_sc_w_cg, Zalrsc_sc_d_cg}/cp_custom_sc_lr",
+        "other harts and devices OUT-OF-SCOPE for single hart",
+      ]
+
+  # H or some other hart executes a successful SC to the reservation set of the LR
+  # instruction in H's constrained LR/SC loops.
+  - name: constrained_lrsc_forward_progress_sc
+    coverpoint:
+      [
+        "{Zalrsc_sc_w_cg, Zalrsc_sc_d_cg}/cp_custom_sc_lr",
+        "other harts OUT-OF-SCOPE for single hart",
+      ]
+
+  # Some other hart executes an unconditional store or AMO instruction to the reservation set of the
+  # LR instruction in H's constrained LR/SC loop, or some other device in the
+  # system writes to that reservation set.
+  - name: constrained_lrsc_forward_progress_store_amo
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+
+  # H executes a branch or jump that exits the constrained LR/SC loop.
+  - name: constrained_lrsc_forward_progress_branch
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # H traps.
+  - name: constrained_lrsc_forward_progress_trap
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]

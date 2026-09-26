@@ -1,6 +1,15 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # This extension depends upon the Zvfbfmin and Zfbfmin extensions.
+  - name: Zvfbfwma_depends
+    coverpoint: ["Definition, checked through UDB"]
+  # Encoding (Vector-Vector) (vfwmaccbf16.vv)
+  - name: vfwmaccbf16_encoding_vv
+    coverpoint: ["Zvfbfwma_vfwmaccbf16_vv_cg/cp_asm_count"]
+  # Encoding (Vector-Scalar) (vfwmaccbf16.vf)
+  - name: vfwmaccbf16_encoding_vf
+    coverpoint: ["Zvfbfwma_vfwmaccbf16_vf_cg/cp_asm_count"]
   # This instruction performs a widening fused multiply-accumulate operation, where each
   # pair of BF16 values are multiplied and their unrounded product is added to the
   # corresponding FP32 accumulate value. The sum is rounded according to the frm register.

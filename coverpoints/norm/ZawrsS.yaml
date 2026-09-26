@@ -13,11 +13,15 @@ normative_rule_definitions:
       ]
 
   # WRS.STO (WRS-with-short-timeout) is provided that works like WRS.NTO
-  # but bounds the stall duration to an implementation-define short timeout
+  # but bounds the stall duration to an implementation-defined short timeout
   # such that the stall is terminated on the timeout if no other conditions
   # have occurred to terminate the stall.
   - name: Zawrs_wrs-sto_stall_duration
     coverpoint: ["ZawrsS_cg/cp_wrs_sto_timeout"]
+
+  # These instructions are available in all privilege modes.
+  - name: Zawrs_all_priv_modes
+    coverpoint: ["ZawrsS_cg/cp_wrs_no_res"]
 
   # While stalled, an implementation is permitted to occasionally terminate the
   # stall and complete execution for any reason.

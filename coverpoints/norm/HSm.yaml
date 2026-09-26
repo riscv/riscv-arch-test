@@ -57,6 +57,7 @@ normative_rule_definitions:
       [
         "HSm_tvm_cg/cp_tvm_hs",
         "HSm_tvm_cg/cp_hfence",
+        "SvinvalHSm_cg/cp_svinval_tvm",
         "TODO: vsatp accesses in HS-mode with mstatus.TVM = 1",
       ]
   # When mstatus.TVM=1, attempts to read or write hgatp while executing in HS-mode will

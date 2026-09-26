@@ -58,7 +58,7 @@ class VectorTypeConfig:
     mask_regs: set[str] = field(default_factory=set)
     scalar_regs: set[str] = field(default_factory=set)
     widened_regs: set[str] = field(default_factory=set)
-    random_element_generator: Callable[[int, int], list[int]] | None = None
+    random_element_generator: Callable[[int, int, str], list[int]] | None = None
 
 
 @dataclass
@@ -90,7 +90,9 @@ class InstructionTypeConfig:
     imm_nonzero: bool = False
     pair_regs: set[str] | None = None  # Registers that use register pairs (e.g., {"rd", "rs2"})
     excluded_regs: dict[str, set[int]] = field(default_factory=dict)
-    instruction_class: list[Literal["load", "store", "indexed", "strided", "segmented"]] = field(default_factory=list)
+    instruction_class: list[Literal["load", "store", "indexed", "strided", "segmented", "vector_fp"]] = field(
+        default_factory=list
+    )
     vector_data: VectorTypeConfig | None = None
 
 

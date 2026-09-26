@@ -10,6 +10,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Literal
 
+from testgen.asm.helpers import write_sigupd
 from testgen.constants import VLEN_MAX
 from testgen.data.params import InstructionParams, PresetMask
 from testgen.data.random import random_int
@@ -692,3 +693,18 @@ def handle_parameter_exclusions(
     if parameters_needed:
         setup.insert(0, "#if " + " && ".join(parameters_needed))
         check.append("#endif")
+
+
+def handle_vector_fp(setup: list[str], check: list[str], frm_val: int, test_data: TestData) -> None:
+    """Modifies Setup, Test, Check in place to ensure that vector-fp tests are run with the correct rounding mode"""
+    setup.append(f"fsrmi {frm_val}")
+    setup.append("fsflagsi 0b00000 # clear all fflags")
+    check.insert(0, write_sigupd(None, test_data, "fflags"))
+
+    # Insert a rounding mode reset inside the test body, (i.e before any #endifs)
+    for i in range(len(check) - 1, -1, -1):
+        if check[i] != "#endif":
+            check.insert(i + 1, "fsrmi 0x0")
+            break
+    else:
+        check.insert(0, "fsrmi 0x0")

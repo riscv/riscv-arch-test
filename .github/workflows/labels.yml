@@ -346,9 +346,7 @@ jobs:
               const statusLabels = labels.map(({ name }) => name).filter((name) => name.startsWith(statusPrefix));
               const reviewStatus = await reviewStatusOnHead(pullRequest);
               const statusLabelState = await getStatusLabelState(pullRequest);
-              if (statusLabelState.manuallyLabeled && !statusLabelState.changedSinceLabel) {
-                await addAreaLabels(pullRequest.number);
-                return;
+              if (statusLabels.length > 0 && statusLabelState.manuallyLabeled && !statusLabelState.changedSinceLabel) {
               }
 
               const canUpdateStatus =

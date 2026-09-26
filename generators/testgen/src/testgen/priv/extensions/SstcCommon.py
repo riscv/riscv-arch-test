@@ -12,6 +12,7 @@
 machine mode and through T-SBI otherwise; user-mode tests are entered from S-mode with RVTEST_TSBI_GOTO_UMODE.
 """
 
+from testgen.asm.csr import write_stce
 from testgen.asm.helpers import comment_banner
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
@@ -26,24 +27,6 @@ def mcounteren_tm(test_data: TestData, enable: bool, mode: str) -> list[str]:
     """Set or clear mcounteren.TM (bit 1)."""
     reg = test_data.int_regs.get_register()
     lines = [f"LI(x{reg}, 0x2)", csr_op(f"{'csrs' if enable else 'csrc'} mcounteren, x{reg}", mode)]
-    test_data.int_regs.return_register(reg)
-    return lines
-
-
-def menvcfg_stce(test_data: TestData, enable: bool, mode: str) -> list[str]:
-    """Set or clear menvcfg.STCE (menvcfgh on RV32)."""
-    op = "csrs" if enable else "csrc"
-    reg = test_data.int_regs.get_register()
-    lines = [
-        f"# {'Enable' if enable else 'Disable'} menvcfg.STCE{'' if mode == 'machine' else ' via T-SBI'}",
-        "#if __riscv_xlen == 64",
-        f"LI(x{reg}, MENVCFG_STCE)",
-        csr_op(f"{op} menvcfg, x{reg}", mode),
-        "#else",
-        f"LI(x{reg}, MENVCFGH_STCE)",
-        csr_op(f"{op} menvcfgh, x{reg}", mode),
-        "#endif",
-    ]
     test_data.int_regs.return_register(reg)
     return lines
 
@@ -72,7 +55,7 @@ def tm_tests(test_data: TestData, covergroup: str, mode: str) -> list[str]:
     lines = [
         comment_banner(coverpoint, f"{mode[0].upper()}-mode stimecmp read: mcounteren.TM = 0/1, STCE = 1"),
         "",
-        *menvcfg_stce(test_data, True, mode),
+        *write_stce(test_data, True, mode[0].upper()),
     ]
     for tm_val in (0, 1):
         lines += mcounteren_tm(test_data, bool(tm_val), mode)
@@ -87,7 +70,7 @@ def tm_tests(test_data: TestData, covergroup: str, mode: str) -> list[str]:
                 *(["RVTEST_TSBI_GOTO_SMODE"] if user else []),
                 *([] if stm_val else ["csrsi scounteren, 0x2"]),
             ]
-    return [*lines, "", *menvcfg_stce(test_data, False, mode)]
+    return [*lines, "", *write_stce(test_data, False, mode[0].upper())]
 
 
 def stce_tests(test_data: TestData, covergroup: str, mode: str) -> list[str]:
@@ -102,10 +85,10 @@ def stce_tests(test_data: TestData, covergroup: str, mode: str) -> list[str]:
         lines += [
             "",
             f"# {coverpoint}: STCE = {stce_val}",
-            *menvcfg_stce(test_data, bool(stce_val), mode),
+            *write_stce(test_data, bool(stce_val), mode[0].upper()),
             *(["RVTEST_TSBI_GOTO_UMODE"] if user else []),
             test_data.add_testcase(f"stce{stce_val}", coverpoint, covergroup),
             *access_stimecmp(test_data),
             *(["RVTEST_TSBI_GOTO_SMODE"] if user else []),
         ]
-    return [*lines, "", *menvcfg_stce(test_data, False, mode)]
+    return [*lines, "", *write_stce(test_data, False, mode[0].upper())]

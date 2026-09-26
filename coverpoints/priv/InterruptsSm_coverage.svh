@@ -430,16 +430,13 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     `endif
     `ifdef SSTC_SUPPORTED
         cp_trigger_sti_sstc:    cross priv_mode_interrupts, menvcfg_stce, mstatus_mie, mstatus_sie, mie_ones, mideleg_both, mtvec_both, stimecmp_max_min {
-            // menvcfg.STCE = 1 is what makes stimecmp S-accessible, so S-mode arms its own timer and
-            // the STI is taken in S-mode, here. Only U-mode still goes through T-SBI, where an
-            // undelegated STI from stimecmp = 0 fires on the mret and cp_trigger_sti_sstc_tsbi
-            // records it.
-            // U-mode cannot reach stimecmp whatever menvcfg.STCE says, so the armed-timer case is
-            // always raised from M through T-SBI and taken on the mret, for either mideleg value.
+            // U-mode cannot write stimecmp, so its STCE = 1 STI fires on the T-SBI mret and only
+            // cp_trigger_sti_sstc_tsbi records it.
             ignore_bins tsbi = binsof(priv_mode_interrupts) intersect {3'b000} && binsof(menvcfg_stce) intersect {1} &&
                                binsof(stimecmp_max_min.min);
         }
         `ifdef U_SUPPORTED
+            // Overlaps cp_trigger_sti_sstc except for U-mode with STCE = 1 and stimecmp = 0.
             cp_trigger_sti_sstc_tsbi: cross priv_mode_m, mret_insn, mstatus_mpp, menvcfg_stce, mstatus_mpie, mstatus_sie, mie_ones, mideleg_both, mtvec_both, stimecmp_max_min {
                 `ifdef S_SUPPORTED
                     // With STCE = 1, S-mode arms stimecmp itself, so no T-SBI mret returns to S

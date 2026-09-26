@@ -657,53 +657,104 @@ def _generate_combined_accesses_tests(test_data: TestData, mode: str) -> list[Te
     tc = test_data.begin_test_chunk("CombinedAccesses")
     lines: list[str] = tc.code
 
-    vsews = ("sew8", "sew16", "sew32", "sew64")
+    seed(reproducible_hash(covergroup))
+
+    # setup registers
+    addr_reg, temp_reg = test_data.int_regs.get_registers(2, exclude_regs=[2], reg_range=list(range(8, 16)))
+    vreg = 8
+    vsews = (8, 16, 32, 64)
+    vops = {"load": ("vle", 0b001), "store": ("vse", 0b010)}
+
+    lines.extend(_global_ie(mode, True))
 
     ######################################
     coverpoint = "cp_sdtrig_vector_load_store"
     ######################################
     lines.append("#ifdef V_SUPPORTED")
+    lines.append("#ifdef ZVL32B_SUPPORTED")
     lines.append(
         comment_banner(
             coverpoint,
-            "mcontrol6 matches each element of a vector load/store as an\nindividual SEW-sized access",
+            "mcontrol6 matches a vector load/store as if it performed a load/store of size SEW",
         )
     )
+    lines.extend(
+        [
+            f"LA(x{addr_reg}, scratch)",
+            *_arch_guard("vsetivli x0, 16, e8, m1, ta, ma", ["v"]),
+            *_arch_guard(f"vle8.v v{vreg}, (x{addr_reg}) # preload vector register before arming triggers", ["v"]),
+        ]
+    )
     for trig_num in range(UDB_NUM_TRIGGERS):
-        for addrval in ("marker", "zero"):
-            for vsew in vsews:
-                for size in SIZE_SEW:
-                    for vperm in ("store", "load"):
-                        binname = f"trig_num_{trig_num}_addr_{addrval}_{vsew}_size_{size}_{vperm}"
+        lines.append(f"\n#ifdef UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num}")
+        for vperm, (vinstr, xsl) in vops.items():
+            lines.extend(_xsl_ifdefs(xsl))
+            for tdata2 in ("scratch", 0):
+                for size in range(7):
+                    lines.append(f"\n# Size = {size}")
+                    if size > 0:
+                        lines.append("#ifdef UDB_SDTRIG_MCONTROL6_SIZE_AVAILABLE")
+                    for sew in vsews:
+                        binname = f"trig_num_{trig_num}_td2_{tdata2}_size_{size}_sew{sew}_{vperm}"
                         lines.extend(
                             [
                                 _add_tc(test_data, binname, coverpoint, covergroup),
+                                *_config_mcontrol6(temp_reg, trig_num, tdata2, mode, xsl=xsl, select=0, size=size),
+                                f"LA(x{addr_reg}, scratch) # vector access address",
+                                *_arch_guard(f"vsetivli x0, 1, e{sew}, m1, ta, ma", ["v"]),
+                                *_arch_guard(
+                                    f"{vinstr}{sew}.v v{vreg}, (x{addr_reg}) # fire iff addr==tdata2 and size in (0, SEW)",
+                                    ["v"],
+                                ),
+                                "nop # spacer",
                             ]
                         )
-    lines.append("#endif")
+                    if size > 0:
+                        lines.append("#endif // UDB_SDTRIG_MCONTROL6_SIZE_AVAILABLE")
+            lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_AVAILABLE"] * len(_xsl_ifdefs(xsl)))
+        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
+        lines.append(f"#endif // UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num}")
+    lines.append("#endif // ZVL32B_SUPPORTED")
+    lines.append("#endif // V_SUPPORTED")
 
     ######################################
     coverpoint = "cp_sdtrig_vector_accesses"
     ######################################
     lines.append("#ifdef V_SUPPORTED")
+    lines.append("#ifdef ZVL32B_SUPPORTED")
     lines.append(
         comment_banner(
             coverpoint,
-            "vector accesses across scratch / scratch+8 / 0 tdata2 values",
+            "mcontrol6 matches each element of a vector load/store as if it were an individual access\n"
+            "(scratch+8 only fires when vl covers it)",
         )
     )
     for trig_num in range(UDB_NUM_TRIGGERS):
-        for addrval in ("marker", "marker8", "zero"):
-            for vsew in vsews:
-                for size in SIZE_SEW:
-                    for vperm in ("store", "load"):
-                        binname = f"trig_num_{trig_num}_addr_{addrval}_{vsew}_size_{size}_{vperm}"
+        lines.append(f"\n#ifdef UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num}")
+        for vperm, (vinstr, xsl) in vops.items():
+            lines.extend(_xsl_ifdefs(xsl))
+            for tdata2_name, tdata2 in (("scratch", "scratch"), ("scratch8", "scratch+8"), ("0", 0)):
+                for avl in (1, 9):
+                    for sew in vsews:
+                        binname = f"trig_num_{trig_num}_td2_{tdata2_name}_vl_{avl}_sew{sew}_{vperm}"
                         lines.extend(
                             [
                                 _add_tc(test_data, binname, coverpoint, covergroup),
+                                *_config_mcontrol6(temp_reg, trig_num, tdata2, mode, xsl=xsl, select=0),
+                                f"LA(x{addr_reg}, scratch) # vector access base address",
+                                *_arch_guard(f"vsetivli x0, {avl}, e{sew}, m1, ta, ma", ["v"]),
+                                *_arch_guard(
+                                    f"{vinstr}{sew}.v v{vreg}, (x{addr_reg}) # fire iff an accessed element addr==tdata2",
+                                    ["v"],
+                                ),
+                                "nop # spacer",
                             ]
                         )
-    lines.append("#endif")
+            lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_AVAILABLE"] * len(_xsl_ifdefs(xsl)))
+        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
+        lines.append(f"#endif // UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num}")
+    lines.append("#endif // ZVL32B_SUPPORTED")
+    lines.append("#endif // V_SUPPORTED")
 
     ######################################
     coverpoint = "cp_sdtrig_cm_pop_push"
@@ -720,7 +771,7 @@ def _generate_combined_accesses_tests(test_data: TestData, mode: str) -> list[Te
             for insn in ("cm_push", "cm_pop"):
                 for size in SIZE_ALL:
                     for perm in ("store", "load"):
-                        binname = f"trig_num_{trig_num}_addr_{addrval}_{insn}_size_{size}_{perm:03b}"
+                        binname = f"trig_num_{trig_num}_addr_{addrval}_{insn}_size_{size}_{perm}"
                         lines.extend(
                             [
                                 _add_tc(test_data, binname, coverpoint, covergroup),
@@ -728,6 +779,8 @@ def _generate_combined_accesses_tests(test_data: TestData, mode: str) -> list[Te
                         )
     lines.append("#endif")
 
+    lines.extend(_global_ie(mode, False))
+    test_data.int_regs.return_registers([addr_reg, temp_reg])
     return [test_data.end_test_chunk()]
 
 
@@ -1840,7 +1893,7 @@ def generate_sdtrig_suite(test_data: TestData, mode: str) -> list[TestChunk]:
     test_chunks.extend(_generate_access_tests(test_data, mode))
     test_chunks.extend(_generate_native_triggers_tests(test_data, mode))
     # test_chunks.extend(_generate_a_tests(test_data, mode))
-    # test_chunks.extend(_generate_combined_accesses_tests(test_data, mode))
+    test_chunks.extend(_generate_combined_accesses_tests(test_data, mode))
     # test_chunks.extend(_generate_cache_operations_tests(test_data, mode))
     # test_chunks.extend(_generate_address_matches_tests(test_data, mode))
     # test_chunks.extend(_generate_csr_tests(test_data, mode))

@@ -7,7 +7,7 @@ normative_rule_definitions:
   # The entropy source extension defines the seed CSR at address 0x015. This CSR
   # provides up to 16 physical entropy bits that can be used to seed cryptographic
   # random bit generators.
-  - name: zkr_seed_addr
+  - name: Zkr_seed_addr
     coverpoint: ["{ZkrSm_cg,ZkrS_cg,ZkrU_cg}/{cp_zkr_seed_csrrw}"]
 
   # Attempts to access seed with a read-only CSR-access instruction (csrrs/csrrc

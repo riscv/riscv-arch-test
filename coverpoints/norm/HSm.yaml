@@ -2,9 +2,38 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
-  # Machine-level H CSRs are accessible from M-mode and hold zero
-  - names:
-      [mtval2_sz, mtval2_acc, MTVAL2_WARL, mtinst_sz, mtinst_acc, MTINST_WARL]
+  # The mtval2 register is an MXLEN-bit read/write register formatted as shown in . When a
+  # trap is taken into M-mode, mtval2 is written with additional exception-specific
+  # information, alongside mtval, to assist software in handling the trap.
+  - name: mtval2_sz_acc_op
+    coverpoint:
+      [
+        "HSm_mcsr_cg/cp_hcsr_access_zero/mtval2",
+        "HSm_mcsr_cg/cp_hcsr_access_zero/mtinst",
+        "HSm_inst_cg/cp_guest_page_fault",
+      ]
+  # mtval2 is a WARL register that must be able to hold zero and may be capable of holding
+  # only an arbitrary subset of other 2-bit-shifted guest physical addresses, if any.
+  - name: mtval2_val
+    coverpoint:
+      [
+        "HSm_mcsr_cg/cp_hcsr_access_zero/mtval2",
+        "HSm_mcsr_cg/cp_hcsr_access_zero/mtinst",
+      ]
+  # The mtinst register is an MXLEN-bit read/write register formatted as shown in . When a
+  # trap is taken into M-mode, mtinst is written with a value that, if nonzero, provides
+  # information about the instruction that trapped, to assist software in handling the
+  # trap. The values that may be written to mtinst on a trap are documented in .
+  - name: mtinst_sz_acc_op
+    coverpoint:
+      [
+        "HSm_mcsr_cg/cp_hcsr_access_zero/mtval2",
+        "HSm_mcsr_cg/cp_hcsr_access_zero/mtinst",
+        "HSm_inst_cg/cp_guest_page_fault",
+      ]
+  # mtinst is a WARL register that need only be able to hold the values that the
+  # implementation may automatically write to it on a trap.
+  - name: mtinst_val
     coverpoint:
       [
         "HSm_mcsr_cg/cp_hcsr_access_zero/mtval2",
@@ -55,11 +84,11 @@ normative_rule_definitions:
     coverpoint: ["HSm_tvm_cg/cp_hfence"]
 
   # mret uses MPV to enter a virtual mode
-  - names: [mstatus_mpv_op, mret_h]
+  - names: [mstatus_mpv_op, mret_H]
     coverpoint: ["HSm_inst_cg/cp_mret_m"]
 
   # sret from M-mode uses SPV
-  - names: [sret_h, sret_v0, hstatus_spv_sret]
+  - names: [sret_H, sret_v0, hstatus_spv_sret]
     coverpoint: ["HSm_inst_cg/cp_sret_m"]
 
   # Hypervisor virtual-machine loads and stores from M-mode
@@ -67,22 +96,52 @@ normative_rule_definitions:
     coverpoint:
       ["HSm_inst_cg/cp_hlv", "HSm_inst_cg/cp_hlvx", "HSm_inst_cg/cp_hsv"]
 
-  # Guest-page faults taken into M-mode write mtval2 and mtinst
-  - names:
-      [
-        H_guest_page_fault,
-        mtval2_op,
-        mtinst_op,
-        H_trap_xtinst,
-        H_trap_xtinst_exception,
-        H_trap_xtinst_val,
-        H_trap_xtinst_guestpage,
-      ]
+  # Guest-page-fault traps may be delegated from M-mode to HS-mode under the control of
+  # CSR csr:medeleg[], but cannot be delegated to other privilege modes. On a guest-page
+  # fault, CSR csr:mtval[] or csr:stval[] is written with the faulting guest virtual
+  # address as usual, and csr:mtval2[] or csr:htval[] is written either with zero or with
+  # the faulting guest physical address, shifted right by qty:2[bits]. CSR csr:mtinst[] or
+  # csr:htinst[] may also be written with information about the faulting instruction or
+  # other reason for the access, as explained in .
+  - name: H_guest_page_fault
     coverpoint: ["HSm_inst_cg/cp_guest_page_fault"]
-
-  # mtval2 must be able to hold zero and may hold only a subset of other 2-bit-shifted guest physical addresses
-  - names: [mtval2_val]
-    coverpoint: ["HSm_mcsr_cg/cp_hcsr_access_zero/mtval2"]
+  # On any trap into M-mode or HS-mode, one of these values is written automatically into
+  # the appropriate trap instruction CSR, mtinst or htinst:
+  - name: H_trap_xtinst
+    coverpoint: ["HSm_inst_cg/cp_guest_page_fault"]
+  # On a synchronous exception, if a nonzero value is written, one of the following shall
+  # be true about the value:
+  - name: H_trap_xtinst_exception_lead_in
+    coverpoint: ["HSm_inst_cg/cp_guest_page_fault"]
+  # Bit 0 is 1, and replacing bit 1 with 1 makes the value into a valid encoding of a
+  # standard instruction. In this case, the instruction that trapped is the same kind as
+  # indicated by the register value, and the register value is the transformation of the
+  # trapping instruction, as defined later. For example, if bits 1:0 are binary 11 and the
+  # register value is the encoding of a standard LW (load word) instruction, then the
+  # trapping instruction is LW, and the register value is the transformation of the
+  # trapping LW instruction. Bit 0 is 1, and replacing bit 1 with 1 makes the value into
+  # an instruction encoding that is explicitly designated for a custom instruction (not an
+  # unused reserved encoding). This is a custom value. The instruction that trapped is a
+  # non-standard instruction. The interpretation of a custom value is not otherwise
+  # specified by this standard. The value is one of the special pseudoinstructions defined
+  # later, all of which have bits 1:0 equal to 00.
+  - name: H_trap_xtinst_exception_list
+    coverpoint: ["HSm_inst_cg/cp_guest_page_fault"]
+  # shows the values that may be automatically written to the trap instruction register
+  # for each standard exception cause. For exceptions that prevent the fetching of an
+  # instruction, only zero or a pseudoinstruction value may be written. A custom value may
+  # be automatically written only if the instruction that traps is non-standard. A future
+  # standard or extension may permit other values to be written, chosen from the set of
+  # allowed values established earlier.
+  - name: H_trap_xtinst_val
+    coverpoint: ["HSm_inst_cg/cp_guest_page_fault"]
+  # For guest-page faults, the trap instruction register is written with a special
+  # pseudoinstruction value if: (a) the fault is caused by an implicit memory access for
+  # VS-stage address translation, and (b) a nonzero value (the faulting guest physical
+  # address) is written to mtval2 or htval. If both conditions are met, the value written
+  # to mtinst or htinst must be taken from ; zero is not allowed.
+  - name: H_trap_xtinst_guestpage
+    coverpoint: ["HSm_inst_cg/cp_guest_page_fault"]
 
   # The Ssdbltrp extension requires mtval2
   - names: [mtval2_Ssdbltrp]
@@ -90,7 +149,7 @@ normative_rule_definitions:
       ["Not tested: TODO an Ssdbltrp double trap into M-mode that reads mtval2"]
 
   # The hypervisor extension is enabled by setting misa bit 7
-  - names: [misa_h_op]
+  - name: misa_H_op
     coverpoint:
       [
         "Not tested: TODO read misa.H, and with MUTABLE_MISA_H clear it and check that hypervisor CSRs and instructions raise illegal instruction",

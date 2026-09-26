@@ -54,25 +54,38 @@ normative_rule_definitions:
   - name: mhpmeventh_presence
     coverpoint: ["SscofpmfSm_cg/cp_sscofpmf_access"]
 
-  - names: [mie_lcofie_op, mip_lcofip_op, mip_lcofip_acc]
+  # If the ext:sscofpmf[] extension is implemented, bits csr:mip[lcofip] and
+  # csr:mie[lcofie] are the interrupt-pending and interrupt-enable bits for
+  # local-counter-overflow interrupts.
+  - name: mip_lcofip_mie_lcofie_op
+    coverpoint: ["SscofpmfSm_cg/cp_lcofi_m"]
+  # reflects the occurrence of a local counter-overflow overflow interrupt request
+  # resulting from any of the mhpmeventn.OF bits being set.
+  - name: mip_lcofip_reflects_overflow
+    coverpoint: ["SscofpmfSm_cg/cp_lcofi_m"]
+  # When an OF bit is set, it eventually, but not necessarily immediately, sets the LCOFIP
+  # bit in the mip/sip registers.
+  - name: lcofip_op
+    coverpoint: ["SscofpmfSm_cg/cp_lcofi_m", "SscofpmfS_cg/cp_lcofi_sip_s"]
+  # csr::[lcofip] is read-write in csr:mip[]
+  - name: mip_lcofip_acc
     coverpoint: ["SscofpmfSm_cg/cp_lcofi_m"]
 
-  - name: sip_lcofip_op
-    coverpoint: ["SscofpmfS_cg/cp_lcofi_sip_s"]
-
-  - names:
-      [
-        sip_lcofip_Sscofpmf_acc,
-        sip_lcofip_Sscofpmf_op,
-        sie_lcofip_Sscofpmf_acc,
-        sie_lcofip_Sscofpmf_op,
-      ]
+  # If the Sscofpmf extension is implemented, bits sip.LCOFIP and sie.LCOFIE are the
+  # interrupt-pending and interrupt-enable bits for local-counter-overflow interrupts.
+  # LCOFIP is read-write in sip and reflects the occurrence of a local counter-overflow
+  # overflow interrupt request resulting from any of the mhpmeventn.OF bits being set. If
+  # the Sscofpmf extension is not implemented, sip.LCOFIP and sie.LCOFIE are read-only
+  # zeros.
+  - name: sip_sie_Sscofpmf
     coverpoint: ["SscofpmfS_cg/cp_lcofi_sip_s", "SscofpmfU_cg/cp_lcofi_sip_u"]
 
-  - names: [intr_M_mode_pri]
+  - name: intr_m_mode_pri
     coverpoint: ["SscofpmfSm_cg/cp_lcofip_priority_m"]
 
-  - names: [sip_priority_bit_order, sie_priority_bit_order]
+  # Multiple simultaneous interrupts destined for supervisor mode are handled in the
+  # following decreasing priority order: SEI, SSI, STI, LCOFI.
+  - name: sip_sie_priority_bit_order
     coverpoint: ["SscofpmfS_cg/cp_lcofip_priority_s"]
 
   # VS-mode is out of scope for these suites: the SscofpmfSm/S/U suites never run in VS-mode.

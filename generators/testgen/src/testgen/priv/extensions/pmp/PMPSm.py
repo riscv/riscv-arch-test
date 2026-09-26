@@ -466,6 +466,19 @@ def _make_tor_all_chunk(test_data: TestData) -> TestChunk:
         ]
     )
     body.append("RVTEST_SFENCE_VMA_IF_SUPPORTED")
+    # Region 0 is [0, TEST_FOR_EXECUTION_0); probe its last word.
+    body.extend(
+        [
+            "",
+            "LA(a5, TEST_FOR_EXECUTION_0)",
+            "addi a5, a5, -4",
+            test_data.add_testcase("entry0_1_lw", "cp_cfg_A_tor_all", "PMPSm"),
+            "lw a4, 0(a5)",
+            write_sigupd(14, test_data),
+        ]
+    )
+    # Region n is [TEST_FOR_EXECUTION_{n-1}, TEST_FOR_EXECUTION_n). The last probe, at
+    # TEST_FOR_EXECUTION_14, lies just above region 14 and checks that TOR's top bound is exclusive.
     for n in range(1, 16):
         body.extend(
             [
@@ -489,7 +502,8 @@ def _make_tor_all_chunk(test_data: TestData) -> TestChunk:
         data.extend([f"TEST_FOR_EXECUTION_{i}:", f".rept ({i + 1} * (PMP_TOR_REGION_BYTES / 4))", "nop", ".endr"])
     data.extend(RETURN_TRAMPOLINE)
     chunk.section_header = comment_banner(
-        "cp_cfg_A_tor_all", "Fifteen locked TOR regions of increasing size with XWR = 00(i%2); lw at the start of each."
+        "cp_cfg_A_tor_all",
+        "Fifteen locked TOR regions of increasing size with XWR = 00(i%2); lw in region 0 and at the start of each other.",
     )
     chunk.code.extend(body)
     chunk.raw_data.extend(tuple(data))

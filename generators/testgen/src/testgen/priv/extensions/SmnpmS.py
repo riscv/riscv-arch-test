@@ -55,47 +55,56 @@ def make_smnpms(test_data: TestData) -> list[TestChunk]:
         tc = test_data.begin_test_chunk(split_name=mode)
         guard, is_bare = MODE_GUARDS[mode], mode == "bare"
         lines = [] if not guard else [f"#ifdef {guard}"]
-        lines += [
-            ".pushsection .data",
-            *data_pm_lo_page(),
-        ]
+        lines.extend([".pushsection .data", *data_pm_lo_page()])
         if not is_bare:
-            lines += data_pm_hi_page()
-            lines += data_slvl_tables(mode)
-        lines += [
-            ".popsection",
-            *jalr_pad_asm(regs),
-        ]
-
-        lines += enable_envcfg_cbo_sse(regs, "menvcfg", tsbi=True)
-        lines += enable_fp_vector_state(regs, status_csr="sstatus")
-
+            lines.extend([*data_pm_hi_page(), *data_slvl_tables(mode)])
+        lines.extend(
+            [
+                ".popsection",
+                *jalr_pad_asm(regs),
+                *enable_envcfg_cbo_sse(regs, "menvcfg", tsbi=True),
+                *enable_fp_vector_state(regs, status_csr="sstatus"),
+            ]
+        )
         if not is_bare:
-            lines += _pte_chain_asm(mode, HIGH_VA[mode], "pm_hi_page", _LEAF_PERMS_S)
-            lines += satp_setup(mode, regs)
+            lines.extend(
+                [
+                    *_pte_chain_asm(mode, HIGH_VA[mode], "pm_hi_page", _LEAF_PERMS_S),
+                    *satp_setup(mode, regs),
+                ]
+            )
 
         for pmm, pmlen, label in PMM_CONFIGS:
             prefix = f"{label}_{mode}"
-            lines += set_pmm_field("menvcfg", _MENVCFG_PMM, pmm, pmlen, regs.tmp, tsbi=True)
-            lines += [f"LA(x{regs.base}, pm_lo_page)"]
-
-            lines += pass_a_all_instructions(None, prefix, test_data, regs, COVERGROUP)
+            lines.extend(
+                [
+                    *set_pmm_field("menvcfg", _MENVCFG_PMM, pmm, pmlen, regs.tmp, tsbi=True),
+                    f"LA(x{regs.base}, pm_lo_page)",
+                    *pass_a_all_instructions(None, prefix, test_data, regs, COVERGROUP),
+                ]
+            )
             if not is_bare:
-                lines += pass_b_sign_extension(None, prefix, mode, test_data, regs, COVERGROUP)
-            lines += pass_c_misaligned(None, prefix, test_data, regs, COVERGROUP)
-            lines += pass_e_jalr(None, prefix, test_data, regs, COVERGROUP, mxr=0)
-            lines += pass_f_fault_address(None, prefix, test_data, regs, COVERGROUP)
-            lines += pass_d_mxr(None, prefix, test_data, regs, COVERGROUP)
-            lines += pass_e_jalr(None, prefix, test_data, regs, COVERGROUP, mxr=1)
+                lines.extend(pass_b_sign_extension(None, prefix, mode, test_data, regs, COVERGROUP))
+            lines.extend(
+                [
+                    *pass_c_misaligned(None, prefix, test_data, regs, COVERGROUP),
+                    *pass_e_jalr(None, prefix, test_data, regs, COVERGROUP, mxr=0),
+                    *pass_f_fault_address(None, prefix, test_data, regs, COVERGROUP),
+                    *pass_d_mxr(None, prefix, test_data, regs, COVERGROUP),
+                    *pass_e_jalr(None, prefix, test_data, regs, COVERGROUP, mxr=1),
+                    *set_mxr(False, regs.tmp),
+                    *pass_g_csr_writes(prefix, pmlen, test_data, regs, COVERGROUP, ["sepc", "sscratch"]),
+                ]
+            )
 
-            lines += set_mxr(False, regs.tmp)
-
-            lines += pass_g_csr_writes(prefix, pmlen, test_data, regs, COVERGROUP, ["sepc", "sscratch"])
-
-        lines += set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp, tsbi=True)
-        lines += set_mxr(False, regs.tmp)
+        lines.extend(
+            [
+                *set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp, tsbi=True),
+                *set_mxr(False, regs.tmp),
+            ]
+        )
         if not is_bare:
-            lines += satp_clear(regs)
+            lines.extend(satp_clear(regs))
         if guard:
             lines.append(f"#endif // {guard}")
         tc.code = lines

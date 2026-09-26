@@ -1,0 +1,79 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # With V = 1, a counter whose hcounteren bit is clear raises virtual instruction if its mcounteren bit is set
+  - names:
+      [
+        hcounteren_op,
+        hcounteren_set_op,
+        H_virtinst_vs_nonhighctr_h0_m1,
+        H_virtinst_vs32_highctr_h0_m1,
+      ]
+    coverpoint:
+      [
+        "ZicntrH_cg/cp_hcounteren_access_vs",
+        "ZicntrH_cg/cp_hcounteren_access_vu",
+      ]
+
+  # In VU-mode, a counter is readable only when its hcounteren and scounteren bits are set
+  - names:
+      [
+        hcounteren_scounteren_vu_op,
+        H_virtinst_vu_nonhighctr_h0_s0_m1,
+        H_virtinst_vu32_highctr_h0_s0_m1,
+      ]
+    coverpoint:
+      [
+        "ZicntrH_cg/cp_hcounteren_access_vu",
+        "ZicntrH_cg/cp_scounteren_access_vu",
+      ]
+
+  # A counter whose mcounteren bit is clear raises illegal instruction below M-mode
+  - name: mcounteren_clr_ill_inst_exc
+    coverpoint: ["ZicntrH_cg/cp_mcounteren_access_vs"]
+
+  # A counter whose mcounteren bit is set is accessible in HS-mode
+  - name: mcounteren_set_nxt_priv
+    coverpoint: ["ZicntrH_cg/cp_scounteren_access_hs"]
+
+  # A counter whose scounteren bit is clear raises illegal instruction in U-mode
+  - name: scounteren_op
+    coverpoint:
+      [
+        "ZicntrH_cg/cp_scounteren_access_u",
+        "ZicntrH_cg/cp_scounteren_access_hs (HS-mode reads ignore scounteren)",
+      ]
+
+  # The htimedelta CSR is a 64-bit read/write register that contains the delta between the
+  # value of the time CSR and the value returned in VS-mode or VU-mode. That is, reading
+  # the time CSR in VS or VU mode returns the sum of the contents of htimedelta and the
+  # actual value of time.
+  - name: htimedelta_sz_acc_op
+    coverpoint:
+      [
+        "ZicntrH_cg/cp_delta_hs",
+        "ZicntrH_cg/cp_delta_vs",
+        "ZicntrH_cg/cp_delta_u",
+        "ZicntrH_cg/cp_delta_vu",
+      ]
+  # When XLEN=32, htimedeltah is a 32-bit read/write register that aliases bits 63:32 of
+  # htimedelta. Register htimedeltah does not exist when XLEN=64.
+  - name: htimedeltah_sz_acc_op
+    coverpoint:
+      [
+        "ZicntrH_cg/cp_delta_hs",
+        "ZicntrH_cg/cp_delta_vs",
+        "ZicntrH_cg/cp_delta_u",
+        "ZicntrH_cg/cp_delta_vu",
+      ]
+  # If the time CSR is implemented, htimedelta (and htimedeltah for XLEN=32) must be
+  # implemented.
+  - name: time_htimedelta_req
+    coverpoint:
+      [
+        "ZicntrH_cg/cp_delta_hs",
+        "ZicntrH_cg/cp_delta_vs",
+        "ZicntrH_cg/cp_delta_u",
+        "ZicntrH_cg/cp_delta_vu",
+      ]

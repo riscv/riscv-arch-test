@@ -24,6 +24,7 @@
 #define SAIL_MTIMECMP_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0x4000)
 #define SAIL_MTIME_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0xBFF8)
 #define SAIL_SIG_ADDRESS (SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS + 0x4)
+#define SAIL_SIG_GUEST_ADDRESS (SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS + 0x8)
 
 // Don't use invisible trap emulation for expected result generation
 #undef RVTEST_EMULATE_TIME_CSR
@@ -136,10 +137,31 @@
 
 
 #undef RVMODEL_CLR_MEXT_INT
+#ifdef RVMODEL_CLR_MEXT_INT_TSBI
+// The DUT's clear below M-mode is a T-SBI call, which the trap counter counts. Make one T-SBI call here too (a
+// read of mip, which changes nothing and, like the DUT's call, records no trap signature) so the trap counts match.
 #define RVMODEL_CLR_MEXT_INT(_R1, _R2)        \
   li _R1, (1 << 11);               \
   li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear MEXT interrupt */ \
+  RVTEST_TSBI_CSR_READ(CSR_MIP)
+#else
+#define RVMODEL_CLR_MEXT_INT(_R1, _R2)        \
+  li _R1, (1 << 11);               \
+  li _R2, SAIL_SIG_ADDRESS;    \
+  sw _R1, 0(_R2)            ; /* Clear MEXT interrupt */ \
+
+#endif
+
+// Sail clears from M-mode with the same store, and no trap, replacing any DUT-specific M-mode clear (such as an
+// IMSIC mtopei claim). It is spelled out rather than left to check_defines.h, which would point it at the clear
+// above and so add the T-SBI call in M-mode.
+#undef RVMODEL_CLR_MEXT_INT_M
+#define RVMODEL_CLR_MEXT_INT_M(_R1, _R2)      \
+  li _R1, (1 << 11);               \
+  li _R2, SAIL_SIG_ADDRESS;    \
+  sw _R1, 0(_R2)            ; /* Clear MEXT interrupt */ \
+
 
 #undef RVMODEL_SET_MSW_INT
 #define RVMODEL_SET_MSW_INT(_R1, _R2)        \
@@ -168,6 +190,8 @@
   li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear SEXT interrupt */ \
 
+#undef RVMODEL_CLR_SEXT_INT_M
+
 #undef RVMODEL_SET_SSW_INT
 #define RVMODEL_SET_SSW_INT(_R1, _R2)        \
   li _R1, (1 << 31) | (1 << 1);               \
@@ -179,5 +203,23 @@
   li _R1, (1 << 1);               \
   li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear SSW interrupt */ \
+
+##### Guest External Interrupts #####
+// Only when the DUT defines them, because the tests are gated on them. The Sail
+// config's extensions.H.geilen must match the DUT's GEILEN.
+#ifdef RVMODEL_SET_GUEST_EXT_INT
+#undef RVMODEL_SET_GUEST_EXT_INT
+#define RVMODEL_SET_GUEST_EXT_INT(_GEI, _R1, _R2)        \
+  li _R1, (1 << 31) | (_GEI);               \
+  li _R2, SAIL_SIG_GUEST_ADDRESS;    \
+  sw _R1, 0(_R2)            ; /* Set hgeip bit _GEI */ \
+
+#undef RVMODEL_CLR_GUEST_EXT_INT
+#define RVMODEL_CLR_GUEST_EXT_INT(_GEI, _R1, _R2)        \
+  li _R1, (_GEI);               \
+  li _R2, SAIL_SIG_GUEST_ADDRESS;    \
+  sw _R1, 0(_R2)            ; /* Clear hgeip bit _GEI */ \
+
+#endif
 
 #endif // _SAIL_MACROS_H

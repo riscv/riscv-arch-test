@@ -10,4 +10,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SvH_cg = new();         SvH_cg.set_inst_name("obj_SvH");
+    SvH_vsstage_cg = new();     SvH_vsstage_cg.set_inst_name("obj_SvH_vsstage");
+    SvH_gstage_cg = new();      SvH_gstage_cg.set_inst_name("obj_SvH_gstage");
+    SvH_twostage_cg = new();    SvH_twostage_cg.set_inst_name("obj_SvH_twostage");
+    SvH_hlv_cg = new();         SvH_hlv_cg.set_inst_name("obj_SvH_hlv");
+    SvH_csr_cg = new();         SvH_csr_cg.set_inst_name("obj_SvH_csr");

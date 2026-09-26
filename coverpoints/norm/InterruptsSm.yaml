@@ -340,3 +340,82 @@ normative_rule_definitions:
   - name: trap_del_intr_priv_lvl
     coverpoint:
       ["InterruptsSm_cg/cp_trigger", "InterruptsSm_cg/cp_priority_mideleg"]
+
+  # A machine timer interrupt becomes pending whenever mtime contains a value greater than or equal
+  # to mtimecmp, treating the values as unsigned integers. The interrupt remains posted until
+  # mtimecmp becomes greater than mtime
+  - name: mtime_intr_pending
+    coverpoint: ["ZawrsSm_cg/cp_wrs_resume"]
+
+  # The interrupt will only be taken if interrupts are enabled and the MTIE bit is set in the mie
+  # register.
+  - name: mtime_intr_taken
+    coverpoint: ["ZawrsSm_cg/{cp_wrs_resume, cp_wrs_no_mie}"]
+
+  # If the result of the comparison between mtime and mtimecmp changes, it is guaranteed to be
+  # reflected in MTIP eventually, but not necessarily immediately.
+  - name: mtime_intr_mtip_visibility
+    coverpoint: ["ZawrsSm_cg/cp_wrs_resume"]
+
+  # The Wait for Interrupt instruction (WFI) informs the implementation that the current hart can be
+  # stalled until an interrupt might need servicing.
+  - name: wfi_op
+    coverpoint: ["InterruptsSm_cg/cp_wfi"]
+
+  # WFI is available in all privileged modes
+  - name: wfi_all_privileged_modes
+    coverpoint: ["InterruptsSm_cg/cp_wfi"]
+
+  # optionally available to U-mode.
+  - name: wfi_opt_u_mode
+    coverpoint: ["InterruptsSm_cg/cp_wfi", "InterruptsSm_cg/cp_wfi_timeout"]
+
+  # This instruction may raise an illegal-instruction exception when TW=1 in mstatus, as described
+  # in virt-control.
+  - name: wfi_ill_exc
+    coverpoint: ["InterruptsSm_cg/cp_wfi_timeout"]
+
+  - name: wfi_enc_img
+    coverpoint: ["InterruptsSm_cg/cp_wfi"]
+
+  # If an enabled interrupt is present or later becomes present while the hart is stalled, the
+  # interrupt trap will be taken on the following instruction, i.e., execution resumes in the trap
+  # handler and mepc = pc + 4.
+  - name: wfi_mepc_val
+    coverpoint: ["InterruptsSm_cg/cp_wfi"]
+
+  # Implementations are permitted to resume execution for any reason, even if an enabled interrupt
+  # has not become pending. Hence, a legal implementation is to simply implement the WFI instruction
+  # as a NOP.
+  - name: wfi_resume_reason
+    coverpoint: ["InterruptsSm_cg/cp_wfi"]
+
+  # The WFI instruction can also be executed when interrupts are disabled.
+  - name: wfi_intr_dis
+    coverpoint: ["InterruptsSm_cg/cp_wfi"]
+
+  # The operation of WFI must be unaffected by the global interrupt bits in mstatus (MIE and SIE)
+  # and the delegation register mideleg (i.e., the hart must resume if a locally enabled interrupt
+  # becomes pending, even if it has been delegated to a less-privileged mode), but should honor the
+  # individual interrupt enables (e.g, MTIE) (i.e., implementations should avoid resuming the hart
+  # if the interrupt is pending but not locally enabled).
+  - name: wfi_unaffected_conditions
+    coverpoint:
+      [
+        "InterruptsSm_cg/cp_wfi",
+        "TODO: wake WFI with a locally enabled interrupt delegated through mideleg",
+      ]
+
+  # WFI is also required to resume execution for locally enabled interrupts pending at any privilege
+  # level, regardless of the global interrupt enable at each privilege level.
+  - name: wfi_resume_any_priv
+    coverpoint:
+      [
+        "InterruptsSm_cg/cp_wfi",
+        "TODO: wake WFI in M-mode with a pending, locally enabled S-level interrupt",
+      ]
+
+  # If the event that causes the hart to resume execution does not cause an interrupt to be taken,
+  # execution will resume at pc + 4
+  - name: wfi_no_intr_pc
+    coverpoint: ["InterruptsSm_cg/cp_wfi"]

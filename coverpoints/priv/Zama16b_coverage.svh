@@ -17,7 +17,10 @@
 //                2-byte  (lh, lhu, sh, flh, fsh, amo*.h)  : offsets [0:14]
 //                4-byte  (lw, lwu, sw, flw, fsw, amo*.w)  : offsets [0:12]
 //                8-byte  (ld, sd, fld, fsd, amo*.d)       : offsets [0:8]
-//               16-byte  (flq, fsq, amocas.q)             : offsets [0:0]
+//               16-byte  (amocas.q)                       : offsets [0:0]
+//
+//              flq/fsq, and fld/fsd on RV32, are omitted: the misaligned atomicity
+//              granule PMA covers only F/D/Q loads and stores of no more than XLEN bits.
 //
 // NOTE: This coverage only checks for no misaligned fault.
 //       Multimaster testing will be required to verify atomicity.
@@ -134,10 +137,12 @@ covergroup Zama16b_cg with function sample(ins_t ins);
             wildcard bins ld = {LD};
             wildcard bins sd = {SD};
         `endif // UDB_MXLEN_64
-        `ifdef D_SUPPORTED
-            wildcard bins fld = {FLD};
-            wildcard bins fsd = {FSD};
-        `endif // D_SUPPORTED
+        `ifdef UDB_MXLEN_64
+            `ifdef D_SUPPORTED
+                wildcard bins fld = {FLD};
+                wildcard bins fsd = {FSD};
+            `endif // D_SUPPORTED
+        `endif // UDB_MXLEN_64
         `ifdef ZAAMO_SUPPORTED
             `ifdef UDB_MXLEN_64
                 wildcard bins amoswap_d = {AMOSWAP_D};
@@ -162,33 +167,20 @@ covergroup Zama16b_cg with function sample(ins_t ins);
     cp_zama16b_8byte: cross insn_8byte, offset_8byte;
 
     // ================================================================
-    // 16-byte accesses (flq, fsq, amocas.q): offset [0:0]
+    // 16-byte accesses (amocas.q): offset [0:0]
     // ================================================================
-    `ifdef Q_SUPPORTED
-        insn_16byte_fp: coverpoint ins.current.insn {
-            type_option.weight = 0;
-            wildcard bins flq = {FLQ};
-            wildcard bins fsq = {FSQ};
-        }
-        offset_16byte_fp: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) {
-            type_option.weight = 0;
-            bins offsets[] = {[0:0]};
-        }
-        cp_zama16b_16byte_fp: cross insn_16byte_fp, offset_16byte_fp;
-    `endif // Q_SUPPORTED
-
     `ifdef ZAAMO_SUPPORTED
         `ifdef ZACAS_SUPPORTED
             `ifdef UDB_MXLEN_64
-                insn_16byte_cas: coverpoint ins.current.insn {
+                insn_16byte: coverpoint ins.current.insn {
                     type_option.weight = 0;
                     wildcard bins amocas_q = {AMOCAS_Q};
                 }
-                offset_16byte_cas: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) {
+                offset_16byte: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) {
                     type_option.weight = 0;
                     bins offsets[] = {[0:0]};
                 }
-                cp_zama16b_16byte_cas: cross insn_16byte_cas, offset_16byte_cas;
+                cp_zama16b_16byte: cross insn_16byte, offset_16byte;
             `endif // UDB_MXLEN_64
         `endif // ZACAS_SUPPORTED
     `endif // ZAAMO_SUPPORTED

@@ -31,11 +31,10 @@ _LOAD_OPS: list[tuple[str, int, bool, str | None]] = [
     # RV64-only integer loads
     ("lwu", 4, False, "#if __riscv_xlen == 64"),
     ("ld", 8, False, "#if __riscv_xlen == 64"),
-    # Floating-point loads
+    # Floating-point loads (fld only on RV64: the granule covers F/D/Q loads of at most XLEN bits)
     ("flh", 2, True, "#ifdef ZFH_SUPPORTED"),
     ("flw", 4, True, "#ifdef F_SUPPORTED"),
-    ("fld", 8, True, "#ifdef D_SUPPORTED"),
-    # ("flq", 16, True, "#ifdef Q_SUPPORTED"),
+    ("fld", 8, True, "#if defined(D_SUPPORTED) && __riscv_xlen == 64"),
 ]
 
 _STORE_OPS: list[tuple[str, int, bool, str | None]] = [
@@ -45,11 +44,10 @@ _STORE_OPS: list[tuple[str, int, bool, str | None]] = [
     ("sw", 4, False, None),
     # RV64-only integer store
     ("sd", 8, False, "#if __riscv_xlen == 64"),
-    # Floating-point stores
+    # Floating-point stores (fsd only on RV64: the granule covers F/D/Q stores of at most XLEN bits)
     ("fsh", 2, True, "#ifdef ZFH_SUPPORTED"),
     ("fsw", 4, True, "#ifdef F_SUPPORTED"),
-    ("fsd", 8, True, "#ifdef D_SUPPORTED"),
-    # ("fsq", 16, True, "#ifdef Q_SUPPORTED"),
+    ("fsd", 8, True, "#if defined(D_SUPPORTED) && __riscv_xlen == 64"),
 ]
 
 _AMO_OPS: list[tuple[str, int, str]] = [
@@ -125,11 +123,7 @@ def _emit_scratch_init(base_reg: int, data_reg: int) -> list[str]:
     return out
 
 
-def _size_coverpoint(mnemonic: str, size: int) -> str:
-    if size == 16:
-        # The 16-byte group has no baseline instruction, so it's split
-        # into an fp (flq/fsq) cross and a separate cas (amocas.q) cross.
-        return "cp_zama16b_16byte_cas" if mnemonic.startswith("amocas") else "cp_zama16b_16byte_fp"
+def _size_coverpoint(size: int) -> str:
     return f"cp_zama16b_{size}byte"
 
 
@@ -172,7 +166,7 @@ def _generate_load_tests(test_data: TestData) -> list[str]:
             prev_guard = guard
 
         bin_name = mnemonic.replace(".", "_")
-        coverpoint = _size_coverpoint(mnemonic, size)
+        coverpoint = _size_coverpoint(size)
 
         for offset in range(16 - size + 1):
             lines.extend(
@@ -241,7 +235,7 @@ def _generate_store_tests(test_data: TestData) -> list[str]:
             prev_guard = guard
 
         bin_name = mnemonic.replace(".", "_")
-        coverpoint = _size_coverpoint(mnemonic, size)
+        coverpoint = _size_coverpoint(size)
 
         # FP needs a value preloaded into f{fp_reg} once per guard block (matches the FP store width).
         if is_fp and guard != last_fp_preload_guard:
@@ -333,7 +327,7 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
             prev_guard = guard
 
         bin_name = mnemonic.replace(".", "_")
-        coverpoint = _size_coverpoint(mnemonic, size)
+        coverpoint = _size_coverpoint(size)
 
         for offset in range(16 - size + 1):
             lines.append(

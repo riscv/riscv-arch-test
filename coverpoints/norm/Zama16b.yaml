@@ -19,6 +19,5 @@ normative_rule_definitions:
         Zama16b_cg/cp_zama16b_2byte,
         Zama16b_cg/cp_zama16b_4byte,
         Zama16b_cg/cp_zama16b_8byte,
-        Zama16b_cg/cp_zama16b_16byte_fp,
-        Zama16b_cg/cp_zama16b_16byte_cas",
+        Zama16b_cg/cp_zama16b_16byte",
       ]

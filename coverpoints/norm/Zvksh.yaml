@@ -1,3 +1,69 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # All of these instructions work on 256-bit element groups comprised of eight 32-bit elements.
+  - name: Zvksh_egw256b_elem32b
+    coverpoint:
+      [
+        "Zvksh_vsm3c_vi_cg/cr_vl_lmul_egs8_sew32",
+        "Zvksh_vsm3me_vv_cg/cr_vl_lmul_egs8_sew32",
+      ]
+
+  # To help avoid side-channel timing attacks, these instructions shall be implemented with
+  # data-independent timing.
+  - name: Zvksh_dataindeptiming
+    coverpoint: ["Untestable: microarchitectural timing"]
+
+  # The number of element groups to be processed is vl/EGS. vl must be set to the number of SEW=32
+  # elements to be processed and therefore must be a multiple of EGS=8.
+  - name: Zvksh_vl
+    coverpoint:
+      [
+        "Zvksh_vsm3c_vi_cg/cr_vl_lmul_egs8_sew32",
+        "Zvksh_vsm3me_vv_cg/cr_vl_lmul_egs8_sew32",
+      ]
+
+  # Likewise, vstart must be a multiple of EGS=8.
+  - name: Zvksh_vstart
+    coverpoint: ["TODO: execute with vstart set to a nonzero multiple of EGS=8"]
+
+  # Two rounds of SM3 compression are performed.
+  - name: vsm3c-vi_op
+    coverpoint:
+      [
+        "Zvksh_vsm3c_vi_cg/{cp_imm_5bit_u, cr_vs2_vd_edges_egs8, cr_vl_lmul_egs8_sew32}",
+      ]
+
+  # The current state of eight 32-bit words is read in as an element group from vd. Eight 32-bit
+  # message words are read in as an element group from vs2, although only four of them are used. All
+  # of the 32-bit input words are byte-swapped from big endian to little endian. These inputs are
+  # processed somewhat differently based on the round group (as specified in uimm), and the next
+  # state is generated as an element group of eight 32-bit words. The next state of eight 32-bit
+  # words are generated, swapped from little endian to big endian, and are returned in an
+  # eight-element group.
+  - name: vsm3c-vi_op_sm3
+    coverpoint:
+      [
+        "Zvksh_vsm3c_vi_cg/{cp_vd_edges_egs8, cp_vs2_edges_egs8, cr_vs2_vd_edges_egs8, cp_imm_5bit_u}",
+      ]
+
+  # The round number is provided by the 5-bit uimm unsigned immediate. Legal values are 0–31 and
+  # indicate which group of two rounds are being performed. For example, if uimm=1, then rounds 2
+  # and 3 are being performed.
+  - name: vsm3c-vi_op_rnd
+    coverpoint: ["Zvksh_vsm3c_vi_cg/cp_imm_5bit_u"]
+
+  # Eight rounds of SM3 message expansion are performed.
+  - name: vsm3me-vv_op
+    coverpoint:
+      ["Zvksh_vsm3me_vv_cg/{cr_vs2_vs1_edges_egs8, cr_vl_lmul_egs8_sew32}"]
+
+  # The sixteen most recent 32-bit message words are read in as two eight-element groups from vs1
+  # and vs2. Each of these words is swapped from big endian to little endian. The next eight 32-bit
+  # message words are generated, swapped from little endian to big endian, and are returned in an
+  # eight-element group.
+  - name: vsm3me-vv_op_sm3
+    coverpoint:
+      [
+        "Zvksh_vsm3me_vv_cg/{cp_vs1_edges_egs8, cp_vs2_edges_egs8, cr_vs2_vs1_edges_egs8}",
+      ]

@@ -8,3 +8,9 @@ normative_rule_definitions:
   # for doublewords and four-byte aligned for words).
   - name: amo_alignment
     coverpoint: ["Zaamo_amoadd_w_cg/cp_align_word"]
+
+  # If a misaligned AMO accesses a region that does not specify a misaligned atomicity granule PMA, or
+  # if not all accessed bytes lie within the same misaligned atomicity granule, then an exception is
+  # raised.
+  - name: pma_mag_op_amo
+    coverpoint: ["ExceptionsZaamo_cg/cp_amo_address_misaligned"]

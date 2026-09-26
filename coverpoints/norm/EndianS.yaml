@@ -4,12 +4,29 @@ normative_rule_definitions:
   # An implementation may make UBE be a read-only field that always specifies the same
   # endianness as for S-mode.
   - name: sstatus_ube
-    coverpoint: ["EndianS/cp_sstatus_ube_endianness_lw"]
+    coverpoint: ["EndianS_cg/cp_sstatus_ube_endianness_lw"]
 
   # UBE has no effect on instruction fetches, which are implicit memory accesses
   # that are always little-endian.
   - name: sstatus_ube_implicit
-    coverpoint: ["EndianS/cp_sstatus_ube_endianness_lw"]
+    coverpoint: ["EndianS_cg/cp_sstatus_ube_endianness_lw"]
+
+  # UBE controls whether explicit load and store memory accesses made from U-mode are
+  # little-endian (UBE=0) or big-endian (UBE=1).
+  - name: sstatus_ube_endianness_op
+    # Representative coverpoints; also cp_sstatus_ube_endianness_{sb,lh,lb,lhu,sd,ld,lwu}
+    coverpoint:
+      [
+        "EndianS_cg/{cp_sstatus_ube_endianness_sw, cp_sstatus_ube_endianness_lw, cp_sstatus_ube_endianness_sh, cp_sstatus_ube_endianness_lbu}",
+      ]
+
+  # For implicit accesses to supervisor-level memory management data structures, such as
+  # page tables, S-mode endianness always applies and UBE is ignored.
+  - name: sstatus_ube_implicit_smode
+    coverpoint:
+      [
+        "TODO: U-mode accesses through Sv translation with UBE≠SBE, checking page tables are read with S-mode endianness",
+      ]
 
   # The EEI will define whether the memory system is little-endian or big-endian.
   - name: endianness
@@ -47,7 +64,14 @@ normative_rule_definitions:
   # store memory addresses are translated and protected, and endianness is applied,
   # as though the current privilege mode were set to MPP.
   - name: mstatus_mprv_ldst_op
-    coverpoint: ["EndianS/cp_mstatus_mprv_sbe_endianness"]
+    # Representative coverpoints; also the other cp_mstatus_mprv_sbe_endianness_* coverpoints
+    coverpoint:
+      [
+        "EndianS_cg/cp_mstatus_mprv_sbe_endianness_sw",
+        "EndianS_cg/cp_mstatus_mprv_sbe_endianness_sb",
+        "EndianS_cg/cp_mstatus_mprv_sbe_endianness_lw",
+        "EndianS_cg/cp_mstatus_mprv_sbe_endianness_lbu",
+      ]
 
   # If S-mode is not supported, SBE is read-only 0. Otherwise, SBE controls whether
   # explicit load and store memory accesses made from S-mode are little-endian

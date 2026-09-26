@@ -40,6 +40,10 @@ normative_rule_definitions:
         "InterruptsS_cg/cp_user_mti, ExceptionsSm_cg/cp_medeleg_msu_illegalinstruction, S_sprivinst_cg/cp_sret_s, Sm_mprivinst_cg/cp_sret_s",
       ]
 
+  # The sstatus register is a subset of the mstatus register.
+  - name: sstatus_subset_mstatus
+    coverpoint: ["Sm_mcsr_cg/cp_shadow"]
+
   # The UXL field controls the value of XLEN for U-mode, termed UXLEN, which may differ
   # from the value of XLEN for S-mode, termed SXLEN. The encoding of UXL is the same as
   # that of the MXL field of misa, shown in .
@@ -59,6 +63,11 @@ normative_rule_definitions:
   - name: sstatus_uxl_behavior
     coverpoint: ["OUT-OF-SCOPE"]
 
+  # If UXLEN < SXLEN, user-mode instruction-fetch addresses and load and store effective
+  # addresses are taken modulo 2^UXLEN.
+  - name: sstatus_uxl_addr_modulo
+    coverpoint: ["XLEN-dependent behavior not tested; single XLEN assumed"]
+
   # Some HINT instructions are encoded as integer computational instructions that
   # overwrite their destination register with its current value, e.g., c.addi x8, 0.
   # When such a HINT is executed with XLEN &lt; SXLEN and bits SXLEN..XLEN of the
@@ -77,6 +86,10 @@ normative_rule_definitions:
   - name: stvec
     coverpoint: ["S_scsr_cg/cp_scsr_access"]
 
+  # Figure: Supervisor trap vector base address (stvec) register.
+  - name: stvec_img
+    coverpoint: ["S_scsr_cg/{cp_stvec_vaddr_walk1, cp_stvec_vaddr_walk0}"]
+
   # The BASE field in stvec is a field that can hold any valid virtual or physical
   # address, subject to the following alignment constraints: the address must be
   # 4-byte aligned, and MODE settings other than Direct might impose additional
@@ -90,6 +103,15 @@ normative_rule_definitions:
   # XLEN-bit address that is always aligned on a 4-byte boundary.
   - name: stvec_sz_base
     coverpoint: ["ExceptionsS_cg/cp_stvec"]
+
+  # Value|Name|Description === 0 1 ≥2|Direct Vectored|All exceptions set pc to BASE.
+  # Asynchronous interrupts set pc to BASE+4×cause. Reserved ===
+  - name: stvec_mode_enc
+    coverpoint:
+      [
+        "ExceptionsS_cg/cp_stvec (Direct)",
+        "TODO: S-mode interrupts with stvec.MODE=Vectored, and a write of a reserved MODE value",
+      ]
 
   # The sip register is an SXLEN-bit read/write register containing information on pending
   # interrupts, while sie is the corresponding SXLEN-bit read/write register containing
@@ -180,6 +202,10 @@ normative_rule_definitions:
   - name: std_super_intr_impl
     coverpoint: ["S_scsr_cg/cp_scsr_access/{sie, sip}"]
 
+  # All bits in sip and sie are WARL fields.
+  - name: sip_sie_warl
+    coverpoint: ["S_scsr_cg/{cp_scsr_access, cp_scsrwalk}"]
+
   # Multiple simultaneous interrupts destined for supervisor mode are handled in the
   # following decreasing priority order: SEI, SSI, STI, LCOFI.
   - name: sip_sie_priority_bit_order
@@ -258,6 +284,25 @@ normative_rule_definitions:
   - name: scause_exception_code_sz
     coverpoint: ["S_scause_cg/cp_scause_write_{interrupt, exception}"]
 
+  # Interrupt|Exception Code|Description === 1 1 1 1 1 1 1 1 1 1|0 1 2-4 5 6-8 9 10-12
+  # 13 14-15 ≥16|Reserved Supervisor software interrupt Reserved Supervisor timer
+  # interrupt Reserved Supervisor external interrupt Reserved Counter-overflow interrupt
+  # Reserved Designated for platform use¶0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0|0
+  # 1 2 3 4 5 6 7 8 9 10-11 12 13 14 15 16-17 18 19 20-23 24-31 32-47 48-63
+  # ≥64|Instruction address misaligned Instruction access fault Illegal instruction
+  # Breakpoint Load address misaligned Load access fault Store/AMO address misaligned
+  # Store/AMO access fault Environment call from U-mode Environment call from S-mode
+  # Reserved Instruction page fault Load page fault Reserved Store/AMO page fault
+  # Reserved Software check Hardware error Reserved Designated for custom use Reserved
+  # Designated for custom use Reserved ===
+  - name: scause_exccode_enc_tbl
+    # Representative coverpoints; also the other ExceptionsS_cg trap coverpoints and InterruptsS_cg
+    coverpoint:
+      [
+        "S_scause_cg/{cp_scause_write_exception, cp_scause_write_interrupt}",
+        "ExceptionsS_cg/{cp_illegal_instruction, cp_ecall_s}",
+      ]
+
   # The stval CSR is an SXLEN-bit read-write register formatted as shown in . When a trap
   # is taken into S-mode, stval is written with exception-specific information to assist
   # software in handling the trap. Otherwise, stval is never written by the
@@ -267,15 +312,16 @@ normative_rule_definitions:
   # event that caused the exception.
   - name: stval
     coverpoint:
-      ["S_stval_cg/cp_stval_write, ExceptionsS_cg/cp_illegal_instruction"]
+      ["S_scsr_cg/cp_scsr_access/stval, ExceptionsS_cg/cp_illegal_instruction"]
 
   # If stval is written with a nonzero value when a breakpoint, address-misaligned,
   # access-fault, page-fault, or hardware-error exception occurs on an instruction
   # fetch, load, or store, then stval will contain the faulting virtual address.
   - name: stval_op_faulting_addr
+    # Representative coverpoints; also cp_store_address_misaligned, cp_instr_adr_misaligned_{branch,jal,jalr}, cp_load_access_fault
     coverpoint:
       [
-        "ExceptionsS_cg/{cp_breakpoint, cp_{load,store,instr}_address_misaligned, cp_{load,store, instr}_access_fault,cp_illegal_instruction",
+        "ExceptionsS_cg/{cp_breakpoint, cp_load_address_misaligned, cp_instr_access_fault, cp_store_access_fault}",
       ]
 
   # On a breakpoint exception raised by an EBREAK or C.EBREAK instruction, stval is
@@ -323,14 +369,21 @@ normative_rule_definitions:
 
   # stval is a WARL register that must be able to hold all valid virtual addresses
   # and the value 0. It need not be capable of holding all possible invalid
-  # addresses. Prior to writing stval, implementations may convert an invalid
-  # address into some other invalid address that stval is capable of holding. If the
-  # feature to return the faulting instruction bits is implemented, stval must also
-  # be able to hold all values less than 2N, where N is the smaller of SXLEN and
-  # ILEN.
+  # addresses.
   - name: stval_acc
     coverpoint:
       ["S_scsr_cg/cp_stval_vaddr_walk1", "S_scsr_cg/cp_stval_vaddr_walk0"]
+
+  # Prior to writing stval, implementations may convert an invalid address into some
+  # other invalid address that stval is capable of holding.
+  - name: stval_inv_addr_conv
+    coverpoint: ["Definition, checked through UDB"]
+
+  # If the feature to return the faulting instruction bits is implemented, stval must
+  # also be able to hold all values less than 2^N, where N is the smaller of SXLEN and
+  # ILEN.
+  - name: stval_instr_bits_sz
+    coverpoint: ["S_scsr_cg/{cp_stval_ilen_walk1, cp_stval_ilen_ones}"]
 
   # The senvcfg CSR is an SXLEN-bit read/write register, formatted as shown in , that
   # controls certain characteristics of the U-mode execution environment.
@@ -355,6 +408,32 @@ normative_rule_definitions:
   - name: senvcfg_fiom_acc
     coverpoint: ["S_scsr_cg/cp_scsr_access/senvcfg"]
 
+  # Instruction bit|Meaning when set === PI PO|Predecessor device input and memory reads
+  # (PR implied) Predecessor device output and memory writes (PW implied)¶SI
+  # SO|Successor device input and memory reads (SR implied) Successor device output and
+  # memory writes (SW implied) ===
+  - name: senvcfg_fiom_fence_presuc_op
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+
+  # When the Zicboz extension is not implemented, CBZE is read-only zero.
+  - name: senvcfg_cbze_rdonly0
+    coverpoint:
+      ["S_scsr_cg/cp_scsrwalk/senvcfg (configurations without Zicboz)"]
+
+  # When the Zicbom extension is not implemented, CBCFE is read-only zero.
+  - name: senvcfg_cbcfe_rdonly0
+    coverpoint:
+      ["S_scsr_cg/cp_scsrwalk/senvcfg (configurations without Zicbom)"]
+
+  # The encoding 0b10 is reserved.
+  - name: senvcfg_cbie_rsv
+    coverpoint: ["S_scsr_cg/cp_scsrwalk/senvcfg (the walk writes CBIE=0b10)"]
+
+  # When the Zicbom extension is not implemented, CBIE is read-only zero.
+  - name: senvcfg_cbie_rdonly0
+    coverpoint:
+      ["S_scsr_cg/cp_scsrwalk/senvcfg (configurations without Zicbom)"]
+
   # although CSRs and instructions are associated with one privilege level, they are
   # also accessible at all higher privilege levels.
   - name: Zicsr_higher_priv
@@ -365,7 +444,7 @@ normative_rule_definitions:
   - name: Zicsr_rw
     coverpoint: ["S_scsr_cg/cp_csr_ro"]
 
-    # The next two bits (csr[9:8]) encode the lowest privilege level that can access
+  # The next two bits (csr[9:8]) encode the lowest privilege level that can access
   # the CSR.
   - name: Zicsr_access
     coverpoint: ["S_scsr_cg/cp_csr_insufficient_priv"]
@@ -434,13 +513,13 @@ normative_rule_definitions:
     coverpoint: ["S_sprivinst_cg/cp_sprivinst mret bin"]
 
   - name: sret_presence
-    coverpoint: ["S_sprivinst_cg/cp_sprivinst sret bin"]
+    coverpoint: ["S_sprivinst_cg/cp_sret_s"]
 
   - name: sret_ill_inst_exc_rst
     coverpoint: ["TODO"]
 
   - name: xret_op
-    coverpoint: ["S_privinst_cg/cp_privinst sret bin"]
+    coverpoint: ["S_sprivinst_cg/cp_sret_s"]
 
   - name: sfence_vma_op
-    coverpoint: ["S_privinst_cg/cp_sprivinst sfence_vma bin"]
+    coverpoint: ["S_sprivinst_cg/cp_sprivinst sfence_vma bin"]

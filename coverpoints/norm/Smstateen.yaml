@@ -24,16 +24,10 @@ normative_rule_definitions:
     coverpoint: ["Not testable"]
 
   - name: sstateen_user_access_control
-    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_jvt_lower}"]
+    coverpoint: ["Ssstateen_cg/{cp_jvt, cp_fcsr_lower}"]
 
   - name: mstateen_bit_correspondence
     coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]
-
-  - name: mstateen_bit_encroachment
-    coverpoint: ["Not testable"]
-
-  - name: sstateen_encroachment_bits_roz
-    coverpoint: ["Not testable"]
 
   - name: hstateen_encoding
     coverpoint: [""]
@@ -47,6 +41,15 @@ normative_rule_definitions:
   - name: stateen_reserved_roz
     coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]
 
+  # For every bit in an mstateen CSR that is zero (whether read-only zero or set to
+  # zero), the same bit appears as read-only zero in the matching hstateen and sstateen
+  # CSRs.
+  - name: mstateen_lower_priv_roz
+    coverpoint:
+      [
+        "TODO: clear an mstateen0 bit (e.g. FCSR or JVT) and check that the matching sstateen0 bit reads zero",
+      ]
+
   - name: sstateen_vsmode_access_roz
     coverpoint: [""]
 
@@ -57,10 +60,10 @@ normative_rule_definitions:
     coverpoint: [""]
 
   - name: mstateen_zero_initialization
-    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_mstateen_reset_val}"]
-
-  - name: hstateen_sstateen_zero_initialization
-    coverpoint: [""]
+    coverpoint:
+      [
+        "TODO: record the writable mstateen bits before the boot code writes them",
+      ]
 
   - name: mstateen_bit_63_op
     coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]
@@ -74,54 +77,69 @@ normative_rule_definitions:
   - name: hstateen_bit_63_writable
     coverpoint: [""]
 
+  # Figure: Machine State Enable 0 Register (mstateen0).
+  - name: mstateen0_enc_img
+    coverpoint: ["Smstateen_cg/cp_walking_ones"]
+
+  # Figure: Hypervisor State Enable 0 Register (hstateen0).
+  - name: hstateen0_enc_img
+    coverpoint: ["TODO: walk hstateen0 in hypervisor tests"]
+
+  # Figure: Supervisor State Enable 0 Register (sstateen0).
+  - name: sstateen0_enc_img
+    coverpoint: ["Ssstateen_cg/cp_walking_ones"]
+
   - name: stateen0_c_op
     coverpoint: [""]
 
   - name: stateen0_fcsr_op
-    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_fcsr}"]
+    coverpoint:
+      ["Smstateen_cg/{cp_fcsr, cp_fcsr_lower}", "Ssstateen_cg/cp_fcsr_lower"]
 
   - name: mstateen0_fcsr_roz
-    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_fcsr_ro_zero}"]
+    coverpoint: ["Smstateen_cg/cp_fcsr_ro_zero"]
 
   - name: stateen0_fcsr0_misa_f0_illegal_fpu_instr
     coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_fcsr_lower}"]
 
   - name: stateen0_jvt_op
-    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_jvt_lower}"]
+    coverpoint: ["Smstateen_cg/cp_jvt_access", "Ssstateen_cg/cp_jvt"]
 
   - name: mstateen0_se0_op
-    coverpoint:
-      ["{Smstateen_cg,Ssstateen_cg}/{cp_mstateen_access_control_over_sstateen}"]
+    coverpoint: ["Smstateen_cg/cp_mstateen0_se0_controls_sstateen0"]
 
   - name: hstateen0_se0_op
     coverpoint: [""]
 
   - name: mstateen0_envcfg_op
-    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_envcfg}"]
+    coverpoint: ["Smstateen_cg/cp_envcfg"]
 
   - name: hstateen0_envcfg_op
     coverpoint: [""]
 
   - name: mstateen0_csrind_op
-    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_csrind}"]
+    coverpoint:
+      [
+        "TODO: mstateen0.CSRIND gating of siselect, sireg*, vsiselect, and vsireg*",
+      ]
 
   - name: hstateen0_csrind_op
     coverpoint: [""]
 
   - name: mstateen0_imsic_op
-    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_imsic}"]
+    coverpoint: ["Smstateen_cg/cp_imsic"]
 
   - name: hstateen0_imsic_op
     coverpoint: [""]
 
   - name: mstateen0_aia_op
-    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_aia}"]
+    coverpoint: ["Smstateen_cg/cp_aia"]
 
   - name: hstateen0_aia_op
     coverpoint: [""]
 
   - name: mstateen0_context_op
-    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_context}"]
+    coverpoint: ["Smstateen_cg/cp_context"]
 
   - name: hstateen0_context_op
     coverpoint: [""]
@@ -130,10 +148,10 @@ normative_rule_definitions:
     coverpoint: ["Smstateen_cg/cp_p1p13"]
 
   - name: mstateen0_srmcfg_op
-    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_srmcfg}"]
+    coverpoint: ["Smstateen_cg/cp_srmcfg"]
 
   - name: mstateen_ctr1
-    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_ctr}"]
+    coverpoint: ["Smstateen_cg/cp_ctr"]
 
   - name: mstateen_ctr0
-    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_ctr}"]
+    coverpoint: ["Smstateen_cg/cp_ctr"]

@@ -12,14 +12,6 @@ normative_rule_definitions:
   - name: vlen
     coverpoint: [""]
 
-  # A small implementation supporting ELEN=32 requires only seven bits of state in
-  # vtype: two bits for ma and ta, two bits for vsew[1:0] and three bits for
-  # vlmul[2:0]. The illegal value represented by vill can be internally encoded
-  # using the illegal 64-bit combination in vsew[1:0] without requiring an
-  # additional storage bit to hold vill.
-  - name: vill_implicit_encoding
-    coverpoint: [""]
-
   # Implementations may also change mstatus.VS or vsstatus.VS from Initial or Clean
   # to Dirty at any time, even when there is no change in vector state.
   - name: hw_mstatus_vs_dirty_update
@@ -325,6 +317,12 @@ normative_rule_definitions:
   - name: vcsr_vxrm_vxsat_acc
     coverpoint: [""]
 
+  # The vector extension must have a consistent state at reset. In particular, vtype and vl must
+  # have values that can be read and then restored with a single vsetvl instruction.
+  - name: vector_reset_state
+    coverpoint:
+      ["TODO: after reset, read vtype and vl and restore them with one vsetvl"]
+
   # When LMUL=1, elements are simply packed in order from the least-significant to
   # most-significant bits of the vector register.
   - name: vreg_lmul1_op
@@ -482,6 +480,13 @@ normative_rule_definitions:
   # arguments, and write the new value of vl into rd.
   - name: vset_op
     coverpoint: [""]
+
+  # The configuration-setting instructions do not depend on vstart; they reset vstart to zero.
+  - name: vset_vstart
+    coverpoint:
+      [
+        "TODO: vset* with nonzero vstart; result unaffected and vstart reset to 0",
+      ]
 
   # the vl register is also set to zero.
   - name: vtype_vstart_op
@@ -2145,6 +2150,11 @@ normative_rule_definitions:
   # which the trap was taken.
   - name: epc_vstart_op_V_trap
     coverpoint: [""]
+
+  # Non-idempotent memory regions must not have been updated for indices equal to or greater than
+  # the element that caused a synchronous trap during a vector store instruction.
+  - name: vec_store_nonidempotent_no_update
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
 
   # Any of these extensions can be added to base ISAs with XLEN=32 or XLEN=64.
   - name: Zve_xlen

@@ -33,7 +33,8 @@ normative_rule_definitions:
     coverpoint:
       [
         "ZicsrF_cg/{cp_fcsr_access, cp_fcsr_walk}",
-        "ZicsrF_cg/cp_fflags_set, F_fadd_s_cg/cp_csr_frm",
+        "ZicsrF_cg/{cp_fflags_set_m_NV, cp_fflags_set_m_DZ, cp_fflags_set_m_OF, cp_fflags_set_m_UF, cp_fflags_set_m_NX}",
+        "F_fadd_s_cg/cp_csr_frm",
       ]
 
   # Bits 31&#8205;&#8211;&#8205;8 of the csr:fcsr[] are reserved for other standard
@@ -41,7 +42,7 @@ normative_rule_definitions:
   # to these bits and supply a zero value when read. Standard software should preserve the
   # contents of these bits.
   - name: fcsr_rsv
-    coverpoint: ["ZicsrF_cg/cp_fflags_set, F_fadd_s_cg/cp_csr_frm"]
+    coverpoint: ["ZicsrF_cg/{cp_fcsr_access, cp_fcsr_walk}"]
 
   # The fields within the csr:fcsr[] can also be accessed individually through different
   # CSR addresses, and separate assembler pseudoinstructions are defined for these

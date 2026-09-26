@@ -4,7 +4,14 @@ normative_rule_definitions:
   # store memory addresses are translated and protected, and endianness is applied,
   # as though the current privilege mode were set to MPP.
   - name: mstatus_mprv_ldst_op
-    coverpoint: ["EndianU/cp_mstatus_mprv_ube_endianness"]
+    # Representative coverpoints; also the other cp_mstatus_mprv_ube_endianness_* coverpoints
+    coverpoint:
+      [
+        "EndianU_cg/cp_mstatus_mprv_ube_endianness_sw",
+        "EndianU_cg/cp_mstatus_mprv_ube_endianness_sb",
+        "EndianU_cg/cp_mstatus_mprv_ube_endianness_lw",
+        "EndianU_cg/cp_mstatus_mprv_ube_endianness_lbu",
+      ]
 
   # If U-mode is not supported, UBE is read-only 0. Otherwise, UBE controls whether
   # explicit load and store memory accesses made from U-mode are little-endian

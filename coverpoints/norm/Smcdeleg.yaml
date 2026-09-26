@@ -8,6 +8,13 @@ normative_rule_definitions:
   - name: Smcdeleg_cde_en
     coverpoint: [""]
 
+  # If the Smcdeleg extension is implemented, the CDE (Counter Delegation Enable) bit controls
+  # whether Zicntr and Zihpm counters can be delegated to S-mode. When CDE=1, the Smcdeleg extension
+  # is enabled, see Smcdeleg. When CDE=0, the Smcdeleg and Ssccfg extensions appear to be not
+  # implemented.
+  - name: menvcfg_cde_op
+    coverpoint: ["TODO: Smcdeleg with menvcfg.CDE = 0 and 1"]
+
   - name: Ssccfg_illegal_sireg_cde0
     coverpoint: [""]
 

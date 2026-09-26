@@ -96,6 +96,13 @@ normative_rule_definitions:
   # Instructions that violate the csr:vl[] or csr:vstart[] requirements are reserved.
   - name: veccrypto_vl_vstart_rsv
     coverpoint: ["TODO"]
+  # For implementations with VLEN ≥ 128, vs2 refers to a single register. Thus, the vd register
+  # group must not overlap the vs2 register. However, in implementations where VLEN < 128, vs2
+  # refers to a register group comprised of the number of registers needed to hold the 128-bit
+  # scalar element group. In this case, the vd register group must not overlap this vs2 register
+  # group.
+  - name: veccrypto_vsins_vdvs2overlap
+    coverpoint: ["TODO"]
   - name: vghsh-vv_sewn32_rsv
     coverpoint: ["TODO"]
   - name: vgmul-vv_sewn32_rsv

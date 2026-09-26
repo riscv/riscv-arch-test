@@ -1,12 +1,48 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # The implementation of a RISC-V execution environment can be pure hardware, pure software,
+  # or a combination of hardware and software. For example, opcode traps and software
+  # emulation can be used to implement functionality not provided in hardware.
+  - name: ee_impl_flex
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+  # There are two primary base integer variants, RV32I and RV64I, which provide 32-bit or
+  # 64-bit address spaces respectively.
+  - name: base_integer_variants
+    coverpoint: ["Definition, checked through UDB"]
+  # We use the term XLEN to refer to the width of an integer register in bits (either 32 or
+  # 64).
+  - name: xlen_definition
+    coverpoint: ["Definition, checked through UDB"]
+  # The base integer instruction sets use a two's-complement representation for signed
+  # integer values.
+  - name: twos_complement_signed_integers
+    # Representative coverpoints; also the other signed compares, branches and shifts
+    coverpoint:
+      [
+        "I_slt_cg/cr_rs1_rs2_edges",
+        "I_slti_cg/cr_rs1_imm_edges",
+        "I_blt_cg/cr_rs1_rs2_edges_offset",
+        "I_sra_cg/cr_rs1_rs2_edges",
+      ]
+  # We use the term exception to refer to an unusual condition occurring at run time
+  # associated with an instruction in the current RISC-V hart.
+  - name: exception_def
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+  # We use the term interrupt to refer to an external asynchronous event that may cause a
+  # RISC-V hart to experience an unexpected transfer of control.
+  - name: interrupt_def
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+  # We use the term trap to refer to the transfer of control to a trap handler caused by
+  # either an exception or an interrupt.
+  - name: trap_def
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
   - name: rv32i_xreg_sz
     coverpoint: ["I_add_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
   - name: rv32i_rv64i_other_xregs
     coverpoint: ["I_add_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
   - name: pcreg_op
-    coverpoint: ["I_auipc_cg/cr_rs1_imm_edges"]
+    coverpoint: ["I_auipc_cg/cp_imm_edges_20bit"]
   # insn:slti[] (set less than immediate) places the value 1 in register rd if register
   # rs1 is less than the sign-extended immediate when both are treated as signed numbers,
   # else 0 is written to rd. insn:sltiu[] is similar but compares the values as unsigned
@@ -15,17 +51,16 @@ normative_rule_definitions:
   - name: slti_sltiu_op
     coverpoint:
       [
-        "I_slti_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}",
-        "I_sltiu_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}",
+        "I_slti_cg/{cp_rs1, cp_rd_nx0, cr_rs1_imm_edges}",
+        "I_sltiu_cg/{cp_rs1, cp_rd_nx0, cr_rs1_imm_edges}",
       ]
   - name: x0eq0
     coverpoint: ["I_add_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
-  - name: imm_always_sex
-    coverpoint: [
-        "I_addi_cg/cr_rs1_imm_edges, I_lw_cg/cp_imm_edges, I_sw_cg/cp_imm_edges, I_lui_cg/cp_imm_edges_20bit, I_beq_cg/cp_imm_edges_branch, I_jal_cg/cp_offset",
-      ] # *** need to add this coverpoint in Zicsr rule table
   - name: nop_op
     coverpoint: ["I_nop_cg/{cp_asm_count}"]
+  # NOP is encoded as addi x0, x0, 0.
+  - name: nop_enc
+    coverpoint: ["I_nop_cg/cp_asm_count"]
   - name: addi_op
     coverpoint: ["I_addi_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}"]
   - name: addi_overflow
@@ -36,13 +71,13 @@ normative_rule_definitions:
   # result in rd.
   - name: andi_ori_xori_op
     coverpoint:
-      ["{I_andi_cg, I_ori_op, I_xori_op}/{cp_rs1, cp_rd, cr_rs1_imm_edges}"]
+      ["{I_andi_cg, I_ori_cg, I_xori_cg}/{cp_rs1, cp_rd, cr_rs1_imm_edges}"]
   - name: slli_op
-    coverpoint: ["I_slli_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges_uimm}"]
+    coverpoint: ["I_slli_cg/{cp_rs1, cp_rd_nx0, cr_rs1_imm_edges_uimm}"]
   - name: srli_op
-    coverpoint: ["I_srli_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges_uimm}"]
+    coverpoint: ["I_srli_cg/{cp_rs1, cp_rd_nx0, cr_rs1_imm_edges_uimm}"]
   - name: srai_op
-    coverpoint: ["I_srai_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges_uimm}"]
+    coverpoint: ["I_srai_cg/{cp_rs1, cp_rd_nx0, cr_rs1_imm_edges_uimm}"]
   - name: lui_op
     coverpoint: ["I_lui_cg/{cp_rd, cp_imm_edges_20bit}"]
   - name: auipc_op
@@ -50,7 +85,8 @@ normative_rule_definitions:
   - name: R-type_operands
     coverpoint:
       [
-        "{I_add_cg, I_sub_cg, I_and_cg, I_or_cg, I_xor_cg, I_sll_cg, I_srl_cg, I_sra_cg, I_slt_sg, I_sltu_cg}/{cp_rs1, cp_rs2, cp_rd, cmp_rs1_rs2, cmp_rd_rs1, cmp_rd_rs2, cmp_rd_rs1_rs2}",
+        "{I_add_cg, I_sub_cg, I_and_cg, I_or_cg, I_xor_cg, I_sll_cg, I_srl_cg, I_sra_cg}/{cp_rs1, cp_rs2, cp_rd, cmp_rs1_rs2, cmp_rd_rs1, cmp_rd_rs2, cmp_rd_rs1_rs2}",
+        "{I_slt_cg, I_sltu_cg}/{cp_rs1, cp_rs2, cp_rd_nx0, cmp_rs1_rs2, cmp_rd_rs1_nx0, cmp_rd_rs2_nx0, cmp_rd_rs1_rs2_nx0}",
       ]
   - name: add_op
     coverpoint: ["I_add_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
@@ -68,8 +104,8 @@ normative_rule_definitions:
   - name: slt_sltu_op
     coverpoint:
       [
-        "I_slt_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}",
-        "I_sltu_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}",
+        "I_slt_cg/{cp_rs1, cp_rs2, cp_rd_nx0, cr_rs1_rs2_edges}",
+        "I_sltu_cg/{cp_rs1, cp_rs2, cp_rd_nx0, cr_rs1_rs2_edges}",
       ]
   # insn:and[], insn:or[], and insn:xor[] perform bitwise logical operations.
   - name: and_or_xor_op
@@ -121,12 +157,12 @@ normative_rule_definitions:
   - name: ldst_ea
     coverpoint:
       [
-        "{I_lw_op, I_lh_op, I_lhu_op, I_lb_op, I_lbu_op, I_sw_op, I_sh_op, I_sb_op}/{cp_imm_edges}",
+        "{I_lw_cg, I_lh_cg, I_lhu_cg, I_lb_cg, I_lbu_cg, I_sw_cg, I_sh_cg, I_sb_cg}/{cp_imm_edges}",
       ]
   - name: ldst_no_exc_aligned
     coverpoint:
       [
-        "I_lw_cg/cp_align_word, I_lh_cg/cp_align_half, I_lhu_cg/cp_align_half, I_lb_cg/cp_align_byte, I_lbu_cg/cp_align_byte, I_sw_cg/cp_align_word, I_sh_cg/cp_align_half, I_sb_cg/cp_align_byte",
+        "I_lw_cg/cp_align_word, I_lh_cg/cp_align_hword, I_lhu_cg/cp_align_hword, I_lb_cg/cp_align_byte, I_lbu_cg/cp_align_byte, I_sw_cg/cp_align_word, I_sh_cg/cp_align_hword, I_sb_cg/cp_align_byte",
       ]
   - name: load_op
     coverpoint: ["I_lw_cg/{cp_memval_word}"]
@@ -169,7 +205,7 @@ normative_rule_definitions:
   - name: ldst_atomicity_for_aligned
     coverpoint:
       [
-        "I_lw_cg/cp_align_word, I_lh_cg/cp_align_half, I_lhu_cg/cp_align_half, I_lb_cg/cp_align_byte, I_lbu_cg/cp_align_byte, I_sw_cg/cp_align_word, I_sh_cg/cp_align_half, I_sb_cg/cp_align_byte, Atomic behavior not tested.",
+        "I_lw_cg/cp_align_word, I_lh_cg/cp_align_hword, I_lhu_cg/cp_align_hword, I_lb_cg/cp_align_byte, I_lbu_cg/cp_align_byte, I_sw_cg/cp_align_word, I_sh_cg/cp_align_hword, I_sb_cg/cp_align_byte, Atomic behavior not tested.",
       ]
   - name: fence_op
     coverpoint: ["I_fence_cg/{cp_custom_fence_pred_succ}, ordering not tested"]
@@ -192,3 +228,278 @@ normative_rule_definitions:
       [
         "I_add_cg/cp_rd, I_lui_cg/cp_rd, I_auipc_cg/cp_rd, I_addi_cg/cp_rd, I_andi_cg/cp_rd, I_ori_op/cp_rd, I_xori_op/cp_rd, I_sub_cg/cp_rd, I_and_cg/cp_rd, I_or_cg/cp_rd, I_xor_cg/cp_rd, I_sll_cg/cp_rd, I_srl_cg/cp_rd, I_sra_cg/cp_rd, I_fence_cg/cp_custom_fence_reserved, I_fence_cg/cp_custom_fence_pred_succ",
       ]
+  # Most RV32I HINTs are encoded as integer computational instructions with rd=x0. The other
+  # RV32I HINTs are encoded as FENCE instructions with a null predecessor or successor
+  # set and with fm=0.
+  - name: hints_enc
+    # Representative coverpoints; also cp_rd (x0 bin) of the other I covergroups with rd=x0 HINTs
+    coverpoint:
+      [
+        "I_add_cg/cp_rd",
+        "I_addi_cg/cp_rd",
+        "I_lui_cg/cp_rd",
+        "I_fence_cg/cp_custom_fence",
+      ]
+
+  # RVWMO memory consistency model. Tests run on a single hart, so only the ordering a hart
+  # observes of its own memory accesses can be checked.
+
+  # Under RVWMO, code running on a single hart appears to execute in order from the
+  # perspective of other memory instructions in the same hart, but memory instructions from
+  # another hart may observe the memory instructions from the first hart being executed in a
+  # different order.
+  - name: rvwmo_single_hart_op
+    # Representative coverpoints; also the other I store coverpoints, which all load back the value
+    coverpoint:
+      [
+        "{I_sw_cg, I_sh_cg, I_sb_cg, I_sd_cg}/cp_rs2_edges",
+        "Observation by other harts OUT-OF-SCOPE for single hart",
+      ]
+  # All memory operations are single-copy atomic: they can never be observed in a partially
+  # complete state.
+  - name: rvwmo_single_copy_atomic
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # Each aligned memory instruction that accesses XLEN or fewer bits gives rise to exactly one
+  # memory operation, unless specified otherwise.
+  - name: rvwmo_aligned_memop
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # An aligned AMO gives rise to a single memory operation that is both a load operation and a
+  # store operation simultaneously.
+  - name: rvwmo_aligned_amo_memop
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # ISA extensions such as the V extension may give rise to multiple memory operations.
+  - name: rvwmo_V_p_multi_memops
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # A misaligned load or store instruction may be decomposed into a set of component memory
+  # operations of any granularity.
+  - name: rvwmo_misaligned_ldst_memops
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # A floating-point load or store of more than XLEN bits may also be decomposed into a set of
+  # component memory operations of any granularity.
+  - name: rvwmo_fp_gt_xlen_memops
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # The memory operations generated by such instructions are not ordered with respect to each
+  # other in program order, but they are ordered normally with respect to the memory operations
+  # generated by preceding and subsequent instructions in program order.
+  - name: rvwmo_order_multi_memops
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # if misaligned atomics are supported via the misaligned atomicity granule PMA, then AMOs
+  # within an atomicity granule are not decomposed, nor are loads and stores defined in the base
+  # ISAs, nor are loads and stores of no more than XLEN bits defined in the F, D, and
+  # Q extensions, nor are the load-acquire and store-release instructions defined in the
+  # Zalasr extension, nor are compressed encodings of the foregoing loads and stores.
+  - name: rvwmo_misaligned_in_atomic_pma
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # The complete definition of preserved program order is as follows (and note that AMOs are
+  # simultaneously both loads and stores): memory operation a precedes memory operation b in
+  # preserved program order (and hence also in the global memory order) if a precedes b in
+  # program order, a and b both access regular main memory (rather than I/O regions), and any of
+  # the following hold:
+  - name: rvwmo_ppo_lead_in
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # b is a store, and a and b access overlapping memory addresses
+  - name: rvwmo_ppo_overlap1
+    coverpoint:
+      [
+        "TODO: load then store, and store then store, to one address, checking the load returns the old value and the later store's value persists",
+        "Ordering seen by other harts OUT-OF-SCOPE for single hart",
+      ]
+  # a and b are loads, x is a byte read by both a and b, there is no store to x between a and b
+  # in program order, and a and b return values for x written by different memory operations
+  - name: rvwmo_ppo_overlap2
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # a is generated by an AMO or SC instruction, b is a load, and b returns a value
+  # written by a
+  - name: rvwmo_ppo_overlap3
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # There is a FENCE instruction that orders a before b
+  - name: rvwmo_ppo_sync1
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # a has an acquire annotation
+  - name: rvwmo_ppo_sync2
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # b has a release annotation
+  - name: rvwmo_ppo_sync3
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # a and b both have RCsc annotations
+  - name: rvwmo_ppo_sync4
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # a is paired with b
+  - name: rvwmo_ppo_sync5
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # b has a syntactic address dependency on a
+  - name: rvwmo_ppo_dep1
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # b has a syntactic data dependency on a
+  - name: rvwmo_ppo_dep2
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # b is a store, and b has a syntactic control dependency on a
+  - name: rvwmo_ppo_dep3
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # b is a load, and there exists some store m between a and b in program order such that m has
+  # an address or data dependency on a, and b returns a value written by m
+  - name: rvwmo_ppo_pipe1
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # b is a store, and there exists some instruction m between a and b in program order such that
+  # m has an address dependency on a
+  - name: rvwmo_ppo_pipe2
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # An execution of a RISC-V program obeys the RVWMO memory consistency model only if there
+  # exists a global memory order conforming to preserved program order and satisfying the load
+  # value axiom, the atomicity axiom, and the progress axiom.
+  - name: rvwmo_obeyed
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # Each byte of each load i returns the value written to that byte by the store that is the
+  # latest in global memory order among the following stores:
+  - name: rvwmo_ld_val_axiom_lead_in
+    # Representative coverpoints; also the other I store coverpoints, which all load back the value
+    coverpoint:
+      [
+        "{I_sw_cg, I_sh_cg, I_sb_cg, I_sd_cg}/cp_rs2_edges",
+        "Stores from other harts OUT-OF-SCOPE for single hart",
+      ]
+  # Stores that write that byte and that precede i in the global memory order; Stores that write
+  # that byte and that precede i in program order
+  - name: rvwmo_ld_val_axiom_list
+    # Representative coverpoints; also the other I store coverpoints, which all load back the value
+    coverpoint:
+      [
+        "{I_sw_cg, I_sh_cg, I_sb_cg, I_sd_cg}/cp_rs2_edges",
+        "Stores from other harts OUT-OF-SCOPE for single hart",
+      ]
+  # If r and w are paired load and store operations generated by aligned LR and SC
+  # instructions in a hart h, s is a store to byte x, and r returns a value written by s, then s
+  # must precede w in the global memory order, and there can be no store from a hart other than
+  # h to byte x following s and preceding w in the global memory order.
+  - name: rvwmo_atomicity_axiom
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # No memory operation may be preceded in the global memory order by an infinite sequence of
+  # other memory operations.
+  - name: rvwmo_progress_axiom
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+
+  # RV32I Base Instruction Set encodings (RV32/64G Instruction Set Listings)
+
+  # LUI
+  - name: lui_enc
+    coverpoint: ["I_lui_cg/cp_asm_count"]
+  # AUIPC
+  - name: auipc_enc
+    coverpoint: ["I_auipc_cg/cp_asm_count"]
+  # JAL
+  - name: jal_enc
+    coverpoint: ["I_jal_cg/cp_asm_count"]
+  # JALR
+  - name: jalr_enc
+    coverpoint: ["I_jalr_cg/cp_asm_count"]
+  # BEQ
+  - name: beq_enc
+    coverpoint: ["I_beq_cg/cp_asm_count"]
+  # BNE
+  - name: bne_enc
+    coverpoint: ["I_bne_cg/cp_asm_count"]
+  # BLT
+  - name: blt_enc
+    coverpoint: ["I_blt_cg/cp_asm_count"]
+  # BGE
+  - name: bge_enc
+    coverpoint: ["I_bge_cg/cp_asm_count"]
+  # BLTU
+  - name: bltu_enc
+    coverpoint: ["I_bltu_cg/cp_asm_count"]
+  # BGEU
+  - name: bgeu_enc
+    coverpoint: ["I_bgeu_cg/cp_asm_count"]
+  # LB
+  - name: lb_enc
+    coverpoint: ["I_lb_cg/cp_asm_count"]
+  # LH
+  - name: lh_enc
+    coverpoint: ["I_lh_cg/cp_asm_count"]
+  # LW
+  - name: lw_enc
+    coverpoint: ["I_lw_cg/cp_asm_count"]
+  # LBU
+  - name: lbu_enc
+    coverpoint: ["I_lbu_cg/cp_asm_count"]
+  # LHU
+  - name: lhu_enc
+    coverpoint: ["I_lhu_cg/cp_asm_count"]
+  # SB
+  - name: sb_enc
+    coverpoint: ["I_sb_cg/cp_asm_count"]
+  # SH
+  - name: sh_enc
+    coverpoint: ["I_sh_cg/cp_asm_count"]
+  # SW
+  - name: sw_enc
+    coverpoint: ["I_sw_cg/cp_asm_count"]
+  # ADDI
+  - name: addi_enc
+    coverpoint: ["I_addi_cg/cp_asm_count"]
+  # SLTI
+  - name: slti_enc
+    coverpoint: ["I_slti_cg/cp_asm_count"]
+  # SLTIU
+  - name: sltiu_enc
+    coverpoint: ["I_sltiu_cg/cp_asm_count"]
+  # XORI
+  - name: xori_enc
+    coverpoint: ["I_xori_cg/cp_asm_count"]
+  # ORI
+  - name: ori_enc
+    coverpoint: ["I_ori_cg/cp_asm_count"]
+  # ANDI
+  - name: andi_enc
+    coverpoint: ["I_andi_cg/cp_asm_count"]
+  # SLLI
+  - name: slli_enc
+    coverpoint: ["I_slli_cg/cp_asm_count"]
+  # SRLI
+  - name: srli_enc
+    coverpoint: ["I_srli_cg/cp_asm_count"]
+  # SRAI
+  - name: srai_enc
+    coverpoint: ["I_srai_cg/cp_asm_count"]
+  # ADD
+  - name: add_enc
+    coverpoint: ["I_add_cg/cp_asm_count"]
+  # SUB
+  - name: sub_enc
+    coverpoint: ["I_sub_cg/cp_asm_count"]
+  # SLL
+  - name: sll_enc
+    coverpoint: ["I_sll_cg/cp_asm_count"]
+  # SLT
+  - name: slt_enc
+    coverpoint: ["I_slt_cg/cp_asm_count"]
+  # SLTU
+  - name: sltu_enc
+    coverpoint: ["I_sltu_cg/cp_asm_count"]
+  # XOR
+  - name: xor_enc
+    coverpoint: ["I_xor_cg/cp_asm_count"]
+  # SRL
+  - name: srl_enc
+    coverpoint: ["I_srl_cg/cp_asm_count"]
+  # SRA
+  - name: sra_enc
+    coverpoint: ["I_sra_cg/cp_asm_count"]
+  # OR
+  - name: or_enc
+    coverpoint: ["I_or_cg/cp_asm_count"]
+  # AND
+  - name: and_enc
+    coverpoint: ["I_and_cg/cp_asm_count"]
+  # FENCE
+  - name: fence_enc
+    coverpoint: ["I_fence_cg/cp_asm_count"]
+  # FENCE.TSO
+  - name: fence-tso_enc
+    coverpoint: ["I_fence_cg/cp_custom_fence"]
+  # ECALL
+  - name: ecall_enc
+    coverpoint: ["ExceptionsSm_cg/cp_ecall_m"]
+  # EBREAK
+  - name: ebreak_enc
+    coverpoint: ["ExceptionsSm_cg/cp_breakpoint"]

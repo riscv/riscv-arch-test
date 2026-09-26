@@ -7,3 +7,21 @@ normative_rule_definitions:
   # read-only zero for RV32.
   - name: senvcfg_pmm_ssnpm
     coverpoint: [""]
+
+  # Changing senvcfg.PMM takes effect immediately, without the need to execute an
+  # SFENCE.VMA instruction.
+  - name: senvcfg_pmm_immediate
+    coverpoint:
+      [
+        "TODO: change senvcfg.PMM, then access memory from U-mode with no intervening SFENCE.VMA",
+      ]
+
+  # Value|Description === 00|Pointer masking is disabled (PMLEN = 0)¶01|Reserved¶10|Pointer
+  # masking is enabled with PMLEN = XLEN - 57 (PMLEN = 7 on RV64)¶11|Pointer masking is
+  # enabled with PMLEN = XLEN - 48 (PMLEN = 16 on RV64) ===
+  - name: senvcfg_pmm_enc
+    coverpoint:
+      [
+        "Ssnpm_cg/cp_pmlen_masking",
+        "S_scsr_cg/cp_scsrwalk/senvcfg (the walk writes the reserved PMM=0b01)",
+      ]

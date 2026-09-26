@@ -9,6 +9,11 @@
 # requires MISALIGNED_LDST=true, which is the parameter those suites key on.
 # The rule excludes AMOs, LR/SC and other Za* accesses, so ExceptionsZaamo,
 # ExceptionsZalrsc and Zama16b are deliberately not listed.
+#
+# This file also maps the rules of the other Zicc* main-memory PMA extensions
+# (Ziccif, Ziccrse, Ziccamoa, Ziccamoc), which have no suites of their own. Every
+# suite runs code and data from main memory, so the suites whose instructions a
+# rule requires main memory to support are the ones cited.
 
 normative_rule_definitions:
   # If the Zicclsm extension is implemented, then misaligned loads and stores to main memory
@@ -30,4 +35,72 @@ normative_rule_definitions:
         # Exception suites: with MISALIGNED_LDST=true these misaligned scalar loads and stores
         # must complete without an address-misaligned exception (M, S, U modes, FP, compressed)
         "{ExceptionsSm_cg,ExceptionsS_cg,ExceptionsU_cg,ExceptionsF_cg,ExceptionsZc_cg}/{cp_load_address_misaligned,cp_store_address_misaligned}",
+      ]
+
+  # If the Ziccif extension is implemented, main memory regions with both the coherence
+  # and cacheability PMAs must support instruction fetch, and any instruction fetches of
+  # naturally aligned power-of-2 sizes of at most min(ILEN,XLEN) bits are atomic.
+  - name: Ziccif_if_atomicity
+    coverpoint:
+      [
+        "Instruction fetch from main memory is exercised by every test; fetch atomicity is OUT-OF-SCOPE for single hart",
+      ]
+  # An implementation with the Ziccif extension fetches instructions in a manner
+  # equivalent to the following state machine.
+  - name: Ziccif_fetch_mechanism
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+  # Memory protection and executability PMAs are applied only to bytes that are not discarded
+  # by this algorithm.
+  - name: Ziccif_pma_application
+    coverpoint:
+      [
+        "TODO: execute an instruction that ends at the top of an executable PMP or PMA region, below a non-executable region, and check that it does not fault",
+      ]
+  # If the Ziccrse extension is implemented, then main memory regions with both the
+  # coherence and cacheability PMAs must support the RsrvEventual PMA.
+  - name: Ziccrse_rsrv_eventual
+    coverpoint: ["{Zalrsc_sc_w_cg, Zalrsc_sc_d_cg}/cp_sc_pass_fail"]
+  # The Ziccrse extension requires RsrvEventual support to main memory regions with both the
+  # coherence and cacheability PMAs.
+  - name: Ziccrse_pma_rsrv_req
+    coverpoint: ["{Zalrsc_sc_w_cg, Zalrsc_sc_d_cg}/cp_sc_pass_fail"]
+  # If the Ziccamoa extension is implemented, then main memory regions with both the
+  # coherence and cacheability PMAs must provide AMOArithmetic-level PMA support.
+  - name: Ziccamoa_amo_pma
+    # Representative coverpoints; also cp_asm_count of the other Zaamo_amo*_cg covergroups
+    coverpoint:
+      [
+        "Zaamo_amoswap_w_cg/cp_asm_count",
+        "Zaamo_amoand_w_cg/cp_asm_count",
+        "Zaamo_amoadd_w_cg/cp_asm_count",
+        "Zaamo_amomax_w_cg/cp_asm_count",
+      ]
+  # The Ziccamoa extension requires AMOArithmetic-level support to main memory regions with
+  # both the coherence and cacheability PMAs.
+  - name: Ziccamoa_pma_amo_req
+    # Representative coverpoints; also cp_asm_count of the other Zaamo_amo*_cg covergroups
+    coverpoint:
+      [
+        "Zaamo_amoswap_w_cg/cp_asm_count",
+        "Zaamo_amoand_w_cg/cp_asm_count",
+        "Zaamo_amoadd_w_cg/cp_asm_count",
+        "Zaamo_amomax_w_cg/cp_asm_count",
+      ]
+  # If the Ziccamoc extension is implemented, then main memory regions with both the
+  # coherence and cacheability PMAs must provide AMOCASQ-level PMA support.
+  - name: Ziccamoc_casq_pma
+    coverpoint:
+      [
+        "Zacas_amocas_w_cg/cp_asm_count",
+        "Zacas_amocas_d_cg/cp_asm_count",
+        "Zacas_amocas_q_cg/cp_asm_count",
+      ]
+  # The Ziccamoc extension requires AMOCASQ-level support to main memory regions with both the
+  # coherence and cacheability PMAs.
+  - name: Ziccamoc_pma_amo_req
+    coverpoint:
+      [
+        "Zacas_amocas_w_cg/cp_asm_count",
+        "Zacas_amocas_d_cg/cp_asm_count",
+        "Zacas_amocas_q_cg/cp_asm_count",
       ]

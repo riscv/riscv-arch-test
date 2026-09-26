@@ -63,25 +63,25 @@ normative_rule_definitions:
     coverpoint: ["Zknh_sha512sum1r_cg/cr_rs1_rs2_edges"]
 
   - name: sha512sig0_enc
-    coverpoint: ["Zknh_sha512sig0_cg/cr_rs1_rs2_edges"]
+    coverpoint: ["Zknh_sha512sig0_cg/cp_rs1_edges"]
 
   - name: sha512sig0_op
-    coverpoint: ["Zknh_sha512sig0_cg/cr_rs1_rs2_edges"]
+    coverpoint: ["Zknh_sha512sig0_cg/cp_rs1_edges"]
 
   - name: sha512sig1_enc
-    coverpoint: ["Zknh_sha512sig1_cg/cr_rs1_rs2_edges"]
+    coverpoint: ["Zknh_sha512sig1_cg/cp_rs1_edges"]
 
   - name: sha512sig1_op
-    coverpoint: ["Zknh_sha512sig1_cg/cr_rs1_rs2_edges"]
+    coverpoint: ["Zknh_sha512sig1_cg/cp_rs1_edges"]
 
   - name: sha512sum0_enc
-    coverpoint: ["Zknh_sha512sum0_cg/cr_rs1_rs2_edges"]
+    coverpoint: ["Zknh_sha512sum0_cg/cp_rs1_edges"]
 
   - name: sha512sum0_op
-    coverpoint: ["Zknh_sha512sum0_cg/cr_rs1_rs2_edges"]
+    coverpoint: ["Zknh_sha512sum0_cg/cp_rs1_edges"]
 
   - name: sha512sum1_enc
-    coverpoint: ["Zknh_sha512sum1_cg/cr_rs1_rs2_edges"]
+    coverpoint: ["Zknh_sha512sum1_cg/cp_rs1_edges"]
 
   - name: sha512sum1_op
-    coverpoint: ["Zknh_sha512sum1_cg/cr_rs1_rs2_edges"]
+    coverpoint: ["Zknh_sha512sum1_cg/cp_rs1_edges"]

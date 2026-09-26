@@ -234,6 +234,10 @@
 #define RVMODEL_CLR_MEXT_INT(_R1, _R2) \
   RVTEST_TSBI_CSR_WRITE(CSR_MTOPEI, 0)
 
+/* The clear below M-mode takes one trap (the T-SBI ecall), which rvtest_trap_count sees. This tells sail_macros.h
+ * to give the Sail clear the same trap, so the trap counts in the Sail signature match. */
+#define RVMODEL_CLR_MEXT_INT_TSBI
+
 /* Supervisor external interrupts use the software-writable mip.SEIP, the default when RVMODEL_SET/CLR_SEXT_INT
  * are left undefined. */
 

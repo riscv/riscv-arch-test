@@ -1,7 +1,7 @@
 normative_rule_definitions:
-  # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to
-  # the value of xIE; xIE is set to 0; and xPP is set to y.
-  - names: [mstatus_xpie_trap_op, mstatus_xie_trap_op, mstatus_xpp_trap_op]
+  # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to the
+  # value of xIE; xIE is set to 0; and xPP is set to y.
+  - name: mstatus_xpie_xie_xpp_trap_op
     coverpoint: ["ExceptionsU_cg/cp_ecall_u"]
 
   # An instruction-address-misaligned exception is generated on a taken branch or unconditional jump
@@ -30,8 +30,13 @@ normative_rule_definitions:
   - name: ia_fault_exc_on_target
     coverpoint: ["ExceptionsU_cg/cp_instr_access_fault"]
 
-  # The EBREAK instruction is used to return control to a debugging environment.
-  - name: ebreak_op
+  # The insn:ebreak[] instruction is used to return control to a debugging environment.
+  - name: ebreak_debug_env_op
+    coverpoint: ["ExceptionsU_cg/cp_breakpoint"]
+  # The EBREAK instruction is used by debuggers to cause control to be transferred back to
+  # a debugging environment. Unless overridden by an external debug environment, EBREAK
+  # raises a breakpoint exception and performs no other operation.
+  - name: ebreak_debugger_transfer_op
     coverpoint: ["ExceptionsU_cg/cp_breakpoint"]
 
   # Naturally aligned loads and stores do not raise an address-misaligned
@@ -49,5 +54,5 @@ normative_rule_definitions:
 
   # Exception codes reflect the relative priority of simultaneously-raised
   # exceptions.
-  - name: mcause_exccode_pri
+  - name: mcause_exccode_priority_order
     coverpoint: ["ExceptionsU_cg/cp_misaligned_priority_{load, store}"]

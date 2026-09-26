@@ -4,5 +4,5 @@
 normative_rule_definitions:
   # If the Shvsatpa extension is implemented, all translation modes supported in satp must
   # be supported in vsatp.
-  - name: shvsatpa_satp_vsatp_modes
+  - name: Shvsatpa_satp_vsatp_modes
     coverpoint: ["Shvsatpa_cg/cp_shvsatpa"]

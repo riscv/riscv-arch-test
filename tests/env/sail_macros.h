@@ -137,14 +137,31 @@
 
 
 #undef RVMODEL_CLR_MEXT_INT
+#ifdef RVMODEL_CLR_MEXT_INT_TSBI
+// The DUT's clear below M-mode is a T-SBI call, which the trap counter counts. Make one T-SBI call here too (a
+// read of mip, which changes nothing and, like the DUT's call, records no trap signature) so the trap counts match.
+#define RVMODEL_CLR_MEXT_INT(_R1, _R2)        \
+  li _R1, (1 << 11);               \
+  li _R2, SAIL_SIG_ADDRESS;    \
+  sw _R1, 0(_R2)            ; /* Clear MEXT interrupt */ \
+  RVTEST_TSBI_CSR_READ(CSR_MIP)
+#else
 #define RVMODEL_CLR_MEXT_INT(_R1, _R2)        \
   li _R1, (1 << 11);               \
   li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear MEXT interrupt */ \
 
-// Sail clears from M-mode the same way, so drop any DUT-specific M-mode clear (such as an IMSIC mtopei claim)
-// and let check_defines.h point RVMODEL_CLR_MEXT_INT_M at the Sail clear above.
+#endif
+
+// Sail clears from M-mode with the same store, and no trap, replacing any DUT-specific M-mode clear (such as an
+// IMSIC mtopei claim). It is spelled out rather than left to check_defines.h, which would point it at the clear
+// above and so add the T-SBI call in M-mode.
 #undef RVMODEL_CLR_MEXT_INT_M
+#define RVMODEL_CLR_MEXT_INT_M(_R1, _R2)      \
+  li _R1, (1 << 11);               \
+  li _R2, SAIL_SIG_ADDRESS;    \
+  sw _R1, 0(_R2)            ; /* Clear MEXT interrupt */ \
+
 
 #undef RVMODEL_SET_MSW_INT
 #define RVMODEL_SET_MSW_INT(_R1, _R2)        \

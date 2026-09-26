@@ -22,13 +22,18 @@ normative_rule_definitions:
     coverpoint: ["ExceptionsZca_cg/cp_breakpoint"]
 
   # From c-st-ext chapter
-  - name: c-ebreak
+  - name: c-jalr_ebreak
     coverpoint: ["ExceptionsZca_cg/cp_breakpoint"]
 
   - name: Zca_align16
     coverpoint: ["ExceptionsSm_cg/cp_instr_access_fault"]
 
-  - name: misa_c_set
+  # csr:misa[c] must be clear if any of the following holds:
+  - name: misa_C_set_line
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
+  # ext:zca[] is not implemented MXLEN=32, ext:f[] is implemented, and ext:zcf[] is not
+  # implemented ext:d[] is implemented, and ext:zcd[] is not implemented
+  - name: misa_C_set_list
     coverpoint:
       ["Sm_mcsr_cg/cp_mcsr_access/misa"]
       # MISA.C is set if the following extensions are selected: | Zca and not F Zca, Zcf and F (but not D) is specified (RV32 only) Zca, Zcf and Zcd if D is specified (RV32 only)  this configuration excludes Zcmp, Zcmt Zca, Zcd if D is specified (RV64 only)  this configuration excludes Zcmp, Zcmt

@@ -1,50 +1,43 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  # The MXR (Make eXecutable Readable) bit modifies the privilege with which loads
-  # access virtual memory. When MXR=0, only loads from pages marked readable (R=1 in )
-  # will succeed. When MXR=1, loads from pages marked either readable or executable (R=1
-  # or X=1) will succeed. MXR has no effect when page-based virtual memory is not in
-  # effect.
-  - names: [sstatus_mxr_sz, sstatus_mxr_acc, sstatus_mxr_op]
+  # The MXR (Make eXecutable Readable) bit modifies the privilege with which loads access
+  # virtual memory. When MXR=0, only loads from pages marked readable (R=1 in ) will
+  # succeed. When MXR=1, loads from pages marked either readable or executable (R=1 or
+  # X=1) will succeed. MXR has no effect when page-based virtual memory is not in effect.
+  - name: sstatus_mxr
     coverpoint: ["Sv_vm_permissions_cg/cp_xpage_{mxrunset,mxrset}_read_{s,u}"]
 
   # The SUM (permit Supervisor User Memory access) bit modifies the privilege with which
   # S-mode loads and stores access virtual memory. When SUM=0, S-mode memory accesses to
   # pages that are accessible by U-mode (U=1 in ) will fault. When SUM=1, these accesses
-  # are permitted. SUM has no effect when page-based virtual memory is not in effect,
-  # nor when executing in U-mode. Note that S-mode can never execute instructions from
-  # user pages, regardless of the state of SUM.
-  - names: [sstatus_sum_sz, sstatus_sum_acc, sstatus_sum_op]
+  # are permitted. SUM has no effect when page-based virtual memory is not in effect, nor
+  # when executing in U-mode. Note that S-mode can never execute instructions from user
+  # pages, regardless of the state of SUM.
+  - name: sstatus_sum
     coverpoint:
       [
         "Sv_vm_permissions_cg/cp_upage_smode_sumunset_{noexec,noread,nowrite}_s",
         "Sv_vm_permissions_cg/cp_upage_smode_sumset_{noexec,read,write}_s",
       ]
 
-  # The satp CSR is an SXLEN-bit read/write register, formatted as shown in  for
-  # SXLEN=32 and  for SXLEN=64, which controls supervisor-mode address translation and
-  # protection. This register holds the physical page number (PPN) of the root page
-  # table, i.e., its supervisor physical address divided by 4 KiB; an address space
-  # identifier (ASID), which facilitates address-translation fences on a per-address-
-  # space basis; and the MODE field, which selects the current address-translation
-  # scheme. Further details on the access to this register are described in .
-  - names: [satp_sz, satp_acc, satp_op, satp_mode]
+  # The satp CSR is an SXLEN-bit read/write register, formatted as shown in for SXLEN=32
+  # and for SXLEN=64, which controls supervisor-mode address translation and protection.
+  # This register holds the physical page number (PPN) of the root page table, i.e., its
+  # supervisor physical address divided by 4 KiB; an address space identifier (ASID),
+  # which facilitates address-translation fences on a per-address-space basis; and the
+  # MODE field, which selects the current address-translation scheme. Further details on
+  # the access to this register are described in .
+  - name: satp
     coverpoint:
       [
         "Sv_satp_cg/{cp_access_s,cp_access_u,satp_asid_PPN}",
         "SvSm_satp_cg/cp_access_m",
       ]
 
-  # shows the encodings of the MODE field when SXLEN=32 and SXLEN=64. When MODE=Bare,
-  # supervisor virtual addresses are equal to supervisor physical addresses, and there
-  # is no additional memory protection beyond the physical memory protection scheme
-  # described in . To select MODE=Bare, software must write zero to the remaining fields
-  # of satp (bits 30–0 when SXLEN=32, or bits 59–0 when SXLEN=64). Attempting to select
-  # MODE=Bare with a nonzero pattern in the remaining fields has an UNSPECIFIED effect
-  # on the value that the remaining fields assume and an UNSPECIFIED effect on address
-  # translation and protection behavior.
-  - names: [satp_mode_sz, satp_mode_acc, satp_mode_op]
+  # &lt;&lt;norm:satp_mode_enc&gt;&gt; shows the encodings of the MODE field when SXLEN=32
+  # and SXLEN=64.
+  - name: satp_mode
     coverpoint: ["Sv_VA_cg/mode_supported", "Svbare_cg/satp_bare"]
 
   # When SXLEN=32, the only other valid setting for MODE is Sv32, a paged virtual-memory
@@ -72,7 +65,7 @@ normative_rule_definitions:
   # the ASID field hold a one. The least-significant bits of ASID are implemented first:
   # that is, if ASIDLEN > 0, ASID[ASIDLEN-1:0] is writable. The maximal value of
   # ASIDLEN, termed ASIDMAX, is 9 for Sv32 or 16 for Sv39, Sv48, and Sv57.
-  - name: ASIDLEN
+  - name: asidlen
     coverpoint: ["Sv_satp_cg/asid_length"]
 
   # The satp CSR is considered active when the effective privilege mode is S-mode or
@@ -245,18 +238,39 @@ normative_rule_definitions:
         "Sv_vm_permissions_cg/{cp_spage_nowrite_s_d,cp_spage_rwx_s_d_nowrite,cp_upage_umode_nowrite_u}",
       ]
 
-  # simple paged virtual-memory system for SXLEN=64
-  - names:
+  # This section describes a simple paged virtual-memory system for SXLEN=64, which
+  # supports 39-bit virtual address spaces.
+  - name: Sv39_sxlen_va_sz
+    coverpoint:
       [
-        Sv39_sxlen,
-        Sv39_va_sz,
-        Sv39_vpn_sz,
-        satp_ppn_sv39_sz,
-        Sv39_levels,
-        Sv39_page_offset_sz,
-        Sv39_LEVELS,
-        Sv39_PTESIZE,
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
       ]
+  # 27-bit VPN
+  - name: Sv39_vpn_sz
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+      ]
+  # 44-bit PPN
+  - name: satp_ppn_Sv39_sz
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+      ]
+  # three-level page table
+  - name: Sv39_levels
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+      ]
+  # 12-bit page offset is untranslated
+  - name: Sv39_page_offset_sz
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+      ]
+  # PTESIZE equals 8
+  - name: Sv39_ptesize
     coverpoint:
       [
         "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
@@ -278,8 +292,20 @@ normative_rule_definitions:
   - names: [Sv39_superpage_align, Sv39_superpage_align_fault]
     coverpoint: ["Sv_vm_permissions_cg/cp_misaligned_{exec,read,write}_{s,u}"]
 
-  # 2^9^ page table entries (PTEs)
-  - names: [Sv39_pte_count, Sv39_pte_sz, Sv39_pt_sz, Sv39_pt_align]
+  # Sv39 page tables contain 2^9^ page table entries (PTEs), eight bytes each.
+  - name: Sv39_pte_count_sz
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+      ]
+  # exactly the size of a page
+  - name: Sv39_pt_sz
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+      ]
+  # must always be aligned to a page boundary
+  - name: Sv39_pt_align
     coverpoint:
       [
         "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
@@ -287,12 +313,12 @@ normative_rule_definitions:
 
   # If Svnapot is not implemented, bit 63 remains reserved and must be zeroed by
   # software for forward compatibility, or else a page-fault exception is raised
-  - name: Sv39_pte_svnapot_rsv
+  - name: Sv39_pte_Svnapot_rsv
     coverpoint: ["Sv_add_feature_cg/cp_svnapot_{read,write,exec}_fault"]
 
   # If Svpbmt is not implemented, bits 62-61 remain reserved and must be zeroed by
   # software for forward compatibility, or else a page-fault exception is raised
-  - name: Sv39_pte_svpbmt_rsv
+  - name: Sv39_pte_Svpbmt_rsv
     coverpoint: ["Sv_add_feature_cg/cp_svpbmt_{read,write,exec}_fault"]
 
   # must be zeroed by software for forward compatibility. If any of these bits are set,
@@ -301,17 +327,43 @@ normative_rule_definitions:
     coverpoint: ["Sv_add_feature_cg/cp_reserved_{read,write,exec}_fault"]
 
   # SXLEN=64
-  - names:
+  - name: Sv48_sxlen
+    coverpoint:
       [
-        Sv48_sxlen,
-        Sv48_va_sz,
-        Sv48_vpn_sz,
-        satp_ppn_sv48_sz,
-        Sv48_levels,
-        Sv48_page_offset_sz,
-        Sv48_LEVELS,
-        Sv48_PTESIZE,
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
       ]
+  # 48-bit virtual address spaces
+  - name: Sv48_va_sz
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+      ]
+  # 36-bit VPN
+  - name: Sv48_vpn_sz
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+      ]
+  # 44-bit PPN
+  - name: satp_ppn_Sv48_sz
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+      ]
+  # four-level page table
+  - name: Sv48_levels
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+      ]
+  # 12-bit page offset is untranslated
+  - name: Sv48_page_offset_sz
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+      ]
+  # PTESIZE equals 8
+  - name: Sv48_ptesize
     coverpoint:
       [
         "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
@@ -338,18 +390,39 @@ normative_rule_definitions:
     coverpoint:
       ["Not tested: extension dependency checked by the UDB configuration"]
 
-  # RV64 systems
-  - names:
+  # This section describes a simple paged virtual-memory system designed for RV64 systems,
+  # which supports 57-bit virtual address spaces.
+  - name: Sv57_sxlen_va_sz
+    coverpoint:
       [
-        Sv57_sxlen,
-        Sv57_va_sz,
-        Sv57_vpn_sz,
-        satp_ppn_sv57_sz,
-        Sv57_levels,
-        Sv57_page_offset_sz,
-        Sv57_LEVELS,
-        Sv57_PTESIZE,
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
       ]
+  # 45-bit VPN
+  - name: Sv57_vpn_sz
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+      ]
+  # 44-bit PPN
+  - name: satp_ppn_Sv57_sz
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+      ]
+  # five-level page table
+  - name: Sv57_levels
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+      ]
+  # 12-bit page offset is untranslated
+  - name: Sv57_page_offset_sz
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+      ]
+  # PTESIZE equals 8
+  - name: Sv57_ptesize
     coverpoint:
       [
         "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
@@ -389,5 +462,5 @@ normative_rule_definitions:
   # The csr::[mxr] and csr::[sum] mechanisms only affect the interpretation of
   # permissions encoded in page-table entries. In particular, they have no impact on
   # whether access-fault exceptions are raised due to PMAs or PMP.
-  - name: MSTATUS_MXR_SUM_OP_ACC_FAULT
+  - name: mstatus_mxr_sum_op_acc_fault
     coverpoint: ["TODO: combine MXR/SUM with a PMA or PMP access fault"]

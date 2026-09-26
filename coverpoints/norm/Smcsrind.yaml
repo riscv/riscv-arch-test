@@ -23,7 +23,7 @@ normative_rule_definitions:
   - name: miselect_value_range
     coverpoint: [""]
 
-  - name: miselect_WARL
+  - name: miselect_warl
     coverpoint: [""]
 
   - name: miselect_min_sz
@@ -53,7 +53,7 @@ normative_rule_definitions:
   - name: sireg_access_behaviour
     coverpoint: [""]
 
-  - name: sscsrind_smode_csrs_sz
+  - name: Sscsrind_smode_csrs_sz
     coverpoint: [""]
 
   - name: vsiselect_min_range
@@ -62,7 +62,7 @@ normative_rule_definitions:
   - name: vsiselect_msb_op
     coverpoint: [""]
 
-  - name: sscsrind_virtual_inst_fault
+  - name: Sscsrind_virtual_inst_fault
     coverpoint: [""]
 
   - name: vsireg_access_on_legal_vsiselect
@@ -74,10 +74,10 @@ normative_rule_definitions:
   - name: vsmode_virtual_inst_fault
     coverpoint: [""]
 
-  - name: sscsrind_vsmode_csrs_sz
+  - name: Sscsrind_vsmode_csrs_sz
     coverpoint: [""]
 
-  - name: sscsrind_csrs_access_control
+  - name: Sscsrind_csrs_access_control
     coverpoint: [""]
 
   - name: hypervisor_impl_csrs_access_control

@@ -72,6 +72,20 @@ def gen_csr_write_sigupd(check_reg: int, csr_name: str, test_data: TestData) -> 
     )
 
 
+def _guest_delegation_read_mask(csr_name: str, mask_reg: int | None, temp_reg: int) -> list[str]:
+    """SGEI delegation is forced to one only when guest interrupts exist."""
+    if csr_name != "mideleg":
+        return []
+    assert mask_reg is not None
+    return [
+        "#if defined(UDB_NUM_EXTERNAL_GUEST_INTERRUPTS) && UDB_NUM_EXTERNAL_GUEST_INTERRUPTS == 0",
+        "# With GEILEN=0, mideleg[12] need not match the reference implementation.",
+        f"LI(x{temp_reg}, ~(1 << 12))",
+        f"and x{mask_reg}, x{mask_reg}, x{temp_reg}",
+        "#endif",
+    ]
+
+
 def csr_access_test(
     test_data: TestData, csr: tuple, covergroup: str, coverpoint: str, maskedwrites: bool = False
 ) -> list[str]:
@@ -117,6 +131,7 @@ def csr_access_test(
             )
         else:
             lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
+        lines.extend(_guest_delegation_read_mask(csr_name, mask_reg, temp_reg))
     if maskedwrites:
         valstr = "mask"
         lines.append(f"mv x{temp_reg}, x{mask_reg}    # Apply {valstr} to value being written")
@@ -328,6 +343,7 @@ def csr_walk_test(
     ]
     if mask is not None:
         lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
+        lines.extend(_guest_delegation_read_mask(csr_name, mask_reg, temp_reg))
     if walk_zeros:
         lines.append(f"LI(x{temp_reg}, -1)             # x{temp_reg} = all 1s")
 

@@ -622,7 +622,7 @@ def _generate_se0_controls_sstateen0(test_data: TestData, *, se0: int) -> list[s
 
 @add_priv_test_generator(
     "Smstateen",
-    required_extensions=["Smstateen"],
+    required_extensions=["Smstateen", "U"],
     march_extensions=["Smstateen"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )

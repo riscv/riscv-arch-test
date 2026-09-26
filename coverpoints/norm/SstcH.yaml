@@ -9,8 +9,9 @@ normative_rule_definitions:
   - name: menvcfg_stce_zero_op
     coverpoint:
       [
-        "SstcH_hs_cg/cp_hs_vstimecmp_{accessible, accesses}",
-        "SstcH_vs_cg/cp_vs_stimecmp_{accessible, accesses}",
+        "SstcH_hs_cg/cp_hs_vstimecmp_accessible",
+        "SstcH_vs_cg/cp_vs_stimecmp_accessible",
+        "SstcH_vu_cg/cp_vu_timecmp_inaccessible",
       ]
   # when the csr:[tm] bit in the csr:mcounteren[] register is clear, attempts to access
   # the csr:stimecmp[] or csr:vstimecmp[] register while executing in a mode less
@@ -18,8 +19,9 @@ normative_rule_definitions:
   - name: mcounteren_tm_clr
     coverpoint:
       [
-        "SstcH_hs_cg/cp_hs_vstimecmp_{accessible, accesses}",
-        "SstcH_vs_cg/cp_vs_stimecmp_{accessible, accesses}",
+        "SstcH_hs_cg/cp_hs_vstimecmp_accessible",
+        "SstcH_vs_cg/cp_vs_stimecmp_accessible",
+        "SstcH_vu_cg/cp_vu_timecmp_inaccessible",
       ]
   # When this bit is set, access to the csr:stimecmp[] or csr:vstimecmp[] register is
   # permitted in S-mode if implemented, and access to the csr:vstimecmp[] register (via
@@ -39,7 +41,7 @@ normative_rule_definitions:
   # when V=1 raises a virtual-instruction exception, and VSTIP in hip reverts to its
   # defined behavior as if this extension is not implemented.
   - name: henvcfg_stce_zero_op
-    coverpoint: ["SstcH_vs_cg/cp_vs_stimecmp_{accessible, accesses}"]
+    coverpoint: ["SstcH_vs_cg/cp_vs_stimecmp_accessible"]
   # In addition, when the TM bit in the hcounteren register is clear, attempts to access
   # the vstimecmp register (via stimecmp) while executing in VS-mode will cause a
   # virtual-instruction exception if the same bit in mcounteren is set. When this bit and

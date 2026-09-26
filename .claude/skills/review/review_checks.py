@@ -203,11 +203,9 @@ def check_params(suite: str, tests: list[Path], files: list[Path], udb_params: d
         m = re.search(r"#\s*REQUIRED_EXTENSIONS:\s*\[(.*)\]", t.read_text(errors="replace"))
         if m:
             required.update(re.findall(r"'(\w+)'", m.group(1)))
-    required -= {"I", "E"}
     # Focus on the extension the suite is named after; base modes (Sm, S, U) define dozens of parameters.
     prefixes = sorted((e for e in required if suite.startswith(e)), key=len, reverse=True)
-    if prefixes:
-        required = {prefixes[0]}
+    required = {prefixes[0]} if prefixes else required - {"I", "E"}
     used = set()
     for f in files:
         for token in set(re.findall(r"\bUDB_(\w+)", f.read_text(errors="replace"))):
@@ -241,27 +239,48 @@ def expand_braces(ref: str) -> list[str]:
     return [x for alt in m.group(1).split(",") for x in expand_braces(ref[: m.start()] + alt.strip() + ref[m.end() :])]
 
 
-def check_norm(suite: str) -> list[str]:
-    norm = ROOT / f"coverpoints/norm/{suite}.yaml"
-    if not norm.exists():
-        return [f"no {rel(norm)}"]
-    data = YAML(typ="safe", pure=True).load(norm.read_text()) or {}
-    all_cov = "\n".join(f.read_text(errors="replace") for f in ROOT.glob("coverpoints/**/*.svh"))
-    out, empty = [], 0
-    for rule in data.get("normative_rule_definitions", []):
-        refs = [r for r in rule.get("coverpoint", []) if r and r.strip()]
-        if not refs:
-            empty += 1
-        for ref in refs:
-            m = re.match(r"\s*(\w+_cg/\w*(?:\{[^}]*\}\w*)?)", ref)
-            if not m:
-                continue  # free text such as OUT-OF-SCOPE or an explanation
-            for full in expand_braces(m.group(1)):
-                cp = full.split("/")[-1]
-                if not re.search(rf"\b{re.escape(cp)}\s*:", all_cov):
-                    out.append(f"{rule.get('name')}: coverpoint {full} not found in coverpoints/")
-    if empty:
-        out.append(f"{empty} rules have no coverpoint (TODO)")
+REF_RE = re.compile(r"(\{[^}]*\}|\w+)/(\w*(?:\{[^}]*\}\w*)?)")
+
+
+def covergroup_members() -> dict[str, set[str]]:
+    """Map every covergroup in coverpoints/ to the coverpoint and cross names it defines."""
+    members: dict[str, set[str]] = {}
+    for f in ROOT.glob("coverpoints/**/*.svh"):
+        text = f.read_text(errors="replace")
+        for m in re.finditer(r"\bcovergroup\s+(\w+)(.*?)\bendgroup\b", text, re.DOTALL):
+            members[m.group(1)] = set(re.findall(r"^\s*(\w+)\s*:\s*(?:coverpoint|cross)\b", m.group(2), re.MULTILINE))
+    return members
+
+
+def check_norm(suite: str, covergroups: set[str]) -> list[str]:
+    files = {ROOT / f"coverpoints/norm/{suite}.yaml"}
+    for f in ROOT.glob("coverpoints/norm/*.yaml"):
+        if any(re.search(rf"\b{cg}\b", f.read_text(errors="replace")) for cg in covergroups):
+            files.add(f)
+    members = covergroup_members()
+    out = []
+    for norm in sorted(files):
+        if not norm.exists():
+            out.append(f"no {rel(norm)}")
+            continue
+        data = YAML(typ="safe", pure=True).load(norm.read_text()) or {}
+        empty = 0
+        for rule in data.get("normative_rule_definitions", []):
+            refs = [r for r in rule.get("coverpoint", []) if r and r.strip()]
+            if not refs:
+                empty += 1
+            for ref in refs:
+                for m in REF_RE.finditer(ref):
+                    for cg in expand_braces(m.group(1)):
+                        if cg not in members:
+                            if re.fullmatch(r"[A-Z]\w*_\w+", cg):
+                                out.append(f"{rel(norm)}: {rule.get('name')}: covergroup {cg} does not exist")
+                            continue
+                        for cp in expand_braces(m.group(2)):
+                            if cp not in members[cg]:
+                                out.append(f"{rel(norm)}: {rule.get('name')}: {cg} has no coverpoint {cp}")
+        if empty:
+            out.append(f"{rel(norm)}: {empty} rules have no coverpoint (TODO)")
     return out
 
 
@@ -304,14 +323,18 @@ def check_traps(suite: str, priv: bool, ref32: str, ref64: str) -> list[str]:
 
 def check_coverage(suite: str, covergroups: set[str]) -> list[str]:
     out = []
-    summaries = list(ROOT.glob("work/*/reports/*_summary.txt"))
-    if not summaries:
-        return ["no coverage reports; run `make coverage EXTENSIONS=<Suite>`"]
-    for f in summaries:
+    seen: set[str] = set()
+    for f in ROOT.glob("work/*/reports/*_summary.txt"):
         for line in f.read_text(errors="replace").splitlines():
             fields = line.split()
-            if len(fields) >= 2 and fields[0] in covergroups and fields[1].endswith("%") and fields[1] != "100.00%":
-                out.append(f"{f.parts[len(ROOT.parts)]}: {fields[0]} {fields[1]} (see {suite}_uncovered.txt)")
+            if len(fields) >= 2 and fields[0] in covergroups and fields[1].endswith("%"):
+                seen.add(fields[0])
+                if fields[1] != "100.00%":
+                    out.append(f"{f.parts[len(ROOT.parts)]}: {fields[0]} {fields[1]} (see {suite}_uncovered.txt)")
+    if not seen:
+        return [f"no coverage data for this suite's covergroups; run `make coverage EXTENSIONS={suite}`"]
+    if missing := sorted(covergroups - seen):
+        out.append(f"{len(missing)} covergroups missing from every report: {', '.join(missing)}")
     return out
 
 
@@ -341,7 +364,7 @@ def main() -> int:
     section("Coverpoint text", check_coverpoint_text(cov_files))
     section("Guard names", check_guards(tests + cov_files + generators, udb_params))
     section("UDB parameters", check_params(suite, tests, tests + cov_files + generators, udb_params))
-    section("Normative-rule mapping", check_norm(suite))
+    section("Normative-rule mapping", check_norm(suite, covergroups))
     section("Coverage", check_coverage(suite, covergroups))
     section("Traps (reference model under each config)", check_traps(suite, priv, args.ref_rv32, args.ref_rv64))
     return 0

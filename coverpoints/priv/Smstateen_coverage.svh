@@ -68,7 +68,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
             bins aia_disabled = {1'b0};
             bins aia_enabled  = {1'b1};
         }
-        // Ssaia state gated by mstateen0.AIA and not by CSRIND or IMSIC; sie/sip are not Ssaia state.
+        // Ssaia state gated by mstateen0.AIA and not by CSRIND or IMSIC
         aia_csrs: coverpoint ins.current.insn[31:20] {
             bins stopi = {CSR_STOPI};
             `ifdef UDB_MXLEN_32

@@ -294,7 +294,7 @@ def _generate_jvt(test_data: TestData) -> list[str]:
                     "",
                     f"{INDENT}# mstateen0.jvt = {state}, {mode_label}",
                     f"LI(x{temp_reg}, {JVT_BIT_MASK})",
-                    f"{bit_action}(mstateen0, x{temp_reg})",
+                    f"{bit_action} mstateen0, x{temp_reg}",
                 ]
             )
             lines.append(enter_line)
@@ -464,7 +464,7 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
                     "",
                     f"{INDENT}# mstateen0.fcsr = {state}, {mode_label}",
                     f"LI(x{temp_reg}, {FCSR_BIT_MASK})",
-                    f"{bit_action}(mstateen0, x{temp_reg})",
+                    f"{bit_action} mstateen0, x{temp_reg}",
                 ]
             )
             lines.append(enter_line)
@@ -528,7 +528,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
                     "",
                     f"{INDENT}# mstateen0.fcsr = {state}, {mode_label}",
                     f"LI(x{temp_reg1}, {FCSR_BIT_MASK})",
-                    f"{bit_action}(mstateen0, x{temp_reg1})",
+                    f"{bit_action} mstateen0, x{temp_reg1}",
                 ]
             )
             lines.append(enter_line)

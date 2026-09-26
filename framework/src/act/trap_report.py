@@ -218,8 +218,9 @@ def _decode_all_traps(
 
         mode = MODE_NAMES.get(mode_raw, f"Unknown({mode_raw})")
 
-        # Entry size should be 3, 4, or 6 REGWIDTH words
-        if entry_size not in (3, 4, 6):
+        # Entry size should be 3, 4, or 6 REGWIDTH words, and an exact multiple of
+        # REGWIDTH: the deadbeef fill pattern otherwise truncates to a valid size.
+        if entry_bytes % regwidth or entry_size not in (3, 4, 6):
             break
         if pos + entry_size > len(raw_words):
             break
@@ -284,14 +285,17 @@ def _format_hex(value: int, xlen: int) -> str:
     return f"0x{value:0{width}x}"
 
 
-def _decode_xstatus(status_bits: int) -> str:
+def _decode_xstatus(status_bits: int, mode: str) -> str:
     """Decode the encoded xstatus field stored in signature word0 bits 30:13.
 
     The trap handler packs mstatus[17:0] into bits [30:13] of word0, then applies
     a mask to clear xstatus bits 16:13 (XS,FS) 10:9 (VS) and unused bits 4,2,0.
     For M-mode traps, mstatus[39:38]/mstatush[7:6] (GVA, MPV) are OR'd into
-    word0 bits [15:14]. For H-mode traps, hstatus[8:6] (SPVP, SPV, GVA) are OR'd
-    into word0 bits [16:14].
+    word0 bits [28:27] (xstatus 15:14). In the S/HS handler on a hypervisor build,
+    hstatus[8:6] (SPVP, SPV, GVA) are OR'd into word0 bits [29:27] (xstatus 16:14).
+    Bit 15 is therefore MPV on an M-mode entry and SPV on an S/HS one; ``mode`` is
+    the entry's MODE_NAMES string. A VS-mode entry holds vsstatus, which has only the
+    supervisor fields.
     """
     # Skip WPRI bit 0
     sie = (status_bits >> 1) & 1
@@ -302,20 +306,24 @@ def _decode_xstatus(status_bits: int) -> str:
     # Skip UBE bit 6 (not relevant to trap)
     mpie = (status_bits >> 7) & 1
     spp = (status_bits >> 8) & 1
+    if mode == "VS":
+        return f"SIE={sie}, SPIE={spie}, SPP={spp}"
     # Skip VS bits 9-10 (not relevant to trap)
     mpp = (status_bits >> 11) & 0x3
     # Skip FS bits 13-14 (not relevant to trap)
     # Skip XS bits 15-16 (not relevant to trap)
     mprv = (status_bits >> 17) & 1
-    # Overlaid bits
+    # Overlaid bits, xstatus[16:14]. Only meaningful on a hypervisor build: hstatus
+    # [8:6] (SPVP, SPV, GVA) in the S/HS handler, mstatus GVA/MPV in M-mode.
     gva = (status_bits >> 14) & 1
-    mpv = (status_bits >> 15) & 1
+    xpv = (status_bits >> 15) & 1
     spvp = (status_bits >> 16) & 1
+    xpv_name = "MPV" if mode == "M" else "SPV"
 
     return (
         f"SIE={sie}, MIE={mie}, SPIE={spie}, MPIE={mpie}, "
         f"SPP={spp}, MPP={mpp} ({MPP_NAMES.get(mpp, '?')}), MPRV={mprv}, "
-        f"GVA={gva}, MPV={mpv}, SPVP={spvp}"
+        f"GVA={gva}, {xpv_name}={xpv}, SPVP={spvp}"
     )
 
 
@@ -344,11 +352,14 @@ def _format_trap_report(entries: list[TrapEntry], test_name: str, xlen: int) -> 
         if entry.int_id is not None:
             lines.append(f"  IntID:   {_format_hex(entry.int_id, xlen)}")
         if entry.mtval2 is not None:
-            lines.append(f"  MTVAL2:  {_format_hex(entry.mtval2, xlen)}")
+            # Words 4 and 5 are mtval2 and mtinst in an M-mode entry, htval and htinst in an S/HS one.
+            label = "MTVAL2" if entry.mode == "M" else "HTVAL "
+            lines.append(f"  {label}:  {_format_hex(entry.mtval2, xlen)}")
         if entry.mtinst is not None:
-            lines.append(f"  MTINST:  {_format_hex(entry.mtinst, xlen)}")
+            label = "MTINST" if entry.mode == "M" else "HTINST"
+            lines.append(f"  {label}:  {_format_hex(entry.mtinst, xlen)}")
 
-        lines.append(f"  Status:  {_decode_xstatus(entry.xstatus_bits)}")
+        lines.append(f"  Status:  {_decode_xstatus(entry.xstatus_bits, entry.mode)}")
         lines.append(f"  XIE[cause]: {int(entry.xie_bit)}  XIP[cause]: {int(entry.xip_bit)}")
 
     lines.append("")

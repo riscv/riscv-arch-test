@@ -30,9 +30,9 @@
     slli t1, t1, __riscv_xlen-PAGE_OFFSET_SHIFT                 ;\
     srli t1, t1, __riscv_xlen-PAGE_OFFSET_SHIFT                 ;\
     or   t0, t0, t1                                             ;\
-    addi a0, a0, 2*sv_area_sz                                   ;\
+    addi a0, a0, 1*sv_area_sz                                   ;\
     SREG t0, _REG_NAME##_bgn_off+1*sv_area_sz(a0)               ;\
-    addi a0, a0, -2*sv_area_sz                                  ;
+    addi a0, a0, -1*sv_area_sz                                  ;
 
 
 // Wrapper macro around G_PTE_SETUP_PA_REG.

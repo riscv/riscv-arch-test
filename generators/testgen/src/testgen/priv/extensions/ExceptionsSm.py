@@ -284,7 +284,6 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
     required_extensions=["Sm"],
     extra_defines=[
         "#define BOOT_TO_MMODE",
-        "#define TRAP_SIGUPD_COUNT 5000",
     ],
 )
 def make_exceptionssm(test_data: TestData) -> list[TestChunk]:

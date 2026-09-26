@@ -215,13 +215,13 @@ def _generate_jvt(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"LI(x{temp_reg}, {1 << JVT_BIT})",
-                    f"{jvt_action}(sstateen0, x{temp_reg})  # sstateen0.JVT = {jvt_state}",
+                    f"{jvt_action} sstateen0, x{temp_reg}  # sstateen0.JVT = {jvt_state}",
                 ]
             )
             if mode_label == "umode":
                 lines.append("RVTEST_TSBI_GOTO_UMODE")
             for op in CSR_OPS:
-                insn = f"{op}(x{temp_reg}, jvt)" if op == "csrr" else f"{op}(x{temp_reg}, jvt, x{ones_reg})"
+                insn = f"{op} x{temp_reg}, jvt" if op == "csrr" else f"{op} x{temp_reg}, jvt, x{ones_reg}"
                 lines.extend(
                     [
                         "",
@@ -283,14 +283,14 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"LI(x{temp_reg}, {1 << FCSR_BIT})",
-                    f"{fcsr_action}(sstateen0, x{temp_reg})  # sstateen0.FCSR = {fcsr_bit}",
+                    f"{fcsr_action} sstateen0, x{temp_reg}  # sstateen0.FCSR = {fcsr_bit}",
                 ]
             )
             if mode_label == "umode":
                 lines.append("RVTEST_TSBI_GOTO_UMODE")
             for csr in fp_csrs:
                 for op in CSR_OPS:
-                    insn = f"{op}(x{temp_reg}, {csr})" if op == "csrr" else f"{op}(x{temp_reg}, {csr}, x{save_reg})"
+                    insn = f"{op} x{temp_reg}, {csr}" if op == "csrr" else f"{op} x{temp_reg}, {csr}, x{save_reg}"
                     lines.extend(
                         [
                             "",
@@ -355,7 +355,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"LI(x{temp_reg1}, {1 << FCSR_BIT})",
-                    f"{fcsr_action}(sstateen0, x{temp_reg1})  # sstateen0.FCSR = {fcsr_bit}",
+                    f"{fcsr_action} sstateen0, x{temp_reg1}  # sstateen0.FCSR = {fcsr_bit}",
                 ]
             )
             if mode_label == "umode":

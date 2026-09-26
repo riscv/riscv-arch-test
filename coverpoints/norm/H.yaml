@@ -8,177 +8,56 @@ normative_rule_definitions:
   # guest.
   - name: hstatus_sz_acc_op
     coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+      ["H_hscsr_cg/{cp_hcsr_access_masked, cp_hcsrwalk_masked}/hstatus"]
   # Register hedeleg is a 64-bit read/write register, formatted as shown in
   # &lt;&lt;norm:hedeleg_img&gt;&gt;.
   - name: hedeleg_sz_acc
     coverpoint:
       [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
+        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hedeleg",
+        "H_hscsr_cg/cp_hcsr_access_zero/hedelegh",
       ]
   # Each bit of hedeleg shall be either writable or read-only zero.
   - name: hedeleg_acc
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hedeleg"]
   - name: hedeleg_img
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hedeleg"]
   # Register hideleg is an HSXLEN-bit read/write register, formatted as shown in
   # &lt;&lt;norm:hideleg_img&gt;&gt;.
   - name: hideleg_sz_acc
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hideleg"]
   # Among bits 15:0 of hideleg, bits 10, 6, and 2 (corresponding to the standard VS-level
   # interrupts) are writable, and bits 12, 9, 5, and 1 (corresponding to the standard
   # S-level interrupts) are read-only zeros.
   - name: hideleg_acc
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hideleg"]
   - name: hideleg_img
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hideleg"]
   # Register hvip is an HSXLEN-bit read/write register that a hypervisor can write to
   # indicate virtual interrupts intended for VS-mode. Bits of hvip that are not writable
   # are read-only zeros.
   - name: hvip_sz_op
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hvip"]
   # The standard portion (bits 15:0) of hvip is formatted as shown in . Bits VSEIP, VSTIP,
   # and VSSIP of hvip are writable. Setting VSEIP=1 in hvip asserts a VS-level external
   # interrupt; setting VSTIP asserts a VS-level timer interrupt; and setting VSSIP asserts
   # a VS-level software interrupt.
   - name: hvip_acc
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hvip"]
   - name: hvip_img
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hvip"]
   # Registers hip and hie are HSXLEN-bit read/write registers that supplement HS-level’s
   # sip and sie respectively.
   - name: hip_hie_sz_acc
     coverpoint:
       [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
+        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hip",
+        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hie",
       ]
   - name: hip_img
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hip"]
   - name: hie_img
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hie"]
   # If bit i of sie is read-only zero, the same bit in register hip may be writable or may
   # be read-only. When bit i in hip is writable, a pending interrupt i can be cleared by
   # writing 0 to this bit. If interrupt i can become pending in hip but bit i in hip is
@@ -186,88 +65,28 @@ normative_rule_definitions:
   # implementation must provide some other mechanism for clearing the pending interrupt
   # (which may involve a call to the execution environment).
   - name: hip_acc
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hip"]
   # A bit in hie shall be writable if the corresponding interrupt can ever become pending
   # in hip. Bits of hie that are not writable shall be read-only zero.
   - name: hie_acc
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hie"]
   # The hgeip register is an HSXLEN-bit read-only register, formatted as shown in
   # &lt;&lt;hgeipreg&gt;&gt;, that indicates pending guest external interrupts for this
   # hart.
   - name: hgeip_sz_acc_op
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/cp_hcsr_access_ro"]
   # The hgeie register is an HSXLEN-bit read/write register, formatted as shown in
   # &lt;&lt;norm:hgeie_img&gt;&gt;, that contains enable bits for the guest external
   # interrupts at this hart.
   - name: hgeie_sz_acc_op
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hgeie"]
   # Register hgeie selects the subset of guest external interrupts that cause a
   # supervisor-level (HS-level) guest external interrupt. The enable bits in hgeie do not
   # affect the VS-level external interrupt signal selected from hgeip by hstatus.VGEIN.
   - name: hgeie_op
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hgeie"]
   - name: hgeie_img
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hgeie"]
   # The number of bits implemented in hgeip and hgeie for guest external interrupts is
   # UNSPECIFIED and may be zero. This number is known as GEILEN. The least-significant
   # bits are implemented first, apart from bit 0. Hence, if GEILEN is nonzero, bits
@@ -276,123 +95,50 @@ normative_rule_definitions:
   - name: geilen
     coverpoint:
       [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
+        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hgeie",
         "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
       ]
   # The henvcfg CSR is a 64-bit read/write register, formatted as shown in , that controls
   # certain characteristics of the execution environment when virtualization mode V=1.
   - name: henvcfg_sz_acc_op
     coverpoint:
       [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
+        "H_hscsr_cg/{cp_hcsr_access_masked, cp_hcsrwalk_masked}/henvcfg",
+        "H_hscsr_cg/{cp_hcsr_access_masked, cp_hcsrwalk_masked}/henvcfgh",
       ]
   # The counter-enable register hcounteren is a 32-bit register that controls the
   # availability of the hardware performance monitoring counters to the guest virtual
   # machine.
   - name: hcounteren_sz
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hcounteren"]
   # In addition, when the TM bit in the hcounteren register is clear, attempts to access
   # the vstimecmp register (via stimecmp) while executing in VS-mode will cause a
   # virtual-instruction exception if the same bit in mcounteren is set. When this bit and
   # the same bit in mcounteren are both set, access to the vstimecmp register (if
   # implemented) is permitted in VS-mode.
   - name: hcounteren_acc
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hcounteren"]
   # hcounteren must be implemented. However, any of the bits may be read-only zero,
   # indicating reads to the corresponding counter will cause an exception when V=1. Hence,
   # they are effectively WARL fields.
   - name: hcounteren_warl
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hcounteren"]
   # The htimedelta CSR is a 64-bit read/write register that contains the delta between the
   # value of the time CSR and the value returned in VS-mode or VU-mode. That is, reading
   # the time CSR in VS or VU mode returns the sum of the contents of htimedelta and the
   # actual value of time.
   - name: htimedelta_sz_acc_op
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/htimedelta"]
   # The htval register is an HSXLEN-bit read/write register formatted as shown in . When a
   # trap is taken into HS-mode, htval is written with additional exception-specific
   # information, alongside stval, to assist software in handling the trap.
   - name: htval_sz_acc_op
     coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-        "H_inst_cg/cp_guest_page_fault",
-      ]
+      ["H_hscsr_cg/cp_hcsr_access_zero/htval", "H_inst_cg/cp_guest_page_fault"]
   # htval is a WARL register that must be able to hold zero and may be capable of holding
   # only an arbitrary subset of other 2-bit-shifted guest physical addresses, if any.
   - name: htval_val
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-        "H_hscsr_cg/cp_hcsr_access_zero/htval",
-      ]
+    coverpoint: ["H_hscsr_cg/cp_hcsr_access_zero/htval"]
   # The htinst register is an HSXLEN-bit read/write register formatted as shown in . When
   # a trap is taken into HS-mode, htinst is written with a value that, if nonzero,
   # provides information about the instruction that trapped, to assist software in
@@ -400,31 +146,11 @@ normative_rule_definitions:
   # in .
   - name: htinst_sz_acc_op
     coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-        "H_inst_cg/cp_guest_page_fault",
-      ]
+      ["H_hscsr_cg/cp_hcsr_access_zero/htinst", "H_inst_cg/cp_guest_page_fault"]
   # htinst is a WARL register that need only be able to hold the values that the
   # implementation may automatically write to it on a trap.
   - name: htinst_val
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/cp_hcsr_access_zero/htinst"]
   # The hgatp register is an HSXLEN-bit read/write register, formatted as shown in
   # &lt;&lt;rv32hgatp&gt;&gt; for HSXLEN=32 and &lt;&lt;rv64hgatp&gt;&gt; for HSXLEN=64,
   # which controls G-stage address translation and protection, the second stage of
@@ -433,14 +159,8 @@ normative_rule_definitions:
   - name: hgatp_sz_acc_op
     coverpoint:
       [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
+        "H_hscsr_cg/cp_hcsr_access_zero/hgatp",
+        "H_hscsr_cg/{cp_atpwalk1, cp_atpwalk0}/hgatp",
       ]
   # When HSXLEN=32, the only other valid setting for MODE is Sv32x4, which is a
   # modification of the usual Sv32 paged virtual-memory scheme, extended to support 34-bit
@@ -448,85 +168,40 @@ normative_rule_definitions:
   # as modifications of the Sv39, Sv48, and Sv57 paged virtual-memory schemes. All of
   # these paged virtual-memory schemes are described in .
   - name: hgatp_mode_Sv
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_atpwalk1, cp_atpwalk0}/hgatp"]
   # In these modes, the lowest two bits of the physical page number (PPN) in hgatp always
   # read as zeros.
   - name: hgatp_ppn_op
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_atpwalk1, cp_atpwalk0}/hgatp"]
   # The number of VMID bits is UNSPECIFIED and may be zero.
   - name: hgatp_vmid
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_atpwalk1, cp_atpwalk0}/hgatp"]
   # When XLEN=32, hedelegh is a 32-bit read/write register that aliases bits 63:32 of
   # hedeleg. Register hedelegh does not exist when XLEN=64.
   - name: hedelegh_sz_acc_op
     coverpoint:
       [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
+        "H_hscsr_cg/cp_hcsr_access_zero/hedelegh",
+        "H_vscsr_cg/cp_illegalupper/hedelegh",
+        "H_ucsr_cg/cp_illegalupper/hedelegh",
       ]
   # When XLEN=32, henvcfgh is a 32-bit read/write register that aliases bits 63:32 of
   # henvcfg. Register henvcfgh does not exist when XLEN=64.
   - name: henvcfgh_sz_acc_op
     coverpoint:
       [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
+        "H_hscsr_cg/{cp_hcsr_access_masked, cp_hcsrwalk_masked}/henvcfgh",
+        "H_vscsr_cg/cp_illegalupper/henvcfgh",
+        "H_ucsr_cg/cp_illegalupper/henvcfgh",
       ]
   # When XLEN=32, htimedeltah is a 32-bit read/write register that aliases bits 63:32 of
   # htimedelta. Register htimedeltah does not exist when XLEN=64.
   - name: htimedeltah_sz_acc_op
     coverpoint:
       [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsr_access_masked",
-        "H_hscsr_cg/cp_hcsr_access_ro",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_atpwalk1/hgatp",
-        "H_hscsr_cg/cp_atpwalk0/hgatp",
+        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/htimedeltah",
+        "H_vscsr_cg/cp_illegalupper/htimedeltah",
+        "H_ucsr_cg/cp_illegalupper/htimedeltah",
       ]
 
   # The VS CSRs can be accessed as themselves only from M-mode or HS-mode.
@@ -534,10 +209,9 @@ normative_rule_definitions:
     coverpoint:
       [
         "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_atpwalk1/vsatp",
-        "H_hscsr_cg/cp_atpwalk0/vsatp",
+        "H_hscsr_cg/cp_hcsr_access_zero/vsatp",
+        "H_vscsr_cg/cp_hcsr_virtualinstructionfault",
+        "H_ucsr_cg/cp_hcsr_inaccessible_u",
       ]
   # The vsstatus register is a VSXLEN-bit read/write register that is VS-mode’s version of
   # supervisor register sstatus, formatted as shown in when VSXLEN=32 and when VSXLEN=64.
@@ -546,12 +220,8 @@ normative_rule_definitions:
   - name: vsstatus_sz_acc_op
     coverpoint:
       [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_atpwalk1/vsatp",
-        "H_hscsr_cg/cp_atpwalk0/vsatp",
-        "H_vscsr_cg/cp_replica",
+        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/vsstatus",
+        "H_vscsr_cg/cp_replica/sstatus",
       ]
   # The vsip and vsie registers are VSXLEN-bit read/write registers that are VS-mode’s
   # versions of supervisor CSRs sip and sie, formatted as shown in and respectively. When
@@ -562,31 +232,15 @@ normative_rule_definitions:
   - name: vsip_vsie_sz_acc_op
     coverpoint:
       [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_atpwalk1/vsatp",
-        "H_hscsr_cg/cp_atpwalk0/vsatp",
-        "H_vscsr_cg/cp_replica",
+        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/vsip",
+        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/vsie",
+        "H_vscsr_cg/cp_replica/sip",
+        "H_vscsr_cg/cp_replica/sie",
       ]
   - name: vsip_img
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_atpwalk1/vsatp",
-        "H_hscsr_cg/cp_atpwalk0/vsatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/vsip"]
   - name: vsie_img
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_atpwalk1/vsatp",
-        "H_hscsr_cg/cp_atpwalk0/vsatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/vsie"]
   # The vstvec register is a VSXLEN-bit read/write register that is VS-mode’s version of
   # supervisor register stvec, formatted as shown in . When V=1, vstvec substitutes for
   # the usual stvec, so instructions that normally read or modify stvec actually access
@@ -594,12 +248,8 @@ normative_rule_definitions:
   - name: vstvec_sz_acc_op
     coverpoint:
       [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_atpwalk1/vsatp",
-        "H_hscsr_cg/cp_atpwalk0/vsatp",
-        "H_vscsr_cg/cp_replica",
+        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/vstvec",
+        "H_vscsr_cg/cp_replica/stvec",
       ]
   # The vsscratch register is a VSXLEN-bit read/write register that is VS-mode’s version
   # of supervisor register sscratch, formatted as shown in . When V=1, vsscratch
@@ -609,12 +259,8 @@ normative_rule_definitions:
   - name: vsscratch_sz_acc_op
     coverpoint:
       [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_atpwalk1/vsatp",
-        "H_hscsr_cg/cp_atpwalk0/vsatp",
-        "H_vscsr_cg/cp_replica",
+        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/vsscratch",
+        "H_vscsr_cg/cp_replica/sscratch",
       ]
   # The vsepc register is a VSXLEN-bit read/write register that is VS-mode’s version of
   # supervisor register sepc, formatted as shown in . When V=1, vsepc substitutes for the
@@ -623,24 +269,13 @@ normative_rule_definitions:
   - name: vsepc_sz_acc_op
     coverpoint:
       [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_atpwalk1/vsatp",
-        "H_hscsr_cg/cp_atpwalk0/vsatp",
-        "H_vscsr_cg/cp_replica",
+        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/vsepc",
+        "H_vscsr_cg/cp_replica/sepc",
       ]
   # vsepc is a WARL register that must be able to hold the same set of values that sepc
   # can hold.
   - name: vsepc_warl
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_atpwalk1/vsatp",
-        "H_hscsr_cg/cp_atpwalk0/vsatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/vsepc"]
   # The vstval register is a VSXLEN-bit read/write register that is VS-mode’s version of
   # supervisor register stval, formatted as shown in . When V=1, vstval substitutes for
   # the usual stval, so instructions that normally read or modify stval actually access
@@ -648,24 +283,13 @@ normative_rule_definitions:
   - name: vstval_sz_acc_op
     coverpoint:
       [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_atpwalk1/vsatp",
-        "H_hscsr_cg/cp_atpwalk0/vsatp",
-        "H_vscsr_cg/cp_replica",
+        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/vstval",
+        "H_vscsr_cg/cp_replica/stval",
       ]
   # vstval is a WARL register that must be able to hold the same set of values that stval
   # can hold.
   - name: vstval_warl
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_atpwalk1/vsatp",
-        "H_hscsr_cg/cp_atpwalk0/vsatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/vstval"]
   # The vsatp register is a VSXLEN-bit read/write register that is VS-mode’s version of
   # supervisor register satp, formatted as shown in for VSXLEN=32 and for VSXLEN=64. When
   # V=1, vsatp substitutes for the usual satp, so instructions that normally read or
@@ -673,49 +297,32 @@ normative_rule_definitions:
   # translation, the first stage of two-stage translation for guest virtual addresses (see
   # ).
   - name: vsatp_sz_acc_op
+    # Representative coverpoints; also HSm_mcsr_cg/{cp_atpwalk1, cp_atpwalk0}/vsatp
     coverpoint:
       [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_atpwalk1/vsatp",
-        "H_hscsr_cg/cp_atpwalk0/vsatp",
-        "H_vscsr_cg/cp_replica",
-        "HSm_mcsr_cg/cp_atpwalk1/vsatp",
-        "HSm_mcsr_cg/cp_atpwalk0/vsatp",
+        "H_hscsr_cg/cp_hcsr_access_zero/vsatp",
+        "H_hscsr_cg/{cp_atpwalk1, cp_atpwalk0}/vsatp",
+        "H_vscsr_cg/cp_replica/satp",
       ]
   # The ASID field in the vsatp register has the same number of implemented bits as that
   # of the satp register, i.e., it is ASIDLEN bits wide.
   - name: vsatp_asidlen
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_atpwalk1/vsatp",
-        "H_hscsr_cg/cp_atpwalk0/vsatp",
-      ]
+    coverpoint: ["H_hscsr_cg/{cp_atpwalk1, cp_atpwalk0}/vsatp"]
   # The csr:vstimecmp[] CSR is a 64-bit register and has 64-bit precision on all RV32 and
   # RV64 systems.
   - name: vstimecmp_sz
     coverpoint:
       [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_atpwalk1/vsatp",
-        "H_hscsr_cg/cp_atpwalk0/vsatp",
+        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/vstimecmp",
+        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/vstimecmph",
       ]
   # In RV32 only, accesses to the csr:vstimecmp[] CSR access the low qty:32[bits], while
   # accesses to the csr:vstimecmph[] CSR access the high qty:32[bits] of csr:vstimecmp[].
   - name: vstimecmp_acc
     coverpoint:
       [
-        "H_hscsr_cg/cp_hcsr_access",
-        "H_hscsr_cg/cp_hcsr_access_zero",
-        "H_hscsr_cg/cp_hcsrwalk",
-        "H_hscsr_cg/cp_atpwalk1/vsatp",
-        "H_hscsr_cg/cp_atpwalk0/vsatp",
+        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/vstimecmp",
+        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/vstimecmph",
       ]
 
   # Machine-level H CSRs are inaccessible below M-mode
@@ -784,14 +391,19 @@ normative_rule_definitions:
   - names: [H_vscsrs_acc_u]
     coverpoint: ["H_ucsr_cg/cp_hcsr_inaccessible_u", "H_ucsr_cg/cp_scsr"]
 
-  # VU-mode accesses to H and S CSRs that HS-mode could perform raise virtual instruction
-  - names:
-      [
-        H_virtinst_vu_vs_nonhigh_allowedhs_tvm0,
-        H_virtinst_vu_nonhigh_supervisor_allowedhs_tvm0,
-      ]
+  # in VS-mode or VU-mode, attempts to access an implemented non-high-half hypervisor CSR
+  # or VS CSR when the same access (read/write) would be allowed in HS-mode, assuming
+  # mstatus.TVM=0;
+  - name: H_virtinst_vu_vs_nonhigh_allowedhs_tvm0
     coverpoint:
-      ["H_ucsr_cg/cp_hcsr_virtualinstructionfault", "H_ucsr_cg/cp_scsr"]
+      [
+        "H_vscsr_cg/cp_hcsr_virtualinstructionfault",
+        "H_ucsr_cg/cp_hcsr_virtualinstructionfault",
+      ]
+  # in VU-mode, attempts to access an implemented non-high-half supervisor CSR when the
+  # same access (read/write) would be allowed in HS-mode, assuming mstatus.TVM=0;
+  - name: H_virtinst_vu_nonhigh_supervisor_allowedhs_tvm0
+    coverpoint: ["H_ucsr_cg/cp_scsr"]
 
   # vsstatus.SD and XS summarize FS, VS and XS as VS-mode sees them
   - names: [vsstatus_sd_xs_op]
@@ -799,16 +411,26 @@ normative_rule_definitions:
 
   # Hypervisor virtual-machine loads and stores from HS-mode and from U-mode with hstatus.HU = 1
   - names: [hlsv_mode, hlsv_op, hstatus_hu_op, hlvx-wu_valid32]
-    coverpoint: ["H_inst_cg/cp_hlv", "H_inst_cg/cp_hlvx", "H_inst_cg/cp_hsv"]
+    coverpoint:
+      [
+        "H_inst_cg/cp_hlv",
+        "H_inst_cg/cp_hlvx",
+        "H_inst_cg/cp_hsv",
+        "ExceptionsH_cg/cp_loadstore_priv",
+      ]
 
   # Attempting to execute an xRET instruction in a mode less privileged than x will raise
   # an illegal-instruction exception.
   - name: xret_in_lower_mode
     coverpoint: ["H_inst_cg/cp_mret_illegal"]
 
-  # sret in VU-mode raises virtual instruction
+  # sret and sfence.vma in VU-mode raise virtual instruction
   - names: [H_virtinst_vu_sret_sfence]
-    coverpoint: ["H_inst_cg/cp_sret_illegal"]
+    coverpoint:
+      [
+        "H_inst_cg/cp_sret_illegal",
+        "ExceptionsH_cg/cp_virtual_instr_vu_sfence_vma",
+      ]
 
   # sret from HS-mode uses SPV
   - names: [sret_v0, hstatus_spv_sret]
@@ -876,43 +498,6 @@ normative_rule_definitions:
         "ZicntrH_cg/cp_hcounteren_access_vu",
       ]
 
-  # 22-bit physical page number (PPN)
-  - name: satp_ppn_Sv32_sz
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_atpwalk1/vsatp",
-        "H_hscsr_cg/cp_atpwalk0/vsatp",
-        "HSm_mcsr_cg/cp_atpwalk1/vsatp",
-        "HSm_mcsr_cg/cp_atpwalk0/vsatp",
-      ]
-  # 44-bit PPN
-  - name: satp_ppn_Sv39_sz
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_atpwalk1/vsatp",
-        "H_hscsr_cg/cp_atpwalk0/vsatp",
-        "HSm_mcsr_cg/cp_atpwalk1/vsatp",
-        "HSm_mcsr_cg/cp_atpwalk0/vsatp",
-      ]
-  # 44-bit PPN
-  - name: satp_ppn_Sv48_sz
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_atpwalk1/vsatp",
-        "H_hscsr_cg/cp_atpwalk0/vsatp",
-        "HSm_mcsr_cg/cp_atpwalk1/vsatp",
-        "HSm_mcsr_cg/cp_atpwalk0/vsatp",
-      ]
-  # 44-bit PPN
-  - name: satp_ppn_Sv57_sz
-    coverpoint:
-      [
-        "H_hscsr_cg/cp_atpwalk1/vsatp",
-        "H_hscsr_cg/cp_atpwalk0/vsatp",
-        "HSm_mcsr_cg/cp_atpwalk1/vsatp",
-        "HSm_mcsr_cg/cp_atpwalk0/vsatp",
-      ]
-
   # The least-significant VMID bits are implemented first; VMIDMAX is 7 for Sv32x4 and 14 otherwise
   - names: [hgatp_vmid_lsbs]
     coverpoint:
@@ -934,7 +519,7 @@ normative_rule_definitions:
   - names: [hstatus_vgein_acc]
     coverpoint:
       [
-        "Not tested: every H configuration has GEILEN of at least 1, and with GEILEN = 0 zero is the only legal VGEIN",
+        "Not tested: with GEILEN = 0 the only legal VGEIN value is 0, so a read-only-zero VGEIN cannot be distinguished from a writable one",
       ]
 
   # we use the term HSXLEN to refer to the effective XLEN when executing in HS-mode
@@ -1025,6 +610,10 @@ normative_rule_definitions:
         "Not tested: configuration requirement; the I suite tests registers x16 through x31",
       ]
 
+  # Sha depends on: H, Ssstateen, Shcounterenw, Shvstvala, Shtvala, Shvstvecd, Shvsatpa, Shgatpa
+  - name: Sha_dep
+    coverpoint: ["Definition, checked through UDB"]
+
   # henvcfg.FIOM = 1 makes FENCE and AMO ordering of device I/O with V=1 also order main memory
   - names: [henvcfg_fiom_op, henvcfg_fiom_order]
     coverpoint:
@@ -1035,48 +624,46 @@ normative_rule_definitions:
   # henvcfg.LPE enables Zicfilp in VS-mode
   - names: [henvcfg_lpe_op]
     coverpoint:
-      [
-        "Not tested: TODO landing-pad checks in VS-mode with henvcfg.LPE = 0 and 1",
-      ]
+      ["TODO: landing-pad checks in VS-mode with henvcfg.LPE = 0 and 1"]
 
   # Zicfilp adds vsstatus.SPELP, which holds the previous ELP on traps into VS-mode
   - names: [vsstatus_spelp_op]
     coverpoint:
       [
-        "Not tested: TODO check vsstatus.SPELP after traps into VS-mode and after sret in VS-mode with Zicfilp enabled",
+        "TODO: check vsstatus.SPELP after traps into VS-mode and after sret in VS-mode with Zicfilp enabled",
       ]
 
   # henvcfg.SSE activates Zicfiss in VS-mode
   - names: [henvcfg_sse_op]
     coverpoint:
       [
-        "Not tested: TODO shadow-stack instructions in VS-mode and VU-mode with henvcfg.SSE = 0 and 1",
+        "TODO: shadow-stack instructions in VS-mode and VU-mode with henvcfg.SSE = 0 and 1",
       ]
 
   # With Ssnpm, henvcfg.PMM enables pointer masking for VS-mode; PMM is read-only zero without Ssnpm and on RV32
   - names: [henvcfg_pmm_op]
     coverpoint:
       [
-        "Not tested: TODO pointer-masked loads and stores in VS-mode with each henvcfg.PMM value",
+        "TODO: pointer-masked loads and stores in VS-mode with each henvcfg.PMM value",
       ]
 
   # With Ssdbltrp, henvcfg.DTE = 0 disables Ssdbltrp for VS-mode and makes vsstatus.SDT read-only zero
   - names: [henvcfg_dte_op]
     coverpoint:
       [
-        "Not tested: TODO write vsstatus.SDT and take a trap into VS-mode with henvcfg.DTE = 0 and 1",
+        "TODO: write vsstatus.SDT and take a trap into VS-mode with henvcfg.DTE = 0 and 1",
       ]
 
   # Ssdbltrp adds vsstatus.SDT for double traps in VS-mode
   - names: [vsstatus_sdt_op]
     coverpoint:
       [
-        "Not tested: TODO take traps into VS-mode with vsstatus.SDT = 0 and 1 and check the double trap",
+        "TODO: take traps into VS-mode with vsstatus.SDT = 0 and 1 and check the double trap",
       ]
 
   # With Ssdbltrp, sret from HS-mode into VU-mode and sret in VS-mode clear vsstatus.SDT
   - names: [sret_dt]
     coverpoint:
       [
-        "Not tested: TODO check vsstatus.SDT after sret from HS-mode into VU-mode and after sret in VS-mode",
+        "TODO: check vsstatus.SDT after sret from HS-mode into VU-mode and after sret in VS-mode",
       ]

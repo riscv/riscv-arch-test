@@ -41,7 +41,7 @@ _MSTATUS_SXL_SHIFT = 34
 @add_priv_test_generator(
     "Smmpm",
     required_extensions=["Smmpm"],
-    march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
+    march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
     extra_defines=["#define BOOT_TO_MMODE", "#define RVTEST_ALLOW_OOS_FETCH_EPC"],
 )
 def make_smmpm(test_data: TestData) -> list[TestChunk]:

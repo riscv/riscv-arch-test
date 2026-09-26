@@ -14,7 +14,7 @@ test generators.
 from dataclasses import dataclass
 
 from testgen.asm.csr import gen_csr_write_sigupd
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import arch_block, comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 
@@ -205,20 +205,6 @@ def free_pm_regs(test_data: TestData, regs: Regs) -> None:
 
 
 # ── Assembly Helpers ───────────────────────────────────────────────────────
-
-
-def _fixed(instr: str) -> list[str]:
-    """
-    Wraps it in `.option norvc` so the assembler cannot silently substitute
-    a compressed (16-bit) encoding,
-    This keeps the emitted instruction matching the exact mnemonic the
-    test ID/coverpoint was built from.
-    """
-    return [".option push", ".option norvc", instr, ".option pop"]
-
-
-def _fixed_block(body: list[str]) -> list[str]:
-    return [".option push", ".option norvc", *body, ".option pop"]
 
 
 def _tid(prefix: str, upper: int, mnemonic: str) -> str:
@@ -657,7 +643,7 @@ def _probe_load(mn: str, tid: str, test_data: TestData, regs: Regs, cp: str, cg:
         *_seed(regs),
         *_sentinel(regs),
         test_data.add_testcase(tid, cp, cg),
-        *_fixed(f"{mn} x{regs.chk}, 0(x{regs.a})"),
+        f"{mn} x{regs.chk}, 0(x{regs.a})",
         write_sigupd(regs.chk, test_data),
     ]
 
@@ -667,8 +653,8 @@ def _probe_store(mn: str, readback: str, tid: str, test_data: TestData, regs: Re
         *_seed(regs),
         f"LI(x{regs.data}, {hex(VALUE_NEW)})",
         test_data.add_testcase(tid, cp, cg),
-        *_fixed(f"{mn} x{regs.data}, 0(x{regs.a})"),
-        *_fixed(f"{readback} x{regs.chk}, 0(x{regs.base})"),
+        f"{mn} x{regs.data}, 0(x{regs.a})",
+        f"{readback} x{regs.chk}, 0(x{regs.base})",
         write_sigupd(regs.chk, test_data),
     ]
 
@@ -678,9 +664,9 @@ def _probe_amo(mn: str, readback: str, tid: str, test_data: TestData, regs: Regs
         *_seed(regs),
         f"LI(x{regs.data}, {hex(VALUE_NEW)})",
         test_data.add_testcase(tid, CP_MASKING, cg),
-        *_fixed(f"{mn} x{regs.chk}, x{regs.data}, (x{regs.a})"),  # capture old value
+        f"{mn} x{regs.chk}, x{regs.data}, (x{regs.a})",  # capture old value
         write_sigupd(regs.chk, test_data),  # sigupd the AMO result
-        *_fixed(f"{readback} x{regs.chk}, 0(x{regs.base})"),
+        f"{readback} x{regs.chk}, 0(x{regs.base})",
         write_sigupd(regs.chk, test_data),  # then the memory read-back
     ]
 
@@ -698,9 +684,9 @@ def _probe_zacas(mn: str, tid: str, test_data: TestData, regs: Regs, cg: str) ->
             f"LI(x{src_lo}, {hex(VALUE_NEW)})",
             f"LI(x{src_hi}, {hex(VALUE_NEW)})",
             test_data.add_testcase(tid, CP_MASKING, cg),
-            *_fixed(f"{mn} x{dest_lo}, x{src_lo}, (x{regs.a})"),
-            *_fixed(f"ld x{dest_lo}, 0(x{regs.base})"),
-            *_fixed(f"ld x{dest_hi}, 8(x{regs.base})"),
+            f"{mn} x{dest_lo}, x{src_lo}, (x{regs.a})",
+            f"ld x{dest_lo}, 0(x{regs.base})",
+            f"ld x{dest_hi}, 8(x{regs.base})",
             write_sigupd(dest_lo, test_data),
             write_sigupd(dest_hi, test_data),
         ]
@@ -711,8 +697,8 @@ def _probe_zacas(mn: str, tid: str, test_data: TestData, regs: Regs, cg: str) ->
         f"LI(x{dest_reg}, {hex(VALUE_OLD)})   # comparand matches the seeded value",
         f"LI(x{src_reg}, {hex(VALUE_NEW)})",
         test_data.add_testcase(tid, CP_MASKING, cg),
-        *_fixed(f"{mn} x{dest_reg}, x{src_reg}, (x{regs.a})"),
-        *_fixed(f"ld x{dest_reg}, 0(x{regs.base})"),
+        f"{mn} x{dest_reg}, x{src_reg}, (x{regs.a})",
+        f"ld x{dest_reg}, 0(x{regs.base})",
         write_sigupd(dest_reg, test_data),
     ]
 
@@ -723,7 +709,7 @@ def _probe_fp_load(mn: str, mv: str, tid: str, test_data: TestData, regs: Regs, 
         *_sentinel(regs),
         f"{mv} f{regs.fp}, x{regs.chk}   # poison the FP destination",
         test_data.add_testcase(tid, CP_MASKING, cg),
-        *_fixed(f"{mn} f{regs.fp}, 0(x{regs.a})"),
+        f"{mn} f{regs.fp}, 0(x{regs.a})",
         f"fmv.x.{mv.split('.')[1]} x{regs.chk}, f{regs.fp}",
         write_sigupd(regs.chk, test_data),
     ]
@@ -735,8 +721,8 @@ def _probe_fp_store(mn: str, readback: str, mv: str, tid: str, test_data: TestDa
         f"LI(x{regs.data}, {hex(VALUE_NEW)})",
         f"{mv} f{regs.fp}, x{regs.data}",
         test_data.add_testcase(tid, CP_MASKING, cg),
-        *_fixed(f"{mn} f{regs.fp}, 0(x{regs.a})"),
-        *_fixed(f"{readback} x{regs.chk}, 0(x{regs.base})"),
+        f"{mn} f{regs.fp}, 0(x{regs.a})",
+        f"{readback} x{regs.chk}, 0(x{regs.base})",
         write_sigupd(regs.chk, test_data),
     ]
 
@@ -746,7 +732,7 @@ def _probe_c_load_cl(mn: str, tid: str, test_data: TestData, regs: Regs, cg: str
         *_seed(regs),
         *_sentinel(regs),
         test_data.add_testcase(tid, CP_MASKING, cg),
-        f"{mn} x{regs.chk}, 0(x{regs.a})",
+        *arch_block([f"{mn} x{regs.chk}, 0(x{regs.a})"], "zca"),
         write_sigupd(regs.chk, test_data),
     ]
 
@@ -756,8 +742,8 @@ def _probe_c_store_cs(mn: str, readback: str, tid: str, test_data: TestData, reg
         *_seed(regs),
         f"LI(x{regs.data}, {hex(VALUE_NEW)})",
         test_data.add_testcase(tid, CP_MASKING, cg),
-        f"{mn} x{regs.data}, 0(x{regs.a})",
-        *_fixed(f"{readback} x{regs.chk}, 0(x{regs.base})"),
+        *arch_block([f"{mn} x{regs.data}, 0(x{regs.a})"], "zca"),
+        f"{readback} x{regs.chk}, 0(x{regs.base})",
         write_sigupd(regs.chk, test_data),
     ]
 
@@ -769,7 +755,7 @@ def _probe_c_load_sp(mn: str, tid: str, test_data: TestData, regs: Regs, cg: str
         f"mv x{regs.tmp}, sp",
         f"mv sp, x{regs.a}",
         test_data.add_testcase(tid, CP_MASKING, cg),
-        f"{mn} x{regs.chk}, 0(sp)",
+        *arch_block([f"{mn} x{regs.chk}, 0(sp)"], "zca"),
         f"mv sp, x{regs.tmp}",
         write_sigupd(regs.chk, test_data),
     ]
@@ -782,9 +768,9 @@ def _probe_c_store_sp(mn: str, readback: str, tid: str, test_data: TestData, reg
         f"mv x{regs.tmp}, sp",
         f"mv sp, x{regs.a}",
         test_data.add_testcase(tid, CP_MASKING, cg),
-        f"{mn} x{regs.data}, 0(sp)",
+        *arch_block([f"{mn} x{regs.data}, 0(sp)"], "zca"),
         f"mv sp, x{regs.tmp}",
-        *_fixed(f"{readback} x{regs.chk}, 0(x{regs.base})"),
+        f"{readback} x{regs.chk}, 0(x{regs.base})",
         write_sigupd(regs.chk, test_data),
     ]
 
@@ -797,7 +783,7 @@ def _probe_cd_load_sp(tid: str, test_data: TestData, regs: Regs, cg: str) -> lis
         f"mv x{regs.tmp}, sp",
         f"mv sp, x{regs.a}",
         test_data.add_testcase(tid, CP_MASKING, cg),
-        f"c.fldsp f{regs.fp_c}, 0(sp)",
+        *arch_block([f"c.fldsp f{regs.fp_c}, 0(sp)"], "zca", "zcd"),
         f"mv sp, x{regs.tmp}",
         f"fmv.x.d x{regs.chk}, f{regs.fp_c}",
         write_sigupd(regs.chk, test_data),
@@ -812,9 +798,9 @@ def _probe_cd_store_sp(tid: str, test_data: TestData, regs: Regs, cg: str) -> li
         f"mv x{regs.tmp}, sp",
         f"mv sp, x{regs.a}",
         test_data.add_testcase(tid, CP_MASKING, cg),
-        f"c.fsdsp f{regs.fp_c}, 0(sp)",
+        *arch_block([f"c.fsdsp f{regs.fp_c}, 0(sp)"], "zca", "zcd"),
         f"mv sp, x{regs.tmp}",
-        *_fixed(f"ld x{regs.chk}, 0(x{regs.base})"),
+        f"ld x{regs.chk}, 0(x{regs.base})",
         write_sigupd(regs.chk, test_data),
     ]
 
@@ -823,8 +809,8 @@ def _probe_cbo(mn: str, tid: str, test_data: TestData, regs: Regs, cg: str) -> l
     return [
         *_seed(regs),
         test_data.add_testcase(tid, CP_MASKING, cg),
-        *_fixed(f"{mn} 0(x{regs.a})"),
-        *_fixed(f"ld x{regs.chk}, 0(x{regs.base})"),
+        f"{mn} 0(x{regs.a})",
+        f"ld x{regs.chk}, 0(x{regs.base})",
         write_sigupd(regs.chk, test_data),
     ]
 
@@ -841,16 +827,12 @@ def _probe_vec_load(mn: str, sew: int, template: str, tid: str, test_data: TestD
     return [
         *_seed(regs),
         *_sentinel(regs),
-        *_fixed_block(
-            [
-                *_vset(sew, regs),
-                f"vmv.v.x v2, x{regs.chk}   # poison the destination vector",
-                test_data.add_testcase(tid, CP_MASKING, cg),
-                template.format(a=regs.a),
-                f"vmv.x.s x{regs.chk}, v2",
-                "csrw vstart, x0",
-            ]
-        ),
+        *_vset(sew, regs),
+        f"vmv.v.x v2, x{regs.chk}   # poison the destination vector",
+        test_data.add_testcase(tid, CP_MASKING, cg),
+        template.format(a=regs.a),
+        f"vmv.x.s x{regs.chk}, v2",
+        "csrw vstart, x0",
         write_sigupd(regs.chk, test_data),
     ]
 
@@ -861,16 +843,12 @@ def _probe_vec_store(
     return [
         *_seed(regs),
         f"LI(x{regs.data}, {hex(VALUE_NEW)})",
-        *_fixed_block(
-            [
-                *_vset(sew, regs),
-                f"vmv.v.x v2, x{regs.data}",
-                test_data.add_testcase(tid, CP_MASKING, cg),
-                template.format(a=regs.a),
-                "csrw vstart, x0",
-            ]
-        ),
-        *_fixed(f"{readback} x{regs.chk}, 0(x{regs.base})"),
+        *_vset(sew, regs),
+        f"vmv.v.x v2, x{regs.data}",
+        test_data.add_testcase(tid, CP_MASKING, cg),
+        template.format(a=regs.a),
+        "csrw vstart, x0",
+        f"{readback} x{regs.chk}, 0(x{regs.base})",
         write_sigupd(regs.chk, test_data),
     ]
 
@@ -885,11 +863,11 @@ def _probe_zicfiss(
         f"LI(x{regs.data}, {hex(VALUE_NEW)})",
         *_sentinel(regs),
         test_data.add_testcase(tid, CP_MASKING, cg),
-        *_fixed(
+        (
             f".insn r 0x2f, {funct3:#x}, 0x24, x{regs.chk}, x{regs.a}, x{regs.data}"
             f"   # {mn} x{regs.chk}, x{regs.data}, (x{regs.a})"
         ),
-        *_fixed(f"{readback} x{regs.chk}, 0(x{regs.base})"),
+        f"{readback} x{regs.chk}, 0(x{regs.base})",
         write_sigupd(regs.chk, test_data),
     ]
 
@@ -1097,7 +1075,7 @@ def pass_e_jalr(cfg: object | None, prefix: str, test_data: TestData, regs: Regs
                 f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
                 f"li x{regs.chk}, 0   # the pad sets this to 1 if the fetch succeeded",
                 test_data.add_testcase(_tid(f"{prefix}_mxr{mxr}", upper, "jalr"), "cp_pmm_jalr", cg),
-                *_fixed(f"jalr ra, 0(x{regs.a})"),
+                f"jalr ra, 0(x{regs.a})",
                 write_sigupd(regs.chk, test_data),
             ]
         )
@@ -1118,12 +1096,12 @@ def pass_f_fault_address(cfg: object | None, prefix: str, test_data: TestData, r
                 f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
                 *_sentinel(regs),
                 test_data.add_testcase(_tid(f"{prefix}_flt", upper, "lw"), "cp_hardware_csr_writes_fault", cg),
-                *_fixed(f"lw x{regs.chk}, 0(x{regs.a})"),
+                f"lw x{regs.chk}, 0(x{regs.a})",
                 write_sigupd(regs.chk, test_data),
                 f"LI(x{regs.data}, {hex(VALUE_NEW)})",
                 *_sentinel(regs),
                 test_data.add_testcase(_tid(f"{prefix}_flt", upper, "sw"), "cp_hardware_csr_writes_fault", cg),
-                *_fixed(f"sw x{regs.data}, 0(x{regs.a})"),
+                f"sw x{regs.data}, 0(x{regs.a})",
                 write_sigupd(regs.chk, test_data),
             ]
         )
@@ -1243,15 +1221,15 @@ def _mprv_lw_sw_probe(
                 *_sentinel(regs),
                 *set_mprv(True, mpp, regs.tmp),
                 test_data.add_testcase(_tid(prefix, upper, "lw"), cp, cg),
-                *_fixed(f"lw x{regs.chk}, 0(x{regs.a})"),
+                f"lw x{regs.chk}, 0(x{regs.a})",
                 write_sigupd(regs.chk, test_data),
                 *_seed(regs),
                 f"LI(x{regs.data}, {hex(VALUE_NEW)})",
                 *set_mprv(True, mpp, regs.tmp),
                 test_data.add_testcase(_tid(prefix, upper, "sw"), cp, cg),
-                *_fixed(f"sw x{regs.data}, 0(x{regs.a})"),
+                f"sw x{regs.data}, 0(x{regs.a})",
                 *set_mprv(True, mpp, regs.tmp),
-                *_fixed(f"lw x{regs.chk}, 0(x{regs.base})"),
+                f"lw x{regs.chk}, 0(x{regs.base})",
                 write_sigupd(regs.chk, test_data),
             ]
         )

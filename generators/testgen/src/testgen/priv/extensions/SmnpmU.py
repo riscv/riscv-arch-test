@@ -33,7 +33,7 @@ _MENVCFG_PMM = 32
     "SmnpmU",
     required_extensions=["Smnpm"],
     forbidden_extensions=["S"],
-    march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
+    march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
     extra_defines=["#define RVTEST_ALLOW_OOS_FETCH_EPC"],
 )
 def make_smnpmu(test_data: TestData) -> list[TestChunk]:

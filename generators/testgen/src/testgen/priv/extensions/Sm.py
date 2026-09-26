@@ -75,7 +75,7 @@ def _generate_mcause_tests(test_data: TestData) -> list[str]:
     gated_exceptions = [
         (10, "#ifdef H_SUPPORTED"),  # ecall from VS-mode
         (14, "RESERVED"),
-        (16, "#ifdef SMDBLTRP_SUPPORTED"),  # Double trap
+        (16, "#ifdef SSDBLTRP_SUPPORTED"),  # Double trap, written to mcause only by Ssdbltrp
         (17, "RESERVED"),
         (18, "#if defined(ZICFILP_SUPPORTED) || defined(ZICFISS_SUPPORTED)"),  # software check
         (19, "#ifdef SM1P13P0_OR_LATER_SUPPORTED"),  # hardware error

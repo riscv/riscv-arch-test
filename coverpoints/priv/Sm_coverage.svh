@@ -60,7 +60,7 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
         bins b_13_load_page_fault = {13};
         //bins b_14_reserved = {14};
         bins b_15_store_page_fault = {15};
-        `ifdef SMDBLTRP_SUPPORTED
+        `ifdef SSDBLTRP_SUPPORTED
             bins b_16_double_trap = {16}; // never delegated to S mode
         `endif
         //bins b_17_reserved = {17};

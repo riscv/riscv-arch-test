@@ -6,6 +6,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
+import math
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Literal
@@ -553,7 +554,28 @@ def generate_random_vl(params: InstructionParams, test_data: TestData) -> tuple[
     )
 
     if params.egs != 1 and params.egs is not None:
-        raise NotImplementedError("Handle egs != 1 vl=random")
+        shift = int(math.log2(params.egs))
+        if 1 << shift != params.egs:
+            raise ValueError(f"element group size must be a power of two, got {params.egs}")
+        code.extend(
+            [
+                f"srli x{params.temp_reg}, x{params.temp_reg}, {shift}",
+                f"beqz x{params.temp_reg}, 1f",
+                f"addi x{params.temp_reg}, x{params.temp_reg}, -2",
+                f"bge x0, x{params.temp_reg}, 2f",
+                f"remu x{temp_reg}, x{temp_reg}, x{params.temp_reg}",
+                f"addi x{temp_reg}, x{temp_reg}, 2",
+                "j 3f",
+                "2:",
+                f"addi x{temp_reg}, x0, 1",
+                "3:",
+                f"slli x{temp_reg}, x{temp_reg}, {shift}",
+                "j 4f",
+                "1:",
+                f"mv x{temp_reg}, x0",
+                "4:",
+            ]
+        )
     else:
         code.append(f"ori x{temp_reg}, x{temp_reg}, 0x2")
 

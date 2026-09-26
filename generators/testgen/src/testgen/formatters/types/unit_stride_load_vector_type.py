@@ -43,6 +43,7 @@ vlm_config = InstructionTypeConfig(
     instruction_class=["load"],
     vector_data=VectorTypeConfig(
         mask_regs={"vd"},
+        maskable=False,
     ),
 )
 

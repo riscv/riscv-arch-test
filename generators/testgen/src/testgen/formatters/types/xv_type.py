@@ -18,7 +18,9 @@ from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
 
 xv_config = InstructionTypeConfig(required_params={"rd", "vs2"}, vector_data=VectorTypeConfig())
-vmvxs_config = InstructionTypeConfig(required_params={"rd", "vs2"}, vector_data=VectorTypeConfig(scalar_regs={"vs2"}))
+vmvxs_config = InstructionTypeConfig(
+    required_params={"rd", "vs2"}, vector_data=VectorTypeConfig(scalar_regs={"vs2"}, maskable=False)
+)
 
 
 @add_instruction_formatter("XV", xv_config)

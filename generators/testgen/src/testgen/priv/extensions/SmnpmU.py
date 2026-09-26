@@ -6,14 +6,11 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from __future__ import annotations
-
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
     PMM_CONFIGS,
-    Regs,
     alloc_pm_regs_paired,
     data_pm_lo_page,
     enable_envcfg_cbo_sse,
@@ -32,7 +29,16 @@ COVERGROUP = "SmnpmU_cg"
 _MENVCFG_PMM = 32
 
 
-def _emit_file(td: TestData, regs: Regs) -> list[str]:
+@add_priv_test_generator(
+    "SmnpmU",
+    required_extensions=["Smnpm"],
+    march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
+    extra_defines=["#define RVTEST_ALLOW_OOS_FETCH_EPC"],
+)
+def make_smnpmu(td: TestData) -> list[TestChunk]:
+    regs = alloc_pm_regs_paired(td)
+
+    tc = td.begin_test_chunk()
     lines = [
         "#ifndef S_SUPPORTED",
         ".pushsection .data",
@@ -57,20 +63,7 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
 
     lines += set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp, tsbi=True)
     lines += ["#endif"]
-    return lines
-
-
-@add_priv_test_generator(
-    "SmnpmU",
-    required_extensions=["Smnpm"],
-    march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
-    extra_defines=["#define RVTEST_ALLOW_OOS_FETCH_EPC"],
-)
-def make_smnpmu(td: TestData) -> list[TestChunk]:
-    regs = alloc_pm_regs_paired(td)
-
-    tc = td.begin_test_chunk()
-    tc.code = _emit_file(td, regs)
+    tc.code = lines
     chunks = [td.end_test_chunk()]
 
     free_pm_regs(td, regs)

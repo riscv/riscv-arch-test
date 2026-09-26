@@ -11,8 +11,6 @@ Common code for Ssnpm (S->U), Smmpm (M-mode), SmnpmS (M->S), SmnpmU (M->U)
 test generators.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 from testgen.asm.csr import gen_csr_write_sigupd

@@ -34,7 +34,7 @@ module testbench;
   string  traceFileList, traceFile;
   integer traceFileListHandler, num;
   integer traceFileHandler = 0; // 0 = no trace file open yet
-  string  line;
+  string  line, listLine;
   string  key, val;
   string  words[$];
   string  traceFiles[$];
@@ -89,13 +89,13 @@ module testbench;
       $display("Error: Could not open trace file list");
       $finish;
     end
-    while($fgets(line, traceFileListHandler)) begin
-      if (line != "" && line != "\n" && line[0] != "#") begin
+    while($fgets(listLine, traceFileListHandler)) begin
+      if (listLine != "" && listLine != "\n" && listLine[0] != "#") begin
         // Strip newline character from the end of the line
-        if (line[line.len()-1] == "\n") begin
-          line = line.substr(0, line.len()-2);
+        if (listLine[listLine.len()-1] == "\n") begin
+          listLine = listLine.substr(0, listLine.len()-2);
         end
-        traceFiles.push_back(line);
+        traceFiles.push_back(listLine);
       end
     end
     if(traceFiles.size == 0) begin

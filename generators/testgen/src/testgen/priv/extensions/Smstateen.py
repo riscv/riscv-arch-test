@@ -196,8 +196,8 @@ def _generate_bit_controlled(
     every CSR in `csrs` is exercised with every op in CSR_OPS.
 
     Args:
-        csrs: CSRs to access. When `csrs_rv32` is given, those are used instead on RV32
-            (e.g. the AIA high-half registers sieh/siph in place of sie/sip).
+        csrs: CSRs to access.
+        csrs_rv32: Additional CSRs to access on RV32 only (e.g. the AIA high halves sieh/siph).
     """
     covergroup = "Smstateen_cg"
     lines = [comment_banner(coverpoint, banner)]
@@ -243,14 +243,11 @@ def _generate_bit_controlled(
             if needs_guard:
                 lines.append("#ifdef S_SUPPORTED")
             lines.append(enter_line)
-            if csrs_rv32 is None:
-                lines.extend(emit_ops(csrs, state, mode_label))
-            else:
-                lines.append("#if __riscv_xlen == 64")
-                lines.extend(emit_ops(csrs, state, mode_label))
-                lines.append("#else  // RV32")
+            lines.extend(emit_ops(csrs, state, mode_label))
+            if csrs_rv32:
+                lines.append("#if __riscv_xlen == 32")
                 lines.extend(emit_ops(csrs_rv32, state, mode_label))
-                lines.append("#endif  // __riscv_xlen")
+                lines.append("#endif  // __riscv_xlen == 32")
             lines.append("RVTEST_TSBI_GOTO_MMODE")
             if needs_guard:
                 lines.append("#endif  // S_SUPPORTED")
@@ -671,8 +668,8 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
             coverpoint="cp_aia",
             bit=59,
             bit_name="aia",
-            banner="CSR ops on AIA CSRs with mstateen0.aia (bit 59) disabled and enabled — M/S/U-mode",
-            csrs=["sie", "sip"],
+            banner="CSR ops on Ssaia CSRs with mstateen0.aia (bit 59) disabled and enabled — M/S/U-mode",
+            csrs=["stopi"],
             csrs_rv32=["sieh", "siph"],
         )
     )

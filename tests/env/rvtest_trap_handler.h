@@ -57,7 +57,6 @@
 //    tramp_sz + 16*8        | 8             | medeleg_illegal_sv — shadow value of medeleg[2]
 //    tramp_sz + 17*8        | 8*REGWIDTH    | trapreg_sv     — ra scratch (slot 0), T1..T6 (slots 1-6), sp (slot 7)
 //    (after trapreg_sv)     | 8*REGWIDTH    | rvmodel_sv     — shared scratch area:
-//                           |               |   first 8 bytes: T-SBI CSR instruction and return
 //                           |               |   slot 0: fast-handler invisible-trap handoff marker
 //                           |               |   slots 2-3: fast-handler a1 and a2 save
 //                           |               |   slots 4-7: GOTO_LOWER_MODE T1, T2, T4, and T3 save
@@ -105,6 +104,9 @@
 //    TSBI_GOTO_UMODE  (a0=3)          — Switch caller to U-mode
 //    TSBI_GOTO_VSMODE (a0=4)          — Switch caller to VS-mode (H required)
 //    TSBI_GOTO_VUMODE (a0=5)          — Switch caller to VU-mode (H required)
+//      The three GOTO ops above also relocate the resume address when a test
+//      runs with translation on and has registered a code alias for its code
+//      region (see TSBI_RELOCATE_EPC).
 //    TSBI_ECALL_TEST  (a0=0x73)       — Test ecall path; returns xEPC in a0
 //    CSR_ACCESS       (a0=CSR opcode) — Execute CSR instruction; rd must be a0
 //    TSBI_LW/LWP4/LD  (a0=load opcode) — Load from physical address a1 into a0
@@ -299,8 +301,6 @@
 //   [after trap_sv]             rvmodel_sv_off  — start of RVMODEL macro scratch area
 //   [after rvmodel_sv]          int_clr_sv_off  — a0-a2 save across interrupt clearing
 //
-// T-SBI CSR_ACCESS reuses the first 8 bytes at rvmodel_sv_off for its dynamic
-// instruction scratch. On RV32 these are slots 0-1; on RV64 this is slot 0.
 // The fast trap handler uses slot 0 as its invisible-trap handoff marker and
 // slots 2-3 to save a1 and a2. These uses do not overlap in time. Slots 4-7
 // save T1, T2, T4, and T3 for RVTEST_GOTO_LOWER_MODE.
@@ -331,10 +331,6 @@
 // be expressed in REGWIDTH (not 8*8) so the offset also matches the emitted
 // .data layout on RV32, where REGWIDTH is 4.
 #define rvmodel_sv_off  (trap_sv_off+8*(REGWIDTH))    // offset to RVMODEL macro scratch area (8 regs)
-
-// T-SBI CSR_ACCESS scratch: reuses the first 8 bytes of rvmodel_sv area
-// for the dynamically-written CSR instruction (4B) + ret instruction (4B).
-#define tsbi_csr_scratch_off        rvmodel_sv_off  // T-SBI dynamic instruction scratch offset
 
 // RVTEST_GOTO_LOWER_MODE register save: the upper 4 slots of the M-mode
 // rvmodel_sv area hold T1, T2, T4 and the macro's pointer register (T3) so the
@@ -407,6 +403,91 @@
   beq     \STATUS_REG, \TMP_REG, 1f
   RVTEST_RESTORE_MEDELEG_ILLEGAL \SAVE_AREA_REG, \TMP_REG
 1:
+.endm
+
+// Relocate the resume address (xEPC, already past the ecall) of
+// RVTEST_TSBI_GOTO_MMODE, RVTEST_TSBI_GOTO_SMODE and RVTEST_TSBI_GOTO_UMODE
+// between the two mappings of the code region.
+//
+// The test image is identity mapped by the boot page tables, but that mapping is
+// not user accessible, so a test that runs code in U-mode maps its code region a
+// second time at a virtual alias. It registers that alias by writing it to code_bgn
+// of the S save area, which is what SAVE_AREA_SETUP(VA, rvtest_code_begin, code,
+// LEVEL) does. Both mappings cover the whole code region, so the offset from the
+// region start is the same in either one and only the base has to be swapped.
+//
+// For example, an Sv39 test that maps rvtest_code_begin (0x80000000) at
+// va_rvtest_code_begin (0xC0000000) and calls RVTEST_TSBI_GOTO_UMODE at 0x80000210
+// resumes at 0xC0000210, and the RVTEST_TSBI_GOTO_SMODE that ends the U-mode
+// excursion, reached at 0xC0000260, resumes at 0x80000260. GOTO_SMODE and
+// GOTO_MMODE have to move back because M-mode does not translate and S-mode cannot
+// execute a user page. The resume address may equal rvtest_code_end, which is where
+// the end-of-test code starts.
+//
+// Each direction checks that xEPC really lies in the mapping it is moving out of, so
+// a test that registers an alias but resumes somewhere else is left alone, as is one
+// that never registers an alias. Uses T2-T4; a0 = GOTO operation code.
+//
+// M and S service different callers, so they get different halves:
+//   M handles GOTO_UMODE, whose caller runs in the code region, and it is the only
+//     one that has to ask whether translation is on at all. Reading satp there is
+//     always legal; in S-mode it would raise an illegal instruction when
+//     mstatus.TVM is set.
+//   S only ever services callers already in U-mode, which reach it because
+//     ecall-from-U is delegated, so it only moves them back out of the alias.
+.macro TSBI_RELOCATE_EPC __MODE__
+// Without S-mode there is no satp, and no S save area to register an alias in.
+#ifdef S_SUPPORTED
+        LA(     T2, Mtramptbl_sv)
+        LREG    T3, code_bgn_off+sv_area_sz(T2)      // T3 = registered code alias
+        LREG    T2, code_bgn_off(T2)                 // T2 = rvtest_code_begin
+        beq     T2, T3, 9f                           // no alias registered
+        li      T4, TSBI_GOTO_UMODE
+  .ifc \__MODE__ , M
+        beq     a0, T4, 1f                           // GOTO_UMODE: code region -> alias
+  .else
+        beq     a0, T4, 9f                           // U caller returning to U: already in the alias
+  .endif
+        bgtu    a0, T4, 9f                           // VS/VU: not relocated
+        csrr    T4, CSR_XEPC                         // GOTO_M/SMODE: alias -> code region
+        sub     T4, T4, T3                           // T4 = offset into the alias
+        LA(     T3, Mtramptbl_sv)
+        LREG    T3, code_seg_siz(T3)                 // T3 = code region size
+  .ifc \__MODE__ , M
+        bgtu    T4, T3, 8f                           // not in the alias: an M caller entering S goes the other way
+  .else
+        bgtu    T4, T3, 9f                           // caller is not in the alias
+  .endif
+        add     T4, T4, T2
+        csrw    CSR_XEPC, T4
+  .ifc \__MODE__ , M
+        j       9f
+
+        // An M-mode caller asking for S-mode runs in the code region, not the alias.
+        // A test whose own map does not cover the code region -- one that maps a test VA
+        // over the root slot the boot tables identity map it through -- can only fetch
+        // through the alias, so send S-mode there, exactly as GOTO_UMODE does.
+8:      li      T4, TSBI_GOTO_SMODE
+        bne     a0, T4, 9f                           // GOTO_MMODE: M does not translate, nothing to do
+        LA(     T3, Mtramptbl_sv)
+        LREG    T3, code_bgn_off+sv_area_sz(T3)      // T3 = registered code alias (clobbered above)
+1:      csrr    T4, CSR_SATP
+    #if (UDB_MXLEN==32)
+        bgez    T4, 9f                               // satp.MODE = Bare
+    #else
+        srli    T4, T4, MODE_LSB
+        beqz    T4, 9f                               // satp.MODE = Bare
+    #endif
+        csrr    T4, CSR_XEPC
+        sub     T4, T4, T2                           // T4 = offset into the code region
+        LA(     T2, Mtramptbl_sv)
+        LREG    T2, code_seg_siz(T2)                 // T2 = code region size
+        bgtu    T4, T2, 9f                           // caller is not in the code region
+        add     T4, T4, T3
+        csrw    CSR_XEPC, T4
+  .endif
+9:
+#endif
 .endm
 
 //==============================================================================
@@ -1540,7 +1621,7 @@ tsbi_\__MODE__\()dispatch:
         beq     a0, T2, tsbi_\__MODE__\()ecall_test // if caller_a0 == 0x73 -> ECALL_TEST handler
 
         // Otherwise consult dispatch table
-        j tsbi_instr_table_dispatch
+        j tsbi_\__MODE__\()instr_dispatch
 
         //--------------------------------------------------------------
         // T-SBI ECALL_TEST handler (M-mode)
@@ -1568,15 +1649,16 @@ tsbi_\__MODE__\()ecall_test:
         //   then mret. The mret instruction transitions to the mode specified by MPP/MPV
         //   and jumps to mepc (which is now the instruction after the caller's ecall).
         //
-        // Note: For GOTO_MMODE, we reuse the existing rtn2mmode path which handles
-        //   EPC relocation across address spaces. The simpler GOTO_S/U/VS/VU paths
-        //   don't need relocation because they set MPP/MPV and let mret handle it.
+        // Note: a test that mapped its code region at a second virtual address for a
+        //   U-mode excursion resumes in whichever of the two mappings the target mode
+        //   can fetch from; TSBI_RELOCATE_EPC moves mepc between them.
         //--------------------------------------------------------------
 tsbi_\__MODE__\()goto_mode:
         // First, bump mepc past the ecall instruction
         csrr    T4, CSR_XEPC                        // T4 = mepc (caller's ecall address)
         addi    T4, T4, 4                            // T4 = mepc + 4 (instruction after ecall)
         csrw    CSR_XEPC, T4                         // mepc = mepc + 4
+        TSBI_RELOCATE_EPC \__MODE__                  // move between code region and its alias if needed
 
         // Dispatch based on caller's a0 (still live in a0 from the ecall)
         li      T2, TSBI_GOTO_MMODE                  // T2 = 1
@@ -1755,7 +1837,7 @@ tsbi_\__MODE__\()dispatch:
         LI(     T4, 0x73)                           // T4 = SYSTEM opcode
         bne     T2, T4, tsbi_\__MODE__\()reserved   // not SYSTEM -> reserved
         LI(     T4, TSBI_SFENCE_VMA)                // sfence.vma is legal in S-mode: execute it locally
-        beq     a0, T4, tsbi_\__MODE__\()exec_local
+        beq     a0, T4, tsbi_\__MODE__\()instr_dispatch
         srli    T2, a0, 12                          // T2 = a0[14:12]
         andi    T2, T2, 0x7                         // T2 = funct3
         beqz    T2, tsbi_\__MODE__\()reserved       // funct3==0 -> not CSR -> reserved
@@ -1788,6 +1870,7 @@ tsbi_\__MODE__\()goto_mode:
         csrr    T4, CSR_XEPC                        // T4 = sepc (caller's ecall address)
         addi    T4, T4, 4                            // skip ecall
         csrw    CSR_XEPC, T4                         // sepc += 4
+        TSBI_RELOCATE_EPC \__MODE__                  // move between code region and its alias if needed
 
         li      T2, TSBI_GOTO_MMODE                  // can't handle GOTO_MMODE from S-mode
         beq     a0, T2, tsbi_\__MODE__\()forward_goto_m // -> forward to M-mode; caller resumes in M
@@ -1861,24 +1944,10 @@ tsbi_\__MODE__\()csr_access:
         andi    T2, T2, 0x3                         // T2 = CSR_addr[11:10] (2 MSBs of CSR address)
         li      T4, 3                               // T4 = 3 (M-mode CSR indicator: addr[11:10]==11)
         bne     T2, T4, 11f                         // S/U CSR -> handle locally below
-        j       tsbi_\__MODE__\()forward_to_m      // M-mode CSR -> forward to the M-mode handler
+        j       tsbi_\__MODE__\()forward_to_m       // M-mode CSR -> forward to the M-mode handler
 11:
-tsbi_\__MODE__\()exec_local:
-        // TODO: Replace this with dispatch table, remove code below
-
-        // S-mode or U-mode CSR, or sfence.vma: can handle locally using scratch execution
-        addi    T2, sp, tsbi_csr_scratch_off       // T2 -> scratch memory in rvmodel_sv area
-        sw      a0, 0(T2)                          // write CSR instruction to scratch[0:3]
-        LI(     T3, 0x00008067)                    // T3 = "ret" encoding (jalr x0, ra, 0)
-        sw      T3, 4(T2)                          // write ret instruction to scratch[4:7]
-        RVTEST_FENCEI                              // sync icache after writing code to data memory
-        SREG    ra, trap_sv_off+0*REGWIDTH(sp)     // save caller's ra
-        jalr    ra, T2, 0                          // execute CSR instruction + ret (result in a0 if rd=a0)
-        LREG    ra, trap_sv_off+0*REGWIDTH(sp)     // restore caller's ra
-        csrr    T3, CSR_XEPC                        // T3 = sepc
-        addi    T3, T3, 4                            // skip past ecall
-        csrw    CSR_XEPC, T3                         // sepc += 4
-        j       resto_\__MODE__\()rtn              // sret to caller with CSR result in a0
+        // S-mode or U-mode CSR, or sfence.vma: find and execute the approved instruction locally.
+        j       tsbi_\__MODE__\()instr_dispatch
 
 .endif  // --------- END S-MODE T-SBI DISPATCH ---------
 
@@ -1915,34 +1984,33 @@ tsbi_\__MODE__\()handle_forwarded:
 //
 // The T-SBI dispatch mechanism uses a table of known instructions to avoid self-modifying code.
 // It searches the table and jumps to a matching instruction, which is followed by a ret to return to the caller.
-// It expects the intended instruction to be in a0.  The instruction may use arguments in a1 and a2, and return results in a0.
+// It expects the intended instruction in a0. The instruction can use a1 and a2,
+// and return a result in a0.
 //==============================================================================
 
-.ifc \__MODE__ , M                              // dispatch runs in M-mode; assemble once
-
-// tsbi_instr_table_dispatch
-tsbi_instr_table_dispatch:
-        LA(T2, tsbi_instr_table)                // initialize T2 = base address of instruction table
-tsbi_instr_table_search_loop:
+tsbi_\__MODE__\()instr_dispatch:
+        LA(     T2, tsbi_instr_table)             // T2 = instruction table base
+1:
         #if (UDB_MXLEN==32)
-            lw      T3, 0(T2)                   // fetch current instruction (32-bit)
+          lw      T3, 0(T2)                       // T3 = table instruction
         #else
-            lwu      T3, 0(T2)                  // fetch current instruction (64-bit); zero extend to 64 bits for comparison
+          lwu     T3, 0(T2)                       // T3 = table instruction
         #endif
-        beq     T3, a0, found_instr             // if it matches tsbi request, handle it
-        beqz    T3, tsbi_instr_not_found        // if we hit the end of the table (0 sentinel), not found
-        addi    T2, T2, 8                       // advance to next entry (4 bytes for instruction, 4 bytes for return)
-        j       tsbi_instr_table_search_loop    // repeat search
-found_instr:
-        mv      T4, ra                          // preserve caller's ra (T4's live value is already saved; restored by resto)
-        LA(     ra, tsbi_instr_rtn)             // table entries end in ret: link them to the epilogue below
-        jr      T2                              // jump to the matching instruction in the table
-tsbi_instr_rtn:
-        mv      ra, T4                          // restore caller's ra
-        csrr    T3, CSR_XEPC                    // T3 = xepc (ecall address)
-        addi    T3, T3, 4                       // T3 = xepc + 4 (skip past ecall)
-        csrw    CSR_XEPC, T3                    // update xepc for return
-        j       resto_\__MODE__\()rtn           // restore handler regs, xret to caller with result in a0
+        beq     T3, a0, tsbi_\__MODE__\()instr_found
+        beqz    T3, tsbi_instr_not_found
+        addi    T2, T2, 8                          // skip instruction and ret
+        j       1b
+tsbi_\__MODE__\()instr_found:
+        SREG    ra, trap_sv_off+0*REGWIDTH(sp)  // save caller's ra
+        jalr    ra, T2, 0                        // execute table instruction and return
+        LREG    ra, trap_sv_off+0*REGWIDTH(sp)  // restore caller's ra
+        csrr    T3, CSR_XEPC                     // T3 = xepc
+        addi    T3, T3, 4                        // skip past ecall
+        csrw    CSR_XEPC, T3                     // xepc += 4
+        j       resto_\__MODE__\()rtn           // restore handler regs and xret
+
+.ifc \__MODE__ , M
+
 tsbi_instr_not_found:
         // Requested instruction is not in the table: print the offending encoding and
         // terminate the simulation. Registers may be clobbered freely: this never returns.
@@ -1973,10 +2041,9 @@ tsbi_instr_not_found:
 
 // T-SBI Instruction Table
 // This table contains all instructions that the T-SBI knows how to run.
-// The dispatcher searches through the table for the matching instruction, runs it, and returns.
-// This avoids the need for self-modifying code.
+// M-mode and S-mode dispatchers search the table, run a matching instruction, and return.
 // Only CSRs that lower-privilege code might be interested in accessing are needed here.
-// Each instruction must be followed by a ret to return to the caller
+// Each instruction must be followed by a ret to return to the dispatcher.
 tsbi_instr_table:
 
         TSBI_CSR_INSTR_TABLE(0x300) // mstatus
@@ -1996,7 +2063,7 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x320) // mcountinhibit
         //TSBI_CSR_INSTR_TABLE(0xB00) // mcycle - shouldn't be changed below M-mode
         //TSBI_CSR_INSTR_TABLE(0xB02) // minstret - shouldn't be changed below M-mode
-        // TODO: Move the following to the S-mode dispatch when it is implemented
+        // S-mode dispatch executes these entries locally for U-mode calls.
         TSBI_CSR_INSTR_TABLE(0x100) // sstatus
         TSBI_CSR_INSTR_TABLE(0x104) // sie
         //TSBI_CSR_INSTR_TABLE(0x105) // stvec
@@ -2039,7 +2106,7 @@ tsbi_instr_table:
         #endif  // S_SUPPORTED
         .word 0 // sentinel to mark end of table
 
-.endif  // end of M-mode-only T-SBI instruction dispatch and table
+.endif
 
 //==============================================================================
 // NORMAL TRAP HANDLING
@@ -3184,8 +3251,7 @@ rvtest_\__MODE__\()end:                            // epilog is done for this mo
 //  Layout: See SAVE AREA OFFSET DEFINITIONS (Section 8) for the full structure.
 //
 //  The rvmodel_sv area has eight REGWIDTH entries at rvmodel_sv_off:
-//    - The first 8 bytes hold a T-SBI CSR instruction and return instruction.
-//    - Slot 0 is also the fast-handler invisible-trap handoff marker.
+//    - Slot 0 is the fast-handler invisible-trap handoff marker.
 //    - Slots 2-3 save a1 and a2 in the fast trap handlers.
 //    - Slots 4-7 save T1, T2, T4, and T3 for RVTEST_GOTO_LOWER_MODE.
 //  The whole scratch space is also available for RVMODEL macros that need temporary storage.
@@ -3229,8 +3295,7 @@ rvtest_\__MODE__\()end:                            // epilog is done for this mo
 \__MODE__\()medeleg_illegal_sv: .dword 0                                     // logical medeleg[2] value
 \__MODE__\()trapreg_sv:    .fill   8, REGWIDTH, 0xdeadbeef                   // handler reg save: ra scratch (slot 0), T1..T6 (1-6), sp (7)
 
-// rvmodel_sv is shared scratch space. T-SBI CSR_ACCESS writes an instruction
-// and return to the first 8 bytes. The fast trap handlers use slot 0 as the
+// rvmodel_sv is shared scratch space. The fast trap handlers use slot 0 as the
 // invisible-trap handoff marker and slots 2-3 to save a1 and a2. Slots 4-7 of
 // the M-mode copy save T1, T2, T4, and T3 for RVTEST_GOTO_LOWER_MODE.
 \__MODE__\()rvmodel_sv:    .fill   8, REGWIDTH, 0xdeadbeef                   // RVMODEL/T-SBI scratch area

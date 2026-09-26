@@ -18,7 +18,7 @@
 #define SIGUPD_COUNT 10
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 #define TRAP_SIGUPD_COUNT 30
 
 // Include framework macros
@@ -28,42 +28,32 @@
 RVTEST_BEGIN
 
 main:
-  RVTEST_GOTO_LOWER_MODE Smode
 Svinval_cg_cp_svinval_test1_sfence_w_inval:
   sfence.w.inval
-  nop
 
 Svinval_cg_cp_svinval_test1_sinval_vma:
   sinval.vma x0, x0
-  nop
 
 Svinval_cg_cp_svinval_test1_sfence_inval_ir:
   sfence.inval.ir
-  nop
 
 Svinval_cg_cp_svinval_test1_sfence_vma:
   sfence.vma x0, x0
-  nop
 
-  RVTEST_GOTO_MMODE
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
 Svinval_cg_cp_svinval_test2_sfence_w_inval:
   sfence.w.inval
-  nop
 
 Svinval_cg_cp_svinval_test2_sinval_vma:
   sinval.vma x0, x0
-  nop
 
 Svinval_cg_cp_svinval_test2_sfence_inval_ir:
   sfence.inval.ir
-  nop
 
 Svinval_cg_cp_svinval_test2_sfence_vma:
   sfence.vma x0, x0
-  nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

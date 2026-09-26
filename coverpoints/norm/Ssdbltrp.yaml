@@ -1,8 +1,7 @@
 normative_rule_definitions:
-  # The S-mode-disable-trap (SDT) bit is a WARL field introduced by the Ssdbltrp
-  # extension to address double trap (See ) at privilege modes lower than M.
-  - names:
-      [sstatus_sdt_sz, sstatus_sdt_acc, sstatus_sdt_op, sstatus_sdt_Ssdbltrp]
+  # The S-mode-disable-trap (SDT) bit is a WARL field introduced by the Ssdbltrp extension
+  # to address double trap (See ) at privilege modes lower than M.
+  - name: sstatus_sdt
     coverpoint: [""]
 
   # When the SDT bit is set to 1 by an explicit CSR write, the SIE (Supervisor

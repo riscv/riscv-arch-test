@@ -19,6 +19,13 @@ covergroup Zcmop_c_mop_1_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    // C.MOP.n is defined to not write any register.  The test seeds registers, executes the
+    // instruction, and writes them to the signature, so the coverpoint just checks execution.
+
+    cp_custom_mop_no_write : coverpoint ins.ins_str == "c.mop.1"  iff (ins.trap == 0 )  {
+        bins no_write  = {1};
+    }
+
 endgroup
 // ---------------------
 covergroup Zcmop_c_mop_11_cg with function sample(ins_t ins);
@@ -26,6 +33,13 @@ covergroup Zcmop_c_mop_11_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "c.mop.11"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    // C.MOP.n is defined to not write any register.  The test seeds registers, executes the
+    // instruction, and writes them to the signature, so the coverpoint just checks execution.
+
+    cp_custom_mop_no_write : coverpoint ins.ins_str == "c.mop.11"  iff (ins.trap == 0 )  {
+        bins no_write  = {1};
     }
 
 endgroup
@@ -37,6 +51,13 @@ covergroup Zcmop_c_mop_13_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    // C.MOP.n is defined to not write any register.  The test seeds registers, executes the
+    // instruction, and writes them to the signature, so the coverpoint just checks execution.
+
+    cp_custom_mop_no_write : coverpoint ins.ins_str == "c.mop.13"  iff (ins.trap == 0 )  {
+        bins no_write  = {1};
+    }
+
 endgroup
 // ---------------------
 covergroup Zcmop_c_mop_15_cg with function sample(ins_t ins);
@@ -44,6 +65,13 @@ covergroup Zcmop_c_mop_15_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "c.mop.15"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    // C.MOP.n is defined to not write any register.  The test seeds registers, executes the
+    // instruction, and writes them to the signature, so the coverpoint just checks execution.
+
+    cp_custom_mop_no_write : coverpoint ins.ins_str == "c.mop.15"  iff (ins.trap == 0 )  {
+        bins no_write  = {1};
     }
 
 endgroup
@@ -55,6 +83,13 @@ covergroup Zcmop_c_mop_3_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    // C.MOP.n is defined to not write any register.  The test seeds registers, executes the
+    // instruction, and writes them to the signature, so the coverpoint just checks execution.
+
+    cp_custom_mop_no_write : coverpoint ins.ins_str == "c.mop.3"  iff (ins.trap == 0 )  {
+        bins no_write  = {1};
+    }
+
 endgroup
 // ---------------------
 covergroup Zcmop_c_mop_5_cg with function sample(ins_t ins);
@@ -62,6 +97,13 @@ covergroup Zcmop_c_mop_5_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "c.mop.5"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    // C.MOP.n is defined to not write any register.  The test seeds registers, executes the
+    // instruction, and writes them to the signature, so the coverpoint just checks execution.
+
+    cp_custom_mop_no_write : coverpoint ins.ins_str == "c.mop.5"  iff (ins.trap == 0 )  {
+        bins no_write  = {1};
     }
 
 endgroup
@@ -73,6 +115,13 @@ covergroup Zcmop_c_mop_7_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    // C.MOP.n is defined to not write any register.  The test seeds registers, executes the
+    // instruction, and writes them to the signature, so the coverpoint just checks execution.
+
+    cp_custom_mop_no_write : coverpoint ins.ins_str == "c.mop.7"  iff (ins.trap == 0 )  {
+        bins no_write  = {1};
+    }
+
 endgroup
 // ---------------------
 covergroup Zcmop_c_mop_9_cg with function sample(ins_t ins);
@@ -80,6 +129,13 @@ covergroup Zcmop_c_mop_9_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "c.mop.9"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    // C.MOP.n is defined to not write any register.  The test seeds registers, executes the
+    // instruction, and writes them to the signature, so the coverpoint just checks execution.
+
+    cp_custom_mop_no_write : coverpoint ins.ins_str == "c.mop.9"  iff (ins.trap == 0 )  {
+        bins no_write  = {1};
     }
 
 endgroup

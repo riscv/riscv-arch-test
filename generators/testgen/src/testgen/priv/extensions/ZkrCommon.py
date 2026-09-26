@@ -12,6 +12,15 @@ from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 
 
+def _record_seed_reserved(dest_reg: int, test_data: TestData) -> list[str]:
+    """Write seed[29:24] to the signature."""
+    return [
+        f"srli x{dest_reg}, x{dest_reg}, 24",
+        f"andi x{dest_reg}, x{dest_reg}, 0x3f",
+        write_sigupd(dest_reg, test_data),
+    ]
+
+
 def _mseccfg(mode: str, instr: str) -> str:
     """mseccfg is an M-mode CSR: access it directly in M-mode, through T-SBI from S/U-mode."""
     return instr if mode == "M" else tsbi_call(instr)
@@ -53,11 +62,15 @@ def gen_seed_csrrw_tests(test_data: TestData, covergroup: str, mode: str) -> lis
                             _mseccfg(mode, f"csrw mseccfg, x{mseccfg_reg}"),
                         ],
                     ),
-                    # nonzero and zero rs1 to cover both insn[19:15] bins
+                    # Test both rs1 fields and record the reserved read-only-zero bits in rd.
+                    f"LI(x{dest_reg}, -1)",
                     test_data.add_testcase(f"{mode}_{tag}", coverpoint, covergroup),
                     f"csrrw x{dest_reg}, seed, x{src_reg}",
+                    *_record_seed_reserved(dest_reg, test_data),
+                    f"LI(x{dest_reg}, -1)",
                     test_data.add_testcase(f"{mode}_zero_{tag}", coverpoint, covergroup),
                     f"csrrw x{dest_reg}, seed, x0",
+                    *_record_seed_reserved(dest_reg, test_data),
                 ]
             )
 
@@ -68,14 +81,14 @@ def gen_seed_csrrw_tests(test_data: TestData, covergroup: str, mode: str) -> lis
 
 
 def gen_seed_illegal_csr_op_tests(test_data: TestData, covergroup: str, mode: str) -> list[str]:
-    """Read-only CSR ops on seed cause an illegal instruction in this suite's mode."""
+    """CSR ops on seed in this suite's mode; only the read-only forms cause an illegal instruction."""
     coverpoint = "cp_zkr_seed_illegal_csr_op"
 
     dest_reg, mseccfg_reg, rs1_reg, save_reg = test_data.int_regs.get_registers(4)
 
     sseed_useed_enabled = (1 << 9) | (1 << 8)
     lines = [
-        comment_banner(coverpoint, f"CSR read ops on seed cause illegal instruction in {mode}-mode"),
+        comment_banner(coverpoint, f"CSR ops on seed in {mode}-mode; only the read-only forms trap"),
         *_gate(
             mode,
             [
@@ -91,10 +104,10 @@ def gen_seed_illegal_csr_op_tests(test_data: TestData, covergroup: str, mode: st
     csr_ops: list[tuple[str, bool]] = [
         ("csrrs", False),
         ("csrrc", False),
-        ("csrrwi", True),
+        ("csrrwi", True),  # not a read of seed, so it does not trap
         ("csrrsi", True),
         ("csrrci", True),
-        ("csrrw", False),
+        ("csrrw", False),  # not a read of seed, so it does not trap
     ]
 
     for op, is_imm in csr_ops:
@@ -120,11 +133,17 @@ def gen_seed_illegal_csr_op_tests(test_data: TestData, covergroup: str, mode: st
 
 
 def gen_seed_entropy_zero_non_es16_tests(test_data: TestData, covergroup: str, mode: str) -> list[str]:
-    """Read seed twice in a row using csrrw; check entropy = 0 if OPST is not ES16."""
+    """Read seed twice in a row using csrrw, 100 times.
+    Fail on OPST == DEAD. If OPST is WAIT/BIST, fail when entropy bits are nonzero.
+    Always SIGUPD 0xB0BA on success so the scorecard does not depend on OPST.
+    """
     coverpoint = "cp_zkr_seed_entropy_zero_non_es16"
+
+    loop_count = 100
 
     read_reg, opst_reg, entropy_reg, cmp_reg = test_data.int_regs.get_registers(4)
     save_reg = test_data.int_regs.get_register()
+    loop_reg = test_data.int_regs.get_register()
 
     sseed_useed_enabled = (1 << 9) | (1 << 8)
     lines = [
@@ -138,26 +157,41 @@ def gen_seed_entropy_zero_non_es16_tests(test_data: TestData, covergroup: str, m
             ],
         ),
         test_data.add_testcase(f"{mode}_es16", coverpoint, covergroup),
+        f"LI(x{loop_reg}, {loop_count})",
+        ".Lzkr_seed_entropy_loop:",
         f"csrrw x{read_reg}, seed, zero",
         f"csrrw x{read_reg}, seed, zero",
         "# OPST bits",
         f"srli x{opst_reg}, x{read_reg}, 0x1E",
         "# entropy bits",
         f"LI(x{entropy_reg}, 0xFFFF)",
-        "# Check OPST value",
+        f"and x{entropy_reg}, x{entropy_reg}, x{read_reg}",
+        "# DEAD (OPST == 3)",
+        f"LI(x{cmp_reg}, 0x3)",
+        f"beq x{opst_reg}, x{cmp_reg}, .Lzkr_seed_entropy_dead",
+        "# ES16 (OPST == 2): skip the empty-source leak check",
         f"LI(x{cmp_reg}, 0x2)",
-        f"bne x{opst_reg}, x{cmp_reg}, .Lzkr_seed_entropy_non_es16",
-        "# SIGUPD 0xB0BA if OPST is ES16",
+        f"beq x{opst_reg}, x{cmp_reg}, .Lzkr_seed_entropy_ok",
+        "# WAIT/BIST: entropy must be 0 (spec seed_entropy_zero_non_es16)",
+        f"bnez x{entropy_reg}, .Lzkr_seed_entropy_leak",
+        ".Lzkr_seed_entropy_ok:",
+        f"addi x{loop_reg}, x{loop_reg}, -1",
+        f"bnez x{loop_reg}, .Lzkr_seed_entropy_loop",
+        "# Same success token for ES16 and for WAIT/BIST with entropy 0",
         f"LI(x{cmp_reg}, 0xB0BA)",
         write_sigupd(cmp_reg, test_data),
         "j .Lzkr_seed_entropy_done",
-        ".Lzkr_seed_entropy_non_es16:",
-        "# If OPST is not ES16",
-        f"and x{entropy_reg}, x{entropy_reg}, x{read_reg}",
+        ".Lzkr_seed_entropy_dead:",
+        "# DEAD: SIGUPD 0xDEAD vs Sail 0xB0BA",
+        f"LI(x{cmp_reg}, 0xDEAD)",
+        write_sigupd(cmp_reg, test_data),
+        "j .Lzkr_seed_entropy_done",
+        ".Lzkr_seed_entropy_leak:",
+        "# Nonzero entropy while WAIT/BIST: SIGUPD leaked bits vs Sail 0xB0BA",
         write_sigupd(entropy_reg, test_data),
         ".Lzkr_seed_entropy_done:",
         *_gate(mode, [_mseccfg(mode, f"csrw mseccfg, x{save_reg}")]),
     ]
 
-    test_data.int_regs.return_registers([read_reg, opst_reg, entropy_reg, cmp_reg, save_reg])
+    test_data.int_regs.return_registers([read_reg, opst_reg, entropy_reg, cmp_reg, save_reg, loop_reg])
     return lines

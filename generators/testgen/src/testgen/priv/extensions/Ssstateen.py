@@ -264,9 +264,13 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
         )
     ]
 
-    temp_reg, save_mstateen, save_mstatenh, save_sstateen, save_reg = test_data.int_regs.get_registers(5)
+    temp_reg, save_mstateen, save_mstatenh, save_sstateen, wdata_reg = test_data.int_regs.get_registers(5)
     fp_csrs = ["frm", "fflags", "fcsr"]
     FCSR_BIT = 1  # sstateen0 bit 1 = FCSR
+
+    # Write data for csrrw/csrrs/csrrc, set outside the gated region so that only the op under test
+    # accesses the FP CSRs. 0 is a legal frm (RNE) and clears fflags.
+    lines.append(f"LI(x{wdata_reg}, 0)  # write data for csrrw/csrrs/csrrc")
 
     for fcsr_bit in [0, 1]:
         fcsr_action = "csrc" if fcsr_bit == 0 else "csrs"
@@ -290,7 +294,7 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
                 lines.append("RVTEST_TSBI_GOTO_UMODE")
             for csr in fp_csrs:
                 for op in CSR_OPS:
-                    insn = f"{op}(x{temp_reg}, {csr})" if op == "csrr" else f"{op}(x{temp_reg}, {csr}, x{save_reg})"
+                    insn = f"{op}(x{temp_reg}, {csr})" if op == "csrr" else f"{op}(x{temp_reg}, {csr}, x{wdata_reg})"
                     lines.extend(
                         [
                             "",
@@ -299,7 +303,6 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
                                 coverpoint,
                                 covergroup,
                             ),
-                            f"csrr x{save_reg}, {csr}  # read operand for write-back ops",
                             insn,
                         ]
                     )
@@ -308,7 +311,7 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
             lines.append(f"csrw sstateen0, x{save_sstateen}  # restore sstateen0")
             lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
 
-    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, save_sstateen, save_reg])
+    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, save_sstateen, wdata_reg])
     return lines
 
 

@@ -58,7 +58,7 @@
 - Keep expected architectural behavior explicit. Each generated testcase must map to meaningful functional coverage.
 - The framework installs trap handlers for unprivileged tests when standard machine mode is available. Unexpected traps fail the test.
 - Privileged tests should boot into their intended mode. Use T-SBI calls for operations that require a higher privilege level. Use `tsbi_call()` for supported CSR or memory instructions and `RVTEST_TSBI_GOTO_*` for mode changes.
-- Allocate registers through `TestData` register allocators. Do not hard-code or separately exclude registers already reserved by the framework. Framework routines and T-SBI can clobber `ra` and `a0` through `a2`.
+- Allocate registers through `TestData` register allocators. Do not hard-code or separately exclude registers already reserved by the framework. Framework routines and T-SBI can clobber `ra` and `a0` through `a2`, so `generate/priv.py` removes them from the privileged-test pool. An allocated register is never one of them, and code need not exclude them again.
 - In generated assembly, use Python loops to emit repeated code. Avoid assembly loops so testcase labels and debug strings stay unique.
 - Do not use the target-dependent `.align` directive in assembly. Use `.p2align` or `.balign`.
 - Do not use the `la` or `li` pseduoinstructions. Use the `LA()` and `LI()` macros.

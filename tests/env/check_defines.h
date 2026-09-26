@@ -83,9 +83,7 @@
 #endif
 
 ##### Machine Interrupts #####
-// The machine interrupt macros are optional: UDB_{MEI,MTI,MSI}_INTR_IMPL is derived in
-// riscv_arch_test.h from whichever mechanism the platform provides, and a platform that
-// provides none simply does not have those tests generated. What is still required is that a
+// The machine interrupt macros are optional, but a
 // platform providing a raise also provides the matching clear.
 
 #ifdef RVMODEL_SET_MEXT_INT

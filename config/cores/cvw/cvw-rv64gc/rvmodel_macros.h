@@ -174,7 +174,6 @@
   sw zero, 0(_R2);
 
 // RVMODEL_SET_SSW_INT / RVMODEL_CLR_SSW_INT are intentionally undefined: Wally has no
-// supervisor software interrupt controller (the CLINT-range slot at 0x0200C000 belongs to
-// the hypervisor TrickBox), so the test environment raises and clears SSI through mip.SSIP.
+// supervisor software interrupt controller, so the test environment raises and clears SSI through mip.SSIP.
 
 #endif // _RVMODEL_MACROS_H

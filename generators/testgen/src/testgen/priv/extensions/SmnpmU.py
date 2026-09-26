@@ -45,23 +45,25 @@ def make_smnpmu(test_data: TestData) -> list[TestChunk]:
         *data_pm_lo_page(),
         ".popsection",
         *jalr_pad_asm(regs),
+        *enable_envcfg_cbo_sse(regs, csr="menvcfg", tsbi=True),
+        *enable_fp_vector_state(regs, tsbi=True),
     ]
-
-    lines += enable_envcfg_cbo_sse(regs, csr="menvcfg", tsbi=True)
-    lines += enable_fp_vector_state(regs, tsbi=True)
 
     for pmm, pmlen, label in PMM_CONFIGS:
         prefix = f"{label}_bare"
-        lines.append(comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), physical addresses"))
-        lines += set_pmm_field("menvcfg", _MENVCFG_PMM, pmm, pmlen, regs.tmp, tsbi=True)
-        lines += [f"LA(x{regs.base}, pm_lo_page)"]
+        lines.extend(
+            [
+                comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), physical addresses"),
+                *set_pmm_field("menvcfg", _MENVCFG_PMM, pmm, pmlen, regs.tmp, tsbi=True),
+                f"LA(x{regs.base}, pm_lo_page)",
+                *pass_a_all_instructions(None, prefix, test_data, regs, COVERGROUP),
+                *pass_c_misaligned(None, prefix, test_data, regs, COVERGROUP),
+                *pass_e_jalr(None, prefix, test_data, regs, COVERGROUP),
+                *pass_f_fault_address(None, prefix, test_data, regs, COVERGROUP),
+            ]
+        )
 
-        lines += pass_a_all_instructions(None, prefix, test_data, regs, COVERGROUP)
-        lines += pass_c_misaligned(None, prefix, test_data, regs, COVERGROUP)
-        lines += pass_e_jalr(None, prefix, test_data, regs, COVERGROUP)
-        lines += pass_f_fault_address(None, prefix, test_data, regs, COVERGROUP)
-
-    lines += set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp, tsbi=True)
+    lines.extend(set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp, tsbi=True))
     tc.code = lines
     chunks = [test_data.end_test_chunk()]
 

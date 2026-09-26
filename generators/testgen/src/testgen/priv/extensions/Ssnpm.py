@@ -68,71 +68,90 @@ def make_ssnpm(test_data: TestData) -> list[TestChunk]:
         tc = test_data.begin_test_chunk(split_name=mode)
         guard, is_bare = MODE_GUARDS[mode], mode == "bare"
         lines = [] if not guard else [f"#ifdef {guard}"]
-        lines += [".pushsection .data", *data_pm_lo_page()]
+        lines.extend([".pushsection .data", *data_pm_lo_page()])
         if not is_bare:
-            lines += data_pm_hi_page()
-            lines += data_slvl_tables(mode)
-            lines += data_slvl_tables(mode, label_prefix="pm_img_slvl")
-        lines += [
-            ".popsection",
-            ".p2align 12",
-            "pm_utext_begin:",
-            *jalr_pad_asm(regs),
-        ]
-
-        lines += enable_cascaded_envcfg_cbo_sse(regs)
-        lines += enable_fp_vector_state(regs, extra_bits=_MSTATUS_SUM, status_csr="sstatus")
-
+            lines.extend(
+                [
+                    *data_pm_hi_page(),
+                    *data_slvl_tables(mode),
+                    *data_slvl_tables(mode, label_prefix="pm_img_slvl"),
+                ]
+            )
+        lines.extend(
+            [
+                ".popsection",
+                ".p2align 12",
+                "pm_utext_begin:",
+                *jalr_pad_asm(regs),
+                *enable_cascaded_envcfg_cbo_sse(regs),
+                *enable_fp_vector_state(regs, extra_bits=_MSTATUS_SUM, status_csr="sstatus"),
+            ]
+        )
         if not is_bare:
-            lines += ["", *finegrained_maps[mode]]
-            lines += ["", *_pte_chain_asm(mode, HIGH_VA[mode], "pm_hi_page")]
+            lines.extend(["", *finegrained_maps[mode], "", *_pte_chain_asm(mode, HIGH_VA[mode], "pm_hi_page")])
 
         # S-mode cannot fetch from the U-marked test text once satp is on, so U-mode
         # turns satp on and off itself and writes senvcfg/sstatus through T-SBI.
-        lines += ["RVTEST_TSBI_GOTO_UMODE"]
+        lines.append("RVTEST_TSBI_GOTO_UMODE")
         if not is_bare:
-            lines += satp_setup(mode, regs, tsbi=True)
+            lines.extend(satp_setup(mode, regs, tsbi=True))
 
         for pmm, pmlen, label in PMM_CONFIGS:
             prefix = f"{label}_{mode}"
-            lines.append(comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), satp={mode.upper()}"))
-            lines += set_pmm_field("senvcfg", _SENVCFG_PMM, pmm, pmlen, regs.tmp, tsbi=True)
-            lines += set_mxr(False, regs.tmp, tsbi=True)
-            lines += [f"LA(x{regs.base}, pm_lo_page)"]
-
-            lines += pass_a_all_instructions(None, prefix, test_data, regs, COVERGROUP)
+            lines.extend(
+                [
+                    comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), satp={mode.upper()}"),
+                    *set_pmm_field("senvcfg", _SENVCFG_PMM, pmm, pmlen, regs.tmp, tsbi=True),
+                    *set_mxr(False, regs.tmp, tsbi=True),
+                    f"LA(x{regs.base}, pm_lo_page)",
+                    *pass_a_all_instructions(None, prefix, test_data, regs, COVERGROUP),
+                ]
+            )
             if not is_bare:
-                lines += pass_b_sign_extension(None, prefix, mode, test_data, regs, COVERGROUP)
-            lines += pass_c_misaligned(None, prefix, test_data, regs, COVERGROUP)
-            lines += pass_e_jalr(None, prefix, test_data, regs, COVERGROUP, mxr=0)
-            lines += pass_f_fault_address(None, prefix, test_data, regs, COVERGROUP)
-            lines += pass_d_mxr(None, prefix, test_data, regs, COVERGROUP, tsbi=True)
-            lines += pass_e_jalr(None, prefix, test_data, regs, COVERGROUP, mxr=1)
-            lines += set_mxr(False, regs.tmp, tsbi=True)
-
-        if not is_bare:
-            lines += satp_clear(regs, tsbi=True)
-        lines += ["RVTEST_TSBI_GOTO_SMODE"]
-        for pmm, pmlen, label in PMM_CONFIGS:
-            prefix = f"{label}_{mode}"
-            lines += set_pmm_field("senvcfg", _SENVCFG_PMM, pmm, pmlen, regs.tmp)
-            lines += pass_clear_on_xlen_change(
-                None,
-                prefix,
-                test_data,
-                regs,
-                cp=CP_UXL_CLEAR,
-                cg=COVERGROUP,
-                pmm_csr="senvcfg",
-                pmm_shift=_SENVCFG_PMM,
-                status_csr="sstatus",
-                status_shift=32,
-                ifdef_guard="UDB_UXLEN_32",
+                lines.extend(pass_b_sign_extension(None, prefix, mode, test_data, regs, COVERGROUP))
+            lines.extend(
+                [
+                    *pass_c_misaligned(None, prefix, test_data, regs, COVERGROUP),
+                    *pass_e_jalr(None, prefix, test_data, regs, COVERGROUP, mxr=0),
+                    *pass_f_fault_address(None, prefix, test_data, regs, COVERGROUP),
+                    *pass_d_mxr(None, prefix, test_data, regs, COVERGROUP, tsbi=True),
+                    *pass_e_jalr(None, prefix, test_data, regs, COVERGROUP, mxr=1),
+                    *set_mxr(False, regs.tmp, tsbi=True),
+                ]
             )
 
-        lines += set_pmm_field("senvcfg", _SENVCFG_PMM, 0b00, 0, regs.tmp)
-        lines += set_mxr(False, regs.tmp)
-        lines += [".p2align 12", "pm_utext_end:"]
+        if not is_bare:
+            lines.extend(satp_clear(regs, tsbi=True))
+        lines.append("RVTEST_TSBI_GOTO_SMODE")
+        for pmm, pmlen, label in PMM_CONFIGS:
+            prefix = f"{label}_{mode}"
+            lines.extend(
+                [
+                    *set_pmm_field("senvcfg", _SENVCFG_PMM, pmm, pmlen, regs.tmp),
+                    *pass_clear_on_xlen_change(
+                        None,
+                        prefix,
+                        test_data,
+                        regs,
+                        cp=CP_UXL_CLEAR,
+                        cg=COVERGROUP,
+                        pmm_csr="senvcfg",
+                        pmm_shift=_SENVCFG_PMM,
+                        status_csr="sstatus",
+                        status_shift=32,
+                        ifdef_guard="UDB_UXLEN_32",
+                    ),
+                ]
+            )
+
+        lines.extend(
+            [
+                *set_pmm_field("senvcfg", _SENVCFG_PMM, 0b00, 0, regs.tmp),
+                *set_mxr(False, regs.tmp),
+                ".p2align 12",
+                "pm_utext_end:",
+            ]
+        )
         if guard:
             lines.append(f"#endif // {guard}")
         tc.code = lines

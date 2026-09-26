@@ -789,6 +789,11 @@
     .dword 0xDEAD001FFFE0BEEF, 0xDEAD0020FFDFBEEF
     .dword 0xDEAD0021FFDEBEEF
 
+  // Temporary memory for RVTEST_SIGUPD_F.
+  .p2align 4
+  fp_sigupd_temp:
+    .dword 0xDEADF001FFFEBEEF, 0xDEADF002FFFDBEEF
+
   // Global counter of the number of traps taken, incremented by every mode's
   // trap handler. Lives in .data (NOT the signature region) so it does not
   // participate in signature self-checking. Readable from any privilege mode
@@ -1056,11 +1061,12 @@
         #endif
       #endif
 
-      // Enable all performance counters if they exist
-      // This is reserved if mcountinhibit is not implemented, and might trap or have unspecified behavior
-      //   *** need to define a UDB parameter MCOUNTINHIBIT_IMPLEMENTED to determine whether mcountinhibit is implemented
-      //   see https://github.com/riscv/riscv-isa-manual/issues/2964
-      csrw mcountinhibit, zero
+      // Enable all performance counters if they exist.
+      // mcountinhibit is optional and accessing the CSR is reserved
+      // if it is not implemented.
+      #ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
+        csrw mcountinhibit, zero
+      #endif
 
       // Initialize counter event selectors to 0.  They must be implemented.
       csrw mhpmevent3, zero

@@ -7,6 +7,9 @@
 #undef H_SUPPORTED // TODO: Remove this once Sail supports Hypervisor
 #include "derived_config.h"
 #include "encoding.h"
+#ifdef RVTEST_EXPERIMENTAL
+  #include "rvtest_experimental.h"
+#endif
 #include "utils.h"
 #include "rvmodel_macros.h"
 #ifndef RVTEST_SELFCHECK

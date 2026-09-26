@@ -546,11 +546,11 @@
         andi x6, x6, 31                   # FP register number (rs2 of FSREG)
         sw x6, 260(DEFAULT_TEMP_REG)      # record failing_reg
 
-        # Load bad FP value from scratch memory (written by FSREG in the sigupd macro)
+        # Load the bad FP value from the temporary memory written by FSREG.
         # Use FP_LREG so we read exactly the CONFIG_FLEN bits FSREG stored,
         # zero-extending on RV64+F-only where fsw wrote fewer bytes than LREG reads.
         # See tests/env/utils.h for an explanation of CONFIG_FLEN and TEST_FLEN.
-        la x6, scratch
+        la x6, fp_sigupd_temp
         FP_LREG x7, 0(x6)
         SREG x7, 272(DEFAULT_TEMP_REG)    # failing_value (lower/only)
     #if CONFIG_FLEN > UDB_MXLEN
@@ -632,7 +632,12 @@
         la x8, failing_instruction
         sw x7, 0(x8)                      # record failing instruction (16 or 32 bits)
 
-        # Extract vd (rd field)
+        # Extract vd (rd field) from a dummy instruction after _STR_PTR
+    #ifdef UDB_MXLEN_64
+        lhu x7, 16(DEFAULT_LINK_REG)
+    #else
+        lhu x7, 8(DEFAULT_LINK_REG)
+    #endif
         srli x7, x7, 7
         andi x7, x7, 31
         la x8, failing_reg
@@ -2102,7 +2107,7 @@
         .fill 2, 4, 0
     # The four saved_x* slots hold the trapping mode's xEPC/xCAUSE/xTVAL/xSTATUS,
     # snapshotted by the trap handler before trap signature word 0
-    # (rvtest_trap_handler.h).
+    # (rvtest_trap_handler.h). Each slot is 8 bytes, regardless of XLEN.
     saved_xepc:
         .fill 2, 4, 0
     saved_xcause:

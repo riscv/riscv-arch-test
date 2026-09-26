@@ -9,6 +9,7 @@
 
 from collections.abc import Callable, Iterable
 
+from testgen.asm.csr import gen_csr_write_sigupd
 from testgen.data.state import TestData
 from testgen.priv.extensions.pmp.probes import ProbeGenerator
 
@@ -65,15 +66,28 @@ _LXWR_PERM_NAMES: dict[str, str] = {
 }
 
 
-NAPOT_MASK_DEFINES = [
-    "#if UDB_PMP_GRANULARITY != 2",
-    "#define PMP_MASK        ~((1 << (UDB_PMP_GRANULARITY - 3)) - 1)",
-    "#define PMP_REGION_SIZE ((1 << (UDB_PMP_GRANULARITY - 3)) - 1)",
-    "#else",
-    "#define PMP_MASK        ~0",
-    "#define PMP_REGION_SIZE 0",
-    "#endif",
-]
+def napot_mask_defines(min_granularity: int | None = None) -> list[str]:
+    """Define a NAPOT mask for the PMP grain and an optional minimum grain."""
+    lines = []
+    region_shift = "UDB_PMP_GRANULARITY"
+    if min_granularity is not None:
+        lines.extend(
+            [
+                f"#if UDB_PMP_GRANULARITY > {min_granularity}",
+                "#define PMP_REGION_SHIFT UDB_PMP_GRANULARITY",
+                "#else",
+                f"#define PMP_REGION_SHIFT {min_granularity}",
+                "#endif",
+            ]
+        )
+        region_shift = "PMP_REGION_SHIFT"
+    lines.extend(
+        [
+            f"#define PMP_REGION_SIZE (((1 << ({region_shift} - 2)) - 1) >> 1)",
+            "#define PMP_MASK        ~PMP_REGION_SIZE",
+        ]
+    )
+    return lines
 
 
 def set_pmpaddr(amode: str, entry: int, region: str = "REGIONSTART") -> list[str]:
@@ -115,6 +129,16 @@ def set_pmpcfg(entry: int, value: str) -> list[str]:
     return lines
 
 
+def write_pmpcfg0(test_data: TestData, value: str, name: str) -> list[str]:
+    """Write pmpcfg0 and register its readback as a testcase."""
+    return [
+        f"LI(x4, {value})",
+        test_data.add_testcase(name, "cp_pmpcfg", test_data.testsuite),
+        gen_csr_write_sigupd(4, "pmpcfg0", test_data),
+        "sfence.vma",
+    ]
+
+
 #: The six legal (L=1) LXWR encodings, each parked in its own PMP entry so that the
 #: most permissive one has the highest priority.
 LOCKED_LXWR_CASES: list[tuple[str, int]] = [
@@ -143,7 +167,7 @@ def lxwr_walk_body(
     first: int = 1,
     lower_mode: str | None = None,
     extra_setup: list[str] | None = None,
-    napot_mask: list[str] = NAPOT_MASK_DEFINES,
+    napot_mask: list[str] | None = None,
 ) -> list[str]:
     """Walk LXWR encodings against one region: clear the PMPs, define one
     ``PMPREGION_LXWR_*`` per case, set the background, then configure and probe each
@@ -151,7 +175,7 @@ def lxwr_walk_body(
     defines = [f"#define PMPREGION_LXWR_{lxwr} {cfg_byte(lxwr, amode, cfg_shift(entry))}" for lxwr, entry in cases]
     lines = [*zero_pmp_regs(), "", *defines, "", "#define REGIONSTART TEST_FOR_EXECUTION"]
     if amode == "napot":
-        lines.extend(napot_mask)
+        lines.extend(napot_mask_defines() if napot_mask is None else napot_mask)
     lines.extend(["", "RVTEST_PMP_SET_BACKGROUND x4"])
     if extra_setup:
         lines.extend(["", *extra_setup])

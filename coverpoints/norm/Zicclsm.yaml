@@ -13,7 +13,7 @@
 normative_rule_definitions:
   # If the Zicclsm extension is implemented, then misaligned loads and stores to main memory
   # regions with both the coherence and cacheability PMAs must be supported.
-  - name: zicclsm_misaligned_support
+  - name: Zicclsm_misaligned_support
     coverpoint: [
         # Misalign: scalar integer loads and stores (lb/sb need no alignment and are not tested)
         "{Misalign_lh_cg,Misalign_lhu_cg,Misalign_lw_cg,Misalign_lwu_cg,Misalign_ld_cg,Misalign_sh_cg,Misalign_sw_cg,Misalign_sd_cg}/{cp_misalign}",

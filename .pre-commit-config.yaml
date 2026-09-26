@@ -32,14 +32,14 @@ repos:
 
   # Format pyproject.toml files
   - repo: https://github.com/tox-dev/pyproject-fmt
-    rev: 3b42b9776870badc9eaffdef9a4a0834b764d87c # frozen: v2.29.3
+    rev: 59e7b26529dc6f15c43063064b8b06ded60d0910 # frozen: v2.29.4
     hooks:
       - id: pyproject-fmt
 
   # Ruff Python linter
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: 321478e58f4938179c6b86e4ddfa923d1547a49b # frozen: v0.16.6
+    rev: 2eeb5678de71a00c0902cbda7105d328432f72cb # frozen: v0.16.8
     hooks:
       # Run the linter.
       - id: ruff-check
@@ -70,13 +70,13 @@ repos:
 
   # Check GitHub Actions workflows
   - repo: https://github.com/kjanat/actionlint
-    rev: 12b4eec2b4964a2c9ed7c2360c79a9e37c872a47 # frozen: v1.16
+    rev: 722799fa4b8cc6734debb97bae24aca9e0dbaf59 # frozen: v1.17
     hooks:
       - id: actionlint-shellcheck
 
   # Find security issues in GitHub Actions workflows
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: cef8b8350da46d8114c7e6b7272aebdccdf193ce # frozen: v1.30.0
+    rev: fa412071e4f5d44d44f9e365f4676f9df92456a2 # frozen: v1.30.1
     hooks:
       - id: zizmor
 
@@ -115,7 +115,7 @@ repos:
 
   # Validate Renovate configuration
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: b5bb9192f38158b3b06f0abe855a09fa929b263f # frozen: 44.67.1
+    rev: 1d7c3165c99edc918406d37b37c9e2d5470f0c84 # frozen: 44.93.4
     hooks:
       - id: renovate-config-validator
 

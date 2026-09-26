@@ -5,9 +5,18 @@ normative_rule_definitions:
     coverpoint: ["ExceptionsZicboS_cg/cp_cbze"]
   - name: menvcfg_cbcfe_op
     coverpoint: ["ExceptionsZicboS_cg/cp_cbcfe"]
-  - name: menvcfg_cbie_op
+  - name: menvcfg_cbie_warl_op
     coverpoint: ["ExceptionsZicboS_cg/cp_cbie"]
-  - name: menvcfg_cbie_cbo-inval_op
+  # When CBIE is set to 0b01 or 0b11, and when enabled for execution in modes less
+  # privileged than M, it behaves as follows:
+  - name: menvcfg_cbie_cbo-inval_op_lead_in
+    coverpoint: ["ExceptionsZicboS_cg/{cp_cbie, cp_cbo_inval_data}"]
+  # 0b01&#8201;&#8212;&#8201;The instruction is executed and performs a flush operation,
+  # even if configured by a mode less privileged than M to perform an invalidate
+  # operation. 0b11&#8201;&#8212;&#8201;The instruction is executed and performs an
+  # invalidate operation, unless configured by a mode less privileged than M to perform a
+  # flush operation.
+  - name: menvcfg_cbie_cbo-inval_op_list
     coverpoint: ["ExceptionsZicboS_cg/{cp_cbie, cp_cbo_inval_data}"]
 
   # The Zicbom extension adds the CBCFE (Cache Block Clean and Flush instruction
@@ -29,10 +38,13 @@ normative_rule_definitions:
     coverpoint: ["ExceptionsZicboS_cg/{cp_cbie, cp_cbo_inval_data}"]
 
   # If CBO.INVAL is enabled in S-mode to perform a flush operation, then when the
-  # instruction is enabled in U-mode it performs a flush operation, even if CBIE is
-  # set to 11b. Otherwise, the instruction behaves as follows, depending on the CBIE
-  # encoding:
-  - name: cbo-inval_s-mode_op
+  # instruction is enabled in U-mode it performs a flush operation, even if CBIE is set to
+  # 0b11. Otherwise, the instruction behaves as follows, depending on the CBIE encoding:
+  - name: cbo-inval_s_mode_enabled_op
+    coverpoint: ["ExceptionsZicboS_cg/{cp_cbie, cp_cbo_inval_data}"]
+  - name: cbo-inval_s_mode_flush_enc
+    coverpoint: ["ExceptionsZicboS_cg/{cp_cbie, cp_cbo_inval_data}"]
+  - name: cbo-inval_s_mode_inval_enc
     coverpoint: ["ExceptionsZicboS_cg/{cp_cbie, cp_cbo_inval_data}"]
 
   # The Zicboz extension adds the CBZE (Cache Block Zero instruction enable) field
@@ -62,7 +74,7 @@ normative_rule_definitions:
 
   # Finally, a CBO.ZERO instruction executes or raises an illegal-instruction or
   # virtual-instruction exception based on the state of the xenvcfg.CBZE bits:
-  - name: cbo-zero_basedon_xenvcfg-CBZE
+  - name: cbo-zero_basedon_xenvcfg_cbze
     coverpoint: ["ExceptionsZicboS_cg/cp_cbze"]
 
   # When a page-fault, guest-page-fault, or access-fault exception is taken, the

@@ -39,19 +39,21 @@ for an example.
 ### Normative Rule - Coverpoint Mapping
 
 Both privileged and unprivileged suites need a mapping between the normative
-rules and coverpoints. This mapping is a YAML file in `coverpoints/norm`
-containing a list of rule names and the coverpoints that exercise them. There
-should be one YAML for each test suite.
+rules and coverpoints. Each `norm:` tag in the ISA manual is one normative rule,
+named by the tag without the `norm:` prefix (e.g. `norm:mstatus_mie_op` is the rule
+`mstatus_mie_op`). The mapping is a YAML file in `coverpoints/norm` containing a
+list of rule names and the coverpoints that exercise them. There should be one
+YAML for each test suite.
 
 Instead of typing this YAML from scratch, it is easier to make an outline
 from the normative rules already in the `riscv-isa-manual` repo. Make sure
 you have a current copy of `riscv-isa-manual` and have run `make` successfully in that repo
-to build the `normative_rule_defs` subdirectory and `build/norm-rules.json`.
+to build `build/norm-rules.json`.
 Then invoke `generators/ctp/generate_norm_rule_coverpoint_templates.py` to
 create one yaml file per ISA manual chapter in `coverpoints/norm/yaml/chapters`.
 (You may need to edit `riscv_isa_manual_dir` in the Python file to point to
 its location in your tree). Then copy the yaml from the chapter related to the
-test suite up two levels (e.g. `cp coverpoints/norm/yaml/chapters/machine.yaml coverpoints/norm/Sm.yaml`) and edit it.
+test suite up two levels (e.g. `cp coverpoints/norm/yaml/chapters/machine-level-isa-version-1-13.yaml coverpoints/norm/Sm.yaml`) and edit it.
 
 When you run `make` in the `ctp` directory, the YAML file is parsed to build an
 ASCIIDoc file (in `ctp/norm`) with a table of normative rule names, definitions, and associated coverpoints. Include this file in the CTP with
@@ -115,6 +117,7 @@ The following top-level keys are recognized. No other keys are permitted
 | `REQUIRED_EXTENSIONS`  | list of strings or lists of strings | **Yes**  | Extensions required by this test. A nested list indicates at least one of the extensions in the sublist must be present. |
 | `FORBIDDEN_EXTENSIONS` | list of strings                     | No       | Extensions that the DUT must NOT implement for the test to be selected.                                                  |
 | `MARCH`                | string                              | **Yes**  | The `-march` string passed to the compiler, such as `rv32i_zba` or `rv64ifd_zfh`.                                        |
+| `MIN_HARTS`            | positive integer                    | No       | Minimum number of harts required by the test. Defaults to `1`.                                                           |
 | `params`               | mapping                             | No       | Parameter constraints that must match the DUT's UDB configuration for the test to be selected.                           |
 
 #### `REQUIRED_EXTENSIONS`
@@ -172,6 +175,17 @@ MARCH: rv${XLEN}i_zicsr
 
 The framework substitutes the actual XLEN value (32 or 64) at compile time
 based on the DUT configuration.
+
+#### `MIN_HARTS`
+
+An optional minimum number of harts required by the test:
+
+```yaml
+MIN_HARTS: 2
+```
+
+The framework selects the test when the DUT configuration's `harts` value is at
+least `MIN_HARTS`. Both values default to `1` when omitted.
 
 #### `params`
 
@@ -571,7 +585,7 @@ Each tab should have the following columns:
 - Description: a precise statement of the conditions being checked, suitable for somebody other than the author to turn into coverpoints and tests.
 - Expectation: what will happen (e.g. trap, CSR takes on a value, etc.)
 - Bins: Number of bins, expressed as a product of independent states where possible to help the test writer confirm the intended number of possibilities have been exercised. (e.g. "2 MIE \* 2 TW", where each of these signals has two possibilities, giving 4 bins).
-- Normative Rule: (optional) name of associated normative rule. Not all coverpoints have to be driven by normative rules; some may exercise combinations of features.
+- Normative Rule: (optional) name of associated normative rule (the ISA manual tag name without `norm:`). Not all coverpoints have to be driven by normative rules; some may exercise combinations of features.
 
 ### Adding New Privileged Coverpoints
 

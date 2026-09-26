@@ -27907,7 +27907,7 @@ covergroup Vx8_vrgather_vx_cg with function sample(ins_t ins);
 
     `ifdef UDB_MXLEN_64
 
-    rs1_target_value : coverpoint ins.current.rs1_val == 16'h8000000000000001 {
+    rs1_target_value : coverpoint ins.current.rs1_val == 64'h8000000000000001 {
         bins target = {1};
     }
 
@@ -30578,7 +30578,7 @@ covergroup Vx8_vslidedown_vx_cg with function sample(ins_t ins);
 
     `ifdef UDB_MXLEN_64
 
-    rs1_target_value : coverpoint ins.current.rs1_val == 16'h8000000000000001 {
+    rs1_target_value : coverpoint ins.current.rs1_val == 64'h8000000000000001 {
         bins target = {1};
     }
 

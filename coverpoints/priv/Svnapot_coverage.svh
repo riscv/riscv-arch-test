@@ -103,14 +103,14 @@ covergroup Svnapot_cg with function sample(ins_t ins);
         bins set = {1};
     }
 
-    ins_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[31:0] {
-        bins ins_page_fault = {32'd12} iff (ins.current.trap);
+    ins_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        bins ins_page_fault = {12} iff (ins.current.trap);
     }
-    load_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[31:0] {
-        bins load_page_fault = {32'd13} iff (ins.current.trap);
+    load_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        bins load_page_fault = {13} iff (ins.current.trap);
     }
-    store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[31:0] {
-        bins store_amo_page_fault = {32'd15} iff (ins.current.trap);
+    store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        bins store_amo_page_fault = {15} iff (ins.current.trap);
     }
 
     Svnapot_legal_enc_exec_s:  cross PTE_RWX_s_i, PTE_Svnapot_i, PTE_N_i, kilopage_i, mode, exec_acc, priv_mode_s;

@@ -40,9 +40,9 @@ covergroup Sv_satp_cg with function sample(ins_t ins);
         bins zero = {0};
     }
 
-    Scause: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[31:0] {
-        bins illegal_ins  = {32'd2};
-        bins no_exception = {32'd0};
+    Scause: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        bins illegal_ins  = {2};
+        bins no_exception = {0};
     }
 
     cp_ins: coverpoint ins.current.insn {
@@ -319,14 +319,14 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
     write_acc: coverpoint ins.current.write_access{
         bins set = {1};
     }
-    load_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[31:0] {
-        bins load_page_fault = {32'd13};
+    load_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        bins load_page_fault = {13};
     }
-    ins_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[31:0] {
-        bins ins_page_fault = {32'd12};
+    ins_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        bins ins_page_fault = {12};
     }
-    store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[31:0] {
-        bins store_amo_page_fault = {32'd15};
+    store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        bins store_amo_page_fault = {15};
     }
     Nopagefault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval"){
         bins no_fault  = {64'd0};
@@ -800,14 +800,14 @@ covergroup Sv_add_feature_cg with function sample(ins_t ins);
         write_acc: coverpoint ins.current.write_access {
             bins set = {1};
         }
-        load_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[31:0] {
-            bins load_page_fault = {32'd13};
+        load_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+            bins load_page_fault = {13};
         }
-        ins_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[31:0] {
-            bins ins_page_fault = {32'd12};
+        ins_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+            bins ins_page_fault = {12};
         }
-        store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[31:0] {
-            bins store_amo_page_fault = {32'd15};
+        store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+            bins store_amo_page_fault = {15};
         }
 
         //pte.17

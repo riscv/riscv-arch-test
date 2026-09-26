@@ -42,8 +42,8 @@ covergroup Zicfilp_u_cg with function sample(ins_t ins);
         bins code_2 = {2};
     }
 
-    instr_access_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause")[4:0] {
-        bins cause_1 = {5'd1};
+    instr_access_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") {
+        bins cause_1 = {1};
     }
 
     cp_zicfilp_indirect_elp_state_update: cross priv_mode_u, menvcfg_lpe, indirect_ct_prev, rs1_all_prev, lpad_dest;

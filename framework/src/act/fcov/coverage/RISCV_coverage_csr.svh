@@ -320,6 +320,12 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   if (name == "mcause") begin
     case(field)
 `ifdef UDB_MXLEN_32
+      "code" : val = val & 32'h7fffffff;
+`endif
+`ifdef UDB_MXLEN_64
+      "code" : val = val & 64'h7fffffffffffffff;
+`endif
+`ifdef UDB_MXLEN_32
       "int" : val = val & 32'hffffffff;
 `endif
 `ifdef UDB_MXLEN_64
@@ -781,6 +787,12 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   if (name == "scause") begin
     case(field)
 `ifdef UDB_MXLEN_32
+      "code" : val = val & 32'h7fffffff;
+`endif
+`ifdef UDB_MXLEN_64
+      "code" : val = val & 64'h7fffffffffffffff;
+`endif
+`ifdef UDB_MXLEN_32
       "int" : val = val & 32'hffffffff;
 `endif
 `ifdef UDB_MXLEN_64
@@ -955,6 +967,12 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "vscause") begin
     case(field)
+`ifdef UDB_MXLEN_32
+      "code" : val = val & 32'h7fffffff;
+`endif
+`ifdef UDB_MXLEN_64
+      "code" : val = val & 64'h7fffffffffffffff;
+`endif
 `ifdef UDB_MXLEN_32
       "int" : val = val & 32'hffffffff;
 `endif

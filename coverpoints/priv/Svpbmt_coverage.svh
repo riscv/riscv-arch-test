@@ -95,14 +95,14 @@ covergroup Svpbmt_cg with function sample(ins_t ins);
         wildcard bins sw = {SW};
     }
 
-    ins_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[31:0] {
-        bins ins_page_fault = {32'd12} iff (ins.current.trap);
+    ins_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        bins ins_page_fault = {12} iff (ins.current.trap);
     }
-    load_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[31:0] {
-        bins load_page_fault = {32'd13} iff (ins.current.trap);
+    load_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        bins load_page_fault = {13} iff (ins.current.trap);
     }
-    store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[31:0] {
-        bins store_amo_page_fault = {32'd15} iff (ins.current.trap);
+    store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        bins store_amo_page_fault = {15} iff (ins.current.trap);
     }
 
     nonleaf_PTE_pbmt_exec_s:  cross nonleaf_PTE_pbmt_i, PBMTE_set, PageType_i, jalr, ins_page_fault, priv_mode_s {

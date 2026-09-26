@@ -23,13 +23,13 @@ covergroup ExceptionsSvSm_cg with function sample(ins_t ins);
         bins u_mode = {2'b00};
         bins s_mode = {2'b01};
     }
-    instr_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause")[31:0] == 32'd12) {
+    instr_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") == 12) {
         // auto fill 0/1
     }
-    load_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause")[31:0] == 32'd13) {
+    load_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") == 13) {
         // auto fill 0/1
     }
-    store_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause")[31:0] == 32'd15) {
+    store_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") == 15) {
         // auto fill 0/1
     }
     i_page_table_entry_invalid: coverpoint ins.current.pte_i[0] {

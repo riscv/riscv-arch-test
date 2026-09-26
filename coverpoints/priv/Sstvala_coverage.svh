@@ -15,8 +15,8 @@
 covergroup Sstvala_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
-    cause_instr_misaligned: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[5:0] {
-            bins set = {6'd0};
+    cause_instr_misaligned: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+            bins set = {0};
     }
 
     stval_equals_vaddr_d:   coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.virt_adr_d {
@@ -90,14 +90,14 @@ covergroup Sstvala_cg with function sample(ins_t ins);
 
     vaddr_d_misaligned: coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] {
     }
-    cause_load_page_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[5:0] {
-            bins set = {6'd13};
+    cause_load_page_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+            bins set = {13};
     }
-    cause_store_page_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[5:0] {
-            bins set = {6'd15};
+    cause_store_page_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+            bins set = {15};
     }
-    cause_instr_page_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[5:0] {
-            bins set = {6'd12};
+    cause_instr_page_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+            bins set = {12};
     }
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS

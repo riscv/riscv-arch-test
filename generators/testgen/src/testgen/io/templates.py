@@ -54,6 +54,9 @@ def insert_header_template(
     )
     ext_components, params = canonicalize_extensions(testsuite, xlen, E_ext, required_extensions, sew, instr_name)
     extension_requirements = [*ext_components, *alternative_extensions]
+    extension_list = f"{extension_requirements}"
+    if test_config.forbidden_extensions:
+        extension_list += f"\n# FORBIDDEN_EXTENSIONS: {test_config.forbidden_extensions}"
     flat_ext_components = ext_components + [ext for alternatives in alternative_extensions for ext in alternatives]
     if test_config.extra_params:
         params.extend(test_config.extra_params)
@@ -72,7 +75,7 @@ def insert_header_template(
     # Replace placeholders
     template = (
         template.replace("@TEST_PATH@", f"{test_file}")
-        .replace("@EXTENSION_LIST@", f"{extension_requirements}")
+        .replace("@EXTENSION_LIST@", extension_list)
         .replace("@PARAMS@", format_params(params, flat_ext_components))
         .replace("@MARCH@", march)
         .replace("@EXTRA_DEFINES@", "\n".join(all_defines))

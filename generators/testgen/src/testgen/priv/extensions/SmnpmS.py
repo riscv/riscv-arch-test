@@ -47,12 +47,12 @@ _MENVCFG_PMM = 32
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
     extra_defines=["#define BOOT_TO_SMODE", "#define RVTEST_ALLOW_OOS_FETCH_EPC"],
 )
-def make_smnpms(td: TestData) -> list[TestChunk]:
-    regs = alloc_pm_regs_paired(td)
+def make_smnpms(test_data: TestData) -> list[TestChunk]:
+    regs = alloc_pm_regs_paired(test_data)
 
     chunks = []
     for mode in MODES:
-        tc = td.begin_test_chunk(split_name=mode)
+        tc = test_data.begin_test_chunk(split_name=mode)
         guard, is_bare = MODE_GUARDS[mode], mode == "bare"
         lines = [] if not guard else [f"#ifdef {guard}"]
         lines += [
@@ -79,18 +79,18 @@ def make_smnpms(td: TestData) -> list[TestChunk]:
             lines += set_pmm_field("menvcfg", _MENVCFG_PMM, pmm, pmlen, regs.tmp, tsbi=True)
             lines += [f"LA(x{regs.base}, pm_lo_page)"]
 
-            lines += pass_a_all_instructions(None, prefix, td, regs, COVERGROUP)
+            lines += pass_a_all_instructions(None, prefix, test_data, regs, COVERGROUP)
             if not is_bare:
-                lines += pass_b_sign_extension(None, prefix, mode, td, regs, COVERGROUP)
-            lines += pass_c_misaligned(None, prefix, td, regs, COVERGROUP)
-            lines += pass_e_jalr(None, prefix, td, regs, COVERGROUP, mxr=0)
-            lines += pass_f_fault_address(None, prefix, td, regs, COVERGROUP)
-            lines += pass_d_mxr(None, prefix, td, regs, COVERGROUP)
-            lines += pass_e_jalr(None, prefix, td, regs, COVERGROUP, mxr=1)
+                lines += pass_b_sign_extension(None, prefix, mode, test_data, regs, COVERGROUP)
+            lines += pass_c_misaligned(None, prefix, test_data, regs, COVERGROUP)
+            lines += pass_e_jalr(None, prefix, test_data, regs, COVERGROUP, mxr=0)
+            lines += pass_f_fault_address(None, prefix, test_data, regs, COVERGROUP)
+            lines += pass_d_mxr(None, prefix, test_data, regs, COVERGROUP)
+            lines += pass_e_jalr(None, prefix, test_data, regs, COVERGROUP, mxr=1)
 
             lines += set_mxr(False, regs.tmp)
 
-            lines += pass_g_csr_writes(prefix, pmlen, td, regs, COVERGROUP, ["sepc", "sscratch"])
+            lines += pass_g_csr_writes(prefix, pmlen, test_data, regs, COVERGROUP, ["sepc", "sscratch"])
 
         lines += set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp, tsbi=True)
         lines += set_mxr(False, regs.tmp)
@@ -99,7 +99,7 @@ def make_smnpms(td: TestData) -> list[TestChunk]:
         if guard:
             lines.append(f"#endif // {guard}")
         tc.code = lines
-        chunks.append(td.end_test_chunk())
+        chunks.append(test_data.end_test_chunk())
 
-    free_pm_regs(td, regs)
+    free_pm_regs(test_data, regs)
     return chunks

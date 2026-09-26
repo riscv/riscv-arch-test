@@ -43,6 +43,7 @@ class PrivTestRegistryEntry:
     generator: PrivTestGenerator
     extra_defines: list[str] = field(default_factory=list)
     required_extensions: list[str | list[str]] | None = None
+    forbidden_extensions: list[str] | None = None
     march_extensions: list[str] | None = None
     params: list[str] | None = None
     testcases_per_file: int = TESTCASES_PER_PRIV_FILE
@@ -57,6 +58,7 @@ def add_priv_test_generator(
     *,
     extra_defines: list[str] | None = None,
     required_extensions: list[str | list[str]] | None = None,
+    forbidden_extensions: list[str] | None = None,
     march_extensions: list[str] | None = None,
     params: list[str] | None = None,
     testcases_per_file: int = TESTCASES_PER_PRIV_FILE,
@@ -73,6 +75,7 @@ def add_priv_test_generator(
                        Trap handlers are added automatically based on extensions.
         required_extensions: List of RISC-V extensions required for the test (e.g., ["Sm", "Zicsr"]).
                              Used for generating the march string and header defines.
+        forbidden_extensions: Optional list of extensions the DUT must not implement for the test to be selected.
         march_extensions: Optional list of extensions to use for the march string.
                           If None, march is built from required_extensions.
         params: Optional list of parameter constraints for the test (e.g., ["NUM_PMP_ENTRIES: '>=16'"]).
@@ -87,6 +90,7 @@ def add_priv_test_generator(
             generator=func,
             extra_defines=extra_defines or [],
             required_extensions=required_extensions,
+            forbidden_extensions=forbidden_extensions,
             march_extensions=march_extensions,
             params=params,
             testcases_per_file=testcases_per_file,

@@ -32,15 +32,15 @@ _MENVCFG_PMM = 32
 @add_priv_test_generator(
     "SmnpmU",
     required_extensions=["Smnpm"],
+    forbidden_extensions=["S"],
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
     extra_defines=["#define RVTEST_ALLOW_OOS_FETCH_EPC"],
 )
-def make_smnpmu(td: TestData) -> list[TestChunk]:
-    regs = alloc_pm_regs_paired(td)
+def make_smnpmu(test_data: TestData) -> list[TestChunk]:
+    regs = alloc_pm_regs_paired(test_data)
 
-    tc = td.begin_test_chunk()
+    tc = test_data.begin_test_chunk()
     lines = [
-        "#ifndef S_SUPPORTED",
         ".pushsection .data",
         *data_pm_lo_page(),
         ".popsection",
@@ -56,15 +56,14 @@ def make_smnpmu(td: TestData) -> list[TestChunk]:
         lines += set_pmm_field("menvcfg", _MENVCFG_PMM, pmm, pmlen, regs.tmp, tsbi=True)
         lines += [f"LA(x{regs.base}, pm_lo_page)"]
 
-        lines += pass_a_all_instructions(None, prefix, td, regs, COVERGROUP)
-        lines += pass_c_misaligned(None, prefix, td, regs, COVERGROUP)
-        lines += pass_e_jalr(None, prefix, td, regs, COVERGROUP)
-        lines += pass_f_fault_address(None, prefix, td, regs, COVERGROUP)
+        lines += pass_a_all_instructions(None, prefix, test_data, regs, COVERGROUP)
+        lines += pass_c_misaligned(None, prefix, test_data, regs, COVERGROUP)
+        lines += pass_e_jalr(None, prefix, test_data, regs, COVERGROUP)
+        lines += pass_f_fault_address(None, prefix, test_data, regs, COVERGROUP)
 
     lines += set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp, tsbi=True)
-    lines += ["#endif"]
     tc.code = lines
-    chunks = [td.end_test_chunk()]
+    chunks = [test_data.end_test_chunk()]
 
-    free_pm_regs(td, regs)
+    free_pm_regs(test_data, regs)
     return chunks

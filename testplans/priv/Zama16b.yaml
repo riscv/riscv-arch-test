@@ -5,7 +5,7 @@ coverpoints:
   - name: cp_zama16b_load
     goal: Misaligned accesses are atomic
     description: |-
-      For each op in {lw, lh, lhu, lb, lbu} + {ld, lwu for RV64} + {flw for F, fld for D, flq for Q, flh for Zfh}:
+      For each op in {lw, lh, lhu, lb, lbu} + {ld, lwu for RV64} + {flw for F, fld for D on RV64, flh for Zfh}:
       Pick base address as multiple of 16
       Issue instruction with offsets of [0, 16-size]
     expectation: No misaligned load fault
@@ -15,7 +15,7 @@ coverpoints:
   - name: cp_zama16b_store
     goal: Misaligned accesses are atomic
     description: |-
-      For each op in {sw, sh, sb} + {sd for RV64} + {fsw for F, fsd for D, fsq for Q, fsh for Zfh}:
+      For each op in {sw, sh, sb} + {sd for RV64} + {fsw for F, fsd for D on RV64, fsh for Zfh}:
       Pick base address as multiple of 16
       Issue instruction with offsets of [0, 16-size]
     expectation: No misaligned store fault
@@ -34,3 +34,4 @@ coverpoints:
       - Misaligned loads, stores, and AMOs to main memory regions that do not cross a naturally aligned 16-byte boundary are atomic.
   - heading: "Note:"
   - heading: This test only checks for no misaligned fault.  Multimaster testing will be required to verify atomicity.
+  - heading: The misaligned atomicity granule applies only to F/D/Q loads and stores of at most XLEN bits, so flq/fsq (and fld/fsd on RV32) are not tested.

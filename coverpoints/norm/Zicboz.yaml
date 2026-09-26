@@ -1,7 +1,7 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  - name: CACHE_BLOCK_SIZE
+  - name: cache_block_size
     coverpoint: ["Zicboz_cbo_zero_cg/cp_custom_cbo"]
 
   # A cbo.zero instruction performs stores of zeros to the full set of bytes

@@ -5,15 +5,15 @@ normative_rule_definitions:
   # The ext:za128rs[] extension requires that the reservation sets used by the
   # instructions in the ext:zalrsc[] extension be contiguous, naturally aligned, and
   # at most 128 bytes in size.
-  - name: za128rs_res_set_req
+  - name: Za128rs_res_set_req
     coverpoint: [""]
 
   # The ext:za64rs[] extension requires that the reservation sets used by the
   # instructions in the ext:zalrsc[] extension be contiguous, naturally aligned, and
   # at most 64 bytes in size.
-  - name: za64rs_res_set_req
+  - name: Za64rs_res_set_req
     coverpoint: ["Za64rs_cg/cp_za64rs"]
 
   # The ext:za64rs[] extension implies the ext:za128rs[] extension.
-  - name: za64rs_implies_za128rs
+  - name: Za64rs_implies_Za128rs
     coverpoint: [""]

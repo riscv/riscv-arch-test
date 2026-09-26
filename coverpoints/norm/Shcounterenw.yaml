@@ -4,11 +4,11 @@
 normative_rule_definitions:
   # If the Shcounterenw extension is implemented, then for any hpmcounter that is not
   # read-only zero, the corresponding bit in hcounteren must be writable.
-  - name: shcounterenw_hpmcounter_hcounteren
+  - name: Shcounterenw_hpmcounter_hcounteren
     coverpoint: ["Shcounterenw_cg/cp_shcounterenw"]
 
   # hcounteren must be implemented. However, any of the bits may be read-only zero,
   # indicating reads to the corresponding counter will cause an exception when V=1.
   # Hence, they are effectively WARL fields.
-  - name: HCOUNTEREN_WARL
+  - name: hcounteren_warl
     coverpoint: ["Shcounterenw_cg/cp_shcounterenw"]

@@ -8,8 +8,8 @@ normative_rule_definitions:
   # which htinst holds a pseudoinstruction.
   - names:
       [
-        shtvala_htval_faulting_gpa,
-        HTVAL_TRAPVAL,
+        Shtvala_htval_faulting_gpa,
+        htval_trapval,
         mtval2_htval_virtaddr,
         H_trap_xtinst_guestpage,
       ]

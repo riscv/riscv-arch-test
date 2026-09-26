@@ -20,8 +20,8 @@ normative_rule_definitions:
         hip_vstip_op,
         hip_vstip_vstimecmp_op,
         hip_vstip_clear,
-        htimedelta_op,
-        htimedeltah_op,
+        htimedelta_sz_acc_op,
+        htimedeltah_sz_acc_op,
       ]
     coverpoint: ["SstcHSm_m_cg/cp_htimedelta"]
 

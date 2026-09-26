@@ -45,17 +45,31 @@ normative_rule_definitions:
         "ZicntrH_cg/cp_scounteren_access_hs (HS-mode reads ignore scounteren)",
       ]
 
-  # time reads time + htimedelta in VS-mode and VU-mode; htimedeltah is bits 63:32 of htimedelta
-  - names:
+  # The htimedelta CSR is a 64-bit read/write register that contains the delta between the
+  # value of the time CSR and the value returned in VS-mode or VU-mode. That is, reading
+  # the time CSR in VS or VU mode returns the sum of the contents of htimedelta and the
+  # actual value of time.
+  - name: htimedelta_sz_acc_op
+    coverpoint:
       [
-        htimedelta_sz,
-        htimedelta_acc,
-        htimedelta_op,
-        htimedeltah_sz,
-        htimedeltah_acc,
-        htimedeltah_op,
-        time_htimedelta_req,
+        "ZicntrH_cg/cp_delta_hs",
+        "ZicntrH_cg/cp_delta_vs",
+        "ZicntrH_cg/cp_delta_u",
+        "ZicntrH_cg/cp_delta_vu",
       ]
+  # When XLEN=32, htimedeltah is a 32-bit read/write register that aliases bits 63:32 of
+  # htimedelta. Register htimedeltah does not exist when XLEN=64.
+  - name: htimedeltah_sz_acc_op
+    coverpoint:
+      [
+        "ZicntrH_cg/cp_delta_hs",
+        "ZicntrH_cg/cp_delta_vs",
+        "ZicntrH_cg/cp_delta_u",
+        "ZicntrH_cg/cp_delta_vu",
+      ]
+  # If the time CSR is implemented, htimedelta (and htimedeltah for XLEN=32) must be
+  # implemented.
+  - name: time_htimedelta_req
     coverpoint:
       [
         "ZicntrH_cg/cp_delta_hs",

@@ -1,43 +1,60 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  # if a precedes b in program order, then a will precede b in the global memory
-  # order if: a is an invalidate, clean, or flush, b is a load, and a and b access
-  # overlapping memory addresses
-  - name: PPO_overlap
+  # if a precedes b in program order, then a will precede b in the global memory order if:
+  - name: ppo_overlap_1
+    coverpoint:
+      ["Not testable on a single core without DMA or other non-coherent agents"]
+  # a is an invalidate, clean, or flush, b is a load, and a and b access overlapping
+  # memory addresses
+  - name: ppo_overlap_2
     coverpoint:
       ["Not testable on a single core without DMA or other non-coherent agents"]
 
-  # If no clean or flush operations on x precede i in the global memory order,
-  # either the initial value of x or the value of any store to x that precedes i If
-  # no store to x precedes a clean or flush operation on x in the global memory
-  # order and if the clean or flush operation on x precedes i in the global memory
-  # order, either the initial value of x or the value of any store to x that
-  # precedes i If a store to x precedes a clean or flush operation on x in the
-  # global memory order and if the clean or flush operation on x precedes i in the
-  # global memory order, either the value of the latest store to x that precedes the
-  # latest clean or flush operation on x or the value of any store to x that both
-  # precedes i and succeeds the latest clean or flush operation on x that precedes i
-  # The value of any store to x by a non-coherent agent regardless of the above
-  # conditions
-  - name: cmo_invalidate_load_values
+  # If no clean or flush operations on x precede i in the global memory order, either the
+  # initial value of x or the value of any store to x that precedes i
+  - name: invalidate_load_val_no_preceding_cmo
+    coverpoint:
+      ["Not testable on a single core without DMA or other non-coherent agents"]
+  # If no store to x precedes a clean or flush operation on x in the global memory order
+  # and if the clean or flush operation on x precedes i in the global memory order, either
+  # the initial value of x or the value of any store to x that precedes i
+  - name: invalidate_load_val_no_store_before_cmo
+    coverpoint:
+      ["Not testable on a single core without DMA or other non-coherent agents"]
+  # If a store to x precedes a clean or flush operation on x in the global memory order
+  # and if the clean or flush operation on x precedes i in the global memory order, either
+  # the value of the latest store to x that precedes the latest clean or flush operation
+  # on x or the value of any store to x that both precedes i and succeeds the latest clean
+  # or flush operation on x that precedes i
+  - name: invalidate_load_val_store_before_cmo
+    coverpoint:
+      ["Not testable on a single core without DMA or other non-coherent agents"]
+  # The value of any store to x by a non-coherent agent regardless of the above conditions
+  - name: invalidate_load_val_noncoherent_store
     coverpoint:
       ["Not testable on a single core without DMA or other non-coherent agents"]
 
-  # The PMP access control bits shall be the same for all physical addresses in the
-  # cache block, and if write permission is granted by the PMP access control bits,
-  # read permission shall also be granted The PMAs shall be the same for all
-  # physical addresses in the cache block, and if write permission is granted by the
-  # supported access type PMAs, read permission shall also be granted If the above
-  # constraints are not met, the behavior of a CBO instruction is UNSPECIFIED.
-  - name: cbo_physical_address_constraints
+  # The PMP access control bits shall be the same for all physical addresses in the cache
+  # block, and if write permission is granted by the PMP access control bits, read
+  # permission shall also be granted
+  - name: pmp_same
+    coverpoint: ["Untestable because behavior is UNSPECIFIED"]
+  # The PMAs shall be the same for all physical addresses in the cache block, and if write
+  # permission is granted by the supported access type PMAs, read permission shall also be
+  # granted
+  - name: pma_same
+    coverpoint: ["Untestable because behavior is UNSPECIFIED"]
+  # If the above constraints are not met, the behavior of a CBO instruction is
+  # UNSPECIFIED.
+  - name: cbo_rsv
     coverpoint: ["Untestable because behavior is UNSPECIFIED"]
 
   # For the purposes of writing the mtinst or htinst register on a trap, the
   # following standard transformation is defined for cache-block management
   # instructions and cache-block zero instructions:
   # SvHZicbo CBOs from VS-mode and VU-mode trap into M-mode, and the trap handler checks mtinst
-  - name: h_trans_cache
+  - name: H_trans_cache
     coverpoint: ["SvHZicbo_cg/{cp_vs_pte,cp_g_pte,cp_g_pa}"]
 
   # A cbo.clean instruction performs a clean operation on the cache block whose

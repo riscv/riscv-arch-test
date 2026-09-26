@@ -3,13 +3,25 @@
 normative_rule_definitions:
   - name: csrrc_op
     coverpoint: ["Zicsr_csrrc_cg/{cp_rs1, cp_rd, cp_rs1_edges}"]
-  - name: csrrci_op
-    coverpoint: ["Zicsr_csrrci_cg/{cp_rd, cp_uimm_5}"]
+  # The insn:csrrwi[], insn:csrrsi[], and insn:csrrci[] variants are similar to
+  # insn:csrrw[], insn:csrrs[], and insn:csrrc[] respectively, except they update the CSR
+  # using an XLEN-bit value obtained by zero-extending a 5-bit unsigned immediate
+  # (uimm[4:0]) field encoded in the rs1 field instead of a value from an integer
+  # register. For insn:csrrsi[] and insn:csrrci[], if the uimm[4:0] field is zero, then
+  # these instructions will not write to the CSR, and shall not cause any of the side
+  # effects that might otherwise occur on a CSR write, nor raise illegal-instruction
+  # exceptions on accesses to read-only CSRs. For insn:csrrwi[], if rd=x0, then the
+  # instruction shall not read the CSR and shall not cause any of the side effects that
+  # might occur on a CSR read. Both insn:csrrsi[] and insn:csrrci[] will always read the
+  # CSR and cause any read side effects regardless of rd and rs1 fields.
+  - name: csrrwi_csrrsi_csrrci_ops
+    coverpoint:
+      [
+        "Zicsr_csrrci_cg/{cp_rd, cp_uimm_5}",
+        "Zicsr_csrrsi_cg/{cp_rd, cp_uimm_5}",
+        "Zicsr_csrrwi_cg/{cp_rd, cp_uimm_5}",
+      ]
   - name: csrrs_op
     coverpoint: ["Zicsr_csrrs_cg/{cp_rs1, cp_rd, cp_rs1_edges}"]
-  - name: csrrsi_op
-    coverpoint: ["Zicsr_csrrsi_cg/{cp_rd, cp_uimm_5}"]
   - name: csrrw_op
     coverpoint: ["Zicsr_csrrw_cg/{cp_rs1, cp_rd, cp_rs1_edges}"]
-  - name: csrrwi_op
-    coverpoint: ["Zicsr_csrrwi_cg/{cp_rd, cp_uimm_5}"]

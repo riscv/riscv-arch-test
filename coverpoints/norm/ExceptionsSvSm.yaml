@@ -13,13 +13,4 @@ normative_rule_definitions:
   # access fault¶Lowest|4,6|If not higher priority: Load/store/AMO address
   # misaligned ===
   - name: exc_priority
-    coverpoint:
-      [
-        "ExceptionsSvSm_cg/{cp_misaligned_priority_m, cp_misaligned_priority_fetch_m}",
-      ]
-
-  # If an instruction access-fault or instruction page-fault exception occurs on
-  # the target of a jump or taken branch, the exception is reported on the target
-  # instruction, not on the jump or branch instruction.
-  - name: ia_fault_exc_on_target
-    coverpoint: ["ExceptionsSvSm_cg/cp_instr_page_fault_m"]
+    coverpoint: ["ExceptionsSvSm_cg/cp_misaligned_priority_m"]

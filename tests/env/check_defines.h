@@ -70,16 +70,20 @@
   #endif
 #endif
 
+#ifndef RVMODEL_MAX_CYCLES_PER_TIMER_TICK
+  #define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
+#endif
+
+// Interrupt macros are used only by the trap handler and privileged tests, which need a
+// standard M-mode. A DUT without one (STANDARD_SM_SUPPORTED undefined) need not define them.
+#ifdef STANDARD_SM_SUPPORTED
+
 ##### Interrupt Delays #####
 #ifndef RVMODEL_INTERRUPT_LATENCY
   #error "RVMODEL_INTERRUPT_LATENCY not defined. Make sure to define it in rvmodel_macros.h."
 #endif
 #ifndef RVMODEL_TIMER_INT_SOON_DELAY
   #error "RVMODEL_TIMER_INT_SOON_DELAY not defined. Make sure to define it in rvmodel_macros.h."
-#endif
-
-#ifndef RVMODEL_MAX_CYCLES_PER_TIMER_TICK
-  #define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
 #endif
 
 ##### Machine Interrupts #####
@@ -141,6 +145,8 @@
     #endif
   #endif
 #endif
+
+#endif // STANDARD_SM_SUPPORTED
 
 ##### Configuration Limitations #####
 #if UDB_NUM_PMP_ENTRIES > 0

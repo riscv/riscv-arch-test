@@ -39,7 +39,7 @@ The test ELF begins with the `RVTEST_BEGIN` macro, which defines `rvtest_entry_p
 
 Next, `rvmodel_boot` calls `RVMODEL_IO_INIT` to perform any necessary I/O initialization, such as configuring baud rate and flow control in a UART.  This macro can also be empty or undefined if no I/O initialization is needed.
 
-Next, `rvmodel_boot` calls `RVTEST_BOOT_TO_MMODE` to set up the trap handlers and initialize M-mode CSRs. This macro first checks if `RVMODEL_BOOT_TO_MMODE` is defined. If undefined, it runs default boot code assuming standard M-mode. If defined, it runs the DUT-specific `RVMODEL_BOOT_TO_MMODE` that performs the same general steps for custom M-mode (or should be blank for cases such as an RV32I DUT that has no CSRs).
+Next, `rvmodel_boot` calls `RVTEST_BOOT_TO_MMODE` to set up the trap handlers and initialize M-mode CSRs. This macro first checks if `RVMODEL_BOOT_TO_MMODE` is defined. If undefined, it runs default boot code assuming standard M-mode. If defined, it runs the DUT-specific `RVMODEL_BOOT_TO_MMODE` that performs the same general steps for custom M-mode. The default boot code touches CSRs only when `STANDARD_SM_SUPPORTED` is defined, so a DUT with no M-mode CSRs, such as an RV32I DUT, leaves both `STANDARD_SM_SUPPORTED` and `RVMODEL_BOOT_TO_MMODE` undefined.
 
 CSR initialization includes
 

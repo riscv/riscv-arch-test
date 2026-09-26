@@ -40,6 +40,12 @@
     `ifdef COVER_EXCEPTIONSH
         exceptionsh_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_EXCEPTIONSHF
+        exceptionshf_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_EXCEPTIONSHSM
+        exceptionshsm_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_EXCEPTIONSHV
         exceptionshv_sample(hart, issue, ins);
     `endif
@@ -112,8 +118,11 @@
     `ifdef COVER_F
         f_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_HV
-        hv_sample(hart, issue, ins);
+    `ifdef COVER_H
+        h_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_HSM
+        hsm_sample(hart, issue, ins);
     `endif
     `ifdef COVER_I
         i_sample(hart, issue, ins);

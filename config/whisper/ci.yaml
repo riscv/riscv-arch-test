@@ -2,9 +2,9 @@
 # Jordan Carlin jcarlin@hmc.edu April 2026
 # CI configuration for Whisper simulator
 
-# SsstrictSm, unknown
-# Smstateen Sail does not yet support 1P13 bit
-# Sdtrig* not yet implemented in Sail (https://github.com/riscv/sail-riscv/issues/222)
+# SsstrictSm: Sail does not implement the Smaia/Ssaia, Smcsrind, Smrnmi and Sdtrig CSRs that whisper implements (no issue filed)
+# Smstateen: Sail does not yet support the P1P13 bit (no issue filed)
+# SdtrigSm, SdtrigS, SdtrigU: Sdtrig is not yet implemented in Sail (https://github.com/riscv/sail-riscv/issues/222)
 ci_enabled: true
 exclude_extensions: "SsstrictSm,Smstateen,SdtrigSm,SdtrigS,SdtrigU"
 exclude_configs:

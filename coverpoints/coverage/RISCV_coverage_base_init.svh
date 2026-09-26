@@ -50,6 +50,14 @@
         `cover_info("//      ExceptionsH - Enabled");
         `include "ExceptionsH_coverage_init.svh"
     `endif
+    `ifdef COVER_EXCEPTIONSHF
+        `cover_info("//      ExceptionsHF - Enabled");
+        `include "ExceptionsHF_coverage_init.svh"
+    `endif
+    `ifdef COVER_EXCEPTIONSHSM
+        `cover_info("//      ExceptionsHSm - Enabled");
+        `include "ExceptionsHSm_coverage_init.svh"
+    `endif
     `ifdef COVER_EXCEPTIONSHV
         `cover_info("//      ExceptionsHV - Enabled");
         `include "ExceptionsHV_coverage_init.svh"
@@ -146,9 +154,13 @@
         `cover_info("//      F - Enabled");
         `include "F_coverage_init.svh"
     `endif
-    `ifdef COVER_HV
-        `cover_info("//      HV - Enabled");
-        `include "HV_coverage_init.svh"
+    `ifdef COVER_H
+        `cover_info("//      H - Enabled");
+        `include "H_coverage_init.svh"
+    `endif
+    `ifdef COVER_HSM
+        `cover_info("//      HSm - Enabled");
+        `include "HSm_coverage_init.svh"
     `endif
     `ifdef COVER_I
         `cover_info("//      I - Enabled");

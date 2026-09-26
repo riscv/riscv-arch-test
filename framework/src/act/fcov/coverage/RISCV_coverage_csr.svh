@@ -86,6 +86,43 @@ typedef enum {
   vxsat
 } csr_name_t;
 
+// xcause exception codes (Interrupt = 0), named as in the privileged spec's mcause table
+localparam int INSTRUCTION_ADDRESS_MISALIGNED        = 0;
+localparam int INSTRUCTION_ACCESS_FAULT              = 1;
+localparam int ILLEGAL_INSTRUCTION                   = 2;
+localparam int BREAKPOINT                            = 3;
+localparam int LOAD_ADDRESS_MISALIGNED               = 4;
+localparam int LOAD_ACCESS_FAULT                     = 5;
+localparam int STORE_AMO_ADDRESS_MISALIGNED          = 6;
+localparam int STORE_AMO_ACCESS_FAULT                = 7;
+localparam int ENVIRONMENT_CALL_FROM_U_MODE          = 8;
+localparam int ENVIRONMENT_CALL_FROM_S_MODE          = 9;
+localparam int ENVIRONMENT_CALL_FROM_VS_MODE         = 10;
+localparam int ENVIRONMENT_CALL_FROM_M_MODE          = 11;
+localparam int INSTRUCTION_PAGE_FAULT                = 12;
+localparam int LOAD_PAGE_FAULT                       = 13;
+localparam int STORE_AMO_PAGE_FAULT                  = 15;
+localparam int DOUBLE_TRAP                           = 16;
+localparam int SOFTWARE_CHECK                        = 18;
+localparam int HARDWARE_ERROR                        = 19;
+localparam int INSTRUCTION_GUEST_PAGE_FAULT          = 20;
+localparam int LOAD_GUEST_PAGE_FAULT                 = 21;
+localparam int VIRTUAL_INSTRUCTION                   = 22;
+localparam int STORE_AMO_GUEST_PAGE_FAULT            = 23;
+
+// xcause interrupt codes (Interrupt = 1)
+localparam int SUPERVISOR_SOFTWARE_INTERRUPT         = 1;
+localparam int VIRTUAL_SUPERVISOR_SOFTWARE_INTERRUPT = 2;
+localparam int MACHINE_SOFTWARE_INTERRUPT            = 3;
+localparam int SUPERVISOR_TIMER_INTERRUPT            = 5;
+localparam int VIRTUAL_SUPERVISOR_TIMER_INTERRUPT    = 6;
+localparam int MACHINE_TIMER_INTERRUPT               = 7;
+localparam int SUPERVISOR_EXTERNAL_INTERRUPT         = 9;
+localparam int VIRTUAL_SUPERVISOR_EXTERNAL_INTERRUPT = 10;
+localparam int MACHINE_EXTERNAL_INTERRUPT            = 11;
+localparam int SUPERVISOR_GUEST_EXTERNAL_INTERRUPT   = 12;
+localparam int COUNTER_OVERFLOW_INTERRUPT            = 13;
+
 function `XLEN_BITS get_csr_val(int hart, int issue, int prev, string name, string field);
   int addr = get_csr_addr(hart, name);
   return get_csr_val_addr(hart, issue, prev, addr, name, field);

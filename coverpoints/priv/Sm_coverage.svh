@@ -189,7 +189,26 @@ covergroup Sm_mprivinst_cg with function sample(ins_t ins);
         }
         old_sstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sie")[0] {
         }
-        cp_sret_s:    cross priv_mode_s, sret, old_sstatus_spp, old_sstatus_spie, old_sstatus_sie, old_mstatus_tsr;
+        cp_sret_s:     cross priv_mode_s, sret, old_sstatus_spp, old_sstatus_spie, old_sstatus_sie, old_mstatus_tsr;
+
+        // sfence.vma is here rather than in S for the same reason: TVM also makes the S-mode
+        // handler's satp read illegal, so a delegated illegal instruction would trap loop.
+        // It is only tested where some Sv mode exists, because a hart with satp.MODE read-only
+        // zero may raise an illegal instruction for it (norm:satp-mode_roz_sfence_illegal).
+        // Sv48 and Sv57 imply Sv39, so Sv39 and Sv32 between them cover every case.
+        `ifdef SV39_SUPPORTED
+            `define SM_SFENCE_VMA_LEGAL
+        `elsif SV32_SUPPORTED
+            `define SM_SFENCE_VMA_LEGAL
+        `endif
+        `ifdef SM_SFENCE_VMA_LEGAL
+            sfence: coverpoint ins.current.insn  {
+                wildcard bins sfence_vma = {SFENCE_VMA};
+            }
+            old_mstatus_tvm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm")[0] {
+            }
+            cp_sfence_tvm: cross priv_mode_m_s, sfence, old_mstatus_tvm;
+        `endif
     `endif
 endgroup
 

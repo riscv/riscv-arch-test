@@ -10,8 +10,6 @@ normative_rule_definitions:
     coverpoint:
       [
         "SvHZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}",
-        "SvHZicbo_envcfg_cg/{cp_cbcfe_vs,cp_cbcfe_vu}",
-        "SvHZicbo_envcfg_cg/{cp_cbze_vs,cp_cbze_vu}",
         "H_hscsr_cg/cp_hcsrwalk_masked",
         "HSm_mcsr_cg/cp_hcsrwalk_masked",
       ]
@@ -20,22 +18,12 @@ normative_rule_definitions:
   # is set to 0b01 or 0b11, the instruction is enabled for execution; otherwise, it raises
   # a virtual-instruction exception.
   - name: cbo-inval_h_mode_veq1_op
-    coverpoint:
-      [
-        "SvHZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}",
-        "SvHZicbo_envcfg_cg/{cp_cbcfe_vs,cp_cbcfe_vu}",
-        "SvHZicbo_envcfg_cg/{cp_cbze_vs,cp_cbze_vu}",
-      ]
+    coverpoint: ["SvHZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}"]
   # A insn:cbo.inval[] instruction executes or raises either an illegal-instruction
   # exception or a virtual-instruction exception based on the state of the
   # csr:envcfg[cbie] fields:
   - name: cbo-inval
-    coverpoint:
-      [
-        "SvHZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}",
-        "SvHZicbo_envcfg_cg/{cp_cbcfe_vs,cp_cbcfe_vu}",
-        "SvHZicbo_envcfg_cg/{cp_cbze_vs,cp_cbze_vu}",
-      ]
+    coverpoint: ["SvHZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}"]
   # The Zicbom extension adds the CBCFE (Cache Block Clean and Flush instruction Enable)
   # field to henvcfg. When V=1, if the CBO.CLEAN and CBO.FLUSH instructions are not
   # HS-qualified, they raise an illegal-instruction exception. If the instructions are
@@ -45,20 +33,15 @@ normative_rule_definitions:
   - name: henvcfg_cbcfe
     coverpoint:
       [
-        "SvHZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}",
         "SvHZicbo_envcfg_cg/{cp_cbcfe_vs,cp_cbcfe_vu}",
-        "SvHZicbo_envcfg_cg/{cp_cbze_vs,cp_cbze_vu}",
+        "H_hscsr_cg/cp_hcsrwalk_masked",
+        "HSm_mcsr_cg/cp_hcsrwalk_masked",
       ]
   # A insn:cbo.clean[] or insn:cbo.flush[] instruction executes or raises an
   # illegal-instruction or virtual-instruction exception based on the state of the
   # csr:envcfg[cbcfe] bits:
   - name: cbo-clean_cbo-flush
-    coverpoint:
-      [
-        "SvHZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}",
-        "SvHZicbo_envcfg_cg/{cp_cbcfe_vs,cp_cbcfe_vu}",
-        "SvHZicbo_envcfg_cg/{cp_cbze_vs,cp_cbze_vu}",
-      ]
+    coverpoint: ["SvHZicbo_envcfg_cg/{cp_cbcfe_vs,cp_cbcfe_vu}"]
   # The Zicboz extension adds the CBZE (Cache Block Zero instruction enable) field to
   # henvcfg. The CBZE field applies to execution of the cache block zero instruction
   # (CBO.ZERO) in privilege modes VS and VU, and only when the instruction is
@@ -70,19 +53,14 @@ normative_rule_definitions:
   - name: henvcfg_cbze
     coverpoint:
       [
-        "SvHZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}",
-        "SvHZicbo_envcfg_cg/{cp_cbcfe_vs,cp_cbcfe_vu}",
         "SvHZicbo_envcfg_cg/{cp_cbze_vs,cp_cbze_vu}",
+        "H_hscsr_cg/cp_hcsrwalk_masked",
+        "HSm_mcsr_cg/cp_hcsrwalk_masked",
       ]
   # Finally, a insn:cbo.zero[] instruction executes or raises an illegal-instruction or
   # virtual-instruction exception based on the state of the csr:envcfg[cbze] bits:
   - name: cbo-zero_basedon_xenvcfg_cbze
-    coverpoint:
-      [
-        "SvHZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}",
-        "SvHZicbo_envcfg_cg/{cp_cbcfe_vs,cp_cbcfe_vu}",
-        "SvHZicbo_envcfg_cg/{cp_cbze_vs,cp_cbze_vu}",
-      ]
+    coverpoint: ["SvHZicbo_envcfg_cg/{cp_cbze_vs,cp_cbze_vu}"]
 
   # CBO permission and faults under two-stage translation
   - names:

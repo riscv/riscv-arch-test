@@ -2,30 +2,48 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
-  # With V = 1, mstatus.VS and vsstatus.VS are both in effect: either set to Off makes vector instructions illegal
-  - names:
-      [
-        vsstatus_vs_op2,
-        vsstatus_vs_op_off,
-        vsstatus_vs_mstatus_vs_op_off,
-        mstatus_vs_op_off,
-        H_illegalinst_xstatus_fs_vs,
-      ]
-    coverpoint: ["ExceptionsHV_cg/cp_exceptionsHV_vs"]
-
-  # Vector state changes set mstatus.VS, and vsstatus.VS when V = 1, to Dirty
-  - names:
-      [vsstatus_vs_op_active, mstatus_vs_op_active, mstatus_vs_op_initial_clean]
+  # Similarly, when V=1, both vsstatus.VS and the HS-level sstatus.VS are in effect.
+  # Attempts to execute a vector instruction when either field is 0 (Off) raise an
+  # illegal-instruction exception. Modifying the vector state when V=1 causes both fields
+  # to be set to 3 (Dirty).
+  - name: vsstatus_vs_op
     coverpoint:
       [
         "ExceptionsHV_cg/cp_exceptionsHV_vs",
         "ExceptionsHV_cg/cp_vsstatus_vs_set_dirty_arithmetic",
         "ExceptionsHV_cg/cp_vsstatus_vs_set_dirty_csr",
       ]
+  # When V=1, both csr:vsstatus[vs] and csr:mstatus[vs] are in effect: attempts to execute
+  # any vector instruction, or to access the vector CSRs, raise an illegal-instruction
+  # exception when either field is set to Off.
+  - name: vsstatus_vs_mstatus_vs_op_off
+    coverpoint: ["ExceptionsHV_cg/cp_exceptionsHV_vs"]
+  # Attempts to execute any vector instruction, or to access the vector CSRs, raise an
+  # illegal-instruction exception when csr:mstatus[vs] is set to Off.
+  - name: mstatus_vs_op_off
+    coverpoint: ["ExceptionsHV_cg/cp_exceptionsHV_vs"]
+  # Fields FS and VS in registers sstatus and vsstatus deviate from the usual HS-qualified
+  # rule. If an instruction is prevented from executing because FS or VS is zero in either
+  # sstatus or vsstatus, the exception raised is always an illegal-instruction exception,
+  # never a virtual-instruction exception.
+  - name: H_illegalinst_xstatus_fs_vs
+    coverpoint: ["ExceptionsHV_cg/cp_exceptionsHV_vs"]
 
-  # With V = 1, vsstatus.VS and the HS-level sstatus.VS are both in effect: either set to Off makes vector
-  # instructions illegal, and changing vector state sets both to Dirty
-  - names: [vsstatus_vs_op]
+  # When V=1 and neither csr:vsstatus[vs] nor csr:mstatus[vs] is set to Off, executing any
+  # instruction that changes vector state, including the vector CSRs, will change both
+  # csr:mstatus[vs] and csr:vsstatus[vs] to Dirty.
+  - name: vsstatus_vs_mstatus_vs_op_active
+    coverpoint:
+      [
+        "ExceptionsHV_cg/cp_exceptionsHV_vs",
+        "ExceptionsHV_cg/cp_vsstatus_vs_set_dirty_arithmetic",
+        "ExceptionsHV_cg/cp_vsstatus_vs_set_dirty_csr",
+      ]
+  # When csr:mstatus[vs] is set to Initial or Clean, executing any instruction that
+  # changes vector state, including the vector CSRs, will change csr:mstatus[vs] to Dirty.
+  # Implementations may also change csr:mstatus[vs] from Initial or Clean to Dirty at any
+  # time, even when there is no change in vector state.
+  - name: mstatus_vs_op_initial_clean
     coverpoint:
       [
         "ExceptionsHV_cg/cp_exceptionsHV_vs",

@@ -7,10 +7,19 @@ normative_rule_definitions:
   - name: menvcfg_cbcfe_op
     coverpoint: ["ExceptionsZicboSm_cg/cp_cbcfe"]
 
-  - name: menvcfg_cbie_op
+  - name: menvcfg_cbie_warl_op
     coverpoint: ["ExceptionsZicboSm_cg/cp_cbie"]
 
-  - name: menvcfg_cbie_cbo-inval_op
+  # When CBIE is set to 0b01 or 0b11, and when enabled for execution in modes less
+  # privileged than M, it behaves as follows:
+  - name: menvcfg_cbie_cbo-inval_op_lead_in
+    coverpoint: ["ExceptionsZicboSm_cg/cp_cbie"]
+  # 0b01&#8201;&#8212;&#8201;The instruction is executed and performs a flush operation,
+  # even if configured by a mode less privileged than M to perform an invalidate
+  # operation. 0b11&#8201;&#8212;&#8201;The instruction is executed and performs an
+  # invalidate operation, unless configured by a mode less privileged than M to perform a
+  # flush operation.
+  - name: menvcfg_cbie_cbo-inval_op_list
     coverpoint: ["ExceptionsZicboSm_cg/cp_cbie"]
 
   # The CBIE/CBCFE/CBZE fields in each xenvcfg register do not affect the read and

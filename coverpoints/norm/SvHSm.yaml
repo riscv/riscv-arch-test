@@ -21,7 +21,7 @@ normative_rule_definitions:
   - names:
       [
         H_guest_page_fault,
-        MTVAL2_TRAPVAL,
+        mtval2_trapval,
         mtval2_trapval_vstrans,
         mtval2_htval_virtaddr,
         mstatus_gva_op,

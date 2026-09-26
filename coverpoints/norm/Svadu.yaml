@@ -17,7 +17,7 @@ normative_rule_definitions:
 
   # When hardware updating of A/D bits is disabled, the Svade extension, which mandates
   # exceptions when A/D bits need be set, instead takes effect.
-  - name: Svadu_disabled_hw_update_falls_back_to_svade
+  - name: Svadu_disabled_hw_update_falls_back_to_Svade
     coverpoint:
       ["Svade_cg/Svade_enabled", "Sv_add_feature_cg/cp_svadu_disabled"]
 

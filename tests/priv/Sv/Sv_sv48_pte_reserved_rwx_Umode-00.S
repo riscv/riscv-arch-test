@@ -18,8 +18,8 @@
 #define SIGUPD_COUNT 34
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_SMODE
 #define TRAP_SIGUPD_COUNT 155
+#define BOOT_TO_SMODE
 
 // Include framework macros
 #include "riscv_arch_test.h"

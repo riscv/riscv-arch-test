@@ -291,7 +291,6 @@ def _generate_instr_page_fault_tests(test_data: TestData, covergroup: str) -> li
     "Sstvala",
     required_extensions=["Sstvala"],
     march_extensions=["S"],
-    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def _generate_sstvala_tests(test_data: TestData) -> list[TestChunk]:
     """Generate all Sstvala tests running in S-mode."""

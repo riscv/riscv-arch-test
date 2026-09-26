@@ -165,7 +165,6 @@ def _make_svpmp(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     required_extensions=["Sv32", "Sm"],
     march_extensions=[],
     params=["NUM_PMP_ENTRIES: '>0'"],
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svpmp_sv32(test_data: TestData) -> list[TestChunk]:
     return _make_svpmp(test_data, SV32)
@@ -176,7 +175,6 @@ def make_svpmp_sv32(test_data: TestData) -> list[TestChunk]:
     required_extensions=["Sv39", "Sm"],
     march_extensions=[],
     params=["NUM_PMP_ENTRIES: '>0'"],
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svpmp_sv39(test_data: TestData) -> list[TestChunk]:
     return _make_svpmp(test_data, SV39)
@@ -187,7 +185,6 @@ def make_svpmp_sv39(test_data: TestData) -> list[TestChunk]:
     required_extensions=["Sv48", "Sm"],
     march_extensions=[],
     params=["NUM_PMP_ENTRIES: '>0'"],
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svpmp_sv48(test_data: TestData) -> list[TestChunk]:
     return _make_svpmp(test_data, SV48)
@@ -198,7 +195,6 @@ def make_svpmp_sv48(test_data: TestData) -> list[TestChunk]:
     required_extensions=["Sv57", "Sm"],
     march_extensions=[],
     params=["NUM_PMP_ENTRIES: '>0'"],
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svpmp_sv57(test_data: TestData) -> list[TestChunk]:
     return _make_svpmp(test_data, SV57)

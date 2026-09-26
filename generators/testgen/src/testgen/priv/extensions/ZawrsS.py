@@ -25,7 +25,6 @@ covergroup = "ZawrsS_cg"
     "ZawrsS",
     required_extensions=["S", "Zawrs", "Zalrsc"],
     march_extensions=["H", "Zawrs", "Zalrsc"],
-    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_zawrss(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZawrsS WRS instructions at S-mode (and H if supported)."""

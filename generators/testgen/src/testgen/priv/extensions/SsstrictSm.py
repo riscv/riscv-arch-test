@@ -57,7 +57,7 @@ _M_CSR_SKIP: frozenset[int] = frozenset(
         "I",
         "V",
     ],
-    extra_defines=["#define RVTEST_USE_FAST_TRAP_HANDLER", "#define BOOT_TO_MMODE"],
+    extra_defines=["#define RVTEST_USE_FAST_TRAP_HANDLER"],
 )
 def make_ssstrictsm(test_data: TestData) -> list[TestChunk]:
     """SsstrictSm — machine-mode strict compliance tests."""

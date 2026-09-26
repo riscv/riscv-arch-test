@@ -28,7 +28,6 @@ _PAGE_REGION = make_exec_region(("1024", "nop"), pad=None)
 
 @add_priv_test_generator(
     "PMPZicbo",
-    extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Sm", "Zicbom", "Zicboz"],
     params=["NUM_PMP_ENTRIES: '>0'"],
 )
@@ -58,7 +57,6 @@ def make_pmpzicbo_cbo(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "PMPZicbo",
-    extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Sm", "Zicbop"],
     params=["NUM_PMP_ENTRIES: '>0'"],
 )

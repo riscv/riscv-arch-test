@@ -253,8 +253,6 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
     "SmF",
     required_extensions=["Sm", "F"],
     march_extensions=["F", "D", "Zfa"],
-    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_smf(test_data: TestData) -> list[TestChunk]:
     """Generate tests for SmF machine-mode floating-point testsuite."""

@@ -54,7 +54,7 @@ _S_CSR_SKIP: frozenset[int] = frozenset(
         "I",
         "V",  # V included: sets vl/vtype for vector loads and stores in the encoding sweep
     ],
-    extra_defines=["#define RVTEST_USE_FAST_TRAP_HANDLER", "#define BOOT_TO_SMODE"],
+    extra_defines=["#define RVTEST_USE_FAST_TRAP_HANDLER"],
 )
 def make_ssstrictss(test_data: TestData) -> list[TestChunk]:
     """SsstrictS — supervisor-mode strict compliance tests."""

@@ -25,7 +25,6 @@ covergroup = "ZawrsSm_cg"
 @add_priv_test_generator(
     "ZawrsSm",
     required_extensions=["Sm", "Zawrs", "Zalrsc"],
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_zawrssm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZawrsSm WRS instructions at machine-mode."""

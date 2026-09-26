@@ -9,7 +9,7 @@
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_INSTRUCTION, not during memory access.
+    // traps at decode with an illegal-instruction exception, not during memory access.
     // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |

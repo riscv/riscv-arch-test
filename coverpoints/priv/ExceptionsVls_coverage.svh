@@ -42,8 +42,8 @@ covergroup ExceptionsVls_vl1re16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vl1re16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vl1re16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -59,7 +59,7 @@ covergroup ExceptionsVls_vl1re16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vl1re16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -136,8 +136,8 @@ covergroup ExceptionsVls_vl1re32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vl1re32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vl1re32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -153,7 +153,7 @@ covergroup ExceptionsVls_vl1re32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vl1re32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -230,8 +230,8 @@ covergroup ExceptionsVls_vl1re64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vl1re64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vl1re64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -247,7 +247,7 @@ covergroup ExceptionsVls_vl1re64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vl1re64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -324,8 +324,8 @@ covergroup ExceptionsVls_vl1re8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vl1re8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vl1re8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -341,7 +341,7 @@ covergroup ExceptionsVls_vl1re8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vl1re8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -418,8 +418,8 @@ covergroup ExceptionsVls_vl2re16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vl2re16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vl2re16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -435,7 +435,7 @@ covergroup ExceptionsVls_vl2re16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vl2re16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -512,8 +512,8 @@ covergroup ExceptionsVls_vl2re32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vl2re32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vl2re32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -529,7 +529,7 @@ covergroup ExceptionsVls_vl2re32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vl2re32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -606,8 +606,8 @@ covergroup ExceptionsVls_vl2re64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vl2re64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vl2re64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -623,7 +623,7 @@ covergroup ExceptionsVls_vl2re64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vl2re64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -700,8 +700,8 @@ covergroup ExceptionsVls_vl2re8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vl2re8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vl2re8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -717,7 +717,7 @@ covergroup ExceptionsVls_vl2re8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vl2re8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -794,8 +794,8 @@ covergroup ExceptionsVls_vl4re16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vl4re16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vl4re16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -811,7 +811,7 @@ covergroup ExceptionsVls_vl4re16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vl4re16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -888,8 +888,8 @@ covergroup ExceptionsVls_vl4re32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vl4re32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vl4re32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -905,7 +905,7 @@ covergroup ExceptionsVls_vl4re32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vl4re32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -982,8 +982,8 @@ covergroup ExceptionsVls_vl4re64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vl4re64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vl4re64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -999,7 +999,7 @@ covergroup ExceptionsVls_vl4re64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vl4re64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -1076,8 +1076,8 @@ covergroup ExceptionsVls_vl4re8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vl4re8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vl4re8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -1093,7 +1093,7 @@ covergroup ExceptionsVls_vl4re8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vl4re8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -1170,8 +1170,8 @@ covergroup ExceptionsVls_vl8re16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vl8re16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vl8re16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -1187,7 +1187,7 @@ covergroup ExceptionsVls_vl8re16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vl8re16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -1264,8 +1264,8 @@ covergroup ExceptionsVls_vl8re32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vl8re32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vl8re32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -1281,7 +1281,7 @@ covergroup ExceptionsVls_vl8re32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vl8re32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -1358,8 +1358,8 @@ covergroup ExceptionsVls_vl8re64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vl8re64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vl8re64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -1375,7 +1375,7 @@ covergroup ExceptionsVls_vl8re64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vl8re64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -1452,8 +1452,8 @@ covergroup ExceptionsVls_vl8re8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vl8re8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vl8re8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -1469,7 +1469,7 @@ covergroup ExceptionsVls_vl8re8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vl8re8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -1546,8 +1546,8 @@ covergroup ExceptionsVls_vle16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vle16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vle16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -1563,7 +1563,7 @@ covergroup ExceptionsVls_vle16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vle16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -1640,8 +1640,8 @@ covergroup ExceptionsVls_vle16ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vle16ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vle16ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -1657,7 +1657,7 @@ covergroup ExceptionsVls_vle16ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vle16ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -1753,8 +1753,8 @@ covergroup ExceptionsVls_vle32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vle32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vle32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -1770,7 +1770,7 @@ covergroup ExceptionsVls_vle32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vle32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -1847,8 +1847,8 @@ covergroup ExceptionsVls_vle32ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vle32ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vle32ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -1864,7 +1864,7 @@ covergroup ExceptionsVls_vle32ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vle32ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -1960,8 +1960,8 @@ covergroup ExceptionsVls_vle64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vle64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vle64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -1977,7 +1977,7 @@ covergroup ExceptionsVls_vle64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vle64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -2054,8 +2054,8 @@ covergroup ExceptionsVls_vle64ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vle64ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vle64ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -2071,7 +2071,7 @@ covergroup ExceptionsVls_vle64ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vle64ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -2167,8 +2167,8 @@ covergroup ExceptionsVls_vle8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vle8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vle8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -2184,7 +2184,7 @@ covergroup ExceptionsVls_vle8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vle8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -2261,8 +2261,8 @@ covergroup ExceptionsVls_vle8ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vle8ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vle8ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -2278,7 +2278,7 @@ covergroup ExceptionsVls_vle8ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vle8ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -2374,8 +2374,8 @@ covergroup ExceptionsVls_vlm_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlm.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlm.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -2391,7 +2391,7 @@ covergroup ExceptionsVls_vlm_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlm.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -2468,8 +2468,8 @@ covergroup ExceptionsVls_vloxei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -2485,7 +2485,7 @@ covergroup ExceptionsVls_vloxei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -2602,8 +2602,8 @@ covergroup ExceptionsVls_vloxei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -2619,7 +2619,7 @@ covergroup ExceptionsVls_vloxei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -2737,8 +2737,8 @@ covergroup ExceptionsVls_vloxei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -2754,7 +2754,7 @@ covergroup ExceptionsVls_vloxei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -2872,8 +2872,8 @@ covergroup ExceptionsVls_vloxei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -2889,7 +2889,7 @@ covergroup ExceptionsVls_vloxei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -2988,8 +2988,8 @@ covergroup ExceptionsVls_vloxseg2ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg2ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg2ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -3005,7 +3005,7 @@ covergroup ExceptionsVls_vloxseg2ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg2ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -3122,8 +3122,8 @@ covergroup ExceptionsVls_vloxseg2ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg2ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg2ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -3139,7 +3139,7 @@ covergroup ExceptionsVls_vloxseg2ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg2ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -3257,8 +3257,8 @@ covergroup ExceptionsVls_vloxseg2ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg2ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg2ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -3274,7 +3274,7 @@ covergroup ExceptionsVls_vloxseg2ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg2ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -3392,8 +3392,8 @@ covergroup ExceptionsVls_vloxseg2ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg2ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg2ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -3409,7 +3409,7 @@ covergroup ExceptionsVls_vloxseg2ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg2ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -3508,8 +3508,8 @@ covergroup ExceptionsVls_vloxseg3ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg3ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg3ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -3525,7 +3525,7 @@ covergroup ExceptionsVls_vloxseg3ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg3ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -3642,8 +3642,8 @@ covergroup ExceptionsVls_vloxseg3ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg3ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg3ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -3659,7 +3659,7 @@ covergroup ExceptionsVls_vloxseg3ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg3ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -3777,8 +3777,8 @@ covergroup ExceptionsVls_vloxseg3ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg3ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg3ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -3794,7 +3794,7 @@ covergroup ExceptionsVls_vloxseg3ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg3ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -3912,8 +3912,8 @@ covergroup ExceptionsVls_vloxseg3ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg3ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg3ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -3929,7 +3929,7 @@ covergroup ExceptionsVls_vloxseg3ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg3ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -4028,8 +4028,8 @@ covergroup ExceptionsVls_vloxseg4ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg4ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg4ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -4045,7 +4045,7 @@ covergroup ExceptionsVls_vloxseg4ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg4ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -4162,8 +4162,8 @@ covergroup ExceptionsVls_vloxseg4ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg4ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg4ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -4179,7 +4179,7 @@ covergroup ExceptionsVls_vloxseg4ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg4ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -4297,8 +4297,8 @@ covergroup ExceptionsVls_vloxseg4ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg4ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg4ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -4314,7 +4314,7 @@ covergroup ExceptionsVls_vloxseg4ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg4ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -4432,8 +4432,8 @@ covergroup ExceptionsVls_vloxseg4ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg4ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg4ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -4449,7 +4449,7 @@ covergroup ExceptionsVls_vloxseg4ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg4ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -4548,8 +4548,8 @@ covergroup ExceptionsVls_vloxseg5ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg5ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg5ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -4565,7 +4565,7 @@ covergroup ExceptionsVls_vloxseg5ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg5ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -4682,8 +4682,8 @@ covergroup ExceptionsVls_vloxseg5ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg5ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg5ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -4699,7 +4699,7 @@ covergroup ExceptionsVls_vloxseg5ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg5ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -4817,8 +4817,8 @@ covergroup ExceptionsVls_vloxseg5ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg5ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg5ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -4834,7 +4834,7 @@ covergroup ExceptionsVls_vloxseg5ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg5ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -4952,8 +4952,8 @@ covergroup ExceptionsVls_vloxseg5ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg5ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg5ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -4969,7 +4969,7 @@ covergroup ExceptionsVls_vloxseg5ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg5ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -5068,8 +5068,8 @@ covergroup ExceptionsVls_vloxseg6ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg6ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg6ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -5085,7 +5085,7 @@ covergroup ExceptionsVls_vloxseg6ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg6ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -5202,8 +5202,8 @@ covergroup ExceptionsVls_vloxseg6ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg6ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg6ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -5219,7 +5219,7 @@ covergroup ExceptionsVls_vloxseg6ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg6ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -5337,8 +5337,8 @@ covergroup ExceptionsVls_vloxseg6ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg6ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg6ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -5354,7 +5354,7 @@ covergroup ExceptionsVls_vloxseg6ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg6ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -5472,8 +5472,8 @@ covergroup ExceptionsVls_vloxseg6ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg6ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg6ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -5489,7 +5489,7 @@ covergroup ExceptionsVls_vloxseg6ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg6ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -5588,8 +5588,8 @@ covergroup ExceptionsVls_vloxseg7ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg7ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg7ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -5605,7 +5605,7 @@ covergroup ExceptionsVls_vloxseg7ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg7ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -5722,8 +5722,8 @@ covergroup ExceptionsVls_vloxseg7ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg7ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg7ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -5739,7 +5739,7 @@ covergroup ExceptionsVls_vloxseg7ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg7ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -5857,8 +5857,8 @@ covergroup ExceptionsVls_vloxseg7ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg7ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg7ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -5874,7 +5874,7 @@ covergroup ExceptionsVls_vloxseg7ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg7ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -5992,8 +5992,8 @@ covergroup ExceptionsVls_vloxseg7ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg7ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg7ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -6009,7 +6009,7 @@ covergroup ExceptionsVls_vloxseg7ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg7ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -6108,8 +6108,8 @@ covergroup ExceptionsVls_vloxseg8ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg8ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg8ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -6125,7 +6125,7 @@ covergroup ExceptionsVls_vloxseg8ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg8ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -6242,8 +6242,8 @@ covergroup ExceptionsVls_vloxseg8ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg8ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg8ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -6259,7 +6259,7 @@ covergroup ExceptionsVls_vloxseg8ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg8ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -6377,8 +6377,8 @@ covergroup ExceptionsVls_vloxseg8ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg8ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg8ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -6394,7 +6394,7 @@ covergroup ExceptionsVls_vloxseg8ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg8ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -6512,8 +6512,8 @@ covergroup ExceptionsVls_vloxseg8ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vloxseg8ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vloxseg8ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -6529,7 +6529,7 @@ covergroup ExceptionsVls_vloxseg8ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vloxseg8ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -6628,8 +6628,8 @@ covergroup ExceptionsVls_vlse16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlse16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlse16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -6645,7 +6645,7 @@ covergroup ExceptionsVls_vlse16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlse16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -6722,8 +6722,8 @@ covergroup ExceptionsVls_vlse32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlse32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlse32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -6739,7 +6739,7 @@ covergroup ExceptionsVls_vlse32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlse32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -6816,8 +6816,8 @@ covergroup ExceptionsVls_vlse64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlse64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlse64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -6833,7 +6833,7 @@ covergroup ExceptionsVls_vlse64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlse64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -6910,8 +6910,8 @@ covergroup ExceptionsVls_vlse8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlse8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlse8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -6927,7 +6927,7 @@ covergroup ExceptionsVls_vlse8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlse8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -7004,8 +7004,8 @@ covergroup ExceptionsVls_vlseg2e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg2e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg2e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -7021,7 +7021,7 @@ covergroup ExceptionsVls_vlseg2e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg2e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -7098,8 +7098,8 @@ covergroup ExceptionsVls_vlseg2e16ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg2e16ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg2e16ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -7115,7 +7115,7 @@ covergroup ExceptionsVls_vlseg2e16ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg2e16ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -7211,8 +7211,8 @@ covergroup ExceptionsVls_vlseg2e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg2e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg2e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -7228,7 +7228,7 @@ covergroup ExceptionsVls_vlseg2e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg2e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -7305,8 +7305,8 @@ covergroup ExceptionsVls_vlseg2e32ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg2e32ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg2e32ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -7322,7 +7322,7 @@ covergroup ExceptionsVls_vlseg2e32ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg2e32ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -7418,8 +7418,8 @@ covergroup ExceptionsVls_vlseg2e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg2e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg2e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -7435,7 +7435,7 @@ covergroup ExceptionsVls_vlseg2e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg2e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -7512,8 +7512,8 @@ covergroup ExceptionsVls_vlseg2e64ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg2e64ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg2e64ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -7529,7 +7529,7 @@ covergroup ExceptionsVls_vlseg2e64ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg2e64ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -7625,8 +7625,8 @@ covergroup ExceptionsVls_vlseg2e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg2e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg2e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -7642,7 +7642,7 @@ covergroup ExceptionsVls_vlseg2e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg2e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -7719,8 +7719,8 @@ covergroup ExceptionsVls_vlseg2e8ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg2e8ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg2e8ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -7736,7 +7736,7 @@ covergroup ExceptionsVls_vlseg2e8ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg2e8ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -7832,8 +7832,8 @@ covergroup ExceptionsVls_vlseg3e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg3e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg3e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -7849,7 +7849,7 @@ covergroup ExceptionsVls_vlseg3e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg3e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -7926,8 +7926,8 @@ covergroup ExceptionsVls_vlseg3e16ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg3e16ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg3e16ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -7943,7 +7943,7 @@ covergroup ExceptionsVls_vlseg3e16ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg3e16ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -8039,8 +8039,8 @@ covergroup ExceptionsVls_vlseg3e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg3e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg3e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -8056,7 +8056,7 @@ covergroup ExceptionsVls_vlseg3e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg3e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -8133,8 +8133,8 @@ covergroup ExceptionsVls_vlseg3e32ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg3e32ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg3e32ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -8150,7 +8150,7 @@ covergroup ExceptionsVls_vlseg3e32ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg3e32ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -8246,8 +8246,8 @@ covergroup ExceptionsVls_vlseg3e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg3e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg3e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -8263,7 +8263,7 @@ covergroup ExceptionsVls_vlseg3e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg3e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -8340,8 +8340,8 @@ covergroup ExceptionsVls_vlseg3e64ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg3e64ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg3e64ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -8357,7 +8357,7 @@ covergroup ExceptionsVls_vlseg3e64ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg3e64ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -8453,8 +8453,8 @@ covergroup ExceptionsVls_vlseg3e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg3e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg3e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -8470,7 +8470,7 @@ covergroup ExceptionsVls_vlseg3e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg3e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -8547,8 +8547,8 @@ covergroup ExceptionsVls_vlseg3e8ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg3e8ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg3e8ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -8564,7 +8564,7 @@ covergroup ExceptionsVls_vlseg3e8ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg3e8ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -8660,8 +8660,8 @@ covergroup ExceptionsVls_vlseg4e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg4e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg4e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -8677,7 +8677,7 @@ covergroup ExceptionsVls_vlseg4e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg4e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -8754,8 +8754,8 @@ covergroup ExceptionsVls_vlseg4e16ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg4e16ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg4e16ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -8771,7 +8771,7 @@ covergroup ExceptionsVls_vlseg4e16ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg4e16ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -8867,8 +8867,8 @@ covergroup ExceptionsVls_vlseg4e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg4e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg4e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -8884,7 +8884,7 @@ covergroup ExceptionsVls_vlseg4e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg4e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -8961,8 +8961,8 @@ covergroup ExceptionsVls_vlseg4e32ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg4e32ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg4e32ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -8978,7 +8978,7 @@ covergroup ExceptionsVls_vlseg4e32ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg4e32ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -9074,8 +9074,8 @@ covergroup ExceptionsVls_vlseg4e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg4e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg4e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -9091,7 +9091,7 @@ covergroup ExceptionsVls_vlseg4e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg4e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -9168,8 +9168,8 @@ covergroup ExceptionsVls_vlseg4e64ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg4e64ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg4e64ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -9185,7 +9185,7 @@ covergroup ExceptionsVls_vlseg4e64ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg4e64ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -9281,8 +9281,8 @@ covergroup ExceptionsVls_vlseg4e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg4e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg4e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -9298,7 +9298,7 @@ covergroup ExceptionsVls_vlseg4e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg4e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -9375,8 +9375,8 @@ covergroup ExceptionsVls_vlseg4e8ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg4e8ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg4e8ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -9392,7 +9392,7 @@ covergroup ExceptionsVls_vlseg4e8ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg4e8ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -9488,8 +9488,8 @@ covergroup ExceptionsVls_vlseg5e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg5e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg5e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -9505,7 +9505,7 @@ covergroup ExceptionsVls_vlseg5e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg5e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -9582,8 +9582,8 @@ covergroup ExceptionsVls_vlseg5e16ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg5e16ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg5e16ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -9599,7 +9599,7 @@ covergroup ExceptionsVls_vlseg5e16ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg5e16ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -9695,8 +9695,8 @@ covergroup ExceptionsVls_vlseg5e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg5e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg5e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -9712,7 +9712,7 @@ covergroup ExceptionsVls_vlseg5e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg5e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -9789,8 +9789,8 @@ covergroup ExceptionsVls_vlseg5e32ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg5e32ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg5e32ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -9806,7 +9806,7 @@ covergroup ExceptionsVls_vlseg5e32ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg5e32ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -9902,8 +9902,8 @@ covergroup ExceptionsVls_vlseg5e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg5e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg5e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -9919,7 +9919,7 @@ covergroup ExceptionsVls_vlseg5e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg5e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -9996,8 +9996,8 @@ covergroup ExceptionsVls_vlseg5e64ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg5e64ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg5e64ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -10013,7 +10013,7 @@ covergroup ExceptionsVls_vlseg5e64ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg5e64ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -10109,8 +10109,8 @@ covergroup ExceptionsVls_vlseg5e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg5e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg5e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -10126,7 +10126,7 @@ covergroup ExceptionsVls_vlseg5e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg5e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -10203,8 +10203,8 @@ covergroup ExceptionsVls_vlseg5e8ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg5e8ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg5e8ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -10220,7 +10220,7 @@ covergroup ExceptionsVls_vlseg5e8ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg5e8ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -10316,8 +10316,8 @@ covergroup ExceptionsVls_vlseg6e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg6e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg6e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -10333,7 +10333,7 @@ covergroup ExceptionsVls_vlseg6e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg6e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -10410,8 +10410,8 @@ covergroup ExceptionsVls_vlseg6e16ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg6e16ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg6e16ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -10427,7 +10427,7 @@ covergroup ExceptionsVls_vlseg6e16ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg6e16ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -10523,8 +10523,8 @@ covergroup ExceptionsVls_vlseg6e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg6e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg6e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -10540,7 +10540,7 @@ covergroup ExceptionsVls_vlseg6e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg6e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -10617,8 +10617,8 @@ covergroup ExceptionsVls_vlseg6e32ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg6e32ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg6e32ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -10634,7 +10634,7 @@ covergroup ExceptionsVls_vlseg6e32ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg6e32ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -10730,8 +10730,8 @@ covergroup ExceptionsVls_vlseg6e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg6e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg6e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -10747,7 +10747,7 @@ covergroup ExceptionsVls_vlseg6e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg6e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -10824,8 +10824,8 @@ covergroup ExceptionsVls_vlseg6e64ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg6e64ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg6e64ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -10841,7 +10841,7 @@ covergroup ExceptionsVls_vlseg6e64ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg6e64ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -10937,8 +10937,8 @@ covergroup ExceptionsVls_vlseg6e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg6e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg6e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -10954,7 +10954,7 @@ covergroup ExceptionsVls_vlseg6e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg6e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -11031,8 +11031,8 @@ covergroup ExceptionsVls_vlseg6e8ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg6e8ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg6e8ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -11048,7 +11048,7 @@ covergroup ExceptionsVls_vlseg6e8ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg6e8ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -11144,8 +11144,8 @@ covergroup ExceptionsVls_vlseg7e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg7e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg7e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -11161,7 +11161,7 @@ covergroup ExceptionsVls_vlseg7e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg7e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -11238,8 +11238,8 @@ covergroup ExceptionsVls_vlseg7e16ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg7e16ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg7e16ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -11255,7 +11255,7 @@ covergroup ExceptionsVls_vlseg7e16ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg7e16ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -11351,8 +11351,8 @@ covergroup ExceptionsVls_vlseg7e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg7e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg7e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -11368,7 +11368,7 @@ covergroup ExceptionsVls_vlseg7e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg7e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -11445,8 +11445,8 @@ covergroup ExceptionsVls_vlseg7e32ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg7e32ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg7e32ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -11462,7 +11462,7 @@ covergroup ExceptionsVls_vlseg7e32ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg7e32ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -11558,8 +11558,8 @@ covergroup ExceptionsVls_vlseg7e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg7e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg7e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -11575,7 +11575,7 @@ covergroup ExceptionsVls_vlseg7e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg7e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -11652,8 +11652,8 @@ covergroup ExceptionsVls_vlseg7e64ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg7e64ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg7e64ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -11669,7 +11669,7 @@ covergroup ExceptionsVls_vlseg7e64ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg7e64ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -11765,8 +11765,8 @@ covergroup ExceptionsVls_vlseg7e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg7e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg7e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -11782,7 +11782,7 @@ covergroup ExceptionsVls_vlseg7e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg7e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -11859,8 +11859,8 @@ covergroup ExceptionsVls_vlseg7e8ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg7e8ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg7e8ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -11876,7 +11876,7 @@ covergroup ExceptionsVls_vlseg7e8ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg7e8ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -11972,8 +11972,8 @@ covergroup ExceptionsVls_vlseg8e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg8e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg8e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -11989,7 +11989,7 @@ covergroup ExceptionsVls_vlseg8e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg8e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -12066,8 +12066,8 @@ covergroup ExceptionsVls_vlseg8e16ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg8e16ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg8e16ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -12083,7 +12083,7 @@ covergroup ExceptionsVls_vlseg8e16ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg8e16ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -12179,8 +12179,8 @@ covergroup ExceptionsVls_vlseg8e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg8e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg8e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -12196,7 +12196,7 @@ covergroup ExceptionsVls_vlseg8e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg8e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -12273,8 +12273,8 @@ covergroup ExceptionsVls_vlseg8e32ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg8e32ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg8e32ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -12290,7 +12290,7 @@ covergroup ExceptionsVls_vlseg8e32ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg8e32ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -12386,8 +12386,8 @@ covergroup ExceptionsVls_vlseg8e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg8e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg8e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -12403,7 +12403,7 @@ covergroup ExceptionsVls_vlseg8e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg8e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -12480,8 +12480,8 @@ covergroup ExceptionsVls_vlseg8e64ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg8e64ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg8e64ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -12497,7 +12497,7 @@ covergroup ExceptionsVls_vlseg8e64ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg8e64ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -12593,8 +12593,8 @@ covergroup ExceptionsVls_vlseg8e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg8e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg8e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -12610,7 +12610,7 @@ covergroup ExceptionsVls_vlseg8e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg8e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -12687,8 +12687,8 @@ covergroup ExceptionsVls_vlseg8e8ff_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlseg8e8ff.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlseg8e8ff.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -12704,7 +12704,7 @@ covergroup ExceptionsVls_vlseg8e8ff_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlseg8e8ff.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -12800,8 +12800,8 @@ covergroup ExceptionsVls_vlsseg2e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg2e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg2e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -12817,7 +12817,7 @@ covergroup ExceptionsVls_vlsseg2e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg2e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -12894,8 +12894,8 @@ covergroup ExceptionsVls_vlsseg2e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg2e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg2e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -12911,7 +12911,7 @@ covergroup ExceptionsVls_vlsseg2e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg2e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -12988,8 +12988,8 @@ covergroup ExceptionsVls_vlsseg2e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg2e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg2e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -13005,7 +13005,7 @@ covergroup ExceptionsVls_vlsseg2e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg2e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -13082,8 +13082,8 @@ covergroup ExceptionsVls_vlsseg2e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg2e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg2e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -13099,7 +13099,7 @@ covergroup ExceptionsVls_vlsseg2e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg2e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -13176,8 +13176,8 @@ covergroup ExceptionsVls_vlsseg3e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg3e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg3e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -13193,7 +13193,7 @@ covergroup ExceptionsVls_vlsseg3e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg3e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -13270,8 +13270,8 @@ covergroup ExceptionsVls_vlsseg3e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg3e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg3e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -13287,7 +13287,7 @@ covergroup ExceptionsVls_vlsseg3e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg3e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -13364,8 +13364,8 @@ covergroup ExceptionsVls_vlsseg3e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg3e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg3e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -13381,7 +13381,7 @@ covergroup ExceptionsVls_vlsseg3e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg3e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -13458,8 +13458,8 @@ covergroup ExceptionsVls_vlsseg3e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg3e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg3e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -13475,7 +13475,7 @@ covergroup ExceptionsVls_vlsseg3e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg3e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -13552,8 +13552,8 @@ covergroup ExceptionsVls_vlsseg4e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg4e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg4e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -13569,7 +13569,7 @@ covergroup ExceptionsVls_vlsseg4e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg4e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -13646,8 +13646,8 @@ covergroup ExceptionsVls_vlsseg4e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg4e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg4e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -13663,7 +13663,7 @@ covergroup ExceptionsVls_vlsseg4e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg4e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -13740,8 +13740,8 @@ covergroup ExceptionsVls_vlsseg4e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg4e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg4e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -13757,7 +13757,7 @@ covergroup ExceptionsVls_vlsseg4e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg4e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -13834,8 +13834,8 @@ covergroup ExceptionsVls_vlsseg4e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg4e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg4e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -13851,7 +13851,7 @@ covergroup ExceptionsVls_vlsseg4e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg4e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -13928,8 +13928,8 @@ covergroup ExceptionsVls_vlsseg5e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg5e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg5e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -13945,7 +13945,7 @@ covergroup ExceptionsVls_vlsseg5e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg5e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -14022,8 +14022,8 @@ covergroup ExceptionsVls_vlsseg5e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg5e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg5e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -14039,7 +14039,7 @@ covergroup ExceptionsVls_vlsseg5e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg5e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -14116,8 +14116,8 @@ covergroup ExceptionsVls_vlsseg5e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg5e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg5e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -14133,7 +14133,7 @@ covergroup ExceptionsVls_vlsseg5e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg5e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -14210,8 +14210,8 @@ covergroup ExceptionsVls_vlsseg5e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg5e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg5e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -14227,7 +14227,7 @@ covergroup ExceptionsVls_vlsseg5e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg5e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -14304,8 +14304,8 @@ covergroup ExceptionsVls_vlsseg6e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg6e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg6e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -14321,7 +14321,7 @@ covergroup ExceptionsVls_vlsseg6e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg6e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -14398,8 +14398,8 @@ covergroup ExceptionsVls_vlsseg6e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg6e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg6e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -14415,7 +14415,7 @@ covergroup ExceptionsVls_vlsseg6e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg6e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -14492,8 +14492,8 @@ covergroup ExceptionsVls_vlsseg6e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg6e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg6e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -14509,7 +14509,7 @@ covergroup ExceptionsVls_vlsseg6e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg6e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -14586,8 +14586,8 @@ covergroup ExceptionsVls_vlsseg6e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg6e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg6e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -14603,7 +14603,7 @@ covergroup ExceptionsVls_vlsseg6e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg6e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -14680,8 +14680,8 @@ covergroup ExceptionsVls_vlsseg7e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg7e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg7e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -14697,7 +14697,7 @@ covergroup ExceptionsVls_vlsseg7e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg7e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -14774,8 +14774,8 @@ covergroup ExceptionsVls_vlsseg7e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg7e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg7e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -14791,7 +14791,7 @@ covergroup ExceptionsVls_vlsseg7e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg7e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -14868,8 +14868,8 @@ covergroup ExceptionsVls_vlsseg7e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg7e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg7e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -14885,7 +14885,7 @@ covergroup ExceptionsVls_vlsseg7e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg7e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -14962,8 +14962,8 @@ covergroup ExceptionsVls_vlsseg7e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg7e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg7e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -14979,7 +14979,7 @@ covergroup ExceptionsVls_vlsseg7e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg7e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -15056,8 +15056,8 @@ covergroup ExceptionsVls_vlsseg8e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg8e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg8e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -15073,7 +15073,7 @@ covergroup ExceptionsVls_vlsseg8e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg8e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -15150,8 +15150,8 @@ covergroup ExceptionsVls_vlsseg8e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg8e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg8e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -15167,7 +15167,7 @@ covergroup ExceptionsVls_vlsseg8e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg8e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -15244,8 +15244,8 @@ covergroup ExceptionsVls_vlsseg8e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg8e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg8e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -15261,7 +15261,7 @@ covergroup ExceptionsVls_vlsseg8e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg8e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -15338,8 +15338,8 @@ covergroup ExceptionsVls_vlsseg8e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vlsseg8e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vlsseg8e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -15355,7 +15355,7 @@ covergroup ExceptionsVls_vlsseg8e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vlsseg8e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -15432,8 +15432,8 @@ covergroup ExceptionsVls_vluxei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -15449,7 +15449,7 @@ covergroup ExceptionsVls_vluxei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -15566,8 +15566,8 @@ covergroup ExceptionsVls_vluxei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -15583,7 +15583,7 @@ covergroup ExceptionsVls_vluxei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -15701,8 +15701,8 @@ covergroup ExceptionsVls_vluxei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -15718,7 +15718,7 @@ covergroup ExceptionsVls_vluxei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -15836,8 +15836,8 @@ covergroup ExceptionsVls_vluxei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -15853,7 +15853,7 @@ covergroup ExceptionsVls_vluxei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -15952,8 +15952,8 @@ covergroup ExceptionsVls_vluxseg2ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg2ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg2ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -15969,7 +15969,7 @@ covergroup ExceptionsVls_vluxseg2ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg2ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -16086,8 +16086,8 @@ covergroup ExceptionsVls_vluxseg2ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg2ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg2ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -16103,7 +16103,7 @@ covergroup ExceptionsVls_vluxseg2ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg2ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -16221,8 +16221,8 @@ covergroup ExceptionsVls_vluxseg2ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg2ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg2ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -16238,7 +16238,7 @@ covergroup ExceptionsVls_vluxseg2ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg2ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -16356,8 +16356,8 @@ covergroup ExceptionsVls_vluxseg2ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg2ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg2ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -16373,7 +16373,7 @@ covergroup ExceptionsVls_vluxseg2ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg2ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -16472,8 +16472,8 @@ covergroup ExceptionsVls_vluxseg3ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg3ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg3ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -16489,7 +16489,7 @@ covergroup ExceptionsVls_vluxseg3ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg3ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -16606,8 +16606,8 @@ covergroup ExceptionsVls_vluxseg3ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg3ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg3ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -16623,7 +16623,7 @@ covergroup ExceptionsVls_vluxseg3ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg3ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -16741,8 +16741,8 @@ covergroup ExceptionsVls_vluxseg3ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg3ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg3ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -16758,7 +16758,7 @@ covergroup ExceptionsVls_vluxseg3ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg3ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -16876,8 +16876,8 @@ covergroup ExceptionsVls_vluxseg3ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg3ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg3ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -16893,7 +16893,7 @@ covergroup ExceptionsVls_vluxseg3ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg3ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -16992,8 +16992,8 @@ covergroup ExceptionsVls_vluxseg4ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg4ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg4ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -17009,7 +17009,7 @@ covergroup ExceptionsVls_vluxseg4ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg4ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -17126,8 +17126,8 @@ covergroup ExceptionsVls_vluxseg4ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg4ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg4ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -17143,7 +17143,7 @@ covergroup ExceptionsVls_vluxseg4ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg4ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -17261,8 +17261,8 @@ covergroup ExceptionsVls_vluxseg4ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg4ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg4ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -17278,7 +17278,7 @@ covergroup ExceptionsVls_vluxseg4ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg4ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -17396,8 +17396,8 @@ covergroup ExceptionsVls_vluxseg4ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg4ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg4ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -17413,7 +17413,7 @@ covergroup ExceptionsVls_vluxseg4ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg4ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -17512,8 +17512,8 @@ covergroup ExceptionsVls_vluxseg5ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg5ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg5ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -17529,7 +17529,7 @@ covergroup ExceptionsVls_vluxseg5ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg5ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -17646,8 +17646,8 @@ covergroup ExceptionsVls_vluxseg5ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg5ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg5ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -17663,7 +17663,7 @@ covergroup ExceptionsVls_vluxseg5ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg5ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -17781,8 +17781,8 @@ covergroup ExceptionsVls_vluxseg5ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg5ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg5ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -17798,7 +17798,7 @@ covergroup ExceptionsVls_vluxseg5ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg5ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -17916,8 +17916,8 @@ covergroup ExceptionsVls_vluxseg5ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg5ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg5ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -17933,7 +17933,7 @@ covergroup ExceptionsVls_vluxseg5ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg5ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -18032,8 +18032,8 @@ covergroup ExceptionsVls_vluxseg6ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg6ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg6ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -18049,7 +18049,7 @@ covergroup ExceptionsVls_vluxseg6ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg6ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -18166,8 +18166,8 @@ covergroup ExceptionsVls_vluxseg6ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg6ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg6ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -18183,7 +18183,7 @@ covergroup ExceptionsVls_vluxseg6ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg6ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -18301,8 +18301,8 @@ covergroup ExceptionsVls_vluxseg6ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg6ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg6ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -18318,7 +18318,7 @@ covergroup ExceptionsVls_vluxseg6ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg6ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -18436,8 +18436,8 @@ covergroup ExceptionsVls_vluxseg6ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg6ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg6ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -18453,7 +18453,7 @@ covergroup ExceptionsVls_vluxseg6ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg6ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -18552,8 +18552,8 @@ covergroup ExceptionsVls_vluxseg7ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg7ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg7ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -18569,7 +18569,7 @@ covergroup ExceptionsVls_vluxseg7ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg7ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -18686,8 +18686,8 @@ covergroup ExceptionsVls_vluxseg7ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg7ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg7ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -18703,7 +18703,7 @@ covergroup ExceptionsVls_vluxseg7ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg7ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -18821,8 +18821,8 @@ covergroup ExceptionsVls_vluxseg7ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg7ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg7ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -18838,7 +18838,7 @@ covergroup ExceptionsVls_vluxseg7ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg7ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -18956,8 +18956,8 @@ covergroup ExceptionsVls_vluxseg7ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg7ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg7ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -18973,7 +18973,7 @@ covergroup ExceptionsVls_vluxseg7ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg7ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -19072,8 +19072,8 @@ covergroup ExceptionsVls_vluxseg8ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg8ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg8ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -19089,7 +19089,7 @@ covergroup ExceptionsVls_vluxseg8ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg8ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -19206,8 +19206,8 @@ covergroup ExceptionsVls_vluxseg8ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg8ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg8ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -19223,7 +19223,7 @@ covergroup ExceptionsVls_vluxseg8ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg8ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -19341,8 +19341,8 @@ covergroup ExceptionsVls_vluxseg8ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg8ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg8ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -19358,7 +19358,7 @@ covergroup ExceptionsVls_vluxseg8ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg8ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -19476,8 +19476,8 @@ covergroup ExceptionsVls_vluxseg8ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vluxseg8ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vluxseg8ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -19493,7 +19493,7 @@ covergroup ExceptionsVls_vluxseg8ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vluxseg8ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -19592,8 +19592,8 @@ covergroup ExceptionsVls_vs1r_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vs1r.vUCTION, not during memory access.
-    // Accept ILLEGAL_vs1r.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -19609,7 +19609,7 @@ covergroup ExceptionsVls_vs1r_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vs1r.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -19686,8 +19686,8 @@ covergroup ExceptionsVls_vs2r_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vs2r.vUCTION, not during memory access.
-    // Accept ILLEGAL_vs2r.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -19703,7 +19703,7 @@ covergroup ExceptionsVls_vs2r_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vs2r.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -19780,8 +19780,8 @@ covergroup ExceptionsVls_vs4r_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vs4r.vUCTION, not during memory access.
-    // Accept ILLEGAL_vs4r.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -19797,7 +19797,7 @@ covergroup ExceptionsVls_vs4r_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vs4r.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -19874,8 +19874,8 @@ covergroup ExceptionsVls_vs8r_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vs8r.vUCTION, not during memory access.
-    // Accept ILLEGAL_vs8r.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -19891,7 +19891,7 @@ covergroup ExceptionsVls_vs8r_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vs8r.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -19968,8 +19968,8 @@ covergroup ExceptionsVls_vse16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vse16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vse16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -19985,7 +19985,7 @@ covergroup ExceptionsVls_vse16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vse16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -20062,8 +20062,8 @@ covergroup ExceptionsVls_vse32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vse32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vse32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -20079,7 +20079,7 @@ covergroup ExceptionsVls_vse32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vse32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -20156,8 +20156,8 @@ covergroup ExceptionsVls_vse64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vse64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vse64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -20173,7 +20173,7 @@ covergroup ExceptionsVls_vse64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vse64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -20250,8 +20250,8 @@ covergroup ExceptionsVls_vse8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vse8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vse8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -20267,7 +20267,7 @@ covergroup ExceptionsVls_vse8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vse8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -20344,8 +20344,8 @@ covergroup ExceptionsVls_vsm_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsm.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsm.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -20361,7 +20361,7 @@ covergroup ExceptionsVls_vsm_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsm.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -20438,8 +20438,8 @@ covergroup ExceptionsVls_vsoxei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -20455,7 +20455,7 @@ covergroup ExceptionsVls_vsoxei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -20572,8 +20572,8 @@ covergroup ExceptionsVls_vsoxei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -20589,7 +20589,7 @@ covergroup ExceptionsVls_vsoxei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -20707,8 +20707,8 @@ covergroup ExceptionsVls_vsoxei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -20724,7 +20724,7 @@ covergroup ExceptionsVls_vsoxei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -20842,8 +20842,8 @@ covergroup ExceptionsVls_vsoxei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -20859,7 +20859,7 @@ covergroup ExceptionsVls_vsoxei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -20958,8 +20958,8 @@ covergroup ExceptionsVls_vsoxseg2ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg2ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg2ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -20975,7 +20975,7 @@ covergroup ExceptionsVls_vsoxseg2ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg2ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -21092,8 +21092,8 @@ covergroup ExceptionsVls_vsoxseg2ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg2ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg2ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -21109,7 +21109,7 @@ covergroup ExceptionsVls_vsoxseg2ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg2ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -21227,8 +21227,8 @@ covergroup ExceptionsVls_vsoxseg2ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg2ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg2ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -21244,7 +21244,7 @@ covergroup ExceptionsVls_vsoxseg2ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg2ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -21362,8 +21362,8 @@ covergroup ExceptionsVls_vsoxseg2ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg2ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg2ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -21379,7 +21379,7 @@ covergroup ExceptionsVls_vsoxseg2ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg2ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -21478,8 +21478,8 @@ covergroup ExceptionsVls_vsoxseg3ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg3ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg3ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -21495,7 +21495,7 @@ covergroup ExceptionsVls_vsoxseg3ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg3ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -21612,8 +21612,8 @@ covergroup ExceptionsVls_vsoxseg3ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg3ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg3ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -21629,7 +21629,7 @@ covergroup ExceptionsVls_vsoxseg3ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg3ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -21747,8 +21747,8 @@ covergroup ExceptionsVls_vsoxseg3ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg3ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg3ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -21764,7 +21764,7 @@ covergroup ExceptionsVls_vsoxseg3ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg3ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -21882,8 +21882,8 @@ covergroup ExceptionsVls_vsoxseg3ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg3ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg3ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -21899,7 +21899,7 @@ covergroup ExceptionsVls_vsoxseg3ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg3ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -21998,8 +21998,8 @@ covergroup ExceptionsVls_vsoxseg4ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg4ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg4ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -22015,7 +22015,7 @@ covergroup ExceptionsVls_vsoxseg4ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg4ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -22132,8 +22132,8 @@ covergroup ExceptionsVls_vsoxseg4ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg4ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg4ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -22149,7 +22149,7 @@ covergroup ExceptionsVls_vsoxseg4ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg4ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -22267,8 +22267,8 @@ covergroup ExceptionsVls_vsoxseg4ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg4ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg4ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -22284,7 +22284,7 @@ covergroup ExceptionsVls_vsoxseg4ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg4ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -22402,8 +22402,8 @@ covergroup ExceptionsVls_vsoxseg4ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg4ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg4ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -22419,7 +22419,7 @@ covergroup ExceptionsVls_vsoxseg4ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg4ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -22518,8 +22518,8 @@ covergroup ExceptionsVls_vsoxseg5ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg5ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg5ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -22535,7 +22535,7 @@ covergroup ExceptionsVls_vsoxseg5ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg5ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -22652,8 +22652,8 @@ covergroup ExceptionsVls_vsoxseg5ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg5ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg5ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -22669,7 +22669,7 @@ covergroup ExceptionsVls_vsoxseg5ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg5ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -22787,8 +22787,8 @@ covergroup ExceptionsVls_vsoxseg5ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg5ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg5ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -22804,7 +22804,7 @@ covergroup ExceptionsVls_vsoxseg5ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg5ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -22922,8 +22922,8 @@ covergroup ExceptionsVls_vsoxseg5ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg5ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg5ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -22939,7 +22939,7 @@ covergroup ExceptionsVls_vsoxseg5ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg5ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -23038,8 +23038,8 @@ covergroup ExceptionsVls_vsoxseg6ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg6ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg6ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -23055,7 +23055,7 @@ covergroup ExceptionsVls_vsoxseg6ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg6ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -23172,8 +23172,8 @@ covergroup ExceptionsVls_vsoxseg6ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg6ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg6ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -23189,7 +23189,7 @@ covergroup ExceptionsVls_vsoxseg6ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg6ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -23307,8 +23307,8 @@ covergroup ExceptionsVls_vsoxseg6ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg6ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg6ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -23324,7 +23324,7 @@ covergroup ExceptionsVls_vsoxseg6ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg6ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -23442,8 +23442,8 @@ covergroup ExceptionsVls_vsoxseg6ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg6ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg6ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -23459,7 +23459,7 @@ covergroup ExceptionsVls_vsoxseg6ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg6ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -23558,8 +23558,8 @@ covergroup ExceptionsVls_vsoxseg7ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg7ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg7ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -23575,7 +23575,7 @@ covergroup ExceptionsVls_vsoxseg7ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg7ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -23692,8 +23692,8 @@ covergroup ExceptionsVls_vsoxseg7ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg7ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg7ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -23709,7 +23709,7 @@ covergroup ExceptionsVls_vsoxseg7ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg7ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -23827,8 +23827,8 @@ covergroup ExceptionsVls_vsoxseg7ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg7ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg7ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -23844,7 +23844,7 @@ covergroup ExceptionsVls_vsoxseg7ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg7ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -23962,8 +23962,8 @@ covergroup ExceptionsVls_vsoxseg7ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg7ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg7ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -23979,7 +23979,7 @@ covergroup ExceptionsVls_vsoxseg7ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg7ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -24078,8 +24078,8 @@ covergroup ExceptionsVls_vsoxseg8ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg8ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg8ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -24095,7 +24095,7 @@ covergroup ExceptionsVls_vsoxseg8ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg8ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -24212,8 +24212,8 @@ covergroup ExceptionsVls_vsoxseg8ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg8ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg8ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -24229,7 +24229,7 @@ covergroup ExceptionsVls_vsoxseg8ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg8ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -24347,8 +24347,8 @@ covergroup ExceptionsVls_vsoxseg8ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg8ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg8ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -24364,7 +24364,7 @@ covergroup ExceptionsVls_vsoxseg8ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg8ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -24482,8 +24482,8 @@ covergroup ExceptionsVls_vsoxseg8ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsoxseg8ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsoxseg8ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -24499,7 +24499,7 @@ covergroup ExceptionsVls_vsoxseg8ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsoxseg8ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -24598,8 +24598,8 @@ covergroup ExceptionsVls_vsse16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsse16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsse16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -24615,7 +24615,7 @@ covergroup ExceptionsVls_vsse16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsse16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -24692,8 +24692,8 @@ covergroup ExceptionsVls_vsse32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsse32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsse32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -24709,7 +24709,7 @@ covergroup ExceptionsVls_vsse32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsse32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -24786,8 +24786,8 @@ covergroup ExceptionsVls_vsse64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsse64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsse64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -24803,7 +24803,7 @@ covergroup ExceptionsVls_vsse64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsse64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -24880,8 +24880,8 @@ covergroup ExceptionsVls_vsse8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsse8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsse8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -24897,7 +24897,7 @@ covergroup ExceptionsVls_vsse8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsse8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -24974,8 +24974,8 @@ covergroup ExceptionsVls_vsseg2e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg2e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg2e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -24991,7 +24991,7 @@ covergroup ExceptionsVls_vsseg2e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg2e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -25068,8 +25068,8 @@ covergroup ExceptionsVls_vsseg2e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg2e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg2e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -25085,7 +25085,7 @@ covergroup ExceptionsVls_vsseg2e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg2e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -25162,8 +25162,8 @@ covergroup ExceptionsVls_vsseg2e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg2e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg2e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -25179,7 +25179,7 @@ covergroup ExceptionsVls_vsseg2e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg2e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -25256,8 +25256,8 @@ covergroup ExceptionsVls_vsseg2e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg2e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg2e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -25273,7 +25273,7 @@ covergroup ExceptionsVls_vsseg2e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg2e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -25350,8 +25350,8 @@ covergroup ExceptionsVls_vsseg3e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg3e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg3e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -25367,7 +25367,7 @@ covergroup ExceptionsVls_vsseg3e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg3e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -25444,8 +25444,8 @@ covergroup ExceptionsVls_vsseg3e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg3e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg3e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -25461,7 +25461,7 @@ covergroup ExceptionsVls_vsseg3e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg3e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -25538,8 +25538,8 @@ covergroup ExceptionsVls_vsseg3e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg3e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg3e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -25555,7 +25555,7 @@ covergroup ExceptionsVls_vsseg3e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg3e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -25632,8 +25632,8 @@ covergroup ExceptionsVls_vsseg3e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg3e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg3e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -25649,7 +25649,7 @@ covergroup ExceptionsVls_vsseg3e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg3e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -25726,8 +25726,8 @@ covergroup ExceptionsVls_vsseg4e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg4e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg4e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -25743,7 +25743,7 @@ covergroup ExceptionsVls_vsseg4e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg4e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -25820,8 +25820,8 @@ covergroup ExceptionsVls_vsseg4e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg4e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg4e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -25837,7 +25837,7 @@ covergroup ExceptionsVls_vsseg4e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg4e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -25914,8 +25914,8 @@ covergroup ExceptionsVls_vsseg4e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg4e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg4e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -25931,7 +25931,7 @@ covergroup ExceptionsVls_vsseg4e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg4e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -26008,8 +26008,8 @@ covergroup ExceptionsVls_vsseg4e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg4e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg4e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -26025,7 +26025,7 @@ covergroup ExceptionsVls_vsseg4e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg4e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -26102,8 +26102,8 @@ covergroup ExceptionsVls_vsseg5e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg5e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg5e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -26119,7 +26119,7 @@ covergroup ExceptionsVls_vsseg5e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg5e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -26196,8 +26196,8 @@ covergroup ExceptionsVls_vsseg5e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg5e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg5e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -26213,7 +26213,7 @@ covergroup ExceptionsVls_vsseg5e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg5e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -26290,8 +26290,8 @@ covergroup ExceptionsVls_vsseg5e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg5e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg5e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -26307,7 +26307,7 @@ covergroup ExceptionsVls_vsseg5e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg5e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -26384,8 +26384,8 @@ covergroup ExceptionsVls_vsseg5e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg5e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg5e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -26401,7 +26401,7 @@ covergroup ExceptionsVls_vsseg5e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg5e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -26478,8 +26478,8 @@ covergroup ExceptionsVls_vsseg6e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg6e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg6e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -26495,7 +26495,7 @@ covergroup ExceptionsVls_vsseg6e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg6e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -26572,8 +26572,8 @@ covergroup ExceptionsVls_vsseg6e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg6e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg6e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -26589,7 +26589,7 @@ covergroup ExceptionsVls_vsseg6e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg6e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -26666,8 +26666,8 @@ covergroup ExceptionsVls_vsseg6e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg6e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg6e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -26683,7 +26683,7 @@ covergroup ExceptionsVls_vsseg6e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg6e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -26760,8 +26760,8 @@ covergroup ExceptionsVls_vsseg6e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg6e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg6e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -26777,7 +26777,7 @@ covergroup ExceptionsVls_vsseg6e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg6e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -26854,8 +26854,8 @@ covergroup ExceptionsVls_vsseg7e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg7e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg7e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -26871,7 +26871,7 @@ covergroup ExceptionsVls_vsseg7e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg7e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -26948,8 +26948,8 @@ covergroup ExceptionsVls_vsseg7e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg7e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg7e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -26965,7 +26965,7 @@ covergroup ExceptionsVls_vsseg7e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg7e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -27042,8 +27042,8 @@ covergroup ExceptionsVls_vsseg7e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg7e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg7e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -27059,7 +27059,7 @@ covergroup ExceptionsVls_vsseg7e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg7e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -27136,8 +27136,8 @@ covergroup ExceptionsVls_vsseg7e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg7e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg7e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -27153,7 +27153,7 @@ covergroup ExceptionsVls_vsseg7e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg7e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -27230,8 +27230,8 @@ covergroup ExceptionsVls_vsseg8e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg8e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg8e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -27247,7 +27247,7 @@ covergroup ExceptionsVls_vsseg8e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg8e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -27324,8 +27324,8 @@ covergroup ExceptionsVls_vsseg8e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg8e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg8e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -27341,7 +27341,7 @@ covergroup ExceptionsVls_vsseg8e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg8e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -27418,8 +27418,8 @@ covergroup ExceptionsVls_vsseg8e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg8e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg8e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -27435,7 +27435,7 @@ covergroup ExceptionsVls_vsseg8e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg8e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -27512,8 +27512,8 @@ covergroup ExceptionsVls_vsseg8e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsseg8e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsseg8e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -27529,7 +27529,7 @@ covergroup ExceptionsVls_vsseg8e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsseg8e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -27606,8 +27606,8 @@ covergroup ExceptionsVls_vssseg2e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg2e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg2e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -27623,7 +27623,7 @@ covergroup ExceptionsVls_vssseg2e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg2e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -27700,8 +27700,8 @@ covergroup ExceptionsVls_vssseg2e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg2e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg2e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -27717,7 +27717,7 @@ covergroup ExceptionsVls_vssseg2e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg2e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -27794,8 +27794,8 @@ covergroup ExceptionsVls_vssseg2e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg2e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg2e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -27811,7 +27811,7 @@ covergroup ExceptionsVls_vssseg2e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg2e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -27888,8 +27888,8 @@ covergroup ExceptionsVls_vssseg2e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg2e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg2e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -27905,7 +27905,7 @@ covergroup ExceptionsVls_vssseg2e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg2e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -27982,8 +27982,8 @@ covergroup ExceptionsVls_vssseg3e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg3e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg3e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -27999,7 +27999,7 @@ covergroup ExceptionsVls_vssseg3e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg3e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -28076,8 +28076,8 @@ covergroup ExceptionsVls_vssseg3e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg3e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg3e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -28093,7 +28093,7 @@ covergroup ExceptionsVls_vssseg3e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg3e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -28170,8 +28170,8 @@ covergroup ExceptionsVls_vssseg3e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg3e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg3e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -28187,7 +28187,7 @@ covergroup ExceptionsVls_vssseg3e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg3e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -28264,8 +28264,8 @@ covergroup ExceptionsVls_vssseg3e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg3e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg3e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -28281,7 +28281,7 @@ covergroup ExceptionsVls_vssseg3e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg3e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -28358,8 +28358,8 @@ covergroup ExceptionsVls_vssseg4e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg4e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg4e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -28375,7 +28375,7 @@ covergroup ExceptionsVls_vssseg4e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg4e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -28452,8 +28452,8 @@ covergroup ExceptionsVls_vssseg4e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg4e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg4e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -28469,7 +28469,7 @@ covergroup ExceptionsVls_vssseg4e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg4e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -28546,8 +28546,8 @@ covergroup ExceptionsVls_vssseg4e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg4e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg4e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -28563,7 +28563,7 @@ covergroup ExceptionsVls_vssseg4e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg4e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -28640,8 +28640,8 @@ covergroup ExceptionsVls_vssseg4e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg4e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg4e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -28657,7 +28657,7 @@ covergroup ExceptionsVls_vssseg4e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg4e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -28734,8 +28734,8 @@ covergroup ExceptionsVls_vssseg5e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg5e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg5e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -28751,7 +28751,7 @@ covergroup ExceptionsVls_vssseg5e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg5e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -28828,8 +28828,8 @@ covergroup ExceptionsVls_vssseg5e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg5e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg5e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -28845,7 +28845,7 @@ covergroup ExceptionsVls_vssseg5e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg5e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -28922,8 +28922,8 @@ covergroup ExceptionsVls_vssseg5e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg5e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg5e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -28939,7 +28939,7 @@ covergroup ExceptionsVls_vssseg5e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg5e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -29016,8 +29016,8 @@ covergroup ExceptionsVls_vssseg5e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg5e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg5e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -29033,7 +29033,7 @@ covergroup ExceptionsVls_vssseg5e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg5e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -29110,8 +29110,8 @@ covergroup ExceptionsVls_vssseg6e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg6e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg6e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -29127,7 +29127,7 @@ covergroup ExceptionsVls_vssseg6e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg6e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -29204,8 +29204,8 @@ covergroup ExceptionsVls_vssseg6e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg6e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg6e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -29221,7 +29221,7 @@ covergroup ExceptionsVls_vssseg6e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg6e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -29298,8 +29298,8 @@ covergroup ExceptionsVls_vssseg6e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg6e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg6e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -29315,7 +29315,7 @@ covergroup ExceptionsVls_vssseg6e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg6e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -29392,8 +29392,8 @@ covergroup ExceptionsVls_vssseg6e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg6e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg6e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -29409,7 +29409,7 @@ covergroup ExceptionsVls_vssseg6e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg6e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -29486,8 +29486,8 @@ covergroup ExceptionsVls_vssseg7e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg7e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg7e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -29503,7 +29503,7 @@ covergroup ExceptionsVls_vssseg7e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg7e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -29580,8 +29580,8 @@ covergroup ExceptionsVls_vssseg7e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg7e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg7e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -29597,7 +29597,7 @@ covergroup ExceptionsVls_vssseg7e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg7e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -29674,8 +29674,8 @@ covergroup ExceptionsVls_vssseg7e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg7e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg7e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -29691,7 +29691,7 @@ covergroup ExceptionsVls_vssseg7e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg7e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -29768,8 +29768,8 @@ covergroup ExceptionsVls_vssseg7e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg7e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg7e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -29785,7 +29785,7 @@ covergroup ExceptionsVls_vssseg7e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg7e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -29862,8 +29862,8 @@ covergroup ExceptionsVls_vssseg8e16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg8e16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg8e16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -29879,7 +29879,7 @@ covergroup ExceptionsVls_vssseg8e16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg8e16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -29956,8 +29956,8 @@ covergroup ExceptionsVls_vssseg8e32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg8e32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg8e32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -29973,7 +29973,7 @@ covergroup ExceptionsVls_vssseg8e32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg8e32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -30050,8 +30050,8 @@ covergroup ExceptionsVls_vssseg8e64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg8e64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg8e64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -30067,7 +30067,7 @@ covergroup ExceptionsVls_vssseg8e64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg8e64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -30144,8 +30144,8 @@ covergroup ExceptionsVls_vssseg8e8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vssseg8e8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vssseg8e8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -30161,7 +30161,7 @@ covergroup ExceptionsVls_vssseg8e8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vssseg8e8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -30238,8 +30238,8 @@ covergroup ExceptionsVls_vsuxei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -30255,7 +30255,7 @@ covergroup ExceptionsVls_vsuxei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -30372,8 +30372,8 @@ covergroup ExceptionsVls_vsuxei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -30389,7 +30389,7 @@ covergroup ExceptionsVls_vsuxei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -30507,8 +30507,8 @@ covergroup ExceptionsVls_vsuxei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -30524,7 +30524,7 @@ covergroup ExceptionsVls_vsuxei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -30642,8 +30642,8 @@ covergroup ExceptionsVls_vsuxei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -30659,7 +30659,7 @@ covergroup ExceptionsVls_vsuxei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -30758,8 +30758,8 @@ covergroup ExceptionsVls_vsuxseg2ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg2ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg2ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -30775,7 +30775,7 @@ covergroup ExceptionsVls_vsuxseg2ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg2ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -30892,8 +30892,8 @@ covergroup ExceptionsVls_vsuxseg2ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg2ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg2ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -30909,7 +30909,7 @@ covergroup ExceptionsVls_vsuxseg2ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg2ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -31027,8 +31027,8 @@ covergroup ExceptionsVls_vsuxseg2ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg2ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg2ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -31044,7 +31044,7 @@ covergroup ExceptionsVls_vsuxseg2ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg2ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -31162,8 +31162,8 @@ covergroup ExceptionsVls_vsuxseg2ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg2ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg2ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -31179,7 +31179,7 @@ covergroup ExceptionsVls_vsuxseg2ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg2ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -31278,8 +31278,8 @@ covergroup ExceptionsVls_vsuxseg3ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg3ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg3ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -31295,7 +31295,7 @@ covergroup ExceptionsVls_vsuxseg3ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg3ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -31412,8 +31412,8 @@ covergroup ExceptionsVls_vsuxseg3ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg3ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg3ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -31429,7 +31429,7 @@ covergroup ExceptionsVls_vsuxseg3ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg3ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -31547,8 +31547,8 @@ covergroup ExceptionsVls_vsuxseg3ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg3ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg3ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -31564,7 +31564,7 @@ covergroup ExceptionsVls_vsuxseg3ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg3ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -31682,8 +31682,8 @@ covergroup ExceptionsVls_vsuxseg3ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg3ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg3ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -31699,7 +31699,7 @@ covergroup ExceptionsVls_vsuxseg3ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg3ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -31798,8 +31798,8 @@ covergroup ExceptionsVls_vsuxseg4ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg4ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg4ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -31815,7 +31815,7 @@ covergroup ExceptionsVls_vsuxseg4ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg4ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -31932,8 +31932,8 @@ covergroup ExceptionsVls_vsuxseg4ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg4ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg4ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -31949,7 +31949,7 @@ covergroup ExceptionsVls_vsuxseg4ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg4ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -32067,8 +32067,8 @@ covergroup ExceptionsVls_vsuxseg4ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg4ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg4ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -32084,7 +32084,7 @@ covergroup ExceptionsVls_vsuxseg4ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg4ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -32202,8 +32202,8 @@ covergroup ExceptionsVls_vsuxseg4ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg4ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg4ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -32219,7 +32219,7 @@ covergroup ExceptionsVls_vsuxseg4ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg4ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -32318,8 +32318,8 @@ covergroup ExceptionsVls_vsuxseg5ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg5ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg5ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -32335,7 +32335,7 @@ covergroup ExceptionsVls_vsuxseg5ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg5ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -32452,8 +32452,8 @@ covergroup ExceptionsVls_vsuxseg5ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg5ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg5ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -32469,7 +32469,7 @@ covergroup ExceptionsVls_vsuxseg5ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg5ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -32587,8 +32587,8 @@ covergroup ExceptionsVls_vsuxseg5ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg5ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg5ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -32604,7 +32604,7 @@ covergroup ExceptionsVls_vsuxseg5ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg5ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -32722,8 +32722,8 @@ covergroup ExceptionsVls_vsuxseg5ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg5ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg5ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -32739,7 +32739,7 @@ covergroup ExceptionsVls_vsuxseg5ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg5ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -32838,8 +32838,8 @@ covergroup ExceptionsVls_vsuxseg6ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg6ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg6ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -32855,7 +32855,7 @@ covergroup ExceptionsVls_vsuxseg6ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg6ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -32972,8 +32972,8 @@ covergroup ExceptionsVls_vsuxseg6ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg6ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg6ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -32989,7 +32989,7 @@ covergroup ExceptionsVls_vsuxseg6ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg6ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -33107,8 +33107,8 @@ covergroup ExceptionsVls_vsuxseg6ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg6ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg6ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -33124,7 +33124,7 @@ covergroup ExceptionsVls_vsuxseg6ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg6ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -33242,8 +33242,8 @@ covergroup ExceptionsVls_vsuxseg6ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg6ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg6ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -33259,7 +33259,7 @@ covergroup ExceptionsVls_vsuxseg6ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg6ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -33358,8 +33358,8 @@ covergroup ExceptionsVls_vsuxseg7ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg7ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg7ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -33375,7 +33375,7 @@ covergroup ExceptionsVls_vsuxseg7ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg7ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -33492,8 +33492,8 @@ covergroup ExceptionsVls_vsuxseg7ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg7ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg7ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -33509,7 +33509,7 @@ covergroup ExceptionsVls_vsuxseg7ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg7ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -33627,8 +33627,8 @@ covergroup ExceptionsVls_vsuxseg7ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg7ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg7ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -33644,7 +33644,7 @@ covergroup ExceptionsVls_vsuxseg7ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg7ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -33762,8 +33762,8 @@ covergroup ExceptionsVls_vsuxseg7ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg7ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg7ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -33779,7 +33779,7 @@ covergroup ExceptionsVls_vsuxseg7ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg7ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -33878,8 +33878,8 @@ covergroup ExceptionsVls_vsuxseg8ei16_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg8ei16.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg8ei16.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -33895,7 +33895,7 @@ covergroup ExceptionsVls_vsuxseg8ei16_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg8ei16.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -34012,8 +34012,8 @@ covergroup ExceptionsVls_vsuxseg8ei32_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg8ei32.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg8ei32.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -34029,7 +34029,7 @@ covergroup ExceptionsVls_vsuxseg8ei32_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg8ei32.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -34147,8 +34147,8 @@ covergroup ExceptionsVls_vsuxseg8ei64_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg8ei64.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg8ei64.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -34164,7 +34164,7 @@ covergroup ExceptionsVls_vsuxseg8ei64_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg8ei64.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};
@@ -34282,8 +34282,8 @@ covergroup ExceptionsVls_vsuxseg8ei8_v_cg with function sample(ins_t ins);
 
     // Main condition: instruction trapped (load/store access or page fault detected via mcause).
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
-    // traps at decode with ILLEGAL_vsuxseg8ei8.vUCTION, not during memory access.
-    // Accept ILLEGAL_vsuxseg8ei8.vUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
     trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
@@ -34299,7 +34299,7 @@ covergroup ExceptionsVls_vsuxseg8ei8_v_cg with function sample(ins_t ins);
                `endif
                `endif
            } &&
-           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_vsuxseg8ei8.vUCTION)
+           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
         `endif
     ) {
         bins trapped = {1'b1};

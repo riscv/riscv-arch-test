@@ -391,10 +391,11 @@ def customize_template(templates: dict[str, str], name: str, arch: str = "", ins
     arch_prefix = re.sub(r"\d+$", "", arch)
 
     def substitute(text: str) -> str:
+        text = text.replace("INSTRNODOT", instr.replace(".", "_"))
+        # Leave names such as ILLEGAL_INSTRUCTION and CSR_INSTRET alone.
+        text = re.sub(r"INSTR(?![A-Z])", lambda _: instr, text)
         text = (
-            text.replace("INSTRNODOT", instr.replace(".", "_"))
-            .replace("INSTR", instr)
-            .replace("ARCHPREFIXUPPER", arch_prefix.upper())
+            text.replace("ARCHPREFIXUPPER", arch_prefix.upper())
             .replace("ARCHPREFIX", arch_prefix)
             .replace("ARCHUPPER", arch.upper())
             .replace("ARCHCASE", arch)

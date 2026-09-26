@@ -85,6 +85,11 @@ The script reports:
 - **Traps:**
   - any trap in an unprivileged suite
   - each config whose trap sequence (mode, cause, and testcase label) differs from `sail-rv32-max` or `sail-rv64-max`, with the first divergence
+- **Size, instructions and traps per config:** for every test on every config, the ELF's loadable bytes, the dynamic instruction count and the number of traps taken, both on the DUT (from its `DEBUG=True` trace) and on the reference model under that config (from the `.sig.trace`).
+  - Counting stops at `rvmodel_halt_pass`/`rvmodel_halt_fail`, so a simulator's halt latency is excluded. Spike, for example, spins about 4,000 instructions in `write_tohost_pass` before it notices `tohost`.
+  - Traps are counted at the `trap_[MSV]handler` entry points. They include the framework's own ecalls (boot, T-SBI, mode changes), so even unprivileged suites show a few.
+  - It reports each config's usual overhead once, then any test that departs from its config's usual overhead, each config's DUT/reference trap counts, and any test over 100,000 dynamic instructions, which should be split into more files.
+  - `--metrics-csv FILE` writes the per-test table for deeper digging.
 
 Every line is a lead to confirm in step 6, not a finding. `li`/`la` misuse is caught by prek, not by this script.
 
@@ -220,3 +225,6 @@ Start from the script's parameter list. Each parameter falls into one of three k
 - **Traps:**
   - Compare the expected traps against the testplan. Flag traps the testplan doesn't expect, or that go against the spirit of the test.
   - A configuration whose expected traps differ from the others can point to an error in that config's UDB yaml or `sail.json`, even when the DUT matches.
+  - Traps in the boot code are not recorded in the signature, so a DUT and reference model that disagree there still pass. The trap counts are the only place such a disagreement shows up.
+- **Outliers:** find the root cause of every outlier in size, instruction count or traps before deciding whether it matters. Compare per-PC execution counts between two traces and attribute the difference to symbols; that usually points straight at the cause (a halt loop, UART polling, a boot-time CSR that traps on one config).
+- **Test length:** recommend splitting any test over 100,000 dynamic instructions into more files.

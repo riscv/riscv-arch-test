@@ -11,7 +11,7 @@
 Mechanical review checks for one ACT suite.
 
 Usage:
-  review_checks.py <Suite> [--udb-param-dir DIR] [--ref-rv32 CFG] [--ref-rv64 CFG]
+  review_checks.py <Suite> [--udb-param-dir DIR] [--ref-rv32 CFG] [--ref-rv64 CFG] [--metrics-csv FILE]
 
 Run from the repository root after `EXTENSIONS=<Suite> make tests`. The trap and
 coverage sections use build outputs in work/ when they exist (trap reports need DEBUG=True).
@@ -338,12 +338,183 @@ def check_coverage(suite: str, covergroups: set[str]) -> list[str]:
     return out
 
 
+# Per-instruction PC patterns for each simulator's trace format.
+# Group 1 is the PC; group 2, when present, numbers the instruction so repeated lines count once.
+TRACE_PC_RES = (
+    re.compile(r"^core\s+\d+: \d 0x([0-9a-f]+) "),  # Spike --log-commits
+    re.compile(r"^#(?P<n>\d+) \d+\s+\S+\s+([0-9a-f]+) "),  # Whisper --log: one line per changed resource
+    re.compile(r"^Info (?P<n>\d+): '[^']+', 0x([0-9a-fA-F]+)"),  # Imperas --trace
+    re.compile(r"^\[\d+\] \[[^\]]+\]: 0x([0-9A-Fa-f]+) "),  # Sail --trace
+)
+QEMU_TB_RE = re.compile(r"^Trace \d+: \S+ \[[0-9a-f]+/([0-9a-f]+)/")
+QEMU_INSN_RE = re.compile(r"^0x([0-9a-f]+):\s")
+TRAP_ENTRY_RE = re.compile(r"^trap_[MSV]handler$|^trap_handler_fast\w+$")
+HALT_RE = re.compile(r"^rvmodel_halt_(?:pass|fail)$")
+PARTITION_LIMIT = 100_000
+
+
+def elf_symbols(elf: Path) -> tuple[set[int], set[int]]:
+    """Return the trap-entry and halt addresses of an ELF."""
+    result = subprocess.run(["riscv64-unknown-elf-nm", str(elf)], capture_output=True, text=True, check=True)
+    traps, halts = set(), set()
+    for line in result.stdout.splitlines():
+        fields = line.split()
+        if len(fields) == 3:
+            if TRAP_ENTRY_RE.match(fields[2]):
+                traps.add(int(fields[0], 16))
+            elif HALT_RE.match(fields[2]):
+                halts.add(int(fields[0], 16))
+    return traps, halts
+
+
+def elf_bytes(elf: Path) -> int:
+    """Loadable text + data bytes."""
+    result = subprocess.run(["riscv64-unknown-elf-size", str(elf)], capture_output=True, text=True, check=True)
+    text, data = result.stdout.splitlines()[1].split()[:2]
+    return int(text) + int(data)
+
+
+def trace_counts(trace: Path, elf: Path) -> tuple[int, int] | None:
+    """Count instructions and traps up to the halt routine, so simulator halt latency is excluded."""
+    traps_at, halts = elf_symbols(elf)
+    instrs = traps = 0
+    qemu_tb: dict[int, int] = {}
+    tb_pc = None
+    last_n = None
+    fmt = None
+    with trace.open(errors="replace") as f:
+        for line in f:
+            if fmt is None or fmt == "qemu":
+                if line.startswith("IN:"):
+                    fmt, tb_pc = "qemu", None
+                    continue
+                if fmt == "qemu":
+                    if m := QEMU_INSN_RE.match(line):
+                        pc = int(m.group(1), 16)
+                        if tb_pc is None:
+                            tb_pc, qemu_tb[pc] = pc, 0
+                        qemu_tb[tb_pc] += 1
+                        continue
+                    if m := QEMU_TB_RE.match(line):
+                        pc = int(m.group(1), 16)
+                        if pc in halts:
+                            break
+                        instrs += qemu_tb.get(pc, 0)
+                    elif line.startswith("riscv_cpu_do_interrupt"):
+                        traps += 1
+                    continue
+            if fmt is None:
+                fmt = next((r for r in TRACE_PC_RES if r.match(line)), None)
+                if fmt is None:
+                    continue
+            if isinstance(fmt, re.Pattern) and (m := fmt.match(line)):
+                if "n" in m.groupdict():
+                    if m.group("n") == last_n:
+                        continue
+                    last_n = m.group("n")
+                pc = int(m.group(m.re.groups), 16)
+                if pc in halts:
+                    break
+                instrs += 1
+                traps += pc in traps_at
+    return (instrs, traps) if fmt is not None else None
+
+
+def collect_metrics(suite: str) -> list[dict[str, object]]:
+    rows = []
+    for elf in sorted(ROOT.glob(f"work/*/elfs/*/{suite}/*.elf")):
+        cfg = elf.parts[len(ROOT.parts) + 1]
+        sub = elf.relative_to(ROOT / "work" / cfg / "elfs").with_suffix("")
+        row: dict[str, object] = {"config": cfg, "test": sub.name, "xlen": 32 if "rv32" in str(sub) else 64}
+        row["elf_bytes"] = elf_bytes(elf)
+        dut = ROOT / "work" / cfg / "logs" / f"{sub}.trace.log"
+        counts = trace_counts(dut, elf) if dut.exists() else None
+        row["instrs"], row["traps"] = counts if counts else (None, None)
+        sig_elf = ROOT / "work" / cfg / "build" / f"{sub}.sig.elf"
+        sig_trace = sig_elf.with_suffix(".trace")
+        ref = trace_counts(sig_trace, sig_elf) if sig_trace.exists() else None
+        row["ref_instrs"], row["ref_traps"] = ref if ref else (None, None)
+        rows.append(row)
+    return rows
+
+
+def median(values: list[int]) -> float:
+    v = sorted(values)
+    return (v[len(v) // 2] + v[(len(v) - 1) // 2]) / 2
+
+
+def check_metrics(suite: str, csv_path: Path | None) -> list[str]:
+    rows = collect_metrics(suite)
+    if not rows:
+        return ["no ELFs in work/; build the suite first (DUT traces need DEBUG=True)"]
+    if csv_path:
+        keys = list(rows[0])
+        csv_path.write_text("\n".join([",".join(keys)] + [",".join(str(r[k]) for k in keys) for r in rows]) + "\n")
+    out: list[str] = []
+    for xlen in sorted({int(r["xlen"]) for r in rows}):  # type: ignore[arg-type]
+        group = [r for r in rows if r["xlen"] == xlen]
+        tests = sorted({str(r["test"]) for r in group})
+        configs = sorted({str(r["config"]) for r in group})
+
+        def val(r: dict[str, object], key: str) -> int | None:
+            v = r[key]
+            return None if v is None else int(v)  # type: ignore[arg-type]
+
+        def instrs(r: dict[str, object]) -> int | None:
+            return val(r, "instrs") if val(r, "instrs") is not None else val(r, "ref_instrs")
+
+        all_i = [i for r in group if (i := instrs(r)) is not None]
+        out.append(
+            f"RV{xlen}: {len(tests)} tests x {len(configs)} configs; ELF bytes median "
+            f"{median([val(r, 'elf_bytes') or 0 for r in group]):.0f}; instructions median {median(all_i):.0f} "
+            f"max {max(all_i)}"
+        )
+        # Difference from each test's median. A config's fixed overhead (boot code, halt, extra traps)
+        # is reported once; a test is reported only when it departs from its config's usual overhead.
+        deltas: dict[tuple[str, str], dict[str, float]] = defaultdict(dict)
+        mids: dict[tuple[str, str], float] = {}
+        for key, get in (("instructions", instrs), ("ELF bytes", lambda r: val(r, "elf_bytes"))):
+            for test in tests:
+                vals = {str(r["config"]): v for r in group if r["test"] == test and (v := get(r)) is not None}
+                if len(vals) >= 3:
+                    mids[(key, test)] = mid = median(list(vals.values()))
+                    for cfg, v in vals.items():
+                        deltas[(key, cfg)][test] = v - mid
+        for (key, cfg), per_test in sorted(deltas.items()):
+            typical = median(list(per_test.values()))
+            scale = median([mids[(key, t)] for t in per_test])
+            if abs(typical) > max(0.2 * scale, 500):
+                out.append(f"RV{xlen} {cfg}: {key} typically {typical:+.0f} vs the per-test median")
+            for test, delta in sorted(per_test.items()):
+                if abs(delta - typical) > max(0.2 * mids[(key, test)], 500):
+                    out.append(
+                        f"RV{xlen} {test} {cfg}: {key} {delta:+.0f} vs median, unlike this config's usual {typical:+.0f}"
+                    )
+        for cfg in configs:
+            pats: dict[tuple[int | None, int | None], list[str]] = defaultdict(list)
+            for r in group:
+                if r["config"] == cfg:
+                    pats[(val(r, "traps"), val(r, "ref_traps"))].append(str(r["test"]))
+            desc = "; ".join(
+                f"DUT {d if d is not None else '-'} / ref {f if f is not None else '-'} in {len(t)} tests"
+                for (d, f), t in sorted(pats.items(), key=lambda kv: -len(kv[1]))
+            )
+            mismatch = any(d is not None and f is not None and d != f for d, f in pats)
+            out.append(f"RV{xlen} {cfg} traps: {desc}{'  <- DUT differs from reference' if mismatch else ''}")
+        for test in tests:
+            worst = max((i for r in group if r["test"] == test and (i := instrs(r)) is not None), default=0)
+            if worst > PARTITION_LIMIT:
+                out.append(f"RV{xlen} {test}: {worst} dynamic instructions > {PARTITION_LIMIT}; split into more files")
+    return out
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("suite")
     parser.add_argument("--udb-param-dir", type=Path, help="spec/std/isa/param of a riscv-unified-db checkout")
     parser.add_argument("--ref-rv32", default="sail-rv32-max")
     parser.add_argument("--ref-rv64", default="sail-rv64-max")
+    parser.add_argument("--metrics-csv", type=Path, help="write per-test, per-config metrics to this CSV file")
     args = parser.parse_args()
     if not (ROOT / "generators/testgen").is_dir():
         print("run from the riscv-arch-test repository root", file=sys.stderr)
@@ -367,6 +538,7 @@ def main() -> int:
     section("Normative-rule mapping", check_norm(suite, covergroups))
     section("Coverage", check_coverage(suite, covergroups))
     section("Traps (reference model under each config)", check_traps(suite, priv, args.ref_rv32, args.ref_rv64))
+    section("Size, instructions and traps per config", check_metrics(suite, args.metrics_csv))
     return 0
 
 

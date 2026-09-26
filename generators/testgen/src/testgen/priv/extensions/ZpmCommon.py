@@ -1001,7 +1001,7 @@ def pass_a_all_instructions(cfg: object | None, prefix: str, td: TestData, regs:
             lines += _probe_vec_store(mn, sew, template, rb, _tid(prefix, upper, mn), td, regs, cg)
         lines.append("#endif // ZVL32B_SUPPORTED")
 
-        lines.append("#ifdef ZVL64B_SUPPORTED")
+        lines.append("#ifdef ZVE64X_SUPPORTED")
         for mn, sew, template in VEC_READS:
             if sew <= 32:
                 continue
@@ -1010,7 +1010,7 @@ def pass_a_all_instructions(cfg: object | None, prefix: str, td: TestData, regs:
             if sew <= 32:
                 continue
             lines += _probe_vec_store(mn, sew, template, rb, _tid(prefix, upper, mn), td, regs, cg)
-        lines.append("#endif // ZVL64B_SUPPORTED")
+        lines.append("#endif // ZVE64X_SUPPORTED")
 
     return lines
 

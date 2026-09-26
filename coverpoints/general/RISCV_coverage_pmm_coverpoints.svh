@@ -157,8 +157,8 @@
             wildcard bins vlseg2e32_v = {VLSEG2E32_V};
         `endif // ZVL32B_SUPPORTED
 
-        `ifdef ZVL64B_SUPPORTED
-            // EEW = 64 (needs Zvl64b / Zve64*)
+        `ifdef ZVE64X_SUPPORTED
+            // EEW = 64 (needs Zve64x)
             wildcard bins vse64_v     = {VSE64_V};
             wildcard bins vsse64_v    = {VSSE64_V};
             wildcard bins vsuxei64_v  = {VSUXEI64_V};
@@ -170,7 +170,7 @@
             wildcard bins vloxei64_v  = {VLOXEI64_V};
             wildcard bins vl1r_v      = {VL1R_V};
             wildcard bins vle64ff_v   = {VLE64FF_V};
-        `endif // ZVL64B_SUPPORTED
+        `endif // ZVE64X_SUPPORTED
     }
 
     sw_lw_insn:  coverpoint ins.current.insn {

@@ -78,62 +78,52 @@ def _generate_page_table_data_section() -> list[str]:
     ]
 
 
-def _pf_identity_map_sv39() -> list[str]:
-    """Sv39 1 GiB identity superpage covering the code/data region.
+def _pf_identity_map(test_data: TestData) -> list[str]:
+    """Identity superpage covering the code/data region.
 
-    Hand-rolled (rather than `SUPERPAGE_PTE_SETUP_SV39`) because the framework
-    macro requires the VA to be a constant immediate, but we need to map
-    whatever PA the linker chose for `rvtest_code_begin` back to itself.
+    RV64/Sv39 uses a 1 GiB superpage (VPN[2], 8-byte PTEs); RV32/Sv32 uses a 4 MiB
+    superpage (VPN[1], 4-byte PTEs). Hand-rolled (rather than `SUPERPAGE_PTE_SETUP_SV*`)
+    because the framework macro requires the VA to be a constant immediate, but we need
+    to map whatever PA the linker chose for `rvtest_code_begin` back to itself.
     """
-    return [
-        "# Sv39: 1 GiB identity superpage for code+data (PC-relative, link-address agnostic)",
-        "auipc t0, 0",
-        "li t1, ~((1 << 30) - 1)",  # 1 GiB alignment mask
-        "and t0, t0, t1",  # t0 = superpage base PA
-        "srli t0, t0, 12",
-        "slli t0, t0, 10",  # PPN in PTE position
-        "li t1, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V)",
-        "or t0, t0, t1",  # leaf PTE value
-        "LA(t2, rvtest_Sroot_pg_tbl)",
-        "LA(t1, rvtest_code_begin)",
-        "srli t1, t1, 30",  # VPN[2]
-        "andi t1, t1, 0x1FF",
-        "slli t1, t1, 3",  # 8 bytes/entry
-        "add t2, t2, t1",
-        "sd t0, 0(t2)",
+    pte_reg, tmp_reg, slot_reg = test_data.int_regs.get_registers(3)
+    lines = [
+        "# Identity superpage for code+data (PC-relative, link-address agnostic)",
+        f"auipc x{pte_reg}, 0",
+        "#if __riscv_xlen == 64",
+        f"LI(x{tmp_reg}, (~((1 << 30) - 1)))",  # 1 GiB alignment mask
+        "#else",
+        f"LI(x{tmp_reg}, (~((1 << 22) - 1)))",  # 4 MiB alignment mask
+        "#endif",
+        f"and x{pte_reg}, x{pte_reg}, x{tmp_reg}",  # superpage base PA
+        f"srli x{pte_reg}, x{pte_reg}, 12",
+        f"slli x{pte_reg}, x{pte_reg}, 10",  # PPN in PTE position
+        f"LI(x{tmp_reg}, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V))",
+        f"or x{pte_reg}, x{pte_reg}, x{tmp_reg}",  # leaf PTE value
+        f"LA(x{slot_reg}, rvtest_Sroot_pg_tbl)",
+        f"LA(x{tmp_reg}, rvtest_code_begin)",
+        "#if __riscv_xlen == 64",
+        f"srli x{tmp_reg}, x{tmp_reg}, 30",  # VPN[2]
+        f"andi x{tmp_reg}, x{tmp_reg}, 0x1FF",
+        f"slli x{tmp_reg}, x{tmp_reg}, 3",  # 8 bytes/entry
+        f"add x{slot_reg}, x{slot_reg}, x{tmp_reg}",
+        f"sd x{pte_reg}, 0(x{slot_reg})",
+        "#else",
+        f"srli x{tmp_reg}, x{tmp_reg}, 22",  # VPN[1]
+        f"andi x{tmp_reg}, x{tmp_reg}, 0x3FF",
+        f"slli x{tmp_reg}, x{tmp_reg}, 2",  # 4 bytes/entry
+        f"add x{slot_reg}, x{slot_reg}, x{tmp_reg}",
+        f"sw x{pte_reg}, 0(x{slot_reg})",
+        "#endif",
         "sfence.vma",
     ]
-
-
-def _pf_identity_map_sv32() -> list[str]:
-    """Sv32 4 MiB identity superpage covering the code/data region.
-
-    Hand-rolled for the same reason as the Sv39 variant above.
-    """
-    return [
-        "# Sv32: 4 MiB identity superpage for code+data (PC-relative, link-address agnostic)",
-        "auipc t0, 0",
-        "li t1, ~((1 << 22) - 1)",  # 4 MiB alignment mask
-        "and t0, t0, t1",  # t0 = superpage base PA
-        "srli t0, t0, 12",
-        "slli t0, t0, 10",  # PPN in PTE position
-        "li t1, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V)",
-        "or t0, t0, t1",  # leaf PTE value
-        "LA(t2, rvtest_Sroot_pg_tbl)",
-        "LA(t1, rvtest_code_begin)",
-        "srli t1, t1, 22",  # VPN[1]
-        "andi t1, t1, 0x3FF",
-        "slli t1, t1, 2",  # 4 bytes/entry
-        "add t2, t2, t1",
-        "sw t0, 0(t2)",
-        "sfence.vma",
-    ]
+    test_data.int_regs.return_registers([pte_reg, tmp_reg, slot_reg])
+    return lines
 
 
 def _pf_pte_setup_sv39(va: int, pte_flags: str) -> list[str]:
     """Wire up the Sv39 page-table chain that maps `va` to a leaf with `pte_flags`."""
     return [
-        *_pf_identity_map_sv39(),
         f"PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), {hex(va)}, LEVEL2)",
         f"PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), {hex(va)}, LEVEL1)",
         f"PTE_SETUP_SV39(rvtest_pf_data, ({pte_flags}), {hex(va)}, LEVEL0)",
@@ -144,7 +134,6 @@ def _pf_pte_setup_sv39(va: int, pte_flags: str) -> list[str]:
 def _pf_pte_setup_sv32(va: int, pte_flags: str) -> list[str]:
     """Wire up the Sv32 page-table chain that maps `va` to a leaf with `pte_flags`."""
     return [
-        *_pf_identity_map_sv32(),
         f"PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), {hex(va)}, LEVEL1)",
         f"PTE_SETUP_SV32(rvtest_pf_data, ({pte_flags}), {hex(va)}, LEVEL0)",
         "sfence.vma",
@@ -172,7 +161,7 @@ def _emit_pf_block(
     extra_setup = extra_setup or []
 
     def _xlen_block(setup: list[str], pf_setup: list[str], instrs: list[tuple[str, list[str]]]) -> list[str]:
-        block: list[str] = [*setup, "sfence.vma", *pf_setup]
+        block: list[str] = [*setup, "sfence.vma", *_pf_identity_map(test_data), *pf_setup]
         for name, asm in instrs:
             block.append(f"\n# Testcase: {name}")
             block.extend(extra_setup)

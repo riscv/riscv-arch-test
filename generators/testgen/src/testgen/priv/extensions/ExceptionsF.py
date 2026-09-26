@@ -618,13 +618,15 @@ def make_exceptionsf(test_data: TestData) -> list[TestChunk]:
     tc = test_data.begin_test_chunk()
 
     # initialize fp registers
+    init_reg = test_data.int_regs.get_register()
     for i in range(32):
         tc.code.extend(
             [
-                f"li t0, {i + 1}",
-                f"fcvt.s.w f{i}, t0",
+                f"LI(x{init_reg}, {i + 1})",
+                f"fcvt.s.w f{i}, x{init_reg}",
             ]
         )
+    test_data.int_regs.return_register(init_reg)
 
     tc.code.extend(_generate_mstatus_fs_illegal_instr_tests(test_data))
     tc.code.extend(_generate_mstatus_fs_csr_access_tests(test_data))

@@ -26,14 +26,12 @@ normative_rule_definitions:
   # fault, or guest-page fault) that writes a guest virtual address to mtval, GVA is set
   # to 1. For any other trap into M-mode, GVA is set to 0.
   - name: mstatus_gva_op
+    # Representative coverpoints; also ExceptionsHSm_cg/cp_{hsv_address_misaligned, hlv_access_fault}
     coverpoint:
       [
         "ExceptionsHSm_cg/cp_ecall_to_m",
         "ExceptionsHSm_cg/cp_ebreak_to_m",
-        "ExceptionsHSm_cg/cp_loadstore_priv",
         "ExceptionsHSm_cg/cp_hlv_address_misaligned",
-        "ExceptionsHSm_cg/cp_hsv_address_misaligned",
-        "ExceptionsHSm_cg/cp_hlv_access_fault",
         "ExceptionsHSm_cg/cp_hsv_access_fault",
       ]
 
@@ -45,11 +43,7 @@ normative_rule_definitions:
   - name: hlsv_op
     coverpoint:
       [
-        "ExceptionsHSm_cg/cp_loadstore_priv",
-        "ExceptionsHSm_cg/cp_hlv_address_misaligned",
-        "ExceptionsHSm_cg/cp_hsv_address_misaligned",
-        "ExceptionsHSm_cg/cp_hlv_access_fault",
-        "ExceptionsHSm_cg/cp_hsv_access_fault",
+        "ExceptionsHSm_cg/cp_{hlv_address_misaligned, hsv_address_misaligned, hlv_access_fault, hsv_access_fault}",
       ]
 
   # Priority of access fault and address misaligned for hlv and hsv in M-mode

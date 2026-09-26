@@ -90,28 +90,28 @@ RVTEST_BEGIN
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(x15, TEST_FOR_EXECUTION_2)
-PMPZca_cp_misaligned_napot_region1_1_c_jalr:
+PMPZca_cg_cp_misaligned_napot_misaligned_region1_1_c_jalr:
   c.jalr x15
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, PMPZca_cp_misaligned_napot_region1_1_c_jalr, PMPZca_cp_misaligned_napot_region1_1_c_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x1, PMPZca_cg_cp_misaligned_napot_misaligned_region1_1_c_jalr, PMPZca_cg_cp_misaligned_napot_misaligned_region1_1_c_jalr_str)
 
   LA(x15, TEST_FOR_EXECUTION_4)
-PMPZca_cp_misaligned_napot_region2_1_c_jalr:
+PMPZca_cg_cp_misaligned_napot_misaligned_region2_1_c_jalr:
   c.jalr x15
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, PMPZca_cp_misaligned_napot_region2_1_c_jalr, PMPZca_cp_misaligned_napot_region2_1_c_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x1, PMPZca_cg_cp_misaligned_napot_misaligned_region2_1_c_jalr, PMPZca_cg_cp_misaligned_napot_misaligned_region2_1_c_jalr_str)
 
   LA(x15, REGIONSTART)
-PMPZca_cp_misaligned_napot_region3_1_c_jalr:
+PMPZca_cg_cp_misaligned_napot_misaligned_region3_1_c_jalr:
   c.jalr x15
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, PMPZca_cp_misaligned_napot_region3_1_c_jalr, PMPZca_cp_misaligned_napot_region3_1_c_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x1, PMPZca_cg_cp_misaligned_napot_misaligned_region3_1_c_jalr, PMPZca_cg_cp_misaligned_napot_misaligned_region3_1_c_jalr_str)
 
   LA(x15, REGIONSTART + REGION_SIZE)
-PMPZca_cp_misaligned_napot_region4_1_c_jalr:
+PMPZca_cg_cp_misaligned_napot_misaligned_region4_1_c_jalr:
   c.jalr x15
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, PMPZca_cp_misaligned_napot_region4_1_c_jalr, PMPZca_cp_misaligned_napot_region4_1_c_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x1, PMPZca_cg_cp_misaligned_napot_misaligned_region4_1_c_jalr, PMPZca_cg_cp_misaligned_napot_misaligned_region4_1_c_jalr_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -154,10 +154,10 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMPZca_cp_misaligned_napot_region1_1_c_jalr_str: .string "\"test: 7; cg: PMPZca; cp: cp_misaligned_napot; bin: region1_1_c.jalr\""
-PMPZca_cp_misaligned_napot_region2_1_c_jalr_str: .string "\"test: 8; cg: PMPZca; cp: cp_misaligned_napot; bin: region2_1_c.jalr\""
-PMPZca_cp_misaligned_napot_region3_1_c_jalr_str: .string "\"test: 9; cg: PMPZca; cp: cp_misaligned_napot; bin: region3_1_c.jalr\""
-PMPZca_cp_misaligned_napot_region4_1_c_jalr_str: .string "\"test: 10; cg: PMPZca; cp: cp_misaligned_napot; bin: region4_1_c.jalr\""
+PMPZca_cg_cp_misaligned_napot_misaligned_region1_1_c_jalr_str: .string "\"test: 7; cg: PMPZca_cg; cp: cp_misaligned_napot; bin: misaligned_region1_1_c.jalr\""
+PMPZca_cg_cp_misaligned_napot_misaligned_region2_1_c_jalr_str: .string "\"test: 8; cg: PMPZca_cg; cp: cp_misaligned_napot; bin: misaligned_region2_1_c.jalr\""
+PMPZca_cg_cp_misaligned_napot_misaligned_region3_1_c_jalr_str: .string "\"test: 9; cg: PMPZca_cg; cp: cp_misaligned_napot; bin: misaligned_region3_1_c.jalr\""
+PMPZca_cg_cp_misaligned_napot_misaligned_region4_1_c_jalr_str: .string "\"test: 10; cg: PMPZca_cg; cp: cp_misaligned_napot; bin: misaligned_region4_1_c.jalr\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

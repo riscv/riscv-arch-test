@@ -30,30 +30,30 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_satp_access
+// cp_access_m
 /////////////////////////////////
 
 main:
   LI(a0, MSTATUS_TVM)
   csrs mstatus, a0
-SvSm_cg_cp_satp_access_tvm:
+SvSm_satp_cg_cp_access_m_tvm:
   # Read mstatus into x14 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(mstatus, x14, SvSm_cg_cp_satp_access_tvm, SvSm_cg_cp_satp_access_tvm_str)
+  RVTEST_SIGUPD_CSR_READ(mstatus, x14, SvSm_satp_cg_cp_access_m_tvm, SvSm_satp_cg_cp_access_m_tvm_str)
   li a0, 0
   csrw satp, a0
-SvSm_cg_cp_satp_access_m_csrw:
+SvSm_satp_cg_cp_access_m_m_csrw:
   # Read satp into x14 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x14, SvSm_cg_cp_satp_access_m_csrw, SvSm_cg_cp_satp_access_m_csrw_str)
+  RVTEST_SIGUPD_CSR_READ(satp, x14, SvSm_satp_cg_cp_access_m_m_csrw, SvSm_satp_cg_cp_access_m_m_csrw_str)
   li a0, 0
   csrs satp, a0
-SvSm_cg_cp_satp_access_m_csrs:
+SvSm_satp_cg_cp_access_m_m_csrs:
   # Read satp into x14 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x14, SvSm_cg_cp_satp_access_m_csrs, SvSm_cg_cp_satp_access_m_csrs_str)
+  RVTEST_SIGUPD_CSR_READ(satp, x14, SvSm_satp_cg_cp_access_m_m_csrs, SvSm_satp_cg_cp_access_m_m_csrs_str)
   li a0, 0
   csrc satp, a0
-SvSm_cg_cp_satp_access_m_csrc:
+SvSm_satp_cg_cp_access_m_m_csrc:
   # Read satp into x14 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x14, SvSm_cg_cp_satp_access_m_csrc, SvSm_cg_cp_satp_access_m_csrc_str)
+  RVTEST_SIGUPD_CSR_READ(satp, x14, SvSm_satp_cg_cp_access_m_m_csrc, SvSm_satp_cg_cp_access_m_m_csrc_str)
   sfence.vma
   RVTEST_TSBI_GOTO_SMODE
   csrw satp, zero
@@ -72,10 +72,10 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-SvSm_cg_cp_satp_access_tvm_str: .string "\"test: 1; cg: SvSm_cg; cp: cp_satp_access; bin: tvm\""
-SvSm_cg_cp_satp_access_m_csrw_str: .string "\"test: 2; cg: SvSm_cg; cp: cp_satp_access; bin: m_csrw\""
-SvSm_cg_cp_satp_access_m_csrs_str: .string "\"test: 3; cg: SvSm_cg; cp: cp_satp_access; bin: m_csrs\""
-SvSm_cg_cp_satp_access_m_csrc_str: .string "\"test: 4; cg: SvSm_cg; cp: cp_satp_access; bin: m_csrc\""
+SvSm_satp_cg_cp_access_m_tvm_str: .string "\"test: 1; cg: SvSm_satp_cg; cp: cp_access_m; bin: tvm\""
+SvSm_satp_cg_cp_access_m_m_csrw_str: .string "\"test: 2; cg: SvSm_satp_cg; cp: cp_access_m; bin: m_csrw\""
+SvSm_satp_cg_cp_access_m_m_csrs_str: .string "\"test: 3; cg: SvSm_satp_cg; cp: cp_access_m; bin: m_csrs\""
+SvSm_satp_cg_cp_access_m_m_csrc_str: .string "\"test: 4; cg: SvSm_satp_cg; cp: cp_access_m; bin: m_csrc\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

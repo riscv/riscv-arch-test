@@ -22,7 +22,7 @@ covergroup Svinval_cg with function sample(ins_t ins);
     cp_tvm : coverpoint ins.prev.csr[CSR_MSTATUS][20] {
         bins zero = {0};
     }
-    cr_svinival : cross cp_instr, priv_mode_s_u, cp_tvm {
+    cp_svinval : cross cp_instr, priv_mode_s_u, cp_tvm {
         // each instruction executed in S and U mode with TVM clear
     }
  endgroup

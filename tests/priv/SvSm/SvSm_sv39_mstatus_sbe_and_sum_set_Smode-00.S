@@ -30,7 +30,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_sv39_mstatus_sbe_and_sum_set_Smode
+// cp_mstatus_sbe_write, cp_mstatus_sbe_read
 /////////////////////////////////
 
 
@@ -122,21 +122,21 @@ main:
   addi a2, a2, 16
 
 // Store
-SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test1_store:
+SvSm_mstatus_mprv_cg_cp_mstatus_sbe_write_test1_store:
   sw a2, 20(a5)
   nop
 
 // Load
-SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test1_load:
+SvSm_mstatus_mprv_cg_cp_mstatus_sbe_read_test1_load:
   lw a3, 20(a5)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test1_store, SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test1_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, SvSm_mstatus_mprv_cg_cp_mstatus_sbe_write_test1_store, SvSm_mstatus_mprv_cg_cp_mstatus_sbe_write_test1_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test1_load, SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvSm_mstatus_mprv_cg_cp_mstatus_sbe_read_test1_load, SvSm_mstatus_mprv_cg_cp_mstatus_sbe_read_test1_load_str)
 
 
 // 2MB page at level 1
@@ -177,21 +177,21 @@ SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test1_load:
   addi a2, a2, 16
 
 // Store
-SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test2_store:
+SvSm_mstatus_mprv_cg_cp_mstatus_sbe_write_test2_store:
   sw a2, 20(a5)
   nop
 
 // Load
-SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test2_load:
+SvSm_mstatus_mprv_cg_cp_mstatus_sbe_read_test2_load:
   lw a3, 20(a5)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test2_store, SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test2_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, SvSm_mstatus_mprv_cg_cp_mstatus_sbe_write_test2_store, SvSm_mstatus_mprv_cg_cp_mstatus_sbe_write_test2_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test2_load, SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test2_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvSm_mstatus_mprv_cg_cp_mstatus_sbe_read_test2_load, SvSm_mstatus_mprv_cg_cp_mstatus_sbe_read_test2_load_str)
 
 
 // 4KB page at level 0
@@ -244,21 +244,21 @@ SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test2_load:
   addi a2, a2, 16
 
 // Store
-SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test3_store:
+SvSm_mstatus_mprv_cg_cp_mstatus_sbe_write_test3_store:
   sw a2, 20(a5)
   nop
 
 // Load
-SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test3_load:
+SvSm_mstatus_mprv_cg_cp_mstatus_sbe_read_test3_load:
   lw a3, 20(a5)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test3_store, SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test3_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, SvSm_mstatus_mprv_cg_cp_mstatus_sbe_write_test3_store, SvSm_mstatus_mprv_cg_cp_mstatus_sbe_write_test3_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test3_load, SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test3_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvSm_mstatus_mprv_cg_cp_mstatus_sbe_read_test3_load, SvSm_mstatus_mprv_cg_cp_mstatus_sbe_read_test3_load_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -291,12 +291,12 @@ rvtest_slvl1_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test1_store_str: .string "\"test: 10; cg: SvSm; cp: cp_sv39_mstatus_sbe_and_sum_set_Smode; bin: test1_store\""
-SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test1_load_str: .string "\"test: 11; cg: SvSm; cp: cp_sv39_mstatus_sbe_and_sum_set_Smode; bin: test1_load\""
-SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test2_store_str: .string "\"test: 12; cg: SvSm; cp: cp_sv39_mstatus_sbe_and_sum_set_Smode; bin: test2_store\""
-SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test2_load_str: .string "\"test: 13; cg: SvSm; cp: cp_sv39_mstatus_sbe_and_sum_set_Smode; bin: test2_load\""
-SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test3_store_str: .string "\"test: 14; cg: SvSm; cp: cp_sv39_mstatus_sbe_and_sum_set_Smode; bin: test3_store\""
-SvSm_cp_sv39_mstatus_sbe_and_sum_set_Smode_test3_load_str: .string "\"test: 15; cg: SvSm; cp: cp_sv39_mstatus_sbe_and_sum_set_Smode; bin: test3_load\""
+SvSm_mstatus_mprv_cg_cp_mstatus_sbe_write_test1_store_str: .string "\"test: 10; cg: SvSm_mstatus_mprv_cg; cp: cp_mstatus_sbe_write; bin: test1_store\""
+SvSm_mstatus_mprv_cg_cp_mstatus_sbe_read_test1_load_str: .string "\"test: 11; cg: SvSm_mstatus_mprv_cg; cp: cp_mstatus_sbe_read; bin: test1_load\""
+SvSm_mstatus_mprv_cg_cp_mstatus_sbe_write_test2_store_str: .string "\"test: 12; cg: SvSm_mstatus_mprv_cg; cp: cp_mstatus_sbe_write; bin: test2_store\""
+SvSm_mstatus_mprv_cg_cp_mstatus_sbe_read_test2_load_str: .string "\"test: 13; cg: SvSm_mstatus_mprv_cg; cp: cp_mstatus_sbe_read; bin: test2_load\""
+SvSm_mstatus_mprv_cg_cp_mstatus_sbe_write_test3_store_str: .string "\"test: 14; cg: SvSm_mstatus_mprv_cg; cp: cp_mstatus_sbe_write; bin: test3_store\""
+SvSm_mstatus_mprv_cg_cp_mstatus_sbe_read_test3_load_str: .string "\"test: 15; cg: SvSm_mstatus_mprv_cg; cp: cp_mstatus_sbe_read; bin: test3_load\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

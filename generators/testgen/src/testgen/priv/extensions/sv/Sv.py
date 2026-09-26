@@ -8,14 +8,14 @@
 
 """Generate core PTE, satp, and mstatus virtual-memory tests."""
 
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 
 from testgen.asm.csr import gen_csr_read_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
-from testgen.priv.extensions.sv.access import add_rwx_test
+from testgen.priv.extensions.sv.access import Crosses, add_rwx_test, cross_names
 from testgen.priv.extensions.sv.assembly import VA_ONES_DATA, VA_ZEROS_DATA
 from testgen.priv.extensions.sv.generate import begin_sv_test, keep_image_mapped, sv_data
 from testgen.priv.extensions.sv.page_tables import (
@@ -54,6 +54,24 @@ def level_header(sv: SvMode, level: int) -> list[str]:
 
 MPRV_CLEANUP = ("LI(t0, MSTATUS_MPRV)", "csrc mstatus, t0")
 
+PERMISSIONS_CG = "Sv_vm_permissions_cg"
+GLOBAL_CG = "Sv_res_global_pte_cg"
+FEATURE_CG = "Sv_add_feature_cg"
+
+
+def permission_crosses(topic: str, flags: PteFlags, suffixes: tuple[str, str, str]) -> Crosses:
+    """Pick the allowed or faulting cross of ``topic`` for each access from the page's R, W and X bits.
+
+    ``suffixes`` complete the store, load and execute cross names, as in cp_spage_write_s_d.
+    """
+    store, load, execute = suffixes
+    return Crosses(
+        PERMISSIONS_CG,
+        f"{topic}_{'' if flags.write else 'no'}write{store}",
+        f"{topic}_{'' if flags.read else 'no'}read{load}",
+        f"{topic}_{'' if flags.execute else 'no'}exec{execute}",
+    )
+
 
 def mstatus_setup(kind: str) -> tuple[str, ...]:
     if kind == "mprv_s":
@@ -75,7 +93,6 @@ def mstatus_setup(kind: str) -> tuple[str, ...]:
 
 
 def _add_rsw_readback(test_data: TestData, sv: SvMode, level: int, name: str) -> list[str]:
-    assert test_data.test_chunk is not None
     offsets = {
         "sv32": {1: 64, 0: 28},
         "sv39": {2: 40, 1: 32, 0: 16},
@@ -84,9 +101,7 @@ def _add_rsw_readback(test_data: TestData, sv: SvMode, level: int, name: str) ->
     }
     table = sv.page_table_label(level)
     offset = offsets[sv.name][level]
-    label = test_data.add_testcase(
-        f"{name}_read_pte", f"cp_{test_data.test_chunk.split_name}", test_data.testsuite
-    ).removesuffix(":")
+    label = test_data.add_testcase(f"{name}_read_pte", "cp_rsw_pte", GLOBAL_CG).removesuffix(":")
     load = "lw" if sv.xlen == 32 else "ld"
     return [f"LA(a4, {table})", f"{label}:", f"{load} a4, {offset}(a4)", write_sigupd(14, test_data, label=label)]
 
@@ -94,11 +109,12 @@ def _add_rsw_readback(test_data: TestData, sv: SvMode, level: int, name: str) ->
 def _extreme_access(
     test_data: TestData, sv: SvMode, name: str, va: str, mode: str, style: str, driver_mode: str
 ) -> list[str]:
-    assert test_data.test_chunk is not None
-    coverpoint = f"cp_{test_data.test_chunk.split_name}"
     operations = ("store", "load") if style.startswith("rw") else ("exec",)
+    crosses = Crosses("Sv_VA_cg", "cp_VA_d_mode", "cp_VA_d_mode", "cp_VA_i_mode")
     labels = {
-        operation: test_data.add_testcase(f"{name}_{operation}", coverpoint, test_data.testsuite).removesuffix(":")
+        operation: test_data.add_testcase(
+            f"{name}_{operation}", crosses.by_operation()[operation], crosses.covergroup
+        ).removesuffix(":")
         for operation in operations
     }
     lines = [*([] if mode == driver_mode else [f"RVTEST_TSBI_GOTO_{mode.upper()}"]), f"LI(a5, {va})"]
@@ -141,6 +157,8 @@ def emit_access(
     va: str,
     mode: str,
     driver_mode: str = "Smode",
+    *,
+    crosses: Crosses | None = None,
 ) -> list[str]:
     if style in ("rw_byte", "rw_word", "x_only"):
         return _extreme_access(test_data, sv, name, va, mode, style, driver_mode)
@@ -164,12 +182,15 @@ def emit_access(
         repeat_setup=style == "mprv_sum_unset",
         physical_fetch=style.startswith("mprv_"),
         include_exec=style != "sl",
+        crosses=crosses,
     ) + (_add_rsw_readback(test_data, sv, level, name) if style == "rsw" else [])
 
 
 def _t_invalid_pte(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     for mode in ("Smode", "Umode"):
-        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_invalid_pte_{mode}")
+        m = mode[0].lower()
+        crosses = Crosses(PERMISSIONS_CG, f"cp_PTE_inv_write_{m}_d", f"cp_PTE_inv_read_{m}_d", f"cp_PTE_inv_exec_{m}_i")
+        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_invalid_pte_{mode}", coverpoint=cross_names(crosses))
         for number, level in enumerate(sv.levels_desc, start=1):
             permissions = PteFlags(user=mode == "Umode", valid=False)
             chunk.code.extend(
@@ -179,7 +200,7 @@ def _t_invalid_pte(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode
                     *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                     "sfence.vma",
                     "",
-                    *emit_access(test_data, sv, level, "rwx", f"test{number}", "va_data", mode),
+                    *emit_access(test_data, sv, level, "rwx", f"test{number}", "va_data", mode, crosses=crosses),
                     "",
                 ]
             )
@@ -195,11 +216,14 @@ def _t_canonical(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) 
     if sv.name not in _CANONICAL_VA:
         return
     for mode in ("Smode", "Umode"):
+        m = mode[0].lower()
+        crosses = Crosses(PERMISSIONS_CG, f"cp_canonical_write_{m}", f"cp_canonical_read_{m}", f"cp_canonical_exec_{m}")
         chunk = begin_sv_test(
             test_data,
             sv,
             mode,
             f"{sv.name}_canonical_{mode}",
+            coverpoint=cross_names(crosses),
             va_defs=(("va_data", _CANONICAL_VA[sv.name]),),
         )
         for number, level in enumerate(sv.levels_desc, start=1):
@@ -211,7 +235,7 @@ def _t_canonical(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) 
                     *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                     "sfence.vma",
                     "",
-                    *emit_access(test_data, sv, level, "rwx", f"test{number}", "va_data", mode),
+                    *emit_access(test_data, sv, level, "rwx", f"test{number}", "va_data", mode, crosses=crosses),
                     "",
                 ]
             )
@@ -227,7 +251,9 @@ def _t_global_pte(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode)
         else ("  csrr  t0, satp", "  slli  t0, t0, 4", "  srli  t0, t0, 48", "  sfence.vma x0, t0")
     )
     for mode in ("Smode", "Umode"):
-        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_global_pte_{mode}")
+        m = mode[0].lower()
+        crosses = Crosses(GLOBAL_CG, f"cp_global_write_{m}", f"cp_global_read_{m}", f"cp_global_exec_{m}")
+        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_global_pte_{mode}", coverpoint=cross_names(crosses))
         for number, level in enumerate(sv.levels_desc, start=1):
             permissions = PteFlags(user=mode == "Umode", global_=True)
             first_name = f"test{number}_access1"
@@ -242,12 +268,12 @@ def _t_global_pte(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode)
                     *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                     "  sfence.vma",
                     "",
-                    *emit_access(test_data, sv, level, "rwx", first_name, "va_data", mode),
+                    *emit_access(test_data, sv, level, "rwx", first_name, "va_data", mode, crosses=crosses),
                     "",
                     "  // Flush the TLB for the current ASID and access again",
                     *asid_lines,
                     "",
-                    *emit_access(test_data, sv, level, "rwx", second_name, "va_data", mode),
+                    *emit_access(test_data, sv, level, "rwx", second_name, "va_data", mode, crosses=crosses),
                     "",
                 ]
             )
@@ -267,11 +293,16 @@ _MISALIGNED_VA = {
 def _t_misaligned_page(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     levels = tuple(level for level in sv.levels_desc if level > 0)
     for mode in ("Smode", "Umode"):
+        m = mode[0].lower()
+        crosses = Crosses(
+            PERMISSIONS_CG, f"cp_misaligned_write_{m}", f"cp_misaligned_read_{m}", f"cp_misaligned_exec_{m}"
+        )
         chunk = begin_sv_test(
             test_data,
             sv,
             mode,
             f"{sv.name}_misaligned_page_{mode}",
+            coverpoint=cross_names(crosses),
             va_defs=(("va_data", _MISALIGNED_VA[sv.name]),),
         )
         for number, level in enumerate(levels, start=1):
@@ -288,7 +319,7 @@ def _t_misaligned_page(test_data: TestData, test_chunks: list[TestChunk], sv: Sv
                     ),
                     "sfence.vma",
                     "",
-                    *emit_access(test_data, sv, level, "rwx", f"test{number}", "va_data", mode),
+                    *emit_access(test_data, sv, level, "rwx", f"test{number}", "va_data", mode, crosses=crosses),
                     "",
                 ]
             )
@@ -299,7 +330,23 @@ def _t_misaligned_page(test_data: TestData, test_chunks: list[TestChunk], sv: Sv
 
 def _t_mstatus_mxr(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     for mode in ("Smode", "Umode"):
-        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_mstatus_mxr_{mode}")
+        m = mode[0].lower()
+        # The page-permission crosses sample the store to and the fetch from the X-only page.
+        store, execute = (
+            ("cp_spage_nowrite_s_d", "cp_spage_exec_s_i")
+            if mode == "Smode"
+            else ("cp_upage_umode_nowrite_u", "cp_upage_umode_exec_u")
+        )
+        crosses = {
+            mxr: Crosses(PERMISSIONS_CG, store, f"cp_xpage_mxr{mxr}_read_{m}", execute) for mxr in ("unset", "set")
+        }
+        chunk = begin_sv_test(
+            test_data,
+            sv,
+            mode,
+            f"{sv.name}_mstatus_mxr_{mode}",
+            coverpoint=cross_names(crosses["unset"], crosses["set"]),
+        )
         number = 0
         faults = 0
         for level in sv.levels_desc:
@@ -322,7 +369,16 @@ def _t_mstatus_mxr(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode
                         "  LI(   t0, MSTATUS_MXR)",
                         f"  {operation}  sstatus, t0",
                         "",
-                        *emit_access(test_data, sv, level, "rwx", f"test{number}", "va_data", mode),
+                        *emit_access(
+                            test_data,
+                            sv,
+                            level,
+                            "rwx",
+                            f"test{number}",
+                            "va_data",
+                            mode,
+                            crosses=crosses["unset" if operation == "csrc" else "set"],
+                        ),
                         "",
                     ]
                 )
@@ -333,11 +389,16 @@ def _t_mstatus_mxr(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode
 
 def _t_nleaf_pte_dau(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     for mode in ("Smode", "Umode"):
+        m = mode[0].lower()
+        crosses = Crosses(
+            PERMISSIONS_CG, f"cp_PTE_DAU_nleaf_write_{m}", f"cp_PTE_DAU_nleaf_read_{m}", f"cp_PTE_DAU_nleaf_exec_{m}"
+        )
         chunk = begin_sv_test(
             test_data,
             sv,
             mode,
             f"{sv.name}_nleaf_pte_DAU_{mode}",
+            coverpoint=cross_names(crosses),
             code_prefix=("#ifdef S1P12P0_OR_LATER_SUPPORTED", ""),
         )
         number = 0
@@ -360,7 +421,7 @@ def _t_nleaf_pte_dau(test_data: TestData, test_chunks: list[TestChunk], sv: SvMo
                         ),
                         "sfence.vma",
                         "",
-                        *emit_access(test_data, sv, 0, "rwx", f"test{number}", "va_data", mode),
+                        *emit_access(test_data, sv, 0, "rwx", f"test{number}", "va_data", mode, crosses=crosses),
                         "",
                     ]
                 )
@@ -372,7 +433,11 @@ def _t_nleaf_pte_dau(test_data: TestData, test_chunks: list[TestChunk], sv: SvMo
 
 def _t_nleaf_pte_level0(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     for mode in ("Smode", "Umode"):
-        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_nleaf_pte_level0_{mode}")
+        prefix = f"cp_PTE_nonleaf_lvl0_{mode[0].lower()}"
+        crosses = Crosses(PERMISSIONS_CG, f"{prefix}_d_write", f"{prefix}_d_read", f"{prefix}_i_exec")
+        chunk = begin_sv_test(
+            test_data, sv, mode, f"{sv.name}_nleaf_pte_level0_{mode}", coverpoint=cross_names(crosses)
+        )
         permissions = PteFlags(
             user=mode == "Umode",
             read=False,
@@ -396,6 +461,7 @@ def _t_nleaf_pte_level0(test_data: TestData, test_chunks: list[TestChunk], sv: S
                     "test1",
                     "va_data",
                     mode,
+                    crosses=crosses,
                 ),
                 "",
             ]
@@ -407,11 +473,14 @@ def _t_nleaf_pte_level0(test_data: TestData, test_chunks: list[TestChunk], sv: S
 
 def _t_pte_reserved_rwx(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     for mode in ("Smode", "Umode"):
+        prefix = f"cp_PTE_res_rwx_{mode[0].lower()}"
+        crosses = Crosses(PERMISSIONS_CG, f"{prefix}_d_write", f"{prefix}_d_read", f"{prefix}_i_exec")
         chunk = begin_sv_test(
             test_data,
             sv,
             mode,
             f"{sv.name}_pte_reserved_rwx_{mode}",
+            coverpoint=cross_names(crosses),
             code_prefix=("#ifdef S1P12P0_OR_LATER_SUPPORTED", ""),
         )
         number = 0
@@ -437,7 +506,7 @@ def _t_pte_reserved_rwx(test_data: TestData, test_chunks: list[TestChunk], sv: S
                         *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                         "sfence.vma",
                         "",
-                        *emit_access(test_data, sv, level, "rwx", f"test{number}", "va_data", mode),
+                        *emit_access(test_data, sv, level, "rwx", f"test{number}", "va_data", mode, crosses=crosses),
                         "",
                     ]
                 )
@@ -450,7 +519,9 @@ def _t_pte_reserved_rwx(test_data: TestData, test_chunks: list[TestChunk], sv: S
 def _t_pte_rsw(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     va_defs = (("va_data", "0x04007000"),) if sv.xlen == 32 else None
     for mode in ("Smode", "Umode"):
-        chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_pte_rsw_{mode}", va_defs=va_defs)
+        chunk = begin_sv_test(
+            test_data, sv, mode, f"{sv.name}_pte_rsw_{mode}", coverpoint="cp_rsw_pte", va_defs=va_defs
+        )
         number = 0
         for level in sv.levels_desc:
             for rsw, description in (
@@ -470,7 +541,16 @@ def _t_pte_rsw(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) ->
                         *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                         "sfence.vma",
                         "",
-                        *emit_access(test_data, sv, level, "rsw", f"test{number}", "va_data", mode),
+                        *emit_access(
+                            test_data,
+                            sv,
+                            level,
+                            "rsw",
+                            f"test{number}",
+                            "va_data",
+                            mode,
+                            crosses=Crosses(GLOBAL_CG, "cp_rsw_pte", "cp_rsw_pte", "cp_rsw_pte"),
+                        ),
                         "",
                     ]
                 )
@@ -483,11 +563,13 @@ def _t_pte_reserved_field(test_data: TestData, test_chunks: list[TestChunk], sv:
     if sv.name == "sv32":
         return
     top = sv.levels - 1
+    crosses = Crosses(FEATURE_CG, "cp_reserved_write_fault", "cp_reserved_read_fault", "cp_reserved_exec_fault")
     chunk = begin_sv_test(
         test_data,
         sv,
         "Smode",
         f"{sv.name}_pte_reserved_field_Smode",
+        coverpoint=cross_names(crosses),
         code_prefix=("#ifdef S1P12P0_OR_LATER_SUPPORTED", ""),
     )
     for number, bit in enumerate(range(54, 61), start=1):
@@ -499,7 +581,7 @@ def _t_pte_reserved_field(test_data: TestData, test_chunks: list[TestChunk], sv:
                 *create_page_mapping(sv, leaf_level=top, leaf_flags=permissions),
                 "sfence.vma",
                 "",
-                *emit_access(test_data, sv, top, "rwx", f"test{number}", "va_data", "Smode"),
+                *emit_access(test_data, sv, top, "rwx", f"test{number}", "va_data", "Smode", crosses=crosses),
                 "",
             ]
         )
@@ -528,11 +610,13 @@ def _t_svpbmt_disabled(test_data: TestData, test_chunks: list[TestChunk], sv: Sv
         else (("(1 << 61)", "PBMT=1"), ("(1 << 62)", "PBMT=2"), ("(1 << 62) | (1 << 61)", "PBMT=3"))
     )
     top = sv.levels - 1
+    crosses = Crosses(FEATURE_CG, "cp_svpbmt_write_fault", "cp_svpbmt_read_fault", "cp_svpbmt_exec_fault")
     chunk = begin_sv_test(
         test_data,
         sv,
         "Smode",
         f"{sv.name}_svpbmt_disabled_Smode",
+        coverpoint=cross_names(crosses),
         code_prefix=("#ifdef S1P12P0_OR_LATER_SUPPORTED", ""),
         setup_asm=setup,
     )
@@ -545,7 +629,7 @@ def _t_svpbmt_disabled(test_data: TestData, test_chunks: list[TestChunk], sv: Sv
                 *create_page_mapping(sv, leaf_level=top, leaf_flags=permissions),
                 "sfence.vma",
                 "",
-                *emit_access(test_data, sv, top, "rwx", f"test{number}", "va_data", "Smode"),
+                *emit_access(test_data, sv, top, "rwx", f"test{number}", "va_data", "Smode", crosses=crosses),
                 "",
             ]
         )
@@ -563,11 +647,13 @@ def _t_svnapot_not_supported(test_data: TestData, test_chunks: list[TestChunk], 
         return
     napot_bit = "PTE_N" if sv.name == "sv39" else "(1 << 63)"
     permissions = PteFlags(extra=(napot_bit, "(1 << 13)"))
+    crosses = Crosses(FEATURE_CG, "cp_svnapot_write_fault", "cp_svnapot_read_fault", "cp_svnapot_exec_fault")
     chunk = begin_sv_test(
         test_data,
         sv,
         "Smode",
         f"{sv.name}_svnapot_not_supported_Smode",
+        coverpoint=cross_names(crosses),
         code_prefix=("#ifdef S1P12P0_OR_LATER_SUPPORTED", ""),
         va_defs=(("va_data", _NAPOT_VA[sv.name]),),
     )
@@ -589,6 +675,7 @@ def _t_svnapot_not_supported(test_data: TestData, test_chunks: list[TestChunk], 
                 "test1",
                 "va_data",
                 "Smode",
+                crosses=crosses,
             ),
             "",
             "#endif",
@@ -616,6 +703,7 @@ def _add_page_permission_matrix(
     *,
     user_page: bool,
     fault_counts: Mapping[str, int] | int,
+    crosses: Callable[[PteFlags], Crosses],
     style: str = "rwx",
 ) -> int:
     number = 0
@@ -639,22 +727,50 @@ def _add_page_permission_matrix(
                     *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                     "sfence.vma",
                     "",
-                    *emit_access(test_data, sv, level, style, f"test{number}", "va_data", mode),
+                    *emit_access(
+                        test_data, sv, level, style, f"test{number}", "va_data", mode, crosses=crosses(permissions)
+                    ),
                     "",
                 ]
             )
     return faults
 
 
+def _spage_crosses(flags: PteFlags) -> Crosses:
+    return permission_crosses("cp_spage", flags, ("_s_d", "_s_d", "_s_i"))
+
+
+def _upage_umode_crosses(flags: PteFlags) -> Crosses:
+    return permission_crosses("cp_upage_umode", flags, ("_u", "_u", "_u"))
+
+
+_SPAGE_FROM_U = Crosses(
+    PERMISSIONS_CG, "cp_spage_rwx_s_d_nowrite", "cp_spage_rwx_s_d_noread", "cp_spage_rwx_s_i_noexec"
+)
+# The U page with SUM set: only an RWX page matches the PTE_upage_d bin of these crosses.
+_UPAGE_SUM_SET = Crosses(
+    PERMISSIONS_CG, "cp_upage_smode_sumset_write_s", "cp_upage_smode_sumset_read_s", "cp_upage_smode_sumset_noexec_s"
+)
+_UPAGE_SUM_UNSET = Crosses(
+    PERMISSIONS_CG,
+    "cp_upage_smode_sumunset_nowrite_s",
+    "cp_upage_smode_sumunset_noread_s",
+    "cp_upage_smode_sumunset_noexec_s",
+)
+_ALL_ALLOWED = PteFlags()
+_ALL_DENIED = PteFlags(read=False, write=False, execute=False)
+
+
 def _t_page_perm_topics(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     s_faults = {"RWX": 0, "X-only": 2, "RX": 1, "RW": 1, "R-only": 2}
     if sv.name == "sv32":
-        for topic, mode, user_page, faults_for in (
-            ("spage", "Smode", False, s_faults),
-            ("upage", "Umode", True, s_faults),
-            ("spage_access", "Umode", False, 3),
+        for topic, mode, user_page, faults_for, crosses in (
+            ("spage", "Smode", False, s_faults, _spage_crosses),
+            ("upage", "Umode", True, s_faults, _upage_umode_crosses),
+            ("spage_access", "Umode", False, 3, lambda _: _SPAGE_FROM_U),
         ):
-            chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_{topic}_{mode}")
+            names = cross_names(crosses(_ALL_ALLOWED), crosses(_ALL_DENIED))
+            chunk = begin_sv_test(test_data, sv, mode, f"{sv.name}_{topic}_{mode}", coverpoint=names)
             faults = _add_page_permission_matrix(
                 test_data,
                 chunk,
@@ -662,12 +778,15 @@ def _t_page_perm_topics(test_data: TestData, test_chunks: list[TestChunk], sv: S
                 mode,
                 user_page=user_page,
                 fault_counts=faults_for,
+                crosses=crosses,
             )
             chunk.raw_data.extend(sv_data(sv))
             chunk.trap_sigupd_count = trap_sigupd_count(faults)
             test_chunks.append(test_data.end_test_chunk())
     else:
-        chunk = begin_sv_test(test_data, sv, "Umode", f"{sv.name}_spage_access_Umode")
+        chunk = begin_sv_test(
+            test_data, sv, "Umode", f"{sv.name}_spage_access_Umode", coverpoint=cross_names(_SPAGE_FROM_U)
+        )
         for number, level in enumerate(sv.levels_desc, start=1):
             chunk.code.extend(
                 [
@@ -680,7 +799,9 @@ def _t_page_perm_topics(test_data: TestData, test_chunks: list[TestChunk], sv: S
                     ),
                     "sfence.vma",
                     "",
-                    *emit_access(test_data, sv, level, "rwx", f"test{number}", "va_data", "Umode"),
+                    *emit_access(
+                        test_data, sv, level, "rwx", f"test{number}", "va_data", "Umode", crosses=_SPAGE_FROM_U
+                    ),
                     "",
                 ]
             )
@@ -689,11 +810,11 @@ def _t_page_perm_topics(test_data: TestData, test_chunks: list[TestChunk], sv: S
         test_chunks.append(test_data.end_test_chunk())
 
     sum_set_faults = {"RWX": 1, "X-only": 3, "RX": 2, "RW": 1, "R-only": 2}
-    for topic, faults_for, style in (
-        ("upage_mstatus_sum_set", sum_set_faults, "sum"),
-        ("upage_mstatus_sum_unset", 3, "rwx"),
+    for topic, faults_for, style, upage_crosses in (
+        ("upage_mstatus_sum_set", sum_set_faults, "sum", _UPAGE_SUM_SET),
+        ("upage_mstatus_sum_unset", 3, "rwx", _UPAGE_SUM_UNSET),
     ):
-        chunk = begin_sv_test(test_data, sv, "Smode", f"{sv.name}_{topic}_Smode")
+        chunk = begin_sv_test(test_data, sv, "Smode", f"{sv.name}_{topic}_Smode", coverpoint=cross_names(upage_crosses))
         faults = _add_page_permission_matrix(
             test_data,
             chunk,
@@ -701,13 +822,20 @@ def _t_page_perm_topics(test_data: TestData, test_chunks: list[TestChunk], sv: S
             "Smode",
             user_page=True,
             fault_counts=faults_for,
+            crosses=lambda _, upage_crosses=upage_crosses: upage_crosses,
             style=style,
         )
         chunk.raw_data.extend(sv_data(sv))
         chunk.trap_sigupd_count = trap_sigupd_count(faults)
         test_chunks.append(test_data.end_test_chunk())
 
-    chunk = begin_sv_test(test_data, sv, "Smode", f"{sv.name}_spage_mstatus_sum_set_Smode")
+    chunk = begin_sv_test(
+        test_data,
+        sv,
+        "Smode",
+        f"{sv.name}_spage_mstatus_sum_set_Smode",
+        coverpoint=cross_names(_spage_crosses(_ALL_ALLOWED), _spage_crosses(_ALL_DENIED)),
+    )
     number = 0
     faults = 0
     spage_permissions = ((True, True, True, "RWX"), (True, False, False, "R-only"), (False, False, True, "X-only"))
@@ -718,6 +846,7 @@ def _t_page_perm_topics(test_data: TestData, test_chunks: list[TestChunk], sv: S
             case_faults = spage_faults[description]
             faults += case_faults
             expected = "No Fault" if case_faults == 0 else f"{case_faults} page fault(s)"
+            permissions = PteFlags(read=read, write=write, execute=execute)
             chunk.code.extend(
                 [
                     *level_header(sv, level),
@@ -725,11 +854,20 @@ def _t_page_perm_topics(test_data: TestData, test_chunks: list[TestChunk], sv: S
                     *create_page_mapping(
                         sv,
                         leaf_level=level,
-                        leaf_flags=PteFlags(read=read, write=write, execute=execute),
+                        leaf_flags=permissions,
                     ),
                     "sfence.vma",
                     "",
-                    *emit_access(test_data, sv, level, "sum", f"test{number}", "va_data", "Smode"),
+                    *emit_access(
+                        test_data,
+                        sv,
+                        level,
+                        "sum",
+                        f"test{number}",
+                        "va_data",
+                        "Smode",
+                        crosses=_spage_crosses(permissions),
+                    ),
                     "",
                 ]
             )
@@ -783,6 +921,7 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
         sv,
         "Smode",
         f"{sv.name}_VA_all_ones_Smode",
+        coverpoint="cp_VA_d_mode, cp_VA_i_mode",
         sig_init=sig_init,
         va_defs=(("va_data_rw", all_ones), ("va_data_x", all_ones_code)),
     )
@@ -815,6 +954,7 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
         sv,
         "Smode",
         f"{sv.name}_VA_all_zeros_Smode",
+        coverpoint="cp_VA_d_mode, cp_VA_i_mode",
         sig_init=sig_init,
         va_defs=(("va_data", all_zeros),),
     )
@@ -845,8 +985,13 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
     test_chunks.append(test_data.end_test_chunk())
 
 
+#: The cross that samples satp accesses in each suite: S-mode accesses in Sv, M-mode accesses in SvSm.
+_SATP_ACCESS_CROSS = {"Sv": "cp_access_s", "SvSm": "cp_access_m"}
+
+
 def satp_csr_read(test_data: TestData, name: str, csr: str = "satp") -> list[str]:
-    label = test_data.add_testcase(name, "cp_satp_access", f"{test_data.testsuite}_cg")
+    suite = test_data.testsuite
+    label = test_data.add_testcase(name, _SATP_ACCESS_CROSS[suite], f"{suite}_satp_cg")
     return [label, gen_csr_read_sigupd(14, (csr, None), test_data)]
 
 
@@ -869,7 +1014,7 @@ def satp_access_ops(test_data: TestData, mode: str, values: tuple[int, int, int]
 def _t_satp_access(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     shift, asid_ones, asid_shift, asid_bits = SATP_FIELDS[sv.name]
     chunk = test_data.begin_test_chunk(f"{sv.name}_satp_access_Smode")
-    chunk.section_header = comment_banner("cp_satp_access")
+    chunk.section_header = comment_banner("cp_access_s")
     chunk.code.extend(["main:", "csrw scause, zero"])
     if sv.name in ("sv32", "sv39"):
         chunk.code.extend(satp_access_ops(test_data, "Smode", (4, 8, 4)))

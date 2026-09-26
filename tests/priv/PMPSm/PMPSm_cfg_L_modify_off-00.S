@@ -50,57 +50,57 @@ RVTEST_BEGIN
 
 // PMP configuration 1: entry 1 = OFF, L = 0, XWR = 0111, pmpaddr1 = 0x100
   addi x4, x0, 0x100
-PMPSm_cp_cfg_L_modify_L0_write_pmpaddr1:
+PMPSm_cg_cp_cfg_L_modify_L0_write_pmpaddr1:
   # Write x4 to pmpaddr1, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, x4, PMPSm_cp_cfg_L_modify_L0_write_pmpaddr1, PMPSm_cp_cfg_L_modify_L0_write_pmpaddr1_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, x4, PMPSm_cg_cp_cfg_L_modify_L0_write_pmpaddr1, PMPSm_cg_cp_cfg_L_modify_L0_write_pmpaddr1_str)
   LI(x4, (((PMP_R | PMP_W | PMP_X) & 0xFF) << PMP1_CFG_SHIFT))
-PMPSm_cp_cfg_L_modify_L0_write_pmpcfg0:
+PMPSm_cg_cp_cfg_L_modify_L0_write_pmpcfg0:
   # Write x4 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, PMPSm_cp_cfg_L_modify_L0_write_pmpcfg0, PMPSm_cp_cfg_L_modify_L0_write_pmpcfg0_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, PMPSm_cg_cp_cfg_L_modify_L0_write_pmpcfg0, PMPSm_cg_cp_cfg_L_modify_L0_write_pmpcfg0_str)
   addi x5, x4, 7
-PMPSm_cp_cfg_L_modify_L0_modify_pmpcfg0:
+PMPSm_cg_cp_cfg_L_modify_L0_modify_pmpcfg0:
   # Write x5 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x5, PMPSm_cp_cfg_L_modify_L0_modify_pmpcfg0, PMPSm_cp_cfg_L_modify_L0_modify_pmpcfg0_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x5, PMPSm_cg_cp_cfg_L_modify_L0_modify_pmpcfg0, PMPSm_cg_cp_cfg_L_modify_L0_modify_pmpcfg0_str)
   addi x4, x0, -1
-PMPSm_cp_cfg_L_modify_L0_modify_pmpaddr0:
+PMPSm_cg_cp_cfg_L_modify_L0_modify_pmpaddr0:
   # Write x4 to pmpaddr0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, x4, PMPSm_cp_cfg_L_modify_L0_modify_pmpaddr0, PMPSm_cp_cfg_L_modify_L0_modify_pmpaddr0_str)
-PMPSm_cp_cfg_L_modify_L0_clear_pmpaddr1:
+  RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, x4, PMPSm_cg_cp_cfg_L_modify_L0_modify_pmpaddr0, PMPSm_cg_cp_cfg_L_modify_L0_modify_pmpaddr0_str)
+PMPSm_cg_cp_cfg_L_modify_L0_clear_pmpaddr1:
   # Write x0 to pmpaddr1, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, x0, PMPSm_cp_cfg_L_modify_L0_clear_pmpaddr1, PMPSm_cp_cfg_L_modify_L0_clear_pmpaddr1_str)
-PMPSm_cp_cfg_L_modify_L0_clear_pmpcfg0:
+  RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, x0, PMPSm_cg_cp_cfg_L_modify_L0_clear_pmpaddr1, PMPSm_cg_cp_cfg_L_modify_L0_clear_pmpaddr1_str)
+PMPSm_cg_cp_cfg_L_modify_L0_clear_pmpcfg0:
   # Write x0 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x0, PMPSm_cp_cfg_L_modify_L0_clear_pmpcfg0, PMPSm_cp_cfg_L_modify_L0_clear_pmpcfg0_str)
-PMPSm_cp_cfg_L_modify_L0_reset_pmpaddr0:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x0, PMPSm_cg_cp_cfg_L_modify_L0_clear_pmpcfg0, PMPSm_cg_cp_cfg_L_modify_L0_clear_pmpcfg0_str)
+PMPSm_cg_cp_cfg_L_modify_L0_reset_pmpaddr0:
   # Write x0 to pmpaddr0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, x0, PMPSm_cp_cfg_L_modify_L0_reset_pmpaddr0, PMPSm_cp_cfg_L_modify_L0_reset_pmpaddr0_str)
-PMPSm_cp_cfg_L_modify_L0_reset_pmpcfg0:
+  RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, x0, PMPSm_cg_cp_cfg_L_modify_L0_reset_pmpaddr0, PMPSm_cg_cp_cfg_L_modify_L0_reset_pmpaddr0_str)
+PMPSm_cg_cp_cfg_L_modify_L0_reset_pmpcfg0:
   # Write x0 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x0, PMPSm_cp_cfg_L_modify_L0_reset_pmpcfg0, PMPSm_cp_cfg_L_modify_L0_reset_pmpcfg0_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x0, PMPSm_cg_cp_cfg_L_modify_L0_reset_pmpcfg0, PMPSm_cg_cp_cfg_L_modify_L0_reset_pmpcfg0_str)
 
 // PMP configuration 2: entry 1 = OFF, L = 1, XWR = 1111, pmpaddr1 = 0x100
   addi x4, x0, 0x100
-PMPSm_cp_cfg_L_modify_L1_write_pmpaddr1:
+PMPSm_cg_cp_cfg_L_modify_L1_write_pmpaddr1:
   # Write x4 to pmpaddr1, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, x4, PMPSm_cp_cfg_L_modify_L1_write_pmpaddr1, PMPSm_cp_cfg_L_modify_L1_write_pmpaddr1_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, x4, PMPSm_cg_cp_cfg_L_modify_L1_write_pmpaddr1, PMPSm_cg_cp_cfg_L_modify_L1_write_pmpaddr1_str)
   LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X) & 0xFF) << PMP1_CFG_SHIFT))
-PMPSm_cp_cfg_L_modify_L1_write_pmpcfg0:
+PMPSm_cg_cp_cfg_L_modify_L1_write_pmpcfg0:
   # Write x4 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, PMPSm_cp_cfg_L_modify_L1_write_pmpcfg0, PMPSm_cp_cfg_L_modify_L1_write_pmpcfg0_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, PMPSm_cg_cp_cfg_L_modify_L1_write_pmpcfg0, PMPSm_cg_cp_cfg_L_modify_L1_write_pmpcfg0_str)
   addi x5, x4, 7
-PMPSm_cp_cfg_L_modify_L1_modify_pmpcfg0:
+PMPSm_cg_cp_cfg_L_modify_L1_modify_pmpcfg0:
   # Write x5 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x5, PMPSm_cp_cfg_L_modify_L1_modify_pmpcfg0, PMPSm_cp_cfg_L_modify_L1_modify_pmpcfg0_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x5, PMPSm_cg_cp_cfg_L_modify_L1_modify_pmpcfg0, PMPSm_cg_cp_cfg_L_modify_L1_modify_pmpcfg0_str)
   addi x4, x0, -1
-PMPSm_cp_cfg_L_modify_L1_modify_pmpaddr0:
+PMPSm_cg_cp_cfg_L_modify_L1_modify_pmpaddr0:
   # Write x4 to pmpaddr0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, x4, PMPSm_cp_cfg_L_modify_L1_modify_pmpaddr0, PMPSm_cp_cfg_L_modify_L1_modify_pmpaddr0_str)
-PMPSm_cp_cfg_L_modify_L1_clear_pmpaddr1:
+  RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, x4, PMPSm_cg_cp_cfg_L_modify_L1_modify_pmpaddr0, PMPSm_cg_cp_cfg_L_modify_L1_modify_pmpaddr0_str)
+PMPSm_cg_cp_cfg_L_modify_L1_clear_pmpaddr1:
   # Write x0 to pmpaddr1, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, x0, PMPSm_cp_cfg_L_modify_L1_clear_pmpaddr1, PMPSm_cp_cfg_L_modify_L1_clear_pmpaddr1_str)
-PMPSm_cp_cfg_L_modify_L1_clear_pmpcfg0:
+  RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, x0, PMPSm_cg_cp_cfg_L_modify_L1_clear_pmpaddr1, PMPSm_cg_cp_cfg_L_modify_L1_clear_pmpaddr1_str)
+PMPSm_cg_cp_cfg_L_modify_L1_clear_pmpcfg0:
   # Write x0 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x0, PMPSm_cp_cfg_L_modify_L1_clear_pmpcfg0, PMPSm_cp_cfg_L_modify_L1_clear_pmpcfg0_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x0, PMPSm_cg_cp_cfg_L_modify_L1_clear_pmpcfg0, PMPSm_cg_cp_cfg_L_modify_L1_clear_pmpcfg0_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -112,20 +112,20 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-PMPSm_cp_cfg_L_modify_L0_write_pmpaddr1_str: .string "\"test: 183; cg: PMPSm; cp: cp_cfg_L_modify; bin: L0_write_pmpaddr1\""
-PMPSm_cp_cfg_L_modify_L0_write_pmpcfg0_str: .string "\"test: 184; cg: PMPSm; cp: cp_cfg_L_modify; bin: L0_write_pmpcfg0\""
-PMPSm_cp_cfg_L_modify_L0_modify_pmpcfg0_str: .string "\"test: 185; cg: PMPSm; cp: cp_cfg_L_modify; bin: L0_modify_pmpcfg0\""
-PMPSm_cp_cfg_L_modify_L0_modify_pmpaddr0_str: .string "\"test: 186; cg: PMPSm; cp: cp_cfg_L_modify; bin: L0_modify_pmpaddr0\""
-PMPSm_cp_cfg_L_modify_L0_clear_pmpaddr1_str: .string "\"test: 187; cg: PMPSm; cp: cp_cfg_L_modify; bin: L0_clear_pmpaddr1\""
-PMPSm_cp_cfg_L_modify_L0_clear_pmpcfg0_str: .string "\"test: 188; cg: PMPSm; cp: cp_cfg_L_modify; bin: L0_clear_pmpcfg0\""
-PMPSm_cp_cfg_L_modify_L0_reset_pmpaddr0_str: .string "\"test: 189; cg: PMPSm; cp: cp_cfg_L_modify; bin: L0_reset_pmpaddr0\""
-PMPSm_cp_cfg_L_modify_L0_reset_pmpcfg0_str: .string "\"test: 190; cg: PMPSm; cp: cp_cfg_L_modify; bin: L0_reset_pmpcfg0\""
-PMPSm_cp_cfg_L_modify_L1_write_pmpaddr1_str: .string "\"test: 191; cg: PMPSm; cp: cp_cfg_L_modify; bin: L1_write_pmpaddr1\""
-PMPSm_cp_cfg_L_modify_L1_write_pmpcfg0_str: .string "\"test: 192; cg: PMPSm; cp: cp_cfg_L_modify; bin: L1_write_pmpcfg0\""
-PMPSm_cp_cfg_L_modify_L1_modify_pmpcfg0_str: .string "\"test: 193; cg: PMPSm; cp: cp_cfg_L_modify; bin: L1_modify_pmpcfg0\""
-PMPSm_cp_cfg_L_modify_L1_modify_pmpaddr0_str: .string "\"test: 194; cg: PMPSm; cp: cp_cfg_L_modify; bin: L1_modify_pmpaddr0\""
-PMPSm_cp_cfg_L_modify_L1_clear_pmpaddr1_str: .string "\"test: 195; cg: PMPSm; cp: cp_cfg_L_modify; bin: L1_clear_pmpaddr1\""
-PMPSm_cp_cfg_L_modify_L1_clear_pmpcfg0_str: .string "\"test: 196; cg: PMPSm; cp: cp_cfg_L_modify; bin: L1_clear_pmpcfg0\""
+PMPSm_cg_cp_cfg_L_modify_L0_write_pmpaddr1_str: .string "\"test: 183; cg: PMPSm_cg; cp: cp_cfg_L_modify; bin: L0_write_pmpaddr1\""
+PMPSm_cg_cp_cfg_L_modify_L0_write_pmpcfg0_str: .string "\"test: 184; cg: PMPSm_cg; cp: cp_cfg_L_modify; bin: L0_write_pmpcfg0\""
+PMPSm_cg_cp_cfg_L_modify_L0_modify_pmpcfg0_str: .string "\"test: 185; cg: PMPSm_cg; cp: cp_cfg_L_modify; bin: L0_modify_pmpcfg0\""
+PMPSm_cg_cp_cfg_L_modify_L0_modify_pmpaddr0_str: .string "\"test: 186; cg: PMPSm_cg; cp: cp_cfg_L_modify; bin: L0_modify_pmpaddr0\""
+PMPSm_cg_cp_cfg_L_modify_L0_clear_pmpaddr1_str: .string "\"test: 187; cg: PMPSm_cg; cp: cp_cfg_L_modify; bin: L0_clear_pmpaddr1\""
+PMPSm_cg_cp_cfg_L_modify_L0_clear_pmpcfg0_str: .string "\"test: 188; cg: PMPSm_cg; cp: cp_cfg_L_modify; bin: L0_clear_pmpcfg0\""
+PMPSm_cg_cp_cfg_L_modify_L0_reset_pmpaddr0_str: .string "\"test: 189; cg: PMPSm_cg; cp: cp_cfg_L_modify; bin: L0_reset_pmpaddr0\""
+PMPSm_cg_cp_cfg_L_modify_L0_reset_pmpcfg0_str: .string "\"test: 190; cg: PMPSm_cg; cp: cp_cfg_L_modify; bin: L0_reset_pmpcfg0\""
+PMPSm_cg_cp_cfg_L_modify_L1_write_pmpaddr1_str: .string "\"test: 191; cg: PMPSm_cg; cp: cp_cfg_L_modify; bin: L1_write_pmpaddr1\""
+PMPSm_cg_cp_cfg_L_modify_L1_write_pmpcfg0_str: .string "\"test: 192; cg: PMPSm_cg; cp: cp_cfg_L_modify; bin: L1_write_pmpcfg0\""
+PMPSm_cg_cp_cfg_L_modify_L1_modify_pmpcfg0_str: .string "\"test: 193; cg: PMPSm_cg; cp: cp_cfg_L_modify; bin: L1_modify_pmpcfg0\""
+PMPSm_cg_cp_cfg_L_modify_L1_modify_pmpaddr0_str: .string "\"test: 194; cg: PMPSm_cg; cp: cp_cfg_L_modify; bin: L1_modify_pmpaddr0\""
+PMPSm_cg_cp_cfg_L_modify_L1_clear_pmpaddr1_str: .string "\"test: 195; cg: PMPSm_cg; cp: cp_cfg_L_modify; bin: L1_clear_pmpaddr1\""
+PMPSm_cg_cp_cfg_L_modify_L1_clear_pmpcfg0_str: .string "\"test: 196; cg: PMPSm_cg; cp: cp_cfg_L_modify; bin: L1_clear_pmpcfg0\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

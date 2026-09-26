@@ -30,7 +30,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_zicbop
+// cp_PTE_rwx_zicbop_u
 /////////////////////////////////
 
 
@@ -79,13 +79,13 @@ main:
   srli a0, a0, 16
   add a5, a5, a0
   RVTEST_TSBI_GOTO_UMODE
-SvZicbo_cg_cp_prefetch_test1_prefetch_i:
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test1_prefetch_i:
   prefetch.i 0(a5)
   nop
-SvZicbo_cg_cp_prefetch_test1_prefetch_r:
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test1_prefetch_r:
   prefetch.r 0(a5)
   nop
-SvZicbo_cg_cp_prefetch_test1_prefetch_w:
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test1_prefetch_w:
   prefetch.w 0(a5)
   nop
   RVTEST_TSBI_GOTO_SMODE
@@ -100,13 +100,13 @@ SvZicbo_cg_cp_prefetch_test1_prefetch_w:
   srli a0, a0, 25
   add a5, a5, a0
   RVTEST_TSBI_GOTO_UMODE
-SvZicbo_cg_cp_prefetch_test2_prefetch_i:
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test2_prefetch_i:
   prefetch.i 0(a5)
   nop
-SvZicbo_cg_cp_prefetch_test2_prefetch_r:
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test2_prefetch_r:
   prefetch.r 0(a5)
   nop
-SvZicbo_cg_cp_prefetch_test2_prefetch_w:
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test2_prefetch_w:
   prefetch.w 0(a5)
   nop
   RVTEST_TSBI_GOTO_SMODE
@@ -122,13 +122,13 @@ SvZicbo_cg_cp_prefetch_test2_prefetch_w:
   srli a0, a0, 34
   add a5, a5, a0
   RVTEST_TSBI_GOTO_UMODE
-SvZicbo_cg_cp_prefetch_test3_prefetch_i:
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test3_prefetch_i:
   prefetch.i 0(a5)
   nop
-SvZicbo_cg_cp_prefetch_test3_prefetch_r:
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test3_prefetch_r:
   prefetch.r 0(a5)
   nop
-SvZicbo_cg_cp_prefetch_test3_prefetch_w:
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test3_prefetch_w:
   prefetch.w 0(a5)
   nop
   RVTEST_TSBI_GOTO_SMODE
@@ -145,13 +145,13 @@ SvZicbo_cg_cp_prefetch_test3_prefetch_w:
   srli a0, a0, 43
   add a5, a5, a0
   RVTEST_TSBI_GOTO_UMODE
-SvZicbo_cg_cp_prefetch_test4_prefetch_i:
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test4_prefetch_i:
   prefetch.i 0(a5)
   nop
-SvZicbo_cg_cp_prefetch_test4_prefetch_r:
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test4_prefetch_r:
   prefetch.r 0(a5)
   nop
-SvZicbo_cg_cp_prefetch_test4_prefetch_w:
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test4_prefetch_w:
   prefetch.w 0(a5)
   nop
   RVTEST_TSBI_GOTO_SMODE
@@ -169,13 +169,13 @@ SvZicbo_cg_cp_prefetch_test4_prefetch_w:
   srli a0, a0, 52
   add a5, a5, a0
   RVTEST_TSBI_GOTO_UMODE
-SvZicbo_cg_cp_prefetch_test5_prefetch_i:
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test5_prefetch_i:
   prefetch.i 0(a5)
   nop
-SvZicbo_cg_cp_prefetch_test5_prefetch_r:
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test5_prefetch_r:
   prefetch.r 0(a5)
   nop
-SvZicbo_cg_cp_prefetch_test5_prefetch_w:
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test5_prefetch_w:
   prefetch.w 0(a5)
   nop
   RVTEST_TSBI_GOTO_SMODE
@@ -217,21 +217,21 @@ rvtest_slvl3_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-SvZicbo_cg_cp_prefetch_test1_prefetch_i_str: .string "\"test: 16; cg: SvZicbo_cg; cp: cp_prefetch; bin: test1_prefetch_i\""
-SvZicbo_cg_cp_prefetch_test1_prefetch_r_str: .string "\"test: 17; cg: SvZicbo_cg; cp: cp_prefetch; bin: test1_prefetch_r\""
-SvZicbo_cg_cp_prefetch_test1_prefetch_w_str: .string "\"test: 18; cg: SvZicbo_cg; cp: cp_prefetch; bin: test1_prefetch_w\""
-SvZicbo_cg_cp_prefetch_test2_prefetch_i_str: .string "\"test: 19; cg: SvZicbo_cg; cp: cp_prefetch; bin: test2_prefetch_i\""
-SvZicbo_cg_cp_prefetch_test2_prefetch_r_str: .string "\"test: 20; cg: SvZicbo_cg; cp: cp_prefetch; bin: test2_prefetch_r\""
-SvZicbo_cg_cp_prefetch_test2_prefetch_w_str: .string "\"test: 21; cg: SvZicbo_cg; cp: cp_prefetch; bin: test2_prefetch_w\""
-SvZicbo_cg_cp_prefetch_test3_prefetch_i_str: .string "\"test: 22; cg: SvZicbo_cg; cp: cp_prefetch; bin: test3_prefetch_i\""
-SvZicbo_cg_cp_prefetch_test3_prefetch_r_str: .string "\"test: 23; cg: SvZicbo_cg; cp: cp_prefetch; bin: test3_prefetch_r\""
-SvZicbo_cg_cp_prefetch_test3_prefetch_w_str: .string "\"test: 24; cg: SvZicbo_cg; cp: cp_prefetch; bin: test3_prefetch_w\""
-SvZicbo_cg_cp_prefetch_test4_prefetch_i_str: .string "\"test: 25; cg: SvZicbo_cg; cp: cp_prefetch; bin: test4_prefetch_i\""
-SvZicbo_cg_cp_prefetch_test4_prefetch_r_str: .string "\"test: 26; cg: SvZicbo_cg; cp: cp_prefetch; bin: test4_prefetch_r\""
-SvZicbo_cg_cp_prefetch_test4_prefetch_w_str: .string "\"test: 27; cg: SvZicbo_cg; cp: cp_prefetch; bin: test4_prefetch_w\""
-SvZicbo_cg_cp_prefetch_test5_prefetch_i_str: .string "\"test: 28; cg: SvZicbo_cg; cp: cp_prefetch; bin: test5_prefetch_i\""
-SvZicbo_cg_cp_prefetch_test5_prefetch_r_str: .string "\"test: 29; cg: SvZicbo_cg; cp: cp_prefetch; bin: test5_prefetch_r\""
-SvZicbo_cg_cp_prefetch_test5_prefetch_w_str: .string "\"test: 30; cg: SvZicbo_cg; cp: cp_prefetch; bin: test5_prefetch_w\""
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test1_prefetch_i_str: .string "\"test: 16; cg: SvZicbo_cg; cp: cp_PTE_rwx_zicbop_u; bin: test1_prefetch_i\""
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test1_prefetch_r_str: .string "\"test: 17; cg: SvZicbo_cg; cp: cp_PTE_rwx_zicbop_u; bin: test1_prefetch_r\""
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test1_prefetch_w_str: .string "\"test: 18; cg: SvZicbo_cg; cp: cp_PTE_rwx_zicbop_u; bin: test1_prefetch_w\""
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test2_prefetch_i_str: .string "\"test: 19; cg: SvZicbo_cg; cp: cp_PTE_rwx_zicbop_u; bin: test2_prefetch_i\""
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test2_prefetch_r_str: .string "\"test: 20; cg: SvZicbo_cg; cp: cp_PTE_rwx_zicbop_u; bin: test2_prefetch_r\""
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test2_prefetch_w_str: .string "\"test: 21; cg: SvZicbo_cg; cp: cp_PTE_rwx_zicbop_u; bin: test2_prefetch_w\""
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test3_prefetch_i_str: .string "\"test: 22; cg: SvZicbo_cg; cp: cp_PTE_rwx_zicbop_u; bin: test3_prefetch_i\""
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test3_prefetch_r_str: .string "\"test: 23; cg: SvZicbo_cg; cp: cp_PTE_rwx_zicbop_u; bin: test3_prefetch_r\""
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test3_prefetch_w_str: .string "\"test: 24; cg: SvZicbo_cg; cp: cp_PTE_rwx_zicbop_u; bin: test3_prefetch_w\""
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test4_prefetch_i_str: .string "\"test: 25; cg: SvZicbo_cg; cp: cp_PTE_rwx_zicbop_u; bin: test4_prefetch_i\""
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test4_prefetch_r_str: .string "\"test: 26; cg: SvZicbo_cg; cp: cp_PTE_rwx_zicbop_u; bin: test4_prefetch_r\""
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test4_prefetch_w_str: .string "\"test: 27; cg: SvZicbo_cg; cp: cp_PTE_rwx_zicbop_u; bin: test4_prefetch_w\""
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test5_prefetch_i_str: .string "\"test: 28; cg: SvZicbo_cg; cp: cp_PTE_rwx_zicbop_u; bin: test5_prefetch_i\""
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test5_prefetch_r_str: .string "\"test: 29; cg: SvZicbo_cg; cp: cp_PTE_rwx_zicbop_u; bin: test5_prefetch_r\""
+SvZicbo_cg_cp_PTE_rwx_zicbop_u_test5_prefetch_w_str: .string "\"test: 30; cg: SvZicbo_cg; cp: cp_PTE_rwx_zicbop_u; bin: test5_prefetch_w\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

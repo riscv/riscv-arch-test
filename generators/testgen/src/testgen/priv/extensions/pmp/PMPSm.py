@@ -7,6 +7,8 @@
 
 """PMPSm suite: pmpcfg/pmpaddr WARL behaviour and M-mode PMP enforcement."""
 
+from collections.abc import Callable
+
 from testgen.asm.csr import gen_csr_write_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
@@ -27,6 +29,7 @@ from testgen.priv.extensions.pmp.helpers import (
     zero_pmp_regs,
 )
 from testgen.priv.extensions.pmp.probes import (
+    cross_by_access,
     gen_lw_bounds,
     gen_rwx,
     gen_rwx_all,
@@ -73,7 +76,7 @@ def _make_zero_walk_chunk(test_data: TestData) -> TestChunk:
     chunk.section_header = comment_banner("cp_pmpcfg_walk", "Write zero to every pmpcfg CSR and check the readback.")
     chunk.code.extend(
         [
-            test_data.add_testcase("zero", "cp_pmpcfg_walk", "PMPSm"),
+            test_data.add_testcase("zero", "cp_pmpcfg_walk", "PMPSm_cg"),
             "// Write zero to every pmpcfg CSR",
             *_csr_walk("0", test_data.current_testcase_label),
         ]
@@ -98,7 +101,7 @@ def _make_pmpcfg_walk_chunk(test_data: TestData, number: int, byte: int) -> Test
             chunk.code.append("")
         chunk.code.extend(
             [
-                test_data.add_testcase(f"bit{bit}", "cp_pmpcfg_walk", "PMPSm"),
+                test_data.add_testcase(f"bit{bit}", "cp_pmpcfg_walk", "PMPSm_cg"),
                 f"// Write 1 << {bit} to every pmpcfg CSR",
                 *_csr_walk(f"1 << {bit}", test_data.current_testcase_label),
             ]
@@ -124,7 +127,8 @@ _ENTRIES = tuple(range(14, -1, -1))
 def _make_a_all_chunk(test_data: TestData) -> TestChunk:
     chunk = test_data.begin_test_chunk("cfg_A_all")
     chunk.section_header = comment_banner(
-        "cp_cfg_A_all", "Write A = NA4, NAPOT, TOR and OFF into every byte of every pmpcfg CSR and read it back."
+        "cp_cfg_A_all_even and cp_cfg_A_all_odd",
+        "Write A = NA4, NAPOT, TOR and OFF into every byte of every pmpcfg CSR and read it back.",
     )
     chunk.code.extend([*zero_pmp_regs(), "", "RVTEST_PMP_SET_BACKGROUND x4"])
 
@@ -132,7 +136,9 @@ def _make_a_all_chunk(test_data: TestData) -> TestChunk:
         for csr in csrs:
             chunk.code.extend(
                 [
-                    test_data.add_testcase(f"{name}_pmpcfg{csr}", "cp_cfg_A_all", "PMPSm"),
+                    test_data.add_testcase(
+                        f"{name}_pmpcfg{csr}", f"cp_cfg_A_all_{'odd' if csr % 2 else 'even'}", "PMPSm_cg"
+                    ),
                     gen_csr_write_sigupd(4 if const else 0, f"pmpcfg{csr}", test_data),
                 ]
             )
@@ -183,11 +189,13 @@ def _make_a_off_all_chunk(test_data: TestData) -> TestChunk:
             "napot",
             lambda e: f"({cfg_byte('1000', 'off', '0')} << {cfg_shift(e)})",
             gen_rwx,
-            "cp_cfg_A_off_all",
+            cross_by_access(
+                execute="cp_cfg_A_OFF_all_exec", load="cp_cfg_A_OFF_all_read", store="cp_cfg_A_OFF_all_write"
+            ),
         ),
     ]
     chunk.section_header = comment_banner(
-        "cp_cfg_A_off_all",
+        "cp_cfg_A_OFF_all_exec, cp_cfg_A_OFF_all_read and cp_cfg_A_OFF_all_write",
         "{jalr, sw, lw} at a region whose entry has L = 1, A = OFF, XWR = 000, for every entry; all succeed.",
     )
     chunk.code.extend(body)
@@ -198,6 +206,11 @@ def _make_a_off_all_chunk(test_data: TestData) -> TestChunk:
 # ---------------------------------------------------------------------------
 # cfg_A_tor_bot: region 1 extends from pmpaddr0 to pmpaddr1
 # ---------------------------------------------------------------------------
+
+
+def _tor_bot_crosses(lock: int) -> Callable[[str], str]:
+    prefix = f"cp_cfg_A_tor_bot_L{lock}"
+    return cross_by_access(execute=f"{prefix}_x", load=f"{prefix}_r", store=f"{prefix}_w")
 
 
 def _make_a_tor_bot_chunk(test_data: TestData) -> TestChunk:
@@ -215,15 +228,16 @@ def _make_a_tor_bot_chunk(test_data: TestData) -> TestChunk:
         "// PMP configuration 1: pmpcfg1 = L, TOR, XR; pmpcfg0 = OFF, unlocked",
         *set_pmpcfg(0, "PMPREGION_UPPER_BOUND"),
         "RVTEST_SFENCE_VMA_IF_SUPPORTED",
-        *gen_rwx_tor_bot(test_data, "unlocked", "cp_cfg_A_tor_bot"),
+        *gen_rwx_tor_bot(test_data, "unlocked", _tor_bot_crosses(0)),
         "",
         "// PMP configuration 2: pmpcfg1 = L, TOR, XR; pmpcfg0 = OFF, locked",
         *set_pmpcfg(0, "PMPREGION_UPPER_BOUND|PMPREGION_LOWER_BOUND"),
         "RVTEST_SFENCE_VMA_IF_SUPPORTED",
-        *gen_rwx_tor_bot(test_data, "locked", "cp_cfg_A_tor_bot"),
+        *gen_rwx_tor_bot(test_data, "locked", _tor_bot_crosses(1)),
     ]
     chunk.section_header = comment_banner(
-        "cp_cfg_A_tor_bot",
+        "cp_cfg_A_tor_bot_L0_x, cp_cfg_A_tor_bot_L0_w, cp_cfg_A_tor_bot_L0_r, "
+        "cp_cfg_A_tor_bot_L1_x, cp_cfg_A_tor_bot_L1_w and cp_cfg_A_tor_bot_L1_r",
         "{sw, lw, jalr} at pmpaddr0-4, pmpaddr0, pmpaddr1-4 and pmpaddr1 with entry 1 = L, TOR, XR and entry 0 = OFF, unlocked then locked.",
     )
     chunk.code.extend(body)
@@ -252,10 +266,15 @@ def _make_a_tor_zero_chunk(test_data: TestData) -> TestChunk:
         "// PMP configuration 1: pmpcfg0 = L, TOR, XWR: region 0 spans [0, TEST_FOR_EXECUTION)",
         *set_pmpcfg(0, "PMPREGION_TOR"),
         "RVTEST_SFENCE_VMA_IF_SUPPORTED",
-        *gen_rwx_tor_zero(test_data, "region0", "cp_cfg_A_tor0"),
+        *gen_rwx_tor_zero(
+            test_data,
+            "region0",
+            cross_by_access(execute="cp_cfg_A_tor0_x", load="cp_cfg_A_tor0_r", store="cp_cfg_A_tor0_w"),
+        ),
     ]
     chunk.section_header = comment_banner(
-        "cp_cfg_A_tor0", "{sw, lw, jalr} at pmpaddr0, pmpaddr0-4 and 0 with entry 0 = L, TOR, XWR."
+        "cp_cfg_A_tor0_x, cp_cfg_A_tor0_r and cp_cfg_A_tor0_w",
+        "{sw, lw, jalr} at pmpaddr0, pmpaddr0-4 and 0 with entry 0 = L, TOR, XWR.",
     )
     chunk.code.extend(body)
     chunk.raw_data.extend(tuple(REGION_BLOBS["off"]))
@@ -277,7 +296,7 @@ def _make_l_access_all_chunk(test_data: TestData) -> TestChunk:
         "",
         "// PMP configuration 0: M-mode access succeeds when every PMP entry is off",
         "RVTEST_SFENCE_VMA_IF_SUPPORTED",
-        *gen_rwx(test_data, "all_off", "cp_none"),
+        *gen_rwx(test_data, "all_off", cross_by_access(execute="cp_none_jalr", load="cp_none_lw", store="cp_none_sw")),
         "",
         "RVTEST_PMP_SET_BACKGROUND x4",
         *entry_walk(
@@ -286,11 +305,11 @@ def _make_l_access_all_chunk(test_data: TestData) -> TestChunk:
             "napot",
             lambda e: f"({cfg_byte('0000', 'napot', '0')} << {cfg_shift(e)})",
             gen_rwx,
-            "cp_cfg_L_access_all",
+            cross_by_access(execute="cp_cfg_L_access_exec", load="cp_cfg_L_access_read", store="cp_cfg_L_access_write"),
         ),
     ]
     chunk.section_header = comment_banner(
-        "cp_cfg_L_access_all and cp_none",
+        "cp_cfg_L_access_exec, cp_cfg_L_access_read, cp_cfg_L_access_write, cp_none_jalr, cp_none_lw and cp_none_sw",
         "{jalr, sw, lw} with every PMP entry off, then at a region whose entry has L = 0, A = NAPOT, XWR = 000, for every entry; all succeed.",
     )
     chunk.code.extend(body)
@@ -334,7 +353,7 @@ def _make_l_modify_chunk(test_data: TestData, amode: str) -> TestChunk:
             chunk.code.extend(setup.format(cfg=cfg_byte(f"{lock}111", amode, "PMP1_CFG_SHIFT")).splitlines())
             chunk.code.extend(
                 [
-                    f"{test_data.add_testcase(f'L{lock}_{step}', 'cp_cfg_L_modify', 'PMPSm')}",
+                    f"{test_data.add_testcase(f'L{lock}_{step}', 'cp_cfg_L_modify', 'PMPSm_cg')}",
                     gen_csr_write_sigupd(src, csr, test_data),
                 ]
             )
@@ -379,9 +398,15 @@ def _make_xwr_all_chunk(test_data: TestData, part: int) -> TestChunk:
     for n, (entry, xwr) in enumerate(zip(_ENTRIES, codes, strict=True), start=first):
         body.extend(["", f"// PMP configuration {n}: L = 1 and XWR = {xwr} on PMP entry {entry}"])
         body.extend(set_pmpcfg(entry, f"(PMPREGION_XWR_{xwr} << {cfg_shift(entry)})"))
-        body.extend(["RVTEST_SFENCE_VMA_IF_SUPPORTED", *gen_rwx_all(test_data, f"entry{entry}_lxwr{xwr}", "cp_cfg_RW")])
+        crosses = cross_by_access(
+            execute=f"cp_cfg_X{xwr[0]}_all",
+            load=f"cp_cfg_Rw{xwr[2]}{xwr[1]}_all",
+            store=f"cp_cfg_rW{xwr[2]}{xwr[1]}_all",
+        )
+        body.extend(["RVTEST_SFENCE_VMA_IF_SUPPORTED", *gen_rwx_all(test_data, f"entry{entry}_lxwr{xwr}", crosses)])
     chunk.section_header = comment_banner(
-        "cp_cfg_X0_all, cp_cfg_X1_all, cp_cfg_RW00_all, cp_cfg_RW10_all and cp_cfg_RW11_all",
+        "cp_cfg_X0_all, cp_cfg_X1_all, cp_cfg_Rw00_all, cp_cfg_Rw10_all, cp_cfg_Rw11_all, "
+        "cp_cfg_rW00_all, cp_cfg_rW10_all and cp_cfg_rW11_all",
         "Every load and store width plus a jalr at a locked NAPOT region, rolling the six legal XWR over entries 14..0.",
     )
     chunk.code.extend(body)
@@ -392,6 +417,9 @@ def _make_xwr_all_chunk(test_data: TestData, part: int) -> TestChunk:
 # ---------------------------------------------------------------------------
 # cfg_na4_all / cfg_napot_all: A=NA4 / A=NAPOT works in every region
 # ---------------------------------------------------------------------------
+
+
+_AMODE_ALL_CROSS = {"na4": "cp_cfg_A_NA4_all", "napot": "cp_cfg_A_napot_all"}
 
 
 def _make_amode_all_chunk(test_data: TestData, amode: str) -> TestChunk:
@@ -413,11 +441,11 @@ def _make_amode_all_chunk(test_data: TestData, amode: str) -> TestChunk:
             amode,
             lambda e: cfg_byte("1000", amode, cfg_shift(e)),
             lambda data, case, coverpoint, region: gen_lw_bounds(data, case, coverpoint, region, beyond),
-            f"cp_cfg_A_{amode}_all",
+            _AMODE_ALL_CROSS[amode],
         )
     )
     chunk.section_header = comment_banner(
-        f"cp_cfg_A_{amode}_all",
+        _AMODE_ALL_CROSS[amode],
         f"lw at, 4 below and just beyond a locked no-permission {amode.upper()} region, for every entry.",
     )
     chunk.code.extend(body)
@@ -472,7 +500,8 @@ def _make_tor_all_chunk(test_data: TestData) -> TestChunk:
                 "RVTEST_SFENCE_VMA_IF_SUPPORTED",
                 "",
                 f"LA(a5, TEST_FOR_EXECUTION_{n - 1})",
-                test_data.add_testcase(f"entry{n}_1_lw", "cp_cfg_A_tor_all", "PMPSm"),
+                # cp_cfg_A_tor_all14 covers the highest region; entry 15 probes just above it.
+                test_data.add_testcase(f"entry{n}_1_lw", f"cp_cfg_A_tor_all{min(n, 14)}", "PMPSm_cg"),
                 "lw a4, 0(a5)",
                 write_sigupd(14, test_data),
             ]
@@ -489,7 +518,8 @@ def _make_tor_all_chunk(test_data: TestData) -> TestChunk:
         data.extend([f"TEST_FOR_EXECUTION_{i}:", f".rept ({i + 1} * (PMP_TOR_REGION_BYTES / 4))", "nop", ".endr"])
     data.extend(RETURN_TRAMPOLINE)
     chunk.section_header = comment_banner(
-        "cp_cfg_A_tor_all", "Fifteen locked TOR regions of increasing size with XWR = 00(i%2); lw at the start of each."
+        "cp_cfg_A_tor_all1 to cp_cfg_A_tor_all14",
+        "Fifteen locked TOR regions of increasing size with XWR = 00(i%2); lw at the start of each.",
     )
     chunk.code.extend(body)
     chunk.raw_data.extend(tuple(data))
@@ -528,10 +558,18 @@ def _make_tor_check_chunk(test_data: TestData, part: int) -> TestChunk:
         f"// PMP configuration 1: pmpcfg1 = L, TOR, no permissions; {case}",
         *set_pmpcfg(0, "PMPREGION_UPPER_BOUND"),
         "RVTEST_SFENCE_VMA_IF_SUPPORTED",
-        *gen_rwx_na4(test_data, f"non_overlap{part}", "cp_cfg_A_tor_non_overlap"),
+        *gen_rwx_na4(
+            test_data,
+            f"non_overlap{part}",
+            cross_by_access(
+                execute=f"cp_cfg_A_tor_nonoverlap{part}_x",
+                load=f"cp_cfg_A_tor_nonoverlap{part}_r",
+                store=f"cp_cfg_A_tor_nonoverlap{part}_w",
+            ),
+        ),
     ]
     chunk.section_header = comment_banner(
-        f"cp_cfg_A_tor_non-overlap test case {part}",
+        f"cp_cfg_A_tor_nonoverlap{part}_x, cp_cfg_A_tor_nonoverlap{part}_r and cp_cfg_A_tor_nonoverlap{part}_w",
         f"{{jalr, sw, lw}} around a locked TOR entry 1 with no permissions while {case}; no match, so all succeed.",
     )
     chunk.code.extend(body)
@@ -547,7 +585,8 @@ def _make_tor_check_chunk(test_data: TestData, part: int) -> TestChunk:
 def _make_grain_chunk(test_data: TestData) -> TestChunk:
     chunk = test_data.begin_test_chunk("grain")
     chunk.section_header = comment_banner(
-        "cp_grain",
+        "cp_grain_NAPOT_to_OFF, cp_grain_NAPOT_to_NAPOT, cp_grain_NAPOT_to_TOR, "
+        "cp_grain_OFF_to_OFF, cp_grain_OFF_to_NAPOT and cp_grain_OFF_to_TOR",
         "Write zeros, ones and a checkerboard to pmpaddr0 with A = NAPOT and OFF; read back with A = OFF, NAPOT and TOR.",
     )
     chunk.code.extend(
@@ -576,7 +615,11 @@ def _make_grain_chunk(test_data: TestData) -> TestChunk:
             for read_mode in ("OFF", "NAPOT", "TOR"):
                 block = [
                     "",
-                    test_data.add_testcase(f"{pattern}_write_{write_mode}_read_{read_mode}", "cp_grain", "PMPSm"),
+                    test_data.add_testcase(
+                        f"{pattern}_write_{write_mode}_read_{read_mode}",
+                        f"cp_grain_{write_mode}_to_{read_mode}",
+                        "PMPSm_cg",
+                    ),
                     f"// Write {pattern} to pmpaddr0 with A = {write_mode}, read back with A = {read_mode}",
                     f"LI(x6, PMPREGION_{write_mode})",
                     "csrw pmpcfg0, x6",
@@ -597,7 +640,7 @@ def _make_grain_chunk(test_data: TestData) -> TestChunk:
 def _make_grain_check_chunk(test_data: TestData) -> TestChunk:
     chunk = test_data.begin_test_chunk("grain_check")
     chunk.section_header = comment_banner(
-        "cp_grain_check",
+        "cp_grain_check_write and cp_grain_check_read",
         "Write all ones to pmpaddr0 with pmpcfg0 = 0 and read it back; the lowest set bit gives the grain.",
     )
     chunk.code.extend(
@@ -608,7 +651,7 @@ def _make_grain_check_chunk(test_data: TestData) -> TestChunk:
             "",
             "RVTEST_PMP_SET_BACKGROUND x4",
             "",
-            test_data.add_testcase("readback", "cp_grain_check", "PMPSm"),
+            test_data.add_testcase("readback", "cp_grain_check_read", "PMPSm_cg"),
             "// Write 0 to pmpcfg0 and all ones to pmpaddr0, then read back pmpaddr0",
             "csrw pmpcfg0, x0",
             "LI(x6, -1)",
@@ -634,7 +677,7 @@ def _make_pmpaddr_upper_chunk(test_data: TestData) -> TestChunk:
     )
     chunk.code.extend(
         [
-            test_data.add_testcase("all_ones", "cp_pmpaddr_upper_zero", "PMPSm"),
+            test_data.add_testcase("all_ones", "cp_pmpaddr_upper_zero", "PMPSm_cg"),
             "// Write ones to every pmpaddr CSR and check bits 63:54 read back as zero",
             "LI(t0, -1)",
             "LI(t1, 0xFFC0000000000000)",
@@ -669,10 +712,17 @@ def _make_legal_chunk(test_data: TestData, amode: str, part: int | None = None) 
         first, name = 3 * (part - 1) + 1, f"{amode}_legal_lxwr-{part:02d}"
     chunk = test_data.begin_test_chunk(name)
     chunk.section_header = comment_banner(
-        f"cp_cfg_A_{amode}",
+        f"cp_cfg_A_{amode}_x, cp_cfg_A_{amode}_r and cp_cfg_A_{amode}_w",
         f"{{jalr, sw, lw}} in M mode at and around a locked {amode.upper()} region, each legal XWR.",
     )
-    chunk.code.extend(lxwr_walk_body(test_data, cases, amode, generator, f"cp_cfg_A_{amode}", first=first))
+    crosses = cross_by_access(
+        execute=f"cp_cfg_A_{amode}_x",
+        load="cp_cfg_R",
+        store="cp_cfg_W",
+        lw=f"cp_cfg_A_{amode}_r",
+        sw=f"cp_cfg_A_{amode}_w",
+    )
+    chunk.code.extend(lxwr_walk_body(test_data, cases, amode, generator, crosses, first=first))
     chunk.raw_data.extend(tuple(REGION_BLOBS[amode]))
     return test_data.end_test_chunk()
 
@@ -732,7 +782,7 @@ def _make_priority_chunk(test_data: TestData) -> TestChunk:
                 *gen_rwx(
                     test_data,
                     f"region{n - 1}_lxwr{lxwr}",
-                    "cp_priority",
+                    cross_by_access(execute="cp_priority_jalr", load="cp_priority_lw", store="cp_priority_sw"),
                     f"(TEST_FOR_EXECUTION + {size} * PMP_NAPOT_REGION_BYTES - 4)",
                 ),
             ]
@@ -749,7 +799,7 @@ def _make_priority_chunk(test_data: TestData) -> TestChunk:
         *RETURN_TRAMPOLINE,
     ]
     chunk.section_header = comment_banner(
-        "cp_priority",
+        "cp_priority_jalr, cp_priority_lw and cp_priority_sw",
         "{jalr, sw, lw} at the last word of each of seven nested NAPOT regions cycling the six legal XWR; the smallest matching region decides.",
     )
     chunk.code.extend(body)
@@ -781,10 +831,14 @@ def _make_priority_off_chunk(test_data: TestData) -> TestChunk:
         "// PMP configuration 1: an OFF region does not match, and the first matching region takes priority",
         *set_pmpcfg(0, "|".join(f"PMPREGION{e}_LXWR_{lxwr}" for e, (lxwr, _) in enumerate(codes))),
         "RVTEST_SFENCE_VMA_IF_SUPPORTED",
-        *gen_rwx(test_data, "entry1", "cp_priority_off"),
+        *gen_rwx(
+            test_data,
+            "entry1",
+            cross_by_access(execute="cp_priority_off_jalr", load="cp_priority_off_lw", store="cp_priority_off_sw"),
+        ),
     ]
     chunk.section_header = comment_banner(
-        "cp_priority_off",
+        "cp_priority_off_jalr, cp_priority_off_lw and cp_priority_off_sw",
         "{jalr, sw, lw} at a region covered by entries 0..3 = OFF, NAPOT XR, OFF, NAPOT XWR; entry 1 decides.",
     )
     chunk.code.extend(body)
@@ -795,6 +849,10 @@ def _make_priority_off_chunk(test_data: TestData) -> TestChunk:
 #####################################################################
 # pmpsm_all_entries_check: every PMP entry enforces load/store access
 #####################################################################
+
+
+#: cp_pmp64_{read,write} sample only lw and sw; the jalr probes of the XR region belong to cp_cfg_X.
+_ALL_ENTRIES_CROSSES = cross_by_access(execute="cp_cfg_X", load="cp_pmp64_read", store="cp_pmp64_write")
 
 
 def _make_all_entries_chunk(test_data: TestData) -> TestChunk:
@@ -820,7 +878,7 @@ def _make_all_entries_chunk(test_data: TestData) -> TestChunk:
             "napot",
             _all_entries_cfg,
             gen_rwx,
-            "cp_pmp64",
+            _ALL_ENTRIES_CROSSES,
             case_prefix="pmp64_entry",
         ),
         "#else",
@@ -830,13 +888,13 @@ def _make_all_entries_chunk(test_data: TestData) -> TestChunk:
             "napot",
             _all_entries_cfg,
             gen_rwx,
-            "cp_pmp64",
+            _ALL_ENTRIES_CROSSES,
             case_prefix="pmp16_entry",
         ),
         "#endif",
     ]
     chunk.section_header = comment_banner(
-        "cp_pmp64",
+        "cp_pmp64_read, cp_pmp64_write and cp_cfg_X",
         "{jalr, sw, lw} at a locked NAPOT XR region, for every entry below the background entry (16 or 64 entries).",
     )
     chunk.code.extend(body)

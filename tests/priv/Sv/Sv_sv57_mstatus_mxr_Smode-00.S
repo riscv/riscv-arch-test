@@ -30,7 +30,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_sv57_mstatus_mxr_Smode
+// cp_spage_nowrite_s_d, cp_xpage_mxrunset_read_s, cp_spage_exec_s_i, cp_xpage_mxrset_read_s
 /////////////////////////////////
 
 
@@ -77,26 +77,26 @@ main:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv57_mstatus_mxr_Smode_test1_store:
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test1_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv57_mstatus_mxr_Smode_test1_load:
+Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test1_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv57_mstatus_mxr_Smode_test1_exec:
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test1_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_mstatus_mxr_Smode_test1_store, Sv_cp_sv57_mstatus_mxr_Smode_test1_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test1_store, Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test1_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv57_mstatus_mxr_Smode_test1_load, Sv_cp_sv57_mstatus_mxr_Smode_test1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test1_load, Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test1_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_mstatus_mxr_Smode_test1_exec, Sv_cp_sv57_mstatus_mxr_Smode_test1_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_spage_exec_s_i_test1_exec, Sv_vm_permissions_cg_cp_spage_exec_s_i_test1_exec_str)
 
 
 // 256TB page at level 4
@@ -115,26 +115,26 @@ Sv_cp_sv57_mstatus_mxr_Smode_test1_exec:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv57_mstatus_mxr_Smode_test2_store:
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test2_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv57_mstatus_mxr_Smode_test2_load:
+Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test2_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv57_mstatus_mxr_Smode_test2_exec:
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test2_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_mstatus_mxr_Smode_test2_store, Sv_cp_sv57_mstatus_mxr_Smode_test2_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test2_store, Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test2_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv57_mstatus_mxr_Smode_test2_load, Sv_cp_sv57_mstatus_mxr_Smode_test2_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test2_load, Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test2_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_mstatus_mxr_Smode_test2_exec, Sv_cp_sv57_mstatus_mxr_Smode_test2_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_spage_exec_s_i_test2_exec, Sv_vm_permissions_cg_cp_spage_exec_s_i_test2_exec_str)
 
 
 // 512GB page at level 3
@@ -154,26 +154,26 @@ Sv_cp_sv57_mstatus_mxr_Smode_test2_exec:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv57_mstatus_mxr_Smode_test3_store:
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test3_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv57_mstatus_mxr_Smode_test3_load:
+Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test3_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv57_mstatus_mxr_Smode_test3_exec:
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test3_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_mstatus_mxr_Smode_test3_store, Sv_cp_sv57_mstatus_mxr_Smode_test3_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test3_store, Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test3_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv57_mstatus_mxr_Smode_test3_load, Sv_cp_sv57_mstatus_mxr_Smode_test3_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test3_load, Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test3_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_mstatus_mxr_Smode_test3_exec, Sv_cp_sv57_mstatus_mxr_Smode_test3_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_spage_exec_s_i_test3_exec, Sv_vm_permissions_cg_cp_spage_exec_s_i_test3_exec_str)
 
 
 // 512GB page at level 3
@@ -193,26 +193,26 @@ Sv_cp_sv57_mstatus_mxr_Smode_test3_exec:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv57_mstatus_mxr_Smode_test4_store:
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test4_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv57_mstatus_mxr_Smode_test4_load:
+Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test4_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv57_mstatus_mxr_Smode_test4_exec:
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test4_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_mstatus_mxr_Smode_test4_store, Sv_cp_sv57_mstatus_mxr_Smode_test4_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test4_store, Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test4_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv57_mstatus_mxr_Smode_test4_load, Sv_cp_sv57_mstatus_mxr_Smode_test4_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test4_load, Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test4_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_mstatus_mxr_Smode_test4_exec, Sv_cp_sv57_mstatus_mxr_Smode_test4_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_spage_exec_s_i_test4_exec, Sv_vm_permissions_cg_cp_spage_exec_s_i_test4_exec_str)
 
 
 // 1GB page at level 2
@@ -233,26 +233,26 @@ Sv_cp_sv57_mstatus_mxr_Smode_test4_exec:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv57_mstatus_mxr_Smode_test5_store:
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test5_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv57_mstatus_mxr_Smode_test5_load:
+Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test5_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv57_mstatus_mxr_Smode_test5_exec:
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test5_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_mstatus_mxr_Smode_test5_store, Sv_cp_sv57_mstatus_mxr_Smode_test5_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test5_store, Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test5_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv57_mstatus_mxr_Smode_test5_load, Sv_cp_sv57_mstatus_mxr_Smode_test5_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test5_load, Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test5_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_mstatus_mxr_Smode_test5_exec, Sv_cp_sv57_mstatus_mxr_Smode_test5_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_spage_exec_s_i_test5_exec, Sv_vm_permissions_cg_cp_spage_exec_s_i_test5_exec_str)
 
 
 // 1GB page at level 2
@@ -273,26 +273,26 @@ Sv_cp_sv57_mstatus_mxr_Smode_test5_exec:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv57_mstatus_mxr_Smode_test6_store:
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test6_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv57_mstatus_mxr_Smode_test6_load:
+Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test6_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv57_mstatus_mxr_Smode_test6_exec:
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test6_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_mstatus_mxr_Smode_test6_store, Sv_cp_sv57_mstatus_mxr_Smode_test6_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test6_store, Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test6_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv57_mstatus_mxr_Smode_test6_load, Sv_cp_sv57_mstatus_mxr_Smode_test6_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test6_load, Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test6_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_mstatus_mxr_Smode_test6_exec, Sv_cp_sv57_mstatus_mxr_Smode_test6_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_spage_exec_s_i_test6_exec, Sv_vm_permissions_cg_cp_spage_exec_s_i_test6_exec_str)
 
 
 // 2MB page at level 1
@@ -314,26 +314,26 @@ Sv_cp_sv57_mstatus_mxr_Smode_test6_exec:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv57_mstatus_mxr_Smode_test7_store:
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test7_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv57_mstatus_mxr_Smode_test7_load:
+Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test7_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv57_mstatus_mxr_Smode_test7_exec:
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test7_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_mstatus_mxr_Smode_test7_store, Sv_cp_sv57_mstatus_mxr_Smode_test7_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test7_store, Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test7_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv57_mstatus_mxr_Smode_test7_load, Sv_cp_sv57_mstatus_mxr_Smode_test7_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test7_load, Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test7_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_mstatus_mxr_Smode_test7_exec, Sv_cp_sv57_mstatus_mxr_Smode_test7_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_spage_exec_s_i_test7_exec, Sv_vm_permissions_cg_cp_spage_exec_s_i_test7_exec_str)
 
 
 // 2MB page at level 1
@@ -355,26 +355,26 @@ Sv_cp_sv57_mstatus_mxr_Smode_test7_exec:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv57_mstatus_mxr_Smode_test8_store:
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test8_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv57_mstatus_mxr_Smode_test8_load:
+Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test8_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv57_mstatus_mxr_Smode_test8_exec:
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test8_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_mstatus_mxr_Smode_test8_store, Sv_cp_sv57_mstatus_mxr_Smode_test8_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test8_store, Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test8_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv57_mstatus_mxr_Smode_test8_load, Sv_cp_sv57_mstatus_mxr_Smode_test8_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test8_load, Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test8_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_mstatus_mxr_Smode_test8_exec, Sv_cp_sv57_mstatus_mxr_Smode_test8_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_spage_exec_s_i_test8_exec, Sv_vm_permissions_cg_cp_spage_exec_s_i_test8_exec_str)
 
 
 // 4KB page at level 0
@@ -397,26 +397,26 @@ Sv_cp_sv57_mstatus_mxr_Smode_test8_exec:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv57_mstatus_mxr_Smode_test9_store:
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test9_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv57_mstatus_mxr_Smode_test9_load:
+Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test9_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv57_mstatus_mxr_Smode_test9_exec:
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test9_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_mstatus_mxr_Smode_test9_store, Sv_cp_sv57_mstatus_mxr_Smode_test9_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test9_store, Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test9_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv57_mstatus_mxr_Smode_test9_load, Sv_cp_sv57_mstatus_mxr_Smode_test9_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test9_load, Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test9_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_mstatus_mxr_Smode_test9_exec, Sv_cp_sv57_mstatus_mxr_Smode_test9_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_spage_exec_s_i_test9_exec, Sv_vm_permissions_cg_cp_spage_exec_s_i_test9_exec_str)
 
 
 // 4KB page at level 0
@@ -439,26 +439,26 @@ Sv_cp_sv57_mstatus_mxr_Smode_test9_exec:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv57_mstatus_mxr_Smode_test10_store:
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test10_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv57_mstatus_mxr_Smode_test10_load:
+Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test10_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv57_mstatus_mxr_Smode_test10_exec:
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test10_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_mstatus_mxr_Smode_test10_store, Sv_cp_sv57_mstatus_mxr_Smode_test10_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test10_store, Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test10_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv57_mstatus_mxr_Smode_test10_load, Sv_cp_sv57_mstatus_mxr_Smode_test10_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test10_load, Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test10_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_mstatus_mxr_Smode_test10_exec, Sv_cp_sv57_mstatus_mxr_Smode_test10_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_spage_exec_s_i_test10_exec, Sv_vm_permissions_cg_cp_spage_exec_s_i_test10_exec_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -497,36 +497,36 @@ rvtest_slvl3_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_cp_sv57_mstatus_mxr_Smode_test1_store_str: .string "\"test: 145; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test1_store\""
-Sv_cp_sv57_mstatus_mxr_Smode_test1_load_str: .string "\"test: 146; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test1_load\""
-Sv_cp_sv57_mstatus_mxr_Smode_test1_exec_str: .string "\"test: 147; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test1_exec\""
-Sv_cp_sv57_mstatus_mxr_Smode_test2_store_str: .string "\"test: 148; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test2_store\""
-Sv_cp_sv57_mstatus_mxr_Smode_test2_load_str: .string "\"test: 149; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test2_load\""
-Sv_cp_sv57_mstatus_mxr_Smode_test2_exec_str: .string "\"test: 150; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test2_exec\""
-Sv_cp_sv57_mstatus_mxr_Smode_test3_store_str: .string "\"test: 151; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test3_store\""
-Sv_cp_sv57_mstatus_mxr_Smode_test3_load_str: .string "\"test: 152; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test3_load\""
-Sv_cp_sv57_mstatus_mxr_Smode_test3_exec_str: .string "\"test: 153; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test3_exec\""
-Sv_cp_sv57_mstatus_mxr_Smode_test4_store_str: .string "\"test: 154; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test4_store\""
-Sv_cp_sv57_mstatus_mxr_Smode_test4_load_str: .string "\"test: 155; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test4_load\""
-Sv_cp_sv57_mstatus_mxr_Smode_test4_exec_str: .string "\"test: 156; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test4_exec\""
-Sv_cp_sv57_mstatus_mxr_Smode_test5_store_str: .string "\"test: 157; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test5_store\""
-Sv_cp_sv57_mstatus_mxr_Smode_test5_load_str: .string "\"test: 158; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test5_load\""
-Sv_cp_sv57_mstatus_mxr_Smode_test5_exec_str: .string "\"test: 159; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test5_exec\""
-Sv_cp_sv57_mstatus_mxr_Smode_test6_store_str: .string "\"test: 160; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test6_store\""
-Sv_cp_sv57_mstatus_mxr_Smode_test6_load_str: .string "\"test: 161; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test6_load\""
-Sv_cp_sv57_mstatus_mxr_Smode_test6_exec_str: .string "\"test: 162; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test6_exec\""
-Sv_cp_sv57_mstatus_mxr_Smode_test7_store_str: .string "\"test: 163; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test7_store\""
-Sv_cp_sv57_mstatus_mxr_Smode_test7_load_str: .string "\"test: 164; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test7_load\""
-Sv_cp_sv57_mstatus_mxr_Smode_test7_exec_str: .string "\"test: 165; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test7_exec\""
-Sv_cp_sv57_mstatus_mxr_Smode_test8_store_str: .string "\"test: 166; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test8_store\""
-Sv_cp_sv57_mstatus_mxr_Smode_test8_load_str: .string "\"test: 167; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test8_load\""
-Sv_cp_sv57_mstatus_mxr_Smode_test8_exec_str: .string "\"test: 168; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test8_exec\""
-Sv_cp_sv57_mstatus_mxr_Smode_test9_store_str: .string "\"test: 169; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test9_store\""
-Sv_cp_sv57_mstatus_mxr_Smode_test9_load_str: .string "\"test: 170; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test9_load\""
-Sv_cp_sv57_mstatus_mxr_Smode_test9_exec_str: .string "\"test: 171; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test9_exec\""
-Sv_cp_sv57_mstatus_mxr_Smode_test10_store_str: .string "\"test: 172; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test10_store\""
-Sv_cp_sv57_mstatus_mxr_Smode_test10_load_str: .string "\"test: 173; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test10_load\""
-Sv_cp_sv57_mstatus_mxr_Smode_test10_exec_str: .string "\"test: 174; cg: Sv; cp: cp_sv57_mstatus_mxr_Smode; bin: test10_exec\""
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test1_store_str: .string "\"test: 145; cg: Sv_vm_permissions_cg; cp: cp_spage_nowrite_s_d; bin: test1_store\""
+Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test1_load_str: .string "\"test: 146; cg: Sv_vm_permissions_cg; cp: cp_xpage_mxrunset_read_s; bin: test1_load\""
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test1_exec_str: .string "\"test: 147; cg: Sv_vm_permissions_cg; cp: cp_spage_exec_s_i; bin: test1_exec\""
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test2_store_str: .string "\"test: 148; cg: Sv_vm_permissions_cg; cp: cp_spage_nowrite_s_d; bin: test2_store\""
+Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test2_load_str: .string "\"test: 149; cg: Sv_vm_permissions_cg; cp: cp_xpage_mxrset_read_s; bin: test2_load\""
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test2_exec_str: .string "\"test: 150; cg: Sv_vm_permissions_cg; cp: cp_spage_exec_s_i; bin: test2_exec\""
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test3_store_str: .string "\"test: 151; cg: Sv_vm_permissions_cg; cp: cp_spage_nowrite_s_d; bin: test3_store\""
+Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test3_load_str: .string "\"test: 152; cg: Sv_vm_permissions_cg; cp: cp_xpage_mxrunset_read_s; bin: test3_load\""
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test3_exec_str: .string "\"test: 153; cg: Sv_vm_permissions_cg; cp: cp_spage_exec_s_i; bin: test3_exec\""
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test4_store_str: .string "\"test: 154; cg: Sv_vm_permissions_cg; cp: cp_spage_nowrite_s_d; bin: test4_store\""
+Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test4_load_str: .string "\"test: 155; cg: Sv_vm_permissions_cg; cp: cp_xpage_mxrset_read_s; bin: test4_load\""
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test4_exec_str: .string "\"test: 156; cg: Sv_vm_permissions_cg; cp: cp_spage_exec_s_i; bin: test4_exec\""
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test5_store_str: .string "\"test: 157; cg: Sv_vm_permissions_cg; cp: cp_spage_nowrite_s_d; bin: test5_store\""
+Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test5_load_str: .string "\"test: 158; cg: Sv_vm_permissions_cg; cp: cp_xpage_mxrunset_read_s; bin: test5_load\""
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test5_exec_str: .string "\"test: 159; cg: Sv_vm_permissions_cg; cp: cp_spage_exec_s_i; bin: test5_exec\""
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test6_store_str: .string "\"test: 160; cg: Sv_vm_permissions_cg; cp: cp_spage_nowrite_s_d; bin: test6_store\""
+Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test6_load_str: .string "\"test: 161; cg: Sv_vm_permissions_cg; cp: cp_xpage_mxrset_read_s; bin: test6_load\""
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test6_exec_str: .string "\"test: 162; cg: Sv_vm_permissions_cg; cp: cp_spage_exec_s_i; bin: test6_exec\""
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test7_store_str: .string "\"test: 163; cg: Sv_vm_permissions_cg; cp: cp_spage_nowrite_s_d; bin: test7_store\""
+Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test7_load_str: .string "\"test: 164; cg: Sv_vm_permissions_cg; cp: cp_xpage_mxrunset_read_s; bin: test7_load\""
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test7_exec_str: .string "\"test: 165; cg: Sv_vm_permissions_cg; cp: cp_spage_exec_s_i; bin: test7_exec\""
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test8_store_str: .string "\"test: 166; cg: Sv_vm_permissions_cg; cp: cp_spage_nowrite_s_d; bin: test8_store\""
+Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test8_load_str: .string "\"test: 167; cg: Sv_vm_permissions_cg; cp: cp_xpage_mxrset_read_s; bin: test8_load\""
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test8_exec_str: .string "\"test: 168; cg: Sv_vm_permissions_cg; cp: cp_spage_exec_s_i; bin: test8_exec\""
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test9_store_str: .string "\"test: 169; cg: Sv_vm_permissions_cg; cp: cp_spage_nowrite_s_d; bin: test9_store\""
+Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test9_load_str: .string "\"test: 170; cg: Sv_vm_permissions_cg; cp: cp_xpage_mxrunset_read_s; bin: test9_load\""
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test9_exec_str: .string "\"test: 171; cg: Sv_vm_permissions_cg; cp: cp_spage_exec_s_i; bin: test9_exec\""
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test10_store_str: .string "\"test: 172; cg: Sv_vm_permissions_cg; cp: cp_spage_nowrite_s_d; bin: test10_store\""
+Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test10_load_str: .string "\"test: 173; cg: Sv_vm_permissions_cg; cp: cp_xpage_mxrset_read_s; bin: test10_load\""
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test10_exec_str: .string "\"test: 174; cg: Sv_vm_permissions_cg; cp: cp_spage_exec_s_i; bin: test10_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -26,6 +26,7 @@ from testgen.priv.extensions.pmp.helpers import (
     zero_pmp_regs,
 )
 from testgen.priv.extensions.pmp.probes import (
+    cross_by_access,
     gen_rwx,
     gen_rwx_all,
     gen_rwx_legal,
@@ -68,11 +69,15 @@ def _make_cfg_a_off_chunk(test_data: TestData, mode: Mode) -> TestChunk:
         "csrw pmpcfg0, x0",
         "RVTEST_SFENCE_VMA_IF_SUPPORTED",
         f"RVTEST_TSBI_GOTO_{mode.letter}MODE",
-        *gen_rwx(test_data, "off", "cp_cfg_A_off"),
+        *gen_rwx(
+            test_data,
+            "off",
+            cross_by_access(execute="cp_cfg_A_off_jalr", load="cp_cfg_A_off_lw", store="cp_cfg_A_off_sw"),
+        ),
         "RVTEST_TSBI_GOTO_MMODE",
     ]
     chunk.section_header = comment_banner(
-        f"{mode.suite} cp_cfg_A_off",
+        f"{test_data.testsuite} cp_cfg_A_off_jalr, cp_cfg_A_off_lw and cp_cfg_A_off_sw",
         f"{{jalr, sw, lw}} from {mode.letter} mode at a region whose entry has A = OFF, XWR = 000 and pmpaddr = all ones; all succeed.",
     )
     chunk.code.extend(body)
@@ -85,11 +90,12 @@ def _make_cfg_xwr_chunk(test_data: TestData, mode: Mode, *, locked: bool) -> Tes
     cases = LOCKED_LXWR_CASES if locked else UNLOCKED_LXWR_CASES
     chunk = test_data.begin_test_chunk(name)
     chunk.section_header = comment_banner(
-        f"{mode.suite} cp_cfg_X and cp_cfg_RW",
+        f"{test_data.testsuite} cp_cfg_X, cp_cfg_R and cp_cfg_W",
         f"Every load and store width plus a jalr from {mode.letter} mode at the start of a NAPOT region, "
         f"L = {int(locked)}, each legal XWR.",
     )
-    chunk.code.extend(lxwr_walk_body(test_data, cases, "napot", gen_rwx_all, "cp_cfg_RW", lower_mode=mode.letter))
+    crosses = cross_by_access(execute="cp_cfg_X", load="cp_cfg_R", store="cp_cfg_W")
+    chunk.code.extend(lxwr_walk_body(test_data, cases, "napot", gen_rwx_all, crosses, lower_mode=mode.letter))
     chunk.raw_data.extend(REGION_BLOBS["off"])
     return test_data.end_test_chunk()
 
@@ -120,12 +126,12 @@ def _make_csr_access_chunk(test_data: TestData, mode: Mode) -> TestChunk:
         [
             "RVTEST_PMP_SET_BACKGROUND x4",
             "",
-            test_data.add_testcase("write_all", f"cp_pmpaddr_access_{low}", mode.suite),
+            test_data.add_testcase("write_all", f"cp_pmpaddr_access_{low}", f"{test_data.testsuite}_cg"),
             f"// Write all ones to every pmpaddr CSR from {mode.letter} mode",
             "LI(x4, -1)",
             *_csr_walk("pmpaddri", "CSR_PMPADDR0", 64, test_data.current_testcase_label, mode),
             "",
-            test_data.add_testcase("write_all", f"cp_pmpcfg_access_{low}", mode.suite),
+            test_data.add_testcase("write_all", f"cp_pmpcfg_access_{low}", f"{test_data.testsuite}_cg"),
             f"// Write all ones to every pmpcfg CSR from {mode.letter} mode",
             *_csr_walk("pmpcfgi", "CSR_PMPCFG0", 16, test_data.current_testcase_label, mode),
         ]
@@ -151,6 +157,7 @@ def _make_mprv_chunk(test_data: TestData, mode: Mode, part: int) -> TestChunk:
         "RVTEST_PMP_SET_BACKGROUND x4",
         "",
     ]
+    crosses = cross_by_access(execute="cp_mprv_jalr", load="cp_mprv_lw", store="cp_mprv_sw")
     n = 0
     for lock in (0, 1):
         body.extend(["", *set_pmpaddr("napot", 0), *set_pmpcfg(0, f"PMPREGION_LXWR_{lock}{xwr}")])
@@ -162,11 +169,11 @@ def _make_mprv_chunk(test_data: TestData, mode: Mode, part: int) -> TestChunk:
                 [
                     "",
                     f"// PMP configuration {n}: mstatus.MPRV = {mprv}, mstatus.MPP = {mode.letter} mode, L = {lock}, XWR = {xwr}",
-                    *gen_rwx_mprv(test_data, f"lock{lock}_mprv{mprv}", "cp_mprv", bits),
+                    *gen_rwx_mprv(test_data, f"lock{lock}_mprv{mprv}", crosses, bits),
                 ]
             )
     chunk.section_header = comment_banner(
-        f"{mode.suite} cp_mprv",
+        f"{test_data.testsuite} cp_mprv_jalr, cp_mprv_lw and cp_mprv_sw",
         f"{{jalr, sw, lw}} from M mode with mstatus.MPRV = {{0, 1}} and MPP = {mode.letter}, region L = {{0, 1}}, XWR = {xwr}.",
     )
     chunk.code.extend(body)
@@ -183,7 +190,7 @@ def _make_legal_chunk(test_data: TestData, mode: Mode, amode: str, part: int | N
     generator = {"na4": gen_rwx_na4, "napot": gen_rwx_napot, "tor": gen_rwx_legal}[amode]
     chunk = test_data.begin_test_chunk(name)
     chunk.section_header = comment_banner(
-        f"{mode.suite} cp_cfg_A_{amode}",
+        f"{test_data.testsuite} cp_cfg_A_{amode}_jalr, cp_cfg_A_{amode}_lw and cp_cfg_A_{amode}_sw",
         f"{{jalr, sw, lw}} from {mode.letter} mode at and around a {amode.upper()} region, L = 0, each legal XWR.",
     )
     chunk.code.extend(
@@ -192,7 +199,13 @@ def _make_legal_chunk(test_data: TestData, mode: Mode, amode: str, part: int | N
             cases,
             amode,
             generator,
-            f"cp_cfg_A_{amode}",
+            cross_by_access(
+                execute=f"cp_cfg_A_{amode}_jalr",
+                load="cp_cfg_R",
+                store="cp_cfg_W",
+                lw=f"cp_cfg_A_{amode}_lw",
+                sw=f"cp_cfg_A_{amode}_sw",
+            ),
             first=1 if part is None else 3 * (part - 1) + 1,
             lower_mode=mode.letter,
         )

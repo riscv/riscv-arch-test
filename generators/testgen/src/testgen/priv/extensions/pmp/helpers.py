@@ -11,7 +11,7 @@ from collections.abc import Callable, Iterable
 
 from testgen.asm.csr import gen_csr_write_sigupd
 from testgen.data.state import TestData
-from testgen.priv.extensions.pmp.probes import ProbeGenerator
+from testgen.priv.extensions.pmp.probes import Cross, ProbeGenerator
 
 #####################################################################
 # PMP CSR helpers
@@ -129,11 +129,11 @@ def set_pmpcfg(entry: int, value: str) -> list[str]:
     return lines
 
 
-def write_pmpcfg0(test_data: TestData, value: str, name: str) -> list[str]:
-    """Write pmpcfg0 and register its readback as a testcase."""
+def write_pmpcfg0(test_data: TestData, value: str, name: str, coverpoint: str) -> list[str]:
+    """Write pmpcfg0 and register its readback as a testcase of ``coverpoint``, which samples pmpcfg0."""
     return [
         f"LI(x4, {value})",
-        test_data.add_testcase(name, "cp_pmpcfg", test_data.testsuite),
+        test_data.add_testcase(name, coverpoint, f"{test_data.testsuite}_cg"),
         gen_csr_write_sigupd(4, "pmpcfg0", test_data),
         "sfence.vma",
     ]
@@ -162,7 +162,7 @@ def lxwr_walk_body(
     cases: list[tuple[str, int]],
     amode: str,
     probe_generator: ProbeGenerator | dict[str, ProbeGenerator],
-    coverpoint: str,
+    coverpoint: Cross,
     *,
     first: int = 1,
     lower_mode: str | None = None,
@@ -200,7 +200,7 @@ def entry_walk(
     amode: str,
     cfg: Callable[[int], str],
     probe_generator: ProbeGenerator,
-    coverpoint: str,
+    coverpoint: Cross,
     *,
     region: str = "TEST_FOR_EXECUTION",
     first: int = 1,

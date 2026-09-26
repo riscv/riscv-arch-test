@@ -30,7 +30,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_cfg_RW
+// cp_cfg_R and cp_cfg_W
 //   Every floating-point load and store width against a locked NAPOT region with each legal XWR.
 /////////////////////////////////
 
@@ -77,36 +77,36 @@ RVTEST_BEGIN
 
   LA(a5, TEST_FOR_EXECUTION)
 #ifdef ZFHMIN_SUPPORTED
-PMPF_cp_cfg_RW_entry5_lxwr1000_1_fsh:
+PMPF_cg_cp_cfg_W_entry5_lxwr1000_1_fsh:
   fsh f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry5_lxwr1000_1_fsh, PMPF_cp_cfg_RW_entry5_lxwr1000_1_fsh_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_W_entry5_lxwr1000_1_fsh, PMPF_cg_cp_cfg_W_entry5_lxwr1000_1_fsh_str)
 #endif
-PMPF_cp_cfg_RW_entry5_lxwr1000_2_fsw:
+PMPF_cg_cp_cfg_W_entry5_lxwr1000_2_fsw:
   fsw f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry5_lxwr1000_2_fsw, PMPF_cp_cfg_RW_entry5_lxwr1000_2_fsw_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_W_entry5_lxwr1000_2_fsw, PMPF_cg_cp_cfg_W_entry5_lxwr1000_2_fsw_str)
 #ifdef D_SUPPORTED
-PMPF_cp_cfg_RW_entry5_lxwr1000_3_fsd:
+PMPF_cg_cp_cfg_W_entry5_lxwr1000_3_fsd:
   fsd f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry5_lxwr1000_3_fsd, PMPF_cp_cfg_RW_entry5_lxwr1000_3_fsd_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_W_entry5_lxwr1000_3_fsd, PMPF_cg_cp_cfg_W_entry5_lxwr1000_3_fsd_str)
 #endif
 #ifdef ZFHMIN_SUPPORTED
-PMPF_cp_cfg_RW_entry5_lxwr1000_4_flh:
+PMPF_cg_cp_cfg_R_entry5_lxwr1000_4_flh:
   flh f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry5_lxwr1000_4_flh, PMPF_cp_cfg_RW_entry5_lxwr1000_4_flh_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_R_entry5_lxwr1000_4_flh, PMPF_cg_cp_cfg_R_entry5_lxwr1000_4_flh_str)
 #endif
-PMPF_cp_cfg_RW_entry5_lxwr1000_5_flw:
+PMPF_cg_cp_cfg_R_entry5_lxwr1000_5_flw:
   flw f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry5_lxwr1000_5_flw, PMPF_cp_cfg_RW_entry5_lxwr1000_5_flw_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_R_entry5_lxwr1000_5_flw, PMPF_cg_cp_cfg_R_entry5_lxwr1000_5_flw_str)
 #ifdef D_SUPPORTED
-PMPF_cp_cfg_RW_entry5_lxwr1000_6_fld:
+PMPF_cg_cp_cfg_R_entry5_lxwr1000_6_fld:
   fld f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry5_lxwr1000_6_fld, PMPF_cp_cfg_RW_entry5_lxwr1000_6_fld_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_R_entry5_lxwr1000_6_fld, PMPF_cg_cp_cfg_R_entry5_lxwr1000_6_fld_str)
 #endif
 
 // PMP configuration 2: L = 1, R permissions, entry 4
@@ -127,36 +127,36 @@ PMPF_cp_cfg_RW_entry5_lxwr1000_6_fld:
 
   LA(a5, TEST_FOR_EXECUTION)
 #ifdef ZFHMIN_SUPPORTED
-PMPF_cp_cfg_RW_entry4_lxwr1001_1_fsh:
+PMPF_cg_cp_cfg_W_entry4_lxwr1001_1_fsh:
   fsh f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry4_lxwr1001_1_fsh, PMPF_cp_cfg_RW_entry4_lxwr1001_1_fsh_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_W_entry4_lxwr1001_1_fsh, PMPF_cg_cp_cfg_W_entry4_lxwr1001_1_fsh_str)
 #endif
-PMPF_cp_cfg_RW_entry4_lxwr1001_2_fsw:
+PMPF_cg_cp_cfg_W_entry4_lxwr1001_2_fsw:
   fsw f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry4_lxwr1001_2_fsw, PMPF_cp_cfg_RW_entry4_lxwr1001_2_fsw_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_W_entry4_lxwr1001_2_fsw, PMPF_cg_cp_cfg_W_entry4_lxwr1001_2_fsw_str)
 #ifdef D_SUPPORTED
-PMPF_cp_cfg_RW_entry4_lxwr1001_3_fsd:
+PMPF_cg_cp_cfg_W_entry4_lxwr1001_3_fsd:
   fsd f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry4_lxwr1001_3_fsd, PMPF_cp_cfg_RW_entry4_lxwr1001_3_fsd_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_W_entry4_lxwr1001_3_fsd, PMPF_cg_cp_cfg_W_entry4_lxwr1001_3_fsd_str)
 #endif
 #ifdef ZFHMIN_SUPPORTED
-PMPF_cp_cfg_RW_entry4_lxwr1001_4_flh:
+PMPF_cg_cp_cfg_R_entry4_lxwr1001_4_flh:
   flh f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry4_lxwr1001_4_flh, PMPF_cp_cfg_RW_entry4_lxwr1001_4_flh_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_R_entry4_lxwr1001_4_flh, PMPF_cg_cp_cfg_R_entry4_lxwr1001_4_flh_str)
 #endif
-PMPF_cp_cfg_RW_entry4_lxwr1001_5_flw:
+PMPF_cg_cp_cfg_R_entry4_lxwr1001_5_flw:
   flw f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry4_lxwr1001_5_flw, PMPF_cp_cfg_RW_entry4_lxwr1001_5_flw_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_R_entry4_lxwr1001_5_flw, PMPF_cg_cp_cfg_R_entry4_lxwr1001_5_flw_str)
 #ifdef D_SUPPORTED
-PMPF_cp_cfg_RW_entry4_lxwr1001_6_fld:
+PMPF_cg_cp_cfg_R_entry4_lxwr1001_6_fld:
   fld f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry4_lxwr1001_6_fld, PMPF_cp_cfg_RW_entry4_lxwr1001_6_fld_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_R_entry4_lxwr1001_6_fld, PMPF_cg_cp_cfg_R_entry4_lxwr1001_6_fld_str)
 #endif
 
 // PMP configuration 3: L = 1, WR permissions, entry 3
@@ -173,36 +173,36 @@ PMPF_cp_cfg_RW_entry4_lxwr1001_6_fld:
 
   LA(a5, TEST_FOR_EXECUTION)
 #ifdef ZFHMIN_SUPPORTED
-PMPF_cp_cfg_RW_entry3_lxwr1011_1_fsh:
+PMPF_cg_cp_cfg_W_entry3_lxwr1011_1_fsh:
   fsh f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry3_lxwr1011_1_fsh, PMPF_cp_cfg_RW_entry3_lxwr1011_1_fsh_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_W_entry3_lxwr1011_1_fsh, PMPF_cg_cp_cfg_W_entry3_lxwr1011_1_fsh_str)
 #endif
-PMPF_cp_cfg_RW_entry3_lxwr1011_2_fsw:
+PMPF_cg_cp_cfg_W_entry3_lxwr1011_2_fsw:
   fsw f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry3_lxwr1011_2_fsw, PMPF_cp_cfg_RW_entry3_lxwr1011_2_fsw_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_W_entry3_lxwr1011_2_fsw, PMPF_cg_cp_cfg_W_entry3_lxwr1011_2_fsw_str)
 #ifdef D_SUPPORTED
-PMPF_cp_cfg_RW_entry3_lxwr1011_3_fsd:
+PMPF_cg_cp_cfg_W_entry3_lxwr1011_3_fsd:
   fsd f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry3_lxwr1011_3_fsd, PMPF_cp_cfg_RW_entry3_lxwr1011_3_fsd_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_W_entry3_lxwr1011_3_fsd, PMPF_cg_cp_cfg_W_entry3_lxwr1011_3_fsd_str)
 #endif
 #ifdef ZFHMIN_SUPPORTED
-PMPF_cp_cfg_RW_entry3_lxwr1011_4_flh:
+PMPF_cg_cp_cfg_R_entry3_lxwr1011_4_flh:
   flh f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry3_lxwr1011_4_flh, PMPF_cp_cfg_RW_entry3_lxwr1011_4_flh_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_R_entry3_lxwr1011_4_flh, PMPF_cg_cp_cfg_R_entry3_lxwr1011_4_flh_str)
 #endif
-PMPF_cp_cfg_RW_entry3_lxwr1011_5_flw:
+PMPF_cg_cp_cfg_R_entry3_lxwr1011_5_flw:
   flw f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry3_lxwr1011_5_flw, PMPF_cp_cfg_RW_entry3_lxwr1011_5_flw_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_R_entry3_lxwr1011_5_flw, PMPF_cg_cp_cfg_R_entry3_lxwr1011_5_flw_str)
 #ifdef D_SUPPORTED
-PMPF_cp_cfg_RW_entry3_lxwr1011_6_fld:
+PMPF_cg_cp_cfg_R_entry3_lxwr1011_6_fld:
   fld f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry3_lxwr1011_6_fld, PMPF_cp_cfg_RW_entry3_lxwr1011_6_fld_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_R_entry3_lxwr1011_6_fld, PMPF_cg_cp_cfg_R_entry3_lxwr1011_6_fld_str)
 #endif
 
 // PMP configuration 4: L = 1, X permissions, entry 2
@@ -219,36 +219,36 @@ PMPF_cp_cfg_RW_entry3_lxwr1011_6_fld:
 
   LA(a5, TEST_FOR_EXECUTION)
 #ifdef ZFHMIN_SUPPORTED
-PMPF_cp_cfg_RW_entry2_lxwr1100_1_fsh:
+PMPF_cg_cp_cfg_W_entry2_lxwr1100_1_fsh:
   fsh f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry2_lxwr1100_1_fsh, PMPF_cp_cfg_RW_entry2_lxwr1100_1_fsh_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_W_entry2_lxwr1100_1_fsh, PMPF_cg_cp_cfg_W_entry2_lxwr1100_1_fsh_str)
 #endif
-PMPF_cp_cfg_RW_entry2_lxwr1100_2_fsw:
+PMPF_cg_cp_cfg_W_entry2_lxwr1100_2_fsw:
   fsw f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry2_lxwr1100_2_fsw, PMPF_cp_cfg_RW_entry2_lxwr1100_2_fsw_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_W_entry2_lxwr1100_2_fsw, PMPF_cg_cp_cfg_W_entry2_lxwr1100_2_fsw_str)
 #ifdef D_SUPPORTED
-PMPF_cp_cfg_RW_entry2_lxwr1100_3_fsd:
+PMPF_cg_cp_cfg_W_entry2_lxwr1100_3_fsd:
   fsd f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry2_lxwr1100_3_fsd, PMPF_cp_cfg_RW_entry2_lxwr1100_3_fsd_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_W_entry2_lxwr1100_3_fsd, PMPF_cg_cp_cfg_W_entry2_lxwr1100_3_fsd_str)
 #endif
 #ifdef ZFHMIN_SUPPORTED
-PMPF_cp_cfg_RW_entry2_lxwr1100_4_flh:
+PMPF_cg_cp_cfg_R_entry2_lxwr1100_4_flh:
   flh f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry2_lxwr1100_4_flh, PMPF_cp_cfg_RW_entry2_lxwr1100_4_flh_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_R_entry2_lxwr1100_4_flh, PMPF_cg_cp_cfg_R_entry2_lxwr1100_4_flh_str)
 #endif
-PMPF_cp_cfg_RW_entry2_lxwr1100_5_flw:
+PMPF_cg_cp_cfg_R_entry2_lxwr1100_5_flw:
   flw f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry2_lxwr1100_5_flw, PMPF_cp_cfg_RW_entry2_lxwr1100_5_flw_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_R_entry2_lxwr1100_5_flw, PMPF_cg_cp_cfg_R_entry2_lxwr1100_5_flw_str)
 #ifdef D_SUPPORTED
-PMPF_cp_cfg_RW_entry2_lxwr1100_6_fld:
+PMPF_cg_cp_cfg_R_entry2_lxwr1100_6_fld:
   fld f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry2_lxwr1100_6_fld, PMPF_cp_cfg_RW_entry2_lxwr1100_6_fld_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_R_entry2_lxwr1100_6_fld, PMPF_cg_cp_cfg_R_entry2_lxwr1100_6_fld_str)
 #endif
 
 // PMP configuration 5: L = 1, XR permissions, entry 1
@@ -265,36 +265,36 @@ PMPF_cp_cfg_RW_entry2_lxwr1100_6_fld:
 
   LA(a5, TEST_FOR_EXECUTION)
 #ifdef ZFHMIN_SUPPORTED
-PMPF_cp_cfg_RW_entry1_lxwr1101_1_fsh:
+PMPF_cg_cp_cfg_W_entry1_lxwr1101_1_fsh:
   fsh f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry1_lxwr1101_1_fsh, PMPF_cp_cfg_RW_entry1_lxwr1101_1_fsh_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_W_entry1_lxwr1101_1_fsh, PMPF_cg_cp_cfg_W_entry1_lxwr1101_1_fsh_str)
 #endif
-PMPF_cp_cfg_RW_entry1_lxwr1101_2_fsw:
+PMPF_cg_cp_cfg_W_entry1_lxwr1101_2_fsw:
   fsw f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry1_lxwr1101_2_fsw, PMPF_cp_cfg_RW_entry1_lxwr1101_2_fsw_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_W_entry1_lxwr1101_2_fsw, PMPF_cg_cp_cfg_W_entry1_lxwr1101_2_fsw_str)
 #ifdef D_SUPPORTED
-PMPF_cp_cfg_RW_entry1_lxwr1101_3_fsd:
+PMPF_cg_cp_cfg_W_entry1_lxwr1101_3_fsd:
   fsd f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry1_lxwr1101_3_fsd, PMPF_cp_cfg_RW_entry1_lxwr1101_3_fsd_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_W_entry1_lxwr1101_3_fsd, PMPF_cg_cp_cfg_W_entry1_lxwr1101_3_fsd_str)
 #endif
 #ifdef ZFHMIN_SUPPORTED
-PMPF_cp_cfg_RW_entry1_lxwr1101_4_flh:
+PMPF_cg_cp_cfg_R_entry1_lxwr1101_4_flh:
   flh f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry1_lxwr1101_4_flh, PMPF_cp_cfg_RW_entry1_lxwr1101_4_flh_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_R_entry1_lxwr1101_4_flh, PMPF_cg_cp_cfg_R_entry1_lxwr1101_4_flh_str)
 #endif
-PMPF_cp_cfg_RW_entry1_lxwr1101_5_flw:
+PMPF_cg_cp_cfg_R_entry1_lxwr1101_5_flw:
   flw f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry1_lxwr1101_5_flw, PMPF_cp_cfg_RW_entry1_lxwr1101_5_flw_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_R_entry1_lxwr1101_5_flw, PMPF_cg_cp_cfg_R_entry1_lxwr1101_5_flw_str)
 #ifdef D_SUPPORTED
-PMPF_cp_cfg_RW_entry1_lxwr1101_6_fld:
+PMPF_cg_cp_cfg_R_entry1_lxwr1101_6_fld:
   fld f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry1_lxwr1101_6_fld, PMPF_cp_cfg_RW_entry1_lxwr1101_6_fld_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_R_entry1_lxwr1101_6_fld, PMPF_cg_cp_cfg_R_entry1_lxwr1101_6_fld_str)
 #endif
 
 // PMP configuration 6: L = 1, XWR permissions, entry 0
@@ -311,36 +311,36 @@ PMPF_cp_cfg_RW_entry1_lxwr1101_6_fld:
 
   LA(a5, TEST_FOR_EXECUTION)
 #ifdef ZFHMIN_SUPPORTED
-PMPF_cp_cfg_RW_entry0_lxwr1111_1_fsh:
+PMPF_cg_cp_cfg_W_entry0_lxwr1111_1_fsh:
   fsh f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry0_lxwr1111_1_fsh, PMPF_cp_cfg_RW_entry0_lxwr1111_1_fsh_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_W_entry0_lxwr1111_1_fsh, PMPF_cg_cp_cfg_W_entry0_lxwr1111_1_fsh_str)
 #endif
-PMPF_cp_cfg_RW_entry0_lxwr1111_2_fsw:
+PMPF_cg_cp_cfg_W_entry0_lxwr1111_2_fsw:
   fsw f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry0_lxwr1111_2_fsw, PMPF_cp_cfg_RW_entry0_lxwr1111_2_fsw_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_W_entry0_lxwr1111_2_fsw, PMPF_cg_cp_cfg_W_entry0_lxwr1111_2_fsw_str)
 #ifdef D_SUPPORTED
-PMPF_cp_cfg_RW_entry0_lxwr1111_3_fsd:
+PMPF_cg_cp_cfg_W_entry0_lxwr1111_3_fsd:
   fsd f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry0_lxwr1111_3_fsd, PMPF_cp_cfg_RW_entry0_lxwr1111_3_fsd_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_W_entry0_lxwr1111_3_fsd, PMPF_cg_cp_cfg_W_entry0_lxwr1111_3_fsd_str)
 #endif
 #ifdef ZFHMIN_SUPPORTED
-PMPF_cp_cfg_RW_entry0_lxwr1111_4_flh:
+PMPF_cg_cp_cfg_R_entry0_lxwr1111_4_flh:
   flh f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry0_lxwr1111_4_flh, PMPF_cp_cfg_RW_entry0_lxwr1111_4_flh_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_R_entry0_lxwr1111_4_flh, PMPF_cg_cp_cfg_R_entry0_lxwr1111_4_flh_str)
 #endif
-PMPF_cp_cfg_RW_entry0_lxwr1111_5_flw:
+PMPF_cg_cp_cfg_R_entry0_lxwr1111_5_flw:
   flw f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry0_lxwr1111_5_flw, PMPF_cp_cfg_RW_entry0_lxwr1111_5_flw_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_R_entry0_lxwr1111_5_flw, PMPF_cg_cp_cfg_R_entry0_lxwr1111_5_flw_str)
 #ifdef D_SUPPORTED
-PMPF_cp_cfg_RW_entry0_lxwr1111_6_fld:
+PMPF_cg_cp_cfg_R_entry0_lxwr1111_6_fld:
   fld f14, 0(a5)
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry0_lxwr1111_6_fld, PMPF_cp_cfg_RW_entry0_lxwr1111_6_fld_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cg_cp_cfg_R_entry0_lxwr1111_6_fld, PMPF_cg_cp_cfg_R_entry0_lxwr1111_6_fld_str)
 #endif
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -373,42 +373,42 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMPF_cp_cfg_RW_entry5_lxwr1000_1_fsh_str: .string "\"test: 1; cg: PMPF; cp: cp_cfg_RW; bin: entry5_lxwr1000_1_fsh\""
-PMPF_cp_cfg_RW_entry5_lxwr1000_2_fsw_str: .string "\"test: 2; cg: PMPF; cp: cp_cfg_RW; bin: entry5_lxwr1000_2_fsw\""
-PMPF_cp_cfg_RW_entry5_lxwr1000_3_fsd_str: .string "\"test: 3; cg: PMPF; cp: cp_cfg_RW; bin: entry5_lxwr1000_3_fsd\""
-PMPF_cp_cfg_RW_entry5_lxwr1000_4_flh_str: .string "\"test: 4; cg: PMPF; cp: cp_cfg_RW; bin: entry5_lxwr1000_4_flh\""
-PMPF_cp_cfg_RW_entry5_lxwr1000_5_flw_str: .string "\"test: 5; cg: PMPF; cp: cp_cfg_RW; bin: entry5_lxwr1000_5_flw\""
-PMPF_cp_cfg_RW_entry5_lxwr1000_6_fld_str: .string "\"test: 6; cg: PMPF; cp: cp_cfg_RW; bin: entry5_lxwr1000_6_fld\""
-PMPF_cp_cfg_RW_entry4_lxwr1001_1_fsh_str: .string "\"test: 7; cg: PMPF; cp: cp_cfg_RW; bin: entry4_lxwr1001_1_fsh\""
-PMPF_cp_cfg_RW_entry4_lxwr1001_2_fsw_str: .string "\"test: 8; cg: PMPF; cp: cp_cfg_RW; bin: entry4_lxwr1001_2_fsw\""
-PMPF_cp_cfg_RW_entry4_lxwr1001_3_fsd_str: .string "\"test: 9; cg: PMPF; cp: cp_cfg_RW; bin: entry4_lxwr1001_3_fsd\""
-PMPF_cp_cfg_RW_entry4_lxwr1001_4_flh_str: .string "\"test: 10; cg: PMPF; cp: cp_cfg_RW; bin: entry4_lxwr1001_4_flh\""
-PMPF_cp_cfg_RW_entry4_lxwr1001_5_flw_str: .string "\"test: 11; cg: PMPF; cp: cp_cfg_RW; bin: entry4_lxwr1001_5_flw\""
-PMPF_cp_cfg_RW_entry4_lxwr1001_6_fld_str: .string "\"test: 12; cg: PMPF; cp: cp_cfg_RW; bin: entry4_lxwr1001_6_fld\""
-PMPF_cp_cfg_RW_entry3_lxwr1011_1_fsh_str: .string "\"test: 13; cg: PMPF; cp: cp_cfg_RW; bin: entry3_lxwr1011_1_fsh\""
-PMPF_cp_cfg_RW_entry3_lxwr1011_2_fsw_str: .string "\"test: 14; cg: PMPF; cp: cp_cfg_RW; bin: entry3_lxwr1011_2_fsw\""
-PMPF_cp_cfg_RW_entry3_lxwr1011_3_fsd_str: .string "\"test: 15; cg: PMPF; cp: cp_cfg_RW; bin: entry3_lxwr1011_3_fsd\""
-PMPF_cp_cfg_RW_entry3_lxwr1011_4_flh_str: .string "\"test: 16; cg: PMPF; cp: cp_cfg_RW; bin: entry3_lxwr1011_4_flh\""
-PMPF_cp_cfg_RW_entry3_lxwr1011_5_flw_str: .string "\"test: 17; cg: PMPF; cp: cp_cfg_RW; bin: entry3_lxwr1011_5_flw\""
-PMPF_cp_cfg_RW_entry3_lxwr1011_6_fld_str: .string "\"test: 18; cg: PMPF; cp: cp_cfg_RW; bin: entry3_lxwr1011_6_fld\""
-PMPF_cp_cfg_RW_entry2_lxwr1100_1_fsh_str: .string "\"test: 19; cg: PMPF; cp: cp_cfg_RW; bin: entry2_lxwr1100_1_fsh\""
-PMPF_cp_cfg_RW_entry2_lxwr1100_2_fsw_str: .string "\"test: 20; cg: PMPF; cp: cp_cfg_RW; bin: entry2_lxwr1100_2_fsw\""
-PMPF_cp_cfg_RW_entry2_lxwr1100_3_fsd_str: .string "\"test: 21; cg: PMPF; cp: cp_cfg_RW; bin: entry2_lxwr1100_3_fsd\""
-PMPF_cp_cfg_RW_entry2_lxwr1100_4_flh_str: .string "\"test: 22; cg: PMPF; cp: cp_cfg_RW; bin: entry2_lxwr1100_4_flh\""
-PMPF_cp_cfg_RW_entry2_lxwr1100_5_flw_str: .string "\"test: 23; cg: PMPF; cp: cp_cfg_RW; bin: entry2_lxwr1100_5_flw\""
-PMPF_cp_cfg_RW_entry2_lxwr1100_6_fld_str: .string "\"test: 24; cg: PMPF; cp: cp_cfg_RW; bin: entry2_lxwr1100_6_fld\""
-PMPF_cp_cfg_RW_entry1_lxwr1101_1_fsh_str: .string "\"test: 25; cg: PMPF; cp: cp_cfg_RW; bin: entry1_lxwr1101_1_fsh\""
-PMPF_cp_cfg_RW_entry1_lxwr1101_2_fsw_str: .string "\"test: 26; cg: PMPF; cp: cp_cfg_RW; bin: entry1_lxwr1101_2_fsw\""
-PMPF_cp_cfg_RW_entry1_lxwr1101_3_fsd_str: .string "\"test: 27; cg: PMPF; cp: cp_cfg_RW; bin: entry1_lxwr1101_3_fsd\""
-PMPF_cp_cfg_RW_entry1_lxwr1101_4_flh_str: .string "\"test: 28; cg: PMPF; cp: cp_cfg_RW; bin: entry1_lxwr1101_4_flh\""
-PMPF_cp_cfg_RW_entry1_lxwr1101_5_flw_str: .string "\"test: 29; cg: PMPF; cp: cp_cfg_RW; bin: entry1_lxwr1101_5_flw\""
-PMPF_cp_cfg_RW_entry1_lxwr1101_6_fld_str: .string "\"test: 30; cg: PMPF; cp: cp_cfg_RW; bin: entry1_lxwr1101_6_fld\""
-PMPF_cp_cfg_RW_entry0_lxwr1111_1_fsh_str: .string "\"test: 31; cg: PMPF; cp: cp_cfg_RW; bin: entry0_lxwr1111_1_fsh\""
-PMPF_cp_cfg_RW_entry0_lxwr1111_2_fsw_str: .string "\"test: 32; cg: PMPF; cp: cp_cfg_RW; bin: entry0_lxwr1111_2_fsw\""
-PMPF_cp_cfg_RW_entry0_lxwr1111_3_fsd_str: .string "\"test: 33; cg: PMPF; cp: cp_cfg_RW; bin: entry0_lxwr1111_3_fsd\""
-PMPF_cp_cfg_RW_entry0_lxwr1111_4_flh_str: .string "\"test: 34; cg: PMPF; cp: cp_cfg_RW; bin: entry0_lxwr1111_4_flh\""
-PMPF_cp_cfg_RW_entry0_lxwr1111_5_flw_str: .string "\"test: 35; cg: PMPF; cp: cp_cfg_RW; bin: entry0_lxwr1111_5_flw\""
-PMPF_cp_cfg_RW_entry0_lxwr1111_6_fld_str: .string "\"test: 36; cg: PMPF; cp: cp_cfg_RW; bin: entry0_lxwr1111_6_fld\""
+PMPF_cg_cp_cfg_W_entry5_lxwr1000_1_fsh_str: .string "\"test: 1; cg: PMPF_cg; cp: cp_cfg_W; bin: entry5_lxwr1000_1_fsh\""
+PMPF_cg_cp_cfg_W_entry5_lxwr1000_2_fsw_str: .string "\"test: 2; cg: PMPF_cg; cp: cp_cfg_W; bin: entry5_lxwr1000_2_fsw\""
+PMPF_cg_cp_cfg_W_entry5_lxwr1000_3_fsd_str: .string "\"test: 3; cg: PMPF_cg; cp: cp_cfg_W; bin: entry5_lxwr1000_3_fsd\""
+PMPF_cg_cp_cfg_R_entry5_lxwr1000_4_flh_str: .string "\"test: 4; cg: PMPF_cg; cp: cp_cfg_R; bin: entry5_lxwr1000_4_flh\""
+PMPF_cg_cp_cfg_R_entry5_lxwr1000_5_flw_str: .string "\"test: 5; cg: PMPF_cg; cp: cp_cfg_R; bin: entry5_lxwr1000_5_flw\""
+PMPF_cg_cp_cfg_R_entry5_lxwr1000_6_fld_str: .string "\"test: 6; cg: PMPF_cg; cp: cp_cfg_R; bin: entry5_lxwr1000_6_fld\""
+PMPF_cg_cp_cfg_W_entry4_lxwr1001_1_fsh_str: .string "\"test: 7; cg: PMPF_cg; cp: cp_cfg_W; bin: entry4_lxwr1001_1_fsh\""
+PMPF_cg_cp_cfg_W_entry4_lxwr1001_2_fsw_str: .string "\"test: 8; cg: PMPF_cg; cp: cp_cfg_W; bin: entry4_lxwr1001_2_fsw\""
+PMPF_cg_cp_cfg_W_entry4_lxwr1001_3_fsd_str: .string "\"test: 9; cg: PMPF_cg; cp: cp_cfg_W; bin: entry4_lxwr1001_3_fsd\""
+PMPF_cg_cp_cfg_R_entry4_lxwr1001_4_flh_str: .string "\"test: 10; cg: PMPF_cg; cp: cp_cfg_R; bin: entry4_lxwr1001_4_flh\""
+PMPF_cg_cp_cfg_R_entry4_lxwr1001_5_flw_str: .string "\"test: 11; cg: PMPF_cg; cp: cp_cfg_R; bin: entry4_lxwr1001_5_flw\""
+PMPF_cg_cp_cfg_R_entry4_lxwr1001_6_fld_str: .string "\"test: 12; cg: PMPF_cg; cp: cp_cfg_R; bin: entry4_lxwr1001_6_fld\""
+PMPF_cg_cp_cfg_W_entry3_lxwr1011_1_fsh_str: .string "\"test: 13; cg: PMPF_cg; cp: cp_cfg_W; bin: entry3_lxwr1011_1_fsh\""
+PMPF_cg_cp_cfg_W_entry3_lxwr1011_2_fsw_str: .string "\"test: 14; cg: PMPF_cg; cp: cp_cfg_W; bin: entry3_lxwr1011_2_fsw\""
+PMPF_cg_cp_cfg_W_entry3_lxwr1011_3_fsd_str: .string "\"test: 15; cg: PMPF_cg; cp: cp_cfg_W; bin: entry3_lxwr1011_3_fsd\""
+PMPF_cg_cp_cfg_R_entry3_lxwr1011_4_flh_str: .string "\"test: 16; cg: PMPF_cg; cp: cp_cfg_R; bin: entry3_lxwr1011_4_flh\""
+PMPF_cg_cp_cfg_R_entry3_lxwr1011_5_flw_str: .string "\"test: 17; cg: PMPF_cg; cp: cp_cfg_R; bin: entry3_lxwr1011_5_flw\""
+PMPF_cg_cp_cfg_R_entry3_lxwr1011_6_fld_str: .string "\"test: 18; cg: PMPF_cg; cp: cp_cfg_R; bin: entry3_lxwr1011_6_fld\""
+PMPF_cg_cp_cfg_W_entry2_lxwr1100_1_fsh_str: .string "\"test: 19; cg: PMPF_cg; cp: cp_cfg_W; bin: entry2_lxwr1100_1_fsh\""
+PMPF_cg_cp_cfg_W_entry2_lxwr1100_2_fsw_str: .string "\"test: 20; cg: PMPF_cg; cp: cp_cfg_W; bin: entry2_lxwr1100_2_fsw\""
+PMPF_cg_cp_cfg_W_entry2_lxwr1100_3_fsd_str: .string "\"test: 21; cg: PMPF_cg; cp: cp_cfg_W; bin: entry2_lxwr1100_3_fsd\""
+PMPF_cg_cp_cfg_R_entry2_lxwr1100_4_flh_str: .string "\"test: 22; cg: PMPF_cg; cp: cp_cfg_R; bin: entry2_lxwr1100_4_flh\""
+PMPF_cg_cp_cfg_R_entry2_lxwr1100_5_flw_str: .string "\"test: 23; cg: PMPF_cg; cp: cp_cfg_R; bin: entry2_lxwr1100_5_flw\""
+PMPF_cg_cp_cfg_R_entry2_lxwr1100_6_fld_str: .string "\"test: 24; cg: PMPF_cg; cp: cp_cfg_R; bin: entry2_lxwr1100_6_fld\""
+PMPF_cg_cp_cfg_W_entry1_lxwr1101_1_fsh_str: .string "\"test: 25; cg: PMPF_cg; cp: cp_cfg_W; bin: entry1_lxwr1101_1_fsh\""
+PMPF_cg_cp_cfg_W_entry1_lxwr1101_2_fsw_str: .string "\"test: 26; cg: PMPF_cg; cp: cp_cfg_W; bin: entry1_lxwr1101_2_fsw\""
+PMPF_cg_cp_cfg_W_entry1_lxwr1101_3_fsd_str: .string "\"test: 27; cg: PMPF_cg; cp: cp_cfg_W; bin: entry1_lxwr1101_3_fsd\""
+PMPF_cg_cp_cfg_R_entry1_lxwr1101_4_flh_str: .string "\"test: 28; cg: PMPF_cg; cp: cp_cfg_R; bin: entry1_lxwr1101_4_flh\""
+PMPF_cg_cp_cfg_R_entry1_lxwr1101_5_flw_str: .string "\"test: 29; cg: PMPF_cg; cp: cp_cfg_R; bin: entry1_lxwr1101_5_flw\""
+PMPF_cg_cp_cfg_R_entry1_lxwr1101_6_fld_str: .string "\"test: 30; cg: PMPF_cg; cp: cp_cfg_R; bin: entry1_lxwr1101_6_fld\""
+PMPF_cg_cp_cfg_W_entry0_lxwr1111_1_fsh_str: .string "\"test: 31; cg: PMPF_cg; cp: cp_cfg_W; bin: entry0_lxwr1111_1_fsh\""
+PMPF_cg_cp_cfg_W_entry0_lxwr1111_2_fsw_str: .string "\"test: 32; cg: PMPF_cg; cp: cp_cfg_W; bin: entry0_lxwr1111_2_fsw\""
+PMPF_cg_cp_cfg_W_entry0_lxwr1111_3_fsd_str: .string "\"test: 33; cg: PMPF_cg; cp: cp_cfg_W; bin: entry0_lxwr1111_3_fsd\""
+PMPF_cg_cp_cfg_R_entry0_lxwr1111_4_flh_str: .string "\"test: 34; cg: PMPF_cg; cp: cp_cfg_R; bin: entry0_lxwr1111_4_flh\""
+PMPF_cg_cp_cfg_R_entry0_lxwr1111_5_flw_str: .string "\"test: 35; cg: PMPF_cg; cp: cp_cfg_R; bin: entry0_lxwr1111_5_flw\""
+PMPF_cg_cp_cfg_R_entry0_lxwr1111_6_fld_str: .string "\"test: 36; cg: PMPF_cg; cp: cp_cfg_R; bin: entry0_lxwr1111_6_fld\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

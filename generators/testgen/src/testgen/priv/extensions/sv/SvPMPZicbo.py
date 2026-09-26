@@ -29,7 +29,13 @@ def _setup_envcfg(extension: str, mode: str) -> tuple[str, ...]:
     return (f"LI(t0, {mask})", "csrs menvcfg, t0", *(("csrs senvcfg, t0",) if mode == "Umode" else ()))
 
 
-def _add_operations(test_data: TestData, sv: SvMode, mode: str, level: int, extension: str, number: int) -> list[str]:
+def _cross(topic: str, mode: str) -> str:
+    return f"cp_{'PA' if topic == 'pmp_on_pa' else 'PTE'}_PMP_rw_unset_cbo_{mode[0].lower()}"
+
+
+def _add_operations(
+    test_data: TestData, sv: SvMode, mode: str, level: int, extension: str, number: int, cross: str
+) -> list[str]:
     enter = [] if mode == "Mmode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"]
     leave = [] if mode == "Mmode" else ["RVTEST_TSBI_GOTO_MMODE"]
     lines = [*virtual_address(sv, "va_data", level), *enter]
@@ -37,7 +43,7 @@ def _add_operations(test_data: TestData, sv: SvMode, mode: str, level: int, exte
         name = operation.split()[0].replace(".", "_")
         lines.extend(
             [
-                test_data.add_testcase(f"test{number}_{name}", "cp_pmp_zicbo", "SvPMPZicbo_cg"),
+                test_data.add_testcase(f"test{number}_{name}", cross, "SvPMPZicbo_cg"),
                 operation,
                 "nop",
             ]
@@ -63,7 +69,7 @@ def _begin_test(
         sv,
         mode,
         f"{sv.name}_{topic}_{extension.lower()}_{mode}",
-        coverpoint="cp_pmp_zicbo",
+        coverpoint=_cross(topic, mode),
         code_prefix=pmp.napot_mask_defines(min_granularity),
         sig_init="",
         va_defs=va_defs,
@@ -88,6 +94,7 @@ def _make_on_pa(test_data: TestData, sv: SvMode, mode: str, extension: str) -> T
                 test_data,
                 pmp.cfg_byte("0100", "napot", pmp.cfg_shift(0)),
                 "pmpcfg0_x",
+                "PMP_perm",
             ),
             "",
         ]
@@ -100,7 +107,7 @@ def _make_on_pa(test_data: TestData, sv: SvMode, mode: str, extension: str) -> T
                 *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                 "sfence.vma",
                 "",
-                *_add_operations(test_data, sv, mode, level, extension, number),
+                *_add_operations(test_data, sv, mode, level, extension, number, _cross("pmp_on_pa", mode)),
                 "",
             ]
         )
@@ -133,6 +140,7 @@ def _make_on_pte(test_data: TestData, sv: SvMode, mode: str, extension: str) -> 
                         test_data,
                         pmp.cfg_byte("0100", "napot", pmp.cfg_shift(0)),
                         "write_pmpcfg0",
+                        "PMP_perm",
                     ),
                     ".if (UDB_PMP_GRANULARITY < 12)",
                 ]
@@ -144,7 +152,7 @@ def _make_on_pte(test_data: TestData, sv: SvMode, mode: str, extension: str) -> 
                 *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                 "sfence.vma",
                 "",
-                *_add_operations(test_data, sv, mode, level, extension, number),
+                *_add_operations(test_data, sv, mode, level, extension, number, _cross("pmp_on_pte", mode)),
             ]
         )
         if top:

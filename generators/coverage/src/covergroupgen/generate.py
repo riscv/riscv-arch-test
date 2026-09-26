@@ -374,8 +374,8 @@ def read_covergroup_templates(package: str = "covergroupgen.templates") -> dict[
 def customize_template(templates: dict[str, str], name: str, arch: str = "", instr: str = "", effew: str = "") -> str:
     """Look up a template by name and substitute placeholders.
 
-    Placeholders replaced: INSTRNODOT, INSTR, ARCHPREFIXUPPER, ARCHPREFIX,
-    ARCHUPPER, ARCHCASE, ARCH, and (if effew is set) TWOEFFEW, EFFEW, EFFVSEW.
+    Placeholders replaced: @INSTRNODOT@, @INSTR@, @ARCHPREFIXUPPER@, @ARCHPREFIX@,
+    @ARCHUPPER@, @ARCHCASE@, @ARCH@, and (if effew is set) @TWOEFFEW@, @EFFEW@, @EFFVSEW@.
     ARCHPREFIX is the arch with any trailing digits stripped (e.g. "Vx16" -> "Vx").
     """
     if name not in templates:
@@ -389,29 +389,23 @@ def customize_template(templates: dict[str, str], name: str, arch: str = "", ins
         raise ValueError(msg)
 
     arch_prefix = re.sub(r"\d+$", "", arch)
-
-    def substitute(text: str) -> str:
-        text = text.replace("INSTRNODOT", instr.replace(".", "_"))
-        # Leave names such as ILLEGAL_INSTRUCTION and CSR_INSTRET alone.
-        text = re.sub(r"INSTR(?![A-Z])", lambda _: instr, text)
-        text = (
-            text.replace("ARCHPREFIXUPPER", arch_prefix.upper())
-            .replace("ARCHPREFIX", arch_prefix)
-            .replace("ARCHUPPER", arch.upper())
-            .replace("ARCHCASE", arch)
-            .replace("ARCH", arch.lower())
+    result = (
+        templates[name]
+        .replace("@INSTRNODOT@", instr.replace(".", "_"))
+        .replace("@INSTR@", instr)
+        .replace("@ARCHPREFIXUPPER@", arch_prefix.upper())
+        .replace("@ARCHPREFIX@", arch_prefix)
+        .replace("@ARCHUPPER@", arch.upper())
+        .replace("@ARCHCASE@", arch)
+        .replace("@ARCH@", arch.lower())
+    )
+    if effew:
+        result = (
+            result.replace("@TWOEFFEW@", str(2 * int(effew)))
+            .replace("@EFFEW@", str(int(effew)))
+            .replace("@EFFVSEW@", str(int(math.log2(int(effew))) - 3))
         )
-        if effew:
-            text = (
-                text.replace("TWOEFFEW", str(2 * int(effew)))
-                .replace("EFFEW", str(int(effew)))
-                .replace("EFFVSEW", str(int(math.log2(int(effew))) - 3))
-            )
-        return text
-
-    # CSR address constants such as CSR_INSTRET contain placeholder text but are never placeholders
-    parts = re.split(r"(\bCSR_\w+)", templates[name])
-    return "".join(part if i % 2 else substitute(part) for i, part in enumerate(parts))
+    return result
 
 
 def _get_effew(arch: str) -> str:

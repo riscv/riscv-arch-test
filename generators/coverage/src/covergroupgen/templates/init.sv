@@ -1,1 +1,1 @@
-    ARCHCASE_INSTRNODOT_cg = new(); ARCHCASE_INSTRNODOT_cg.set_inst_name("obj_ARCHCASE_INSTRNODOT");
+    @ARCHCASE@_@INSTRNODOT@_cg = new(); @ARCHCASE@_@INSTRNODOT@_cg.set_inst_name("obj_@ARCHCASE@_@INSTRNODOT@");

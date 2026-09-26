@@ -5,6 +5,10 @@
 
 The UDB configuration file determines whether to run tests for Sv32, or for Sv39 and possibly Sv48 and Sv57.
 
+Coverpoints that need M-mode state (`mstatus.MPRV`, `mstatus.TVM`, `mstatus.SBE`, or an M-mode CSR access)
+are in the `Sm` suites: SvSm, SvbareSm and SvinvalSm.
+The PMP suites (SvPMP, SvPMPZicbo, SvaduPMP) boot to M-mode because they program PMP entries.
+
 include::{testplansdir}/priv/Sv.adoc[]
 
 include::norm/Sv_norm_rules.adoc[]
@@ -14,11 +18,15 @@ include::norm/Sv_norm_rules.adoc[]
 * REPORT_VA_IN_{MTVAL/STVAL}ON_{INSTRUCTION/LOAD/STORE_AMO}PAGE_FAULT affects result in {MTVAL,STVAL} during page-fault exceptions, such as coverpoints TODO
 * TODO other coverpoints at least SATP_MODE_BARE, TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY
 
-==== SvSm Machine-Mode Virtual Memory
+==== SvSm Virtual Memory with M-mode State
 
-These tests boot to M-mode and exercise `satp`, `mstatus.TVM`, and `mstatus.MPRV` translation from machine mode.
+Covers `mstatus.MPRV` accesses, `mstatus.TVM` trapping of `satp` and `SFENCE.VMA`, `mstatus.SBE` for implicit
+page-table accesses, and M-mode access to `satp`. The `mstatus.SBE` tests are generated but not run until a
+big-endian configuration is available.
 
 include::{testplansdir}/priv/SvSm.adoc[]
+
+include::norm/SvSm_norm_rules.adoc[]
 
 ==== Svbare Virtual Memory Off
 
@@ -26,10 +34,22 @@ include::{testplansdir}/priv/Svbare.adoc[]
 
 include::norm/Svbare_norm_rules.adoc[]
 
+==== SvbareSm Virtual Memory Off with MPRV
+
+[[t-SvbareSm-coverpoints]]
+.SvbareSm Coverpoints
+,===
+See the SvbareSm sheet of the Sv testplan.
+,===
+
+include::norm/SvbareSm_norm_rules.adoc[]
+
 
 ==== SvPMP VirtMem + PMP
 
 include::{testplansdir}/priv/SvPMP.adoc[]
+
+include::norm/SvPMP_norm_rules.adoc[]
 
 ==== SvZicbo VirtMem + CBOM/CBOZ
 
@@ -53,9 +73,23 @@ include::{testplansdir}/priv/Svinval.adoc[]
 
 include::norm/Svinval_norm_rules.adoc[]
 
+==== SvinvalSm Table Invalidation with mstatus.TVM
+
+Runs the Svinval instructions in M, S and U mode with `mstatus.TVM=1`.
+
+[[t-SvinvalSm-coverpoints]]
+.SvinvalSm Coverpoints
+,===
+See the SvinvalSm sheet of the Sv testplan.
+,===
+
+include::norm/SvinvalSm_norm_rules.adoc[]
+
 ==== Svade A/D Bit Page Fault Exception
 
 include::{testplansdir}/priv/Svade.adoc[]
+
+include::norm/Svade_norm_rules.adoc[]
 
 ==== Svadu A/D Bit Hardware Update
 
@@ -66,6 +100,8 @@ include::norm/Svadu_norm_rules.adoc[]
 ==== Svadu A/D Bit Hardware Update + PMP
 
 include::{testplansdir}/priv/SvaduPMP.adoc[]
+
+include::norm/SvaduPMP_norm_rules.adoc[]
 
 ==== Svpbmt Page-Based Memory Types
 

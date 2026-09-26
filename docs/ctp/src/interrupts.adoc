@@ -15,7 +15,7 @@ TODO: coverpoints will need to ignore bins with mie.msie nonzero:
   # If a system has only one hart, or if a platform standard supports the delivery
   # of machine-level interprocessor interrupts through external interrupts (MEI)
   # instead, then mip.MSIP and mie.MSIE may both be read-only zeros.
-  - name: mie_msie_maybe_rdonly0
+  - name: mip_msip_mie_msie_maybe_rdonly0
 TODO: mip.MSIP update time
   # When the memory-mapped msip register changes, it is guaranteed to be reflected
   # in mip.MSIP eventually, but not necessarily immediately.
@@ -37,12 +37,12 @@ include::{testplansdir}/priv/SstcSm.adoc[]
 
 include::norm/SstcSm_norm_rules.adoc[]
 
-==== SstcS Supervisor-Mode Supervisor Timer Compare
+==== Sstc Supervisor-Mode Supervisor Timer Compare
 
 These tests are run on any configuration with supervisor mode when the Sstc supervisor timer compare extension is supported.
 
-include::{testplansdir}/priv/SstcS.adoc[]
+include::{testplansdir}/priv/Sstc.adoc[]
 
-include::norm/SstcS_norm_rules.adoc[]
+include::norm/Sstc_norm_rules.adoc[]
 
 TODO: beef up testing stimecmp values, behavior near wraparound

@@ -33,7 +33,7 @@ import os
 import re
 import sys
 import urllib.request
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -168,6 +168,36 @@ def find_normative_rules(data: dict[str, Any] | list[dict[str, Any]]) -> list[di
     raise ValueError("Could not locate normative rules list in JSON")
 
 
+def iter_rules(rules_list: list[dict[str, Any]]) -> Iterator[tuple[str, list[dict[str, Any]], str]]:
+    """Yield (rule name, tags, chapter) for each normative rule in the JSON.
+
+    Each norm: tag in the ISA manual is one normative rule, named by the tag without
+    the norm: prefix. The manual's JSON has one entry per tag with the tag's text on the
+    entry. Older JSON had one entry per rule definition with the rule's tags in a "tags"
+    list; each of those tags (except context tags) is yielded once as a rule of its own,
+    so coverpoint files keyed by tag names resolve against either form.
+    """
+    seen: set[str] = set()
+    for entry in rules_list:
+        if not isinstance(entry, dict):
+            continue
+        chapter = entry.get("chapter_name") or entry.get("def_filename") or "unknown"
+        if "tags" in entry or "tag" in entry:
+            tags = entry.get("tags") or entry.get("tag") or []
+            for tg in [tags] if isinstance(tags, dict) else tags:
+                if not isinstance(tg, dict) or not tg.get("name") or tg.get("context"):
+                    continue
+                name = str(tg["name"]).removeprefix("norm:")
+                if name not in seen:
+                    seen.add(name)
+                    yield name, [tg], chapter
+        elif entry.get("name") and entry["name"] not in seen:
+            name = str(entry["name"])
+            seen.add(name)
+            tag = {"name": f"norm:{name}", "text": entry.get("text", ""), "tag_filename": entry.get("tag_filename", "")}
+            yield name, [tag], chapter
+
+
 def extract_rule_text(tags: dict[str, Any] | list[Any] | None) -> str:
     """Extract text from tags structure (dict, list, or mixed)."""
     if not tags:
@@ -193,11 +223,14 @@ def split_name_list(val: str | list[str] | None) -> list[str]:
     """Split name(s) into a list, handling various formats."""
     if not val:
         return []
+    if isinstance(val, list):
+        return [n for v in val for n in split_name_list(v)]
     s = str(val).strip().strip("\"'")
     # Remove list brackets if present
     if s.startswith("[") and s.endswith("]"):
         s = s[1:-1]
-    return [p.strip() for p in s.split(",") if p.strip()] if "," in s else [s]
+    parts = s.split(",") if "," in s else [s]
+    return [p.strip().strip("\"'") for p in parts if p.strip().strip("\"'")]
 
 
 def extract_names_from_item(item: dict[str, Any]) -> list[str]:
@@ -628,14 +661,8 @@ def main() -> None:
     json_links_map = {}
     json_names = set()
     json_def_map = {}
-    for entry in rules_list:
-        if not isinstance(entry, dict):
-            continue
-        name = entry.get("name")
-        if not name:
-            continue
+    for name, tags, chapter in iter_rules(rules_list):
         json_names.add(name)
-        tags = entry.get("tags") or entry.get("tag") or []
         # Build ASCIIDoc linked text for tags associated with this rule.
         # The link should apply to the tagged text (tag['text']) and the
         # tag 'name' (e.g. 'norm:...') should not be printed.
@@ -744,9 +771,8 @@ def main() -> None:
                 text = text.replace("|", "&#124;")
             json_text_map[name] = text
             json_links_map[name] = []
-        # capture def_filename for later grouping in reports
-        def_fn = entry.get("def_filename") or entry.get("def_file") or entry.get("definition_filename")
-        json_def_map[name] = def_fn or "unknown"
+        # capture the chapter for later grouping in reports
+        json_def_map[name] = chapter
 
     # If args.yaml is a directory, process every .yaml/.yml file inside
     if yaml_path.is_dir():
@@ -810,9 +836,9 @@ def main() -> None:
             report_lines.append("")
 
         # Now list JSON-only names organized by def_filename (chapter)
-        report_lines.append("Names present in JSON but missing from any YAML (organized by def_filename):")
+        report_lines.append("Names present in JSON but missing from any YAML (organized by chapter):")
         if missing_in_yaml:
-            # group by def_filename
+            # group by chapter
             chapter_map = {}
             for name in missing_in_yaml:
                 chapter = json_def_map.get(name, "unknown") or "unknown"

@@ -9,16 +9,16 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'S']
+# REQUIRED_EXTENSIONS: ['I', 'Svbare']
 # # # no param constraints
-# MARCH: rv${XLEN}i_zicsr_zifencei
+# MARCH: rv${XLEN}i_zicsr_zifencei_svbare
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
 #define SIGUPD_COUNT 14
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 #define TRAP_SIGUPD_COUNT 10
 
 // Include framework macros
@@ -33,23 +33,18 @@ main:
 Svbare_cg_cp_satp_satp_bare:
   # Read satp into x14 and check against expected.
   RVTEST_SIGUPD_CSR_READ(satp, x14, Svbare_cg_cp_satp_satp_bare, Svbare_cg_cp_satp_satp_bare_str)
-  RVTEST_GOTO_LOWER_MODE Smode
   LA(a5, rvtest_data_1)
   addi a2, a2, 16
 Svbare_cg_cp_bare_access_test1_store:
   sw a2, 20(a5)
-  nop
-Svbare_cg_cp_bare_access_test1_load:
-  lw a3, 20(a5)
-  nop
-Svbare_cg_cp_bare_access_test1_exec:
-  jalr ra, a5, 0
-  nop
-  RVTEST_GOTO_MMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svbare_cg_cp_bare_access_test1_store, Svbare_cg_cp_bare_access_test1_store_str)
+Svbare_cg_cp_bare_access_test1_load:
+  lw a3, 20(a5)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Svbare_cg_cp_bare_access_test1_load, Svbare_cg_cp_bare_access_test1_load_str)
+Svbare_cg_cp_bare_access_test1_exec:
+  jalr ra, a5, 0
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svbare_cg_cp_bare_access_test1_exec, Svbare_cg_cp_bare_access_test1_exec_str)
 

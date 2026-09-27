@@ -39,6 +39,7 @@ from testgen.priv.extensions.ZicfissCommon import (
     set_envcfg_sse,
     ss_forms_against,
     ss_instr,
+    ssamoswap_sweep_offsets,
     zcmop_only,
 )
 from testgen.priv.registry import add_priv_test_generator
@@ -418,7 +419,7 @@ def _generate_ssamoswap(test_data: TestData) -> list[str]:
 
 
 def _generate_alignment(test_data: TestData) -> list[str]:
-    """Sweep addr[2:0] over all 8 values for ssp and for both SSAMOSWAP widths."""
+    """Sweep addr[2:0] for ssp and for SSAMOSWAP; see SSAMOSWAP_SWEEP_BASE."""
     addr_reg, rd_reg, rs2_reg = test_data.int_regs.get_registers(3)
     lines = _umode_prologue(test_data)
     save_x1, save_x5, save_lines = save_link_regs(test_data)
@@ -440,7 +441,7 @@ def _generate_alignment(test_data: TestData) -> list[str]:
     # SSAMOSWAP address alignment sweep; see SSAMOSWAP_SWEEP_BASE.
     for width in ("w", "d"):
         block: list[str] = []
-        for offset in range(8):
+        for offset in ssamoswap_sweep_offsets(width):
             block.extend(
                 [
                     f"LI(x{addr_reg}, ZICFISS_VA_SS + {hex(SSAMOSWAP_SWEEP_BASE + offset)})",

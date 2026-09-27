@@ -63,11 +63,19 @@ XWR_PERMS = {
     "111": "PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V",
 }
 
-# SSAMOSWAP.W/D follow the A-extension alignment rules. The sweep starts 8 bytes into a
-# 16-byte-aligned block, so a misaligned SSAMOSWAP.D, and a misaligned SSAMOSWAP.W at
-# addr[2:0] of 5-7, crosses into the next 16-byte block, while SSAMOSWAP.W at addr[2:0] of
-# 1-3 stays inside it.
+# SSAMOSWAP.W/D follow the A-extension alignment rules, but whether the misaligned atomicity
+# granule (Zama16b) relaxation applies to them is not settled: Sail 0.14.1 executes a misaligned
+# SSAMOSWAP that stays inside a 16-byte granule, while Spike, QEMU and Whisper raise a store/AMO
+# access fault, and Sail has no option to choose. So the sweep starts 8 bytes into a 16-byte
+# block, where every misaligned SSAMOSWAP.D, and SSAMOSWAP.W at addr[2:0] of 5-7, crosses the
+# granule and must fault on every model. SSAMOSWAP.W at addr[2:0] of 1-3 cannot cross it, so
+# those offsets are left out until Sail can model both behaviours.
 SSAMOSWAP_SWEEP_BASE = 0x408
+
+
+def ssamoswap_sweep_offsets(width: str) -> list[int]:
+    """addr[2:0] values swept for SSAMOSWAP.W ("w") or SSAMOSWAP.D ("d"); see SSAMOSWAP_SWEEP_BASE."""
+    return [0, 4, 5, 6, 7] if width == "w" else list(range(8))
 
 
 class SsForm(NamedTuple):

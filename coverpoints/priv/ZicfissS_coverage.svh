@@ -228,7 +228,13 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
     cp_ssamoswap_s:                cross priv_mode_s, ssamoswap_instr, pte_ss_page;
     cp_ss_address_alignment_ssp_s: cross priv_mode_s, ss_push_instr, ssp_LSBs;
     cp_ss_address_alignment_pop_s: cross priv_mode_s, ss_pop_instr, ssp_LSBs;
-    cp_ss_address_alignment_swap_s: cross priv_mode_s, ssamoswap_instr, ssamoswap_adr_LSBs;
+    cp_ss_address_alignment_swap_s: cross priv_mode_s, ssamoswap_instr, ssamoswap_adr_LSBs {
+        // SSAMOSWAP.W at addr[2:0] of 1-3 stays inside one misaligned atomicity granule, where Sail
+        // executes it and Spike, QEMU and Whisper raise an access fault; see SSAMOSWAP_SWEEP_BASE in
+        // ZicfissCommon.py. Untested until Sail can model both.
+        ignore_bins w_within_granule =
+            binsof(ssamoswap_instr.ssamoswap_w) && binsof(ssamoswap_adr_LSBs) intersect {[3'd1:3'd3]};
+    }
     cp_ss_instr_target_page_s:     cross priv_mode_s, ss_mem_instr, pte_xwr;
 
     // The U/SUM/MXR permission check resolves before any shadow stack rule, so where

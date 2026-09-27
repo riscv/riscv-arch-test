@@ -38,6 +38,7 @@ from testgen.priv.extensions.ZicfissCommon import (
     set_envcfg_sse,
     ss_forms_against,
     ss_instr,
+    ssamoswap_sweep_offsets,
     zcmop_only,
 )
 from testgen.priv.registry import add_priv_test_generator
@@ -263,7 +264,7 @@ def _generate_alignment_s(test_data: TestData) -> list[str]:
     # SSAMOSWAP address alignment sweep; see SSAMOSWAP_SWEEP_BASE.
     for width in ("w", "d"):
         block: list[str] = []
-        for offset in range(8):
+        for offset in ssamoswap_sweep_offsets(width):
             block.extend(
                 [
                     f"LI(x{addr_reg}, ZICFISS_VA_SS + {hex(SSAMOSWAP_SWEEP_BASE + offset)})",

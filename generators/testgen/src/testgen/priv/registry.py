@@ -75,7 +75,7 @@ def add_priv_test_generator(
                        Trap handlers are added automatically based on extensions.
         required_extensions: List of RISC-V extensions required for the test (e.g., ["Sm", "Zicsr"]).
                              Used for generating the march string and header defines.
-        forbidden_extensions: Optional list of extensions the DUT must not implement for the test to be selected.
+        forbidden_extensions: Optional list of RISC-V extensions that must not be implemented for the test.
         march_extensions: Optional list of extensions to use for the march string.
                           If None, march is built from required_extensions.
         params: Optional list of parameter constraints for the test (e.g., ["NUM_PMP_ENTRIES: '>=16'"]).

@@ -22,12 +22,22 @@ normative_rule_definitions:
 
   # The Zama16b extension requires MAG16 support to main memory regions.
   - name: Zama16b_pma_mag_req
-    coverpoint: [""]
+    # Representative coverpoints; the other Zama16b_cg load, store, and AMO coverpoints
+    coverpoint:
+      [
+        "Zama16b_cg/{cp_lh_load, cp_lw_load, cp_sw_store, cp_amoadd_w_amo}",
+        "atomicity OUT-OF-SCOPE for single hart",
+      ]
   # If the ext:zama16b[] extension is implemented, then the
   # &lt;&lt;sec:misaligned-atomicity-granule,misaligned atomicity granule&gt;&gt; in main
   # memory regions with both the coherence and cacheability PMAs is 16 bytes.
   - name: Zama16b_mag
-    coverpoint: [""]
+    # Representative coverpoints; the other Zama16b_cg load, store, and AMO coverpoints
+    coverpoint:
+      [
+        "Zama16b_cg/{cp_lh_load, cp_lw_load, cp_sw_store, cp_amoadd_w_amo}",
+        "atomicity OUT-OF-SCOPE for single hart",
+      ]
 
   # The misaligned atomicity granule PMA provides constrained support for misaligned AMOs. This PMA,
   # if present, specifies the size of a misaligned atomicity granule, a naturally aligned power-of-two

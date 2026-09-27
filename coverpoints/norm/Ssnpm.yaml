@@ -6,7 +6,7 @@ normative_rule_definitions:
   # in . If Ssnpm is not implemented, PMM is read-only zero. The PMM field is
   # read-only zero for RV32.
   - name: senvcfg_pmm_ssnpm
-    coverpoint: [""]
+    coverpoint: ["Ssnpm_cg/cp_pmlen_masking", "S_scsr_cg/cp_scsrwalk/senvcfg"]
 
   # Changing senvcfg.PMM takes effect immediately, without the need to execute an
   # SFENCE.VMA instruction.

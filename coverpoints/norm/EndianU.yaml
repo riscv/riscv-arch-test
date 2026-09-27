@@ -17,7 +17,11 @@ normative_rule_definitions:
   # explicit load and store memory accesses made from U-mode are little-endian
   # (UBE=0) or big-endian (UBE=1).
   - name: mstatus_ube_op
-    coverpoint: [""]
+    # Representative coverpoints; also cp_mstatus_ube_endianness_{sb,lh,lb,lhu,sd,ld,lwu}
+    coverpoint:
+      [
+        "EndianU_cg/{cp_mstatus_ube_endianness_sw, cp_mstatus_ube_endianness_lw, cp_mstatus_ube_endianness_sh, cp_mstatus_ube_endianness_lbu}",
+      ]
 
   # If U-mode is supported, an implementation may make UBE be a read-only copy of
   # either MBE or SBE.

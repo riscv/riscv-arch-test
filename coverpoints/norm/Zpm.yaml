@@ -45,7 +45,11 @@ normative_rule_definitions:
   # A setting has been reserved to potentially support other values of PMLEN in
   # future standards.
   - name: pmlen_future_reserved
-    coverpoint: [""]
+    coverpoint:
+      [
+        "S_scsr_cg/cp_scsrwalk/senvcfg",
+        "Sm_mcsr_cg/cp_mcsrwalk_masked/{menvcfg, mseccfg}",
+      ]
 
   # Pointer masking is controlled separately for different privilege modes.
   - name: pm_per_mode_control
@@ -143,7 +147,7 @@ normative_rule_definitions:
   # In RV32, trying to enable pointer masking will result in an illegal WARL write
   # and not update the pointer masking configuration bits
   - name: pm_rv32_illegal
-    coverpoint: [""]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk_masked/{menvcfgh, mseccfgh}"]
 
   # Setting UXL/SXL to 1 will clear the corresponding pointer masking
   # configuration bits.
@@ -160,4 +164,8 @@ normative_rule_definitions:
   # illegal write to the corresponding pointer masking enable bit and follows WARL
   # semantics.
   - name: pmlen_illegal_warl
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mcsrwalk_masked/{menvcfg, mseccfg, menvcfgh, mseccfgh}",
+        "S_scsr_cg/cp_scsrwalk/senvcfg",
+      ]

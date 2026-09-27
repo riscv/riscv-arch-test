@@ -18,10 +18,10 @@ normative_rule_definitions:
     coverpoint: [""]
 
   - name: Ssqosid_Smstateen_srmcfg_requires_mstateen0
-    coverpoint: [""]
+    coverpoint: ["Smstateen_cg/{cp_walking_ones, cp_srmcfg}"]
 
   - name: Ssqosid_srmcfg_access_illegal_instruction
-    coverpoint: [""]
+    coverpoint: ["Smstateen_cg/cp_srmcfg"]
 
   - name: Ssqosid_srmcfg_access_virtual_instruction
     coverpoint: [""]

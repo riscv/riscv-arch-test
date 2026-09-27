@@ -10,12 +10,9 @@ from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
-    HIGH_VA,
-    LEVELS_BELOW_ROOT,
     MODE_GUARDS,
     MODES,
     PMM_CONFIGS,
-    _pte_chain_asm,
     build_finegrained_text_map_asm,
     csr_op,
     data_page,
@@ -27,6 +24,7 @@ from testgen.priv.extensions.ZpmCommon import (
     generate_mxr_tests,
     generate_sign_extension_tests,
     generate_xlen_change_tests,
+    map_pm_hi_page,
     satp_clear,
     satp_setup,
     set_mxr,
@@ -68,13 +66,12 @@ def make_ssnpm(test_data: TestData) -> list[TestChunk]:
             ]
         )
         if not is_bare:
-            img_tables = [f"pm_img_slvl{i}_pg_tbl" for i in range(LEVELS_BELOW_ROOT[mode] - 1, -1, -1)]
             lines.extend(
                 [
                     "",
-                    *build_finegrained_text_map_asm(mode, img_tables, test_data),
+                    *build_finegrained_text_map_asm(mode, test_data),
                     "",
-                    *_pte_chain_asm(mode, HIGH_VA[mode], "pm_hi_page"),
+                    *map_pm_hi_page(mode, user=True),
                 ]
             )
 

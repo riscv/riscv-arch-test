@@ -9,12 +9,9 @@
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
-    _LEAF_PERMS_S,
-    HIGH_VA,
     MODE_GUARDS,
     MODES,
     PMM_CONFIGS,
-    _pte_chain_asm,
     data_page,
     data_slvl_tables,
     generate_csr_write_tests,
@@ -24,6 +21,7 @@ from testgen.priv.extensions.ZpmCommon import (
     generate_misaligned_tests,
     generate_mxr_tests,
     generate_sign_extension_tests,
+    map_pm_hi_page,
     satp_clear,
     satp_setup,
     set_mxr,
@@ -57,7 +55,7 @@ def make_smnpms(test_data: TestData) -> list[TestChunk]:
         if not is_bare:
             lines.extend(
                 [
-                    *_pte_chain_asm(mode, HIGH_VA[mode], "pm_hi_page", _LEAF_PERMS_S),
+                    *map_pm_hi_page(mode, user=False),
                     *satp_setup(mode, test_data),
                 ]
             )

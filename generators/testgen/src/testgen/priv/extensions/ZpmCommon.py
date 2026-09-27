@@ -15,6 +15,7 @@ from testgen.asm.csr import gen_csr_write_sigupd
 from testgen.asm.helpers import arch_block, comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
+from testgen.priv.extensions.sv.page_tables import RV64_SV_MODES, SV39, PteFlags, create_page_mapping
 
 # ── Constants ──────────────────────────────────────────────────────────────
 
@@ -101,11 +102,7 @@ VEC_WRITES = [
 
 # ── Page-table constants (Sv39/Sv48/Sv57) ─────────────────────────────────
 
-_NONLEAF_PERMS = "PTE_V"  # non-leaf PTEs must have ONLY V set
-_LEAF_PERMS_U = "PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V"  # U-accessible data page
-_LEAF_PERMS_S = "PTE_D | PTE_A | PTE_W | PTE_R | PTE_V"  # S-accessible only (no U)
-
-LEVELS_BELOW_ROOT = {"sv39": 2, "sv48": 3, "sv57": 4}
+SV_MODES = {sv.name: sv for sv in RV64_SV_MODES}
 
 HIGH_VA = {
     "sv39": 0xFFFF_FFC0_0000_0000,
@@ -190,12 +187,12 @@ def set_mxr(enable: bool, test_data: TestData, status_csr: str = "sstatus", tsbi
 def satp_setup(mode: str, test_data: TestData, tsbi: bool = False) -> list[str]:
     """Point satp at the framework root table in *mode*, from S-mode directly or from U-mode through T-SBI."""
     if not tsbi:
-        return ["sfence.vma", f"SATP_SETUP_RV64({mode})", "sfence.vma"]
+        return ["sfence.vma", SV_MODES[mode].satp_setup, "sfence.vma"]
     satp, mode_bits = test_data.int_regs.get_registers(2)
     lines = [
         f"LA(x{satp}, rvtest_Sroot_pg_tbl)",
         f"srli x{satp}, x{satp}, 12",
-        f"LI(x{mode_bits}, (SATP64_MODE) & (SATP_MODE_{mode.upper()} << 60))",
+        f"LI(x{mode_bits}, (SATP64_MODE) & (SATP_MODE_{SV_MODES[mode].suffix} << 60))",
         f"or x{satp}, x{satp}, x{mode_bits}",
         tsbi_call("sfence.vma"),
         tsbi_call(f"csrw satp, x{satp}"),
@@ -223,7 +220,7 @@ def data_page(label: str, value: int = VALUE_OLD) -> list[str]:
 def data_slvl_tables(mode: str, label_prefix: str = "rvtest_slvl") -> list[str]:
     """Zero-filled page-table pages for the given satp mode."""
     lines: list[str] = []
-    for i in range(LEVELS_BELOW_ROOT[mode]):
+    for i in range(SV_MODES[mode].levels - 1):
         lines.extend([".p2align 12", f"{label_prefix}{i}_pg_tbl: .zero 4096"])
     return lines
 
@@ -238,7 +235,7 @@ def _mprv_img_tables(mode: str) -> list[str]:
     tables[0] is the table one level below the framework root, tables[-1]
     is the table that directly holds the 4 KiB leaf PTEs.
     """
-    return [f"rvtest_mprv_slvl{i}_pg_tbl_{mode}" for i in range(LEVELS_BELOW_ROOT[mode] - 1, -1, -1)]
+    return [f"rvtest_mprv_slvl{i}_pg_tbl_{mode}" for i in SV_MODES[mode].levels_desc[1:]]
 
 
 def mprv_data_section() -> list[str]:
@@ -253,7 +250,7 @@ def mprv_data_section() -> list[str]:
         ("sv57", "SV57_SUPPORTED"),
     ]:
         lines.append(f"#ifdef {guard}")
-        for level in range(LEVELS_BELOW_ROOT[mode]):
+        for level in range(SV_MODES[mode].levels - 1):
             lines.extend(
                 [
                     ".p2align 12",
@@ -272,10 +269,6 @@ def build_data_only_u_map_asm(mode: str, img_tables: list[str], test_data: TestD
     ever marked U -- callers (Smmpm's MPRV pass) fetch only from M-mode,
     which is never translated, so only the data page's permission bit matters.
 
-    Only 6 int registers are available, so the loop keeps just three live
-    across iterations -- current VA, leaf PTE slot pointer, and the loop
-    counter -- and reloads the data-range bounds with LA each pass instead
-    of holding them in dedicated registers.
     """
     (r0,) = test_data.int_regs.get_registers(1)
     lines = [
@@ -335,17 +328,19 @@ def build_data_only_u_map_asm(mode: str, img_tables: list[str], test_data: TestD
     return lines
 
 
-def _pte_chain_asm(mode: str, va: int, leaf_label: str, leaf_perms: str = _LEAF_PERMS_U) -> list[str]:
-    """Walk a fresh chain from the root down to a 4 KiB leaf mapping ``va``.
-    This walks root -> slvl(top-1) -> ... -> slvl0 -> leaf across multiple PTE_SETUP calls
-    """
-    top = LEVELS_BELOW_ROOT[mode]
-    macro = f"PTE_SETUP_{mode.upper()}"
-    lines = [f"# {mode.upper()}: map {hex(va)} -> {leaf_label}"]
-    for level in range(top, 0, -1):
-        lines.append(f"{macro}(rvtest_slvl{level - 1}_pg_tbl, ({_NONLEAF_PERMS}), {hex(va)}, LEVEL{level})")
-    lines.append(f"{macro}({leaf_label}, ({leaf_perms}), {hex(va)}, LEVEL0)")
-    return lines
+def map_pm_hi_page(mode: str, *, user: bool) -> list[str]:
+    """Map HIGH_VA[mode] to pm_hi_page with a 4 KiB read/write leaf."""
+    va = HIGH_VA[mode]
+    return [
+        f"# {mode.upper()}: map {hex(va)} -> pm_hi_page",
+        *create_page_mapping(
+            SV_MODES[mode],
+            leaf_level=0,
+            leaf_flags=PteFlags(execute=False, user=user),
+            virtual_address=hex(va),
+            physical_address="pm_hi_page",
+        ),
+    ]
 
 
 def _nonleaf_asm(parent: str, child: str, shift: int, va_reg: str, test_data: TestData) -> list[str]:
@@ -360,7 +355,7 @@ def _nonleaf_asm(parent: str, child: str, shift: int, va_reg: str, test_data: Te
         f"LA(x{t3}, {child})",
         f"srli x{t3}, x{t3}, 12",
         f"slli x{t3}, x{t3}, 10",
-        f"ori  x{t3}, x{t3}, ({_NONLEAF_PERMS})",
+        f"ori  x{t3}, x{t3}, ({PteFlags.nonleaf()})",
         f"sd   x{t3}, 0(x{t2})",
     ]
     test_data.int_regs.return_registers([t1, t2, t3])
@@ -369,8 +364,8 @@ def _nonleaf_asm(parent: str, child: str, shift: int, va_reg: str, test_data: Te
 
 def _walk_asm(mode: str, tables: list[str], va_reg: str, test_data: TestData) -> list[str]:
     """Install non-leaf entries from the framework root down to tables[0]."""
-    top = LEVELS_BELOW_ROOT[mode]
-    shifts = [12 + 9 * k for k in range(top, 0, -1)]
+    sv = SV_MODES[mode]
+    shifts = [sv.page_offset_bits(level) for level in sv.levels_desc[:-1]]
     chain = ["rvtest_Sroot_pg_tbl", *tables]
     lines: list[str] = []
     for parent, child, shift in zip(chain, chain[1:], shifts):
@@ -378,7 +373,7 @@ def _walk_asm(mode: str, tables: list[str], va_reg: str, test_data: TestData) ->
     return lines
 
 
-def build_finegrained_text_map_asm(mode: str, img_tables: list[str], test_data: TestData) -> list[str]:
+def build_finegrained_text_map_asm(mode: str, test_data: TestData) -> list[str]:
     """Split the 2 MiB region containing rvtest_code_begin into 4 KiB leaves,
     granting PTE_U to:
     1. U-mode-executable text (pm_utext_begin..end)
@@ -388,6 +383,7 @@ def build_finegrained_text_map_asm(mode: str, img_tables: list[str], test_data: 
     The S-mode trap handler, which lives outside that bracket in the same
     2 MiB region, is left without PTE_U so S-mode can still fetch it.
     """
+    img_tables = [f"pm_img_slvl{i}_pg_tbl" for i in SV_MODES[mode].levels_desc[1:]]
     (r0,) = test_data.int_regs.get_registers(1)
     lines = [
         f"# {mode.upper()}: 4 KiB mapping of the test image; PTE_U on test code, framework data, and PM data pages",
@@ -1188,7 +1184,7 @@ def _mprv_satp_loop(
                 f"{satp_mode}_{mpp_name}"
             )
             if satp_mode != "bare":
-                lines.extend(["SATP_SETUP_RV64(sv39)", "sfence.vma"])
+                lines.extend([SV39.satp_setup, "sfence.vma"])
             lines.extend(_mprv_lw_sw_probe(mpp, cp, prefix, test_data, cg))
             if satp_mode != "bare":
                 lines.extend(["csrwi satp, 0", "sfence.vma"])

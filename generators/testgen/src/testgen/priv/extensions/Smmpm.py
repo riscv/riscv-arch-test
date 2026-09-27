@@ -11,10 +11,6 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
     PMM_CONFIGS,
-    _mprv_img_tables,
-    alloc_pm_regs_paired,
-    build_data_only_u_map_asm,
-    free_pm_regs,
     generate_csr_write_tests,
     generate_fault_address_tests,
     generate_instruction_sweep_tests,
@@ -23,7 +19,6 @@ from testgen.priv.extensions.ZpmCommon import (
     generate_mprv_tests,
     generate_mxr_tests,
     generate_xlen_change_tests,
-    jalr_pad_asm,
     mprv_data_section,
     set_mxr,
     set_pmm_field,
@@ -43,11 +38,6 @@ _MSTATUS_SXL_SHIFT = 34
     extra_defines=["#define BOOT_TO_MMODE", "#define RVTEST_ALLOW_OOS_FETCH_EPC"],
 )
 def make_smmpm(test_data: TestData) -> list[TestChunk]:
-    # Build the sv39 data-only U-map ASM once, before regs claims the whole
-    # register pool, so building it here avoids the register exhaustion.
-    sv39_data_map = build_data_only_u_map_asm("sv39", _mprv_img_tables("sv39"), test_data)
-
-    regs = alloc_pm_regs_paired(test_data)
     tc = test_data.begin_test_chunk()
     lines = [
         *mprv_data_section(),
@@ -56,27 +46,25 @@ def make_smmpm(test_data: TestData) -> list[TestChunk]:
             "mseccfg.PMM is programmed from M-mode; every probe also runs in M-mode.",
         ),
         "",
-        *jalr_pad_asm(regs),
     ]
     for pmm, pmlen, label in PMM_CONFIGS:
         prefix = f"{label}_mmode"
         lines.extend(
             [
                 comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), M-mode"),
-                *set_pmm_field("mseccfg", pmm, pmlen, regs.tmp),
+                *set_pmm_field("mseccfg", pmm, pmlen, test_data),
                 "#ifdef S_SUPPORTED",
-                *set_mxr(False, regs.tmp, "mstatus"),
+                *set_mxr(False, test_data, "mstatus"),
                 "#endif // S_SUPPORTED",
-                f"LA(x{regs.base}, pm_lo_page)",
-                *generate_instruction_sweep_tests(prefix, test_data, regs, COVERGROUP),
-                *generate_misaligned_tests(prefix, test_data, regs, COVERGROUP),
-                *generate_jalr_tests(prefix, test_data, regs, COVERGROUP),
-                *generate_fault_address_tests(prefix, test_data, regs, COVERGROUP),
+                *generate_instruction_sweep_tests(prefix, test_data, COVERGROUP),
+                *generate_misaligned_tests(prefix, test_data, COVERGROUP),
+                *generate_jalr_tests(prefix, test_data, COVERGROUP),
+                *generate_fault_address_tests(prefix, test_data, COVERGROUP),
                 "#ifdef S_SUPPORTED",
-                *generate_mxr_tests(prefix, test_data, regs, COVERGROUP, status_csr="mstatus"),
-                *set_mxr(False, regs.tmp, "mstatus"),
+                *generate_mxr_tests(prefix, test_data, COVERGROUP, status_csr="mstatus"),
+                *set_mxr(False, test_data, "mstatus"),
                 "#endif // S_SUPPORTED",
-                *generate_csr_write_tests(prefix, pmlen, test_data, regs, COVERGROUP, _CSR_TARGETS),
+                *generate_csr_write_tests(prefix, pmlen, test_data, COVERGROUP, _CSR_TARGETS),
             ]
         )
 
@@ -90,11 +78,10 @@ def make_smmpm(test_data: TestData) -> list[TestChunk]:
         for pmm, pmlen, label in PMM_CONFIGS:
             lines.extend(
                 [
-                    *set_pmm_field(pmm_csr, pmm, pmlen, regs.tmp),
+                    *set_pmm_field(pmm_csr, pmm, pmlen, test_data),
                     *generate_xlen_change_tests(
                         f"{label}_{tag}",
                         test_data,
-                        regs,
                         cp=cp,
                         cg=COVERGROUP,
                         pmm_csr=pmm_csr,
@@ -105,7 +92,7 @@ def make_smmpm(test_data: TestData) -> list[TestChunk]:
             )
         lines.extend(
             [
-                *set_pmm_field(pmm_csr, 0b00, 0, regs.tmp),
+                *set_pmm_field(pmm_csr, 0b00, 0, test_data),
                 f"#endif // {xlen_guard}",
                 f"#endif // {mode_guard.split()[1]}",
                 "#endif // U_SUPPORTED",
@@ -116,14 +103,13 @@ def make_smmpm(test_data: TestData) -> list[TestChunk]:
         [
             # MPRV test using nested loop structure from testplan
             # Only tests Bare and Sv39 modes with limited upper bit patterns
-            *generate_mprv_tests(test_data, regs, COVERGROUP, sv39_data_map),
-            *set_pmm_field("mseccfg", 0b00, 0, regs.tmp),
+            *generate_mprv_tests(test_data, COVERGROUP),
+            *set_pmm_field("mseccfg", 0b00, 0, test_data),
             "#ifdef S_SUPPORTED",
-            *set_mxr(False, regs.tmp, "mstatus"),
+            *set_mxr(False, test_data, "mstatus"),
             "#endif // S_SUPPORTED",
         ]
     )
     tc.code = lines
     chunks = [test_data.end_test_chunk()]
-    free_pm_regs(test_data, regs)
     return chunks

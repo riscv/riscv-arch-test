@@ -15,10 +15,8 @@ from testgen.priv.extensions.ZpmCommon import (
     MODES,
     PMM_CONFIGS,
     _pte_chain_asm,
-    alloc_pm_regs_paired,
     data_page,
     data_slvl_tables,
-    free_pm_regs,
     generate_csr_write_tests,
     generate_fault_address_tests,
     generate_instruction_sweep_tests,
@@ -26,7 +24,6 @@ from testgen.priv.extensions.ZpmCommon import (
     generate_misaligned_tests,
     generate_mxr_tests,
     generate_sign_extension_tests,
-    jalr_pad_asm,
     satp_clear,
     satp_setup,
     set_mxr,
@@ -44,8 +41,6 @@ COVERGROUP = "SmnpmS_cg"
     extra_defines=["#define BOOT_TO_SMODE", "#define RVTEST_ALLOW_OOS_FETCH_EPC"],
 )
 def make_smnpms(test_data: TestData) -> list[TestChunk]:
-    regs = alloc_pm_regs_paired(test_data)
-
     chunks = []
     for mode in MODES:
         tc = test_data.begin_test_chunk(split_name=mode)
@@ -57,14 +52,13 @@ def make_smnpms(test_data: TestData) -> list[TestChunk]:
         lines.extend(
             [
                 ".popsection",
-                *jalr_pad_asm(regs),
             ]
         )
         if not is_bare:
             lines.extend(
                 [
                     *_pte_chain_asm(mode, HIGH_VA[mode], "pm_hi_page", _LEAF_PERMS_S),
-                    *satp_setup(mode, regs),
+                    *satp_setup(mode, test_data),
                 ]
             )
 
@@ -72,37 +66,34 @@ def make_smnpms(test_data: TestData) -> list[TestChunk]:
             prefix = f"{label}_{mode}"
             lines.extend(
                 [
-                    *set_pmm_field("menvcfg", pmm, pmlen, regs.tmp, tsbi=True),
-                    f"LA(x{regs.base}, pm_lo_page)",
-                    *generate_instruction_sweep_tests(prefix, test_data, regs, COVERGROUP),
+                    *set_pmm_field("menvcfg", pmm, pmlen, test_data, tsbi=True),
+                    *generate_instruction_sweep_tests(prefix, test_data, COVERGROUP),
                 ]
             )
             if not is_bare:
-                lines.extend(generate_sign_extension_tests(prefix, mode, test_data, regs, COVERGROUP))
+                lines.extend(generate_sign_extension_tests(prefix, mode, test_data, COVERGROUP))
             lines.extend(
                 [
-                    *generate_misaligned_tests(prefix, test_data, regs, COVERGROUP),
-                    *generate_jalr_tests(prefix, test_data, regs, COVERGROUP, mxr=0),
-                    *generate_fault_address_tests(prefix, test_data, regs, COVERGROUP),
-                    *generate_mxr_tests(prefix, test_data, regs, COVERGROUP),
-                    *generate_jalr_tests(prefix, test_data, regs, COVERGROUP, mxr=1),
-                    *set_mxr(False, regs.tmp),
-                    *generate_csr_write_tests(prefix, pmlen, test_data, regs, COVERGROUP, ["sepc", "sscratch"]),
+                    *generate_misaligned_tests(prefix, test_data, COVERGROUP),
+                    *generate_jalr_tests(prefix, test_data, COVERGROUP, mxr=0),
+                    *generate_fault_address_tests(prefix, test_data, COVERGROUP),
+                    *generate_mxr_tests(prefix, test_data, COVERGROUP),
+                    *generate_jalr_tests(prefix, test_data, COVERGROUP, mxr=1),
+                    *set_mxr(False, test_data),
+                    *generate_csr_write_tests(prefix, pmlen, test_data, COVERGROUP, ["sepc", "sscratch"]),
                 ]
             )
 
         lines.extend(
             [
-                *set_pmm_field("menvcfg", 0b00, 0, regs.tmp, tsbi=True),
-                *set_mxr(False, regs.tmp),
+                *set_pmm_field("menvcfg", 0b00, 0, test_data, tsbi=True),
+                *set_mxr(False, test_data),
             ]
         )
         if not is_bare:
-            lines.extend(satp_clear(regs))
+            lines.extend(satp_clear())
         if guard:
             lines.append(f"#endif // {guard}")
         tc.code = lines
         chunks.append(test_data.end_test_chunk())
-
-    free_pm_regs(test_data, regs)
     return chunks

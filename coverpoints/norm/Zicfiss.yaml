@@ -49,6 +49,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "{ZicfissH_cg}/{cp_ssp_csr_gating_vs,cp_ssamoswap_sse_gating_vs,cp_ss_instr_inactive_virt,cp_envcfg_sse_rdonly0_virt}",
+        "senvcfg.SSE read-only zero when V=1: {ZicfissSm_cg}/cp_envcfg_sse_rdonly0_virt, dormant until H_SUPPORTED is enabled for coverage",
       ]
 
   # If the privilege mode is less than M and csr:menvcfg[sse] is 0, an illegal-instruction
@@ -112,6 +113,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "{ZicfissS_cg}/{cp_ss_page_enc,cp_ss_page_enc_load,cp_ss_page_enc_store}",
+        "{ZicfissSm_cg}/{cp_menvcfg_sse_ss_page}",
       ]
 
   # Similarly, when V=1 and henvcfg.SSE=0, this encoding remains reserved at VS and
@@ -136,31 +138,25 @@ normative_rule_definitions:
   - name: ssmp_ss_page_access_fault
     coverpoint:
       [
-        "{ZicfissU_cg}/{cp_ss_page_access_store,cp_ss_page_access_load,cp_ss_page_access_amo,cp_ss_page_access_cbo,cp_ss_page_access_cboz,cp_ss_page_access_lrsc,cp_ss_page_access_amocas,cp_ss_instr_target_page,cp_ss_instr_target_page_u_mxr}",
-        "{ZicfissS_cg}/{cp_ss_page_enc_load,cp_ss_page_enc_store,cp_ss_instr_target_page_s}",
+        "{ZicfissU_cg}/{cp_ss_page_access_store,cp_ss_page_access_amo,cp_ss_page_access_lrsc,cp_ss_page_access_amocas,cp_ss_vector_store}",
+        "{ZicfissS_cg}/{cp_ss_page_enc_store,cp_ss_page_perm_priority_store}",
+        "{ZicfissSm_cg}/{cp_menvcfg_sse_ss_page}",
       ]
   # Access to a SS page using cache-block operation (insn:cbo.*[]) instructions is not
   # permitted. Such accesses will raise a store/AMO access-fault exception.
   - name: ssmp_ss_cache_block_access_fault
-    coverpoint:
-      [
-        "{ZicfissU_cg}/{cp_ss_page_access_store,cp_ss_page_access_load,cp_ss_page_access_amo,cp_ss_page_access_cbo,cp_ss_page_access_cboz,cp_ss_page_access_lrsc,cp_ss_page_access_amocas,cp_ss_instr_target_page,cp_ss_instr_target_page_u_mxr}",
-        "{ZicfissS_cg}/{cp_ss_page_enc_load,cp_ss_page_enc_store,cp_ss_instr_target_page_s}",
-      ]
+    coverpoint: ["{ZicfissU_cg}/{cp_ss_page_access_cbo,cp_ss_page_access_cboz}"]
   # Implicit accesses, including instruction fetches to an SS page, are not permitted.
   # Such accesses will raise an access-fault exception appropriate to the access type.
   - name: ssmp_ss_implicit_access_fault
-    coverpoint:
-      [
-        "{ZicfissU_cg}/{cp_ss_page_access_store,cp_ss_page_access_load,cp_ss_page_access_amo,cp_ss_page_access_cbo,cp_ss_page_access_cboz,cp_ss_page_access_lrsc,cp_ss_page_access_amocas,cp_ss_instr_target_page,cp_ss_instr_target_page_u_mxr}",
-        "{ZicfissS_cg}/{cp_ss_page_enc_load,cp_ss_page_enc_store,cp_ss_instr_target_page_s}",
-      ]
+    coverpoint: ["TODO: no test yet fetches an instruction from an SS page"]
   # However, the shadow stack is readable by all instructions that only load from memory.
   - name: ssmp_ss_load
     coverpoint:
       [
-        "{ZicfissU_cg}/{cp_ss_page_access_store,cp_ss_page_access_load,cp_ss_page_access_amo,cp_ss_page_access_cbo,cp_ss_page_access_cboz,cp_ss_page_access_lrsc,cp_ss_page_access_amocas,cp_ss_instr_target_page,cp_ss_instr_target_page_u_mxr}",
-        "{ZicfissS_cg}/{cp_ss_page_enc_load,cp_ss_page_enc_store,cp_ss_instr_target_page_s}",
+        "{ZicfissU_cg}/{cp_ss_page_access_load,cp_ss_page_access_lrsc,cp_ss_vector_load}",
+        "{ZicfissS_cg}/{cp_ss_page_enc_load,cp_ss_page_perm_priority_load}",
+        "{ZicfissSm_cg}/{cp_menvcfg_sse_ss_page}",
       ]
   # If a shadow stack (SS) instruction raises an access-fault, page-fault, or
   # guest-page-fault exception that is supposed to indicate the original instruction type
@@ -170,8 +166,9 @@ normative_rule_definitions:
   - name: ss_fault_exception_code
     coverpoint:
       [
-        "{ZicfissU_cg}/{cp_ss_page_access_store,cp_ss_page_access_load,cp_ss_page_access_amo,cp_ss_page_access_cbo,cp_ss_page_access_cboz,cp_ss_page_access_lrsc,cp_ss_page_access_amocas,cp_ss_instr_target_page,cp_ss_instr_target_page_u_mxr}",
-        "{ZicfissS_cg}/{cp_ss_page_enc_load,cp_ss_page_enc_store,cp_ss_instr_target_page_s}",
+        "{ZicfissU_cg}/{cp_ss_instr_target_page,cp_ss_instr_target_page_u_mxr,cp_ss_page_ad_bits,cp_ss_non_idempotent,cp_sspopchk_fault_priority}",
+        "{ZicfissS_cg}/{cp_ss_instr_target_page_s,cp_ss_page_perm_priority,cp_sspopchk_fault_priority_s}",
+        "{ZicfissSm_cg}/{cp_ss_pmp_permissions,cp_ss_satp_bare}",
       ]
   # Should a shadow stack instruction access a page that is not designated as a shadow
   # stack page and is not marked as read-only (pte.xwr=0b001), a store/AMO access-fault
@@ -179,16 +176,16 @@ normative_rule_definitions:
   - name: ssmp_ss_page_illegal_access
     coverpoint:
       [
-        "{ZicfissU_cg}/{cp_ss_page_access_store,cp_ss_page_access_load,cp_ss_page_access_amo,cp_ss_page_access_cbo,cp_ss_page_access_cboz,cp_ss_page_access_lrsc,cp_ss_page_access_amocas,cp_ss_instr_target_page,cp_ss_instr_target_page_u_mxr}",
-        "{ZicfissS_cg}/{cp_ss_page_enc_load,cp_ss_page_enc_store,cp_ss_instr_target_page_s}",
+        "{ZicfissU_cg}/{cp_ss_instr_target_page}",
+        "{ZicfissS_cg}/{cp_ss_instr_target_page_s}",
       ]
   # Conversely, if the page being accessed by a shadow stack instruction is a read-only
   # page, a store/AMO page-fault exception will be triggered.
   - name: ssmp_ss_read_only_page
     coverpoint:
       [
-        "{ZicfissU_cg}/{cp_ss_page_access_store,cp_ss_page_access_load,cp_ss_page_access_amo,cp_ss_page_access_cbo,cp_ss_page_access_cboz,cp_ss_page_access_lrsc,cp_ss_page_access_amocas,cp_ss_instr_target_page,cp_ss_instr_target_page_u_mxr}",
-        "{ZicfissS_cg}/{cp_ss_page_enc_load,cp_ss_page_enc_store,cp_ss_instr_target_page_s}",
+        "{ZicfissU_cg}/{cp_ss_instr_target_page}",
+        "{ZicfissS_cg}/{cp_ss_instr_target_page_s}",
       ]
 
   # If the virtual address in ssp is not XLEN aligned, then the SSPUSH/

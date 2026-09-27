@@ -55,9 +55,6 @@ def insert_header_template(
     )
     ext_components, params = canonicalize_extensions(testsuite, xlen, E_ext, required_extensions, sew, instr_name)
     extension_requirements = [*ext_components, *alternative_extensions]
-    extension_list = f"{extension_requirements}"
-    if test_config.forbidden_extensions:
-        extension_list += f"\n# FORBIDDEN_EXTENSIONS: {test_config.forbidden_extensions}"
     flat_ext_components = ext_components + [ext for alternatives in alternative_extensions for ext in alternatives]
     if test_config.extra_params:
         params.extend(test_config.extra_params)

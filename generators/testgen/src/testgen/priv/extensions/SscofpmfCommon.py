@@ -22,6 +22,19 @@ _FIXED_TSBI_ALIASES = {
     "scountovf": "0xda0",
 }
 
+# The S/U suites reach the counter through T-SBI calls encoded at generation time, and
+# the RV32 high halves are named directly, so counter 3 is the only supported choice.
+MACRO_CHECKS = [
+    "#if !defined(RVMODEL_MHPMEVENT) || !defined(RVMODEL_MHPMCOUNTER) || \\",
+    "    !defined(RVMODEL_MHPMEVENT_VAL) || !defined(RVMODEL_MHPMEVENT_CODE)",
+    '  #error "Sscofpmf tests need RVMODEL_MHPMEVENT, RVMODEL_MHPMCOUNTER, RVMODEL_MHPMEVENT_VAL and RVMODEL_MHPMEVENT_CODE in rvmodel_macros.h"',
+    "#endif",
+    "#if (RVMODEL_MHPMEVENT != CSR_MHPMEVENT3) || (RVMODEL_MHPMCOUNTER != CSR_MHPMCOUNTER3)",
+    '  #error "Sscofpmf tests only support counter 3: define RVMODEL_MHPMEVENT as CSR_MHPMEVENT3 and RVMODEL_MHPMCOUNTER as CSR_MHPMCOUNTER3"',
+    "#endif",
+    "",
+]
+
 _MHPMEVENT_RE = re.compile(r"\bCSR_MHPMEVENT(\d+)(H)?\b")
 _MHPMCOUNTER_RE = re.compile(r"\bCSR_MHPMCOUNTER(\d+)(H)?\b")
 

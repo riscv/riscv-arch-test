@@ -13,7 +13,7 @@ from testgen.priv.extensions.ZpmCommon import (
     MODE_GUARDS,
     MODES,
     PMM_CONFIGS,
-    build_finegrained_text_map_asm,
+    build_4k_image_map,
     csr_op,
     data_page,
     data_slvl_tables,
@@ -53,7 +53,7 @@ def make_ssnpm(test_data: TestData) -> list[TestChunk]:
                 [
                     *data_page("pm_hi_page"),
                     *data_slvl_tables(mode),
-                    *data_slvl_tables(mode, label_prefix="pm_img_slvl"),
+                    *data_slvl_tables(mode, "pm_img_slvl{}_pg_tbl"),
                 ]
             )
         lines.extend(
@@ -69,7 +69,17 @@ def make_ssnpm(test_data: TestData) -> list[TestChunk]:
             lines.extend(
                 [
                     "",
-                    *build_finegrained_text_map_asm(mode, test_data),
+                    *build_4k_image_map(
+                        mode,
+                        "pm_img_slvl{}_pg_tbl",
+                        [
+                            ("pm_utext_begin", "pm_utext_end"),
+                            ("pm_lo_page", 4096),
+                            ("pm_hi_page", 4096),
+                            ("rvtest_data_begin", "end_signature"),
+                        ],
+                        test_data,
+                    ),
                     "",
                     *map_pm_hi_page(mode, user=True),
                 ]

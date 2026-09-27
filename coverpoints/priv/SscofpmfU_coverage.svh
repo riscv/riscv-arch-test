@@ -27,6 +27,10 @@ covergroup SscofpmfU_cg with function sample(ins_t ins);
         sip_lcofi_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sip", "lcofip")[0] {
             bins zero = {0};
         }
+        // With S, LCOFIP is cleared through sip, so check sip rather than mip here.
+        sip_clear: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sip", "sip") == 0) {
+                bins yes = {1};
+        }
 
         sret_insn: coverpoint ins.current.insn {
                 type_option.weight = 0;
@@ -51,11 +55,25 @@ covergroup SscofpmfU_cg with function sample(ins_t ins);
     cp_uinh_inhibits_umode:    cross priv_mode_u, mhpmevent_xinh_combos, mhpmevent_of_zero;
     `ifdef S_SUPPORTED
 
-        cp_of_set_on_overflow: cross priv_mode_u, sip_lcofi_one, mie_clear, mhpmevent_of_one, mhpmevent_inhibits_pattern_state;
+        // The workload runs in U-mode, so with U-mode counting inhibited it cannot overflow the counter
+        // (only a hart counting the T-SBI round trip in S/M-mode could, and the test must not rely on that).
+        cp_of_set_on_overflow: cross priv_mode_u, sip_lcofi_one, mie_clear, mhpmevent_of_one, mhpmevent_inhibits_pattern_state {
+            ignore_bins self_inhibited = binsof(mhpmevent_inhibits_pattern_state.uinh_only) ||
+                                         binsof(mhpmevent_inhibits_pattern_state.msu_set);
+        }
     `else
-        cp_of_set_on_overflow: cross priv_mode_u, lcofi_ip_one, mie_clear, mhpmevent_of_one, mhpmevent_inhibits_pattern_state;
+        // The workload runs in U-mode, so with U-mode counting inhibited it cannot overflow the counter
+        // (only a hart counting the T-SBI round trip in S/M-mode could, and the test must not rely on that).
+        cp_of_set_on_overflow: cross priv_mode_u, lcofi_ip_one, mie_clear, mhpmevent_of_one, mhpmevent_inhibits_pattern_state {
+            ignore_bins self_inhibited = binsof(mhpmevent_inhibits_pattern_state.uinh_only) ||
+                                         binsof(mhpmevent_inhibits_pattern_state.msu_set);
+        }
     `endif
-    cp_overflow_hw_only:       cross priv_mode_u, mip_clear, mie_clear, mhpmcounter_extreme_state, mhpmevent_all_zero;
+    `ifdef S_SUPPORTED
+        cp_overflow_hw_only:   cross priv_mode_u, sip_clear, mie_clear, mhpmcounter_extreme_state, mhpmevent_all_zero;
+    `else
+        cp_overflow_hw_only:   cross priv_mode_u, mip_clear, mie_clear, mhpmcounter_extreme_state, mhpmevent_all_zero;
+    `endif
     `ifdef S_SUPPORTED
 
         cp_lcofip_hw_only:     cross priv_mode_u, mhpmevent_of, sip_lcofi_zero ;

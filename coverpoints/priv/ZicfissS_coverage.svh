@@ -171,10 +171,11 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
         bins mxr_clear = {1'b0};
         bins mxr_set   = {1'b1};
     }
-    // What was written into senvcfg bit 3, and what it reads back as.
-    sse_bit_written: coverpoint ins.current.rs1_val[3] {
-        bins wrote_zero = {1'b0};
-        bins wrote_one  = {1'b1};
+    // The SSE bit alone set (csrrs) or cleared (csrrc): funct3 is insn[14:12] and SSE is
+    // bit 3 of rs1. Setting or clearing only SSE leaves every other field of the CSR alone.
+    sse_bit_write: coverpoint {ins.current.insn[14:12], ins.current.rs1_val[3]} {
+        bins set_sse   = {4'b0101};
+        bins clear_sse = {4'b0111};
     }
     senvcfg_sse_readback: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "senvcfg", "sse") {
         bins reads_zero = {1'b0};
@@ -182,10 +183,6 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
     }
     senvcfg_csr: coverpoint ins.current.insn[31:20] {
         bins senvcfg = {CSR_SENVCFG};
-    }
-    csr_write_ops: coverpoint ins.current.insn {
-        wildcard bins csrrw = {CSRRW};
-        wildcard bins csrrs = {CSRRS};
     }
 
     // SSPOPCHK's base is implicitly ssp, so the faulting address is ssp itself.
@@ -231,12 +228,7 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
     cp_ssamoswap_s:                cross priv_mode_s, ssamoswap_instr, pte_ss_page;
     cp_ss_address_alignment_ssp_s: cross priv_mode_s, ss_push_instr, ssp_LSBs;
     cp_ss_address_alignment_pop_s: cross priv_mode_s, ss_pop_instr, ssp_LSBs;
-    cp_ss_address_alignment_swap_s: cross priv_mode_s, ssamoswap_instr, ssamoswap_adr_LSBs {
-        // A misaligned SSAMOSWAP.W at addr[2:0] of 1-3 stays inside one misaligned atomicity
-        // granule, where the reference models differ on whether it executes or faults. Untested.
-        ignore_bins w_within_granule =
-            binsof(ssamoswap_instr.ssamoswap_w) && binsof(ssamoswap_adr_LSBs) intersect {[3'd1:3'd3]};
-    }
+    cp_ss_address_alignment_swap_s: cross priv_mode_s, ssamoswap_instr, ssamoswap_adr_LSBs;
     cp_ss_instr_target_page_s:     cross priv_mode_s, ss_mem_instr, pte_xwr;
 
     // The U/SUM/MXR permission check resolves before any shadow stack rule, so where
@@ -246,21 +238,16 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
     cp_ss_page_perm_priority_store: cross priv_mode_s, ordinary_storeops, pte_u, sstatus_sum, sstatus_mxr;
 
     // senvcfg.SSE reads back 0 from S-mode whenever menvcfg.SSE is 0.
-    cp_senvcfg_sse_rdonly0_s:      cross priv_mode_s, csr_write_ops, senvcfg_csr, menvcfg_sse,
-                                         sse_bit_written, senvcfg_sse_readback {
+    cp_senvcfg_sse_rdonly0_s:      cross priv_mode_s, senvcfg_csr, menvcfg_sse, sse_bit_write, senvcfg_sse_readback {
         // menvcfg.SSE=0 forces senvcfg.SSE read-only zero, and the write that is sampled here
         // is logged with its legalized value, so a read-back of 1 is an error.
         illegal_bins rdonly0_cannot_read_one =
             binsof(menvcfg_sse.sse_off) && binsof(senvcfg_sse_readback.reads_one);
-        // With menvcfg.SSE=1 the field is writable: csrrw reads back what it wrote, and
-        // csrrs of a 1 reads back 1.
-        ignore_bins csrrw_reads_back_written =
-            binsof(csr_write_ops.csrrw) && binsof(menvcfg_sse.sse_on) &&
-            ((binsof(sse_bit_written.wrote_zero) && binsof(senvcfg_sse_readback.reads_one)) ||
-             (binsof(sse_bit_written.wrote_one) && binsof(senvcfg_sse_readback.reads_zero)));
-        ignore_bins csrrs_set_reads_one =
-            binsof(csr_write_ops.csrrs) && binsof(menvcfg_sse.sse_on) &&
-            binsof(sse_bit_written.wrote_one) && binsof(senvcfg_sse_readback.reads_zero);
+        // With menvcfg.SSE=1 the field is writable and reads back what was written.
+        ignore_bins writable_reads_back =
+            binsof(menvcfg_sse.sse_on) &&
+            ((binsof(sse_bit_write.set_sse) && binsof(senvcfg_sse_readback.reads_zero)) ||
+             (binsof(sse_bit_write.clear_sse) && binsof(senvcfg_sse_readback.reads_one)));
     }
 
 endgroup

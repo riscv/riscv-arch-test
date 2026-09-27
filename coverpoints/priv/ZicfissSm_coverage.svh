@@ -114,10 +114,26 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
             bins henvcfg = {CSR_HENVCFG};
         }
     `endif
-    // Only the write forms can drive a read-only-zero check.
-    csr_write_ops: coverpoint ins.current.insn {
-        wildcard bins csrrw = {CSRRW};
-        wildcard bins csrrs = {CSRRS};
+    // The SSE bit alone set (csrrs) or cleared (csrrc): funct3 is insn[14:12] and SSE is
+    // bit 3 of rs1. Setting or clearing only SSE leaves every other field of the CSR alone.
+    sse_bit_write: coverpoint {ins.current.insn[14:12], ins.current.rs1_val[3]} {
+        bins set_sse   = {4'b0101};
+        bins clear_sse = {4'b0111};
+    }
+    // Ordinary word/doubleword load and store, for the SS page encoding check.
+    `ifdef UDB_MXLEN_64
+        ls_op: coverpoint ins.current.insn {
+            wildcard bins load  = {LD};
+            wildcard bins store = {SD};
+        }
+    `else
+        ls_op: coverpoint ins.current.insn {
+            wildcard bins load  = {LW};
+            wildcard bins store = {SW};
+        }
+    `endif
+    pte_ss_page: coverpoint ins.current.pte_d[3:1] {
+        bins ss_page = {3'b010};
     }
 
     // ── Enable-chain building blocks ──────────────────────────────────────
@@ -128,11 +144,6 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
     // Zicfiss is inactive in S-mode only while menvcfg.SSE=0.
     s_sse_inactive: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") {
         bins sse_off = {1'b0};
-    }
-    // What the test attempted to write into bit 3 (the SSE position).
-    sse_bit_written: coverpoint ins.current.rs1_val[3] {
-        bins wrote_zero = {1'b0};
-        bins wrote_one  = {1'b1};
     }
     // What senvcfg.SSE actually reads back afterwards. With menvcfg.SSE=0 this must
     // stay zero no matter what was written.
@@ -145,6 +156,10 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
         henvcfg_sse_readback: coverpoint ins.current.csr[CSR_HENVCFG][3] {
             bins reads_zero = {1'b0};
             bins reads_one  = {1'b1};
+        }
+        henvcfg_sse: coverpoint ins.prev.csr[CSR_HENVCFG][3] {
+            bins sse_off = {1'b0};
+            bins sse_on  = {1'b1};
         }
     `endif
 
@@ -208,37 +223,41 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
     cp_ss_instr_inactive_m:        cross priv_mode_m, ss_mop_instr, sse_state, ssp_state;
     cp_ss_instr_inactive_s:        cross priv_mode_s, ss_mop_instr, s_sse_inactive, ssp_state;
 
+    // With menvcfg.SSE=0 the xwr=010 encoding is reserved below M-mode, so ordinary accesses
+    // page-fault; with menvcfg.SSE=1 it is an SS page, readable by loads and not writable by stores.
+    cp_menvcfg_sse_ss_page:        cross priv_mode_s_u, ls_op, pte_ss_page, menvcfg_sse;
+
     // menvcfg.SSE=0 forces senvcfg.SSE (and henvcfg.SSE) read-only zero.
-    cp_envcfg_sse_rdonly0_senvcfg: cross priv_mode_m, csr_write_ops, senvcfg_csr, menvcfg_sse,
-                                         sse_bit_written, senvcfg_sse_readback {
-        // menvcfg.SSE=0 forces senvcfg.SSE read-only zero, and the write that is sampled here
-        // is logged with its legalized value, so a read-back of 1 is an error.
+    cp_envcfg_sse_rdonly0_senvcfg: cross priv_mode_m, senvcfg_csr, menvcfg_sse, sse_bit_write, senvcfg_sse_readback {
+        // The write that is sampled here is logged with its legalized value, so a read-back
+        // of 1 while menvcfg.SSE=0 is an error.
         illegal_bins rdonly0_cannot_read_one =
             binsof(menvcfg_sse.sse_off) && binsof(senvcfg_sse_readback.reads_one);
-        // With menvcfg.SSE=1 the field is writable: csrrw reads back what it wrote, and
-        // csrrs of a 1 reads back 1.
-        ignore_bins csrrw_reads_back_written =
-            binsof(csr_write_ops.csrrw) && binsof(menvcfg_sse.sse_on) &&
-            ((binsof(sse_bit_written.wrote_zero) && binsof(senvcfg_sse_readback.reads_one)) ||
-             (binsof(sse_bit_written.wrote_one) && binsof(senvcfg_sse_readback.reads_zero)));
-        ignore_bins csrrs_set_reads_one =
-            binsof(csr_write_ops.csrrs) && binsof(menvcfg_sse.sse_on) &&
-            binsof(sse_bit_written.wrote_one) && binsof(senvcfg_sse_readback.reads_zero);
+        // With menvcfg.SSE=1 the field is writable and reads back what was written.
+        ignore_bins writable_reads_back =
+            binsof(menvcfg_sse.sse_on) &&
+            ((binsof(sse_bit_write.set_sse) && binsof(senvcfg_sse_readback.reads_zero)) ||
+             (binsof(sse_bit_write.clear_sse) && binsof(senvcfg_sse_readback.reads_one)));
     }
     // H_SUPPORTED is undefined for coverage until Sail supports the hypervisor extension (see
-    // riscv_arch_test.sv), so this cross and its stimulus are dormant until then.
+    // riscv_arch_test.sv), so these crosses and their stimulus are dormant until then.
     `ifdef H_SUPPORTED
-        cp_envcfg_sse_rdonly0_henvcfg: cross priv_mode_m, csr_write_ops, henvcfg_csr, menvcfg_sse,
-                                             sse_bit_written, henvcfg_sse_readback {
+        cp_envcfg_sse_rdonly0_henvcfg: cross priv_mode_m, henvcfg_csr, menvcfg_sse, sse_bit_write, henvcfg_sse_readback {
             illegal_bins rdonly0_cannot_read_one =
                 binsof(menvcfg_sse.sse_off) && binsof(henvcfg_sse_readback.reads_one);
-            ignore_bins csrrw_reads_back_written =
-                binsof(csr_write_ops.csrrw) && binsof(menvcfg_sse.sse_on) &&
-                ((binsof(sse_bit_written.wrote_zero) && binsof(henvcfg_sse_readback.reads_one)) ||
-                 (binsof(sse_bit_written.wrote_one) && binsof(henvcfg_sse_readback.reads_zero)));
-            ignore_bins csrrs_set_reads_one =
-                binsof(csr_write_ops.csrrs) && binsof(menvcfg_sse.sse_on) &&
-                binsof(sse_bit_written.wrote_one) && binsof(henvcfg_sse_readback.reads_zero);
+            ignore_bins writable_reads_back =
+                binsof(menvcfg_sse.sse_on) &&
+                ((binsof(sse_bit_write.set_sse) && binsof(henvcfg_sse_readback.reads_zero)) ||
+                 (binsof(sse_bit_write.clear_sse) && binsof(henvcfg_sse_readback.reads_one)));
+        }
+        // henvcfg.SSE=0 makes senvcfg.SSE read-only zero when V=1 (menvcfg.SSE=1 here).
+        cp_envcfg_sse_rdonly0_virt: cross priv_mode_vs, senvcfg_csr, henvcfg_sse, sse_bit_write, senvcfg_sse_readback {
+            illegal_bins rdonly0_cannot_read_one =
+                binsof(henvcfg_sse.sse_off) && binsof(senvcfg_sse_readback.reads_one);
+            ignore_bins writable_reads_back =
+                binsof(henvcfg_sse.sse_on) &&
+                ((binsof(sse_bit_write.set_sse) && binsof(senvcfg_sse_readback.reads_zero)) ||
+                 (binsof(sse_bit_write.clear_sse) && binsof(senvcfg_sse_readback.reads_one)));
         }
     `endif
 

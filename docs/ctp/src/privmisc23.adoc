@@ -130,9 +130,10 @@ In Privileged section because it has both unpriv and privileged behaviors.
 In Privileged section because it has both unpriv and privileged behaviors.
 
 Split into suites by the privilege mode the tests execute in, mirroring the Exceptions
-suites: ZicfissU (U-mode), ZicfissS (S/HS-mode), ZicfissSm (M-mode control plane) and
-ZicfissV (vector accesses to a shadow stack page). The VS/VU-mode suite is documented in
-the Hypervisor chapter, see <<t-ZicfissH-coverpoints>>.
+suites: ZicfissU (U-mode), ZicfissS (S/HS-mode) and ZicfissSm (M-mode control plane).
+ZicfissU also covers vector accesses to a shadow stack page, the ZicfissV sheet, when Zve32x
+is implemented. The VS/VU-mode suite is documented in the Hypervisor chapter, see
+<<t-ZicfissH-coverpoints>>.
 
 [[t-Zicfiss-coverpoints]]
 .Zicfiss Coverpoints
@@ -151,7 +152,7 @@ https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61
 https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?gid=568706494#gid=568706494[Google Sheet Testplan]
 
 [[t-ZicfissV-coverpoints]]
-.ZicfissV Coverpoints
+.ZicfissV Coverpoints (in ZicfissU)
 https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?gid=186206611#gid=186206611[Google Sheet Testplan]
 
 ==== Zawrs Wait on Reservation Set

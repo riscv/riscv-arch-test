@@ -470,9 +470,6 @@
 `ifdef ZICFISSU_COVERAGE
   `include "ZicfissU_coverage.svh"
 `endif
-`ifdef ZICFISSV_COVERAGE
-  `include "ZicfissV_coverage.svh"
-`endif
 `ifdef ZICNTR_COVERAGE
   `include "Zicntr_coverage.svh"
 `endif

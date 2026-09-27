@@ -339,6 +339,34 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
         }
     `endif
 
+    `ifdef ZVE32X_SUPPORTED
+        // ── Vector accessors of an SS page ────────────────────────────────────
+        vector_unit_load: coverpoint ins.current.insn {
+            wildcard bins vle8  = {VLE8_V};
+            wildcard bins vle16 = {VLE16_V};
+            wildcard bins vle32 = {VLE32_V};
+        }
+        vector_unit_store: coverpoint ins.current.insn {
+            wildcard bins vse8  = {VSE8_V};
+            wildcard bins vse16 = {VSE16_V};
+            wildcard bins vse32 = {VSE32_V};
+        }
+        vector_strided: coverpoint ins.current.insn {
+            wildcard bins vlse8  = {VLSE8_V};
+            wildcard bins vlse32 = {VLSE32_V};
+        }
+        vector_indexed: coverpoint ins.current.insn {
+            wildcard bins vluxei8 = {VLUXEI8_V};
+            wildcard bins vsuxei8 = {VSUXEI8_V};
+        }
+        // Where the access starts: on the SS page, or on the page below it (rs1[12] differs
+        // because the SS page is 4 KiB-aligned at an even page number).
+        access_origin: coverpoint ins.current.rs1_val[12] {
+            bins on_ss_page       = {1'b0};
+            bins on_adjacent_page = {1'b1};
+        }
+    `endif
+
     // ── Fault-priority building block ─────────────────────────────────────
     // SSPOPCHK's base is implicitly ssp, so the faulting address is ssp itself
     // rather than rs1+imm. Pointing ssp at the model's access-fault address while a
@@ -396,12 +424,7 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     // Alignment
     cp_ss_address_alignment_ssp:   cross priv_mode_u, ss_push_instr, ssp_LSBs;
     cp_ss_address_alignment_pop:   cross priv_mode_u, ss_pop_instr, ssp_LSBs;
-    cp_ss_address_alignment_swap:  cross priv_mode_u, ssamoswap_instr, ssamoswap_adr_LSBs {
-        // A misaligned SSAMOSWAP.W at addr[2:0] of 1-3 stays inside one misaligned atomicity
-        // granule, where the reference models differ on whether it executes or faults. Untested.
-        ignore_bins w_within_granule =
-            binsof(ssamoswap_instr.ssamoswap_w) && binsof(ssamoswap_adr_LSBs) intersect {[3'd1:3'd3]};
-    }
+    cp_ss_address_alignment_swap:  cross priv_mode_u, ssamoswap_instr, ssamoswap_adr_LSBs;
 
     // Page / PMA behaviour
     cp_ss_instr_target_page:       cross priv_mode_u, ss_mem_instr, pte_xwr;
@@ -435,9 +458,15 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     `ifdef ZACAS_SUPPORTED
         cp_ss_page_access_amocas:  cross priv_mode_u, amocas_ops, pte_ss_page;
     `endif
-    // Vector accessor leg deferred: it needs V in the suite's required_extensions and
-    // vector setup in the generator. Tracked on the ZicfissU test plan row rather than
-    // shipped as a coverpoint that can never fill.
+    `ifdef ZVE32X_SUPPORTED
+        // A shadow stack page is readable by anything that only loads, and writable only by
+        // SSPUSH, C.SSPUSH and SSAMOSWAP, so vector loads succeed and vector stores fault,
+        // including when the access begins on the page below and runs into the SS page.
+        cp_ss_vector_load:         cross priv_mode_u, vector_unit_load, pte_ss_page, sstatus_mxr;
+        cp_ss_vector_store:        cross priv_mode_u, vector_unit_store, pte_ss_page;
+        cp_ss_vector_strided:      cross priv_mode_u, vector_strided, pte_ss_page, access_origin;
+        cp_ss_vector_indexed:      cross priv_mode_u, vector_indexed, pte_ss_page, access_origin;
+    `endif
 
     // Enable-chain gating
     cp_ssp_csr_gating_u:           cross priv_mode_u, csrops, ssp_csr, u_sse_active;

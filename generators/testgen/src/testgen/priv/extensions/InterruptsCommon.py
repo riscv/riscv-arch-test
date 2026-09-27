@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from itertools import combinations
 
 from testgen.asm.csr import write_stce
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -189,7 +189,7 @@ def generate_cp_priority(
         coverpoint,
         f"Priority of pairs of interrupts distinguished by {csr} in {priv} mode that are otherwise enabled and pending",
     )
-    tmp_reg = test_data.int_regs.get_register()
+    tmp_reg, check_reg = test_data.int_regs.get_registers(2)
 
     types = suite.priority_types
     # delegated interrupts are only taken in S-mode with sstatus.SIE set
@@ -206,6 +206,7 @@ def generate_cp_priority(
         raised = types if vary == "ie" else pair
         # ie: enable only the pair; otherwise enable everything
         ie_after = (1 << int_bit[first]) | (1 << int_bit[second]) if vary == "ie" else -1
+        raised_mask = sum({1 << int_bit[int_type] for int_type in raised})
         # mideleg: one case per delegatable member of the pair, delegating that member;
         # otherwise a single case with nothing delegated
         delegations: list[str | None] = [None]
@@ -233,13 +234,17 @@ def generate_cp_priority(
                 f"csrs {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = 1",
                 f"LI(x{tmp_reg}, 0)",
                 f"csrw {ie}, x{tmp_reg} # {ie} = 0",
-                test_data.add_testcase(bin_name, coverpoint, suite.covergroup),
                 *mode_enter(suite, priv),
                 *_raise(raised, pair, "SET", priv),
-                # enable after everything is pending so the pair is arbitrated together, not raced by latency
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait until every raised interrupt is pending",
+                test_data.add_testcase(bin_name, coverpoint, suite.covergroup),
+                csr_access(f"csrr x{check_reg}, {suite.ip}", priv),
+                f"LI(x{tmp_reg}, {raised_mask:#x})",
+                f"and x{check_reg}, x{check_reg}, x{tmp_reg} # raised interrupts that are pending",
+                write_sigupd(check_reg, test_data),
+                # Enable last, so the pending interrupts are arbitrated together and taken in priority order
                 f"LI(x{tmp_reg}, {ie_after})",
                 csr_access(f"csrw {ie}, x{tmp_reg} # {ie} = {ie_after:#x}", priv),
-                f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupts to fire in priority order",
                 *_raise(raised, pair, "CLR", priv),
                 *mode_exit(suite, priv),
                 f"#endif // {guard_symbol(second)}",
@@ -247,7 +252,7 @@ def generate_cp_priority(
                 "",
             ]
 
-    test_data.int_regs.return_register(tmp_reg)
+    test_data.int_regs.return_registers([tmp_reg, check_reg])
 
 
 def generate_cp_priority_pending(

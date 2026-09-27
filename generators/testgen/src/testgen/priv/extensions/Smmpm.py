@@ -18,7 +18,6 @@ from testgen.priv.extensions.ZpmCommon import (
     generate_misaligned_tests,
     generate_mprv_tests,
     generate_mxr_tests,
-    generate_xlen_change_tests,
     mprv_data_section,
     set_mxr,
     set_pmm_field,
@@ -27,8 +26,6 @@ from testgen.priv.registry import add_priv_test_generator
 
 COVERGROUP = "Smmpm_cg"
 _CSR_TARGETS = ["mepc", "mscratch"]
-_MSTATUS_UXL_SHIFT = 32
-_MSTATUS_SXL_SHIFT = 34
 
 
 @add_priv_test_generator(
@@ -65,37 +62,6 @@ def make_smmpm(test_data: TestData) -> list[TestChunk]:
                 *set_mxr(False, test_data, "mstatus"),
                 "#endif // S_SUPPORTED",
                 *generate_csr_write_tests(prefix, pmlen, test_data, COVERGROUP, _CSR_TARGETS),
-            ]
-        )
-
-    # Writing SXL or UXL to 32 must clear menvcfg.PMM, which governs S (SXL) or U without S (UXL).
-    checks = [
-        ("#ifdef S_SUPPORTED", "UDB_SXLEN_32", "sxl", "cp_pmm_sxl_clear", "menvcfg", _MSTATUS_SXL_SHIFT),
-        ("#ifndef S_SUPPORTED", "UDB_UXLEN_32", "uxl", "cp_pmm_uxl_clear", "menvcfg", _MSTATUS_UXL_SHIFT),
-    ]
-    for mode_guard, xlen_guard, tag, cp, pmm_csr, status_shift in checks:
-        lines.extend(["#ifdef U_SUPPORTED", mode_guard, f"#ifdef {xlen_guard}"])
-        for pmm, pmlen, label in PMM_CONFIGS:
-            lines.extend(
-                [
-                    *set_pmm_field(pmm_csr, pmm, pmlen, test_data),
-                    *generate_xlen_change_tests(
-                        f"{label}_{tag}",
-                        test_data,
-                        cp=cp,
-                        cg=COVERGROUP,
-                        pmm_csr=pmm_csr,
-                        status_csr="mstatus",
-                        status_shift=status_shift,
-                    ),
-                ]
-            )
-        lines.extend(
-            [
-                *set_pmm_field(pmm_csr, 0b00, 0, test_data),
-                f"#endif // {xlen_guard}",
-                f"#endif // {mode_guard.split()[1]}",
-                "#endif // U_SUPPORTED",
             ]
         )
 

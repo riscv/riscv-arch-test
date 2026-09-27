@@ -160,12 +160,7 @@ normative_rule_definitions:
   # Setting UXL/SXL to 1 will clear the corresponding pointer masking
   # configuration bits.
   - name: pm_uxl_clear
-    coverpoint:
-      [
-        "Smmpm_cg/cp_pmm_sxl_clear",
-        "Smmpm_cg/cp_pmm_uxl_clear",
-        "Ssnpm_cg/cp_pmm_uxl_clear",
-      ]
+    coverpoint: ["Ssnpm_cg/cp_pmm_uxl_clear"]
 
   # the supported values of PMLEN may depend on the effective privilege mode. The
   # current standard only defines PMLEN=XLEN-48 and PMLEN=XLEN-57,

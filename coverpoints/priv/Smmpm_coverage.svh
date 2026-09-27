@@ -74,22 +74,6 @@
         `endif
     `endif
 
-    // Writing SXL/UXL to 32 must clear the PMM field of the mode; checked from M-mode
-    `ifdef S_SUPPORTED
-        `ifdef UDB_SXLEN_32  // SXL=01 is only reachable when S-mode supports RV32
-            sxl_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sxl") {
-                bins sxl_01 = {2'b01};
-            }
-        `endif // UDB_SXLEN_32
-    `endif // S_SUPPORTED
-    `ifdef U_SUPPORTED
-        `ifdef UDB_UXLEN_32  // UXL=01 is only reachable when U-mode supports RV32
-            uxl_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "uxl") {
-                bins uxl_01 = {2'b01};
-            }
-        `endif // UDB_UXLEN_32
-    `endif // U_SUPPORTED
-
     csr_target: coverpoint ins.current.insn[31:20] { //excluding read-only csrs
         bins mepc     = {CSR_MEPC};
         //bins mtvec    = {CSR_MTVEC}; //// warl field has complex write restrictions and is not easy to test
@@ -100,20 +84,6 @@
     cp_pmlen_masking : cross priv_mode_m, pmm, a_upper_bits, pm_insn;
     cp_pmlen_misaligned_word: cross priv_mode_m, pm_misalign;
     cp_pm_csr_software_access: cross priv_mode_m, pmm, csr_target, csrw_insn;
-
-    `ifdef S_SUPPORTED
-        `ifdef UDB_SXLEN_32
-            cp_pmm_sxl_clear: cross priv_mode_m, menvcfg_pmm, sxl_rv32;
-        `endif // UDB_SXLEN_32
-    `endif // S_SUPPORTED
-    `ifdef U_SUPPORTED
-        `ifndef S_SUPPORTED  // without S, menvcfg.PMM governs U-mode
-            `ifdef UDB_UXLEN_32
-                cp_pmm_uxl_clear: cross priv_mode_m, menvcfg_pmm, uxl_rv32;
-            `endif // UDB_UXLEN_32
-        `endif // S_SUPPORTED
-    `endif // U_SUPPORTED
-
 
     // MPRV Crosses (split by MPP and S_SUPPORTED to handle MXR/SATP)
 

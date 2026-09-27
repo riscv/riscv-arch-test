@@ -4,9 +4,11 @@
 //
 // Zicfiss (shadow stack) — VS/VU-mode (H-extension) coverage
 //
-// Derived from ACT4-CTP Zicfiss_simplified.xlsx, sheet ZicfissH.
+// Testplan: the ZicfissH sheet linked from docs/ctp/src/privmisc23.adoc.
 //
-// Copyright (C) 2026 Harvey Mudd College, 10x Engineers, UET Lahore, Habib University
+// Written: Umer Shahid umer@riscv.org 2026
+//
+// Copyright (C) 2026 RISC-V International
 //
 // SPDX-License-Identifier: Apache-2.0
 //

@@ -16,7 +16,7 @@
 # - ExceptionsVx: https://solvnetplus.synopsys.com/s/case/500WQ000023l1CPYAY/vmvnrrv-does-not-raise-an-illegalinstruction-exception-when-vtypevill-1
 # - Sdtrig*: Sail does not implement Sdtrig yet (https://github.com/riscv/sail-riscv/issues/222)
 # - ZicfissU/S/Sm: three model bugs, seen on imperas-rv64-max and imperas-rv32gck with ImperasDV
-#   Y-2026.03-DEV-20260612 against Sail 0.14.1 (ZicfissV passes). Filed as
+#   Y-2026.03-DEV-20260612 against Sail 0.14.1. Filed as
 #   https://solvnetplus.synopsys.com/s/case/500WQ000028qjufYAA/zicfiss-discrepancies
 #   1. A memory fault does not outrank the SSPOPCHK software check. With PMP read-only on the
 #      shadow stack (ZicfissSm, cp_ss_pmp_permissions) or on an xwr=001 page (ZicfissS/U,

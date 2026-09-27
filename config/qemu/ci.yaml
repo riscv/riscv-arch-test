@@ -26,12 +26,18 @@ ci_enabled: true
 #     on RV32 the IMSIC bit is writable although Sail does not model IMSIC
 # ZawrsU and ZawrsS fail on qemu due to stval mismatching, filed QEMU issue https://gitlab.com/qemu-project/qemu/-/work_items/4080
 # Sdtrig*: Sail does not implement Sdtrig yet (https://github.com/riscv/sail-riscv/issues/222)
-# ZicfissU, ZicfissS, ZicfissSm, ZicfissV excluded due to QEMU bugs:
-#  1. sspopchk raises a software-check exception where a store/AMO access fault must take priority
-#     (https://gitlab.com/qemu-project/qemu/-/work_items/4379)
-#  2. mtval is reported as 0 on the M-mode SSAMOSWAP access fault, disagreeing with
-#     the reference model (https://gitlab.com/qemu-project/qemu/-/work_items/4380)
-exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,ZicfissU,ZicfissS,ZicfissSm,ZicfissV"
+# ZicfissU, ZicfissS, ZicfissSm: QEMU bugs
+#  1. a shadow stack instruction on a non-SS page other than xwr=001 gets the ordinary permission
+#     check instead of a store/AMO access fault: SSPOPCHK on an RW page raises a software check
+#     (https://gitlab.com/qemu-project/qemu/-/work_items/4379), and SSPUSH/SSAMOSWAP on RW/RWX pages
+#     write, and on X/RX pages raise a store/AMO page fault (not yet reported)
+#  2. the M-mode SSAMOSWAP access fault leaves a stale mtval, the previous fault's address, rather than
+#     zero or the faulting address (https://gitlab.com/qemu-project/qemu/-/work_items/4380)
+#  3. SSPOPCHK with satp.MODE=Bare below M does not fault (https://gitlab.com/qemu-project/qemu/-/work_items/4432)
+#  4. senvcfg.SSE keeps 1 after menvcfg.SSE is cleared (https://gitlab.com/qemu-project/qemu/-/work_items/4224)
+#  5. not yet reported: ssp[1:0] are writable; SSPOPCHK to a PMP read-only region does not fault;
+#     cbo.* on an SS page does not fault
+exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,ZicfissU,ZicfissS,ZicfissSm"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"
 shards: 1

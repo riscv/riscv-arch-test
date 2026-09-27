@@ -5,9 +5,12 @@
 # SsstrictSm, unknown
 # Smstateen Sail does not yet support 1P13 bit
 # Sdtrig* not yet implemented in Sail (https://github.com/riscv/sail-riscv/issues/222)
-# ZicfissU, ZicfissS, ZicfissSm excluded due to Whisper bugs: SSAMOSWAP in M-mode raises an
-# illegal-instruction exception instead of a store/AMO access fault, and an S-mode ordinary store to a
-# U=1 shadow stack page with SUM=0 raises a store/AMO access fault instead of the U/SUM page fault
+# ZicfissU, ZicfissS, ZicfissSm: Whisper bugs, not yet reported upstream
+#  1. SSAMOSWAP in M-mode raises an illegal-instruction exception instead of a store/AMO access fault
+#  2. an S-mode ordinary store to a U=1 shadow stack page with SUM=0 raises a store/AMO access fault
+#     instead of the U/SUM page fault
+#  3. U-mode access to ssp also requires henvcfg.SSE when V=0, so every U-mode ssp access traps
+#  4. SSPUSH, SSPOPCHK and SSAMOSWAP access memory at the untranslated virtual address
 ci_enabled: true
 exclude_extensions: "SsstrictSm,Smstateen,SdtrigSm,SdtrigS,SdtrigU,ZicfissU,ZicfissS,ZicfissSm"
 exclude_configs:

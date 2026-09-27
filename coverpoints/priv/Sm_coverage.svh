@@ -262,7 +262,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         // bins mcause     = {CSR_MCAUSE}; // WLRL field; tested with cp_mcause_write_exception and cp_mcause_write_interrupt
         bins mtval      = {CSR_MTVAL};
         bins mip        = {CSR_MIP};
-        bins mcountinhibit = {CSR_MCOUNTINHIBIT};
+        `ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
+            bins mcountinhibit = {CSR_MCOUNTINHIBIT};
+        `endif
         bins mhpmevent3 = {CSR_MHPMEVENT3};
         bins mhpmevent4 = {CSR_MHPMEVENT4};
         bins mhpmevent5 = {CSR_MHPMEVENT5};
@@ -377,7 +379,10 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins debug_only[] = {[12'h7B0:12'h7BF]};
     }
     csr_ro: coverpoint ins.current.insn[31:20] {
-        bins readonly[] = {[12'hC00:12'hFFF]};
+        bins readonly_c[] = {[12'hC00:12'hCFF]};
+        bins readonly_d[] = {[12'hD00:12'hDFF]};
+        bins readonly_e[] = {[12'hE00:12'hEFF]};
+        bins readonly_f[] = {[12'hF00:12'hFFF]};
     }
 
     csrr: coverpoint ins.current.insn  {
@@ -397,6 +402,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins ones = {'1};
     }
 
+    `ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
     old_mcountinhibit_cy: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "cy") {
         bins zero = {1'b0};
         `ifdef UDB_COUNTINHIBIT_EN_0
@@ -409,6 +415,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             bins one = {1'b1}; // only if counter can be inhibited
         `endif
     }
+    `endif
 
     mcycle: coverpoint ins.current.insn[31:20] {
         bins mcycle = {CSR_MCYCLE};
@@ -573,8 +580,10 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     // counters
     cp_cntr_access :            cross priv_mode_m, mcounters, cntraccesses;
-    cp_inhibit_mcycle :         cross priv_mode_m, csrr, mcycle, old_mcountinhibit_cy;
-    cp_inhibit_minstret :       cross priv_mode_m, csrr, minstret, old_mcountinhibit_ir;
+    `ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
+        cp_inhibit_mcycle :     cross priv_mode_m, csrr, mcycle, old_mcountinhibit_cy;
+        cp_inhibit_minstret :   cross priv_mode_m, csrr, minstret, old_mcountinhibit_ir;
+    `endif
 
     // misa
     cp_misa_mxl :               cross priv_mode_m, misa, misa_mxl_accesses;
@@ -701,13 +710,13 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             bins sip_mip         = { {CSR_SIP, CSR_MIP} };
         }
         // S-level interrupt delegation bits {LCOFI, SEI, STI, SSI}; the VS bits are read-only without H
-        mideleg_s: coverpoint {ins.current.csr[CSR_MIDELEG][13], ins.current.csr[CSR_MIDELEG][9],
-                               ins.current.csr[CSR_MIDELEG][5],  ins.current.csr[CSR_MIDELEG][1]} {
+        mideleg_s: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "lcofip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "seip")[0],
+                               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "stip")[0],  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "ssip")[0]} {
             bins none = {4'b0000};
             bins all  = {4'b1111};
         }
-        mideleg_s_walking: coverpoint {ins.current.csr[CSR_MIDELEG][13], ins.current.csr[CSR_MIDELEG][9],
-                                       ins.current.csr[CSR_MIDELEG][5],  ins.current.csr[CSR_MIDELEG][1]} {
+        mideleg_s_walking: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "lcofip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "seip")[0],
+                                       get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "stip")[0],  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "ssip")[0]} {
             bins lcofi = {4'b1000};
             bins sei   = {4'b0100};
             bins sti   = {4'b0010};

@@ -280,8 +280,8 @@ covergroup SvH_cg with function sample(ins_t ins);
     mstatus_mpv_set: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstatus", "mpv") {
         bins mpv_set = {1};
     }
-    mstatus_mpv_unset: get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstatus", "mpv") {
-        bins mpv_unset = {0}
+    mstatus_mpv_unset: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstatus", "mpv") {
+        bins mpv_unset = {0};
     }
 
     mpp_mstatus_m: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "mstatus", "mpp") {

@@ -133,7 +133,7 @@ def _generate_load_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            "cp_zama16b_load",
+            "cp_<mnemonic>_load",
             "Misaligned loads that stay within a 16-byte aligned window must not fault.\n"
             "Base address is 16-byte aligned; offsets sweep [0, 16 - access_size].",
         ),
@@ -204,7 +204,7 @@ def _generate_store_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            "cp_zama16b_store",
+            "cp_<mnemonic>_store",
             "Misaligned stores that stay within a 16-byte aligned window must not fault.\n"
             "Base address is 16-byte aligned; offsets sweep [0, 16 - access_size].\n"
             "Scratch is re-initialized before each store; all 16 bytes are signed out\n"
@@ -297,7 +297,7 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            "cp_zama16b_amo",
+            "cp_<mnemonic>_amo",
             "Misaligned AMOs that stay within a 16-byte aligned window must not fault.\n"
             "Base address is 16-byte aligned; offsets sweep [0, 16 - access_size].\n"
             "Scratch is re-initialized before each AMO; all 16 bytes are signed out\n"

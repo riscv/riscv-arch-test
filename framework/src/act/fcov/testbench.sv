@@ -32,7 +32,8 @@ module testbench;
 
   // Temporary signals for filling RVVI trace interface (file handling, string parsing, etc)
   string  traceFileList, traceFile;
-  integer traceFileListHandler, traceFileHandler, num;
+  integer traceFileListHandler, num;
+  integer traceFileHandler = 0; // 0 = no trace file open yet
   string  line;
   string  key, val;
   string  words[$];
@@ -112,7 +113,7 @@ module testbench;
   // Moves through full list of trace files
   always_ff @(posedge clk) begin
     // Open trace file if needed
-    if(traceFileHandler === 'x) begin
+    if(traceFileHandler == 0) begin
       fileNum = 0;
       traceFile = traceFiles[fileNum];
       $display("Opening trace file: %s", traceFile);

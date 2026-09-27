@@ -37,6 +37,13 @@ def comment_banner(title: str, description: str | None = None) -> str:
     return "\n".join(lines)
 
 
+def arch_block(lines: list[str], *extensions: str) -> list[str]:
+    """Bracket a block of code with `.option arch, +ext...` so the extensions are enabled
+    only where they are needed, instead of in the test's MARCH string."""
+    adds = ", ".join(f"+{e.lower()}" for e in extensions)
+    return [".option push", f".option arch, {adds}", *lines, ".option pop"]
+
+
 def to_hex(value: int, bits: int) -> str:
     """
     Convert an integer to a hex string for assembly output.

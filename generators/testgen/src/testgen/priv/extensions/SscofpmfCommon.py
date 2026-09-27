@@ -58,6 +58,24 @@ def _csr_access(instr: str, mode: str) -> str:
     return tsbi_call(_resolve_tsbi_csr(instr))
 
 
+def clear_lcofip(r_tmp: int, priv_mode: str) -> list[str]:
+    """Clear a pending LCOFIP left by an earlier real overflow: through sip when S exists
+    and the suite runs below M, else through mip."""
+    set_bit = f"LI(x{r_tmp}, {hex(1 << 13)})"
+    if priv_mode == "Sm":
+        return [set_bit, f"csrc mip, x{r_tmp}   # clear LCOFIP"]
+    if priv_mode == "S":
+        return [set_bit, f"csrc sip, x{r_tmp}   # clear LCOFIP"]
+    return [
+        set_bit,
+        "#ifdef S_SUPPORTED",
+        _csr_access(f"csrc sip, x{r_tmp}   # clear LCOFIP", priv_mode),
+        "#else",
+        _csr_access(f"csrc mip, x{r_tmp}   # clear LCOFIP", priv_mode),
+        "#endif",
+    ]
+
+
 # Every T-SBI call runs the M-mode handler, and a call from U is delegated through S
 # first, so counting must be inhibited in every mode above the one under test or the
 # counter would also count the round trip instead of just the workload.
@@ -428,6 +446,11 @@ def _generate_overflow_hw_only_tests(test_data: TestData, priv_mode: str) -> lis
         "",
         _csr_access("csrw mie, zero   # disable interrupts", priv_mode),
         _csr_access("csrw RVMODEL_MHPMEVENT, zero", priv_mode),
+        "#if __riscv_xlen == 32",
+        _csr_access("csrw CSR_MHPMEVENT3H, zero   # clear OF and xINH left by earlier tests", priv_mode),
+        "#endif",
+        # A real overflow in the previous tests leaves LCOFIP pending on a counting hart.
+        *clear_lcofip(r_val, priv_mode),
         "",
     ]
 
@@ -512,6 +535,9 @@ def _generate_lcofip_hw_only_tests(test_data: TestData, priv_mode: str) -> list[
         ),
         "",
         _csr_access("csrw mie, zero   # disable interrupts", priv_mode),
+        # A real overflow earlier leaves LCOFIP pending on a counting hart; clear it so
+        # the readbacks below show whether the software OF write raised it.
+        *clear_lcofip(r_temp, priv_mode),
         "",
         "# Testcase: software-set OF bit directly (no HW increment)",
         *set_of("csrs", "software-set OF bit"),

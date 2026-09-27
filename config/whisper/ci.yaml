@@ -4,7 +4,7 @@
 
 # SsstrictSm, unknown
 # Smstateen Sail does not yet support 1P13 bit
-# Sdtrig* not yet implemented in Sail
+# Sdtrig* not yet implemented in Sail (https://github.com/riscv/sail-riscv/issues/222)
 # Sscofpmf* will be added back in CI once Sail increments HPM counters
 #   (https://github.com/riscv/sail-riscv/issues/1733); whisper counts events, so every
 #   result that depends on a real overflow diverges from the Sail reference. On RV32,

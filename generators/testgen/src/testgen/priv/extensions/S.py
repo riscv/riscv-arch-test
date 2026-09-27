@@ -347,7 +347,7 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
 
     tc = test_data.new_test_chunk(test_chunks, "scsr_addr")
     tc.section_header = comment_banner(
-        "cp_stval_{zero,ilen_walk1,ilen_ones}",
+        "cp_stval_zero / cp_stval_ilen_walk1 / cp_stval_ilen_ones",
         "Write 0 to stval, and every ILEN-bit value as a walking 1 and all 32 1s when the illegal\n"
         "instruction encoding is reported in stval",
     )

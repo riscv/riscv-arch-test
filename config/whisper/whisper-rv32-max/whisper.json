@@ -34,7 +34,8 @@
           "rsrv",
           "idempotent",
           "misal_ok",
-          "mag16"
+          "mag16",
+          "cacheable"
         ],
         "high": "0x3ffffffff",
         "low": "0x80000000"

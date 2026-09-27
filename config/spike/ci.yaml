@@ -5,7 +5,7 @@
 
 ci_enabled: true
 # Smstateen will be added back once sail starts supporting Sscsrind too
-# Sdtrig* not yet supported in Sail reference
+# Sdtrig* not yet supported in Sail reference (https://github.com/riscv/sail-riscv/issues/222)
 # Sscofpmf* will be added back in CI once spike counts HPM events
 #   (https://github.com/riscv-software-src/riscv-isa-sim/issues/2370) and Sail does too
 #   (https://github.com/riscv/sail-riscv/issues/1733)

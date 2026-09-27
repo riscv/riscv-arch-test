@@ -22,26 +22,34 @@ normative_rule_definitions:
   - name: Zicsr_illegal_acc
     coverpoint: ["U_ucsr_cg/cp_csr_ro"]
 
-  # 0x7B0-0x7BF are only visible to debug mode. Implementations should raise
-  # illegal-instruction exceptions on machine-mode access to the latter set of
-  # registers.
-  - name: Zicsr_debug-illegal
-    coverpoint: ["U_ucsr_cg/cp_csr_insufficient_priv"]
-
-  # The ECALL instruction is used to make a service request to the execution
+  # The insn:ecall[] instruction is used to make a service request to the execution
   # environment.
-  - name: ecall_op
+  - name: ecall_service_request_op
+    coverpoint: ["U_uprivinst_cg/cp_uprivinst ecall bin"]
+  # The ECALL instruction is used to make a request to the supporting execution
+  # environment. When executed in U-mode, S-mode, or M-mode, it generates an
+  # environment-call-from-U-mode exception, environment-call-from-S-mode exception, or
+  # environment-call-from-M-mode exception, respectively, and performs no other operation.
+  - name: ecall_priv_mode_op
     coverpoint: ["U_uprivinst_cg/cp_uprivinst ecall bin"]
 
-  # The EBREAK instruction is used to return control to a debugging environment.
-  - name: ebreak_op
+  # The insn:ebreak[] instruction is used to return control to a debugging environment.
+  - name: ebreak_debug_env_op
+    coverpoint: ["U_uprivinst_cg/cp_uprivinst ebreak bin"]
+  # The EBREAK instruction is used by debuggers to cause control to be transferred back to
+  # a debugging environment. Unless overridden by an external debug environment, EBREAK
+  # raises a breakpoint exception and performs no other operation.
+  - name: ebreak_debugger_transfer_op
     coverpoint: ["U_uprivinst_cg/cp_uprivinst ebreak bin"]
 
-  - name: mret_in_U_mode
-    coverpoint: ["U_uprivinst_cg/cp_uprivinst mret bin"]
-
-  - name: sret_in_U_mode
-    coverpoint: ["U_uprivinst_cg/cp_uprivinst sret bin"]
+  # Attempting to execute an xRET instruction in a mode less privileged than x will raise
+  # an illegal-instruction exception.
+  - name: xret_in_lower_mode
+    coverpoint:
+      [
+        "U_uprivinst_cg/cp_uprivinst mret bin",
+        "U_uprivinst_cg/cp_uprivinst sret bin",
+      ]
 
   - name: sret_presence
     coverpoint: ["U_uprivinst_cg/cp_uprivinst sret bin"]

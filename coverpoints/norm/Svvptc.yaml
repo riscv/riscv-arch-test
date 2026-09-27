@@ -1,5 +1,12 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # When the Svvptc extension is implemented, explicit stores by a hart that update the
+  # Valid bit of leaf and/or non-leaf PTEs from 0 to 1 and are visible to a hart will
+  # eventually become visible within a bounded timeframe to subsequent implicit accesses
+  # by that hart to such PTEs.
   - name: Svvptc_explicit_stores_update_valid_bit
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Not tested: bounded-time visibility is not observable in signature tests",
+      ]

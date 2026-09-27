@@ -83,15 +83,14 @@ _HIGHER_MODE_INHIBITS = {"Sm": 0, "S": 1 << 62, "U": (1 << 62) | (1 << 61)}
 _HIGHER_MODE_INHIBITS_32 = {mode: bits >> 32 for mode, bits in _HIGHER_MODE_INHIBITS.items()}
 
 
-def nonzero_not_all_ones(reg: int, scratch: int) -> list[str]:
-    """Reduce x{reg} in place to a 0/1 "nonzero and not all-1s" boolean; raw hpmcounter
-    values aren't reproducible across the signature/self-check build split."""
+def counted_since_all_ones(reg: int) -> list[str]:
+    """Reduce x{reg}, a counter read after it was preset to all 1s, to 1 if it counted
+    at least one event (it is no longer all 1s) and 0 if it did not. The count itself
+    is not recorded, since how many events a workload generates is implementation-specific;
+    one or more events always leaves the counter somewhere other than all 1s."""
     return [
-        f"snez x{scratch}, x{reg}          # x{scratch} = (val != 0)",
-        f"addi x{reg}, x{reg}, 1            # x{reg} = val + 1 (wraps to 0 iff val was all-1s)",
-        f"seqz x{reg}, x{reg}               # x{reg} = (val was all-1s)",
-        f"xori x{reg}, x{reg}, 1            # x{reg} = NOT(val was all-1s)",
-        f"and x{reg}, x{reg}, x{scratch}    # x{reg} = nonzero AND not all-1s",
+        f"addi x{reg}, x{reg}, 1            # x{reg} = val + 1 (0 iff val is still all 1s)",
+        f"snez x{reg}, x{reg}               # x{reg} = counted at least one event",
     ]
 
 
@@ -370,8 +369,8 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
                     test_data.add_testcase(binname, coverpoint, covergroup),
                     *read_event_config_bits(),
                     write_sigupd(r_temp, test_data),
-                    f"csrr x{r_temp}, RVMODEL_MHPMCOUNTER   # sample point for hpmcounter_nonzero/non-all-1s",
-                    *nonzero_not_all_ones(r_temp, r_bool),
+                    f"csrr x{r_temp}, RVMODEL_MHPMCOUNTER   # sample point: did the counter move off all 1s?",
+                    *counted_since_all_ones(r_temp),
                     write_sigupd(r_temp, test_data),
                     "",
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})   # wait for RVMODEL_INTERRUPT_LATENCY",
@@ -381,7 +380,7 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
             )
 
         else:
-            mhpmcounter_read = f"csrr x{r_temp}, RVMODEL_MHPMCOUNTER   # sample point for hpmcounter_nonzero/non-all-1s"
+            mhpmcounter_read = f"csrr x{r_temp}, RVMODEL_MHPMCOUNTER   # sample point: did the counter move off all 1s?"
 
             lines.extend(
                 [
@@ -397,7 +396,7 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
                     *read_event_config_bits(),
                     write_sigupd(r_temp, test_data),
                     _csr_access(mhpmcounter_read, priv_mode),
-                    *nonzero_not_all_ones(r_temp, r_bool),
+                    *counted_since_all_ones(r_temp),
                     write_sigupd(r_temp, test_data),
                     "",
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})   # wait for RVMODEL_INTERRUPT_LATENCY",

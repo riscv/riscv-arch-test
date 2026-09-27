@@ -168,6 +168,22 @@ def _generate_xinh_inhibits_tests(test_data: TestData, priv_mode: str) -> list[s
     )
 
     r_hval = test_data.int_regs.get_register(exclude_regs=[0, 31])
+
+    def combo_counts() -> list[str]:
+        """In M-mode, also run the workload so every combination checks that only MINH
+        decides whether M-mode events count. Below M the counter is reached through a
+        T-SBI round trip that the combinations with MINH=0 would count, so the S and U
+        suites check counting only in the single-bit toggles above."""
+        if priv_mode != "Sm":
+            return []
+        return [
+            f"{indent}LA(x{r_temp}, scratch)",
+            f"{indent}RVMODEL_MHPMEVENT_CODE(x{r_temp}, x{r_hval})",
+            f"{indent}csrr x{r_temp}, RVMODEL_MHPMCOUNTER",
+            f"{indent}snez x{r_temp}, x{r_temp}   # counted iff MINH = 0",
+            f"{indent}{write_sigupd(r_temp, test_data)}",
+        ]
+
     lines.append(f"{indent}#if __riscv_xlen == 32")
     for combo in range(32):
         binname = f"xinh_combo_{combo:05b}_{priv_mode.lower()}_rv32"
@@ -188,6 +204,7 @@ def _generate_xinh_inhibits_tests(test_data: TestData, priv_mode: str) -> list[s
                 f"{indent}and x{r_temp}, x{r_temp}, x{r_hval}",
                 "#endif",
                 f"{indent}{write_sigupd(r_temp, test_data)}",
+                *combo_counts(),
                 "",
             ]
         )
@@ -208,6 +225,7 @@ def _generate_xinh_inhibits_tests(test_data: TestData, priv_mode: str) -> list[s
                 f"{indent}and x{r_temp}, x{r_temp}, x{r_val}",
                 "#endif",
                 f"{indent}{write_sigupd(r_temp, test_data)}",
+                *combo_counts(),
                 "",
             ]
         )

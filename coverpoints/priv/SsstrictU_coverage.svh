@@ -98,7 +98,7 @@ covergroup SsstrictU_instr_cg with function sample(ins_t ins);
     cp_fstore:            cross priv_mode_u, fstore;
     cp_atomic_funct3:     cross priv_mode_u, atomic_funct3;
     cp_atomic_funct7:     cross priv_mode_u, atomic_funct7;
-    cl_lrsc:              cross priv_mode_u, lrsc;
+    cp_lrsc:              cross priv_mode_u, lrsc;
     cp_Rtype:             cross priv_mode_u, Rtype;
     cp_RWtype:            cross priv_mode_u, RWtype;
     cp_Ftype:             cross priv_mode_u, Ftype;

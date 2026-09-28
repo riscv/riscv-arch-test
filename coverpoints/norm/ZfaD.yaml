@@ -5,31 +5,23 @@ normative_rule_definitions:
     # The FCVTMOD.W.D instruction is defined similarly to the FCVT.W.D instruction, with the following differences. FCVTMOD.W.D always rounds towards zero. Bits 31:0 are taken from the rounded, unbounded two&#8217;s complement result, then sign-extended to XLEN bits and written to integer register rd. ±∞ and NaN are converted to zero.
     coverpoint:
       ["ZfaD_fcvtmod_w_d_cg/{cp_rd, cp_fs1, cp_fs1_edges_D, cp_csr_fflags_vn}"]
-  - name: fleq-d_op
-    # If the D extension is implemented, FLEQ.D and FLTQ.D instructions are analogously defined to operate on double-precision numbers.
+  # If the ext:d[] extension is implemented, insn:fleq.d[] and insn:fltq.d[] instructions
+  # are analogously defined to operate on double-precision numbers.
+  - name: fleq-d_fltq-d_op
     coverpoint:
       [
         "ZfaD_fleq_d_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges_D}",
+        "ZfaD_fltq_d_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges_D}",
       ]
   - name: fli-d_op
     # If the D extension is implemented, FLI.D performs the analogous operation, but loads a double-precision value into floating-point register rd. Note that entry 1 (corresponding to the minimum positive normal value) has a numerically different value for double-precision than for single-precision. FLI.D is encoded like FLI.S, but with fmt=D.
     coverpoint: ["ZfaD_fli_d_cg/{cp_rs1_fli, cp_fd}"]
-  - name: fltq-d_op
-    # If the D extension is implemented, FLEQ.D and FLTQ.D instructions are analogously defined to operate on double-precision numbers.
-    coverpoint:
-      [
-        "ZfaD_fltq_d_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges_D}",
-      ]
-  - name: fmaxm-d_op
-    # If the D extension is implemented, FMINM.D and FMAXM.D instructions are analogously defined to operate on double-precision numbers.
+  # If the ext:d[] extension is implemented, insn:fminm.d[] and insn:fmaxm.d[]
+  # instructions are analogously defined to operate on double-precision numbers.
+  - name: fmaxm-d_fminm-d_op
     coverpoint:
       [
         "ZfaD_fmaxm_d_cg/{cp_fs1, cp_fs2, cp_fd, cp_csr_fflags_v, cr_fs1_fs2_edges_D}",
-      ]
-  - name: fminm-d_op
-    # If the D extension is implemented, FMINM.D and FMAXM.D instructions are analogously defined to operate on double-precision numbers.
-    coverpoint:
-      [
         "ZfaD_fminm_d_cg/{cp_fs1, cp_fs2, cp_fd, cp_csr_fflags_v, cr_fs1_fs2_edges_D}",
       ]
   - name: fmvh-x-d_op
@@ -39,23 +31,27 @@ normative_rule_definitions:
     # For RV32 only, if the D extension is implemented, the FMVP.D.X instruction moves a double-precision number from a pair of integer registers into a floating-point register. Integer registers rs1 and rs2 supply bits 31:0 and 63:32, respectively; the result is written to floating-point register rd. FMVP.D.X is encoded in the OP-FP major opcode with funct3=0 and funct7=1011001.
     coverpoint:
       ["ZfaD_fmvp_d_x_cg/{cp_rs1, cp_rs2, cp_rs1_edges, cp_rs2_edges, cp_fd}"]
-  - name: fleq-s_op
-    # The FLEQ.S and FLTQ.S instructions are defined like the FLE.S and FLT.S instructions, except that quiet NaN inputs do not cause the invalid operation exception flag to be set.
-    coverpoint: ["ZfaD_fleq_s_cg/{cp_fs1_badNB_D_S, cp_fs2_badNB_D_S}"]
+  # The insn:fleq.s[] and insn:fltq.s[] instructions are defined like the insn:fle.s[] and
+  # insn:flt.s[] instructions, except that quiet NaN inputs do not cause the invalid
+  # operation exception flag to be set.
+  - name: fleq-s_fltq-s_op
+    coverpoint:
+      [
+        "ZfaD_fleq_s_cg/{cp_fs1_badNB_D_S, cp_fs2_badNB_D_S}",
+        "ZfaD_fltq_s_cg/{cp_fs1_badNB_D_S, cp_fs2_badNB_D_S}",
+      ]
   - name: fli-s_op
     # The FLI.S instruction loads one of 32 single-precision floating-point constants, encoded in the rs1 field, into floating-point register rd. The correspondence of rs1 field values and single-precision floating-point values is shown in . FLI.S is encoded like FMV.W.X, but with rs2=1.
     coverpoint: ["ZfaD_fli_s_cg/{cp_NaNBox_D_S}"]
-  - name: fltq-s_op
-    # The FLEQ.S and FLTQ.S instructions are defined like the FLE.S and FLT.S instructions, except that quiet NaN inputs do not cause the invalid operation exception flag to be set.
-    coverpoint: ["ZfaD_fltq_s_cg/{cp_fs1_badNB_D_S, cp_fs2_badNB_D_S}"]
-  - name: fmaxm-s_op
-    # The FMINM.S and FMAXM.S instructions are defined like the FMIN.S and FMAX.S instructions, except that if either input is NaN, the result is the canonical NaN.
+  # The insn:fminm.s[] and insn:fmaxm.s[] instructions are defined like the insn:fmin.s[]
+  # and insn:fmax.s[] instructions, except that if either input is NaN, the result is the
+  # canonical NaN.
+  - name: fmaxm-s_fminm-s_op
     coverpoint:
-      ["ZfaD_fmaxm_s_cg/{cp_NaNBox_D_S, cp_fs1_badNB_D_S, cp_fs2_badNB_D_S}"]
-  - name: fminm-s_op
-    # The FMINM.S and FMAXM.S instructions are defined like the FMIN.S and FMAX.S instructions, except that if either input is NaN, the result is the canonical NaN.
-    coverpoint:
-      ["ZfaD_fminm_s_cg/{cp_NaNBox_D_S, cp_fs1_badNB_D_S, cp_fs2_badNB_D_S}"]
+      [
+        "ZfaD_fmaxm_s_cg/{cp_NaNBox_D_S, cp_fs1_badNB_D_S, cp_fs2_badNB_D_S}",
+        "ZfaD_fminm_s_cg/{cp_NaNBox_D_S, cp_fs1_badNB_D_S, cp_fs2_badNB_D_S}",
+      ]
   - name: fround-s_op
     # The FROUND.S instruction rounds the single-precision floating-point
     # number in floating-point register rs1 to an integer, according to the

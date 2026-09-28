@@ -72,35 +72,35 @@ covergroup EndianH_cg with function sample(ins_t ins);
     }
 
 
-    hstatus_vsbe: coverpoint ins.current.csr[CSR_HSTATUS][5] { // vsbe is hstatus[5]
+    hstatus_vsbe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hstatus", "vsbe")[0] {
     }
 
 
-    mstatus_mprv: coverpoint ins.current.csr[CSR_MSTATUS][17] { // mprv is mstatus[17]
+    mstatus_mprv: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mprv")[0] {
     }
 
-    mstatus_mpp: coverpoint ins.current.csr[CSR_MSTATUS][12:11] { // mpp is mstatus[12:11]
+    mstatus_mpp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mpp")[1:0] {
         bins S_Mode = {2'b01};
         bins M_Mode = {2'b11};
     }
 
     `ifdef UDB_MXLEN_64
-        mstatus_mpv: coverpoint ins.current.csr[300][37] {// mpv is mstatus[39] in RV64
+        mstatus_mpv: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mpv")[0] {
         }
     `else
-        mstatus_mpv: coverpoint ins.current.csr[310][7] { // mpv is mstatush[7] in RV32
+        mstatus_mpv: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatush", "mpv")[0] {
         }
     `endif
 
     `ifdef UDB_MXLEN_64
-        mstatus_mbe: coverpoint ins.current.csr[CSR_MSTATUS][37] { // mbe is mstatus[37] in RV64
+        mstatus_mbe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mbe")[0] {
         }
     `else
-        mstatus_mbe: coverpoint ins.current.csr[CSR_MSTATUSH][5] { // mbe is mstatush[5] in RV32
+        mstatus_mbe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatush", "mbe")[0] {
         }
     `endif
 
-    vsstatus_ube: coverpoint ins.current.csr[CSR_VSSTATUS][6] { // ube is vsstatus[6]
+    vsstatus_ube: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vsstatus", "ube")[0] {
     }
 
 

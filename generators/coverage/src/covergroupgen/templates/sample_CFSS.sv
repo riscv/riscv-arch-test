@@ -1,4 +1,4 @@
-        "INSTR"     : begin
+        "@INSTR@"     : begin
             ins.add_fs2(0);
             ins.add_mem_offset(1);
             ins.add_rs1_sp();

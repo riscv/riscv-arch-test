@@ -656,6 +656,14 @@ covergroup Zca_c_lw_cg with function sample(ins_t ins);
         bins offset[] = {[0:124]} with (item % 4 == 0);
     }
 
+    cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
+        bins zero = {32'h00000000};
+        bins one  = {32'h00000001};
+        bins max  = {32'h7fffffff};
+        bins min  = {32'h80000000};
+        bins mone = {32'hffffffff};
+    }
+
     cp_rd_p : coverpoint ins.get_gpr_c_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -676,6 +684,14 @@ covergroup Zca_c_lwsp_cg with function sample(ins_t ins);
     cp_imm_mul_4sp : coverpoint ins.current.imm iff (ins.trap == 0) {
         // Immediate Multiples of 4
         bins offset[] = {[0:252]} with (item % 4 == 0);
+    }
+
+    cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
+        bins zero = {32'h00000000};
+        bins one  = {32'h00000001};
+        bins max  = {32'h7fffffff};
+        bins min  = {32'h80000000};
+        bins mone = {32'hffffffff};
     }
 
     cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
@@ -1596,6 +1612,14 @@ covergroup Zca_c_ld_cg with function sample(ins_t ins);
         bins offset[] = {[0:248]} with (item % 8 == 0);
     }
 
+    cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {
+        bins zero = {64'h0000000000000000};
+        bins one  = {64'h0000000000000001};
+        bins max  = {64'h7fffffffffffffff};
+        bins min  = {64'h8000000000000000};
+        bins mone = {64'hffffffffffffffff};
+    }
+
     cp_rd_p : coverpoint ins.get_gpr_c_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -1616,6 +1640,14 @@ covergroup Zca_c_ldsp_cg with function sample(ins_t ins);
     cp_imm_mul_8sp : coverpoint ins.current.imm iff (ins.trap == 0) {
         // Immediate Multiples of 8
         bins offset[] = {[0:504]} with (item % 8 == 0);
+    }
+
+    cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {
+        bins zero = {64'h0000000000000000};
+        bins one  = {64'h0000000000000001};
+        bins max  = {64'h7fffffffffffffff};
+        bins min  = {64'h8000000000000000};
+        bins mone = {64'hffffffffffffffff};
     }
 
     cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {

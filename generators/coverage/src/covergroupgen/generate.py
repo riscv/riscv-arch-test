@@ -374,8 +374,8 @@ def read_covergroup_templates(package: str = "covergroupgen.templates") -> dict[
 def customize_template(templates: dict[str, str], name: str, arch: str = "", instr: str = "", effew: str = "") -> str:
     """Look up a template by name and substitute placeholders.
 
-    Placeholders replaced: INSTRNODOT, INSTR, ARCHPREFIXUPPER, ARCHPREFIX,
-    ARCHUPPER, ARCHCASE, ARCH, and (if effew is set) TWOEFFEW, EFFEW, EFFVSEW.
+    Placeholders replaced: @INSTRNODOT@, @INSTR@, @ARCHPREFIXUPPER@, @ARCHPREFIX@,
+    @ARCHUPPER@, @ARCHCASE@, @ARCH@, and (if effew is set) @TWOEFFEW@, @EFFEW@, @EFFVSEW@.
     ARCHPREFIX is the arch with any trailing digits stripped (e.g. "Vx16" -> "Vx").
     """
     if name not in templates:
@@ -391,19 +391,19 @@ def customize_template(templates: dict[str, str], name: str, arch: str = "", ins
     arch_prefix = re.sub(r"\d+$", "", arch)
     result = (
         templates[name]
-        .replace("INSTRNODOT", instr.replace(".", "_"))
-        .replace("INSTR", instr)
-        .replace("ARCHPREFIXUPPER", arch_prefix.upper())
-        .replace("ARCHPREFIX", arch_prefix)
-        .replace("ARCHUPPER", arch.upper())
-        .replace("ARCHCASE", arch)
-        .replace("ARCH", arch.lower())
+        .replace("@INSTRNODOT@", instr.replace(".", "_"))
+        .replace("@INSTR@", instr)
+        .replace("@ARCHPREFIXUPPER@", arch_prefix.upper())
+        .replace("@ARCHPREFIX@", arch_prefix)
+        .replace("@ARCHUPPER@", arch.upper())
+        .replace("@ARCHCASE@", arch)
+        .replace("@ARCH@", arch.lower())
     )
     if effew:
         result = (
-            result.replace("TWOEFFEW", str(2 * int(effew)))
-            .replace("EFFEW", str(int(effew)))
-            .replace("EFFVSEW", str(int(math.log2(int(effew))) - 3))
+            result.replace("@TWOEFFEW@", str(2 * int(effew)))
+            .replace("@EFFEW@", str(int(effew)))
+            .replace("@EFFVSEW@", str(int(math.log2(int(effew))) - 3))
         )
     return result
 
@@ -747,10 +747,11 @@ def _write_extension_files(
             effew = ""
     instr_keys = _get_sorted_instr_keys(tp, arch) if per_sew else sorted(tp.keys())
 
-    header_tmpl = "header_vector" if vector else "header"
-    # Priv vector archs (SsstrictV, ExceptionsV*) don't expand per-SEW so the
-    # EFFVSEW gate doesn't apply — use the non-vector sample header/end.
+    # Priv vector archs (SsstrictV, ExceptionsV*, MisalignV) don't expand per-SEW, so
+    # neither the EFFEW defines in header_vector nor the EFFVSEW gate in the vector
+    # sample header/end apply — use the non-vector templates for them.
     use_vector_sample = vector and bool(effew)
+    header_tmpl = "header_vector" if use_vector_sample else "header"
     sample_header_tmpl = "covergroup_sample_header_vector" if use_vector_sample else "covergroup_sample_header"
     sample_end_tmpl = "covergroup_sample_end_vector" if use_vector_sample else "covergroup_sample_end"
 

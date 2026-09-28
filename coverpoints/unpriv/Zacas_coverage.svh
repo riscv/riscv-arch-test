@@ -59,6 +59,10 @@ covergroup Zacas_amocas_w_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -163,6 +167,10 @@ covergroup Zacas_amocas_d_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
     cp_rd_pair : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment, even registers only
         bins reg_pair[] = {[$:$]} with (item % 2 == 0);
@@ -261,6 +269,10 @@ covergroup Zacas_amocas_d_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "amocas.d"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
     }
 
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
@@ -371,6 +383,10 @@ covergroup Zacas_amocas_q_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "amocas.q"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
     }
 
     cp_rd_pair : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {

@@ -41,6 +41,10 @@ covergroup Zaamo_amoadd_w_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
     cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
         bins zero = {32'h00000000};
         bins one  = {32'h00000001};
@@ -125,6 +129,10 @@ covergroup Zaamo_amoand_w_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "amoand.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
     }
 
     cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
@@ -213,6 +221,10 @@ covergroup Zaamo_amomax_w_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
     cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
         bins zero = {32'h00000000};
         bins one  = {32'h00000001};
@@ -297,6 +309,10 @@ covergroup Zaamo_amomaxu_w_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "amomaxu.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
     }
 
     cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
@@ -385,6 +401,10 @@ covergroup Zaamo_amomin_w_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
     cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
         bins zero = {32'h00000000};
         bins one  = {32'h00000001};
@@ -469,6 +489,10 @@ covergroup Zaamo_amominu_w_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "amominu.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
     }
 
     cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
@@ -557,6 +581,10 @@ covergroup Zaamo_amoor_w_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
     cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
         bins zero = {32'h00000000};
         bins one  = {32'h00000001};
@@ -641,6 +669,10 @@ covergroup Zaamo_amoswap_w_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "amoswap.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
     }
 
     cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
@@ -729,6 +761,10 @@ covergroup Zaamo_amoxor_w_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
     cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
         bins zero = {32'h00000000};
         bins one  = {32'h00000001};
@@ -811,6 +847,10 @@ covergroup Zaamo_amoadd_d_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "amoadd.d"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
     }
 
     cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {
@@ -896,6 +936,10 @@ covergroup Zaamo_amoand_d_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
     cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {
         bins zero = {64'h0000000000000000};
         bins one  = {64'h0000000000000001};
@@ -977,6 +1021,10 @@ covergroup Zaamo_amomax_d_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "amomax.d"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
     }
 
     cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {
@@ -1062,6 +1110,10 @@ covergroup Zaamo_amomaxu_d_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
     cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {
         bins zero = {64'h0000000000000000};
         bins one  = {64'h0000000000000001};
@@ -1143,6 +1195,10 @@ covergroup Zaamo_amomin_d_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "amomin.d"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
     }
 
     cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {
@@ -1228,6 +1284,10 @@ covergroup Zaamo_amominu_d_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
     cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {
         bins zero = {64'h0000000000000000};
         bins one  = {64'h0000000000000001};
@@ -1309,6 +1369,10 @@ covergroup Zaamo_amoor_d_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "amoor.d"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
     }
 
     cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {
@@ -1394,6 +1458,10 @@ covergroup Zaamo_amoswap_d_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
     cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {
         bins zero = {64'h0000000000000000};
         bins one  = {64'h0000000000000001};
@@ -1475,6 +1543,10 @@ covergroup Zaamo_amoxor_d_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "amoxor.d"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
     }
 
     cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {

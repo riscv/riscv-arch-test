@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import load_float_reg, write_sigupd
+from testgen.asm.helpers import check_store_canary, fill_store_canary, load_float_reg, write_sigupd
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -45,29 +45,24 @@ def format_cfs_type(
     # Wrap into valid range
     params.immval = params.immval % (max_val + alignment)
 
-    # Move sig_reg to rs1
     setup = [
         load_float_reg("fs2", params.fs2, params.fs2val, test_data),
         "fsflagsi 0b00000 # clear all fflags",
+        *fill_store_canary(
+            params.rs1,
+            params.temp_reg,
+            test_data,
+            area_bytes=alignment,
+            store_val=params.fs2val,
+            store_bytes=alignment,
+        ),
+        f"addi x{params.rs1}, x{params.rs1}, {-params.immval} # adjust base address for offset",
     ]
-    if params.rs1 != test_data.int_regs.sig_reg:
-        setup.append(
-            test_data.int_regs.move_sig_reg(params.rs1),
-        )
-        params.rs1 = None
 
-    sig_reg = test_data.int_regs.sig_reg
-
-    setup.append(f"addi x{sig_reg}, x{sig_reg}, {-params.immval} # adjust base address for offset")
-
-    test = [f"{instr_name} f{params.fs2}, {params.immval}(x{sig_reg}) # perform store"]
+    test = [f"{instr_name} f{params.fs2}, {params.immval}(x{params.rs1}) # perform store"]
     check = [
-        f"addi x{sig_reg}, x{sig_reg}, {params.immval} # restore base address",
-        f"addi x{sig_reg}, x{sig_reg}, SIG_STRIDE # increment signature pointer",
-        f"LREG x{params.temp_reg}, -SIG_STRIDE(x{sig_reg}) # load stored value for checking",
-        write_sigupd(params.temp_reg, test_data),
+        f"addi x{params.rs1}, x{params.rs1}, {params.immval} # restore base address",
+        *check_store_canary(params.rs1, params.temp_reg, test_data, area_bytes=alignment),
+        write_sigupd(None, test_data, "fflags"),
     ]
-    assert test_data.test_chunk is not None
-    test_data.test_chunk.sigupd_count += 1  # Test store writes one extra signature slot
-    check.append(write_sigupd(None, test_data, "fflags"))
     return (setup, test, check)

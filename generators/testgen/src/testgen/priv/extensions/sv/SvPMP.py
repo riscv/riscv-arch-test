@@ -28,9 +28,6 @@ _PA_CFGS = (
     (pmp.cfg_byte("0011", "napot", pmp.cfg_shift(1)), "pmpcfg0_rw", 1),
     (pmp.cfg_byte("0100", "napot", pmp.cfg_shift(1)), "pmpcfg0_x", 2),
 )
-_MARCH = ["I", "Zicsr", "Zifencei"]
-_PARAMS = ["NUM_PMP_ENTRIES: '>0'"]
-_DEFINES = ["#define BOOT_TO_MMODE"]
 
 
 def _begin_test(
@@ -85,7 +82,15 @@ def _make_pmp_on_pa(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                     "sfence.vma",
                     "",
-                    *add_rwx_test(test_data, sv, mode, "va_data", level, f"test{number}"),
+                    *add_rwx_test(
+                        test_data,
+                        sv,
+                        mode,
+                        "va_data",
+                        level,
+                        f"test{number}",
+                        driver_mode="Mmode",
+                    ),
                     "",
                 ]
             )
@@ -129,7 +134,15 @@ def _make_pmp_on_pte(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                 *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                 "sfence.vma",
                 "",
-                *add_rwx_test(test_data, sv, mode, "va_data", level, f"test{number}"),
+                *add_rwx_test(
+                    test_data,
+                    sv,
+                    mode,
+                    "va_data",
+                    level,
+                    f"test{number}",
+                    driver_mode="Mmode",
+                ),
             ]
         )
         if top:
@@ -149,10 +162,10 @@ def _make_svpmp(test_data: TestData, sv: SvMode) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvPMP",
-    required_extensions=["I", "Sv32", "Sm"],
-    march_extensions=_MARCH,
-    params=_PARAMS,
-    extra_defines=_DEFINES,
+    required_extensions=["Sv32", "Sm"],
+    march_extensions=[],
+    params=["NUM_PMP_ENTRIES: '>0'"],
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svpmp_sv32(test_data: TestData) -> list[TestChunk]:
     return _make_svpmp(test_data, SV32)
@@ -160,10 +173,10 @@ def make_svpmp_sv32(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvPMP",
-    required_extensions=["I", "Sv39", "Sm"],
-    march_extensions=_MARCH,
-    params=_PARAMS,
-    extra_defines=_DEFINES,
+    required_extensions=["Sv39", "Sm"],
+    march_extensions=[],
+    params=["NUM_PMP_ENTRIES: '>0'"],
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svpmp_sv39(test_data: TestData) -> list[TestChunk]:
     return _make_svpmp(test_data, SV39)
@@ -171,10 +184,10 @@ def make_svpmp_sv39(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvPMP",
-    required_extensions=["I", "Sv48", "Sm"],
-    march_extensions=_MARCH,
-    params=_PARAMS,
-    extra_defines=_DEFINES,
+    required_extensions=["Sv48", "Sm"],
+    march_extensions=[],
+    params=["NUM_PMP_ENTRIES: '>0'"],
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svpmp_sv48(test_data: TestData) -> list[TestChunk]:
     return _make_svpmp(test_data, SV48)
@@ -182,10 +195,10 @@ def make_svpmp_sv48(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvPMP",
-    required_extensions=["I", "Sv57", "Sm"],
-    march_extensions=_MARCH,
-    params=_PARAMS,
-    extra_defines=_DEFINES,
+    required_extensions=["Sv57", "Sm"],
+    march_extensions=[],
+    params=["NUM_PMP_ENTRIES: '>0'"],
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svpmp_sv57(test_data: TestData) -> list[TestChunk]:
     return _make_svpmp(test_data, SV57)

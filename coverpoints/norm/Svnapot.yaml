@@ -5,7 +5,7 @@ normative_rule_definitions:
   - name: Svnapot_depends_Sv39
     coverpoint: ["Svnapot_cg/Svnapot_legal_enc_exec_{s, u}"]
 
-  - name: Svnapot_pte_N
+  - name: Svnapot_pte_n
     coverpoint: ["Svnapot_cg/Svnapot_legal_enc_exec_{s, u}"]
 
   # In Sv39, Sv48, and Sv57, when a PTE has N=1, the PTE represents a translation
@@ -15,17 +15,16 @@ normative_rule_definitions:
   - name: Svnapot_range_napot
     coverpoint: ["Svnapot_cg/Svnapot_legal_enc_exec_{s, u}"]
 
-  - name: Svnapot_valid_encoding
+  # If the encoding in pte is valid according to &lt;&lt;norm:Svnapot_enc_tbl&gt;&gt;,
+  # then instead of returning the original value of pte, implicit reads of a NAPOT PTE
+  # return a copy of pte in which pte.ppn[i][pte.napot_bits-1:0] is replaced by
+  # vpn[i][pte.napot_bits-1:0].
+  - name: Svnapot_valid_encoding_ppn_subst
     coverpoint: ["Svnapot_cg/Svnapot_legal_enc_exec_{s, u}"]
 
   # If the encoding in pte is reserved, a page-fault exception must be raised
   - name: Svnapot_reserved_encoding_fault
     coverpoint: ["Svnapot_cg/Svnapot_reserved_enc_exec_{s, u}"]
-
-  # If the encoding in pte is valid, implicit reads of a NAPOT PTE return a copy of pte
-  # in which pte.ppn[i][pte.napot_bits-1:0] is replaced by vpn[i][pte.napot_bits-1:0].
-  - name: Svnapot_implicit_read_ppn_subst
-    coverpoint: ["Svnapot_cg/Svnapot_legal_enc_exec_{s, u}"]
 
   # Implicit reads of NAPOT page table entries may create address-translation cache entries
   # mapping a + j×PTESIZE to a copy of pte in which pte.ppn[i][pte.napot_bits-1:0] is replaced

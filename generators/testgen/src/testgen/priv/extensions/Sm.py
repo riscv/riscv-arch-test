@@ -1117,34 +1117,16 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc = test_data.new_test_chunk(test_chunks, "misa")
 
     tc.section_header = comment_banner(
-        "cp_misa_b / cp_misa_v",
-        "Sm1p13: misa.B (bit 1) and misa.V (bit 21) correctness.\n"
-        "Read, set, and clear each bit; read back and write to signature.",
+        "cp_misa_v / cp_misa_b",
+        "misa.V (bit 21) and, from Sm1p13, misa.B (bit 1).\nSet and clear each bit; read back and write to signature.",
     )
 
     rmisasave3, rb, rv, rr3 = test_data.int_regs.get_registers(4)
 
-    tc.code.append("#ifdef SM1P13P0_OR_LATER_SUPPORTED")
-
     tc.code.extend(
         [
-            f"csrr x{rmisasave3}, misa       # save misa before Sm1p13 B/V tests",
-            f"LI(x{rb}, 0x2)                 # bitmask for misa.B (bit 1)",
+            f"csrr x{rmisasave3}, misa       # save misa before the B/V tests",
             f"LI(x{rv}, 0x200000)            # bitmask for misa.V (bit 21)",
-            "",
-            "# Set misa.B and read back",
-            test_data.add_testcase("set_B", "cp_misa_b", covergroup),
-            f"csrs misa, x{rb}              # attempt to set misa.B",
-            f"csrr x{rr3}, misa             # read back misa",
-            f"and x{rr3}, x{rr3}, x{rb}     # isolate misa.B",
-            write_sigupd(rr3, test_data),
-            "",
-            "# Clear misa.B and read back",
-            test_data.add_testcase("clr_B", "cp_misa_b", covergroup),
-            f"csrc misa, x{rb}              # attempt to clear misa.B",
-            f"csrr x{rr3}, misa             # read back misa",
-            f"and x{rr3}, x{rr3}, x{rb}     # isolate misa.B",
-            write_sigupd(rr3, test_data),
             "",
             "# Set misa.V and read back",
             test_data.add_testcase("set_V", "cp_misa_v", covergroup),
@@ -1160,7 +1142,26 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             f"and x{rr3}, x{rr3}, x{rv}     # isolate misa.V",
             write_sigupd(rr3, test_data),
             "",
-            f"csrw misa, x{rmisasave3}      # restore misa after B/V tests",
+            f"csrw misa, x{rmisasave3}      # restore misa after the V tests",
+            "",
+            "#ifdef SM1P13P0_OR_LATER_SUPPORTED",
+            f"LI(x{rb}, 0x2)                 # bitmask for misa.B (bit 1)",
+            "",
+            "# Set misa.B and read back",
+            test_data.add_testcase("set_B", "cp_misa_b", covergroup),
+            f"csrs misa, x{rb}              # attempt to set misa.B",
+            f"csrr x{rr3}, misa             # read back misa",
+            f"and x{rr3}, x{rr3}, x{rb}     # isolate misa.B",
+            write_sigupd(rr3, test_data),
+            "",
+            "# Clear misa.B and read back",
+            test_data.add_testcase("clr_B", "cp_misa_b", covergroup),
+            f"csrc misa, x{rb}              # attempt to clear misa.B",
+            f"csrr x{rr3}, misa             # read back misa",
+            f"and x{rr3}, x{rr3}, x{rb}     # isolate misa.B",
+            write_sigupd(rr3, test_data),
+            "",
+            f"csrw misa, x{rmisasave3}      # restore misa after the B tests",
         ]
     )
 

@@ -75,6 +75,10 @@ def run_act(
         CoverageSimulator,
         typer.Option(help="Coverage simulator backend", case_sensitive=False),
     ] = CoverageSimulator.QUESTA,
+    enable_experimental_extensions: Annotated[
+        bool,
+        typer.Option(help="Enable tests for experimental extensions"),
+    ] = False,
 ) -> None:
 
     # Parse options
@@ -121,7 +125,13 @@ def run_act(
     # (extensions.txt, rvtest_config.{h,svh}, and rvmodel_macros.svh) in
     # one parallel UDB pass, then select tests per config.
     for config, config_params, selected_tests in prepare_configs_and_select_tests(
-        config_files, certificate, full_test_dict, workdir, jobs=jobs, verbose=verbose
+        config_files,
+        certificate,
+        full_test_dict,
+        workdir,
+        jobs=jobs,
+        verbose=verbose,
+        enable_experimental_extensions=enable_experimental_extensions,
     ):
         mxlen = config_params["MXLEN"]
         if not isinstance(mxlen, int):
@@ -142,6 +152,7 @@ def run_act(
                 fast,
                 verbose,
                 dry_run,
+                enable_experimental_extensions,
             )
         )
 

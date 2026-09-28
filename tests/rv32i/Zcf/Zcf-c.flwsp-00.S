@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 202
+#define SIGUPD_COUNT 258
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -363,9 +363,9 @@ Zcf_c_flwsp_cg_cp_fd_b31:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, 0 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x0:
-  c.flwsp f24, 0(sp) # perform load (0xe74f63ab)
-  # Check if f24 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f24, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x0, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x0_str)
+  c.flwsp f1, 0(sp) # perform load (0x7c0d263f)
+  # Check if f1 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f1, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x0, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x0_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=4
@@ -373,9 +373,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x0:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -4 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x4:
-  c.flwsp f22, 4(sp) # perform load (0xcedb34c8)
-  # Check if f22 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f22, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x4_str)
+  c.flwsp f13, 4(sp) # perform load (0x1f5c5e66)
+  # Check if f13 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f13, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x4_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=8
@@ -383,9 +383,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x4:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -8 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x8:
-  c.flwsp f28, 8(sp) # perform load (0x32d901c7)
-  # Check if f28 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f28, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x8, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x8_str)
+  c.flwsp f22, 8(sp) # perform load (0x99173adc)
+  # Check if f22 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f22, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x8, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x8_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=12
@@ -393,9 +393,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x8:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -12 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc:
-  c.flwsp f20, 12(sp) # perform load (0x0ecf6de2)
-  # Check if f20 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f20, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc_str)
+  c.flwsp f4, 12(sp) # perform load (0x79e45f0b)
+  # Check if f4 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=16
@@ -403,9 +403,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -16 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x10:
-  c.flwsp f30, 16(sp) # perform load (0x6da0f326)
-  # Check if f30 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f30, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x10, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x10_str)
+  c.flwsp f14, 16(sp) # perform load (0xb788a9e0)
+  # Check if f14 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f14, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x10, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x10_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=20
@@ -413,9 +413,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x10:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -20 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x14:
-  c.flwsp f18, 20(sp) # perform load (0x47068032)
-  # Check if f18 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f18, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x14, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x14_str)
+  c.flwsp f29, 20(sp) # perform load (0x28c307d3)
+  # Check if f29 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f29, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x14, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x14_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=24
@@ -423,9 +423,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x14:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -24 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x18:
-  c.flwsp f25, 24(sp) # perform load (0x157a725d)
-  # Check if f25 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f25, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x18, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x18_str)
+  c.flwsp f19, 24(sp) # perform load (0x4a85d55f)
+  # Check if f19 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f19, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x18, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x18_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=28
@@ -433,9 +433,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x18:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -28 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x1c:
-  c.flwsp f29, 28(sp) # perform load (0xdd980ea5)
-  # Check if f29 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f29, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x1c, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x1c_str)
+  c.flwsp f0, 28(sp) # perform load (0x4e209b9d)
+  # Check if f0 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f0, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x1c, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x1c_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=32
@@ -443,9 +443,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x1c:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -32 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x20:
-  c.flwsp f19, 32(sp) # perform load (0xe5d5be72)
-  # Check if f19 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f19, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x20, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x20_str)
+  c.flwsp f6, 32(sp) # perform load (0xdfbfef9b)
+  # Check if f6 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f6, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x20, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x20_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=36
@@ -453,9 +453,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x20:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -36 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x24:
-  c.flwsp f0, 36(sp) # perform load (0x66d93c03)
-  # Check if f0 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f0, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x24, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x24_str)
+  c.flwsp f20, 36(sp) # perform load (0x1c58b8dc)
+  # Check if f20 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f20, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x24, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x24_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=40
@@ -463,9 +463,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x24:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -40 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x28:
-  c.flwsp f6, 40(sp) # perform load (0xa887a3e6)
-  # Check if f6 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f6, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x28, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x28_str)
+  c.flwsp f3, 40(sp) # perform load (0xb1d7d0e3)
+  # Check if f3 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f3, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x28, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x28_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=44
@@ -473,9 +473,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x28:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -44 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x2c:
-  c.flwsp f20, 44(sp) # perform load (0xcaadb16a)
-  # Check if f20 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f20, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x2c, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x2c_str)
+  c.flwsp f14, 44(sp) # perform load (0x8ffa55df)
+  # Check if f14 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f14, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x2c, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x2c_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=48
@@ -483,9 +483,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x2c:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -48 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x30:
-  c.flwsp f4, 48(sp) # perform load (0x9c58a66b)
-  # Check if f4 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x30, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x30_str)
+  c.flwsp f13, 48(sp) # perform load (0xe2428159)
+  # Check if f13 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f13, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x30, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x30_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=52
@@ -493,9 +493,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x30:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -52 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x34:
-  c.flwsp f24, 52(sp) # perform load (0x74c1e129)
-  # Check if f24 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f24, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x34, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x34_str)
+  c.flwsp f13, 52(sp) # perform load (0x0d10b924)
+  # Check if f13 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f13, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x34, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x34_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=56
@@ -503,9 +503,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x34:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -56 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x38:
-  c.flwsp f13, 56(sp) # perform load (0xb858d21f)
-  # Check if f13 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f13, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x38, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x38_str)
+  c.flwsp f3, 56(sp) # perform load (0x85f8d691)
+  # Check if f3 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f3, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x38, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x38_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=60
@@ -513,9 +513,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x38:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -60 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x3c:
-  c.flwsp f18, 60(sp) # perform load (0xf38b634f)
-  # Check if f18 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f18, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x3c, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x3c_str)
+  c.flwsp f28, 60(sp) # perform load (0x39bf9ff3)
+  # Check if f28 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f28, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x3c, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x3c_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=64
@@ -523,9 +523,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x3c:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -64 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x40:
-  c.flwsp f0, 64(sp) # perform load (0xde01e3eb)
-  # Check if f0 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f0, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x40, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x40_str)
+  c.flwsp f4, 64(sp) # perform load (0x295cc235)
+  # Check if f4 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x40, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x40_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=68
@@ -533,9 +533,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x40:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -68 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x44:
-  c.flwsp f18, 68(sp) # perform load (0x39bf9ff3)
-  # Check if f18 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f18, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x44, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x44_str)
+  c.flwsp f11, 68(sp) # perform load (0xd4caeb08)
+  # Check if f11 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f11, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x44, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x44_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=72
@@ -543,9 +543,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x44:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -72 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x48:
-  c.flwsp f3, 72(sp) # perform load (0x295cc235)
-  # Check if f3 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f3, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x48, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x48_str)
+  c.flwsp f30, 72(sp) # perform load (0xf93b39f0)
+  # Check if f30 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f30, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x48, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x48_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=76
@@ -553,9 +553,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x48:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -76 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x4c:
-  c.flwsp f11, 76(sp) # perform load (0xd4caeb08)
-  # Check if f11 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f11, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x4c, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x4c_str)
+  c.flwsp f21, 76(sp) # perform load (0x282c0fb1)
+  # Check if f21 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f21, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x4c, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x4c_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=80
@@ -563,9 +563,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x4c:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -80 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x50:
-  c.flwsp f21, 80(sp) # perform load (0xe57b6250)
-  # Check if f21 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f21, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x50, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x50_str)
+  c.flwsp f15, 80(sp) # perform load (0xa88ecdf2)
+  # Check if f15 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f15, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x50, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x50_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=84
@@ -573,9 +573,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x50:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -84 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x54:
-  c.flwsp f18, 84(sp) # perform load (0xf73f2e41)
-  # Check if f18 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f18, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x54, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x54_str)
+  c.flwsp f11, 84(sp) # perform load (0xefe75778)
+  # Check if f11 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f11, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x54, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x54_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=88
@@ -583,9 +583,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x54:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -88 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x58:
-  c.flwsp f14, 88(sp) # perform load (0xc2b6a7e1)
-  # Check if f14 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f14, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x58, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x58_str)
+  c.flwsp f19, 88(sp) # perform load (0xa7c9ed2a)
+  # Check if f19 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f19, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x58, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x58_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=92
@@ -593,9 +593,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x58:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -92 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x5c:
-  c.flwsp f19, 92(sp) # perform load (0xf5f2325d)
-  # Check if f19 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f19, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x5c, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x5c_str)
+  c.flwsp f15, 92(sp) # perform load (0x5ed76cba)
+  # Check if f15 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f15, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x5c, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x5c_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=96
@@ -603,9 +603,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x5c:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -96 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x60:
-  c.flwsp f1, 96(sp) # perform load (0xcdbe12cf)
-  # Check if f1 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f1, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x60, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x60_str)
+  c.flwsp f4, 96(sp) # perform load (0xb15d51b8)
+  # Check if f4 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x60, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x60_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=100
@@ -613,9 +613,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x60:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -100 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x64:
-  c.flwsp f4, 100(sp) # perform load (0xf62bdc3c)
-  # Check if f4 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x64, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x64_str)
+  c.flwsp f16, 100(sp) # perform load (0x6ca66c98)
+  # Check if f16 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f16, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x64, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x64_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=104
@@ -623,9 +623,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x64:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -104 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x68:
-  c.flwsp f10, 104(sp) # perform load (0x63739c34)
-  # Check if f10 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f10, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x68, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x68_str)
+  c.flwsp f3, 104(sp) # perform load (0xf345e5ce)
+  # Check if f3 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f3, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x68, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x68_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=108
@@ -633,9 +633,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x68:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -108 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x6c:
-  c.flwsp f27, 108(sp) # perform load (0x9a581017)
-  # Check if f27 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f27, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x6c, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x6c_str)
+  c.flwsp f22, 108(sp) # perform load (0x14faa3be)
+  # Check if f22 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f22, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x6c, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x6c_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=112
@@ -643,9 +643,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x6c:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -112 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x70:
-  c.flwsp f18, 112(sp) # perform load (0x14faa3be)
-  # Check if f18 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f18, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x70, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x70_str)
+  c.flwsp f9, 112(sp) # perform load (0x326526af)
+  # Check if f9 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f9, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x70, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x70_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=116
@@ -653,9 +653,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x70:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -116 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x74:
-  c.flwsp f22, 116(sp) # perform load (0x326526af)
-  # Check if f22 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f22, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x74, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x74_str)
+  c.flwsp f25, 116(sp) # perform load (0xd33b17b0)
+  # Check if f25 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f25, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x74, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x74_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=120
@@ -663,9 +663,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x74:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -120 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x78:
-  c.flwsp f5, 120(sp) # perform load (0xd33b17b0)
-  # Check if f5 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f5, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x78, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x78_str)
+  c.flwsp f14, 120(sp) # perform load (0x38398c3f)
+  # Check if f14 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f14, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x78, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x78_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=124
@@ -673,9 +673,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x78:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -124 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x7c:
-  c.flwsp f18, 124(sp) # perform load (0x38398c3f)
-  # Check if f18 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f18, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x7c, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x7c_str)
+  c.flwsp f21, 124(sp) # perform load (0x4e68090f)
+  # Check if f21 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f21, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x7c, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x7c_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=128
@@ -683,9 +683,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x7c:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -128 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x80:
-  c.flwsp f2, 128(sp) # perform load (0x4e68090f)
-  # Check if f2 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f2, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x80, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x80_str)
+  c.flwsp f26, 128(sp) # perform load (0xec038561)
+  # Check if f26 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f26, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x80, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x80_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=132
@@ -693,9 +693,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x80:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -132 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x84:
-  c.flwsp f16, 132(sp) # perform load (0xec038561)
-  # Check if f16 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f16, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x84, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x84_str)
+  c.flwsp f21, 132(sp) # perform load (0xc2a8e5e0)
+  # Check if f21 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f21, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x84, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x84_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=136
@@ -703,9 +703,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x84:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -136 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x88:
-  c.flwsp f10, 136(sp) # perform load (0xc2a8e5e0)
-  # Check if f10 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f10, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x88, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x88_str)
+  c.flwsp f17, 136(sp) # perform load (0xff1bbc2f)
+  # Check if f17 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f17, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x88, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x88_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=140
@@ -713,9 +713,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x88:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -140 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x8c:
-  c.flwsp f20, 140(sp) # perform load (0xff1bbc2f)
-  # Check if f20 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f20, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x8c, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x8c_str)
+  c.flwsp f26, 140(sp) # perform load (0x8b2b8c32)
+  # Check if f26 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f26, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x8c, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x8c_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=144
@@ -723,9 +723,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x8c:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -144 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x90:
-  c.flwsp f23, 144(sp) # perform load (0x8b2b8c32)
-  # Check if f23 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f23, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x90, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x90_str)
+  c.flwsp f21, 144(sp) # perform load (0x3b69dbe1)
+  # Check if f21 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f21, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x90, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x90_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=148
@@ -733,9 +733,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x90:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -148 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x94:
-  c.flwsp f15, 148(sp) # perform load (0x3b69dbe1)
-  # Check if f15 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f15, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x94, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x94_str)
+  c.flwsp f28, 148(sp) # perform load (0x3cbcff93)
+  # Check if f28 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f28, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x94, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x94_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=152
@@ -743,7 +743,7 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x94:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -152 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x98:
-  c.flwsp f26, 152(sp) # perform load (0x93056424)
+  c.flwsp f26, 152(sp) # perform load (0x67393691)
   # Check if f26 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x28, x5, x4, f7, f26, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x98, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x98_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
@@ -753,9 +753,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x98:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -156 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x9c:
-  c.flwsp f25, 156(sp) # perform load (0x9355d45f)
-  # Check if f25 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f25, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x9c, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x9c_str)
+  c.flwsp f13, 156(sp) # perform load (0x476cdbf1)
+  # Check if f13 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f13, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x9c, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x9c_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=160
@@ -763,9 +763,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0x9c:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -160 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xa0:
-  c.flwsp f19, 160(sp) # perform load (0x5a2a5a65)
-  # Check if f19 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f19, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xa0, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xa0_str)
+  c.flwsp f28, 160(sp) # perform load (0xfbc0ab26)
+  # Check if f28 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f28, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xa0, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xa0_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=164
@@ -773,7 +773,7 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xa0:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -164 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xa4:
-  c.flwsp f23, 164(sp) # perform load (0xab251ebb)
+  c.flwsp f23, 164(sp) # perform load (0x90c990c5)
   # Check if f23 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x28, x5, x4, f7, f23, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xa4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xa4_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
@@ -783,7 +783,7 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xa4:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -168 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xa8:
-  c.flwsp f2, 168(sp) # perform load (0xacab0830)
+  c.flwsp f2, 168(sp) # perform load (0x6c8565bc)
   # Check if f2 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x28, x5, x4, f7, f2, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xa8, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xa8_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
@@ -793,9 +793,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xa8:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -172 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xac:
-  c.flwsp f18, 172(sp) # perform load (0x68a3f0b5)
-  # Check if f18 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f18, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xac, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xac_str)
+  c.flwsp f3, 172(sp) # perform load (0x44528487)
+  # Check if f3 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f3, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xac, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xac_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=176
@@ -803,9 +803,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xac:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -176 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xb0:
-  c.flwsp f15, 176(sp) # perform load (0xa0aa7fa9)
-  # Check if f15 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f15, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xb0, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xb0_str)
+  c.flwsp f22, 176(sp) # perform load (0x4597cc2d)
+  # Check if f22 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f22, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xb0, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xb0_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=180
@@ -813,9 +813,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xb0:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -180 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xb4:
-  c.flwsp f23, 180(sp) # perform load (0x44528487)
-  # Check if f23 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f23, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xb4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xb4_str)
+  c.flwsp f27, 180(sp) # perform load (0x14430c23)
+  # Check if f27 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f27, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xb4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xb4_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=184
@@ -823,9 +823,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xb4:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -184 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xb8:
-  c.flwsp f31, 184(sp) # perform load (0x4597cc2d)
-  # Check if f31 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f31, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xb8, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xb8_str)
+  c.flwsp f0, 184(sp) # perform load (0xfc10a099)
+  # Check if f0 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f0, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xb8, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xb8_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=188
@@ -833,9 +833,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xb8:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -188 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xbc:
-  c.flwsp f21, 188(sp) # perform load (0x529dd061)
-  # Check if f21 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f21, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xbc, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xbc_str)
+  c.flwsp f4, 188(sp) # perform load (0x10f6d822)
+  # Check if f4 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xbc, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xbc_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=192
@@ -843,9 +843,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xbc:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -192 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc0:
-  c.flwsp f30, 192(sp) # perform load (0x4663f5ac)
-  # Check if f30 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f30, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc0, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc0_str)
+  c.flwsp f9, 192(sp) # perform load (0x7ee9b202)
+  # Check if f9 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f9, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc0, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc0_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=196
@@ -853,9 +853,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc0:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -196 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc4:
-  c.flwsp f4, 196(sp) # perform load (0xf3049119)
-  # Check if f4 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc4_str)
+  c.flwsp f19, 196(sp) # perform load (0xb8fc1dd8)
+  # Check if f19 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f19, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc4_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=200
@@ -863,9 +863,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc4:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -200 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc8:
-  c.flwsp f31, 200(sp) # perform load (0x48e72455)
-  # Check if f31 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f31, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc8, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc8_str)
+  c.flwsp f26, 200(sp) # perform load (0xf075714a)
+  # Check if f26 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f26, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc8, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc8_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=204
@@ -873,9 +873,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xc8:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -204 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xcc:
-  c.flwsp f14, 204(sp) # perform load (0x3e41b0b3)
-  # Check if f14 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f14, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xcc, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xcc_str)
+  c.flwsp f2, 204(sp) # perform load (0x1deb59ca)
+  # Check if f2 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f2, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xcc, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xcc_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=208
@@ -883,9 +883,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xcc:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -208 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xd0:
-  c.flwsp f15, 208(sp) # perform load (0x10f6d822)
-  # Check if f15 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f15, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xd0, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xd0_str)
+  c.flwsp f16, 208(sp) # perform load (0x1c68e6a8)
+  # Check if f16 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f16, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xd0, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xd0_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=212
@@ -893,9 +893,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xd0:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -212 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xd4:
-  c.flwsp f26, 212(sp) # perform load (0x7ee9b202)
-  # Check if f26 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f26, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xd4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xd4_str)
+  c.flwsp f1, 212(sp) # perform load (0x222fc7ae)
+  # Check if f1 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f1, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xd4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xd4_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=216
@@ -903,9 +903,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xd4:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -216 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xd8:
-  c.flwsp f29, 216(sp) # perform load (0xb8fc1dd8)
-  # Check if f29 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f29, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xd8, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xd8_str)
+  c.flwsp f22, 216(sp) # perform load (0x3c0bbe89)
+  # Check if f22 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f22, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xd8, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xd8_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=220
@@ -913,9 +913,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xd8:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -220 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xdc:
-  c.flwsp f9, 220(sp) # perform load (0x4a06d135)
-  # Check if f9 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f9, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xdc, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xdc_str)
+  c.flwsp f1, 220(sp) # perform load (0x69e388db)
+  # Check if f1 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f1, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xdc, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xdc_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=224
@@ -923,9 +923,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xdc:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -224 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xe0:
-  c.flwsp f24, 224(sp) # perform load (0x581d6d8f)
-  # Check if f24 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f24, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xe0, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xe0_str)
+  c.flwsp f11, 224(sp) # perform load (0x1182e14c)
+  # Check if f11 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f11, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xe0, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xe0_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=228
@@ -933,9 +933,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xe0:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -228 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xe4:
-  c.flwsp f16, 228(sp) # perform load (0xc73655eb)
-  # Check if f16 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f16, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xe4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xe4_str)
+  c.flwsp f0, 228(sp) # perform load (0x03edd4ca)
+  # Check if f0 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f0, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xe4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xe4_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=232
@@ -943,9 +943,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xe4:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -232 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xe8:
-  c.flwsp f31, 232(sp) # perform load (0x418c1c82)
-  # Check if f31 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f31, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xe8, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xe8_str)
+  c.flwsp f18, 232(sp) # perform load (0xdbfc565d)
+  # Check if f18 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f18, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xe8, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xe8_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=236
@@ -953,9 +953,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xe8:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -236 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xec:
-  c.flwsp f1, 236(sp) # perform load (0x8fa5dfe8)
-  # Check if f1 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f1, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xec, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xec_str)
+  c.flwsp f29, 236(sp) # perform load (0x20343b80)
+  # Check if f29 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f29, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xec, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xec_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=240
@@ -963,9 +963,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xec:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -240 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf0:
-  c.flwsp f22, 240(sp) # perform load (0xdea72d85)
-  # Check if f22 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f22, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf0, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf0_str)
+  c.flwsp f5, 240(sp) # perform load (0x11c74e95)
+  # Check if f5 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f5, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf0, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf0_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=244
@@ -973,9 +973,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf0:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -244 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf4:
-  c.flwsp f1, 244(sp) # perform load (0xe2d513bf)
-  # Check if f1 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f1, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf4_str)
+  c.flwsp f4, 244(sp) # perform load (0xc8d4b209)
+  # Check if f4 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf4, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf4_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=248
@@ -983,9 +983,9 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf4:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -248 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf8:
-  c.flwsp f28, 248(sp) # perform load (0xd45f1798)
-  # Check if f28 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f28, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf8, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf8_str)
+  c.flwsp f19, 248(sp) # perform load (0xd0f7dd5a)
+  # Check if f19 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f19, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf8, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf8_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_imm_mul_4sp: imm=252
@@ -993,9 +993,293 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf8:
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -252 # adjust base address for load
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xfc:
-  c.flwsp f3, 252(sp) # perform load (0x1182e14c)
-  # Check if f3 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x28, x5, x4, f7, f3, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xfc, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xfc_str)
+  c.flwsp f30, 252(sp) # perform load (0x78ec45a0)
+  # Check if f30 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f30, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xfc, Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xfc_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+/////////////////////////////////
+// cp_memval_fp_single
+/////////////////////////////////
+
+# Testcase cp_memval_fp_single (memory value = 0x00000000)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -216 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x0:
+  c.flwsp f13, 216(sp) # perform load (0x00000000)
+  # Check if f13 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f13, Zcf_c_flwsp_cg_cp_memval_fp_single_0x0, Zcf_c_flwsp_cg_cp_memval_fp_single_0x0_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0x80000000)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -196 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x80000000:
+  c.flwsp f24, 196(sp) # perform load (0x80000000)
+  # Check if f24 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f24, Zcf_c_flwsp_cg_cp_memval_fp_single_0x80000000, Zcf_c_flwsp_cg_cp_memval_fp_single_0x80000000_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0x3f800000)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, 0 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x3f800000:
+  c.flwsp f20, 0(sp) # perform load (0x3f800000)
+  # Check if f20 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f20, Zcf_c_flwsp_cg_cp_memval_fp_single_0x3f800000, Zcf_c_flwsp_cg_cp_memval_fp_single_0x3f800000_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0xbf800000)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -44 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0xbf800000:
+  c.flwsp f27, 44(sp) # perform load (0xbf800000)
+  # Check if f27 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f27, Zcf_c_flwsp_cg_cp_memval_fp_single_0xbf800000, Zcf_c_flwsp_cg_cp_memval_fp_single_0xbf800000_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0x3fc00000)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -20 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x3fc00000:
+  c.flwsp f13, 20(sp) # perform load (0x3fc00000)
+  # Check if f13 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f13, Zcf_c_flwsp_cg_cp_memval_fp_single_0x3fc00000, Zcf_c_flwsp_cg_cp_memval_fp_single_0x3fc00000_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0xbfc00000)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -252 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0xbfc00000:
+  c.flwsp f13, 252(sp) # perform load (0xbfc00000)
+  # Check if f13 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f13, Zcf_c_flwsp_cg_cp_memval_fp_single_0xbfc00000, Zcf_c_flwsp_cg_cp_memval_fp_single_0xbfc00000_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0x40000000)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -232 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x40000000:
+  c.flwsp f8, 232(sp) # perform load (0x40000000)
+  # Check if f8 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f8, Zcf_c_flwsp_cg_cp_memval_fp_single_0x40000000, Zcf_c_flwsp_cg_cp_memval_fp_single_0x40000000_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0xc0000000)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -176 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0xc0000000:
+  c.flwsp f17, 176(sp) # perform load (0xc0000000)
+  # Check if f17 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f17, Zcf_c_flwsp_cg_cp_memval_fp_single_0xc0000000, Zcf_c_flwsp_cg_cp_memval_fp_single_0xc0000000_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0x00800000)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -56 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x800000:
+  c.flwsp f6, 56(sp) # perform load (0x00800000)
+  # Check if f6 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f6, Zcf_c_flwsp_cg_cp_memval_fp_single_0x800000, Zcf_c_flwsp_cg_cp_memval_fp_single_0x800000_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0x80800000)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -96 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x80800000:
+  c.flwsp f21, 96(sp) # perform load (0x80800000)
+  # Check if f21 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f21, Zcf_c_flwsp_cg_cp_memval_fp_single_0x80800000, Zcf_c_flwsp_cg_cp_memval_fp_single_0x80800000_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0x7f7fffff)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -252 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x7f7fffff:
+  c.flwsp f28, 252(sp) # perform load (0x7f7fffff)
+  # Check if f28 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f28, Zcf_c_flwsp_cg_cp_memval_fp_single_0x7f7fffff, Zcf_c_flwsp_cg_cp_memval_fp_single_0x7f7fffff_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0xff7fffff)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -16 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0xff7fffff:
+  c.flwsp f13, 16(sp) # perform load (0xff7fffff)
+  # Check if f13 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f13, Zcf_c_flwsp_cg_cp_memval_fp_single_0xff7fffff, Zcf_c_flwsp_cg_cp_memval_fp_single_0xff7fffff_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0x007fffff)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -184 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x7fffff:
+  c.flwsp f8, 184(sp) # perform load (0x007fffff)
+  # Check if f8 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f8, Zcf_c_flwsp_cg_cp_memval_fp_single_0x7fffff, Zcf_c_flwsp_cg_cp_memval_fp_single_0x7fffff_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0x807fffff)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -184 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x807fffff:
+  c.flwsp f9, 184(sp) # perform load (0x807fffff)
+  # Check if f9 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f9, Zcf_c_flwsp_cg_cp_memval_fp_single_0x807fffff, Zcf_c_flwsp_cg_cp_memval_fp_single_0x807fffff_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0x00400000)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -104 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x400000:
+  c.flwsp f22, 104(sp) # perform load (0x00400000)
+  # Check if f22 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f22, Zcf_c_flwsp_cg_cp_memval_fp_single_0x400000, Zcf_c_flwsp_cg_cp_memval_fp_single_0x400000_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0x80400000)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -124 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x80400000:
+  c.flwsp f17, 124(sp) # perform load (0x80400000)
+  # Check if f17 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f17, Zcf_c_flwsp_cg_cp_memval_fp_single_0x80400000, Zcf_c_flwsp_cg_cp_memval_fp_single_0x80400000_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0x00000001)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -136 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x1:
+  c.flwsp f29, 136(sp) # perform load (0x00000001)
+  # Check if f29 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f29, Zcf_c_flwsp_cg_cp_memval_fp_single_0x1, Zcf_c_flwsp_cg_cp_memval_fp_single_0x1_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0x80000001)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -236 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x80000001:
+  c.flwsp f10, 236(sp) # perform load (0x80000001)
+  # Check if f10 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f10, Zcf_c_flwsp_cg_cp_memval_fp_single_0x80000001, Zcf_c_flwsp_cg_cp_memval_fp_single_0x80000001_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0x7f800000)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -20 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x7f800000:
+  c.flwsp f25, 20(sp) # perform load (0x7f800000)
+  # Check if f25 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f25, Zcf_c_flwsp_cg_cp_memval_fp_single_0x7f800000, Zcf_c_flwsp_cg_cp_memval_fp_single_0x7f800000_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0xff800000)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -20 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0xff800000:
+  c.flwsp f11, 20(sp) # perform load (0xff800000)
+  # Check if f11 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f11, Zcf_c_flwsp_cg_cp_memval_fp_single_0xff800000, Zcf_c_flwsp_cg_cp_memval_fp_single_0xff800000_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0x7fc00000)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -172 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x7fc00000:
+  c.flwsp f20, 172(sp) # perform load (0x7fc00000)
+  # Check if f20 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f20, Zcf_c_flwsp_cg_cp_memval_fp_single_0x7fc00000, Zcf_c_flwsp_cg_cp_memval_fp_single_0x7fc00000_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0x7fffffff)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -124 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x7fffffff:
+  c.flwsp f17, 124(sp) # perform load (0x7fffffff)
+  # Check if f17 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f17, Zcf_c_flwsp_cg_cp_memval_fp_single_0x7fffffff, Zcf_c_flwsp_cg_cp_memval_fp_single_0x7fffffff_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0xffffffff)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -188 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0xffffffff:
+  c.flwsp f4, 188(sp) # perform load (0xffffffff)
+  # Check if f4 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f4, Zcf_c_flwsp_cg_cp_memval_fp_single_0xffffffff, Zcf_c_flwsp_cg_cp_memval_fp_single_0xffffffff_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0x7f800001)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -244 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x7f800001:
+  c.flwsp f30, 244(sp) # perform load (0x7f800001)
+  # Check if f30 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f30, Zcf_c_flwsp_cg_cp_memval_fp_single_0x7f800001, Zcf_c_flwsp_cg_cp_memval_fp_single_0x7f800001_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0x7fbfffff)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -12 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x7fbfffff:
+  c.flwsp f20, 12(sp) # perform load (0x7fbfffff)
+  # Check if f20 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f20, Zcf_c_flwsp_cg_cp_memval_fp_single_0x7fbfffff, Zcf_c_flwsp_cg_cp_memval_fp_single_0x7fbfffff_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0xffbfffff)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -4 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0xffbfffff:
+  c.flwsp f30, 4(sp) # perform load (0xffbfffff)
+  # Check if f30 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f30, Zcf_c_flwsp_cg_cp_memval_fp_single_0xffbfffff, Zcf_c_flwsp_cg_cp_memval_fp_single_0xffbfffff_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0x7ef8654f)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -148 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x7ef8654f:
+  c.flwsp f28, 148(sp) # perform load (0x7ef8654f)
+  # Check if f28 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f28, Zcf_c_flwsp_cg_cp_memval_fp_single_0x7ef8654f, Zcf_c_flwsp_cg_cp_memval_fp_single_0x7ef8654f_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_single (memory value = 0x813d9ab0)
+  fsflagsi 0b00000 # clear all fflags
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -60 # adjust base address for load
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x813d9ab0:
+  c.flwsp f11, 60(sp) # perform load (0x813d9ab0)
+  # Check if f11 contains the expected result. Also checks fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x28, x5, x4, f7, f11, Zcf_c_flwsp_cg_cp_memval_fp_single_0x813d9ab0, Zcf_c_flwsp_cg_cp_memval_fp_single_0x813d9ab0_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
   mv x2, x28 # restore signature pointer to default register for teardown
@@ -1039,34 +1323,33 @@ RVTEST_DATA_BEGIN
 .word 0x1850c597
 .word 0xeaeb0858
 .word 0x3104fcd8
-.word 0xe74f63ab
-.word 0xcedb34c8
-.word 0x32d901c7
-.word 0x0ecf6de2
-.word 0x6da0f326
-.word 0x47068032
-.word 0x157a725d
-.word 0xdd980ea5
-.word 0xe5d5be72
-.word 0x66d93c03
-.word 0xa887a3e6
-.word 0xcaadb16a
-.word 0x9c58a66b
-.word 0x74c1e129
-.word 0xb858d21f
-.word 0xf38b634f
-.word 0xde01e3eb
+.word 0x7c0d263f
+.word 0x1f5c5e66
+.word 0x99173adc
+.word 0x79e45f0b
+.word 0xb788a9e0
+.word 0x28c307d3
+.word 0x4a85d55f
+.word 0x4e209b9d
+.word 0xdfbfef9b
+.word 0x1c58b8dc
+.word 0xb1d7d0e3
+.word 0x8ffa55df
+.word 0xe2428159
+.word 0x0d10b924
+.word 0x85f8d691
 .word 0x39bf9ff3
 .word 0x295cc235
 .word 0xd4caeb08
-.word 0xe57b6250
-.word 0xf73f2e41
-.word 0xc2b6a7e1
-.word 0xf5f2325d
-.word 0xcdbe12cf
-.word 0xf62bdc3c
-.word 0x63739c34
-.word 0x9a581017
+.word 0xf93b39f0
+.word 0x282c0fb1
+.word 0xa88ecdf2
+.word 0xefe75778
+.word 0xa7c9ed2a
+.word 0x5ed76cba
+.word 0xb15d51b8
+.word 0x6ca66c98
+.word 0xf345e5ce
 .word 0x14faa3be
 .word 0x326526af
 .word 0xd33b17b0
@@ -1077,32 +1360,61 @@ RVTEST_DATA_BEGIN
 .word 0xff1bbc2f
 .word 0x8b2b8c32
 .word 0x3b69dbe1
-.word 0x93056424
-.word 0x9355d45f
-.word 0x5a2a5a65
-.word 0xab251ebb
-.word 0xacab0830
-.word 0x68a3f0b5
-.word 0xa0aa7fa9
+.word 0x3cbcff93
+.word 0x67393691
+.word 0x476cdbf1
+.word 0xfbc0ab26
+.word 0x90c990c5
+.word 0x6c8565bc
 .word 0x44528487
 .word 0x4597cc2d
-.word 0x529dd061
-.word 0x4663f5ac
-.word 0xf3049119
-.word 0x48e72455
-.word 0x3e41b0b3
+.word 0x14430c23
+.word 0xfc10a099
 .word 0x10f6d822
 .word 0x7ee9b202
 .word 0xb8fc1dd8
-.word 0x4a06d135
-.word 0x581d6d8f
-.word 0xc73655eb
-.word 0x418c1c82
-.word 0x8fa5dfe8
-.word 0xdea72d85
-.word 0xe2d513bf
-.word 0xd45f1798
+.word 0xf075714a
+.word 0x1deb59ca
+.word 0x1c68e6a8
+.word 0x222fc7ae
+.word 0x3c0bbe89
+.word 0x69e388db
 .word 0x1182e14c
+.word 0x03edd4ca
+.word 0xdbfc565d
+.word 0x20343b80
+.word 0x11c74e95
+.word 0xc8d4b209
+.word 0xd0f7dd5a
+.word 0x78ec45a0
+.word 0x00000000
+.word 0x80000000
+.word 0x3f800000
+.word 0xbf800000
+.word 0x3fc00000
+.word 0xbfc00000
+.word 0x40000000
+.word 0xc0000000
+.word 0x00800000
+.word 0x80800000
+.word 0x7f7fffff
+.word 0xff7fffff
+.word 0x007fffff
+.word 0x807fffff
+.word 0x00400000
+.word 0x80400000
+.word 0x00000001
+.word 0x80000001
+.word 0x7f800000
+.word 0xff800000
+.word 0x7fc00000
+.word 0x7fffffff
+.word 0xffffffff
+.word 0x7f800001
+.word 0x7fbfffff
+.word 0xffbfffff
+.word 0x7ef8654f
+.word 0x813d9ab0
 
 // Testcase strings
 Zcf_c_flwsp_cg_cp_fd_b0_str: .string "\"test: 1; cg: Zcf_c.flwsp_cg; cp: cp_fd; bin: b0\""
@@ -1201,6 +1513,34 @@ Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf0_str: .string "\"test: 93; cg: Zcf_c.flwsp_cg
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf4_str: .string "\"test: 94; cg: Zcf_c.flwsp_cg; cp: cp_imm_mul_4sp; bin: b0xf4\""
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xf8_str: .string "\"test: 95; cg: Zcf_c.flwsp_cg; cp: cp_imm_mul_4sp; bin: b0xf8\""
 Zcf_c_flwsp_cg_cp_imm_mul_4sp_b0xfc_str: .string "\"test: 96; cg: Zcf_c.flwsp_cg; cp: cp_imm_mul_4sp; bin: b0xfc\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x0_str: .string "\"test: 97; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x0\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x80000000_str: .string "\"test: 98; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x80000000\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x3f800000_str: .string "\"test: 99; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x3f800000\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0xbf800000_str: .string "\"test: 100; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0xbf800000\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x3fc00000_str: .string "\"test: 101; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x3fc00000\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0xbfc00000_str: .string "\"test: 102; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0xbfc00000\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x40000000_str: .string "\"test: 103; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x40000000\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0xc0000000_str: .string "\"test: 104; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0xc0000000\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x800000_str: .string "\"test: 105; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x800000\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x80800000_str: .string "\"test: 106; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x80800000\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x7f7fffff_str: .string "\"test: 107; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x7f7fffff\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0xff7fffff_str: .string "\"test: 108; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0xff7fffff\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x7fffff_str: .string "\"test: 109; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x7fffff\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x807fffff_str: .string "\"test: 110; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x807fffff\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x400000_str: .string "\"test: 111; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x400000\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x80400000_str: .string "\"test: 112; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x80400000\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x1_str: .string "\"test: 113; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x1\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x80000001_str: .string "\"test: 114; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x80000001\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x7f800000_str: .string "\"test: 115; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x7f800000\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0xff800000_str: .string "\"test: 116; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0xff800000\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x7fc00000_str: .string "\"test: 117; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x7fc00000\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x7fffffff_str: .string "\"test: 118; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x7fffffff\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0xffffffff_str: .string "\"test: 119; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0xffffffff\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x7f800001_str: .string "\"test: 120; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x7f800001\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x7fbfffff_str: .string "\"test: 121; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x7fbfffff\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0xffbfffff_str: .string "\"test: 122; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0xffbfffff\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x7ef8654f_str: .string "\"test: 123; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x7ef8654f\""
+Zcf_c_flwsp_cg_cp_memval_fp_single_0x813d9ab0_str: .string "\"test: 124; cg: Zcf_c.flwsp_cg; cp: cp_memval_fp_single; bin: 0x813d9ab0\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -143,7 +143,7 @@
 #endif
 
 ##### Configuration Limitations #####
-#if UDB_NUM_PMP_ENTIRES > 0
+#if UDB_NUM_PMP_ENTRIES > 0
   #ifndef UDB_PMP_NAPOT_SUPPORTED
     #error "DUTs with PMP but without NAPOT support are not currently supported by ACTs. Please report this as an issue on the riscv/riscv-arch-test repository."
   #endif

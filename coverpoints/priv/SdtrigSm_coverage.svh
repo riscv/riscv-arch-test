@@ -16,7 +16,7 @@ covergroup SdtrigSm_trig_module_reg_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "general/RISCV_coverage_sdtrig_coverpoints.svh"
 
-    type_disabled: coverpoint ins.current.csr[CSR_TDATA1][XLEN-1:XLEN-4] {
+    type_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "type")[3:0] {
         bins disabled = {4'd15};
     }
     tdata1_type_six: coverpoint ins.current.rs1_val[XLEN-1:XLEN-4] {
@@ -54,14 +54,14 @@ covergroup SdtrigSm_trig_module_reg_cg with function sample(ins_t ins);
         bins tdata3 = {CSR_TDATA3};
         bins tinfo  = {CSR_TINFO};
     }
-    csr_access: coverpoint ins.current.insn{
+    csr_access: coverpoint ins.current.insn {
         wildcard bins csrrw0 = {CSRRW} iff (ins.current.rs1_val == '0);
         wildcard bins csrrw1 = {CSRRW} iff (ins.current.rs1_val == '1);
     }
-    csrr: coverpoint ins.current.insn{
+    csrr: coverpoint ins.current.insn {
         wildcard bins csrr = {CSRR};
     }
-    csrw: coverpoint ins.current.insn{
+    csrw: coverpoint ins.current.insn {
         wildcard bins csrw = {CSRW};
     }
 

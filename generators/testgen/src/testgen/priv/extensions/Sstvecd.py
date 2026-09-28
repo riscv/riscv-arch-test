@@ -37,7 +37,7 @@ def _generate_stvec_mode_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "Sstvecd",
-    required_extensions=["S"],
+    required_extensions=["S", "Sstvecd"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_sstvecd(test_data: TestData) -> list[TestChunk]:

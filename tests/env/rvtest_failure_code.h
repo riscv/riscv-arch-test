@@ -729,7 +729,7 @@
         add  x6, x6, x7            # base + offset
 
         # add index * element_size (assume SEW known = shift)
-        mul  x8, x8, x17           # failing_index * eew_bytes
+        sll x8, x8, x16            # Shift by vsew, which multiplies the index by the EEW
         add  x6, x6, x8
 
         # store SEW-length expected value bytewise
@@ -762,7 +762,18 @@
         la x7, failing_reg
         lw x6, 0(x7)                      # vd index
         li   x7, VLEN_BYTES
-        mul  x6, x6, x7                   # offset of vd in bytes = vd_index * vlen_bytes
+        # mul  x6, x6, x7                 # offset of vd in bytes = vd_index * vlen_bytes
+        #ifdef M_SUPPORTED
+            .insn 0x02730333     # mul x6, x6, x7
+        #else
+            # Multiply clobbering x7, Assume x7 is a power of 2
+            0:
+                srli x7, x7, 1
+                beq x7, x0, 1f # Loop ends when x7 starts the loop at 1 (because that is multiplying by 1)
+                slli x6, x6, 1
+                j 0b
+            1:
+        #endif
         la x7, vecreg_scratch
         add  x6, x7, x6
 
@@ -812,7 +823,18 @@
         # --- compute src = vecreg_scratch + vd * vlenb ---
         la x6, vecreg_scratch
         li   x7, VLEN_BYTES
-        mul  x19, x19, x7                   # offset of vd in bytes = vd_index * vlen_bytes
+        # mul  x19, x19, x7                   # offset of vd in bytes = vd_index * vlen_bytes
+        #ifdef M_SUPPORTED
+            .insn 0x027989B3     # mul x19, x19, x7
+        #else
+            # Multiply clobbering x7, Assume x7 is a power of 2
+            0:
+                srli x7, x7, 1
+                beq x7, x0, 1f # Loop ends when x7 starts the loop at 1 (because that is multiplying by 1)
+                slli x19, x19, 1
+                j 0b
+            1:
+        #endif
         add x6, x6, x19                   # offset to where mismatch register is saved in scratch
 
         # --- dst = failing_mask_vec ---

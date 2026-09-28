@@ -1,7 +1,17 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  - name: zihpm_op_sz_mode_acc
+  # RISC-V ISAs provide a set of up to thirty-two 64-bit performance counters and timers
+  - name: Zihpm_op_sz_mode_acc_count
+    coverpoint: ["Zihpm_csrrs_cg/{cp_cntr_hpm}"]
+  # These counters are divided between the ext:zicntr[] and extlink:zihpm[] extensions.
+  - name: Zihpm_op_sz_mode_acc_partition
+    coverpoint: ["Zihpm_csrrs_cg/{cp_cntr_hpm}"]
+  # accessible via unprivileged XLEN-bit read-only CSR registers 0xC00–0xC1F
+  - name: Zihpm_op_sz_mode_acc_priv
+    coverpoint: ["Zihpm_csrrs_cg/{cp_cntr_hpm}"]
+  # when XLEN=32, the upper 32 bits are accessed via CSR registers 0xC80–0xC9F
+  - name: Zihpm_op_sz_mode_acc_xlen32
     coverpoint: ["Zihpm_csrrs_cg/{cp_cntr_hpm}"]
 
   - name: hpmcounter_op_sz_mode
@@ -11,7 +21,7 @@ normative_rule_definitions:
   # two permitted responses (an illegal-instruction exception, or a constant value) are equally
   # conformant, so a reference signature cannot require either one. cp_cntr_hpm accordingly reads
   # only the counters that HPM_COUNTER_EN says the configuration implements.
-  - name: HPM_UNIMPLEMENTED_COUNTER_ACCESS
+  - name: hpm_unimplemented_counter_access
     coverpoint:
       [
         "Not tested: implementation-defined behavior; an unimplemented counter may trap or return a constant value, so neither response can be required. cp_cntr_hpm reads only the counters HPM_COUNTER_EN implements.",

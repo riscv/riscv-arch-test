@@ -15,14 +15,14 @@ covergroup SvSm_satp_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-    tvm_mstatus: coverpoint ins.current.csr[CSR_MSTATUS][20]{
+    tvm_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tvm")[0]{
         bins zero = {0};
         bins set  = {1};
     }
 
     // satp is always accessible from M-mode, so an access here never raises an exception.
-    Mcause: coverpoint ins.current.csr[CSR_MCAUSE][31:0] {
-        bins no_exception = {32'd0};
+    Mcause: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") {
+        bins no_exception = {0};
     }
 
     cp_ins: coverpoint ins.current.insn {
@@ -41,25 +41,25 @@ covergroup SvSm_mstatus_mprv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-    tvm_mstatus: coverpoint ins.current.csr[CSR_MSTATUS][20] {
+    tvm_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tvm")[0] {
         bins set = {1};
     }
-    Mcause: coverpoint ins.current.csr[CSR_MCAUSE][31:0] {
-        bins illegal_ins = {32'd2};
+    Mcause: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") {
+        bins illegal_ins = {ILLEGAL_INSTRUCTION};
     }
     cp_ins: coverpoint ins.current.insn {
-        wildcard bins csrrs  = {32'b000110000000_?????_010_?????_1110011};
-        wildcard bins csrrw  = {32'b000110000000_?????_001_?????_1110011};
-        wildcard bins csrrc  = {32'b000110000000_?????_011_?????_1110011};
+        wildcard bins csrrs  = {CSRRS} iff (ins.current.insn[31:20] == CSR_SATP);
+        wildcard bins csrrw  = {CSRRW} iff (ins.current.insn[31:20] == CSR_SATP);
+        wildcard bins csrrc  = {CSRRC} iff (ins.current.insn[31:20] == CSR_SATP);
         wildcard bins sfence = {SFENCE_VMA};
     }
 
     cp_tvm_exception_s: cross tvm_mstatus, priv_mode_s, Mcause, cp_ins; //ms.1
 
-    mprv_mstatus: coverpoint ins.current.csr[CSR_MSTATUS][17] {
+    mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mprv")[0] {
         bins set = {1};
     }
-    mpp_mstatus: coverpoint ins.prev.csr[CSR_MSTATUS][12:11] {
+    mpp_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] {
         bins U_mode = {2'b00};
         bins S_mode = {2'b01};
     }
@@ -74,7 +74,7 @@ covergroup SvSm_mstatus_mprv_cg with function sample(ins_t ins);
     }
 
     `ifdef UDB_MXLEN_64
-        satp_mode: coverpoint ins.current.csr[CSR_SATP][63:60] {
+        satp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] {
             `ifdef SV57_SUPPORTED
                 bins sv57 = {4'b1010};
             `endif
@@ -86,7 +86,7 @@ covergroup SvSm_mstatus_mprv_cg with function sample(ins_t ins);
             `endif
         }
     `else
-        satp_mode: coverpoint ins.current.csr[CSR_SATP][31] {
+        satp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] {
             bins sv32 = {1'b1};
         }
     `endif
@@ -105,48 +105,48 @@ covergroup SvSm_mstatus_mprv_cg with function sample(ins_t ins);
     `ifdef UDB_MXLEN_64
         PageType_i: coverpoint ins.current.page_type_i {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera = {2'b11} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
-                bins sv48_giga = {2'b10} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
-                bins sv48_mega = {2'b01} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
-                bins sv48_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
+                bins sv48_tera = {2'b11} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga = {2'b10} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
-                bins sv39_mega = {2'b01} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
-                bins sv39_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
+                bins sv39_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
             `endif
         }
         PageType_d: coverpoint ins.current.page_type_d {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera = {2'b11} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
-                bins sv48_giga = {2'b10} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
-                bins sv48_mega = {2'b01} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
-                bins sv48_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
+                bins sv48_tera = {2'b11} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga = {2'b10} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
-                bins sv39_mega = {2'b01} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
-                bins sv39_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
+                bins sv39_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
             `endif
         }
     `else
         PageType_i: coverpoint ins.current.page_type_i {
-            bins sv32_mega = {2'b01} iff (ins.current.csr[CSR_SATP][31] == 1'b1);
-            bins sv32_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][31] == 1'b1);
+            bins sv32_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
+            bins sv32_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
         }
         PageType_d: coverpoint ins.current.page_type_d {
-            bins sv32_mega = {2'b01} iff (ins.current.csr[CSR_SATP][31] == 1'b1);
-            bins sv32_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][31] == 1'b1);
+            bins sv32_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
+            bins sv32_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
         }
     `endif
 
-    load_page_fault: coverpoint  ins.current.csr[CSR_MCAUSE][31:0] {
-        bins load_page_fault = {32'd13};
+    load_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") {
+        bins load_page_fault = {LOAD_PAGE_FAULT};
     }
-    store_page_fault: coverpoint  ins.current.csr[CSR_MCAUSE][31:0] {
-        bins store_amo_page_fault = {32'd15};
+    store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") {
+        bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT};
     }
-    sum_sstatus: coverpoint ins.current.csr[CSR_SSTATUS][18]{
+    sum_sstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "sum")[0] {
         bins notset = {0};
         bins set = {1};
     }
@@ -181,12 +181,12 @@ covergroup SvSm_mstatus_mprv_cg with function sample(ins_t ins);
         wildcard bins leaflvl_s = {8'b11?01111};
     }
     `ifdef UDB_MXLEN_64
-        sbe_mstatus: coverpoint ins.current.csr[CSR_MSTATUS][36] { //ms.5
+        sbe_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "sbe")[0] { //ms.5
             bins set = {1};
             bins not_set = {0};
         }
     `else
-        sbe_mstatus: coverpoint ins.current.csr[CSR_MSTATUSH][4] { //ms.5
+        sbe_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatush", "sbe")[0] { //ms.5
             bins set = {1};
             bins not_set = {0};
         }

@@ -222,18 +222,18 @@
     }
 
     upper_reg_instrs : coverpoint ins.current.insn {
-        wildcard bins add = {32'b0000000_?????_?????_000_?????_0110011};
-        wildcard bins mul = {32'b0000001_?????_?????_000_?????_0110011};
+        wildcard bins add = {ADD};
+        wildcard bins mul = {MUL};
         wildcard bins fadd_s = {32'b0000000_?????_?????_000_?????_1010011};
     }
 
     upper_reg_addi : coverpoint ins.current.insn {
-        wildcard bins addi = {32'b????????????_?????_000_?????_0010011};
+        wildcard bins addi = {ADDI};
     }
 
     upper_reg_fmv : coverpoint ins.current.insn {
-        wildcard bins fmv_x_w = {32'b1110000_00000_?????_000_?????_1010011};
-        wildcard bins fmv_w_x = {32'b1111000_00000_?????_000_?????_1010011};
+        wildcard bins fmv_x_w = {FMV_X_W};
+        wildcard bins fmv_w_x = {FMV_W_X};
     }
 
     amocas_odd : coverpoint ins.current.insn {

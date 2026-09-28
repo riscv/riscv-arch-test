@@ -1,5 +1,5 @@
 {
-  "$schema": "/opt/riscv/share/sail-riscv/sail_riscv_config_schema.json",
+  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.14.1/sail_riscv_config_schema.json",
   "base": {
     "xlen": 64,
     // Whether the base ISA is E, in which case accessing
@@ -38,6 +38,10 @@
       "len": 32,
       "value": "0x0000_07FF"
     },
+    "hcounteren_writable_bits": {
+      "len": 32,
+      "value": "0x0000_07FF"
+    },
     // `mtvec.{direct,vectored}.supported` indicates whether the
     // corresponding mode is supported for `mtvec`.  At least one mode
     // should be supported.  If both modes are supported, the mode on
@@ -64,6 +68,15 @@
       // The spec requires `base_alignment` for `stvec.direct` to be 2
       // (i.e. 4-byte alignment), hence there is no configuration
       // parameter for it.
+      "direct": {
+        "supported": true
+      },
+      "vectored": {
+        "supported": true,
+        "base_alignment": 2
+      }
+    },
+    "vstvec": {
       "direct": {
         "supported": true
       },
@@ -104,6 +117,10 @@
     // `xtval` registers.
     "xtval_nonzero": {
       "illegal_instruction": true,
+      "virtual_instruction": true,
+      "load_guest_page_fault": true,
+      "samo_guest_page_fault": true,
+      "fetch_guest_page_fault": true,
       "software_breakpoint": true,
       "hardware_breakpoint": true,
       "load_address_misaligned": true,
@@ -116,6 +133,7 @@
       "fetch_access_fault": true,
       "fetch_page_fault": true,
       "software_check": true,
+      "hardware_error": true,
       "reserved_exceptions": false
     },
     "reserved_behavior": {
@@ -177,6 +195,8 @@
     // bitvectors in the model and since it is unlikely real implementations
     // will have lower values.
     "physaddr_bits": 56,
+    "asidlen": 16,
+    "vmidlen": 14,
     "pmp": {
       "grain": 10,
       // This specifies the number of PMP entries present.
@@ -213,15 +233,14 @@
         "vector": {
           "None": null
         },
-        // Similarly, a misaligned AMO currently always faults, and this field
-        // can specify either `"AccessFault"` or `"AlignmentException"`.
+        // Similarly, a misaligned AMO and LR/SC can be configured with the same
+        // option values.
         "amo": {
           "None": null
         },
-        // A misaligned LR/SC currently always faults, and this field can specify
-        // whether it generates an access fault (use `"AccessFault"`)
-        // or a misaligned exception (use `"AlignmentException"`).
-        "lrsc": "AccessFault"
+        "lrsc": {
+          "None": null
+        }
       },
       // If multiple memory operations are needed, this controls whether they
       // are done in increasing or decreasing address order. This is architecturally
@@ -240,7 +259,7 @@
       // multiple memory operations. 0 means all misaligned accesses
       // will be split.  The maximum value is 12 (one page).
       "default_allowed_within_exp": 0,
-      // If the access gets split due to `allowed_within_exp` then the size
+      // If the access gets split due to `default_allowed_within_exp` then the size
       // of the operations will be one byte if `byte_by_byte` is set, otherwise
       // they will be the maximum size possible based on the alignment. For
       // example a 4-byte access to address 0x2 will use two 2-byte operations.
@@ -277,13 +296,12 @@
           "read_idempotent": false,
           "write_idempotent": false,
           "misaligned_exceptions": {
-            "load_store": {
-              "Some": "AlignmentException"
-            },
+            "load_store": { "Some": "AlignmentException" },
             "vector": {
               "Some": "AlignmentException"
             },
-            "amo": "AccessFault"
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
           },
           "atomic_support": "AMONone",
           "misaligned_atomicity_granule_size_exp": 0,
@@ -321,7 +339,8 @@
             "vector": {
               "None": null
             },
-            "amo": "AccessFault"
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
           },
           "atomic_support": "AMOCASQ",
           "misaligned_atomicity_granule_size_exp": 4,
@@ -358,6 +377,13 @@
       // model invalidates the reservation if a store from the same hart lies within
       // the reservation set.
       "invalidate_on_same_hart_store": false
+    },
+    "interrupts": {
+      "machine": {
+        "software": { "supported": true },
+        "external": { "supported": true },
+        "timer": { "supported": true }
+      }
     },
     "clint": {
       // Whether the platform contains a CLINT.
@@ -478,13 +504,42 @@
       "supported": true
     },
     "S": {
-      "supported": true
+      "supported": true,
+      "interrupts": {
+        "software": { "supported": true },
+        "external": { "supported": true },
+        "timer": { "supported": true }
+      }
     },
     "U": {
       "supported": true
     },
+
+    "H": {
+      "supported": false,
+      "geilen": 63,
+      "guest_page_fault_writes_htval": true,
+      "hgatp_modes": {
+        "Sv32x4": false,
+        "Sv39x4": true,
+        "Sv48x4": true,
+        "Sv57x4": true
+      },
+      "vsatp_modes": { "Sv32": false, "Sv39": true, "Sv48": true, "Sv57": true }
+    },
+
+    "Sha": { "supported": false },
+    "Shcounterenw": { "supported": false },
+    "Shgatpa": { "supported": false },
+    "Shtvala": { "supported": false },
+    "Shvsatpa": { "supported": false },
+    "Shvstvala": { "supported": false },
+    "Shvstvecd": { "supported": false },
+    "Sstvecd": { "supported": true },
+    "Svukte": { "supported": false },
+    "Zilx": { "supported": false },
     "Zibi": {
-      "supported": true
+      "supported": false
     },
     // This extension just asserts that the cache block size is 64 bytes.
     // If you enable this you also need to ensure `platform.cache_block_size_exp`
@@ -670,7 +725,7 @@
       "supported": false
     },
     "Zvabd": {
-      "supported": true
+      "supported": false
     },
     "Zvfbfmin": {
       "supported": true

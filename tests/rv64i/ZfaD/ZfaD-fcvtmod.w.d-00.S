@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 194
+#define SIGUPD_COUNT 196
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -969,6 +969,21 @@ ZfaD_fcvtmod_w_d_cg_cp_fs1_edges_D_b0xa6e895993737426c:
   # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x3, x5, x4, ZfaD_fcvtmod_w_d_cg_cp_fs1_edges_D_b0xa6e895993737426c, ZfaD_fcvtmod_w_d_cg_cp_fs1_edges_D_b0xa6e895993737426c_str)
 
+/////////////////////////////////
+// cp_csr_fflags_vn
+/////////////////////////////////
+
+# Testcase cp_csr_fflags_vn (fflags = 10001)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x25, f6) # load fs1: f6 = 0x1b8ffaf1cb1ddfd8
+  fsflagsi 0b00000 # clear all fflags
+  csrsi fcsr, 0b10001 # set fflags
+ZfaD_fcvtmod_w_d_cg_cp_csr_fflags_vn_b10001:
+  fcvtmod.w.d x12, f6, rtz # perform operation
+  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x12, ZfaD_fcvtmod_w_d_cg_cp_csr_fflags_vn_b10001, ZfaD_fcvtmod_w_d_cg_cp_csr_fflags_vn_b10001_str)
+  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, ZfaD_fcvtmod_w_d_cg_cp_csr_fflags_vn_b10001, ZfaD_fcvtmod_w_d_cg_cp_csr_fflags_vn_b10001_str)
+
   mv x2, x3 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -1070,6 +1085,7 @@ RVTEST_DATA_BEGIN
 .dword 0xfff0000000000001
 .dword 0x5a392534a57711ad
 .dword 0xa6e895993737426c
+.dword 0x1b8ffaf1cb1ddfd8
 
 // Testcase strings
 ZfaD_fcvtmod_w_d_cg_cp_rd_b0_str: .string "\"test: 1; cg: ZfaD_fcvtmod.w.d_cg; cp: cp_rd; bin: b0\""
@@ -1164,6 +1180,7 @@ ZfaD_fcvtmod_w_d_cg_cp_fs1_edges_D_b0x7ff7ffffffffffff_str: .string "\"test: 89;
 ZfaD_fcvtmod_w_d_cg_cp_fs1_edges_D_b0xfff0000000000001_str: .string "\"test: 90; cg: ZfaD_fcvtmod.w.d_cg; cp: cp_fs1_edges_D; bin: b0xfff0000000000001\""
 ZfaD_fcvtmod_w_d_cg_cp_fs1_edges_D_b0x5a392534a57711ad_str: .string "\"test: 91; cg: ZfaD_fcvtmod.w.d_cg; cp: cp_fs1_edges_D; bin: b0x5a392534a57711ad\""
 ZfaD_fcvtmod_w_d_cg_cp_fs1_edges_D_b0xa6e895993737426c_str: .string "\"test: 92; cg: ZfaD_fcvtmod.w.d_cg; cp: cp_fs1_edges_D; bin: b0xa6e895993737426c\""
+ZfaD_fcvtmod_w_d_cg_cp_csr_fflags_vn_b10001_str: .string "\"test: 93; cg: ZfaD_fcvtmod.w.d_cg; cp: cp_csr_fflags_vn; bin: b10001\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

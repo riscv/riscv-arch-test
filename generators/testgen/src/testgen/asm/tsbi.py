@@ -113,6 +113,8 @@ _CSR_ALIASES = {
     "menvcfg": 0x30A,
     "mseccfg": 0x747,
     "menvcfgh": 0x31A,
+    "mstateen0": 0x30C,
+    "mstateen0h": 0x31C,
     "stimecmp": 0x14D,
     "stimecmph": 0x15D,
     "tselect": 0x7A0,

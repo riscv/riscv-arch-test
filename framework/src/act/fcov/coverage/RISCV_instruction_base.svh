@@ -157,7 +157,10 @@ class RISCV_instruction
     return 0;
   endfunction
 
-  // Lookup vector register value
+  // Lookup vector register value.  These helpers expand UDB_VLEN, which the configuration only
+  // defines when the DUT implements the vector extension, so guard them with ZVL32B_SUPPORTED,
+  // the extension every vector configuration carries, as the rest of the vector code does.
+`ifdef ZVL32B_SUPPORTED
   function `SIGNED_VLEN_BITS get_vr_val(int hart, int issue, string key, int prev);
     int idx = get_vr_num(key);
     if (idx >= 0) begin
@@ -195,6 +198,7 @@ class RISCV_instruction
       end
     endcase
   endfunction
+`endif // ZVL32B_SUPPORTED
 
   function `SIGNED_XLEN_BITS get_pc();
     return current.pc_rdata;

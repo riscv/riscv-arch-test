@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
+from testgen.asm.helpers import write_sigupd
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -25,4 +26,13 @@ def format_cbo_type(
     test = [
         f"{instr_name} (x{params.rs1}) # perform operation",
     ]
-    return (setup, test, [""])
+    # cbo.zero must zero the block holding rs1; the other CBOs may legally be no-ops, so they have no check.
+    # Dirtying the byte first keeps the check meaningful when an earlier testcase already zeroed the block.
+    check = [""]
+    if instr_name == "cbo.zero":
+        setup.append(f"sb x{params.rs1}, 0(x{params.rs1}) # dirty a byte inside the block so zeroing it is observable")
+        check = [
+            f"lbu x{params.rs1}, 0(x{params.rs1}) # read back a byte inside the zeroed block; must be 0",
+            write_sigupd(params.rs1, test_data, "int"),
+        ]
+    return (setup, test, check)

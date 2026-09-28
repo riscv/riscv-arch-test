@@ -151,7 +151,7 @@
 // Interrupt latency configuration
 #define RVMODEL_INTERRUPT_LATENCY 10
 
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
+#define RVMODEL_TIMER_INT_SOON_DELAY 10000
 
 ##### Machine Timer #####
 #define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
@@ -193,5 +193,6 @@
   li      _R1, ADDR_S_CLRIPNUM; /* clear the pending interrupt */ \
   li      _R2, 2; \
   sw      _R2, 0(_R1); /* clear source 2 interrupt */
+
 
 #endif // _RVMODEL_MACROS_H

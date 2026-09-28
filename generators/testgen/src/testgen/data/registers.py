@@ -87,6 +87,7 @@ class IntegerRegisterFile(RegisterFile):
     Class to represent an integer register file.
 
     Automatically handles special registers like signature pointer and link register.
+    Privileged tests reserve more registers, including a0-a2 for T-SBI, in `generate/priv.py`.
     """
 
     default_sig_reg = 2

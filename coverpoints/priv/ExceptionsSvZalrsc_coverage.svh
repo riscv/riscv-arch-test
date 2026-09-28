@@ -29,35 +29,7 @@ covergroup ExceptionsSvZalrsc_cg with function sample(ins_t ins);
         wildcard bins lr_w     = {LR_W};
         wildcard bins sc_w     = {SC_W};
     }
-    medeleg_walk: coverpoint ins.current.csr[CSR_MEDELEG] {
-        bins zeros                    = {16'b0000_0000_0000_0000};
-        `ifndef ZCA_SUPPORTED
-            bins instrmisaligned_enabled  = {16'b0000_0000_0000_0001};
-        `endif
-        bins instraccessfault_enabled = {16'b0000_0000_0000_0010};
-        bins illegalinstr_enabled     = {16'b0000_0000_0000_0100};
-        bins breakpoint_enabled       = {16'b0000_0000_0000_1000};
-        bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000};
-        bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000};
-        bins storemisaligned_enabled  = {16'b0000_0000_0100_0000};
-        bins storeaccessfault_enabled = {16'b0000_0000_1000_0000};
-        bins ecallu_enabled           = {16'b0000_0001_0000_0000};
-        // Delegating ecall to S mode makes it impossible to escape S mode
-        // bins ecalls_enabled           = {16'b0000_0010_0000_0000};
-        // bit 10 reserved
-        // bit 11 is read only zero
-        bins instrpagefault_enabled   = {16'b0001_0000_0000_0000};
-        bins loadpagefault_enabled    = {16'b0010_0000_0000_0000};
-        // bit 14 reserved
-        bins storepagefault_enabled   = {16'b1000_0000_0000_0000};
-        wildcard bins ones            = {16'b1011_0001_1111_111?};
-    }
-
     // main coverpoints
-    cp_medeleg_m:                    cross priv_mode_m, lrscops,  d_page_table_entry_invalid, medeleg_walk;
-    cp_medeleg_s:                    cross priv_mode_s, lrscops, d_page_table_entry_invalid, medeleg_walk;
-    cp_medeleg_u:                    cross priv_mode_u, lrscops,  d_page_table_entry_invalid, medeleg_walk;
-
 
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
@@ -70,9 +42,8 @@ covergroup ExceptionsSvZalrsc_cg with function sample(ins_t ins);
                 // auto fill 1/0 for the physical address being valid
             }
         `endif
-        cp_misaligned_priority_m:        cross priv_mode_m, lrscops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent;
         cp_misaligned_priority_s:        cross priv_mode_s, lrscops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent;
-        cp_misaligned_priority_u:        cross priv_mode_u, lrscops,  d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent;
+        cp_misaligned_priority_u:        cross priv_mode_u, lrscops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent;
     `endif
 endgroup
 

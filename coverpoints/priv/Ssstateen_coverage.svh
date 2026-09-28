@@ -24,12 +24,6 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
     sstateen_walk_csr: coverpoint ins.current.insn[31:20] {
             bins sstateen0 = {CSR_SSTATEEN0};
     }
-    priv_mode_maybes_u: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
-            bins U_mode = {3'b000};
-            `ifdef S_SUPPORTED
-                    bins S_mode = {3'b001};
-            `endif
-    }
 
     `ifdef UDB_MXLEN_64
       csr_walk: coverpoint ins.current.rs1_val {
@@ -44,7 +38,7 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
               wildcard bins walking0_2  = {64'b?????????????????????????????????????????????????????????????0??};
       }
     `else
-      csr_walk: coverpoint ins.current.csr[ins.current.insn[31:20]] {
+      csr_walk: coverpoint get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, ins.current.insn[31:20], "stateen", "stateen") {
           // bits [3:31] are WPRI; bit 0 (C) is custom state (not tested)
           `ifdef ZFINX_SUPPORTED
                   wildcard bins walking1_1  = {32'b??????????????????????????????1?};
@@ -57,32 +51,21 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
       }
     `endif
 
-    // SE0 is bit 63 of mstateen0 on RV64, bit 31 of mstateen0h on RV32
     `ifdef UDB_MXLEN_64
-        se0_one: coverpoint ins.current.csr[CSR_MSTATEEN0][63] {
+        se0_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstateen0", "se0")[0] {
                 bins se0_enabled  = {1'b1};
         }
     `else
-        se0_one: coverpoint ins.current.csr[CSR_MSTATEEN0H][31] {
+        se0_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstateen0h", "se0")[0] {
                 bins se0_enabled  = {1'b1};
         }
     `endif
-    `ifdef UDB_MXLEN_64
-        se0_zero: coverpoint ins.current.csr[CSR_MSTATEEN0][63] {
-                bins se0_disabled  = {1'b0};
-        }
-    `else
-        se0_zero: coverpoint ins.current.csr[CSR_MSTATEEN0H][31] {
-                bins se0_disabled  = {1'b0};
-        }
-    `endif
-
     `ifdef ZFINX_SUPPORTED
-        misa_F: coverpoint ins.current.csr[CSR_MISA][5] {
+        misa_F: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "misa", "exts")[5] {
                 bins F_set   = {1'b1};
                 bins F_clear = {1'b0};
         }
-        sstateen0_fcsr_bit: coverpoint ins.current.csr[CSR_SSTATEEN0][1] {
+        sstateen0_fcsr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sstateen0", "fcsr")[0] {
                 bins fcsr_zero = {1'b0};
                 bins fcsr_one  = {1'b1};
         }
@@ -99,7 +82,7 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
         }
     `endif
     `ifdef ZCMT_SUPPORTED
-        jvt_state: coverpoint ins.current.csr[CSR_SSTATEEN0][2] {
+        jvt_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sstateen0", "jvt")[0] {
                 bins jvt_disabled = {1'b0};
                 bins jvt_enabled  = {1'b1};
         }
@@ -108,29 +91,19 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
         }
     `endif
     `ifdef ZFINX_SUPPORTED
-        cp_fcsr_lower: cross priv_mode_maybes_u, misa_F, se0_one, sstateen0_fcsr_bit, csrops, fcsr_lower_mode_csrs {
+        cp_fcsr_lower: cross priv_mode_s_u, misa_F, se0_one, sstateen0_fcsr_bit, csrops, fcsr_lower_mode_csrs {
                 ignore_bins ig1 = binsof(misa_F.F_set)   && binsof(sstateen0_fcsr_bit.fcsr_zero);
                 ignore_bins ig2 = binsof(misa_F.F_clear) && binsof(sstateen0_fcsr_bit.fcsr_zero);
         }
-        cp_fcsr_fp_instrs: cross priv_mode_maybes_u, misa_F, se0_one, sstateen0_fcsr_bit, fp_instrs {
+        cp_fcsr_fp_instrs: cross priv_mode_s_u, misa_F, se0_one, sstateen0_fcsr_bit, fp_instrs {
                 ignore_bins ig1 = binsof(misa_F.F_set)   && binsof(sstateen0_fcsr_bit.fcsr_zero);
                 ignore_bins ig2 = binsof(misa_F.F_clear) && binsof(sstateen0_fcsr_bit.fcsr_zero);
         }
     `endif
-    cp_mstateen0_se0_zero_controls_sstateen0: cross csrops, priv_mode_s, se0_zero, sstateen_csrs {
-            ignore_bins ig1 = binsof(sstateen_csrs.sstateen1);
-            ignore_bins ig2 = binsof(sstateen_csrs.sstateen2);
-            ignore_bins ig3 = binsof(sstateen_csrs.sstateen3);
-    }
-    cp_mstateen0_se0_one_controls_sstateen0: cross csrops, priv_mode_s, se0_one, sstateen_csrs {
-            ignore_bins ig1 = binsof(sstateen_csrs.sstateen1);
-            ignore_bins ig2 = binsof(sstateen_csrs.sstateen2);
-            ignore_bins ig3 = binsof(sstateen_csrs.sstateen3);
-    }
     cp_csr_illegal_accesses: cross priv_mode_u, sstateen_csrs, csrops, se0_one;
     cp_walking_ones:         cross priv_mode_s, sstateen_walk_csr, csrops, csr_walk, se0_one;
     `ifdef ZCMT_SUPPORTED
-        cp_jvt:              cross priv_mode_maybes_u, csrops, jvt_csr, jvt_state, se0_one;
+        cp_jvt:              cross priv_mode_s_u, csrops, jvt_csr, jvt_state, se0_one;
     `endif
 endgroup
 function void ssstateen_sample(int hart, int issue, ins_t ins);

@@ -11,7 +11,7 @@ across different privilege-modes."""
 
 from typing import NamedTuple
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -42,6 +42,40 @@ _CBO_FIELDS: dict[str, _CboField] = {
     ),
     "cbze": _CboField(shift=7, bins=["0", "1"], instrs=["cbo.zero"], guard="ZICBOZ_SUPPORTED"),
 }
+
+
+def _cbo_test(
+    instr: str,
+    name: str,
+    coverpoint: str,
+    covergroup: str,
+    addr_reg: int,
+    val_reg: int,
+    test_data: TestData,
+) -> list[str]:
+    lines = []
+    if instr == "cbo.zero":
+        lines.extend(
+            [
+                "# Store a nonzero value so the test can check cbo.zero",
+                f"LI(x{val_reg}, {0x0C0B0000:#x})",
+                f"sw x{val_reg}, 0(x{addr_reg})",
+            ]
+        )
+    lines.extend(
+        [
+            test_data.add_testcase(name, coverpoint, covergroup),
+            f"{instr}    0(x{addr_reg})",
+        ]
+    )
+    if instr == "cbo.zero":
+        lines.extend(
+            [
+                f"lw x{val_reg}, 0(x{addr_reg})",
+                write_sigupd(val_reg, test_data),
+            ]
+        )
+    return lines
 
 
 def _csr_op(op: str, csr: str, reg: int, mode: str) -> str:
@@ -82,7 +116,7 @@ def cbo_config_helper(
 
     description = f"Exercise {', '.join(instrs)} across menvcfg.{field}"
 
-    addr_reg, cfg_reg, mask_reg = test_data.int_regs.get_registers(3)
+    addr_reg, cfg_reg, mask_reg, val_reg = test_data.int_regs.get_registers(4)
 
     lines = [
         comment_banner(coverpoint, description),
@@ -118,12 +152,7 @@ def cbo_config_helper(
         if not cross_senvcfg:
             for instr in instrs:
                 name = f"{instr}{mode_tag}_menvcfg.{field}{m_val}"
-                lines.extend(
-                    [
-                        test_data.add_testcase(name, coverpoint, covergroup),
-                        f"{instr}    0(x{addr_reg})",
-                    ]
-                )
+                lines.extend(_cbo_test(instr, name, coverpoint, covergroup, addr_reg, val_reg, test_data))
         else:
             lines.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
             for s_val in bins:
@@ -138,21 +167,11 @@ def cbo_config_helper(
                     )
                 for instr in instrs:
                     name = f"{instr}{mode_tag}_menvcfg.{field}{m_val}{senvcfg_tag}"
-                    lines.extend(
-                        [
-                            test_data.add_testcase(name, coverpoint, covergroup),
-                            f"{instr}    0(x{addr_reg})",
-                        ]
-                    )
+                    lines.extend(_cbo_test(instr, name, coverpoint, covergroup, addr_reg, val_reg, test_data))
             lines.append("#else")
             for instr in instrs:
                 name = f"{instr}{mode_tag}_menvcfg.{field}{m_val}"
-                lines.extend(
-                    [
-                        test_data.add_testcase(name, coverpoint, covergroup),
-                        f"{instr}    0(x{addr_reg})",
-                    ]
-                )
+                lines.extend(_cbo_test(instr, name, coverpoint, covergroup, addr_reg, val_reg, test_data))
             lines.append("#endif // S1P12P0_OR_LATER_SUPPORTED")
 
     lines.append("#endif")
@@ -160,7 +179,7 @@ def cbo_config_helper(
         lines.append("#endif // U_SUPPORTED")
     lines.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
 
-    test_data.int_regs.return_registers([addr_reg, cfg_reg, mask_reg])
+    test_data.int_regs.return_registers([addr_reg, cfg_reg, mask_reg, val_reg])
     return lines
 
 

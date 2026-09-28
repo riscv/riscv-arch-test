@@ -11,7 +11,6 @@
 from random import seed
 
 from testgen.asm.helpers import comment_banner, reproducible_hash, write_sigupd
-from testgen.asm.interrupts import set_mtimer_int
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.random import random_int
 from testgen.data.state import TestData
@@ -203,7 +202,7 @@ def _disable_trigger(reg: int, trig_num: int, mode: str) -> list[str]:
     return lines
 
 
-def _cause_interrupt(code: int, mode: str, r1: int, r2: int, r3: int, r4: int) -> list[str]:
+def _cause_interrupt(code: int, mode: str, r1: int) -> list[str]:
     """Emit assembly that makes interrupt ``code`` (mcause interrupt code) pending."""
     flavor = "M" if mode == "Sm" else mode
     if code == 1:  # supervisor software interrupt (SSIP)
@@ -217,7 +216,7 @@ def _cause_interrupt(code: int, mode: str, r1: int, r2: int, r3: int, r4: int) -
     if code == 3:  # machine software interrupt (CLINT MSIP; M-mode only)
         return [f"RVTEST_SET_MSW_INT_{flavor}"]
     if code == 7:  # machine timer interrupt (mtimecmp = mtime; M-mode only)
-        return set_mtimer_int(r1, r2, r3, r4)
+        return [f"RVTEST_SET_MTIME_INT_{flavor}"]
     if code == 11:  # machine external interrupt (PLIC MEIP; M-mode only)
         return [f"RVTEST_SET_MEXT_INT_{flavor}"]
     raise ValueError(f"unsupported interrupt code {code}")
@@ -439,7 +438,7 @@ def _fire_supported_triggers(trig_num: int, mode: str, cfg_reg: int, addr_reg: i
     #     [
     #         f"#ifdef UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE",
     #         *_config_itrigger(cfg_reg, trig_num, 1 << 1, mode),
-    #         *_cause_interrupt(1, mode, cfg_reg, addr_reg, data_reg, data_reg),
+    #         *_cause_interrupt(1, mode, cfg_reg),
     #         "nop # spacer",
     #         *_disable_trigger(cfg_reg, trig_num, mode),
     #         f"#endif // UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE",
@@ -1700,7 +1699,7 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                     [
                         _add_tc(test_data, binname, coverpoint, covergroup),
                         # *_config_itrigger(t1, trig_num, 1 << code, mode, privbits=priv),
-                        # *_cause_interrupt(code, mode, t1, t2, t3, t4),
+                        # *_cause_interrupt(code, mode, t1),
                         # "nop # spacer",
                     ]
                 )

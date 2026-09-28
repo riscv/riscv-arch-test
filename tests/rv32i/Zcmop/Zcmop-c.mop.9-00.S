@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 10
+#define SIGUPD_COUNT 13
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -30,12 +30,22 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_asm_count
+// cp_custom_mop_no_write
 /////////////////////////////////
 
-# Testcase cp_asm_count
-Zcmop_c_mop_9_cg_cp_asm_count_count:
-  c.mop.9
+# cp_custom_mop_no_write: c.mop.9 must not write x9 (the c.lui x9, 0 encoding it reuses) or any other register
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load x9: x9 = 0x99fb9ae8
+  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load x25: x25 = 0x08b1144e
+  RVTEST_TESTDATA_LOAD_INT(x3, x22) # load x22: x22 = 0x627f8d96
+Zcmop_c_mop_9_cg_cp_custom_mop_no_write_x9:
+  c.mop.9 # must not write any register
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Zcmop_c_mop_9_cg_cp_custom_mop_no_write_x9, Zcmop_c_mop_9_cg_cp_custom_mop_no_write_x9_str)
+  # Check if x25 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x25, Zcmop_c_mop_9_cg_cp_custom_mop_no_write_x9, Zcmop_c_mop_9_cg_cp_custom_mop_no_write_x9_str)
+  # Check if x22 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x22, Zcmop_c_mop_9_cg_cp_custom_mop_no_write_x9, Zcmop_c_mop_9_cg_cp_custom_mop_no_write_x9_str)
+
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -44,10 +54,12 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test data
-
+.word 0x99fb9ae8
+.word 0x08b1144e
+.word 0x627f8d96
 
 // Testcase strings
-Zcmop_c_mop_9_cg_cp_asm_count_count_str: .string "\"test: 1; cg: Zcmop_c.mop.9_cg; cp: cp_asm_count; bin: count\""
+Zcmop_c_mop_9_cg_cp_custom_mop_no_write_x9_str: .string "\"test: 1; cg: Zcmop_c.mop.9_cg; cp: cp_custom_mop_no_write; bin: x9\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

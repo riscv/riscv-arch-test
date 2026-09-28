@@ -113,7 +113,7 @@ def make_cp_custom_ffLS(instr_name: str, instr_type: str, coverpoint: str, test_
     if needs_endif:
         check += "\n#endif"
 
-    setup += f"\nLI (x{params.rs1}, 0)"  # Hardcode the load
+    setup += f"\nLI (x{params.rs1}, RVMODEL_ACCESS_FAULT_ADDRESS)"  # Hardcode the load
 
     tc.code.extend([setup, label_line, test, check])
 

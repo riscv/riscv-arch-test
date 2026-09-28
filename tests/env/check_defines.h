@@ -14,11 +14,7 @@
 #endif
 
 #ifndef TRAP_SIGUPD_COUNT
-  #ifdef RVTEST_PRIV_TEST
-    #define TRAP_SIGUPD_COUNT 6000
-  #else
-    #define TRAP_SIGUPD_COUNT 0
-  #endif
+  #define TRAP_SIGUPD_COUNT 6000
 #endif
 
 ########## GLOBAL XLEN CHECK  ##########

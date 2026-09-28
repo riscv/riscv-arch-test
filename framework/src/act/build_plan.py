@@ -193,8 +193,6 @@ def gen_compile_tasks(
     )
     # Assembly tests set up their own sp; only C tests need the linker script's stack.
     stack_flags = [] if test_metadata.is_c_test else ["-Wl,--defsym=__stack_size=128"]
-    # Only privileged tests reserve a trap signature by default; unprivileged tests must not trap.
-    priv_flags = ["-DRVTEST_PRIV_TEST"] if test_path.parent.parent.name == "priv" else []
 
     # Compilation sources and inputs
     test_sources = [str(test_path)]
@@ -208,7 +206,6 @@ def gen_compile_tasks(
             *compile_prefix,
             *c_compile_flags,
             *stack_flags,
-            *priv_flags,
             "-o",
             str(sig_elf),
             *march_flags,
@@ -291,7 +288,6 @@ def gen_compile_tasks(
         *compile_prefix,
         *c_compile_flags,
         *stack_flags,
-        *priv_flags,
         "-o",
         str(final_elf),
         *march_flags,

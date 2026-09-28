@@ -211,6 +211,14 @@ jobs:
       - name: Build CTP
         run: cd docs/ctp && make docker-pull-latest && make -j6
 
+      - name: Upload CTP
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ctp
+          path: |
+            docs/ctp/build/ctp.pdf
+            docs/ctp/build/ctp.html
+
   crd-build:
     name: Build CRD
     runs-on: ubuntu-latest
@@ -223,6 +231,14 @@ jobs:
 
       - name: Build CRD
         run: cd docs/crd && make docker-pull-latest && make -j6
+
+      - name: Upload CRD
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: crd
+          path: |
+            docs/crd/build/rva23_crd.pdf
+            docs/crd/build/rva23_crd.html
 
   check-tests:
     name: Check generated tests

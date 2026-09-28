@@ -13,7 +13,6 @@ from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.InterruptsCommon import (
-    Generator,
     InterruptSuite,
     emit_interrupts,
     generate_cp_enable,
@@ -106,34 +105,24 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
     test_data.int_regs.return_register(tmp_reg)
 
 
-# Coverpoints for each test mode. U-mode has no cp_wfi because U-mode WFI traps after a bounded
-# time when S-mode is implemented (cp_wfi_timeout).
-_GENERATORS: dict[str, list[Generator]] = {
-    "S": [
-        _generate_cp_trigger_s,
-        generate_cp_enable,
-        generate_cp_priority_pending,
-        generate_cp_priority_enable,
-        generate_cp_wfi,
-        generate_cp_wfi_timeout,
-    ],
-    "U": [
-        _generate_cp_trigger_s,
-        generate_cp_enable,
-        generate_cp_priority_pending,
-        generate_cp_priority_enable,
-        generate_cp_wfi_timeout,
-    ],
-}
+_COMMON_GENERATORS = [
+    _generate_cp_trigger_s,
+    generate_cp_enable,
+    generate_cp_priority_pending,
+    generate_cp_priority_enable,
+]
 
 
 @add_priv_test_generator(SUITE.name, required_extensions=["S"], extra_defines=["#define BOOT_TO_SMODE"])
 def make_interruptss_s(test_data: TestData) -> list[TestChunk]:
     """InterruptsS tests that run in S-mode."""
-    return emit_interrupts(test_data, SUITE, "S", _GENERATORS["S"])
+    generators = _COMMON_GENERATORS + [generate_cp_wfi, generate_cp_wfi_timeout]
+    return emit_interrupts(test_data, SUITE, "S", generators)
 
 
 @add_priv_test_generator(SUITE.name, required_extensions=["S"], extra_defines=["#define BOOT_TO_SMODE"])
 def make_interruptss_u(test_data: TestData) -> list[TestChunk]:
     """InterruptsS tests that run in U-mode."""
-    return emit_interrupts(test_data, SUITE, "U", _GENERATORS["U"])
+    # U-mode WFI traps after a bounded time when S-mode is implemented, so only test the timeout.
+    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout]
+    return emit_interrupts(test_data, SUITE, "U", generators)

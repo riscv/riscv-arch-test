@@ -6,8 +6,8 @@ ci_enabled: true
 
 # Exclusions are by test-suite directory, the only granularity EXCLUDE_EXTENSIONS supports.
 # Each entry records the specific measured reason, on olofk/serv @ f200eb2e verilated as
-# width=1, compressed=1, with_csr=1, MDU=1, memsize=8 MiB.  Without exclusions: 116 tests
-# selected, 88 pass, 28 fail.  With them: 77 selected, 77 pass.
+# width=1, compressed=1, with_csr=1, MDU=1, memsize=8 MiB.  Without exclusions: 123 tests
+# selected, 92 pass, 31 fail.  With them: 77 selected, 77 pass.
 # Every failure is a DUT-versus-spec divergence, not a configuration error: the identical
 # test sources all pass on config/sail/sail-rv32-max.  ~/reviews/act-ports/serv-discrepancies.md
 # has the full write-up with RTL citations.
@@ -55,7 +55,15 @@ ci_enabled: true
 #                 instruction), so every later trap record is compared against the wrong entry.
 #                 The first mismatch reports a Breakpoint where an Illegal instruction was
 #                 expected.  ExceptionsSm's three medeleg tests pass.
-exclude_extensions: "Zicsr,Zifencei,Sm,ExceptionsSm,ExceptionsZc"
+#
+#   InterruptsSm  4 of 7 fail, on three of the Sm divergences above.  InterruptsSm_enable_M,
+#                 _priority_mip_M and _trigger_M record trap signature word 0 as 0x03000353
+#                 where 0x03101b53 is expected: bit 11 (mie[cause]) reads 0 because mie is
+#                 write-only, bit 12 (mip[cause]) reads 0 because 0x344 is mscratch, and bit
+#                 20 (mstatus.MPIE) reads 0 because MPIE is not implemented.
+#                 InterruptsSm_priority_mie_M reads mip and gets 0x20 where MTIP (0x80) is
+#                 expected.
+exclude_extensions: "Zicsr,Zifencei,Sm,ExceptionsSm,ExceptionsZc,InterruptsSm"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-serv.sh"

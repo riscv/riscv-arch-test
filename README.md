@@ -409,6 +409,7 @@ Contributors are always welcome. There are several ways to contribute:
 
 - [Open issues](https://github.com/riscv/riscv-arch-test/issues/new) with bug reports or feature requests.
 - [Submit PRs](https://github.com/riscv/riscv-arch-test/pulls) that fix open issues, add tests for new extensions, or add a new feature. Before opening a PR, make sure to review the guidelines and helpful tips in [`CONTRIBUTING.md`](./CONTRIBUTING.md)
+- Before submitting a new or substantially changed suite, consider asking an AI agent for a critical review. In Claude Code, type `/critical-review <Suite>` or `/critical-review PR <N>`. With other agents, ask for "a critical review of `<Suite>` using `.claude/skills/critical-review/SKILL.md`". A critical review reads the relevant ISA manual chapters, runs the suite on every available simulator, and checks each layer against the others, so it takes much longer than an ordinary review.
 - Join the [ACT SIG mailing list](https://lists.riscv.org/g/sig-arch-test). The mailing list and meetings are only open to RISC-V members.
 
 ## Licensing

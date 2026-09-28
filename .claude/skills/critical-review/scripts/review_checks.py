@@ -13,9 +13,9 @@ Mechanical review checks for one ACT suite.
 Usage:
   review_checks.py <Suite> [--udb-param-dir DIR] [--ref-rv32 CFG] [--ref-rv64 CFG] [--metrics-csv FILE]
 
-Run from the repository root after `EXTENSIONS=<Suite> make tests`. The trap and
-coverage sections use build outputs in work/ when they exist (trap reports need DEBUG=True).
-Every line printed is a lead to verify, not a confirmed finding.
+Run from anywhere in the repository after `EXTENSIONS=<Suite> make tests`. The trap and
+coverage sections use build outputs in work/ when they exist (trap reports need DEBUG=True)
+and say which outputs are missing otherwise. Every line printed is a lead to verify, not a confirmed finding.
 """
 
 import argparse
@@ -28,7 +28,9 @@ from pathlib import Path
 
 from ruamel.yaml import YAML
 
-ROOT = Path.cwd()
+ROOT = Path(
+    subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True, check=True).stdout.strip()
+)
 PRIV_GEN_DIR = ROOT / "generators/testgen/src/testgen/priv/extensions"
 GATE_RE = re.compile(r"^\s*[#`](?:ifdef|ifndef|elsif)\s+(\w+)|defined\s*\(\s*(\w+)\s*\)", re.MULTILINE)
 DEFINE_RE = re.compile(r"^\s*[#`]define\s+(\w+)", re.MULTILINE)

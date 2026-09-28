@@ -1,4 +1,4 @@
-# Review rules
+# Critical review rules
 
 ## 1. PR scope and hygiene
 

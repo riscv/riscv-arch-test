@@ -1,13 +1,17 @@
 ---
-name: review
-description: Use when asked to review a suite, PR, testplan, coverpoints, or normative rules in riscv-arch-test. Reviews every layer of a suite (ISA manual, testplan, coverpoints, generator, generated tests, normative-rule mapping, CTP), runs it on the reference models and DUTs, and reports verified findings.
+name: critical-review
+description: Slow, exhaustive critical review of a riscv-arch-test suite or PR. Reads every layer (ISA manual, testplan, coverpoints, generator, generated tests, normative-rule mapping, CTP), runs the suite on the reference models and DUTs, and reports verified findings. Use only when the user asks for a critical review.
+disable-model-invocation: true
+compatibility: Requires uv and gh. The runs need the Sail reference model and whichever simulators are installed.
 ---
 
-# Reviewing ACT suites and PRs
+# Critical review of ACT suites and PRs
 
-This skill supplements the normal review process; it does not replace it.
+A critical review is deliberately slow: it reads the spec, runs every affected config, and checks each layer against the others.
+Ordinary reviews should not use it.
+It supplements the normal review process; it does not replace it.
 AGENTS.md rules (LI/LA macros, register clobbering, PR hygiene, prek) also apply and are not repeated here.
-`review-rules-jordan.md` in this directory holds the detailed rules, distilled from maintainer reviews. Read it before step 5.
+`references/critical-review-rules.md` holds the detailed rules, distilled from maintainer reviews. Read it before step 5.
 
 Take a critical view and assume nothing is correct.
 Be especially skeptical of code that looks AI-generated.
@@ -16,20 +20,26 @@ Also watch for search-and-replace type errors in new commits.
 
 **Out of scope:** XLEN and endianness don't need to be exercised, although tests that are otherwise in scope may touch them. Custom instruction and CSR space is out of scope.
 
+## Gotchas
+
+- A trap report (`DEBUG=True`) is **not** the DUT's traps. It comes from the Sail run, under that DUT's configuration, that produces the expected signature. Comparing trap reports across configs shows where configurations make the expected behavior diverge. A DUT whose actual traps differ from its reference shows up as a signature mismatch in its run log instead.
+- Traps in the boot code are not recorded in the signature, so a DUT and reference model that disagree there still pass. Only the trap counts from `scripts/review_checks.py` show it.
+- `scripts/review_checks.py` calls `bundle exec udb`. If `bundle` is not on `PATH`, run it with `mise exec --`.
+- The coverage and simulator runs share `work/` and `tests/`. Never run two of them at once in the same checkout.
+
 ## Workflow
 
 ### 1. Scope and checkout
 
 - **Suite review:** the suite is `<Suite>`. For a privileged suite, that is the name registered with `add_priv_test_generator`. For an unprivileged suite, it is the testplan name.
 - **PR review:**
-  - Check out the PR in its own worktree, so neither your work nor the builds mix with it: `git worktree add ../act-pr-N && cd ../act-pr-N && gh pr checkout N`.
-  - List the suites and files touched with `gh pr view N` and `gh pr diff N`.
-  - Check that the description matches the diff.
+  - Check out the PR in its own worktree.
+  - Review the changed files and ensure the PR description matches.
   - Watch for stray commits, churn, and config changes the PR does not need.
 
 ### 2. History
 
-- Keep review records in your personal `~/reviews/act/`, never in this repository.
+- Keep a record of every review, but do not commit it to the repository. A personal directory or a locally gitignored folder both work.
   - Use `<Suite>/` for suite reviews and `pr-<N>/` for PR reviews.
   - Write one dated file per review, starting with the head SHA reviewed. Record the findings and what was run, with the results.
 - On a re-review:
@@ -40,57 +50,29 @@ Also watch for search-and-replace type errors in new commits.
 
 ### 3. Generate, then start the runs in the background
 
-Run the build in one background job, in this order. The coverage and simulator runs share `work/` and `tests/`, so running them concurrently corrupts both.
+Run the build in one background job, in this order:
 
 ```bash
-EXTENSIONS=<Suite> make tests && git status --short tests coverpoints   # tracked generated files must not change
+EXTENSIONS=<Suite> make tests
 make coverage EXTENSIONS=<Suite>                                        # sail-rv32-max and sail-rv64-max, with coverage
 EXTENSIONS=<Suite> DEBUG=True make -k spike whisper qemu imperas cores  # DUT configs; `cores` includes cvw
 ```
 
 - Drop any simulators you don't have installed.
 - Add `sail` (all 13 Sail configs, including the profile and clang variants) only when the PR touches those configs. Otherwise just do `sail-rv64-max-clang` to test the clang compiler.
-- Where Sail coverage is incomplete, also collect functional coverage on cvw-rv64gc with Verilator.
-- If `tests/priv/` or `work/` holds output from an older checkout, run `make clean` first. Generated priv tests are not tracked, so stale suites linger.
-- `DEBUG=True` is what produces each config's trap report. A trap report is **not** the DUT's traps. It is the Sail run, under that DUT's configuration, that produces the expected signature. Comparing trap reports across configs therefore shows where configurations make the expected behavior diverge.
-  - Keep `DEBUG=True` on every config whose traps you want to compare.
-  - A DUT whose actual traps differ from its reference shows up as a signature mismatch in its run log instead.
+- Keep `DEBUG=True` on every config whose traps you want to compare.
 
 ### 4. Mechanical checks
 
 These take seconds. Run them first, and again once the runs finish, to find where to look:
 
 ```bash
-.claude/skills/review/review_checks.py <Suite>
+scripts/review_checks.py <Suite>
 ```
 
-The script reports:
+The path is relative to this skill's directory. Run it from anywhere in the repository; `--help` lists the options.
 
-- **Sources:**
-  - a missing generator or testplan
-  - stale generated tests
-  - tests that reference a covergroup no coverpoint file defines
-- **Suite type:**
-  - a boot define that doesn't match the suite name
-  - `RVTEST_TSBI_GOTO_MMODE` in a suite that boots to S or U
-  - T-SBI calls in an unprivileged suite
-  - legacy `RVTEST_GOTO_*` macros
-- **Coverpoint text:** commented-out bins or coverpoints, and `ignore_bins` without a reason comment.
-- **Guard names:** every `#ifdef`, `` `ifdef `` and `defined()` name that no config, header, or UDB parameter defines. These are likely typos.
-- **UDB parameters:**
-  - parameters defined by the suite's extension that the suite neither uses (`UDB_*`) nor maps in `coverpoints/param/<Suite>.yaml`
-  - parameters it uses without mapping them
-  - The script takes the parameter list from the pinned `udb` gem. To check against a riscv-unified-db checkout instead, pass `--udb-param-dir <udb>/spec/std/isa/param`. The canonical list is <https://github.com/riscv/riscv-unified-db/tree/main/spec/std/isa/param>; each YAML's `definedBy` names the extensions a parameter belongs to.
-- **Normative-rule mapping:** entries in `coverpoints/norm/<Suite>.yaml` that point to coverpoints that don't exist, and the number of rules with no coverpoint.
-- **Coverage:** covergroups below 100%.
-- **Traps:**
-  - any trap in an unprivileged suite
-  - each config whose trap sequence (mode, cause, and testcase label) differs from `sail-rv32-max` or `sail-rv64-max`, with the first divergence
-- **Size, instructions and traps per config:** for every test on every config, the ELF's loadable bytes, the dynamic instruction count and the number of traps taken, both on the DUT (from its `DEBUG=True` trace) and on the reference model under that config (from the `.sig.trace`).
-  - Counting stops at `rvmodel_halt_pass`/`rvmodel_halt_fail`, so a simulator's halt latency is excluded. Spike, for example, spins about 4,000 instructions in `write_tohost_pass` before it notices `tohost`.
-  - Traps are counted at the `trap_[MSV]handler` entry points. They include the framework's own ecalls (boot, T-SBI, mode changes), so even unprivileged suites show a few.
-  - It reports each config's usual overhead once, then any test that departs from its config's usual overhead, each config's DUT/reference trap counts, and any test over 100,000 dynamic instructions, which should be split into more files.
-  - `--metrics-csv FILE` writes the per-test table for deeper digging.
+`references/review-checks.md` explains each section of the output; read it when a line is unclear.
 
 Every line is a lead to confirm in step 6, not a finding. `li`/`la` misuse is caught by prek, not by this script.
 
@@ -192,7 +174,7 @@ Rules for the split:
 
 ### Code and coverpoint style
 
-Beyond `review-rules-jordan.md`:
+Beyond `references/critical-review-rules.md`:
 
 - **Never use `li`:** different compilers can emit different instruction sequences, and then a DUT can't exactly match Sail.
 - **State:** `RVTEST_BOOT_TO_*` initializes CSRs to a known state. Each test file must set up any other state it depends on.
@@ -226,6 +208,5 @@ Start from the script's parameter list. Each parameter falls into one of three k
 - **Traps:**
   - Compare the expected traps against the testplan. Flag traps the testplan doesn't expect, or that go against the spirit of the test.
   - A configuration whose expected traps differ from the others can point to an error in that config's UDB yaml or `sail.json`, even when the DUT matches.
-  - Traps in the boot code are not recorded in the signature, so a DUT and reference model that disagree there still pass. The trap counts are the only place such a disagreement shows up.
 - **Outliers:** find the root cause of every outlier in size, instruction count or traps before deciding whether it matters. Compare per-PC execution counts between two traces and attribute the difference to symbols; that usually points straight at the cause (a halt loop, UART polling, a boot-time CSR that traps on one config).
 - **Test length:** recommend splitting any test over 100,000 dynamic instructions into more files.

@@ -93,6 +93,6 @@
 - To test one suite across simulators, use `EXTENSIONS=<suite> DEBUG=True make -k sail spike whisper qemu imperas cvw`. Each failing simulator log names the first divergent testcase on its `bin:` line.
 - Simulator (not RTL) tests normally finish in seconds. If they run for much longer, inspect the simulation for a hang.
 
-## Reviewing
+## Critical Review
 
-See .claude/skills/review/SKILL.md
+- `.claude/skills/critical-review/SKILL.md` is a slow, exhaustive review of a suite or PR. Use it only when the user asks for a critical review, not for ordinary reviews.

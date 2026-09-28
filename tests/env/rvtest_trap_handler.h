@@ -74,7 +74,7 @@
 //    5. common_Xentry: save T4..T1, read xcause into T5
 //    6. Ecall detection -> T-SBI dispatch (if ecall and SBI call) OR normal trap sig
 //    7. Normal path: record trap signature (vect+mode, cause, epc/ip, tval/intID)
-//    8. Exception: relocate xEPC, bump past trapping instruction
+//    8. Exception: record xEPC, bump past trapping instruction
 //    9. Interrupt: clear interrupt source via dispatch table
 //   10. resto_Xrtn: restore T1..T6 and sp, xret to resume execution
 //
@@ -1375,7 +1375,7 @@ rvtest_\__MODE__\()prolog_done:
 //    4. Common entry           — save T1-T4, read xcause
 //    5. T-SBI dispatch (NEW)   — check for ecall + dispatch SBI operations
 //    6. Trap signature update  — record trap info in signature region
-//    7. Exception handler      — relocate xEPC, bump past instruction
+//    7. Exception handler      — record xEPC, bump past instruction
 //    8. Interrupt handler      — clear interrupt source via dispatch table
 //    9. Restore and return     — restore T1-T6+sp, xret
 //
@@ -2230,7 +2230,7 @@ tsbi_instr_table:
 //   1. Calculates the trap signature entry size (3, 4, or 5 words)
 //   2. Pre-increments the trap signature pointer and checks for overrun
 //   3. Records: vect+mode word, xcause, xepc/xip, xtval/intID
-//   4. For exceptions: relocates xEPC and bumps past the trapping instruction
+//   4. For exceptions: records xEPC and bumps past the trapping instruction
 //   5. For interrupts: dispatches to interrupt clearing routines
 //   6. Restores registers and returns via xret
 //==============================================================================
@@ -2402,148 +2402,11 @@ sv_\__MODE__\()cause:
 
 //==============================================================================
 // EXCEPTION HANDLER
-// Handles EPC relocation, tval recording, and instruction skipping.
+// Records xEPC and xtval, then bumps past the trapping instruction.
 //==============================================================================
 
 common_\__MODE__\()excpt_handler:
         csrr    T3, CSR_XEPC                         // T3 = xEPC (faulting instruction address)
-        mv      T4, sp                               // T4 = this mode's save area (for relocation lookup)
-
-// --- EPC relocation logic ---
-// Determines whether xEPC needs to be offset-adjusted based on the trapping
-// mode's address translation state. If virtual memory is active (xSATP.MODE != bare),
-// xEPC is a virtual address and should NOT be relocated. If bare mode, it's a
-// physical address and needs relocation relative to code/data/vmem segment starts.
-
-.ifc \__MODE__ , M
- #ifndef S_SUPPORTED
-        j       vmem_adj_\__MODE__\()epc            // no S-mode -> always PA, always relocate
- #else
-        csrr    T6, CSR_MSTATUS
- // select MPP based on MPRV; if MPRV=1, substitute saved mstatus (with MPP bits)
-        slli    T2, T6, UDB_MXLEN-MPRV_LSB-1         /* put MPRV [17] into sign bit & test   */
-        bgez    T2, 1f
-        LI(     T6, sved_mpp_off)
-        add     T6, T6, sp
-        LREG    T6, 0(T6)                             // T6 = saved mstatus with original MPP
-                                                      // (nothing writes sved_mpp_off yet, so this
-                                                      //  reads the VS area's unused shared slot and
-                                                      //  the MPP bits come out as U -> satp path)
-
-1:      srli    T2, T6,  MPP_LSB                     // extract MPP[1:0]
-        andi    T2, T2,  MMODE_SIG                   // T2 = MPP value
-        addi    T2, T2, -MMODE_SIG                   // compare to M-mode (3)
-        beqz    T2, vmem_adj_\__MODE__\()epc         // MPP=M -> PA -> relocate
-
-        addi    T4, sp, 1*sv_area_sz                  // T4 -> S/HS mode save area
-#ifdef H_SUPPORTED
- // mstatus.MPV says which translation produced xEPC: the host's satp for a trap from
- // HS/U, or the guest's VS-stage and G-stage maps for one from VS/VU.
-        #if (UDB_MXLEN==64)
-                csrr    T6, CSR_MSTATUS
-        #else
-          #ifdef SM1P12P0_OR_LATER_SUPPORTED
-                csrr    T6, CSR_MSTATUSH
-          #else
-            li      T6, 0                   // no H: MPV always 0
-          #endif
-        #endif
-        slli    T6, T6, WDSZ-MPV_LSB-1               // MPV to MSB
-        bgez    T6, 1f                                // MPV=0 -> host trap -> satp decides
-
-        csrr    T2, CSR_VSATP                         // guest: VS-stage first
-        srli    T2, T2, MODE_LSB
-        LI(     T4, 2*sv_area_sz)                     // VS/VU save area
-        add     T4, T4, sp
-        bnez    T2, sv_\__MODE__\()epc               // VS MODE != bare -> VA -> skip relocation
-        csrr    T2, CSR_HGATP                         // then G-stage
-        srli    T2, T2, MODE_LSB
-        bnez    T2, sv_\__MODE__\()epc               // G-stage on -> guest physical -> skip relocation
-        j       vmem_adj_\__MODE__\()epc             // guest bare at both levels -> relocate
-1:
-#endif
-        csrr    T2, CSR_SATP                          // host trap: check satp.MODE
-        srli    T2, T2, MODE_LSB                      // extract MODE field
-        bnez    T2, sv_\__MODE__\()epc               // MODE != bare -> VA -> skip relocation
-  #endif
-.endif
-
-
-.ifc \__MODE__ ,  S
-#ifdef H_SUPPORTED
-        // The S/HS handler also receives every guest trap that HS delegation sends
-        // here, and a guest's xEPC is a guest address, not a host one, so the guest's
-        // own translation decides before the host's satp is consulted.
-        csrr    T2, CSR_HSTATUS
-        slli    T2, T2, UDB_MXLEN-MPV_LSB-1           // hstatus.SPV into the sign bit
-        bgez    T2, 1f                                // SPV=0 -> host trap -> satp decides
-        csrr    T2, CSR_VSATP
-        srli    T2, T2, MODE_LSB
-        bnez    T2, sv_\__MODE__\()epc               // guest VS-stage translation on -> VA -> skip
-        csrr    T2, CSR_HGATP
-        srli    T2, T2, MODE_LSB
-        bnez    T2, sv_\__MODE__\()epc               // G-stage on -> guest physical, not host PA -> skip
-        addi    T4, sp, 1*sv_area_sz                  // guest bare at both levels -> use the VS segments
-        j       vmem_adj_\__MODE__\()epc
-1:
-#endif
-        csrr    T2, CSR_SATP
-        srli    T2, T2, MODE_LSB
-        bnez    T2, sv_\__MODE__\()epc               // host VA -> skip
-.endif
-
-.ifc \__MODE__ ,  V
-        csrr    T2, CSR_SATP
-        srli    T2, T2, MODE_LSB
-        bnez    T2, sv_\__MODE__\()epc
-        // A guest with vsatp=Bare under an active G-stage has a guest physical
-        // xEPC, which must not be relocated either, but VS-mode cannot read
-        // hgatp to find out. Such a guest is not supported here yet.
-  .endif
-
-// --- Offset adjustment for physical addresses ---
-// A fault deliberately triggered at an address outside every test segment — the
-// model's access-fault probe address (RVMODEL_ACCESS_FAULT_ADDRESS, used by the
-// instruction/load/store access-fault tests) or a null (0) fetch target — has an
-// xEPC that cannot be expressed as a segment-relative offset. Record such an
-// xEPC raw and skip the segment relocation below, which would otherwise fall
-// through to abort_test on the out-of-range EPC. These are fixed constants,
-// identical on the DUT and the reference model, so the raw value is
-// deterministic. This is ALWAYS safe (a normal in-segment EPC never equals the
-// probe address or 0), so it is unconditional. It used to be gated behind
-// SKIP_MEPC — but the generators no longer emit that define, so keeping the
-// gate silently compiled this skip out and every access-fault test aborted on
-// its first deliberate probe (EPC=0 is outside vmem/code/data -> abort_test).
-vmem_adj_\__MODE__\()epc:
-        #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-                LI(     T2, RVMODEL_ACCESS_FAULT_ADDRESS)
-                beq     T3, T2, sv_\__MODE__\()epc
-                addi    T2, T2, 2
-                beq     T3, T2, sv_\__MODE__\()epc
-        #endif
-                beqz    T3, sv_\__MODE__\()epc
-        LREG    T2, vmem_bgn_off(T4)                  // check if EPC is in vmem segment
-        LREG    T6, vmem_seg_siz(T4)
-        add     T6, T6, T2
-        bgeu    T3, T6, code_adj_\__MODE__\()epc
-        bgeu    T3, T2,      adj_\__MODE__\()epc
-
-code_adj_\__MODE__\()epc:
-        LREG    T2, code_bgn_off(T4)                  // check if EPC is in code segment
-        LREG    T6, code_seg_siz(T4)
-        add     T6, T6, T2
-        bgeu    T3, T6, data_adj_\__MODE__\()epc
-        bgeu    T3, T2,      adj_\__MODE__\()epc
-
-data_adj_\__MODE__\()epc:
-        LREG    T2, data_bgn_off(T4)                  // check if EPC is in data segment
-        LREG    T6, data_seg_siz(T4)
-        add     T6, T6, T2
-        bgeu    T3, T6, abort_test                    // EPC beyond all known segments -> abort
-        bltu    T3, T2, abort_test                    // EPC before data segment -> abort
-
-adj_\__MODE__\()epc:
-        sub     T3, T3, T2                            // T3 = EPC - segment_begin (relocated offset)
 
 sv_\__MODE__\()epc:
 #ifdef SDTRIG_IMPRECISE_XEPC
@@ -2553,7 +2416,7 @@ sv_\__MODE__\()epc:
 #endif
         TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()epc, sv_\__MODE__\()epc_str) // write word 2: xEPC
 skpsv_\__MODE__\()epc:
-        csrr    T3, CSR_XEPC                          // re-read xEPC (T3 was modified by relocation)
+        csrr    T3, CSR_XEPC                          // reload xEPC (TRAP_SIGUPD may clobber T3 on its failure path)
 
         csrr    T2, CSR_XCAUSE
         LI(     T6, CAUSE_FETCH_PAGE_FAULT)

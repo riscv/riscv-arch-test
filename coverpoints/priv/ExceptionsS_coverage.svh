@@ -76,9 +76,10 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
             wildcard bins sd = {SD};
         `endif
     }
-    sw_lw: coverpoint ins.current.insn {
+    sw_lw_jalr: coverpoint ins.current.insn {
         wildcard bins sw   = {SW};
         wildcard bins lw   = {LW};
+        wildcard bins jalr = {JALR};
     }
     illegalops: coverpoint ins.current.insn {
         bins zeros = {'0};
@@ -106,10 +107,10 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
     csr_0x000: coverpoint ins.current.insn[31:20] {
         bins zero = {12'h000};
     }
-    mstatus_MIE: coverpoint ins.prev.csr[CSR_MSTATUS][3] {
+    mstatus_MIE: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
         // auto fills 1 and 0
     }
-    mstatus_SIE: coverpoint ins.prev.csr[CSR_MSTATUS][1] {
+    mstatus_SIE: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0] {
         // auto fills 1 and 0
     }
     pc_bit_1: coverpoint ins.current.pc_rdata[1] {
@@ -122,10 +123,10 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
     }
     rs1_1_0: coverpoint ins.current.rs1_val[1:0] {
     }
-    medeleg_illegalinstr_enabled: coverpoint ins.current.csr[CSR_MEDELEG][2] {
+    medeleg_illegalinstr_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[2] {
         bins enabled = {1};
     }
-    mtvec_stvec_ne: coverpoint {ins.current.csr[CSR_MTVEC] != ins.current.csr[CSR_STVEC]} {
+    mtvec_stvec_ne: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mtvec", "mtvec") != get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stvec", "stvec")} {
         bins notequal = {1};
     }
 
@@ -153,12 +154,13 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
         }
         illegal_address_misaligned: coverpoint ins.current.imm + ins.current.rs1_val {
-            bins illegal_misaligned = {`RVMODEL_ACCESS_FAULT_ADDRESS + 1}; // One more than the illegal address is both misaligned and illegal
+            // Both misaligned and illegal: +1 for lw/sw; +2 for jalr, which clears bit 0 of the target
+            bins illegal_misaligned = {`RVMODEL_ACCESS_FAULT_ADDRESS + 1, `RVMODEL_ACCESS_FAULT_ADDRESS + 2};
         }
         cp_instr_access_fault:                   cross priv_mode_s, jalr, illegal_address;
         cp_load_access_fault:                    cross priv_mode_s, loadops, illegal_address;
         cp_store_access_fault:                   cross priv_mode_s, storeops, illegal_address;
-        cp_misaligned_priority:                  cross priv_mode_s, sw_lw, illegal_address_misaligned;
+        cp_misaligned_priority:                  cross priv_mode_s, sw_lw_jalr, illegal_address_misaligned;
     `endif
 
 endgroup
@@ -168,7 +170,7 @@ function void exceptionss_sample(int hart, int issue, ins_t ins);
 
 // $display("mode: %b, medel: %b, funct3: %b, rs1_1_0: %b, pc_1: %b, offset: %b ",
 //     ins.current.mode,
-//     ins.current.csr[CSR_MEDELEG],
+//     get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg"),
 //     ins.current.insn[14:12],
 //     ins.current.rs1_val[1:0],
 //     ins.current.pc_rdata[1],

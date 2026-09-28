@@ -57,7 +57,6 @@ covergroup Zvfbfmin_vfncvtbf16_f_f_w_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////

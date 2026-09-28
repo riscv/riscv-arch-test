@@ -1,11 +1,49 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # If the Svadu extension is implemented, the menvcfg.ADUE field is writable.
   - name: Svadu_hw_update_a_d_bits
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Svadu_cg/Abit_unset_{exec,read,write}_{s,u}",
+        "Svadu_cg/Dbit_unset_write_{s,u}",
+      ]
 
+  # If the hypervisor extension is additionally implemented, the henvcfg.ADUE field is
+  # also writable.
   - name: Svadu_hypervisor_adue_writable
-    coverpoint: [""]
+    coverpoint: ["TODO: test in hypervisor tests"]
 
-  - name: Svadu_disabled_hw_update_falls_back_to_svade
-    coverpoint: [""]
+  # When hardware updating of A/D bits is disabled, the Svade extension, which mandates
+  # exceptions when A/D bits need be set, instead takes effect.
+  - name: Svadu_disabled_hw_update_falls_back_to_Svade
+    coverpoint:
+      ["Svade_cg/Svade_enabled", "Sv_add_feature_cg/cp_svadu_disabled"]
+
+  # If the Svadu extension is implemented, the ADUE bit controls whether hardware
+  # updating of PTE A/D bits is enabled for S-mode and G-stage address translations.
+  # When ADUE=1, hardware updating of PTE A/D bits is enabled during S-mode address
+  # translation, and the implementation behaves as though the Svade extension were not
+  # implemented for S-mode address translation. When the hypervisor extension is
+  # implemented, if ADUE=1, hardware updating of PTE A/D bits is enabled during G-stage
+  # address translation, and the implementation behaves as though the Svade extension
+  # were not implemented for G-stage address translation. When ADUE=0, the
+  # implementation behaves as though Svade were implemented for S-mode and G-stage
+  # address translation.
+  - name: menvcfg_adue_op
+    coverpoint: ["Svadu_cg/Svadu_enabled"]
+
+  # After changing menvcfg.ADUE, executing an SFENCE.VMA instruction with rs1=x0 and
+  # rs2=x0 suffices to synchronize address-translation caches with respect to the
+  # altered interpretation of page-table entries' A/D bits.
+  - name: menvcfg_adue_fence
+    coverpoint: ["Svadu_cg/Svadu_enabled"]
+
+  # If Svadu is not implemented, ADUE is read-only zero.
+  - name: menvcfg_adue_rdonly0
+    coverpoint: ["Not tested: needs an implementation without Svadu"]
+
+  # for implementations with the hypervisor extension, henvcfg.ADUE is read-only zero if
+  # menvcfg.ADUE is zero.
+  - name: menvcfg_adue_henvcfg_adue_rdonly0
+    coverpoint: ["TODO: test in hypervisor tests"]

@@ -65,7 +65,6 @@ covergroup Vf32_vfadd_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -411,7 +410,6 @@ covergroup Vf32_vfadd_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -930,7 +928,6 @@ covergroup Vf32_vfcvt_f_x_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -1161,7 +1158,6 @@ covergroup Vf32_vfcvt_f_xu_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -1906,7 +1902,6 @@ covergroup Vf32_vfcvt_x_f_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -2172,7 +2167,6 @@ covergroup Vf32_vfcvt_xu_f_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -2450,7 +2444,6 @@ covergroup Vf32_vfdiv_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -2806,7 +2799,6 @@ covergroup Vf32_vfdiv_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -3130,7 +3122,6 @@ covergroup Vf32_vfmacc_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -3474,7 +3465,6 @@ covergroup Vf32_vfmacc_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -3794,7 +3784,6 @@ covergroup Vf32_vfmadd_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -4138,7 +4127,6 @@ covergroup Vf32_vfmadd_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -5934,7 +5922,6 @@ covergroup Vf32_vfmsac_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -6278,7 +6265,6 @@ covergroup Vf32_vfmsac_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -6598,7 +6584,6 @@ covergroup Vf32_vfmsub_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -6942,7 +6927,6 @@ covergroup Vf32_vfmsub_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -7262,7 +7246,6 @@ covergroup Vf32_vfmul_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -7614,7 +7597,6 @@ covergroup Vf32_vfmul_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -8448,7 +8430,6 @@ covergroup Vf32_vfncvt_f_f_w_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -8790,7 +8771,6 @@ covergroup Vf32_vfncvt_f_x_w_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -9074,7 +9054,6 @@ covergroup Vf32_vfncvt_f_xu_w_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -10353,7 +10332,6 @@ covergroup Vf32_vfncvt_x_f_w_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -10672,7 +10650,6 @@ covergroup Vf32_vfncvt_xu_f_w_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -11005,7 +10982,6 @@ covergroup Vf32_vfnmacc_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -11349,7 +11325,6 @@ covergroup Vf32_vfnmacc_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -11669,7 +11644,6 @@ covergroup Vf32_vfnmadd_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -12013,7 +11987,6 @@ covergroup Vf32_vfnmadd_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -12333,7 +12306,6 @@ covergroup Vf32_vfnmsac_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -12677,7 +12649,6 @@ covergroup Vf32_vfnmsac_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -12997,7 +12968,6 @@ covergroup Vf32_vfnmsub_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -13341,7 +13311,6 @@ covergroup Vf32_vfnmsub_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -13669,7 +13638,6 @@ covergroup Vf32_vfrdiv_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -13993,7 +13961,6 @@ covergroup Vf32_vfrec7_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -15077,7 +15044,6 @@ covergroup Vf32_vfredosum_vs_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -15554,7 +15520,6 @@ covergroup Vf32_vfredusum_vs_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -15876,7 +15841,6 @@ covergroup Vf32_vfrsqrt7_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -16319,7 +16283,6 @@ covergroup Vf32_vfrsub_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -18495,7 +18458,6 @@ covergroup Vf32_vfsqrt_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -18763,7 +18725,6 @@ covergroup Vf32_vfsub_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -19105,7 +19066,6 @@ covergroup Vf32_vfsub_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -19411,7 +19371,6 @@ covergroup Vf32_vfwadd_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -19803,7 +19762,6 @@ covergroup Vf32_vfwadd_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -20269,7 +20227,6 @@ covergroup Vf32_vfwadd_wf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -20620,7 +20577,6 @@ covergroup Vf32_vfwadd_wv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -21919,7 +21875,6 @@ covergroup Vf32_vfwcvt_x_f_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -22190,7 +22145,6 @@ covergroup Vf32_vfwcvt_xu_f_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -22461,7 +22415,6 @@ covergroup Vf32_vfwmacc_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -22786,7 +22739,6 @@ covergroup Vf32_vfwmacc_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -23107,7 +23059,6 @@ covergroup Vf32_vfwmsac_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -23432,7 +23383,6 @@ covergroup Vf32_vfwmsac_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -23751,7 +23701,6 @@ covergroup Vf32_vfwmul_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -24141,7 +24090,6 @@ covergroup Vf32_vfwmul_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -24581,7 +24529,6 @@ covergroup Vf32_vfwnmacc_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -24906,7 +24853,6 @@ covergroup Vf32_vfwnmacc_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -25227,7 +25173,6 @@ covergroup Vf32_vfwnmsac_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -25552,7 +25497,6 @@ covergroup Vf32_vfwnmsac_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -25899,7 +25843,6 @@ covergroup Vf32_vfwredosum_vs_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -26433,7 +26376,6 @@ covergroup Vf32_vfwredusum_vs_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -26868,7 +26810,6 @@ covergroup Vf32_vfwsub_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -27260,7 +27201,6 @@ covergroup Vf32_vfwsub_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -27726,7 +27666,6 @@ covergroup Vf32_vfwsub_wf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -28077,7 +28016,6 @@ covergroup Vf32_vfwsub_wv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////

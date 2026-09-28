@@ -45,7 +45,6 @@ _MEDELEG_WALK = (
 def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: int) -> list[str]:
     """Runs 10 exception tests x 17 medeleg values for one privilege mode."""
     covergroup = _CG
-    coverpoint = "cp_medeleg_msu"
 
     addr_reg, data_reg, check_reg, medeleg_reg, medeleg_orig = test_data.int_regs.get_registers(5)
     goto_mode = {3: [], 1: ["RVTEST_TSBI_GOTO_SMODE"], 0: ["RVTEST_TSBI_GOTO_UMODE"]}[priv_mode]
@@ -66,7 +65,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         lines.extend(
             [
                 "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
-                test_data.add_testcase(f"instrmisaligned_{tag}", coverpoint, covergroup),
+                test_data.add_testcase(tag, "cp_medeleg_msu_instrmisaligned", covergroup),
                 f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
                 f"jalr x1, 0(x{addr_reg})  # aligned target",
                 f"jalr x1, 2(x{addr_reg})  # misaligned target",
@@ -78,7 +77,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         lines.extend(
             [
                 "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
-                test_data.add_testcase(f"instraccessfault_{tag}", coverpoint, covergroup),
+                test_data.add_testcase(tag, "cp_medeleg_msu_instraccessfault", covergroup),
                 f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
                 f"jalr x1, 0(x{addr_reg})",
                 "#endif",
@@ -88,7 +87,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         # Illegal instruction zeros
         lines.extend(
             [
-                test_data.add_testcase(f"illegalinstr_zeros_{tag}", coverpoint, covergroup),
+                test_data.add_testcase(f"zeros_{tag}", "cp_medeleg_msu_illegalinstruction", covergroup),
                 ".p2align 2",
                 ".word 0x00000000",
             ]
@@ -97,7 +96,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         # Illegal instruction ones
         lines.extend(
             [
-                test_data.add_testcase(f"illegalinstr_ones_{tag}", coverpoint, covergroup),
+                test_data.add_testcase(f"ones_{tag}", "cp_medeleg_msu_illegalinstruction", covergroup),
                 ".p2align 2",
                 ".word 0xFFFFFFFF",
             ]
@@ -106,14 +105,14 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         # Ebreak
         lines.extend(
             [
-                test_data.add_testcase(f"ebreak_{tag}", coverpoint, covergroup),
+                test_data.add_testcase(tag, "cp_medeleg_msu_ebreak", covergroup),
                 "ebreak",
             ]
         )
 
         # Load misaligned
         lines.extend(
-            [test_data.add_testcase(f"loadmisaligned_{tag}", coverpoint, covergroup), f"LA(x{addr_reg}, scratch)"]
+            [test_data.add_testcase(tag, "cp_medeleg_msu_loadmisaligned", covergroup), f"LA(x{addr_reg}, scratch)"]
         )
         for offset in range(8):
             for op in ["lw", "lh", "lhu", "lb", "lbu"]:
@@ -131,7 +130,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
         lines.extend(
             [
-                test_data.add_testcase(f"loadaccessfault_{tag}", coverpoint, covergroup),
+                test_data.add_testcase(tag, "cp_medeleg_msu_loadaccessfault", covergroup),
                 f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             ]
         )
@@ -150,7 +149,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         # Store misaligned
         lines.extend(
             [
-                test_data.add_testcase(f"storemisaligned_{tag}", coverpoint, covergroup),
+                test_data.add_testcase(tag, "cp_medeleg_msu_storemisaligned", covergroup),
                 f"LI(x{data_reg}, 0xDECAFCAB)",
                 f"LA(x{addr_reg}, scratch)",
             ]
@@ -170,7 +169,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
         lines.extend(
             [
-                test_data.add_testcase(f"storeaccessfault_{tag}", coverpoint, covergroup),
+                test_data.add_testcase(tag, "cp_medeleg_msu_storeaccessfault", covergroup),
                 f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
                 f"LI(x{data_reg}, 0xADDEDCAB)",
             ]
@@ -188,7 +187,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
 
         lines.extend(
             [
-                test_data.add_testcase(f"ecall_{tag}", coverpoint, covergroup),
+                test_data.add_testcase(tag, "cp_medeleg_msu_ecall", covergroup),
                 "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
                 "# ecall returns xepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
                 write_sigupd(10, test_data),
@@ -284,7 +283,7 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
     required_extensions=["Sm"],
     extra_defines=[
         "#define BOOT_TO_MMODE",
-        "#define TRAP_SIGUPD_COUNT 3000",
+        "#define TRAP_SIGUPD_COUNT 5000",
     ],
 )
 def make_exceptionssm(test_data: TestData) -> list[TestChunk]:
@@ -324,7 +323,9 @@ def make_exceptionssm(test_data: TestData) -> list[TestChunk]:
     test_chunks.append(test_data.end_test_chunk())
 
     # medeleg only exists with S-mode; walk it from M-, S- and U-mode.  One file per mode: each walk
-    # records 306 trap signatures of up to 6 words, ~1.8k words of the TRAP_SIGUPD_COUNT area.
+    # repeats the misaligned load and store sweeps for every medeleg value, so a DUT that traps on
+    # every misaligned access records ~700 trap signatures of up to 6 words, ~4.2k entries of the
+    # TRAP_SIGUPD_COUNT area.
     for mode_tag, priv_mode in (("mode_m", 3), ("mode_s", 1), ("mode_u", 0)):
         tc = test_data.begin_test_chunk(f"medeleg_{mode_tag[-1]}")
         tc.code.append("#ifdef S_SUPPORTED")

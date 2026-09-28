@@ -46,6 +46,7 @@ def insert_header_template(
     testsuite = test_config.testsuite
     E_ext = test_config.E_ext
     required_extensions = test_config.required_extensions
+    forbidden_extensions = test_config.forbidden_extensions
     alternative_extensions = (
         [] if required_extensions is None else [ext for ext in required_extensions if isinstance(ext, list)]
     )
@@ -70,9 +71,10 @@ def insert_header_template(
     if not EXPERIMENTAL_EXTENSIONS.isdisjoint(all_extensions):
         all_defines.append("#define RVTEST_EXPERIMENTAL")
     # Replace placeholders
+    forbidden_extension_line = "" if not forbidden_extensions else f"\n# FORBIDDEN_EXTENSIONS: {forbidden_extensions}"
     template = (
         template.replace("@TEST_PATH@", f"{test_file}")
-        .replace("@EXTENSION_LIST@", f"{extension_requirements}")
+        .replace("@EXTENSION_LIST@", f"{extension_requirements}{forbidden_extension_line}")
         .replace("@PARAMS@", format_params(params, flat_ext_components))
         .replace("@MARCH@", march)
         .replace("@EXTRA_DEFINES@", "\n".join(all_defines))

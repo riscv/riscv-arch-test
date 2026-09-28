@@ -11,14 +11,14 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'Sv39', 'Svnapot']
 # # # no param constraints
-# MARCH: rv${XLEN}i_zicsr_zifencei
+# MARCH: rv${XLEN}i_zicsr_zifencei_svnapot
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
 #define SIGUPD_COUNT 28
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -34,7 +34,6 @@ RVTEST_BEGIN
 
 
 main:
-  LI(a2, 0x800) // Test signature initialization
 
 // Virtual addresses for code and test regions
 
@@ -48,12 +47,17 @@ main:
   SUPERPAGE_PTE_SETUP_SV39(rvtest_code_begin, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL2)
   sfence.vma
 
-// Set up the code-region save area.
-  csrr a0, mscratch
+// The boot tables identity map the test image, but that mapping is not user
+// accessible, so the code is mapped again at va_rvtest_code_begin. Registering
+// that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
+// to can fetch from.
+  LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL2)
 
   SATP_SETUP_RV64(sv39) // Enable address translation.
   sfence.vma
+
+  LI(a2, 0x800) // Test signature initialization
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
 // PTE.N on a level 2 superpage
@@ -65,7 +69,7 @@ main:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -83,7 +87,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test1_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test1_store, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test1_store_str)
@@ -102,7 +106,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test1_exec:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -120,7 +124,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test2_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test2_store, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test2_store_str)
@@ -140,7 +144,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test2_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -158,7 +162,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test3_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test3_store, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test3_store_str)
@@ -178,7 +182,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test3_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -196,7 +200,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test4_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test4_store, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test4_store_str)
@@ -216,7 +220,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test4_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -234,7 +238,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test5_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test5_store, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test5_store_str)
@@ -254,7 +258,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test5_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -272,7 +276,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test6_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test6_store, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test6_store_str)

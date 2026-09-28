@@ -45,6 +45,7 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cp_offset|2|A branch or jalr instruction has a positive and negative offset.
 |cp_uimm|`XLEN`|Exercise all XLEN unsigned immediate values, such as shift amounts.
 |cp_align|≤ 8|Alignment of naturally-aligned sub-doubleword load/store operand within doubleword
+|cp_memval|5|Edge values for integer memory values loaded by load instructions.
 3+^|Coverpoints for Compressed Instructions
 |cp_rs1p|8|The rs1 register number used in compressed instructions supporting x8-x15.
 |cp_rs2p|8|The rs2 register number used in compressed instructions supporting x8-x15.
@@ -65,7 +66,7 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cmp_fd_fs3|32|The fd register has the same register number as the fs3 register.
 |cp_frm|5|The floating-point rounding mode used in the instruction: rne, rdn, rup, rtz, rmm, dyn.
 |cp_csr_fflags|10|The instruction sets the {NV, DZ, OF, UF, NX} flags in the fflags CSR.
-|cp_csr_frm|6|Dynamic rounding mode in the frm CSR: rne, rdn, rup, rtz, rmm, illegal
+|cp_csr_frm|5|Dynamic rounding mode in the frm CSR: rne, rdn, rup, rtz, rmm
 |cr_fs1_fs2_edges|26*26|Cross product of edges of fs1 and fs2 registers.
 |cr_fs1_fs3_edges|26*26|Cross product of edges of fs1 and fs3 registers.
 |cp_fclass|10|All 10 fclass classes.

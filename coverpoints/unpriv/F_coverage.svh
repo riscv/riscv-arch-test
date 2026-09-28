@@ -51,7 +51,6 @@ covergroup F_fadd_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -220,7 +219,6 @@ covergroup F_fcvt_s_w_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -294,7 +292,6 @@ covergroup F_fcvt_s_wu_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -370,7 +367,6 @@ covergroup F_fcvt_w_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -446,7 +442,6 @@ covergroup F_fcvt_wu_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -542,7 +537,6 @@ covergroup F_fdiv_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -939,6 +933,36 @@ covergroup F_flw_cg with function sample(ins_t ins);
         bins randomp = {1795};
     }
 
+    cp_memval_fp_single : coverpoint unsigned'(ins.current.fd_val[31:0])  iff (ins.trap == 0 )  {
+        // Single-precision value loaded from memory
+        bins pos0             = {32'h00000000};
+        bins neg0             = {32'h80000000};
+        bins pos1             = {32'h3f800000};
+        bins neg1             = {32'hbf800000};
+        bins pos1p5           = {32'h3fc00000};
+        bins neg1p5           = {32'hbfc00000};
+        bins pos2             = {32'h40000000};
+        bins neg2             = {32'hc0000000};
+        bins posminnorm       = {32'h00800000};
+        bins negminnorm       = {32'h80800000};
+        bins posmaxnorm       = {32'h7f7fffff};
+        bins negmaxnorm       = {32'hff7fffff};
+        bins posmax_subnorm   = {32'h007fffff};
+        bins negmax_subnorm   = {32'h807fffff};
+        bins posmid_subnorm   = {32'h00400000};
+        bins negmid_subnorm   = {32'h80400000};
+        bins posmin_subnorm   = {32'h00000001};
+        bins negmin_subnorm   = {32'h80000001};
+        bins posinfinity      = {32'h7f800000};
+        bins neginfinity      = {32'hff800000};
+        bins posQNaN          = {[32'h7fc00000:32'h7fffffff]};
+        bins posSNaN          = {[32'h7f800001:32'h7fbfffff]};
+        bins negQNaN          = {[32'hffc00000:32'hffffffff]};
+        bins negSNaN          = {[32'hff800001:32'hffbfffff]};
+        bins posrandom        = {32'h7ef8654f};
+        bins negrandom        = {32'h813d9ab0};
+    }
+
     cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
         // RS1 register assignment (excluding x0)
         ignore_bins x0 = {x0};
@@ -991,7 +1015,6 @@ covergroup F_fmadd_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -1359,7 +1382,6 @@ covergroup F_fmsub_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -1519,7 +1541,6 @@ covergroup F_fmul_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -1743,7 +1764,6 @@ covergroup F_fnmadd_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -1907,7 +1927,6 @@ covergroup F_fnmsub_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -2338,7 +2357,6 @@ covergroup F_fsqrt_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -2424,7 +2442,6 @@ covergroup F_fsub_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -2606,7 +2623,6 @@ covergroup F_fcvt_l_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -2682,7 +2698,6 @@ covergroup F_fcvt_lu_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -2756,7 +2771,6 @@ covergroup F_fcvt_s_l_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -2830,7 +2844,6 @@ covergroup F_fcvt_s_lu_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {

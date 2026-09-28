@@ -10,22 +10,15 @@
 #   https://solvnetplus.synopsys.com/s/case/500WQ0000230O4P/imperas-treats-vwmaccuvv-v14-v9-v15-v0t-as-legal
 #   SsstrictSm additionally trips on hcontext (0x6a8) on rv64-max, which Imperas implements
 #   and Sail does not. The rv32 configs pass SsstrictS/U entirely, and rv32gck passes all three.
-# - InterruptsSm/S/SSm/U: Imperas does not implement external interrupts
 # - Smstateen: Sail does not implement all state yet to match; also, Imperas lets mstateen0.P1P13
 #   be written on RV64: https://solvnetplus.synopsys.com/s/case/500WQ0000289tyxYAA/mstateen0p1p13-should-be-readonly-zero-on-rv64
 # - ExceptionsVx: https://solvnetplus.synopsys.com/s/case/500WQ000023l1CPYAY/vmvnrrv-does-not-raise-an-illegalinstruction-exception-when-vtypevill-1
 # - Sdtrig*: Sail does not implement Sdtrig yet (https://github.com/riscv/sail-riscv/issues/222)
-# - ZicfissU/S/Sm: three model bugs, seen on imperas-rv64-max and imperas-rv32gck with ImperasDV
-#   Y-2026.03-DEV-20260612 against Sail 0.14.1 (ZicfissV passes). Filed as
-#   https://solvnetplus.synopsys.com/s/case/500WQ000028qjufYAA/zicfiss-discrepancies
-#   1. A memory fault does not outrank the SSPOPCHK software check. With PMP read-only on the
-#      shadow stack (ZicfissSm, cp_ss_pmp_permissions) or on an xwr=001 page (ZicfissS/U,
-#      cp_ss_instr_target_page*), SSPOPCHK raises a software check (cause 18, xtval 3) instead of
-#      the store/AMO access fault or store/AMO page fault.
-#   2. An S-mode SS access to a U=1 page with SUM=0 raises a store/AMO access fault instead of a
-#      store/AMO page fault (ZicfissS, cp_ss_page_perm_priority).
-#   3. CBO.CLEAN/FLUSH/INVAL/ZERO on a shadow stack page do not raise the store/AMO access fault,
-#      and CBO.ZERO zeroes the page (ZicfissU, cp_ss_page_access).
 #
 ci_enabled: false
-exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,InterruptsSm,InterruptsS,InterruptsSSm,InterruptsU,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,ZicfissU,ZicfissS,ZicfissSm"
+# - ZicfissU/S/Sm: three model bugs, seen on imperas-rv64-max and imperas-rv32gck with ImperasDV
+#   Y-2026.03-DEV-20260612 against Sail 0.14.1 (ZicfissV passes). Filed as
+#      shadow stack (ZicfissSm, cp_ss_pmp_permissions) or on an xwr=001 page (ZicfissS/U,
+#      store/AMO page fault (ZicfissS, cp_ss_page_perm_priority).
+#      and CBO.ZERO zeroes the page (ZicfissU, cp_ss_page_access).
+exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,ZicfissU,ZicfissS,ZicfissSm"

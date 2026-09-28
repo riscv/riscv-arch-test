@@ -73,10 +73,11 @@ XWR_PERMS = {
     "111": "PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V",
 }
 
-# SSAMOSWAP follows the A-extension alignment rules, but the reference models differ on whether a
-# misaligned SSAMOSWAP that stays inside one misaligned atomicity granule executes, as an AMO, or
-# faults. The alignment sweep starts 8 bytes into a 16-byte granule so that every misaligned access
-# crosses it and must fault. SSAMOSWAP.W with addr[2:0] of 1-3 cannot cross, so it is left out.
+# SSAMOSWAP follows the A-extension alignment rules, but the spec does not say whether the misaligned
+# atomicity granule applies to it (https://github.com/riscv/riscv-isa-manual/issues/3425): Sail honors
+# the granule and executes such an access, while Spike, QEMU and Whisper fault. The alignment sweep
+# starts 8 bytes into a 16-byte granule so that every misaligned access crosses it and must fault.
+# SSAMOSWAP.W with addr[2:0] of 1-3 cannot cross, so it is left out until that issue is resolved.
 SSAMOSWAP_SWEEP_BASE = 0x408
 
 

@@ -32,20 +32,6 @@
         bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
         bins pmm_11_pmlen16 = {2'b11};   // PMLEN = 16, upper 16 bits masked
     }
-    // PMM fields that govern effective privilege under MPRV
-    menvcfg_pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "pmm") {
-        bins pmm_00 = {2'b00};
-        bins pmm_10 = {2'b10};
-        bins pmm_11 = {2'b11};
-    }
-    `ifdef S_SUPPORTED
-        senvcfg_pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm") {
-            bins pmm_00 = {2'b00};
-            bins pmm_10 = {2'b10};
-            bins pmm_11 = {2'b11};
-        }
-    `endif
-
     //Declare pmm before including the shared PMM coverpoint file so the include can reference it.
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
@@ -62,17 +48,6 @@
     mpp_field_m: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
         bins mpp_m = {2'b11};   // effective privilege = M-mode
     }
-    `ifdef U_SUPPORTED
-        mpp_field_u: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
-                bins mpp_u = {2'b00};   // effective privilege = U-mode
-        }
-        `ifdef S_SUPPORTED
-        mpp_field_u_s: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
-            bins mpp_u = {2'b00};   // effective privilege = U-mode
-            bins mpp_s = {2'b01};   // effective privilege = S-mode
-        }
-        `endif
-    `endif
 
     csr_target: coverpoint ins.current.insn[31:20] { //excluding read-only csrs
         bins mepc     = {CSR_MEPC};
@@ -85,24 +60,11 @@
     cp_pmlen_misaligned_word: cross priv_mode_m, pm_misalign;
     cp_pm_csr_software_access: cross priv_mode_m, pmm, csr_target, csrw_insn;
 
-    // MPRV Crosses (split by MPP and S_SUPPORTED to handle MXR/SATP)
-
-    // MPRV with MPP=M: no MXR, no SATP
-    // Effective privilege = M-mode, so mseccfg.PMM applies directly
-    cp_pm_mprv_mpp_m: cross priv_mode_m, pmm, mprv_bit, a_upper_bits_mprv, sw_lw_insn,  mpp_field_m;
-
-    // MPRV with MPP=U or MPP=S: includes MXR and SATP (both S-mode features)
-    // Effective privilege = U or S, so menvcfg.PMM or senvcfg.PMM applies
-    `ifdef S_SUPPORTED
-        cp_pm_mprv_mpp_u_s: cross priv_mode_m, pmm, menvcfg_pmm, senvcfg_pmm, mprv_bit, mxr_bit, satp_mode_mprv, a_upper_bits_mprv, sw_lw_insn, mpp_field_u_s;
-    `endif
-
-    // MPRV with MPP=U when S is NOT supported: no MXR, no SATP
-    `ifdef U_SUPPORTED
-        `ifndef S_SUPPORTED
-            cp_pm_mprv_mpp_u_no_s: cross priv_mode_m, pmm, menvcfg_pmm, mprv_bit, a_upper_bits_mprv, sw_lw_insn, mpp_field_u;
-        `endif
-    `endif
+    // MPRV with MPP=M: the effective privilege stays M, so mseccfg.PMM governs and
+    // neither satp nor MXR applies. MPP=U and MPP=S are governed by senvcfg.PMM and
+    // menvcfg.PMM, which Ssnpm and Smnpm provide, and are covered by SsnpmSm_cg and
+    // SmnpmSSm_cg.
+    cp_pm_mprv_mpp_m: cross priv_mode_m, pmm, mprv_bit, a_upper_bits_mprv, sw_lw_insn, mpp_field_m;
 
     // cp_pmm_addr_mode_jalr — not guarded by S_SUPPORTED; implicit fetch is
     // never pointer-masked regardless of PMM or MXR availability.

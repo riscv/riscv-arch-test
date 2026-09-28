@@ -184,6 +184,9 @@
     `ifdef COVER_SMNPMS
         smnpms_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SMNPMSSM
+        smnpmssm_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SMNPMU
         smnpmu_sample(hart, issue, ins);
     `endif
@@ -207,6 +210,9 @@
     `endif
     `ifdef COVER_SSNPM
         ssnpm_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSNPMSM
+        ssnpmsm_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SSSTATEEN
         ssstateen_sample(hart, issue, ins);

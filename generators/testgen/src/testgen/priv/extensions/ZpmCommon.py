@@ -916,32 +916,16 @@ def _mprv_satp_loop(
     return lines
 
 
-def generate_mprv_tests(test_data: TestData, cg: str) -> list[str]:
-    """MPRV=1 test with nested loops over MXR, mseccfg.PMM, menvcfg.PMM, senvcfg.PMM, MPP, satp.MODE, upper patterns.
+def mprv_setup(test_data: TestData) -> list[str]:
+    """One-time setup shared by every MPRV suite: the U-accessible Sv39 map and SUM.
 
-    Uses only Bare and Sv39 modes (not Sv48/Sv57).
-    senvcfg.PMM is only programmed when S_SUPPORTED (CSR does not exist otherwise).
-    MPP=M: no SATP at all (satp is an S-mode register); no S-mode required.
-    MPP=U: no S-mode guard required; SATP used only when S_SUPPORTED. Under
-    sv39, pm_lo_page's default PTE has no PTE_U, so the MPP=U probes remap
-    the data range with build_4k_image_map before enabling SATP --
-    without this, every mppu/sv39 access would page-fault regardless of
-    tag/PMLEN and the masking behavior would never actually be exercised.
-    MPP=S (S_SUPPORTED only): loops satp.MODE in {Bare, Sv39}.
-    The MPP=U remap already put PTE_U on the data pages, so SUM must be
-    set for S-mode accesses to succeed.  No further remap is done here.
-
-    mstatus.MPRV, .MXR and .SUM are all explicitly cleared at the end rather
-    than snapshotted/restored
+    The MPP=U probes read and write pm_lo_page with the effective privilege set to
+    U-mode, so under Sv39 the pages must carry PTE_U -- pm_lo_page's default PTE
+    does not, and every access would page-fault regardless of tag or PMLEN, which
+    would hide the masking behaviour the suite is there to check. mstatus.SUM then
+    lets the S-mode/M-mode code reach those same U pages.
     """
-    lines = [
-        comment_banner(
-            "Smmpm MPRV: pointer masking with MPRV=1 uses effective MPP's PMM settings",
-            "MPRV=1 causes effective privilege = MPP, so mseccfg.PMM is ignored."
-            "MPP=M: no SATP. MPP=U: no S guard. MPP=S and senvcfg: S_SUPPORTED only.",
-        ),
-        "",
-        "#ifdef S_SUPPORTED",
+    return [
         "#ifdef SV39_SUPPORTED",
         "# Build the U-accessible data map once; the page tables never change",
         *build_4k_image_map(
@@ -952,66 +936,105 @@ def generate_mprv_tests(test_data: TestData, cg: str) -> list[str]:
         ),
         "sfence.vma",
         "#endif // SV39_SUPPORTED",
-        # Enable SUM so we can access user-space pages from S-mode (only when S exists)
         "# mstatus.SUM = 1",
         *csr_op("csrs", "mstatus", "MSTATUS_SUM", test_data),
-        "#endif // S_SUPPORTED",
     ]
 
-    # Loop over MXR settings (only meaningful when S-mode exists)
-    for mxr_val in [0, 1]:
-        lines.extend(["#ifdef S_SUPPORTED", *set_mxr(mxr_val != 0, test_data, "mstatus"), "#endif // S_SUPPORTED"])
 
-        # Loop over mseccfg.PMM (M-mode setting)
-        for mseccfg_pmm, mseccfg_pmlen, _ in PMM_CONFIGS:
-            lines.extend(set_pmm_field("mseccfg", mseccfg_pmm, mseccfg_pmlen, test_data))
-
-            # Loop over menvcfg.PMM
-            for menvcfg_pmm, menvcfg_pmlen, _ in PMM_CONFIGS:
-                prefix_m = f"mprv_mxr{mxr_val}_mseccfg{mseccfg_pmm:02b}_menvcfg{menvcfg_pmm:02b}_senvcfg00_nosatp_mppm"
-                prefix_u_nos = (
-                    f"mprv_mxr{mxr_val}_mseccfg{mseccfg_pmm:02b}_menvcfg{menvcfg_pmm:02b}_senvcfg00_nosatp_mppu"
-                )
-                lines.extend(
-                    [
-                        *set_pmm_field("menvcfg", menvcfg_pmm, menvcfg_pmlen, test_data),
-                        # MPP=M: always runs, no SATP at all (satp is S-mode CSR)
-                        *_mprv_lw_sw_probe("PRV_M", "cp_pm_mprv_mpp_m", prefix_m, test_data, cg),
-                        # MPP=U: no S_SUPPORTED guard on the MPP itself.
-                        # senvcfg only exists / is programmed when S_SUPPORTED.
-                        # SATP only when S_SUPPORTED. Map was already built once above.
-                        "#ifdef S_SUPPORTED",
-                        *_mprv_satp_loop(
-                            "PRV_U", "mppu", "cp_pm_mprv_mpp_u_s", mxr_val, mseccfg_pmm, menvcfg_pmm, test_data, cg
-                        ),
-                        "#endif // S_SUPPORTED",
-                        # MPP=U when S is NOT supported: no senvcfg, no SATP
-                        "#ifndef S_SUPPORTED",
-                        *_mprv_lw_sw_probe("PRV_U", "cp_pm_mprv_mpp_u_no_s", prefix_u_nos, test_data, cg),
-                        "#endif // !S_SUPPORTED",
-                        # MPP=S: only when S_SUPPORTED; SATP in {Bare, Sv39}
-                        "#ifdef S_SUPPORTED",
-                        *_mprv_satp_loop(
-                            "PRV_S", "mpps", "cp_pm_mprv_mpp_u_s", mxr_val, mseccfg_pmm, menvcfg_pmm, test_data, cg
-                        ),
-                        "#endif // S_SUPPORTED",
-                    ]
-                )
-
+def mprv_teardown(test_data: TestData, *, sum_bit: bool) -> list[str]:
+    """Undo everything an MPRV sweep left set. MPP is restored to M explicitly
+    because set_mprv(False, ...) only clears MPRV."""
+    lines = [*set_mxr(False, test_data, "mstatus")]
+    if sum_bit:
+        lines.extend(["# mstatus.SUM = 0", *csr_op("csrc", "mstatus", "MSTATUS_SUM", test_data)])
     lines.extend(
         [
-            *set_pmm_field("mseccfg", 0b00, 0, test_data),
-            *set_pmm_field("menvcfg", 0b00, 0, test_data),
-            "#ifdef S_SUPPORTED",
-            *set_pmm_field("senvcfg", 0b00, 0, test_data),
-            *set_mxr(False, test_data, "mstatus"),
-            "# mstatus.SUM = 0",
-            *csr_op("csrc", "mstatus", "MSTATUS_SUM", test_data),
-            "#endif // S_SUPPORTED",
             *set_mprv(False, test_data),
             "# restore mstatus.MPP = M; set_mprv(False, ...) only clears MPRV",
             *csr_op("csrs", "mstatus", "MSTATUS_MPP", test_data),
         ]
     )
+    return lines
 
+
+def generate_mprv_mpp_m_tests(test_data: TestData, cg: str) -> list[str]:
+    """MPRV=1 with MPP=M: the effective privilege stays M, so mseccfg.PMM governs.
+
+    This is the only MPRV case that belongs to Smmpm. satp is an S-mode register and
+    plays no part when the effective privilege is M, so there is no satp loop here.
+    """
+    lines = [
+        comment_banner(
+            "Smmpm MPRV, MPP=M: the effective privilege is M, so mseccfg.PMM governs",
+            "No satp loop: satp does not apply to M-mode accesses.",
+        ),
+        "",
+    ]
+    for mseccfg_pmm, mseccfg_pmlen, _ in PMM_CONFIGS:
+        prefix = f"mprv_mseccfg{mseccfg_pmm:02b}_nosatp_mppm"
+        lines.extend(
+            [
+                *set_pmm_field("mseccfg", mseccfg_pmm, mseccfg_pmlen, test_data),
+                *_mprv_lw_sw_probe("PRV_M", "cp_pm_mprv_mpp_m", prefix, test_data, cg),
+            ]
+        )
+    lines.extend([*set_pmm_field("mseccfg", 0b00, 0, test_data), *mprv_teardown(test_data, sum_bit=False)])
+    return lines
+
+
+def generate_mprv_lower_mode_tests(
+    test_data: TestData,
+    cg: str,
+    *,
+    mpp: str,
+    pmm_csr: str,
+    cp: str,
+) -> list[str]:
+    """MPRV=1 with MPP below M: the effective privilege is *mpp*, so the PMM field of
+    that mode's envcfg -- *pmm_csr* -- governs, not mseccfg.PMM.
+
+    mseccfg.PMM is swept alongside it (when Smmpm is implemented) precisely to show
+    that it is ignored once the effective privilege drops below M. MXR and satp.MODE
+    are swept because both apply at the effective privilege.
+    """
+    mpp_name = {"PRV_U": "mppu", "PRV_S": "mpps"}[mpp]
+    lines = [
+        comment_banner(
+            f"MPRV, MPP={mpp_name[-1].upper()}: the effective privilege is {mpp_name[-1].upper()},"
+            f" so {pmm_csr}.PMM governs",
+            "mseccfg.PMM is swept with it to show it no longer applies.",
+        ),
+        "",
+        *mprv_setup(test_data),
+    ]
+
+    for mxr_val in [0, 1]:
+        lines.extend(set_mxr(mxr_val != 0, test_data, "mstatus"))
+
+        # mseccfg.PMM only exists with Smmpm; without it the sweep collapses to one pass.
+        for mseccfg_pmm, mseccfg_pmlen, _ in PMM_CONFIGS:
+            lines.append("#ifdef SMMPM_SUPPORTED")
+            lines.extend(set_pmm_field("mseccfg", mseccfg_pmm, mseccfg_pmlen, test_data))
+            lines.append("#endif // SMMPM_SUPPORTED")
+
+            for pmm, pmlen, _ in PMM_CONFIGS:
+                lines.extend(set_pmm_field(pmm_csr, pmm, pmlen, test_data))
+
+                for satp_mode in ["bare", "sv39"]:
+                    prefix = f"mprv_mxr{mxr_val}_mseccfg{mseccfg_pmm:02b}_{pmm_csr}{pmm:02b}_{satp_mode}_{mpp_name}"
+                    if satp_mode != "bare":
+                        lines.extend(["#ifdef SV39_SUPPORTED", SV39.satp_setup, "sfence.vma"])
+                    lines.extend(_mprv_lw_sw_probe(mpp, cp, prefix, test_data, cg))
+                    if satp_mode != "bare":
+                        lines.extend(["csrwi satp, 0", "sfence.vma", "#endif // SV39_SUPPORTED"])
+
+    lines.extend(
+        [
+            "#ifdef SMMPM_SUPPORTED",
+            *set_pmm_field("mseccfg", 0b00, 0, test_data),
+            "#endif // SMMPM_SUPPORTED",
+            *set_pmm_field(pmm_csr, 0b00, 0, test_data),
+            *mprv_teardown(test_data, sum_bit=True),
+        ]
+    )
     return lines

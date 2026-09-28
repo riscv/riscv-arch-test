@@ -242,6 +242,10 @@
         `cover_info("//      SmnpmS - Enabled");
         `include "SmnpmS_coverage_init.svh"
     `endif
+    `ifdef COVER_SMNPMSSM
+        `cover_info("//      SmnpmSSm - Enabled");
+        `include "SmnpmSSm_coverage_init.svh"
+    `endif
     `ifdef COVER_SMNPMU
         `cover_info("//      SmnpmU - Enabled");
         `include "SmnpmU_coverage_init.svh"
@@ -273,6 +277,10 @@
     `ifdef COVER_SSNPM
         `cover_info("//      Ssnpm - Enabled");
         `include "Ssnpm_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSNPMSM
+        `cover_info("//      SsnpmSm - Enabled");
+        `include "SsnpmSm_coverage_init.svh"
     `endif
     `ifdef COVER_SSSTATEEN
         `cover_info("//      Ssstateen - Enabled");

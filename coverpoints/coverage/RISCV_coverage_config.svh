@@ -185,6 +185,9 @@
 `ifdef SMNPMS_COVERAGE
   `include "SmnpmS_coverage.svh"
 `endif
+`ifdef SMNPMSSM_COVERAGE
+  `include "SmnpmSSm_coverage.svh"
+`endif
 `ifdef SMNPMU_COVERAGE
   `include "SmnpmU_coverage.svh"
 `endif
@@ -208,6 +211,9 @@
 `endif
 `ifdef SSNPM_COVERAGE
   `include "Ssnpm_coverage.svh"
+`endif
+`ifdef SSNPMSM_COVERAGE
+  `include "SsnpmSm_coverage.svh"
 `endif
 `ifdef SSSTATEEN_COVERAGE
   `include "Ssstateen_coverage.svh"

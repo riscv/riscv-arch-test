@@ -35,8 +35,7 @@ covergroup = "Sstvala_cg"
 #         load page fault  – W only (reserved encoding, no R)
 #         store page fault – R|X    (no W)
 #         instr page fault – R|W    (no X)
-#   3. Drops to S-mode, performs the access, then returns to M-mode and
-#      disables translation.
+#   3. Performs the access in S-mode, then disables translation.
 #
 # Page-table labels (declared in _generate_page_table_data_section):
 #   rvtest_Sroot_pg_tbl  — root PT (emitted by the framework)
@@ -167,19 +166,19 @@ def _emit_pf_block(
     """Emit one page-fault test section.
 
     `instrs_*` is a list of (testcase_name, asm_lines) pairs for the inner XLEN block.
-    The wrapper takes care of SATP setup, identity map, page-table wiring, dropping
-    to S-mode, and tearing the VM back down on the way out.
+    The wrapper takes care of SATP setup, identity map, page-table wiring, and tearing
+    the VM back down on the way out. Everything runs in S-mode, which the suite boots into.
     """
     extra_setup = extra_setup or []
 
     def _xlen_block(setup: list[str], pf_setup: list[str], instrs: list[tuple[str, list[str]]]) -> list[str]:
-        block: list[str] = [*setup, "sfence.vma", *pf_setup, "RVTEST_GOTO_LOWER_MODE Smode"]
+        block: list[str] = [*setup, "sfence.vma", *pf_setup]
         for name, asm in instrs:
             block.append(f"\n# Testcase: {name}")
             block.extend(extra_setup)
             block.append(test_data.add_testcase(name, coverpoint, covergroup))
             block.extend(asm)
-        block.extend(["RVTEST_GOTO_MMODE", "csrwi satp, 0", "sfence.vma", ""])
+        block.extend(["csrwi satp, 0", "sfence.vma", ""])
         return block
 
     lines = [comment_banner(coverpoint, section_title), ""]
@@ -292,8 +291,7 @@ def _generate_instr_page_fault_tests(test_data: TestData, covergroup: str) -> li
     "Sstvala",
     required_extensions=["Sstvala"],
     march_extensions=["S"],
-    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
-    extra_defines=["#define BOOT_TO_MMODE"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def _generate_sstvala_tests(test_data: TestData) -> list[TestChunk]:
     """Generate all Sstvala tests running in S-mode."""
@@ -302,18 +300,8 @@ def _generate_sstvala_tests(test_data: TestData) -> list[TestChunk]:
 
     tc.code.extend(_generate_page_table_data_section())
 
-    # Delegate exceptions to S-mode via medeleg.
-    # 0xB0F7 = bits {15,13,12,7,6,5,4,2,1,0}
-    medeleg_reg = test_data.int_regs.get_register()
-    tc.code.extend(
-        [
-            "RVTEST_GOTO_MMODE",
-            f"LI(x{medeleg_reg}, 0xB0F7)",
-            f"csrw medeleg, x{medeleg_reg}",
-            "RVTEST_GOTO_LOWER_MODE Smode",
-        ]
-    )
-    test_data.int_regs.return_registers([medeleg_reg])
+    # Exceptions reach the S-mode handler through the delegation the boot code sets up;
+    # the suite never writes medeleg itself.
 
     # Reuse the shared helpers from ExceptionsCommon. These emit their own
     # coverpoint names (cp_load_access_fault, etc.) — Sstvala_coverage.svh
@@ -326,20 +314,11 @@ def _generate_sstvala_tests(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(generate_instr_adr_misaligned_jalr_tests(test_data, covergroup))
     tc.code.extend(generate_illegal_instruction_tests(test_data, covergroup))
 
-    tc.code.extend(["", "# --- Page-fault tests (VM required) ---", "RVTEST_GOTO_MMODE"])
+    tc.code.extend(["", "# --- Page-fault tests (VM required) ---"])
 
     tc.code.extend(_generate_load_page_fault_tests(test_data, covergroup))
     tc.code.extend(_generate_store_page_fault_tests(test_data, covergroup))
     tc.code.extend(_generate_instr_page_fault_tests(test_data, covergroup))
-
-    medeleg_reg = test_data.int_regs.get_register()
-    tc.code.extend(
-        [
-            f"LI(x{medeleg_reg}, 0)",
-            f"csrw medeleg, x{medeleg_reg}",
-        ]
-    )
-    test_data.int_regs.return_registers([medeleg_reg])
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

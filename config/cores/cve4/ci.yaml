@@ -3,9 +3,10 @@
 # CI configuration for the cve4 family: CV32E40P and CV32E40X
 
 ci_enabled: true
-# SmF: cv32e40p-rv32imcf DUT bug - https://github.com/openhwgroup/cv32e40p/issues/1060
+# SmF: cv32e40p-rv32imcf DUT bug - https://github.com/openhwfoundation/cv32e40p/issues/1060
 # ExceptionsZalrsc/ExceptionsZaamo: Throwing access fault instead of misaligned fault.
-# See discussion at https://github.com/riscv/riscv-arch-test/pull/1710#issuecomment-5444172186
+# See https://github.com/openhwfoundation/cv32e40x/issues/1000 and
+# https://github.com/riscv/riscv-arch-test/pull/1710#issuecomment-5444172186
 exclude_extensions: "Sm,SmF,ExceptionsZalrsc,ExceptionsZaamo"
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cve4.sh"

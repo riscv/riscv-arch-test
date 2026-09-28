@@ -4,5 +4,5 @@ aes32dsmi,RB,x,,x,x,x,x,x,x,x,x,x,x,x,x,,x
 aes64ds,R,,x,x,x,x,x,x,x,x,x,x,x,x,,,x
 aes64dsm,R,,x,x,x,x,x,x,x,x,x,x,x,x,,,x
 aes64im,I1,,x,x,x,,x,x,,,,x,,,,,
-aes64ks1i,IR,,x,x,x,,x,x,,,,x,,,,x,
+aes64ks1i,IR,,x,x,x,,x,x,,,,x,,,,x,rs1
 aes64ks2,R,,x,x,x,x,x,x,x,x,x,x,x,x,,,

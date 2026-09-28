@@ -90,7 +90,7 @@ covergroup Sstvecd_cg with function sample(ins_t ins);
             }
     `else
 
-        stvec_walk: coverpoint ins.current.csr[CSR_STVEC] {
+        stvec_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stvec", "stvec") {
             // Walking 1s — single bit set at each BASE position (bits 2..31)
             wildcard bins walking1_2  = {32'b00000000000000000000000000000100};
             wildcard bins walking1_3  = {32'b00000000000000000000000000001000};

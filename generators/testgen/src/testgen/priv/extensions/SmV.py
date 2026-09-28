@@ -59,9 +59,9 @@ def _gen_vcsrrswc(test_data: TestData, temp_reg: int) -> list[str]:
     save_reg, check_reg = test_data.int_regs.get_registers(2)
     lines.append(f"LI(x{save_reg}, -1)  # all 1s mask for csr ops")
     for csr in _VECTOR_CSRS:
-        for op_name, op in (("csrrs", "csrs"), ("csrrc", "csrc"), ("csrrw", "csrw")):
-            lines.append(test_data.add_testcase(f"{csr}_{op_name}", coverpoint, _CG))
-            lines.append(f"{op} {csr}, x{save_reg}  # {op_name} {csr}")
+        for op in ("csrrs", "csrrc", "csrrw"):
+            lines.append(test_data.add_testcase(f"{csr}_{op}", coverpoint, _CG))
+            lines.append(f"{op} x0, {csr}, x{save_reg}")
             # Read the CSR under test back. vl, vtype and vlenb are read-only, so the
             # write traps and this shows the CSR kept its value.
             lines.append(gen_csr_read_sigupd(check_reg, (csr, None), test_data))

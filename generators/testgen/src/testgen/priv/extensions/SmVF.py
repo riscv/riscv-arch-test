@@ -121,7 +121,7 @@ def _gen_fs_state_nonaffecting(test_data: TestData, temp_reg: int) -> list[str]:
         for vs2_reg, vs1_reg, name in pattern_pairs:
             lines.extend(_set_fs_vs(fs=3, vs=3, temp_reg=temp_reg))
             lines.extend(_load_v_zero_one(temp_reg))
-            lines.append("csrwi fcsr, 0  # clear fcsr under FS=Dirty, as the sibling generator does")
+            lines.append("csrwi fcsr, 0  # clear fcsr under FS=Dirty")
             lines.extend(_set_fs_vs(fs=fs, vs=3, temp_reg=temp_reg))
             lines.append(test_data.add_testcase(f"vfadd_{name}_fs{fs}", coverpoint, _CG))
             # vfadd.vv vd, vs2, vs1  — operand order: result = vs2 + vs1

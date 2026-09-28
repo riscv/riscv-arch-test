@@ -5,8 +5,6 @@ Supporting floating-point involves enabling at least the F extension.  Other ext
 
 The basic coverpoints are defined in <<t-unprivileged-coverpoints>>. Modified coverpoints for floating-point instructions are defined in <<t-float-modified-coverpoints>>. D and H suffixes apply to double-precision and half-precision floating-point instructions, respectively.
 
-[[t-unprivileged-coverpoints]]
-
 [[t-float-modified-coverpoints]]
 .Floating-Point Modified Coverpoint Definitions
 [cols="2, 1, 4" options=header]

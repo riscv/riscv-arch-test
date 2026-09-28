@@ -62,6 +62,8 @@ UDB_DEFINES = [
     "#define UDB_SDTRIG_VU_AVAILABLE",
     # Sims that do not follow Suggested Trigger Timing in spec or fires several cycles after will mismatch MEPC in trap handler
     "#define SDTRIG_IMPRECISE_XEPC",
+    # TODO Uncomment once #2463mis merged
+    # "#define SDTRIG_TRIGGER_BP_HANDLING"
 ]
 
 XSL_UDB_NAMES = ("LOAD", "STORE", "EXECUTE")  # mcontrol6 xsl bits 0, 1, 2
@@ -1865,10 +1867,50 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     #     "etrigger": "UDB_ETRIGGER_TRIG{trig_num}_AVAILABLE",
     #     "mcontrol6": "UDB_MCONTROL6_TRIG{trig_num}_AVAILABLE",
     # }
+
     # RV64 spelling; RV32 bins differ (see svh)
-    # mhvalue = ("match", "zero", "half")
-    # svalue = ("aaaaaaaa", "bbbbbbaa", "bbbbaabb", "bbaabbbb", "aabbbbbb", "bbbbbbbb")
+    mhvalue = ("match", "zero", "half")
+    svalue = ("aaaaaaaa", "bbbbbbaa", "bbbbaabb", "bbaabbbb", "aabbbbbb", "bbbbbbbb")
     # svalue_asid = ("below", "equal", "above")
+
+    ######################################
+    coverpoint = "cp_sdtrig_textra_mcontext"
+    ######################################
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "textra mhselect/mhvalue match against mcontext",
+        )
+    )
+    for trig_num in range(UDB_NUM_TRIGGERS):
+        for tt in trig_type4:
+            for mhv in mhvalue:
+                binname = f"trig_num_{trig_num}_type_{tt}_mhvalue_{mhv}"
+                lines.extend(
+                    [
+                        _add_tc(test_data, binname, coverpoint, covergroup),
+                    ]
+                )
+
+    ######################################
+    coverpoint = "cp_sdtrig_textra_scontext"
+    ######################################
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "textra sselect=scontext svalue/sbytemask match against scontext",
+        )
+    )
+    for trig_num in range(UDB_NUM_TRIGGERS):
+        for tt in trig_type4:
+            for sv in svalue:
+                for mask in range(4):  # sbytemask (RV64: 4 bits; RV32: 2 bits -> range(4))
+                    binname = f"trig_num_{trig_num}_type_{tt}_svalue_{sv}_mask_{mask:02b}"
+                    lines.extend(
+                        [
+                            _add_tc(test_data, binname, coverpoint, covergroup),
+                        ]
+                    )
 
     ######################################
     coverpoint = "cp_sdtrig_textra_asid"
@@ -1961,6 +2003,24 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
 
     test_data.int_regs.return_registers([cfg_reg, addr_reg, data_reg, temp_reg])
     lines.extend(_global_ie(mode, False))
+    # return [test_data.end_test_chunk()]
+
+    ######################################
+    coverpoint = "cp_sdtrig_smode_fields_hardwired"
+    ######################################
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "svalue/sselect read 0 when S-mode is not supported",
+        )
+    )
+    for trig_num in range(UDB_NUM_TRIGGERS):
+        lines.extend(
+            [
+                _add_tc(test_data, f"trig_num_{trig_num}_hardwired", coverpoint, covergroup),
+            ]
+        )
+
     return [test_data.end_test_chunk()]
 
 

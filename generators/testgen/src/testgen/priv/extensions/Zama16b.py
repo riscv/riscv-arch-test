@@ -349,7 +349,9 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
             elif pair:
                 setup += [
                     pair,
-                    f"LI(x{src_reg + 1}, 0)                      # upper half of the 64-bit source",
+                    f"LI(x{src_reg + 1}, 0xDEF)                  # upper half of the 64-bit source",
+                    "#else",
+                    f"LI(x{src_reg}, 0xDEF00000ABC)              # same 64-bit source as the RV32 pair",
                     "#endif",
                 ]
             if mnemonic.startswith("amocas"):

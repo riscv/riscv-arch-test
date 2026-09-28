@@ -2375,18 +2375,15 @@ common_\__MODE__\()excpt_handler:
   .endif
 
 // --- Offset adjustment for physical addresses ---
-// A fault deliberately triggered at an address outside every test segment — the
-// model's access-fault probe address (RVMODEL_ACCESS_FAULT_ADDRESS, used by the
-// instruction/load/store access-fault tests) or a null (0) fetch target — has an
-// xEPC that cannot be expressed as a segment-relative offset. Record such an
-// xEPC raw and skip the segment relocation below, which would otherwise fall
-// through to abort_test on the out-of-range EPC. These are fixed constants,
-// identical on the DUT and the reference model, so the raw value is
-// deterministic. This is ALWAYS safe (a normal in-segment EPC never equals the
-// probe address or 0), so it is unconditional. It used to be gated behind
-// SKIP_MEPC — but the generators no longer emit that define, so keeping the
-// gate silently compiled this skip out and every access-fault test aborted on
-// its first deliberate probe (EPC=0 is outside vmem/code/data -> abort_test).
+// An xEPC inside a test segment is recorded relative to that segment's base, so
+// the signature does not depend on where the test was linked. An xEPC outside
+// every segment is recorded raw: the tests that produce one trap at a fixed,
+// test-chosen address — the model's access-fault probe (RVMODEL_ACCESS_FAULT_ADDRESS,
+// used by the instruction/load/store access-fault tests), a null (0) fetch
+// target, or a pointer-masking JALR through a tagged pointer — and that address
+// is identical on the DUT and the reference model, so the raw value is
+// deterministic. The two early-outs below are shortcuts for the first two; any
+// other out-of-segment xEPC reaches the same raw path at the end of the walk.
 vmem_adj_\__MODE__\()epc:
         #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
                 LI(     T2, RVMODEL_ACCESS_FAULT_ADDRESS)
@@ -2412,28 +2409,9 @@ data_adj_\__MODE__\()epc:
         LREG    T2, data_bgn_off(T4)                  // check if EPC is in data segment
         sub     T2, T3, T2                            // T2 = EPC - data_begin, wraps if EPC is below it
         LREG    T6, data_seg_siz(T4)
-        bgeu    T2, T6, oos_\__MODE__\()epc           // outside the data segment, either side
+        bgeu    T2, T6, sv_\__MODE__\()epc            // outside every segment -> record xEPC raw
         mv      T3, T2                                // relocated offset
         j       sv_\__MODE__\()epc
-
-// xEPC outside every known segment. By default this is a runaway EPC and the
-// test aborts. A test that deliberately jumps to an out-of-segment address and
-// expects the fetch fault (the pointer-masking suites' JALR-through-tagged-
-// pointer probes) opts in with
-//
-//   #define RVTEST_ALLOW_OOS_FETCH_EPC    (in the test file, before the handler)
-//
-// With the define, a fetch access/page/guest-page fault records xEPC raw: the
-// value is the test-chosen target, deterministic on DUT and reference model,
-// and the return path below resumes via ra. Any other cause still aborts.
-oos_\__MODE__\()epc:
-#ifdef RVTEST_ALLOW_OOS_FETCH_EPC
-        csrr    T2, CSR_XCAUSE
-        LI(     T6, CAUSE_FETCH_ACCESS | CAUSE_FETCH_PAGE_FAULT | CAUSE_FETCH_GUEST_PAGE_FAULT)
-        and      T2, T2, T6
-        bnez     T2, sv_\__MODE__\()epc
-#endif
-        j       abort_test                            // runaway EPC -> abort
 
 adj_\__MODE__\()epc:
         sub     T3, T3, T2                            // T3 = EPC - segment_begin (relocated offset)

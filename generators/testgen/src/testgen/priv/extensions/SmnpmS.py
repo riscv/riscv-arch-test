@@ -36,7 +36,7 @@ COVERGROUP = "SmnpmS_cg"
     "SmnpmS",
     required_extensions=["Smnpm", "S"],
     march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
-    extra_defines=["#define BOOT_TO_SMODE", "#define RVTEST_ALLOW_OOS_FETCH_EPC"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_smnpms(test_data: TestData) -> list[TestChunk]:
     chunks = []

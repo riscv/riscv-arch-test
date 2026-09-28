@@ -16,7 +16,7 @@ from testgen.priv.extensions.ZpmCommon import (
     generate_instruction_sweep_tests,
     generate_jalr_tests,
     generate_misaligned_tests,
-    generate_mprv_tests,
+    generate_mprv_mpp_m_tests,
     generate_mxr_tests,
     mprv_data_section,
     set_mxr,
@@ -32,7 +32,7 @@ _CSR_TARGETS = ["mepc", "mscratch"]
     "Smmpm",
     required_extensions=["Smmpm"],
     march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
-    extra_defines=["#define BOOT_TO_MMODE", "#define RVTEST_ALLOW_OOS_FETCH_EPC"],
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_smmpm(test_data: TestData) -> list[TestChunk]:
     tc = test_data.begin_test_chunk()
@@ -67,9 +67,11 @@ def make_smmpm(test_data: TestData) -> list[TestChunk]:
 
     lines.extend(
         [
-            # MPRV test using nested loop structure from testplan
-            # Only tests Bare and Sv39 modes with limited upper bit patterns
-            *generate_mprv_tests(test_data, COVERGROUP),
+            # MPRV with MPP=M only: the effective privilege stays M, so mseccfg.PMM
+            # governs. The MPP=U and MPP=S cases are governed by senvcfg.PMM and
+            # menvcfg.PMM, which come from Ssnpm and Smnpm, and live in SsnpmSm and
+            # SmnpmSSm.
+            *generate_mprv_mpp_m_tests(test_data, COVERGROUP),
             *set_pmm_field("mseccfg", 0b00, 0, test_data),
             "#ifdef S_SUPPORTED",
             *set_mxr(False, test_data, "mstatus"),

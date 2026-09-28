@@ -28,7 +28,6 @@ COVERGROUP = "SmnpmU_cg"
     required_extensions=["Smnpm"],
     forbidden_extensions=["S"],
     march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
-    extra_defines=["#define RVTEST_ALLOW_OOS_FETCH_EPC"],
 )
 def make_smnpmu(test_data: TestData) -> list[TestChunk]:
     tc = test_data.begin_test_chunk()

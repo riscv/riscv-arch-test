@@ -26,7 +26,6 @@
 
   invisible_Mtime_check_access:
     // Check counter permissions before emulating the missing CSR.
-    // TODO: Check hcounteren when H is supported.
     csrr    \DEST_REG, mstatus
     li      \VALUE_REG, MSTATUS_MPP
     and     \DEST_REG, \DEST_REG, \VALUE_REG
@@ -34,6 +33,22 @@
     csrr    \VALUE_REG, mcounteren
     andi    \VALUE_REG, \VALUE_REG, MCOUNTEREN_TIME
     beqz    \VALUE_REG, invisible_Mtime_done
+    #ifdef H_SUPPORTED
+      // A trap taken from VS or VU mode (mstatus.MPV = 1) also needs hcounteren.TIME.
+      #if UDB_MXLEN == 32
+        csrr    \VALUE_REG, CSR_MSTATUSH
+        andi    \VALUE_REG, \VALUE_REG, (1 << MPV_LSB)
+      #else
+        csrr    \VALUE_REG, mstatus
+        srli    \VALUE_REG, \VALUE_REG, (32 + MPV_LSB)
+        andi    \VALUE_REG, \VALUE_REG, 1
+      #endif
+      beqz    \VALUE_REG, invisible_Mtime_not_virtual
+      csrr    \VALUE_REG, CSR_HCOUNTEREN
+      andi    \VALUE_REG, \VALUE_REG, MCOUNTEREN_TIME
+      beqz    \VALUE_REG, invisible_Mtime_done
+      invisible_Mtime_not_virtual:
+    #endif
     #ifdef S_SUPPORTED
       bnez    \DEST_REG, invisible_Mtime_read              // S-mode access only needs mcounteren.TIME
       csrr    \VALUE_REG, scounteren
@@ -66,7 +81,8 @@
   invisible_Mhandler:
     // Reconstruct the illegal instruction.
     // Load with the trapped mode's access rights from mstatus.MPP. SUM and MXR
-    // permit reads from executable or readable lower-mode pages.
+    // permit reads from executable or readable lower-mode pages. MPRV also honors
+    // mstatus.MPV, so a fetch from VS or VU uses the guest's two-stage translation.
     csrr    T1, mepc
     li      T3, MSTATUS_MPRV | MSTATUS_SUM | MSTATUS_MXR
     csrrs   T4, mstatus, T3
@@ -135,6 +151,40 @@
       csrw    scause, T5
       csrr    T4, mtval
       csrw    stval, T4
+
+      #ifdef H_SUPPORTED
+        // A trap from a guest is delivered to HS-mode, which has to see where it
+        // came from: SPV records the guest and SPVP its nominal privilege. GVA stays
+        // clear because the only trap forwarded here is an illegal instruction,
+        // whose stval holds the instruction rather than an address. Clearing MPV
+        // makes the mret below enter HS-mode instead of returning to the guest.
+        LI(     T3, HSTATUS_SPV | HSTATUS_SPVP | HSTATUS_GVA)
+        csrc    hstatus, T3
+        #if UDB_MXLEN == 32
+          csrr    T4, CSR_MSTATUSH
+          andi    T4, T4, (1 << MPV_LSB)
+        #else
+          srli    T4, T1, 32
+          andi    T4, T4, (1 << MPV_LSB)
+        #endif
+        beqz    T4, invisible_Mforward_host
+        LI(     T3, HSTATUS_SPV)
+        csrs    hstatus, T3
+        srli    T4, T1, MPP_LSB
+        andi    T4, T4, 1                         // nominal privilege: VS = 1, VU = 0
+        beqz    T4, invisible_Mforward_vu
+        LI(     T3, HSTATUS_SPVP)
+        csrs    hstatus, T3
+      invisible_Mforward_vu:
+        #if UDB_MXLEN == 32
+          li      T3, (1 << MPV_LSB)
+          csrc    CSR_MSTATUSH, T3
+        #else
+          LI(     T3, MSTATUS_MPV)
+          csrc    mstatus, T3
+        #endif
+      invisible_Mforward_host:
+      #endif
 
       // Reproduce S-mode trap entry: SPIE gets the prior SIE value, SIE is cleared,
       // and SPP records whether the interrupted mode was S or U.

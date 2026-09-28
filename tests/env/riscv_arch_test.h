@@ -4,9 +4,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 #include "rvtest_config.h"
-#ifndef RVTEST_HYPERVISOR
-  #undef H_SUPPORTED
-#endif
 #include "derived_config.h"
 #include "encoding.h"
 #ifdef RVTEST_EXPERIMENTAL
@@ -26,7 +23,7 @@
 #ifdef RVTEST_VECTOR
   #include "rvtest_macros_vector.h"
 #endif
-#ifdef RVTEST_HYPERVISOR
+#ifdef H_SUPPORTED
   #include "rvtest_macros_hypervisor.h"
 #endif
 #include "rvtest_trap_handler.h"

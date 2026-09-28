@@ -4,6 +4,12 @@
 # Sstvecd extension test generator.
 # Written by : Ayesha Anwar ayesha.anwaar2005@gmail.com 22 April 2026
 # SPDX-License-Identifier: Apache-2.0
+#
+# stvec is also covered by the S suite, which every Sstvecd configuration runs because
+# Sstvecd requires S: S.py walks stvec (with MODE = Direct) through every valid virtual
+# address as walking 1s and walking 0s, and writes two known-valid physical addresses,
+# the current pc and an address in the scratch area (PrivCommon.addr_csr_tests). The
+# Sstvecd rules map to both suites' coverpoints in coverpoints/norm/Sstvecd.yaml.
 ##################################
 from testgen.asm.csr import csr_walk_test
 from testgen.asm.helpers import comment_banner

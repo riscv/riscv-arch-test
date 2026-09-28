@@ -99,6 +99,14 @@ SvSm_cp_sv39_upage_mprv_set_sum_unset_Smode_test1_store:
 SvSm_cp_sv39_upage_mprv_set_sum_unset_Smode_test1_load:
   lw a3, 20(a5)
   nop
+  LI(t0, MSTATUS_MPRV)
+  csrs mstatus, t0
+  LI(t0, 0x1800)
+  csrc mstatus, t0
+  LI(t0, 0x800)
+  csrs mstatus, t0
+  LI(t0, MSTATUS_SUM)
+  csrc mstatus, t0
   LA(a5, rvtest_data_1)
 
 // Execute
@@ -156,6 +164,14 @@ SvSm_cp_sv39_upage_mprv_set_sum_unset_Smode_test2_store:
 SvSm_cp_sv39_upage_mprv_set_sum_unset_Smode_test2_load:
   lw a3, 20(a5)
   nop
+  LI(t0, MSTATUS_MPRV)
+  csrs mstatus, t0
+  LI(t0, 0x1800)
+  csrc mstatus, t0
+  LI(t0, 0x800)
+  csrs mstatus, t0
+  LI(t0, MSTATUS_SUM)
+  csrc mstatus, t0
   LA(a5, rvtest_data_1)
 
 // Execute
@@ -214,6 +230,14 @@ SvSm_cp_sv39_upage_mprv_set_sum_unset_Smode_test3_store:
 SvSm_cp_sv39_upage_mprv_set_sum_unset_Smode_test3_load:
   lw a3, 20(a5)
   nop
+  LI(t0, MSTATUS_MPRV)
+  csrs mstatus, t0
+  LI(t0, 0x1800)
+  csrc mstatus, t0
+  LI(t0, 0x800)
+  csrs mstatus, t0
+  LI(t0, MSTATUS_SUM)
+  csrc mstatus, t0
   LA(a5, rvtest_data_1)
 
 // Execute

@@ -2269,23 +2269,6 @@ sv_\__MODE__\()cause:
 common_\__MODE__\()excpt_handler:
         csrr    T3, CSR_XEPC                         // T3 = xEPC (faulting instruction address)
 
-// xEPC is recorded raw. It used to be rewritten as an offset from whichever of the
-// vmem, code and data segments contained it, on the theory that the signature must
-// not depend on where the test was linked. It does not: the reference model runs
-// the .sig.elf built from the same source, with the same config's link.ld and the
-// same include directory as the ELF the DUT runs, so both sides see identical
-// addresses. Translated modes already skipped the rewrite and recorded the raw
-// virtual address, so bare mode was the only case it ever applied to, and the whole
-// decision tree behind it -- MPP under MPRV, satp/vsatp/hgatp MODE, MPV, SPV -- only
-// existed to make that choice.
-//
-// An xEPC that lands outside every segment no longer aborts the test either. The
-// tests that produce one trap at a fixed, test-chosen address -- the model's
-// access-fault probe (RVMODEL_ACCESS_FAULT_ADDRESS), a null fetch target, a JALR
-// through a tagged pointer -- and that address is the same on the DUT and the
-// reference model. A genuinely runaway xEPC now shows up as a signature mismatch
-// instead of an abort.
-
 sv_\__MODE__\()epc:
 #ifdef SDTRIG_IMPRECISE_XEPC
         csrr    T2, CSR_XCAUSE                        // breakpoint-trigger epc differs across DUTs (trigger fires

@@ -336,7 +336,7 @@ covergroup Zknh_sha512sig0h_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -445,7 +445,7 @@ covergroup Zknh_sha512sig0l_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -554,7 +554,7 @@ covergroup Zknh_sha512sig1h_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -663,7 +663,7 @@ covergroup Zknh_sha512sig1l_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -772,7 +772,7 @@ covergroup Zknh_sha512sum0r_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -881,7 +881,7 @@ covergroup Zknh_sha512sum1r_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 

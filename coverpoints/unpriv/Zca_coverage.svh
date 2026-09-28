@@ -107,7 +107,7 @@ covergroup Zca_c_add_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -304,7 +304,7 @@ covergroup Zca_c_and_cg with function sample(ins_t ins);
         // RS2 register assignment
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -866,7 +866,7 @@ covergroup Zca_c_or_cg with function sample(ins_t ins);
         // RS2 register assignment
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -1185,7 +1185,7 @@ covergroup Zca_c_sub_cg with function sample(ins_t ins);
         // RS2 register assignment
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -1386,7 +1386,7 @@ covergroup Zca_c_xor_cg with function sample(ins_t ins);
         // RS2 register assignment
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -1590,7 +1590,7 @@ covergroup Zca_c_addw_cg with function sample(ins_t ins);
         // RS2 register assignment
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -1852,7 +1852,7 @@ covergroup Zca_c_subw_cg with function sample(ins_t ins);
         // RS2 register assignment
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 

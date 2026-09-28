@@ -115,7 +115,7 @@ covergroup E_add_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -197,7 +197,7 @@ covergroup E_addi_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  {
         // Cross coverage of RS1 and Imm edges
     }
 
@@ -306,7 +306,7 @@ covergroup E_and_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -388,7 +388,7 @@ covergroup E_andi_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  {
         // Cross coverage of RS1 and Imm edges
     }
 
@@ -455,7 +455,7 @@ covergroup E_beq_cg with function sample(ins_t ins);
         bins b_8 = {8};
         bins b_16 = {16};
         bins b_2048 = {2048};
-        bins b_4092 = {4092}; // not hit yet because gcc is not generating a branch by this much correctly
+        bins b_4092 = {4092};
         bins b_m4 = {-4};
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
@@ -543,9 +543,20 @@ covergroup E_beq_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges_offset : cross cp_rs1_edges,cp_rs2_edges,cp_offset  iff (ins.trap == 0 )  {
-        // Cross coverage of RS1 edges and RS2 edges and branch direction
+    cr_rs1_rs2_edges_offset : cross cp_rs1_edges,cp_rs2_edges  {
+        // Cross coverage of RS1 edges and RS2 edges, which exercises the comparison
     }
+    // The comparison does not depend on the branch direction, so direction is crossed only with the outcome:
+    // forward and backward branches, each taken and not taken.
+    cp_branch_taken : coverpoint {ins.current.insn[14:12],                                        // funct3
+                                  ins.current.rs1_val == ins.current.rs2_val,                     // rs1 = rs2
+                                  $signed(ins.current.rs1_val) < $signed(ins.current.rs2_val),    // rs1 < rs2 (signed)
+                                  $unsigned(ins.current.rs1_val) < $unsigned(ins.current.rs2_val) // rs1 < rs2 (unsigned)
+                                 } iff (ins.trap == 0 )  {
+        wildcard bins taken     = {6'b000_1_?_?, 6'b001_0_?_?, 6'b100_?_1_?, 6'b101_?_0_?, 6'b110_?_?_1, 6'b111_?_?_0};
+        wildcard bins not_taken = {6'b000_0_?_?, 6'b001_1_?_?, 6'b100_?_0_?, 6'b101_?_1_?, 6'b110_?_?_0, 6'b111_?_?_1};
+    }
+    cr_offset_branch_taken : cross cp_offset,cp_branch_taken;
 
 endgroup
 // ---------------------
@@ -566,7 +577,7 @@ covergroup E_bge_cg with function sample(ins_t ins);
         bins b_8 = {8};
         bins b_16 = {16};
         bins b_2048 = {2048};
-        bins b_4092 = {4092}; // not hit yet because gcc is not generating a branch by this much correctly
+        bins b_4092 = {4092};
         bins b_m4 = {-4};
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
@@ -654,9 +665,20 @@ covergroup E_bge_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges_offset : cross cp_rs1_edges,cp_rs2_edges,cp_offset  iff (ins.trap == 0 )  {
-        // Cross coverage of RS1 edges and RS2 edges and branch direction
+    cr_rs1_rs2_edges_offset : cross cp_rs1_edges,cp_rs2_edges  {
+        // Cross coverage of RS1 edges and RS2 edges, which exercises the comparison
     }
+    // The comparison does not depend on the branch direction, so direction is crossed only with the outcome:
+    // forward and backward branches, each taken and not taken.
+    cp_branch_taken : coverpoint {ins.current.insn[14:12],                                        // funct3
+                                  ins.current.rs1_val == ins.current.rs2_val,                     // rs1 = rs2
+                                  $signed(ins.current.rs1_val) < $signed(ins.current.rs2_val),    // rs1 < rs2 (signed)
+                                  $unsigned(ins.current.rs1_val) < $unsigned(ins.current.rs2_val) // rs1 < rs2 (unsigned)
+                                 } iff (ins.trap == 0 )  {
+        wildcard bins taken     = {6'b000_1_?_?, 6'b001_0_?_?, 6'b100_?_1_?, 6'b101_?_0_?, 6'b110_?_?_1, 6'b111_?_?_0};
+        wildcard bins not_taken = {6'b000_0_?_?, 6'b001_1_?_?, 6'b100_?_0_?, 6'b101_?_1_?, 6'b110_?_?_0, 6'b111_?_?_1};
+    }
+    cr_offset_branch_taken : cross cp_offset,cp_branch_taken;
 
 endgroup
 // ---------------------
@@ -677,7 +699,7 @@ covergroup E_bgeu_cg with function sample(ins_t ins);
         bins b_8 = {8};
         bins b_16 = {16};
         bins b_2048 = {2048};
-        bins b_4092 = {4092}; // not hit yet because gcc is not generating a branch by this much correctly
+        bins b_4092 = {4092};
         bins b_m4 = {-4};
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
@@ -765,9 +787,20 @@ covergroup E_bgeu_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges_offset : cross cp_rs1_edges,cp_rs2_edges,cp_offset  iff (ins.trap == 0 )  {
-        // Cross coverage of RS1 edges and RS2 edges and branch direction
+    cr_rs1_rs2_edges_offset : cross cp_rs1_edges,cp_rs2_edges  {
+        // Cross coverage of RS1 edges and RS2 edges, which exercises the comparison
     }
+    // The comparison does not depend on the branch direction, so direction is crossed only with the outcome:
+    // forward and backward branches, each taken and not taken.
+    cp_branch_taken : coverpoint {ins.current.insn[14:12],                                        // funct3
+                                  ins.current.rs1_val == ins.current.rs2_val,                     // rs1 = rs2
+                                  $signed(ins.current.rs1_val) < $signed(ins.current.rs2_val),    // rs1 < rs2 (signed)
+                                  $unsigned(ins.current.rs1_val) < $unsigned(ins.current.rs2_val) // rs1 < rs2 (unsigned)
+                                 } iff (ins.trap == 0 )  {
+        wildcard bins taken     = {6'b000_1_?_?, 6'b001_0_?_?, 6'b100_?_1_?, 6'b101_?_0_?, 6'b110_?_?_1, 6'b111_?_?_0};
+        wildcard bins not_taken = {6'b000_0_?_?, 6'b001_1_?_?, 6'b100_?_0_?, 6'b101_?_1_?, 6'b110_?_?_0, 6'b111_?_?_1};
+    }
+    cr_offset_branch_taken : cross cp_offset,cp_branch_taken;
 
 endgroup
 // ---------------------
@@ -788,7 +821,7 @@ covergroup E_blt_cg with function sample(ins_t ins);
         bins b_8 = {8};
         bins b_16 = {16};
         bins b_2048 = {2048};
-        bins b_4092 = {4092}; // not hit yet because gcc is not generating a branch by this much correctly
+        bins b_4092 = {4092};
         bins b_m4 = {-4};
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
@@ -876,9 +909,20 @@ covergroup E_blt_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges_offset : cross cp_rs1_edges,cp_rs2_edges,cp_offset  iff (ins.trap == 0 )  {
-        // Cross coverage of RS1 edges and RS2 edges and branch direction
+    cr_rs1_rs2_edges_offset : cross cp_rs1_edges,cp_rs2_edges  {
+        // Cross coverage of RS1 edges and RS2 edges, which exercises the comparison
     }
+    // The comparison does not depend on the branch direction, so direction is crossed only with the outcome:
+    // forward and backward branches, each taken and not taken.
+    cp_branch_taken : coverpoint {ins.current.insn[14:12],                                        // funct3
+                                  ins.current.rs1_val == ins.current.rs2_val,                     // rs1 = rs2
+                                  $signed(ins.current.rs1_val) < $signed(ins.current.rs2_val),    // rs1 < rs2 (signed)
+                                  $unsigned(ins.current.rs1_val) < $unsigned(ins.current.rs2_val) // rs1 < rs2 (unsigned)
+                                 } iff (ins.trap == 0 )  {
+        wildcard bins taken     = {6'b000_1_?_?, 6'b001_0_?_?, 6'b100_?_1_?, 6'b101_?_0_?, 6'b110_?_?_1, 6'b111_?_?_0};
+        wildcard bins not_taken = {6'b000_0_?_?, 6'b001_1_?_?, 6'b100_?_0_?, 6'b101_?_1_?, 6'b110_?_?_0, 6'b111_?_?_1};
+    }
+    cr_offset_branch_taken : cross cp_offset,cp_branch_taken;
 
 endgroup
 // ---------------------
@@ -899,7 +943,7 @@ covergroup E_bltu_cg with function sample(ins_t ins);
         bins b_8 = {8};
         bins b_16 = {16};
         bins b_2048 = {2048};
-        bins b_4092 = {4092}; // not hit yet because gcc is not generating a branch by this much correctly
+        bins b_4092 = {4092};
         bins b_m4 = {-4};
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
@@ -987,9 +1031,20 @@ covergroup E_bltu_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges_offset : cross cp_rs1_edges,cp_rs2_edges,cp_offset  iff (ins.trap == 0 )  {
-        // Cross coverage of RS1 edges and RS2 edges and branch direction
+    cr_rs1_rs2_edges_offset : cross cp_rs1_edges,cp_rs2_edges  {
+        // Cross coverage of RS1 edges and RS2 edges, which exercises the comparison
     }
+    // The comparison does not depend on the branch direction, so direction is crossed only with the outcome:
+    // forward and backward branches, each taken and not taken.
+    cp_branch_taken : coverpoint {ins.current.insn[14:12],                                        // funct3
+                                  ins.current.rs1_val == ins.current.rs2_val,                     // rs1 = rs2
+                                  $signed(ins.current.rs1_val) < $signed(ins.current.rs2_val),    // rs1 < rs2 (signed)
+                                  $unsigned(ins.current.rs1_val) < $unsigned(ins.current.rs2_val) // rs1 < rs2 (unsigned)
+                                 } iff (ins.trap == 0 )  {
+        wildcard bins taken     = {6'b000_1_?_?, 6'b001_0_?_?, 6'b100_?_1_?, 6'b101_?_0_?, 6'b110_?_?_1, 6'b111_?_?_0};
+        wildcard bins not_taken = {6'b000_0_?_?, 6'b001_1_?_?, 6'b100_?_0_?, 6'b101_?_1_?, 6'b110_?_?_0, 6'b111_?_?_1};
+    }
+    cr_offset_branch_taken : cross cp_offset,cp_branch_taken;
 
 endgroup
 // ---------------------
@@ -1010,7 +1065,7 @@ covergroup E_bne_cg with function sample(ins_t ins);
         bins b_8 = {8};
         bins b_16 = {16};
         bins b_2048 = {2048};
-        bins b_4092 = {4092}; // not hit yet because gcc is not generating a branch by this much correctly
+        bins b_4092 = {4092};
         bins b_m4 = {-4};
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
@@ -1098,9 +1153,20 @@ covergroup E_bne_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges_offset : cross cp_rs1_edges,cp_rs2_edges,cp_offset  iff (ins.trap == 0 )  {
-        // Cross coverage of RS1 edges and RS2 edges and branch direction
+    cr_rs1_rs2_edges_offset : cross cp_rs1_edges,cp_rs2_edges  {
+        // Cross coverage of RS1 edges and RS2 edges, which exercises the comparison
     }
+    // The comparison does not depend on the branch direction, so direction is crossed only with the outcome:
+    // forward and backward branches, each taken and not taken.
+    cp_branch_taken : coverpoint {ins.current.insn[14:12],                                        // funct3
+                                  ins.current.rs1_val == ins.current.rs2_val,                     // rs1 = rs2
+                                  $signed(ins.current.rs1_val) < $signed(ins.current.rs2_val),    // rs1 < rs2 (signed)
+                                  $unsigned(ins.current.rs1_val) < $unsigned(ins.current.rs2_val) // rs1 < rs2 (unsigned)
+                                 } iff (ins.trap == 0 )  {
+        wildcard bins taken     = {6'b000_1_?_?, 6'b001_0_?_?, 6'b100_?_1_?, 6'b101_?_0_?, 6'b110_?_?_1, 6'b111_?_?_0};
+        wildcard bins not_taken = {6'b000_0_?_?, 6'b001_1_?_?, 6'b100_?_0_?, 6'b101_?_1_?, 6'b110_?_?_0, 6'b111_?_?_1};
+    }
+    cr_offset_branch_taken : cross cp_offset,cp_branch_taken;
 
 endgroup
 // ---------------------
@@ -1114,7 +1180,7 @@ covergroup E_fence_cg with function sample(ins_t ins);
     // Custom coverpoints for fence
 
     // Encodings with a nonzero fm, rd or rs1 field. fm = 0, rd = rs1 = x0 is cp_custom_fence_pred_succ.
-    cp_custom_fence_reserved : coverpoint ins.current.insn  {
+    cp_custom_fence_reserved : coverpoint ins.current.insn  iff (ins.trap == 0 )  {
         bins fence_tso_rw_rw  = {32'h8330000f}; // fence.tso
         bins fence_nonzerors1 = {32'h0331000f}; // nonzero rs should behave as fence
         bins fence_nonzerord  = {32'h0330008f}; // nonzero rd should behave as fence
@@ -1123,7 +1189,7 @@ covergroup E_fence_cg with function sample(ins_t ins);
         bins fence_hint0b     = {32'h0301000f}; // fence with rd = x0, rs1 != x0, fm = 0, succ = 0 is a hint
         bins fence_hint1a     = {32'h0030008f}; // fence with rd != x0, rs1 = x0, fm = 0, pred = 0 is a hint
         bins fence_hint1b     = {32'h0300008f}; // fence with rd != x0, rs1 = x0, fm = 0, succ = 0 is a hint
-        bins fence_tso_r_r    = {32'h8110000f}; // fence.tso with r, r should behave as fence
+        bins fence_tso_w_w    = {32'h8110000f}; // fm = 1000 with pred = succ = W is reserved and should behave as fence
     }
 
     // Every pred x succ combination with fm = 0 and rd = rs1 = x0.
@@ -1680,7 +1746,7 @@ covergroup E_or_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -1762,7 +1828,7 @@ covergroup E_ori_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  {
         // Cross coverage of RS1 and Imm edges
     }
 
@@ -2027,7 +2093,7 @@ covergroup E_sll_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -2106,7 +2172,7 @@ covergroup E_slli_cg with function sample(ins_t ins);
             bins b_63 = {63};
         `endif
     }
-    cr_rs1_imm_edges_uimm : cross cp_rs1_edges,cp_imm_edges_uimm  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges_uimm : cross cp_rs1_edges,cp_imm_edges_uimm  {
         // Cross coverage of RS1 and Imm edges
     }
 
@@ -2219,7 +2285,7 @@ covergroup E_slt_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -2303,7 +2369,7 @@ covergroup E_slti_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  {
         // Cross coverage of RS1 and Imm edges
     }
 
@@ -2387,7 +2453,7 @@ covergroup E_sltiu_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  {
         // Cross coverage of RS1 and Imm edges
     }
 
@@ -2500,7 +2566,7 @@ covergroup E_sltu_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -2609,7 +2675,7 @@ covergroup E_sra_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -2688,7 +2754,7 @@ covergroup E_srai_cg with function sample(ins_t ins);
             bins b_63 = {63};
         `endif
     }
-    cr_rs1_imm_edges_uimm : cross cp_rs1_edges,cp_imm_edges_uimm  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges_uimm : cross cp_rs1_edges,cp_imm_edges_uimm  {
         // Cross coverage of RS1 and Imm edges
     }
 
@@ -2797,7 +2863,7 @@ covergroup E_srl_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -2876,7 +2942,7 @@ covergroup E_srli_cg with function sample(ins_t ins);
             bins b_63 = {63};
         `endif
     }
-    cr_rs1_imm_edges_uimm : cross cp_rs1_edges,cp_imm_edges_uimm  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges_uimm : cross cp_rs1_edges,cp_imm_edges_uimm  {
         // Cross coverage of RS1 and Imm edges
     }
 
@@ -2985,7 +3051,7 @@ covergroup E_sub_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -3172,7 +3238,7 @@ covergroup E_xor_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -3254,7 +3320,7 @@ covergroup E_xori_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  {
         // Cross coverage of RS1 and Imm edges
     }
 
@@ -3337,7 +3403,7 @@ covergroup E_addiw_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  {
         // Cross coverage of RS1 and Imm edges
     }
 
@@ -3446,7 +3512,7 @@ covergroup E_addw_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -3704,7 +3770,7 @@ covergroup E_slliw_cg with function sample(ins_t ins);
         bins b_30 = {30};
         bins b_31 = {31};
     }
-    cr_rs1_imm_edges_uimmw : cross cp_rs1_edges,cp_imm_edges_uimmw  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges_uimmw : cross cp_rs1_edges,cp_imm_edges_uimmw  {
         // Cross coverage of RS1 and Imm edges
     }
 
@@ -3813,7 +3879,7 @@ covergroup E_sllw_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -3885,7 +3951,7 @@ covergroup E_sraiw_cg with function sample(ins_t ins);
         bins b_30 = {30};
         bins b_31 = {31};
     }
-    cr_rs1_imm_edges_uimmw : cross cp_rs1_edges,cp_imm_edges_uimmw  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges_uimmw : cross cp_rs1_edges,cp_imm_edges_uimmw  {
         // Cross coverage of RS1 and Imm edges
     }
 
@@ -3994,7 +4060,7 @@ covergroup E_sraw_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -4066,7 +4132,7 @@ covergroup E_srliw_cg with function sample(ins_t ins);
         bins b_30 = {30};
         bins b_31 = {31};
     }
-    cr_rs1_imm_edges_uimmw : cross cp_rs1_edges,cp_imm_edges_uimmw  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges_uimmw : cross cp_rs1_edges,cp_imm_edges_uimmw  {
         // Cross coverage of RS1 and Imm edges
     }
 
@@ -4175,7 +4241,7 @@ covergroup E_srlw_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -4284,7 +4350,7 @@ covergroup E_subw_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 

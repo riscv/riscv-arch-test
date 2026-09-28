@@ -125,7 +125,7 @@ covergroup Zkne_aes32esi_cg with function sample(ins_t ins);
         bins all[] = {[0:$]};
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -243,7 +243,7 @@ covergroup Zkne_aes32esmi_cg with function sample(ins_t ins);
         bins all[] = {[0:$]};
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -359,7 +359,7 @@ covergroup Zkne_aes64es_cg with function sample(ins_t ins);
         bins all[] = {[0:$]};
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -473,7 +473,7 @@ covergroup Zkne_aes64esm_cg with function sample(ins_t ins);
         bins all[] = {[0:$]};
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -648,7 +648,7 @@ covergroup Zkne_aes64ks2_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 

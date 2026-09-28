@@ -67,10 +67,10 @@ covergroup F_fadd_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -101,10 +101,10 @@ covergroup F_fadd_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -127,32 +127,6 @@ covergroup F_fadd_s_cg with function sample(ins_t ins);
 
     cr_fs1_fs2_edges_frm : cross cp_fs1_edges,cp_fs2_edges,cp_frm_3  iff (ins.trap == 0 )  {
         // Cross coverage FS1, FS2, rounding mode
-    }
-
-    cp_fs1_ties_frm : coverpoint unsigned'(ins.current.fs1_val[31:0])  iff (ins.trap == 0 )  {
-        // FS1 exact-tie values (Single Precision)
-        bins pos0p5   = {32'h3f000000};
-        bins neg0p5   = {32'hbf000000};
-        bins pos2p5   = {32'h40200000};
-        bins neg2p5   = {32'hc0200000};
-        bins postie   = {32'h4b800000};
-        bins negtie   = {32'hcb800000};
-    }
-
-    cp_fs2_tie_partner_frm : coverpoint unsigned'(ins.current.fs2_val[31:0])  iff (ins.trap == 0 )  {
-        // FS2 partner that makes the exact result a tie
-        bins pos1     = {32'h3f800000};
-        bins neg1     = {32'hbf800000};
-    }
-
-    cp_frm_ties_frm : coverpoint get_frm(ins.ops[3].val)  iff (ins.trap == 0 )  {
-        // Only RNE and RMM are distinguished by an exact tie
-        bins rne = {rne};
-        bins rmm = {rmm};
-    }
-
-    cr_fs1_fs2_edges_ties_frm : cross cp_fs1_ties_frm,cp_fs2_tie_partner_frm,cp_frm_ties_frm  iff (ins.trap == 0 )  {
-        // Cross coverage FS1 exact ties, FS2 tie partner, rounding mode
     }
 
 endgroup
@@ -188,10 +162,10 @@ covergroup F_fclass_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -405,10 +379,10 @@ covergroup F_fcvt_w_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -431,26 +405,6 @@ covergroup F_fcvt_w_s_cg with function sample(ins_t ins);
 
     cr_fs1_edges_frm : cross cp_fs1_edges,cp_frm_2  iff (ins.trap == 0 )  {
         // Cross coverage FS1, FRM
-    }
-
-    cp_fs1_edges_ties : coverpoint unsigned'(ins.current.fs1_val[31:0])  iff (ins.trap == 0 )  {
-        // FS1 exact-tie values (Single Precision): the only operands where RMM differs from RNE
-        bins pos0p5   = {32'h3f000000};
-        bins neg0p5   = {32'hbf000000};
-        bins pos2p5   = {32'h40200000};
-        bins neg2p5   = {32'hc0200000};
-        bins postie   = {32'h4b800000};
-        bins negtie   = {32'hcb800000};
-    }
-
-    cp_frm_ties : coverpoint get_frm(ins.ops[2].val)  iff (ins.trap == 0 )  {
-        // Only RNE and RMM are distinguished by an exact tie
-        bins rne = {rne};
-        bins rmm = {rmm};
-    }
-
-    cr_fs1_edges_ties_frm : cross cp_fs1_edges_ties,cp_frm_ties  iff (ins.trap == 0 )  {
-        // Cross coverage FS1 exact ties, rounding mode
     }
 
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
@@ -500,10 +454,10 @@ covergroup F_fcvt_wu_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -526,26 +480,6 @@ covergroup F_fcvt_wu_s_cg with function sample(ins_t ins);
 
     cr_fs1_edges_frm : cross cp_fs1_edges,cp_frm_2  iff (ins.trap == 0 )  {
         // Cross coverage FS1, FRM
-    }
-
-    cp_fs1_edges_ties : coverpoint unsigned'(ins.current.fs1_val[31:0])  iff (ins.trap == 0 )  {
-        // FS1 exact-tie values (Single Precision): the only operands where RMM differs from RNE
-        bins pos0p5   = {32'h3f000000};
-        bins neg0p5   = {32'hbf000000};
-        bins pos2p5   = {32'h40200000};
-        bins neg2p5   = {32'hc0200000};
-        bins postie   = {32'h4b800000};
-        bins negtie   = {32'hcb800000};
-    }
-
-    cp_frm_ties : coverpoint get_frm(ins.ops[2].val)  iff (ins.trap == 0 )  {
-        // Only RNE and RMM are distinguished by an exact tie
-        bins rne = {rne};
-        bins rmm = {rmm};
-    }
-
-    cr_fs1_edges_ties_frm : cross cp_fs1_edges_ties,cp_frm_ties  iff (ins.trap == 0 )  {
-        // Cross coverage FS1 exact ties, rounding mode
     }
 
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
@@ -619,10 +553,10 @@ covergroup F_fdiv_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -653,10 +587,10 @@ covergroup F_fdiv_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -679,32 +613,6 @@ covergroup F_fdiv_s_cg with function sample(ins_t ins);
 
     cr_fs1_fs2_edges_frm : cross cp_fs1_edges,cp_fs2_edges,cp_frm_3  iff (ins.trap == 0 )  {
         // Cross coverage FS1, FS2, rounding mode
-    }
-
-    cp_fs1_ties_frm : coverpoint unsigned'(ins.current.fs1_val[31:0])  iff (ins.trap == 0 )  {
-        // FS1 exact-tie values (Single Precision)
-        bins pos0p5   = {32'h3f000000};
-        bins neg0p5   = {32'hbf000000};
-        bins pos2p5   = {32'h40200000};
-        bins neg2p5   = {32'hc0200000};
-        bins postie   = {32'h4b800000};
-        bins negtie   = {32'hcb800000};
-    }
-
-    cp_fs2_tie_partner_frm : coverpoint unsigned'(ins.current.fs2_val[31:0])  iff (ins.trap == 0 )  {
-        // FS2 partner that makes the exact result a tie
-        bins pos1     = {32'h3f800000};
-        bins neg1     = {32'hbf800000};
-    }
-
-    cp_frm_ties_frm : coverpoint get_frm(ins.ops[3].val)  iff (ins.trap == 0 )  {
-        // Only RNE and RMM are distinguished by an exact tie
-        bins rne = {rne};
-        bins rmm = {rmm};
-    }
-
-    cr_fs1_fs2_edges_ties_frm : cross cp_fs1_ties_frm,cp_fs2_tie_partner_frm,cp_frm_ties_frm  iff (ins.trap == 0 )  {
-        // Cross coverage FS1 exact ties, FS2 tie partner, rounding mode
     }
 
 endgroup
@@ -735,10 +643,10 @@ covergroup F_feq_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -769,10 +677,10 @@ covergroup F_feq_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -829,10 +737,10 @@ covergroup F_fle_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -863,10 +771,10 @@ covergroup F_fle_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -923,10 +831,10 @@ covergroup F_flt_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -957,10 +865,10 @@ covergroup F_flt_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1031,10 +939,10 @@ covergroup F_flw_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1123,10 +1031,10 @@ covergroup F_fmadd_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1157,10 +1065,10 @@ covergroup F_fmadd_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1191,10 +1099,10 @@ covergroup F_fmadd_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1217,32 +1125,6 @@ covergroup F_fmadd_s_cg with function sample(ins_t ins);
 
     cr_fs1_fs2_edges_frm4 : cross cp_fs1_edges,cp_fs2_edges,cp_frm_4  iff (ins.trap == 0 )  {
         // Cross coverage FS1, FS2, rounding mode
-    }
-
-    cp_fs1_ties_frm4 : coverpoint unsigned'(ins.current.fs1_val[31:0])  iff (ins.trap == 0 )  {
-        // FS1 exact-tie values (Single Precision)
-        bins pos0p5   = {32'h3f000000};
-        bins neg0p5   = {32'hbf000000};
-        bins pos2p5   = {32'h40200000};
-        bins neg2p5   = {32'hc0200000};
-        bins postie   = {32'h4b800000};
-        bins negtie   = {32'hcb800000};
-    }
-
-    cp_fs2_tie_partner_frm4 : coverpoint unsigned'(ins.current.fs2_val[31:0])  iff (ins.trap == 0 )  {
-        // FS2 partner that makes the exact result a tie
-        bins pos1     = {32'h3f800000};
-        bins neg1     = {32'hbf800000};
-    }
-
-    cp_frm_ties_frm4 : coverpoint get_frm(ins.ops[4].val)  iff (ins.trap == 0 )  {
-        // Only RNE and RMM are distinguished by an exact tie
-        bins rne = {rne};
-        bins rmm = {rmm};
-    }
-
-    cr_fs1_fs2_edges_ties_frm4 : cross cp_fs1_ties_frm4,cp_fs2_tie_partner_frm4,cp_frm_ties_frm4  iff (ins.trap == 0 )  {
-        // Cross coverage FS1 exact ties, FS2 tie partner, rounding mode
     }
 
     cr_fs1_fs3_edges_frm4 : cross cp_fs1_edges,cp_fs3_edges,cp_frm_4  iff (ins.trap == 0 )  {
@@ -1289,10 +1171,10 @@ covergroup F_fmax_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1323,10 +1205,10 @@ covergroup F_fmax_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1391,10 +1273,10 @@ covergroup F_fmin_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1425,10 +1307,10 @@ covergroup F_fmin_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1516,10 +1398,10 @@ covergroup F_fmsub_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1550,10 +1432,10 @@ covergroup F_fmsub_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1584,10 +1466,10 @@ covergroup F_fmsub_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1610,32 +1492,6 @@ covergroup F_fmsub_s_cg with function sample(ins_t ins);
 
     cr_fs1_fs2_edges_frm4 : cross cp_fs1_edges,cp_fs2_edges,cp_frm_4  iff (ins.trap == 0 )  {
         // Cross coverage FS1, FS2, rounding mode
-    }
-
-    cp_fs1_ties_frm4 : coverpoint unsigned'(ins.current.fs1_val[31:0])  iff (ins.trap == 0 )  {
-        // FS1 exact-tie values (Single Precision)
-        bins pos0p5   = {32'h3f000000};
-        bins neg0p5   = {32'hbf000000};
-        bins pos2p5   = {32'h40200000};
-        bins neg2p5   = {32'hc0200000};
-        bins postie   = {32'h4b800000};
-        bins negtie   = {32'hcb800000};
-    }
-
-    cp_fs2_tie_partner_frm4 : coverpoint unsigned'(ins.current.fs2_val[31:0])  iff (ins.trap == 0 )  {
-        // FS2 partner that makes the exact result a tie
-        bins pos1     = {32'h3f800000};
-        bins neg1     = {32'hbf800000};
-    }
-
-    cp_frm_ties_frm4 : coverpoint get_frm(ins.ops[4].val)  iff (ins.trap == 0 )  {
-        // Only RNE and RMM are distinguished by an exact tie
-        bins rne = {rne};
-        bins rmm = {rmm};
-    }
-
-    cr_fs1_fs2_edges_ties_frm4 : cross cp_fs1_ties_frm4,cp_fs2_tie_partner_frm4,cp_frm_ties_frm4  iff (ins.trap == 0 )  {
-        // Cross coverage FS1 exact ties, FS2 tie partner, rounding mode
     }
 
     cr_fs1_fs3_edges_frm4 : cross cp_fs1_edges,cp_fs3_edges,cp_frm_4  iff (ins.trap == 0 )  {
@@ -1701,10 +1557,10 @@ covergroup F_fmul_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1735,10 +1591,10 @@ covergroup F_fmul_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1761,32 +1617,6 @@ covergroup F_fmul_s_cg with function sample(ins_t ins);
 
     cr_fs1_fs2_edges_frm : cross cp_fs1_edges,cp_fs2_edges,cp_frm_3  iff (ins.trap == 0 )  {
         // Cross coverage FS1, FS2, rounding mode
-    }
-
-    cp_fs1_ties_frm : coverpoint unsigned'(ins.current.fs1_val[31:0])  iff (ins.trap == 0 )  {
-        // FS1 exact-tie values (Single Precision)
-        bins pos0p5   = {32'h3f000000};
-        bins neg0p5   = {32'hbf000000};
-        bins pos2p5   = {32'h40200000};
-        bins neg2p5   = {32'hc0200000};
-        bins postie   = {32'h4b800000};
-        bins negtie   = {32'hcb800000};
-    }
-
-    cp_fs2_tie_partner_frm : coverpoint unsigned'(ins.current.fs2_val[31:0])  iff (ins.trap == 0 )  {
-        // FS2 partner that makes the exact result a tie
-        bins pos1     = {32'h3f800000};
-        bins neg1     = {32'hbf800000};
-    }
-
-    cp_frm_ties_frm : coverpoint get_frm(ins.ops[3].val)  iff (ins.trap == 0 )  {
-        // Only RNE and RMM are distinguished by an exact tie
-        bins rne = {rne};
-        bins rmm = {rmm};
-    }
-
-    cr_fs1_fs2_edges_ties_frm : cross cp_fs1_ties_frm,cp_fs2_tie_partner_frm,cp_frm_ties_frm  iff (ins.trap == 0 )  {
-        // Cross coverage FS1 exact ties, FS2 tie partner, rounding mode
     }
 
 endgroup
@@ -1859,10 +1689,10 @@ covergroup F_fmv_x_w_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1950,10 +1780,10 @@ covergroup F_fnmadd_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1984,10 +1814,10 @@ covergroup F_fnmadd_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2018,10 +1848,10 @@ covergroup F_fnmadd_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2044,32 +1874,6 @@ covergroup F_fnmadd_s_cg with function sample(ins_t ins);
 
     cr_fs1_fs2_edges_frm4 : cross cp_fs1_edges,cp_fs2_edges,cp_frm_4  iff (ins.trap == 0 )  {
         // Cross coverage FS1, FS2, rounding mode
-    }
-
-    cp_fs1_ties_frm4 : coverpoint unsigned'(ins.current.fs1_val[31:0])  iff (ins.trap == 0 )  {
-        // FS1 exact-tie values (Single Precision)
-        bins pos0p5   = {32'h3f000000};
-        bins neg0p5   = {32'hbf000000};
-        bins pos2p5   = {32'h40200000};
-        bins neg2p5   = {32'hc0200000};
-        bins postie   = {32'h4b800000};
-        bins negtie   = {32'hcb800000};
-    }
-
-    cp_fs2_tie_partner_frm4 : coverpoint unsigned'(ins.current.fs2_val[31:0])  iff (ins.trap == 0 )  {
-        // FS2 partner that makes the exact result a tie
-        bins pos1     = {32'h3f800000};
-        bins neg1     = {32'hbf800000};
-    }
-
-    cp_frm_ties_frm4 : coverpoint get_frm(ins.ops[4].val)  iff (ins.trap == 0 )  {
-        // Only RNE and RMM are distinguished by an exact tie
-        bins rne = {rne};
-        bins rmm = {rmm};
-    }
-
-    cr_fs1_fs2_edges_ties_frm4 : cross cp_fs1_ties_frm4,cp_fs2_tie_partner_frm4,cp_frm_ties_frm4  iff (ins.trap == 0 )  {
-        // Cross coverage FS1 exact ties, FS2 tie partner, rounding mode
     }
 
     cr_fs1_fs3_edges_frm4 : cross cp_fs1_edges,cp_fs3_edges,cp_frm_4  iff (ins.trap == 0 )  {
@@ -2139,10 +1943,10 @@ covergroup F_fnmsub_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2173,10 +1977,10 @@ covergroup F_fnmsub_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2207,10 +2011,10 @@ covergroup F_fnmsub_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2233,32 +2037,6 @@ covergroup F_fnmsub_s_cg with function sample(ins_t ins);
 
     cr_fs1_fs2_edges_frm4 : cross cp_fs1_edges,cp_fs2_edges,cp_frm_4  iff (ins.trap == 0 )  {
         // Cross coverage FS1, FS2, rounding mode
-    }
-
-    cp_fs1_ties_frm4 : coverpoint unsigned'(ins.current.fs1_val[31:0])  iff (ins.trap == 0 )  {
-        // FS1 exact-tie values (Single Precision)
-        bins pos0p5   = {32'h3f000000};
-        bins neg0p5   = {32'hbf000000};
-        bins pos2p5   = {32'h40200000};
-        bins neg2p5   = {32'hc0200000};
-        bins postie   = {32'h4b800000};
-        bins negtie   = {32'hcb800000};
-    }
-
-    cp_fs2_tie_partner_frm4 : coverpoint unsigned'(ins.current.fs2_val[31:0])  iff (ins.trap == 0 )  {
-        // FS2 partner that makes the exact result a tie
-        bins pos1     = {32'h3f800000};
-        bins neg1     = {32'hbf800000};
-    }
-
-    cp_frm_ties_frm4 : coverpoint get_frm(ins.ops[4].val)  iff (ins.trap == 0 )  {
-        // Only RNE and RMM are distinguished by an exact tie
-        bins rne = {rne};
-        bins rmm = {rmm};
-    }
-
-    cr_fs1_fs2_edges_ties_frm4 : cross cp_fs1_ties_frm4,cp_fs2_tie_partner_frm4,cp_frm_ties_frm4  iff (ins.trap == 0 )  {
-        // Cross coverage FS1 exact ties, FS2 tie partner, rounding mode
     }
 
     cr_fs1_fs3_edges_frm4 : cross cp_fs1_edges,cp_fs3_edges,cp_frm_4  iff (ins.trap == 0 )  {
@@ -2296,10 +2074,10 @@ covergroup F_fsgnj_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2330,10 +2108,10 @@ covergroup F_fsgnj_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2389,10 +2167,10 @@ covergroup F_fsgnjn_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2423,10 +2201,10 @@ covergroup F_fsgnjn_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2482,10 +2260,10 @@ covergroup F_fsgnjx_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2516,10 +2294,10 @@ covergroup F_fsgnjx_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2595,10 +2373,10 @@ covergroup F_fsqrt_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2621,26 +2399,6 @@ covergroup F_fsqrt_s_cg with function sample(ins_t ins);
 
     cr_fs1_edges_frm : cross cp_fs1_edges,cp_frm_2  iff (ins.trap == 0 )  {
         // Cross coverage FS1, FRM
-    }
-
-    cp_fs1_edges_ties : coverpoint unsigned'(ins.current.fs1_val[31:0])  iff (ins.trap == 0 )  {
-        // FS1 exact-tie values (Single Precision): the only operands where RMM differs from RNE
-        bins pos0p5   = {32'h3f000000};
-        bins neg0p5   = {32'hbf000000};
-        bins pos2p5   = {32'h40200000};
-        bins neg2p5   = {32'hc0200000};
-        bins postie   = {32'h4b800000};
-        bins negtie   = {32'hcb800000};
-    }
-
-    cp_frm_ties : coverpoint get_frm(ins.ops[2].val)  iff (ins.trap == 0 )  {
-        // Only RNE and RMM are distinguished by an exact tie
-        bins rne = {rne};
-        bins rmm = {rmm};
-    }
-
-    cr_fs1_edges_ties_frm : cross cp_fs1_edges_ties,cp_frm_ties  iff (ins.trap == 0 )  {
-        // Cross coverage FS1 exact ties, rounding mode
     }
 
 endgroup
@@ -2700,10 +2458,10 @@ covergroup F_fsub_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2734,10 +2492,10 @@ covergroup F_fsub_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2762,32 +2520,6 @@ covergroup F_fsub_s_cg with function sample(ins_t ins);
         // Cross coverage FS1, FS2, rounding mode
     }
 
-    cp_fs1_ties_frm : coverpoint unsigned'(ins.current.fs1_val[31:0])  iff (ins.trap == 0 )  {
-        // FS1 exact-tie values (Single Precision)
-        bins pos0p5   = {32'h3f000000};
-        bins neg0p5   = {32'hbf000000};
-        bins pos2p5   = {32'h40200000};
-        bins neg2p5   = {32'hc0200000};
-        bins postie   = {32'h4b800000};
-        bins negtie   = {32'hcb800000};
-    }
-
-    cp_fs2_tie_partner_frm : coverpoint unsigned'(ins.current.fs2_val[31:0])  iff (ins.trap == 0 )  {
-        // FS2 partner that makes the exact result a tie
-        bins pos1     = {32'h3f800000};
-        bins neg1     = {32'hbf800000};
-    }
-
-    cp_frm_ties_frm : coverpoint get_frm(ins.ops[3].val)  iff (ins.trap == 0 )  {
-        // Only RNE and RMM are distinguished by an exact tie
-        bins rne = {rne};
-        bins rmm = {rmm};
-    }
-
-    cr_fs1_fs2_edges_ties_frm : cross cp_fs1_ties_frm,cp_fs2_tie_partner_frm,cp_frm_ties_frm  iff (ins.trap == 0 )  {
-        // Cross coverage FS1 exact ties, FS2 tie partner, rounding mode
-    }
-
 endgroup
 // ---------------------
 covergroup F_fsw_cg with function sample(ins_t ins);
@@ -2807,10 +2539,10 @@ covergroup F_fsw_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2903,10 +2635,10 @@ covergroup F_fcvt_l_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2929,26 +2661,6 @@ covergroup F_fcvt_l_s_cg with function sample(ins_t ins);
 
     cr_fs1_edges_frm : cross cp_fs1_edges,cp_frm_2  iff (ins.trap == 0 )  {
         // Cross coverage FS1, FRM
-    }
-
-    cp_fs1_edges_ties : coverpoint unsigned'(ins.current.fs1_val[31:0])  iff (ins.trap == 0 )  {
-        // FS1 exact-tie values (Single Precision): the only operands where RMM differs from RNE
-        bins pos0p5   = {32'h3f000000};
-        bins neg0p5   = {32'hbf000000};
-        bins pos2p5   = {32'h40200000};
-        bins neg2p5   = {32'hc0200000};
-        bins postie   = {32'h4b800000};
-        bins negtie   = {32'hcb800000};
-    }
-
-    cp_frm_ties : coverpoint get_frm(ins.ops[2].val)  iff (ins.trap == 0 )  {
-        // Only RNE and RMM are distinguished by an exact tie
-        bins rne = {rne};
-        bins rmm = {rmm};
-    }
-
-    cr_fs1_edges_ties_frm : cross cp_fs1_edges_ties,cp_frm_ties  iff (ins.trap == 0 )  {
-        // Cross coverage FS1 exact ties, rounding mode
     }
 
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
@@ -2998,10 +2710,10 @@ covergroup F_fcvt_lu_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -3024,26 +2736,6 @@ covergroup F_fcvt_lu_s_cg with function sample(ins_t ins);
 
     cr_fs1_edges_frm : cross cp_fs1_edges,cp_frm_2  iff (ins.trap == 0 )  {
         // Cross coverage FS1, FRM
-    }
-
-    cp_fs1_edges_ties : coverpoint unsigned'(ins.current.fs1_val[31:0])  iff (ins.trap == 0 )  {
-        // FS1 exact-tie values (Single Precision): the only operands where RMM differs from RNE
-        bins pos0p5   = {32'h3f000000};
-        bins neg0p5   = {32'hbf000000};
-        bins pos2p5   = {32'h40200000};
-        bins neg2p5   = {32'hc0200000};
-        bins postie   = {32'h4b800000};
-        bins negtie   = {32'hcb800000};
-    }
-
-    cp_frm_ties : coverpoint get_frm(ins.ops[2].val)  iff (ins.trap == 0 )  {
-        // Only RNE and RMM are distinguished by an exact tie
-        bins rne = {rne};
-        bins rmm = {rmm};
-    }
-
-    cr_fs1_edges_ties_frm : cross cp_fs1_edges_ties,cp_frm_ties  iff (ins.trap == 0 )  {
-        // Cross coverage FS1 exact ties, rounding mode
     }
 
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {

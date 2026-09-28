@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 522
+#define SIGUPD_COUNT 498
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -940,253 +940,253 @@ F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbf800000_rup:
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbf800000_rup, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbf800000_rup_str)
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x3fc00000, frm = dyn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f10) # load fs1: f10 = 0x3fc00000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x40200000, frm = dyn)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f10) # load fs1: f10 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_dyn:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_dyn:
   fcvt.lu.s x16, f10, dyn # perform operation
   # Check if x16 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x16, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_dyn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_dyn_str)
+  RVTEST_SIGUPD(x18, x5, x4, x16, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_dyn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_dyn_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_dyn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_dyn_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_dyn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_dyn_str)
   fsrmi 0x0
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x3fc00000, frm = rdn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f17) # load fs1: f17 = 0x3fc00000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x40200000, frm = rdn)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f17) # load fs1: f17 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rdn:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rdn:
   fcvt.lu.s x22, f17, rdn # perform operation
   # Check if x22 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x22, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rdn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rdn_str)
+  RVTEST_SIGUPD(x18, x5, x4, x22, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rdn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rdn_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rdn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rdn_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rdn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rdn_str)
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x3fc00000, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f14) # load fs1: f14 = 0x3fc00000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x40200000, frm = rmm)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f14) # load fs1: f14 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rmm:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rmm:
   fcvt.lu.s x27, f14, rmm # perform operation
   # Check if x27 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x27, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rmm_str)
+  RVTEST_SIGUPD(x18, x5, x4, x27, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rmm_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rmm_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rmm_str)
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x3fc00000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f15) # load fs1: f15 = 0x3fc00000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x40200000, frm = rne)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f15) # load fs1: f15 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rne:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rne:
   fcvt.lu.s x7, f15, rne # perform operation
   # Check if x7 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x7, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rne_str)
+  RVTEST_SIGUPD(x18, x5, x4, x7, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rne_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rne_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rne_str)
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x3fc00000, frm = rtz)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f18) # load fs1: f18 = 0x3fc00000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x40200000, frm = rtz)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f18) # load fs1: f18 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rtz:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rtz:
   fcvt.lu.s x20, f18, rtz # perform operation
   # Check if x20 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x20, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rtz, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rtz_str)
+  RVTEST_SIGUPD(x18, x5, x4, x20, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rtz, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rtz_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rtz, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rtz_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rtz, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rtz_str)
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x3fc00000, frm = rup)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f16) # load fs1: f16 = 0x3fc00000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x40200000, frm = rup)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f16) # load fs1: f16 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rup:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rup:
   fcvt.lu.s x3, f16, rup # perform operation
   # Check if x3 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x3, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rup, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rup_str)
+  RVTEST_SIGUPD(x18, x5, x4, x3, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rup, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rup_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rup, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rup_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rup, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rup_str)
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xbfc00000, frm = dyn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f1) # load fs1: f1 = 0xbfc00000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xc0200000, frm = dyn)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f1) # load fs1: f1 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 0
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_dyn:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_dyn:
   fcvt.lu.s x21, f1, dyn # perform operation
   # Check if x21 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x21, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_dyn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_dyn_str)
+  RVTEST_SIGUPD(x18, x5, x4, x21, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_dyn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_dyn_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_dyn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_dyn_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_dyn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_dyn_str)
   fsrmi 0x0
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xbfc00000, frm = rdn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f10) # load fs1: f10 = 0xbfc00000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xc0200000, frm = rdn)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f10) # load fs1: f10 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rdn:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rdn:
   fcvt.lu.s x3, f10, rdn # perform operation
   # Check if x3 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x3, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rdn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rdn_str)
+  RVTEST_SIGUPD(x18, x5, x4, x3, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rdn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rdn_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rdn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rdn_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rdn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rdn_str)
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xbfc00000, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f7) # load fs1: f7 = 0xbfc00000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xc0200000, frm = rmm)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f7) # load fs1: f7 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rmm:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rmm:
   fcvt.lu.s x28, f7, rmm # perform operation
   # Check if x28 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x28, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rmm_str)
+  RVTEST_SIGUPD(x18, x5, x4, x28, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rmm_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rmm_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rmm_str)
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xbfc00000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f6) # load fs1: f6 = 0xbfc00000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xc0200000, frm = rne)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f6) # load fs1: f6 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rne:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rne:
   fcvt.lu.s x23, f6, rne # perform operation
   # Check if x23 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x23, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rne_str)
+  RVTEST_SIGUPD(x18, x5, x4, x23, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rne_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rne_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rne_str)
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xbfc00000, frm = rtz)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f7) # load fs1: f7 = 0xbfc00000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xc0200000, frm = rtz)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f7) # load fs1: f7 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rtz:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rtz:
   fcvt.lu.s x28, f7, rtz # perform operation
   # Check if x28 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x28, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rtz, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rtz_str)
+  RVTEST_SIGUPD(x18, x5, x4, x28, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rtz, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rtz_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rtz, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rtz_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rtz, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rtz_str)
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xbfc00000, frm = rup)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f11) # load fs1: f11 = 0xbfc00000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xc0200000, frm = rup)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f11) # load fs1: f11 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rup:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rup:
   fcvt.lu.s x12, f11, rup # perform operation
   # Check if x12 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x12, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rup, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rup_str)
+  RVTEST_SIGUPD(x18, x5, x4, x12, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rup, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rup_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rup, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rup_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rup, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rup_str)
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x40000000, frm = dyn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f9) # load fs1: f9 = 0x40000000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x4b800000, frm = dyn)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f9) # load fs1: f9 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 0
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_dyn:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_dyn:
   fcvt.lu.s x6, f9, dyn # perform operation
   # Check if x6 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x6, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_dyn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_dyn_str)
+  RVTEST_SIGUPD(x18, x5, x4, x6, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_dyn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_dyn_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_dyn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_dyn_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_dyn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_dyn_str)
   fsrmi 0x0
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x40000000, frm = rdn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f24) # load fs1: f24 = 0x40000000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x4b800000, frm = rdn)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f24) # load fs1: f24 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rdn:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rdn:
   fcvt.lu.s x11, f24, rdn # perform operation
   # Check if x11 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x11, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rdn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rdn_str)
+  RVTEST_SIGUPD(x18, x5, x4, x11, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rdn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rdn_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rdn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rdn_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rdn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rdn_str)
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x40000000, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f19) # load fs1: f19 = 0x40000000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x4b800000, frm = rmm)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f19) # load fs1: f19 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rmm:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rmm:
   fcvt.lu.s x2, f19, rmm # perform operation
   # Check if x2 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x2, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rmm_str)
+  RVTEST_SIGUPD(x18, x5, x4, x2, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rmm_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rmm_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rmm_str)
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x40000000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f18) # load fs1: f18 = 0x40000000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x4b800000, frm = rne)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f18) # load fs1: f18 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rne:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rne:
   fcvt.lu.s x7, f18, rne # perform operation
   # Check if x7 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x7, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rne_str)
+  RVTEST_SIGUPD(x18, x5, x4, x7, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rne_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rne_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rne_str)
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x40000000, frm = rtz)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f27) # load fs1: f27 = 0x40000000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x4b800000, frm = rtz)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f27) # load fs1: f27 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rtz:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rtz:
   fcvt.lu.s x9, f27, rtz # perform operation
   # Check if x9 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x9, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rtz, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rtz_str)
+  RVTEST_SIGUPD(x18, x5, x4, x9, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rtz, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rtz_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rtz, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rtz_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rtz, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rtz_str)
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x40000000, frm = rup)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f23) # load fs1: f23 = 0x40000000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0x4b800000, frm = rup)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f23) # load fs1: f23 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rup:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rup:
   fcvt.lu.s x31, f23, rup # perform operation
   # Check if x31 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x31, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rup, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rup_str)
+  RVTEST_SIGUPD(x18, x5, x4, x31, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rup, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rup_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rup, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rup_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rup, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rup_str)
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xc0000000, frm = dyn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f7) # load fs1: f7 = 0xc0000000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xcb800000, frm = dyn)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f7) # load fs1: f7 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_dyn:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_dyn:
   fcvt.lu.s x22, f7, dyn # perform operation
   # Check if x22 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x22, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_dyn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_dyn_str)
+  RVTEST_SIGUPD(x18, x5, x4, x22, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_dyn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_dyn_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_dyn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_dyn_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_dyn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_dyn_str)
   fsrmi 0x0
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xc0000000, frm = rdn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f7) # load fs1: f7 = 0xc0000000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xcb800000, frm = rdn)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f7) # load fs1: f7 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rdn:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rdn:
   fcvt.lu.s x13, f7, rdn # perform operation
   # Check if x13 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x13, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rdn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rdn_str)
+  RVTEST_SIGUPD(x18, x5, x4, x13, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rdn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rdn_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rdn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rdn_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rdn, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rdn_str)
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xc0000000, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f26) # load fs1: f26 = 0xc0000000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xcb800000, frm = rmm)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f26) # load fs1: f26 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rmm:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rmm:
   fcvt.lu.s x16, f26, rmm # perform operation
   # Check if x16 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x16, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rmm_str)
+  RVTEST_SIGUPD(x18, x5, x4, x16, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rmm_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rmm_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rmm_str)
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xc0000000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f22) # load fs1: f22 = 0xc0000000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xcb800000, frm = rne)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f22) # load fs1: f22 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rne:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rne:
   fcvt.lu.s x14, f22, rne # perform operation
   # Check if x14 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x14, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rne_str)
+  RVTEST_SIGUPD(x18, x5, x4, x14, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rne_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rne_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rne_str)
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xc0000000, frm = rtz)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f22) # load fs1: f22 = 0xc0000000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xcb800000, frm = rtz)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f22) # load fs1: f22 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rtz:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rtz:
   fcvt.lu.s x7, f22, rtz # perform operation
   # Check if x7 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x7, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rtz, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rtz_str)
+  RVTEST_SIGUPD(x18, x5, x4, x7, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rtz, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rtz_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rtz, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rtz_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rtz, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rtz_str)
 
-# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xc0000000, frm = rup)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f14) # load fs1: f14 = 0xc0000000
+# Testcase cp_fs1_edges_frm (Test source fs1 value = 0xcb800000, frm = rup)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f14) # load fs1: f14 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rup:
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rup:
   fcvt.lu.s x13, f14, rup # perform operation
   # Check if x13 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x13, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rup, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rup_str)
+  RVTEST_SIGUPD(x18, x5, x4, x13, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rup, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rup_str)
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rup, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rup_str)
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rup, F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rup_str)
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x00800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f14) # load fs1: f14 = 0x00800000
@@ -2573,130 +2573,6 @@ F_fcvt_lu_s_cg_cp_csr_frm_rmm:
   RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_csr_frm_rmm, F_fcvt_lu_s_cg_cp_csr_frm_rmm_str)
   fsrmi 0x0
 
-/////////////////////////////////
-// cp_fs1_edges_ties
-/////////////////////////////////
-
-# Testcase cp_fs1_edges_ties (Test source fs1 value = 0x3f000000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f27) # load fs1: f27 = 0x3f000000
-  fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x3f000000_rne:
-  fcvt.lu.s x13, f27, rne # perform operation
-  # Check if x13 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x13, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x3f000000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x3f000000_rne_str)
-  # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x3f000000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x3f000000_rne_str)
-
-# Testcase cp_fs1_edges_ties (Test source fs1 value = 0x3f000000, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f7) # load fs1: f7 = 0x3f000000
-  fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x3f000000_rmm:
-  fcvt.lu.s x23, f7, rmm # perform operation
-  # Check if x23 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x23, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x3f000000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x3f000000_rmm_str)
-  # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x3f000000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x3f000000_rmm_str)
-
-# Testcase cp_fs1_edges_ties (Test source fs1 value = 0xbf000000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f20) # load fs1: f20 = 0xbf000000
-  fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xbf000000_rne:
-  fcvt.lu.s x11, f20, rne # perform operation
-  # Check if x11 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x11, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xbf000000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xbf000000_rne_str)
-  # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xbf000000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xbf000000_rne_str)
-
-# Testcase cp_fs1_edges_ties (Test source fs1 value = 0xbf000000, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f1) # load fs1: f1 = 0xbf000000
-  fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xbf000000_rmm:
-  fcvt.lu.s x17, f1, rmm # perform operation
-  # Check if x17 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x17, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xbf000000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xbf000000_rmm_str)
-  # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xbf000000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xbf000000_rmm_str)
-
-# Testcase cp_fs1_edges_ties (Test source fs1 value = 0x40200000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f24) # load fs1: f24 = 0x40200000
-  fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x40200000_rne:
-  fcvt.lu.s x14, f24, rne # perform operation
-  # Check if x14 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x14, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x40200000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x40200000_rne_str)
-  # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x40200000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x40200000_rne_str)
-
-# Testcase cp_fs1_edges_ties (Test source fs1 value = 0x40200000, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f25) # load fs1: f25 = 0x40200000
-  fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x40200000_rmm:
-  fcvt.lu.s x10, f25, rmm # perform operation
-  # Check if x10 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x10, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x40200000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x40200000_rmm_str)
-  # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x40200000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x40200000_rmm_str)
-
-# Testcase cp_fs1_edges_ties (Test source fs1 value = 0xc0200000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f24) # load fs1: f24 = 0xc0200000
-  fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xc0200000_rne:
-  fcvt.lu.s x26, f24, rne # perform operation
-  # Check if x26 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x26, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xc0200000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xc0200000_rne_str)
-  # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xc0200000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xc0200000_rne_str)
-
-# Testcase cp_fs1_edges_ties (Test source fs1 value = 0xc0200000, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f28) # load fs1: f28 = 0xc0200000
-  fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xc0200000_rmm:
-  fcvt.lu.s x6, f28, rmm # perform operation
-  # Check if x6 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x6, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xc0200000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xc0200000_rmm_str)
-  # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xc0200000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xc0200000_rmm_str)
-
-# Testcase cp_fs1_edges_ties (Test source fs1 value = 0x4b800000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f22) # load fs1: f22 = 0x4b800000
-  fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x4b800000_rne:
-  fcvt.lu.s x25, f22, rne # perform operation
-  # Check if x25 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x25, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x4b800000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x4b800000_rne_str)
-  # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x4b800000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x4b800000_rne_str)
-
-# Testcase cp_fs1_edges_ties (Test source fs1 value = 0x4b800000, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f18) # load fs1: f18 = 0x4b800000
-  fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x4b800000_rmm:
-  fcvt.lu.s x27, f18, rmm # perform operation
-  # Check if x27 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x27, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x4b800000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x4b800000_rmm_str)
-  # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x4b800000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x4b800000_rmm_str)
-
-# Testcase cp_fs1_edges_ties (Test source fs1 value = 0xcb800000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f27) # load fs1: f27 = 0xcb800000
-  fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xcb800000_rne:
-  fcvt.lu.s x26, f27, rne # perform operation
-  # Check if x26 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x26, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xcb800000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xcb800000_rne_str)
-  # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xcb800000_rne, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xcb800000_rne_str)
-
-# Testcase cp_fs1_edges_ties (Test source fs1 value = 0xcb800000, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x15, f26) # load fs1: f26 = 0xcb800000
-  fsflagsi 0b00000 # clear all fflags
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xcb800000_rmm:
-  fcvt.lu.s x25, f26, rmm # perform operation
-  # Check if x25 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x25, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xcb800000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xcb800000_rmm_str)
-  # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xcb800000_rmm, F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xcb800000_rmm_str)
-
   mv x2, x18 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -2794,30 +2670,30 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000bf800000
 .dword 0x00000000bf800000
 .dword 0x00000000bf800000
-.dword 0x000000003fc00000
-.dword 0x000000003fc00000
-.dword 0x000000003fc00000
-.dword 0x000000003fc00000
-.dword 0x000000003fc00000
-.dword 0x000000003fc00000
-.dword 0x00000000bfc00000
-.dword 0x00000000bfc00000
-.dword 0x00000000bfc00000
-.dword 0x00000000bfc00000
-.dword 0x00000000bfc00000
-.dword 0x00000000bfc00000
-.dword 0x0000000040000000
-.dword 0x0000000040000000
-.dword 0x0000000040000000
-.dword 0x0000000040000000
-.dword 0x0000000040000000
-.dword 0x0000000040000000
-.dword 0x00000000c0000000
-.dword 0x00000000c0000000
-.dword 0x00000000c0000000
-.dword 0x00000000c0000000
-.dword 0x00000000c0000000
-.dword 0x00000000c0000000
+.dword 0x0000000040200000
+.dword 0x0000000040200000
+.dword 0x0000000040200000
+.dword 0x0000000040200000
+.dword 0x0000000040200000
+.dword 0x0000000040200000
+.dword 0x00000000c0200000
+.dword 0x00000000c0200000
+.dword 0x00000000c0200000
+.dword 0x00000000c0200000
+.dword 0x00000000c0200000
+.dword 0x00000000c0200000
+.dword 0x000000004b800000
+.dword 0x000000004b800000
+.dword 0x000000004b800000
+.dword 0x000000004b800000
+.dword 0x000000004b800000
+.dword 0x000000004b800000
+.dword 0x00000000cb800000
+.dword 0x00000000cb800000
+.dword 0x00000000cb800000
+.dword 0x00000000cb800000
+.dword 0x00000000cb800000
+.dword 0x00000000cb800000
 .dword 0x0000000000800000
 .dword 0x0000000000800000
 .dword 0x0000000000800000
@@ -2950,18 +2826,6 @@ RVTEST_DATA_BEGIN
 .dword 0xffffffffd1aafb69
 .dword 0x000000005f7e6bc8
 .dword 0xffffffff8c4a44bc
-.dword 0x000000003f000000
-.dword 0x000000003f000000
-.dword 0x00000000bf000000
-.dword 0x00000000bf000000
-.dword 0x0000000040200000
-.dword 0x0000000040200000
-.dword 0x00000000c0200000
-.dword 0x00000000c0200000
-.dword 0x000000004b800000
-.dword 0x000000004b800000
-.dword 0x00000000cb800000
-.dword 0x00000000cb800000
 
 // Testcase strings
 F_fcvt_lu_s_cg_cp_rd_b0_str: .string "\"test: 1; cg: F_fcvt.lu.s_cg; cp: cp_rd; bin: b0\""
@@ -3052,30 +2916,30 @@ F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbf800000_rmm_str: .string "\"test: 85; cg: F_
 F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbf800000_rne_str: .string "\"test: 86; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xbf800000_rne\""
 F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbf800000_rtz_str: .string "\"test: 87; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xbf800000_rtz\""
 F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbf800000_rup_str: .string "\"test: 88; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xbf800000_rup\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_dyn_str: .string "\"test: 89; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x3fc00000_dyn\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rdn_str: .string "\"test: 90; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x3fc00000_rdn\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rmm_str: .string "\"test: 91; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x3fc00000_rmm\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rne_str: .string "\"test: 92; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x3fc00000_rne\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rtz_str: .string "\"test: 93; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x3fc00000_rtz\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x3fc00000_rup_str: .string "\"test: 94; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x3fc00000_rup\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_dyn_str: .string "\"test: 95; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xbfc00000_dyn\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rdn_str: .string "\"test: 96; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xbfc00000_rdn\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rmm_str: .string "\"test: 97; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xbfc00000_rmm\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rne_str: .string "\"test: 98; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xbfc00000_rne\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rtz_str: .string "\"test: 99; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xbfc00000_rtz\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xbfc00000_rup_str: .string "\"test: 100; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xbfc00000_rup\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_dyn_str: .string "\"test: 101; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x40000000_dyn\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rdn_str: .string "\"test: 102; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x40000000_rdn\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rmm_str: .string "\"test: 103; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x40000000_rmm\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rne_str: .string "\"test: 104; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x40000000_rne\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rtz_str: .string "\"test: 105; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x40000000_rtz\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40000000_rup_str: .string "\"test: 106; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x40000000_rup\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_dyn_str: .string "\"test: 107; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xc0000000_dyn\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rdn_str: .string "\"test: 108; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xc0000000_rdn\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rmm_str: .string "\"test: 109; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xc0000000_rmm\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rne_str: .string "\"test: 110; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xc0000000_rne\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rtz_str: .string "\"test: 111; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xc0000000_rtz\""
-F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0000000_rup_str: .string "\"test: 112; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xc0000000_rup\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_dyn_str: .string "\"test: 89; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x40200000_dyn\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rdn_str: .string "\"test: 90; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x40200000_rdn\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rmm_str: .string "\"test: 91; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x40200000_rmm\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rne_str: .string "\"test: 92; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x40200000_rne\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rtz_str: .string "\"test: 93; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x40200000_rtz\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x40200000_rup_str: .string "\"test: 94; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x40200000_rup\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_dyn_str: .string "\"test: 95; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xc0200000_dyn\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rdn_str: .string "\"test: 96; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xc0200000_rdn\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rmm_str: .string "\"test: 97; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xc0200000_rmm\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rne_str: .string "\"test: 98; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xc0200000_rne\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rtz_str: .string "\"test: 99; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xc0200000_rtz\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xc0200000_rup_str: .string "\"test: 100; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xc0200000_rup\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_dyn_str: .string "\"test: 101; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x4b800000_dyn\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rdn_str: .string "\"test: 102; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x4b800000_rdn\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rmm_str: .string "\"test: 103; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x4b800000_rmm\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rne_str: .string "\"test: 104; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x4b800000_rne\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rtz_str: .string "\"test: 105; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x4b800000_rtz\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x4b800000_rup_str: .string "\"test: 106; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x4b800000_rup\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_dyn_str: .string "\"test: 107; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xcb800000_dyn\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rdn_str: .string "\"test: 108; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xcb800000_rdn\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rmm_str: .string "\"test: 109; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xcb800000_rmm\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rne_str: .string "\"test: 110; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xcb800000_rne\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rtz_str: .string "\"test: 111; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xcb800000_rtz\""
+F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0xcb800000_rup_str: .string "\"test: 112; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0xcb800000_rup\""
 F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x800000_dyn_str: .string "\"test: 113; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x800000_dyn\""
 F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x800000_rdn_str: .string "\"test: 114; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x800000_rdn\""
 F_fcvt_lu_s_cg_cp_fs1_edges_frm_b0x800000_rmm_str: .string "\"test: 115; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_frm; bin: b0x800000_rmm\""
@@ -3208,18 +3072,6 @@ F_fcvt_lu_s_cg_cp_csr_frm_rtz_str: .string "\"test: 241; cg: F_fcvt.lu.s_cg; cp:
 F_fcvt_lu_s_cg_cp_csr_frm_rdn_str: .string "\"test: 242; cg: F_fcvt.lu.s_cg; cp: cp_csr_frm; bin: rdn\""
 F_fcvt_lu_s_cg_cp_csr_frm_rup_str: .string "\"test: 243; cg: F_fcvt.lu.s_cg; cp: cp_csr_frm; bin: rup\""
 F_fcvt_lu_s_cg_cp_csr_frm_rmm_str: .string "\"test: 244; cg: F_fcvt.lu.s_cg; cp: cp_csr_frm; bin: rmm\""
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x3f000000_rne_str: .string "\"test: 245; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_ties; bin: b0x3f000000_rne\""
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x3f000000_rmm_str: .string "\"test: 246; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_ties; bin: b0x3f000000_rmm\""
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xbf000000_rne_str: .string "\"test: 247; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_ties; bin: b0xbf000000_rne\""
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xbf000000_rmm_str: .string "\"test: 248; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_ties; bin: b0xbf000000_rmm\""
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x40200000_rne_str: .string "\"test: 249; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_ties; bin: b0x40200000_rne\""
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x40200000_rmm_str: .string "\"test: 250; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_ties; bin: b0x40200000_rmm\""
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xc0200000_rne_str: .string "\"test: 251; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_ties; bin: b0xc0200000_rne\""
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xc0200000_rmm_str: .string "\"test: 252; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_ties; bin: b0xc0200000_rmm\""
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x4b800000_rne_str: .string "\"test: 253; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_ties; bin: b0x4b800000_rne\""
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0x4b800000_rmm_str: .string "\"test: 254; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_ties; bin: b0x4b800000_rmm\""
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xcb800000_rne_str: .string "\"test: 255; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_ties; bin: b0xcb800000_rne\""
-F_fcvt_lu_s_cg_cp_fs1_edges_ties_b0xcb800000_rmm_str: .string "\"test: 256; cg: F_fcvt.lu.s_cg; cp: cp_fs1_edges_ties; bin: b0xcb800000_rmm\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

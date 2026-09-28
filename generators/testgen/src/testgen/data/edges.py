@@ -272,10 +272,10 @@ class FLOAT_EDGES:
         0x80000000,  # -0
         0x3F800000,  # 1.0
         0xBF800000,  # -1.0
-        0x3FC00000,  # 1.5
-        0xBFC00000,  # -1.5
-        0x40000000,  # 2.0
-        0xC0000000,  # -2.0
+        0x40200000,  # 2.5 (a tie when rounded to an integer)
+        0xC0200000,  # -2.5
+        0x4B800000,  # 2^24 (2^24 + 1 is a tie)
+        0xCB800000,  # -2^24
         0x00800000,  # smallest positive normalized
         0x80800000,  # smallest negative normalized
         0x7F7FFFFF,  # most positive
@@ -303,10 +303,10 @@ class FLOAT_EDGES:
         0x8000000000000000,  # -0.0
         0x3FF0000000000000,  # 1.0
         0xBFF0000000000000,  # -1.0
-        0x3FF8000000000000,  # 1.5
-        0xBFF8000000000000,  # -1.5
-        0x4000000000000000,  # 2.0
-        0xC000000000000000,  # -2.0
+        0x4004000000000000,  # 2.5 (a tie when rounded to an integer)
+        0xC004000000000000,  # -2.5
+        0x4340000000000000,  # 2^53 (2^53 + 1 is a tie)
+        0xC340000000000000,  # -2^53
         0x0010000000000000,  # smallest positive normalized
         0x8010000000000000,  # smallest negative normalized
         0x7FEFFFFFFFFFFFFF,  # most positive normalized
@@ -334,10 +334,10 @@ class FLOAT_EDGES:
         0x8000,  # -0.0
         0x3C00,  # 1.0
         0xBC00,  # -1.0
-        0x3E00,  # 1.5
-        0xBE00,  # -1.5
-        0x4000,  # 2.0
-        0xC000,  # -2.0
+        0x4100,  # 2.5 (a tie when rounded to an integer)
+        0xC100,  # -2.5
+        0x6800,  # 2^11 (2^11 + 1 is a tie)
+        0xE800,  # -2^11
         0x0400,  # smallest normalized
         0x8400,  # smallest negative normalized
         0x7BFF,  # most positive normalized
@@ -365,10 +365,10 @@ class FLOAT_EDGES:
         0x8000,  # -0
         0x3F80,  # 1.0
         0xBF80,  # -1.0
-        0x3FC0,  # 1.5
-        0xBFC0,  # -1.5
-        0x4000,  # 2.0
-        0xC000,  # -2.0
+        0x4020,  # 2.5 (a tie when rounded to an integer)
+        0xC020,  # -2.5
+        0x4380,  # 2^8 (2^8 + 1 is a tie)
+        0xC380,  # -2^8
         0x0080,  # smallest positive normalized
         0x8080,  # smallest negative normalized
         0x7F7F,  # most positive
@@ -390,53 +390,6 @@ class FLOAT_EDGES:
         0x7EF8,  # random positive 1.6482427e+38
         0x813D,  # random negative -3.4713818e-38
     )
-
-    # Exact-tie operands. RMM differs from RNE only on an exact tie, so these are
-    # the only values that tell the two rounding modes apart.
-    # +-0.5 and +-2.5 are float-to-integer ties; +-2^p (p = significand bits) is an
-    # arithmetic tie when combined with +-1.0 from tie_partners_*.
-    ties_single = (
-        0x3F000000,  # 0.5
-        0xBF000000,  # -0.5
-        0x40200000,  # 2.5
-        0xC0200000,  # -2.5
-        0x4B800000,  # 2^24
-        0xCB800000,  # -2^24
-    )
-
-    ties_double = (
-        0x3FE0000000000000,  # 0.5
-        0xBFE0000000000000,  # -0.5
-        0x4004000000000000,  # 2.5
-        0xC004000000000000,  # -2.5
-        0x4340000000000000,  # 2^53
-        0xC340000000000000,  # -2^53
-    )
-
-    ties_half = (
-        0x3800,  # 0.5
-        0xB800,  # -0.5
-        0x4100,  # 2.5
-        0xC100,  # -2.5
-        0x6800,  # 2^11
-        0xE800,  # -2^11
-    )
-
-    ties_bf16 = (
-        0x3F00,  # 0.5
-        0xBF00,  # -0.5
-        0x4020,  # 2.5
-        0xC020,  # -2.5
-        0x4380,  # 2^8
-        0xC380,  # -2^8
-    )
-
-    # Second operand for the arithmetic tie crosses; kept to two entries so the
-    # cross stays linear in the size of ties_*.
-    tie_partners_single = (0x3F800000, 0xBF800000)  # 1.0, -1.0
-    tie_partners_double = (0x3FF0000000000000, 0xBFF0000000000000)  # 1.0, -1.0
-    tie_partners_half = (0x3C00, 0xBC00)  # 1.0, -1.0
-    tie_partners_bf16 = (0x3F80, 0xBF80)  # 1.0, -1.0
 
     # Bad NaN-boxing: Double register holding Single value
     bad_NaN_double_single = (

@@ -405,7 +405,7 @@
     },
     "clock_frequency": 1000000000,
     "instructions_per_tick": 2,
-    "wfi_is_nop": true,
+    "wfi_is_nop": false,
     // WFI is optionally available to User mode.  Note that even if
     // `wfi_is_nop` is set to `true` above, it will still not be
     // available to User mode unless `wfi_available_to_user_mode` is

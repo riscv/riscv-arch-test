@@ -207,7 +207,7 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
     """Generate ecall and ebreak tests."""
     ######################################
     covergroup = "Sm_mprivinst_cg"
-    coverpoint = "cp_mprvinst"
+    coverpoint = "cp_mprivinst"
     ######################################
 
     lines = [
@@ -800,7 +800,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc = test_data.new_test_chunk(test_chunks, "mcsr_addr")
     tc.section_header = comment_banner(
-        "cp_mtval_{zero,ilen_walk1,ilen_ones}",
+        "cp_mtval_zero / cp_mtval_ilen_walk1 / cp_mtval_ilen_ones",
         "Write 0 to mtval, and every ILEN-bit value as a walking 1 and all 32 1s when the illegal\n"
         "instruction encoding is reported in mtval",
     )
@@ -1114,14 +1114,10 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     test_data.int_regs.return_registers([r1, r2, rc, rmisasave])
 
-    ######################################
-    coverpoint = "cp_misa_bv"
-    ######################################
-
     tc = test_data.new_test_chunk(test_chunks, "misa")
 
     tc.section_header = comment_banner(
-        coverpoint,
+        "cp_misa_b / cp_misa_v",
         "Sm1p13: misa.B (bit 1) and misa.V (bit 21) correctness.\n"
         "Read, set, and clear each bit; read back and write to signature.",
     )
@@ -1137,28 +1133,28 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             f"LI(x{rv}, 0x200000)            # bitmask for misa.V (bit 21)",
             "",
             "# Set misa.B and read back",
-            test_data.add_testcase("set_B", coverpoint, covergroup),
+            test_data.add_testcase("set_B", "cp_misa_b", covergroup),
             f"csrs misa, x{rb}              # attempt to set misa.B",
             f"csrr x{rr3}, misa             # read back misa",
             f"and x{rr3}, x{rr3}, x{rb}     # isolate misa.B",
             write_sigupd(rr3, test_data),
             "",
             "# Clear misa.B and read back",
-            test_data.add_testcase("clr_B", coverpoint, covergroup),
+            test_data.add_testcase("clr_B", "cp_misa_b", covergroup),
             f"csrc misa, x{rb}              # attempt to clear misa.B",
             f"csrr x{rr3}, misa             # read back misa",
             f"and x{rr3}, x{rr3}, x{rb}     # isolate misa.B",
             write_sigupd(rr3, test_data),
             "",
             "# Set misa.V and read back",
-            test_data.add_testcase("set_V", coverpoint, covergroup),
+            test_data.add_testcase("set_V", "cp_misa_v", covergroup),
             f"csrs misa, x{rv}              # attempt to set misa.V",
             f"csrr x{rr3}, misa             # read back misa",
             f"and x{rr3}, x{rr3}, x{rv}     # isolate misa.V",
             write_sigupd(rr3, test_data),
             "",
             "# Clear misa.V and read back",
-            test_data.add_testcase("clr_V", coverpoint, covergroup),
+            test_data.add_testcase("clr_V", "cp_misa_v", covergroup),
             f"csrc misa, x{rv}              # attempt to clear misa.V",
             f"csrr x{rr3}, misa             # read back misa",
             f"and x{rr3}, x{rr3}, x{rv}     # isolate misa.V",
@@ -1337,6 +1333,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED",
+            "#ifdef UDB_COUNTINHIBIT_EN_0 // mcountinhibit.CY may be read-only zero",
             f"LI(x{r1}, 0b1)        # inhibit mcycle",
             f"csrw mcountinhibit, x{r1}        # inhibit mcycle",
             f"csrr x{r1}, mcycle        # read mcycle",
@@ -1345,6 +1342,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             f"csrr x{r2}, mcycle        # read mcycle again",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be 0",
             write_sigupd(r2, test_data),
+            "#endif // UDB_COUNTINHIBIT_EN_0",
         ]
     )
 
@@ -1359,6 +1357,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     )
     lines.extend(
         [
+            "#ifdef UDB_COUNTINHIBIT_EN_2 // mcountinhibit.IR may be read-only zero",
             f"LI(x{r1}, 0b100)        # inhibit minstret",
             f"csrw mcountinhibit, x{r1}        # inhibit minstret",
             f"csrr x{r1}, minstret        # read minstret",
@@ -1367,6 +1366,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             f"csrr x{r2}, minstret        # read minstret again",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be 0",
             write_sigupd(r2, test_data),
+            "#endif // UDB_COUNTINHIBIT_EN_2",
             "#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED",
         ]
     )

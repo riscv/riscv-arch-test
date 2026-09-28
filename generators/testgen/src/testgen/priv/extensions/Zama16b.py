@@ -93,7 +93,7 @@ _AMO_OPS: list[tuple[str, int, str]] = [
     ("amominu.h", 2, "#if defined(ZAAMO_SUPPORTED) && defined(ZABHA_SUPPORTED)"),
     # Compare-and-swap (Zaamo + Zacas)
     ("amocas.w", 4, "#if defined(ZAAMO_SUPPORTED) && defined(ZACAS_SUPPORTED)"),
-    ("amocas.d", 8, "#if defined(ZAAMO_SUPPORTED) && defined(ZACAS_SUPPORTED) && __riscv_xlen == 64"),
+    ("amocas.d", 8, "#if defined(ZAAMO_SUPPORTED) && defined(ZACAS_SUPPORTED)"),
     ("amocas.q", 16, "#if defined(ZAAMO_SUPPORTED) && defined(ZACAS_SUPPORTED) && __riscv_xlen == 64"),
 ]
 
@@ -342,13 +342,33 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
                 f"addi x{addr_reg}, x{base_reg}, {offset}   # effective address = base + {offset}",
                 f"LI(x{src_reg}, 0xABC)                      # value AMO will write into memory",
             ]
+            # amocas.d on RV32 and amocas.q on RV64 take register pairs
+            pair = "#if __riscv_xlen == 32" if mnemonic == "amocas.d" else None
             if size == 16:
                 setup.append(f"LI(x{src_reg + 1}, 0xDEF)                  # upper half of the 128-bit source")
+            elif pair:
+                setup += [
+                    pair,
+                    f"LI(x{src_reg + 1}, 0)                      # upper half of the 64-bit source",
+                    "#endif",
+                ]
             if mnemonic.startswith("amocas"):
                 # amocas compares rd against memory, so preload it with the scratch
                 # pattern; otherwise the compare fails and nothing is written
-                for k, value in enumerate(_scratch_operand(offset, size)):
-                    setup.append(f"LI(x{dest_reg + k}, {value:#x})   # amocas compare operand")
+                compare = _scratch_operand(offset, size)
+                if pair:
+                    value = compare[0]
+                    setup += [
+                        pair,
+                        f"LI(x{dest_reg}, {value & 0xFFFFFFFF:#x})   # amocas compare operand, low word",
+                        f"LI(x{dest_reg + 1}, {value >> 32:#x})   # amocas compare operand, high word",
+                        "#else",
+                        f"LI(x{dest_reg}, {value:#x})   # amocas compare operand",
+                        "#endif",
+                    ]
+                else:
+                    for k, value in enumerate(compare):
+                        setup.append(f"LI(x{dest_reg + k}, {value:#x})   # amocas compare operand")
             setup.extend(
                 [
                     test_data.add_testcase(f"{bin_name}_off{offset}", coverpoint, covergroup),
@@ -361,6 +381,8 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
             lines.append(write_sigupd(dest_reg, test_data))
             if size == 16:
                 lines.append(write_sigupd(dest_reg + 1, test_data))
+            elif pair:
+                lines += [pair, write_sigupd(dest_reg + 1, test_data), "#endif"]
             lines.extend(_emit_sig_dump(base_reg, dest_reg, test_data))
 
     if prev_guard is not None:

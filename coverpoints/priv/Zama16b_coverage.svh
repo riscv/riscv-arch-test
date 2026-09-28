@@ -154,10 +154,10 @@ covergroup Zama16b_cg with function sample(ins_t ins);
                 wildcard bins amomaxu_d = {AMOMAXU_D};
                 wildcard bins amomin_d  = {AMOMIN_D};
                 wildcard bins amominu_d = {AMOMINU_D};
-                `ifdef ZACAS_SUPPORTED
-                    wildcard bins amocas_d = {AMOCAS_D};
-                `endif // ZACAS_SUPPORTED
             `endif // UDB_MXLEN_64
+            `ifdef ZACAS_SUPPORTED
+                wildcard bins amocas_d = {AMOCAS_D};
+            `endif // ZACAS_SUPPORTED
         `endif // ZAAMO_SUPPORTED
     }
     offset_8byte: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) {

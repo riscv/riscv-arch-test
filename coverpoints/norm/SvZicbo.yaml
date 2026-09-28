@@ -1,37 +1,59 @@
+# Mapping of normative rules to coverpoints for a test suite
+
 normative_rule_definitions:
-  # Mapping of normative rules to coverpoints for a test suite
-
   # When a page-fault, guest-page-fault, or access-fault exception is taken, the
-  # relevant *tval CSR is written with the faulting effective address (i.e. the
-  # value of rs1).
+  # relevant *tval CSR is written with the faulting effective address (i.e. the value of
+  # rs1).
   - name: fault_excep_csr
-    coverpoint: ["SvZicbo_cg/PTE_inv_cbo_s", "TODO: guest page fault"]
+    coverpoint:
+      [
+        "SvZicbo_cg/{cp_PTE_inv_cbo_s,cp_PTE_inv_cbo_u}",
+        "TODO: guest page fault",
+      ]
 
-  # If access to the cache block is not permitted, a cache-block management
-  # instruction raises a store page-fault or store guest-page-fault exception if
-  # address translation does not permit any access or raises a store access-fault
-  # exception otherwise.
+  # If access to the cache block is not permitted, a cache-block management instruction
+  # raises a store page-fault or store guest-page-fault exception if address translation
+  # does not permit any access or raises a store access-fault exception otherwise.
   - name: cbm_unperm_fault
-    coverpoint: ["SvZicbo_cg/PTE_inv_cbo_s", "TODO: guest page fault"]
+    coverpoint:
+      [
+        "SvZicbo_cg/{cp_PTE_rw_unset_zicbom_s,cp_PTE_rw_unset_zicbom_u}",
+        "TODO: guest page fault",
+      ]
 
   # During address translation, the instruction also checks the accessed bit and may
   # either raise an exception or set the bit as required.
   - name: cbm_unperm_translate
-    coverpoint: ["SvZicbo_cg/cp_Abit_unset_cbo_s", "TODO: guest page fault"]
+    coverpoint:
+      [
+        "SvZicbo_cg/{cp_Abit_unset_cbo_s,cp_Abit_unset_cbo_u}",
+        "TODO: guest page fault",
+      ]
 
-  # If access to the cache block is not permitted, a cache-block zero instruction
-  # raises a store page-fault or store guest-page-fault exception if address
-  # translation does not permit write access or raises a store access-fault
-  # exception otherwise.
+  # If access to the cache block is not permitted, a cache-block zero instruction raises
+  # a store page-fault or store guest-page-fault exception if address translation does
+  # not permit write access or raises a store access-fault exception otherwise.
   - name: cbz_unperm_fault
-    coverpoint: ["SvZicbo_cg/PTE_inv_cbo_s", "TODO: guest page fault"]
+    coverpoint:
+      [
+        "SvZicbo_cg/{cp_PTE_w_unset_zicboz_s,cp_PTE_w_unset_zicboz_u}",
+        "TODO: guest page fault",
+      ]
 
-  # During address translation, the instruction also checks the accessed and dirty
-  # bits and may either raise an exception or set the bits as required.
+  # During address translation, the instruction also checks the accessed and dirty bits
+  # and may either raise an exception or set the bits as required.
   - name: cbz_unperm_translate
-    coverpoint: ["SvZicbo_cg/{cp_Abit_unset_cbo_s,cp_Dbit_unset_zicbom_s}"]
+    coverpoint: ["SvZicbo_cg/{cp_Abit_unset_cbo_s,cp_Dbit_unset_zicboz_s}"]
 
-  # During address translation, the instruction does not check the accessed and
-  # dirty bits and neither raises an exception nor sets the bits.
+  # During address translation, the instruction does not check the accessed and dirty
+  # bits and neither raises an exception nor sets the bits.
   - name: cbp_unperm_translate
-    coverpoint: ["SvZicbo_cg/{cp_Abit_unset_cbo_s,cp_Dbit_unset_zicbom_s}"]
+    coverpoint: ["SvZicbo_cg/{cp_PTE_rwx_zicbop_s,cp_PTE_rwx_zicbop_u}"]
+
+  # PMAs are checked for any access to physical memory, including accesses that have
+  # undergone virtual to physical memory translation.
+  - name: pma_chk_paddr
+    coverpoint:
+      [
+        "SvZicbo_cg/{cp_leaf_PTE_to_nonexistent_pa_cbo_s,cp_leaf_PTE_to_nonexistent_pa_cbo_u}",
+      ]

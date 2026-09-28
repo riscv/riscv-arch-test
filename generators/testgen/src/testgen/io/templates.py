@@ -12,7 +12,7 @@ import importlib.resources
 import re
 from pathlib import Path
 
-from testgen.constants import EXTENSION_PARAM_MAP
+from testgen.constants import EXPERIMENTAL_EXTENSIONS, EXTENSION_PARAM_MAP
 from testgen.data.config import TestConfig
 
 
@@ -46,6 +46,7 @@ def insert_header_template(
     testsuite = test_config.testsuite
     E_ext = test_config.E_ext
     required_extensions = test_config.required_extensions
+    forbidden_extensions = test_config.forbidden_extensions
     alternative_extensions = (
         [] if required_extensions is None else [ext for ext in required_extensions if isinstance(ext, list)]
     )
@@ -67,10 +68,13 @@ def insert_header_template(
         all_extensions = flat_ext_components
         march = generate_march_string(all_extensions, xlen)
     all_defines = [*(extra_defines or []), *generate_defines_from_extensions(all_extensions)]
+    if not EXPERIMENTAL_EXTENSIONS.isdisjoint(all_extensions):
+        all_defines.append("#define RVTEST_EXPERIMENTAL")
     # Replace placeholders
+    forbidden_extension_line = "" if not forbidden_extensions else f"\n# FORBIDDEN_EXTENSIONS: {forbidden_extensions}"
     template = (
         template.replace("@TEST_PATH@", f"{test_file}")
-        .replace("@EXTENSION_LIST@", f"{extension_requirements}")
+        .replace("@EXTENSION_LIST@", f"{extension_requirements}{forbidden_extension_line}")
         .replace("@PARAMS@", format_params(params, flat_ext_components))
         .replace("@MARCH@", march)
         .replace("@EXTRA_DEFINES@", "\n".join(all_defines))
@@ -142,9 +146,6 @@ def canonicalize_extensions(
             no_sew_suffix = re.sub(r"\d+$", "", testsuite)
             if no_sew_suffix in ext_components:
                 ext_components.remove(no_sew_suffix)
-
-    if any(ext.startswith(("V", "Zv")) for ext in ext_components):
-        ext_components.append("M")  # Add M if V is present (required for gcc 15)
 
     ext_components = list(dict.fromkeys(ext_components))  # Remove duplicates while preserving order
 

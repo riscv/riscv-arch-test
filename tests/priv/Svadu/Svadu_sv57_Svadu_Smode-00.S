@@ -11,14 +11,14 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'Sv57', 'Svadu']
 # # # no param constraints
-# MARCH: rv${XLEN}i_zicsr_zifencei
+# MARCH: rv${XLEN}i_zicsr_zifencei_svadu
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
 #define SIGUPD_COUNT 100
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -34,7 +34,6 @@ RVTEST_BEGIN
 
 
 main:
-  LI(a2, 0x800) // Test signature initialization
 
 // Virtual addresses for code and test regions
 
@@ -62,15 +61,28 @@ main:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL4)
   sfence.vma
 
-// Set up the code-region save area.
-  csrr a0, mscratch
+// The boot tables identity map the test image, but that mapping is not user
+// accessible, so the code is mapped again at va_rvtest_code_begin. Registering
+// that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
+// to can fetch from.
+  LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL4)
 
   SATP_SETUP_RV64(sv57) // Enable address translation.
   sfence.vma
 
   LI(t0, MENVCFG_ADUE)
-  csrs menvcfg, t0
+  # T-SBI call to execute instruction: csrs menvcfg, t0
+  # Copy rs1 (x5) to a1 for T-SBI call
+  mv a1, x5
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, t0
+  ecall # T-SBI call to execute instruction at suitable privilege level
+
+  LI(a2, 0x800) // Test signature initialization
 
 // Test case 1: PTE.A unset at level 4
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l4_w, LEVEL4)
@@ -78,33 +90,31 @@ main:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l4_x, LEVEL4)
   sfence.vma
 
-  LI(a0, (va_data_l4_w >> 48) << 48)
+  LI(s0, (va_data_l4_w >> 48) << 48)
   LA(t0, rvtest_data_1)
   slli t0, t0, 16
   srli t0, t0, 16
-  add a0, a0, t0
-  LI(a1, (va_data_l4_r >> 48) << 48)
+  add s0, s0, t0
+  LI(s1, (va_data_l4_r >> 48) << 48)
   LA(t0, rvtest_data_1)
   slli t0, t0, 16
   srli t0, t0, 16
-  add a1, a1, t0
+  add s1, s1, t0
   LI(a5, (va_data_l4_x >> 48) << 48)
   LA(t0, rvtest_data_1)
   slli t0, t0, 16
   srli t0, t0, 16
   add a5, a5, t0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test1_store:
-  sw a2, 20(a0)
+  sw a2, 20(s0)
   nop
 Svadu_cg_cp_ad_update_test1_load:
-  lw a3, 20(a1)
+  lw a3, 20(s1)
   nop
 Svadu_cg_cp_ad_update_test1_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_GOTO_MMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test1_store, Svadu_cg_cp_ad_update_test1_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -131,33 +141,31 @@ Svadu_cg_cp_ad_update_test1_read_exec_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l4_x, LEVEL4)
   sfence.vma
 
-  LI(a0, (va_data_l4_w >> 48) << 48)
+  LI(s0, (va_data_l4_w >> 48) << 48)
   LA(t0, rvtest_data_1)
   slli t0, t0, 16
   srli t0, t0, 16
-  add a0, a0, t0
-  LI(a1, (va_data_l4_r >> 48) << 48)
+  add s0, s0, t0
+  LI(s1, (va_data_l4_r >> 48) << 48)
   LA(t0, rvtest_data_1)
   slli t0, t0, 16
   srli t0, t0, 16
-  add a1, a1, t0
+  add s1, s1, t0
   LI(a5, (va_data_l4_x >> 48) << 48)
   LA(t0, rvtest_data_1)
   slli t0, t0, 16
   srli t0, t0, 16
   add a5, a5, t0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test2_store:
-  sw a2, 20(a0)
+  sw a2, 20(s0)
   nop
 Svadu_cg_cp_ad_update_test2_load:
-  lw a3, 20(a1)
+  lw a3, 20(s1)
   nop
 Svadu_cg_cp_ad_update_test2_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_GOTO_MMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test2_store, Svadu_cg_cp_ad_update_test2_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -184,33 +192,31 @@ Svadu_cg_cp_ad_update_test2_read_exec_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V), va_data_l4_x, LEVEL4)
   sfence.vma
 
-  LI(a0, (va_data_l4_w >> 48) << 48)
+  LI(s0, (va_data_l4_w >> 48) << 48)
   LA(t0, rvtest_data_1)
   slli t0, t0, 16
   srli t0, t0, 16
-  add a0, a0, t0
-  LI(a1, (va_data_l4_r >> 48) << 48)
+  add s0, s0, t0
+  LI(s1, (va_data_l4_r >> 48) << 48)
   LA(t0, rvtest_data_1)
   slli t0, t0, 16
   srli t0, t0, 16
-  add a1, a1, t0
+  add s1, s1, t0
   LI(a5, (va_data_l4_x >> 48) << 48)
   LA(t0, rvtest_data_1)
   slli t0, t0, 16
   srli t0, t0, 16
   add a5, a5, t0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test3_store:
-  sw a2, 20(a0)
+  sw a2, 20(s0)
   nop
 Svadu_cg_cp_ad_update_test3_load:
-  lw a3, 20(a1)
+  lw a3, 20(s1)
   nop
 Svadu_cg_cp_ad_update_test3_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_GOTO_MMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test3_store, Svadu_cg_cp_ad_update_test3_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -238,33 +244,31 @@ Svadu_cg_cp_ad_update_test3_read_exec_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l3_x, LEVEL3)
   sfence.vma
 
-  LI(a0, (va_data_l3_w >> 39) << 39)
+  LI(s0, (va_data_l3_w >> 39) << 39)
   LA(t0, rvtest_data_1)
   slli t0, t0, 25
   srli t0, t0, 25
-  add a0, a0, t0
-  LI(a1, (va_data_l3_r >> 39) << 39)
+  add s0, s0, t0
+  LI(s1, (va_data_l3_r >> 39) << 39)
   LA(t0, rvtest_data_1)
   slli t0, t0, 25
   srli t0, t0, 25
-  add a1, a1, t0
+  add s1, s1, t0
   LI(a5, (va_data_l3_x >> 39) << 39)
   LA(t0, rvtest_data_1)
   slli t0, t0, 25
   srli t0, t0, 25
   add a5, a5, t0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test4_store:
-  sw a2, 20(a0)
+  sw a2, 20(s0)
   nop
 Svadu_cg_cp_ad_update_test4_load:
-  lw a3, 20(a1)
+  lw a3, 20(s1)
   nop
 Svadu_cg_cp_ad_update_test4_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_GOTO_MMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test4_store, Svadu_cg_cp_ad_update_test4_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -292,33 +296,31 @@ Svadu_cg_cp_ad_update_test4_read_exec_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l3_x, LEVEL3)
   sfence.vma
 
-  LI(a0, (va_data_l3_w >> 39) << 39)
+  LI(s0, (va_data_l3_w >> 39) << 39)
   LA(t0, rvtest_data_1)
   slli t0, t0, 25
   srli t0, t0, 25
-  add a0, a0, t0
-  LI(a1, (va_data_l3_r >> 39) << 39)
+  add s0, s0, t0
+  LI(s1, (va_data_l3_r >> 39) << 39)
   LA(t0, rvtest_data_1)
   slli t0, t0, 25
   srli t0, t0, 25
-  add a1, a1, t0
+  add s1, s1, t0
   LI(a5, (va_data_l3_x >> 39) << 39)
   LA(t0, rvtest_data_1)
   slli t0, t0, 25
   srli t0, t0, 25
   add a5, a5, t0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test5_store:
-  sw a2, 20(a0)
+  sw a2, 20(s0)
   nop
 Svadu_cg_cp_ad_update_test5_load:
-  lw a3, 20(a1)
+  lw a3, 20(s1)
   nop
 Svadu_cg_cp_ad_update_test5_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_GOTO_MMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test5_store, Svadu_cg_cp_ad_update_test5_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -346,33 +348,31 @@ Svadu_cg_cp_ad_update_test5_read_exec_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V), va_data_l3_x, LEVEL3)
   sfence.vma
 
-  LI(a0, (va_data_l3_w >> 39) << 39)
+  LI(s0, (va_data_l3_w >> 39) << 39)
   LA(t0, rvtest_data_1)
   slli t0, t0, 25
   srli t0, t0, 25
-  add a0, a0, t0
-  LI(a1, (va_data_l3_r >> 39) << 39)
+  add s0, s0, t0
+  LI(s1, (va_data_l3_r >> 39) << 39)
   LA(t0, rvtest_data_1)
   slli t0, t0, 25
   srli t0, t0, 25
-  add a1, a1, t0
+  add s1, s1, t0
   LI(a5, (va_data_l3_x >> 39) << 39)
   LA(t0, rvtest_data_1)
   slli t0, t0, 25
   srli t0, t0, 25
   add a5, a5, t0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test6_store:
-  sw a2, 20(a0)
+  sw a2, 20(s0)
   nop
 Svadu_cg_cp_ad_update_test6_load:
-  lw a3, 20(a1)
+  lw a3, 20(s1)
   nop
 Svadu_cg_cp_ad_update_test6_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_GOTO_MMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test6_store, Svadu_cg_cp_ad_update_test6_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -401,33 +401,31 @@ Svadu_cg_cp_ad_update_test6_read_exec_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l2_x, LEVEL2)
   sfence.vma
 
-  LI(a0, (va_data_l2_w >> 30) << 30)
+  LI(s0, (va_data_l2_w >> 30) << 30)
   LA(t0, rvtest_data_1)
   slli t0, t0, 34
   srli t0, t0, 34
-  add a0, a0, t0
-  LI(a1, (va_data_l2_r >> 30) << 30)
+  add s0, s0, t0
+  LI(s1, (va_data_l2_r >> 30) << 30)
   LA(t0, rvtest_data_1)
   slli t0, t0, 34
   srli t0, t0, 34
-  add a1, a1, t0
+  add s1, s1, t0
   LI(a5, (va_data_l2_x >> 30) << 30)
   LA(t0, rvtest_data_1)
   slli t0, t0, 34
   srli t0, t0, 34
   add a5, a5, t0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test7_store:
-  sw a2, 20(a0)
+  sw a2, 20(s0)
   nop
 Svadu_cg_cp_ad_update_test7_load:
-  lw a3, 20(a1)
+  lw a3, 20(s1)
   nop
 Svadu_cg_cp_ad_update_test7_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_GOTO_MMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test7_store, Svadu_cg_cp_ad_update_test7_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -456,33 +454,31 @@ Svadu_cg_cp_ad_update_test7_read_exec_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l2_x, LEVEL2)
   sfence.vma
 
-  LI(a0, (va_data_l2_w >> 30) << 30)
+  LI(s0, (va_data_l2_w >> 30) << 30)
   LA(t0, rvtest_data_1)
   slli t0, t0, 34
   srli t0, t0, 34
-  add a0, a0, t0
-  LI(a1, (va_data_l2_r >> 30) << 30)
+  add s0, s0, t0
+  LI(s1, (va_data_l2_r >> 30) << 30)
   LA(t0, rvtest_data_1)
   slli t0, t0, 34
   srli t0, t0, 34
-  add a1, a1, t0
+  add s1, s1, t0
   LI(a5, (va_data_l2_x >> 30) << 30)
   LA(t0, rvtest_data_1)
   slli t0, t0, 34
   srli t0, t0, 34
   add a5, a5, t0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test8_store:
-  sw a2, 20(a0)
+  sw a2, 20(s0)
   nop
 Svadu_cg_cp_ad_update_test8_load:
-  lw a3, 20(a1)
+  lw a3, 20(s1)
   nop
 Svadu_cg_cp_ad_update_test8_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_GOTO_MMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test8_store, Svadu_cg_cp_ad_update_test8_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -511,33 +507,31 @@ Svadu_cg_cp_ad_update_test8_read_exec_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V), va_data_l2_x, LEVEL2)
   sfence.vma
 
-  LI(a0, (va_data_l2_w >> 30) << 30)
+  LI(s0, (va_data_l2_w >> 30) << 30)
   LA(t0, rvtest_data_1)
   slli t0, t0, 34
   srli t0, t0, 34
-  add a0, a0, t0
-  LI(a1, (va_data_l2_r >> 30) << 30)
+  add s0, s0, t0
+  LI(s1, (va_data_l2_r >> 30) << 30)
   LA(t0, rvtest_data_1)
   slli t0, t0, 34
   srli t0, t0, 34
-  add a1, a1, t0
+  add s1, s1, t0
   LI(a5, (va_data_l2_x >> 30) << 30)
   LA(t0, rvtest_data_1)
   slli t0, t0, 34
   srli t0, t0, 34
   add a5, a5, t0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test9_store:
-  sw a2, 20(a0)
+  sw a2, 20(s0)
   nop
 Svadu_cg_cp_ad_update_test9_load:
-  lw a3, 20(a1)
+  lw a3, 20(s1)
   nop
 Svadu_cg_cp_ad_update_test9_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_GOTO_MMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test9_store, Svadu_cg_cp_ad_update_test9_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -567,33 +561,31 @@ Svadu_cg_cp_ad_update_test9_read_exec_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l1_x, LEVEL1)
   sfence.vma
 
-  LI(a0, (va_data_l1_w >> 21) << 21)
+  LI(s0, (va_data_l1_w >> 21) << 21)
   LA(t0, rvtest_data_1)
   slli t0, t0, 43
   srli t0, t0, 43
-  add a0, a0, t0
-  LI(a1, (va_data_l1_r >> 21) << 21)
+  add s0, s0, t0
+  LI(s1, (va_data_l1_r >> 21) << 21)
   LA(t0, rvtest_data_1)
   slli t0, t0, 43
   srli t0, t0, 43
-  add a1, a1, t0
+  add s1, s1, t0
   LI(a5, (va_data_l1_x >> 21) << 21)
   LA(t0, rvtest_data_1)
   slli t0, t0, 43
   srli t0, t0, 43
   add a5, a5, t0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test10_store:
-  sw a2, 20(a0)
+  sw a2, 20(s0)
   nop
 Svadu_cg_cp_ad_update_test10_load:
-  lw a3, 20(a1)
+  lw a3, 20(s1)
   nop
 Svadu_cg_cp_ad_update_test10_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_GOTO_MMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test10_store, Svadu_cg_cp_ad_update_test10_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -623,33 +615,31 @@ Svadu_cg_cp_ad_update_test10_read_exec_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l1_x, LEVEL1)
   sfence.vma
 
-  LI(a0, (va_data_l1_w >> 21) << 21)
+  LI(s0, (va_data_l1_w >> 21) << 21)
   LA(t0, rvtest_data_1)
   slli t0, t0, 43
   srli t0, t0, 43
-  add a0, a0, t0
-  LI(a1, (va_data_l1_r >> 21) << 21)
+  add s0, s0, t0
+  LI(s1, (va_data_l1_r >> 21) << 21)
   LA(t0, rvtest_data_1)
   slli t0, t0, 43
   srli t0, t0, 43
-  add a1, a1, t0
+  add s1, s1, t0
   LI(a5, (va_data_l1_x >> 21) << 21)
   LA(t0, rvtest_data_1)
   slli t0, t0, 43
   srli t0, t0, 43
   add a5, a5, t0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test11_store:
-  sw a2, 20(a0)
+  sw a2, 20(s0)
   nop
 Svadu_cg_cp_ad_update_test11_load:
-  lw a3, 20(a1)
+  lw a3, 20(s1)
   nop
 Svadu_cg_cp_ad_update_test11_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_GOTO_MMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test11_store, Svadu_cg_cp_ad_update_test11_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -679,33 +669,31 @@ Svadu_cg_cp_ad_update_test11_read_exec_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V), va_data_l1_x, LEVEL1)
   sfence.vma
 
-  LI(a0, (va_data_l1_w >> 21) << 21)
+  LI(s0, (va_data_l1_w >> 21) << 21)
   LA(t0, rvtest_data_1)
   slli t0, t0, 43
   srli t0, t0, 43
-  add a0, a0, t0
-  LI(a1, (va_data_l1_r >> 21) << 21)
+  add s0, s0, t0
+  LI(s1, (va_data_l1_r >> 21) << 21)
   LA(t0, rvtest_data_1)
   slli t0, t0, 43
   srli t0, t0, 43
-  add a1, a1, t0
+  add s1, s1, t0
   LI(a5, (va_data_l1_x >> 21) << 21)
   LA(t0, rvtest_data_1)
   slli t0, t0, 43
   srli t0, t0, 43
   add a5, a5, t0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test12_store:
-  sw a2, 20(a0)
+  sw a2, 20(s0)
   nop
 Svadu_cg_cp_ad_update_test12_load:
-  lw a3, 20(a1)
+  lw a3, 20(s1)
   nop
 Svadu_cg_cp_ad_update_test12_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_GOTO_MMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test12_store, Svadu_cg_cp_ad_update_test12_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -736,33 +724,31 @@ Svadu_cg_cp_ad_update_test12_read_exec_pte:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l0_x, LEVEL0)
   sfence.vma
 
-  LI(a0, (va_data_l0_w >> 12) << 12)
+  LI(s0, (va_data_l0_w >> 12) << 12)
   LA(t0, rvtest_data_1)
   slli t0, t0, 52
   srli t0, t0, 52
-  add a0, a0, t0
-  LI(a1, (va_data_l0_r >> 12) << 12)
+  add s0, s0, t0
+  LI(s1, (va_data_l0_r >> 12) << 12)
   LA(t0, rvtest_data_1)
   slli t0, t0, 52
   srli t0, t0, 52
-  add a1, a1, t0
+  add s1, s1, t0
   LI(a5, (va_data_l0_x >> 12) << 12)
   LA(t0, rvtest_data_1)
   slli t0, t0, 52
   srli t0, t0, 52
   add a5, a5, t0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test13_store:
-  sw a2, 20(a0)
+  sw a2, 20(s0)
   nop
 Svadu_cg_cp_ad_update_test13_load:
-  lw a3, 20(a1)
+  lw a3, 20(s1)
   nop
 Svadu_cg_cp_ad_update_test13_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_GOTO_MMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test13_store, Svadu_cg_cp_ad_update_test13_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -793,33 +779,31 @@ Svadu_cg_cp_ad_update_test13_read_exec_pte:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l0_x, LEVEL0)
   sfence.vma
 
-  LI(a0, (va_data_l0_w >> 12) << 12)
+  LI(s0, (va_data_l0_w >> 12) << 12)
   LA(t0, rvtest_data_1)
   slli t0, t0, 52
   srli t0, t0, 52
-  add a0, a0, t0
-  LI(a1, (va_data_l0_r >> 12) << 12)
+  add s0, s0, t0
+  LI(s1, (va_data_l0_r >> 12) << 12)
   LA(t0, rvtest_data_1)
   slli t0, t0, 52
   srli t0, t0, 52
-  add a1, a1, t0
+  add s1, s1, t0
   LI(a5, (va_data_l0_x >> 12) << 12)
   LA(t0, rvtest_data_1)
   slli t0, t0, 52
   srli t0, t0, 52
   add a5, a5, t0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test14_store:
-  sw a2, 20(a0)
+  sw a2, 20(s0)
   nop
 Svadu_cg_cp_ad_update_test14_load:
-  lw a3, 20(a1)
+  lw a3, 20(s1)
   nop
 Svadu_cg_cp_ad_update_test14_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_GOTO_MMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test14_store, Svadu_cg_cp_ad_update_test14_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -850,33 +834,31 @@ Svadu_cg_cp_ad_update_test14_read_exec_pte:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V), va_data_l0_x, LEVEL0)
   sfence.vma
 
-  LI(a0, (va_data_l0_w >> 12) << 12)
+  LI(s0, (va_data_l0_w >> 12) << 12)
   LA(t0, rvtest_data_1)
   slli t0, t0, 52
   srli t0, t0, 52
-  add a0, a0, t0
-  LI(a1, (va_data_l0_r >> 12) << 12)
+  add s0, s0, t0
+  LI(s1, (va_data_l0_r >> 12) << 12)
   LA(t0, rvtest_data_1)
   slli t0, t0, 52
   srli t0, t0, 52
-  add a1, a1, t0
+  add s1, s1, t0
   LI(a5, (va_data_l0_x >> 12) << 12)
   LA(t0, rvtest_data_1)
   slli t0, t0, 52
   srli t0, t0, 52
   add a5, a5, t0
-  RVTEST_GOTO_LOWER_MODE Smode
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test15_store:
-  sw a2, 20(a0)
+  sw a2, 20(s0)
   nop
 Svadu_cg_cp_ad_update_test15_load:
-  lw a3, 20(a1)
+  lw a3, 20(s1)
   nop
 Svadu_cg_cp_ad_update_test15_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_GOTO_MMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test15_store, Svadu_cg_cp_ad_update_test15_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

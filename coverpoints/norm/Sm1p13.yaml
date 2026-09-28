@@ -8,19 +8,22 @@
 # misaligned atomicity granule PMA by Zama16b.
 
 normative_rule_definitions:
-  # medelegh (RV32 only): write all 1s to medelegh and read back.
-
-  # When XLEN=32, medelegh is a 32-bit read/write register that aliases bits 63:32
-  # of medeleg.
-  - names: [medelegh_sz_xlen32, medelegh_acc_xlen32, medelegh_enc_xlen32]
+  # When XLEN=32, csr:medelegh[] is a 32-bit read/write register that aliases bits 63:32
+  # of csr:medeleg[].
+  - name: medelegh_sz_acc_enc_xlen32
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/medelegh"]
 
-  # misa.MXL is read-only: write all U, S, M values of misa.MXL and read back M-mode.
-
-  # The MXL (Machine XLEN) field encodes the native base integer ISA width as shown
-  # in <<norm:misa_mxl_enc>>. If misa is nonzero, the MXL field indicates the
-  # effective XLEN in M-mode, a constant termed MXLEN.
-  - names: [misa_mxl_op, MXLEN]
+  # The csr::[mxl] (Machine XLEN) field encodes the native base integer ISA width as shown
+  # in &lt;&lt;norm:misa_mxl_enc&gt;&gt;.
+  - name: misa_mxl_op_isa
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
+  # If csr:misa[] is nonzero, the csr::[mxl] field indicates the effective XLEN in M-mode,
+  # a constant termed MXLEN.
+  - name: misa_mxl_op_nz
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
+  # XLEN is never greater than MXLEN, but XLEN might be smaller than MXLEN in
+  # less-privileged modes.
+  - name: xlen_le_mxlen
     coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
 
   # The MXL field is read-only.
@@ -31,31 +34,41 @@ normative_rule_definitions:
   - name: misa_mxl_enc
     coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
 
-  # misa.B (bit 1) and misa.V (bit 21): read, set, clear, and read back.
-
-  # The Extensions field encodes the presence of the standard extensions, with a
-  # single bit per letter of the alphabet (bit 0 encodes presence of extension A,
-  # bit 1 encodes presence of extension B, through to bit 25 which encodes Z).
-  # ... 1|B|B extension ... 21|V|Vector extension ...
-  - name: misa_extensions_enc
+  # The Extensions field encodes the presence of the standard extensions, with a single
+  # bit per letter of the alphabet (bit 0 encodes presence of extension ext:a[], bit 1
+  # encodes presence of extension ext:b[], through to bit 25 which encodes ext:z[]).
+  - name: misa_extensions_enc_txt
+    coverpoint: ["Sm_mcsr_cg/{cp_misa_b, cp_misa_v}"]
+  # Bit|Character|Description === 0|csr::[a]|Atomic extension¶1|csr::[b]|B
+  # extension¶2|csr::[c]|Compressed extension¶3|csr::[d]|Double-precision floating-point
+  # extension¶4|csr::[e]|RV32E/64E base ISA¶5|csr::[f]|Single-precision floating-point
+  # extension¶6|csr::[g]|Reserved¶7|csr::[h]|Hypervisor extension¶8|csr::[i]|RV32I/64I
+  # base
+  # ISA¶9|csr::[j]|Reserved¶10|csr::[k]|Reserved¶11|csr::[l]|Reserved¶12|csr::[m]|Integer
+  # Multiply/Divide extension¶13|csr::[n]|Tentatively reserved for User-Level Interrupts
+  # extension¶14|csr::[o]|Reserved¶15|csr::[p]|Tentatively reserved for Packed-SIMD
+  # extension¶16|csr::[q]|Quad-precision floating-point
+  # extension¶17|csr::[r]|Reserved¶18|csr::[s]|Supervisor mode
+  # implemented¶19|csr::[t]|Reserved¶20|csr::[u]|User mode implemented¶21|csr::[v]|Vector
+  # extension¶22|csr::[w]|Reserved¶23|csr::[x]|Non-standard extensions
+  # implemented¶24|csr::[y]|Reserved¶25|csr::[z]|Reserved ===
+  - name: misa_extensions_enc_tbl
     coverpoint: ["Sm_mcsr_cg/{cp_misa_b, cp_misa_v}"]
 
   # The Extensions field is a WARL field that can contain writable bits where the
   # implementation allows the supported ISA to be modified.
-  - names: [misa_extensions_op, MISA_EXTENSIONS_WRITABLE_BITS]
+  - name: misa_extensions_warl_op
     coverpoint: ["Sm_mcsr_cg/{cp_misa_b, cp_misa_v}"]
 
   # mcause accepts software-check (18) and hardware-error (19) exception codes.
 
   # Interrupt|Exception Code|Description === ... 0|18|Software check 0|19|Hardware
   # error ... ===
-  - name: mcause_exccode_enc
+  - name: mcause_exccode_enc_img
     coverpoint: ["Sm_mcause_cg/cp_mcause_write_exception"]
 
-  # Memory-mapped msip: write all 1s / all 0s, read back, then read mip.MSIP.
-
-  # A hart's memory-mapped msip register is a 32-bit read/write register
-  - names: [msip_sz, msip_acc]
+  # A hart's memory-mapped csr:msip[] register is a 32-bit read/write register
+  - name: msip_sz_acc
     coverpoint: ["Sm_mcsr_cg/cp_msip"]
 
   # bits 31-1 read as zero and bit 0 contains the MSIP bit.
@@ -69,5 +82,5 @@ normative_rule_definitions:
 
   # When the memory-mapped msip register changes, it is guaranteed to be reflected
   # in mip.MSIP eventually, but not necessarily immediately.
-  - name: MSIP_UPDATE_MAX_TIME
+  - name: msip_update_max_time
     coverpoint: ["Sm_mcsr_cg/cp_msip"]

@@ -23,7 +23,6 @@ _AD_CASES = (
     (True, False, "PTE.D unset"),
     (False, False, "PTE.A and PTE.D unset"),
 )
-_MARCH = ["I", "Zicsr", "Zifencei"]
 
 
 def _add_pte_readback(test_data: TestData, sv: SvMode, level: int, number: int) -> list[str]:
@@ -79,7 +78,15 @@ def _make_svadupmp_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk
                     *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                     "sfence.vma",
                     "",
-                    *add_rwx_test(test_data, sv, mode, "va_data", level, f"test{number}"),
+                    *add_rwx_test(
+                        test_data,
+                        sv,
+                        mode,
+                        "va_data",
+                        level,
+                        f"test{number}",
+                        driver_mode="Mmode",
+                    ),
                     *_add_pte_readback(test_data, sv, level, number),
                     "",
                 ]
@@ -94,8 +101,8 @@ def _make_svadupmp(test_data: TestData, sv: SvMode) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvaduPMP",
-    required_extensions=["I", "Sv32", "Svadu", "Sm"],
-    march_extensions=_MARCH,
+    required_extensions=["Sv32", "Svadu", "Sm"],
+    march_extensions=["Svadu"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
@@ -105,8 +112,8 @@ def make_svadupmp_sv32(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvaduPMP",
-    required_extensions=["I", "Sv39", "Svadu", "Sm"],
-    march_extensions=_MARCH,
+    required_extensions=["Sv39", "Svadu", "Sm"],
+    march_extensions=["Svadu"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
@@ -116,8 +123,8 @@ def make_svadupmp_sv39(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvaduPMP",
-    required_extensions=["I", "Sv48", "Svadu", "Sm"],
-    march_extensions=_MARCH,
+    required_extensions=["Sv48", "Svadu", "Sm"],
+    march_extensions=["Svadu"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
@@ -127,8 +134,8 @@ def make_svadupmp_sv48(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvaduPMP",
-    required_extensions=["I", "Sv57", "Svadu", "Sm"],
-    march_extensions=_MARCH,
+    required_extensions=["Sv57", "Svadu", "Sm"],
+    march_extensions=["Svadu"],
     params=["NUM_PMP_ENTRIES: '>0'"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )

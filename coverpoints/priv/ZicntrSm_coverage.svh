@@ -16,10 +16,11 @@ covergroup ZicntrSm_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     // building blocks for the main coverpoints
-    csrr: coverpoint ins.current.insn  {
+    csraccess: coverpoint ins.current.insn  {
         wildcard bins csrr = {CSRR};
+        wildcard bins csrw = {CSRW};
     }
-    counters_mcounteren: coverpoint {ins.current.insn[31:20], ins.current.csr[CSR_MCOUNTEREN][31:0] } {
+    counters_mcounteren: coverpoint {ins.current.insn[31:20], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[31:0] } {
       bins cycle_enabled         = {44'b110000000000_00000000000000000000000000000001};
       bins time_enabled          = {44'b110000000001_00000000000000000000000000000010};
       bins instret_enabled       = {44'b110000000010_00000000000000000000000000000100};
@@ -163,14 +164,14 @@ covergroup ZicntrSm_cg with function sample(ins_t ins);
       `endif // UDB_MXLEN_32
     }
 
-    cp_mcounteren_access_m: cross csrr, counters_mcounteren, priv_mode_m;
+    cp_mcounteren_access_m: cross csraccess, counters_mcounteren, priv_mode_m;
 
     `ifdef S_SUPPORTED
-      mcounteren: coverpoint ins.current.csr[CSR_MCOUNTEREN]{
+      mcounteren: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren"){
           bins ones  = {32'b11111111111111111111111111111111};
           bins zeros = {32'b00000000000000000000000000000000};
       }
-      counters_scounteren: coverpoint {ins.current.insn[31:20], ins.current.csr[CSR_SCOUNTEREN][31:0]} {
+      counters_scounteren: coverpoint {ins.current.insn[31:20], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[31:0]} {
         bins cycle_enabled         = {44'b110000000000_00000000000000000000000000000001};
         bins time_enabled          = {44'b110000000001_00000000000000000000000000000010};
         bins instret_enabled       = {44'b110000000010_00000000000000000000000000000100};
@@ -314,7 +315,7 @@ covergroup ZicntrSm_cg with function sample(ins_t ins);
         `endif //UDB_MXLEN_32
       }
 
-      cp_scounteren_access_m: cross csrr, counters_scounteren, mcounteren, priv_mode_m;
+      cp_scounteren_access_m: cross csraccess, counters_scounteren, mcounteren, priv_mode_m;
 
     `endif // S_SUPPORTED
 endgroup

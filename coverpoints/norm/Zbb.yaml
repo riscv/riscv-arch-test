@@ -8,17 +8,17 @@ normative_rule_definitions:
   - name: bitmanip_bhw_suffix_semantics
     coverpoint: ["Zbb_orc_b_cg/cp_rs1_edges_orcb"]
 
-  - name: b_extension_composition
+  - name: B_extension_composition
     coverpoint:
       ["Inherent in UDB configuration validation, does not require testing"]
 
-  - name: zbb_sign_zero_extension_function
+  - name: Zbb_sign_zero_extension_function
     coverpoint: ["Zbb_sext_b_cg/cp_rs1_edges"]
 
-  - name: zbb_rotate_semantics
+  - name: Zbb_rotate_semantics
     coverpoint: ["Zbb_ror_cg/cr_rs1_rs2_edges"]
 
-  - name: zbb_orc_b_semantics
+  - name: Zbb_orc-b_semantics
     coverpoint: ["Zbb_orc_b_cg/cp_rs1_edges_orcb"]
 
   - name: andn_enc
@@ -28,40 +28,40 @@ normative_rule_definitions:
     coverpoint: ["Zbb_andn_cg/cr_rs1_rs2_edges"]
 
   - name: clz_enc
-    coverpoint: ["Zbb_clz_cg/cr_rs1_edges"]
+    coverpoint: ["Zbb_clz_cg/cp_rs1_edges"]
 
   - name: clz_op
-    coverpoint: ["Zbb_clz_cg/cr_rs1_edges"]
+    coverpoint: ["Zbb_clz_cg/cp_rs1_edges"]
 
   - name: clzw_enc
-    coverpoint: ["Zbb_clzw_cg/cr_rs1_edges"]
+    coverpoint: ["Zbb_clzw_cg/cp_rs1_edges"]
 
   - name: clzw_op
-    coverpoint: ["Zbb_clzw_cg/cr_rs1_edges"]
+    coverpoint: ["Zbb_clzw_cg/cp_rs1_edges"]
 
   - name: cpop_enc
-    coverpoint: ["Zbb_cpop_cg/cr_rs1_edges"]
+    coverpoint: ["Zbb_cpop_cg/cp_rs1_edges"]
 
   - name: cpop_op
-    coverpoint: ["Zbb_cpop_cg/cr_rs1_edges"]
+    coverpoint: ["Zbb_cpop_cg/cp_rs1_edges"]
 
   - name: cpopw_enc
-    coverpoint: ["Zbb_cpopw_cg/cr_rs1_edges"]
+    coverpoint: ["Zbb_cpopw_cg/cp_rs1_edges"]
 
   - name: cpopw_op
-    coverpoint: ["Zbb_cpopw_cg/cr_rs1_edges"]
+    coverpoint: ["Zbb_cpopw_cg/cp_rs1_edges"]
 
   - name: ctz_enc
-    coverpoint: ["Zbb_ctz_cg/cr_rs1_edges"]
+    coverpoint: ["Zbb_ctz_cg/cp_rs1_edges"]
 
   - name: ctz_op
-    coverpoint: ["Zbb_ctz_cg/cr_rs1_edges"]
+    coverpoint: ["Zbb_ctz_cg/cp_rs1_edges"]
 
   - name: ctzw_enc
-    coverpoint: ["Zbb_ctzw_cg/cr_rs1_edges"]
+    coverpoint: ["Zbb_ctzw_cg/cp_rs1_edges"]
 
   - name: ctzw_op
-    coverpoint: ["Zbb_ctzw_cg/cr_rs1_edges"]
+    coverpoint: ["Zbb_ctzw_cg/cp_rs1_edges"]
 
   - name: max_enc
     coverpoint: ["Zbb_max_cg/cr_rs1_rs2_edges"]
@@ -87,10 +87,10 @@ normative_rule_definitions:
   - name: minu_op
     coverpoint: ["Zbb_minu_cg/cr_rs1_rs2_edges"]
 
-  - name: orc_b_enc
+  - name: orc-b_enc
     coverpoint: ["Zbb_orc_b_cg/cp_rs1_edges_orcb"]
 
-  - name: orc_b_op
+  - name: orc-b_op
     coverpoint: ["Zbb_orc_b_cg/cp_rs1_edges_orcb"]
 
   - name: orn_enc
@@ -99,11 +99,15 @@ normative_rule_definitions:
   - name: orn_op
     coverpoint: ["Zbb_orn_cg/cr_rs1_rs2_edges"]
 
-  - name: rev8_enc
-    coverpoint: ["Zbb_rev8_cg/cr_rs1_edges"]
+  # Encoding (RV32)
+  - name: rev8_rv32_enc
+    coverpoint: ["Zbb_rev8_cg/cp_rs1_edges"]
+  # Encoding (RV64)
+  - name: rev8_rv64_enc
+    coverpoint: ["Zbb_rev8_cg/cp_rs1_edges"]
 
   - name: rev8_op
-    coverpoint: ["Zbb_rev8_cg/cr_rs1_edges"]
+    coverpoint: ["Zbb_rev8_cg/cp_rs1_edges"]
 
   - name: rol_enc
     coverpoint: ["Zbb_rol_cg/cr_rs1_rs2_edges"]
@@ -123,7 +127,11 @@ normative_rule_definitions:
   - name: ror_op
     coverpoint: ["Zbb_ror_cg/cr_rs1_rs2_edges"]
 
-  - name: rori_enc
+  # Encoding (RV32)
+  - name: rori_rv32_enc
+    coverpoint: ["Zbb_rori_cg/cr_rs1_imm_edges_uimm"]
+  # Encoding (RV64)
+  - name: rori_rv64_enc
     coverpoint: ["Zbb_rori_cg/cr_rs1_imm_edges_uimm"]
 
   - name: rori_op
@@ -141,16 +149,16 @@ normative_rule_definitions:
   - name: rorw_op
     coverpoint: ["Zbb_rorw_cg/cr_rs1_rs2_edges"]
 
-  - name: sext_b_enc
-    coverpoint: ["Zbb_sext_b_cg/cr_rs1_edges"]
-
-  - name: sext_b_op
+  - name: sext-b_enc
     coverpoint: ["Zbb_sext_b_cg/cp_rs1_edges"]
 
-  - name: sext_h_enc
-    coverpoint: ["Zbb_sext_h_cg/cr_rs1_edges"]
+  - name: sext-b_op
+    coverpoint: ["Zbb_sext_b_cg/cp_rs1_edges"]
 
-  - name: sext_h_op
+  - name: sext-h_enc
+    coverpoint: ["Zbb_sext_h_cg/cp_rs1_edges"]
+
+  - name: sext-h_op
     coverpoint: ["Zbb_sext_h_cg/cp_rs1_edges"]
 
   - name: xnor_enc
@@ -159,8 +167,12 @@ normative_rule_definitions:
   - name: xnor_op
     coverpoint: ["Zbb_xnor_cg/cr_rs1_rs2_edges"]
 
-  - name: zext_h_enc
-    coverpoint: ["Zbb_zext_h_cg/cr_rs1_edges"]
+  # Encoding (RV32)
+  - name: zext-h_rv32_enc
+    coverpoint: ["Zbb_zext_h_cg/cp_rs1_edges"]
+  # Encoding (RV64)
+  - name: zext-h_rv64_enc
+    coverpoint: ["Zbb_zext_h_cg/cp_rs1_edges"]
 
-  - name: zext_h_op
+  - name: zext-h_op
     coverpoint: ["Zbb_zext_h_cg/cp_rs1_edges"]

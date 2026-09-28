@@ -5,6 +5,10 @@
 
 The UDB configuration file determines whether to run tests for Sv32, or for Sv39 and possibly Sv48 and Sv57.
 
+Coverpoints that need M-mode state (`mstatus.MPRV`, `mstatus.TVM`, `mstatus.SBE`, or an M-mode CSR access)
+are in the `Sm` suites: SvSm, SvbareSm and SvinvalSm.
+The PMP suites (SvPMP, SvPMPZicbo, SvaduPMP) boot to M-mode because they program PMP entries.
+
 [[t-Sv-coverpoints]]
 .Sv Coverpoints
 ,===
@@ -12,6 +16,20 @@ https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jv
 ,===
 
 include::norm/Sv_norm_rules.adoc[]
+
+==== SvSm Virtual Memory with M-mode State
+
+Covers `mstatus.MPRV` accesses, `mstatus.TVM` trapping of `satp` and `SFENCE.VMA`, `mstatus.SBE` for implicit
+page-table accesses, and M-mode access to `satp`. The `mstatus.SBE` tests are generated but not run until a
+big-endian configuration is available.
+
+[[t-SvSm-coverpoints]]
+.SvSm Coverpoints
+,===
+See the SvSm sheet of the Sv testplan.
+,===
+
+include::norm/SvSm_norm_rules.adoc[]
 
 *UDB Parameters:*
 
@@ -28,6 +46,16 @@ https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jv
 
 include::norm/Svbare_norm_rules.adoc[]
 
+==== SvbareSm Virtual Memory Off with MPRV
+
+[[t-SvbareSm-coverpoints]]
+.SvbareSm Coverpoints
+,===
+See the SvbareSm sheet of the Sv testplan.
+,===
+
+include::norm/SvbareSm_norm_rules.adoc[]
+
 
 ==== SvPMP VirtMem + PMP
 
@@ -36,6 +64,8 @@ include::norm/Svbare_norm_rules.adoc[]
 ,===
 https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=726223656#gid=726223656[Google Sheet Testplan]
 ,===
+
+include::norm/SvPMP_norm_rules.adoc[]
 
 ==== SvZicbo VirtMem + CBOM/CBOZ
 
@@ -69,6 +99,20 @@ The Svinval extension defines instructions to update memory management tables fo
 https://docs.google.com/spreadsheets/d/1M78FrWvnva08vg-_5ejIkTZBhW1z5mW7NkYjl5lXH5g/edit?gid=1987812700#gid=1987812700[Google Sheet Testplan]
 ,===
 
+include::norm/Svinval_norm_rules.adoc[]
+
+==== SvinvalSm Table Invalidation with mstatus.TVM
+
+Runs the Svinval instructions in M, S and U mode with `mstatus.TVM=1`.
+
+[[t-SvinvalSm-coverpoints]]
+.SvinvalSm Coverpoints
+,===
+See the SvinvalSm sheet of the Sv testplan.
+,===
+
+include::norm/SvinvalSm_norm_rules.adoc[]
+
 ==== Svade A/D Bit Page Fault Exception
 
 [[t-Svade-coverpoints]]
@@ -76,6 +120,8 @@ https://docs.google.com/spreadsheets/d/1M78FrWvnva08vg-_5ejIkTZBhW1z5mW7NkYjl5lX
 ,===
 https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1346750896#gid=1346750896[Google Sheet Testplan]
 ,===
+
+include::norm/Svade_norm_rules.adoc[]
 
 ==== Svadu A/D Bit Hardware Update
 
@@ -85,6 +131,8 @@ https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jv
 https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1484908158#gid=1484908158[Google Sheet Testplan]
 ,===
 
+include::norm/Svadu_norm_rules.adoc[]
+
 ==== Svadu A/D Bit Hardware Update + PMP
 
 [[t-SvaduPMP-coverpoints]]
@@ -92,6 +140,8 @@ https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jv
 ,===
 https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1568813008#gid=1568813008[Google Sheet Testplan]
 ,===
+
+include::norm/SvaduPMP_norm_rules.adoc[]
 
 ==== Svpbmt Page-Based Memory Types
 
@@ -101,6 +151,8 @@ https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jv
 https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=375458051#gid=375458051[Google Sheet Testplan]
 ,===
 
+include::norm/Svpbmt_norm_rules.adoc[]
+
 ==== Svnapot Naturally-Aligned Power-of-Two Page Sizes
 
 [[t-Svnapot-coverpoints]]
@@ -108,3 +160,5 @@ https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jv
 ,===
 https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=375458051#gid=375458051[Google Sheet Testplan]
 ,===
+
+include::norm/Svnapot_norm_rules.adoc[]

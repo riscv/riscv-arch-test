@@ -148,7 +148,7 @@ params:
   MISALIGNED_AMO: false
   LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
   LRSC_FAIL_ON_VA_SYNONYM: false
-  LRSC_MISALIGNED_BEHAVIOR: "always raise access fault"
+  LRSC_MISALIGNED_BEHAVIOR: "always raise misaligned exception"
   LRSC_FAIL_ON_NON_EXACT_LRSC: true
   MUTABLE_MISA_A: false
   # M params

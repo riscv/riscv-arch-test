@@ -52,11 +52,20 @@
     `ifdef COVER_EXCEPTIONSSV
         exceptionssv_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_EXCEPTIONSSVSM
+        exceptionssvsm_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_EXCEPTIONSSVZAAMO
         exceptionssvzaamo_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_EXCEPTIONSSVZAAMOSM
+        exceptionssvzaamosm_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_EXCEPTIONSSVZALRSC
         exceptionssvzalrsc_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_EXCEPTIONSSVZALRSCSM
+        exceptionssvzalrscsm_sample(hart, issue, ins);
     `endif
     `ifdef COVER_EXCEPTIONSU
         exceptionsu_sample(hart, issue, ins);
@@ -109,21 +118,6 @@
     `ifdef COVER_I
         i_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_INTERRUPTSS
-        interruptss_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_INTERRUPTSSSM
-        interruptsssm_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_INTERRUPTSSM
-        interruptssm_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_INTERRUPTSSSTC
-        interruptssstc_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_INTERRUPTSU
-        interruptsu_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_M
         m_sample(hart, issue, ins);
     `endif
@@ -168,6 +162,9 @@
     `endif
     `ifdef COVER_S
         s_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SDTRIGSM
+        sdtrigsm_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SM
         sm_sample(hart, issue, ins);
@@ -226,6 +223,12 @@
     `ifdef COVER_SSSTRICTV
         ssstrictv_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SSTC
+        sstc_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSTCSM
+        sstcsm_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SSTVALA
         sstvala_sample(hart, issue, ins);
     `endif
@@ -247,6 +250,9 @@
     `ifdef COVER_SVPMPZICBO
         svpmpzicbo_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SVSM
+        svsm_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SVZICBO
         svzicbo_sample(hart, issue, ins);
     `endif
@@ -262,11 +268,17 @@
     `ifdef COVER_SVBARE
         svbare_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SVBARESM
+        svbaresm_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SVINVAL
         svinval_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SVINVALH
         svinvalh_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SVINVALSM
+        svinvalsm_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SVNAPOT
         svnapot_sample(hart, issue, ins);

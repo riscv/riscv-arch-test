@@ -456,17 +456,17 @@ function edge_mask_values_t mask_edges_check(int hart, int issue, `VLEN_BITS mas
   // and previous random-mask tests can leave any value there). Discard the
   // inactive bits before classifying so the edge-value bins are reachable.
   `VLEN_BITS active_mask;
+  `VLEN_BITS one = 'b1;
   if (vlmax >= $bits(mask_val)) begin
     active_mask = mask_val;
   end else begin
-    `VLEN_BITS one = 'b1;
     active_mask = mask_val & ((one << vlmax) - 1);
   end
 
   if      (active_mask == 0)                           return mask_zero;
-  else if (active_mask == ((2 ** (vlmax)) - 1))        return mask_ones;
-  else if (active_mask == ((2 ** (vlmax-1)) - 1))      return mask_vlmaxm1ones;
-  else if (active_mask == ((2 ** (vlmax/2+1)) - 1))    return mask_vlmaxd2p1ones;
+  else if (active_mask == ((one << vlmax) - 1))        return mask_ones;
+  else if (active_mask == ((one << (vlmax-1)) - 1))    return mask_vlmaxm1ones;
+  else if (active_mask == ((one << (vlmax/2+1)) - 1))  return mask_vlmaxd2p1ones;
   else                                                 return mask_random;
 
 endfunction

@@ -11,6 +11,7 @@
 """Top-level command-line interface for test generation."""
 
 import os
+import shutil
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
@@ -55,6 +56,27 @@ class PrivTask:
 
     testsuite: str
     output_test_dir: Path
+
+
+def _remove_stale_suites(output_dir: Path, current_suites: set[str]) -> None:
+    """Remove generated files for suites that no longer exist."""
+    if output_dir.is_dir():
+        for suite_dir in output_dir.iterdir():
+            if suite_dir.is_dir() and suite_dir.name not in current_suites:
+                shutil.rmtree(suite_dir)
+
+
+def remove_stale_test_suites(
+    output_test_dir: Path,
+    available_unpriv_extensions: list[str],
+    available_priv_extensions: list[str],
+) -> None:
+    """Remove generated files for deleted testplans and privileged generators."""
+    _remove_stale_suites(output_test_dir / "priv", set(available_priv_extensions))
+    _remove_stale_suites(output_test_dir / "rv32i", set(available_unpriv_extensions))
+    _remove_stale_suites(output_test_dir / "rv32e", {*available_unpriv_extensions, "E"})
+    _remove_stale_suites(output_test_dir / "rv64i", set(available_unpriv_extensions))
+    _remove_stale_suites(output_test_dir / "rv64e", {*available_unpriv_extensions, "E"})
 
 
 @testgen_app.command()
@@ -114,6 +136,9 @@ def generate_all_tests(
                 unpriv_ext_list.remove(ext)
             if ext in priv_ext_list:
                 priv_ext_list.remove(ext)
+
+    # Delete any test suites that testgen no longer produces
+    remove_stale_test_suites(output_test_dir, available_unpriv_extensions, available_priv_extensions)
 
     # Build list of test generation tasks
     tasks: list[UnprivTask | PrivTask] = []

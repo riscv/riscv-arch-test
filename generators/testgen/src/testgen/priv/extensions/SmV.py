@@ -20,11 +20,7 @@ _VS_MASK = 3 << 9  # mstatus.VS = bits [10:9]
 
 
 def _check_vset(rd_reg: int, check_reg: int, test_data: TestData) -> list[str]:
-    """Commit what a vset* produced: the vl written to rd, and the resulting vtype.
-
-    The config's VLEN, ELEN and SEW_MIN fully determine both, so these are exact checks
-    rather than WARL noise.
-    """
+    """Commit what a vset* produced: the vl written to rd, and the resulting vtype."""
     return [
         write_sigupd(rd_reg, test_data),
         gen_csr_read_sigupd(check_reg, ("vtype", None), test_data),

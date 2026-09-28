@@ -6,7 +6,7 @@ normative_rule_definitions:
   - name: rv32i_rv64i_other_xregs
     coverpoint: ["I_add_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
   - name: pcreg_op
-    coverpoint: ["I_auipc_cg/cr_rs1_imm_edges"]
+    coverpoint: ["I_auipc_cg/{cp_rd, cp_imm_edges_20bit}"]
   # insn:slti[] (set less than immediate) places the value 1 in register rd if register
   # rs1 is less than the sign-extended immediate when both are treated as signed numbers,
   # else 0 is written to rd. insn:sltiu[] is similar but compares the values as unsigned
@@ -15,15 +15,21 @@ normative_rule_definitions:
   - name: slti_sltiu_op
     coverpoint:
       [
-        "I_slti_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}",
-        "I_sltiu_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}",
+        "I_slti_cg/{cp_rs1, cp_rd_nx0, cr_rs1_imm_edges}",
+        "I_sltiu_cg/{cp_rs1, cp_rd_nx0, cr_rs1_imm_edges}",
       ]
   - name: x0eq0
     coverpoint: ["I_add_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
-  - name: imm_always_sex
-    coverpoint: [
-        "I_addi_cg/cr_rs1_imm_edges, I_lw_cg/cp_imm_edges, I_sw_cg/cp_imm_edges, I_lui_cg/cp_imm_edges_20bit, I_beq_cg/cp_imm_edges_branch, I_jal_cg/cp_offset",
-      ] # *** need to add this coverpoint in Zicsr rule table
+  - name: twos_complement_signed_integers
+    # Use representative coverpoints; other signed operations apply too
+    coverpoint:
+      [
+        "I_slt_cg/cr_rs1_rs2_edges",
+        "I_blt_cg/cr_rs1_rs2_edges_offset",
+        "I_sra_cg/cr_rs1_rs2_edges",
+      ]
+  - name: nop_enc
+    coverpoint: ["I_nop_cg/cp_asm_count"]
   - name: nop_op
     coverpoint: ["I_nop_cg/{cp_asm_count}"]
   - name: addi_op
@@ -36,22 +42,20 @@ normative_rule_definitions:
   # result in rd.
   - name: andi_ori_xori_op
     coverpoint:
-      ["{I_andi_cg, I_ori_op, I_xori_op}/{cp_rs1, cp_rd, cr_rs1_imm_edges}"]
+      ["{I_andi_cg, I_ori_cg, I_xori_cg}/{cp_rs1, cp_rd, cr_rs1_imm_edges}"]
   - name: slli_op
-    coverpoint: ["I_slli_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges_uimm}"]
+    coverpoint: ["I_slli_cg/{cp_rs1, cp_rd_nx0, cr_rs1_imm_edges_uimm}"]
   - name: srli_op
-    coverpoint: ["I_srli_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges_uimm}"]
+    coverpoint: ["I_srli_cg/{cp_rs1, cp_rd_nx0, cr_rs1_imm_edges_uimm}"]
   - name: srai_op
-    coverpoint: ["I_srai_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges_uimm}"]
+    coverpoint: ["I_srai_cg/{cp_rs1, cp_rd_nx0, cr_rs1_imm_edges_uimm}"]
   - name: lui_op
     coverpoint: ["I_lui_cg/{cp_rd, cp_imm_edges_20bit}"]
   - name: auipc_op
     coverpoint: ["I_auipc_cg/{cp_rd, cp_imm_edges_20bit}"]
   - name: R-type_operands
-    coverpoint:
-      [
-        "{I_add_cg, I_sub_cg, I_and_cg, I_or_cg, I_xor_cg, I_sll_cg, I_srl_cg, I_sra_cg, I_slt_sg, I_sltu_cg}/{cp_rs1, cp_rs2, cp_rd, cmp_rs1_rs2, cmp_rd_rs1, cmp_rd_rs2, cmp_rd_rs1_rs2}",
-      ]
+    # Use representative coverpoints; applies to the other R-type instructions too
+    coverpoint: ["I_add_cg/{cp_rs1, cp_rs2, cp_rd, cmp_rd_rs1_rs2}"]
   - name: add_op
     coverpoint: ["I_add_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
   - name: sub_op
@@ -68,8 +72,8 @@ normative_rule_definitions:
   - name: slt_sltu_op
     coverpoint:
       [
-        "I_slt_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}",
-        "I_sltu_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}",
+        "I_slt_cg/{cp_rs1, cp_rs2, cp_rd_nx0, cr_rs1_rs2_edges}",
+        "I_sltu_cg/{cp_rs1, cp_rs2, cp_rd_nx0, cr_rs1_rs2_edges}",
       ]
   # insn:and[], insn:or[], and insn:xor[] perform bitwise logical operations.
   - name: and_or_xor_op
@@ -119,14 +123,16 @@ normative_rule_definitions:
     coverpoint:
       ["{I_bge_cg, I_bgeu_cg}/{cp_rs1, cp_rs2, cr_rs1_rs2_edges_offset}"]
   - name: ldst_ea
-    coverpoint:
-      [
-        "{I_lw_op, I_lh_op, I_lhu_op, I_lb_op, I_lbu_op, I_sw_op, I_sh_op, I_sb_op}/{cp_imm_edges}",
-      ]
+    # Use representative coverpoints; applies to the other loads and stores too
+    coverpoint: ["{I_lw_cg, I_sw_cg}/{cp_rs1_nx0, cp_imm_edges}"]
   - name: ldst_no_exc_aligned
+    # Use representative coverpoints; applies to the other loads and stores too
     coverpoint:
       [
-        "I_lw_cg/cp_align_word, I_lh_cg/cp_align_half, I_lhu_cg/cp_align_half, I_lb_cg/cp_align_byte, I_lbu_cg/cp_align_byte, I_sw_cg/cp_align_word, I_sh_cg/cp_align_half, I_sb_cg/cp_align_byte",
+        "I_lw_cg/cp_align_word",
+        "I_lh_cg/cp_align_hword",
+        "I_sw_cg/cp_align_word",
+        "I_sh_cg/cp_align_hword",
       ]
   - name: load_op
     coverpoint: ["I_lw_cg/{cp_memval_word}"]
@@ -137,25 +143,17 @@ normative_rule_definitions:
   # insn:lh[] loads a 16-bit value from memory, then sign-extends to 32-bits before
   # storing in rd.
   - name: lh_op
-    coverpoint:
-      [
-        "I_lh_cg/{cp_rs1_nx0, cp_rd, cp_imm_edges, cp_memval_hword}",
-        "I_lb_cg/{cp_rs1_nx0, cp_rd, cp_imm_edges, cp_memval_byte}",
-      ]
+    coverpoint: ["I_lh_cg/{cp_rs1_nx0, cp_rd, cp_imm_edges, cp_memval_hword}"]
   # insn:lhu[] loads a 16-bit value from memory but then zero extends to 32-bits before
   # storing in rd.
   - name: lhu_op
-    coverpoint:
-      [
-        "I_lhu_cg/{cp_rs1_nx0, cp_rd, cp_imm_edges, cp_memval_hword}",
-        "I_lbu_cg/{cp_rd, cp_imm_edges, cp_memval_byte}",
-      ]
+    coverpoint: ["I_lhu_cg/{cp_rs1_nx0, cp_rd, cp_imm_edges, cp_memval_hword}"]
   # insn:lb[] and insn:lbu[] are defined analogously for 8-bit values.
   - name: lb_lbu_op
     coverpoint:
       [
         "I_lb_cg/{cp_rs1_nx0, cp_rd, cp_imm_edges, cp_memval_byte}",
-        "I_lbu_cg/{cp_rd, cp_imm_edges, cp_memval_byte}",
+        "I_lbu_cg/{cp_rs1_nx0, cp_rd, cp_imm_edges, cp_memval_byte}",
       ]
   # The insn:sw[], insn:sh[], and insn:sb[] instructions store 32-bit, 16-bit, and 8-bit
   # values from the low bits of register rs2 to memory.
@@ -167,9 +165,11 @@ normative_rule_definitions:
         "I_sb_cg/{cp_rs1_nx0, cp_rs2, cp_rs2_edges, cp_imm_edges}",
       ]
   - name: ldst_atomicity_for_aligned
+    # Use representative coverpoints; applies to the other loads and stores too
     coverpoint:
       [
-        "I_lw_cg/cp_align_word, I_lh_cg/cp_align_half, I_lhu_cg/cp_align_half, I_lb_cg/cp_align_byte, I_lbu_cg/cp_align_byte, I_sw_cg/cp_align_word, I_sh_cg/cp_align_half, I_sb_cg/cp_align_byte, Atomic behavior not tested.",
+        "{I_lw_cg, I_sw_cg}/cp_align_word",
+        "Not tested: atomicity is not observable in single-hart signature tests",
       ]
   - name: fence_op
     coverpoint: ["I_fence_cg/{cp_custom_fence_pred_succ}, ordering not tested"]
@@ -186,9 +186,17 @@ normative_rule_definitions:
       [
         "I_fence_cg/{cp_custom_fence_reserved, cp_custom_fence_pred_succ}, ordering not tested",
       ]
-  - name: hints_op
-    # hints designated for standard use
+  # HINTs designated for standard use: cp_rd includes rd = x0. Use representative
+  # coverpoints; the other computational instructions with cp_rd apply too.
+  - name: hints_enc
     coverpoint:
       [
-        "I_add_cg/cp_rd, I_lui_cg/cp_rd, I_auipc_cg/cp_rd, I_addi_cg/cp_rd, I_andi_cg/cp_rd, I_ori_op/cp_rd, I_xori_op/cp_rd, I_sub_cg/cp_rd, I_and_cg/cp_rd, I_or_cg/cp_rd, I_xor_cg/cp_rd, I_sll_cg/cp_rd, I_srl_cg/cp_rd, I_sra_cg/cp_rd, I_fence_cg/cp_custom_fence_reserved, I_fence_cg/cp_custom_fence_pred_succ",
+        "{I_add_cg, I_addi_cg}/cp_rd",
+        "I_fence_cg/{cp_custom_fence_pred_succ, cp_custom_fence_reserved}",
+      ]
+  - name: hints_op
+    coverpoint:
+      [
+        "{I_add_cg, I_addi_cg}/cp_rd",
+        "I_fence_cg/{cp_custom_fence_pred_succ, cp_custom_fence_reserved}",
       ]

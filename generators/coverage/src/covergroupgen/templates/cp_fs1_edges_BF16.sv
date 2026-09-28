@@ -4,10 +4,10 @@
         bins neg0             = {32'h8000};
         bins pos1             = {32'h3f80};
         bins neg1             = {32'hbf80};
-        bins pos1p5           = {32'h3fc0};
-        bins neg1p5           = {32'hbfc0};
-        bins pos2             = {32'h4000};
-        bins neg2             = {32'hc000};
+        bins pos2p5           = {32'h4020};
+        bins neg2p5           = {32'hc020};
+        bins pos2prec         = {32'h4380};
+        bins neg2prec         = {32'hc380};
         bins posminnorm       = {32'h0080};
         bins negminnorm       = {32'h8080};
         bins posmaxnorm       = {32'h7f7f};

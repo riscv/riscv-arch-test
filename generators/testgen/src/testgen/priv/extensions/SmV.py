@@ -373,7 +373,12 @@ def _gen_vsetvl_i_rd_rs1(test_data: TestData, temp_reg: int) -> list[str]:
 
 def _gen_avl_corners(test_data: TestData, temp_reg: int) -> list[str]:
     """cp_vsetvl_i_avl_eq_zero / eq_vlmax / lt_2x_vlmax / eq_2x_vlmax / gt_2x_vlmax."""
-    lines = [comment_banner("cp_vsetvl_i_avl_*", "AVL corner cases for vsetvli and vsetvl")]
+    lines = [
+        comment_banner(
+            "cp_vsetvl_i_avl_eq_zero / eq_vlmax / lt_2x_vlmax / eq_2x_vlmax / gt_2x_vlmax",
+            "AVL corner cases for vsetvli and vsetvl",
+        )
+    ]
     lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
     rs1_reg, rs2_reg = test_data.int_regs.get_registers(2)
 

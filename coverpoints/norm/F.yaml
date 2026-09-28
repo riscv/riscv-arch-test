@@ -261,7 +261,7 @@ normative_rule_definitions:
   - name: fsw_flw_op
     coverpoint:
       [
-        "F_flw_cg/{cp_rs1_nx0, cp_imm_edges, cp_fd}",
+        "F_flw_cg/{cp_rs1_nx0, cp_imm_edges, cp_fd, cp_memval_fp_single}",
         "F_fsw_cg/{cp_rs1_nx0, cp_imm_edges, cp_fs2, cp_fs2_edges}",
       ]
   # insn:fmadd.s[] multiplies the values in rs1 and rs2, adds the value in rs3, and writes

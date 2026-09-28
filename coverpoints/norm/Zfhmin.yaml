@@ -21,7 +21,7 @@ normative_rule_definitions:
   - name: fsh_flh_op
     coverpoint:
       [
-        "Zfhmin_flh_cg/{cp_rs1_nx0, cp_imm_edges, cp_fd, cp_NaNBox_S_H}",
+        "Zfhmin_flh_cg/{cp_rs1_nx0, cp_imm_edges, cp_fd, cp_memval_fp_half, cp_NaNBox_S_H}",
         "Zfhmin_fsh_cg/{cp_rs1_nx0, cp_imm_edges, cp_fs2, cp_fs2_edges_H, cp_fs2_badNB_S_H}",
       ]
   # insn:fmv.d.x[] moves the double-precision value encoded in the IEEE 754-2008 encoding

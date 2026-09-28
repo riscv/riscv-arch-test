@@ -237,7 +237,7 @@ def _generate_sfence_tvm_tests(test_data: TestData) -> list[str]:
     covergroup = "Sm_mprivinst_cg"
     coverpoint = "cp_sfence_tvm"
     ######################################
-    tvm_reg = test_data.int_regs.get_register()
+    tvm_reg, medeleg_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         # sfence.vma may raise an illegal instruction on a hart that makes satp.MODE read-only zero
@@ -252,7 +252,8 @@ def _generate_sfence_tvm_tests(test_data: TestData) -> list[str]:
         ),
         "",
         "# Setup",
-        "csrci medeleg, 1 << 2          # turn off delegating illegal instruction exceptions so TVM won't cause a trap loop on sfence.vma",
+        f"csrr x{medeleg_reg}, medeleg          # save medeleg",
+        "csrci medeleg, 1 << 2          # illegal instructions trap to M-mode",
         f"LI(x{tvm_reg}, {1 << 20:#x})          # mstatus.TVM bit",
     ]
 
@@ -276,11 +277,11 @@ def _generate_sfence_tvm_tests(test_data: TestData) -> list[str]:
         [
             "",
             f"csrc mstatus, x{tvm_reg}          # clear TVM bit",
-            "csrsi medeleg, 1 << 2          # restore delegating illegal instructions",
+            f"csrw medeleg, x{medeleg_reg}          # restore medeleg",
             f"#endif // {SV_GATE.split(' ', 1)[1]}",
         ]
     )
-    test_data.int_regs.return_registers([tvm_reg])
+    test_data.int_regs.return_registers([tvm_reg, medeleg_reg])
     return lines
 
 

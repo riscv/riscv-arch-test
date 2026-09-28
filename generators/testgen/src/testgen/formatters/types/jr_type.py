@@ -7,11 +7,11 @@
 
 from testgen.asm.helpers import load_int_reg, write_sigupd
 from testgen.data.params import InstructionParams
-from testgen.data.state import TestData, return_testcase_registers
+from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
 
 jr_config = InstructionTypeConfig(
-    required_params={"rd", "rs1", "rs2", "immval", "temp_reg", "temp_val"},
+    required_params={"rd", "rs1", "immval", "temp_reg", "temp_val"},
     imm_bits=12,
     imm_signed=True,
 )
@@ -58,5 +58,4 @@ def format_jr_type(
         f"sub x{params.rd}, x{params.rd}, x{params.temp_reg} # subtract current PC to make position-independent",
         write_sigupd(params.rd, test_data, "int"),
     ]
-    return_testcase_registers(test_data, params)
     return (setup, test, check)

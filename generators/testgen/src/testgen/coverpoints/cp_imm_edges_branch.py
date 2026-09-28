@@ -1,14 +1,14 @@
 ##################################
-# cp_imm_edges.py
+# cp_imm_edges_branch.py
 #
 # jcarlin@hmc.edu Oct 2025
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
 
-"""cp_imm_edges coverpoint generators."""
+"""cp_imm_edges_branch coverpoint generator."""
 
-from testgen.asm.helpers import load_int_reg, write_sigupd
+from testgen.asm.helpers import write_sigupd
 from testgen.constants import INDENT
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData, return_testcase_registers
@@ -18,97 +18,71 @@ from testgen.instructions.params import generate_random_params
 
 @add_coverpoint_generator("cp_imm_edges_branch")
 def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
-    """Generate tests for branch immediate edge values."""
+    """Generate tests for branch immediate edge values, one testcase per bin.
+
+    Each taken branch skips a failure code, so the signature records whether the branch was taken.
+    """
     tc = test_data.begin_test_chunk()
     params = generate_random_params(test_data, instr_type, exclude_regs=[0])
     assert params.rs1 is not None and params.rs2 is not None and params.temp_reg is not None
+    rs1, rs2, check = params.rs1, params.rs2, params.temp_reg
+    branch = f"{instr_name} x{rs1}, x{rs2}"
     tc.code.extend(
         [
-            load_int_reg("branch check value", params.temp_reg, 4096, test_data),
-            f"LI(x{params.rs1}, 1)",
-            f"LI(x{params.rs2}, {1 if instr_name in ['beq', 'bge', 'bgeu'] else 2}) # setup for taken branch",
-            "",
-            test_data.add_testcase("all", coverpoint),
-            "",
-            "# branch forward by 4",
-            f"{instr_name} x{params.rs1}, x{params.rs2}, 1f",
-            f"{INDENT}# offset too small to modify counter for checking",
-            "1:",
-            "nop",
-            "",
-            "# branch forward by 8",
-            f"{instr_name} x{params.rs1}, x{params.rs2}, 2f",
-            f"addi x{params.temp_reg}, x{params.temp_reg}, -2 # shouldn't happen",
-            "2:",
-            f"addi x{params.temp_reg}, x{params.temp_reg}, 4 # should happen",
-            "",
-            "# branch forward by 16",
-            f"{instr_name} x{params.rs1}, x{params.rs2}, 3f",
-            f"addi x{params.temp_reg}, x{params.temp_reg}, -8 # shouldn't happen",
-            "j 19f # shouldn't happen",
-            "nop # use up 4 bytes",
-            "3:",
-            f"addi x{params.temp_reg}, x{params.temp_reg}, 16 # should happen",
-            "",
-            "# branch forward by 2048",
-            ".p2align 11 # align to 2048 bytes",
-            f"{instr_name} x{params.rs1}, x{params.rs2}, 4f",
-            f"addi x{params.temp_reg}, x{params.temp_reg}, -32 # shouldn't happen",
-            "j 19f # shouldn't happen",
-            ".p2align 11 # align to 2048 bytes",
-            "4:",
-            f"addi x{params.temp_reg}, x{params.temp_reg}, 64 # should happen",
-            "",
-            "# branch forward by 4092",
-            ".p2align 12 # align to 4096 bytes",
-            "nop # use up 4 bytes",
-            f"{instr_name} x{params.rs1}, x{params.rs2}, 5f",
-            f"addi x{params.temp_reg}, x{params.temp_reg}, -128 # shouldn't happen",
-            "j 19f # shouldn't happen",
-            ".p2align 12 # align to 4096 bytes",
-            "5:",
-            f"addi x{params.temp_reg}, x{params.temp_reg}, 256 # should happen",
-            "",
-            "# backward branch by -4",
-            "j 7f # jump around to test backward branch",
-            "6:",
-            "j 9f # backward branch succeeded",
-            f"{INDENT}# offset too small to modify counter for checking",
-            "7:",
-            f"{instr_name} x{params.rs1}, x{params.rs2}, 6b",
-            f"addi x{params.temp_reg}, x{params.temp_reg}, -512 # shouldn't happen",
-            "j 19f # shouldn't happen",
-            "",
-            "# backward branch by -8",
-            "8:",
-            f"addi x{params.temp_reg}, x{params.temp_reg}, 1024 # should happen",
-            "j 11f # backward branch succeeded",
-            "9:",
-            f"{instr_name} x{params.rs1}, x{params.rs2}, 8b",
-            f"addi x{params.temp_reg}, x{params.temp_reg}, -2048 # shouldn't happen",
-            "j 19f # shouldn't happen",
-            "",
-            "# backward branch by 4096",
-            ".p2align 12 # align to 4096 bytes",
-            "10:",
-            f"addi x{params.temp_reg}, x{params.temp_reg}, 1 # should happen",
-            "j 20f # backward branch succeeded",
-            ".p2align 12 # align to 4096 bytes",
-            "11:",
-            f".insn {encode_branch(instr_name, params.rs1, params.rs2, 4096):#x} # {instr_name} x{params.rs1}, x{params.rs2}, -4096; GCC is turning this into a small branch and a jump",
-            f"addi x{params.temp_reg}, x{params.temp_reg}, 300 # shouldn't happen",
-            "j 19f # shouldn't happen",
-            "",
-            "# Shouldn't reach here, write failure code",
-            "19:",
-            f"LI(x{params.temp_reg}, -1)",
-            "",
-            "# end of branches",
-            "20:",
-            "",
-            write_sigupd(params.temp_reg, test_data),
+            f"LI(x{rs1}, 1)",
+            f"LI(x{rs2}, {1 if instr_name in ['beq', 'bge', 'bgeu'] else 2}) # setup for taken branch",
         ]
     )
+
+    # Forward branches: the branch and its target are on consecutive 2^align boundaries.
+    # The failure code and alignment padding lie between them.
+    for offset, align in [(4, 2), (8, 3), (16, 4), (2048, 11), (4092, 12)]:
+        bin_name = f"b_{offset}"
+        tc.code.extend(
+            [
+                "",
+                f"# {coverpoint}: branch forward by {offset}",
+                f"LI(x{check}, 1) # success code",
+                f".p2align {align}",
+                *(["nop # start the branch 4 bytes after the boundary"] if offset == 4092 else []),
+                test_data.add_testcase(bin_name, coverpoint),
+                f"{branch}, 1f",
+                f"LI(x{check}, 7) # failure code" if offset > 4 else f"{INDENT}# offset too small for failure code",
+                f".p2align {align}",
+                "1:",
+                write_sigupd(check, test_data),
+            ]
+        )
+
+    # Backward branches: jump past the target, branch back to it, and have the target skip the failure code.
+    for offset, bin_name in [(4, "b_m4"), (8, "b_m8"), (4096, "b_m4096")]:
+        if offset == 4096:
+            target_align, source_align = [".p2align 12"], [".p2align 12"]
+            # GCC turns a -4096 branch into a short branch and a jump, so encode it directly
+            source = f".insn {encode_branch(instr_name, rs1, rs2, -4096):#x} # {branch}, -4096"
+        else:
+            target_align, source_align = [], []
+            source = f"{branch}, 2b"
+        tc.code.extend(
+            [
+                "",
+                f"# {coverpoint}: branch backward by {offset}",
+                f"LI(x{check}, 1) # success code",
+                "j 3f # jump past backward branch target",
+                *target_align,
+                "2:",
+                "j 4f # backward branch taken",
+                *(["nop # offset 8"] if offset == 8 else []),
+                *source_align,
+                "3:",
+                test_data.add_testcase(bin_name, coverpoint),
+                source,
+                f"LI(x{check}, 7) # failure code",
+                "4:",
+                write_sigupd(check, test_data),
+            ]
+        )
+
     return_testcase_registers(test_data, params)
     return [test_data.end_test_chunk()]
 

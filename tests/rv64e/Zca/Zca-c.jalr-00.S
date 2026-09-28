@@ -232,17 +232,17 @@ Zca_c_jalr_cg_cp_rs1_nx0_b15:
 1: addi x12, x12, 4 # backward jump target, increment check value
   j 3f # jump past backward jump
 2: LA(x14, 1b) # load backward jump target
-Zca_c_jalr_cg_cp_offset_c_jr_neg:
+Zca_c_jalr_cg_cp_offset_neg:
   c.jalr x14 # backward jump
   addi x12, x12, -2 # jump not taken, decrement check value
 3:  # done with sequence
   # Check if x12 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x12, Zca_c_jalr_cg_cp_offset_c_jr_neg, Zca_c_jalr_cg_cp_offset_c_jr_neg_str)
+  RVTEST_SIGUPD(x6, x5, x4, x12, Zca_c_jalr_cg_cp_offset_neg, Zca_c_jalr_cg_cp_offset_neg_str)
   # check return address from c.jalr
   auipc x12, 0 # get current PC
   sub x1, x1, x12 # subtract PC to make position-independent
   # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x1, Zca_c_jalr_cg_cp_offset_c_jr_neg, Zca_c_jalr_cg_cp_offset_c_jr_neg_str)
+  RVTEST_SIGUPD(x6, x5, x4, x1, Zca_c_jalr_cg_cp_offset_neg, Zca_c_jalr_cg_cp_offset_neg_str)
 
 # Testcase cp_offset_lsbs (rs1 LSB=0)
   RVTEST_TESTDATA_LOAD_INT(x3, x11) # load jump check value: x11 = 0xe4baeeb6e9c723dd
@@ -366,7 +366,7 @@ Zca_c_jalr_cg_cp_rs1_nx0_b12_str: .string "\"test: 12; cg: Zca_c.jalr_cg; cp: cp
 Zca_c_jalr_cg_cp_rs1_nx0_b13_str: .string "\"test: 13; cg: Zca_c.jalr_cg; cp: cp_rs1_nx0; bin: b13\""
 Zca_c_jalr_cg_cp_rs1_nx0_b14_str: .string "\"test: 14; cg: Zca_c.jalr_cg; cp: cp_rs1_nx0; bin: b14\""
 Zca_c_jalr_cg_cp_rs1_nx0_b15_str: .string "\"test: 15; cg: Zca_c.jalr_cg; cp: cp_rs1_nx0; bin: b15\""
-Zca_c_jalr_cg_cp_offset_c_jr_neg_str: .string "\"test: 16; cg: Zca_c.jalr_cg; cp: cp_offset_c_jr; bin: neg\""
+Zca_c_jalr_cg_cp_offset_neg_str: .string "\"test: 16; cg: Zca_c.jalr_cg; cp: cp_offset; bin: neg\""
 Zca_c_jalr_cg_cp_offset_lsbs_00_str: .string "\"test: 17; cg: Zca_c.jalr_cg; cp: cp_offset_lsbs; bin: 00\""
 Zca_c_jalr_cg_cp_offset_lsbs_01_str: .string "\"test: 18; cg: Zca_c.jalr_cg; cp: cp_offset_lsbs; bin: 01\""
 Zca_c_jalr_cg_cp_offset_lsbs_10_str: .string "\"test: 19; cg: Zca_c.jalr_cg; cp: cp_offset_lsbs; bin: 10\""

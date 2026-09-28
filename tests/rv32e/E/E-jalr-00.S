@@ -52,235 +52,235 @@ E_jalr_cg_cp_rs1_nx0_b1:
   mv x9, x2 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x2)
   LA(x2, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load jump check value: x15 = 0xa32b7ac4
-  addi x2, x2, 1300 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load jump check value: x12 = 0xf3ee7c01
+  addi x2, x2, -1577 # adjust base address for offset
 E_jalr_cg_cp_rs1_nx0_b2:
-  jalr x13, x2, -1300 # perform jump with offset
-  addi x15, x15, -4 # should not execute
+  jalr x13, x2, 1577 # perform jump with offset
+  addi x12, x12, -4 # should not execute
 1:
-  addi x15, x15, 2 # should execute
-  # Check if x15 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x15, E_jalr_cg_cp_rs1_nx0_b2, E_jalr_cg_cp_rs1_nx0_b2_str)
-  auipc x15, 0 # get current PC
-  sub x13, x13, x15 # subtract current PC to make position-independent
+  addi x12, x12, 2 # should execute
+  # Check if x12 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x12, E_jalr_cg_cp_rs1_nx0_b2, E_jalr_cg_cp_rs1_nx0_b2_str)
+  auipc x12, 0 # get current PC
+  sub x13, x13, x12 # subtract current PC to make position-independent
   # Check if x13 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x13, E_jalr_cg_cp_rs1_nx0_b2, E_jalr_cg_cp_rs1_nx0_b2_str)
 
   mv x1, x3 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x3)
   LA(x3, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load jump check value: x14 = 0x0257f62a
-  addi x3, x3, 546 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load jump check value: x15 = 0x62ffb97b
+  addi x3, x3, -1368 # adjust base address for offset
 E_jalr_cg_cp_rs1_nx0_b3:
-  jalr x13, x3, -546 # perform jump with offset
-  addi x14, x14, -4 # should not execute
-1:
-  addi x14, x14, 2 # should execute
-  # Check if x14 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x14, E_jalr_cg_cp_rs1_nx0_b3, E_jalr_cg_cp_rs1_nx0_b3_str)
-  auipc x14, 0 # get current PC
-  sub x13, x13, x14 # subtract current PC to make position-independent
-  # Check if x13 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x13, E_jalr_cg_cp_rs1_nx0_b3, E_jalr_cg_cp_rs1_nx0_b3_str)
-
-  mv x13, x4 # switch temp register to avoid conflict with test
-  mv x14, x5 # switch link pointer register to avoid conflict with test
-# Testcase cp_rs1_nx0 (Test source rs1 = x4)
-  LA(x4, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load jump check value: x12 = 0x530708c7
-  addi x4, x4, 1850 # adjust base address for offset
-E_jalr_cg_cp_rs1_nx0_b4:
-  jalr x2, x4, -1850 # perform jump with offset
-  addi x12, x12, -4 # should not execute
-1:
-  addi x12, x12, 2 # should execute
-  # Check if x12 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x9, x14, x13, x12, E_jalr_cg_cp_rs1_nx0_b4, E_jalr_cg_cp_rs1_nx0_b4_str)
-  auipc x12, 0 # get current PC
-  sub x2, x2, x12 # subtract current PC to make position-independent
-  # Check if x2 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x9, x14, x13, x2, E_jalr_cg_cp_rs1_nx0_b4, E_jalr_cg_cp_rs1_nx0_b4_str)
-
-# Testcase cp_rs1_nx0 (Test source rs1 = x5)
-  LA(x5, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load jump check value: x3 = 0xfa369bd0
-  addi x5, x5, -81 # adjust base address for offset
-E_jalr_cg_cp_rs1_nx0_b5:
-  jalr x15, x5, 81 # perform jump with offset
-  addi x3, x3, -4 # should not execute
-1:
-  addi x3, x3, 2 # should execute
-  # Check if x3 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x9, x14, x13, x3, E_jalr_cg_cp_rs1_nx0_b5, E_jalr_cg_cp_rs1_nx0_b5_str)
-  auipc x3, 0 # get current PC
-  sub x15, x15, x3 # subtract current PC to make position-independent
-  # Check if x15 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x9, x14, x13, x15, E_jalr_cg_cp_rs1_nx0_b5, E_jalr_cg_cp_rs1_nx0_b5_str)
-
-# Testcase cp_rs1_nx0 (Test source rs1 = x6)
-  LA(x6, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load jump check value: x8 = 0x0c58e979
-  addi x6, x6, -1133 # adjust base address for offset
-E_jalr_cg_cp_rs1_nx0_b6:
-  jalr x11, x6, 1133 # perform jump with offset
-  addi x8, x8, -4 # should not execute
-1:
-  addi x8, x8, 2 # should execute
-  # Check if x8 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x9, x14, x13, x8, E_jalr_cg_cp_rs1_nx0_b6, E_jalr_cg_cp_rs1_nx0_b6_str)
-  auipc x8, 0 # get current PC
-  sub x11, x11, x8 # subtract current PC to make position-independent
-  # Check if x11 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x9, x14, x13, x11, E_jalr_cg_cp_rs1_nx0_b6, E_jalr_cg_cp_rs1_nx0_b6_str)
-
-# Testcase cp_rs1_nx0 (Test source rs1 = x7)
-  LA(x7, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load jump check value: x3 = 0x82552633
-  addi x7, x7, -488 # adjust base address for offset
-E_jalr_cg_cp_rs1_nx0_b7:
-  jalr x4, x7, 488 # perform jump with offset
-  addi x3, x3, -4 # should not execute
-1:
-  addi x3, x3, 2 # should execute
-  # Check if x3 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x9, x14, x13, x3, E_jalr_cg_cp_rs1_nx0_b7, E_jalr_cg_cp_rs1_nx0_b7_str)
-  auipc x3, 0 # get current PC
-  sub x4, x4, x3 # subtract current PC to make position-independent
-  # Check if x4 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x9, x14, x13, x4, E_jalr_cg_cp_rs1_nx0_b7, E_jalr_cg_cp_rs1_nx0_b7_str)
-
-# Testcase cp_rs1_nx0 (Test source rs1 = x8)
-  LA(x8, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load jump check value: x5 = 0x972f52f0
-  addi x8, x8, 1714 # adjust base address for offset
-E_jalr_cg_cp_rs1_nx0_b8:
-  jalr x11, x8, -1714 # perform jump with offset
-  addi x5, x5, -4 # should not execute
-1:
-  addi x5, x5, 2 # should execute
-  # Check if x5 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x9, x14, x13, x5, E_jalr_cg_cp_rs1_nx0_b8, E_jalr_cg_cp_rs1_nx0_b8_str)
-  auipc x5, 0 # get current PC
-  sub x11, x11, x5 # subtract current PC to make position-independent
-  # Check if x11 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x9, x14, x13, x11, E_jalr_cg_cp_rs1_nx0_b8, E_jalr_cg_cp_rs1_nx0_b8_str)
-
-  mv x10, x9 # switch signature pointer register to avoid conflict with test
-# Testcase cp_rs1_nx0 (Test source rs1 = x9)
-  LA(x9, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load jump check value: x15 = 0x936a7778
-  addi x9, x9, 1072 # adjust base address for offset
-E_jalr_cg_cp_rs1_nx0_b9:
-  jalr x7, x9, -1072 # perform jump with offset
+  jalr x2, x3, 1368 # perform jump with offset
   addi x15, x15, -4 # should not execute
 1:
   addi x15, x15, 2 # should execute
-  # Check if x15 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x10, x14, x13, x15, E_jalr_cg_cp_rs1_nx0_b9, E_jalr_cg_cp_rs1_nx0_b9_str)
+  # Check if x15 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x15, E_jalr_cg_cp_rs1_nx0_b3, E_jalr_cg_cp_rs1_nx0_b3_str)
   auipc x15, 0 # get current PC
-  sub x7, x7, x15 # subtract current PC to make position-independent
-  # Check if x7 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x10, x14, x13, x7, E_jalr_cg_cp_rs1_nx0_b9, E_jalr_cg_cp_rs1_nx0_b9_str)
+  sub x2, x2, x15 # subtract current PC to make position-independent
+  # Check if x2 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x2, E_jalr_cg_cp_rs1_nx0_b3, E_jalr_cg_cp_rs1_nx0_b3_str)
 
-  mv x12, x10 # switch signature pointer register to avoid conflict with test
+  mv x7, x4 # switch temp register to avoid conflict with test
+  mv x8, x5 # switch link pointer register to avoid conflict with test
+# Testcase cp_rs1_nx0 (Test source rs1 = x4)
+  LA(x4, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load jump check value: x6 = 0x1dd58aea
+  addi x4, x4, 1047 # adjust base address for offset
+E_jalr_cg_cp_rs1_nx0_b4:
+  jalr x15, x4, -1047 # perform jump with offset
+  addi x6, x6, -4 # should not execute
+1:
+  addi x6, x6, 2 # should execute
+  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x6, E_jalr_cg_cp_rs1_nx0_b4, E_jalr_cg_cp_rs1_nx0_b4_str)
+  auipc x6, 0 # get current PC
+  sub x15, x15, x6 # subtract current PC to make position-independent
+  # Check if x15 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x15, E_jalr_cg_cp_rs1_nx0_b4, E_jalr_cg_cp_rs1_nx0_b4_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x5)
+  LA(x5, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load jump check value: x14 = 0x530708c7
+  addi x5, x5, 1850 # adjust base address for offset
+E_jalr_cg_cp_rs1_nx0_b5:
+  jalr x0, x5, -1850 # perform jump with offset
+  addi x14, x14, -4 # should not execute
+1:
+  addi x14, x14, 2 # should execute
+  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x14, E_jalr_cg_cp_rs1_nx0_b5, E_jalr_cg_cp_rs1_nx0_b5_str)
+  auipc x14, 0 # get current PC
+  sub x0, x0, x14 # subtract current PC to make position-independent
+  # Check if x0 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x0, E_jalr_cg_cp_rs1_nx0_b5, E_jalr_cg_cp_rs1_nx0_b5_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x6)
+  LA(x6, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load jump check value: x11 = 0x8a3a5169
+  addi x6, x6, -1722 # adjust base address for offset
+E_jalr_cg_cp_rs1_nx0_b6:
+  jalr x15, x6, 1722 # perform jump with offset
+  addi x11, x11, -4 # should not execute
+1:
+  addi x11, x11, 2 # should execute
+  # Check if x11 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x11, E_jalr_cg_cp_rs1_nx0_b6, E_jalr_cg_cp_rs1_nx0_b6_str)
+  auipc x11, 0 # get current PC
+  sub x15, x15, x11 # subtract current PC to make position-independent
+  # Check if x15 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x15, E_jalr_cg_cp_rs1_nx0_b6, E_jalr_cg_cp_rs1_nx0_b6_str)
+
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
+# Testcase cp_rs1_nx0 (Test source rs1 = x7)
+  LA(x7, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load jump check value: x6 = 0xe82e7b27
+  addi x7, x7, -1252 # adjust base address for offset
+E_jalr_cg_cp_rs1_nx0_b7:
+  jalr x11, x7, 1252 # perform jump with offset
+  addi x6, x6, -4 # should not execute
+1:
+  addi x6, x6, 2 # should execute
+  # Check if x6 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x6, E_jalr_cg_cp_rs1_nx0_b7, E_jalr_cg_cp_rs1_nx0_b7_str)
+  auipc x6, 0 # get current PC
+  sub x11, x11, x6 # subtract current PC to make position-independent
+  # Check if x11 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x11, E_jalr_cg_cp_rs1_nx0_b7, E_jalr_cg_cp_rs1_nx0_b7_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x8)
+  LA(x8, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load jump check value: x6 = 0x8593fdad
+  addi x8, x8, 1974 # adjust base address for offset
+E_jalr_cg_cp_rs1_nx0_b8:
+  jalr x7, x8, -1974 # perform jump with offset
+  addi x6, x6, -4 # should not execute
+1:
+  addi x6, x6, 2 # should execute
+  # Check if x6 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x6, E_jalr_cg_cp_rs1_nx0_b8, E_jalr_cg_cp_rs1_nx0_b8_str)
+  auipc x6, 0 # get current PC
+  sub x7, x7, x6 # subtract current PC to make position-independent
+  # Check if x7 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x7, E_jalr_cg_cp_rs1_nx0_b8, E_jalr_cg_cp_rs1_nx0_b8_str)
+
+  mv x6, x9 # switch signature pointer register to avoid conflict with test
+# Testcase cp_rs1_nx0 (Test source rs1 = x9)
+  LA(x9, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load jump check value: x3 = 0xa7600bce
+  addi x9, x9, -1857 # adjust base address for offset
+E_jalr_cg_cp_rs1_nx0_b9:
+  jalr x5, x9, 1857 # perform jump with offset
+  addi x3, x3, -4 # should not execute
+1:
+  addi x3, x3, 2 # should execute
+  # Check if x3 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x6, x14, x13, x3, E_jalr_cg_cp_rs1_nx0_b9, E_jalr_cg_cp_rs1_nx0_b9_str)
+  auipc x3, 0 # get current PC
+  sub x5, x5, x3 # subtract current PC to make position-independent
+  # Check if x5 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x6, x14, x13, x5, E_jalr_cg_cp_rs1_nx0_b9, E_jalr_cg_cp_rs1_nx0_b9_str)
+
 # Testcase cp_rs1_nx0 (Test source rs1 = x10)
   LA(x10, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load jump check value: x7 = 0x598a4c9c
-  addi x10, x10, 190 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load jump check value: x12 = 0xe0379bdd
+  addi x10, x10, 1427 # adjust base address for offset
 E_jalr_cg_cp_rs1_nx0_b10:
-  jalr x5, x10, -190 # perform jump with offset
-  addi x7, x7, -4 # should not execute
+  jalr x0, x10, -1427 # perform jump with offset
+  addi x12, x12, -4 # should not execute
 1:
-  addi x7, x7, 2 # should execute
-  # Check if x7 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x12, x14, x13, x7, E_jalr_cg_cp_rs1_nx0_b10, E_jalr_cg_cp_rs1_nx0_b10_str)
-  auipc x7, 0 # get current PC
-  sub x5, x5, x7 # subtract current PC to make position-independent
-  # Check if x5 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x12, x14, x13, x5, E_jalr_cg_cp_rs1_nx0_b10, E_jalr_cg_cp_rs1_nx0_b10_str)
+  addi x12, x12, 2 # should execute
+  # Check if x12 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x6, x14, x13, x12, E_jalr_cg_cp_rs1_nx0_b10, E_jalr_cg_cp_rs1_nx0_b10_str)
+  auipc x12, 0 # get current PC
+  sub x0, x0, x12 # subtract current PC to make position-independent
+  # Check if x0 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x6, x14, x13, x0, E_jalr_cg_cp_rs1_nx0_b10, E_jalr_cg_cp_rs1_nx0_b10_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x11)
   LA(x11, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load jump check value: x8 = 0x40391434
-  addi x11, x11, -2041 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load jump check value: x4 = 0xc0d725ed
+  addi x11, x11, -1176 # adjust base address for offset
 E_jalr_cg_cp_rs1_nx0_b11:
-  jalr x0, x11, 2041 # perform jump with offset
+  jalr x8, x11, 1176 # perform jump with offset
+  addi x4, x4, -4 # should not execute
+1:
+  addi x4, x4, 2 # should execute
+  # Check if x4 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x6, x14, x13, x4, E_jalr_cg_cp_rs1_nx0_b11, E_jalr_cg_cp_rs1_nx0_b11_str)
+  auipc x4, 0 # get current PC
+  sub x8, x8, x4 # subtract current PC to make position-independent
+  # Check if x8 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x6, x14, x13, x8, E_jalr_cg_cp_rs1_nx0_b11, E_jalr_cg_cp_rs1_nx0_b11_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x12)
+  LA(x12, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load jump check value: x8 = 0x86d8999d
+  addi x12, x12, -822 # adjust base address for offset
+E_jalr_cg_cp_rs1_nx0_b12:
+  jalr x11, x12, 822 # perform jump with offset
   addi x8, x8, -4 # should not execute
 1:
   addi x8, x8, 2 # should execute
-  # Check if x8 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x12, x14, x13, x8, E_jalr_cg_cp_rs1_nx0_b11, E_jalr_cg_cp_rs1_nx0_b11_str)
+  # Check if x8 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x6, x14, x13, x8, E_jalr_cg_cp_rs1_nx0_b12, E_jalr_cg_cp_rs1_nx0_b12_str)
   auipc x8, 0 # get current PC
-  sub x0, x0, x8 # subtract current PC to make position-independent
-  # Check if x0 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x12, x14, x13, x0, E_jalr_cg_cp_rs1_nx0_b11, E_jalr_cg_cp_rs1_nx0_b11_str)
+  sub x11, x11, x8 # subtract current PC to make position-independent
+  # Check if x11 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x6, x14, x13, x11, E_jalr_cg_cp_rs1_nx0_b12, E_jalr_cg_cp_rs1_nx0_b12_str)
 
-  mv x3, x12 # switch signature pointer register to avoid conflict with test
-# Testcase cp_rs1_nx0 (Test source rs1 = x12)
-  LA(x12, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load jump check value: x7 = 0x3c17077a
-  addi x12, x12, 960 # adjust base address for offset
-E_jalr_cg_cp_rs1_nx0_b12:
-  jalr x10, x12, -960 # perform jump with offset
-  addi x7, x7, -4 # should not execute
-1:
-  addi x7, x7, 2 # should execute
-  # Check if x7 contains the expected result. x3 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x3, x14, x13, x7, E_jalr_cg_cp_rs1_nx0_b12, E_jalr_cg_cp_rs1_nx0_b12_str)
-  auipc x7, 0 # get current PC
-  sub x10, x10, x7 # subtract current PC to make position-independent
-  # Check if x10 contains the expected result. x3 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x3, x14, x13, x10, E_jalr_cg_cp_rs1_nx0_b12, E_jalr_cg_cp_rs1_nx0_b12_str)
-
-  mv x4, x13 # switch temp register to avoid conflict with test
-  mv x5, x14 # switch link pointer register to avoid conflict with test
+  mv x7, x13 # switch temp register to avoid conflict with test
+  mv x8, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x13)
   LA(x13, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load jump check value: x7 = 0x2a07785f
-  addi x13, x13, -2028 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load jump check value: x5 = 0x16b04213
+  addi x13, x13, -1242 # adjust base address for offset
 E_jalr_cg_cp_rs1_nx0_b13:
-  jalr x0, x13, 2028 # perform jump with offset
-  addi x7, x7, -4 # should not execute
+  jalr x11, x13, 1242 # perform jump with offset
+  addi x5, x5, -4 # should not execute
 1:
-  addi x7, x7, 2 # should execute
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, E_jalr_cg_cp_rs1_nx0_b13, E_jalr_cg_cp_rs1_nx0_b13_str)
-  auipc x7, 0 # get current PC
-  sub x0, x0, x7 # subtract current PC to make position-independent
-  # Check if x0 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x0, E_jalr_cg_cp_rs1_nx0_b13, E_jalr_cg_cp_rs1_nx0_b13_str)
+  addi x5, x5, 2 # should execute
+  # Check if x5 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x5, E_jalr_cg_cp_rs1_nx0_b13, E_jalr_cg_cp_rs1_nx0_b13_str)
+  auipc x5, 0 # get current PC
+  sub x11, x11, x5 # subtract current PC to make position-independent
+  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x11, E_jalr_cg_cp_rs1_nx0_b13, E_jalr_cg_cp_rs1_nx0_b13_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x14)
   LA(x14, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load jump check value: x9 = 0x6923612c
-  addi x14, x14, 743 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load jump check value: x5 = 0x808b0ddf
+  addi x14, x14, 1474 # adjust base address for offset
 E_jalr_cg_cp_rs1_nx0_b14:
-  jalr x7, x14, -743 # perform jump with offset
-  addi x9, x9, -4 # should not execute
+  jalr x3, x14, -1474 # perform jump with offset
+  addi x5, x5, -4 # should not execute
 1:
-  addi x9, x9, 2 # should execute
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, E_jalr_cg_cp_rs1_nx0_b14, E_jalr_cg_cp_rs1_nx0_b14_str)
-  auipc x9, 0 # get current PC
-  sub x7, x7, x9 # subtract current PC to make position-independent
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, E_jalr_cg_cp_rs1_nx0_b14, E_jalr_cg_cp_rs1_nx0_b14_str)
+  addi x5, x5, 2 # should execute
+  # Check if x5 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x5, E_jalr_cg_cp_rs1_nx0_b14, E_jalr_cg_cp_rs1_nx0_b14_str)
+  auipc x5, 0 # get current PC
+  sub x3, x3, x5 # subtract current PC to make position-independent
+  # Check if x3 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x3, E_jalr_cg_cp_rs1_nx0_b14, E_jalr_cg_cp_rs1_nx0_b14_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x15)
   LA(x15, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load jump check value: x7 = 0xca59280c
-  addi x15, x15, -428 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load jump check value: x10 = 0x100d7eb9
+  addi x15, x15, -1499 # adjust base address for offset
 E_jalr_cg_cp_rs1_nx0_b15:
-  jalr x10, x15, 428 # perform jump with offset
-  addi x7, x7, -4 # should not execute
+  jalr x14, x15, 1499 # perform jump with offset
+  addi x10, x10, -4 # should not execute
 1:
-  addi x7, x7, 2 # should execute
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, E_jalr_cg_cp_rs1_nx0_b15, E_jalr_cg_cp_rs1_nx0_b15_str)
-  auipc x7, 0 # get current PC
-  sub x10, x10, x7 # subtract current PC to make position-independent
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, E_jalr_cg_cp_rs1_nx0_b15, E_jalr_cg_cp_rs1_nx0_b15_str)
+  addi x10, x10, 2 # should execute
+  # Check if x10 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x10, E_jalr_cg_cp_rs1_nx0_b15, E_jalr_cg_cp_rs1_nx0_b15_str)
+  auipc x10, 0 # get current PC
+  sub x14, x14, x10 # subtract current PC to make position-independent
+  # Check if x14 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x14, E_jalr_cg_cp_rs1_nx0_b15, E_jalr_cg_cp_rs1_nx0_b15_str)
 
 /////////////////////////////////
 // cp_rd
@@ -288,937 +288,937 @@ E_jalr_cg_cp_rs1_nx0_b15:
 
 # Testcase cp_rd (Test destination rd = x0)
   LA(x2, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load jump check value: x15 = 0x3959b26f
-  addi x2, x2, 392 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load jump check value: x12 = 0xb3c1d10f
+  addi x2, x2, 1087 # adjust base address for offset
 E_jalr_cg_cp_rd_b0:
-  jalr x0, x2, -392 # perform jump with offset
-  addi x15, x15, -4 # should not execute
+  jalr x0, x2, -1087 # perform jump with offset
+  addi x12, x12, -4 # should not execute
 1:
-  addi x15, x15, 2 # should execute
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, E_jalr_cg_cp_rd_b0, E_jalr_cg_cp_rd_b0_str)
-  auipc x15, 0 # get current PC
-  sub x0, x0, x15 # subtract current PC to make position-independent
-  # Check if x0 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x0, E_jalr_cg_cp_rd_b0, E_jalr_cg_cp_rd_b0_str)
+  addi x12, x12, 2 # should execute
+  # Check if x12 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x12, E_jalr_cg_cp_rd_b0, E_jalr_cg_cp_rd_b0_str)
+  auipc x12, 0 # get current PC
+  sub x0, x0, x12 # subtract current PC to make position-independent
+  # Check if x0 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x0, E_jalr_cg_cp_rd_b0, E_jalr_cg_cp_rd_b0_str)
 
-  mv x6, x1 # switch data pointer register to avoid conflict with test
+  mv x9, x1 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x1)
   LA(x2, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load jump check value: x8 = 0x20ad2be9
+  RVTEST_TESTDATA_LOAD_INT(x9, x15) # load jump check value: x15 = 0x20ad2be9
   addi x2, x2, 747 # adjust base address for offset
 E_jalr_cg_cp_rd_b1:
   jalr x1, x2, -747 # perform jump with offset
-  addi x8, x8, -4 # should not execute
+  addi x15, x15, -4 # should not execute
 1:
-  addi x8, x8, 2 # should execute
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, E_jalr_cg_cp_rd_b1, E_jalr_cg_cp_rd_b1_str)
-  auipc x8, 0 # get current PC
-  sub x1, x1, x8 # subtract current PC to make position-independent
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, E_jalr_cg_cp_rd_b1, E_jalr_cg_cp_rd_b1_str)
+  addi x15, x15, 2 # should execute
+  # Check if x15 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x15, E_jalr_cg_cp_rd_b1, E_jalr_cg_cp_rd_b1_str)
+  auipc x15, 0 # get current PC
+  sub x1, x1, x15 # subtract current PC to make position-independent
+  # Check if x1 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x1, E_jalr_cg_cp_rd_b1, E_jalr_cg_cp_rd_b1_str)
 
 # Testcase cp_rd (Test destination rd = x2)
-  LA(x10, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load jump check value: x8 = 0x16c37c07
-  addi x10, x10, 960 # adjust base address for offset
+  LA(x5, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x9, x15) # load jump check value: x15 = 0xa204e471
+  addi x5, x5, 1851 # adjust base address for offset
 E_jalr_cg_cp_rd_b2:
-  jalr x2, x10, -960 # perform jump with offset
-  addi x8, x8, -4 # should not execute
+  jalr x2, x5, -1851 # perform jump with offset
+  addi x15, x15, -4 # should not execute
 1:
-  addi x8, x8, 2 # should execute
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, E_jalr_cg_cp_rd_b2, E_jalr_cg_cp_rd_b2_str)
-  auipc x8, 0 # get current PC
-  sub x2, x2, x8 # subtract current PC to make position-independent
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, E_jalr_cg_cp_rd_b2, E_jalr_cg_cp_rd_b2_str)
+  addi x15, x15, 2 # should execute
+  # Check if x15 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x15, E_jalr_cg_cp_rd_b2, E_jalr_cg_cp_rd_b2_str)
+  auipc x15, 0 # get current PC
+  sub x2, x2, x15 # subtract current PC to make position-independent
+  # Check if x2 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x2, E_jalr_cg_cp_rd_b2, E_jalr_cg_cp_rd_b2_str)
 
-  mv x1, x3 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x3)
-  LA(x8, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load jump check value: x9 = 0xc8a00358
-  addi x8, x8, 1382 # adjust base address for offset
+  LA(x14, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load jump check value: x5 = 0xc8a00358
+  addi x14, x14, 1382 # adjust base address for offset
 E_jalr_cg_cp_rd_b3:
-  jalr x3, x8, -1382 # perform jump with offset
-  addi x9, x9, -4 # should not execute
+  jalr x3, x14, -1382 # perform jump with offset
+  addi x5, x5, -4 # should not execute
 1:
-  addi x9, x9, 2 # should execute
-  # Check if x9 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x9, E_jalr_cg_cp_rd_b3, E_jalr_cg_cp_rd_b3_str)
-  auipc x9, 0 # get current PC
-  sub x3, x3, x9 # subtract current PC to make position-independent
-  # Check if x3 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x3, E_jalr_cg_cp_rd_b3, E_jalr_cg_cp_rd_b3_str)
+  addi x5, x5, 2 # should execute
+  # Check if x5 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x5, E_jalr_cg_cp_rd_b3, E_jalr_cg_cp_rd_b3_str)
+  auipc x5, 0 # get current PC
+  sub x3, x3, x5 # subtract current PC to make position-independent
+  # Check if x3 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x3, E_jalr_cg_cp_rd_b3, E_jalr_cg_cp_rd_b3_str)
 
-  mv x13, x4 # switch temp register to avoid conflict with test
-  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x4)
-  LA(x7, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load jump check value: x12 = 0xcffb91cc
-  addi x7, x7, 981 # adjust base address for offset
+  LA(x12, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x9, x11) # load jump check value: x11 = 0x35ef2195
+  addi x12, x12, -511 # adjust base address for offset
 E_jalr_cg_cp_rd_b4:
-  jalr x4, x7, -981 # perform jump with offset
-  addi x12, x12, -4 # should not execute
-1:
-  addi x12, x12, 2 # should execute
-  # Check if x12 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x12, E_jalr_cg_cp_rd_b4, E_jalr_cg_cp_rd_b4_str)
-  auipc x12, 0 # get current PC
-  sub x4, x4, x12 # subtract current PC to make position-independent
-  # Check if x4 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x4, E_jalr_cg_cp_rd_b4, E_jalr_cg_cp_rd_b4_str)
-
-# Testcase cp_rd (Test destination rd = x5)
-  LA(x7, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load jump check value: x11 = 0x233d9285
-  addi x7, x7, 285 # adjust base address for offset
-E_jalr_cg_cp_rd_b5:
-  jalr x5, x7, -285 # perform jump with offset
+  jalr x4, x12, 511 # perform jump with offset
   addi x11, x11, -4 # should not execute
 1:
   addi x11, x11, 2 # should execute
-  # Check if x11 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x11, E_jalr_cg_cp_rd_b5, E_jalr_cg_cp_rd_b5_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x11, E_jalr_cg_cp_rd_b4, E_jalr_cg_cp_rd_b4_str)
   auipc x11, 0 # get current PC
-  sub x5, x5, x11 # subtract current PC to make position-independent
-  # Check if x5 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x5, E_jalr_cg_cp_rd_b5, E_jalr_cg_cp_rd_b5_str)
+  sub x4, x4, x11 # subtract current PC to make position-independent
+  # Check if x4 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x4, E_jalr_cg_cp_rd_b4, E_jalr_cg_cp_rd_b4_str)
 
-  mv x15, x6 # switch data pointer register to avoid conflict with test
-# Testcase cp_rd (Test destination rd = x6)
-  LA(x10, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x15, x5) # load jump check value: x5 = 0xee84b5ae
-  addi x10, x10, -1447 # adjust base address for offset
-E_jalr_cg_cp_rd_b6:
-  jalr x6, x10, 1447 # perform jump with offset
-  addi x5, x5, -4 # should not execute
+# Testcase cp_rd (Test destination rd = x5)
+  LA(x12, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x9, x4) # load jump check value: x4 = 0xcd775771
+  addi x12, x12, -1487 # adjust base address for offset
+E_jalr_cg_cp_rd_b5:
+  jalr x5, x12, 1487 # perform jump with offset
+  addi x4, x4, -4 # should not execute
 1:
-  addi x5, x5, 2 # should execute
-  # Check if x5 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x5, E_jalr_cg_cp_rd_b6, E_jalr_cg_cp_rd_b6_str)
-  auipc x5, 0 # get current PC
-  sub x6, x6, x5 # subtract current PC to make position-independent
-  # Check if x6 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x6, E_jalr_cg_cp_rd_b6, E_jalr_cg_cp_rd_b6_str)
+  addi x4, x4, 2 # should execute
+  # Check if x4 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x4, E_jalr_cg_cp_rd_b5, E_jalr_cg_cp_rd_b5_str)
+  auipc x4, 0 # get current PC
+  sub x5, x5, x4 # subtract current PC to make position-independent
+  # Check if x5 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x5, E_jalr_cg_cp_rd_b5, E_jalr_cg_cp_rd_b5_str)
 
+  mv x12, x6 # switch signature pointer register to avoid conflict with test
+# Testcase cp_rd (Test destination rd = x6)
+  LA(x15, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x9, x1) # load jump check value: x1 = 0xb345f062
+  addi x15, x15, -1488 # adjust base address for offset
+E_jalr_cg_cp_rd_b6:
+  jalr x6, x15, 1488 # perform jump with offset
+  addi x1, x1, -4 # should not execute
+1:
+  addi x1, x1, 2 # should execute
+  # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x1, E_jalr_cg_cp_rd_b6, E_jalr_cg_cp_rd_b6_str)
+  auipc x1, 0 # get current PC
+  sub x6, x6, x1 # subtract current PC to make position-independent
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, E_jalr_cg_cp_rd_b6, E_jalr_cg_cp_rd_b6_str)
+
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x7)
   LA(x6, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x15, x5) # load jump check value: x5 = 0xd2d94374
-  addi x6, x6, -1141 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x9, x1) # load jump check value: x1 = 0xa97fe1ae
+  addi x6, x6, -587 # adjust base address for offset
 E_jalr_cg_cp_rd_b7:
-  jalr x7, x6, 1141 # perform jump with offset
-  addi x5, x5, -4 # should not execute
+  jalr x7, x6, 587 # perform jump with offset
+  addi x1, x1, -4 # should not execute
 1:
-  addi x5, x5, 2 # should execute
-  # Check if x5 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x5, E_jalr_cg_cp_rd_b7, E_jalr_cg_cp_rd_b7_str)
-  auipc x5, 0 # get current PC
-  sub x7, x7, x5 # subtract current PC to make position-independent
-  # Check if x7 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x7, E_jalr_cg_cp_rd_b7, E_jalr_cg_cp_rd_b7_str)
+  addi x1, x1, 2 # should execute
+  # Check if x1 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x1, E_jalr_cg_cp_rd_b7, E_jalr_cg_cp_rd_b7_str)
+  auipc x1, 0 # get current PC
+  sub x7, x7, x1 # subtract current PC to make position-independent
+  # Check if x7 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x7, E_jalr_cg_cp_rd_b7, E_jalr_cg_cp_rd_b7_str)
 
 # Testcase cp_rd (Test destination rd = x8)
-  LA(x5, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x15, x4) # load jump check value: x4 = 0x872df5be
-  addi x5, x5, 1316 # adjust base address for offset
+  LA(x10, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load jump check value: x7 = 0x13276fff
+  addi x10, x10, 293 # adjust base address for offset
 E_jalr_cg_cp_rd_b8:
-  jalr x8, x5, -1316 # perform jump with offset
-  addi x4, x4, -4 # should not execute
+  jalr x8, x10, -293 # perform jump with offset
+  addi x7, x7, -4 # should not execute
 1:
-  addi x4, x4, 2 # should execute
-  # Check if x4 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x4, E_jalr_cg_cp_rd_b8, E_jalr_cg_cp_rd_b8_str)
-  auipc x4, 0 # get current PC
-  sub x8, x8, x4 # subtract current PC to make position-independent
-  # Check if x8 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x8, E_jalr_cg_cp_rd_b8, E_jalr_cg_cp_rd_b8_str)
+  addi x7, x7, 2 # should execute
+  # Check if x7 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x7, E_jalr_cg_cp_rd_b8, E_jalr_cg_cp_rd_b8_str)
+  auipc x7, 0 # get current PC
+  sub x8, x8, x7 # subtract current PC to make position-independent
+  # Check if x8 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x8, E_jalr_cg_cp_rd_b8, E_jalr_cg_cp_rd_b8_str)
 
+  mv x10, x9 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x9)
-  LA(x5, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x15, x4) # load jump check value: x4 = 0xba3c021f
-  addi x5, x5, 924 # adjust base address for offset
+  LA(x6, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x10, x4) # load jump check value: x4 = 0xca64bcc3
+  addi x6, x6, 369 # adjust base address for offset
 E_jalr_cg_cp_rd_b9:
-  jalr x9, x5, -924 # perform jump with offset
+  jalr x9, x6, -369 # perform jump with offset
   addi x4, x4, -4 # should not execute
 1:
   addi x4, x4, 2 # should execute
-  # Check if x4 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x4, E_jalr_cg_cp_rd_b9, E_jalr_cg_cp_rd_b9_str)
+  # Check if x4 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x4, E_jalr_cg_cp_rd_b9, E_jalr_cg_cp_rd_b9_str)
   auipc x4, 0 # get current PC
   sub x9, x9, x4 # subtract current PC to make position-independent
-  # Check if x9 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x9, E_jalr_cg_cp_rd_b9, E_jalr_cg_cp_rd_b9_str)
+  # Check if x9 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x9, E_jalr_cg_cp_rd_b9, E_jalr_cg_cp_rd_b9_str)
 
+  mv x1, x10 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x10)
-  LA(x12, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x15, x8) # load jump check value: x8 = 0x22f2973e
-  addi x12, x12, -977 # adjust base address for offset
+  LA(x7, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load jump check value: x4 = 0x491624b4
+  addi x7, x7, 349 # adjust base address for offset
 E_jalr_cg_cp_rd_b10:
-  jalr x10, x12, 977 # perform jump with offset
-  addi x8, x8, -4 # should not execute
+  jalr x10, x7, -349 # perform jump with offset
+  addi x4, x4, -4 # should not execute
 1:
-  addi x8, x8, 2 # should execute
-  # Check if x8 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x8, E_jalr_cg_cp_rd_b10, E_jalr_cg_cp_rd_b10_str)
-  auipc x8, 0 # get current PC
-  sub x10, x10, x8 # subtract current PC to make position-independent
-  # Check if x10 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x10, E_jalr_cg_cp_rd_b10, E_jalr_cg_cp_rd_b10_str)
+  addi x4, x4, 2 # should execute
+  # Check if x4 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x4, E_jalr_cg_cp_rd_b10, E_jalr_cg_cp_rd_b10_str)
+  auipc x4, 0 # get current PC
+  sub x10, x10, x4 # subtract current PC to make position-independent
+  # Check if x10 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x10, E_jalr_cg_cp_rd_b10, E_jalr_cg_cp_rd_b10_str)
 
 # Testcase cp_rd (Test destination rd = x11)
-  LA(x4, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x15, x8) # load jump check value: x8 = 0x0061db4b
-  addi x4, x4, 789 # adjust base address for offset
+  LA(x5, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load jump check value: x7 = 0xd3bcf6c0
+  addi x5, x5, 1554 # adjust base address for offset
 E_jalr_cg_cp_rd_b11:
-  jalr x11, x4, -789 # perform jump with offset
-  addi x8, x8, -4 # should not execute
+  jalr x11, x5, -1554 # perform jump with offset
+  addi x7, x7, -4 # should not execute
 1:
-  addi x8, x8, 2 # should execute
-  # Check if x8 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x8, E_jalr_cg_cp_rd_b11, E_jalr_cg_cp_rd_b11_str)
-  auipc x8, 0 # get current PC
-  sub x11, x11, x8 # subtract current PC to make position-independent
-  # Check if x11 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x11, E_jalr_cg_cp_rd_b11, E_jalr_cg_cp_rd_b11_str)
+  addi x7, x7, 2 # should execute
+  # Check if x7 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x7, E_jalr_cg_cp_rd_b11, E_jalr_cg_cp_rd_b11_str)
+  auipc x7, 0 # get current PC
+  sub x11, x11, x7 # subtract current PC to make position-independent
+  # Check if x11 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x11, E_jalr_cg_cp_rd_b11, E_jalr_cg_cp_rd_b11_str)
 
+  mv x2, x12 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x12)
-  LA(x11, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x15, x8) # load jump check value: x8 = 0x05b32262
-  addi x11, x11, 1469 # adjust base address for offset
+  LA(x6, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load jump check value: x10 = 0x7992c397
+  addi x6, x6, 1830 # adjust base address for offset
 E_jalr_cg_cp_rd_b12:
-  jalr x12, x11, -1469 # perform jump with offset
-  addi x8, x8, -4 # should not execute
-1:
-  addi x8, x8, 2 # should execute
-  # Check if x8 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x8, E_jalr_cg_cp_rd_b12, E_jalr_cg_cp_rd_b12_str)
-  auipc x8, 0 # get current PC
-  sub x12, x12, x8 # subtract current PC to make position-independent
-  # Check if x12 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x12, E_jalr_cg_cp_rd_b12, E_jalr_cg_cp_rd_b12_str)
-
-  mv x7, x13 # switch temp register to avoid conflict with test
-  mv x8, x14 # switch link pointer register to avoid conflict with test
-# Testcase cp_rd (Test destination rd = x13)
-  LA(x3, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x15, x10) # load jump check value: x10 = 0x6bf3fc6c
-  addi x3, x3, 1013 # adjust base address for offset
-E_jalr_cg_cp_rd_b13:
-  jalr x13, x3, -1013 # perform jump with offset
+  jalr x12, x6, -1830 # perform jump with offset
   addi x10, x10, -4 # should not execute
 1:
   addi x10, x10, 2 # should execute
-  # Check if x10 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x10, E_jalr_cg_cp_rd_b13, E_jalr_cg_cp_rd_b13_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x2, x14, x13, x10, E_jalr_cg_cp_rd_b12, E_jalr_cg_cp_rd_b12_str)
+  auipc x10, 0 # get current PC
+  sub x12, x12, x10 # subtract current PC to make position-independent
+  # Check if x12 contains the expected result. x2 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x2, x14, x13, x12, E_jalr_cg_cp_rd_b12, E_jalr_cg_cp_rd_b12_str)
+
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
+# Testcase cp_rd (Test destination rd = x13)
+  LA(x14, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load jump check value: x10 = 0xcebf6899
+  addi x14, x14, 1035 # adjust base address for offset
+E_jalr_cg_cp_rd_b13:
+  jalr x13, x14, -1035 # perform jump with offset
+  addi x10, x10, -4 # should not execute
+1:
+  addi x10, x10, 2 # should execute
+  # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x10, E_jalr_cg_cp_rd_b13, E_jalr_cg_cp_rd_b13_str)
   auipc x10, 0 # get current PC
   sub x13, x13, x10 # subtract current PC to make position-independent
-  # Check if x13 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x13, E_jalr_cg_cp_rd_b13, E_jalr_cg_cp_rd_b13_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, E_jalr_cg_cp_rd_b13, E_jalr_cg_cp_rd_b13_str)
 
 # Testcase cp_rd (Test destination rd = x14)
-  LA(x6, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x15, x10) # load jump check value: x10 = 0x0bc2b178
-  addi x6, x6, 232 # adjust base address for offset
+  LA(x3, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load jump check value: x10 = 0x7bfac81a
+  addi x3, x3, -12 # adjust base address for offset
 E_jalr_cg_cp_rd_b14:
-  jalr x14, x6, -232 # perform jump with offset
+  jalr x14, x3, 12 # perform jump with offset
   addi x10, x10, -4 # should not execute
 1:
   addi x10, x10, 2 # should execute
-  # Check if x10 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x10, E_jalr_cg_cp_rd_b14, E_jalr_cg_cp_rd_b14_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x10, E_jalr_cg_cp_rd_b14, E_jalr_cg_cp_rd_b14_str)
   auipc x10, 0 # get current PC
   sub x14, x14, x10 # subtract current PC to make position-independent
-  # Check if x14 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x14, E_jalr_cg_cp_rd_b14, E_jalr_cg_cp_rd_b14_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, E_jalr_cg_cp_rd_b14, E_jalr_cg_cp_rd_b14_str)
 
-  mv x2, x15 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x15)
-  LA(x14, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load jump check value: x12 = 0x5476d56d
-  addi x14, x14, -533 # adjust base address for offset
+  LA(x10, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load jump check value: x6 = 0xa05c78d4
+  addi x10, x10, 1829 # adjust base address for offset
 E_jalr_cg_cp_rd_b15:
-  jalr x15, x14, 533 # perform jump with offset
-  addi x12, x12, -4 # should not execute
+  jalr x15, x10, -1829 # perform jump with offset
+  addi x6, x6, -4 # should not execute
 1:
-  addi x12, x12, 2 # should execute
-  # Check if x12 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x12, E_jalr_cg_cp_rd_b15, E_jalr_cg_cp_rd_b15_str)
-  auipc x12, 0 # get current PC
-  sub x15, x15, x12 # subtract current PC to make position-independent
-  # Check if x15 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x15, E_jalr_cg_cp_rd_b15, E_jalr_cg_cp_rd_b15_str)
+  addi x6, x6, 2 # should execute
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, E_jalr_cg_cp_rd_b15, E_jalr_cg_cp_rd_b15_str)
+  auipc x6, 0 # get current PC
+  sub x15, x15, x6 # subtract current PC to make position-independent
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, E_jalr_cg_cp_rd_b15, E_jalr_cg_cp_rd_b15_str)
 
 /////////////////////////////////
 // cmp_rd_rs1_nx0
 /////////////////////////////////
 
-  mv x6, x1 # switch signature pointer register to avoid conflict with test
+  mv x6, x1 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x1)
   LA(x1, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load jump check value: x11 = 0x31275f28
-  addi x1, x1, -834 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load jump check value: x9 = 0xca8e850b
+  addi x1, x1, 961 # adjust base address for offset
 E_jalr_cg_cmp_rd_rs1_nx0_b1:
-  jalr x1, x1, 834 # perform jump with offset
-  addi x11, x11, -4 # should not execute
-1:
-  addi x11, x11, 2 # should execute
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, E_jalr_cg_cmp_rd_rs1_nx0_b1, E_jalr_cg_cmp_rd_rs1_nx0_b1_str)
-  auipc x11, 0 # get current PC
-  sub x1, x1, x11 # subtract current PC to make position-independent
-  # Check if x1 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x1, E_jalr_cg_cmp_rd_rs1_nx0_b1, E_jalr_cg_cmp_rd_rs1_nx0_b1_str)
-
-  mv x1, x2 # switch data pointer register to avoid conflict with test
-# Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x2)
-  LA(x2, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load jump check value: x9 = 0xbe359794
-  addi x2, x2, -1783 # adjust base address for offset
-E_jalr_cg_cmp_rd_rs1_nx0_b2:
-  jalr x2, x2, 1783 # perform jump with offset
+  jalr x1, x1, -961 # perform jump with offset
   addi x9, x9, -4 # should not execute
 1:
   addi x9, x9, 2 # should execute
-  # Check if x9 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x9, E_jalr_cg_cmp_rd_rs1_nx0_b2, E_jalr_cg_cmp_rd_rs1_nx0_b2_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, E_jalr_cg_cmp_rd_rs1_nx0_b1, E_jalr_cg_cmp_rd_rs1_nx0_b1_str)
   auipc x9, 0 # get current PC
-  sub x2, x2, x9 # subtract current PC to make position-independent
-  # Check if x2 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x2, E_jalr_cg_cmp_rd_rs1_nx0_b2, E_jalr_cg_cmp_rd_rs1_nx0_b2_str)
+  sub x1, x1, x9 # subtract current PC to make position-independent
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, E_jalr_cg_cmp_rd_rs1_nx0_b1, E_jalr_cg_cmp_rd_rs1_nx0_b1_str)
 
-# Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x3)
-  LA(x3, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load jump check value: x15 = 0x62003e12
-  addi x3, x3, 313 # adjust base address for offset
-E_jalr_cg_cmp_rd_rs1_nx0_b3:
-  jalr x3, x3, -313 # perform jump with offset
-  addi x15, x15, -4 # should not execute
-1:
-  addi x15, x15, 2 # should execute
-  # Check if x15 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x15, E_jalr_cg_cmp_rd_rs1_nx0_b3, E_jalr_cg_cmp_rd_rs1_nx0_b3_str)
-  auipc x15, 0 # get current PC
-  sub x3, x3, x15 # subtract current PC to make position-independent
-  # Check if x3 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x3, E_jalr_cg_cmp_rd_rs1_nx0_b3, E_jalr_cg_cmp_rd_rs1_nx0_b3_str)
-
-# Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x4)
-  LA(x4, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load jump check value: x15 = 0x61ce84a0
-  addi x4, x4, 1199 # adjust base address for offset
-E_jalr_cg_cmp_rd_rs1_nx0_b4:
-  jalr x4, x4, -1199 # perform jump with offset
-  addi x15, x15, -4 # should not execute
-1:
-  addi x15, x15, 2 # should execute
-  # Check if x15 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x15, E_jalr_cg_cmp_rd_rs1_nx0_b4, E_jalr_cg_cmp_rd_rs1_nx0_b4_str)
-  auipc x15, 0 # get current PC
-  sub x4, x4, x15 # subtract current PC to make position-independent
-  # Check if x4 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x4, E_jalr_cg_cmp_rd_rs1_nx0_b4, E_jalr_cg_cmp_rd_rs1_nx0_b4_str)
-
-# Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x5)
-  LA(x5, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load jump check value: x12 = 0x3c80153b
-  addi x5, x5, -1676 # adjust base address for offset
-E_jalr_cg_cmp_rd_rs1_nx0_b5:
-  jalr x5, x5, 1676 # perform jump with offset
-  addi x12, x12, -4 # should not execute
-1:
-  addi x12, x12, 2 # should execute
-  # Check if x12 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x12, E_jalr_cg_cmp_rd_rs1_nx0_b5, E_jalr_cg_cmp_rd_rs1_nx0_b5_str)
-  auipc x12, 0 # get current PC
-  sub x5, x5, x12 # subtract current PC to make position-independent
-  # Check if x5 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x5, E_jalr_cg_cmp_rd_rs1_nx0_b5, E_jalr_cg_cmp_rd_rs1_nx0_b5_str)
-
-  mv x9, x6 # switch signature pointer register to avoid conflict with test
-# Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x6)
-  LA(x6, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load jump check value: x11 = 0x4c62efbe
-  addi x6, x6, -1429 # adjust base address for offset
-E_jalr_cg_cmp_rd_rs1_nx0_b6:
-  jalr x6, x6, 1429 # perform jump with offset
-  addi x11, x11, -4 # should not execute
-1:
-  addi x11, x11, 2 # should execute
-  # Check if x11 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x11, E_jalr_cg_cmp_rd_rs1_nx0_b6, E_jalr_cg_cmp_rd_rs1_nx0_b6_str)
-  auipc x11, 0 # get current PC
-  sub x6, x6, x11 # subtract current PC to make position-independent
-  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x6, E_jalr_cg_cmp_rd_rs1_nx0_b6, E_jalr_cg_cmp_rd_rs1_nx0_b6_str)
-
-  mv x13, x7 # switch temp register to avoid conflict with test
-  mv x14, x8 # switch link pointer register to avoid conflict with test
-# Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x7)
-  LA(x7, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load jump check value: x3 = 0x06735095
-  addi x7, x7, 1269 # adjust base address for offset
-E_jalr_cg_cmp_rd_rs1_nx0_b7:
-  jalr x7, x7, -1269 # perform jump with offset
+  mv x9, x2 # switch signature pointer register to avoid conflict with test
+# Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x2)
+  LA(x2, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load jump check value: x3 = 0x730665b9
+  addi x2, x2, 58 # adjust base address for offset
+E_jalr_cg_cmp_rd_rs1_nx0_b2:
+  jalr x2, x2, -58 # perform jump with offset
   addi x3, x3, -4 # should not execute
 1:
   addi x3, x3, 2 # should execute
-  # Check if x3 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x9, x14, x13, x3, E_jalr_cg_cmp_rd_rs1_nx0_b7, E_jalr_cg_cmp_rd_rs1_nx0_b7_str)
+  # Check if x3 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x3, E_jalr_cg_cmp_rd_rs1_nx0_b2, E_jalr_cg_cmp_rd_rs1_nx0_b2_str)
   auipc x3, 0 # get current PC
-  sub x7, x7, x3 # subtract current PC to make position-independent
+  sub x2, x2, x3 # subtract current PC to make position-independent
+  # Check if x2 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x2, E_jalr_cg_cmp_rd_rs1_nx0_b2, E_jalr_cg_cmp_rd_rs1_nx0_b2_str)
+
+# Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x3)
+  LA(x3, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load jump check value: x12 = 0x777e035d
+  addi x3, x3, 574 # adjust base address for offset
+E_jalr_cg_cmp_rd_rs1_nx0_b3:
+  jalr x3, x3, -574 # perform jump with offset
+  addi x12, x12, -4 # should not execute
+1:
+  addi x12, x12, 2 # should execute
+  # Check if x12 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x12, E_jalr_cg_cmp_rd_rs1_nx0_b3, E_jalr_cg_cmp_rd_rs1_nx0_b3_str)
+  auipc x12, 0 # get current PC
+  sub x3, x3, x12 # subtract current PC to make position-independent
+  # Check if x3 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x3, E_jalr_cg_cmp_rd_rs1_nx0_b3, E_jalr_cg_cmp_rd_rs1_nx0_b3_str)
+
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
+# Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x4)
+  LA(x4, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load jump check value: x10 = 0xdfbc8143
+  addi x4, x4, 868 # adjust base address for offset
+E_jalr_cg_cmp_rd_rs1_nx0_b4:
+  jalr x4, x4, -868 # perform jump with offset
+  addi x10, x10, -4 # should not execute
+1:
+  addi x10, x10, 2 # should execute
+  # Check if x10 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x10, E_jalr_cg_cmp_rd_rs1_nx0_b4, E_jalr_cg_cmp_rd_rs1_nx0_b4_str)
+  auipc x10, 0 # get current PC
+  sub x4, x4, x10 # subtract current PC to make position-independent
+  # Check if x4 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x4, E_jalr_cg_cmp_rd_rs1_nx0_b4, E_jalr_cg_cmp_rd_rs1_nx0_b4_str)
+
+# Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x5)
+  LA(x5, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load jump check value: x12 = 0xcb69008f
+  addi x5, x5, 612 # adjust base address for offset
+E_jalr_cg_cmp_rd_rs1_nx0_b5:
+  jalr x5, x5, -612 # perform jump with offset
+  addi x12, x12, -4 # should not execute
+1:
+  addi x12, x12, 2 # should execute
+  # Check if x12 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x12, E_jalr_cg_cmp_rd_rs1_nx0_b5, E_jalr_cg_cmp_rd_rs1_nx0_b5_str)
+  auipc x12, 0 # get current PC
+  sub x5, x5, x12 # subtract current PC to make position-independent
+  # Check if x5 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x5, E_jalr_cg_cmp_rd_rs1_nx0_b5, E_jalr_cg_cmp_rd_rs1_nx0_b5_str)
+
+  mv x11, x6 # switch data pointer register to avoid conflict with test
+# Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x6)
+  LA(x6, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load jump check value: x10 = 0xe43f2b53
+  addi x6, x6, 1592 # adjust base address for offset
+E_jalr_cg_cmp_rd_rs1_nx0_b6:
+  jalr x6, x6, -1592 # perform jump with offset
+  addi x10, x10, -4 # should not execute
+1:
+  addi x10, x10, 2 # should execute
+  # Check if x10 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x10, E_jalr_cg_cmp_rd_rs1_nx0_b6, E_jalr_cg_cmp_rd_rs1_nx0_b6_str)
+  auipc x10, 0 # get current PC
+  sub x6, x6, x10 # subtract current PC to make position-independent
+  # Check if x6 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x6, E_jalr_cg_cmp_rd_rs1_nx0_b6, E_jalr_cg_cmp_rd_rs1_nx0_b6_str)
+
+# Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x7)
+  LA(x7, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x11, x1) # load jump check value: x1 = 0xba015065
+  addi x7, x7, 224 # adjust base address for offset
+E_jalr_cg_cmp_rd_rs1_nx0_b7:
+  jalr x7, x7, -224 # perform jump with offset
+  addi x1, x1, -4 # should not execute
+1:
+  addi x1, x1, 2 # should execute
+  # Check if x1 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x1, E_jalr_cg_cmp_rd_rs1_nx0_b7, E_jalr_cg_cmp_rd_rs1_nx0_b7_str)
+  auipc x1, 0 # get current PC
+  sub x7, x7, x1 # subtract current PC to make position-independent
   # Check if x7 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x9, x14, x13, x7, E_jalr_cg_cmp_rd_rs1_nx0_b7, E_jalr_cg_cmp_rd_rs1_nx0_b7_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x8)
   LA(x8, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load jump check value: x7 = 0x1f4fe12c
+  RVTEST_TESTDATA_LOAD_INT(x11, x5) # load jump check value: x5 = 0x1f4fe12c
   addi x8, x8, -545 # adjust base address for offset
 E_jalr_cg_cmp_rd_rs1_nx0_b8:
   jalr x8, x8, 545 # perform jump with offset
-  addi x7, x7, -4 # should not execute
+  addi x5, x5, -4 # should not execute
 1:
-  addi x7, x7, 2 # should execute
-  # Check if x7 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x9, x14, x13, x7, E_jalr_cg_cmp_rd_rs1_nx0_b8, E_jalr_cg_cmp_rd_rs1_nx0_b8_str)
-  auipc x7, 0 # get current PC
-  sub x8, x8, x7 # subtract current PC to make position-independent
+  addi x5, x5, 2 # should execute
+  # Check if x5 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x5, E_jalr_cg_cmp_rd_rs1_nx0_b8, E_jalr_cg_cmp_rd_rs1_nx0_b8_str)
+  auipc x5, 0 # get current PC
+  sub x8, x8, x5 # subtract current PC to make position-independent
   # Check if x8 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x9, x14, x13, x8, E_jalr_cg_cmp_rd_rs1_nx0_b8, E_jalr_cg_cmp_rd_rs1_nx0_b8_str)
 
   mv x12, x9 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x9)
   LA(x9, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load jump check value: x5 = 0xbe1489d7
-  addi x9, x9, -29 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load jump check value: x10 = 0x2b4863d0
+  addi x9, x9, 62 # adjust base address for offset
 E_jalr_cg_cmp_rd_rs1_nx0_b9:
-  jalr x9, x9, 29 # perform jump with offset
-  addi x5, x5, -4 # should not execute
+  jalr x9, x9, -62 # perform jump with offset
+  addi x10, x10, -4 # should not execute
 1:
-  addi x5, x5, 2 # should execute
-  # Check if x5 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x12, x14, x13, x5, E_jalr_cg_cmp_rd_rs1_nx0_b9, E_jalr_cg_cmp_rd_rs1_nx0_b9_str)
-  auipc x5, 0 # get current PC
-  sub x9, x9, x5 # subtract current PC to make position-independent
+  addi x10, x10, 2 # should execute
+  # Check if x10 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x10, E_jalr_cg_cmp_rd_rs1_nx0_b9, E_jalr_cg_cmp_rd_rs1_nx0_b9_str)
+  auipc x10, 0 # get current PC
+  sub x9, x9, x10 # subtract current PC to make position-independent
   # Check if x9 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x12, x14, x13, x9, E_jalr_cg_cmp_rd_rs1_nx0_b9, E_jalr_cg_cmp_rd_rs1_nx0_b9_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x10)
   LA(x10, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load jump check value: x3 = 0xf8f013d9
-  addi x10, x10, -1351 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x11, x8) # load jump check value: x8 = 0xc0eecf27
+  addi x10, x10, 1666 # adjust base address for offset
 E_jalr_cg_cmp_rd_rs1_nx0_b10:
-  jalr x10, x10, 1351 # perform jump with offset
-  addi x3, x3, -4 # should not execute
+  jalr x10, x10, -1666 # perform jump with offset
+  addi x8, x8, -4 # should not execute
 1:
-  addi x3, x3, 2 # should execute
-  # Check if x3 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x12, x14, x13, x3, E_jalr_cg_cmp_rd_rs1_nx0_b10, E_jalr_cg_cmp_rd_rs1_nx0_b10_str)
-  auipc x3, 0 # get current PC
-  sub x10, x10, x3 # subtract current PC to make position-independent
+  addi x8, x8, 2 # should execute
+  # Check if x8 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x8, E_jalr_cg_cmp_rd_rs1_nx0_b10, E_jalr_cg_cmp_rd_rs1_nx0_b10_str)
+  auipc x8, 0 # get current PC
+  sub x10, x10, x8 # subtract current PC to make position-independent
   # Check if x10 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x12, x14, x13, x10, E_jalr_cg_cmp_rd_rs1_nx0_b10, E_jalr_cg_cmp_rd_rs1_nx0_b10_str)
 
+  mv x6, x11 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x11)
   LA(x11, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load jump check value: x9 = 0x424dcc12
-  addi x11, x11, 1004 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load jump check value: x5 = 0xea3f2743
+  addi x11, x11, -764 # adjust base address for offset
 E_jalr_cg_cmp_rd_rs1_nx0_b11:
-  jalr x11, x11, -1004 # perform jump with offset
-  addi x9, x9, -4 # should not execute
+  jalr x11, x11, 764 # perform jump with offset
+  addi x5, x5, -4 # should not execute
 1:
-  addi x9, x9, 2 # should execute
-  # Check if x9 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x12, x14, x13, x9, E_jalr_cg_cmp_rd_rs1_nx0_b11, E_jalr_cg_cmp_rd_rs1_nx0_b11_str)
-  auipc x9, 0 # get current PC
-  sub x11, x11, x9 # subtract current PC to make position-independent
+  addi x5, x5, 2 # should execute
+  # Check if x5 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x5, E_jalr_cg_cmp_rd_rs1_nx0_b11, E_jalr_cg_cmp_rd_rs1_nx0_b11_str)
+  auipc x5, 0 # get current PC
+  sub x11, x11, x5 # subtract current PC to make position-independent
   # Check if x11 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x12, x14, x13, x11, E_jalr_cg_cmp_rd_rs1_nx0_b11, E_jalr_cg_cmp_rd_rs1_nx0_b11_str)
 
-  mv x11, x12 # switch signature pointer register to avoid conflict with test
+  mv x2, x12 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x12)
   LA(x12, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load jump check value: x6 = 0x8212ef01
-  addi x12, x12, -1473 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load jump check value: x3 = 0xb58c81ce
+  addi x12, x12, 480 # adjust base address for offset
 E_jalr_cg_cmp_rd_rs1_nx0_b12:
-  jalr x12, x12, 1473 # perform jump with offset
-  addi x6, x6, -4 # should not execute
+  jalr x12, x12, -480 # perform jump with offset
+  addi x3, x3, -4 # should not execute
 1:
-  addi x6, x6, 2 # should execute
-  # Check if x6 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x11, x14, x13, x6, E_jalr_cg_cmp_rd_rs1_nx0_b12, E_jalr_cg_cmp_rd_rs1_nx0_b12_str)
-  auipc x6, 0 # get current PC
-  sub x12, x12, x6 # subtract current PC to make position-independent
-  # Check if x12 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x11, x14, x13, x12, E_jalr_cg_cmp_rd_rs1_nx0_b12, E_jalr_cg_cmp_rd_rs1_nx0_b12_str)
+  addi x3, x3, 2 # should execute
+  # Check if x3 contains the expected result. x2 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x2, x14, x13, x3, E_jalr_cg_cmp_rd_rs1_nx0_b12, E_jalr_cg_cmp_rd_rs1_nx0_b12_str)
+  auipc x3, 0 # get current PC
+  sub x12, x12, x3 # subtract current PC to make position-independent
+  # Check if x12 contains the expected result. x2 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x2, x14, x13, x12, E_jalr_cg_cmp_rd_rs1_nx0_b12, E_jalr_cg_cmp_rd_rs1_nx0_b12_str)
 
   mv x4, x13 # switch temp register to avoid conflict with test
   mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x13)
   LA(x13, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load jump check value: x3 = 0xcb984b3d
-  addi x13, x13, -2033 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load jump check value: x12 = 0x2b761cb1
+  addi x13, x13, 72 # adjust base address for offset
 E_jalr_cg_cmp_rd_rs1_nx0_b13:
-  jalr x13, x13, 2033 # perform jump with offset
-  addi x3, x3, -4 # should not execute
+  jalr x13, x13, -72 # perform jump with offset
+  addi x12, x12, -4 # should not execute
 1:
-  addi x3, x3, 2 # should execute
-  # Check if x3 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x3, E_jalr_cg_cmp_rd_rs1_nx0_b13, E_jalr_cg_cmp_rd_rs1_nx0_b13_str)
-  auipc x3, 0 # get current PC
-  sub x13, x13, x3 # subtract current PC to make position-independent
-  # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x13, E_jalr_cg_cmp_rd_rs1_nx0_b13, E_jalr_cg_cmp_rd_rs1_nx0_b13_str)
+  addi x12, x12, 2 # should execute
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, E_jalr_cg_cmp_rd_rs1_nx0_b13, E_jalr_cg_cmp_rd_rs1_nx0_b13_str)
+  auipc x12, 0 # get current PC
+  sub x13, x13, x12 # subtract current PC to make position-independent
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, E_jalr_cg_cmp_rd_rs1_nx0_b13, E_jalr_cg_cmp_rd_rs1_nx0_b13_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x14)
   LA(x14, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load jump check value: x9 = 0x9b64145b
-  addi x14, x14, 1300 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load jump check value: x9 = 0x63c6e72b
+  addi x14, x14, -1851 # adjust base address for offset
 E_jalr_cg_cmp_rd_rs1_nx0_b14:
-  jalr x14, x14, -1300 # perform jump with offset
+  jalr x14, x14, 1851 # perform jump with offset
   addi x9, x9, -4 # should not execute
 1:
   addi x9, x9, 2 # should execute
-  # Check if x9 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x9, E_jalr_cg_cmp_rd_rs1_nx0_b14, E_jalr_cg_cmp_rd_rs1_nx0_b14_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, E_jalr_cg_cmp_rd_rs1_nx0_b14, E_jalr_cg_cmp_rd_rs1_nx0_b14_str)
   auipc x9, 0 # get current PC
   sub x14, x14, x9 # subtract current PC to make position-independent
-  # Check if x14 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x14, E_jalr_cg_cmp_rd_rs1_nx0_b14, E_jalr_cg_cmp_rd_rs1_nx0_b14_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, E_jalr_cg_cmp_rd_rs1_nx0_b14, E_jalr_cg_cmp_rd_rs1_nx0_b14_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x15)
   LA(x15, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load jump check value: x9 = 0xb642e6c1
-  addi x15, x15, 1200 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load jump check value: x12 = 0x83a68691
+  addi x15, x15, -1995 # adjust base address for offset
 E_jalr_cg_cmp_rd_rs1_nx0_b15:
-  jalr x15, x15, -1200 # perform jump with offset
-  addi x9, x9, -4 # should not execute
+  jalr x15, x15, 1995 # perform jump with offset
+  addi x12, x12, -4 # should not execute
 1:
-  addi x9, x9, 2 # should execute
-  # Check if x9 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x9, E_jalr_cg_cmp_rd_rs1_nx0_b15, E_jalr_cg_cmp_rd_rs1_nx0_b15_str)
-  auipc x9, 0 # get current PC
-  sub x15, x15, x9 # subtract current PC to make position-independent
-  # Check if x15 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x15, E_jalr_cg_cmp_rd_rs1_nx0_b15, E_jalr_cg_cmp_rd_rs1_nx0_b15_str)
+  addi x12, x12, 2 # should execute
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, E_jalr_cg_cmp_rd_rs1_nx0_b15, E_jalr_cg_cmp_rd_rs1_nx0_b15_str)
+  auipc x12, 0 # get current PC
+  sub x15, x15, x12 # subtract current PC to make position-independent
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, E_jalr_cg_cmp_rd_rs1_nx0_b15, E_jalr_cg_cmp_rd_rs1_nx0_b15_str)
 
 /////////////////////////////////
 // cp_offset_jalr
 /////////////////////////////////
 
 # Testcase cp_offset negative bin (positive bin is covered by other coverpoints)
-  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load jump check value: x10 = 0xab821ff3
+  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load jump check value: x7 = 0xebd8d4cf
   j 2f # jump past backward jump target
-1: addi x10, x10, 4 # backward jump target, increment check value
+1: addi x7, x7, 4 # backward jump target, increment check value
   j 3f # jump past backward jump
-2: LA(x9, 1b) # load backward jump target
-E_jalr_cg_cp_offset_jalr_neg:
-  jalr x15, x9, 0 # backward jump
-  addi x10, x10, -2 # jump not taken, decrement check value
+2: LA(x10, 1b) # load backward jump target
+E_jalr_cg_cp_offset_neg:
+  jalr x15, x10, 0 # backward jump
+  addi x7, x7, -2 # jump not taken, decrement check value
 3:  # done with sequence
-  # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x10, E_jalr_cg_cp_offset_jalr_neg, E_jalr_cg_cp_offset_jalr_neg_str)
+  # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x7, E_jalr_cg_cp_offset_neg, E_jalr_cg_cp_offset_neg_str)
   # check return address from jalr
-  auipc x10, 0 # get current PC
-  sub x15, x15, x10 # subtract PC to make position-independent
-  # Check if x15 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x15, E_jalr_cg_cp_offset_jalr_neg, E_jalr_cg_cp_offset_jalr_neg_str)
+  auipc x7, 0 # get current PC
+  sub x15, x15, x7 # subtract PC to make position-independent
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, E_jalr_cg_cp_offset_neg, E_jalr_cg_cp_offset_neg_str)
 
 # Testcase cp_offset_lsbs (rs1 LSB=0, imm LSB=0)
-  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load jump check value: x13 = 0xfc2ca3f9
-  LA(x12, jalrlsb_00) # load address of label
-  addi x12, x12, 0 # set rs1 LSB to 0
+  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load jump check value: x11 = 0x7365f4ea
+  LA(x3, jalrlsb_00) # load address of label
+  addi x3, x3, 0 # set rs1 LSB to 0
 E_jalr_cg_cp_offset_lsbs_0_0:
-  jalr x6, x12, 0 # jump with imm LSB = 0
-  addi x13, x13, -4  # should not execute; branch not taken
-jalrlsb_00: addi x13, x13, 2 # should execute; branch taken
+  jalr x12, x3, 0 # jump with imm LSB = 0
+  addi x11, x11, -4  # should not execute; branch not taken
+jalrlsb_00: addi x11, x11, 2 # should execute; branch taken
   # check jump taken
-  # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x13, E_jalr_cg_cp_offset_lsbs_0_0, E_jalr_cg_cp_offset_lsbs_0_0_str)
+  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x11, E_jalr_cg_cp_offset_lsbs_0_0, E_jalr_cg_cp_offset_lsbs_0_0_str)
   # check return address from jalr
-  auipc x13, 0 # get current PC
-  sub x6, x6, x13 # subtract PC to make position-independent
-  # Check if x6 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x6, E_jalr_cg_cp_offset_lsbs_0_0, E_jalr_cg_cp_offset_lsbs_0_0_str)
+  auipc x11, 0 # get current PC
+  sub x12, x12, x11 # subtract PC to make position-independent
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, E_jalr_cg_cp_offset_lsbs_0_0, E_jalr_cg_cp_offset_lsbs_0_0_str)
 
 # Testcase cp_offset_lsbs (rs1 LSB=0, imm LSB=1)
-  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load jump check value: x6 = 0xcb360253
-  LA(x2, jalrlsb_01) # load address of label
-  addi x2, x2, 0 # set rs1 LSB to 0
+  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load jump check value: x8 = 0x2853675b
+  LA(x1, jalrlsb_01) # load address of label
+  addi x1, x1, 0 # set rs1 LSB to 0
 E_jalr_cg_cp_offset_lsbs_0_1:
-  jalr x13, x2, 1 # jump with imm LSB = 1
-  addi x6, x6, -4  # should not execute; branch not taken
-jalrlsb_01: addi x6, x6, 2 # should execute; branch taken
+  jalr x14, x1, 1 # jump with imm LSB = 1
+  addi x8, x8, -4  # should not execute; branch not taken
+jalrlsb_01: addi x8, x8, 2 # should execute; branch taken
   # check jump taken
-  # Check if x6 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x6, E_jalr_cg_cp_offset_lsbs_0_1, E_jalr_cg_cp_offset_lsbs_0_1_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, E_jalr_cg_cp_offset_lsbs_0_1, E_jalr_cg_cp_offset_lsbs_0_1_str)
   # check return address from jalr
-  auipc x6, 0 # get current PC
-  sub x13, x13, x6 # subtract PC to make position-independent
-  # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x13, E_jalr_cg_cp_offset_lsbs_0_1, E_jalr_cg_cp_offset_lsbs_0_1_str)
+  auipc x8, 0 # get current PC
+  sub x14, x14, x8 # subtract PC to make position-independent
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, E_jalr_cg_cp_offset_lsbs_0_1, E_jalr_cg_cp_offset_lsbs_0_1_str)
 
 # Testcase cp_offset_lsbs (rs1 LSB=1, imm LSB=0)
-  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load jump check value: x14 = 0xd7f1efc5
-  LA(x8, jalrlsb_10) # load address of label
-  addi x8, x8, 1 # set rs1 LSB to 1
+  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load jump check value: x8 = 0x1bff69ae
+  LA(x9, jalrlsb_10) # load address of label
+  addi x9, x9, 1 # set rs1 LSB to 1
 E_jalr_cg_cp_offset_lsbs_1_0:
-  jalr x13, x8, 0 # jump with imm LSB = 0
-  addi x14, x14, -4  # should not execute; branch not taken
-jalrlsb_10: addi x14, x14, 2 # should execute; branch taken
+  jalr x1, x9, 0 # jump with imm LSB = 0
+  addi x8, x8, -4  # should not execute; branch not taken
+jalrlsb_10: addi x8, x8, 2 # should execute; branch taken
   # check jump taken
-  # Check if x14 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x14, E_jalr_cg_cp_offset_lsbs_1_0, E_jalr_cg_cp_offset_lsbs_1_0_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, E_jalr_cg_cp_offset_lsbs_1_0, E_jalr_cg_cp_offset_lsbs_1_0_str)
   # check return address from jalr
-  auipc x14, 0 # get current PC
-  sub x13, x13, x14 # subtract PC to make position-independent
-  # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x13, E_jalr_cg_cp_offset_lsbs_1_0, E_jalr_cg_cp_offset_lsbs_1_0_str)
+  auipc x8, 0 # get current PC
+  sub x1, x1, x8 # subtract PC to make position-independent
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, E_jalr_cg_cp_offset_lsbs_1_0, E_jalr_cg_cp_offset_lsbs_1_0_str)
 
 # Testcase cp_offset_lsbs (rs1 LSB=1, imm LSB=1)
-  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load jump check value: x8 = 0xf1c60310
-  LA(x14, jalrlsb_11) # load address of label
-  addi x14, x14, 1 # set rs1 LSB to 1
+  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load jump check value: x8 = 0xf3cb2e4c
+  LA(x12, jalrlsb_11) # load address of label
+  addi x12, x12, 1 # set rs1 LSB to 1
 E_jalr_cg_cp_offset_lsbs_1_1:
-  jalr x6, x14, -1 # jump with imm LSB = 1
+  jalr x14, x12, -1 # jump with imm LSB = 1
   addi x8, x8, -4  # should not execute; branch not taken
 jalrlsb_11: addi x8, x8, 2 # should execute; branch taken
   # check jump taken
-  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x8, E_jalr_cg_cp_offset_lsbs_1_1, E_jalr_cg_cp_offset_lsbs_1_1_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, E_jalr_cg_cp_offset_lsbs_1_1, E_jalr_cg_cp_offset_lsbs_1_1_str)
   # check return address from jalr
   auipc x8, 0 # get current PC
-  sub x6, x6, x8 # subtract PC to make position-independent
-  # Check if x6 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x6, E_jalr_cg_cp_offset_lsbs_1_1, E_jalr_cg_cp_offset_lsbs_1_1_str)
+  sub x14, x14, x8 # subtract PC to make position-independent
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, E_jalr_cg_cp_offset_lsbs_1_1, E_jalr_cg_cp_offset_lsbs_1_1_str)
 
 /////////////////////////////////
 // cp_imm_edges
 /////////////////////////////////
 
 # Testcase cp_imm_edges (imm = 0)
-  LA(x7, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load jump check value: x3 = 0x72007470
-  addi x7, x7, 0 # adjust base address for offset
+  LA(x8, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load jump check value: x10 = 0x6965a5f2
+  addi x8, x8, 0 # adjust base address for offset
 E_jalr_cg_cp_imm_edges_0x0:
-  jalr x10, x7, 0 # perform jump with offset
-  addi x3, x3, -4 # should not execute
+  jalr x11, x8, 0 # perform jump with offset
+  addi x10, x10, -4 # should not execute
 1:
-  addi x3, x3, 2 # should execute
-  # Check if x3 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x3, E_jalr_cg_cp_imm_edges_0x0, E_jalr_cg_cp_imm_edges_0x0_str)
-  auipc x3, 0 # get current PC
-  sub x10, x10, x3 # subtract current PC to make position-independent
-  # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x10, E_jalr_cg_cp_imm_edges_0x0, E_jalr_cg_cp_imm_edges_0x0_str)
+  addi x10, x10, 2 # should execute
+  # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x10, E_jalr_cg_cp_imm_edges_0x0, E_jalr_cg_cp_imm_edges_0x0_str)
+  auipc x10, 0 # get current PC
+  sub x11, x11, x10 # subtract current PC to make position-independent
+  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x11, E_jalr_cg_cp_imm_edges_0x0, E_jalr_cg_cp_imm_edges_0x0_str)
 
 # Testcase cp_imm_edges (imm = 1)
-  LA(x6, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load jump check value: x8 = 0x111063a4
-  addi x6, x6, -1 # adjust base address for offset
+  LA(x11, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load jump check value: x7 = 0x0248fc6e
+  addi x11, x11, -1 # adjust base address for offset
 E_jalr_cg_cp_imm_edges_0x1:
-  jalr x9, x6, 1 # perform jump with offset
-  addi x8, x8, -4 # should not execute
+  jalr x8, x11, 1 # perform jump with offset
+  addi x7, x7, -4 # should not execute
 1:
-  addi x8, x8, 2 # should execute
-  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x8, E_jalr_cg_cp_imm_edges_0x1, E_jalr_cg_cp_imm_edges_0x1_str)
-  auipc x8, 0 # get current PC
-  sub x9, x9, x8 # subtract current PC to make position-independent
-  # Check if x9 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x9, E_jalr_cg_cp_imm_edges_0x1, E_jalr_cg_cp_imm_edges_0x1_str)
+  addi x7, x7, 2 # should execute
+  # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x7, E_jalr_cg_cp_imm_edges_0x1, E_jalr_cg_cp_imm_edges_0x1_str)
+  auipc x7, 0 # get current PC
+  sub x8, x8, x7 # subtract current PC to make position-independent
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, E_jalr_cg_cp_imm_edges_0x1, E_jalr_cg_cp_imm_edges_0x1_str)
 
 # Testcase cp_imm_edges (imm = 2)
-  LA(x14, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load jump check value: x8 = 0x3f7a01f2
-  addi x14, x14, -2 # adjust base address for offset
-E_jalr_cg_cp_imm_edges_0x2:
-  jalr x15, x14, 2 # perform jump with offset
-  addi x8, x8, -4 # should not execute
-1:
-  addi x8, x8, 2 # should execute
-  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x8, E_jalr_cg_cp_imm_edges_0x2, E_jalr_cg_cp_imm_edges_0x2_str)
-  auipc x8, 0 # get current PC
-  sub x15, x15, x8 # subtract current PC to make position-independent
-  # Check if x15 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x15, E_jalr_cg_cp_imm_edges_0x2, E_jalr_cg_cp_imm_edges_0x2_str)
-
-# Testcase cp_imm_edges (imm = 3)
   LA(x3, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load jump check value: x8 = 0xa594a5e9
-  addi x3, x3, -3 # adjust base address for offset
-E_jalr_cg_cp_imm_edges_0x3:
-  jalr x10, x3, 3 # perform jump with offset
-  addi x8, x8, -4 # should not execute
-1:
-  addi x8, x8, 2 # should execute
-  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x8, E_jalr_cg_cp_imm_edges_0x3, E_jalr_cg_cp_imm_edges_0x3_str)
-  auipc x8, 0 # get current PC
-  sub x10, x10, x8 # subtract current PC to make position-independent
-  # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x10, E_jalr_cg_cp_imm_edges_0x3, E_jalr_cg_cp_imm_edges_0x3_str)
-
-# Testcase cp_imm_edges (imm = 4)
-  LA(x2, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load jump check value: x3 = 0x48dd7fff
-  addi x2, x2, -4 # adjust base address for offset
-E_jalr_cg_cp_imm_edges_0x4:
-  jalr x8, x2, 4 # perform jump with offset
-  addi x3, x3, -4 # should not execute
-1:
-  addi x3, x3, 2 # should execute
-  # Check if x3 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x3, E_jalr_cg_cp_imm_edges_0x4, E_jalr_cg_cp_imm_edges_0x4_str)
-  auipc x3, 0 # get current PC
-  sub x8, x8, x3 # subtract current PC to make position-independent
-  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x8, E_jalr_cg_cp_imm_edges_0x4, E_jalr_cg_cp_imm_edges_0x4_str)
-
-# Testcase cp_imm_edges (imm = 8)
-  LA(x9, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load jump check value: x13 = 0x2eb7fe43
-  addi x9, x9, -8 # adjust base address for offset
-E_jalr_cg_cp_imm_edges_0x8:
-  jalr x8, x9, 8 # perform jump with offset
-  addi x13, x13, -4 # should not execute
-1:
-  addi x13, x13, 2 # should execute
-  # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x13, E_jalr_cg_cp_imm_edges_0x8, E_jalr_cg_cp_imm_edges_0x8_str)
-  auipc x13, 0 # get current PC
-  sub x8, x8, x13 # subtract current PC to make position-independent
-  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x8, E_jalr_cg_cp_imm_edges_0x8, E_jalr_cg_cp_imm_edges_0x8_str)
-
-# Testcase cp_imm_edges (imm = 16)
-  LA(x2, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load jump check value: x9 = 0xde741d4a
-  addi x2, x2, -16 # adjust base address for offset
-E_jalr_cg_cp_imm_edges_0x10:
-  jalr x3, x2, 16 # perform jump with offset
+  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load jump check value: x9 = 0x807894e4
+  addi x3, x3, -2 # adjust base address for offset
+E_jalr_cg_cp_imm_edges_0x2:
+  jalr x14, x3, 2 # perform jump with offset
   addi x9, x9, -4 # should not execute
 1:
   addi x9, x9, 2 # should execute
-  # Check if x9 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x9, E_jalr_cg_cp_imm_edges_0x10, E_jalr_cg_cp_imm_edges_0x10_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, E_jalr_cg_cp_imm_edges_0x2, E_jalr_cg_cp_imm_edges_0x2_str)
   auipc x9, 0 # get current PC
-  sub x3, x3, x9 # subtract current PC to make position-independent
-  # Check if x3 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x3, E_jalr_cg_cp_imm_edges_0x10, E_jalr_cg_cp_imm_edges_0x10_str)
+  sub x14, x14, x9 # subtract current PC to make position-independent
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, E_jalr_cg_cp_imm_edges_0x2, E_jalr_cg_cp_imm_edges_0x2_str)
 
-# Testcase cp_imm_edges (imm = 32)
-  LA(x2, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load jump check value: x7 = 0x6cb1d5f6
-  addi x2, x2, -32 # adjust base address for offset
-E_jalr_cg_cp_imm_edges_0x20:
-  jalr x14, x2, 32 # perform jump with offset
-  addi x7, x7, -4 # should not execute
-1:
-  addi x7, x7, 2 # should execute
-  # Check if x7 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x7, E_jalr_cg_cp_imm_edges_0x20, E_jalr_cg_cp_imm_edges_0x20_str)
-  auipc x7, 0 # get current PC
-  sub x14, x14, x7 # subtract current PC to make position-independent
-  # Check if x14 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x14, E_jalr_cg_cp_imm_edges_0x20, E_jalr_cg_cp_imm_edges_0x20_str)
-
-# Testcase cp_imm_edges (imm = 64)
+# Testcase cp_imm_edges (imm = 3)
   LA(x7, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load jump check value: x14 = 0x6e260f1d
-  addi x7, x7, -64 # adjust base address for offset
-E_jalr_cg_cp_imm_edges_0x40:
-  jalr x9, x7, 64 # perform jump with offset
-  addi x14, x14, -4 # should not execute
-1:
-  addi x14, x14, 2 # should execute
-  # Check if x14 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x14, E_jalr_cg_cp_imm_edges_0x40, E_jalr_cg_cp_imm_edges_0x40_str)
-  auipc x14, 0 # get current PC
-  sub x9, x9, x14 # subtract current PC to make position-independent
-  # Check if x9 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x9, E_jalr_cg_cp_imm_edges_0x40, E_jalr_cg_cp_imm_edges_0x40_str)
-
-# Testcase cp_imm_edges (imm = 128)
-  LA(x8, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load jump check value: x10 = 0x8defc010
-  addi x8, x8, -128 # adjust base address for offset
-E_jalr_cg_cp_imm_edges_0x80:
-  jalr x3, x8, 128 # perform jump with offset
+  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load jump check value: x10 = 0xa594a5e9
+  addi x7, x7, -3 # adjust base address for offset
+E_jalr_cg_cp_imm_edges_0x3:
+  jalr x3, x7, 3 # perform jump with offset
   addi x10, x10, -4 # should not execute
 1:
   addi x10, x10, 2 # should execute
-  # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x10, E_jalr_cg_cp_imm_edges_0x80, E_jalr_cg_cp_imm_edges_0x80_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x10, E_jalr_cg_cp_imm_edges_0x3, E_jalr_cg_cp_imm_edges_0x3_str)
   auipc x10, 0 # get current PC
   sub x3, x3, x10 # subtract current PC to make position-independent
-  # Check if x3 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x3, E_jalr_cg_cp_imm_edges_0x80, E_jalr_cg_cp_imm_edges_0x80_str)
+  # Check if x3 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x3, E_jalr_cg_cp_imm_edges_0x3, E_jalr_cg_cp_imm_edges_0x3_str)
 
-# Testcase cp_imm_edges (imm = 256)
-  LA(x3, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load jump check value: x7 = 0x59f4a334
-  addi x3, x3, -256 # adjust base address for offset
-E_jalr_cg_cp_imm_edges_0x100:
-  jalr x9, x3, 256 # perform jump with offset
-  addi x7, x7, -4 # should not execute
-1:
-  addi x7, x7, 2 # should execute
-  # Check if x7 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x7, E_jalr_cg_cp_imm_edges_0x100, E_jalr_cg_cp_imm_edges_0x100_str)
-  auipc x7, 0 # get current PC
-  sub x9, x9, x7 # subtract current PC to make position-independent
-  # Check if x9 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x9, E_jalr_cg_cp_imm_edges_0x100, E_jalr_cg_cp_imm_edges_0x100_str)
-
-# Testcase cp_imm_edges (imm = 512)
-  LA(x2, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load jump check value: x8 = 0x9fa1a8ef
-  addi x2, x2, -512 # adjust base address for offset
-E_jalr_cg_cp_imm_edges_0x200:
-  jalr x6, x2, 512 # perform jump with offset
+# Testcase cp_imm_edges (imm = 4)
+  LA(x1, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load jump check value: x8 = 0xd979b432
+  addi x1, x1, -4 # adjust base address for offset
+E_jalr_cg_cp_imm_edges_0x4:
+  jalr x9, x1, 4 # perform jump with offset
   addi x8, x8, -4 # should not execute
 1:
   addi x8, x8, 2 # should execute
-  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x8, E_jalr_cg_cp_imm_edges_0x200, E_jalr_cg_cp_imm_edges_0x200_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, E_jalr_cg_cp_imm_edges_0x4, E_jalr_cg_cp_imm_edges_0x4_str)
   auipc x8, 0 # get current PC
-  sub x6, x6, x8 # subtract current PC to make position-independent
-  # Check if x6 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x6, E_jalr_cg_cp_imm_edges_0x200, E_jalr_cg_cp_imm_edges_0x200_str)
+  sub x9, x9, x8 # subtract current PC to make position-independent
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, E_jalr_cg_cp_imm_edges_0x4, E_jalr_cg_cp_imm_edges_0x4_str)
 
-# Testcase cp_imm_edges (imm = 1023)
-  LA(x3, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load jump check value: x14 = 0xe6d419d1
-  addi x3, x3, -1023 # adjust base address for offset
-E_jalr_cg_cp_imm_edges_0x3ff:
-  jalr x2, x3, 1023 # perform jump with offset
-  addi x14, x14, -4 # should not execute
-1:
-  addi x14, x14, 2 # should execute
-  # Check if x14 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x14, E_jalr_cg_cp_imm_edges_0x3ff, E_jalr_cg_cp_imm_edges_0x3ff_str)
-  auipc x14, 0 # get current PC
-  sub x2, x2, x14 # subtract current PC to make position-independent
-  # Check if x2 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x2, E_jalr_cg_cp_imm_edges_0x3ff, E_jalr_cg_cp_imm_edges_0x3ff_str)
-
-# Testcase cp_imm_edges (imm = 1024)
-  LA(x12, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load jump check value: x13 = 0xe3b94e80
-  addi x12, x12, -1024 # adjust base address for offset
-E_jalr_cg_cp_imm_edges_0x400:
-  jalr x8, x12, 1024 # perform jump with offset
-  addi x13, x13, -4 # should not execute
-1:
-  addi x13, x13, 2 # should execute
-  # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x13, E_jalr_cg_cp_imm_edges_0x400, E_jalr_cg_cp_imm_edges_0x400_str)
-  auipc x13, 0 # get current PC
-  sub x8, x8, x13 # subtract current PC to make position-independent
-  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x8, E_jalr_cg_cp_imm_edges_0x400, E_jalr_cg_cp_imm_edges_0x400_str)
-
-# Testcase cp_imm_edges (imm = 1795)
-  LA(x8, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load jump check value: x3 = 0x0b3eb44b
-  addi x8, x8, -1795 # adjust base address for offset
-E_jalr_cg_cp_imm_edges_0x703:
-  jalr x15, x8, 1795 # perform jump with offset
-  addi x3, x3, -4 # should not execute
-1:
-  addi x3, x3, 2 # should execute
-  # Check if x3 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x3, E_jalr_cg_cp_imm_edges_0x703, E_jalr_cg_cp_imm_edges_0x703_str)
-  auipc x3, 0 # get current PC
-  sub x15, x15, x3 # subtract current PC to make position-independent
-  # Check if x15 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x15, E_jalr_cg_cp_imm_edges_0x703, E_jalr_cg_cp_imm_edges_0x703_str)
-
-# Testcase cp_imm_edges (imm = 2047)
-  LA(x3, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load jump check value: x10 = 0x48547ade
-  addi x3, x3, -2047 # adjust base address for offset
-E_jalr_cg_cp_imm_edges_0x7ff:
-  jalr x6, x3, 2047 # perform jump with offset
-  addi x10, x10, -4 # should not execute
-1:
-  addi x10, x10, 2 # should execute
-  # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x10, E_jalr_cg_cp_imm_edges_0x7ff, E_jalr_cg_cp_imm_edges_0x7ff_str)
-  auipc x10, 0 # get current PC
-  sub x6, x6, x10 # subtract current PC to make position-independent
-  # Check if x6 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x6, E_jalr_cg_cp_imm_edges_0x7ff, E_jalr_cg_cp_imm_edges_0x7ff_str)
-
-# Testcase cp_imm_edges (imm = -2048)
-  LA(x7, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load jump check value: x15 = 0xcd519dd5
-  addi x7, x7, 2047 # increment by 2047
-  addi x7, x7, 1 # increment by 1 more for total +2048
-E_jalr_cg_cp_imm_edges_m0x800:
-  jalr x10, x7, -2048 # perform jump with offset
+# Testcase cp_imm_edges (imm = 8)
+  LA(x10, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load jump check value: x15 = 0x2eb7fe43
+  addi x10, x10, -8 # adjust base address for offset
+E_jalr_cg_cp_imm_edges_0x8:
+  jalr x9, x10, 8 # perform jump with offset
   addi x15, x15, -4 # should not execute
 1:
   addi x15, x15, 2 # should execute
-  # Check if x15 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x15, E_jalr_cg_cp_imm_edges_m0x800, E_jalr_cg_cp_imm_edges_m0x800_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, E_jalr_cg_cp_imm_edges_0x8, E_jalr_cg_cp_imm_edges_0x8_str)
   auipc x15, 0 # get current PC
-  sub x10, x10, x15 # subtract current PC to make position-independent
-  # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x10, E_jalr_cg_cp_imm_edges_m0x800, E_jalr_cg_cp_imm_edges_m0x800_str)
+  sub x9, x9, x15 # subtract current PC to make position-independent
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, E_jalr_cg_cp_imm_edges_0x8, E_jalr_cg_cp_imm_edges_0x8_str)
 
-# Testcase cp_imm_edges (imm = -2047)
-  LA(x12, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load jump check value: x6 = 0xbd6a3ae5
-  addi x12, x12, 2047 # adjust base address for offset
-E_jalr_cg_cp_imm_edges_m0x7ff:
-  jalr x7, x12, -2047 # perform jump with offset
-  addi x6, x6, -4 # should not execute
+# Testcase cp_imm_edges (imm = 16)
+  LA(x1, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load jump check value: x15 = 0xb4537949
+  addi x1, x1, -16 # adjust base address for offset
+E_jalr_cg_cp_imm_edges_0x10:
+  jalr x3, x1, 16 # perform jump with offset
+  addi x15, x15, -4 # should not execute
 1:
-  addi x6, x6, 2 # should execute
-  # Check if x6 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x6, E_jalr_cg_cp_imm_edges_m0x7ff, E_jalr_cg_cp_imm_edges_m0x7ff_str)
-  auipc x6, 0 # get current PC
-  sub x7, x7, x6 # subtract current PC to make position-independent
-  # Check if x7 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x7, E_jalr_cg_cp_imm_edges_m0x7ff, E_jalr_cg_cp_imm_edges_m0x7ff_str)
+  addi x15, x15, 2 # should execute
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, E_jalr_cg_cp_imm_edges_0x10, E_jalr_cg_cp_imm_edges_0x10_str)
+  auipc x15, 0 # get current PC
+  sub x3, x3, x15 # subtract current PC to make position-independent
+  # Check if x3 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x3, E_jalr_cg_cp_imm_edges_0x10, E_jalr_cg_cp_imm_edges_0x10_str)
 
-# Testcase cp_imm_edges (imm = -2)
-  LA(x8, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load jump check value: x6 = 0x1ef931dd
-  addi x8, x8, 2 # adjust base address for offset
-E_jalr_cg_cp_imm_edges_m0x2:
-  jalr x13, x8, -2 # perform jump with offset
-  addi x6, x6, -4 # should not execute
+# Testcase cp_imm_edges (imm = 32)
+  LA(x11, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load jump check value: x10 = 0x64a33278
+  addi x11, x11, -32 # adjust base address for offset
+E_jalr_cg_cp_imm_edges_0x20:
+  jalr x3, x11, 32 # perform jump with offset
+  addi x10, x10, -4 # should not execute
 1:
-  addi x6, x6, 2 # should execute
-  # Check if x6 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x6, E_jalr_cg_cp_imm_edges_m0x2, E_jalr_cg_cp_imm_edges_m0x2_str)
-  auipc x6, 0 # get current PC
-  sub x13, x13, x6 # subtract current PC to make position-independent
-  # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x13, E_jalr_cg_cp_imm_edges_m0x2, E_jalr_cg_cp_imm_edges_m0x2_str)
+  addi x10, x10, 2 # should execute
+  # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x10, E_jalr_cg_cp_imm_edges_0x20, E_jalr_cg_cp_imm_edges_0x20_str)
+  auipc x10, 0 # get current PC
+  sub x3, x3, x10 # subtract current PC to make position-independent
+  # Check if x3 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x3, E_jalr_cg_cp_imm_edges_0x20, E_jalr_cg_cp_imm_edges_0x20_str)
 
-# Testcase cp_imm_edges (imm = -1)
-  LA(x10, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load jump check value: x14 = 0x1e4e9783
-  addi x10, x10, 1 # adjust base address for offset
-E_jalr_cg_cp_imm_edges_m0x1:
-  jalr x9, x10, -1 # perform jump with offset
+# Testcase cp_imm_edges (imm = 64)
+  LA(x7, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load jump check value: x14 = 0x8e81219f
+  addi x7, x7, -64 # adjust base address for offset
+E_jalr_cg_cp_imm_edges_0x40:
+  jalr x11, x7, 64 # perform jump with offset
   addi x14, x14, -4 # should not execute
 1:
   addi x14, x14, 2 # should execute
-  # Check if x14 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x14, E_jalr_cg_cp_imm_edges_m0x1, E_jalr_cg_cp_imm_edges_m0x1_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, E_jalr_cg_cp_imm_edges_0x40, E_jalr_cg_cp_imm_edges_0x40_str)
   auipc x14, 0 # get current PC
-  sub x9, x9, x14 # subtract current PC to make position-independent
-  # Check if x9 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x9, E_jalr_cg_cp_imm_edges_m0x1, E_jalr_cg_cp_imm_edges_m0x1_str)
+  sub x11, x11, x14 # subtract current PC to make position-independent
+  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x11, E_jalr_cg_cp_imm_edges_0x40, E_jalr_cg_cp_imm_edges_0x40_str)
 
-  mv x2, x11 # restore signature pointer to default register for teardown
+# Testcase cp_imm_edges (imm = 128)
+  LA(x7, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load jump check value: x9 = 0x29c9d972
+  addi x7, x7, -128 # adjust base address for offset
+E_jalr_cg_cp_imm_edges_0x80:
+  jalr x8, x7, 128 # perform jump with offset
+  addi x9, x9, -4 # should not execute
+1:
+  addi x9, x9, 2 # should execute
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, E_jalr_cg_cp_imm_edges_0x80, E_jalr_cg_cp_imm_edges_0x80_str)
+  auipc x9, 0 # get current PC
+  sub x8, x8, x9 # subtract current PC to make position-independent
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, E_jalr_cg_cp_imm_edges_0x80, E_jalr_cg_cp_imm_edges_0x80_str)
+
+# Testcase cp_imm_edges (imm = 256)
+  LA(x10, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load jump check value: x1 = 0x83be70fc
+  addi x10, x10, -256 # adjust base address for offset
+E_jalr_cg_cp_imm_edges_0x100:
+  jalr x3, x10, 256 # perform jump with offset
+  addi x1, x1, -4 # should not execute
+1:
+  addi x1, x1, 2 # should execute
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, E_jalr_cg_cp_imm_edges_0x100, E_jalr_cg_cp_imm_edges_0x100_str)
+  auipc x1, 0 # get current PC
+  sub x3, x3, x1 # subtract current PC to make position-independent
+  # Check if x3 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x3, E_jalr_cg_cp_imm_edges_0x100, E_jalr_cg_cp_imm_edges_0x100_str)
+
+# Testcase cp_imm_edges (imm = 512)
+  LA(x7, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load jump check value: x8 = 0x59f4a334
+  addi x7, x7, -512 # adjust base address for offset
+E_jalr_cg_cp_imm_edges_0x200:
+  jalr x3, x7, 512 # perform jump with offset
+  addi x8, x8, -4 # should not execute
+1:
+  addi x8, x8, 2 # should execute
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, E_jalr_cg_cp_imm_edges_0x200, E_jalr_cg_cp_imm_edges_0x200_str)
+  auipc x8, 0 # get current PC
+  sub x3, x3, x8 # subtract current PC to make position-independent
+  # Check if x3 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x3, E_jalr_cg_cp_imm_edges_0x200, E_jalr_cg_cp_imm_edges_0x200_str)
+
+# Testcase cp_imm_edges (imm = 1023)
+  LA(x1, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load jump check value: x11 = 0xacc65f68
+  addi x1, x1, -1023 # adjust base address for offset
+E_jalr_cg_cp_imm_edges_0x3ff:
+  jalr x7, x1, 1023 # perform jump with offset
+  addi x11, x11, -4 # should not execute
+1:
+  addi x11, x11, 2 # should execute
+  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x11, E_jalr_cg_cp_imm_edges_0x3ff, E_jalr_cg_cp_imm_edges_0x3ff_str)
+  auipc x11, 0 # get current PC
+  sub x7, x7, x11 # subtract current PC to make position-independent
+  # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x7, E_jalr_cg_cp_imm_edges_0x3ff, E_jalr_cg_cp_imm_edges_0x3ff_str)
+
+# Testcase cp_imm_edges (imm = 1024)
+  LA(x3, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load jump check value: x13 = 0x8cc07652
+  addi x3, x3, -1024 # adjust base address for offset
+E_jalr_cg_cp_imm_edges_0x400:
+  jalr x15, x3, 1024 # perform jump with offset
+  addi x13, x13, -4 # should not execute
+1:
+  addi x13, x13, 2 # should execute
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, E_jalr_cg_cp_imm_edges_0x400, E_jalr_cg_cp_imm_edges_0x400_str)
+  auipc x13, 0 # get current PC
+  sub x15, x15, x13 # subtract current PC to make position-independent
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, E_jalr_cg_cp_imm_edges_0x400, E_jalr_cg_cp_imm_edges_0x400_str)
+
+# Testcase cp_imm_edges (imm = 1795)
+  LA(x11, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load jump check value: x12 = 0x594db5cd
+  addi x11, x11, -1795 # adjust base address for offset
+E_jalr_cg_cp_imm_edges_0x703:
+  jalr x14, x11, 1795 # perform jump with offset
+  addi x12, x12, -4 # should not execute
+1:
+  addi x12, x12, 2 # should execute
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, E_jalr_cg_cp_imm_edges_0x703, E_jalr_cg_cp_imm_edges_0x703_str)
+  auipc x12, 0 # get current PC
+  sub x14, x14, x12 # subtract current PC to make position-independent
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, E_jalr_cg_cp_imm_edges_0x703, E_jalr_cg_cp_imm_edges_0x703_str)
+
+# Testcase cp_imm_edges (imm = 2047)
+  LA(x9, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load jump check value: x13 = 0xe3b94e80
+  addi x9, x9, -2047 # adjust base address for offset
+E_jalr_cg_cp_imm_edges_0x7ff:
+  jalr x11, x9, 2047 # perform jump with offset
+  addi x13, x13, -4 # should not execute
+1:
+  addi x13, x13, 2 # should execute
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, E_jalr_cg_cp_imm_edges_0x7ff, E_jalr_cg_cp_imm_edges_0x7ff_str)
+  auipc x13, 0 # get current PC
+  sub x11, x11, x13 # subtract current PC to make position-independent
+  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x11, E_jalr_cg_cp_imm_edges_0x7ff, E_jalr_cg_cp_imm_edges_0x7ff_str)
+
+# Testcase cp_imm_edges (imm = -2048)
+  LA(x9, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load jump check value: x10 = 0xc5606c5b
+  addi x9, x9, 2047 # increment by 2047
+  addi x9, x9, 1 # increment by 1 more for total +2048
+E_jalr_cg_cp_imm_edges_m0x800:
+  jalr x15, x9, -2048 # perform jump with offset
+  addi x10, x10, -4 # should not execute
+1:
+  addi x10, x10, 2 # should execute
+  # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x10, E_jalr_cg_cp_imm_edges_m0x800, E_jalr_cg_cp_imm_edges_m0x800_str)
+  auipc x10, 0 # get current PC
+  sub x15, x15, x10 # subtract current PC to make position-independent
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, E_jalr_cg_cp_imm_edges_m0x800, E_jalr_cg_cp_imm_edges_m0x800_str)
+
+# Testcase cp_imm_edges (imm = -2047)
+  LA(x15, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load jump check value: x8 = 0xd87102d9
+  addi x15, x15, 2047 # adjust base address for offset
+E_jalr_cg_cp_imm_edges_m0x7ff:
+  jalr x3, x15, -2047 # perform jump with offset
+  addi x8, x8, -4 # should not execute
+1:
+  addi x8, x8, 2 # should execute
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, E_jalr_cg_cp_imm_edges_m0x7ff, E_jalr_cg_cp_imm_edges_m0x7ff_str)
+  auipc x8, 0 # get current PC
+  sub x3, x3, x8 # subtract current PC to make position-independent
+  # Check if x3 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x3, E_jalr_cg_cp_imm_edges_m0x7ff, E_jalr_cg_cp_imm_edges_m0x7ff_str)
+
+# Testcase cp_imm_edges (imm = -2)
+  LA(x3, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load jump check value: x11 = 0xe0c2baf9
+  addi x3, x3, 2 # adjust base address for offset
+E_jalr_cg_cp_imm_edges_m0x2:
+  jalr x14, x3, -2 # perform jump with offset
+  addi x11, x11, -4 # should not execute
+1:
+  addi x11, x11, 2 # should execute
+  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x11, E_jalr_cg_cp_imm_edges_m0x2, E_jalr_cg_cp_imm_edges_m0x2_str)
+  auipc x11, 0 # get current PC
+  sub x14, x14, x11 # subtract current PC to make position-independent
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, E_jalr_cg_cp_imm_edges_m0x2, E_jalr_cg_cp_imm_edges_m0x2_str)
+
+# Testcase cp_imm_edges (imm = -1)
+  LA(x13, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load jump check value: x10 = 0x8ba66e94
+  addi x13, x13, 1 # adjust base address for offset
+E_jalr_cg_cp_imm_edges_m0x1:
+  jalr x1, x13, -1 # perform jump with offset
+  addi x10, x10, -4 # should not execute
+1:
+  addi x10, x10, 2 # should execute
+  # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x10, E_jalr_cg_cp_imm_edges_m0x1, E_jalr_cg_cp_imm_edges_m0x1_str)
+  auipc x10, 0 # get current PC
+  sub x1, x1, x10 # subtract current PC to make position-independent
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, E_jalr_cg_cp_imm_edges_m0x1, E_jalr_cg_cp_imm_edges_m0x1_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -1228,76 +1228,76 @@ RVTEST_DATA_BEGIN
 
 // Test data
 .word 0x521297c6
-.word 0xa32b7ac4
-.word 0x0257f62a
+.word 0xf3ee7c01
+.word 0x62ffb97b
+.word 0x1dd58aea
 .word 0x530708c7
-.word 0xfa369bd0
-.word 0x0c58e979
-.word 0x82552633
-.word 0x972f52f0
-.word 0x936a7778
-.word 0x598a4c9c
-.word 0x40391434
-.word 0x3c17077a
-.word 0x2a07785f
-.word 0x6923612c
-.word 0xca59280c
-.word 0x3959b26f
+.word 0x8a3a5169
+.word 0xe82e7b27
+.word 0x8593fdad
+.word 0xa7600bce
+.word 0xe0379bdd
+.word 0xc0d725ed
+.word 0x86d8999d
+.word 0x16b04213
+.word 0x808b0ddf
+.word 0x100d7eb9
+.word 0xb3c1d10f
 .word 0x20ad2be9
-.word 0x16c37c07
+.word 0xa204e471
 .word 0xc8a00358
-.word 0xcffb91cc
-.word 0x233d9285
-.word 0xee84b5ae
-.word 0xd2d94374
-.word 0x872df5be
-.word 0xba3c021f
-.word 0x22f2973e
-.word 0x0061db4b
-.word 0x05b32262
-.word 0x6bf3fc6c
-.word 0x0bc2b178
-.word 0x5476d56d
-.word 0x31275f28
-.word 0xbe359794
-.word 0x62003e12
-.word 0x61ce84a0
-.word 0x3c80153b
-.word 0x4c62efbe
-.word 0x06735095
+.word 0x35ef2195
+.word 0xcd775771
+.word 0xb345f062
+.word 0xa97fe1ae
+.word 0x13276fff
+.word 0xca64bcc3
+.word 0x491624b4
+.word 0xd3bcf6c0
+.word 0x7992c397
+.word 0xcebf6899
+.word 0x7bfac81a
+.word 0xa05c78d4
+.word 0xca8e850b
+.word 0x730665b9
+.word 0x777e035d
+.word 0xdfbc8143
+.word 0xcb69008f
+.word 0xe43f2b53
+.word 0xba015065
 .word 0x1f4fe12c
-.word 0xbe1489d7
-.word 0xf8f013d9
-.word 0x424dcc12
-.word 0x8212ef01
-.word 0xcb984b3d
-.word 0x9b64145b
-.word 0xb642e6c1
-.word 0xab821ff3
-.word 0xfc2ca3f9
-.word 0xcb360253
-.word 0xd7f1efc5
-.word 0xf1c60310
-.word 0x72007470
-.word 0x111063a4
-.word 0x3f7a01f2
+.word 0x2b4863d0
+.word 0xc0eecf27
+.word 0xea3f2743
+.word 0xb58c81ce
+.word 0x2b761cb1
+.word 0x63c6e72b
+.word 0x83a68691
+.word 0xebd8d4cf
+.word 0x7365f4ea
+.word 0x2853675b
+.word 0x1bff69ae
+.word 0xf3cb2e4c
+.word 0x6965a5f2
+.word 0x0248fc6e
+.word 0x807894e4
 .word 0xa594a5e9
-.word 0x48dd7fff
+.word 0xd979b432
 .word 0x2eb7fe43
-.word 0xde741d4a
-.word 0x6cb1d5f6
-.word 0x6e260f1d
-.word 0x8defc010
+.word 0xb4537949
+.word 0x64a33278
+.word 0x8e81219f
+.word 0x29c9d972
+.word 0x83be70fc
 .word 0x59f4a334
-.word 0x9fa1a8ef
-.word 0xe6d419d1
+.word 0xacc65f68
+.word 0x8cc07652
+.word 0x594db5cd
 .word 0xe3b94e80
-.word 0x0b3eb44b
-.word 0x48547ade
-.word 0xcd519dd5
-.word 0xbd6a3ae5
-.word 0x1ef931dd
-.word 0x1e4e9783
+.word 0xc5606c5b
+.word 0xd87102d9
+.word 0xe0c2baf9
+.word 0x8ba66e94
 
 // Testcase strings
 E_jalr_cg_cp_rs1_nx0_b1_str: .string "\"test: 1; cg: E_jalr_cg; cp: cp_rs1_nx0; bin: b1\""
@@ -1346,7 +1346,7 @@ E_jalr_cg_cmp_rd_rs1_nx0_b12_str: .string "\"test: 43; cg: E_jalr_cg; cp: cmp_rd
 E_jalr_cg_cmp_rd_rs1_nx0_b13_str: .string "\"test: 44; cg: E_jalr_cg; cp: cmp_rd_rs1_nx0; bin: b13\""
 E_jalr_cg_cmp_rd_rs1_nx0_b14_str: .string "\"test: 45; cg: E_jalr_cg; cp: cmp_rd_rs1_nx0; bin: b14\""
 E_jalr_cg_cmp_rd_rs1_nx0_b15_str: .string "\"test: 46; cg: E_jalr_cg; cp: cmp_rd_rs1_nx0; bin: b15\""
-E_jalr_cg_cp_offset_jalr_neg_str: .string "\"test: 47; cg: E_jalr_cg; cp: cp_offset_jalr; bin: neg\""
+E_jalr_cg_cp_offset_neg_str: .string "\"test: 47; cg: E_jalr_cg; cp: cp_offset; bin: neg\""
 E_jalr_cg_cp_offset_lsbs_0_0_str: .string "\"test: 48; cg: E_jalr_cg; cp: cp_offset_lsbs; bin: 0_0\""
 E_jalr_cg_cp_offset_lsbs_0_1_str: .string "\"test: 49; cg: E_jalr_cg; cp: cp_offset_lsbs; bin: 0_1\""
 E_jalr_cg_cp_offset_lsbs_1_0_str: .string "\"test: 50; cg: E_jalr_cg; cp: cp_offset_lsbs; bin: 1_0\""

@@ -51,8 +51,8 @@ I_fence_cg_cp_custom_fence_reserved_fence_nonzerord:
 I_fence_cg_cp_custom_fence_reserved_fence_fm:
   .word 0x1330000f    # fence with reserved fm behaves as fence with fm = 0000
 
-I_fence_cg_cp_custom_fence_reserved_fence_tso_r_r:
-  .word 0x8110000f    # fence.TSO with R,R rather than RW behaves as fence
+I_fence_cg_cp_custom_fence_reserved_fence_tso_w_w:
+  .word 0x8110000f    # fence.TSO with W,W rather than RW,RW behaves as fence
 
 # Testcase cp_custom_fence_reserved (hints with nonzero rd or rs1)
 I_fence_cg_cp_custom_fence_reserved_fence_hint0a:
@@ -604,7 +604,7 @@ I_fence_cg_cp_custom_fence_reserved_fence_tso_rw_rw_str: .string "\"test: 1; cg:
 I_fence_cg_cp_custom_fence_reserved_fence_nonzerors1_str: .string "\"test: 2; cg: I_fence_cg; cp: cp_custom_fence_reserved; bin: fence_nonzerors1\""
 I_fence_cg_cp_custom_fence_reserved_fence_nonzerord_str: .string "\"test: 3; cg: I_fence_cg; cp: cp_custom_fence_reserved; bin: fence_nonzerord\""
 I_fence_cg_cp_custom_fence_reserved_fence_fm_str: .string "\"test: 4; cg: I_fence_cg; cp: cp_custom_fence_reserved; bin: fence_fm\""
-I_fence_cg_cp_custom_fence_reserved_fence_tso_r_r_str: .string "\"test: 5; cg: I_fence_cg; cp: cp_custom_fence_reserved; bin: fence_tso_r_r\""
+I_fence_cg_cp_custom_fence_reserved_fence_tso_w_w_str: .string "\"test: 5; cg: I_fence_cg; cp: cp_custom_fence_reserved; bin: fence_tso_w_w\""
 I_fence_cg_cp_custom_fence_reserved_fence_hint0a_str: .string "\"test: 6; cg: I_fence_cg; cp: cp_custom_fence_reserved; bin: fence_hint0a\""
 I_fence_cg_cp_custom_fence_reserved_fence_hint0b_str: .string "\"test: 7; cg: I_fence_cg; cp: cp_custom_fence_reserved; bin: fence_hint0b\""
 I_fence_cg_cp_custom_fence_reserved_fence_hint1a_str: .string "\"test: 8; cg: I_fence_cg; cp: cp_custom_fence_reserved; bin: fence_hint1a\""

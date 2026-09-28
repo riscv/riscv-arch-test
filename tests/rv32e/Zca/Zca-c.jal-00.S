@@ -52,7 +52,7 @@ Zca_c_jal_cg_cp_offset_neg:
 # cp_imm_edges_c_jal: forward jump by 2
   # offset too small, skipping self-check
   .p2align 1
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_1:
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_2:
   c.jal  cp_imm_edges_c_jal_fwd_b_2
   # offset too small, skipping self-check
   .p2align 1
@@ -61,46 +61,16 @@ cp_imm_edges_c_jal_fwd_b_2:
   # offset too small, skipping self-check
   # Check destination register
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_1_str)
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_2, Zca_c_jal_cg_cp_imm_edges_c_jal_b_2_str)
 
 # cp_imm_edges_c_jal: forward jump by 4
   c.li x14, 1 # success code
   .p2align 2
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_2:
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_4:
   c.jal  cp_imm_edges_c_jal_fwd_b_4
   c.li x14, 7 # failure code
   .p2align 2
 cp_imm_edges_c_jal_fwd_b_4:
-  # Check jump taken/not-taken
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_2, Zca_c_jal_cg_cp_imm_edges_c_jal_b_2_str)
-  # Check destination register
-  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_2, Zca_c_jal_cg_cp_imm_edges_c_jal_b_2_str)
-
-# cp_imm_edges_c_jal: forward jump by 8
-  c.li x14, 1 # success code
-  .p2align 3
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_3:
-  c.jal  cp_imm_edges_c_jal_fwd_b_8
-  c.li x14, 7 # failure code
-  .p2align 3
-cp_imm_edges_c_jal_fwd_b_8:
-  # Check jump taken/not-taken
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_3, Zca_c_jal_cg_cp_imm_edges_c_jal_b_3_str)
-  # Check destination register
-  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_3, Zca_c_jal_cg_cp_imm_edges_c_jal_b_3_str)
-
-# cp_imm_edges_c_jal: forward jump by 16
-  c.li x14, 1 # success code
-  .p2align 4
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_4:
-  c.jal  cp_imm_edges_c_jal_fwd_b_16
-  c.li x14, 7 # failure code
-  .p2align 4
-cp_imm_edges_c_jal_fwd_b_16:
   # Check jump taken/not-taken
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_4, Zca_c_jal_cg_cp_imm_edges_c_jal_b_4_str)
@@ -108,59 +78,14 @@ cp_imm_edges_c_jal_fwd_b_16:
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_4, Zca_c_jal_cg_cp_imm_edges_c_jal_b_4_str)
 
-# cp_imm_edges_c_jal: forward jump by 32
+# cp_imm_edges_c_jal: forward jump by 8
   c.li x14, 1 # success code
-  .p2align 5
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_5:
-  c.jal  cp_imm_edges_c_jal_fwd_b_32
-  c.li x14, 7 # failure code
-  .p2align 5
-cp_imm_edges_c_jal_fwd_b_32:
-  # Check jump taken/not-taken
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_5, Zca_c_jal_cg_cp_imm_edges_c_jal_b_5_str)
-  # Check destination register
-  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_5, Zca_c_jal_cg_cp_imm_edges_c_jal_b_5_str)
-
-# cp_imm_edges_c_jal: forward jump by 64
-  c.li x14, 1 # success code
-  .p2align 6
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_6:
-  c.jal  cp_imm_edges_c_jal_fwd_b_64
-  c.li x14, 7 # failure code
-  .p2align 6
-cp_imm_edges_c_jal_fwd_b_64:
-  # Check jump taken/not-taken
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_6, Zca_c_jal_cg_cp_imm_edges_c_jal_b_6_str)
-  # Check destination register
-  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_6, Zca_c_jal_cg_cp_imm_edges_c_jal_b_6_str)
-
-# cp_imm_edges_c_jal: forward jump by 128
-  c.li x14, 1 # success code
-  .p2align 7
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_7:
-  c.jal  cp_imm_edges_c_jal_fwd_b_128
-  c.li x14, 7 # failure code
-  .p2align 7
-cp_imm_edges_c_jal_fwd_b_128:
-  # Check jump taken/not-taken
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_7, Zca_c_jal_cg_cp_imm_edges_c_jal_b_7_str)
-  # Check destination register
-  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_7, Zca_c_jal_cg_cp_imm_edges_c_jal_b_7_str)
-
-# cp_imm_edges_c_jal: forward jump by 256
-  c.li x14, 1 # success code
-  .p2align 8
+  .p2align 3
 Zca_c_jal_cg_cp_imm_edges_c_jal_b_8:
-  c.jal  cp_imm_edges_c_jal_fwd_b_256
+  c.jal  cp_imm_edges_c_jal_fwd_b_8
   c.li x14, 7 # failure code
-  .p2align 8
-cp_imm_edges_c_jal_fwd_b_256:
+  .p2align 3
+cp_imm_edges_c_jal_fwd_b_8:
   # Check jump taken/not-taken
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_8, Zca_c_jal_cg_cp_imm_edges_c_jal_b_8_str)
@@ -168,46 +93,121 @@ cp_imm_edges_c_jal_fwd_b_256:
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_8, Zca_c_jal_cg_cp_imm_edges_c_jal_b_8_str)
 
+# cp_imm_edges_c_jal: forward jump by 16
+  c.li x14, 1 # success code
+  .p2align 4
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_16:
+  c.jal  cp_imm_edges_c_jal_fwd_b_16
+  c.li x14, 7 # failure code
+  .p2align 4
+cp_imm_edges_c_jal_fwd_b_16:
+  # Check jump taken/not-taken
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_16, Zca_c_jal_cg_cp_imm_edges_c_jal_b_16_str)
+  # Check destination register
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_16, Zca_c_jal_cg_cp_imm_edges_c_jal_b_16_str)
+
+# cp_imm_edges_c_jal: forward jump by 32
+  c.li x14, 1 # success code
+  .p2align 5
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_32:
+  c.jal  cp_imm_edges_c_jal_fwd_b_32
+  c.li x14, 7 # failure code
+  .p2align 5
+cp_imm_edges_c_jal_fwd_b_32:
+  # Check jump taken/not-taken
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_32, Zca_c_jal_cg_cp_imm_edges_c_jal_b_32_str)
+  # Check destination register
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_32, Zca_c_jal_cg_cp_imm_edges_c_jal_b_32_str)
+
+# cp_imm_edges_c_jal: forward jump by 64
+  c.li x14, 1 # success code
+  .p2align 6
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_64:
+  c.jal  cp_imm_edges_c_jal_fwd_b_64
+  c.li x14, 7 # failure code
+  .p2align 6
+cp_imm_edges_c_jal_fwd_b_64:
+  # Check jump taken/not-taken
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_64, Zca_c_jal_cg_cp_imm_edges_c_jal_b_64_str)
+  # Check destination register
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_64, Zca_c_jal_cg_cp_imm_edges_c_jal_b_64_str)
+
+# cp_imm_edges_c_jal: forward jump by 128
+  c.li x14, 1 # success code
+  .p2align 7
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_128:
+  c.jal  cp_imm_edges_c_jal_fwd_b_128
+  c.li x14, 7 # failure code
+  .p2align 7
+cp_imm_edges_c_jal_fwd_b_128:
+  # Check jump taken/not-taken
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_128, Zca_c_jal_cg_cp_imm_edges_c_jal_b_128_str)
+  # Check destination register
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_128, Zca_c_jal_cg_cp_imm_edges_c_jal_b_128_str)
+
+# cp_imm_edges_c_jal: forward jump by 256
+  c.li x14, 1 # success code
+  .p2align 8
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_256:
+  c.jal  cp_imm_edges_c_jal_fwd_b_256
+  c.li x14, 7 # failure code
+  .p2align 8
+cp_imm_edges_c_jal_fwd_b_256:
+  # Check jump taken/not-taken
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_256, Zca_c_jal_cg_cp_imm_edges_c_jal_b_256_str)
+  # Check destination register
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_256, Zca_c_jal_cg_cp_imm_edges_c_jal_b_256_str)
+
 # cp_imm_edges_c_jal: forward jump by 512
   c.li x14, 1 # success code
   .p2align 9
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_9:
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_512:
   c.jal  cp_imm_edges_c_jal_fwd_b_512
   c.li x14, 7 # failure code
   .p2align 9
 cp_imm_edges_c_jal_fwd_b_512:
   # Check jump taken/not-taken
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_9, Zca_c_jal_cg_cp_imm_edges_c_jal_b_9_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_512, Zca_c_jal_cg_cp_imm_edges_c_jal_b_512_str)
   # Check destination register
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_9, Zca_c_jal_cg_cp_imm_edges_c_jal_b_9_str)
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_512, Zca_c_jal_cg_cp_imm_edges_c_jal_b_512_str)
 
 # cp_imm_edges_c_jal: forward jump by 1024
   c.li x14, 1 # success code
   .p2align 10
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_10:
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_1024:
   c.jal  cp_imm_edges_c_jal_fwd_b_1024
   c.li x14, 7 # failure code
   .p2align 10
 cp_imm_edges_c_jal_fwd_b_1024:
   # Check jump taken/not-taken
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_10, Zca_c_jal_cg_cp_imm_edges_c_jal_b_10_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_1024, Zca_c_jal_cg_cp_imm_edges_c_jal_b_1024_str)
   # Check destination register
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_10, Zca_c_jal_cg_cp_imm_edges_c_jal_b_10_str)
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_1024, Zca_c_jal_cg_cp_imm_edges_c_jal_b_1024_str)
 
 # cp_imm_edges_c_jal: backward jump by 2
   # offset too small, skipping self-check
   .p2align 2
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m1:
-  c.jal  cp_imm_edges_c_jal_skip_b_m2
+  c.j cp_imm_edges_c_jal_skip_b_m2
   .p2align 1
 cp_imm_edges_c_jal_bwd_b_m2:
-  c.jal  cp_imm_edges_c_jal_done_b_m2
+  c.j cp_imm_edges_c_jal_done_b_m2
 cp_imm_edges_c_jal_skip_b_m2:
   .p2align 2
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m2:
   c.jal  cp_imm_edges_c_jal_bwd_b_m2
   # offset too small, skipping self-check
 cp_imm_edges_c_jal_done_b_m2:
@@ -215,61 +215,21 @@ cp_imm_edges_c_jal_done_b_m2:
   # offset too small, skipping self-check
   # Check destination register
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m1_str)
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m2, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m2_str)
 
 # cp_imm_edges_c_jal: backward jump by 4
   c.li x14, 1 # success code
   .p2align 3
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m2:
-  c.jal  cp_imm_edges_c_jal_skip_b_m4
+  c.j cp_imm_edges_c_jal_skip_b_m4
   .p2align 2
 cp_imm_edges_c_jal_bwd_b_m4:
-  c.jal  cp_imm_edges_c_jal_done_b_m4
+  c.j cp_imm_edges_c_jal_done_b_m4
 cp_imm_edges_c_jal_skip_b_m4:
   .p2align 3
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m4:
   c.jal  cp_imm_edges_c_jal_bwd_b_m4
   c.li x14, 7 # failure code
 cp_imm_edges_c_jal_done_b_m4:
-  # Check jump taken/not-taken
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m2, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m2_str)
-  # Check destination register
-  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m2, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m2_str)
-
-# cp_imm_edges_c_jal: backward jump by 8
-  c.li x14, 1 # success code
-  .p2align 4
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m3:
-  c.jal  cp_imm_edges_c_jal_skip_b_m8
-  .p2align 3
-cp_imm_edges_c_jal_bwd_b_m8:
-  c.jal  cp_imm_edges_c_jal_done_b_m8
-cp_imm_edges_c_jal_skip_b_m8:
-  .p2align 4
-  c.jal  cp_imm_edges_c_jal_bwd_b_m8
-  c.li x14, 7 # failure code
-cp_imm_edges_c_jal_done_b_m8:
-  # Check jump taken/not-taken
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m3, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m3_str)
-  # Check destination register
-  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m3, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m3_str)
-
-# cp_imm_edges_c_jal: backward jump by 16
-  c.li x14, 1 # success code
-  .p2align 5
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m4:
-  c.jal  cp_imm_edges_c_jal_skip_b_m16
-  .p2align 4
-cp_imm_edges_c_jal_bwd_b_m16:
-  c.jal  cp_imm_edges_c_jal_done_b_m16
-cp_imm_edges_c_jal_skip_b_m16:
-  .p2align 5
-  c.jal  cp_imm_edges_c_jal_bwd_b_m16
-  c.li x14, 7 # failure code
-cp_imm_edges_c_jal_done_b_m16:
   # Check jump taken/not-taken
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m4, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m4_str)
@@ -277,79 +237,19 @@ cp_imm_edges_c_jal_done_b_m16:
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m4, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m4_str)
 
-# cp_imm_edges_c_jal: backward jump by 32
+# cp_imm_edges_c_jal: backward jump by 8
   c.li x14, 1 # success code
-  .p2align 6
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m5:
-  c.jal  cp_imm_edges_c_jal_skip_b_m32
-  .p2align 5
-cp_imm_edges_c_jal_bwd_b_m32:
-  c.jal  cp_imm_edges_c_jal_done_b_m32
-cp_imm_edges_c_jal_skip_b_m32:
-  .p2align 6
-  c.jal  cp_imm_edges_c_jal_bwd_b_m32
-  c.li x14, 7 # failure code
-cp_imm_edges_c_jal_done_b_m32:
-  # Check jump taken/not-taken
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m5, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m5_str)
-  # Check destination register
-  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m5, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m5_str)
-
-# cp_imm_edges_c_jal: backward jump by 64
-  c.li x14, 1 # success code
-  .p2align 7
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m6:
-  c.jal  cp_imm_edges_c_jal_skip_b_m64
-  .p2align 6
-cp_imm_edges_c_jal_bwd_b_m64:
-  c.jal  cp_imm_edges_c_jal_done_b_m64
-cp_imm_edges_c_jal_skip_b_m64:
-  .p2align 7
-  c.jal  cp_imm_edges_c_jal_bwd_b_m64
-  c.li x14, 7 # failure code
-cp_imm_edges_c_jal_done_b_m64:
-  # Check jump taken/not-taken
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m6, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m6_str)
-  # Check destination register
-  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m6, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m6_str)
-
-# cp_imm_edges_c_jal: backward jump by 128
-  c.li x14, 1 # success code
-  .p2align 8
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m7:
-  c.jal  cp_imm_edges_c_jal_skip_b_m128
-  .p2align 7
-cp_imm_edges_c_jal_bwd_b_m128:
-  c.jal  cp_imm_edges_c_jal_done_b_m128
-cp_imm_edges_c_jal_skip_b_m128:
-  .p2align 8
-  c.jal  cp_imm_edges_c_jal_bwd_b_m128
-  c.li x14, 7 # failure code
-cp_imm_edges_c_jal_done_b_m128:
-  # Check jump taken/not-taken
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m7, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m7_str)
-  # Check destination register
-  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m7, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m7_str)
-
-# cp_imm_edges_c_jal: backward jump by 256
-  c.li x14, 1 # success code
-  .p2align 9
+  .p2align 4
+  c.j cp_imm_edges_c_jal_skip_b_m8
+  .p2align 3
+cp_imm_edges_c_jal_bwd_b_m8:
+  c.j cp_imm_edges_c_jal_done_b_m8
+cp_imm_edges_c_jal_skip_b_m8:
+  .p2align 4
 Zca_c_jal_cg_cp_imm_edges_c_jal_b_m8:
-  c.jal  cp_imm_edges_c_jal_skip_b_m256
-  .p2align 8
-cp_imm_edges_c_jal_bwd_b_m256:
-  c.jal  cp_imm_edges_c_jal_done_b_m256
-cp_imm_edges_c_jal_skip_b_m256:
-  .p2align 9
-  c.jal  cp_imm_edges_c_jal_bwd_b_m256
+  c.jal  cp_imm_edges_c_jal_bwd_b_m8
   c.li x14, 7 # failure code
-cp_imm_edges_c_jal_done_b_m256:
+cp_imm_edges_c_jal_done_b_m8:
   # Check jump taken/not-taken
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m8, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m8_str)
@@ -357,65 +257,165 @@ cp_imm_edges_c_jal_done_b_m256:
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m8, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m8_str)
 
+# cp_imm_edges_c_jal: backward jump by 16
+  c.li x14, 1 # success code
+  .p2align 5
+  c.j cp_imm_edges_c_jal_skip_b_m16
+  .p2align 4
+cp_imm_edges_c_jal_bwd_b_m16:
+  c.j cp_imm_edges_c_jal_done_b_m16
+cp_imm_edges_c_jal_skip_b_m16:
+  .p2align 5
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m16:
+  c.jal  cp_imm_edges_c_jal_bwd_b_m16
+  c.li x14, 7 # failure code
+cp_imm_edges_c_jal_done_b_m16:
+  # Check jump taken/not-taken
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m16, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m16_str)
+  # Check destination register
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m16, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m16_str)
+
+# cp_imm_edges_c_jal: backward jump by 32
+  c.li x14, 1 # success code
+  .p2align 6
+  c.j cp_imm_edges_c_jal_skip_b_m32
+  .p2align 5
+cp_imm_edges_c_jal_bwd_b_m32:
+  c.j cp_imm_edges_c_jal_done_b_m32
+cp_imm_edges_c_jal_skip_b_m32:
+  .p2align 6
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m32:
+  c.jal  cp_imm_edges_c_jal_bwd_b_m32
+  c.li x14, 7 # failure code
+cp_imm_edges_c_jal_done_b_m32:
+  # Check jump taken/not-taken
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m32, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m32_str)
+  # Check destination register
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m32, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m32_str)
+
+# cp_imm_edges_c_jal: backward jump by 64
+  c.li x14, 1 # success code
+  .p2align 7
+  c.j cp_imm_edges_c_jal_skip_b_m64
+  .p2align 6
+cp_imm_edges_c_jal_bwd_b_m64:
+  c.j cp_imm_edges_c_jal_done_b_m64
+cp_imm_edges_c_jal_skip_b_m64:
+  .p2align 7
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m64:
+  c.jal  cp_imm_edges_c_jal_bwd_b_m64
+  c.li x14, 7 # failure code
+cp_imm_edges_c_jal_done_b_m64:
+  # Check jump taken/not-taken
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m64, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m64_str)
+  # Check destination register
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m64, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m64_str)
+
+# cp_imm_edges_c_jal: backward jump by 128
+  c.li x14, 1 # success code
+  .p2align 8
+  c.j cp_imm_edges_c_jal_skip_b_m128
+  .p2align 7
+cp_imm_edges_c_jal_bwd_b_m128:
+  c.j cp_imm_edges_c_jal_done_b_m128
+cp_imm_edges_c_jal_skip_b_m128:
+  .p2align 8
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m128:
+  c.jal  cp_imm_edges_c_jal_bwd_b_m128
+  c.li x14, 7 # failure code
+cp_imm_edges_c_jal_done_b_m128:
+  # Check jump taken/not-taken
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m128, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m128_str)
+  # Check destination register
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m128, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m128_str)
+
+# cp_imm_edges_c_jal: backward jump by 256
+  c.li x14, 1 # success code
+  .p2align 9
+  c.j cp_imm_edges_c_jal_skip_b_m256
+  .p2align 8
+cp_imm_edges_c_jal_bwd_b_m256:
+  c.j cp_imm_edges_c_jal_done_b_m256
+cp_imm_edges_c_jal_skip_b_m256:
+  .p2align 9
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m256:
+  c.jal  cp_imm_edges_c_jal_bwd_b_m256
+  c.li x14, 7 # failure code
+cp_imm_edges_c_jal_done_b_m256:
+  # Check jump taken/not-taken
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m256, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m256_str)
+  # Check destination register
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m256, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m256_str)
+
 # cp_imm_edges_c_jal: backward jump by 512
   c.li x14, 1 # success code
   .p2align 10
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m9:
-  c.jal  cp_imm_edges_c_jal_skip_b_m512
+  c.j cp_imm_edges_c_jal_skip_b_m512
   .p2align 9
 cp_imm_edges_c_jal_bwd_b_m512:
-  c.jal  cp_imm_edges_c_jal_done_b_m512
+  c.j cp_imm_edges_c_jal_done_b_m512
 cp_imm_edges_c_jal_skip_b_m512:
   .p2align 10
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m512:
   c.jal  cp_imm_edges_c_jal_bwd_b_m512
   c.li x14, 7 # failure code
 cp_imm_edges_c_jal_done_b_m512:
   # Check jump taken/not-taken
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m9, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m9_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m512, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m512_str)
   # Check destination register
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m9, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m9_str)
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m512, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m512_str)
 
 # cp_imm_edges_c_jal: backward jump by 1024
   c.li x14, 1 # success code
   .p2align 11
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m10:
-  c.jal  cp_imm_edges_c_jal_skip_b_m1024
+  c.j cp_imm_edges_c_jal_skip_b_m1024
   .p2align 10
 cp_imm_edges_c_jal_bwd_b_m1024:
-  c.jal  cp_imm_edges_c_jal_done_b_m1024
+  c.j cp_imm_edges_c_jal_done_b_m1024
 cp_imm_edges_c_jal_skip_b_m1024:
   .p2align 11
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m1024:
   .insn 0x3101 # backward c.jal by -1024; GCC expands to jal
   c.li x14, 7 # failure code
 cp_imm_edges_c_jal_done_b_m1024:
   # Check jump taken/not-taken
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m10, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m10_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m1024, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m1024_str)
   # Check destination register
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m10, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m10_str)
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m1024, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m1024_str)
 
 # cp_imm_edges_c_jal: backward jump by 2048
   c.li x14, 1 # success code
   .p2align 12
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m11:
-  c.jal  cp_imm_edges_c_jal_skip_b_m2048
+  c.j cp_imm_edges_c_jal_skip_b_m2048
   .p2align 11
 cp_imm_edges_c_jal_bwd_b_m2048:
-  c.jal  cp_imm_edges_c_jal_done_b_m2048
+  c.j cp_imm_edges_c_jal_done_b_m2048
 cp_imm_edges_c_jal_skip_b_m2048:
   .p2align 12
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m2048:
   .insn 0x3001 # backward c.jal by -2048; GCC doesn't generate compressed branch properly
   c.li x14, 7 # failure code
 cp_imm_edges_c_jal_done_b_m2048:
   # Check jump taken/not-taken
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m11, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m11_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m2048, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m2048_str)
   # Check destination register
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m11, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m11_str)
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m2048, Zca_c_jal_cg_cp_imm_edges_c_jal_b_m2048_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -429,27 +429,27 @@ RVTEST_DATA_BEGIN
 
 // Testcase strings
 Zca_c_jal_cg_cp_offset_neg_str: .string "\"test: 1; cg: Zca_c.jal_cg; cp: cp_offset; bin: neg\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_1_str: .string "\"test: 2; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_1\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_2_str: .string "\"test: 3; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_2\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_3_str: .string "\"test: 4; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_3\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_4_str: .string "\"test: 5; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_4\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_5_str: .string "\"test: 6; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_5\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_6_str: .string "\"test: 7; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_6\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_7_str: .string "\"test: 8; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_7\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_8_str: .string "\"test: 9; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_8\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_9_str: .string "\"test: 10; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_9\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_10_str: .string "\"test: 11; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_10\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m1_str: .string "\"test: 12; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m1\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m2_str: .string "\"test: 13; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m2\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m3_str: .string "\"test: 14; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m3\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m4_str: .string "\"test: 15; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m4\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m5_str: .string "\"test: 16; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m5\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m6_str: .string "\"test: 17; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m6\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m7_str: .string "\"test: 18; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m7\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m8_str: .string "\"test: 19; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m8\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m9_str: .string "\"test: 20; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m9\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m10_str: .string "\"test: 21; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m10\""
-Zca_c_jal_cg_cp_imm_edges_c_jal_b_m11_str: .string "\"test: 22; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m11\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_2_str: .string "\"test: 2; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_2\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_4_str: .string "\"test: 3; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_4\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_8_str: .string "\"test: 4; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_8\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_16_str: .string "\"test: 5; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_16\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_32_str: .string "\"test: 6; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_32\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_64_str: .string "\"test: 7; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_64\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_128_str: .string "\"test: 8; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_128\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_256_str: .string "\"test: 9; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_256\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_512_str: .string "\"test: 10; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_512\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_1024_str: .string "\"test: 11; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_1024\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m2_str: .string "\"test: 12; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m2\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m4_str: .string "\"test: 13; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m4\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m8_str: .string "\"test: 14; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m8\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m16_str: .string "\"test: 15; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m16\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m32_str: .string "\"test: 16; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m32\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m64_str: .string "\"test: 17; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m64\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m128_str: .string "\"test: 18; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m128\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m256_str: .string "\"test: 19; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m256\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m512_str: .string "\"test: 20; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m512\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m1024_str: .string "\"test: 21; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m1024\""
+Zca_c_jal_cg_cp_imm_edges_c_jal_b_m2048_str: .string "\"test: 22; cg: Zca_c.jal_cg; cp: cp_imm_edges_c_jal; bin: b_m2048\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

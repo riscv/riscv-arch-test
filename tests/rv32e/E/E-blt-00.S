@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 372
+#define SIGUPD_COUNT 379
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -39,7 +39,7 @@ RVTEST_BEGIN
   RVTEST_TESTDATA_LOAD_INT(x3, x8) # load branch taken value: x8 = 0xcca4889d
 E_blt_cg_cp_rs1_b0:
   blt x0, x15, 1f # perform operation
-  LI(x8, -1) # branch not taken, set temp_reg to 0
+  LI(x8, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, E_blt_cg_cp_rs1_b0, E_blt_cg_cp_rs1_b0_str)
@@ -50,7 +50,7 @@ E_blt_cg_cp_rs1_b0:
   RVTEST_TESTDATA_LOAD_INT(x3, x14) # load branch taken value: x14 = 0x958e8ae5
 E_blt_cg_cp_rs1_b1:
   blt x1, x8, 1f # perform operation
-  LI(x14, -1) # branch not taken, set temp_reg to 0
+  LI(x14, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, E_blt_cg_cp_rs1_b1, E_blt_cg_cp_rs1_b1_str)
@@ -62,7 +62,7 @@ E_blt_cg_cp_rs1_b1:
   RVTEST_TESTDATA_LOAD_INT(x3, x6) # load branch taken value: x6 = 0xccd6830c
 E_blt_cg_cp_rs1_b2:
   blt x2, x12, 1f # perform operation
-  LI(x6, -1) # branch not taken, set temp_reg to 0
+  LI(x6, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x6 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x6, E_blt_cg_cp_rs1_b2, E_blt_cg_cp_rs1_b2_str)
@@ -74,7 +74,7 @@ E_blt_cg_cp_rs1_b2:
   RVTEST_TESTDATA_LOAD_INT(x15, x9) # load branch taken value: x9 = 0x184af098
 E_blt_cg_cp_rs1_b3:
   blt x3, x1, 1f # perform operation
-  LI(x9, -1) # branch not taken, set temp_reg to 0
+  LI(x9, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x9 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x9, E_blt_cg_cp_rs1_b3, E_blt_cg_cp_rs1_b3_str)
@@ -87,7 +87,7 @@ E_blt_cg_cp_rs1_b3:
   RVTEST_TESTDATA_LOAD_INT(x15, x9) # load branch taken value: x9 = 0x0623c01e
 E_blt_cg_cp_rs1_b4:
   blt x4, x1, 1f # perform operation
-  LI(x9, -1) # branch not taken, set temp_reg to 0
+  LI(x9, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x9 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x11, x14, x13, x9, E_blt_cg_cp_rs1_b4, E_blt_cg_cp_rs1_b4_str)
@@ -98,7 +98,7 @@ E_blt_cg_cp_rs1_b4:
   RVTEST_TESTDATA_LOAD_INT(x15, x12) # load branch taken value: x12 = 0xa61f6063
 E_blt_cg_cp_rs1_b5:
   blt x5, x4, 1f # perform operation
-  LI(x12, -1) # branch not taken, set temp_reg to 0
+  LI(x12, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x12 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x11, x14, x13, x12, E_blt_cg_cp_rs1_b5, E_blt_cg_cp_rs1_b5_str)
@@ -109,7 +109,7 @@ E_blt_cg_cp_rs1_b5:
   RVTEST_TESTDATA_LOAD_INT(x15, x10) # load branch taken value: x10 = 0x1546ef0f
 E_blt_cg_cp_rs1_b6:
   blt x6, x3, 1f # perform operation
-  LI(x10, -1) # branch not taken, set temp_reg to 0
+  LI(x10, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x10 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x11, x14, x13, x10, E_blt_cg_cp_rs1_b6, E_blt_cg_cp_rs1_b6_str)
@@ -120,7 +120,7 @@ E_blt_cg_cp_rs1_b6:
   RVTEST_TESTDATA_LOAD_INT(x15, x5) # load branch taken value: x5 = 0x5af9acce
 E_blt_cg_cp_rs1_b7:
   blt x7, x2, 1f # perform operation
-  LI(x5, -1) # branch not taken, set temp_reg to 0
+  LI(x5, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x5 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x11, x14, x13, x5, E_blt_cg_cp_rs1_b7, E_blt_cg_cp_rs1_b7_str)
@@ -131,7 +131,7 @@ E_blt_cg_cp_rs1_b7:
   RVTEST_TESTDATA_LOAD_INT(x15, x12) # load branch taken value: x12 = 0xa723ac3c
 E_blt_cg_cp_rs1_b8:
   blt x8, x10, 1f # perform operation
-  LI(x12, -1) # branch not taken, set temp_reg to 0
+  LI(x12, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x12 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x11, x14, x13, x12, E_blt_cg_cp_rs1_b8, E_blt_cg_cp_rs1_b8_str)
@@ -142,7 +142,7 @@ E_blt_cg_cp_rs1_b8:
   RVTEST_TESTDATA_LOAD_INT(x15, x10) # load branch taken value: x10 = 0x5f72bb1c
 E_blt_cg_cp_rs1_b9:
   blt x9, x7, 1f # perform operation
-  LI(x10, -1) # branch not taken, set temp_reg to 0
+  LI(x10, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x10 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x11, x14, x13, x10, E_blt_cg_cp_rs1_b9, E_blt_cg_cp_rs1_b9_str)
@@ -153,7 +153,7 @@ E_blt_cg_cp_rs1_b9:
   RVTEST_TESTDATA_LOAD_INT(x15, x1) # load branch taken value: x1 = 0xf6defca9
 E_blt_cg_cp_rs1_b10:
   blt x10, x4, 1f # perform operation
-  LI(x1, -1) # branch not taken, set temp_reg to 0
+  LI(x1, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x1 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x11, x14, x13, x1, E_blt_cg_cp_rs1_b10, E_blt_cg_cp_rs1_b10_str)
@@ -165,7 +165,7 @@ E_blt_cg_cp_rs1_b10:
   RVTEST_TESTDATA_LOAD_INT(x15, x5) # load branch taken value: x5 = 0x1b47c1aa
 E_blt_cg_cp_rs1_b11:
   blt x11, x8, 1f # perform operation
-  LI(x5, -1) # branch not taken, set temp_reg to 0
+  LI(x5, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x5 contains the expected result. x3 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x3, x14, x13, x5, E_blt_cg_cp_rs1_b11, E_blt_cg_cp_rs1_b11_str)
@@ -176,7 +176,7 @@ E_blt_cg_cp_rs1_b11:
   RVTEST_TESTDATA_LOAD_INT(x15, x7) # load branch taken value: x7 = 0xbd85e2d9
 E_blt_cg_cp_rs1_b12:
   blt x12, x0, 1f # perform operation
-  LI(x7, -1) # branch not taken, set temp_reg to 0
+  LI(x7, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x7 contains the expected result. x3 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x3, x14, x13, x7, E_blt_cg_cp_rs1_b12, E_blt_cg_cp_rs1_b12_str)
@@ -189,7 +189,7 @@ E_blt_cg_cp_rs1_b12:
   RVTEST_TESTDATA_LOAD_INT(x15, x1) # load branch taken value: x1 = 0x6620b940
 E_blt_cg_cp_rs1_b13:
   blt x13, x9, 1f # perform operation
-  LI(x1, -1) # branch not taken, set temp_reg to 0
+  LI(x1, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x1 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x3, x8, x7, x1, E_blt_cg_cp_rs1_b13, E_blt_cg_cp_rs1_b13_str)
@@ -200,7 +200,7 @@ E_blt_cg_cp_rs1_b13:
   RVTEST_TESTDATA_LOAD_INT(x15, x12) # load branch taken value: x12 = 0x0c952272
 E_blt_cg_cp_rs1_b14:
   blt x14, x1, 1f # perform operation
-  LI(x12, -1) # branch not taken, set temp_reg to 0
+  LI(x12, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x12 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x3, x8, x7, x12, E_blt_cg_cp_rs1_b14, E_blt_cg_cp_rs1_b14_str)
@@ -212,7 +212,7 @@ E_blt_cg_cp_rs1_b14:
   RVTEST_TESTDATA_LOAD_INT(x11, x1) # load branch taken value: x1 = 0x8e4561a8
 E_blt_cg_cp_rs1_b15:
   blt x15, x10, 1f # perform operation
-  LI(x1, -1) # branch not taken, set temp_reg to 0
+  LI(x1, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x1 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x3, x8, x7, x1, E_blt_cg_cp_rs1_b15, E_blt_cg_cp_rs1_b15_str)
@@ -227,7 +227,7 @@ E_blt_cg_cp_rs1_b15:
   RVTEST_TESTDATA_LOAD_INT(x11, x15) # load branch taken value: x15 = 0xb3c883d0
 E_blt_cg_cp_rs2_b0:
   blt x5, x0, 1f # perform operation
-  LI(x15, -1) # branch not taken, set temp_reg to 0
+  LI(x15, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x3, x8, x7, x15, E_blt_cg_cp_rs2_b0, E_blt_cg_cp_rs2_b0_str)
@@ -238,7 +238,7 @@ E_blt_cg_cp_rs2_b0:
   RVTEST_TESTDATA_LOAD_INT(x11, x13) # load branch taken value: x13 = 0xe57be130
 E_blt_cg_cp_rs2_b1:
   blt x4, x1, 1f # perform operation
-  LI(x13, -1) # branch not taken, set temp_reg to 0
+  LI(x13, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x13 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x3, x8, x7, x13, E_blt_cg_cp_rs2_b1, E_blt_cg_cp_rs2_b1_str)
@@ -249,7 +249,7 @@ E_blt_cg_cp_rs2_b1:
   RVTEST_TESTDATA_LOAD_INT(x11, x6) # load branch taken value: x6 = 0x31554e05
 E_blt_cg_cp_rs2_b2:
   blt x5, x2, 1f # perform operation
-  LI(x6, -1) # branch not taken, set temp_reg to 0
+  LI(x6, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x6 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x3, x8, x7, x6, E_blt_cg_cp_rs2_b2, E_blt_cg_cp_rs2_b2_str)
@@ -261,7 +261,7 @@ E_blt_cg_cp_rs2_b2:
   RVTEST_TESTDATA_LOAD_INT(x11, x4) # load branch taken value: x4 = 0x26577a97
 E_blt_cg_cp_rs2_b3:
   blt x12, x3, 1f # perform operation
-  LI(x4, -1) # branch not taken, set temp_reg to 0
+  LI(x4, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x4 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x15, x8, x7, x4, E_blt_cg_cp_rs2_b3, E_blt_cg_cp_rs2_b3_str)
@@ -272,7 +272,7 @@ E_blt_cg_cp_rs2_b3:
   RVTEST_TESTDATA_LOAD_INT(x11, x10) # load branch taken value: x10 = 0xed38718c
 E_blt_cg_cp_rs2_b4:
   blt x14, x4, 1f # perform operation
-  LI(x10, -1) # branch not taken, set temp_reg to 0
+  LI(x10, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x10 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x15, x8, x7, x10, E_blt_cg_cp_rs2_b4, E_blt_cg_cp_rs2_b4_str)
@@ -283,7 +283,7 @@ E_blt_cg_cp_rs2_b4:
   RVTEST_TESTDATA_LOAD_INT(x11, x3) # load branch taken value: x3 = 0xa62efc86
 E_blt_cg_cp_rs2_b5:
   blt x12, x5, 1f # perform operation
-  LI(x3, -1) # branch not taken, set temp_reg to 0
+  LI(x3, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x3 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x15, x8, x7, x3, E_blt_cg_cp_rs2_b5, E_blt_cg_cp_rs2_b5_str)
@@ -294,7 +294,7 @@ E_blt_cg_cp_rs2_b5:
   RVTEST_TESTDATA_LOAD_INT(x11, x9) # load branch taken value: x9 = 0xae4b4cb4
 E_blt_cg_cp_rs2_b6:
   blt x3, x6, 1f # perform operation
-  LI(x9, -1) # branch not taken, set temp_reg to 0
+  LI(x9, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x15, x8, x7, x9, E_blt_cg_cp_rs2_b6, E_blt_cg_cp_rs2_b6_str)
@@ -307,7 +307,7 @@ E_blt_cg_cp_rs2_b6:
   RVTEST_TESTDATA_LOAD_INT(x11, x9) # load branch taken value: x9 = 0x6ce9edac
 E_blt_cg_cp_rs2_b7:
   blt x3, x7, 1f # perform operation
-  LI(x9, -1) # branch not taken, set temp_reg to 0
+  LI(x9, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x9, E_blt_cg_cp_rs2_b7, E_blt_cg_cp_rs2_b7_str)
@@ -318,7 +318,7 @@ E_blt_cg_cp_rs2_b7:
   RVTEST_TESTDATA_LOAD_INT(x11, x6) # load branch taken value: x6 = 0x446b2c1d
 E_blt_cg_cp_rs2_b8:
   blt x9, x8, 1f # perform operation
-  LI(x6, -1) # branch not taken, set temp_reg to 0
+  LI(x6, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x6 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x6, E_blt_cg_cp_rs2_b8, E_blt_cg_cp_rs2_b8_str)
@@ -329,7 +329,7 @@ E_blt_cg_cp_rs2_b8:
   RVTEST_TESTDATA_LOAD_INT(x11, x12) # load branch taken value: x12 = 0x174c4686
 E_blt_cg_cp_rs2_b9:
   blt x8, x9, 1f # perform operation
-  LI(x12, -1) # branch not taken, set temp_reg to 0
+  LI(x12, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x12 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x12, E_blt_cg_cp_rs2_b9, E_blt_cg_cp_rs2_b9_str)
@@ -340,7 +340,7 @@ E_blt_cg_cp_rs2_b9:
   RVTEST_TESTDATA_LOAD_INT(x11, x7) # load branch taken value: x7 = 0xc92c2c14
 E_blt_cg_cp_rs2_b10:
   blt x12, x10, 1f # perform operation
-  LI(x7, -1) # branch not taken, set temp_reg to 0
+  LI(x7, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x7 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x7, E_blt_cg_cp_rs2_b10, E_blt_cg_cp_rs2_b10_str)
@@ -352,7 +352,7 @@ E_blt_cg_cp_rs2_b10:
   RVTEST_TESTDATA_LOAD_INT(x2, x9) # load branch taken value: x9 = 0x09229747
 E_blt_cg_cp_rs2_b11:
   blt x12, x11, 1f # perform operation
-  LI(x9, -1) # branch not taken, set temp_reg to 0
+  LI(x9, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x9, E_blt_cg_cp_rs2_b11, E_blt_cg_cp_rs2_b11_str)
@@ -363,7 +363,7 @@ E_blt_cg_cp_rs2_b11:
   RVTEST_TESTDATA_LOAD_INT(x2, x8) # load branch taken value: x8 = 0x684dbf96
 E_blt_cg_cp_rs2_b12:
   blt x3, x12, 1f # perform operation
-  LI(x8, -1) # branch not taken, set temp_reg to 0
+  LI(x8, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x8 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x8, E_blt_cg_cp_rs2_b12, E_blt_cg_cp_rs2_b12_str)
@@ -374,7 +374,7 @@ E_blt_cg_cp_rs2_b12:
   RVTEST_TESTDATA_LOAD_INT(x2, x3) # load branch taken value: x3 = 0x768bd5f8
 E_blt_cg_cp_rs2_b13:
   blt x0, x13, 1f # perform operation
-  LI(x3, -1) # branch not taken, set temp_reg to 0
+  LI(x3, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x3 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x3, E_blt_cg_cp_rs2_b13, E_blt_cg_cp_rs2_b13_str)
@@ -385,7 +385,7 @@ E_blt_cg_cp_rs2_b13:
   RVTEST_TESTDATA_LOAD_INT(x2, x1) # load branch taken value: x1 = 0xf89f20e7
 E_blt_cg_cp_rs2_b14:
   blt x8, x14, 1f # perform operation
-  LI(x1, -1) # branch not taken, set temp_reg to 0
+  LI(x1, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x1 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x1, E_blt_cg_cp_rs2_b14, E_blt_cg_cp_rs2_b14_str)
@@ -397,7 +397,7 @@ E_blt_cg_cp_rs2_b14:
   RVTEST_TESTDATA_LOAD_INT(x2, x11) # load branch taken value: x11 = 0xb2e4b78a
 E_blt_cg_cp_rs2_b15:
   blt x13, x15, 1f # perform operation
-  LI(x11, -1) # branch not taken, set temp_reg to 0
+  LI(x11, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x11 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x11, E_blt_cg_cp_rs2_b15, E_blt_cg_cp_rs2_b15_str)
@@ -412,7 +412,7 @@ E_blt_cg_cp_rs2_b15:
   RVTEST_TESTDATA_LOAD_INT(x2, x7) # load branch taken value: x7 = 0x578ef975
 E_blt_cg_cp_rs1_edges_0x0:
   blt x14, x15, 1f # perform operation
-  LI(x7, -1) # branch not taken, set temp_reg to 0
+  LI(x7, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x7 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x7, E_blt_cg_cp_rs1_edges_0x0, E_blt_cg_cp_rs1_edges_0x0_str)
@@ -423,7 +423,7 @@ E_blt_cg_cp_rs1_edges_0x0:
   RVTEST_TESTDATA_LOAD_INT(x2, x14) # load branch taken value: x14 = 0xbd26f27c
 E_blt_cg_cp_rs1_edges_0x1:
   blt x3, x1, 1f # perform operation
-  LI(x14, -1) # branch not taken, set temp_reg to 0
+  LI(x14, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x14, E_blt_cg_cp_rs1_edges_0x1, E_blt_cg_cp_rs1_edges_0x1_str)
@@ -434,7 +434,7 @@ E_blt_cg_cp_rs1_edges_0x1:
   RVTEST_TESTDATA_LOAD_INT(x2, x15) # load branch taken value: x15 = 0x99c3589e
 E_blt_cg_cp_rs1_edges_0x2:
   blt x6, x12, 1f # perform operation
-  LI(x15, -1) # branch not taken, set temp_reg to 0
+  LI(x15, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x15, E_blt_cg_cp_rs1_edges_0x2, E_blt_cg_cp_rs1_edges_0x2_str)
@@ -445,7 +445,7 @@ E_blt_cg_cp_rs1_edges_0x2:
   RVTEST_TESTDATA_LOAD_INT(x2, x15) # load branch taken value: x15 = 0xe0893bf3
 E_blt_cg_cp_rs1_edges_0x80000000:
   blt x1, x8, 1f # perform operation
-  LI(x15, -1) # branch not taken, set temp_reg to 0
+  LI(x15, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x15, E_blt_cg_cp_rs1_edges_0x80000000, E_blt_cg_cp_rs1_edges_0x80000000_str)
@@ -456,7 +456,7 @@ E_blt_cg_cp_rs1_edges_0x80000000:
   RVTEST_TESTDATA_LOAD_INT(x2, x14) # load branch taken value: x14 = 0x40b39b91
 E_blt_cg_cp_rs1_edges_0x80000001:
   blt x12, x6, 1f # perform operation
-  LI(x14, -1) # branch not taken, set temp_reg to 0
+  LI(x14, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x14, E_blt_cg_cp_rs1_edges_0x80000001, E_blt_cg_cp_rs1_edges_0x80000001_str)
@@ -467,7 +467,7 @@ E_blt_cg_cp_rs1_edges_0x80000001:
   RVTEST_TESTDATA_LOAD_INT(x2, x14) # load branch taken value: x14 = 0xedd86f66
 E_blt_cg_cp_rs1_edges_0x7fffffff:
   blt x3, x7, 1f # perform operation
-  LI(x14, -1) # branch not taken, set temp_reg to 0
+  LI(x14, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x14, E_blt_cg_cp_rs1_edges_0x7fffffff, E_blt_cg_cp_rs1_edges_0x7fffffff_str)
@@ -478,7 +478,7 @@ E_blt_cg_cp_rs1_edges_0x7fffffff:
   RVTEST_TESTDATA_LOAD_INT(x2, x1) # load branch taken value: x1 = 0x8d8fde0e
 E_blt_cg_cp_rs1_edges_0x7ffffffe:
   blt x7, x11, 1f # perform operation
-  LI(x1, -1) # branch not taken, set temp_reg to 0
+  LI(x1, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x1 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x1, E_blt_cg_cp_rs1_edges_0x7ffffffe, E_blt_cg_cp_rs1_edges_0x7ffffffe_str)
@@ -489,7 +489,7 @@ E_blt_cg_cp_rs1_edges_0x7ffffffe:
   RVTEST_TESTDATA_LOAD_INT(x2, x11) # load branch taken value: x11 = 0x126a4897
 E_blt_cg_cp_rs1_edges_0xffffffff:
   blt x1, x3, 1f # perform operation
-  LI(x11, -1) # branch not taken, set temp_reg to 0
+  LI(x11, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x11 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x11, E_blt_cg_cp_rs1_edges_0xffffffff, E_blt_cg_cp_rs1_edges_0xffffffff_str)
@@ -500,7 +500,7 @@ E_blt_cg_cp_rs1_edges_0xffffffff:
   RVTEST_TESTDATA_LOAD_INT(x2, x1) # load branch taken value: x1 = 0x7a348bd0
 E_blt_cg_cp_rs1_edges_0xfffffffe:
   blt x12, x14, 1f # perform operation
-  LI(x1, -1) # branch not taken, set temp_reg to 0
+  LI(x1, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x1 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x1, E_blt_cg_cp_rs1_edges_0xfffffffe, E_blt_cg_cp_rs1_edges_0xfffffffe_str)
@@ -511,7 +511,7 @@ E_blt_cg_cp_rs1_edges_0xfffffffe:
   RVTEST_TESTDATA_LOAD_INT(x2, x13) # load branch taken value: x13 = 0x2d3e1b7f
 E_blt_cg_cp_rs1_edges_0x5bbc8872:
   blt x3, x14, 1f # perform operation
-  LI(x13, -1) # branch not taken, set temp_reg to 0
+  LI(x13, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x13, E_blt_cg_cp_rs1_edges_0x5bbc8872, E_blt_cg_cp_rs1_edges_0x5bbc8872_str)
@@ -522,7 +522,7 @@ E_blt_cg_cp_rs1_edges_0x5bbc8872:
   RVTEST_TESTDATA_LOAD_INT(x2, x6) # load branch taken value: x6 = 0x9696d112
 E_blt_cg_cp_rs1_edges_0xaaaaaaaa:
   blt x1, x11, 1f # perform operation
-  LI(x6, -1) # branch not taken, set temp_reg to 0
+  LI(x6, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x6 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x6, E_blt_cg_cp_rs1_edges_0xaaaaaaaa, E_blt_cg_cp_rs1_edges_0xaaaaaaaa_str)
@@ -533,7 +533,7 @@ E_blt_cg_cp_rs1_edges_0xaaaaaaaa:
   RVTEST_TESTDATA_LOAD_INT(x2, x3) # load branch taken value: x3 = 0xb314f74e
 E_blt_cg_cp_rs1_edges_0x55555555:
   blt x13, x15, 1f # perform operation
-  LI(x3, -1) # branch not taken, set temp_reg to 0
+  LI(x3, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x3, E_blt_cg_cp_rs1_edges_0x55555555, E_blt_cg_cp_rs1_edges_0x55555555_str)
@@ -548,7 +548,7 @@ E_blt_cg_cp_rs1_edges_0x55555555:
   RVTEST_TESTDATA_LOAD_INT(x2, x6) # load branch taken value: x6 = 0x849646d2
 E_blt_cg_cp_rs2_edges_0x0:
   blt x13, x9, 1f # perform operation
-  LI(x6, -1) # branch not taken, set temp_reg to 0
+  LI(x6, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x6 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x6, E_blt_cg_cp_rs2_edges_0x0, E_blt_cg_cp_rs2_edges_0x0_str)
@@ -559,7 +559,7 @@ E_blt_cg_cp_rs2_edges_0x0:
   RVTEST_TESTDATA_LOAD_INT(x2, x13) # load branch taken value: x13 = 0x454fd6ee
 E_blt_cg_cp_rs2_edges_0x1:
   blt x12, x8, 1f # perform operation
-  LI(x13, -1) # branch not taken, set temp_reg to 0
+  LI(x13, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x13, E_blt_cg_cp_rs2_edges_0x1, E_blt_cg_cp_rs2_edges_0x1_str)
@@ -570,7 +570,7 @@ E_blt_cg_cp_rs2_edges_0x1:
   RVTEST_TESTDATA_LOAD_INT(x2, x8) # load branch taken value: x8 = 0xe649528f
 E_blt_cg_cp_rs2_edges_0x2:
   blt x9, x15, 1f # perform operation
-  LI(x8, -1) # branch not taken, set temp_reg to 0
+  LI(x8, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x8 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x8, E_blt_cg_cp_rs2_edges_0x2, E_blt_cg_cp_rs2_edges_0x2_str)
@@ -581,7 +581,7 @@ E_blt_cg_cp_rs2_edges_0x2:
   RVTEST_TESTDATA_LOAD_INT(x2, x6) # load branch taken value: x6 = 0x09da42c8
 E_blt_cg_cp_rs2_edges_0x80000000:
   blt x11, x14, 1f # perform operation
-  LI(x6, -1) # branch not taken, set temp_reg to 0
+  LI(x6, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x6 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x6, E_blt_cg_cp_rs2_edges_0x80000000, E_blt_cg_cp_rs2_edges_0x80000000_str)
@@ -592,7 +592,7 @@ E_blt_cg_cp_rs2_edges_0x80000000:
   RVTEST_TESTDATA_LOAD_INT(x2, x14) # load branch taken value: x14 = 0x8dccbeed
 E_blt_cg_cp_rs2_edges_0x80000001:
   blt x7, x6, 1f # perform operation
-  LI(x14, -1) # branch not taken, set temp_reg to 0
+  LI(x14, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x14, E_blt_cg_cp_rs2_edges_0x80000001, E_blt_cg_cp_rs2_edges_0x80000001_str)
@@ -603,7 +603,7 @@ E_blt_cg_cp_rs2_edges_0x80000001:
   RVTEST_TESTDATA_LOAD_INT(x2, x13) # load branch taken value: x13 = 0x9d9b34ce
 E_blt_cg_cp_rs2_edges_0x7fffffff:
   blt x7, x11, 1f # perform operation
-  LI(x13, -1) # branch not taken, set temp_reg to 0
+  LI(x13, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x13, E_blt_cg_cp_rs2_edges_0x7fffffff, E_blt_cg_cp_rs2_edges_0x7fffffff_str)
@@ -614,7 +614,7 @@ E_blt_cg_cp_rs2_edges_0x7fffffff:
   RVTEST_TESTDATA_LOAD_INT(x2, x14) # load branch taken value: x14 = 0x47d5c31b
 E_blt_cg_cp_rs2_edges_0x7ffffffe:
   blt x12, x11, 1f # perform operation
-  LI(x14, -1) # branch not taken, set temp_reg to 0
+  LI(x14, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x14, E_blt_cg_cp_rs2_edges_0x7ffffffe, E_blt_cg_cp_rs2_edges_0x7ffffffe_str)
@@ -625,7 +625,7 @@ E_blt_cg_cp_rs2_edges_0x7ffffffe:
   RVTEST_TESTDATA_LOAD_INT(x2, x1) # load branch taken value: x1 = 0x6f83077f
 E_blt_cg_cp_rs2_edges_0xffffffff:
   blt x8, x3, 1f # perform operation
-  LI(x1, -1) # branch not taken, set temp_reg to 0
+  LI(x1, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x1 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x1, E_blt_cg_cp_rs2_edges_0xffffffff, E_blt_cg_cp_rs2_edges_0xffffffff_str)
@@ -636,7 +636,7 @@ E_blt_cg_cp_rs2_edges_0xffffffff:
   RVTEST_TESTDATA_LOAD_INT(x2, x7) # load branch taken value: x7 = 0x4d518ec6
 E_blt_cg_cp_rs2_edges_0xfffffffe:
   blt x8, x14, 1f # perform operation
-  LI(x7, -1) # branch not taken, set temp_reg to 0
+  LI(x7, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x7 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x7, E_blt_cg_cp_rs2_edges_0xfffffffe, E_blt_cg_cp_rs2_edges_0xfffffffe_str)
@@ -647,7 +647,7 @@ E_blt_cg_cp_rs2_edges_0xfffffffe:
   RVTEST_TESTDATA_LOAD_INT(x2, x15) # load branch taken value: x15 = 0x35c41fe0
 E_blt_cg_cp_rs2_edges_0x5bbc8872:
   blt x9, x12, 1f # perform operation
-  LI(x15, -1) # branch not taken, set temp_reg to 0
+  LI(x15, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x15, E_blt_cg_cp_rs2_edges_0x5bbc8872, E_blt_cg_cp_rs2_edges_0x5bbc8872_str)
@@ -658,7 +658,7 @@ E_blt_cg_cp_rs2_edges_0x5bbc8872:
   RVTEST_TESTDATA_LOAD_INT(x2, x6) # load branch taken value: x6 = 0xc6def561
 E_blt_cg_cp_rs2_edges_0xaaaaaaaa:
   blt x13, x1, 1f # perform operation
-  LI(x6, -1) # branch not taken, set temp_reg to 0
+  LI(x6, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x6 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x6, E_blt_cg_cp_rs2_edges_0xaaaaaaaa, E_blt_cg_cp_rs2_edges_0xaaaaaaaa_str)
@@ -669,7 +669,7 @@ E_blt_cg_cp_rs2_edges_0xaaaaaaaa:
   RVTEST_TESTDATA_LOAD_INT(x2, x15) # load branch taken value: x15 = 0xdd596ac7
 E_blt_cg_cp_rs2_edges_0x55555555:
   blt x7, x1, 1f # perform operation
-  LI(x15, -1) # branch not taken, set temp_reg to 0
+  LI(x15, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x15, E_blt_cg_cp_rs2_edges_0x55555555, E_blt_cg_cp_rs2_edges_0x55555555_str)
@@ -3569,7 +3569,7 @@ E_blt_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x55555555:
   RVTEST_TESTDATA_LOAD_INT(x2, x7) # load branch taken value: x7 = 0x162f9f7a
 E_blt_cg_cmp_rs1_rs2_b0:
   blt x0, x0, 1f # perform operation
-  LI(x7, -1) # branch not taken, set temp_reg to 0
+  LI(x7, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x7 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x7, E_blt_cg_cmp_rs1_rs2_b0, E_blt_cg_cmp_rs1_rs2_b0_str)
@@ -3580,7 +3580,7 @@ E_blt_cg_cmp_rs1_rs2_b0:
   RVTEST_TESTDATA_LOAD_INT(x2, x11) # load branch taken value: x11 = 0xc24752a7
 E_blt_cg_cmp_rs1_rs2_b1:
   blt x1, x1, 1f # perform operation
-  LI(x11, -1) # branch not taken, set temp_reg to 0
+  LI(x11, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x11 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x11, E_blt_cg_cmp_rs1_rs2_b1, E_blt_cg_cmp_rs1_rs2_b1_str)
@@ -3592,7 +3592,7 @@ E_blt_cg_cmp_rs1_rs2_b1:
   RVTEST_TESTDATA_LOAD_INT(x9, x14) # load branch taken value: x14 = 0x827ac4c4
 E_blt_cg_cmp_rs1_rs2_b2:
   blt x2, x2, 1f # perform operation
-  LI(x14, -1) # branch not taken, set temp_reg to 0
+  LI(x14, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x14, E_blt_cg_cmp_rs1_rs2_b2, E_blt_cg_cmp_rs1_rs2_b2_str)
@@ -3603,7 +3603,7 @@ E_blt_cg_cmp_rs1_rs2_b2:
   RVTEST_TESTDATA_LOAD_INT(x9, x14) # load branch taken value: x14 = 0x0c88960d
 E_blt_cg_cmp_rs1_rs2_b3:
   blt x3, x3, 1f # perform operation
-  LI(x14, -1) # branch not taken, set temp_reg to 0
+  LI(x14, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x14, E_blt_cg_cmp_rs1_rs2_b3, E_blt_cg_cmp_rs1_rs2_b3_str)
@@ -3616,7 +3616,7 @@ E_blt_cg_cmp_rs1_rs2_b3:
   RVTEST_TESTDATA_LOAD_INT(x9, x5) # load branch taken value: x5 = 0xb65a32ea
 E_blt_cg_cmp_rs1_rs2_b4:
   blt x4, x4, 1f # perform operation
-  LI(x5, -1) # branch not taken, set temp_reg to 0
+  LI(x5, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x5 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x10, x8, x7, x5, E_blt_cg_cmp_rs1_rs2_b4, E_blt_cg_cmp_rs1_rs2_b4_str)
@@ -3627,7 +3627,7 @@ E_blt_cg_cmp_rs1_rs2_b4:
   RVTEST_TESTDATA_LOAD_INT(x9, x15) # load branch taken value: x15 = 0x6b4015fc
 E_blt_cg_cmp_rs1_rs2_b5:
   blt x5, x5, 1f # perform operation
-  LI(x15, -1) # branch not taken, set temp_reg to 0
+  LI(x15, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x15 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x10, x8, x7, x15, E_blt_cg_cmp_rs1_rs2_b5, E_blt_cg_cmp_rs1_rs2_b5_str)
@@ -3638,7 +3638,7 @@ E_blt_cg_cmp_rs1_rs2_b5:
   RVTEST_TESTDATA_LOAD_INT(x9, x4) # load branch taken value: x4 = 0xa3aab4ee
 E_blt_cg_cmp_rs1_rs2_b6:
   blt x6, x6, 1f # perform operation
-  LI(x4, -1) # branch not taken, set temp_reg to 0
+  LI(x4, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x4 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x10, x8, x7, x4, E_blt_cg_cmp_rs1_rs2_b6, E_blt_cg_cmp_rs1_rs2_b6_str)
@@ -3651,7 +3651,7 @@ E_blt_cg_cmp_rs1_rs2_b6:
   RVTEST_TESTDATA_LOAD_INT(x9, x11) # load branch taken value: x11 = 0x643c7d6b
 E_blt_cg_cmp_rs1_rs2_b7:
   blt x7, x7, 1f # perform operation
-  LI(x11, -1) # branch not taken, set temp_reg to 0
+  LI(x11, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x11 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x11, E_blt_cg_cmp_rs1_rs2_b7, E_blt_cg_cmp_rs1_rs2_b7_str)
@@ -3662,7 +3662,7 @@ E_blt_cg_cmp_rs1_rs2_b7:
   RVTEST_TESTDATA_LOAD_INT(x9, x14) # load branch taken value: x14 = 0x2161e66b
 E_blt_cg_cmp_rs1_rs2_b8:
   blt x8, x8, 1f # perform operation
-  LI(x14, -1) # branch not taken, set temp_reg to 0
+  LI(x14, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x14, E_blt_cg_cmp_rs1_rs2_b8, E_blt_cg_cmp_rs1_rs2_b8_str)
@@ -3674,7 +3674,7 @@ E_blt_cg_cmp_rs1_rs2_b8:
   RVTEST_TESTDATA_LOAD_INT(x11, x14) # load branch taken value: x14 = 0x2d9c4b12
 E_blt_cg_cmp_rs1_rs2_b9:
   blt x9, x9, 1f # perform operation
-  LI(x14, -1) # branch not taken, set temp_reg to 0
+  LI(x14, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x14, E_blt_cg_cmp_rs1_rs2_b9, E_blt_cg_cmp_rs1_rs2_b9_str)
@@ -3686,7 +3686,7 @@ E_blt_cg_cmp_rs1_rs2_b9:
   RVTEST_TESTDATA_LOAD_INT(x11, x14) # load branch taken value: x14 = 0x67374f42
 E_blt_cg_cmp_rs1_rs2_b10:
   blt x10, x10, 1f # perform operation
-  LI(x14, -1) # branch not taken, set temp_reg to 0
+  LI(x14, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x14 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x1, x5, x4, x14, E_blt_cg_cmp_rs1_rs2_b10, E_blt_cg_cmp_rs1_rs2_b10_str)
@@ -3698,7 +3698,7 @@ E_blt_cg_cmp_rs1_rs2_b10:
   RVTEST_TESTDATA_LOAD_INT(x10, x15) # load branch taken value: x15 = 0xaee9ed39
 E_blt_cg_cmp_rs1_rs2_b11:
   blt x11, x11, 1f # perform operation
-  LI(x15, -1) # branch not taken, set temp_reg to 0
+  LI(x15, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x15 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x1, x5, x4, x15, E_blt_cg_cmp_rs1_rs2_b11, E_blt_cg_cmp_rs1_rs2_b11_str)
@@ -3709,7 +3709,7 @@ E_blt_cg_cmp_rs1_rs2_b11:
   RVTEST_TESTDATA_LOAD_INT(x10, x11) # load branch taken value: x11 = 0x968d7893
 E_blt_cg_cmp_rs1_rs2_b12:
   blt x12, x12, 1f # perform operation
-  LI(x11, -1) # branch not taken, set temp_reg to 0
+  LI(x11, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x11 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x1, x5, x4, x11, E_blt_cg_cmp_rs1_rs2_b12, E_blt_cg_cmp_rs1_rs2_b12_str)
@@ -3720,7 +3720,7 @@ E_blt_cg_cmp_rs1_rs2_b12:
   RVTEST_TESTDATA_LOAD_INT(x10, x12) # load branch taken value: x12 = 0xc83a10ce
 E_blt_cg_cmp_rs1_rs2_b13:
   blt x13, x13, 1f # perform operation
-  LI(x12, -1) # branch not taken, set temp_reg to 0
+  LI(x12, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x12 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x1, x5, x4, x12, E_blt_cg_cmp_rs1_rs2_b13, E_blt_cg_cmp_rs1_rs2_b13_str)
@@ -3731,7 +3731,7 @@ E_blt_cg_cmp_rs1_rs2_b13:
   RVTEST_TESTDATA_LOAD_INT(x10, x8) # load branch taken value: x8 = 0x617ee87b
 E_blt_cg_cmp_rs1_rs2_b14:
   blt x14, x14, 1f # perform operation
-  LI(x8, -1) # branch not taken, set temp_reg to 0
+  LI(x8, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x8 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x1, x5, x4, x8, E_blt_cg_cmp_rs1_rs2_b14, E_blt_cg_cmp_rs1_rs2_b14_str)
@@ -3742,7 +3742,7 @@ E_blt_cg_cmp_rs1_rs2_b14:
   RVTEST_TESTDATA_LOAD_INT(x10, x12) # load branch taken value: x12 = 0x4bf96b89
 E_blt_cg_cmp_rs1_rs2_b15:
   blt x15, x15, 1f # perform operation
-  LI(x12, -1) # branch not taken, set temp_reg to 0
+  LI(x12, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x12 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x1, x5, x4, x12, E_blt_cg_cmp_rs1_rs2_b15, E_blt_cg_cmp_rs1_rs2_b15_str)
@@ -3769,90 +3769,106 @@ E_blt_cg_cp_offset_neg:
 // cp_imm_edges_branch
 /////////////////////////////////
 
-  RVTEST_TESTDATA_LOAD_INT(x10, x14) # load branch check value: x14 = 0x00001000
   LI(x2, 1)
   LI(x13, 2) # setup for taken branch
 
-E_blt_cg_cp_imm_edges_branch_all:
-
-# branch forward by 4
+# cp_imm_edges_branch: branch forward by 4
+  LI(x14, 1) # success code
+  .p2align 2
+E_blt_cg_cp_imm_edges_branch_b_4:
   blt x2, x13, 1f
-  # offset too small to modify counter for checking
+  # offset too small for failure code
+  .p2align 2
 1:
-  nop
-
-# branch forward by 8
-  blt x2, x13, 2f
-  addi x14, x14, -2 # shouldn't happen
-2:
-  addi x14, x14, 4 # should happen
-
-# branch forward by 16
-  blt x2, x13, 3f
-  addi x14, x14, -8 # shouldn't happen
-  j 19f # shouldn't happen
-  nop # use up 4 bytes
-3:
-  addi x14, x14, 16 # should happen
-
-# branch forward by 2048
-  .p2align 11 # align to 2048 bytes
-  blt x2, x13, 4f
-  addi x14, x14, -32 # shouldn't happen
-  j 19f # shouldn't happen
-  .p2align 11 # align to 2048 bytes
-4:
-  addi x14, x14, 64 # should happen
-
-# branch forward by 4092
-  .p2align 12 # align to 4096 bytes
-  nop # use up 4 bytes
-  blt x2, x13, 5f
-  addi x14, x14, -128 # shouldn't happen
-  j 19f # shouldn't happen
-  .p2align 12 # align to 4096 bytes
-5:
-  addi x14, x14, 256 # should happen
-
-# backward branch by -4
-  j 7f # jump around to test backward branch
-6:
-  j 9f # backward branch succeeded
-  # offset too small to modify counter for checking
-7:
-  blt x2, x13, 6b
-  addi x14, x14, -512 # shouldn't happen
-  j 19f # shouldn't happen
-
-# backward branch by -8
-8:
-  addi x14, x14, 1024 # should happen
-  j 11f # backward branch succeeded
-9:
-  blt x2, x13, 8b
-  addi x14, x14, -2048 # shouldn't happen
-  j 19f # shouldn't happen
-
-# backward branch by 4096
-  .p2align 12 # align to 4096 bytes
-10:
-  addi x14, x14, 1 # should happen
-  j 20f # backward branch succeeded
-  .p2align 12 # align to 4096 bytes
-11:
-  .insn 0x80d14063 # blt x2, x13, -4096; GCC is turning this into a small branch and a jump
-  addi x14, x14, 300 # shouldn't happen
-  j 19f # shouldn't happen
-
-# Shouldn't reach here, write failure code
-19:
-  LI(x14, -1)
-
-# end of branches
-20:
-
   # Check if x14 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x14, E_blt_cg_cp_imm_edges_branch_all, E_blt_cg_cp_imm_edges_branch_all_str)
+  RVTEST_SIGUPD(x1, x5, x4, x14, E_blt_cg_cp_imm_edges_branch_b_4, E_blt_cg_cp_imm_edges_branch_b_4_str)
+
+# cp_imm_edges_branch: branch forward by 8
+  LI(x14, 1) # success code
+  .p2align 3
+E_blt_cg_cp_imm_edges_branch_b_8:
+  blt x2, x13, 1f
+  LI(x14, 7) # failure code
+  .p2align 3
+1:
+  # Check if x14 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x14, E_blt_cg_cp_imm_edges_branch_b_8, E_blt_cg_cp_imm_edges_branch_b_8_str)
+
+# cp_imm_edges_branch: branch forward by 16
+  LI(x14, 1) # success code
+  .p2align 4
+E_blt_cg_cp_imm_edges_branch_b_16:
+  blt x2, x13, 1f
+  LI(x14, 7) # failure code
+  .p2align 4
+1:
+  # Check if x14 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x14, E_blt_cg_cp_imm_edges_branch_b_16, E_blt_cg_cp_imm_edges_branch_b_16_str)
+
+# cp_imm_edges_branch: branch forward by 2048
+  LI(x14, 1) # success code
+  .p2align 11
+E_blt_cg_cp_imm_edges_branch_b_2048:
+  blt x2, x13, 1f
+  LI(x14, 7) # failure code
+  .p2align 11
+1:
+  # Check if x14 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x14, E_blt_cg_cp_imm_edges_branch_b_2048, E_blt_cg_cp_imm_edges_branch_b_2048_str)
+
+# cp_imm_edges_branch: branch forward by 4092
+  LI(x14, 1) # success code
+  .p2align 12
+  nop # start the branch 4 bytes after the boundary
+E_blt_cg_cp_imm_edges_branch_b_4092:
+  blt x2, x13, 1f
+  LI(x14, 7) # failure code
+  .p2align 12
+1:
+  # Check if x14 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x14, E_blt_cg_cp_imm_edges_branch_b_4092, E_blt_cg_cp_imm_edges_branch_b_4092_str)
+
+# cp_imm_edges_branch: branch backward by 4
+  LI(x14, 1) # success code
+  j 3f # jump past backward branch target
+2:
+  j 4f # backward branch taken
+3:
+E_blt_cg_cp_imm_edges_branch_b_m4:
+  blt x2, x13, 2b
+  LI(x14, 7) # failure code
+4:
+  # Check if x14 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x14, E_blt_cg_cp_imm_edges_branch_b_m4, E_blt_cg_cp_imm_edges_branch_b_m4_str)
+
+# cp_imm_edges_branch: branch backward by 8
+  LI(x14, 1) # success code
+  j 3f # jump past backward branch target
+2:
+  j 4f # backward branch taken
+  nop # offset 8
+3:
+E_blt_cg_cp_imm_edges_branch_b_m8:
+  blt x2, x13, 2b
+  LI(x14, 7) # failure code
+4:
+  # Check if x14 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x14, E_blt_cg_cp_imm_edges_branch_b_m8, E_blt_cg_cp_imm_edges_branch_b_m8_str)
+
+# cp_imm_edges_branch: branch backward by 4096
+  LI(x14, 1) # success code
+  j 3f # jump past backward branch target
+  .p2align 12
+2:
+  j 4f # backward branch taken
+  .p2align 12
+3:
+E_blt_cg_cp_imm_edges_branch_b_m4096:
+  .insn 0x80d14063 # blt x2, x13, -4096
+  LI(x14, 7) # failure code
+4:
+  # Check if x14 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x14, E_blt_cg_cp_imm_edges_branch_b_m4096, E_blt_cg_cp_imm_edges_branch_b_m4096_str)
 
   mv x2, x1 # restore signature pointer to default register for teardown
 
@@ -4368,7 +4384,6 @@ RVTEST_DATA_BEGIN
 .word 0xc7a10a53
 .word 0x4bf96b89
 .word 0x7c26adb7
-.word 0x00001000
 
 // Testcase strings
 E_blt_cg_cp_rs1_b0_str: .string "\"test: 1; cg: E_blt_cg; cp: cp_rs1; bin: b0\""
@@ -4588,7 +4603,14 @@ E_blt_cg_cmp_rs1_rs2_b13_str: .string "\"test: 214; cg: E_blt_cg; cp: cmp_rs1_rs
 E_blt_cg_cmp_rs1_rs2_b14_str: .string "\"test: 215; cg: E_blt_cg; cp: cmp_rs1_rs2; bin: b14\""
 E_blt_cg_cmp_rs1_rs2_b15_str: .string "\"test: 216; cg: E_blt_cg; cp: cmp_rs1_rs2; bin: b15\""
 E_blt_cg_cp_offset_neg_str: .string "\"test: 217; cg: E_blt_cg; cp: cp_offset; bin: neg\""
-E_blt_cg_cp_imm_edges_branch_all_str: .string "\"test: 218; cg: E_blt_cg; cp: cp_imm_edges_branch; bin: all\""
+E_blt_cg_cp_imm_edges_branch_b_4_str: .string "\"test: 218; cg: E_blt_cg; cp: cp_imm_edges_branch; bin: b_4\""
+E_blt_cg_cp_imm_edges_branch_b_8_str: .string "\"test: 219; cg: E_blt_cg; cp: cp_imm_edges_branch; bin: b_8\""
+E_blt_cg_cp_imm_edges_branch_b_16_str: .string "\"test: 220; cg: E_blt_cg; cp: cp_imm_edges_branch; bin: b_16\""
+E_blt_cg_cp_imm_edges_branch_b_2048_str: .string "\"test: 221; cg: E_blt_cg; cp: cp_imm_edges_branch; bin: b_2048\""
+E_blt_cg_cp_imm_edges_branch_b_4092_str: .string "\"test: 222; cg: E_blt_cg; cp: cp_imm_edges_branch; bin: b_4092\""
+E_blt_cg_cp_imm_edges_branch_b_m4_str: .string "\"test: 223; cg: E_blt_cg; cp: cp_imm_edges_branch; bin: b_m4\""
+E_blt_cg_cp_imm_edges_branch_b_m8_str: .string "\"test: 224; cg: E_blt_cg; cp: cp_imm_edges_branch; bin: b_m8\""
+E_blt_cg_cp_imm_edges_branch_b_m4096_str: .string "\"test: 225; cg: E_blt_cg; cp: cp_imm_edges_branch; bin: b_m4096\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

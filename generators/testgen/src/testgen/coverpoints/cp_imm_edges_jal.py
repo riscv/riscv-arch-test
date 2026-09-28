@@ -36,19 +36,25 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
     # Determine alignment and which instructions to use based on coverpoint variant
     if coverpoint == "cp_imm_edges_jal":
         instr_size = 4
-        # jal has 20-bit signed offset, but we only test up to 4096
+        # jal has a 21-bit signed offset, but the covergroup only has bins up to +/-8192
         max_fwd_align = 13  # 2^13 = 8192
         max_bwd_align = 13  # 2^13 = 8192
         min_align = 2
-        li_instr = "li"
+        # Helper jumps write x0 so that only the jump under test writes rd
+        helper_jump = "j"
     elif coverpoint == "cp_imm_edges_c_jal":
         instr_size = 2
         max_fwd_align = 10  # 2^10 = 1024
         max_bwd_align = 11  # 2^11 = 2048
         min_align = 1
-        li_instr = "c.li"
+        helper_jump = "c.j"
     else:
         raise ValueError(f"Unsupported coverpoint variant for cp_imm_edges_jal/cp_imm_edges_c_jal: {coverpoint}")
+
+    def set_check(value: int) -> str:
+        if coverpoint == "cp_imm_edges_c_jal":
+            return f"c.li x{params.temp_reg}, {value}"
+        return f"LI(x{params.temp_reg}, {value})"
 
     for align in range(min_align, max_fwd_align + 1):
         bin_name = f"b_{1 << align}"
@@ -59,13 +65,13 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
         tc.code.extend(
             [
                 f"# {coverpoint}: forward jump by {1 << align}",
-                f"{li_instr} x{params.temp_reg}, 1 # success code"
+                f"{set_check(1)} # success code"
                 if not skip_check
                 else f"{INDENT}# offset too small, skipping self-check",
                 f".p2align {align}",
-                test_data.add_testcase(f"b_{align}", coverpoint),
+                test_data.add_testcase(bin_name, coverpoint),
                 f"{instr_name} {f'x{params.rd},' if instr_name == 'jal' else ''} {coverpoint}_fwd_{bin_name}",
-                f"{li_instr} x{params.temp_reg}, 7 # failure code"
+                f"{set_check(7)} # failure code"
                 if not skip_check
                 else f"{INDENT}# offset too small, skipping self-check",
                 f".p2align {align}",
@@ -89,22 +95,22 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
         tc.code.extend(
             [
                 f"# {coverpoint}: backward jump by {1 << align}",
-                f"{li_instr} x{params.temp_reg}, 1 # success code"
+                f"{set_check(1)} # success code"
                 if not skip_check
                 else f"{INDENT}# offset too small, skipping self-check",
                 f".p2align {align + 1}",
                 # Jump over the target
-                test_data.add_testcase(f"b_m{align}", coverpoint),
-                f"{instr_name} {f'x{params.rd},' if instr_name == 'jal' else ''} {coverpoint}_skip_{bin_name}",
+                f"{helper_jump} {coverpoint}_skip_{bin_name}",
                 # Align target to 2^align boundary
                 f".p2align {align}",
                 f"{coverpoint}_bwd_{bin_name}:",
                 # Target label (when backward jump lands here, escape forward to done)
-                f"{instr_name} {f'x{params.rd},' if instr_name == 'jal' else ''} {coverpoint}_done_{bin_name}",
+                f"{helper_jump} {coverpoint}_done_{bin_name}",
                 # Skip point
                 f"{coverpoint}_skip_{bin_name}:",
                 # Align source to 2^(align+1) boundary for backward jump
                 f".p2align {align + 1}",
+                test_data.add_testcase(bin_name, coverpoint),
             ]
         )
 
@@ -132,7 +138,7 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
         # Fall-through failure case and done label
         tc.code.extend(
             [
-                f"{li_instr} x{params.temp_reg}, 7 # failure code"
+                f"{set_check(7)} # failure code"
                 if not skip_check
                 else f"{INDENT}# offset too small, skipping self-check",
                 f"{coverpoint}_done_{bin_name}:",

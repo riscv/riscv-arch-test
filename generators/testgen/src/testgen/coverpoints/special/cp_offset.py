@@ -10,6 +10,7 @@
 from testgen.asm.helpers import load_int_reg, write_sigupd
 from testgen.constants import INDENT
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.data.random import random_int
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.instructions.params import generate_random_params
@@ -25,6 +26,9 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
         params = generate_random_params(test_data, instr_type, rd=1)
     elif instr_name == "c.jr":
         params = generate_random_params(test_data, instr_type, rd=0)
+    elif instr_type == "J":
+        # The J formatter does not need a check value, so supply one
+        params = generate_random_params(test_data, instr_type, temp_val=random_int(bits=test_data.xlen))
     else:
         params = generate_random_params(test_data, instr_type)
 
@@ -47,7 +51,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
                 "j 2f # jump past backward branch target",
                 f"1: addi x{params.temp_reg}, x{params.temp_reg}, 4 # backward branch target, increment check value",
                 "j 3f # jump past backward branch",
-                test_data.add_testcase("neg", coverpoint),
+                test_data.add_testcase("neg", "cp_offset"),
                 f"2: {instr_name} x{params.rs1}, {f'x{params.rs2},' if params.rs2 is not None else ''} 1b # backward branch",
                 f"addi x{params.temp_reg}, x{params.temp_reg}, -2 # branch not taken, decrement check value",
                 "3:  # done with sequence",
@@ -68,7 +72,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
                 f"1: addi x{params.temp_reg}, x{params.temp_reg}, 4 # backward jump target, increment check value",
                 "j 3f # jump past backward jump",
                 f"2: LA(x{params.rs1}, 1b) # load backward jump target",
-                test_data.add_testcase("neg", coverpoint),
+                test_data.add_testcase("neg", "cp_offset"),
                 f"{instr_name} x{params.rd}, x{params.rs1}, 0 # backward jump"
                 if instr_type == "JR"
                 else f"{instr_name} x{params.rs1} # backward jump",
@@ -81,25 +85,22 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
                 write_sigupd(params.rd, test_data),
             ]
         )
-    elif instr_type in ["CJ", "CJAL"]:
+    elif instr_type in ["J", "CJ", "CJAL"]:
         assert params.temp_reg is not None and params.temp_val is not None
+        jump = f"jal x{params.rd}, 1b" if instr_type == "J" else f"{instr_name} 1b"
         tc.code.extend(
             [
                 load_int_reg("jump check value", params.temp_reg, params.temp_val, test_data),
                 "j 2f # jump past backward jump target",
                 f"1: addi x{params.temp_reg}, x{params.temp_reg}, 4 # backward jump target, increment check value",
                 "j 3f # jump past backward jump",
-                test_data.add_testcase("neg", coverpoint),
-                f"2: {instr_name} 1b # backward jump",
+                test_data.add_testcase("neg", "cp_offset"),
+                f"2: {jump} # backward jump",
                 f"addi x{params.temp_reg}, x{params.temp_reg}, -2 # jump not taken, decrement check value",
                 "3:  # done with sequence",
                 write_sigupd(params.temp_reg, test_data),
             ]
         )
-    elif instr_type == "J":
-        tc.code.append(
-            "# cp_offset is covered by other tests for jal."
-        )  # TODO: Maybe revisit this and implement it anyway for completeness.
     else:
         raise ValueError(f"cp_offset coverpoint not supported for instruction {instr_name} with type {instr_type}.")
 

@@ -62,6 +62,8 @@ UDB_DEFINES = [
     "#define UDB_SDTRIG_VU_AVAILABLE",
     # Sims that do not follow Suggested Trigger Timing in spec or fires several cycles after will mismatch MEPC in trap handler
     "#define SDTRIG_IMPRECISE_XEPC",
+    # TODO Uncomment once #2463 is merged
+    # "#define SDTRIG_TRIGGER_BP_HANDLING"
 ]
 
 XSL_UDB_NAMES = ("LOAD", "STORE", "EXECUTE")  # mcontrol6 xsl bits 0, 1, 2

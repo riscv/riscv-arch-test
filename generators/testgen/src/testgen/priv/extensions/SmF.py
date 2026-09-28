@@ -40,7 +40,7 @@ def _gen_fp_csr_init(csr_name: str, value: int, temp_reg: int) -> str:
 
 def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
     """Generate CSR tests."""
-    covergroup = "SmF_fcsr_cg"
+    covergroup = "SmF_cg"
 
     # fp CSRs
     fcsrs = [("fcsr", None), ("frm", None), ("fflags", None)]
@@ -60,7 +60,6 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
     lines.append(f"LI(x{ones_reg}, -1)\n")
 
     for fs in range(4):
-        coverpoint_full = f"{coverpoint}_fs{fs}"
         for csr in fcsrs:
             csr_name, _mask = csr
             lines.extend(
@@ -68,34 +67,34 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
                     f"# Testcase: {csr_name} access with mstatus.FS={fs}: write 1s",
                     _gen_fs_init(fs, temp_reg),
                     f"csrr x{save_reg}, {csr_name}    # Save CSR",
-                    test_data.add_testcase(f"{csr_name}_csrrw1_mstatus", coverpoint_full, covergroup),
+                    test_data.add_testcase(f"fs{fs}_{csr_name}_csrrw1_mstatus", coverpoint, covergroup),
                     f"csrw {csr_name}, x{ones_reg}    # Write all 1s to CSR",
                     gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
-                    test_data.add_testcase(f"{csr_name}_csrrw1_csr", coverpoint_full, covergroup),
+                    test_data.add_testcase(f"fs{fs}_{csr_name}_csrrw1_csr", coverpoint, covergroup),
                     gen_csr_read_sigupd(check_reg, csr, test_data),
                     "",
                     f"# Testcase: {csr_name} access with mstatus.FS={fs}: write 0s",
                     _gen_fs_init(fs, temp_reg),
-                    test_data.add_testcase(f"{csr_name}_csrrw0_mstatus", coverpoint_full, covergroup),
+                    test_data.add_testcase(f"fs{fs}_{csr_name}_csrrw0_mstatus", coverpoint, covergroup),
                     f"csrw {csr_name}, zero   # Write all 0s to CSR",
                     gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
-                    test_data.add_testcase(f"{csr_name}_csrrw0_csr", coverpoint_full, covergroup),
+                    test_data.add_testcase(f"fs{fs}_{csr_name}_csrrw0_csr", coverpoint, covergroup),
                     gen_csr_read_sigupd(check_reg, csr, test_data),
                     "",
                     f"# Testcase: {csr_name} access with mstatus.FS={fs}: set all bits",
                     _gen_fs_init(fs, temp_reg),
-                    test_data.add_testcase(f"{csr_name}_csrs_all_mstatus", coverpoint_full, covergroup),
+                    test_data.add_testcase(f"fs{fs}_{csr_name}_csrs_all_mstatus", coverpoint, covergroup),
                     f"csrs {csr_name}, x{ones_reg}    # Set all CSR bits",
                     gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
-                    test_data.add_testcase(f"{csr_name}_csrs_all_csr", coverpoint_full, covergroup),
+                    test_data.add_testcase(f"fs{fs}_{csr_name}_csrs_all_csr", coverpoint, covergroup),
                     gen_csr_read_sigupd(check_reg, csr, test_data),
                     "",
                     f"# Testcase: {csr_name} access with mstatus.FS={fs}: clear all bits",
                     _gen_fs_init(fs, temp_reg),
-                    test_data.add_testcase(f"{csr_name}_csrrc_all_mstatus", coverpoint_full, covergroup),
+                    test_data.add_testcase(f"fs{fs}_{csr_name}_csrrc_all_mstatus", coverpoint, covergroup),
                     f"csrc {csr_name}, x{ones_reg}    # Clear all CSR bits",
                     gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
-                    test_data.add_testcase(f"{csr_name}_csrrc_all_csr", coverpoint_full, covergroup),
+                    test_data.add_testcase(f"fs{fs}_{csr_name}_csrrc_all_csr", coverpoint, covergroup),
                     gen_csr_read_sigupd(check_reg, csr, test_data),
                     f"csrw {csr_name}, x{save_reg}       # Restore CSR",
                     "",
@@ -150,6 +149,8 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
         f"add x{temp_reg}, x{temp_reg}, x{temp_reg}",
     ]
     insns = [*nondeterministic_initial_clean_insns, *fp_csr_write_insns, *deterministic_insns]
+    # fsw, fcvt.w.s, feq.s, fmv.x.w, fclass.s, csrr of FP CSRs, and fmvh.x.d have their own cross
+    coverpoint_nd = f"{coverpoint}_nondeterministic"
 
     lines.extend(
         [
@@ -162,7 +163,6 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
     )
 
     for fs in range(4):
-        coverpoint_full = f"{coverpoint}_fs{fs}"
         for insn in insns:
             if fs in (1, 2) and insn in nondeterministic_initial_clean_insns:
                 continue  # skip nondeterministic instructions for FS=1 or FS=2
@@ -180,12 +180,13 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
                 ]
             else:
                 setup_lines = [_gen_fs_init(fs, temp_reg)]
+            cp = coverpoint_nd if insn in nondeterministic_initial_clean_insns else coverpoint
             lines.extend(
                 [
                     "",
                     f"# Testcase: {insn} with mstatus.FS={fs}",
                     *setup_lines,
-                    test_data.add_testcase(f"{insn}", coverpoint_full, covergroup),
+                    test_data.add_testcase(f"fs{fs}_{insn}", cp, covergroup),
                     f"{insn} # execute instruction with mstatus.FS={fs}",
                     gen_csr_read_sigupd(temp_reg, ("mstatus", None), test_data),
                 ]
@@ -197,7 +198,7 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
                     "",
                     f"# Testcase: {insn} with mstatus.FS={fs}",
                     _gen_fs_init(fs, temp_reg),
-                    test_data.add_testcase(f"{insn}", coverpoint_full, covergroup),
+                    test_data.add_testcase(f"fs{fs}_{insn}", coverpoint, covergroup),
                     f"{insn} # execute instruction with mstatus.FS={fs}",
                     gen_csr_read_sigupd(temp_reg, ("mstatus", None), test_data),
                 ]
@@ -212,12 +213,13 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
         for insn in [f"fmvh.x.d x{temp_reg}, f1", f"fmvp.d.x f0, x{temp_reg}, x{temp_reg}"]:
             if fs in (1, 2) and insn.startswith("fmvh.x.d "):
                 continue
+            cp = coverpoint_nd if insn.startswith("fmvh.x.d ") else coverpoint
             lines.extend(
                 [
                     "",
                     f"# Testcase: {insn} with mstatus.FS={fs}",
                     _gen_fs_init(fs, temp_reg),
-                    test_data.add_testcase(f"{insn}", coverpoint_full, covergroup),
+                    test_data.add_testcase(f"fs{fs}_{insn}", cp, covergroup),
                     f"{insn} # execute instruction with mstatus.FS={fs}",
                     gen_csr_read_sigupd(temp_reg, ("mstatus", None), test_data),
                 ]
@@ -237,7 +239,7 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
                 [
                     "",
                     _gen_fs_init(fs, temp_reg),
-                    test_data.add_testcase(f"{insn}", coverpoint_full, covergroup),
+                    test_data.add_testcase(f"fs{fs}_{insn}", coverpoint, covergroup),
                     f"{insn} # execute instruction with mstatus.FS={fs}",
                     gen_csr_read_sigupd(temp_reg, ("mstatus", None), test_data),
                 ]

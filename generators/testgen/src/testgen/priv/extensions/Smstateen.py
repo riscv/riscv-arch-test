@@ -647,7 +647,7 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
     tc.code.append("#endif")
 
     # cp_imsic — only when IMSIC is present
-    tc.code.append("#ifdef IMSIC_SUPPORTED")
+    tc.code.append("#ifdef SSAIA_SUPPORTED")
     tc.code.extend(
         _generate_bit_controlled(
             test_data,
@@ -658,10 +658,10 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
             csrs=["stopei", "vstopei"],
         )
     )
-    tc.code.append("#endif  // IMSIC_SUPPORTED")
+    tc.code.append("#endif  // SSAIA_SUPPORTED")
 
     # cp_aia — only when AIA is present
-    tc.code.append("#ifdef AIA_SUPPORTED")
+    tc.code.append("#ifdef SSAIA_SUPPORTED")
     tc.code.extend(
         _generate_bit_controlled(
             test_data,
@@ -673,7 +673,7 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
             csrs_rv32=["sieh", "siph"],
         )
     )
-    tc.code.append("#endif  // AIA_SUPPORTED")
+    tc.code.append("#endif  // SSAIA_SUPPORTED")
 
     # cp_jvt_access — only when Zcmt is present (covers S-mode and U-mode)
     tc.code.append("#ifdef ZCMT_SUPPORTED")
@@ -723,7 +723,7 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
     tc.code.append("#endif  // SSQOSID_SUPPORTED")
 
     # cp_ctr — only when Sctr is present
-    tc.code.append("#ifdef SCTR_SUPPORTED")
+    tc.code.append("#ifdef SSCTR_SUPPORTED")
     tc.code.extend(
         _generate_bit_controlled(
             test_data,
@@ -734,7 +734,7 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
             csrs=["sctrdepth", "sctrstatus"],
         )
     )
-    tc.code.append("#endif  // SCTR_SUPPORTED")
+    tc.code.append("#endif  // SSCTR_SUPPORTED")
 
     # cp_fcsr, cp_fcsr_ro_zero, cp_fcsr_lower, cp_fcsr_fp_instrs — only when Zfinx present
     tc.code.append("#ifdef ZFINX_SUPPORTED")

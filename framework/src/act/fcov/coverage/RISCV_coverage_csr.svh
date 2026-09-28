@@ -151,7 +151,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "stopcount" : val = (val >> 10) & 'h1;
       "stoptime" : val = (val >> 9) & 'h1;
       "xdebugver" : val = (val >> 28) & 'hf;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "etrigger") begin
@@ -178,26 +178,26 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "type" : val = (val >> 60) & 64'hf;
 `endif
       "u" : val = (val >> 6) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "fcsr") begin
     case(field)
       "fflags" : val = val & 'h1f;
       "frm" : val = (val >> 5) & 'h7;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "fflags") begin
     case(field)
       "fflags" : val = val & 'h1f;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "frm") begin
     case(field)
       "frm" : val = val & 'h7;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "hcounteren") begin
@@ -206,13 +206,13 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "enable" : val = (val >> 3) & 'h1fffffff;
       "ir" : val = (val >> 2) & 'h1;
       "tm" : val = (val >> 1) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "hedeleg") begin
     case(field)
       "deleg" : val = val & 'hffffffff;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "hgatp") begin
@@ -223,19 +223,19 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `ifdef UDB_MXLEN_64
       "mode" : val = (val >> 60) & 64'hf;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "hgeie") begin
     case(field)
       "enable" : val = (val >> 1) & 'h7fffffff;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "hgeip") begin
     case(field)
       "pending" : val = (val >> 1) & 'h7fffffff;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "hideleg") begin
@@ -250,7 +250,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "vgeip" : val = (val >> 10) & 'h1;
       "vssip" : val = (val >> 2) & 'h1;
       "vstip" : val = (val >> 6) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "hie") begin
@@ -259,7 +259,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "vseie" : val = (val >> 10) & 'h1;
       "vssie" : val = (val >> 2) & 'h1;
       "vstie" : val = (val >> 6) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "hip") begin
@@ -268,7 +268,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "vseip" : val = (val >> 10) & 'h1;
       "vssip" : val = (val >> 2) & 'h1;
       "vstip" : val = (val >> 6) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "hstatus") begin
@@ -284,7 +284,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "vtsr" : val = (val >> 22) & 'h1;
       "vtvm" : val = (val >> 20) & 'h1;
       "vtw" : val = (val >> 21) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "hvip") begin
@@ -292,7 +292,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "vseip" : val = (val >> 10) & 'h1;
       "vssip" : val = (val >> 2) & 'h1;
       "vstip" : val = (val >> 6) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "icount") begin
@@ -313,7 +313,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "type" : val = (val >> 60) & 64'hf;
 `endif
       "u" : val = (val >> 6) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "itrigger") begin
@@ -339,7 +339,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "type" : val = (val >> 60) & 64'hf;
 `endif
       "u" : val = (val >> 6) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "jvt") begin
@@ -351,7 +351,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "base" : val = (val >> 6) & 64'h3ffffffffffffff;
 `endif
       "mode" : val = val & 'h3f;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "mcause") begin
@@ -368,7 +368,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `ifdef UDB_MXLEN_64
       "int" : val = val & 64'hffffffffffffffff;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "mcontrol") begin
@@ -407,7 +407,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "type" : val = (val >> 60) & 64'hf;
 `endif
       "u" : val = (val >> 3) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "mcounteren") begin
@@ -416,7 +416,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "enable" : val = (val >> 3) & 'h1fffffff;
       "ir" : val = (val >> 2) & 'h1;
       "tm" : val = (val >> 1) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "mcountinhibit") begin
@@ -424,13 +424,13 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "cy" : val = val & 'h1;
       "inhibit" : val = (val >> 3) & 'h1fffffff;
       "ir" : val = (val >> 2) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "medeleg") begin
     case(field)
       "deleg" : val = val & 'hffffffff;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "menvcfg") begin
@@ -449,7 +449,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "pbmte" : val = (val >> 62) & 64'h1;
       "stce" : val = (val >> 63) & 64'h1;
 `endif
-      default: val = 0;
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "menvcfgh") begin
@@ -458,7 +458,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "cde" : val = (val >> 28) & 32'h1;
       "dte" : val = (val >> 27) & 32'h1;
       "stce" : val = (val >> 31) & 32'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "mideleg") begin
@@ -474,7 +474,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "vgeip" : val = (val >> 10) & 'h1;
       "vssip" : val = (val >> 2) & 'h1;
       "vstip" : val = (val >> 6) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "mie") begin
@@ -490,7 +490,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "vgeie" : val = (val >> 10) & 'h1;
       "vssie" : val = (val >> 2) & 'h1;
       "vstie" : val = (val >> 6) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "mip") begin
@@ -506,7 +506,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "vgeip" : val = (val >> 10) & 'h1;
       "vssip" : val = (val >> 2) & 'h1;
       "vstip" : val = (val >> 6) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "misa") begin
@@ -518,7 +518,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `ifdef UDB_MXLEN_64
       "mxl" : val = (val >> 62) & 64'h3;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "mseccfg") begin
@@ -532,7 +532,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `ifdef UDB_MXLEN_64
       "pmm" : val = (val >> 32) & 64'h3;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "mstatus") begin
@@ -581,7 +581,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `endif
       "vs" : val = (val >> 9) & 'h3;
       "xs" : val = (val >> 15) & 'h3;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "mstatush") begin
@@ -601,13 +601,13 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `ifdef UDB_MXLEN_32
       "sbe" : val = (val >> 4) & 32'h1;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "mtvec") begin
     case(field)
       "mode" : val = val & 'h3;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "pmpcfg0") begin
@@ -660,7 +660,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `ifdef UDB_MXLEN_64
       "pmp7cfg_xwr" : val = (val >> 56) & 64'h7;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "pmpcfg1") begin
@@ -701,7 +701,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `ifdef UDB_MXLEN_32
       "pmp7cfg_xwr" : val = (val >> 24) & 32'h7;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "pmpcfg2") begin
@@ -754,7 +754,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "pmp9cfg_a" : val = (val >> 11) & 'h3;
       "pmp9cfg_l" : val = (val >> 15) & 'h1;
       "pmp9cfg_xwr" : val = (val >> 8) & 'h7;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "pmpcfg3") begin
@@ -795,7 +795,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `ifdef UDB_MXLEN_32
       "pmp15cfg_xwr" : val = (val >> 24) & 32'h7;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "satp") begin
@@ -818,7 +818,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `ifdef UDB_MXLEN_64
       "ppn" : val = val & 64'hfffffffffff;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "scause") begin
@@ -835,7 +835,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `ifdef UDB_MXLEN_64
       "int" : val = val & 64'hffffffffffffffff;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "scounteren") begin
@@ -844,7 +844,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "enable" : val = (val >> 3) & 'h1fffffff;
       "ir" : val = (val >> 2) & 'h1;
       "tm" : val = (val >> 1) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "seed") begin
@@ -855,7 +855,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `ifdef UDB_MXLEN_64
       "entropy" : val = val & 32'hffff;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "senvcfg") begin
@@ -869,7 +869,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `ifdef UDB_MXLEN_64
       "pmm" : val = (val >> 32) & 64'h3;
 `endif
-      default: val = 0;
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "sie") begin
@@ -878,7 +878,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "seie" : val = (val >> 9) & 'h1;
       "ssie" : val = (val >> 1) & 'h1;
       "stie" : val = (val >> 5) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "sip") begin
@@ -887,7 +887,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "seip" : val = (val >> 9) & 'h1;
       "ssip" : val = (val >> 1) & 'h1;
       "stip" : val = (val >> 5) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "sstatus") begin
@@ -911,20 +911,20 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `endif
       "vs" : val = (val >> 9) & 'h3;
       "xs" : val = (val >> 15) & 'h3;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "stvec") begin
     case(field)
       "mode" : val = val & 'h3;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "tcontrol") begin
     case(field)
       "mpte" : val = (val >> 7) & 'h1;
       "mte" : val = (val >> 3) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "tdata1") begin
@@ -941,7 +941,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `ifdef UDB_MXLEN_64
       "type" : val = (val >> 60) & 64'hf;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "textra32") begin
@@ -952,7 +952,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `ifdef UDB_MXLEN_32
       "sselect" : val = val & 32'h3;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "textra64") begin
@@ -963,32 +963,32 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `ifdef UDB_MXLEN_64
       "sselect" : val = val & 64'h3;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "tinfo") begin
     case(field)
       "info" : val = val & 'hffff;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "vcsr") begin
     case(field)
       "vxsat" : val = val & 'h1;
       "vxrm"  : val = (val >> 1) & 'h3;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "vl") begin
     case(field)
       "vl" : val = val & 'hffff;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "vlenb") begin
     case(field)
       "vlenb" : val = val & 'h1fff;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "vsatp") begin
@@ -999,7 +999,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `ifdef UDB_MXLEN_64
       "mode" : val = (val >> 60) & 64'hf;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "vscause") begin
@@ -1016,7 +1016,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `ifdef UDB_MXLEN_64
       "int" : val = val & 64'hffffffffffffffff;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "vsie") begin
@@ -1024,7 +1024,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "seie" : val = (val >> 9) & 'h1;
       "ssie" : val = (val >> 1) & 'h1;
       "stie" : val = (val >> 5) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "vsip") begin
@@ -1032,7 +1032,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "seip" : val = (val >> 9) & 'h1;
       "ssip" : val = (val >> 1) & 'h1;
       "stip" : val = (val >> 5) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "vsstatus") begin
@@ -1055,19 +1055,19 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `endif
       "vs" : val = (val >> 9) & 'h3;
       "xs" : val = (val >> 15) & 'h3;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "vstart") begin
     case(field)
       "vstart" : val = val & 'hffff;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "vstvec") begin
     case(field)
       "mode" : val = val & 'h3;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "vtype") begin
@@ -1082,26 +1082,26 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "vma" : val = (val >> 7) & 'h1;
       "vsew" : val = (val >> 3) & 'h7;
       "vta" : val = (val >> 6) & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "vxrm") begin
     case(field)
       "vxrm" : val = val & 'h3;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "vxsat") begin
     case(field)
       "vxsat" : val = val & 'h1;
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "sstateen0") begin
     case(field)
         "fcsr"   : val = (val >> 1) & 'h1;
         "jvt"    : val = (val >> 2) & 'h1;
-        default: val = 0;
+        default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "mstateen0") begin
@@ -1120,7 +1120,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "envcfg" : val = (val >> 62) & 64'h1;
       "se0" : val = (val >> 63) & 64'h1;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "mstateen0h") begin
@@ -1136,7 +1136,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "envcfg" : val = (val >> 30) & 32'h1;
       "se0" : val = (val >> 31) & 32'h1;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "pmpcfg4") begin
@@ -1181,7 +1181,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "pmp23cfg_l" : val = (val >> 63) & 64'h1;
       "pmp23cfg_xwr" : val = (val >> 56) & 64'h7;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "pmpcfg5") begin
@@ -1200,7 +1200,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "pmp23cfg_l" : val = (val >> 31) & 32'h1;
       "pmp23cfg_xwr" : val = (val >> 24) & 32'h7;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "pmpcfg6") begin
@@ -1245,7 +1245,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "pmp31cfg_l" : val = (val >> 63) & 64'h1;
       "pmp31cfg_xwr" : val = (val >> 56) & 64'h7;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "pmpcfg7") begin
@@ -1264,7 +1264,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "pmp31cfg_l" : val = (val >> 31) & 32'h1;
       "pmp31cfg_xwr" : val = (val >> 24) & 32'h7;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "pmpcfg8") begin
@@ -1309,7 +1309,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "pmp39cfg_l" : val = (val >> 63) & 64'h1;
       "pmp39cfg_xwr" : val = (val >> 56) & 64'h7;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "pmpcfg9") begin
@@ -1328,7 +1328,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "pmp39cfg_l" : val = (val >> 31) & 32'h1;
       "pmp39cfg_xwr" : val = (val >> 24) & 32'h7;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "pmpcfg10") begin
@@ -1373,7 +1373,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "pmp47cfg_l" : val = (val >> 63) & 64'h1;
       "pmp47cfg_xwr" : val = (val >> 56) & 64'h7;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "pmpcfg11") begin
@@ -1392,7 +1392,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "pmp47cfg_l" : val = (val >> 31) & 32'h1;
       "pmp47cfg_xwr" : val = (val >> 24) & 32'h7;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "pmpcfg12") begin
@@ -1437,7 +1437,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "pmp55cfg_l" : val = (val >> 63) & 64'h1;
       "pmp55cfg_xwr" : val = (val >> 56) & 64'h7;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "pmpcfg13") begin
@@ -1456,7 +1456,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "pmp55cfg_l" : val = (val >> 31) & 32'h1;
       "pmp55cfg_xwr" : val = (val >> 24) & 32'h7;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "pmpcfg14") begin
@@ -1501,7 +1501,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "pmp63cfg_l" : val = (val >> 63) & 64'h1;
       "pmp63cfg_xwr" : val = (val >> 56) & 64'h7;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
   if (name == "pmpcfg15") begin
@@ -1520,8 +1520,11 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "pmp63cfg_l" : val = (val >> 31) & 32'h1;
       "pmp63cfg_xwr" : val = (val >> 24) & 32'h7;
 `endif
-      default: val = 0; // Todo: error
+      default: $fatal(1, "get_csr_val: CSR %s has no field %s on this hart (UDB_MXLEN = %0d); fields that exist only on RV64 are in the upper-half CSR on RV32", name, field, `UDB_MXLEN);
     endcase
   end
+  if (field != "" && !(name inside {"dcsr", "etrigger", "fcsr", "fflags", "frm", "hcounteren", "hedeleg", "hgatp", "hgeie", "hgeip", "hideleg", "hie", "hip", "hstatus", "hvip", "icount", "itrigger", "jvt", "mcause", "mcontrol", "mcounteren", "mcountinhibit", "medeleg", "menvcfg", "menvcfgh", "mideleg", "mie", "mip", "misa", "mseccfg", "mstatus", "mstatush", "mtvec", "pmpcfg0", "pmpcfg1", "pmpcfg2", "pmpcfg3", "satp", "scause", "scounteren", "seed", "senvcfg", "sie", "sip", "sstatus", "stvec", "tcontrol", "tdata1", "textra32", "textra64", "tinfo", "vcsr", "vl", "vlenb", "vsatp", "vscause", "vsie", "vsip", "vsstatus", "vstart", "vstvec", "vtype", "vxrm", "vxsat", "sstateen0", "mstateen0", "mstateen0h", "pmpcfg4", "pmpcfg5", "pmpcfg6", "pmpcfg7", "pmpcfg8", "pmpcfg9", "pmpcfg10", "pmpcfg11", "pmpcfg12", "pmpcfg13", "pmpcfg14", "pmpcfg15"}))
+    $fatal(1, "get_csr_val: CSR %s has no fields; read it whole with field \"%s\"", name, name);
+
   return val;
 endfunction

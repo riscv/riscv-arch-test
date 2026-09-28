@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 482
+#define SIGUPD_COUNT 492
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -3248,6 +3248,75 @@ Zaamo_amoswap_d_cg_cmp_rd_rs1_rs2_nx0_b31:
   # Check if x31 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x31, Zaamo_amoswap_d_cg_cmp_rd_rs1_rs2_nx0_b31, Zaamo_amoswap_d_cg_cmp_rd_rs1_rs2_nx0_b31_str)
 
+/////////////////////////////////
+// cp_memval_double
+/////////////////////////////////
+
+# Testcase cp_memval_double (memory value = 0x0)
+  RVTEST_TESTDATA_LOAD_INT(x10, x3) # load value in memory: x3 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x10, x28) # load rs2: x28 = 0x404985ee45d1102f
+  LA(x31, scratch) # load base address into rs1
+  SREG x3, 0(x31) # store value into memory at address in rs1
+Zaamo_amoswap_d_cg_cp_memval_double_0x0:
+  amoswap.d x22, x28, (x31) # perform operation
+  # Check if x22 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x22, Zaamo_amoswap_d_cg_cp_memval_double_0x0, Zaamo_amoswap_d_cg_cp_memval_double_0x0_str)
+  LREG x31, 0(x31) # Load the updated value from memory
+  # Check if x31 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x31, Zaamo_amoswap_d_cg_cp_memval_double_0x0, Zaamo_amoswap_d_cg_cp_memval_double_0x0_str)
+
+# Testcase cp_memval_double (memory value = 0x1)
+  RVTEST_TESTDATA_LOAD_INT(x10, x24) # load value in memory: x24 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x10, x25) # load rs2: x25 = 0xa67cd271d088f290
+  LA(x16, scratch) # load base address into rs1
+  SREG x24, 0(x16) # store value into memory at address in rs1
+Zaamo_amoswap_d_cg_cp_memval_double_0x1:
+  amoswap.d x3, x25, (x16) # perform operation
+  # Check if x3 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x3, Zaamo_amoswap_d_cg_cp_memval_double_0x1, Zaamo_amoswap_d_cg_cp_memval_double_0x1_str)
+  LREG x16, 0(x16) # Load the updated value from memory
+  # Check if x16 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x16, Zaamo_amoswap_d_cg_cp_memval_double_0x1, Zaamo_amoswap_d_cg_cp_memval_double_0x1_str)
+
+# Testcase cp_memval_double (memory value = 0x7fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x10, x3) # load value in memory: x3 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x10, x24) # load rs2: x24 = 0x47942d49b69ae4d6
+  LA(x28, scratch) # load base address into rs1
+  SREG x3, 0(x28) # store value into memory at address in rs1
+Zaamo_amoswap_d_cg_cp_memval_double_0x7fffffffffffffff:
+  amoswap.d x13, x24, (x28) # perform operation
+  # Check if x13 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x13, Zaamo_amoswap_d_cg_cp_memval_double_0x7fffffffffffffff, Zaamo_amoswap_d_cg_cp_memval_double_0x7fffffffffffffff_str)
+  LREG x28, 0(x28) # Load the updated value from memory
+  # Check if x28 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x28, Zaamo_amoswap_d_cg_cp_memval_double_0x7fffffffffffffff, Zaamo_amoswap_d_cg_cp_memval_double_0x7fffffffffffffff_str)
+
+# Testcase cp_memval_double (memory value = 0x8000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x10, x26) # load value in memory: x26 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x10, x30) # load rs2: x30 = 0xed8d01c921b01057
+  LA(x7, scratch) # load base address into rs1
+  SREG x26, 0(x7) # store value into memory at address in rs1
+Zaamo_amoswap_d_cg_cp_memval_double_0x8000000000000000:
+  amoswap.d x24, x30, (x7) # perform operation
+  # Check if x24 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x24, Zaamo_amoswap_d_cg_cp_memval_double_0x8000000000000000, Zaamo_amoswap_d_cg_cp_memval_double_0x8000000000000000_str)
+  LREG x7, 0(x7) # Load the updated value from memory
+  # Check if x7 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x7, Zaamo_amoswap_d_cg_cp_memval_double_0x8000000000000000, Zaamo_amoswap_d_cg_cp_memval_double_0x8000000000000000_str)
+
+# Testcase cp_memval_double (memory value = 0xffffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x10, x21) # load value in memory: x21 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x10, x7) # load rs2: x7 = 0x39231f397afae377
+  LA(x23, scratch) # load base address into rs1
+  SREG x21, 0(x23) # store value into memory at address in rs1
+Zaamo_amoswap_d_cg_cp_memval_double_0xffffffffffffffff:
+  amoswap.d x16, x7, (x23) # perform operation
+  # Check if x16 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x16, Zaamo_amoswap_d_cg_cp_memval_double_0xffffffffffffffff, Zaamo_amoswap_d_cg_cp_memval_double_0xffffffffffffffff_str)
+  LREG x23, 0(x23) # Load the updated value from memory
+  # Check if x23 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x23, Zaamo_amoswap_d_cg_cp_memval_double_0xffffffffffffffff, Zaamo_amoswap_d_cg_cp_memval_double_0xffffffffffffffff_str)
+
   mv x2, x6 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -3729,6 +3798,16 @@ RVTEST_DATA_BEGIN
 .dword 0xf11546eff9a90098
 .dword 0x34f2b194935cf662
 .dword 0x0f46204b8542b4c6
+.dword 0x0000000000000000
+.dword 0x404985ee45d1102f
+.dword 0x0000000000000001
+.dword 0xa67cd271d088f290
+.dword 0x7fffffffffffffff
+.dword 0x47942d49b69ae4d6
+.dword 0x8000000000000000
+.dword 0xed8d01c921b01057
+.dword 0xffffffffffffffff
+.dword 0x39231f397afae377
 
 // Testcase strings
 Zaamo_amoswap_d_cg_cp_rs1_nx0_b1_str: .string "\"test: 1; cg: Zaamo_amoswap.d_cg; cp: cp_rs1_nx0; bin: b1\""
@@ -3967,6 +4046,11 @@ Zaamo_amoswap_d_cg_cmp_rd_rs1_rs2_nx0_b28_str: .string "\"test: 233; cg: Zaamo_a
 Zaamo_amoswap_d_cg_cmp_rd_rs1_rs2_nx0_b29_str: .string "\"test: 234; cg: Zaamo_amoswap.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b29\""
 Zaamo_amoswap_d_cg_cmp_rd_rs1_rs2_nx0_b30_str: .string "\"test: 235; cg: Zaamo_amoswap.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b30\""
 Zaamo_amoswap_d_cg_cmp_rd_rs1_rs2_nx0_b31_str: .string "\"test: 236; cg: Zaamo_amoswap.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b31\""
+Zaamo_amoswap_d_cg_cp_memval_double_0x0_str: .string "\"test: 237; cg: Zaamo_amoswap.d_cg; cp: cp_memval_double; bin: 0x0\""
+Zaamo_amoswap_d_cg_cp_memval_double_0x1_str: .string "\"test: 238; cg: Zaamo_amoswap.d_cg; cp: cp_memval_double; bin: 0x1\""
+Zaamo_amoswap_d_cg_cp_memval_double_0x7fffffffffffffff_str: .string "\"test: 239; cg: Zaamo_amoswap.d_cg; cp: cp_memval_double; bin: 0x7fffffffffffffff\""
+Zaamo_amoswap_d_cg_cp_memval_double_0x8000000000000000_str: .string "\"test: 240; cg: Zaamo_amoswap.d_cg; cp: cp_memval_double; bin: 0x8000000000000000\""
+Zaamo_amoswap_d_cg_cp_memval_double_0xffffffffffffffff_str: .string "\"test: 241; cg: Zaamo_amoswap.d_cg; cp: cp_memval_double; bin: 0xffffffffffffffff\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

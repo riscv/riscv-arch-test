@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 482
+#define SIGUPD_COUNT 492
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -3252,6 +3252,75 @@ Zabha_amoor_h_cg_cp_align_hword_b6:
   RVTEST_SIGUPD(x10, x8, x7, x28, Zabha_amoor_h_cg_cp_align_hword_b6, Zabha_amoor_h_cg_cp_align_hword_b6_str)
 
 
+/////////////////////////////////
+// cp_memval_hword
+/////////////////////////////////
+
+# Testcase cp_memval_hword (memory value = 0x0)
+  RVTEST_TESTDATA_LOAD_INT(x23, x12) # load value in memory: x12 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x23, x15) # load rs2: x15 = 0xa16f53c2
+  LA(x30, scratch) # load base address into rs1
+  SREG x12, 0(x30) # store value into memory at address in rs1
+Zabha_amoor_h_cg_cp_memval_hword_0x0:
+  amoor.h x6, x15, (x30) # perform operation
+  # Check if x6 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x6, Zabha_amoor_h_cg_cp_memval_hword_0x0, Zabha_amoor_h_cg_cp_memval_hword_0x0_str)
+  LREG x30, 0(x30) # Load the updated value from memory
+  # Check if x30 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x30, Zabha_amoor_h_cg_cp_memval_hword_0x0, Zabha_amoor_h_cg_cp_memval_hword_0x0_str)
+
+# Testcase cp_memval_hword (memory value = 0x1)
+  RVTEST_TESTDATA_LOAD_INT(x23, x29) # load value in memory: x29 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x23, x12) # load rs2: x12 = 0x623a9ff6
+  LA(x31, scratch) # load base address into rs1
+  SREG x29, 0(x31) # store value into memory at address in rs1
+Zabha_amoor_h_cg_cp_memval_hword_0x1:
+  amoor.h x11, x12, (x31) # perform operation
+  # Check if x11 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x11, Zabha_amoor_h_cg_cp_memval_hword_0x1, Zabha_amoor_h_cg_cp_memval_hword_0x1_str)
+  LREG x31, 0(x31) # Load the updated value from memory
+  # Check if x31 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x31, Zabha_amoor_h_cg_cp_memval_hword_0x1, Zabha_amoor_h_cg_cp_memval_hword_0x1_str)
+
+# Testcase cp_memval_hword (memory value = 0x7fff)
+  RVTEST_TESTDATA_LOAD_INT(x23, x28) # load value in memory: x28 = 0x00007fff
+  RVTEST_TESTDATA_LOAD_INT(x23, x1) # load rs2: x1 = 0x2c5a0db9
+  LA(x24, scratch) # load base address into rs1
+  SREG x28, 0(x24) # store value into memory at address in rs1
+Zabha_amoor_h_cg_cp_memval_hword_0x7fff:
+  amoor.h x6, x1, (x24) # perform operation
+  # Check if x6 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x6, Zabha_amoor_h_cg_cp_memval_hword_0x7fff, Zabha_amoor_h_cg_cp_memval_hword_0x7fff_str)
+  LREG x24, 0(x24) # Load the updated value from memory
+  # Check if x24 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x24, Zabha_amoor_h_cg_cp_memval_hword_0x7fff, Zabha_amoor_h_cg_cp_memval_hword_0x7fff_str)
+
+# Testcase cp_memval_hword (memory value = 0x8000)
+  RVTEST_TESTDATA_LOAD_INT(x23, x15) # load value in memory: x15 = 0x00008000
+  RVTEST_TESTDATA_LOAD_INT(x23, x12) # load rs2: x12 = 0x6028d97c
+  LA(x18, scratch) # load base address into rs1
+  SREG x15, 0(x18) # store value into memory at address in rs1
+Zabha_amoor_h_cg_cp_memval_hword_0x8000:
+  amoor.h x4, x12, (x18) # perform operation
+  # Check if x4 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x4, Zabha_amoor_h_cg_cp_memval_hword_0x8000, Zabha_amoor_h_cg_cp_memval_hword_0x8000_str)
+  LREG x18, 0(x18) # Load the updated value from memory
+  # Check if x18 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x18, Zabha_amoor_h_cg_cp_memval_hword_0x8000, Zabha_amoor_h_cg_cp_memval_hword_0x8000_str)
+
+# Testcase cp_memval_hword (memory value = 0xffff)
+  RVTEST_TESTDATA_LOAD_INT(x23, x27) # load value in memory: x27 = 0x0000ffff
+  RVTEST_TESTDATA_LOAD_INT(x23, x9) # load rs2: x9 = 0x1861d518
+  LA(x11, scratch) # load base address into rs1
+  SREG x27, 0(x11) # store value into memory at address in rs1
+Zabha_amoor_h_cg_cp_memval_hword_0xffff:
+  amoor.h x29, x9, (x11) # perform operation
+  # Check if x29 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x29, Zabha_amoor_h_cg_cp_memval_hword_0xffff, Zabha_amoor_h_cg_cp_memval_hword_0xffff_str)
+  LREG x11, 0(x11) # Load the updated value from memory
+  # Check if x11 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x11, Zabha_amoor_h_cg_cp_memval_hword_0xffff, Zabha_amoor_h_cg_cp_memval_hword_0xffff_str)
+
   mv x2, x10 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -3733,6 +3802,16 @@ RVTEST_DATA_BEGIN
 .word 0x1a9fcbb9
 .word 0x2550cbf6
 .word 0xaecf985c
+.word 0x00000000
+.word 0xa16f53c2
+.word 0x00000001
+.word 0x623a9ff6
+.word 0x00007fff
+.word 0x2c5a0db9
+.word 0x00008000
+.word 0x6028d97c
+.word 0x0000ffff
+.word 0x1861d518
 
 // Testcase strings
 Zabha_amoor_h_cg_cp_rs1_nx0_b1_str: .string "\"test: 1; cg: Zabha_amoor.h_cg; cp: cp_rs1_nx0; bin: b1\""
@@ -3971,6 +4050,11 @@ Zabha_amoor_h_cg_cp_align_hword_b0_str: .string "\"test: 233; cg: Zabha_amoor.h_
 Zabha_amoor_h_cg_cp_align_hword_b2_str: .string "\"test: 234; cg: Zabha_amoor.h_cg; cp: cp_align_hword; bin: b2\""
 Zabha_amoor_h_cg_cp_align_hword_b4_str: .string "\"test: 235; cg: Zabha_amoor.h_cg; cp: cp_align_hword; bin: b4\""
 Zabha_amoor_h_cg_cp_align_hword_b6_str: .string "\"test: 236; cg: Zabha_amoor.h_cg; cp: cp_align_hword; bin: b6\""
+Zabha_amoor_h_cg_cp_memval_hword_0x0_str: .string "\"test: 237; cg: Zabha_amoor.h_cg; cp: cp_memval_hword; bin: 0x0\""
+Zabha_amoor_h_cg_cp_memval_hword_0x1_str: .string "\"test: 238; cg: Zabha_amoor.h_cg; cp: cp_memval_hword; bin: 0x1\""
+Zabha_amoor_h_cg_cp_memval_hword_0x7fff_str: .string "\"test: 239; cg: Zabha_amoor.h_cg; cp: cp_memval_hword; bin: 0x7fff\""
+Zabha_amoor_h_cg_cp_memval_hword_0x8000_str: .string "\"test: 240; cg: Zabha_amoor.h_cg; cp: cp_memval_hword; bin: 0x8000\""
+Zabha_amoor_h_cg_cp_memval_hword_0xffff_str: .string "\"test: 241; cg: Zabha_amoor.h_cg; cp: cp_memval_hword; bin: 0xffff\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

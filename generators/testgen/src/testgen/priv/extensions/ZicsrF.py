@@ -94,8 +94,9 @@ def _generate_fcsr_write(test_data: TestData) -> list[str]:
                 "",
                 f"# Testcase: write {i:03b} to fcsr.FRM",
                 f"LI(x{r1}, {i << 5})           # write value {i << 5}",
-                test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
+                test_data.add_testcase(f"b_{i}_fcsr", coverpoint, covergroup),
                 gen_csr_write_sigupd(r1, "fcsr", test_data),
+                test_data.add_testcase(f"b_{i}_frm", coverpoint, covergroup),
                 gen_csr_read_sigupd(r1, ("frm", None), test_data),
             ]
         )
@@ -117,8 +118,9 @@ def _generate_fcsr_write(test_data: TestData) -> list[str]:
                 "",
                 f"# Testcase: write {i:05b} to fcsr.FFLAGS",
                 f"LI(x{r1}, {i})           # write value {i}",
-                test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
+                test_data.add_testcase(f"b_{i}_fcsr", coverpoint, covergroup),
                 gen_csr_write_sigupd(r1, "fcsr", test_data),
+                test_data.add_testcase(f"b_{i}_fflags", coverpoint, covergroup),
                 gen_csr_read_sigupd(r1, ("fflags", None), test_data),
             ]
         )
@@ -141,8 +143,9 @@ def _generate_fcsr_write(test_data: TestData) -> list[str]:
                 "",
                 f"# Testcase: write {i:03b} to frm",
                 f"LI(x{r1}, {i})           # write value {i}",
-                test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
+                test_data.add_testcase(f"b_{i}_frm", coverpoint, covergroup),
                 gen_csr_write_sigupd(r1, "frm", test_data),
+                test_data.add_testcase(f"b_{i}_fcsr", coverpoint, covergroup),
                 gen_csr_read_sigupd(r1, ("fcsr", None), test_data),
             ]
         )
@@ -163,8 +166,9 @@ def _generate_fcsr_write(test_data: TestData) -> list[str]:
                 "",
                 f"# Testcase: write {i:05b} to fflags",
                 f"LI(x{r1}, {i})           # write value {i}",
-                test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
+                test_data.add_testcase(f"b_{i}_fflags", coverpoint, covergroup),
                 gen_csr_write_sigupd(r1, "fflags", test_data),
+                test_data.add_testcase(f"b_{i}_fcsr", coverpoint, covergroup),
                 gen_csr_read_sigupd(r1, ("fcsr", None), test_data),
             ]
         )
@@ -181,14 +185,14 @@ def make_op(
     test_data: TestData,
     coverpoint: str,
     covergroup: str,
-    coverbin: str,
+    flag: str,
     comment: str,
 ) -> list[str]:
     """Helper to generate a fp instruction with a comment and check flags."""
     lines = [
         "",
         "csrwi fflags, 0 # reset flags",
-        test_data.add_testcase(coverbin, coverpoint, covergroup),
+        test_data.add_testcase(mnemonic, f"{coverpoint}_{flag}", covergroup),
         f"{mnemonic} f7, f{fs1}, f{fs2}           # {comment}",
         write_sigupd(7, test_data, "float"),
     ]
@@ -206,7 +210,7 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            "cp_fflags_set_m",
+            "cp_fflags_set_m_NV/DZ/OF/UF/NX",
             "Set each flag with different operations",
         )
     ]
@@ -227,13 +231,9 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
     lines.extend(make_op("fmul.s", 14, 14, test_data, coverpoint, covergroup, "UF", "tiny * tiny sets underflow flag"))
     lines.extend(make_op("fdiv.s", 11, 12, test_data, coverpoint, covergroup, "NX", "1 / 3 sets inexact flag"))
 
-    ######################################
-    coverpoint = "cp_underflow_after_rounding"
-    ######################################
-
     lines.append(
         comment_banner(
-            coverpoint,
+            "Underflow after rounding",
             "Check underflow flag is determined after rounding",
         )
     )

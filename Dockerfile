@@ -21,13 +21,13 @@
 # Global ARGs - declared before any FROM so they are overridable across all stages.
 # Each stage that uses them must redeclare them with a bare ARG (no default) to bring them into scope.
 ARG RISCV_TOOLCHAIN_PREFIX=/opt/riscv
-ARG SAIL_VERSION=0.13.1
+ARG SAIL_VERSION=0.14.1
 ARG RISCV_TOOLCHAIN_VERSION=2026.08.27
 
 # Stage 1: build riscv-gnu-toolchain
 #
 # LDFLAGS=-static ensures no shared-lib dependencies survive into the final image.
-FROM ubuntu:24.04@sha256:33ceb71981b602c1a7443a53469e4dba065f7503eab3078a2d7a57a2ab987517 AS toolchain-builder
+FROM ubuntu:24.04@sha256:008173c23f95b170204355c12626cb5a965d779a7e1283b09e9cffbb1bf33ca3 AS toolchain-builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RISCV_TOOLCHAIN_PREFIX
@@ -99,7 +99,7 @@ RUN git clone --depth 1 --branch "${RISCV_TOOLCHAIN_VERSION}" https://github.com
 #
 # HOME=/home/shared is used so all caches (mise, uv, udb, etc.) land in a single directory that is copied to the final
 # image.
-FROM ubuntu:24.04@sha256:33ceb71981b602c1a7443a53469e4dba065f7503eab3078a2d7a57a2ab987517 AS mise-fetcher
+FROM ubuntu:24.04@sha256:008173c23f95b170204355c12626cb5a965d779a7e1283b09e9cffbb1bf33ca3 AS mise-fetcher
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -138,14 +138,13 @@ COPY generators/testgen/src/testgen/__init__.py /act4/generators/testgen/src/tes
 # Pre-download all Python dependencies so `uv sync` is a no-op at runtime.
 RUN cd /act4 \
   && mise install \
-  && mise exec -- bundle install \
-  && mise exec -- uv sync
+  && mise deps --skip prek
 
 # Fix permissions so that any user can use it
 RUN chmod -R 777 /act4 /home/shared
 
 # Stage 3: final runtime image
-FROM ubuntu:24.04@sha256:33ceb71981b602c1a7443a53469e4dba065f7503eab3078a2d7a57a2ab987517 AS act4-build
+FROM ubuntu:24.04@sha256:008173c23f95b170204355c12626cb5a965d779a7e1283b09e9cffbb1bf33ca3 AS act4-build
 
 LABEL description="RISC-V Architectural Certification Tests (ACT4) build env"
 LABEL org.opencontainers.image.source="https://github.com/riscv/riscv-arch-test"

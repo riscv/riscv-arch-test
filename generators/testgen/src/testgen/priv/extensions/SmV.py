@@ -288,11 +288,19 @@ def _gen_vsetvl_rs2_vill(test_data: TestData, temp_reg: int) -> list[str]:
     lines.append(f"LI(x{msb_reg}, 0x8000000000000000)")
     lines.append("#endif")
     for sew_name, sew_v in _SEW_VALUES:
-        # clear vill: try every supported sew with lmul=1 to find one that sticks
-        for try_sew in (0, 1, 2, 3):
-            vt = try_sew << 3
-            lines.append(f"LI(x{rs2_reg}, 0x{vt:02x})  # try clear vill with SEW={try_sew}")
-            lines.append(f"vsetvl x{temp_reg}, x{rs1_reg}, x{rs2_reg}")
+        # Clear vill with the config's smallest supported SEW and LMUL=1
+        lines.append("#if UDB_SEW_MIN == 8")
+        lines.append(f"LI(x{rs2_reg}, 0x00)  # SEW=8, LMUL=1")
+        lines.append("#elif UDB_SEW_MIN == 16")
+        lines.append(f"LI(x{rs2_reg}, 0x08)  # SEW=16, LMUL=1")
+        lines.append("#elif UDB_SEW_MIN == 32")
+        lines.append(f"LI(x{rs2_reg}, 0x10)  # SEW=32, LMUL=1")
+        lines.append("#elif UDB_SEW_MIN == 64")
+        lines.append(f"LI(x{rs2_reg}, 0x18)  # SEW=64, LMUL=1")
+        lines.append("#else")
+        lines.append('#error "UDB_SEW_MIN unsupported, expected 8, 16, 32, or 64"')
+        lines.append("#endif")
+        lines.append(f"vsetvl x{temp_reg}, x{rs1_reg}, x{rs2_reg}  # clear vill")
         # Now vsetvl with rs2_vill_set + valid sew+lmul=1
         vtype_low = sew_v << 3
         lines.append(f"LI(x{rs2_reg}, 0x{vtype_low:02x})")
@@ -365,7 +373,12 @@ def _gen_vsetvl_i_rd_rs1(test_data: TestData, temp_reg: int) -> list[str]:
 
 def _gen_avl_corners(test_data: TestData, temp_reg: int) -> list[str]:
     """cp_vsetvl_i_avl_eq_zero / eq_vlmax / lt_2x_vlmax / eq_2x_vlmax / gt_2x_vlmax."""
-    lines = [comment_banner("cp_vsetvl_i_avl_*", "AVL corner cases for vsetvli and vsetvl")]
+    lines = [
+        comment_banner(
+            "cp_vsetvl_i_avl_eq_zero / eq_vlmax / lt_2x_vlmax / eq_2x_vlmax / gt_2x_vlmax",
+            "AVL corner cases for vsetvli and vsetvl",
+        )
+    ]
     lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
     rs1_reg, rs2_reg = test_data.int_regs.get_registers(2)
 

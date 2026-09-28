@@ -103,7 +103,7 @@ normative_rule_definitions:
 
   # Implementations may have a writable misa.V field.
   - name: mutable_misa_v
-    coverpoint: ["Sm_mcsr_cg/cp_misa_v"]
+    coverpoint: [""]
 
   # Analogous to the way in which the floating-point unit is handled, the mstatus.VS
   # field may exist even if misa.V is clear.
@@ -2208,7 +2208,7 @@ normative_rule_definitions:
 
   # The misa.v bit is set for implementations providing misa and supporting V.
   - name: misa_v_op
-    coverpoint: ["Sm_mcsr_cg/cp_misa_v"]
+    coverpoint: [""]
 
   # The V vector extension has precise traps.
   - name: V_precise_traps

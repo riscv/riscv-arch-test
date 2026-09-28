@@ -595,19 +595,18 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         cp_mtimeh_write :       cross priv_mode_m, csrr,  timeh_csr; // assumes mtimeh has been written
     `endif
 
-    misa_v_bit: coverpoint ins.current.rs1_val[21] {
-        bins v_set   = {1'b1};
-        bins v_clear = {1'b0};
-    }
-    cp_misa_v: cross priv_mode_m, misa, csrop, misa_v_bit;
-
     `ifdef SM1P13P0_OR_LATER_SUPPORTED
         misa_b_bit: coverpoint ins.current.rs1_val[1] {
             bins b_set   = {1'b1};
             bins b_clear = {1'b0};
         }
+        misa_v_bit: coverpoint ins.current.rs1_val[21] {
+            bins v_set   = {1'b1};
+            bins v_clear = {1'b0};
+        }
 
         cp_misa_b: cross priv_mode_m, misa, csrop, misa_b_bit;
+        cp_misa_v: cross priv_mode_m, misa, csrop, misa_v_bit;
 
 
         `ifdef RVMODEL_MSIP_ADDRESS

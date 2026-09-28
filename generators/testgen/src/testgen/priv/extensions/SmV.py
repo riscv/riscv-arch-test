@@ -2,7 +2,7 @@
 # priv/extensions/SmV.py
 #
 # SmV privileged test generator.
-# Vector CSR access, vsetvl* behavior, vill, vstart, mstatus.VS.
+# Vector CSR access, vsetvl* behavior, vill, vstart, mstatus.VS, misa.V.
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
@@ -152,6 +152,27 @@ def _gen_mstatus_vs_off(test_data: TestData, temp_reg: int) -> list[str]:
     lines.append(test_data.add_testcase("vsetvli_vs_off", "cp_mstatus_vs_off_csr", _CG))
     lines.append(f"vsetvli x{temp_reg}, x0, e8, m1, tu, mu  # traps: VS=Off")
     lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
+    return lines
+
+
+def _gen_misa_v(test_data: TestData, temp_reg: int) -> list[str]:
+    """cp_misa_v_clear_set: csrrs/csrrc misa with rs1[21]=1."""
+    coverpoint = "cp_misa_v_clear_set"
+    lines = [
+        comment_banner(coverpoint, "csrrs/csrrc misa with rs1[21]=1 to attempt to clear/set V"),
+    ]
+    check_reg = test_data.int_regs.get_register()
+    lines.append(f"LI(x{temp_reg}, 0x200000)  # misa.V")
+    lines.append(test_data.add_testcase("misa_v_csrrc", coverpoint, _CG))
+    lines.append(f"csrc misa, x{temp_reg}")
+    # No signature word here: whether misa.V can be cleared is implementation-defined
+    # (Sail keeps V set, QEMU clears it), so the value after the clear is not determined.
+    lines.append(test_data.add_testcase("misa_v_csrrs", coverpoint, _CG))
+    lines.append(f"csrs misa, x{temp_reg}")
+    # After the set, V must read 1 on any machine that implements V, whether or not the
+    # clear above took effect. temp_reg already holds the bit-21 mask.
+    lines.append(gen_csr_read_sigupd(check_reg, ("misa", 0x200000), test_data, temp_reg))
+    test_data.int_regs.return_registers([check_reg])
     return lines
 
 
@@ -575,6 +596,7 @@ def make_smv(test_data: TestData) -> list[TestChunk]:
     for gen in (
         _gen_mstatus_vs_dirty,
         _gen_mstatus_vs_off,
+        _gen_misa_v,
         _gen_sew_lmul_vsetvl,
         _gen_sew_lmul_vset_i_vli,
         _gen_vill_vsetvl,

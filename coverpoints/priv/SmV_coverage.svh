@@ -107,6 +107,26 @@ covergroup SmV_cg with function sample(ins_t ins);
                                                                                                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 );
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_misa_v
+    // attempts to set and clear the misa.V field
+    //////////////////////////////////////////////////////////////////////////////////
+
+    misa_csr: coverpoint ins.current.insn[31:20] {
+        bins misa = {CSR_MISA};
+    }
+
+    csr_set_clear: coverpoint ins.current.insn {
+        wildcard bins csrrs     = {CSRRS};
+        wildcard bins csrrc     = {CSRRC};
+    }
+
+    rs1_misa_v_active : coverpoint ins.current.rs1_val[21] {
+        bins set = {1};
+    }
+
+    cp_misa_v_clear_set : cross misa_csr, csr_set_clear, rs1_misa_v_active;
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_sew_lmul_vset*
     // writes all combinations of lmul and sew to vtype with all vset* instructions
     //////////////////////////////////////////////////////////////////////////////////

@@ -18,16 +18,22 @@
 #   be written on RV64: https://solvnetplus.synopsys.com/s/case/500WQ0000289tyxYAA/mstateen0p1p13-should-be-readonly-zero-on-rv64
 # - ExceptionsVx: https://solvnetplus.synopsys.com/s/case/500WQ000023l1CPYAY/vmvnrrv-does-not-raise-an-illegalinstruction-exception-when-vtypevill-1
 # - Sdtrig*: Sail does not implement Sdtrig yet (https://github.com/riscv/sail-riscv/issues/222)
-# - PMPH: hlvx.hu/wu to a PMP region with R but not X succeeds (PMP must grant R and X), and a
-#   PMP-denied page-table read by hlvx raises an instruction access fault instead of a load access fault
+# - PMPH: hlvx.hu/wu to a PMP region with R but not X succeeds (PMP must grant R and X):
+#   https://solvnetplus.synopsys.com/s/case/500WQ000029sOnBYAU/hlvx-succeeds-to-a-pmp-region-that-allows-reads-but-not-execute
+#   and a PMP-denied page-table read by hlvx raises an instruction access fault instead of a load access fault:
+#   https://solvnetplus.synopsys.com/s/case/500WQ000029tEHDYA2/an-hlvx-pagetable-read-that-pmp-denies-raises-an-instruction-access-fault-instead-of-a-load-access-fault
 # - SvH: hlvx with hstatus.SPVP = 1 and vsstatus.SUM = 1 faults on a VS-stage U = 1 page (SUM applies
-#   to HLVX as to any guest load: https://github.com/riscv/riscv-isa-manual/issues/1480); with
-#   henvcfg.ADUE = 1 a fetch through a VS leaf with A = 0 whose table is G-mapped read-only completes
-#   instead of raising an instruction guest-page fault
-# - SvHZicbo: a guest-page fault on an implicit VS-stage page-table read writes the table base to
-#   mtval2 instead of the faulting guest physical address of the PTE
+#   to HLVX as to any guest load: https://github.com/riscv/riscv-isa-manual/issues/1480):
+#   https://solvnetplus.synopsys.com/s/case/500WQ000029tzPeYAI/hlvx-with-spvp1-and-sum1-faults-on-a-vsstage-page-with-u1
+#   and with henvcfg.ADUE = 1 a fetch through a VS leaf with A = 0 whose table is G-mapped read-only
+#   completes instead of raising an instruction guest-page fault:
+#   https://solvnetplus.synopsys.com/s/case/500WQ000029sv6VYAQ/with-adue1-a-fetch-whose-abit-update-targets-a-table-the-gstage-maps-readonly-completes-instead-of-faulting
+# - SvHZicbo: a guest-page fault on the implicit VS-stage page-table read of a CBO writes the PTE's
+#   guest physical address rounded down to its 64-byte cache block to mtval2 instead of the PTE's address:
+#   https://solvnetplus.synopsys.com/s/case/500WQ000029tFJcYAM/after-a-fault-on-an-implicit-pagetable-read-mtval2-holds-the-tables-base-address-instead-of-the-ptes-address
 # - InterruptsH, SstcH, SstcHSm: csrrc/csrrs/csrrw return 0 in the old value for the delegated
-#   read-only vsip.STIP/SEIP bits (csrr reads them correctly)
+#   read-only vsip.STIP/SEIP bits (csrr reads them correctly):
+#   https://solvnetplus.synopsys.com/s/case/500WQ000029snvFYAQ/csrrccsrrscsrrw-return-0-as-the-old-value-of-vsipstipseip
 #
 ci_enabled: false
 exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,PMPH,SvH,SvHZicbo,InterruptsH,SstcH,SstcHSm"

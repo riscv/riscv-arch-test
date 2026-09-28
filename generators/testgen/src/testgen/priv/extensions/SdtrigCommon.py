@@ -1834,18 +1834,32 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     #     "mcontrol6": "UDB_MCONTROL6_TRIG{trig_num}_AVAILABLE",
     # }
     # RV64 spelling; RV32 bins differ (see svh)
-    # mhvalue = ("match", "zero", "half")
+    mhvalue = ("match", "zero", "half")
     # svalue = ("aaaaaaaa", "bbbbbbaa", "bbbbaabb", "bbaabbbb", "aabbbbbb", "bbbbbbbb")
-    # svalue_asid = ("below", "equal", "above")
-    # RV64 spelling; RV32 bins differ (see svh)
-    # mhvalue = ("match", "zero", "half")
-    # svalue = ("aaaaaaaa", "bbbbbbaa", "bbbbaabb", "bbaabbbb", "aabbbbbb", "bbbbbbbb")
-    # svalue_asid = ("below", "equal", "above")
+    svalue_asid = ("below", "equal", "above")
+
+    ######################################
+    coverpoint = "cp_sdtrig_textra_mcontext"
+    ######################################
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "textra mhselect/mhvalue match against mcontext",
+        )
+    )
+    for trig_num in range(UDB_NUM_TRIGGERS):
+        for tt in trig_type4:
+            for mhv in mhvalue:
+                binname = f"trig_num_{trig_num}_type_{tt}_mhvalue_{mhv}"
+                lines.extend(
+                    [
+                        _add_tc(test_data, binname, coverpoint, covergroup),
+                    ]
+                )
 
     ######################################
     coverpoint = "cp_sdtrig_textra_scontext"
     ######################################
-
     lines.append(
         comment_banner(
             coverpoint,
@@ -1958,6 +1972,43 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines.extend(_global_ie(mode, False))
     return [test_data.end_test_chunk()]
 
+    ######################################
+    coverpoint = "cp_sdtrig_textra_asid"
+    ######################################
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "textra sselect=asid match against satp.ASID",
+        )
+    )
+    for trig_num in range(UDB_NUM_TRIGGERS):
+        for tt in trig_type4:
+            for sv in svalue_asid:
+                binname = f"trig_num_{trig_num}_type_{tt}_asid_{sv}"
+                lines.extend(
+                    [
+                        _add_tc(test_data, binname, coverpoint, covergroup),
+                    ]
+                )
+
+    ######################################
+    coverpoint = "cp_sdtrig_smode_fields_hardwired"
+    ######################################
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "svalue/sselect read 0 when S-mode is not supported",
+        )
+    )
+    for trig_num in range(UDB_NUM_TRIGGERS):
+        lines.extend(
+            [
+                _add_tc(test_data, f"trig_num_{trig_num}_hardwired", coverpoint, covergroup),
+            ]
+        )
+
+    return [test_data.end_test_chunk()]
+
 
 # ── Suite assembly ─────────────────────────────────────────────────────────
 
@@ -1965,16 +2016,16 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
 def generate_sdtrig_suite(test_data: TestData, mode: str) -> list[TestChunk]:
     """Assemble the full Sdtrig suite for ``mode`` ("Sm"/"S"/"U") as test chunks."""
     test_chunks: list[TestChunk] = []
-    # test_chunks.extend(_generate_access_tests(test_data, mode))
-    # test_chunks.extend(_generate_native_triggers_tests(test_data, mode))
+    test_chunks.extend(_generate_access_tests(test_data, mode))
+    test_chunks.extend(_generate_native_triggers_tests(test_data, mode))
     # test_chunks.extend(_generate_a_tests(test_data, mode))
     # test_chunks.extend(_generate_combined_accesses_tests(test_data, mode))
     # test_chunks.extend(_generate_cache_operations_tests(test_data, mode))
     # test_chunks.extend(_generate_address_matches_tests(test_data, mode))
     # test_chunks.extend(_generate_csr_tests(test_data, mode))
-    # test_chunks.extend(_generate_mcontrol6_tests(test_data, mode))
-    # test_chunks.extend(_generate_icount_tests(test_data, mode))
-    # test_chunks.extend(_generate_itrigger_tests(test_data, mode))
+    test_chunks.extend(_generate_mcontrol6_tests(test_data, mode))
+    test_chunks.extend(_generate_icount_tests(test_data, mode))
+    test_chunks.extend(_generate_itrigger_tests(test_data, mode))
     # test_chunks.extend(_generate_etrigger_tests(test_data, mode))
     test_chunks.extend(_generate_textra_tests(test_data, mode))
     return test_chunks

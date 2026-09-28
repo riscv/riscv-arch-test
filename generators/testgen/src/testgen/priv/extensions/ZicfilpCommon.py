@@ -18,6 +18,9 @@ from testgen.data.test_chunk import TestChunk
 LABEL = 0x12345
 OTHER_LABEL = 0x54321
 ALL_ONES_LABEL = 0xFFFFF
+# The label check reads x7[31:12] only, so every x7 that carries a label also carries
+# nonzero low bits. A DUT that compares x7[31:0] with {LPL,12'b0} then fails the match cases.
+LOW_BITS = 0xABC
 
 JUMP_KINDS = ("jalr", "c.jr", "c.jalr")
 
@@ -201,10 +204,15 @@ def lpad_label_tests(test_data: TestData, priv: str, covergroup: str) -> TestChu
     ]
     cases = [
         ("lpl_zero_x7_zero", "cp_zicfilp_lpad_zero_label_bypass", 0, "lpad 0"),
-        ("lpl_zero_x7_nonzero", "cp_zicfilp_lpad_zero_label_bypass", LABEL << 12, "lpad 0"),
-        ("lpl_match", "cp_zicfilp_lpad_valid_execution", LABEL << 12, f"lpad 0x{LABEL:x}"),
-        ("not_lpad", "cp_zicfilp_lpad_missing_instruction_exception", LABEL << 12, "addi x0, x0, 0 # non-LPAD"),
-        ("lpl_mismatch", "cp_zicfilp_lpad_label_mismatch", LABEL << 12, f"lpad 0x{OTHER_LABEL:x}"),
+        ("lpl_zero_x7_nonzero", "cp_zicfilp_lpad_zero_label_bypass", (LABEL << 12) | LOW_BITS, "lpad 0"),
+        ("lpl_match", "cp_zicfilp_lpad_valid_execution", (LABEL << 12) | LOW_BITS, f"lpad 0x{LABEL:x}"),
+        (
+            "not_lpad",
+            "cp_zicfilp_lpad_missing_instruction_exception",
+            (LABEL << 12) | LOW_BITS,
+            "addi x0, x0, 0 # non-LPAD",
+        ),
+        ("lpl_mismatch", "cp_zicfilp_lpad_label_mismatch", (LABEL << 12) | LOW_BITS, f"lpad 0x{OTHER_LABEL:x}"),
         ("lpl_nonzero_x7_zero", "cp_zicfilp_lpad_label_match_mismatch", 0, f"lpad 0x{LABEL:x}"),
     ]
     for bin_name, coverpoint, x7, target in cases:
@@ -231,8 +239,13 @@ def lpad_label_tests(test_data: TestData, priv: str, covergroup: str) -> TestChu
                 )
             )
     extra_matches = [
-        ("jalr_lpl_match_all_ones", ALL_ONES_LABEL << 12, ALL_ONES_LABEL, None),
-        ("jalr_lpl_match_x7_upper_bits_set", (0xABCD0000 << 32) | (LABEL << 12), LABEL, "__riscv_xlen == 64"),
+        ("jalr_lpl_match_all_ones", (ALL_ONES_LABEL << 12) | LOW_BITS, ALL_ONES_LABEL, None),
+        (
+            "jalr_lpl_match_x7_upper_bits_set",
+            (0xABCD0000 << 32) | (LABEL << 12) | LOW_BITS,
+            LABEL,
+            "__riscv_xlen == 64",
+        ),
     ]
     for bin_name, x7, lpl, condition in extra_matches:
         case = [
@@ -277,7 +290,7 @@ def disabled_tests(test_data: TestData, priv: str, covergroup: str) -> TestChunk
                 kind,
                 [
                     "",
-                    f"LI(x7, 0x{LABEL << 12:x}) # expected landing pad label in x7[31:12]",
+                    f"LI(x7, 0x{(LABEL << 12) | LOW_BITS:x}) # expected landing pad label in x7[31:12]",
                     *jump_to_target(
                         test_data,
                         kind,
@@ -566,7 +579,7 @@ def _set_status(priv: str, target: str, pelp: int, reg: int) -> list[str]:
         f"LI(x{reg}, MSTATUS_MPELP)",
         f"{op} mstatus, x{reg}",
         "#else",
-        f"LI(x{reg}, 0x200)",
+        f"LI(x{reg}, MSTATUSH_MPELP)",
         f"{op} mstatush, x{reg}",
         "#endif",
     ]
@@ -589,7 +602,7 @@ def _check_pelp_cleared(test_data: TestData, priv: str, reg: int, mask_reg: int)
         f"LI(x{mask_reg}, MSTATUS_MPELP)",
         "#else",
         f"csrr x{reg}, mstatush",
-        f"LI(x{mask_reg}, 0x200)",
+        f"LI(x{mask_reg}, MSTATUSH_MPELP)",
         "#endif",
         f"and x{reg}, x{reg}, x{mask_reg}",
         write_sigupd(reg, test_data),

@@ -32,11 +32,12 @@ covergroup ZicfilpSm_cg with function sample(ins_t ins);
     }
 
     // The current instruction trapped into M-mode (mepc written with its own PC)
-    sw_check_exc: coverpoint ins.current.csr[CSR_MCAUSE]
-                  iff (ins.current.csr_wb[CSR_MEPC] && (ins.current.csr[CSR_MEPC] == ins.current.pc_rdata)) {
-        bins cause_18 = {18};
+    sw_check_exc: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code")
+                  iff (ins.current.csr_wb[CSR_MEPC] &&
+                       (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mepc", "mepc") == ins.current.pc_rdata)) {
+        bins software_check = {SOFTWARE_CHECK};
     }
-    xtval_lpad: coverpoint ins.current.csr[CSR_MTVAL] {
+    xtval_lpad: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mtval", "mtval") {
         `ifdef UDB_REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK
             bins code_2 = {2};
         `else

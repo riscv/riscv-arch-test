@@ -41,19 +41,17 @@ covergroup Zama16b_cg with function sample(ins_t ins);
         wildcard bins lb  = {LB};
         wildcard bins lbu = {LBU};
         wildcard bins sb  = {SB};
-        `ifdef ZAAMO_SUPPORTED
-            `ifdef ZABHA_SUPPORTED
-                wildcard bins amoswap_b = {AMOSWAP_B};
-                wildcard bins amoadd_b  = {AMOADD_B};
-                wildcard bins amoand_b  = {AMOAND_B};
-                wildcard bins amoor_b   = {AMOOR_B};
-                wildcard bins amoxor_b  = {AMOXOR_B};
-                wildcard bins amomax_b  = {AMOMAX_B};
-                wildcard bins amomaxu_b = {AMOMAXU_B};
-                wildcard bins amomin_b  = {AMOMIN_B};
-                wildcard bins amominu_b = {AMOMINU_B};
-            `endif // ZABHA_SUPPORTED
-        `endif // ZAAMO_SUPPORTED
+        `ifdef ZABHA_SUPPORTED
+            wildcard bins amoswap_b = {AMOSWAP_B};
+            wildcard bins amoadd_b  = {AMOADD_B};
+            wildcard bins amoand_b  = {AMOAND_B};
+            wildcard bins amoor_b   = {AMOOR_B};
+            wildcard bins amoxor_b  = {AMOXOR_B};
+            wildcard bins amomax_b  = {AMOMAX_B};
+            wildcard bins amomaxu_b = {AMOMAXU_B};
+            wildcard bins amomin_b  = {AMOMIN_B};
+            wildcard bins amominu_b = {AMOMINU_B};
+        `endif // ZABHA_SUPPORTED
     }
     offset_1byte: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) {
         type_option.weight = 0;
@@ -73,19 +71,17 @@ covergroup Zama16b_cg with function sample(ins_t ins);
             wildcard bins flh = {FLH};
             wildcard bins fsh = {FSH};
         `endif // ZFH_SUPPORTED
-        `ifdef ZAAMO_SUPPORTED
-            `ifdef ZABHA_SUPPORTED
-                wildcard bins amoswap_h = {AMOSWAP_H};
-                wildcard bins amoadd_h  = {AMOADD_H};
-                wildcard bins amoand_h  = {AMOAND_H};
-                wildcard bins amoor_h   = {AMOOR_H};
-                wildcard bins amoxor_h  = {AMOXOR_H};
-                wildcard bins amomax_h  = {AMOMAX_H};
-                wildcard bins amomaxu_h = {AMOMAXU_H};
-                wildcard bins amomin_h  = {AMOMIN_H};
-                wildcard bins amominu_h = {AMOMINU_H};
-            `endif // ZABHA_SUPPORTED
-        `endif // ZAAMO_SUPPORTED
+        `ifdef ZABHA_SUPPORTED
+            wildcard bins amoswap_h = {AMOSWAP_H};
+            wildcard bins amoadd_h  = {AMOADD_H};
+            wildcard bins amoand_h  = {AMOAND_H};
+            wildcard bins amoor_h   = {AMOOR_H};
+            wildcard bins amoxor_h  = {AMOXOR_H};
+            wildcard bins amomax_h  = {AMOMAX_H};
+            wildcard bins amomaxu_h = {AMOMAXU_H};
+            wildcard bins amomin_h  = {AMOMIN_H};
+            wildcard bins amominu_h = {AMOMINU_H};
+        `endif // ZABHA_SUPPORTED
     }
     offset_2byte: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) {
         type_option.weight = 0;
@@ -169,21 +165,19 @@ covergroup Zama16b_cg with function sample(ins_t ins);
     // ================================================================
     // 16-byte accesses (amocas.q): offset [0:0]
     // ================================================================
-    `ifdef ZAAMO_SUPPORTED
-        `ifdef ZACAS_SUPPORTED
-            `ifdef UDB_MXLEN_64
-                insn_16byte: coverpoint ins.current.insn {
-                    type_option.weight = 0;
-                    wildcard bins amocas_q = {AMOCAS_Q};
-                }
-                offset_16byte: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) {
-                    type_option.weight = 0;
-                    bins offsets[] = {[0:0]};
-                }
-                cp_zama16b_16byte: cross insn_16byte, offset_16byte;
-            `endif // UDB_MXLEN_64
-        `endif // ZACAS_SUPPORTED
-    `endif // ZAAMO_SUPPORTED
+    `ifdef ZACAS_SUPPORTED
+        `ifdef UDB_MXLEN_64
+            insn_16byte: coverpoint ins.current.insn {
+                type_option.weight = 0;
+                wildcard bins amocas_q = {AMOCAS_Q};
+            }
+            offset_16byte: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) {
+                type_option.weight = 0;
+                bins offsets[] = {[0:0]};
+            }
+            cp_zama16b_16byte: cross insn_16byte, offset_16byte;
+        `endif // UDB_MXLEN_64
+    `endif // ZACAS_SUPPORTED
 
 endgroup
 

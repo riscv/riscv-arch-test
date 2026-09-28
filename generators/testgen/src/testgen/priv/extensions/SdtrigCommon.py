@@ -15,13 +15,6 @@ from testgen.asm.tsbi import tsbi_call
 from testgen.data.random import random_int
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.Sstvala import (
-    _VA_PF_PAGE_RV32,
-    _VA_PF_PAGE_RV64,
-    _generate_page_table_data_section,
-    _pf_pte_setup_sv32,
-    _pf_pte_setup_sv39,
-)
 
 # data
 PERM_XSL = ("exec", "store", "load")
@@ -41,10 +34,18 @@ _PAGE_FAULT_CODES = (12, 13, 15)
 _MSTATUS_MPP_MASK = 0x1800
 _MSTATUS_MPRV = 0x20000
 
+VA_TARGET_RV32 = 0x90407000
+VA2_TARGET_RV32 = 0x90807000
+VA_TARGET_RV64 = 0x140802000
+VA2_TARGET_RV64 = 0x180802000
+
 # Fetch-type codes: a trigger bp here leaves xEPC unfetchable.
 _FETCH_EXCODES = (0, 1, 12)
 
-_ETRIGGER_BASE_CODES = (0, 1, 2, 3, 4, 5, 6, 7, 13, 15)  # common to every mode
+_PTE_INVALID = "PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R"  # no PTE_V
+_PTE_UPAGE = "PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V"
+
+_ETRIGGER_BASE_CODES = (0, 1, 2, 3, 4, 5, 6, 7, 12, 13, 15)  # common to every mode
 _ETRIGGER_ECALL_CODE = {"Sm": 11, "S": 9, "U": 8}
 
 # maps mcause exception code -> short mnemonic used in binnames / ifdef names
@@ -244,38 +245,6 @@ def _disable_trigger(reg: int, trig_num: int, mode: str) -> list[str]:
     return lines
 
 
-def _page_fault_perms(code: int) -> str:
-    """PTE permission bits that leave the access ``code`` raises unpermitted."""
-    if code == 12:  # instruction page fault: valid, readable/writable, not executable
-        return "PTE_D | PTE_A | PTE_U | PTE_R | PTE_W | PTE_V"
-    if code in (13, 15):  # load/store page fault: execute-only page
-        return "PTE_D | PTE_A | PTE_U | PTE_X | PTE_V"
-    raise ValueError(f"_page_fault_perms: exception code {code} is not a page fault code")
-
-
-def _page_fault_setup(code: int) -> list[str]:
-    perms = _page_fault_perms(code)
-    return [
-        "#if __riscv_xlen == 64",
-        "#ifdef SV39_SUPPORTED",
-        "SATP_SETUP_RV64(sv39)",
-        "sfence.vma",
-        *_pf_pte_setup_sv39(_VA_PF_PAGE_RV64, perms),
-        "#endif",
-        "#else",
-        "#ifdef SV32_SUPPORTED",
-        "SATP_SETUP_SV32",
-        "sfence.vma",
-        *_pf_pte_setup_sv32(_VA_PF_PAGE_RV32, perms),
-        "#endif",
-        "#endif",
-    ]
-
-
-def _page_fault_teardown() -> list[str]:
-    return ["csrwi satp, 0", "sfence.vma"]
-
-
 def _mprv_as_umode_setup(scratch_reg: int) -> list[str]:
     """MPRV=1, MPP=U: next load/store is translated as if from U-mode."""
     return [
@@ -303,11 +272,89 @@ def _set_medeleg(reg: int, code: int, enable: bool) -> list[str]:
     ]
 
 
-def _sdtrig_bp_arm(raised_code: int) -> str | None:
-    """a1 token for the handler; None for code 3 (a real ebreak needs no note)."""
-    if raised_code == 3:
-        return None
-    return "SDTRIG_BP_FETCH" if raised_code in _FETCH_EXCODES else "SDTRIG_BP_SKIP"
+def pf_data_section() -> list[str]:
+    """Backing page the invalid target PTE points at."""
+    return [
+        ".pushsection .data",
+        ".p2align 12",
+        "pf_target_page:",
+        "jr ra",
+        ".zero 4096",
+        ".popsection",
+    ]
+
+
+def pf_mode_arm(mode: str) -> list[str]:
+    """Point satp at an invalid target PTE. U-mode also elevates to S first,
+    maps its own code page, and drops back to U at the end."""
+
+    if mode not in ("Sm", "S", "U"):
+        raise ValueError(f"pf_mode_arm: mode must be 'Sm', 'S' or 'U', got {mode!r}")
+
+    lines = [f"\n# pf_mode_arm: set up page-fault PTEs for {mode}-mode"]
+    if mode == "U":
+        lines.append("RVTEST_TSBI_GOTO_SMODE")
+    lines += [
+        "#if __riscv_xlen == 64",
+        "#ifdef SV39_SUPPORTED",
+        f"SUPERPAGE_PTE_SETUP_SV39(pf_target_page, ({_PTE_INVALID}), 0x{VA_TARGET_RV64:x}, LEVEL2)",
+    ]
+    if mode == "U":
+        lines += [
+            f"SUPERPAGE_PTE_SETUP_SV39(rvtest_code_begin, ({_PTE_UPAGE}), 0x{VA2_TARGET_RV64:x}, LEVEL2)",
+            "LA(a0, Mtramptbl_sv)",
+            f"SAVE_AREA_SETUP(0x{VA2_TARGET_RV64:x}, rvtest_code_begin, code, LEVEL2)",
+        ]
+    lines += [
+        "SATP_SETUP_RV64(sv39)",
+        "sfence.vma",
+        "#endif",
+        "#else",
+        "#ifdef SV32_SUPPORTED",
+        f"SUPERPAGE_PTE_SETUP_SV32(pf_target_page, ({_PTE_INVALID}), 0x{VA_TARGET_RV32:x}, LEVEL1)",
+    ]
+    if mode == "U":
+        lines += [
+            f"SUPERPAGE_PTE_SETUP_SV32(rvtest_code_begin, ({_PTE_UPAGE}), 0x{VA2_TARGET_RV32:x}, LEVEL1)",
+            "LA(a0, Mtramptbl_sv)",
+            f"SAVE_AREA_SETUP(0x{VA2_TARGET_RV32:x}, rvtest_code_begin, code, LEVEL1)",
+        ]
+    lines += [
+        "SATP_SETUP_SV32",
+        "sfence.vma",
+        "#endif",
+        "#endif",
+    ]
+    if mode == "U":
+        lines.append("RVTEST_TSBI_GOTO_UMODE")
+    return lines
+
+
+def pf_mode_disarm(mode: str) -> list[str]:
+    """Clear satp. U-mode elevates to S first since U can't touch satp itself."""
+    if mode not in ("Sm", "S", "U"):
+        raise ValueError(f"pf_mode_disarm: mode must be 'Sm', 'S' or 'U', got {mode!r}")
+
+    lines = [f"\n# pf_mode_disarm: clear page tables for {mode}-mode"]
+    if mode == "U":
+        lines.append("RVTEST_TSBI_GOTO_SMODE")
+    lines.extend(
+        [
+            "csrwi satp, 0",
+            "sfence.vma",
+        ]
+    )
+    if mode == "U":
+        lines.extend(
+            [
+                "LA(a0, Mtramptbl_sv)",
+                "LA(t0, rvtest_code_begin)",
+                "SREG t0, code_bgn_off+1*sv_area_sz(a0)",
+                "RVTEST_TSBI_GOTO_UMODE",
+            ]
+        )
+
+    return lines
 
 
 def _etrigger_codes_to_test(mode: str, cross_priv: bool = False) -> tuple[int, ...]:
@@ -318,11 +365,8 @@ def _etrigger_codes_to_test(mode: str, cross_priv: bool = False) -> tuple[int, .
 
     codes = set(_ETRIGGER_BASE_CODES) | {_ETRIGGER_ECALL_CODE[mode]}
 
-    if cross_priv:
-        if mode == "S":
-            codes.add(12)  # TODO: re-add for U once it passes on spike
-        elif mode == "U":  # TODO: remove once U mode page fault test is properly added
-            codes.difference_update((13, 15))
+    if mode == "Sm":
+        codes.discard(12)
 
     return tuple(sorted(codes))
 
@@ -436,9 +480,9 @@ def _cause_exception(
 
         return [
             "#if __riscv_xlen == 64",
-            f"LI(x{addr_reg}, {_VA_PF_PAGE_RV64})",
+            f"LI(x{addr_reg}, 0x{VA_TARGET_RV64:x})",
             "#else",
-            f"LI(x{addr_reg}, {_VA_PF_PAGE_RV32})",
+            f"LI(x{addr_reg}, 0x{VA_TARGET_RV32:x})",
             "#endif",
             f"jalr ra, 0(x{addr_reg}) # instruction page fault",
             "nop # spacer; trap handler returns here",
@@ -450,9 +494,9 @@ def _cause_exception(
 
         lines = [
             "#if __riscv_xlen == 64",
-            f"LI(x{addr_reg}, {_VA_PF_PAGE_RV64})",
+            f"LI(x{addr_reg}, 0x{VA_TARGET_RV64:x})",
             "#else",
-            f"LI(x{addr_reg}, {_VA_PF_PAGE_RV32})",
+            f"LI(x{addr_reg}, 0x{VA_TARGET_RV32:x})",
             "#endif",
         ]
         if mode == "Sm":
@@ -471,9 +515,9 @@ def _cause_exception(
 
         lines = [
             "#if __riscv_xlen == 64",
-            f"LI(x{addr_reg}, 0x140300000)",
+            f"LI(x{addr_reg}, 0x{VA_TARGET_RV64:x})",
             "#else",
-            f"LI(x{addr_reg}, 0xC0300000)",
+            f"LI(x{addr_reg}, 0x{VA_TARGET_RV32:x})",
             "#endif",
             f"LI(x{data_reg}, 0xDEADBEEF)",
         ]
@@ -2025,7 +2069,7 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     codes_to_test = _etrigger_codes_to_test(mode)
 
     if any(code in _PAGE_FAULT_CODES for code in codes_to_test):
-        lines.extend(_generate_page_table_data_section())
+        lines.extend(pf_data_section())
 
     # Exception value CSR for the current privilege mode.
     tval_csr = "mtval" if mode == "Sm" else "stval"
@@ -2049,11 +2093,11 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                             *_config_etrigger(cfg_reg, trig_num, 1 << code, mode, privbits=privbits),
                         ]
                     )
-                    bp_token = _sdtrig_bp_arm(raised_code)
                     if is_pf:
-                        lines.extend(_page_fault_setup(raised_code))
-                    if bp_token:
-                        lines.append(f"LI(a1, {bp_token}) # sdtrig: note for the handler if this becomes a bp")
+                        lines.extend(pf_mode_arm(mode))
+                    if raised_code != 3:
+                        bp_token = "SDTRIG_BP_FETCH" if raised_code in _FETCH_EXCODES else "SDTRIG_BP_SKIP"
+                        lines.append(f"LI(a1, {bp_token}) # sdtrig: note for the handler")
                     lines.extend(
                         [
                             *_cause_exception(
@@ -2065,10 +2109,10 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                             ),
                         ]
                     )
-                    if bp_token:
-                        lines.append("LI(a1, SDTRIG_BP_NONE) # sdtrig: clear the note")
+                    if raised_code != 3:
+                        lines.append("LI(a1, SDTRIG_BP_NONE) # clear the handler note")
                     if is_pf:
-                        lines.extend(_page_fault_teardown())
+                        lines.extend(pf_mode_disarm(mode))
                     lines.extend(
                         [
                             f"csrr x{data_reg}, {tval_csr} # 0 iff matched",
@@ -2114,7 +2158,7 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
     goto_target = "RVTEST_TSBI_GOTO_SMODE" if target_mode == "S" else "RVTEST_TSBI_GOTO_UMODE"
 
     if any(code in _PAGE_FAULT_CODES for code in codes_to_test):
-        lines.extend(_generate_page_table_data_section())
+        lines.extend(pf_data_section())
 
     for trig_num in range(UDB_NUM_TRIGGERS):
         lines.append(f"\n#ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED{trig_num}")
@@ -2129,7 +2173,6 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
                     for raised_code in raised_codes:
                         outcome = "match" if raised_code == code else "mismatch"
                         is_pf = raised_code in _PAGE_FAULT_CODES
-                        bp_token = _sdtrig_bp_arm(raised_code)
                         binname = (
                             f"trig_num_{trig_num}_{target_mode.lower()}_code_{name}"
                             f"_priv{priv_en}_medeleg{medeleg_en}_{outcome}"
@@ -2145,14 +2188,15 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
                             ]
                         )
                         if is_pf:
-                            lines.extend(_page_fault_setup(raised_code))
-                        if bp_token:
-                            lines.append(f"LI(a1, {bp_token}) # sdtrig: note for the handler if this becomes a bp")
+                            lines.extend(pf_mode_arm(target_mode))
+                        if raised_code != 3:
+                            bp_token = "SDTRIG_BP_FETCH" if raised_code in _FETCH_EXCODES else "SDTRIG_BP_SKIP"
+                            lines.append(f"LI(a1, {bp_token}) # sdtrig: note for the handler")
                         lines.extend(_cause_exception(raised_code, target_mode, data_reg, temp_reg))
-                        if bp_token:
-                            lines.append("LI(a1, SDTRIG_BP_NONE) # sdtrig: clear the notessss")
+                        if raised_code != 3:
+                            lines.append("LI(a1, SDTRIG_BP_NONE) # clear the handler note")
                         if is_pf:
-                            lines.extend(_page_fault_teardown())
+                            lines.extend(pf_mode_disarm(target_mode))
                         lines.extend(
                             [
                                 "RVTEST_GOTO_DELEGATED_MMODE" if code in (8, 9) else "RVTEST_TSBI_GOTO_MMODE",

@@ -2313,9 +2313,35 @@ common_\__MODE__\()excpt_handler:
         li      a1, SDTRIG_BP_NONE                    // consume
         j       skpsv_\__MODE__\()epc                 // keep the advance, drop word 2 only
 sdtrig_\__MODE__\()bp_fetch:
-        li      a1, SDTRIG_BP_NONE                    // consume
-        csrw    CSR_XEPC, ra                          // resume at the jalr's link
-        j       skp_adj_\__MODE__\()epc               // xEPC unreadable -- skip the probe too
+        li      a1, SDTRIG_BP_NONE
+
+  .ifc \__MODE__ , M
+
+        csrw    CSR_MEPC, ra
+
+        // A delegated instruction-page fault has not entered Strampoline yet.
+        csrr    T2, CSR_MEDELEG
+        li      T6, (1 << CAUSE_FETCH_PAGE_FAULT)
+        and     T2, T2, T6
+        beqz    T2, skp_adj_\__MODE__\()epc
+
+        csrr    T2, CSR_STVEC
+        andi    T2, T2, -4
+        csrw    CSR_MEPC, T2
+
+        LI(     T2, MSTATUS_MPP)
+        csrc    CSR_MSTATUS, T2
+        LI(     T2, MPP_SMODE)
+        csrs    CSR_MSTATUS, T2
+
+        j       skp_adj_\__MODE__\()epc
+
+  .else
+
+        csrw    CSR_XEPC, ra
+        j       skp_adj_\__MODE__\()epc
+
+  .endif
 sdtrig_\__MODE__\()bp_done:
 #endif
         csrr    T3, CSR_XEPC                          // T3 = xEPC (faulting instruction address)

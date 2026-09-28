@@ -348,163 +348,181 @@ def _guarded(off: int, lines: list[str]) -> list[str]:
     return [f"#if UDB_CACHE_BLOCK_SIZE > {off}", *lines, "#endif"]
 
 
-def _fill_block(pat_reg: int, addr_reg: int, base: int) -> list[str]:
+def _fill_block(test_data: TestData, addr_reg: int, base: int) -> list[str]:
     """Write ``base``, ``base+2``, ``base+4`` ... over the words of the cache block, so
     every word holds a different value. The step of 2 leaves bit 0 of each word free:
     filling once from an even ``base`` and again from ``base + 1`` gives each word an
     old and a new value that differ only in bit 0."""
+    pat_reg = test_data.int_regs.get_register()
     lines = [f"LI(x{pat_reg}, {base:#x})"]
     for off in range(0, _MAX_CHECKED_BLOCK, 4):
         step = [] if off == 0 else [f"addi x{pat_reg}, x{pat_reg}, 2"]
         lines.extend(_guarded(off, [*step, f"sw   x{pat_reg}, {off}(x{addr_reg})"]))
+    test_data.int_regs.return_register(pat_reg)
     return lines
 
 
-def _set_cbie(field_csr: str, value: str, mode: str, cfg_reg: int, mask_reg: int) -> list[str]:
+def _set_cbie(test_data: TestData, field_csr: str, value: str, mode: str) -> list[str]:
     """Set ``field_csr``.CBIE to ``value`` without disturbing the other fields."""
-    return [
-        _csr_op("csrc", field_csr, mask_reg, mode),
-        f"LI(x{cfg_reg}, 0b{int(value, 2) << _CBIE_SHIFT:06b})",
-        _csr_op("csrs", field_csr, cfg_reg, mode),
+    reg = test_data.int_regs.get_register()
+    lines = [
+        f"LI(x{reg}, 0b{_CBIE_MASK:06b})  # cbie field mask",
+        _csr_op("csrc", field_csr, reg, mode),
+        f"LI(x{reg}, 0b{int(value, 2) << _CBIE_SHIFT:06b})",
+        _csr_op("csrs", field_csr, reg, mode),
     ]
+    test_data.int_regs.return_register(reg)
+    return lines
 
 
 def _inval_data_case(
-    test_data: TestData,
-    covergroup: str,
-    coverpoint: str,
-    *,
-    mode: str,
-    mode_tag: str,
-    m_cbie: str,
-    s_cbie: str | None,
-    index: int,
-    addr_reg: int,
-    cfg_reg: int,
-    mask_reg: int,
-    pat_reg: int,
-    val_reg: int,
+    test_data: TestData, covergroup: str, *, name: str, real_inval: bool, addr_reg: int, index: int
 ) -> list[str]:
-    """One cbo.inval data check at a single menvcfg.CBIE/senvcfg.CBIE setting."""
-    # cbo.inval really invalidates, so the block may read back old or new data, unless
-    # an xenvcfg.CBIE of 01 turns it into a flush and makes the new data the only result.
-    real_inval = m_cbie == "11" and not (mode == "U" and s_cbie == "01")
+    """Dirty the cache block at ``addr_reg`` over a cleaned pattern, cbo.inval it, and check
+    the block and the word beyond it. ``real_inval`` accepts the old or the new data in each
+    word; otherwise cbo.inval performs a flush and only the new data is correct."""
     old_base = _OLD_PATTERN_BASE + (index << 8)
-    beyond = _BEYOND_PATTERN_BASE + (index << 8)
-    senvcfg_tag = "" if s_cbie is None else f"_senvcfg.cbie{s_cbie}"
-    name = f"cbo.inval_data{mode_tag}_menvcfg.cbie{m_cbie}{senvcfg_tag}"
-
-    setting = f"menvcfg.cbie = {m_cbie}" + ("" if s_cbie is None else f", senvcfg.cbie = {s_cbie}")
-    lines = ["", f"# {setting}: cbo.inval " + ("invalidates" if real_inval else "flushes")]
-    lines.extend(_set_cbie("menvcfg", m_cbie, mode, cfg_reg, mask_reg))
-    if s_cbie is not None:
-        lines.extend(_set_cbie("senvcfg", s_cbie, mode, cfg_reg, mask_reg))
-
-    lines.append(f"# Write the old pattern ({old_base:#x}, +2 per word) and clean it out to memory")
-    lines.extend(_fill_block(pat_reg, addr_reg, old_base))
-    lines.append(f"cbo.clean   0(x{addr_reg})")
-    lines.append(f"# Dirty the block with the new pattern ({old_base + 1:#x}, +2 per word), so")
-    lines.append("# each word's new value differs from its old value only in bit 0")
-    lines.extend(_fill_block(pat_reg, addr_reg, old_base + 1))
-    lines.extend(
-        [
-            "# Dirty the first word of the next block, which cbo.inval must leave alone",
-            f"LI(x{pat_reg}, {beyond:#x})",
-            f"sw   x{pat_reg}, UDB_CACHE_BLOCK_SIZE(x{addr_reg})",
-            test_data.add_testcase(name, coverpoint, covergroup),
-            f"cbo.inval   0(x{addr_reg})",
-            "# The word beyond the block always reads back the value just written",
-            f"lw   x{val_reg}, UDB_CACHE_BLOCK_SIZE(x{addr_reg})",
-            write_sigupd(val_reg, test_data),
-        ]
-    )
-
-    if real_inval:
-        lines.append("# Each word reads back its old or its new value, so mask off bit 0 to accept either")
-    else:
-        lines.append("# cbo.inval flushed the block, so each word must read back its new value exactly")
+    val_reg = test_data.int_regs.get_register()
+    lines = [
+        f"# Write the old pattern ({old_base:#x}, +2 per word) and clean it out to memory",
+        *_fill_block(test_data, addr_reg, old_base),
+        f"cbo.clean   0(x{addr_reg})",
+        f"# Dirty the block with the new pattern ({old_base + 1:#x}, +2 per word), so",
+        "# each word's new value differs from its old value only in bit 0",
+        *_fill_block(test_data, addr_reg, old_base + 1),
+        "# Dirty the first word of the next block, which cbo.inval must leave alone",
+        f"LI(x{val_reg}, {_BEYOND_PATTERN_BASE + (index << 8):#x})",
+        f"sw   x{val_reg}, UDB_CACHE_BLOCK_SIZE(x{addr_reg})",
+        test_data.add_testcase(name, "cp_cbo_inval_data", covergroup),
+        f"cbo.inval   0(x{addr_reg})",
+        "# The word beyond the block always reads back the value just written",
+        f"lw   x{val_reg}, UDB_CACHE_BLOCK_SIZE(x{addr_reg})",
+        write_sigupd(val_reg, test_data),
+        "# Each word reads back its old or its new value, so mask off bit 0 to accept either"
+        if real_inval
+        else "# cbo.inval flushed the block, so each word must read back its new value exactly",
+    ]
     for off in range(0, _MAX_CHECKED_BLOCK, 4):
         check = [f"lw   x{val_reg}, {off}(x{addr_reg})"]
         if real_inval:
             check.append(f"andi x{val_reg}, x{val_reg}, -2")
         check.append(write_sigupd(val_reg, test_data))
         lines.extend(_guarded(off, check))
+    test_data.int_regs.return_register(val_reg)
     return lines
+
+
+def _inval_data_cbie_case(
+    test_data: TestData,
+    covergroup: str,
+    *,
+    mode: str,
+    mode_tag: str,
+    m_cbie: str,
+    s_cbie: str | None,
+    addr_reg: int,
+    index: int,
+) -> list[str]:
+    """One cbo.inval data check at a single menvcfg.CBIE/senvcfg.CBIE setting."""
+    # cbo.inval really invalidates unless an xenvcfg.CBIE of 01 turns it into a flush
+    real_inval = m_cbie == "11" and not (mode == "U" and s_cbie == "01")
+    setting = f"menvcfg.cbie = {m_cbie}" + ("" if s_cbie is None else f", senvcfg.cbie = {s_cbie}")
+    senvcfg_tag = "" if s_cbie is None else f"_senvcfg.cbie{s_cbie}"
+    return [
+        "",
+        f"# {setting}: cbo.inval " + ("invalidates" if real_inval else "flushes"),
+        *_set_cbie(test_data, "menvcfg", m_cbie, mode),
+        *([] if s_cbie is None else _set_cbie(test_data, "senvcfg", s_cbie, mode)),
+        *_inval_data_case(
+            test_data,
+            covergroup,
+            name=f"cbo.inval_data{mode_tag}_menvcfg.cbie{m_cbie}{senvcfg_tag}",
+            real_inval=real_inval,
+            addr_reg=addr_reg,
+            index=index,
+        ),
+    ]
 
 
 def cbo_inval_data_helper(
     test_data: TestData,
     covergroup: str,
     *,
-    mode: str,  # "S" | "U"
+    mode: str,  # "Sm" | "S" | "U"
     cross_senvcfg: bool = False,
 ) -> list[str]:
     """Generate the cbo.inval data tests: clean a known pattern out to memory, dirty
     the block with a pattern differing in one bit per word, then cbo.inval and check
     the whole block plus the word beyond it, for each enabled xenvcfg.CBIE setting."""
-    assert mode != "Sm", "menvcfg.CBIE does not affect cbo.inval in M-mode"
-    coverpoint = "cp_cbo_inval_data"
     mode_tag = _mode_tag(mode, cross_senvcfg)
-    addr_reg, cfg_reg, mask_reg, pat_reg, val_reg = test_data.int_regs.get_registers(5)
-
-    def case(m_cbie: str, s_cbie: str | None, index: int) -> list[str]:
-        return _inval_data_case(
-            test_data,
-            covergroup,
-            coverpoint,
-            mode=mode,
-            mode_tag=mode_tag,
-            m_cbie=m_cbie,
-            s_cbie=s_cbie,
-            index=index,
-            addr_reg=addr_reg,
-            cfg_reg=cfg_reg,
-            mask_reg=mask_reg,
-            pat_reg=pat_reg,
-            val_reg=val_reg,
-        )
-
+    addr_reg = test_data.int_regs.get_register()
     lines = [
         comment_banner(
-            coverpoint,
+            "cp_cbo_inval_data",
             "cbo.inval on a dirty cache block either discards or writes back the new\n"
-            "data, depending on the effective xenvcfg.CBIE. The neighbouring block is\n"
-            "never affected.",
+            "data, depending on the effective xenvcfg.CBIE (M-mode may do either). The\n"
+            "neighbouring block is never affected.",
         ),
         "",
         "#ifdef ZICBOM_SUPPORTED",
-        "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
         "#ifdef UDB_CACHE_BLOCK_SIZE",
         f"LA(x{addr_reg}, scratch)  # scratch is 256 byte aligned, so it starts a cache block",
-        f"LI(x{cfg_reg}, 0b{_CBCFE_MASK:07b})  # cbcfe: enable cbo.clean",
-        _csr_op("csrs", "menvcfg", cfg_reg, mode),
-        "#ifdef S1P12P0_OR_LATER_SUPPORTED",
-        _csr_op("csrs", "senvcfg", cfg_reg, mode),
-        "#endif // S1P12P0_OR_LATER_SUPPORTED",
-        f"LI(x{mask_reg}, 0b{_CBIE_MASK:06b})  # cbie field mask",
-        "",
-        "#ifdef S1P12P0_OR_LATER_SUPPORTED",
     ]
 
-    index = 0
-    for m_cbie in _CBIE_ENABLED_BINS:
-        for s_cbie in _CBIE_ENABLED_BINS if cross_senvcfg else [m_cbie]:
-            lines.extend(case(m_cbie, s_cbie, index))
+    if mode == "Sm":
+        # No xenvcfg field controls cbo.inval in M-mode, so it may invalidate or flush
+        lines.extend(
+            _inval_data_case(
+                test_data, covergroup, name="cbo.inval_data_m", real_inval=True, addr_reg=addr_reg, index=0
+            )
+        )
+    else:
+        cfg_reg = test_data.int_regs.get_register()
+        lines.extend(
+            [
+                "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
+                f"LI(x{cfg_reg}, 0b{_CBCFE_MASK:07b})  # cbcfe: enable cbo.clean",
+                _csr_op("csrs", "menvcfg", cfg_reg, mode),
+                "#ifdef S1P12P0_OR_LATER_SUPPORTED",
+                _csr_op("csrs", "senvcfg", cfg_reg, mode),
+            ]
+        )
+        test_data.int_regs.return_register(cfg_reg)
+        index = 0
+        for m_cbie in _CBIE_ENABLED_BINS:
+            for s_cbie in _CBIE_ENABLED_BINS if cross_senvcfg else [m_cbie]:
+                lines.extend(
+                    _inval_data_cbie_case(
+                        test_data,
+                        covergroup,
+                        mode=mode,
+                        mode_tag=mode_tag,
+                        m_cbie=m_cbie,
+                        s_cbie=s_cbie,
+                        addr_reg=addr_reg,
+                        index=index,
+                    )
+                )
+                index += 1
+        lines.append("#else")
+        for m_cbie in _CBIE_ENABLED_BINS:
+            lines.extend(
+                _inval_data_cbie_case(
+                    test_data,
+                    covergroup,
+                    mode=mode,
+                    mode_tag=mode_tag,
+                    m_cbie=m_cbie,
+                    s_cbie=None,
+                    addr_reg=addr_reg,
+                    index=index,
+                )
+            )
             index += 1
-    lines.append("#else")
-    for m_cbie in _CBIE_ENABLED_BINS:
-        lines.extend(case(m_cbie, None, index))
-        index += 1
-    lines.extend(
-        [
-            "#endif // S1P12P0_OR_LATER_SUPPORTED",
-            "#endif // UDB_CACHE_BLOCK_SIZE",
-            "#endif // SM1P12P0_OR_LATER_SUPPORTED",
-            "#endif // ZICBOM_SUPPORTED",
-        ]
-    )
+        lines.extend(["#endif // S1P12P0_OR_LATER_SUPPORTED", "#endif // SM1P12P0_OR_LATER_SUPPORTED"])
 
-    test_data.int_regs.return_registers([addr_reg, cfg_reg, mask_reg, pat_reg, val_reg])
+    lines.extend(["#endif // UDB_CACHE_BLOCK_SIZE", "#endif // ZICBOM_SUPPORTED"])
+    test_data.int_regs.return_register(addr_reg)
     return lines
 
 
@@ -554,18 +572,10 @@ def emit_suite(
 
     chunks = [test_data.end_test_chunk()]
 
-    if mode != "Sm":
-        tc = test_data.begin_test_chunk()
-        if mode_entry:
-            tc.code.append(f"RVTEST_TSBI_GOTO_{mode}MODE  # enter {mode}-mode")
-        tc.code.extend(
-            cbo_inval_data_helper(
-                test_data,
-                covergroup,
-                mode=mode,
-                cross_senvcfg=cross_senvcfg,
-            )
-        )
-        chunks.append(test_data.end_test_chunk())
+    tc = test_data.begin_test_chunk()
+    if mode_entry:
+        tc.code.append(f"RVTEST_TSBI_GOTO_{mode}MODE  # enter {mode}-mode")
+    tc.code.extend(cbo_inval_data_helper(test_data, covergroup, mode=mode, cross_senvcfg=cross_senvcfg))
+    chunks.append(test_data.end_test_chunk())
 
     return chunks

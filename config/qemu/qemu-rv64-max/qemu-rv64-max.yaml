@@ -529,8 +529,10 @@ params:
   HCONTEXT_AVAILABLE: true
   HSTATEEN_CONTEXT_TYPE: rw
   MCONTEXT_AVAILABLE: true
-  # Pointer masking params
-  PMLEN: 17
+  # Pointer masking params (udb defines per-mode supported-PMLEN arrays)
+  SUPPORTED_PMLEN_SMMPM: [0, 7, 16]
+  SUPPORTED_PMLEN_SMNPM: [0, 7, 16]
+  SUPPORTED_PMLEN_SSNPM: [0, 7, 16]
   # Smstateen params
   MSTATEEN_ENVCFG_TYPE: rw
   MSTATEEN_CONTEXT_TYPE: rw

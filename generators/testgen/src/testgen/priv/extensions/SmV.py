@@ -56,11 +56,28 @@ def _gen_vcsrrswc(test_data: TestData, temp_reg: int) -> list[str]:
     lines.append(f"LI(x{save_reg}, -1)  # all 1s mask for csr ops")
     for csr in _VECTOR_CSRS:
         for op in ("csrrs", "csrrc", "csrrw"):
-            lines.append(test_data.add_testcase(f"{csr}_{op}", coverpoint, _CG))
-            lines.append(f"{op} x0, {csr}, x{save_reg}")
-            # Read the CSR under test back. vl, vtype and vlenb are read-only, so the
-            # write traps and this shows the CSR kept its value.
-            lines.append(gen_csr_read_sigupd(check_reg, (csr, None), test_data))
+            if csr not in _VECTOR_CSRS_WR:
+                # vl, vtype and vlenb are read-only, so the write traps and the readback
+                # shows the CSR kept its value.
+                lines.append(test_data.add_testcase(f"{csr}_{op}", coverpoint, _CG))
+                lines.append(f"{op} x0, {csr}, x{save_reg}")
+                lines.append(gen_csr_read_sigupd(check_reg, (csr, None), test_data))
+                continue
+            # A write that changes vector state must set mstatus.VS to Dirty, so preset the
+            # CSR to a value the operation changes: 0 for csrrs/csrrw of all 1s, 1 for csrrc.
+            for vs in (1, 2):
+                lines.extend(
+                    [
+                        f"csrwi {csr}, {1 if op == 'csrrc' else 0}  # preset so {op} changes {csr}",
+                        *_set_vs(vs=vs, temp_reg=temp_reg),
+                        test_data.add_testcase(f"{csr}_{op}_vs{vs}", coverpoint, _CG),
+                        f"{op} x0, {csr}, x{save_reg}",
+                        f"LI(x{temp_reg}, {_VS_MASK})",
+                        gen_csr_read_sigupd(check_reg, ("mstatus", _VS_MASK), test_data, temp_reg),
+                        gen_csr_read_sigupd(check_reg, (csr, None), test_data),
+                    ]
+                )
+    lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
     test_data.int_regs.return_registers([save_reg, check_reg])
     return lines
 

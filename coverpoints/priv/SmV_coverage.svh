@@ -38,6 +38,13 @@ covergroup SmV_cg with function sample(ins_t ins);
 
     cp_vcsrrswc: cross vcsrs, csrops;
 
+    vcsrs_writable: coverpoint ins.current.insn[31:20] {
+        bins vstart = {CSR_VSTART};
+        bins vxsat  = {CSR_VXSAT};
+        bins vxrm   = {CSR_VXRM};
+        bins vcsr   = {CSR_VCSR};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vcsrs_walking1s
     // attempt to set all the writable CSR bit fields by writing all XLEN 1-hot
@@ -98,6 +105,7 @@ covergroup SmV_cg with function sample(ins_t ins);
 
     cp_mstatus_vs_set_dirty_arithmetic  : cross std_vec,        vector_vector_arithmetic_instruction,   mstatus_vs_initial_clean;
     cp_mstatus_vs_set_dirty_csr         : cross std_vec,        vsetvli_instruction,                    mstatus_vs_initial_clean;
+    cp_mstatus_vs_set_dirty_vcsr        : cross vcsrs_writable, csrops,                                 mstatus_vs_initial_clean;
 
     cp_mstatus_vs_off_arithmetic        : cross misa_v_active, mstatus_vs_inactive,     vector_vector_arithmetic_instruction iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
                                                                                                                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &

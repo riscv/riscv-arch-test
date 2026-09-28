@@ -1,26 +1,20 @@
 # ACT Configuration for the CHIPS Alliance VeeR EH2 Core
 
-[VeeR EH2](https://github.com/chipsalliance/Cores-VeeR-EH2) is an open-source 32-bit RISC-V core
-from CHIPS Alliance, dual-threaded and with an optional A extension. This configuration is written
-against a pinned upstream commit, and every UDB and Sail parameter cites the supporting
-documentation text plus a permalink to it.
+[VeeR EH2](https://github.com/chipsalliance/Cores-VeeR-EH2) is a dual-threaded 32-bit RISC-V core
+from CHIPS Alliance. The configuration runs the RTL under Verilator, pinned to commit `bd52450b`.
 
-| Config              | ISA                     | Modes               | Pinned commit |
-| ------------------- | ----------------------- | ------------------- | ------------- |
-| `veer-eh2-rv32imac` | RV32IMAC_Zicsr_Zifencei | M only, single hart | `bd52450b`    |
+| Config              | ISA                     | Modes               |
+| ------------------- | ----------------------- | ------------------- |
+| `veer-eh2-rv32imac` | RV32IMAC_Zicsr_Zifencei | M only, single hart |
 
-Atomics are on, which is the default and the maximum ratified feature set. Bit-manipulation is off
-because VeeR's Zb* is a 0.94-draft subset rather than ratified B, and the core is built with one
-hart because ACT is single-hart. EH2 implements privileged specification 1.11
-(`20190608-Priv-MSU-Ratified`), so it is declared `Sm 1.11.0`: `mstatush` arrived in 1.12, and ACT
-guards every access to it behind `SM1P12P0_OR_LATER_SUPPORTED`.
+- Privileged specification 1.11 (`Sm 1.11.0`); no `mstatush`.
+- A/Zaamo/Zalrsc are claimed, but atomic instructions are illegal outside the 64 KB DCCM and ACT
+  images run from system memory, so the `Zaamo` and `Zalrsc` suites are excluded.
+- Bit-manipulation is not claimed: VeeR's Zb\* is a 0.94-draft subset, not ratified B.
 
-**The A extension cannot actually be exercised.** EH2 makes atomic instructions illegal outside the
-DCCM, and an ACT image is much larger than the 64 KB DCCM, so the tests run from system memory
-where every atomic faults. `Zaamo` and `Zalrsc` are therefore excluded and do not even build; see
-`ci.yaml`.
+## RTL configuration
 
-Current results: 110/127. `ci.yaml` records the reason for every excluded suite.
+`atomic_enable=1` (the default), `num_threads=1`, and all `bitmanip_*` options set to 0.
 
 ## Building and running
 
@@ -40,6 +34,7 @@ make CONFIG_FILES=config/cores/veer-eh2/veer-eh2-rv32imac/test_config.yaml --job
 ./run_tests.py "run-veer-eh2.sh --stub 0x1000 --elf" work/veer-eh2-rv32imac/elfs
 ```
 
-`run_cmd.txt` passes `--stub 0x1000`: the EH2 testbench hardcodes the reset vector to 0
-(`reset_vector = {`RV_XLEN{1'b0}};`) and ACT cannot link at address 0, so the runner prepends a
-two-instruction jump stub at 0.
+## Platform
+
+- The testbench hardcodes the reset vector to 0, where ACT cannot link; `run_cmd.txt` passes
+  `--stub 0x1000` so the runner places a two-instruction jump stub at 0.

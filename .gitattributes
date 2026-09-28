@@ -1,6 +1,9 @@
 # Normalize line endings to LF
 * text=auto eol=lf
 
+# Markdown link check config is JSON
+.markdown-link-check.config linguist-language=JSON
+
 # Treat Sail and Whisper model configs as JSON with Comments on GitHub.
 **/sail.json linguist-language=JSON-with-Comments
 **/whisper.json linguist-language=JSON-with-Comments

@@ -1,19 +1,35 @@
 # SPDX-License-Identifier: Apache-2.0
 
+[settings]
+experimental = true
+
 [tools]
-prek = "0.5.2"
+prek = "0.5.3"
 ruby = "3.4.10"
 shellcheck = "0.11.0"
 uv = "0.11.33"
-"gem:bundler" = "4.0.20"
+"gem:bundler" = "4.0.21"
 
 [settings.ruby]
 compile = false
+
+[deps.uv]
+auto = true
+
+[deps.bundler]
+auto = true
+dir = "framework/src/act/data"
+
+[deps.prek]
+depends = ["uv"]
+sources = [".pre-commit-config.yaml"]
+outputs = []
+run = "prek prepare-hooks"
 
 [tasks.prek]
 description = "Run prek hooks on all files"
 run = "prek run --all-files"
 
 [tasks.prek-install]
-description = "Install prek git hooks"
-run = "prek install"
+description = "Install prek git hooks and prepare environments"
+run = "prek install --prepare-hooks"

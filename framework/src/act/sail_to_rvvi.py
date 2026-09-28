@@ -15,7 +15,7 @@ from pathlib import Path
 def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
     # Regular expression to match instruction lines
     #                             [STEP]     [MODE]:    0xPC              (0xINSN)           DISASM
-    insn_pattern = re.compile(r"\[(\d+)\] \[([MSU])\]: 0x([0-9a-fA-F]+) \(0x([0-9a-fA-F]+)\) (.*)")
+    insn_pattern = re.compile(r"\[(\d+)\] \[(HS|M|S|U)\]: 0x([0-9a-fA-F]+) \(0x([0-9a-fA-F]+)\) (.*)")
 
     # Regular expressions to match register updates
     reg_patterns = {
@@ -26,7 +26,7 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
     }
 
     # Mode mapping
-    mode_map = {"M": "3", "S": "1", "U": "0"}
+    mode_map = {"M": "3", "S": "1", "HS": "1", "U": "0"}
 
     # TODO: Add support for parsing traps, interrupts, and VM signals
 
@@ -49,21 +49,24 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
                 # mode at the end of the instruction but Sail logs have the mode at the start of the instruction.
                 next_output = f"ORDER {order} PC {pc} INSN {insn} MODE " + "{mode_num}"
 
-                # Check for register updates until the next instruction line
+                # Check for register updates until the next instruction line.  Sail logs every
+                # element a vector instruction writes as a separate whole-register update, so a
+                # vector load can log a register a thousand times; only the final value of each
+                # register matters, so keep the last write per register in first-write order.
+                reg_writes: dict[tuple[str, str], str] = {}
                 j = i + 1
                 while j < len(lines):
-                    reg_match = None
-                    reg_type = None
                     for reg, pattern in reg_patterns.items():
                         reg_match = pattern.search(lines[j])
                         if reg_match:
-                            reg_type = reg
                             reg_num, reg_val = reg_match.groups()
-                            next_output += f" {reg_type} {reg_num} {reg_val}"
+                            reg_writes[(reg, reg_num)] = reg_val
                             break
                     if insn_pattern.search(lines[j]):
                         break
                     j += 1
+                for (reg_type, reg_num), reg_val in reg_writes.items():
+                    next_output += f" {reg_type} {reg_num} {reg_val}"
 
                 # Reached end of instruction
                 next_output += "\n"

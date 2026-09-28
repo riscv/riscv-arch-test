@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 584
+#define SIGUPD_COUNT 586
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -2268,6 +2268,19 @@ F_fsqrt_s_cg_cp_frm_2_brup:
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fsqrt_s_cg_cp_frm_2_brup, F_fsqrt_s_cg_cp_frm_2_brup_str)
 
 /////////////////////////////////
+// cp_csr_fflags_vn
+/////////////////////////////////
+
+# Testcase cp_csr_fflags_vn (fflags = 10001)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0xe439dd13
+  fsflagsi 0b00000 # clear all fflags
+  csrsi fcsr, 0b10001 # set fflags
+F_fsqrt_s_cg_cp_csr_fflags_vn_b10001:
+  fsqrt.s f15, f6 # perform operation
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fsqrt_s_cg_cp_csr_fflags_vn_b10001, F_fsqrt_s_cg_cp_csr_fflags_vn_b10001_str)
+
+/////////////////////////////////
 // cp_csr_frm
 /////////////////////////////////
 
@@ -2698,6 +2711,7 @@ RVTEST_DATA_BEGIN
 .dword 0xffffffffdfc107ca
 .dword 0x0000000035cb84bd
 .dword 0xffffffffcbad9c00
+.dword 0xffffffffe439dd13
 .dword 0x000000005fd45cc1
 .dword 0xffffffffb5af70e4
 .dword 0xffffffffbef1e4e0
@@ -2987,23 +3001,24 @@ F_fsqrt_s_cg_cp_frm_2_brmm_str: .string "\"test: 267; cg: F_fsqrt.s_cg; cp: cp_f
 F_fsqrt_s_cg_cp_frm_2_brne_str: .string "\"test: 268; cg: F_fsqrt.s_cg; cp: cp_frm_2; bin: brne\""
 F_fsqrt_s_cg_cp_frm_2_brtz_str: .string "\"test: 269; cg: F_fsqrt.s_cg; cp: cp_frm_2; bin: brtz\""
 F_fsqrt_s_cg_cp_frm_2_brup_str: .string "\"test: 270; cg: F_fsqrt.s_cg; cp: cp_frm_2; bin: brup\""
-F_fsqrt_s_cg_cp_csr_frm_rne_str: .string "\"test: 271; cg: F_fsqrt.s_cg; cp: cp_csr_frm; bin: rne\""
-F_fsqrt_s_cg_cp_csr_frm_rtz_str: .string "\"test: 272; cg: F_fsqrt.s_cg; cp: cp_csr_frm; bin: rtz\""
-F_fsqrt_s_cg_cp_csr_frm_rdn_str: .string "\"test: 273; cg: F_fsqrt.s_cg; cp: cp_csr_frm; bin: rdn\""
-F_fsqrt_s_cg_cp_csr_frm_rup_str: .string "\"test: 274; cg: F_fsqrt.s_cg; cp: cp_csr_frm; bin: rup\""
-F_fsqrt_s_cg_cp_csr_frm_rmm_str: .string "\"test: 275; cg: F_fsqrt.s_cg; cp: cp_csr_frm; bin: rmm\""
-F_fsqrt_s_cg_cp_fs1_edges_ties_b0x3f000000_rne_str: .string "\"test: 276; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0x3f000000_rne\""
-F_fsqrt_s_cg_cp_fs1_edges_ties_b0x3f000000_rmm_str: .string "\"test: 277; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0x3f000000_rmm\""
-F_fsqrt_s_cg_cp_fs1_edges_ties_b0xbf000000_rne_str: .string "\"test: 278; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0xbf000000_rne\""
-F_fsqrt_s_cg_cp_fs1_edges_ties_b0xbf000000_rmm_str: .string "\"test: 279; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0xbf000000_rmm\""
-F_fsqrt_s_cg_cp_fs1_edges_ties_b0x40200000_rne_str: .string "\"test: 280; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0x40200000_rne\""
-F_fsqrt_s_cg_cp_fs1_edges_ties_b0x40200000_rmm_str: .string "\"test: 281; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0x40200000_rmm\""
-F_fsqrt_s_cg_cp_fs1_edges_ties_b0xc0200000_rne_str: .string "\"test: 282; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0xc0200000_rne\""
-F_fsqrt_s_cg_cp_fs1_edges_ties_b0xc0200000_rmm_str: .string "\"test: 283; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0xc0200000_rmm\""
-F_fsqrt_s_cg_cp_fs1_edges_ties_b0x4b800000_rne_str: .string "\"test: 284; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0x4b800000_rne\""
-F_fsqrt_s_cg_cp_fs1_edges_ties_b0x4b800000_rmm_str: .string "\"test: 285; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0x4b800000_rmm\""
-F_fsqrt_s_cg_cp_fs1_edges_ties_b0xcb800000_rne_str: .string "\"test: 286; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0xcb800000_rne\""
-F_fsqrt_s_cg_cp_fs1_edges_ties_b0xcb800000_rmm_str: .string "\"test: 287; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0xcb800000_rmm\""
+F_fsqrt_s_cg_cp_csr_fflags_vn_b10001_str: .string "\"test: 271; cg: F_fsqrt.s_cg; cp: cp_csr_fflags_vn; bin: b10001\""
+F_fsqrt_s_cg_cp_csr_frm_rne_str: .string "\"test: 272; cg: F_fsqrt.s_cg; cp: cp_csr_frm; bin: rne\""
+F_fsqrt_s_cg_cp_csr_frm_rtz_str: .string "\"test: 273; cg: F_fsqrt.s_cg; cp: cp_csr_frm; bin: rtz\""
+F_fsqrt_s_cg_cp_csr_frm_rdn_str: .string "\"test: 274; cg: F_fsqrt.s_cg; cp: cp_csr_frm; bin: rdn\""
+F_fsqrt_s_cg_cp_csr_frm_rup_str: .string "\"test: 275; cg: F_fsqrt.s_cg; cp: cp_csr_frm; bin: rup\""
+F_fsqrt_s_cg_cp_csr_frm_rmm_str: .string "\"test: 276; cg: F_fsqrt.s_cg; cp: cp_csr_frm; bin: rmm\""
+F_fsqrt_s_cg_cp_fs1_edges_ties_b0x3f000000_rne_str: .string "\"test: 277; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0x3f000000_rne\""
+F_fsqrt_s_cg_cp_fs1_edges_ties_b0x3f000000_rmm_str: .string "\"test: 278; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0x3f000000_rmm\""
+F_fsqrt_s_cg_cp_fs1_edges_ties_b0xbf000000_rne_str: .string "\"test: 279; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0xbf000000_rne\""
+F_fsqrt_s_cg_cp_fs1_edges_ties_b0xbf000000_rmm_str: .string "\"test: 280; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0xbf000000_rmm\""
+F_fsqrt_s_cg_cp_fs1_edges_ties_b0x40200000_rne_str: .string "\"test: 281; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0x40200000_rne\""
+F_fsqrt_s_cg_cp_fs1_edges_ties_b0x40200000_rmm_str: .string "\"test: 282; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0x40200000_rmm\""
+F_fsqrt_s_cg_cp_fs1_edges_ties_b0xc0200000_rne_str: .string "\"test: 283; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0xc0200000_rne\""
+F_fsqrt_s_cg_cp_fs1_edges_ties_b0xc0200000_rmm_str: .string "\"test: 284; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0xc0200000_rmm\""
+F_fsqrt_s_cg_cp_fs1_edges_ties_b0x4b800000_rne_str: .string "\"test: 285; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0x4b800000_rne\""
+F_fsqrt_s_cg_cp_fs1_edges_ties_b0x4b800000_rmm_str: .string "\"test: 286; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0x4b800000_rmm\""
+F_fsqrt_s_cg_cp_fs1_edges_ties_b0xcb800000_rne_str: .string "\"test: 287; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0xcb800000_rne\""
+F_fsqrt_s_cg_cp_fs1_edges_ties_b0xcb800000_rmm_str: .string "\"test: 288; cg: F_fsqrt.s_cg; cp: cp_fs1_edges_ties; bin: b0xcb800000_rmm\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

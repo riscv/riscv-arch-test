@@ -57,7 +57,7 @@ covergroup ZcbM_c_mul_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
@@ -95,7 +95,7 @@ covergroup ZcbM_c_mul_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs2p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
+    cp_rs2_p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
 

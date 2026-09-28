@@ -8,7 +8,7 @@
 set -euo pipefail
 
 INSTALL_DIR="${1:?Usage: install-cvw.sh <install-dir>}"
-CVW_COMMIT="2345ec2ad68d9a9073b2dfec0929ce87c90cb0ce"
+CVW_COMMIT="be4b5af64c7ad1bb361636ade49bdfeb43bd847d"
 VERILATOR_VERSION="v5.036"
 
 # Install Verilator from source
@@ -22,7 +22,7 @@ make install
 cd ..
 
 # Clone CVW repo
-git clone https://github.com/openhwgroup/cvw.git "$INSTALL_DIR/cvw"
+git clone https://github.com/openhwfoundation/cvw.git "$INSTALL_DIR/cvw"
 cd "$INSTALL_DIR/cvw"
 git checkout "$CVW_COMMIT"
 git submodule update --init addins/verilog-ethernet

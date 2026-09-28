@@ -1,0 +1,14 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  # When csr::[mprv]=0, explicit memory accesses behave as normal, using the translation
+  # and protection mechanisms of the current privilege mode. When csr::[mprv]=1, load
+  # and store memory addresses are translated and protected, and endianness is applied,
+  # as though the current privilege mode were set to csr::[mpp].
+  - name: mstatus_mprv_ldst_op
+    coverpoint: ["SvbareSm_cg/cp_satp_bare_mprv_{load,store}"]
+
+  # Instruction address-translation and protection are unaffected by the setting of
+  # csr::[mprv].
+  - name: mstatus_mprv_inst_xlat_op
+    coverpoint: ["SvbareSm_cg/cp_satp_bare_mprv_exec"]

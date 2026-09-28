@@ -1,5 +1,5 @@
 {
-  "$schema": "/opt/riscv/share/sail-riscv/sail_riscv_config_schema.json",
+  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.14.1/sail_riscv_config_schema.json",
   "base": {
     "xlen": 32,
     "E": false,
@@ -23,6 +23,10 @@
     // corresponding bit of `mcounteren` is writable, otherwise the
     // bit is read-only zero.
     "mcounteren_writable_bits": {
+      "len": 32,
+      "value": "0x0"
+    },
+    "hcounteren_writable_bits": {
       "len": 32,
       "value": "0x0"
     },
@@ -60,6 +64,15 @@
         "base_alignment": 2
       }
     },
+    "vstvec": {
+      "direct": {
+        "supported": false
+      },
+      "vectored": {
+        "supported": false,
+        "base_alignment": 2
+      }
+    },
     "medeleg": {
       "delegatable_bits": {
         "len": 64,
@@ -77,6 +90,10 @@
     // `xtval` registers.
     "xtval_nonzero": {
       "illegal_instruction": true,
+      "virtual_instruction": false,
+      "load_guest_page_fault": false,
+      "samo_guest_page_fault": false,
+      "fetch_guest_page_fault": false,
       "software_breakpoint": false,
       "hardware_breakpoint": false,
       "load_address_misaligned": false,
@@ -89,6 +106,7 @@
       "fetch_access_fault": true,
       "fetch_page_fault": false,
       "software_check": false,
+      "hardware_error": true,
       "reserved_exceptions": false
     },
     "reserved_behavior": {
@@ -135,6 +153,8 @@
   },
   "memory": {
     "physaddr_bits": 32,
+    "asidlen": 9,
+    "vmidlen": 7,
     "pmp": {
       "grain": 0,
       // This specifies the number of PMP entries present.
@@ -157,7 +177,7 @@
       "exceptions": {
         "load_store": { "None": null },
         "vector": { "None": null },
-        "lrsc": "AccessFault",
+        "lrsc": { "Some": "AccessFault" },
         "amo": { "Some": "AccessFault" }
       },
       "default_allowed_within_exp": 0,
@@ -193,7 +213,8 @@
           "misaligned_exceptions": {
             "load_store": { "None": null },
             "vector": { "None": null },
-            "amo": "AccessFault"
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
           },
           "atomic_support": "AMONone",
           "misaligned_atomicity_granule_size_exp": 0,
@@ -229,7 +250,8 @@
           "misaligned_exceptions": {
             "load_store": { "None": null },
             "vector": { "None": null },
-            "amo": "AccessFault"
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
           },
           "atomic_support": "AMONone",
           "misaligned_atomicity_granule_size_exp": 0,
@@ -260,6 +282,13 @@
       // model invalidates the reservation if a store from the same hart lies within
       // the reservation set.
       "invalidate_on_same_hart_store": false
+    },
+    "interrupts": {
+      "machine": {
+        "software": { "supported": true },
+        "external": { "supported": true },
+        "timer": { "supported": true }
+      }
     },
     "clint": {
       "supported": true,
@@ -351,11 +380,45 @@
       "supported": false
     },
     "S": {
-      "supported": false
+      "supported": false,
+      "interrupts": {
+        "software": { "supported": true },
+        "external": { "supported": true },
+        "timer": { "supported": true }
+      }
     },
     "U": {
       "supported": false
     },
+
+    "H": {
+      "supported": false,
+      "geilen": 31,
+      "guest_page_fault_writes_htval": true,
+      "hgatp_modes": {
+        "Sv32x4": false,
+        "Sv39x4": false,
+        "Sv48x4": false,
+        "Sv57x4": false
+      },
+      "vsatp_modes": {
+        "Sv32": true,
+        "Sv39": false,
+        "Sv48": false,
+        "Sv57": false
+      }
+    },
+
+    "Sha": { "supported": false },
+    "Shcounterenw": { "supported": false },
+    "Shgatpa": { "supported": false },
+    "Shtvala": { "supported": false },
+    "Shvsatpa": { "supported": false },
+    "Shvstvala": { "supported": false },
+    "Shvstvecd": { "supported": false },
+    "Sstvecd": { "supported": false },
+    "Svukte": { "supported": false },
+    "Zilx": { "supported": false },
     "Zibi": {
       "supported": false
     },

@@ -111,6 +111,19 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
     cp_fflags_set_m_UF:       cross fmul,  fs1_smallest, fs2_smallest;
     cp_fflags_set_m_NX:       cross fdiv,  fs1_one,      fs2_three;
 
+    // An instruction with a static rounding mode must not trap when frm holds a reserved value
+    frm_reserved: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm") {
+        bins reserved[] = {[5:7]};
+    }
+    static_rm: coverpoint ins.current.insn[14:12] {
+        bins rne = {3'b000};
+        bins rtz = {3'b001};
+        bins rdn = {3'b010};
+        bins rup = {3'b011};
+        bins rmm = {3'b100};
+    }
+    cp_frm_reserved_static_rm: cross fadd, frm_reserved, static_rm iff (ins.trap == 0);
+
     // very specific tests to check that underflow is computed after rounding
     // These come from Berkeley TestFloat cases that set underflow = 0 after rounding but 1 if done before rounding
     // single-precision (S) cases

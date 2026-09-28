@@ -344,6 +344,39 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _generate_frm_reserved_static_rm(test_data: TestData) -> list[str]:
+    """Static rounding modes execute normally while frm holds a reserved value."""
+    ######################################
+    covergroup = "ZicsrF_cg"
+    coverpoint = "cp_frm_reserved_static_rm"
+    ######################################
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            "Set frm to each reserved value (5-7) and execute fadd.s with each static rounding mode.\n"
+            "Only dynamic rounding depends on frm, so none of these trap.\n"
+            "1.0 + 2^-24 is an exact tie, so each rounding mode gives its own result.",
+        ),
+        load_float_reg("1.0", 10, 0x3F800000, test_data, "single"),
+        load_float_reg("2^-24", 11, 0x33800000, test_data, "single"),
+    ]
+    for frm in (5, 6, 7):
+        lines.append(f"csrwi frm, {frm}        # reserved rounding mode")
+        for rm in ("rne", "rtz", "rdn", "rup", "rmm"):
+            lines.extend(
+                [
+                    "",
+                    "csrwi fflags, 0 # reset flags",
+                    test_data.add_testcase(f"frm{frm}_{rm}", coverpoint, covergroup),
+                    f"fadd.s f7, f10, f11, {rm}",
+                    write_sigupd(7, test_data, "float"),
+                ]
+            )
+    lines.append("csrwi frm, 0        # back to a legal rounding mode")
+    return lines
+
+
 @add_priv_test_generator(
     "ZicsrF",
     required_extensions=["Zicsr", "F"],
@@ -360,6 +393,7 @@ def make_zicsrf(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_fcsr_walk(test_data))
     tc.code.extend(_generate_fcsr_write(test_data))
     tc.code.extend(_generate_instr_tests(test_data))
+    tc.code.extend(_generate_frm_reserved_static_rm(test_data))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

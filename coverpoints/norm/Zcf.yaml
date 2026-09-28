@@ -5,9 +5,10 @@ normative_rule_definitions:
     # Use a representative coverpoint; applies to others too
     coverpoint: ["Zcf_c_flw_cg/{cp_fd_p}"]
   - name: c-flw_op
-    coverpoint: ["Zcf_c_flw_cg/{cp_rs1_p, cp_fd_p, cp_imm_mul}"]
+    coverpoint:
+      ["Zcf_c_flw_cg/{cp_rs1_p, cp_fd_p, cp_imm_mul, cp_memval_fp_single}"]
   - name: c-flwsp_op
-    coverpoint: ["Zcf_c_flwsp_cg/{cp_fd, cp_imm_mul_4sp}"]
+    coverpoint: ["Zcf_c_flwsp_cg/{cp_fd, cp_imm_mul_4sp, cp_memval_fp_single}"]
   - name: c-fsw_op
     coverpoint: ["Zcf_c_fsw_cg/{cp_rs1_p, cp_fs2_p, cp_imm_mul}"]
   - name: c-fswsp_op

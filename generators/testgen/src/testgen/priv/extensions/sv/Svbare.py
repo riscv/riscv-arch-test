@@ -15,45 +15,23 @@ from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.assembly import DATA_REGION
 from testgen.priv.registry import add_priv_test_generator
 
-_MARCH = ["I", "Zicsr", "Zifencei"]
 
-
-def _add_rwx(test_data: TestData, name: str, *, mode: str | None) -> list[str]:
-    labels = {
-        operation: test_data.add_testcase(f"{name}_{operation}", "cp_bare_access", "Svbare_cg").removesuffix(":")
-        for operation in ("store", "load", "exec")
-    }
-    lines = ["LA(a5, rvtest_data_1)", "addi a2, a2, 16"]
-    if mode is not None:
-        lines.insert(0, f"RVTEST_GOTO_LOWER_MODE {mode}")
-    lines.extend(
-        [
-            f"{labels['store']}:",
-            "sw a2, 20(a5)",
-            "nop",
-            f"{labels['load']}:",
-            "lw a3, 20(a5)",
-            "nop",
-            f"{labels['exec']}:",
-            "jalr ra, a5, 0",
-            "nop",
-        ]
-    )
-    if mode is not None:
-        lines.append("RVTEST_GOTO_MMODE")
-    lines.extend(
-        [
-            write_sigupd(12, test_data, label=labels["store"]),
-            write_sigupd(13, test_data, label=labels["load"]),
-            write_sigupd(14, test_data, label=labels["exec"]),
-        ]
-    )
+def bare_rwx(test_data: TestData, name: str, *, enter: tuple[str, ...] = (), leave: tuple[str, ...] = ()) -> list[str]:
+    lines = [*enter, "LA(a5, rvtest_data_1)", "addi a2, a2, 16"]
+    for operation, register, instruction in (
+        ("store", 12, "sw a2, 20(a5)"),
+        ("load", 13, "lw a3, 20(a5)"),
+        ("exec", 14, "jalr ra, a5, 0"),
+    ):
+        lines.append(test_data.add_testcase(f"{name}_{operation}", "cp_bare_access", f"{test_data.testsuite}_cg"))
+        lines.extend([instruction, write_sigupd(register, test_data, label=test_data.current_testcase_label)])
+    lines.extend(leave)
     return lines
 
 
-def _begin_bare_test(test_data: TestData, split_name: str) -> TestChunk:
+def begin_bare_test(test_data: TestData, split_name: str) -> TestChunk:
     chunk = test_data.begin_test_chunk(split_name)
-    satp_label = test_data.add_testcase("satp_bare", "cp_satp", "Svbare_cg")
+    satp_label = test_data.add_testcase("satp_bare", "cp_satp", f"{test_data.testsuite}_cg")
     chunk.code.extend(
         [
             "main:",
@@ -68,52 +46,25 @@ def _begin_bare_test(test_data: TestData, split_name: str) -> TestChunk:
     return chunk
 
 
-def _make_bare_mode(test_data: TestData, mode: str) -> list[TestChunk]:
-    chunk = _begin_bare_test(test_data, f"Svbare_{mode}mode")
-    chunk.code.extend(_add_rwx(test_data, "test1", mode=f"{mode}mode"))
+@add_priv_test_generator(
+    "Svbare",
+    required_extensions=["Svbare"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+)
+def make_svbare_smode(test_data: TestData) -> list[TestChunk]:
+    chunk = begin_bare_test(test_data, "Svbare_Smode")
+    chunk.code.extend(bare_rwx(test_data, "test1"))
     return [test_data.end_test_chunk()]
 
 
 @add_priv_test_generator(
     "Svbare",
-    required_extensions=["I", "S", "Svbare"],
-    march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
-)
-def make_svbare_smode(test_data: TestData) -> list[TestChunk]:
-    return _make_bare_mode(test_data, "S")
-
-
-@add_priv_test_generator(
-    "Svbare",
-    required_extensions=["I", "S", "Svbare"],
-    march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Svbare"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svbare_umode(test_data: TestData) -> list[TestChunk]:
-    return _make_bare_mode(test_data, "U")
-
-
-@add_priv_test_generator(
-    "Svbare",
-    required_extensions=["I", "S", "Svbare"],
-    march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
-)
-def make_svbare_mprv(test_data: TestData) -> list[TestChunk]:
-    chunk = _begin_bare_test(test_data, "Svbare_mstatus_mprv")
-    for number, mpp in ((1, "S"), (2, "U")):
-        label = test_data.add_testcase(f"test{number}_mstatus", "cp_mprv", "Svbare_cg")
-        chunk.code.extend(
-            [
-                "LI(t0, MSTATUS_MPRV)",
-                "csrs mstatus, t0",
-                "LI(t0, 0x1800)",
-                "csrc mstatus, t0",
-                *(("LI(t0, 0x800)", "csrs mstatus, t0") if mpp == "S" else ()),
-                label,
-                gen_csr_read_sigupd(14, ("mstatus", None), test_data),
-                *_add_rwx(test_data, f"test{number}", mode=None),
-            ]
-        )
+    chunk = begin_bare_test(test_data, "Svbare_Umode")
+    chunk.code.extend(
+        bare_rwx(test_data, "test1", enter=("RVTEST_TSBI_GOTO_UMODE",), leave=("RVTEST_TSBI_GOTO_SMODE",))
+    )
     return [test_data.end_test_chunk()]

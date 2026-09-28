@@ -9,7 +9,7 @@ set -euo pipefail
 
 INSTALL_DIR="${1:?Usage: install-hazard3.sh <install-dir>}"
 HAZARD3_REPO="https://github.com/Wren6991/Hazard3.git"
-HAZARD3_COMMIT="8af992930f71a69b0e06c38734c1094f41a05ca0" # v1.1.1
+HAZARD3_COMMIT="ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6" # develop
 VERILATOR_VERSION="v5.036"
 
 mkdir -p "$INSTALL_DIR/bin"
@@ -38,25 +38,14 @@ git init "$INSTALL_DIR/Hazard3"
   git fetch --depth 1 origin "$HAZARD3_COMMIT"
   git checkout FETCH_HEAD
   git submodule update --init --depth 1 scripts
+  # tb.cpp passes unsigned long long to VerilatedVcdC::dump, which is ambiguous where
+  # uint64_t is unsigned long (Linux), so cast it.
+  sed -i 's/vcd->dump(\(2ull \* cycle[^)]*\))/vcd->dump((uint64_t)(\1))/' test/sim/tb_verilator/tb.cpp
 )
 
-# 3. Write the RTL configuration this ACT config is written against.
-#
-#    This is the bundled config_pmpfull.vh (the RP2350 feature set plus Zbc and 16 PMP
-#    regions), with five deliberate changes:
-#      * RESET_VECTOR moved to 0x80000000, the base of the testbench's RAM, because the
-#        image is loaded as a flat binary at MEM_BASE and there is no boot ROM.
-#      * EXTENSION_XH3IRQ = 0. With the nonstandard interrupt controller enabled, external
-#        interrupts arrive through a 512-source priority controller and its meiea/meipa
-#        CSRs instead of plain mip.MEIP, and ACT's external-interrupt tests never see the
-#        interrupt.
-#      * EXTENSION_XH3BEXTM / XH3PMPM / XH3POWER = 0: custom extensions with no ACT suite,
-#        which occupy encodings ACT expects to be illegal.
-#      * EXTENSION_ZILSD / ZCLSD / ZCMP = 0: frozen rather than ratified, no ACT suite, and
-#        the RISC-V GCC 15.2 multilib set has no Zcmp library.
-#      * MVENDORID_VAL / MCONFIGPTR_VAL set to 0. The bundled values (0xdeadbeef,
-#        0x9abcdef0) are placeholders; the manual permits all-zeroes for both, and that is
-#        what VENDOR_ID_BANK/VENDOR_ID_OFFSET and CONFIG_PTR_ADDRESS in the UDB config say.
+# 3. Write the RTL configuration: the full feature set with RESET_VECTOR at the base of
+#    the testbench RAM, placeholder MVENDORID/MCONFIGPTR values zeroed, and the custom
+#    (Xh3*), Zibi, Zilsd, Zclsd and Zcmp extensions off.
 cat >"$INSTALL_DIR/Hazard3/test/sim/tb_common/hdl/config_act.vh" <<'EOF'
 // Hazard3 configuration for riscv-arch-test: maximum ratified feature set.
 
@@ -75,12 +64,14 @@ localparam EXTENSION_ZBS       = 1;
 localparam EXTENSION_ZCB       = 1;
 localparam EXTENSION_ZCLSD     = 0;
 localparam EXTENSION_ZCMP      = 0;
+localparam EXTENSION_ZIBI      = 0;
 localparam EXTENSION_ZIFENCEI  = 1;
 localparam EXTENSION_ZILSD     = 0;
 localparam EXTENSION_XH3BEXTM  = 0;
 localparam EXTENSION_XH3IRQ    = 0;
 localparam EXTENSION_XH3PMPM   = 0;
 localparam EXTENSION_XH3POWER  = 0;
+localparam EXTENSION_XH3SFX    = 0;
 localparam CSR_M_MANDATORY     = 1;
 localparam CSR_M_TRAP          = 1;
 localparam CSR_COUNTER         = 1;
@@ -104,26 +95,18 @@ localparam MULDIV_UNROLL       = 2;
 localparam MUL_FAST            = 1;
 localparam MUL_FASTER          = 1;
 localparam MULH_FAST           = 1;
-localparam FAST_BRANCHCMP      = 1;
 localparam RESET_REGFILE       = 1;
 localparam BRANCH_PREDICTOR    = 1;
 localparam MTVEC_WMASK         = 32'hfffffffd;
 EOF
 
-# 4. Verilate and build.
-#
-#    Two notes on the bundled Makefile:
-#      * BUILD_DIR is keyed on the flist, not on CONFIG, and the verilate stamp does not
-#        depend on config_*.vh, so a build directory left over from a different CONFIG is
-#        silently relinked. Always start from a clean tree, as this script does.
-#      * The vlib rule forces a precompiled header (a workaround for a Verilator issue with
-#        clang) that makes GCC spend over ten minutes in a single cc1plus. Driving the
-#        generated Vtb.mk directly avoids it, so the two stamp files are made by hand.
+# 4. Verilate and build. The Makefile's vlib rule forces a precompiled header that makes
+#    GCC spend over ten minutes in one cc1plus, so drive the generated Vtb.mk directly.
 (
   cd "$INSTALL_DIR/Hazard3/test/sim/tb_verilator"
   make CONFIG=act vcc
-  make -j"$(nproc)" -C build-tb/obj_dir -f Vtb.mk
-  touch build-tb/vlib.touch
+  make -j"$(nproc)" -C build-tb-act/obj_dir -f Vtb.mk
+  touch build-tb-act/vlib.touch
   make CONFIG=act
 )
 

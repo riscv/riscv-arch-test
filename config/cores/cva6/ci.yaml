@@ -7,7 +7,10 @@
 #
 # Measured on Ara @ 34bd3bc152421b4601a7bf3d6e8e91ffb545c99e with
 # CVA6 @ 99eac9a649001bdf5b8f9da52e0ca73d5c48db1c, hierarchical Verilator model at
-# nr_lanes=4 vlen=512: 2361 tests selected, 347 pass, 2014 fail.
+# nr_lanes=4 vlen=512: 2361 tests selected, 347 pass, 2014 fail (act4, 2026-09-21).
+# On act4 at f00137e73, 424 tests remain after the exclusions below other than D, F, Sm,
+# Sv, Svade, ExceptionsSvSm, InterruptsS, InterruptsSm and SmV, and 97 of them fail; with
+# all of them, 125 selected, 125 pass.
 # Full analysis, with RTL citations and directed-probe evidence for every claim, is in
 # the discrepancy report that accompanies this config.
 
@@ -75,18 +78,40 @@ ci_enabled: true
 #                 undecoded address does not fault - it never completes, and the core
 #                 deadlocks as soon as an instruction needs the result.
 #
-#   D, F          Left ENABLED: 168 of 200 pass and the 32 failures are a real, narrow
-#                 finding worth surfacing in CI - 26 fflags mismatches and 6 wrong
-#                 results, confined to fdiv, fsqrt, the fused multiply-add family and
-#                 fcvt.d.s/fcvt.s.d. Example: fcvt.d.s of +infinity sets NX when the
-#                 conversion is exact.
+#   D, F          32 of 200 fail: 26 fflags mismatches and 6 wrong results, confined to
+#                 fdiv, fsqrt, the fused multiply-add family and fcvt.d.s/fcvt.s.d.
+#                 Example: fcvt.d.s of +infinity sets NX when the conversion is exact.
 #
-#   Sm            Left ENABLED: 17 of 27 pass. The failures are a genuine finding -
-#                 mstatus WPRI bits 38..62 are writable and read back what was written
-#                 (Sm_mcsr_walk fails on mstatus_set_bit_38 expecting 0 and reading
-#                 0x40_0000_0000), and mstatus.SD is not set by a dirty mstatus.VS
+#   Sm            10 of 27 fail. mstatus WPRI bits 38..62 are writable and read back what
+#                 was written (Sm_mcsr_walk fails on mstatus_set_bit_38 expecting 0 and
+#                 reading 0x40_0000_0000), and mstatus.SD is not set by a dirty mstatus.VS
 #                 because the SD expression at csr_regfile.sv:1940 covers only xs and fs.
-exclude_extensions: "Vx8,Vx16,Vx32,Vx64,Vls8,Vls16,Vls32,Vls64,S,U,UV,SmF,SmVF,Sstvala,Sstvecd,Ssu64xl,ZicsrF,ExceptionsF,ExceptionsS,ExceptionsSm,ExceptionsSv,ExceptionsU,ExceptionsZc"
+#
+#   Sv, Svade     22 of 28 and 2 of 2 fail, since these suites moved to S-mode trap
+#                 handling (#2430), on the sstatus.VS root cause above: the S-mode handler
+#                 records sstatus in trap signature word 0, and Sv_sv39_satp_access expects
+#                 0x0cc00661 and gets 0x0c000661, bits 23:22 being sstatus.VS. Under
+#                 translation the failure report then page-faults on the console store, so
+#                 most of these tests end with a signature offset of 0. Sv also fails
+#                 Sv_sv39_nleaf_pte_DAU_{S,U}mode because a non-leaf PTE with A, D or U
+#                 set is accepted instead of raising a page fault.
+#
+#   ExceptionsSvSm
+#                 0 of 4. The two mprv tests stop on the same load_unit.sv:556
+#                 misaligned-offset assertion as the misaligned accesses above, and the
+#                 two medeleg tests record mstatus.SPIE as 0 where the model has 1.
+#
+#   InterruptsS, InterruptsSm
+#                 10 of 11 and 15 of 21 fail. ara_system.sv ties every interrupt pin to
+#                 zero and sail.json declares no machine interrupts, so the model and the
+#                 DUT disagree on which interrupts can be raised: for example
+#                 InterruptsS_priority_sip_S sets mip.STIP and reads it back as pending,
+#                 where the model reads 0.
+#
+#   SmV           2 of 6 fail. vsetvl with vill set in rs2 returns vl = 1, where it must
+#                 set vill and vl = 0, and SmV_vcsr aborts on the acc_dispatcher.sv:435
+#                 assertion.
+exclude_extensions: "Vx8,Vx16,Vx32,Vx64,Vls8,Vls16,Vls32,Vls64,S,U,UV,SmF,SmVF,Sstvala,Sstvecd,Ssu64xl,ZicsrF,ExceptionsF,ExceptionsS,ExceptionsSm,ExceptionsSv,ExceptionsU,ExceptionsZc,D,F,Sm,Sv,Svade,ExceptionsSvSm,InterruptsS,InterruptsSm,SmV"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache libelf-dev"
 install_script: ".github/scripts/install-ara.sh"

@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import load_float_reg, write_sigupd
+from testgen.asm.helpers import check_store_canary, fill_store_canary, load_float_reg, write_sigupd
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -27,45 +27,42 @@ def format_fs_type(
     assert params.temp_reg is not None, "temp_reg must be provided for FS-type instructions"
     assert params.immval is not None, "immval must be provided for FS-type instructions"
 
+    store_bytes = {"fsh": 2, "fsw": 4, "fsd": 8, "fsq": 16}[instr_name]
+
     # Ensure rs1 is not x0 (base address)
     if params.rs1 == 0:
         test_data.int_regs.return_register(params.rs1)
         params.rs1 = test_data.int_regs.get_register(exclude_regs=[0])
 
-    # load test value
+    # load test value and fill the store target at scratch with a canary
     setup = [
         load_float_reg("fs2", params.fs2, params.fs2val, test_data, params.fp_load_type),
         "fsflagsi 0b00000 # clear all fflags",
+        *fill_store_canary(
+            params.rs1,
+            params.temp_reg,
+            test_data,
+            area_bytes=store_bytes,
+            store_val=params.fs2val,
+            store_bytes=store_bytes,
+        ),
     ]
-
-    # Move sig_reg to rs1
-    if params.rs1 != test_data.int_regs.sig_reg:
-        setup.append(
-            test_data.int_regs.move_sig_reg(params.rs1),
-        )
-        params.rs1 = None
-
-    sig_reg = test_data.int_regs.sig_reg
 
     # Handle special case where offset is -2048
     if params.immval == -2048:
         setup.extend(
             [
-                f"addi x{sig_reg}, x{sig_reg}, 2047 # increment by 2047",
-                f"addi x{sig_reg}, x{sig_reg}, 1 # increment by 1 more for total +2048",
+                f"addi x{params.rs1}, x{params.rs1}, 2047 # increment by 2047",
+                f"addi x{params.rs1}, x{params.rs1}, 1 # increment by 1 more for total +2048",
             ]
         )
     else:
-        setup.append(f"addi x{sig_reg}, x{sig_reg}, {-params.immval} # adjust base address for offset")
+        setup.append(f"addi x{params.rs1}, x{params.rs1}, {-params.immval} # adjust base address for offset")
 
-    test = [f"{instr_name} f{params.fs2}, {params.immval}(x{sig_reg}) # perform store"]
+    test = [f"{instr_name} f{params.fs2}, {params.immval}(x{params.rs1}) # perform store"]
     check = [
-        f"addi x{sig_reg}, x{sig_reg}, {params.immval} # restore base address",
-        f"addi x{sig_reg}, x{sig_reg}, SIG_STRIDE # increment signature pointer",
-        f"LREG x{params.temp_reg}, -SIG_STRIDE(x{sig_reg}) # load stored value for checking",
-        write_sigupd(params.temp_reg, test_data),
+        f"addi x{params.rs1}, x{params.rs1}, {params.immval} # restore base address",
+        *check_store_canary(params.rs1, params.temp_reg, test_data, area_bytes=store_bytes),
+        write_sigupd(None, test_data, "fflags"),
     ]
-    assert test_data.test_chunk is not None
-    test_data.test_chunk.sigupd_count += 1  # Test store writes one extra signature slot
-    check.append(write_sigupd(None, test_data, "fflags"))
     return (setup, test, check)

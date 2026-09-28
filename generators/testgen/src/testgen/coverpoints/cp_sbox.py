@@ -30,7 +30,9 @@ def make_cp_sbox(instr_name: str, instr_type: str, coverpoint: str, test_data: T
         else:  # test_data.xlen == 64
             s = sbox | sbox << 8 | sbox << 16 | sbox << 24 | sbox << 32 | sbox << 40 | sbox << 48 | sbox << 56
 
-        params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=s, rs2val=s)
+        # The _rs1 variant's instructions (aes64ks1i) have no rs2
+        rs2 = {} if coverpoint == "cp_sbox_rs1" else {"rs2val": s}
+        params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=s, **rs2)
         desc = f"{coverpoint} = {sbox}"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{sbox}", coverpoint)
         test_chunks.append(tc)

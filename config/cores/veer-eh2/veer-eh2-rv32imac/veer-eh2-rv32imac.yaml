@@ -182,9 +182,11 @@ params:
   # these interrupts can actually be raised in this configuration's runs.
   #   Quote: ".timer_int ( '0 ), .extintsrc_req ( '0 ), ... .soft_int ('0),"
   #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/testbench/tb_top.sv#L785-L833
-  MEI_INTR_IMPL: true
-  MSI_INTR_IMPL: true
-  MTI_INTR_IMPL: true
+  # ACT reads {MEI,MTI,MSI}_INTR_IMPL as the machine interrupts the platform can raise
+  # (tests/env/check_defines.h), so each is true only where rvmodel_macros.h can raise it.
+  MEI_INTR_IMPL: false
+  MSI_INTR_IMPL: false
+  MTI_INTR_IMPL: false
   # No PMA hardware: region attributes come from mrac, whose granularity is one
   # 256 MB region, but the natural access granule on the 64-bit AHB/AXI bus is 8 bytes.
   PMA_GRANULARITY: 3

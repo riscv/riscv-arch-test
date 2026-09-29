@@ -84,6 +84,7 @@ normative_rule_definitions:
         "Smmpm_cg/cp_pm_mprv_mpp_m",
         "SsnpmSm_cg/cp_pm_mprv_mpp_u",
         "SmnpmSSm_cg/cp_pm_mprv_mpp_s",
+        "SmnpmUSm_cg/cp_pm_mprv_mpp_u",
       ]
 
   # When MXR is in effect at the effective privilege mode where explicit memory

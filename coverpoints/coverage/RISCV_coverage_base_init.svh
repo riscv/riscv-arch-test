@@ -254,6 +254,10 @@
         `cover_info("//      SmnpmU - Enabled");
         `include "SmnpmU_coverage_init.svh"
     `endif
+    `ifdef COVER_SMNPMUSM
+        `cover_info("//      SmnpmUSm - Enabled");
+        `include "SmnpmUSm_coverage_init.svh"
+    `endif
     `ifdef COVER_SMSTATEEN
         `cover_info("//      Smstateen - Enabled");
         `include "Smstateen_coverage_init.svh"

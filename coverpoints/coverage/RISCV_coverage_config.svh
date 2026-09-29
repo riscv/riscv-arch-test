@@ -194,6 +194,9 @@
 `ifdef SMNPMU_COVERAGE
   `include "SmnpmU_coverage.svh"
 `endif
+`ifdef SMNPMUSM_COVERAGE
+  `include "SmnpmUSm_coverage.svh"
+`endif
 `ifdef SMSTATEEN_COVERAGE
   `include "Smstateen_coverage.svh"
 `endif

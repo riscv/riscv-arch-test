@@ -10,9 +10,9 @@ processor in OpenTitan. The configuration runs
 [Ibex Simple System](https://github.com/lowRISC/ibex/tree/master/examples/simple_system) under
 Verilator, pinned to `lowRISC/ibex` at `e9f5534`.
 
-| Config           | ISA                         | Modes                 |
-| ---------------- | --------------------------- | --------------------- |
-| `ibex-opentitan` | RV32IMC_Zba_Zbb_Zbc_Zbs_Zcb | M + U, 16 PMP entries |
+| Config           | ISA                              | Modes                 |
+| ---------------- | -------------------------------- | --------------------- |
+| `ibex-opentitan` | RV32IMC_Zba_Zbb_Zbc_Zbs_Zbkc_Zcb | M + U, 16 PMP entries |
 
 - Privileged specification 1.12.
 - PMP: 16 entries, granularity 0.

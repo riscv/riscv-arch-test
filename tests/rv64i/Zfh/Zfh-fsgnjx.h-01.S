@@ -34,6 +34,7 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 # Testcase cp_NaNBox_S_H (Test NaN-Boxed inputs)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fd (improperly boxed): f8 = 0x89abcdef
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f16) # load fs1: f16 = 0xf218
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f12) # load fs2: f12 = 0xd3ee
   fsflagsi 0b00000 # clear all fflags
@@ -309,6 +310,7 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test data
+.dword 0x0000000089abcdef
 .dword 0x0000000026ebf218
 .dword 0xffffffff8a6dd3ee
 .dword 0x0000000000000000

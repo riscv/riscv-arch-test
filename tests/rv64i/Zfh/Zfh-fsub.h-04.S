@@ -8730,6 +8730,7 @@ Zfh_fsub_h_cg_cr_fs1_fs2_edges_frm_H_fs1val_0xc93a_fs2val_0xc93a_frm_rup:
 /////////////////////////////////
 
 # Testcase cp_NaNBox_S_H (Test NaN-Boxed inputs)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fd (improperly boxed): f5 = 0x89abcdef
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f17) # load fs1: f17 = 0x638a
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f6) # load fs2: f6 = 0xf737
   fsflagsi 0b00000 # clear all fflags
@@ -10869,6 +10870,7 @@ RVTEST_DATA_BEGIN
 .dword 0x000000000000c93a
 .dword 0x000000000000c93a
 .dword 0x000000000000c93a
+.dword 0x0000000089abcdef
 .dword 0x0000000014cb638a
 .dword 0xffffffff82ddf737
 .dword 0x0000000000000000

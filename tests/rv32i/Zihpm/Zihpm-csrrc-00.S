@@ -33,6 +33,8 @@ RVTEST_BEGIN
 // cp_cntr_hpm
 /////////////////////////////////
 
+#ifdef UDB_HPM_COUNTER_EN_3
+
 # Testcase: cp_cntr (hpmcounter3)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter3, x0
@@ -49,6 +51,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter3:
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter3, Zihpm_csrrc_cg_cp_cntr_hpmcounter3_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_4
 
 # Testcase: cp_cntr (hpmcounter4)
 # Read two consecutive times to check if counter increments
@@ -67,6 +73,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter4:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter4, Zihpm_csrrc_cg_cp_cntr_hpmcounter4_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_5
+
 # Testcase: cp_cntr (hpmcounter5)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter5, x0
@@ -83,6 +93,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter5:
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter5, Zihpm_csrrc_cg_cp_cntr_hpmcounter5_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_6
 
 # Testcase: cp_cntr (hpmcounter6)
 # Read two consecutive times to check if counter increments
@@ -101,6 +115,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter6:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter6, Zihpm_csrrc_cg_cp_cntr_hpmcounter6_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_7
+
 # Testcase: cp_cntr (hpmcounter7)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter7, x0
@@ -117,6 +135,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter7:
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter7, Zihpm_csrrc_cg_cp_cntr_hpmcounter7_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_8
 
 # Testcase: cp_cntr (hpmcounter8)
 # Read two consecutive times to check if counter increments
@@ -135,6 +157,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter8:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter8, Zihpm_csrrc_cg_cp_cntr_hpmcounter8_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_9
+
 # Testcase: cp_cntr (hpmcounter9)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter9, x0
@@ -151,6 +177,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter9:
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter9, Zihpm_csrrc_cg_cp_cntr_hpmcounter9_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_10
 
 # Testcase: cp_cntr (hpmcounter10)
 # Read two consecutive times to check if counter increments
@@ -169,6 +199,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter10:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter10, Zihpm_csrrc_cg_cp_cntr_hpmcounter10_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_11
+
 # Testcase: cp_cntr (hpmcounter11)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter11, x0
@@ -185,6 +219,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter11:
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter11, Zihpm_csrrc_cg_cp_cntr_hpmcounter11_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_12
 
 # Testcase: cp_cntr (hpmcounter12)
 # Read two consecutive times to check if counter increments
@@ -203,6 +241,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter12:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter12, Zihpm_csrrc_cg_cp_cntr_hpmcounter12_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_13
+
 # Testcase: cp_cntr (hpmcounter13)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter13, x0
@@ -219,6 +261,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter13:
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter13, Zihpm_csrrc_cg_cp_cntr_hpmcounter13_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_14
 
 # Testcase: cp_cntr (hpmcounter14)
 # Read two consecutive times to check if counter increments
@@ -237,6 +283,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter14:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter14, Zihpm_csrrc_cg_cp_cntr_hpmcounter14_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_15
+
 # Testcase: cp_cntr (hpmcounter15)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter15, x0
@@ -253,6 +303,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter15:
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter15, Zihpm_csrrc_cg_cp_cntr_hpmcounter15_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_16
 
 # Testcase: cp_cntr (hpmcounter16)
 # Read two consecutive times to check if counter increments
@@ -271,6 +325,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter16:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter16, Zihpm_csrrc_cg_cp_cntr_hpmcounter16_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_17
+
 # Testcase: cp_cntr (hpmcounter17)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter17, x0
@@ -287,6 +345,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter17:
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter17, Zihpm_csrrc_cg_cp_cntr_hpmcounter17_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_18
 
 # Testcase: cp_cntr (hpmcounter18)
 # Read two consecutive times to check if counter increments
@@ -305,6 +367,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter18:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter18, Zihpm_csrrc_cg_cp_cntr_hpmcounter18_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_19
+
 # Testcase: cp_cntr (hpmcounter19)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter19, x0
@@ -321,6 +387,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter19:
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter19, Zihpm_csrrc_cg_cp_cntr_hpmcounter19_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_20
 
 # Testcase: cp_cntr (hpmcounter20)
 # Read two consecutive times to check if counter increments
@@ -339,6 +409,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter20:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter20, Zihpm_csrrc_cg_cp_cntr_hpmcounter20_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_21
+
 # Testcase: cp_cntr (hpmcounter21)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter21, x0
@@ -355,6 +429,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter21:
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter21, Zihpm_csrrc_cg_cp_cntr_hpmcounter21_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_22
 
 # Testcase: cp_cntr (hpmcounter22)
 # Read two consecutive times to check if counter increments
@@ -373,6 +451,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter22:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter22, Zihpm_csrrc_cg_cp_cntr_hpmcounter22_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_23
+
 # Testcase: cp_cntr (hpmcounter23)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter23, x0
@@ -389,6 +471,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter23:
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter23, Zihpm_csrrc_cg_cp_cntr_hpmcounter23_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_24
 
 # Testcase: cp_cntr (hpmcounter24)
 # Read two consecutive times to check if counter increments
@@ -407,6 +493,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter24:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter24, Zihpm_csrrc_cg_cp_cntr_hpmcounter24_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_25
+
 # Testcase: cp_cntr (hpmcounter25)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter25, x0
@@ -423,6 +513,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter25:
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter25, Zihpm_csrrc_cg_cp_cntr_hpmcounter25_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_26
 
 # Testcase: cp_cntr (hpmcounter26)
 # Read two consecutive times to check if counter increments
@@ -441,6 +535,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter26:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter26, Zihpm_csrrc_cg_cp_cntr_hpmcounter26_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_27
+
 # Testcase: cp_cntr (hpmcounter27)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter27, x0
@@ -457,6 +555,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter27:
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter27, Zihpm_csrrc_cg_cp_cntr_hpmcounter27_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_28
 
 # Testcase: cp_cntr (hpmcounter28)
 # Read two consecutive times to check if counter increments
@@ -475,6 +577,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter28:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter28, Zihpm_csrrc_cg_cp_cntr_hpmcounter28_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_29
+
 # Testcase: cp_cntr (hpmcounter29)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter29, x0
@@ -491,6 +597,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter29:
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter29, Zihpm_csrrc_cg_cp_cntr_hpmcounter29_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_30
 
 # Testcase: cp_cntr (hpmcounter30)
 # Read two consecutive times to check if counter increments
@@ -509,6 +619,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter30:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter30, Zihpm_csrrc_cg_cp_cntr_hpmcounter30_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_31
+
 # Testcase: cp_cntr (hpmcounter31)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter31, x0
@@ -526,7 +640,11 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter31:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter31, Zihpm_csrrc_cg_cp_cntr_hpmcounter31_str)
 
+#endif
+
 #if __riscv_xlen == 32
+
+#ifdef UDB_HPM_COUNTER_EN_3
 
 # Testcase: cp_cntr (hpmcounter3h)
 # Read two consecutive times to check if counter increments
@@ -544,6 +662,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter3h:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter3h, Zihpm_csrrc_cg_cp_cntr_hpmcounter3h_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_4
+
 # Testcase: cp_cntr (hpmcounter4h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter4h, x0
@@ -559,6 +681,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter4h:
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter4h, Zihpm_csrrc_cg_cp_cntr_hpmcounter4h_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_5
 
 # Testcase: cp_cntr (hpmcounter5h)
 # Read two consecutive times to check if counter increments
@@ -576,6 +702,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter5h:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter5h, Zihpm_csrrc_cg_cp_cntr_hpmcounter5h_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_6
+
 # Testcase: cp_cntr (hpmcounter6h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter6h, x0
@@ -591,6 +721,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter6h:
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter6h, Zihpm_csrrc_cg_cp_cntr_hpmcounter6h_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_7
 
 # Testcase: cp_cntr (hpmcounter7h)
 # Read two consecutive times to check if counter increments
@@ -608,6 +742,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter7h:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter7h, Zihpm_csrrc_cg_cp_cntr_hpmcounter7h_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_8
+
 # Testcase: cp_cntr (hpmcounter8h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter8h, x0
@@ -623,6 +761,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter8h:
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter8h, Zihpm_csrrc_cg_cp_cntr_hpmcounter8h_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_9
 
 # Testcase: cp_cntr (hpmcounter9h)
 # Read two consecutive times to check if counter increments
@@ -640,6 +782,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter9h:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter9h, Zihpm_csrrc_cg_cp_cntr_hpmcounter9h_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_10
+
 # Testcase: cp_cntr (hpmcounter10h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter10h, x0
@@ -655,6 +801,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter10h:
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter10h, Zihpm_csrrc_cg_cp_cntr_hpmcounter10h_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_11
 
 # Testcase: cp_cntr (hpmcounter11h)
 # Read two consecutive times to check if counter increments
@@ -672,6 +822,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter11h:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter11h, Zihpm_csrrc_cg_cp_cntr_hpmcounter11h_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_12
+
 # Testcase: cp_cntr (hpmcounter12h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter12h, x0
@@ -687,6 +841,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter12h:
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter12h, Zihpm_csrrc_cg_cp_cntr_hpmcounter12h_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_13
 
 # Testcase: cp_cntr (hpmcounter13h)
 # Read two consecutive times to check if counter increments
@@ -704,6 +862,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter13h:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter13h, Zihpm_csrrc_cg_cp_cntr_hpmcounter13h_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_14
+
 # Testcase: cp_cntr (hpmcounter14h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter14h, x0
@@ -719,6 +881,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter14h:
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter14h, Zihpm_csrrc_cg_cp_cntr_hpmcounter14h_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_15
 
 # Testcase: cp_cntr (hpmcounter15h)
 # Read two consecutive times to check if counter increments
@@ -736,6 +902,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter15h:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter15h, Zihpm_csrrc_cg_cp_cntr_hpmcounter15h_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_16
+
 # Testcase: cp_cntr (hpmcounter16h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter16h, x0
@@ -751,6 +921,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter16h:
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter16h, Zihpm_csrrc_cg_cp_cntr_hpmcounter16h_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_17
 
 # Testcase: cp_cntr (hpmcounter17h)
 # Read two consecutive times to check if counter increments
@@ -768,6 +942,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter17h:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter17h, Zihpm_csrrc_cg_cp_cntr_hpmcounter17h_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_18
+
 # Testcase: cp_cntr (hpmcounter18h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter18h, x0
@@ -783,6 +961,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter18h:
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter18h, Zihpm_csrrc_cg_cp_cntr_hpmcounter18h_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_19
 
 # Testcase: cp_cntr (hpmcounter19h)
 # Read two consecutive times to check if counter increments
@@ -800,6 +982,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter19h:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter19h, Zihpm_csrrc_cg_cp_cntr_hpmcounter19h_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_20
+
 # Testcase: cp_cntr (hpmcounter20h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter20h, x0
@@ -815,6 +1001,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter20h:
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter20h, Zihpm_csrrc_cg_cp_cntr_hpmcounter20h_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_21
 
 # Testcase: cp_cntr (hpmcounter21h)
 # Read two consecutive times to check if counter increments
@@ -832,6 +1022,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter21h:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter21h, Zihpm_csrrc_cg_cp_cntr_hpmcounter21h_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_22
+
 # Testcase: cp_cntr (hpmcounter22h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter22h, x0
@@ -847,6 +1041,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter22h:
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter22h, Zihpm_csrrc_cg_cp_cntr_hpmcounter22h_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_23
 
 # Testcase: cp_cntr (hpmcounter23h)
 # Read two consecutive times to check if counter increments
@@ -864,6 +1062,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter23h:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter23h, Zihpm_csrrc_cg_cp_cntr_hpmcounter23h_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_24
+
 # Testcase: cp_cntr (hpmcounter24h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter24h, x0
@@ -879,6 +1081,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter24h:
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter24h, Zihpm_csrrc_cg_cp_cntr_hpmcounter24h_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_25
 
 # Testcase: cp_cntr (hpmcounter25h)
 # Read two consecutive times to check if counter increments
@@ -896,6 +1102,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter25h:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter25h, Zihpm_csrrc_cg_cp_cntr_hpmcounter25h_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_26
+
 # Testcase: cp_cntr (hpmcounter26h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter26h, x0
@@ -911,6 +1121,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter26h:
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter26h, Zihpm_csrrc_cg_cp_cntr_hpmcounter26h_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_27
 
 # Testcase: cp_cntr (hpmcounter27h)
 # Read two consecutive times to check if counter increments
@@ -928,6 +1142,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter27h:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter27h, Zihpm_csrrc_cg_cp_cntr_hpmcounter27h_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_28
+
 # Testcase: cp_cntr (hpmcounter28h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter28h, x0
@@ -943,6 +1161,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter28h:
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter28h, Zihpm_csrrc_cg_cp_cntr_hpmcounter28h_str)
+
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_29
 
 # Testcase: cp_cntr (hpmcounter29h)
 # Read two consecutive times to check if counter increments
@@ -960,6 +1182,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter29h:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter29h, Zihpm_csrrc_cg_cp_cntr_hpmcounter29h_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_30
+
 # Testcase: cp_cntr (hpmcounter30h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter30h, x0
@@ -976,6 +1202,10 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter30h:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter30h, Zihpm_csrrc_cg_cp_cntr_hpmcounter30h_str)
 
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_31
+
 # Testcase: cp_cntr (hpmcounter31h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter31h, x0
@@ -991,6 +1221,8 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter31h:
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter31h, Zihpm_csrrc_cg_cp_cntr_hpmcounter31h_str)
+
+#endif
 
 #endif
 

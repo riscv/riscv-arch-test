@@ -4,11 +4,11 @@
 experimental = true
 
 [tools]
-prek = "0.5.2"
+prek = "0.5.3"
 ruby = "3.4.10"
 shellcheck = "0.11.0"
 uv = "0.11.33"
-"gem:bundler" = "4.0.20"
+"gem:bundler" = "4.0.21"
 
 [settings.ruby]
 compile = false

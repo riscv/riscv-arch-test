@@ -28,6 +28,16 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
     # Mode mapping
     mode_map = {"M": "3", "S": "1", "HS": "1", "U": "0"}
 
+    # sip and sie are restricted views of mip and mie through mideleg, and Sail logs only the view
+    # that was accessed. A csrrs to sip therefore leaves the mip the covergroups read unchanged, so
+    # an interrupt S-mode raised for itself is invisible to any coverpoint keyed on mip. Mirror the
+    # S view back into the M register: the delegated bits take the logged value and the rest keep
+    # what mip/mie already held. A read mirrors to the same value it already has, so it costs
+    # nothing and resynchronises after a write this converter did not see.
+    SIP, MIP, SIE, MIE, MIDELEG = 0x144, 0x344, 0x104, 0x304, 0x303
+    s_view_of = {SIP: MIP, SIE: MIE}
+    csr_state: dict[int, int] = {}
+
     # TODO: Add support for parsing traps, interrupts, and VM signals
 
     # Main parsing of log file
@@ -49,21 +59,33 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
                 # mode at the end of the instruction but Sail logs have the mode at the start of the instruction.
                 next_output = f"ORDER {order} PC {pc} INSN {insn} MODE " + "{mode_num}"
 
-                # Check for register updates until the next instruction line
+                # Check for register updates until the next instruction line.  Sail logs every
+                # element a vector instruction writes as a separate whole-register update, so a
+                # vector load can log a register a thousand times; only the final value of each
+                # register matters, so keep the last write per register in first-write order.
+                reg_writes: dict[tuple[str, str], str] = {}
                 j = i + 1
                 while j < len(lines):
-                    reg_match = None
-                    reg_type = None
                     for reg, pattern in reg_patterns.items():
                         reg_match = pattern.search(lines[j])
                         if reg_match:
-                            reg_type = reg
                             reg_num, reg_val = reg_match.groups()
-                            next_output += f" {reg_type} {reg_num} {reg_val}"
+                            reg_writes[(reg, reg_num)] = reg_val
+                            if reg == "CSR":
+                                csr_num, csr_val = int(reg_num, 16), int(reg_val, 16)
+                                csr_state[csr_num] = csr_val
+                                m_num = s_view_of.get(csr_num)
+                                if m_num is not None:
+                                    mideleg = csr_state.get(MIDELEG, 0)
+                                    m_val = (csr_state.get(m_num, 0) & ~mideleg) | (csr_val & mideleg)
+                                    csr_state[m_num] = m_val
+                                    reg_writes[("CSR", f"{m_num:x}")] = f"{m_val:016x}"
                             break
                     if insn_pattern.search(lines[j]):
                         break
                     j += 1
+                for (reg_type, reg_num), reg_val in reg_writes.items():
+                    next_output += f" {reg_type} {reg_num} {reg_val}"
 
                 # Reached end of instruction
                 next_output += "\n"

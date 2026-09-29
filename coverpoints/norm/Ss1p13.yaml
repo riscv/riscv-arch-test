@@ -3,5 +3,5 @@
 
 # If S-mode is implemented, the set of legal values that the UXL field may assume
 # excludes those that would cause UXLEN to be greater than SXLEN.
-- name: MSTATUS_UXL_LEGAL_VALS_SMODE
+- name: mstatus_uxl_legal_vals_smode
   coverpoint: ["S_sstatus_cg/cp_sxlen_ge_uxlen"]

@@ -119,6 +119,13 @@ implemented_extensions:
   #     atomics always trap, so the pair is not declared as a unit.
 
 params:
+  # misa.X (bit 23) is hardwired 1: the XuanTie custom extensions (XThead*) exist.
+  # RVMODEL_BOOT clears mxstatus.THEADISAEE so they are disabled while ACT runs, but
+  # misa is read-only and X still reads 1, and UDB uses this parameter as misa.X.
+  #   Quote: "assign extensions[25:0] = {2'b0, 2'b10, misa_vector, ...};"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L1736-L1738
+  NON_STANDARD_EXTENSION_IMPLEMENTED: true
+
   # ---------------- A ----------------
   # Misaligned atomics ALWAYS raise cause 6, regardless of mxstatus.MM.
   #   Quote: "assign ld_ag_expt_misalign_no_page = ld_ag_unalign
@@ -150,6 +157,12 @@ params:
   TIME_CSR_IMPLEMENTED: true
 
   # ---------------- U ----------------
+  # WFI in U-mode always raises illegal instruction, regardless of mstatus.TW.  (The
+  # user manual, 14.1.61, lists "M mode/S mode/U mode" and no exception; the RTL
+  # disagrees - recorded as a discrepancy.)
+  #   Quote: "assign iui_u_inv = iui_u_mode && (... || iui_inst_wfi || ...);"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_iui.v#L1334-L1340
+  WFI_U_MODE: false
   MUTABLE_MISA_U: false
   # mstatus.UBE/SBE/MBE are inside hardwired-zero fields, so the hart is
   # little-endian only.
@@ -162,6 +175,17 @@ params:
   TRAP_ON_ECALL_FROM_U: true
 
   # ---------------- S ----------------
+  # mie.SEIE/STIE/SSIE and mideleg bits 9/5/1 are writable.  In the SoC the PLIC drives
+  # the S external interrupt and the CLINT drives the S timer and software interrupts.
+  #   Quote: "seie <= iui_regs_src0[9]; ... stie <= iui_regs_src0[5]; ... ssie <= iui_regs_src0[1];"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L1868-L1877
+  #   Quote: "assign plic_core0_se_int  = plic_hartx_sint_req[0];"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cpu/rtl/openC910.v#L1655-L1656
+  #   Quote: "assign clint_core0_ss_int = ssip0_reg;" / "assign clint_core0_st_int = ..."
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/clint/rtl/ct_clint_func.v#L495-L501
+  SEI_INTR_IMPL: true
+  SSI_INTR_IMPL: true
+  STI_INTR_IMPL: true
   MUTABLE_MISA_S: false
   # satp.ASID is 16 bits.
   #   Quote: "parameter ASID_WIDTH = 16;"
@@ -252,6 +276,29 @@ params:
   MSTATUS_VS_LEGAL_VALUES: [0]
 
   # ---------------- Sm ----------------
+  # mie.MEIE/MTIE/MSIE are writable; the PLIC drives MEI and the CLINT drives MTI/MSI.
+  #   Quote: "meie <= iui_regs_src0[11]; ... mtie <= iui_regs_src0[7]; ... msie <= iui_regs_src0[3];"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L1868-L1877
+  #   Quote: "assign plic_core0_me_int  = plic_hartx_mint_req[0];"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cpu/rtl/openC910.v#L1655-L1656
+  #   Quote: "assign clint_core0_ms_int = msip0_reg;" / "assign clint_core0_mt_int = ..."
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/clint/rtl/ct_clint_func.v#L495-L501
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+  # WFI has no timeout: the core stays in low-power mode until an enabled interrupt
+  # is pending, a debug request arrives, or reset.
+  #   Quote: "else if((had_cp0_xx_dbg || regs_lpmd_int_vld) && cpu_in_lpmd || rtu_yy_xx_dbgon)
+  #             lpmd_b[1:0] <= 2'b11;"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_lpmd.v#L198-L204
+  #   Quote: "assign regs_lpmd_int_vld = meip_en || mtip_en || msip_en || moip_en || mcip_en
+  #                                   || seip_en || stip_en || ssip_en;"
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L4011-L4012
+  #   Quote (user manual 11.3, p.88): "当发生下列事件时，核心会被唤醒并退出 WFI 模式：
+  #   复位；中断请求……；调试请求。"
+  #   ("The core is woken and leaves WFI mode on: reset; an interrupt request ...;
+  #   a debug request.")
+  WFI_FINITE: false
   MXLEN: 64
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
@@ -385,6 +432,24 @@ params:
       false,
       false,
     ]
+  # Every implemented counter is 64 bits (see "reg [63:0] counter;" above).
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/pmu/rtl/ct_hpcp_cnt.v#L50
+  HPM_COUNTER3_WIDTH: 64
+  HPM_COUNTER4_WIDTH: 64
+  HPM_COUNTER5_WIDTH: 64
+  HPM_COUNTER6_WIDTH: 64
+  HPM_COUNTER7_WIDTH: 64
+  HPM_COUNTER8_WIDTH: 64
+  HPM_COUNTER9_WIDTH: 64
+  HPM_COUNTER10_WIDTH: 64
+  HPM_COUNTER11_WIDTH: 64
+  HPM_COUNTER12_WIDTH: 64
+  HPM_COUNTER13_WIDTH: 64
+  HPM_COUNTER14_WIDTH: 64
+  HPM_COUNTER15_WIDTH: 64
+  HPM_COUNTER16_WIDTH: 64
+  HPM_COUNTER17_WIDTH: 64
+  HPM_COUNTER18_WIDTH: 64
   HPM_EVENTS: [0]
   # mcountinhibit (0x320) exists with CY (bit 0), IR (bit 2) and HPM3..31 (bits 31:3);
   # bit 1 is read-only zero, as the architecture requires.

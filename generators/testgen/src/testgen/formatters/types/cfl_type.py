@@ -11,7 +11,7 @@ from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
 
 cfl_config = InstructionTypeConfig(
-    required_params={"fd", "rs1", "immval", "temp_val"},
+    required_params={"fd", "rs1", "immval", "temp_fval"},
     reg_range=range(8, 16),
     imm_bits=8,
     imm_signed=False,
@@ -24,7 +24,7 @@ def format_cfl_type(
 ) -> tuple[list[str], list[str], list[str]]:
     """Format CFL-type instruction."""
     assert params.rs1 is not None
-    assert params.temp_val is not None
+    assert params.temp_fval is not None
     assert params.fd is not None and params.immval is not None
 
     # Determine alignment requirement and max value: c.fld needs 8-byte, c.flw needs 4-byte
@@ -44,7 +44,7 @@ def format_cfl_type(
 
     # Add value to load data region
     assert test_data.test_chunk is not None
-    test_data.test_chunk.data_values.append(params.temp_val)
+    test_data.test_chunk.data_values.append(params.temp_fval)
 
     setup = [
         "fsflagsi 0b00000 # clear all fflags",

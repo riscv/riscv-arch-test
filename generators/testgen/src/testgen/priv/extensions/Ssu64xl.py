@@ -39,6 +39,8 @@ def _generate_ssu64xl_tests(test_data: TestData) -> list[str]:
             f"csrw sstatus, x{uxl_reg}",
             test_data.add_testcase("uxl_is_10", coverpoint, covergroup),
             f"csrr x{uxl_reg}, sstatus",
+            f"srli x{uxl_reg}, x{uxl_reg}, 32",  # keep only UXL (sstatus bits 33:32)
+            f"andi x{uxl_reg}, x{uxl_reg}, 3",
             write_sigupd(uxl_reg, test_data),
             "",
             "RVTEST_TSBI_GOTO_UMODE",

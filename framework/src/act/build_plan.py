@@ -88,11 +88,14 @@ def _ref_model_sig_cmd(
     sig_trace_file: Path,
     xlen: int,
     debug: bool,
+    enable_experimental_extensions: bool,
 ) -> list[str]:
     """Build the command for invoking the reference model to produce a signature file."""
     if config.ref_model_type == RefModelType.SAIL:
         sail_config_path = config.dut_include_dir / "sail.json"
         cmd = [str(config.ref_model_exe)]
+        if enable_experimental_extensions:
+            cmd.append("--enable-experimental-extensions")
         if debug:
             cmd.append("--trace")
             cmd.extend(["--trace-output", str(sig_trace_file)])
@@ -129,6 +132,7 @@ def gen_compile_tasks(
     ref_model_inputs: tuple[Path, ...] = (),
     debug: bool = False,
     fast: bool = False,
+    enable_experimental_extensions: bool = False,
 ) -> list[BuildTask]:
     """Generate BuildTasks for the compilation pipeline of a single test.
 
@@ -233,7 +237,9 @@ def gen_compile_tasks(
             )
 
         # 2. sig – run reference model
-        ref_model_cmd = _ref_model_sig_cmd(config, sig_elf, sig_file, sig_trace_file, xlen, debug)
+        ref_model_cmd = _ref_model_sig_cmd(
+            config, sig_elf, sig_file, sig_trace_file, xlen, debug, enable_experimental_extensions
+        )
         ref_model_outputs = (sig_file, sig_trace_file) if debug else (sig_file,)
         tasks.append(
             BuildTask(
@@ -322,6 +328,7 @@ def gen_rvvi_tasks(
     config: Config,
     ref_model_inputs: tuple[Path, ...] = (),
     fast: bool = False,
+    enable_experimental_extensions: bool = False,
 ) -> list[BuildTask]:
     """Generate BuildTasks for RVVI trace generation (coverage pipeline).
 
@@ -356,15 +363,19 @@ def gen_rvvi_tasks(
         )
 
     # Run Sail with trace
-    sail_cmd = [
-        str(config.ref_model_exe),
-        "--trace",
-        "--trace-output",
-        str(sail_trace),
-        "--config",
-        str(config.dut_include_dir / "sail.json"),
-        str(elf),
-    ]
+    sail_cmd = [str(config.ref_model_exe)]
+    if enable_experimental_extensions:
+        sail_cmd.append("--enable-experimental-extensions")
+    sail_cmd.extend(
+        [
+            "--trace",
+            "--trace-output",
+            str(sail_trace),
+            "--config",
+            str(config.dut_include_dir / "sail.json"),
+            str(elf),
+        ]
+    )
     tasks.append(
         BuildTask(
             outputs=(sail_trace,),
@@ -398,6 +409,7 @@ def gen_coverage_tasks(
     coverage_simulator: CoverageSimulator,
     verbose: bool = False,
     dry_run: bool = False,
+    enable_experimental_extensions: bool = False,
 ) -> list[BuildTask]:
     """Generate BuildTasks for coverage UCDB generation, reports, and summary merging."""
     tasks: list[BuildTask] = []
@@ -449,7 +461,12 @@ def gen_coverage_tasks(
 
         # Coverage collection task
         coverage_tag = f"{coverage_group.stem.upper()}_COVERAGE"
-        coverage_defines = f"{coverage_tag} FCOV_VERBOSE" if verbose else coverage_tag
+        coverage_define_list = [coverage_tag]
+        if verbose:
+            coverage_define_list.append("FCOV_VERBOSE")
+        if enable_experimental_extensions:
+            coverage_define_list.append("ENABLE_EXPERIMENTAL_EXTENSIONS")
+        coverage_defines = " ".join(coverage_define_list)
         if coverage_simulator == CoverageSimulator.QUESTA:
             do_script = (
                 f"do {sim_script} "
@@ -537,6 +554,7 @@ def generate_build_plan(
     fast: bool = False,
     verbose: bool = False,
     dry_run: bool = False,
+    enable_experimental_extensions: bool = False,
 ) -> list[BuildTask]:
     """Build the full DAG of tasks for a single config."""
     if coverage_enabled and config.ref_model_type != RefModelType.SAIL:
@@ -591,6 +609,7 @@ def generate_build_plan(
                 ref_model_inputs,
                 debug,
                 fast,
+                enable_experimental_extensions,
             )
         )
 
@@ -608,6 +627,7 @@ def generate_build_plan(
                     config,
                     ref_model_inputs,
                     fast,
+                    enable_experimental_extensions,
                 )
             )
 
@@ -624,6 +644,7 @@ def generate_build_plan(
                 coverage_simulator,
                 verbose,
                 dry_run,
+                enable_experimental_extensions,
             )
         )
 

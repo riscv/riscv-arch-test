@@ -24,6 +24,7 @@ include::norm/Zifencei_norm_rules.adoc[]
 [[t-Zifencei-coverpoint-definitions]]
 .Zifencei Coverpoint Definitions
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Coverpoint|Bins|Definition
 |cp_custom_fencei|4|Executes normal `fence.i` and `fence.i` instructions with nonzero rs1, rd, and funct12 fields to verify that they execute without trapping.
@@ -37,7 +38,7 @@ The Zifencei tests must write an instruction to an address, execute `fence.i`, a
 
 Misaligned loads/stores to main memory optionally can be handled in hardware.  When the UDB MISALIGNED_LDST parameter is true, misaligned scalar loads and stores to main memory do not throw an exception.  This parameter is a simplification of the "Access Type PMAs" which could define misaligned behavior on each memory region.
 
-The misaligned family of tests exercises integer, compressed, and single/double/quad-precision floating-point loads/stores.  It uses the new cp_misalign coverpoint defined in <<t-Misaligned-modified-coverpoints>>. It assumes that if these work, then Zfh and Zcb loads/stores will also work correctly.  Misaligned atomics are exercised with {ExceptionsZaamo, ExceptionsZalrsc}/{cp_amo/load/store_address_misaligned}. Misaligned vector load/stores are exercised in <<MisalignV>>.
+The misaligned family of tests exercises integer, compressed, and single/double/quad-precision floating-point loads/stores.  It uses the new cp_misalign coverpoint defined in <<t-Misalign-coverpoint-definitions>>. It assumes that if these work, then Zfh and Zcb loads/stores will also work correctly.  Misaligned atomics are exercised with {ExceptionsZaamo, ExceptionsZalrsc}/{cp_amo/load/store_address_misaligned}. Misaligned vector load/stores are exercised in <<MisalignV>>.
 
 include::{testplansdir}/Misalign.adoc[]
 
@@ -62,6 +63,7 @@ include::norm/MisalignZca_norm_rules.adoc[]
 [[t-Misalign-coverpoint-definitions]]
 .Misalign Coverpoint Definitions
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Modified Coverpoint|Bins|Definition
 |cp_misalign|8|All 8 combinations of the three least significant bits of the address.
@@ -106,6 +108,7 @@ This rule is checked by the time bin of cp_cntr coverpoint.
 [[t-Zicntr-coverpoint-definition]]
 .Zicntr Coverpoint Definition
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Coverpoint|Bins|Definition
 |cp_cntr|3|Read each of the counters (`cycle`, `time`, `instret`) twice using `csrrs rd, csr, x0` and check that the difference is exactly right for `instret`, or at least 1 for `cycle`, 0 for `time` (`time` may not increment between reads).
@@ -124,6 +127,7 @@ include::norm/Zihpm_norm_rules.adoc[]
 [[t-Zihpm-modified-coverpoints]]
 .Zihpm Coverpoint Definition
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Coverpoint|Bins|Definition
 |cp_cntr_hpm|29|Read each of the HPMs twice and check that the difference is non-negative.  For RV32, also check the high halves of each HPM.
@@ -170,6 +174,7 @@ The `cbo.zero` instruction zeros a cache line.  The cache line size may vary fro
 [[t-Zicbo-coverpoint-definition]]
 .Zicbo Coverpoint Definition
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Coverpoint|Bins|Definition
 |cp_custom_cbo|65*2|Writes 65 words (260 bytes) of arbitrary data to scratch memory, executes `cbo` instruction at the aligned start of scratch, and then reads back all 260 bytes and stores them to the signature.  The first cache line (often 64 bytes) of data should be zeroed and the rest unchanged.  It repeats this operation with an offset of 255 bytes.  The instruction ignores the offset within a cache line, so for 64-byte lines, this would zero bytes 192-255 and leave the others unchanged.
@@ -198,20 +203,12 @@ include::norm/Zicbop_norm_rules.adoc[]
 
 ==== Za64rs Max 64B Reservation Set
 
-[[t-Za64rs-coverpoints]]
-.Za64rs Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=910803819#gid=910803819[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/Za64rs.adoc[]
 
 include::norm/Za64rs_norm_rules.adoc[]
 
 ==== Zic64bZicboz 64B Cache Block Zero
 
-[[t-Zic64bZicboz-coverpoints]]
-.Zic64bZicboz Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1677990180#gid=1677990180[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/Zic64bZicboz.adoc[]
 
 include::norm/Zic64b_norm_rules.adoc[]

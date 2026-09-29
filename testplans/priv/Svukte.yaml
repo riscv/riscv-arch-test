@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Svukte
+source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=2065954789#gid=2065954789
+coverpoints:
+  - name: |-
+      cp_svukte_qualified_exec_fault
+      cp_svukte_qualified_read_fault
+      cp_svukte_qualified_write_fault
+    goal: Test qualified accesses from U-mode
+    description: While in U-mode, with senvcfg.UKTE=1 and any non-bare address translation mode (satp={SV39, SV48, SV57}) an access with vaddr >= (XLEN-1)^2 is Svukte-qualified.
+    expectation: Accesses should all cause the corresponding fault based on their access type
+    bins: 3 non-bare SATP modes (each)
+  - name: |-
+      cp_svukte_qualified_mprv_read_fault
+      cp_svukte_qualified_mprv_write_fault
+    goal: Test accesses with effective U-mode from M-mode
+    description: |-
+      If MPRV=1 and MPP=U, accesses will have effective U-mode.
+
+      Thus, with senvcfg.UKTE=1 and any non-bare address translation mode (satp={SV39, SV48, SV57}), accesses with vaddr >= (XLEN-1)^2 will be Svukte-qualified.
+    bins: 3 non-bare SATP modes (each)
+  - name: |-
+      cp_svukte_qualified_vu_exec_fault
+      cp_svukte_qualified_vu_read_fault
+      cp_svukte_qualified_vu_write_fault
+    goal: Test accesses from VU-mode
+    description: While in VU-mode, with senvcfg.UKTE=1 and any non-bare address translation mode (satp={SV39, SV48, SV57}) an access with vaddr >= (XLEN-1)^2 is Svukte-qualified.
+    bins: 3 non-bare VSATP modes (each)
+  - name: |-
+      cp_svukte_qualified_hs_read_fault
+      cp_svukte_qualified_hs_write_fault
+    goal: Test accesses with effective VU-mode from HS-mode
+    description: While in effective VU-mode, with senvcfg.UKTE=1 and any non-bare address translation mode (satp={SV39, SV48, SV57}) an access with vaddr >= (XLEN-1)^2 is Svukte-qualified.
+    bins: 3 non-bare VSATP modes (each)
+  - name: |-
+      cp_svukte_qualified_hukte_read_fault
+      cp_svukte_qualified_hukte_write_fault
+    goal: Test accesses virtual accesses from U-mode
+    description: When an hlv, hlvx or hsv instruction is executed in U-mode (which is allowed if hstatus.HU=1), the access should be Svukte-qualified as if senvcfg.UKTE was set to the value of hstatus.HUKTE.
+    expectation: |-
+      If hstatus.HUKTE=1, accesses should fail
+      If hstatus.HUKTE=0, accesses should not fail
+    bins: 3 non-bare VSATP modes (each) * 2 HUKTE values
+  - name: "*"
+    goal: Test non-Svukte-qualified accesses
+    description: Accesses that do not have effective U-mode, are using Bare address translation, or the other qualifying criteria are not Svukte-qualified
+    expectation: Non-qualified accesses should succeed

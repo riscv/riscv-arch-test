@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Svpbmt
+source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=375458051#gid=375458051
+coverpoints:
+  - name: nonleaf_PTE_pbmt
+    goal: Test that a non-leaf PTE faults when PBMT bits are set
+    description: |-
+      For non-leaf PTEs, bits 62-61 are reserved for future standard use.
+
+      Test Cases:
+      With menvcfg.PBMTE=1, setup a valid non-leaf PTE with PBMT=1. Store, load & execute using that PTE.
+      With menvcfg.PBMTE=1, setup a valid non-leaf PTE with PBMT=2. Store, load & execute using that PTE.
+      With menvcfg.PBMTE=1, setup a valid non-leaf PTE with PBMT=3. Store, load & execute using that PTE.
+
+      Test for SV39, SV48 & SV57
+      Test in both Supervisor & User modes
+
+      Test Environment:
+      All PMP permissions on targated pages if PMP is enabled
+      Execute sfence.vma before accessign the PTE.
+    expectation: |-
+      3 Store page faults
+      3 Load page faults
+      3 Instruction page faulsts
+    bins: 3 PBMT encodings * 2 priv modes * 3 access
+  - name: leaf_PTE_pbmt_reserved_enc
+    goal: Test that leaf PTE faults when PBMT field is set to 3
+    description: |-
+      For leaf PTEs, setting bits 62-61 to the value 3 is reserved for future standard use.
+
+      Test Case:
+      With menvcfg.PBMTE=1, setup a valid leaf PTE with PBMT=3 and RWX permissions. Store, load & execute using that PTE.
+
+      Test for SV39, SV48 & SV57
+      Test for all levels
+      Test in both Supervisor & User mode
+
+      Test Environment:
+       All PMP permissions on targated pages if PMP is enabled
+       Execute sfence.vma before accessign the PTE.
+    expectation: Store, load & instruction page fault
+    bins: 1 PBMT encoding * 2 priv modes * (3 Sv39 +4 Sv48 + 5 Sv57) levels * 3 access
+  - name: leaf_PTE_pbmt
+    goal: Test that setting PBMT field of PTE to legal values succeed when menvcfg.PBMTE=1
+    description: |-
+      Test Case:
+      With menvcfg.PBMTE=1, setup a valid leaf PTE with PBMT=1 and RWX permissions. Store, load & execute using that PTE.
+      With menvcfg.PBMTE=1, setup a valid leaf PTE with PBMT=2 and RWX permissions. Store, load & execute using that PTE.
+
+      Test for SV39, SV48 & SV57
+      Test for all levels
+      Test in both Supervisor & User mode
+
+      Test Environment:
+       All PMP permissions on targated pages if PMP is enabled
+       Execute sfence.vma before accessign the PTE.
+    expectation: No fault
+    bins: 2 PBMT encodings * 2 priv modes * (3 Sv39 +4 Sv48 + 5 Sv57) levels * 3 access

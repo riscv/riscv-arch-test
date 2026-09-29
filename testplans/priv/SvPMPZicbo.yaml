@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SvPMPZicbo
+source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1563579846#gid=1563579846
+coverpoints:
+  - name: pmp.1
+    goal: PMP permissions on Physical Address
+    description: |-
+      If PTE has valid and non-reserved RWX permissions, but the translated Physical address (pte.ppn of leaf PTE + offset) does not have (r,w,x) PMP permissions, then accessing the translated Physical address would raise access fault exception.
+
+      Test in superviosr and user privilege mode for PTE at all levels
+      Test Environment:
+      Set satp.mode = sv32, sv39, sv48 & sv57
+      Valid PTE, with no reserved encodings
+      There should not be any page fault condition
+
+      Test Cases:
+       Remove {r,w} PMP permission of translated Physical Address in pmpcfg and access it using Zicbom & Zicboz instructions.
+    expectation: store/AMO access fault raised
+    check: Check against RM
+    status: Done
+    coverage: Uncovered
+    notes: "feature: Exception in VM"
+  - name: pmp.2
+    goal: PMP permissions on PTE
+    description: |-
+      If PTE does not have read PMP permissions, then accessing it during page table walk would raise access fault exception of the corresponding access type.
+
+      Test in supervisor and user privilege mode for PTE at all levels
+      Test Environment:
+      Set satp.mode = sv32, sv39, sv48 and sv57
+      Valid PTE, with no reserved encodings
+      There should not be any page fault condition
+
+      Test Cases:
+      Remove read PMP permission of PTE address in pmpcfg and execute Zicbom & Zicboz instructions (using a VA which accesses that PTE).
+    expectation: store/AMO access fault raised
+    check: Check against RM
+    status: Done
+    coverage: Uncovered

@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: ExceptionsSvZalrsc
+source: https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=287426144#gid=287426144
+description: |
+  This testplan is for systems supporting supervisor mode and virtual memory.
+  Also requires Zalrsc
+  The following coverpoints should be exercised in machine mode.
+coverpoints:
+  - name: cp_misaligned_priority_m
+    goal: Priority of exceptions
+    description: Attempt lr.w and sc.w from memory location causing {access fault and page fault}, {page fault and misaligned}, {access fault, page fault, misaligned}
+    notes: M-mode needs MPRV to S or U mode to be able to cause access fault.
+  - name: cp_medeleg_m
+    goal: Machine mode exception not affected by medeleg
+    description: Attempt lr.w and sc.w causing page faults crossed crossed with medeleg = [ {1011_0011_1111_1111}, {0}, and 13 different walking 1s]
+    notes: medeleg should not affect machine mode exceptions
+  - heading: The following coverpoints should be exercised in supervisor mode
+  - name: cp_misaligned_priority_s
+    goal: Priority of exceptions
+    description: Attempt lr.w and sc.w from memory location causing {access fault and page fault}, {page fault and misaligned}, {access fault, page fault, misaligned}
+  - name: cp_medeleg_s
+    goal: Delegation to supervisor mode
+    description: Attempt lr.w and sc.w causing page faults crossed crossed with medeleg = [ {1011_0011_1111_1111}, {0}, and 13 different walking 1s]
+    notes: Should delegate when a 1 is in the appropriate column.
+  - heading: The following coverpoints should be exercised in user mode
+  - name: cp_misaligned_priority_u
+    goal: Priority of exceptions
+    description: Attempt lr.w and sc.w from memory location causing {access fault and page fault}, {page fault and misaligned}, {access fault, page fault, misaligned}
+  - name: cp_medeleg_u
+    goal: Delegation to supervisor mode
+    description: Attempt lr.w and sc.w causing page faults crossed crossed with medeleg = [ {1011_0011_1111_1111}, {0}, and 13 different walking 1s]
+    notes: Should delegate when a 1 is in the appropriate column.

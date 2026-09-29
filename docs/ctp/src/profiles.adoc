@@ -112,7 +112,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |ExceptionsSvZaamo|Virt Mem AMO Exceptions|<<t-ExceptionsSvZaamo-coverpoints>>|||x|x|x
 |InterruptsSm|Machine Interrupts|<<t-InterruptsSm-coverpoints>>||x|x|x|x
 |InterruptsS|Supervisor Interrupts|<<t-InterruptsS-coverpoints>>|||x|x|x
-|InterruptsU|User Interrupts|<<t-InterruptsU-coverpoints>>|||x|x|x
 |SstcSm|Machine Supervisor Timer Compare|<<t-SstcSm-coverpoints>>|||x|x|x
 |Sstc|Supervisor Timer Compare|<<t-Sstc-coverpoints>>|||x|x|x
 |ZicntrS|Supervisor Counters|<<t-ZicntrS-coverpoints>>|||x|x|x
@@ -135,6 +134,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |PMPZalrsc|LR/SC PMP|<<t-PMPZalrsc-coverpoints>>|||x|x|x
 |Svbare|No Virtual Memory|<<t-Svbare-coverpoints>>|||x|x|x
 |Sv|Sv32/39/48/57 Virtual Memory|<<t-Sv-coverpoints>>|||x|x|x
+|SvSm|Machine-Mode Virtual Memory|<<t-SvSm-coverpoints>>|||x|x|x
 |Svinval|TLB Invalidation|<<t-Svinval-coverpoints>>|||x|x|x
 |SvPMP|VM + PMP|<<t-SvPMP-coverpoints>>|||x|x|x
 |SvZicbo|VM + CBOM/CBOZ|<<t-SvZicbo-coverpoints>>|||x|x|x
@@ -144,6 +144,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |SvaduPMP|Page Table Update + PMP|<<t-SvaduPMP-coverpoints>>||||o|o
 |Svpbmt|Page-based Memory Types|<<t-Svpbmt-coverpoints>>|||x|x|x
 |Svnapot|Naturally Aligned Pages|<<t-Svnapot-coverpoints>>|||o|x|x
+|Svukte|User Kernel Translation Enable|<<t-Svukte-coverpoints>>|||o|o|o
 |Sscofpmf|Counter Filtering|<<t-Sscofpmf-coverpoints>>|||o|x|x
 |Ssstateen|Supervisor State Enable|<<t-Ssstateen-coverpoints>>|||o||x
 |Ssu64xl|64-bit UXL|<<t-Ssu64xl-coverpoints>>|||o|x|x
@@ -177,11 +178,11 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zvkb16|Vector Crypto Bit Manip 16-bit|<<t-Zvkb-coverpoints>>||||o|o
 |Zvkb32|Vector Crypto Bit Manip 32-bit|<<t-Zvkb-coverpoints>>||||o|o
 |Zvkb64|Vector Crypto Bit Manip 64-bit|<<t-Zvkb-coverpoints>>||||o|o
-|Zvbc64|Vector Carryless Mult|<<t-Zvbc-coverpoints>>||||o|o
+|Zvbc64|Vector Carryless Mult|<<t-Zvbc64-coverpoints>>||||o|o
 |Zvkg32|Vector GCM|<<t-Zvkg-coverpoints>>||||o|o
 |Zvkned32|Vector Crypt|<<t-Zvkned-coverpoints>>||||o|o
-|Zvknha32|Vector Hash 32-bit|<<t-Zvknh-coverpoints>>|||||
-|Zvknhb64|Vector Hash 64-bit|<<t-Zvknh-coverpoints>>||||o|o
+|Zvknha32|Vector Hash 32-bit|<<t-Zvknha-coverpoints>>|||||
+|Zvknhb64|Vector Hash 64-bit|<<t-Zvknhb-coverpoints>>||||o|o
 |Zvksed32|Vector ShangMi Crypt|<<t-Zvksed-coverpoints>>||||o|o
 |Zvksh32|Vector ShangMi Hash|<<t-Zvksh-coverpoints>>||||o|o
 8+^|Vector Privileged
@@ -225,14 +226,20 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zacas|Atomic Compare-And-Swap|<<t-Zacas-coverpoints>>||||o|o
 |Zabha|Subword Atomics|<<t-Zabha-coverpoints>>||||o|o
 |ZacasZabha|Subword CAS|<<t-ZacasZabha-coverpoints>>||||o|o
-|Zama16b|Main memory PMA supports misaligned atomics within 16-byte regions|<<t-ExceptionsZaamo-coverpoints>>|||||x
-|Zicfilp|Landing Pads|<<t-Zicfilp-coverpoints>>||||o|o
-|Zicfiss|Shadow Stack|<<t-Zicfiss-coverpoints>>||||o|o
+|Zama16b|Main memory PMA supports misaligned atomics within 16-byte regions|<<t-Zama16b-coverpoints>>|||||x
+|ZicfilpU|User Landing Pads|<<t-ZicfilpU-coverpoints>>||||o|o
+|ZicfilpSm|Machine Landing Pads|<<t-ZicfilpSm-coverpoints>>||||o|o
+|ZicfilpS|Supervisor Landing Pads|<<t-ZicfilpS-coverpoints>>||||o|o
+|ZicfissU|User Shadow Stack|<<t-ZicfissU-coverpoints>>||||o|o
+|ZicfissS|Supervisor Shadow Stack|<<t-ZicfissS-coverpoints>>||||o|o
+|ZicfissSm|Machine Shadow Stack|<<t-ZicfissSm-coverpoints>>||||o|o
 |Zfbfmin|BF16 Convert|<<t-Zfbfmin-coverpoints>>||||o|o
 |Zimop|Maybe-Ops|<<t-Zimop-coverpoints>>||||x|x
 |Zcmop|Compressed Maybe-Ops|<<t-Zcmop-coverpoints>>||||x|x
-|Zawrs|Wait on Reservation Set|<<t-Zawrs-coverpoints>>||||x|x
-|Sdtrig|Debug Triggers|<<t-Sdtrig-coverpoints>>||||o|o
+|ZawrsSm|Machine Wait on Reservation Set|<<t-ZawrsSm-coverpoints>>||||x|x
+|ZawrsS|Supervisor Wait on Reservation Set|<<t-ZawrsS-coverpoints>>||||x|x
+|ZawrsU|User Wait on Reservation Set|<<t-ZawrsU-coverpoints>>||||x|x
+|SdtrigSm|Debug Triggers|<<t-SdtrigSm-coverpoints>>||||o|o
 8+^|Non-Profile Extensions
 |E|Embedded 16 Regs|<<t-E-normative-rules>>|||||
 |Zfinx|Float in Int Regs|<<t-Zfinx-coverpoints>>|||||
@@ -244,9 +251,9 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |ZfhminQ|Half-Quad Converts|<<t-ZfhQ-coverpoints>>|||||
 |ZfaQ|Additional Quad|<<t-ZfaQ-coverpoints>>|||||
 |ZfaZfhQ|Additional Half-Quad Converts|<<t-ZfaZfhQ-coverpoints>>|||||
-|MisalignQ|Misaligned Quad|<<t-MisalignQ-coverpoints>>|||||
-|Zcmp|Compressed Push/Pop|<<t-Zcmp-coverpoints>>|||||
-|Zcmt|Compressed Table Jumps|<<t-Zcmt-coverpoints>>|||||
+|MisalignQ|Misaligned Quad|none yet|||||
+|Zcmp|Compressed Push/Pop|none yet|||||
+|Zcmt|Compressed Table Jumps|none yet|||||
 |Zilsd|Load/Store Double|<<t-Zilsd-coverpoints>>|||||
 |Zclsd|Compressed Load/Store Double|<<t-Zclsd-coverpoints>>|||||
 |Smcsrind|Machine Indirect CSRs|<<t-Smcsrind-coverpoints>>|||||
@@ -264,16 +271,17 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Smdbltrp|Machine Double Trap|<<t-Smdbltrp-coverpoints>>|||||
 |Ssdbltrp|Supervisor Double Trap|<<t-Ssdbltrp-coverpoints>>|||||
 |SsdbltrpH|Hypervisor Double Trap|<<t-SsdbltrpH-coverpoints>>|||||
-|Smnpm|Pointer Masking|<<t-Smnpm-coverpoints>>|||||
+|SmnpmS|Machine Pointer Masking with S-mode|<<t-SmnpmS-coverpoints>>|||||
+|SmnpmU|Machine Pointer Masking without S-mode|<<t-SmnpmU-coverpoints>>|||||
 |Smmpm|Pointer Masking|<<t-Smmpm-coverpoints>>|||||
 |SmnpmH|Hypervisor Pointer Masking|<<t-SmnpmH-coverpoints>>|||||
 |Smctr|Control Transfer Records|<<t-Smctr-coverpoints>>|||||
 |SmctrH|Hypervisor Control Transfer Records|<<t-SmctrH-coverpoints>>|||||
 |Ssqosid|Quality-of-Service ID|<<t-Ssqosid-coverpoints>>|||||
 8+^|Debug
-|DM|Debug Module|<<t-DM-coverpoints>>|||||
-|DTM|Debug Transport Module|<<t-DTM-coverpoints>>|||||
-|Sdext|Debug Mode|<<t-Sdext-coverpoints>>|||||
+|DM|Debug Module|none yet|||||
+|DTM|Debug Transport Module|none yet|||||
+|Sdext|Debug Mode|none yet|||||
 8+^|Advanced Interrupt Architecture
 |Smaia|Machine Advanced Interrupts|<<t-Smaia-coverpoints>>|||||
 |Ssaia|Supervisor Advanced Interrupts|<<t-Ssaia-coverpoints>>|||||

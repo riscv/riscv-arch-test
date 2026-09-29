@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 105
+#define SIGUPD_COUNT 110
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -903,6 +903,55 @@ Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xfc:
   RVTEST_SIGUPD(x10, x5, x4, x24, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xfc, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xfc_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
+/////////////////////////////////
+// cp_memval_word
+/////////////////////////////////
+
+# Testcase cp_memval_word (memory value = 0x0)
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -176 # adjust base address for load
+Zca_c_lwsp_cg_cp_memval_word_0x0:
+  c.lwsp x21, 176(sp) # perform load (0x00000000)
+  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x21, Zca_c_lwsp_cg_cp_memval_word_0x0, Zca_c_lwsp_cg_cp_memval_word_0x0_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_word (memory value = 0x1)
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -12 # adjust base address for load
+Zca_c_lwsp_cg_cp_memval_word_0x1:
+  c.lwsp x27, 12(sp) # perform load (0x00000001)
+  # Check if x27 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x27, Zca_c_lwsp_cg_cp_memval_word_0x1, Zca_c_lwsp_cg_cp_memval_word_0x1_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_word (memory value = 0x7fffffff)
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -28 # adjust base address for load
+Zca_c_lwsp_cg_cp_memval_word_0x7fffffff:
+  c.lwsp x25, 28(sp) # perform load (0x7fffffff)
+  # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x25, Zca_c_lwsp_cg_cp_memval_word_0x7fffffff, Zca_c_lwsp_cg_cp_memval_word_0x7fffffff_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_word (memory value = 0x80000000)
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -164 # adjust base address for load
+Zca_c_lwsp_cg_cp_memval_word_0x80000000:
+  c.lwsp x19, 164(sp) # perform load (0x80000000)
+  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x19, Zca_c_lwsp_cg_cp_memval_word_0x80000000, Zca_c_lwsp_cg_cp_memval_word_0x80000000_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_word (memory value = 0xffffffff)
+  mv sp, x3 # move data_ptr to sp
+  addi sp, sp, -100 # adjust base address for load
+Zca_c_lwsp_cg_cp_memval_word_0xffffffff:
+  c.lwsp x23, 100(sp) # perform load (0xffffffff)
+  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x23, Zca_c_lwsp_cg_cp_memval_word_0xffffffff, Zca_c_lwsp_cg_cp_memval_word_0xffffffff_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
   mv x2, x10 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -1007,6 +1056,11 @@ RVTEST_DATA_BEGIN
 .word 0x6652bfcc
 .word 0x69e352ae
 .word 0x58deb24b
+.word 0x00000000
+.word 0x00000001
+.word 0x7fffffff
+.word 0x80000000
+.word 0xffffffff
 
 // Testcase strings
 Zca_c_lwsp_cg_cp_rd_nx0_b1_str: .string "\"test: 1; cg: Zca_c.lwsp_cg; cp: cp_rd_nx0; bin: b1\""
@@ -1104,6 +1158,11 @@ Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xf0_str: .string "\"test: 92; cg: Zca_c.lwsp_cg; 
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xf4_str: .string "\"test: 93; cg: Zca_c.lwsp_cg; cp: cp_imm_mul_4sp; bin: b0xf4\""
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xf8_str: .string "\"test: 94; cg: Zca_c.lwsp_cg; cp: cp_imm_mul_4sp; bin: b0xf8\""
 Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xfc_str: .string "\"test: 95; cg: Zca_c.lwsp_cg; cp: cp_imm_mul_4sp; bin: b0xfc\""
+Zca_c_lwsp_cg_cp_memval_word_0x0_str: .string "\"test: 96; cg: Zca_c.lwsp_cg; cp: cp_memval_word; bin: 0x0\""
+Zca_c_lwsp_cg_cp_memval_word_0x1_str: .string "\"test: 97; cg: Zca_c.lwsp_cg; cp: cp_memval_word; bin: 0x1\""
+Zca_c_lwsp_cg_cp_memval_word_0x7fffffff_str: .string "\"test: 98; cg: Zca_c.lwsp_cg; cp: cp_memval_word; bin: 0x7fffffff\""
+Zca_c_lwsp_cg_cp_memval_word_0x80000000_str: .string "\"test: 99; cg: Zca_c.lwsp_cg; cp: cp_memval_word; bin: 0x80000000\""
+Zca_c_lwsp_cg_cp_memval_word_0xffffffff_str: .string "\"test: 100; cg: Zca_c.lwsp_cg; cp: cp_memval_word; bin: 0xffffffff\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

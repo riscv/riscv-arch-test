@@ -76,9 +76,10 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
             wildcard bins sd = {SD};
         `endif
     }
-    sw_lw: coverpoint ins.current.insn {
+    sw_lw_jalr: coverpoint ins.current.insn {
         wildcard bins sw   = {SW};
         wildcard bins lw   = {LW};
+        wildcard bins jalr = {JALR};
     }
     illegalops: coverpoint ins.current.insn {
         bins zeros = {'0};
@@ -153,12 +154,13 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
         }
         illegal_address_misaligned: coverpoint ins.current.imm + ins.current.rs1_val {
-            bins illegal_misaligned = {`RVMODEL_ACCESS_FAULT_ADDRESS + 1}; // One more than the illegal address is both misaligned and illegal
+            // Both misaligned and illegal: +1 for lw/sw; +2 for jalr, which clears bit 0 of the target
+            bins illegal_misaligned = {`RVMODEL_ACCESS_FAULT_ADDRESS + 1, `RVMODEL_ACCESS_FAULT_ADDRESS + 2};
         }
         cp_instr_access_fault:                   cross priv_mode_s, jalr, illegal_address;
         cp_load_access_fault:                    cross priv_mode_s, loadops, illegal_address;
         cp_store_access_fault:                   cross priv_mode_s, storeops, illegal_address;
-        cp_misaligned_priority:                  cross priv_mode_s, sw_lw, illegal_address_misaligned;
+        cp_misaligned_priority:                  cross priv_mode_s, sw_lw_jalr, illegal_address_misaligned;
     `endif
 
 endgroup

@@ -585,37 +585,37 @@ ZfaF_fround_s_cg_cp_fs1_edges_b0xbf800000:
   # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, ZfaF_fround_s_cg_cp_fs1_edges_b0xbf800000, ZfaF_fround_s_cg_cp_fs1_edges_b0xbf800000_str)
 
-# Testcase cp_fs1_edges (Test source fs1 value = 0x3fc00000)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0x3fc00000
+# Testcase cp_fs1_edges (Test source fs1 value = 0x40200000)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-ZfaF_fround_s_cg_cp_fs1_edges_b0x3fc00000:
+ZfaF_fround_s_cg_cp_fs1_edges_b0x40200000:
   fround.s f21, f26 # perform operation
   # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, ZfaF_fround_s_cg_cp_fs1_edges_b0x3fc00000, ZfaF_fround_s_cg_cp_fs1_edges_b0x3fc00000_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, ZfaF_fround_s_cg_cp_fs1_edges_b0x40200000, ZfaF_fround_s_cg_cp_fs1_edges_b0x40200000_str)
 
-# Testcase cp_fs1_edges (Test source fs1 value = 0xbfc00000)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0xbfc00000
+# Testcase cp_fs1_edges (Test source fs1 value = 0xc0200000)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-ZfaF_fround_s_cg_cp_fs1_edges_b0xbfc00000:
+ZfaF_fround_s_cg_cp_fs1_edges_b0xc0200000:
   fround.s f5, f11 # perform operation
   # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, ZfaF_fround_s_cg_cp_fs1_edges_b0xbfc00000, ZfaF_fround_s_cg_cp_fs1_edges_b0xbfc00000_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, ZfaF_fround_s_cg_cp_fs1_edges_b0xc0200000, ZfaF_fround_s_cg_cp_fs1_edges_b0xc0200000_str)
 
-# Testcase cp_fs1_edges (Test source fs1 value = 0x40000000)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x40000000
+# Testcase cp_fs1_edges (Test source fs1 value = 0x4b800000)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-ZfaF_fround_s_cg_cp_fs1_edges_b0x40000000:
+ZfaF_fround_s_cg_cp_fs1_edges_b0x4b800000:
   fround.s f29, f3 # perform operation
   # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, ZfaF_fround_s_cg_cp_fs1_edges_b0x40000000, ZfaF_fround_s_cg_cp_fs1_edges_b0x40000000_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, ZfaF_fround_s_cg_cp_fs1_edges_b0x4b800000, ZfaF_fround_s_cg_cp_fs1_edges_b0x4b800000_str)
 
-# Testcase cp_fs1_edges (Test source fs1 value = 0xc0000000)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0xc0000000
+# Testcase cp_fs1_edges (Test source fs1 value = 0xcb800000)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-ZfaF_fround_s_cg_cp_fs1_edges_b0xc0000000:
+ZfaF_fround_s_cg_cp_fs1_edges_b0xcb800000:
   fround.s f15, f10 # perform operation
   # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, ZfaF_fround_s_cg_cp_fs1_edges_b0xc0000000, ZfaF_fround_s_cg_cp_fs1_edges_b0xc0000000_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, ZfaF_fround_s_cg_cp_fs1_edges_b0xcb800000, ZfaF_fround_s_cg_cp_fs1_edges_b0xcb800000_str)
 
 # Testcase cp_fs1_edges (Test source fs1 value = 0x00800000)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x00800000
@@ -1233,10 +1233,10 @@ RVTEST_DATA_BEGIN
 .word 0x80000000
 .word 0x3f800000
 .word 0xbf800000
-.word 0x3fc00000
-.word 0xbfc00000
-.word 0x40000000
-.word 0xc0000000
+.word 0x40200000
+.word 0xc0200000
+.word 0x4b800000
+.word 0xcb800000
 .word 0x00800000
 .word 0x80800000
 .word 0x7f7fffff
@@ -1371,10 +1371,10 @@ ZfaF_fround_s_cg_cp_fs1_edges_b0x0_str: .string "\"test: 65; cg: ZfaF_fround.s_c
 ZfaF_fround_s_cg_cp_fs1_edges_b0x80000000_str: .string "\"test: 66; cg: ZfaF_fround.s_cg; cp: cp_fs1_edges; bin: b0x80000000\""
 ZfaF_fround_s_cg_cp_fs1_edges_b0x3f800000_str: .string "\"test: 67; cg: ZfaF_fround.s_cg; cp: cp_fs1_edges; bin: b0x3f800000\""
 ZfaF_fround_s_cg_cp_fs1_edges_b0xbf800000_str: .string "\"test: 68; cg: ZfaF_fround.s_cg; cp: cp_fs1_edges; bin: b0xbf800000\""
-ZfaF_fround_s_cg_cp_fs1_edges_b0x3fc00000_str: .string "\"test: 69; cg: ZfaF_fround.s_cg; cp: cp_fs1_edges; bin: b0x3fc00000\""
-ZfaF_fround_s_cg_cp_fs1_edges_b0xbfc00000_str: .string "\"test: 70; cg: ZfaF_fround.s_cg; cp: cp_fs1_edges; bin: b0xbfc00000\""
-ZfaF_fround_s_cg_cp_fs1_edges_b0x40000000_str: .string "\"test: 71; cg: ZfaF_fround.s_cg; cp: cp_fs1_edges; bin: b0x40000000\""
-ZfaF_fround_s_cg_cp_fs1_edges_b0xc0000000_str: .string "\"test: 72; cg: ZfaF_fround.s_cg; cp: cp_fs1_edges; bin: b0xc0000000\""
+ZfaF_fround_s_cg_cp_fs1_edges_b0x40200000_str: .string "\"test: 69; cg: ZfaF_fround.s_cg; cp: cp_fs1_edges; bin: b0x40200000\""
+ZfaF_fround_s_cg_cp_fs1_edges_b0xc0200000_str: .string "\"test: 70; cg: ZfaF_fround.s_cg; cp: cp_fs1_edges; bin: b0xc0200000\""
+ZfaF_fround_s_cg_cp_fs1_edges_b0x4b800000_str: .string "\"test: 71; cg: ZfaF_fround.s_cg; cp: cp_fs1_edges; bin: b0x4b800000\""
+ZfaF_fround_s_cg_cp_fs1_edges_b0xcb800000_str: .string "\"test: 72; cg: ZfaF_fround.s_cg; cp: cp_fs1_edges; bin: b0xcb800000\""
 ZfaF_fround_s_cg_cp_fs1_edges_b0x800000_str: .string "\"test: 73; cg: ZfaF_fround.s_cg; cp: cp_fs1_edges; bin: b0x800000\""
 ZfaF_fround_s_cg_cp_fs1_edges_b0x80800000_str: .string "\"test: 74; cg: ZfaF_fround.s_cg; cp: cp_fs1_edges; bin: b0x80800000\""
 ZfaF_fround_s_cg_cp_fs1_edges_b0x7f7fffff_str: .string "\"test: 75; cg: ZfaF_fround.s_cg; cp: cp_fs1_edges; bin: b0x7f7fffff\""

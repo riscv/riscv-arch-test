@@ -6,7 +6,13 @@
 normative_rule_definitions:
   # All of these instructions work on 128-bit element groups comprised of four 32-bit elements.
   - name: Zvksed_egw128b_elem32b
-    coverpoint: ["Zvksed_vsm4k_vi_cg/cp_csr_vtype_lmul_egs4_sew32"]
+    coverpoint:
+      [
+        "Zvksed_vsm4k_vi_cg/cp_csr_vtype_lmul_egs4_sew32",
+        "Zvksed_vsm4k_vi_cg/cr_vl_lmul_egs4_sew32",
+        "Zvksed_vsm4r_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvksed_vsm4r_vs_cg/cr_vl_lmul_egs4_sew32",
+      ]
 
   # To help avoid side-channel timing attacks, these instructions shall be implemented with data-
   # independent timing.
@@ -44,7 +50,14 @@ normative_rule_definitions:
   # substitution, and then XORing rotated versions of this value with the corresponding current
   # round key. The round group number comes from uimm[2:0].
   - name: vsm4k-vi_op
-    coverpoint: ["Zvksed_vsm4k_vi_cg/cp_vd_egs4"]
+    coverpoint:
+      [
+        "Zvksed_vsm4k_vi_cg/cp_vd_egs4",
+        "Zvksed_vsm4k_vi_cg/cp_imm_5bit_u",
+        "Zvksed_vsm4k_vi_cg/cp_vs2_edges_egs4_sm_byte_0",
+        "Zvksed_vsm4k_vi_cg/cp_vs2_edges_egs4_sm_byte_3",
+        "Zvksed_vsm4k_vi_cg/cr_vl_lmul_egs4_sew32",
+      ]
 
   # SEW is any value other than 32.
   - name: vsm4r_sewn32_rsv
@@ -67,4 +80,11 @@ normative_rule_definitions:
   # of the state with the corresponding round key, performing a byte-wise substitution, and then
   # XORing rotated versions of this value with the current state.
   - name: vsm4r_op
-    coverpoint: ["Zvksed_vsm4r_vv_cg/cp_vd_egs4"]
+    coverpoint:
+      [
+        "Zvksed_vsm4r_vv_cg/cp_vd_egs4",
+        "Zvksed_vsm4r_vv_cg/cr_vs2_vd_edges_egs4_subbytes_sm_0",
+        "Zvksed_vsm4r_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvksed_vsm4r_vs_cg/cr_vs2_vd_edges_egs4_subbytes_sm_0",
+        "Zvksed_vsm4r_vs_cg/cr_vl_lmul_egs4_sew32",
+      ]

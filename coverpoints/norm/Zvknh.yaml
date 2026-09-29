@@ -17,11 +17,23 @@ normative_rule_definitions:
   # SHA-512: these instructions work on 256-bit element groups comprised of four 64-bit
   # elements.
   - name: Zvknhb_sha512_egw256b_elem64b
-    coverpoint: ["Zvknhb64_vsha2ch_vv_cg/cp_csr_vtype_lmul_egs4_sew64"]
+    coverpoint:
+      [
+        "Zvknhb64_vsha2ch_vv_cg/cp_csr_vtype_lmul_egs4_sew64",
+        "Zvknhb64_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew64",
+        "Zvknhb64_vsha2cl_vv_cg/cr_vl_lmul_egs4_sew64",
+        "Zvknhb64_vsha2ms_vv_cg/cr_vl_lmul_egs4_sew64",
+      ]
 
   # ext:zvknhb[] supports SHA-256 and SHA-512.
   - name: Zvknhb_sha256_sha512
-    coverpoint: ["{Zvknhb32_vsha2ch_vv_cg,Zvknhb64_vsha2ch_vv_cg}/cp_asm_count"]
+    coverpoint:
+      [
+        "Zvknhb32_vsha2ch_vv_cg/cp_asm_count",
+        "Zvknhb32_vsha2ms_vv_cg/cp_asm_count",
+        "Zvknhb64_vsha2ch_vv_cg/cp_asm_count",
+        "Zvknhb64_vsha2ms_vv_cg/cp_asm_count",
+      ]
 
   # ext:zvknha[] supports only SHA-256.
   - name: Zvknha_sha256
@@ -108,4 +120,11 @@ normative_rule_definitions:
   # ext:zvknhb[]). SEW=64: Four rounds of SHA-512 message schedule expansion are performed
   # (ext:zvknhb[]).
   - name: vsha2ms-vv_op
-    coverpoint: ["Zvknha_vsha2ms_vv_cg/cp_vd_egs4"]
+    coverpoint:
+      [
+        "Zvknha_vsha2ms_vv_cg/cp_vd_egs4",
+        "Zvknha_vsha2ms_vv_cg/cr_vs2_vs1_edges_egs4",
+        "Zvknha_vsha2ms_vv_cg/cr_vs1_vd_edges_egs4",
+        "Zvknha_vsha2ms_vv_cg/cr_vs2_vd_edges_egs4",
+        "Zvknhb64_vsha2ms_vv_cg/cr_vs2_vs1_edges_egs4",
+      ]

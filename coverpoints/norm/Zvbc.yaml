@@ -13,7 +13,14 @@ normative_rule_definitions:
 
   # The instructions in ext:zvbc[] are only defined for SEW=64.
   - name: Zvbc_sew64only
-    coverpoint: ["Zvbc64_vclmul_vv_cg/cp_csr_vtype_lmul_all_sew64_lmul_le_8"]
+    coverpoint:
+      [
+        "Zvbc64_vclmul_vv_cg/cp_asm_count",
+        "Zvbc64_vclmul_vx_cg/cp_asm_count",
+        "Zvbc64_vclmulh_vv_cg/cp_asm_count",
+        "Zvbc64_vclmulh_vx_cg/cp_asm_count",
+        "TODO: Needs Vector Crypto Ssstrict Coverage",
+      ]
 
   # SEW is any value other than 64 [is reserved].
   - name: vclmul_sewn64_rsv
@@ -26,7 +33,14 @@ normative_rule_definitions:
   # 64-bit element in vs1 (vector-vector), or the 64-bit value from integer register rs1
   # (vector-scalar). The result is the least significant 64 bits of the carry-less product.
   - name: vclmul_op
-    coverpoint: ["Zvbc64_vclmul_vv_cg/cp_vs2_edges"]
+    coverpoint:
+      [
+        "Zvbc64_vclmul_vv_cg/cp_vs2_edges",
+        "Zvbc64_vclmul_vv_cg/cr_vs2_vs1_edges",
+        "Zvbc64_vclmul_vv_cg/cr_vl_lmul_sew64",
+        "Zvbc64_vclmul_vx_cg/cr_vs2_rs1_edges",
+        "Zvbc64_vclmul_vx_cg/cr_vl_lmul_sew64",
+      ]
 
   # SEW is any value other than 64 [is reserved].
   - name: vclmulh_sewn64_rsv
@@ -39,4 +53,11 @@ normative_rule_definitions:
   # 64-bit element in vs1 (vector-vector), or the 64-bit value from integer register rs1
   # (vector-scalar). The result is the most significant 64 bits of the carry-less product.
   - name: vclmulh_op
-    coverpoint: ["Zvbc64_vclmulh_vv_cg/cp_vs2_edges"]
+    coverpoint:
+      [
+        "Zvbc64_vclmulh_vv_cg/cp_vs2_edges",
+        "Zvbc64_vclmulh_vv_cg/cr_vs2_vs1_edges",
+        "Zvbc64_vclmulh_vv_cg/cr_vl_lmul_sew64",
+        "Zvbc64_vclmulh_vx_cg/cr_vs2_rs1_edges",
+        "Zvbc64_vclmulh_vx_cg/cr_vl_lmul_sew64",
+      ]

@@ -6,7 +6,12 @@
 normative_rule_definitions:
   # All of these instructions work on 256-bit element groups comprised of eight 32-bit elements.
   - name: Zvksh_egw256b_elem32b
-    coverpoint: ["Zvksh_vsm3c_vi_cg/cp_csr_vtype_lmul_egs8_sew32"]
+    coverpoint:
+      [
+        "Zvksh_vsm3c_vi_cg/cp_csr_vtype_lmul_egs8_sew32",
+        "Zvksh_vsm3c_vi_cg/cr_vl_lmul_egs8_sew32",
+        "Zvksh_vsm3me_vv_cg/cr_vl_lmul_egs8_sew32",
+      ]
 
   # To help avoid side-channel timing attacks, these instructions shall be implemented with data-
   # independent timing.
@@ -52,7 +57,13 @@ normative_rule_definitions:
   # back to big endian, and returned as an eight-element group. The round number is provided by
   # the 5-bit uimm unsigned immediate.
   - name: vsm3c-vi_op
-    coverpoint: ["Zvksh_vsm3c_vi_cg/cp_vd_egs8"]
+    coverpoint:
+      [
+        "Zvksh_vsm3c_vi_cg/cp_vd_egs8",
+        "Zvksh_vsm3c_vi_cg/cp_imm_5bit_u",
+        "Zvksh_vsm3c_vi_cg/cr_vs2_vd_edges_egs8",
+        "Zvksh_vsm3c_vi_cg/cr_vl_lmul_egs8_sew32",
+      ]
 
   # SEW is any value other than 32.
   - name: vsm3me-vv_sewn32_rsv
@@ -73,4 +84,9 @@ normative_rule_definitions:
   # from big endian to little endian. The next eight 32-bit message words are generated, swapped
   # back to big endian, and returned in an eight-element group.
   - name: vsm3me-vv_op
-    coverpoint: ["Zvksh_vsm3me_vv_cg/cp_vd_egs8"]
+    coverpoint:
+      [
+        "Zvksh_vsm3me_vv_cg/cp_vd_egs8",
+        "Zvksh_vsm3me_vv_cg/cr_vs2_vs1_edges_egs8",
+        "Zvksh_vsm3me_vv_cg/cr_vl_lmul_egs8_sew32",
+      ]

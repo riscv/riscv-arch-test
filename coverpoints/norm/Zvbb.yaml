@@ -38,7 +38,13 @@ normative_rule_definitions:
 
   # A bit reversal is performed on the bits of each element.
   - name: vbrev-v_op
-    coverpoint: ["Zvbb16_vbrev_v_cg/cp_vd"]
+    coverpoint:
+      [
+        "Zvbb8_vbrev_v_cg/cp_vs2_edges",
+        "Zvbb8_vbrev_v_cg/cr_vl_lmul_sew8",
+        "Zvbb64_vbrev_v_cg/cp_vs2_edges",
+        "Zvbb64_vbrev_v_cg/cr_vl_lmul_sew64",
+      ]
 
   # A bit reversal is performed on the bits of each byte.
   - name: vbrev8-v_op
@@ -47,15 +53,36 @@ normative_rule_definitions:
   # A leading zero count is performed on each element. The result for zero-valued inputs is
   # the value SEW.
   - name: vclz-v_op
-    coverpoint: ["Zvbb16_vclz_v_cg/cp_vs2_edges"]
+    coverpoint:
+      [
+        "Zvbb16_vclz_v_cg/cp_vs2_edges",
+        "Zvbb8_vclz_v_cg/cp_vs2_edges",
+        "Zvbb8_vclz_v_cg/cr_vl_lmul_sew8",
+        "Zvbb64_vclz_v_cg/cp_vs2_edges",
+        "Zvbb64_vclz_v_cg/cr_vl_lmul_sew64",
+      ]
 
   # A population count is performed on each element.
   - name: vcpop-v_op
-    coverpoint: ["Zvbb16_vcpop_v_cg/cp_vd"]
+    coverpoint:
+      [
+        "Zvbb16_vcpop_v_cg/cp_vd",
+        "Zvbb8_vcpop_v_cg/cp_vs2_edges",
+        "Zvbb8_vcpop_v_cg/cr_vl_lmul_sew8",
+        "Zvbb64_vcpop_v_cg/cp_vs2_edges",
+        "Zvbb64_vcpop_v_cg/cr_vl_lmul_sew64",
+      ]
 
   # A trailing zero count is performed on each element.
   - name: vctz-v_op
-    coverpoint: ["Zvbb16_vctz_v_cg/cp_vd"]
+    coverpoint:
+      [
+        "Zvbb16_vctz_v_cg/cp_vd",
+        "Zvbb8_vctz_v_cg/cp_vs2_edges",
+        "Zvbb8_vctz_v_cg/cr_vl_lmul_sew8",
+        "Zvbb64_vctz_v_cg/cp_vs2_edges",
+        "Zvbb64_vctz_v_cg/cr_vl_lmul_sew64",
+      ]
 
   # A byte reversal is performed on each element of vs2, effectively performing an endian
   # swap.
@@ -82,4 +109,11 @@ normative_rule_definitions:
   # register rs1 (vector-scalar), or an immediate value (vector-immediate). Only the low
   # log2(2*SEW) bits of the shift-amount value are used, all other bits are ignored.
   - name: vwsll_op
-    coverpoint: ["Zvbb16_vwsll_vx_cg/cp_rs1_edges"]
+    coverpoint:
+      [
+        "Zvbb16_vwsll_vx_cg/cp_rs1_edges",
+        "Zvbb8_vwsll_vv_cg/cr_vs2_vs1_edges",
+        "Zvbb8_vwsll_vx_cg/cr_vs2_rs1_edges",
+        "Zvbb8_vwsll_vi_cg/cr_vs2_imm_edges",
+        "Zvbb32_vwsll_vv_cg/cr_vs2_vs1_edges",
+      ]

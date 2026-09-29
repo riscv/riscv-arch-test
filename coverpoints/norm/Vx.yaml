@@ -651,7 +651,13 @@ normative_rule_definitions:
   # The vset{i}vl{i} instructions set the vtype and vl CSRs based on their
   # arguments, and write the new value of vl into rd.
   - name: vset_op
-    coverpoint: ["SmV_cg/cp_sew_lmul_vsetvl", "SmV_cg/cp_sew_lmul_vset_i_vli"]
+    coverpoint:
+      [
+        "SmV_cg/cp_sew_lmul_vsetvl",
+        "SmV_cg/cp_sew_lmul_vset_i_vli",
+        "SmV_cg/cp_vsetvl_i_avl_eq_vlmax",
+        "SmV_cg/cp_vsetivli_avl_edges",
+      ]
 
   # the vl register is also set to zero.
   - name: vtype_vstart_op
@@ -689,7 +695,15 @@ normative_rule_definitions:
   # when VLMAX and hence vl is not actually changed by the new SEW/LMUL ratio.
   - name: vsetvl_op
     coverpoint:
-      ["SmV_cg/cp_vsetvl_i_rd_x0_rs1_x0", "SmV_cg/cp_vsetvl_i_rd_nx0_rs1_x0"]
+      [
+        "SmV_cg/cp_vsetvl_i_rd_x0_rs1_x0",
+        "SmV_cg/cp_vsetvl_i_rd_nx0_rs1_x0",
+        "SmV_cg/cp_vsetvl_i_avl_eq_zero",
+        "SmV_cg/cp_vsetvl_i_avl_eq_vlmax",
+        "SmV_cg/cp_vsetvl_i_avl_lt_2x_vlmax",
+        "SmV_cg/cp_vsetvl_i_avl_eq_2x_vlmax",
+        "SmV_cg/cp_vsetvl_i_avl_gt_2x_vlmax",
+      ]
 
   # Use of the instructions with a new SEW/LMUL ratio that would result in a change
   # of VLMAX is reserved. Use of the instructions is also reserved if vill was 1
@@ -1451,7 +1465,12 @@ normative_rule_definitions:
   # The first operand specifier (vs2) must contain v0, and any other vector register
   # number in vs2 is reserved.
   - name: vmv_vs2_nv0_rsv
-    coverpoint: ["SsstrictV_vmv_v_v_cg/cp_ssstrictv_vmv_vs2_not_v0_reserved"]
+    coverpoint:
+      [
+        "SsstrictV_vmv_v_v_cg/cp_ssstrictv_vmv_vs2_not_v0_reserved",
+        "SsstrictV_vmv_v_x_cg/cp_ssstrictv_vmv_vs2_not_v0_reserved",
+        "SsstrictV_vmv_v_i_cg/cp_ssstrictv_vmv_vs2_not_v0_reserved",
+      ]
 
   # Saturating forms of integer add and subtract are provided, for both signed and
   # unsigned integers. If the result would overflow the destination, the result is
@@ -1851,53 +1870,190 @@ normative_rule_definitions:
 
   # Traps on vector reduction instructions are always reported with a vstart of 0.
   - name: vreduction_trap
-    coverpoint: ["ExceptionsVx_vredsum_vs_cg/cp_vstart"]
+    coverpoint:
+      [
+        "TODO: no coverpoint checks that vstart is reported as 0 after a trap on vector reduction; cp_vstart only checks that a non-zero vstart raises an illegal-instruction exception",
+      ]
 
   # Vector reduction operations raise an illegal-instruction exception if vstart is
   # non-zero.
   - name: vreduction_vstart_n0_ill
-    coverpoint: ["ExceptionsVx_vredsum_vs_cg/cp_vstart_gt_vl"]
+    coverpoint:
+      [
+        "ExceptionsVx_vredsum_vs_cg/cp_vstart",
+        "ExceptionsVx_vwredsum_vs_cg/cp_vstart",
+        "ExceptionsVf32_vfredosum_vs_cg/cp_vstart",
+        "ExceptionsVf32_vfwredosum_vs_cg/cp_vstart",
+      ]
 
   # All operands and results of single-width reduction instructions have the same
   # SEW width.
-  - names:
+  - name: vredsum_op
+    coverpoint:
       [
-        vredsum_op,
-        vredmaxu_op,
-        vredmax_op,
-        vredminu_op,
-        vredmin_op,
-        vredand_op,
-        vredor_op,
-        vredxor_op,
+        "Vx8_vredsum_vs_cg/cp_vd",
+        "Vx16_vredsum_vs_cg/cp_vd",
+        "Vx32_vredsum_vs_cg/cp_vd",
+        "Vx64_vredsum_vs_cg/cp_vd",
       ]
-    coverpoint: ["Vx16_vredsum_vs_cg/cp_vd"]
+
+  - name: vredmaxu_op
+    coverpoint:
+      [
+        "Vx8_vredmaxu_vs_cg/cp_vd",
+        "Vx16_vredmaxu_vs_cg/cp_vd",
+        "Vx32_vredmaxu_vs_cg/cp_vd",
+        "Vx64_vredmaxu_vs_cg/cp_vd",
+      ]
+
+  - name: vredmax_op
+    coverpoint:
+      [
+        "Vx8_vredmax_vs_cg/cp_vd",
+        "Vx16_vredmax_vs_cg/cp_vd",
+        "Vx32_vredmax_vs_cg/cp_vd",
+        "Vx64_vredmax_vs_cg/cp_vd",
+      ]
+
+  - name: vredminu_op
+    coverpoint:
+      [
+        "Vx8_vredminu_vs_cg/cp_vd",
+        "Vx16_vredminu_vs_cg/cp_vd",
+        "Vx32_vredminu_vs_cg/cp_vd",
+        "Vx64_vredminu_vs_cg/cp_vd",
+      ]
+
+  - name: vredmin_op
+    coverpoint:
+      [
+        "Vx8_vredmin_vs_cg/cp_vd",
+        "Vx16_vredmin_vs_cg/cp_vd",
+        "Vx32_vredmin_vs_cg/cp_vd",
+        "Vx64_vredmin_vs_cg/cp_vd",
+      ]
+
+  - name: vredand_op
+    coverpoint:
+      [
+        "Vx8_vredand_vs_cg/cp_vd",
+        "Vx16_vredand_vs_cg/cp_vd",
+        "Vx32_vredand_vs_cg/cp_vd",
+        "Vx64_vredand_vs_cg/cp_vd",
+      ]
+
+  - name: vredor_op
+    coverpoint:
+      [
+        "Vx8_vredor_vs_cg/cp_vd",
+        "Vx16_vredor_vs_cg/cp_vd",
+        "Vx32_vredor_vs_cg/cp_vd",
+        "Vx64_vredor_vs_cg/cp_vd",
+      ]
+
+  - name: vredxor_op
+    coverpoint:
+      [
+        "Vx8_vredxor_vs_cg/cp_vd",
+        "Vx16_vredxor_vs_cg/cp_vd",
+        "Vx32_vredxor_vs_cg/cp_vd",
+        "Vx64_vredxor_vs_cg/cp_vd",
+      ]
 
   # Overflows wrap around on arithmetic sums.
-  - names:
+  - name: vredsum_overflow
+    coverpoint:
       [
-        vredsum_overflow,
-        vredmaxu_overflow,
-        vredmax_overflow,
-        vredminu_overflow,
-        vredmin_overflow,
-        vredand_overflow,
-        vredor_overflow,
-        vredxor_overflow,
+        "Vx8_vredsum_vs_cg/cr_vs2_vs1_edges",
+        "Vx16_vredsum_vs_cg/cr_vs2_vs1_edges",
+        "Vx32_vredsum_vs_cg/cr_vs2_vs1_edges",
+        "Vx64_vredsum_vs_cg/cr_vs2_vs1_edges",
       ]
-    coverpoint: ["Vx16_vredsum_vs_cg/cp_vs2_edges"]
+
+  - name: vredmaxu_overflow
+    coverpoint:
+      [
+        "Vx8_vredmaxu_vs_cg/cr_vs2_vs1_edges",
+        "Vx16_vredmaxu_vs_cg/cr_vs2_vs1_edges",
+        "Vx32_vredmaxu_vs_cg/cr_vs2_vs1_edges",
+        "Vx64_vredmaxu_vs_cg/cr_vs2_vs1_edges",
+      ]
+
+  - name: vredmax_overflow
+    coverpoint:
+      [
+        "Vx8_vredmax_vs_cg/cr_vs2_vs1_edges",
+        "Vx16_vredmax_vs_cg/cr_vs2_vs1_edges",
+        "Vx32_vredmax_vs_cg/cr_vs2_vs1_edges",
+        "Vx64_vredmax_vs_cg/cr_vs2_vs1_edges",
+      ]
+
+  - name: vredminu_overflow
+    coverpoint:
+      [
+        "Vx8_vredminu_vs_cg/cr_vs2_vs1_edges",
+        "Vx16_vredminu_vs_cg/cr_vs2_vs1_edges",
+        "Vx32_vredminu_vs_cg/cr_vs2_vs1_edges",
+        "Vx64_vredminu_vs_cg/cr_vs2_vs1_edges",
+      ]
+
+  - name: vredmin_overflow
+    coverpoint:
+      [
+        "Vx8_vredmin_vs_cg/cr_vs2_vs1_edges",
+        "Vx16_vredmin_vs_cg/cr_vs2_vs1_edges",
+        "Vx32_vredmin_vs_cg/cr_vs2_vs1_edges",
+        "Vx64_vredmin_vs_cg/cr_vs2_vs1_edges",
+      ]
+
+  - name: vredand_overflow
+    coverpoint:
+      [
+        "Vx8_vredand_vs_cg/cr_vs2_vs1_edges",
+        "Vx16_vredand_vs_cg/cr_vs2_vs1_edges",
+        "Vx32_vredand_vs_cg/cr_vs2_vs1_edges",
+        "Vx64_vredand_vs_cg/cr_vs2_vs1_edges",
+      ]
+
+  - name: vredor_overflow
+    coverpoint:
+      [
+        "Vx8_vredor_vs_cg/cr_vs2_vs1_edges",
+        "Vx16_vredor_vs_cg/cr_vs2_vs1_edges",
+        "Vx32_vredor_vs_cg/cr_vs2_vs1_edges",
+        "Vx64_vredor_vs_cg/cr_vs2_vs1_edges",
+      ]
+
+  - name: vredxor_overflow
+    coverpoint:
+      [
+        "Vx8_vredxor_vs_cg/cr_vs2_vs1_edges",
+        "Vx16_vredxor_vs_cg/cr_vs2_vs1_edges",
+        "Vx32_vredxor_vs_cg/cr_vs2_vs1_edges",
+        "Vx64_vredxor_vs_cg/cr_vs2_vs1_edges",
+      ]
 
   # The unsigned vwredsumu.vs instruction zero-extends the SEW-wide vector elements
   # before summing them, then adds the 2*SEW-width scalar element, and stores the
   # result in a 2*SEW-width scalar element. For both vwredsumu.vs and vwredsum.vs,
   # overflows wrap around.
   - name: vwredsumu_op
-    coverpoint: ["Vx16_vwredsumu_vs_cg/cp_custom_vreductionw_vd_vs1_emul_16"]
+    coverpoint:
+      [
+        "Vx8_vwredsumu_vs_cg/cr_vs2_vs1_edges_wred",
+        "Vx16_vwredsumu_vs_cg/cr_vs2_vs1_edges_wred",
+        "Vx32_vwredsumu_vs_cg/cr_vs2_vs1_edges_wred",
+      ]
 
   # The vwredsum.vs instruction sign-extends the SEW-wide vector elements before
   # summing them. For both vwredsumu.vs and vwredsum.vs, overflows wrap around.
   - name: vwredsum_op
-    coverpoint: ["Vx16_vwredsum_vs_cg/cp_custom_vreductionw_vd_vs1_emul_16"]
+    coverpoint:
+      [
+        "Vx8_vwredsum_vs_cg/cr_vs2_vs1_edges_wred",
+        "Vx16_vwredsum_vs_cg/cr_vs2_vs1_edges_wred",
+        "Vx32_vwredsum_vs_cg/cr_vs2_vs1_edges_wred",
+      ]
 
   # The vfredosum instruction must sum the floating-point values in element order,
   # starting with the scalar in vs1[0] where each addition operates identically to
@@ -1983,7 +2139,13 @@ normative_rule_definitions:
 
   # so there are no inactive elements, and the encodings with vm=0 are reserved.
   - name: vmasklogical_masked_rsv
-    coverpoint: ["SsstrictV_vmand_mm_cg/cp_ssstrictv_mask_logical_vm0_reserved"]
+    coverpoint:
+      [
+        "SsstrictV_vmand_mm_cg/cp_ssstrictv_mask_logical_vm0_reserved",
+        "SsstrictV_vmnand_mm_cg/cp_ssstrictv_mask_logical_vm0_reserved",
+        "SsstrictV_vmor_mm_cg/cp_ssstrictv_mask_logical_vm0_reserved",
+        "SsstrictV_vmxor_mm_cg/cp_ssstrictv_mask_logical_vm0_reserved",
+      ]
 
   # Mask elements past vl, the tail elements, are always updated with a
   # tail-agnostic policy.
@@ -2040,12 +2202,19 @@ normative_rule_definitions:
 
   # Traps on vcpop.m are always reported with a vstart of 0.
   - name: vcpop_trap
-    coverpoint: ["ExceptionsVx_vcpop_m_cg/cp_vstart"]
+    coverpoint:
+      [
+        "TODO: no coverpoint checks that vstart is reported as 0 after a trap on vcpop.m; cp_vstart only checks that a non-zero vstart raises an illegal-instruction exception",
+      ]
 
   # The vcpop.m instruction will raise an illegal-instruction exception if vstart is
   # non-zero.
   - name: vcpop_vstart_n0_ill
-    coverpoint: ["ExceptionsVx_vcpop_m_cg/cp_vstart_gt_vl"]
+    coverpoint:
+      [
+        "ExceptionsVx_vcpop_m_cg/cp_vstart_gt_vl",
+        "ExceptionsVx_vcpop_m_cg/cp_vstart",
+      ]
 
   # The vfirst instruction finds the lowest-numbered active element of the source
   # mask vector that has the value 1 and writes that element's index to a GPR. If no
@@ -2060,12 +2229,19 @@ normative_rule_definitions:
 
   # Traps on vfirst are always reported with a vstart of 0.
   - name: vfirst_trap
-    coverpoint: ["ExceptionsVx_vfirst_m_cg/cp_vstart"]
+    coverpoint:
+      [
+        "TODO: no coverpoint checks that vstart is reported as 0 after a trap on vfirst.m; cp_vstart only checks that a non-zero vstart raises an illegal-instruction exception",
+      ]
 
   # The vfirst instruction will raise an illegal-instruction exception if vstart is
   # non-zero.
   - name: vfirst_vstart_n0_ill
-    coverpoint: ["ExceptionsVx_vfirst_m_cg/cp_vstart_gt_vl"]
+    coverpoint:
+      [
+        "ExceptionsVx_vfirst_m_cg/cp_vstart_gt_vl",
+        "ExceptionsVx_vfirst_m_cg/cp_vstart",
+      ]
 
   # The vmsbf.m instruction takes a mask register as input and writes results to a
   # mask register. The instruction writes a 1 to all active mask elements before the
@@ -2082,17 +2258,24 @@ normative_rule_definitions:
 
   # Traps on vmsbf.m are always reported with a vstart of 0.
   - name: vmsbf_trap
-    coverpoint: ["ExceptionsVx_vmsbf_m_cg/cp_vstart"]
+    coverpoint:
+      [
+        "TODO: no coverpoint checks that vstart is reported as 0 after a trap on vmsbf.m; cp_vstart only checks that a non-zero vstart raises an illegal-instruction exception",
+      ]
 
   # The vmsbf instruction will raise an illegal-instruction exception if vstart is
   # non-zero.
   - name: vmsbf_vstart_n0_ill
-    coverpoint: ["ExceptionsVx_vmsbf_m_cg/cp_vstart_gt_vl"]
+    coverpoint:
+      [
+        "ExceptionsVx_vmsbf_m_cg/cp_vstart_gt_vl",
+        "ExceptionsVx_vmsbf_m_cg/cp_vstart",
+      ]
 
   # The destination register cannot overlap the source register and, if masked,
   # cannot overlap the mask register ('v0').
   - name: vmsbf_vreg_constr
-    coverpoint: ["SsstrictV_vmsbf_m_cg/cp_exceptionsv_vd_vs2_overlap"]
+    coverpoint: ["SsstrictV_vmsbf_m_cg/cp_ssstrictv_masking_vd_eq_v0"]
 
   # The vector mask set-including-first instruction is similar to set-before-first,
   # except it also includes the element with a set bit.
@@ -2106,17 +2289,24 @@ normative_rule_definitions:
 
   # Traps on vmsif.m are always reported with a vstart of 0.
   - name: vmsif_trap
-    coverpoint: ["ExceptionsVx_vmsif_m_cg/cp_vstart"]
+    coverpoint:
+      [
+        "TODO: no coverpoint checks that vstart is reported as 0 after a trap on vmsif.m; cp_vstart only checks that a non-zero vstart raises an illegal-instruction exception",
+      ]
 
   # The vmsif instruction will raise an illegal-instruction exception if vstart is
   # non-zero.
   - name: vmsif_vstart_n0_ill
-    coverpoint: ["ExceptionsVx_vmsif_m_cg/cp_vstart_gt_vl"]
+    coverpoint:
+      [
+        "ExceptionsVx_vmsif_m_cg/cp_vstart_gt_vl",
+        "ExceptionsVx_vmsif_m_cg/cp_vstart",
+      ]
 
   # The destination register cannot overlap the source register and, if masked,
   # cannot overlap the mask register ('v0').
   - name: vmsif_vreg_constr
-    coverpoint: ["SsstrictV_vmsif_m_cg/cp_exceptionsv_vd_vs2_overlap"]
+    coverpoint: ["SsstrictV_vmsif_m_cg/cp_ssstrictv_masking_vd_eq_v0"]
 
   # The vector mask set-only-first instruction is similar to set-before-first,
   # except it only sets the first element with a bit set, if any.
@@ -2130,17 +2320,24 @@ normative_rule_definitions:
 
   # Traps on vmsof.m are always reported with a vstart of 0.
   - name: vmsof_trap
-    coverpoint: ["ExceptionsVx_vmsof_m_cg/cp_vstart"]
+    coverpoint:
+      [
+        "TODO: no coverpoint checks that vstart is reported as 0 after a trap on vmsof.m; cp_vstart only checks that a non-zero vstart raises an illegal-instruction exception",
+      ]
 
   # The vmsof instruction will raise an illegal-instruction exception if vstart is
   # non-zero.
   - name: vmsof_vstart_n0_ill
-    coverpoint: ["ExceptionsVx_vmsof_m_cg/cp_vstart_gt_vl"]
+    coverpoint:
+      [
+        "ExceptionsVx_vmsof_m_cg/cp_vstart_gt_vl",
+        "ExceptionsVx_vmsof_m_cg/cp_vstart",
+      ]
 
   # The destination register cannot overlap the source register and, if masked,
   # cannot overlap the mask register ('v0').
   - name: vmsof_vreg_constr
-    coverpoint: ["SsstrictV_vmsof_m_cg/cp_exceptionsv_vd_vs2_overlap"]
+    coverpoint: ["SsstrictV_vmsof_m_cg/cp_ssstrictv_masking_vd_eq_v0"]
 
   # The viota.m instruction reads a source vector mask register and writes to each
   # element of the destination vector register group the sum of all the bits of
@@ -2155,11 +2352,18 @@ normative_rule_definitions:
 
   # Traps on viota.m are always reported with a vstart of 0,
   - name: viota_trap
-    coverpoint: ["ExceptionsVx_viota_m_cg/cp_vstart"]
+    coverpoint:
+      [
+        "TODO: no coverpoint checks that vstart is reported as 0 after a trap on viota.m; cp_vstart only checks that a non-zero vstart raises an illegal-instruction exception",
+      ]
 
   # An illegal-instruction exception is raised if vstart is non-zero.
   - name: viota_vstart_n0_ill
-    coverpoint: ["ExceptionsVx_viota_m_cg/cp_vstart_gt_vl"]
+    coverpoint:
+      [
+        "ExceptionsVx_viota_m_cg/cp_vstart_gt_vl",
+        "ExceptionsVx_viota_m_cg/cp_vstart",
+      ]
 
   # The destination register group cannot overlap the source register and, if
   # masked, cannot overlap the mask register (v0).
@@ -2308,7 +2512,10 @@ normative_rule_definitions:
   # vector register group, otherwise the instruction encoding is reserved.
   - name: vslideup_vreg_constr
     coverpoint:
-      ["SsstrictV_vslideup_vx_cg/cp_ssstrictv_vslideup_vd_vs2_overlap"]
+      [
+        "SsstrictV_vslideup_vx_cg/cp_ssstrictv_vslideup_vd_vs2_overlap",
+        "SsstrictV_vslideup_vi_cg/cp_ssstrictv_vslideup_vd_vs2_overlap",
+      ]
 
   # For vslidedown, the value in vl specifies the maximum number of destination
   # elements that are written. The remaining elements past vl are handled according
@@ -2455,7 +2662,14 @@ normative_rule_definitions:
 
   # T`vcompress` is encoded as an unmasked instruction (vm=1).
   - name: vcompress_enc
-    coverpoint: ["Vx16_vcompress_vm_cg/cr_vtype_agnostic_nomask"]
+    coverpoint:
+      [
+        "Vx8_vcompress_vm_cg/cp_asm_count",
+        "Vx16_vcompress_vm_cg/cp_asm_count",
+        "Vx32_vcompress_vm_cg/cp_asm_count",
+        "Vx64_vcompress_vm_cg/cp_asm_count",
+        "SsstrictV_vcompress_vm_cg/cp_ssstrictv_vcompress_vm0_reserved",
+      ]
 
   # The equivalent masked instruction (vm=0) is reserved.
   - name: vcompress_masked_rsv
@@ -2471,26 +2685,46 @@ normative_rule_definitions:
 
   # A trap on a vcompress instruction is always reported with a vstart of 0.
   - name: vcompress_trap
-    coverpoint: ["ExceptionsVx_vcompress_vm_cg/cp_vstart"]
+    coverpoint:
+      [
+        "TODO: no coverpoint checks that vstart is reported as 0 after a trap on vcompress.vm; cp_vstart only checks that a non-zero vstart raises an illegal-instruction exception",
+      ]
 
   # Executing a vcompress instruction with a non-zero vstart raises an
   # illegal-instruction exception.
   - name: vcompress_vstart_n0_ill
-    coverpoint: ["ExceptionsVx_vcompress_vm_cg/cp_vstart_gt_vl"]
+    coverpoint:
+      [
+        "ExceptionsVx_vcompress_vm_cg/cp_vstart_gt_vl",
+        "ExceptionsVx_vcompress_vm_cg/cp_vstart",
+      ]
 
   # The vmv&lt;nr&gt;r.v instructions copy whole vector registers (i.e., all VLEN
   # bits) and can copy whole vector register groups. The nr value in the opcode is
   # the number of individual vector registers, NREG, to copy. The instructions
   # operate as if EEW=SEW, EMUL = NREG, effective length evl= EMUL * VLEN/SEW.
   - name: vmv-nr-r_op
-    coverpoint: ["Vx16_vmv1r_v_cg/cp_vd"]
+    coverpoint:
+      [
+        "Vx8_vmv1r_v_cg/cr_vl_lmul_sew8",
+        "Vx8_vmv2r_v_cg/cr_vl_lmul_sew8",
+        "Vx8_vmv4r_v_cg/cr_vl_lmul_sew8",
+        "Vx8_vmv8r_v_cg/cr_vl_lmul_sew8",
+      ]
 
   # The instruction is encoded as an OPIVI instruction. The number of vector
   # registers to copy is encoded in the low three bits of the simm field (simm[2:0])
   # using the same encoding as the nf[2:0] field for memory instructions (Figure
   # &lt;&lt;fig-nf&gt;&gt;), i.e., simm[2:0] = NREG-1.
   - name: vmv-nr-r_enc
-    coverpoint: ["SsstrictV_vmv1r_v_cg/cp_ssstrictv_vmvnr_simm_reserved"]
+    coverpoint:
+      [
+        "SsstrictV_vmv1r_v_cg/cp_ssstrictv_vmvnr_simm_reserved",
+        "Vx8_vmv1r_v_cg/cp_asm_count",
+        "Vx8_vmv2r_v_cg/cp_asm_count",
+        "Vx8_vmv4r_v_cg/cp_asm_count",
+        "Vx8_vmv8r_v_cg/cp_asm_count",
+      ]
 
   # The value of NREG must be 1, 2, 4, or 8, and values of simm[4:0] other than 0,
   # 1, 3, and 7 are reserved.
@@ -2612,7 +2846,7 @@ normative_rule_definitions:
 
   # The misa.v bit is set for implementations providing misa and supporting V.
   - name: misa_v_op
-    coverpoint: ["SmV_cg/cp_misa_v_clear_set"]
+    coverpoint: ["SmV_cg/cp_misa_v_clear_set", "Sm_mcsr_cg/cp_misa_v"]
 
   # The V vector extension has precise traps.
   - name: V_precise_traps

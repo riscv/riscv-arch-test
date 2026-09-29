@@ -2,14 +2,27 @@
 
 normative_rule_definitions:
   - name: mul_op
-    coverpoint: ["M_mul_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
+    coverpoint: ["Zmmul_mul_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
   # insn:mulh[], insn:mulhu[], and insn:mulhsu[] perform the same multiplication but
   # return the upper XLEN bits of the full 2×XLEN-bit product, for signed×signed,
   # unsigned×unsigned, and rs1×unsigned rs2 multiplication.
   - name: mulh_mulhu_mulhsu_op
     coverpoint:
       [
-        "{M_mulh_cg, M_mulhu_cg, M_mulhsu_cg}/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}}",
+        "{Zmmul_mulh_cg, Zmmul_mulhu_cg, Zmmul_mulhsu_cg}/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}",
       ]
   - name: mulw_op
-    coverpoint: ["M_mulw_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
+    coverpoint: ["Zmmul_mulw_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
+  - name: Zmmul_insns
+    coverpoint:
+      [
+        "{Zmmul_mul_cg, Zmmul_mulh_cg, Zmmul_mulhsu_cg, Zmmul_mulhu_cg, Zmmul_mulw_cg}/{cp_asm_count}",
+      ]
+  - name: Zmmul_enc_same
+    coverpoint:
+      [
+        "{Zmmul_mul_cg, Zmmul_mulh_cg, Zmmul_mulhsu_cg, Zmmul_mulhu_cg, Zmmul_mulw_cg}/{cp_asm_count}",
+      ]
+  # The Zmmul tests run on every configuration that supports M.
+  - name: M_implies_Zmmul
+    coverpoint: ["Zmmul_mul_cg/{cp_asm_count}"]

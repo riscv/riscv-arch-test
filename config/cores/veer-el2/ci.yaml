@@ -8,6 +8,8 @@ ci_enabled: true
 #   Sm            mstatus.TW is not implemented, mip is read-only to software, and a mcycle write
 #                 does not stick; trap-count, mepc and mtval mismatches.
 #   U             Trap-count and mepc/mtval mismatches in U-mode traps.
+#   InterruptsSm  mstatus.TW is not implemented, so U-mode WFI with TW=1 never traps
+#                 (cp_wfi_timeout); TW must be writable when U-mode exists [norm:mstatus_tw_acc].
 #   ExceptionsSm, ExceptionsU, ExceptionsZc
 #                 mtval mismatches.
 #   PMPSm         A TOR entry with pmpaddr=0 raises an illegal instruction instead of a Store/AMO
@@ -15,11 +17,10 @@ ci_enabled: true
 #   PMPU          mtval is 0 on an illegal CSR access but holds the encoding for other illegal
 #                 instructions; the spec permits either policy, not both.
 #   PMPZca        A compressed fetch crossing out of an executable PMP region does not fault.
-#   Zihpm         Only hpmcounter3..6 are implemented, not 7..31.
 #   Zifencei      The testbench's instruction memory never sees stores, so fence.i fetches stale
 #                 code.
 #   I             fence.tso (FENCE with fm=1000) raises an illegal instruction.
-exclude_extensions: "Sm,U,ExceptionsSm,ExceptionsU,ExceptionsZc,PMPSm,PMPU,PMPZca,Zihpm,Zifencei,I"
+exclude_extensions: "Sm,U,InterruptsSm,ExceptionsSm,ExceptionsU,ExceptionsZc,PMPSm,PMPU,PMPZca,Zifencei,I"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-veer-el2.sh"

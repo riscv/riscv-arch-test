@@ -17,7 +17,12 @@ normative_rule_definitions:
     coverpoint: ["Zba_sh1add_cg/cr_rs1_rs2_edges"]
 
   - name: bitmanip_uw_suffix_semantics
-    coverpoint: ["Zba_add_uw_cg/cr_rs1_rs2_edges"]
+    # Representative coverpoints; also Zba_sh2add_uw_cg and Zba_sh3add_uw_cg
+    coverpoint:
+      [
+        "{Zba_add_uw_cg, Zba_sh1add_uw_cg}/cr_rs1_rs2_edges",
+        "Zba_slli_uw_cg/cr_rs1_imm_edges_uimm",
+      ]
 
   # Operation
   - name: slli-uw_op

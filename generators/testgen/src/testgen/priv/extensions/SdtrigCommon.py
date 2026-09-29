@@ -98,6 +98,7 @@ UDB_DEFINES = [
     "#define UDB_SDTRIG_U_AVAILABLE",
     "#define UDB_SDTRIG_VS_AVAILABLE",
     "#define UDB_SDTRIG_VU_AVAILABLE",
+    # TODO: Replace with UDB supported Etrigger and Exceptions parameters
     # Etrigger params
     *[f"#define UDB_SDTRIG_ETRIGGER_SUPPORTED{i}" for i in range(UDB_NUM_TRIGGERS)],
     *[f"#define UDB_EXCEPTION_{name.upper()}_SUPPORTED" for name in ETRIGGER_EXCODE_NAMES.values()],

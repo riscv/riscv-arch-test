@@ -25,11 +25,11 @@ covergroup Svbare_cg with function sample(ins_t ins);
     }
 
     `ifdef UDB_MXLEN_64
-        satp_bare: coverpoint ins.current.csr[CSR_SATP][63:60] {
+        satp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] {
             bins bare = {4'b0000};
         }
     `else
-        satp_bare: coverpoint ins.current.csr[CSR_SATP][31] {
+        satp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] {
             bins bare = {1'b0};
         }
     `endif

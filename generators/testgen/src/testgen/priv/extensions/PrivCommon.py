@@ -13,10 +13,14 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 
+# Some Sv translation mode is supported. Sv48 and Sv57 imply Sv39, so Sv39 and Sv32 between them
+# cover every case and the wider modes need not be named.
+SV_GATE = "#if defined(SV39_SUPPORTED) || defined(SV32_SUPPORTED)"
+
 # Canonical virtual addresses have bits XLEN-1:VALEN-1 all equal, so the msb that can be walked
 # independently is VALEN-2 (31 for Sv32, where VALEN = XLEN). Each tier is (msb, gate define) and
 # extends the walk to the wider translation scheme when it is supported.
-VADDR_GATE = "#if defined(SV39_SUPPORTED) || defined(SV32_SUPPORTED)"
+VADDR_GATE = SV_GATE
 VADDR_TIERS = [
     (31, None),
     (37, "SV39_SUPPORTED"),

@@ -13,8 +13,8 @@ from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.params import PresetMask
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
-from testgen.formatters import format_single_testcase
-from testgen.instructions.vector import get_legal_lmuls
+from testgen.formatters import format_single_testcase, get_instruction_type_config
+from testgen.instructions.vector import get_element_group_lmul, get_legal_lmuls
 from testgen.instructions.vector_params import generate_random_vector_params
 
 _NO_OVERLAP_MASKED = {("vs1", "v0"), ("vs2", "v0"), ("vd", "v0"), ("vs3", "v0")}
@@ -31,7 +31,9 @@ def make_vtype_agnostic(instr_name: str, instr_type: str, coverpoint: str, test_
     eew = None
     max_emul = 8
     egs = 1
-    masked = True
+    config = get_instruction_type_config(instr_type)
+    assert config.vector_data is not None
+    masked = config.vector_data.maskable
     if coverpoint.startswith("cr_vtype_agnostic_"):
         suffix = coverpoint[len("cr_vtype_agnostic_") :]
 
@@ -65,9 +67,7 @@ def make_vtype_agnostic(instr_name: str, instr_type: str, coverpoint: str, test_
     min_lmul = min(get_legal_lmuls(sew))
 
     if egs != 1:
-        # The minlmul for a crypto instruction must assume SEW=32, so lmul >= egs
-        # We have to do this because it is chosen at random
-        min_lmul = max(min_lmul, math.ceil(math.log2(egs)))
+        min_lmul = max(min_lmul, int(math.log2(get_element_group_lmul(egs))))
 
     lmul_exponents = list(range(min_lmul, max_lmul + 1))
 

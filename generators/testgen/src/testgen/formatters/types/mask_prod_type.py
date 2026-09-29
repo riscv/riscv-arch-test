@@ -21,7 +21,8 @@ from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig,
 
 # Mask = Mask op Mask
 mmm_config = InstructionTypeConfig(
-    required_params={"vd", "vs1", "vs2"}, vector_data=VectorTypeConfig(mask_regs={"vd", "vs1", "vs2"})
+    required_params={"vd", "vs1", "vs2"},
+    vector_data=VectorTypeConfig(mask_regs={"vd", "vs1", "vs2"}, maskable=False),
 )
 # Mask = Vector op Vector
 mvv_config = InstructionTypeConfig(
@@ -44,15 +45,17 @@ mvi_config = InstructionTypeConfig(
 )
 # Mask = Vector op Vector (carry variant, so not maskable)
 mvvc_config = InstructionTypeConfig(
-    required_params={"vd", "vs1", "vs2"}, vector_data=VectorTypeConfig(mask_regs={"vd"})
+    required_params={"vd", "vs1", "vs2"}, vector_data=VectorTypeConfig(mask_regs={"vd"}, maskable=False)
 )
 # Mask = Vector op Integer (carry variant, so not maskable)
 mvxc_config = InstructionTypeConfig(
-    required_params={"vd", "rs1", "vs2"}, vector_data=VectorTypeConfig(mask_regs={"vd"})
+    required_params={"vd", "rs1", "vs2"}, vector_data=VectorTypeConfig(mask_regs={"vd"}, maskable=False)
 )
 # Mask = Vector op Immediate (carry variant, so not maskable)
 mvic_config = InstructionTypeConfig(
-    required_params={"vd", "vs2", "immval"}, imm_bits=5, vector_data=VectorTypeConfig(mask_regs={"vd"})
+    required_params={"vd", "vs2", "immval"},
+    imm_bits=5,
+    vector_data=VectorTypeConfig(mask_regs={"vd"}, maskable=False),
 )
 # Mask = Vector op Vector op Mask
 mvvm_config = InstructionTypeConfig(

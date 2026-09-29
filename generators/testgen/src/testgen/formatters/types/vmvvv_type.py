@@ -18,7 +18,7 @@ from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
 
 # This is slightly different from vv-like instructions, as the second operand is vs1
-vmvvv_config = InstructionTypeConfig(required_params={"vd", "vs1"}, vector_data=VectorTypeConfig())
+vmvvv_config = InstructionTypeConfig(required_params={"vd", "vs1"}, vector_data=VectorTypeConfig(maskable=False))
 
 
 @add_instruction_formatter("VMVVV", vmvvv_config)

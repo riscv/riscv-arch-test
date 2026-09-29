@@ -173,7 +173,7 @@ def _generate_unpriv_tests_for_instruction(
             assert instr_type_config.vector_data is not None, "vector_data must be provided for all vector instructions"
 
             vdsew = sew
-            if "vd" in instr_type_config.vector_data.widened_regs:
+            if "vd" in instr_type_config.vector_data.widened_regs or "vd" in info.widened_regs:
                 vdsew *= 2
             elif info.load_store_eew == 64:
                 vdsew = 64

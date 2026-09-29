@@ -392,7 +392,11 @@ def generate_random_vector_params(
     assert instr_type_config.vector_data is not None, (
         f"Vector Data must be provided for vector instruction type {instr_type}"
     )
+    if masked and not instr_type_config.vector_data.maskable:
+        raise ValueError(f"vector instruction type {instr_type} is not maskable")
     info = parse_vector_instruction_info(instruction, instr_type)
+    if preset_params.egs is None:
+        preset_params.egs = info.element_group_size
 
     no_overlap = get_overlap_constraints(info, instr_type_config, masked, sew)
     if additional_no_overlap is not None:
@@ -400,7 +404,7 @@ def generate_random_vector_params(
 
     mask_vector_regs = instr_type_config.vector_data.mask_regs
     scalar_vector_regs = instr_type_config.vector_data.scalar_regs
-    widened_regs = instr_type_config.vector_data.widened_regs
+    widened_regs = instr_type_config.vector_data.widened_regs | info.widened_regs
 
     preset_params.lmul = lmul
     # These are effective lmuls for the operation, but we still must respect the callers choice of lmul
@@ -516,6 +520,6 @@ def generate_random_vector_params(
     params.sew = sew
     params.vector_suite = suite
     if params.vl is None:
-        params.vl = 1
+        params.vl = info.element_group_size
 
     return params

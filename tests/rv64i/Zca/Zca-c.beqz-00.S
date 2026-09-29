@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 50
+#define SIGUPD_COUNT 52
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -276,6 +276,26 @@ Zca_c_beqz_cg_cp_rs1_edges_0x100000001:
 1:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Zca_c_beqz_cg_cp_rs1_edges_0x100000001, Zca_c_beqz_cg_cp_rs1_edges_0x100000001_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load branch taken value: x12 = 0x5f353bda982bc1b0
+Zca_c_beqz_cg_cp_rs1_edges_0x80000000:
+  c.beqz x10, 1f # perform operation
+  LI(x12, 0) # branch not taken, set temp_reg to 0
+1:
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, Zca_c_beqz_cg_cp_rs1_edges_0x80000000, Zca_c_beqz_cg_cp_rs1_edges_0x80000000_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs1: x13 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load branch taken value: x8 = 0x4af2aed985334027
+Zca_c_beqz_cg_cp_rs1_edges_0x7fffffff:
+  c.beqz x13, 1f # perform operation
+  LI(x8, 0) # branch not taken, set temp_reg to 0
+1:
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Zca_c_beqz_cg_cp_rs1_edges_0x7fffffff, Zca_c_beqz_cg_cp_rs1_edges_0x7fffffff_str)
 
 /////////////////////////////////
 // cp_offset
@@ -556,6 +576,10 @@ RVTEST_DATA_BEGIN
 .dword 0xfb8a3774250826e0
 .dword 0x0000000100000001
 .dword 0x57d498f8370fe4bf
+.dword 0x0000000080000000
+.dword 0x5f353bda982bc1b0
+.dword 0x000000007fffffff
+.dword 0x4af2aed985334027
 .dword 0x66986c097b46cff9
 
 // Testcase strings
@@ -583,22 +607,24 @@ Zca_c_beqz_cg_cp_rs1_edges_0xffffffff_str: .string "\"test: 21; cg: Zca_c.beqz_c
 Zca_c_beqz_cg_cp_rs1_edges_0xfffffffe_str: .string "\"test: 22; cg: Zca_c.beqz_cg; cp: cp_rs1_edges; bin: 0xfffffffe\""
 Zca_c_beqz_cg_cp_rs1_edges_0x100000000_str: .string "\"test: 23; cg: Zca_c.beqz_cg; cp: cp_rs1_edges; bin: 0x100000000\""
 Zca_c_beqz_cg_cp_rs1_edges_0x100000001_str: .string "\"test: 24; cg: Zca_c.beqz_cg; cp: cp_rs1_edges; bin: 0x100000001\""
-Zca_c_beqz_cg_cp_offset_neg_str: .string "\"test: 25; cg: Zca_c.beqz_cg; cp: cp_offset; bin: neg\""
-Zca_c_beqz_cg_cp_imm_edges_c_branch_b_2_str: .string "\"test: 26; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_2\""
-Zca_c_beqz_cg_cp_imm_edges_c_branch_b_4_str: .string "\"test: 27; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_4\""
-Zca_c_beqz_cg_cp_imm_edges_c_branch_b_8_str: .string "\"test: 28; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_8\""
-Zca_c_beqz_cg_cp_imm_edges_c_branch_b_16_str: .string "\"test: 29; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_16\""
-Zca_c_beqz_cg_cp_imm_edges_c_branch_b_32_str: .string "\"test: 30; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_32\""
-Zca_c_beqz_cg_cp_imm_edges_c_branch_b_64_str: .string "\"test: 31; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_64\""
-Zca_c_beqz_cg_cp_imm_edges_c_branch_b_128_str: .string "\"test: 32; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_128\""
-Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m2_str: .string "\"test: 33; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_m2\""
-Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m4_str: .string "\"test: 34; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_m4\""
-Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m8_str: .string "\"test: 35; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_m8\""
-Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m16_str: .string "\"test: 36; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_m16\""
-Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m32_str: .string "\"test: 37; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_m32\""
-Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m64_str: .string "\"test: 38; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_m64\""
-Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m128_str: .string "\"test: 39; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_m128\""
-Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m256_str: .string "\"test: 40; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_m256\""
+Zca_c_beqz_cg_cp_rs1_edges_0x80000000_str: .string "\"test: 25; cg: Zca_c.beqz_cg; cp: cp_rs1_edges; bin: 0x80000000\""
+Zca_c_beqz_cg_cp_rs1_edges_0x7fffffff_str: .string "\"test: 26; cg: Zca_c.beqz_cg; cp: cp_rs1_edges; bin: 0x7fffffff\""
+Zca_c_beqz_cg_cp_offset_neg_str: .string "\"test: 27; cg: Zca_c.beqz_cg; cp: cp_offset; bin: neg\""
+Zca_c_beqz_cg_cp_imm_edges_c_branch_b_2_str: .string "\"test: 28; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_2\""
+Zca_c_beqz_cg_cp_imm_edges_c_branch_b_4_str: .string "\"test: 29; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_4\""
+Zca_c_beqz_cg_cp_imm_edges_c_branch_b_8_str: .string "\"test: 30; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_8\""
+Zca_c_beqz_cg_cp_imm_edges_c_branch_b_16_str: .string "\"test: 31; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_16\""
+Zca_c_beqz_cg_cp_imm_edges_c_branch_b_32_str: .string "\"test: 32; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_32\""
+Zca_c_beqz_cg_cp_imm_edges_c_branch_b_64_str: .string "\"test: 33; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_64\""
+Zca_c_beqz_cg_cp_imm_edges_c_branch_b_128_str: .string "\"test: 34; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_128\""
+Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m2_str: .string "\"test: 35; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_m2\""
+Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m4_str: .string "\"test: 36; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_m4\""
+Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m8_str: .string "\"test: 37; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_m8\""
+Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m16_str: .string "\"test: 38; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_m16\""
+Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m32_str: .string "\"test: 39; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_m32\""
+Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m64_str: .string "\"test: 40; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_m64\""
+Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m128_str: .string "\"test: 41; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_m128\""
+Zca_c_beqz_cg_cp_imm_edges_c_branch_b_m256_str: .string "\"test: 42; cg: Zca_c.beqz_cg; cp: cp_imm_edges_c_branch; bin: b_m256\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

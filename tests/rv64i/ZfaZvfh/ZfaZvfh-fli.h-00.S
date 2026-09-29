@@ -9,10 +9,10 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Zfa', 'Zvfh', 'F', 'M']
+# REQUIRED_EXTENSIONS: ['I', 'Zfa', 'Zvfh', 'F']
 # params:
 #   MXLEN: 64
-# MARCH: rv64imf_zicsr_zifencei_zfa_zvfh
+# MARCH: rv64if_zicsr_zifencei_zfa_zvfh
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region

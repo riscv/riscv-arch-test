@@ -272,10 +272,10 @@ class FLOAT_EDGES:
         0x80000000,  # -0
         0x3F800000,  # 1.0
         0xBF800000,  # -1.0
-        0x3FC00000,  # 1.5
-        0xBFC00000,  # -1.5
-        0x40000000,  # 2.0
-        0xC0000000,  # -2.0
+        0x40200000,  # 2.5 (a tie when rounded to an integer)
+        0xC0200000,  # -2.5
+        0x4B800000,  # 2^24 (2^24 + 1 is a tie)
+        0xCB800000,  # -2^24
         0x00800000,  # smallest positive normalized
         0x80800000,  # smallest negative normalized
         0x7F7FFFFF,  # most positive
@@ -303,10 +303,10 @@ class FLOAT_EDGES:
         0x8000000000000000,  # -0.0
         0x3FF0000000000000,  # 1.0
         0xBFF0000000000000,  # -1.0
-        0x3FF8000000000000,  # 1.5
-        0xBFF8000000000000,  # -1.5
-        0x4000000000000000,  # 2.0
-        0xC000000000000000,  # -2.0
+        0x4004000000000000,  # 2.5 (a tie when rounded to an integer)
+        0xC004000000000000,  # -2.5
+        0x4340000000000000,  # 2^53 (2^53 + 1 is a tie)
+        0xC340000000000000,  # -2^53
         0x0010000000000000,  # smallest positive normalized
         0x8010000000000000,  # smallest negative normalized
         0x7FEFFFFFFFFFFFFF,  # most positive normalized
@@ -334,10 +334,10 @@ class FLOAT_EDGES:
         0x8000,  # -0.0
         0x3C00,  # 1.0
         0xBC00,  # -1.0
-        0x3E00,  # 1.5
-        0xBE00,  # -1.5
-        0x4000,  # 2.0
-        0xC000,  # -2.0
+        0x4100,  # 2.5 (a tie when rounded to an integer)
+        0xC100,  # -2.5
+        0x6800,  # 2^11 (2^11 + 1 is a tie)
+        0xE800,  # -2^11
         0x0400,  # smallest normalized
         0x8400,  # smallest negative normalized
         0x7BFF,  # most positive normalized
@@ -365,10 +365,10 @@ class FLOAT_EDGES:
         0x8000,  # -0
         0x3F80,  # 1.0
         0xBF80,  # -1.0
-        0x3FC0,  # 1.5
-        0xBFC0,  # -1.5
-        0x4000,  # 2.0
-        0xC000,  # -2.0
+        0x4020,  # 2.5 (a tie when rounded to an integer)
+        0xC020,  # -2.5
+        0x4380,  # 2^8 (2^8 + 1 is a tie)
+        0xC380,  # -2^8
         0x0080,  # smallest positive normalized
         0x8080,  # smallest negative normalized
         0x7F7F,  # most positive
@@ -672,9 +672,32 @@ def get_general_edges(xlen: int) -> tuple[int, ...]:
             0b0000000000000000000000000000000011111111111111111111111111111110,  # Wmaxm1
             0b0000000000000000000000000000000100000000000000000000000000000000,  # Wmaxp1
             0b0000000000000000000000000000000100000000000000000000000000000001,  # Wmaxp2
+            0b0000000000000000000000000000000010000000000000000000000000000000,  # W80: low word INT32_MIN
+            0b0000000000000000000000000000000001111111111111111111111111111111,  # W7F: low word INT32_MAX
         )
 
     return base_edges
+
+
+def _sign_extend_edges(edges: tuple[int, ...], width: int, xlen: int) -> tuple[int, ...]:
+    """Sign-extend width-bit edge values to XLEN, keeping them unsigned."""
+    if width >= xlen:
+        return edges
+    return tuple(edge + 2**xlen - 2**width if edge & (1 << (width - 1)) else edge for edge in edges)
+
+
+def get_walkone_edges(xlen: int, width: int) -> tuple[int, ...]:
+    """Get general edges plus a walking one, sweeping clz/ctz over every result."""
+    base = get_general_edges(xlen)
+    sweep = _sign_extend_edges(tuple(1 << i for i in range(width)), width, xlen)
+    return base + tuple(val for val in sweep if val not in base)
+
+
+def get_walkmask_edges(xlen: int, width: int) -> tuple[int, ...]:
+    """Get general edges plus a walking low-order mask, sweeping cpop over every result."""
+    base = get_general_edges(xlen)
+    sweep = _sign_extend_edges(tuple((1 << k) - 1 for k in range(width + 1)), width, xlen)
+    return base + tuple(val for val in sweep if val not in base)
 
 
 # TODO: Do we really need these extra edges for orcb?

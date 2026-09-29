@@ -154,6 +154,10 @@
         `cover_info("//      I - Enabled");
         `include "I_coverage_init.svh"
     `endif
+    `ifdef COVER_INTERRUPTSSM
+        `cover_info("//      InterruptsSm - Enabled");
+        `include "InterruptsSm_coverage_init.svh"
+    `endif
     `ifdef COVER_M
         `cover_info("//      M - Enabled");
         `include "M_coverage_init.svh"
@@ -293,6 +297,14 @@
     `ifdef COVER_SSSTRICTV
         `cover_info("//      SsstrictV - Enabled");
         `include "SsstrictV_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSTC
+        `cover_info("//      Sstc - Enabled");
+        `include "Sstc_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSTCSM
+        `cover_info("//      SstcSm - Enabled");
+        `include "SstcSm_coverage_init.svh"
     `endif
     `ifdef COVER_SSTVALA
         `cover_info("//      Sstvala - Enabled");

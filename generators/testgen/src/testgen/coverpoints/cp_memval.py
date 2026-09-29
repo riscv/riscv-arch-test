@@ -35,6 +35,10 @@ def make_memval(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
         elif instr_type in {"L", "CL", "CILS"}:
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], temp_val=val)
             value = f"{val:#x}"
+        elif instr_type == "A":
+            # For AMOs, rs1val holds the value written to memory before the operation
+            params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=val)
+            value = f"{val:#x}"
         else:
             raise ValueError(f"cp_memval is not supported for instruction type: {instr_type} in {instr_name}")
 

@@ -7,6 +7,8 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
+// stvec is also covered by S_scsr_cg (cp_stvec_vaddr_walk1/walk0/pc/scratch), which every
+// Sstvecd configuration samples; see coverpoints/norm/Sstvecd.yaml.
 `define COVER_SSTVECD
 covergroup Sstvecd_cg with function sample(ins_t ins);
     option.per_instance = 0;

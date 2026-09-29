@@ -20,8 +20,8 @@ include::{testplansdir}/Zaamo.adoc[]
 |Coverpoint|Bins|Definition
 3+^|cp_custom_amo_aqrl coverpoints
 |cp_custom_aqrl|4|none, aq, rl, aqrl
-3+^|cr_memval_rs2_minmax coverpoints (amomin, amomax, amominu, amomaxu)
-|cr_memval_rs2_minmax|2|Memory holds the most negative and rs2 the most positive operand-width value, and the reverse
+3+^|cr_memval_rs2_edges coverpoints (amomin, amomax, amominu, amomaxu)
+|cr_memval_rs2_edges|cp_memval bins x cp_rs2_edges bins|Cross of the standard memory-value and rs2 edge coverpoints
 |===
 
 include::norm/Zaamo_norm_rules.adoc[]

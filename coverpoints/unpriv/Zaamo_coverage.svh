@@ -286,11 +286,8 @@ covergroup Zaamo_amomax_w_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_memval_rs2_minmax_word : coverpoint {ins.current.rd_val[31:0], ins.current.rs2_val[31:0]} iff (ins.trap == 0) {
-        // Old memory word (returned in rd) and rs2 word at opposite signed extremes,
-        // where signed and unsigned comparisons disagree
-        bins mem_min_rs2_max = {64'h80000000_7fffffff};
-        bins mem_max_rs2_min = {64'h7fffffff_80000000};
+    cr_memval_rs2_edges_word : cross cp_memval_word,cp_rs2_edges  iff (ins.trap == 0 )  {
+        // Cross coverage of memory word and rs2 edges
     }
 
 endgroup
@@ -385,11 +382,8 @@ covergroup Zaamo_amomaxu_w_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_memval_rs2_minmax_word : coverpoint {ins.current.rd_val[31:0], ins.current.rs2_val[31:0]} iff (ins.trap == 0) {
-        // Old memory word (returned in rd) and rs2 word at opposite signed extremes,
-        // where signed and unsigned comparisons disagree
-        bins mem_min_rs2_max = {64'h80000000_7fffffff};
-        bins mem_max_rs2_min = {64'h7fffffff_80000000};
+    cr_memval_rs2_edges_word : cross cp_memval_word,cp_rs2_edges  iff (ins.trap == 0 )  {
+        // Cross coverage of memory word and rs2 edges
     }
 
 endgroup
@@ -484,11 +478,8 @@ covergroup Zaamo_amomin_w_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_memval_rs2_minmax_word : coverpoint {ins.current.rd_val[31:0], ins.current.rs2_val[31:0]} iff (ins.trap == 0) {
-        // Old memory word (returned in rd) and rs2 word at opposite signed extremes,
-        // where signed and unsigned comparisons disagree
-        bins mem_min_rs2_max = {64'h80000000_7fffffff};
-        bins mem_max_rs2_min = {64'h7fffffff_80000000};
+    cr_memval_rs2_edges_word : cross cp_memval_word,cp_rs2_edges  iff (ins.trap == 0 )  {
+        // Cross coverage of memory word and rs2 edges
     }
 
 endgroup
@@ -583,11 +574,8 @@ covergroup Zaamo_amominu_w_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_memval_rs2_minmax_word : coverpoint {ins.current.rd_val[31:0], ins.current.rs2_val[31:0]} iff (ins.trap == 0) {
-        // Old memory word (returned in rd) and rs2 word at opposite signed extremes,
-        // where signed and unsigned comparisons disagree
-        bins mem_min_rs2_max = {64'h80000000_7fffffff};
-        bins mem_max_rs2_min = {64'h7fffffff_80000000};
+    cr_memval_rs2_edges_word : cross cp_memval_word,cp_rs2_edges  iff (ins.trap == 0 )  {
+        // Cross coverage of memory word and rs2 edges
     }
 
 endgroup
@@ -1134,11 +1122,8 @@ covergroup Zaamo_amomax_d_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_memval_rs2_minmax_double : coverpoint {ins.current.rd_val[63:0], ins.current.rs2_val[63:0]} iff (ins.trap == 0) {
-        // Old memory doubleword (returned in rd) and rs2 at opposite signed extremes,
-        // where signed and unsigned comparisons disagree
-        bins mem_min_rs2_max = {128'h8000000000000000_7fffffffffffffff};
-        bins mem_max_rs2_min = {128'h7fffffffffffffff_8000000000000000};
+    cr_memval_rs2_edges_double : cross cp_memval_double,cp_rs2_edges  iff (ins.trap == 0 )  {
+        // Cross coverage of memory doubleword and rs2 edges
     }
 
 endgroup
@@ -1230,11 +1215,8 @@ covergroup Zaamo_amomaxu_d_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_memval_rs2_minmax_double : coverpoint {ins.current.rd_val[63:0], ins.current.rs2_val[63:0]} iff (ins.trap == 0) {
-        // Old memory doubleword (returned in rd) and rs2 at opposite signed extremes,
-        // where signed and unsigned comparisons disagree
-        bins mem_min_rs2_max = {128'h8000000000000000_7fffffffffffffff};
-        bins mem_max_rs2_min = {128'h7fffffffffffffff_8000000000000000};
+    cr_memval_rs2_edges_double : cross cp_memval_double,cp_rs2_edges  iff (ins.trap == 0 )  {
+        // Cross coverage of memory doubleword and rs2 edges
     }
 
 endgroup
@@ -1326,11 +1308,8 @@ covergroup Zaamo_amomin_d_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_memval_rs2_minmax_double : coverpoint {ins.current.rd_val[63:0], ins.current.rs2_val[63:0]} iff (ins.trap == 0) {
-        // Old memory doubleword (returned in rd) and rs2 at opposite signed extremes,
-        // where signed and unsigned comparisons disagree
-        bins mem_min_rs2_max = {128'h8000000000000000_7fffffffffffffff};
-        bins mem_max_rs2_min = {128'h7fffffffffffffff_8000000000000000};
+    cr_memval_rs2_edges_double : cross cp_memval_double,cp_rs2_edges  iff (ins.trap == 0 )  {
+        // Cross coverage of memory doubleword and rs2 edges
     }
 
 endgroup
@@ -1422,11 +1401,8 @@ covergroup Zaamo_amominu_d_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_memval_rs2_minmax_double : coverpoint {ins.current.rd_val[63:0], ins.current.rs2_val[63:0]} iff (ins.trap == 0) {
-        // Old memory doubleword (returned in rd) and rs2 at opposite signed extremes,
-        // where signed and unsigned comparisons disagree
-        bins mem_min_rs2_max = {128'h8000000000000000_7fffffffffffffff};
-        bins mem_max_rs2_min = {128'h7fffffffffffffff_8000000000000000};
+    cr_memval_rs2_edges_double : cross cp_memval_double,cp_rs2_edges  iff (ins.trap == 0 )  {
+        // Cross coverage of memory doubleword and rs2 edges
     }
 
 endgroup

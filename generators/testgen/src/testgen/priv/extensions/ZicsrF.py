@@ -838,8 +838,6 @@ def _directed_chunk(test_data: TestData, split_name: str, groups: list[DirectedG
     "ZicsrF",
     required_extensions=["Zicsr", "F"],
     march_extensions=["F", "D", "Zfh", "Zfa", "Zfbfmin"],
-    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_zicsrf(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZicsrF unprivileged floating-point fcsr extension."""

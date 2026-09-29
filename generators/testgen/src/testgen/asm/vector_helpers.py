@@ -266,7 +266,9 @@ def prep_base_v(
                 "# Load Vl=Random",
                 f"LI(x{temp_reg}, {randomVl})",
                 f"vsetvli x{vlmax_reg}, x0, e{params.sew}, {flags}",
-                f"remu x{temp_reg}, x{temp_reg}, x{vlmax_reg}",
+                "# VLMAX should be a power of 2, so taking a remainder is simple",
+                f"addi x{vlmax_reg}, x{vlmax_reg}, -1",
+                f"and x{temp_reg}, x{temp_reg}, x{vlmax_reg}",
             ]
         )
 
@@ -548,7 +550,9 @@ def generate_random_vl(params: InstructionParams, test_data: TestData) -> tuple[
             "# Load vl=random",
             f"LI(x{temp_reg}, {randomVl})",
             f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, tu, mu",
-            f"remu x{temp_reg}, x{temp_reg}, x{params.temp_reg}",
+            "# VLMAX should be a power of 2, so taking a remainder is simple",
+            f"addi x{params.temp_reg}, x{params.temp_reg}, -1",
+            f"and x{temp_reg}, x{temp_reg}, x{params.temp_reg}",
         ]
     )
 

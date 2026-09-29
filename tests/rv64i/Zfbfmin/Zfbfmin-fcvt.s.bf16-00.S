@@ -585,37 +585,37 @@ Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0xbf80:
   # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0xbf80, Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0xbf80_str)
 
-# Testcase cp_fs1_edges_BF16 (Test source fs1 value = 0x00003fc0)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f11) # load fs1: f11 = 0x3fc0
+# Testcase cp_fs1_edges_BF16 (Test source fs1 value = 0x00004020)
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f11) # load fs1: f11 = 0x4020
   fsflagsi 0b00000 # clear all fflags
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x3fc0:
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x4020:
   fcvt.s.bf16 f5, f11 # perform operation
   # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x3fc0, Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x3fc0_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x4020, Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x4020_str)
 
-# Testcase cp_fs1_edges_BF16 (Test source fs1 value = 0x0000bfc0)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f21) # load fs1: f21 = 0xbfc0
+# Testcase cp_fs1_edges_BF16 (Test source fs1 value = 0x0000c020)
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f21) # load fs1: f21 = 0xc020
   fsflagsi 0b00000 # clear all fflags
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0xbfc0:
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0xc020:
   fcvt.s.bf16 f17, f21 # perform operation
   # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0xbfc0, Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0xbfc0_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0xc020, Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0xc020_str)
 
-# Testcase cp_fs1_edges_BF16 (Test source fs1 value = 0x00004000)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f1) # load fs1: f1 = 0x4000
+# Testcase cp_fs1_edges_BF16 (Test source fs1 value = 0x00004380)
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f1) # load fs1: f1 = 0x4380
   fsflagsi 0b00000 # clear all fflags
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x4000:
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x4380:
   fcvt.s.bf16 f27, f1 # perform operation
   # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x4000, Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x4000_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x4380, Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x4380_str)
 
-# Testcase cp_fs1_edges_BF16 (Test source fs1 value = 0x0000c000)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f10) # load fs1: f10 = 0xc000
+# Testcase cp_fs1_edges_BF16 (Test source fs1 value = 0x0000c380)
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f10) # load fs1: f10 = 0xc380
   fsflagsi 0b00000 # clear all fflags
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0xc000:
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0xc380:
   fcvt.s.bf16 f24, f10 # perform operation
   # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0xc000, Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0xc000_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0xc380, Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0xc380_str)
 
 # Testcase cp_fs1_edges_BF16 (Test source fs1 value = 0x00000080)
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f5) # load fs1: f5 = 0x0080
@@ -1241,10 +1241,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000000008000
 .dword 0x0000000000003f80
 .dword 0x000000000000bf80
-.dword 0x0000000000003fc0
-.dword 0x000000000000bfc0
-.dword 0x0000000000004000
-.dword 0x000000000000c000
+.dword 0x0000000000004020
+.dword 0x000000000000c020
+.dword 0x0000000000004380
+.dword 0x000000000000c380
 .dword 0x0000000000000080
 .dword 0x0000000000008080
 .dword 0x0000000000007f7f
@@ -1382,10 +1382,10 @@ Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x0_str: .string "\"test: 65; cg: Zfbf
 Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x8000_str: .string "\"test: 66; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_edges_BF16; bin: b0x8000\""
 Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x3f80_str: .string "\"test: 67; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_edges_BF16; bin: b0x3f80\""
 Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0xbf80_str: .string "\"test: 68; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_edges_BF16; bin: b0xbf80\""
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x3fc0_str: .string "\"test: 69; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_edges_BF16; bin: b0x3fc0\""
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0xbfc0_str: .string "\"test: 70; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_edges_BF16; bin: b0xbfc0\""
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x4000_str: .string "\"test: 71; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_edges_BF16; bin: b0x4000\""
-Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0xc000_str: .string "\"test: 72; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_edges_BF16; bin: b0xc000\""
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x4020_str: .string "\"test: 69; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_edges_BF16; bin: b0x4020\""
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0xc020_str: .string "\"test: 70; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_edges_BF16; bin: b0xc020\""
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x4380_str: .string "\"test: 71; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_edges_BF16; bin: b0x4380\""
+Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0xc380_str: .string "\"test: 72; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_edges_BF16; bin: b0xc380\""
 Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x80_str: .string "\"test: 73; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_edges_BF16; bin: b0x80\""
 Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x8080_str: .string "\"test: 74; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_edges_BF16; bin: b0x8080\""
 Zfbfmin_fcvt_s_bf16_cg_cp_fs1_edges_BF16_b0x7f7f_str: .string "\"test: 75; cg: Zfbfmin_fcvt.s.bf16_cg; cp: cp_fs1_edges_BF16; bin: b0x7f7f\""

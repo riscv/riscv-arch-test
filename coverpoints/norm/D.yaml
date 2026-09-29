@@ -16,7 +16,7 @@ normative_rule_definitions:
   # insn:fld[] and insn:fsd[] do not modify the bits being transferred; in particular, the
   # payloads of non-canonical NaNs are preserved.
   - name: fld_fsd_bits_maintained
-    coverpoint: ["TODO"]
+    coverpoint: ["D_fld_cg/cp_memval_fp_double"]
   # insn:fmv.x.d[] and insn:fmv.d.x[] do not modify the bits being transferred; in
   # particular, the payloads of non-canonical NaNs are preserved.
   - name: fmv_bits_preserved

@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 82
+#define SIGUPD_COUNT 86
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -361,15 +361,35 @@ Zcb_c_sb_cg_cp_rs2_edges_0x100000001:
   # Check if x10 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x13, x5, x4, x10, Zcb_c_sb_cg_cp_rs2_edges_0x100000001, Zcb_c_sb_cg_cp_rs2_edges_0x100000001_str)
 
+# Testcase cp_rs2_edges (Test source rs2 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs2: x10 = 0x0000000080000000
+  mv x11, x13 # move signature pointer register
+Zcb_c_sb_cg_cp_rs2_edges_0x80000000:
+  c.sb x10, 0(x11) # perform store
+  addi x11, x11, SIG_STRIDE # increment signature pointer
+  LREG x8, -SIG_STRIDE(x11) # load stored value for checking
+  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x8, Zcb_c_sb_cg_cp_rs2_edges_0x80000000, Zcb_c_sb_cg_cp_rs2_edges_0x80000000_str)
+
+# Testcase cp_rs2_edges (Test source rs2 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs2: x12 = 0x000000007fffffff
+  mv x10, x11 # move signature pointer register
+Zcb_c_sb_cg_cp_rs2_edges_0x7fffffff:
+  c.sb x12, 2(x10) # perform store
+  addi x10, x10, SIG_STRIDE # increment signature pointer
+  LREG x8, -SIG_STRIDE(x10) # load stored value for checking
+  # Check if x8 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x8, Zcb_c_sb_cg_cp_rs2_edges_0x7fffffff, Zcb_c_sb_cg_cp_rs2_edges_0x7fffffff_str)
+
 /////////////////////////////////
 // cp_uimm_2
 /////////////////////////////////
 
 # Testcase cp_uimm_2: imm=0
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs2: x12 = 0x8877665544332211
-  mv x9, x13 # move signature pointer register
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs2: x13 = 0x8877665544332211
+  mv x9, x10 # move signature pointer register
 Zcb_c_sb_cg_cp_uimm_2_uimm0:
-  c.sb x12, 0(x9) # perform store
+  c.sb x13, 0(x9) # perform store
   addi x9, x9, SIG_STRIDE # increment signature pointer
   LREG x8, -SIG_STRIDE(x9) # load stored value for checking
   # Check if x8 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -446,6 +466,8 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000fffffffe
 .dword 0x0000000100000000
 .dword 0x0000000100000001
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
 .dword 0x8877665544332211
 .dword 0x8877665544332211
 .dword 0x8877665544332211
@@ -484,10 +506,12 @@ Zcb_c_sb_cg_cp_rs2_edges_0xffffffff_str: .string "\"test: 29; cg: Zcb_c.sb_cg; c
 Zcb_c_sb_cg_cp_rs2_edges_0xfffffffe_str: .string "\"test: 30; cg: Zcb_c.sb_cg; cp: cp_rs2_edges; bin: 0xfffffffe\""
 Zcb_c_sb_cg_cp_rs2_edges_0x100000000_str: .string "\"test: 31; cg: Zcb_c.sb_cg; cp: cp_rs2_edges; bin: 0x100000000\""
 Zcb_c_sb_cg_cp_rs2_edges_0x100000001_str: .string "\"test: 32; cg: Zcb_c.sb_cg; cp: cp_rs2_edges; bin: 0x100000001\""
-Zcb_c_sb_cg_cp_uimm_2_uimm0_str: .string "\"test: 33; cg: Zcb_c.sb_cg; cp: cp_uimm_2; bin: uimm0\""
-Zcb_c_sb_cg_cp_uimm_2_uimm1_str: .string "\"test: 34; cg: Zcb_c.sb_cg; cp: cp_uimm_2; bin: uimm1\""
-Zcb_c_sb_cg_cp_uimm_2_uimm2_str: .string "\"test: 35; cg: Zcb_c.sb_cg; cp: cp_uimm_2; bin: uimm2\""
-Zcb_c_sb_cg_cp_uimm_2_uimm3_str: .string "\"test: 36; cg: Zcb_c.sb_cg; cp: cp_uimm_2; bin: uimm3\""
+Zcb_c_sb_cg_cp_rs2_edges_0x80000000_str: .string "\"test: 33; cg: Zcb_c.sb_cg; cp: cp_rs2_edges; bin: 0x80000000\""
+Zcb_c_sb_cg_cp_rs2_edges_0x7fffffff_str: .string "\"test: 34; cg: Zcb_c.sb_cg; cp: cp_rs2_edges; bin: 0x7fffffff\""
+Zcb_c_sb_cg_cp_uimm_2_uimm0_str: .string "\"test: 35; cg: Zcb_c.sb_cg; cp: cp_uimm_2; bin: uimm0\""
+Zcb_c_sb_cg_cp_uimm_2_uimm1_str: .string "\"test: 36; cg: Zcb_c.sb_cg; cp: cp_uimm_2; bin: uimm1\""
+Zcb_c_sb_cg_cp_uimm_2_uimm2_str: .string "\"test: 37; cg: Zcb_c.sb_cg; cp: cp_uimm_2; bin: uimm2\""
+Zcb_c_sb_cg_cp_uimm_2_uimm3_str: .string "\"test: 38; cg: Zcb_c.sb_cg; cp: cp_uimm_2; bin: uimm3\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

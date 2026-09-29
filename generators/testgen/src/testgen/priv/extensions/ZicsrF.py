@@ -172,14 +172,14 @@ def make_op(
     test_data: TestData,
     coverpoint: str,
     covergroup: str,
-    coverbin: str,
+    flag: str,
     comment: str,
 ) -> list[str]:
     """Helper to generate a fp instruction with a comment and check flags."""
     lines = [
         "",
         "csrwi fflags, 0 # reset flags",
-        test_data.add_testcase(coverbin, coverpoint, covergroup),
+        test_data.add_testcase(mnemonic, f"{coverpoint}_{flag}", covergroup),
         f"{mnemonic} f7, f{fs1}, f{fs2}           # {comment}",
         write_sigupd(7, test_data, "float"),
     ]
@@ -197,7 +197,7 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            "cp_fflags_set_m",
+            "cp_fflags_set_m_NV/DZ/OF/UF/NX",
             "Set each flag with different operations",
         )
     ]
@@ -218,13 +218,9 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
     lines.extend(make_op("fmul.s", 14, 14, test_data, coverpoint, covergroup, "UF", "tiny * tiny sets underflow flag"))
     lines.extend(make_op("fdiv.s", 11, 12, test_data, coverpoint, covergroup, "NX", "1 / 3 sets inexact flag"))
 
-    ######################################
-    coverpoint = "cp_underflow_after_rounding"
-    ######################################
-
     lines.append(
         comment_banner(
-            coverpoint,
+            "Underflow after rounding",
             "Check underflow flag is determined after rounding",
         )
     )
@@ -335,6 +331,39 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _generate_frm_reserved_static_rm(test_data: TestData) -> list[str]:
+    """Static rounding modes execute normally while frm holds a reserved value."""
+    ######################################
+    covergroup = "ZicsrF_cg"
+    coverpoint = "cp_frm_reserved_static_rm"
+    ######################################
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            "Set frm to each reserved value (5-7) and execute fadd.s with each static rounding mode.\n"
+            "Only dynamic rounding depends on frm, so none of these trap.\n"
+            "1.0 + 2^-24 is an exact tie, so each rounding mode gives its own result.",
+        ),
+        load_float_reg("1.0", 10, 0x3F800000, test_data, "single"),
+        load_float_reg("2^-24", 11, 0x33800000, test_data, "single"),
+    ]
+    for frm in (5, 6, 7):
+        lines.append(f"csrwi frm, {frm}        # reserved rounding mode")
+        for rm in ("rne", "rtz", "rdn", "rup", "rmm"):
+            lines.extend(
+                [
+                    "",
+                    "csrwi fflags, 0 # reset flags",
+                    test_data.add_testcase(f"frm{frm}_{rm}", coverpoint, covergroup),
+                    f"fadd.s f7, f10, f11, {rm}",
+                    write_sigupd(7, test_data, "float"),
+                ]
+            )
+    lines.append("csrwi frm, 0        # back to a legal rounding mode")
+    return lines
+
+
 @add_priv_test_generator(
     "ZicsrF",
     required_extensions=["Zicsr", "F"],
@@ -351,6 +380,7 @@ def make_zicsrf(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_fcsr_walk(test_data))
     tc.code.extend(_generate_fcsr_write(test_data))
     tc.code.extend(_generate_instr_tests(test_data))
+    tc.code.extend(_generate_frm_reserved_static_rm(test_data))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

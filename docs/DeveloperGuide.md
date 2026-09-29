@@ -469,7 +469,7 @@ case statement.
 All instruction sample templates must match the following format:
 
 ```sv
-        "INSTR"     : begin
+        "@INSTR@"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
             ins.add_rs2(2);

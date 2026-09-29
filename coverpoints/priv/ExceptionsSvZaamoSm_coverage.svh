@@ -27,7 +27,7 @@ covergroup ExceptionsSvZaamoSm_cg with function sample(ins_t ins);
     amoops: coverpoint ins.current.insn {
         wildcard bins amoadd_w = {AMOADD_W};
     }
-    medeleg_walk: coverpoint ins.current.csr[CSR_MEDELEG] {
+    medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg") {
         bins zeros                    = {16'b0000_0000_0000_0000};
         `ifndef ZCA_SUPPORTED
             bins instrmisaligned_enabled = {16'b0000_0000_0000_0001};

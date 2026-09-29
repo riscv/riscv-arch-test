@@ -77,6 +77,8 @@ implemented_extensions:
   - { name: Zba, version: "= 1.0.0" }
   - { name: Zbb, version: "= 1.0.0" }
   - { name: Zbc, version: "= 1.0.0" }
+  # Zbkc (clmul, clmulh) is a subset of Zbc, so it comes with Zbc; UDB requires it.
+  - { name: Zbkc, version: "= 1.0.0" }
   - { name: Zbs, version: "= 1.0.0" }
   # Zicntr: mcycle/minstret and their unprivileged cycle/instret aliases exist. The
   # time CSR does NOT (see TIME_CSR_IMPLEMENTED below), so ACT emulates time reads
@@ -122,6 +124,12 @@ params:
   MUTABLE_MISA_M: false
   MUTABLE_MISA_C: false
   MUTABLE_MISA_U: false
+  # misa.X is set (MEASURED misa 0x4090_1104 above): every RV32B configuration also
+  # decodes the non-ratified Zbf/Zbp/Zbr/Zbt instructions.
+  #   Quote: "// X bit: non-standard extensions present (B extra sub-extensions or CHERIoT configured)
+  #   localparam int unsigned MisaXBit     = RV32BExtra | 32'(BaseIsa == BaseIsaRV32IorCHERIoT);"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_cs_registers.sv#L181-L182
+  NON_STANDARD_EXTENSION_IMPLEMENTED: true
 
   # Endianness: mstatush reads zero, and the RTL comment says so explicitly.
   #   Quote: "// mstatush: All zeros for Ibex (fixed little endian and all other bits reserved)"
@@ -228,6 +236,31 @@ params:
   #   CSR to the current program counter"
   #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/exception_interrupts.rst#L8
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  # mie.MSIE/MTIE/MEIE are all writable, whatever the integration connects. Simple
+  # System drives only irq_timer_i and ties irq_software_i and irq_external_i to 0
+  # (see rvmodel_macros.h), so software and external interrupts are implemented but
+  # can never become pending in this testbench.
+  #   Quote: "assign mie_d.irq_software = csr_wdata_int[CSR_MSIX_BIT];
+  #   assign mie_d.irq_timer    = csr_wdata_int[CSR_MTIX_BIT];
+  #   assign mie_d.irq_external = csr_wdata_int[CSR_MEIX_BIT];"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_cs_registers.sv#L1103-L1105
+  #   Quote: ".irq_software_i            (1'b0), .irq_timer_i               (timer_irq),
+  #   .irq_external_i            (1'b0),"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/examples/simple_system/rtl/ibex_simple_system.sv#L281-L283
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+  # WFI in U-mode traps only when mstatus.TW is set; with TW clear it executes.
+  #   Quote: "assign illegal_umode_insn = (priv_mode_i != PRIV_LVL_M) &
+  #   // MRET must be in M-Mode. TW means trap WFI to M-Mode.
+  #   (mret_insn_dec | (csr_mstatus_tw_i & wfi_insn_dec));"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_id_stage.sv#L606-L608
+  WFI_U_MODE: true
+  # WFI sleeps with no timeout until an enabled interrupt (mip & mie), NMI or debug
+  # request arrives.
+  #   Quote: "if (irq_nm || irq_pending_i || debug_req_i || debug_mode_q || debug_single_step_i) begin"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_controller.sv#L615
+  WFI_FINITE: false
   # No PMA hardware. The data side of the OBI bus carries a 4-bit byte enable over a
   # 32-bit bus, so the natural access granule is 4 bytes (2^2).
   #   Quote: "output logic [3:0]                                                   data_be_o,"
@@ -301,6 +334,23 @@ params:
       false,
       false, # 26..31
     ]
+  # MHPMCounterWidth=32 in the opentitan configuration, so mhpmcounter3h..12h are
+  # read-only zero.
+  #   Quote: "MHPMCounterWidth         : 32"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/ibex_configs.yaml#L60
+  #   Quote: "Their width can be parametrized between 1 and 64 bit through the
+  #   ``MHPMCounterWidth`` parameter"
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/performance_counters.rst#L86
+  HPM_COUNTER3_WIDTH: 32
+  HPM_COUNTER4_WIDTH: 32
+  HPM_COUNTER5_WIDTH: 32
+  HPM_COUNTER6_WIDTH: 32
+  HPM_COUNTER7_WIDTH: 32
+  HPM_COUNTER8_WIDTH: 32
+  HPM_COUNTER9_WIDTH: 32
+  HPM_COUNTER10_WIDTH: 32
+  HPM_COUNTER11_WIDTH: 32
+  HPM_COUNTER12_WIDTH: 32
 
   #   Quote: "0x320 | ``mcountinhibit`` | RW | Machine Counter-Inhibit Register"
   #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/cs_registers.rst#L25

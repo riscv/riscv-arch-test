@@ -95,7 +95,7 @@
 # skip those testcases - it fails assembly ("non-constant expression in .if") and the
 # whole suite never builds. Defining it confines the damage to the individual ELFs that
 # actually probe the address: those hang and are caught by the runner's cycle-limit
-# check, and every other test in the same suite still runs. See the discrepancy notes.
+# check, and every other test in the same suite still runs.
 #define RVMODEL_ACCESS_FAULT_ADDRESS 0x50000000
 
 ##### Interrupt Latency #####

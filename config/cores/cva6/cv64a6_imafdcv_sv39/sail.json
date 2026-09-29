@@ -376,8 +376,8 @@
           // AMONone: an axi_atop_filter sits in front of the L2, so no AXI atomic
           // ever reaches memory.  Quote: "// The L2 memory does not support atomics"
           // https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_soc.sv#L191
-          // The DUT does not fault on an AMO, it silently drops it - see the
-          // discrepancy notes; the Zaamo/Zalrsc suites are excluded in ci.yaml.
+          // The DUT does not fault on an AMO, it silently drops it; the Zaamo/Zalrsc
+          // suites are excluded in ci.yaml.
           "atomic_support": "AMONone",
           "misaligned_atomicity_granule_size_exp": 0,
           "vector_misaligned_atomicity_granule_size_exp": 0,

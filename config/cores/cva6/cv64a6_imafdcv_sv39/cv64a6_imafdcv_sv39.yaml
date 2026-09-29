@@ -21,8 +21,8 @@ name: cv64a6_imafdcv_sv39
 description: CVA6 (cv64a6_imafdcv_sv39) with the Ara vector unit, 4 lanes, VLEN 512
 
 implemented_extensions:
-  # misa is read-only and reports A, C, D, F, I, M, S, U, V with MXL=2, i.e.
-  # 0x8000_0000_0034_112D.  Quote: "riscv::CSR_MISA: csr_rdata = IsaCode;"
+  # misa is read-only and reports A, C, D, F, I, M, S, U, V, X with MXL=2, i.e.
+  # 0x8000_0000_00B4_112D (measured).  Quote: "riscv::CSR_MISA: csr_rdata = IsaCode;"
   #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L601
   #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L308
   - { name: I, version: "= 2.1" }
@@ -34,8 +34,7 @@ implemented_extensions:
   # AXI atomic is turned into an error before it reaches memory.  Measured: amoadd.d
   # returns 0 and leaves memory unchanged while raising no fault, and sc.d reports failure
   # in rd yet commits the store.  The configuration describes what the DUT can do, so the
-  # extension is left out rather than declared and then excluded suite by suite; misa.A
-  # reading 1 without working atomics is recorded as discrepancy D3 instead.
+  # extension is left out rather than declared and then excluded suite by suite.
   #   Quote: "localparam CVA6ConfigAExtEn = 1;"
   #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/cv64a6_imafdcv_sv39_config_pkg.sv#L29
   #   Quote: "// The L2 memory does not support atomics"
@@ -44,8 +43,9 @@ implemented_extensions:
   #     handling them"
   #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/apps/common/riscv_tests.mk#L30
 
-  # F and D: RVF = RVD = CVA6ConfigRVF = 1.  Half precision is off (CVA6ConfigF16En = 0),
-  # so no Zfh/Zfhmin and, on the vector side, no Zvfh/Zvfhmin.
+  # F and D: RVF = RVD = CVA6ConfigRVF = 1.  CVA6ConfigF16En = 0, so no Zfh/Zfhmin and, on
+  # the vector side, no Zvfh/Zvfhmin; the Ara SoC enables CVA6's non-standard XF16 instead
+  # (see NON_STANDARD_EXTENSION_IMPLEMENTED).
   #   Quote: "localparam CVA6ConfigRVF = 1;" / "localparam CVA6ConfigF16En = 0;"
   #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/cv64a6_imafdcv_sv39_config_pkg.sv#L17
   - { name: F, version: "= 2.2.0" }
@@ -156,8 +156,7 @@ implemented_extensions:
 params:
   # misa.X reads 1.  The Ara SoC turns on CVA6's scalar half-precision FPU (XF16) from
   # FPUSupport, which defaults to FPUSupportHalfSingleDouble, and CVA6 counts XF16 as a
-  # non-standard extension.  Measured misa = 0x8000_0000_00B4_112D (bit 23 set); see
-  # discrepancy D10.
+  # non-standard extension.  Measured misa = 0x8000_0000_00B4_112D (bit 23 set).
   #   Quote: "cfg.XF16                  = FPUSupport[3];"
   #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_soc.sv#L456
   #   Quote: "FPUSupportHalfSingleDouble = 6'b111000,"
@@ -246,8 +245,7 @@ params:
   # an unmasked assignment of csr_wdata[31:0].  UDB will not accept that: it requires a
   # scounteren bit to be disabled unless the counter behind it exists, so bits 0..2 must
   # be false (no Zicntr, see above) and bits 9..31 must be false (only six HPM counters).
-  # The values below are what UDB permits; the divergence from the RTL is recorded in
-  # the discrepancy notes rather than hidden.
+  # The values below are what UDB permits.
   SCOUNTENABLE_EN:
     [
       false,
@@ -341,13 +339,11 @@ params:
   # crosses an 8-byte boundary returns the first doubleword shifted and zero-filled
   # instead of the bytes from the next doubleword, a misaligned store corrupts the
   # first doubleword and never writes the second, and some offsets trip a CVA6 RTL
-  # assertion that kills the simulation.  See discrepancy D13 in
-  # ~/reviews/act-ports/cva6-ara-discrepancies.md.  `true` is the value that matches
+  # assertion that kills the simulation.  `true` is the value that matches
   # the observable "no trap" behaviour, but it is not the right declaration: a misaligned
   # access on this DUT neither traps nor works, and "supported" is the stronger of those
   # two claims.  Declared false, which deselects the Misalign suites rather than running
-  # tests the hardware cannot satisfy.  The silent data corruption is recorded as
-  # discrepancy D13 instead.
+  # tests the hardware cannot satisfy.
   MISALIGNED_LDST: false
   MISALIGNED_LDST_EXCEPTION_PRIORITY: low
   # MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE and MISALIGNED_SPLIT_STRATEGY are gated on

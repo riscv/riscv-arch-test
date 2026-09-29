@@ -178,12 +178,9 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
         wildcard bins any_prefetch_ins = {PREFETCH_I, PREFETCH_R, PREFETCH_W};
     }
 
-    cp_PTE_rwx_zicbop_s: cross PTE_RWX_d, PageType_d, zicbop_ins, priv_mode_s {
-        ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_u);
-    }
-    cp_PTE_rwx_zicbop_u: cross PTE_RWX_d, PageType_d, zicbop_ins, priv_mode_u {
-        ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_s);
-    }
+    // A prefetch is a hint that need not translate, so it has no PTE or page type to cross with
+    cp_PTE_rwx_zicbop_s: cross zicbop_ins, mode, priv_mode_s;
+    cp_PTE_rwx_zicbop_u: cross zicbop_ins, mode, priv_mode_u;
 
     cp_PTE_inv_cbo_s: cross PTE_d_inv, PageType_d, store_page_fault, cbo_ins, priv_mode_s {
         ignore_bins ig1 = binsof(PTE_d_inv.leaflvl_u_w);
@@ -297,7 +294,17 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
 
         // Non leaf PTE points to a non existatant phys addr instead of next page table. Store access fault required during walk
         // Example: Setup a giga page in sv48, lvl 3 pte (tera) should point to lvl2 page table, but it points to non existent PA
-        cp_nonleaf_PTE_to_nonexistent_pa_cbo: cross pointer_PTE_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s_u {
+        // The walk faults before any data physical address exists, so check where the pointer PTE points instead
+        `ifdef UDB_MXLEN_64
+            nonleaf_ppn_nonexistent: coverpoint (ins.current.pte_d[53:10] == (`RVMODEL_ACCESS_FAULT_ADDRESS >> 12)) {
+                bins non_existent_pa = {1};
+            }
+        `else
+            nonleaf_ppn_nonexistent: coverpoint (ins.current.pte_d[31:10] == (`RVMODEL_ACCESS_FAULT_ADDRESS >> 12)) {
+                bins non_existent_pa = {1};
+            }
+        `endif
+        cp_nonleaf_PTE_to_nonexistent_pa_cbo: cross pointer_PTE_d, nonleaf_ppn_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s_u {
             `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_tera); `endif     // Here PageType_d will be the page being pointed towards
             `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_giga); `endif
             `ifdef UDB_MXLEN_32   ignore_bins ig3 = binsof(PageType_d.sv32_mega); `endif

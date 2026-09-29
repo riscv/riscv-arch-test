@@ -15,7 +15,7 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.sv.access import add_rwx_test, mode_switch, virtual_address
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
-from testgen.priv.extensions.sv.page_tables import PteFlags, SvMode, create_page_mapping
+from testgen.priv.extensions.sv.page_tables import PteFlags, SvMode, create_leaf_pte, create_page_mapping
 from testgen.priv.extensions.sv.Sv import MPRV_CLEANUP, mstatus_setup
 
 # medeleg[9] would delegate the S-mode ecall that T-SBI uses to enter M-mode.
@@ -30,6 +30,18 @@ _BASE_CASES = (
     (False, "rvtest_data_1", True),
     (False, "RVMODEL_ACCESS_FAULT_ADDRESS", False),
     (False, "RVMODEL_ACCESS_FAULT_ADDRESS", True),
+)
+# Two physical pages holding a 4-byte instruction that starts in the last halfword of the first page
+_CROSSING_DATA = (
+    "// Two pages that a misaligned access spans",
+    ".p2align 12",
+    "rvtest_cross_page:",
+    ".skip 4096 - 2",
+    ".option push",
+    ".option norvc",
+    "jr ra",
+    ".option pop",
+    ".skip 4096 - 2",
 )
 
 
@@ -163,6 +175,61 @@ def _add_access(
     ]
 
 
+def _page_crossing_cases(test_data: TestData, sv: SvMode) -> list[str]:
+    """Access the last halfword of the first of two kilopages, one with RWX = 111 and the other a zero PTE.
+
+    A lw, a sw and a jalr to a 4-byte instruction each span both pages. The store runs last, because a
+    store that faults in one page may still write the part that lies in the other page.
+    """
+    covergroup = "ExceptionsSv_cg"
+    good, bad = PteFlags(), "0"
+    lines: list[str] = []
+    for name, first, second in (("first", bad, good), ("second", good, bad)):
+        labels = {
+            op: test_data.add_testcase(f"{name}_{op}", coverpoint, covergroup).removesuffix(":")
+            for op, coverpoint in (
+                ("exec", "cp_misaligned_inst_page_fault_s"),
+                ("load", "cp_misaligned_load_page_fault_s"),
+                ("store", "cp_misaligned_store_page_fault_s"),
+            )
+        }
+        lines.extend(
+            [
+                f"// The {name} page faults",
+                *create_page_mapping(
+                    sv,
+                    virtual_address="va_cross_1",
+                    physical_address="rvtest_cross_page",
+                    leaf_level=0,
+                    leaf_flags=first,
+                ),
+                create_leaf_pte(
+                    sv,
+                    level=0,
+                    flags=second,
+                    virtual_address="va_cross_2",
+                    physical_address="rvtest_cross_page + 4096",
+                ),
+                "sfence.vma",
+                "LI(a5, va_cross_2 - 2)",
+                "",
+                f"{labels['exec']}:",
+                "jalr ra, a5, 0",
+                "nop",
+                f"{labels['load']}:",
+                "lw a3, 0(a5)",
+                "nop",
+                f"{labels['store']}:",
+                "sw a2, 0(a5)",
+                "nop",
+                "",
+                write_sigupd(13, test_data, label=labels["load"]),
+                "",
+            ]
+        )
+    return lines
+
+
 def _make_mode_test(
     test_data: TestData, sv: SvMode, target: _Target, *, base_cases: bool, medeleg_cases: bool
 ) -> TestChunk:
@@ -190,6 +257,11 @@ def _make_mode_test(
         )
         setup_asm = (*setup_asm, "sfence.vma")
 
+    crossing = base_cases and target.operation == "rwx" and target.mode == "Smode"
+    va_defs = (("va_data", sv.data_va), ("va_data_invalid", _INVALID_VA[sv.name]))
+    if crossing:
+        va_defs = (*va_defs, ("va_cross_1", sv.data_va), ("va_cross_2", "va_cross_1 + 0x1000"))
+
     suffix = target.mode[0].lower()
     if not base_cases:
         banner = f"cp_medeleg_{suffix}"
@@ -203,7 +275,7 @@ def _make_mode_test(
         target.effective_mode,
         f"{sv.name}_{topic}{operation_name}_{mode_name}",
         coverpoint=banner,
-        va_defs=(("va_data", sv.data_va), ("va_data_invalid", _INVALID_VA[sv.name])),
+        va_defs=va_defs,
         setup_asm=setup_asm,
     )
 
@@ -222,6 +294,8 @@ def _make_mode_test(
             )
             chunk.code.extend(["#ifdef RVMODEL_ACCESS_FAULT_ADDRESS", *access, "#endif", ""] if guarded else access)
             number += 1
+    if crossing:
+        chunk.code.extend(_page_crossing_cases(test_data, sv))
 
     if medeleg_cases:
         for medeleg in _MEDELEG_VALUES:
@@ -238,6 +312,8 @@ def _make_mode_test(
         test_data.int_regs.return_registers([saved_medeleg, medeleg_value])
 
     chunk.raw_data.extend(sv_data(sv))
+    if crossing:
+        chunk.raw_data.extend(_CROSSING_DATA)
     chunk.trap_sigupd_count = trap_sigupd_count(200)
     return test_data.end_test_chunk()
 

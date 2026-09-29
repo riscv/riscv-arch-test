@@ -2044,6 +2044,9 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x31A) // menvcfgh
         #endif
         TSBI_CSR_INSTR_TABLE(0x344) // mip
+        TSBI_CSR_INSTR_TABLE(0x350) // miselect
+        TSBI_CSR_INSTR_TABLE(0x351) // mireg
+        TSBI_CSR_INSTR_TABLE(0x35c) // mtopei
         TSBI_CSR_INSTR_TABLE(0x747) // mseccfg
         TSBI_CSR_INSTR_TABLE(0x320) // mcountinhibit
         //TSBI_CSR_INSTR_TABLE(0xB00) // mcycle - shouldn't be changed below M-mode
@@ -2060,6 +2063,9 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x15D) // stimecmph
         #endif
         TSBI_CSR_INSTR_TABLE(0x180) // satp
+        TSBI_CSR_INSTR_TABLE(0x150) // siselect
+        TSBI_CSR_INSTR_TABLE(0x151) // sireg
+        TSBI_CSR_INSTR_TABLE(0x15c) // stopei
         TSBI_CSR_INSTR_TABLE(0x7A0) // tselect
         TSBI_CSR_INSTR_TABLE(0x7A1) // tdata1
         TSBI_CSR_INSTR_TABLE(0x7A2) // tdata2

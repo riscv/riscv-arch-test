@@ -68,6 +68,9 @@ params:
   MISA_CSR_IMPLEMENTED: true
   MUTABLE_MISA_M: false
   MUTABLE_MISA_C: false
+  # misa.X (bit 23) reads 0 in the misa value above (0x4000_1104). EH1's custom CSRs
+  # (mrac, mgpmc, ...) are not a non-standard instruction extension.
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
 
   # Endianness: RISC-V little-endian; EH1 implements no mstatus.MBE/SBE/UBE fields.
   M_MODE_ENDIANNESS: little
@@ -142,6 +145,29 @@ params:
 
   # Sm parameters.
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  # WFI is a NOP, so it always resumes after a finite time. There is no U-mode.
+  #   Quote: "Currently, the WFI instruction is implemented as NOP, which is a fully
+  #   RISC-V-compliant option."
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/power-management-and-multi-core-debug-control.md#L618
+  WFI_FINITE: true
+  WFI_U_MODE: false
+  # Machine external and timer interrupts are implemented (mie.MEIE/MTIE are R/W, and
+  # mcause lists 0x8000_0007 and 0x8000_000B). The core has a timer_int input and a PIC
+  # fed by extintsrc_req; the ACT testbench ties both to 0, so neither fires in these runs.
+  #   Quote: "timer_int | in | Standard RISC-V timer interrupt (async)"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/complex-port-list.md#L54
+  #   Quote: ".timer_int ( 1'b0 ), .extintsrc_req ( '0 ),"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/testbench/tb_top.sv#L699
+  MEI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+  # Machine software interrupts are NOT implemented: mip has no msip bit, there is no
+  # msip input, and mcause lists no 0x8000_0003. mie.MSIE is nonetheless a writable
+  # flop with nothing behind it, where UDB's false models it as read-only zero.
+  #   Quote: "assign mip_ns[5:0] = {ce_int, dec_timer_t0_pulse, dec_timer_t1_pulse, mexintpend, timer_int_sync, mip[0]};"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/design/dec/dec_tlu_ctl.sv#L1161
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/standard-risc-v-csrs-with-core-specific-adaptations.md#L130
+  #   (mip table: bits 6:0 Reserved, R, 0 - no msip)
+  MSI_INTR_IMPL: false
   # No PMA hardware: region attributes come from mrac, whose granularity is one
   # 256 MB region, but the natural access granule on the 64-bit AHB/AXI bus is 8 bytes.
   PMA_GRANULARITY: 3
@@ -195,6 +221,14 @@ params:
       false,
       false,
     ]
+
+  # mhpmcounter3..6 are 64 bits (mhpmcounterNh holds the upper half).
+  #   Quote: "assign mhpmc3_incr[63:0] = {mhpmc3h[31:0],mhpmc3[31:0]} + ..."
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/design/dec/dec_tlu_ctl.sv#L2077
+  HPM_COUNTER3_WIDTH: 64
+  HPM_COUNTER4_WIDTH: 64
+  HPM_COUNTER5_WIDTH: 64
+  HPM_COUNTER6_WIDTH: 64
 
   # mcountinhibit (0x320) does NOT exist on EH1. Its function is served by the
   # non-standard mgpmc register at 0x7D0, which the next VeeR generation replaced with

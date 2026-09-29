@@ -245,6 +245,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 `endif
 
     // ── Sm1p13 + Hypervisor dependent coverpoints (cp_p1p13) ─────────────
+// hedelegh exists only on RV32, where P1P13 is bit 24 of mstateen0h
 `ifdef SM1P13P0_OR_LATER_SUPPORTED
     p1p13_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "p1p13") {
         bins p1p13_disabled = {1'b0};

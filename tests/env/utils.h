@@ -68,7 +68,10 @@
     sfence.vma
   #endif
   #ifdef H_SUPPORTED
+    .option push
+    .option arch, +h
     hfence.gvma
+    .option pop
   #endif
 .endm
 

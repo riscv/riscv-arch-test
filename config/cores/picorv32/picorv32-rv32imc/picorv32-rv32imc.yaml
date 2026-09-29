@@ -80,6 +80,15 @@ params:
   MISA_CSR_IMPLEMENTED: false
   MUTABLE_MISA_M: false
   MUTABLE_MISA_C: false
+  # NON_STANDARD_EXTENSION_IMPLEMENTED: false. It is the reset value of misa.X,
+  # which does not exist here (NO SUCH CSR). The only nonstandard instructions in
+  # PicoRV32 are the custom-0 IRQ instructions (getq/setq/retirq/maskirq/waitirq/
+  # timer), and every one of them is decoded only when ENABLE_IRQ=1. This build
+  # sets ENABLE_IRQ(0) (install-picorv32.sh), so custom-0 encodings are illegal.
+  # Quote: "instr_maskirq <= mem_rdata_q[6:0] == 7'b0001011 && ... && ENABLE_IRQ;"
+  # https://github.com/YosysHQ/picorv32/blob/ef203c2b0a3fb793280f5114941416c425c5b461/picorv32.v#L1090-L1093
+  # https://github.com/YosysHQ/picorv32/blob/ef203c2b0a3fb793280f5114941416c425c5b461/picorv32.v#L871-L872
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
 
   # PRECISE_SYNCHRONOUS_EXCEPTIONS: false. PicoRV32 does not deliver synchronous
   # exceptions at all. Every condition the spec calls an exception instead drives
@@ -101,6 +110,19 @@ params:
   # encoding and halts through the same CATCH_ILLINSN path.
   TRAP_ON_UNIMPLEMENTED_CSR: true
   TRAP_ON_ILLEGAL_WLRL: false # NO SUCH CSR: no WLRL field exists to write.
+
+  # WFI: there is no wfi instruction. The SYSTEM opcode decodes only the fixed
+  # rdcycle/rdinstret encodings and ecall/ebreak, so wfi (0x10500073) is an unknown
+  # encoding and halts the core through CATCH_ILLINSN, in any mode.
+  # Quote: "instr_ecall_ebreak <= ((mem_rdata_q[6:0] == 7'b1110011 && !mem_rdata_q[31:21] && !mem_rdata_q[19:7]) ||"
+  # https://github.com/YosysHQ/picorv32/blob/ef203c2b0a3fb793280f5114941416c425c5b461/picorv32.v#L1079-L1087
+  # WFI_FINITE: false. Execution never resumes after a wfi, so "resumes after a
+  # finite amount of time" cannot be claimed.
+  WFI_FINITE: false
+  # WFI_U_MODE: false. There is no U-mode, and wfi is illegal everywhere, so
+  # "executing WFI in U mode raises an illegal instruction exception" is the
+  # closer description (the illegal instruction halts rather than traps).
+  WFI_U_MODE: false
 
   # mtval: NO SUCH CSR. Nothing is reported anywhere, ever.
   REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false

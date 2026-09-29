@@ -25,7 +25,7 @@ covergroup Sstvala_cg with function sample(ins_t ins);
     }
 
     stval_equals_insn: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval")[31:0] == ins.current.insn[31:0] {
-           bins match = {1'b1};
+            bins match = {1'b1};
     }
 
     medeleg_instr_ma: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[0] {
@@ -52,15 +52,15 @@ covergroup Sstvala_cg with function sample(ins_t ins);
     }
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-    medeleg_instr_af: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[1] {
-            bins delegated = {1'b1};
-    }
-    medeleg_load_af: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[5] {
-            bins delegated = {1'b1};
-    }
-    medeleg_store_af: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[7] {
-            bins delegated = {1'b1};
-    }
+        medeleg_instr_af: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[1] {
+                bins delegated = {1'b1};
+        }
+        medeleg_load_af: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[5] {
+                bins delegated = {1'b1};
+        }
+        medeleg_store_af: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[7] {
+                bins delegated = {1'b1};
+        }
     `endif
 
     // -----------------------------------------------------------------------
@@ -93,12 +93,12 @@ covergroup Sstvala_cg with function sample(ins_t ins);
     }
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-    illegal_data_address: coverpoint ins.current.rs1_val + ins.current.imm {
-            bins fault_addr = {`RVMODEL_ACCESS_FAULT_ADDRESS};
-    }
-    illegal_instr_address: coverpoint ins.current.rs1_val + ins.current.imm {
-            bins fault_addr = {`RVMODEL_ACCESS_FAULT_ADDRESS};
-    }
+        illegal_data_address: coverpoint ins.current.rs1_val + ins.current.imm {
+                bins fault_addr = {`RVMODEL_ACCESS_FAULT_ADDRESS};
+        }
+        illegal_instr_address: coverpoint ins.current.rs1_val + ins.current.imm {
+                bins fault_addr = {`RVMODEL_ACCESS_FAULT_ADDRESS};
+        }
     `endif
 
     pf_stval: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") {
@@ -111,24 +111,24 @@ covergroup Sstvala_cg with function sample(ins_t ins);
 
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-    cp_load_access_fault:  cross priv_mode_s, illegal_data_address,  stval_equals_vaddr_d,     medeleg_load_af,  lw_insn;
-    cp_store_access_fault: cross priv_mode_s, illegal_data_address,  stval_equals_vaddr_d,     medeleg_store_af, sw_insn;
-    cp_instr_access_fault: cross priv_mode_s, illegal_instr_address, stval_equals_jalr_target, medeleg_instr_af, jalr_insn_curr;
+        cp_load_access_fault:  cross priv_mode_s, illegal_data_address,  stval_equals_vaddr_d,     medeleg_load_af,  lw_insn;
+        cp_store_access_fault: cross priv_mode_s, illegal_data_address,  stval_equals_vaddr_d,     medeleg_store_af, sw_insn;
+        cp_instr_access_fault: cross priv_mode_s, illegal_instr_address, stval_equals_jalr_target, medeleg_instr_af, jalr_insn_curr;
     `endif
 
     // Misaligned loads and stores to main memory raise no exception when the hart supports them
     `ifndef UDB_MISALIGNED_LDST
-    vaddr_d_misaligned: coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] {
-    }
-    cp_load_address_misaligned:  cross priv_mode_s, lw_insn, stval_equals_vaddr_d, vaddr_d_misaligned, medeleg_load_ma;
-    cp_store_address_misaligned: cross priv_mode_s, sw_insn, stval_equals_vaddr_d, vaddr_d_misaligned, medeleg_store_ma;
+        vaddr_d_misaligned: coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] {
+        }
+        cp_load_address_misaligned:  cross priv_mode_s, lw_insn, stval_equals_vaddr_d, vaddr_d_misaligned, medeleg_load_ma;
+        cp_store_address_misaligned: cross priv_mode_s, sw_insn, stval_equals_vaddr_d, vaddr_d_misaligned, medeleg_store_ma;
     `endif
 
     `ifndef ZCA_SUPPORTED
-    cause_instr_misaligned: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
-            bins set = {INSTRUCTION_ADDRESS_MISALIGNED};
-    }
-    cp_instr_adr_misaligned_jalr: cross priv_mode_s, jalr_insn_curr, cause_instr_misaligned, stval_equals_jalr_target, medeleg_instr_ma;
+        cause_instr_misaligned: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+                bins set = {INSTRUCTION_ADDRESS_MISALIGNED};
+        }
+        cp_instr_adr_misaligned_jalr: cross priv_mode_s, jalr_insn_curr, cause_instr_misaligned, stval_equals_jalr_target, medeleg_instr_ma;
     `endif
 
     // -----------------------------------------------------------------------

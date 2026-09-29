@@ -178,7 +178,7 @@ covergroup Zca_c_addi_cg with function sample(ins_t ins);
         bins b_62 = {-2};
         bins b_63 = {-1};
     }
-    cr_rs1_imm_edges_6bit_n0 : cross cp_rs1_edges,cp_imm_edges_6bit_n0  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges_6bit_n0 : cross cp_rs1_edges,cp_imm_edges_6bit_n0  {
         // Cross coverage of RS1 andedges
     }
 
@@ -370,7 +370,7 @@ covergroup Zca_c_andi_cg with function sample(ins_t ins);
         bins b_62 = {-2};
         bins b_63 = {-1};
     }
-    cr_rs1_imm_edges_6bit : cross cp_rs1_edges,cp_imm_edges_6bit  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges_6bit : cross cp_rs1_edges,cp_imm_edges_6bit  {
         // Cross coverage of RS1 and Imm edges
     }
 
@@ -942,7 +942,7 @@ covergroup Zca_c_slli_cg with function sample(ins_t ins);
             bins b_63 = {63};
         `endif
     }
-    cr_rs1_imm_edges_c : cross cp_rs1_edges,cp_imm_edges_c  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges_c : cross cp_rs1_edges,cp_imm_edges_c  {
         // Cross coverage of RS1 and Imm edges
     }
 
@@ -1017,7 +1017,7 @@ covergroup Zca_c_srai_cg with function sample(ins_t ins);
             bins b_63 = {63};
         `endif
     }
-    cr_rs1_imm_edges_c : cross cp_rs1_edges,cp_imm_edges_c  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges_c : cross cp_rs1_edges,cp_imm_edges_c  {
         // Cross coverage of RS1 and Imm edges
     }
 
@@ -1092,7 +1092,7 @@ covergroup Zca_c_srli_cg with function sample(ins_t ins);
             bins b_63 = {63};
         `endif
     }
-    cr_rs1_imm_edges_c : cross cp_rs1_edges,cp_imm_edges_c  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges_c : cross cp_rs1_edges,cp_imm_edges_c  {
         // Cross coverage of RS1 and Imm edges
     }
 
@@ -1497,7 +1497,7 @@ covergroup Zca_c_addiw_cg with function sample(ins_t ins);
         bins b_62 = {-2};
         bins b_63 = {-1};
     }
-    cr_rs1_imm_edges_6bit : cross cp_rs1_edges,cp_imm_edges_6bit  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges_6bit : cross cp_rs1_edges,cp_imm_edges_6bit  {
         // Cross coverage of RS1 and Imm edges
     }
 

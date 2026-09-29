@@ -18,6 +18,6 @@
             bins b_63 = {63};
         `endif
     }
-    cr_rs1_imm_edges_c : cross cp_rs1_edges,cp_imm_edges_c  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges_c : cross cp_rs1_edges,cp_imm_edges_c  {
         // Cross coverage of RS1 and Imm edges
     }

@@ -12,6 +12,6 @@
         bins b_62 = {-2};
         bins b_63 = {-1};
     }
-    cr_rs1_imm_edges_6bit_n0 : cross cp_rs1_edges,cp_imm_edges_6bit_n0  iff (ins.trap == 0 )  {
+    cr_rs1_imm_edges_6bit_n0 : cross cp_rs1_edges,cp_imm_edges_6bit_n0  {
         // Cross coverage of RS1 andedges
     }

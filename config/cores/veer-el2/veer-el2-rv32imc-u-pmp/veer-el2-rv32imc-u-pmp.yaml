@@ -80,6 +80,10 @@ params:
   MUTABLE_MISA_M: false
   MUTABLE_MISA_C: false
   MUTABLE_MISA_U: false
+  # misa.X (bit 23) reads 0 in the value above. EL2 has vendor CSRs (mrac, the PIC
+  # registers, ...) but no non-standard instruction-set extension; the draft bitmanip
+  # subset is disabled in this build.
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
 
   # Endianness: RISC-V little-endian; EL2 implements no mstatus.MBE/SBE/UBE fields.
   M_MODE_ENDIANNESS: little
@@ -157,6 +161,30 @@ params:
 
   # Sm parameters.
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  # WFI is a NOP, so it always completes, and there is no mstatus.TW or privilege check
+  # on it, so it also executes (as a NOP) in U-mode.
+  #   Quote: "Currently, the WFI instruction is implemented as NOP, which is a fully
+  #   RISC-V-compliant option."
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/power.md#L631
+  #   Quote: "rv32i[wfi] =    {  alu rs1 imm12 rd lor pm_alu }"
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/decode#L583
+  WFI_FINITE: true
+  WFI_U_MODE: true
+  # mie.MEIE, mie.MTIE and mie.MSIE are all writable, fed by the core's extintsrc_req
+  # (through the PIC), timer_int and soft_int inputs. mtime/mtimecmp are left to the SoC.
+  #   Quote: "assign mie_ns[5:0] = wr_mie_r ? {dec_csr_wrdata_r[30:28], dec_csr_wrdata_r[11],
+  #   dec_csr_wrdata_r[7], dec_csr_wrdata_r[3]} : mie[5:0];"
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L1719
+  #   Quote: "soft_int | in | Standard RISC-V software interrupt (async)" /
+  #   "timer_int | in | Standard RISC-V timer interrupt (async)"
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/complex-ports.md#L53-L58
+  # Testbench: tb_top drives all three lines from mailbox writes (0x83/0x84/0x85/0x86), but
+  # it has no mtime/mtimecmp and rvmodel_macros.h leaves the interrupt macros as stubs, so
+  # ACT does not yet raise any of these interrupts on this config.
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/testbench/tb_top.sv#L878-L891
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
   # No PMA hardware: region attributes come from mrac, whose granularity is one
   # 256 MB region, but the natural access granule on the 64-bit AHB/AXI bus is 8 bytes.
   PMA_GRANULARITY: 3
@@ -217,6 +245,13 @@ params:
       false,
       false,
     ]
+  # The four implemented counters are full 64-bit counters ({mhpmc<n>h, mhpmc<n>}).
+  #   Quote: "Four standard 64-bit wide event counters"
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/performance.md#L9
+  HPM_COUNTER3_WIDTH: 64
+  HPM_COUNTER4_WIDTH: 64
+  HPM_COUNTER5_WIDTH: 64
+  HPM_COUNTER6_WIDTH: 64
 
   # mcountinhibit (0x320) DOES exist on EL2 - it replaced EH1's non-standard mgpmc.
   #   Quote: "replaces the non-standard mgpmc register of the previous VeeR generation."

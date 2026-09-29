@@ -850,40 +850,40 @@ Zfhmin_flh_cg_cp_memval_fp_half_0xbc00:
   RVTEST_SIGUPD_F(x3, x8, x7, f4, f20, Zfhmin_flh_cg_cp_memval_fp_half_0xbc00, Zfhmin_flh_cg_cp_memval_fp_half_0xbc00_str)
   addi x2, x2, SIG_STRIDE # increment data_ptr
 
-# Testcase cp_memval_fp_half (memory value = 0x00003e00)
+# Testcase cp_memval_fp_half (memory value = 0x00004100)
   fsflagsi 0b00000 # clear all fflags
   addi x27, x2, -1076 # copy data_ptr to rs1 and adjust for offset
-Zfhmin_flh_cg_cp_memval_fp_half_0x3e00:
-  flh f6, 1076(x27) # perform load (0x00003e00)
+Zfhmin_flh_cg_cp_memval_fp_half_0x4100:
+  flh f6, 1076(x27) # perform load (0x00004100)
   # Check if f6 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x3, x8, x7, f4, f6, Zfhmin_flh_cg_cp_memval_fp_half_0x3e00, Zfhmin_flh_cg_cp_memval_fp_half_0x3e00_str)
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f6, Zfhmin_flh_cg_cp_memval_fp_half_0x4100, Zfhmin_flh_cg_cp_memval_fp_half_0x4100_str)
   addi x2, x2, SIG_STRIDE # increment data_ptr
 
-# Testcase cp_memval_fp_half (memory value = 0x0000be00)
+# Testcase cp_memval_fp_half (memory value = 0x0000c100)
   fsflagsi 0b00000 # clear all fflags
   addi x18, x2, -238 # copy data_ptr to rs1 and adjust for offset
-Zfhmin_flh_cg_cp_memval_fp_half_0xbe00:
-  flh f14, 238(x18) # perform load (0x0000be00)
+Zfhmin_flh_cg_cp_memval_fp_half_0xc100:
+  flh f14, 238(x18) # perform load (0x0000c100)
   # Check if f14 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x3, x8, x7, f4, f14, Zfhmin_flh_cg_cp_memval_fp_half_0xbe00, Zfhmin_flh_cg_cp_memval_fp_half_0xbe00_str)
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f14, Zfhmin_flh_cg_cp_memval_fp_half_0xc100, Zfhmin_flh_cg_cp_memval_fp_half_0xc100_str)
   addi x2, x2, SIG_STRIDE # increment data_ptr
 
-# Testcase cp_memval_fp_half (memory value = 0x00004000)
+# Testcase cp_memval_fp_half (memory value = 0x00006800)
   fsflagsi 0b00000 # clear all fflags
   addi x6, x2, -1561 # copy data_ptr to rs1 and adjust for offset
-Zfhmin_flh_cg_cp_memval_fp_half_0x4000:
-  flh f16, 1561(x6) # perform load (0x00004000)
+Zfhmin_flh_cg_cp_memval_fp_half_0x6800:
+  flh f16, 1561(x6) # perform load (0x00006800)
   # Check if f16 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x3, x8, x7, f4, f16, Zfhmin_flh_cg_cp_memval_fp_half_0x4000, Zfhmin_flh_cg_cp_memval_fp_half_0x4000_str)
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f16, Zfhmin_flh_cg_cp_memval_fp_half_0x6800, Zfhmin_flh_cg_cp_memval_fp_half_0x6800_str)
   addi x2, x2, SIG_STRIDE # increment data_ptr
 
-# Testcase cp_memval_fp_half (memory value = 0x0000c000)
+# Testcase cp_memval_fp_half (memory value = 0x0000e800)
   fsflagsi 0b00000 # clear all fflags
   addi x9, x2, 1703 # copy data_ptr to rs1 and adjust for offset
-Zfhmin_flh_cg_cp_memval_fp_half_0xc000:
-  flh f3, -1703(x9) # perform load (0x0000c000)
+Zfhmin_flh_cg_cp_memval_fp_half_0xe800:
+  flh f3, -1703(x9) # perform load (0x0000e800)
   # Check if f3 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x3, x8, x7, f4, f3, Zfhmin_flh_cg_cp_memval_fp_half_0xc000, Zfhmin_flh_cg_cp_memval_fp_half_0xc000_str)
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f3, Zfhmin_flh_cg_cp_memval_fp_half_0xe800, Zfhmin_flh_cg_cp_memval_fp_half_0xe800_str)
   addi x2, x2, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_memval_fp_half (memory value = 0x00000400)
@@ -1163,10 +1163,10 @@ RVTEST_DATA_BEGIN
 .word 0x00008000
 .word 0x00003c00
 .word 0x0000bc00
-.word 0x00003e00
-.word 0x0000be00
-.word 0x00004000
-.word 0x0000c000
+.word 0x00004100
+.word 0x0000c100
+.word 0x00006800
+.word 0x0000e800
 .word 0x00000400
 .word 0x00008400
 .word 0x00007bff
@@ -1277,10 +1277,10 @@ Zfhmin_flh_cg_cp_memval_fp_half_0x0_str: .string "\"test: 85; cg: Zfhmin_flh_cg;
 Zfhmin_flh_cg_cp_memval_fp_half_0x8000_str: .string "\"test: 86; cg: Zfhmin_flh_cg; cp: cp_memval_fp_half; bin: 0x8000\""
 Zfhmin_flh_cg_cp_memval_fp_half_0x3c00_str: .string "\"test: 87; cg: Zfhmin_flh_cg; cp: cp_memval_fp_half; bin: 0x3c00\""
 Zfhmin_flh_cg_cp_memval_fp_half_0xbc00_str: .string "\"test: 88; cg: Zfhmin_flh_cg; cp: cp_memval_fp_half; bin: 0xbc00\""
-Zfhmin_flh_cg_cp_memval_fp_half_0x3e00_str: .string "\"test: 89; cg: Zfhmin_flh_cg; cp: cp_memval_fp_half; bin: 0x3e00\""
-Zfhmin_flh_cg_cp_memval_fp_half_0xbe00_str: .string "\"test: 90; cg: Zfhmin_flh_cg; cp: cp_memval_fp_half; bin: 0xbe00\""
-Zfhmin_flh_cg_cp_memval_fp_half_0x4000_str: .string "\"test: 91; cg: Zfhmin_flh_cg; cp: cp_memval_fp_half; bin: 0x4000\""
-Zfhmin_flh_cg_cp_memval_fp_half_0xc000_str: .string "\"test: 92; cg: Zfhmin_flh_cg; cp: cp_memval_fp_half; bin: 0xc000\""
+Zfhmin_flh_cg_cp_memval_fp_half_0x4100_str: .string "\"test: 89; cg: Zfhmin_flh_cg; cp: cp_memval_fp_half; bin: 0x4100\""
+Zfhmin_flh_cg_cp_memval_fp_half_0xc100_str: .string "\"test: 90; cg: Zfhmin_flh_cg; cp: cp_memval_fp_half; bin: 0xc100\""
+Zfhmin_flh_cg_cp_memval_fp_half_0x6800_str: .string "\"test: 91; cg: Zfhmin_flh_cg; cp: cp_memval_fp_half; bin: 0x6800\""
+Zfhmin_flh_cg_cp_memval_fp_half_0xe800_str: .string "\"test: 92; cg: Zfhmin_flh_cg; cp: cp_memval_fp_half; bin: 0xe800\""
 Zfhmin_flh_cg_cp_memval_fp_half_0x400_str: .string "\"test: 93; cg: Zfhmin_flh_cg; cp: cp_memval_fp_half; bin: 0x400\""
 Zfhmin_flh_cg_cp_memval_fp_half_0x8400_str: .string "\"test: 94; cg: Zfhmin_flh_cg; cp: cp_memval_fp_half; bin: 0x8400\""
 Zfhmin_flh_cg_cp_memval_fp_half_0x7bff_str: .string "\"test: 95; cg: Zfhmin_flh_cg; cp: cp_memval_fp_half; bin: 0x7bff\""

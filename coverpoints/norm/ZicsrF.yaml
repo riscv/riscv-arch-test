@@ -74,7 +74,11 @@ normative_rule_definitions:
   # field selects the dynamic rounding mode held in frm
   - name: roundingmode_dynamic
     coverpoint:
-      ["F_fadd_s_cg/cp_csr_frm", "ZicsrF_cg/cp_underflow_after_rounding_*"]
+      [
+        "F_fadd_s_cg/cp_csr_frm",
+        "ZicsrF_cg/cp_underflow_after_rounding_*",
+        "ZicsrF_cg/cp_frm_reserved_static_rm",
+      ]
 
   # The accrued exception flags indicate the exception conditions that have arisen on any
   # floating-point arithmetic instruction since the field was last reset by software, as

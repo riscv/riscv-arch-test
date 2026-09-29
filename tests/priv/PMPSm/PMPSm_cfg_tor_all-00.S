@@ -17,7 +17,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 25
+#define SIGUPD_COUNT 26
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_MMODE
@@ -31,8 +31,8 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_cfg_A_tor_all1 to cp_cfg_A_tor_all14
-//   Fifteen locked TOR regions of increasing size with XWR = 00(i%2); lw at the start of each.
+// cp_cfg_A_tor_all0 to cp_cfg_A_tor_all14
+//   Fifteen locked TOR regions of increasing size with XWR = 00(i%2); lw in region 0 and at the start of each other.
 /////////////////////////////////
 
 // Clear every pmpcfg and pmpaddr CSR
@@ -129,6 +129,13 @@ RVTEST_BEGIN
   csrw pmpcfg3, x4
 #endif
   RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  LA(a5, TEST_FOR_EXECUTION_0)
+  addi a5, a5, -4
+PMPSm_cg_cp_cfg_A_tor_all0_entry0_1_lw:
+  lw a4, 0(a5)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor_all0_entry0_1_lw, PMPSm_cg_cp_cfg_A_tor_all0_entry0_1_lw_str)
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION_0)
@@ -318,21 +325,22 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMPSm_cg_cp_cfg_A_tor_all1_entry1_1_lw_str: .string "\"test: 48; cg: PMPSm_cg; cp: cp_cfg_A_tor_all1; bin: entry1_1_lw\""
-PMPSm_cg_cp_cfg_A_tor_all2_entry2_1_lw_str: .string "\"test: 49; cg: PMPSm_cg; cp: cp_cfg_A_tor_all2; bin: entry2_1_lw\""
-PMPSm_cg_cp_cfg_A_tor_all3_entry3_1_lw_str: .string "\"test: 50; cg: PMPSm_cg; cp: cp_cfg_A_tor_all3; bin: entry3_1_lw\""
-PMPSm_cg_cp_cfg_A_tor_all4_entry4_1_lw_str: .string "\"test: 51; cg: PMPSm_cg; cp: cp_cfg_A_tor_all4; bin: entry4_1_lw\""
-PMPSm_cg_cp_cfg_A_tor_all5_entry5_1_lw_str: .string "\"test: 52; cg: PMPSm_cg; cp: cp_cfg_A_tor_all5; bin: entry5_1_lw\""
-PMPSm_cg_cp_cfg_A_tor_all6_entry6_1_lw_str: .string "\"test: 53; cg: PMPSm_cg; cp: cp_cfg_A_tor_all6; bin: entry6_1_lw\""
-PMPSm_cg_cp_cfg_A_tor_all7_entry7_1_lw_str: .string "\"test: 54; cg: PMPSm_cg; cp: cp_cfg_A_tor_all7; bin: entry7_1_lw\""
-PMPSm_cg_cp_cfg_A_tor_all8_entry8_1_lw_str: .string "\"test: 55; cg: PMPSm_cg; cp: cp_cfg_A_tor_all8; bin: entry8_1_lw\""
-PMPSm_cg_cp_cfg_A_tor_all9_entry9_1_lw_str: .string "\"test: 56; cg: PMPSm_cg; cp: cp_cfg_A_tor_all9; bin: entry9_1_lw\""
-PMPSm_cg_cp_cfg_A_tor_all10_entry10_1_lw_str: .string "\"test: 57; cg: PMPSm_cg; cp: cp_cfg_A_tor_all10; bin: entry10_1_lw\""
-PMPSm_cg_cp_cfg_A_tor_all11_entry11_1_lw_str: .string "\"test: 58; cg: PMPSm_cg; cp: cp_cfg_A_tor_all11; bin: entry11_1_lw\""
-PMPSm_cg_cp_cfg_A_tor_all12_entry12_1_lw_str: .string "\"test: 59; cg: PMPSm_cg; cp: cp_cfg_A_tor_all12; bin: entry12_1_lw\""
-PMPSm_cg_cp_cfg_A_tor_all13_entry13_1_lw_str: .string "\"test: 60; cg: PMPSm_cg; cp: cp_cfg_A_tor_all13; bin: entry13_1_lw\""
-PMPSm_cg_cp_cfg_A_tor_all14_entry14_1_lw_str: .string "\"test: 61; cg: PMPSm_cg; cp: cp_cfg_A_tor_all14; bin: entry14_1_lw\""
-PMPSm_cg_cp_cfg_A_tor_all14_entry15_1_lw_str: .string "\"test: 62; cg: PMPSm_cg; cp: cp_cfg_A_tor_all14; bin: entry15_1_lw\""
+PMPSm_cg_cp_cfg_A_tor_all0_entry0_1_lw_str: .string "\"test: 48; cg: PMPSm_cg; cp: cp_cfg_A_tor_all0; bin: entry0_1_lw\""
+PMPSm_cg_cp_cfg_A_tor_all1_entry1_1_lw_str: .string "\"test: 49; cg: PMPSm_cg; cp: cp_cfg_A_tor_all1; bin: entry1_1_lw\""
+PMPSm_cg_cp_cfg_A_tor_all2_entry2_1_lw_str: .string "\"test: 50; cg: PMPSm_cg; cp: cp_cfg_A_tor_all2; bin: entry2_1_lw\""
+PMPSm_cg_cp_cfg_A_tor_all3_entry3_1_lw_str: .string "\"test: 51; cg: PMPSm_cg; cp: cp_cfg_A_tor_all3; bin: entry3_1_lw\""
+PMPSm_cg_cp_cfg_A_tor_all4_entry4_1_lw_str: .string "\"test: 52; cg: PMPSm_cg; cp: cp_cfg_A_tor_all4; bin: entry4_1_lw\""
+PMPSm_cg_cp_cfg_A_tor_all5_entry5_1_lw_str: .string "\"test: 53; cg: PMPSm_cg; cp: cp_cfg_A_tor_all5; bin: entry5_1_lw\""
+PMPSm_cg_cp_cfg_A_tor_all6_entry6_1_lw_str: .string "\"test: 54; cg: PMPSm_cg; cp: cp_cfg_A_tor_all6; bin: entry6_1_lw\""
+PMPSm_cg_cp_cfg_A_tor_all7_entry7_1_lw_str: .string "\"test: 55; cg: PMPSm_cg; cp: cp_cfg_A_tor_all7; bin: entry7_1_lw\""
+PMPSm_cg_cp_cfg_A_tor_all8_entry8_1_lw_str: .string "\"test: 56; cg: PMPSm_cg; cp: cp_cfg_A_tor_all8; bin: entry8_1_lw\""
+PMPSm_cg_cp_cfg_A_tor_all9_entry9_1_lw_str: .string "\"test: 57; cg: PMPSm_cg; cp: cp_cfg_A_tor_all9; bin: entry9_1_lw\""
+PMPSm_cg_cp_cfg_A_tor_all10_entry10_1_lw_str: .string "\"test: 58; cg: PMPSm_cg; cp: cp_cfg_A_tor_all10; bin: entry10_1_lw\""
+PMPSm_cg_cp_cfg_A_tor_all11_entry11_1_lw_str: .string "\"test: 59; cg: PMPSm_cg; cp: cp_cfg_A_tor_all11; bin: entry11_1_lw\""
+PMPSm_cg_cp_cfg_A_tor_all12_entry12_1_lw_str: .string "\"test: 60; cg: PMPSm_cg; cp: cp_cfg_A_tor_all12; bin: entry12_1_lw\""
+PMPSm_cg_cp_cfg_A_tor_all13_entry13_1_lw_str: .string "\"test: 61; cg: PMPSm_cg; cp: cp_cfg_A_tor_all13; bin: entry13_1_lw\""
+PMPSm_cg_cp_cfg_A_tor_all14_entry14_1_lw_str: .string "\"test: 62; cg: PMPSm_cg; cp: cp_cfg_A_tor_all14; bin: entry14_1_lw\""
+PMPSm_cg_cp_cfg_A_tor_all14_entry15_1_lw_str: .string "\"test: 63; cg: PMPSm_cg; cp: cp_cfg_A_tor_all14; bin: entry15_1_lw\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

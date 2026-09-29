@@ -26,46 +26,46 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
     wildcard bins jalr = {JALR};
   }
 
-  read_c_instr: coverpoint ins.current.insn[15:0] {
-    wildcard bins c_lw   = {16'b010_???????????_00};
-    wildcard bins c_lwsp = {16'b010_???????????_10};
+  read_c_instr: coverpoint ins.current.insn {
+    wildcard bins c_lw   = {C_LW};
+    wildcard bins c_lwsp = {C_LWSP};
     `ifdef UDB_MXLEN_64
-      wildcard bins c_ld   = {16'b011_???????????_00};
-      wildcard bins c_ldsp = {16'b011_???????????_10};
+      wildcard bins c_ld   = {C_LD};
+      wildcard bins c_ldsp = {C_LDSP};
     `endif
     `ifdef ZCF_SUPPORTED
-      wildcard bins c_flw   = {16'b011_???????????_00};
-      wildcard bins c_flwsp = {16'b011_???????????_10};
+      wildcard bins c_flw   = {C_FLW};
+      wildcard bins c_flwsp = {C_FLWSP};
     `endif
     `ifdef ZCD_SUPPORTED
-      wildcard bins c_fld   = {16'b001_???????????_00};
-      wildcard bins c_fldsp = {16'b001_???????????_10};
+      wildcard bins c_fld   = {C_FLD};
+      wildcard bins c_fldsp = {C_FLDSP};
     `endif
     `ifdef ZCB_SUPPORTED
-      wildcard bins c_lbu = {16'b100000_????????_00};
-      wildcard bins c_lh  = {16'b100001_???1????_00};
-      wildcard bins c_lhu = {16'b100001_???0????_00};
+      wildcard bins c_lbu = {C_LBU};
+      wildcard bins c_lh  = {C_LH};
+      wildcard bins c_lhu = {C_LHU};
     `endif
   }
 
-  write_c_instr: coverpoint ins.current.insn[15:0]{
-    wildcard bins c_sw   = {16'b110_???????????_00};
-    wildcard bins c_swsp = {16'b110_???????????_10};
+  write_c_instr: coverpoint ins.current.insn {
+    wildcard bins c_sw   = {C_SW};
+    wildcard bins c_swsp = {C_SWSP};
     `ifdef UDB_MXLEN_64
-      wildcard bins c_sd   = {16'b111_???????????_00};
-      wildcard bins c_sdsp = {16'b111_???????????_10};
+      wildcard bins c_sd   = {C_SD};
+      wildcard bins c_sdsp = {C_SDSP};
     `endif
     `ifdef ZCF_SUPPORTED
-      wildcard bins c_fsw   = {16'b111_???????????_00};
-      wildcard bins c_fswsp = {16'b111_???????????_10};
+      wildcard bins c_fsw   = {C_FSW};
+      wildcard bins c_fswsp = {C_FSWSP};
     `endif
     `ifdef ZCD_SUPPORTED
-      wildcard bins c_fsd   = {16'b101_???????????_00};
-      wildcard bins c_fsdsp = {16'b101_???????????_10};
+      wildcard bins c_fsd   = {C_FSD};
+      wildcard bins c_fsdsp = {C_FSDSP};
     `endif
     `ifdef ZCB_SUPPORTED
-      wildcard bins c_sb = {16'b100010_????????_00};
-      wildcard bins c_sh = {16'b100011_???0????_00};
+      wildcard bins c_sb = {C_SB};
+      wildcard bins c_sh = {C_SH};
     `endif
   }
 
@@ -128,7 +128,7 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
 
   // First three consecutive standard napot regions.
   // Region 0 -> LXWR 1111, Region 1 -> LXWR 1111, Region 2 -> LXWR 1000
-  cfg_consecutive_napot: coverpoint (ins.current.csr[CSR_PMPCFG0][23:0]) {
+  cfg_consecutive_napot: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[23:0]) {
     bins locked_napot_regions = {24'b100110001001111110011111};
   }
 
@@ -140,17 +140,17 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
     bins first_three_regions = {1};
   }
 
-  napot_region: coverpoint (ins.current.csr[CSR_PMPADDR0] & `PMP_PMPADDR_LOWMASK) {
+  napot_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr0", "pmpaddr0") & `PMP_PMPADDR_LOWMASK) {
     bins address = {`STANDARD_REGION & `PMP_PMPADDR_LOWMASK}; // NAPOT region with LXWR 1111
   }
 
-  napot_setup: coverpoint (ins.current.csr[CSR_PMPCFG0][7:0]) {
+  napot_setup: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[7:0]) {
     bins napot_lxwr = {8'b10011111}; // NAPOT region with LXWR 1111
   }
 
   // First three consecutive standard tor regions.
   // Region 0 -> LXWR 1111, Region 1 -> LXWR 1111, Region 2 -> LXWR 1000
-  cfg_consecutive_tor: coverpoint (ins.current.csr[CSR_PMPCFG0]) {
+  cfg_consecutive_tor: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")) {
     bins locked_tor_regions = {32'b10001000_10001111_10001111_00000000};
   }
 
@@ -169,33 +169,33 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
     bins address = {1};
   }
 
-  tor_setup: coverpoint (ins.current.csr[CSR_PMPCFG0][15:8]) {
+  tor_setup: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[15:8]) {
     bins tor_lxwr = { 8'b10001111}; // TOR region with LXWR 1111
   }
 
   `ifdef UDB_PMP_NA4_SUPPORTED
-    cfg_consecutive_na4: coverpoint (ins.current.csr[CSR_PMPCFG0][23:0]) {
+    cfg_consecutive_na4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[23:0]) {
       bins locked_na4_regions = {24'b100100001001011110010111};
     }
 
     // PMP0, PMP1, PMP2: NA4, L=1, XWR=111 — regions at PMP_REGION_START, PMP_REGION_START+4, PMP_REGION_START+8
-    pmpaddr_consecutive_na4: coverpoint (((ins.current.csr[CSR_PMPADDR2] & `PMP_PMPADDR_LOWMASK) == (((`PMP_REGION_START + 8) >> 2) & `PMP_PMPADDR_LOWMASK)) &&
-                                         ((ins.current.csr[CSR_PMPADDR1] & `PMP_PMPADDR_LOWMASK) == (((`PMP_REGION_START + 4) >> 2) & `PMP_PMPADDR_LOWMASK)) &&
-                                         ((ins.current.csr[CSR_PMPADDR0] & `PMP_PMPADDR_LOWMASK) == ((`PMP_REGION_START >> 2) & `PMP_PMPADDR_LOWMASK))) {
+    pmpaddr_consecutive_na4: coverpoint (((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr2", "pmpaddr2") & `PMP_PMPADDR_LOWMASK) == (((`PMP_REGION_START + 8) >> 2) & `PMP_PMPADDR_LOWMASK)) &&
+                                         ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr1", "pmpaddr1") & `PMP_PMPADDR_LOWMASK) == (((`PMP_REGION_START + 4) >> 2) & `PMP_PMPADDR_LOWMASK)) &&
+                                         ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr0", "pmpaddr0") & `PMP_PMPADDR_LOWMASK) == ((`PMP_REGION_START >> 2) & `PMP_PMPADDR_LOWMASK))) {
       bins first_three_regions = {1};
     }
 
-    na4_region: coverpoint (ins.current.csr[CSR_PMPADDR0] & `PMP_PMPADDR_LOWMASK) {
+    na4_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr0", "pmpaddr0") & `PMP_PMPADDR_LOWMASK) {
       bins address = {(`PMP_REGION_START >> 2) & `PMP_PMPADDR_LOWMASK}; // NA4 region with LXWR 1111
     }
 
-    na4_setup: coverpoint (ins.current.csr[CSR_PMPCFG0][7:0]) {
+    na4_setup: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[7:0]) {
       bins na4_lxwr = { 8'b10010111}; // NA4 region with LXWR 1111
     }
 
   `endif
 
-  cfg_consecutive_off: coverpoint (ins.current.csr[CSR_PMPCFG0][23:0]) {
+  cfg_consecutive_off: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[23:0]) {
     bins locked_off_regions = {24'b100001111000011110000111};
   }
 
@@ -231,7 +231,7 @@ function void pmpzca_sample(int hart, int issue, ins_t ins);
   `ifdef UDB_MXLEN_32
     // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
     for (int i = 0; i < 16; i++) begin
-      logic [31:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + i];
+      logic [31:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + i, "pmpcfg", "pmpcfg");
       pmpcfg[i*4 + 0] = cfg_word[7:0];
       pmpcfg[i*4 + 1] = cfg_word[15:8];
       pmpcfg[i*4 + 2] = cfg_word[23:16];
@@ -240,7 +240,7 @@ function void pmpzca_sample(int hart, int issue, ins_t ins);
   `elsif UDB_MXLEN_64
     // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
-      logic [63:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + 2*i];
+      logic [63:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 2*i, "pmpcfg", "pmpcfg");
       pmpcfg[i*8 + 0] = cfg_word[7:0];
       pmpcfg[i*8 + 1] = cfg_word[15:8];
       pmpcfg[i*8 + 2] = cfg_word[23:16];
@@ -253,7 +253,7 @@ function void pmpzca_sample(int hart, int issue, ins_t ins);
   `endif
 
   for (int j = 0; j < 63; j++) begin
-    pmpaddr[j] = ins.current.csr[CSR_PMPADDR0 + j];
+    pmpaddr[j] = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0 + j, "pmpaddr", "pmpaddr");
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions

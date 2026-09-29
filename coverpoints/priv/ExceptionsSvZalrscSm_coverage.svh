@@ -28,7 +28,7 @@ covergroup ExceptionsSvZalrscSm_cg with function sample(ins_t ins);
         wildcard bins lr_w = {LR_W};
         wildcard bins sc_w = {SC_W};
     }
-    medeleg_walk: coverpoint ins.current.csr[CSR_MEDELEG] {
+    medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg") {
         bins zeros                    = {16'b0000_0000_0000_0000};
         `ifndef ZCA_SUPPORTED
             bins instrmisaligned_enabled = {16'b0000_0000_0000_0001};

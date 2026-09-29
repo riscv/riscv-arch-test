@@ -252,7 +252,7 @@ def _t_global_pte(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode)
                 ]
             )
         chunk.raw_data.extend(sv_data(sv))
-        chunk.trap_sigupd_count = 10
+        chunk.trap_sigupd_count = 3
         test_chunks.append(test_data.end_test_chunk())
 
 
@@ -475,7 +475,7 @@ def _t_pte_rsw(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) ->
                     ]
                 )
         chunk.raw_data.extend(sv_data(sv))
-        chunk.trap_sigupd_count = 10
+        chunk.trap_sigupd_count = 3
         test_chunks.append(test_data.end_test_chunk())
 
 

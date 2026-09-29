@@ -13,16 +13,16 @@
   #error "SIGUPD_COUNT not defined. It should be defined at the beginning of the test file."
 #endif
 
+// TRAP_SIGUPD_COUNT is the number of expected traps. Each trap uses 4 signature
+// words, or 6 when H is supported.
 #ifndef TRAP_SIGUPD_COUNT
-  #define TRAP_SIGUPD_COUNT 15000
+  #define TRAP_SIGUPD_COUNT 3750
 #endif
 
-// An exception entry carries two extra words on a hypervisor build (see
-// trapsig_ptr_upd), so a count a test sized for 4-word entries falls short.
 #ifdef H_SUPPORTED
-  #define TRAP_SIGUPD_WORDS (((TRAP_SIGUPD_COUNT)*6+3)/4)
+  #define TRAP_SIGUPD_WORDS ((TRAP_SIGUPD_COUNT)*6)
 #else
-  #define TRAP_SIGUPD_WORDS (TRAP_SIGUPD_COUNT)
+  #define TRAP_SIGUPD_WORDS ((TRAP_SIGUPD_COUNT)*4)
 #endif
 
 ########## GLOBAL XLEN CHECK  ##########

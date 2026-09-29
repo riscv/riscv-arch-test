@@ -303,9 +303,11 @@ params:
   #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/cv64a6_imafdcv_sv39_config_pkg.sv#L121
   #   Quote: ".irq_i ('0), .ipi_i ('0), .time_irq_i ('0),"
   #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_system.sv#L144
-  MEI_INTR_IMPL: true
-  MSI_INTR_IMPL: true
-  MTI_INTR_IMPL: true
+  # ACT reads {MEI,MTI,MSI}_INTR_IMPL as the machine interrupts the platform can raise
+  # (tests/env/check_defines.h), so each is true only where rvmodel_macros.h can raise it.
+  MEI_INTR_IMPL: false
+  MSI_INTR_IMPL: false
+  MTI_INTR_IMPL: false
   # WFI has no timeout: the core stays halted until an enabled interrupt is pending or
   # debug is requested.  (With the interrupt pins tied to zero in the Ara testbench, a
   # WFI with nothing pending in mip never resumes.)

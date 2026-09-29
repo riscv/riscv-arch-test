@@ -17,11 +17,14 @@ ci_enabled: true
 #                         reads the stale instruction.
 #   Sm, S                 sepc bit 1 is writable; menvcfg.CBIE accepts 0b10; mstatus.MPP accepts
 #                         0b10; mie/sip expose VS and LCOFI bits; mip.MTIP never sets (no timer).
+#   InterruptsSm          After a csrw mie enables a pending interrupt, the core retires two more
+#                         instructions before taking it; it must be taken at once
+#                         [norm:intr_mip_mie_xret_csrwr].
 #   Sv, SvZicbo,          Non-canonical Sv39 addresses raise access faults (41-bit check); a store
 #   ExceptionsSv          to an R=0/W=1 PTE raises a load page fault; a PTE pointing at unimplemented
 #                         memory raises a page fault; non-leaf A/D/U is accepted; N, PBMT or other
 #                         reserved PTE bits hang the core.
-exclude_extensions: "F,ZfaF,ZfaD,Zfhmin,ZfhminD,ZicsrF,SmF,Zicntr,ZicntrS,ZicntrU,Zifencei,Sm,S,Sv,SvZicbo,ExceptionsSv"
+exclude_extensions: "F,ZfaF,ZfaD,Zfhmin,ZfhminD,ZicsrF,SmF,Zicntr,ZicntrS,ZicntrU,Zifencei,Sm,S,InterruptsSm,Sv,SvZicbo,ExceptionsSv"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler libboost-dev libboost-regex-dev libboost-system-dev"
 install_script: ".github/scripts/install-sargantana.sh"

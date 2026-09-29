@@ -38,7 +38,9 @@ git init "$INSTALL_DIR/core_tile"
   git remote add origin "$CORE_TILE_REPO"
   git fetch --depth 1 origin "$CORE_TILE_COMMIT"
   git checkout FETCH_HEAD
-  git submodule update --init --depth 1 \
+  # --recursive: the core and both caches have their own submodules (rtl/mmu, rtl/csr,
+  # rtl/memory_library, the FPU) whose filelist.f files the simulator build reads.
+  git submodule update --init --recursive --depth 1 \
     rtl/common_cells rtl/icache rtl/dcache rtl/core/sargantana \
     simulator/bsc-dm simulator/reference/riscv-isa-sim
 )

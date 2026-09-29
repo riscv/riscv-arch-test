@@ -146,13 +146,12 @@
 
 // Machine and Supervisor Interrupts //
 
-// There is no interrupt controller to poke, so these are empty.  The suites that use
-// them (Interrupts*) cannot pass and are listed in EXCLUDE_EXTENSIONS in ci.yaml.
+// There is no interrupt controller, so the machine-level macros are empty (MEI_INTR_IMPL and
+// MSI_INTR_IMPL are false).  RVMODEL_SET/CLR_SEXT_INT are left undefined so that ACT raises the
+// supervisor external interrupt through mip.SEIP.
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)
 #define RVMODEL_CLR_MEXT_INT(_R1, _R2)
 #define RVMODEL_SET_MSW_INT(_R1, _R2)
 #define RVMODEL_CLR_MSW_INT(_R1, _R2)
-#define RVMODEL_SET_SEXT_INT(_R1, _R2)
-#define RVMODEL_CLR_SEXT_INT(_R1, _R2)
 
 #endif // _RVMODEL_MACROS_H

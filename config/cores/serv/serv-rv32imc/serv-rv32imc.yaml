@@ -143,7 +143,9 @@ params:
   #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/servant/servant.v#L111
   #   Quote: ".i_timer_irq  (timer_irq),"
   #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/servant/servant.v#L148
-  MTI_INTR_IMPL: true
+  # ACT reads {MEI,MTI,MSI}_INTR_IMPL as the machine interrupts the platform can raise
+  # (tests/env/check_defines.h), so each is true only where rvmodel_macros.h can raise it.
+  MTI_INTR_IMPL: false
   MSI_INTR_IMPL: false
   MEI_INTR_IMPL: false
 

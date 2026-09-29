@@ -32,22 +32,21 @@ RVTEST_BEGIN
 // cp_satp_access
 /////////////////////////////////
 
-main:
-  li a0, 1
-  csrw satp, a0
+  li x9, 1
+  csrw satp, x9
 SvSm_cg_cp_satp_access_m_csrw:
-  # Read satp into x14 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x14, SvSm_cg_cp_satp_access_m_csrw, SvSm_cg_cp_satp_access_m_csrw_str)
-  li a0, 2
-  csrs satp, a0
+  # Read satp into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x15, SvSm_cg_cp_satp_access_m_csrw, SvSm_cg_cp_satp_access_m_csrw_str)
+  li x9, 2
+  csrs satp, x9
 SvSm_cg_cp_satp_access_m_csrs:
-  # Read satp into x14 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x14, SvSm_cg_cp_satp_access_m_csrs, SvSm_cg_cp_satp_access_m_csrs_str)
-  li a0, 1
-  csrc satp, a0
+  # Read satp into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x15, SvSm_cg_cp_satp_access_m_csrs, SvSm_cg_cp_satp_access_m_csrs_str)
+  li x9, 1
+  csrc satp, x9
 SvSm_cg_cp_satp_access_m_csrc:
-  # Read satp into x14 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x14, SvSm_cg_cp_satp_access_m_csrc, SvSm_cg_cp_satp_access_m_csrc_str)
+  # Read satp into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x15, SvSm_cg_cp_satp_access_m_csrc, SvSm_cg_cp_satp_access_m_csrc_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

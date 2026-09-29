@@ -12,7 +12,7 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.access import add_rwx_test
 from testgen.priv.extensions.sv.assembly import NAPOT_DATA, NAPOT_RESERVED_DATA
-from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
+from testgen.priv.extensions.sv.generate import SvRegs, begin_sv_test, end_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
     SV39,
     SV48,
@@ -32,9 +32,10 @@ def _permissions(umode: bool, ppn_bits: str | None = "(1 << 13)") -> PteFlags:
     return PteFlags(user=umode, extra=extra_bits)
 
 
-def _begin_test(test_data: TestData, sv: SvMode, mode: str, topic: str) -> TestChunk:
+def _begin_test(test_data: TestData, regs: SvRegs, sv: SvMode, mode: str, topic: str) -> TestChunk:
     return begin_sv_test(
         test_data,
+        regs,
         sv,
         mode,
         f"{sv.name}_{topic}_{mode}",
@@ -42,14 +43,15 @@ def _begin_test(test_data: TestData, sv: SvMode, mode: str, topic: str) -> TestC
     )
 
 
-def _finish_test(test_data: TestData, sv: SvMode, data: str) -> TestChunk:
+def _finish_test(test_data: TestData, sv: SvMode, regs: SvRegs, data: str) -> TestChunk:
     assert test_data.test_chunk is not None
-    test_data.test_chunk.raw_data.extend(sv_data(sv, data_align=16, data_region_body=data))
-    return test_data.end_test_chunk()
+    test_data.test_chunk.raw_data.extend(sv_data(sv, regs, data_align=16, data_region_body=data))
+    return end_sv_test(test_data, regs)
 
 
 def _make_napot(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
-    chunk = _begin_test(test_data, sv, mode, "Svnapot")
+    regs = SvRegs.allocate(test_data)
+    chunk = _begin_test(test_data, regs, sv, mode, "Svnapot")
     permissions = _permissions(mode == "Umode")
     chunk.code.extend(
         [
@@ -74,20 +76,22 @@ def _make_napot(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                 *add_rwx_test(
                     test_data,
                     sv,
+                    regs,
                     mode,
                     f"va_data{offset}",
                     0,
                     f"test1_access{access}",
-                    address=[f"LI(a5, va_data{offset})"],
+                    address=[f"LI(x{regs.addr}, va_data{offset})"],
                 ),
                 "",
             ]
         )
-    return _finish_test(test_data, sv, NAPOT_DATA)
+    return _finish_test(test_data, sv, regs, NAPOT_DATA)
 
 
 def _make_reserved(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
-    chunk = _begin_test(test_data, sv, mode, "Svnapot_reserved_enc")
+    regs = SvRegs.allocate(test_data)
+    chunk = _begin_test(test_data, regs, sv, mode, "Svnapot_reserved_enc")
     chunk.code.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
     umode = mode == "Umode"
     number = 0
@@ -102,6 +106,7 @@ def _make_reserved(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                 *add_rwx_test(
                     test_data,
                     sv,
+                    regs,
                     mode,
                     "va_data",
                     level,
@@ -122,6 +127,7 @@ def _make_reserved(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                 *add_rwx_test(
                     test_data,
                     sv,
+                    regs,
                     mode,
                     "va_data",
                     0,
@@ -132,7 +138,7 @@ def _make_reserved(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
             ]
         )
     chunk.code.append("#endif")
-    return _finish_test(test_data, sv, NAPOT_RESERVED_DATA)
+    return _finish_test(test_data, sv, regs, NAPOT_RESERVED_DATA)
 
 
 def _make_svnapot(test_data: TestData, sv: SvMode) -> list[TestChunk]:

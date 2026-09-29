@@ -34,8 +34,6 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 
-main:
-
 // Virtual addresses for code and test regions
 
 // Virtual address of rvtest_data_1
@@ -53,26 +51,27 @@ main:
 // accessible, so the code is mapped again at va_rvtest_code_begin. Registering
 // that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
 // to can fetch from.
+// SAVE_AREA_SETUP takes the M-mode save area in a0 and clobbers t0 and t1.
   LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL2)
 
   SATP_SETUP_RV64(sv39) // Enable address translation.
   sfence.vma
 
-  LI(a2, 0x800) // Test signature initialization
+  LI(x14, 0x800) // Test signature initialization
 
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
-  addi a2, a2, 1
+  LI(x15, (va_data >> 30) << 30)
+  LA(x9, rvtest_data_1)
+  slli x9, x9, 34
+  srli x9, x9, 34
+  add x15, x15, x9
+  addi x14, x14, 1
 
 ExceptionsSvZaamo_cg_cp_misaligned_priority_s_test1_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x14, (x15)
   nop
 
 
@@ -82,16 +81,16 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_s_test1_amoadd:
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
-  addi a5, a5, 2
-  addi a2, a2, 1
+  LI(x15, (va_data >> 30) << 30)
+  LA(x9, rvtest_data_1)
+  slli x9, x9, 34
+  srli x9, x9, 34
+  add x15, x15, x9
+  addi x15, x15, 2
+  addi x14, x14, 1
 
 ExceptionsSvZaamo_cg_cp_misaligned_priority_s_test2_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x14, (x15)
   nop
 
 
@@ -102,15 +101,15 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_s_test2_amoadd:
   SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LI(a0, RVMODEL_ACCESS_FAULT_ADDRESS)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
-  addi a2, a2, 1
+  LI(x15, (va_data >> 30) << 30)
+  LI(x9, RVMODEL_ACCESS_FAULT_ADDRESS)
+  slli x9, x9, 34
+  srli x9, x9, 34
+  add x15, x15, x9
+  addi x14, x14, 1
 
 ExceptionsSvZaamo_cg_cp_misaligned_priority_s_test3_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x14, (x15)
   nop
 
 
@@ -123,16 +122,16 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_s_test3_amoadd:
   SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LI(a0, RVMODEL_ACCESS_FAULT_ADDRESS)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
-  addi a5, a5, 2
-  addi a2, a2, 1
+  LI(x15, (va_data >> 30) << 30)
+  LI(x9, RVMODEL_ACCESS_FAULT_ADDRESS)
+  slli x9, x9, 34
+  srli x9, x9, 34
+  add x15, x15, x9
+  addi x15, x15, 2
+  addi x14, x14, 1
 
 ExceptionsSvZaamo_cg_cp_misaligned_priority_s_test4_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x14, (x15)
   nop
 
 
@@ -144,15 +143,15 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_s_test4_amoadd:
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
-  addi a2, a2, 1
+  LI(x15, (va_data >> 30) << 30)
+  LA(x9, rvtest_data_1)
+  slli x9, x9, 34
+  srli x9, x9, 34
+  add x15, x15, x9
+  addi x14, x14, 1
 
 ExceptionsSvZaamo_cg_cp_misaligned_priority_s_test5_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x14, (x15)
   nop
 
 
@@ -162,16 +161,16 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_s_test5_amoadd:
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
-  addi a5, a5, 2
-  addi a2, a2, 1
+  LI(x15, (va_data >> 30) << 30)
+  LA(x9, rvtest_data_1)
+  slli x9, x9, 34
+  srli x9, x9, 34
+  add x15, x15, x9
+  addi x15, x15, 2
+  addi x14, x14, 1
 
 ExceptionsSvZaamo_cg_cp_misaligned_priority_s_test6_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x14, (x15)
   nop
 
 
@@ -182,15 +181,15 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_s_test6_amoadd:
   SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LI(a0, RVMODEL_ACCESS_FAULT_ADDRESS)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
-  addi a2, a2, 1
+  LI(x15, (va_data >> 30) << 30)
+  LI(x9, RVMODEL_ACCESS_FAULT_ADDRESS)
+  slli x9, x9, 34
+  srli x9, x9, 34
+  add x15, x15, x9
+  addi x14, x14, 1
 
 ExceptionsSvZaamo_cg_cp_misaligned_priority_s_test7_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x14, (x15)
   nop
 
 
@@ -203,16 +202,16 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_s_test7_amoadd:
   SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LI(a0, RVMODEL_ACCESS_FAULT_ADDRESS)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
-  addi a5, a5, 2
-  addi a2, a2, 1
+  LI(x15, (va_data >> 30) << 30)
+  LI(x9, RVMODEL_ACCESS_FAULT_ADDRESS)
+  slli x9, x9, 34
+  srli x9, x9, 34
+  add x15, x15, x9
+  addi x15, x15, 2
+  addi x14, x14, 1
 
 ExceptionsSvZaamo_cg_cp_misaligned_priority_s_test8_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x14, (x15)
   nop
 
 
@@ -235,7 +234,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi a4, a2, 4
+  addi x8, x14, 4
   jr ra
   nop
   .word 0xbeefcaf1

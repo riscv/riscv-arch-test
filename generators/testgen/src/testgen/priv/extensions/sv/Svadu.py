@@ -13,7 +13,7 @@ from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.access import virtual_address
-from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
+from testgen.priv.extensions.sv.generate import SvRegs, begin_sv_test, end_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
     SV32,
     SV39,
@@ -52,49 +52,63 @@ _VAS = {
 _CODE_VA = {"sv32": "0x90000000", "sv39": "0x180000000", "sv48": "0x030080000000", "sv57": "0x05000080000000"}
 
 
-def _add_adu_access(test_data: TestData, sv: SvMode, mode: str, level: int, number: int) -> list[str]:
+def _add_adu_access(test_data: TestData, sv: SvMode, regs: SvRegs, mode: str, level: int, number: int) -> list[str]:
     labels = {
         name: test_data.add_testcase(f"test{number}_{name}", "cp_ad_update", "Svadu_cg").removesuffix(":")
         for name in ("store", "load", "exec", "read_store_pte", "read_load_pte", "read_exec_pte")
     }
     table = "rvtest_Sroot_pg_tbl" if level == sv.levels - 1 else f"rvtest_slvl{level}_pg_tbl"
     load = "lw" if sv.xlen == 32 else "ld"
-    # s0/s1 hold the load and store VAs because a0-a2 do not survive the mode switch.
     index_bits = 10 if sv.xlen == 32 else 9
     offsets = [
         ((int(va, 16) >> sv.page_offset_bits(level)) & ((1 << index_bits) - 1)) * (sv.xlen // 8)
         for va in _VAS[sv.name][level]
     ]
-    return [
-        *virtual_address(sv, f"va_data_l{level}_w", level, destination="s0", scratch="t0", merge_sv32_base_page=True),
-        *virtual_address(sv, f"va_data_l{level}_r", level, destination="s1", scratch="t0", merge_sv32_base_page=True),
-        *virtual_address(sv, f"va_data_l{level}_x", level, destination="a5", scratch="t0", merge_sv32_base_page=True),
+    # The store, load, and fetch VAs are all built before the mode switch. The load register is free until
+    # the load, so it is the scratch register for building them.
+    store_addr = test_data.int_regs.get_register(exclude_regs=[0])
+    load_addr = regs.scratch
+    value, result = f"x{regs.value}", f"x{regs.result}"
+    lines = [
+        *(
+            line
+            for suffix, destination in (("w", store_addr), ("r", load_addr), ("x", regs.addr))
+            for line in virtual_address(
+                sv,
+                f"va_data_l{level}_{suffix}",
+                level,
+                destination=destination,
+                scratch=regs.load,
+                merge_sv32_base_page=True,
+            )
+        ),
         *([] if mode == "Smode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"]),
-        "addi a2, a2, 16",
+        f"addi {value}, {value}, 16",
         f"{labels['store']}:",
-        "sw a2, 20(s0)",
+        f"sw {value}, 20(x{store_addr})",
         "nop",
         f"{labels['load']}:",
-        "lw a3, 20(s1)",
+        f"lw x{regs.load}, 20(x{load_addr})",
         "nop",
         f"{labels['exec']}:",
-        "jalr ra, a5, 0",
+        f"jalr ra, x{regs.addr}, 0",
         "nop",
         *([] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"]),
-        write_sigupd(12, test_data, label=labels["store"]),
-        write_sigupd(13, test_data, label=labels["load"]),
-        write_sigupd(14, test_data, label=labels["exec"]),
-        f"LA(a0, {table})",
-        f"{labels['read_store_pte']}:",
-        f"{load} a4, {offsets[0]}(a0)",
-        write_sigupd(14, test_data, label=labels["read_store_pte"]),
-        f"{labels['read_load_pte']}:",
-        f"{load} a4, {offsets[1]}(a0)",
-        write_sigupd(14, test_data, label=labels["read_load_pte"]),
-        f"{labels['read_exec_pte']}:",
-        f"{load} a4, {offsets[2]}(a0)",
-        write_sigupd(14, test_data, label=labels["read_exec_pte"]),
+        write_sigupd(regs.value, test_data, label=labels["store"]),
+        write_sigupd(regs.load, test_data, label=labels["load"]),
+        write_sigupd(regs.result, test_data, label=labels["exec"]),
+        f"LA(x{regs.scratch}, {table})",
     ]
+    for name, offset in zip(("read_store_pte", "read_load_pte", "read_exec_pte"), offsets, strict=True):
+        lines.extend(
+            [
+                f"{labels[name]}:",
+                f"{load} {result}, {offset}(x{regs.scratch})",
+                write_sigupd(regs.result, test_data, label=labels[name]),
+            ]
+        )
+    test_data.int_regs.return_register(store_addr)
+    return lines
 
 
 def _make_svadu_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
@@ -105,15 +119,17 @@ def _make_svadu_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
         for suffix, va in zip(("w", "r", "x"), va_table[level], strict=True)
     )
     csr, mask = ("menvcfg", "MENVCFG_ADUE") if sv.xlen == 64 else ("menvcfgh", "MENVCFGH_ADUE")
+    regs = SvRegs.allocate(test_data)
     chunk = begin_sv_test(
         test_data,
+        regs,
         sv,
         mode,
         f"{sv.name}_Svadu_{mode}",
         coverpoint="cp_ad_update",
         va_defs=va_defs,
         va_code_override=_CODE_VA[sv.name],
-        setup_asm=(f"LI(t0, {mask})", tsbi_call(f"csrs {csr}, t0")),
+        setup_asm=(f"LI(x{regs.scratch}, {mask})", tsbi_call(f"csrs {csr}, x{regs.scratch}")),
     )
     number = 0
     for level in sorted(va_table, reverse=True):
@@ -142,12 +158,12 @@ def _make_svadu_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     create_leaf_pte(sv, virtual_address=va_x, level=level, flags=permissions),
                     "sfence.vma",
                     "",
-                    *_add_adu_access(test_data, sv, mode, level, number),
+                    *_add_adu_access(test_data, sv, regs, mode, level, number),
                     "",
                 ]
             )
-    chunk.raw_data.extend(sv_data(sv))
-    return test_data.end_test_chunk()
+    chunk.raw_data.extend(sv_data(sv, regs))
+    return end_sv_test(test_data, regs)
 
 
 def _make_svadu(test_data: TestData, sv: SvMode) -> list[TestChunk]:

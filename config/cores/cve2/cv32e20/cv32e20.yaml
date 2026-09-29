@@ -21,6 +21,7 @@ implemented_extensions:
   - { name: Sm, version: "= 1.12.0" }
 
 params:
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
   # XLEN parameters (VERIFIED)
   MXLEN: 32
   PHYS_ADDR_WIDTH: 32
@@ -74,6 +75,11 @@ params:
   #  Needs: ((`Sm=1.11.0`{false} || `Sm=1.12.0`{true} || `Sm=1.13.0`{false}) && !`(MTVEC_ACCESS=="ro")`{false} && (!`Sm=1.11.0`{false} || !`Sm=1.12.0`{true}) && (!`Sm=1.11.0`{false} || !`Sm=1.13.0`{false}) && (!`Sm=1.12.0`{true} || !`Sm=1.13.0`{false}) && `Sm>=0`{true} && `(MTVEC_ACCESS=="rw")`{true} && `$array_includes?(MTVEC_MODES, 0)`{false})
 
   # Sm params (VERIFIED)
+  WFI_U_MODE: true
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+  WFI_FINITE: true
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true # VERIFIED — exception_interrupts.rst § "Exceptions and Interrupts": mepc set to current program counter; 2-stage in-order pipeline has no imprecise exception path
   MARCHID_IMPLEMENTED: true # VERIFIED — cs_registers.rst § "Machine Architecture ID (marchid)": CSR (0xF12) implemented with fixed CSR_MARCHID_VALUE; value 0x23 (35 decimal) allocated specifically to cve2
   MIMPID_IMPLEMENTED: false # VERIFIED — cs_registers.rst § "Machine Implementation ID (mimpid)": Reset Value 0x0000_0000; CSR_MIMPID_VALUE parameter hardcoded to 0 (read-only-0 == not implemented per spec)
@@ -118,6 +124,16 @@ params:
       false,
       false, # 24..31
     ]
+  HPM_COUNTER3_WIDTH: 64
+  HPM_COUNTER4_WIDTH: 64
+  HPM_COUNTER5_WIDTH: 64
+  HPM_COUNTER6_WIDTH: 64
+  HPM_COUNTER7_WIDTH: 64
+  HPM_COUNTER8_WIDTH: 64
+  HPM_COUNTER9_WIDTH: 64
+  HPM_COUNTER10_WIDTH: 64
+  HPM_COUNTER11_WIDTH: 64
+  HPM_COUNTER12_WIDTH: 64
   MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
     [

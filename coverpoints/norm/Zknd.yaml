@@ -2,7 +2,7 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
-  - name: zknd_shared_instr
+  - name: Zknd_shared_instr
     coverpoint: ["Definition, checked through UDB"]
 
   - name: aes32dsi_enc

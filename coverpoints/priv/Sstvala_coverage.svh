@@ -15,8 +15,8 @@
 covergroup Sstvala_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
-    cause_instr_misaligned: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[5:0] {
-            bins set = {6'd0};
+    cause_instr_misaligned: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+            bins set = {INSTRUCTION_ADDRESS_MISALIGNED};
     }
 
     stval_equals_vaddr_d:   coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.virt_adr_d {
@@ -31,37 +31,37 @@ covergroup Sstvala_cg with function sample(ins_t ins);
            bins match = {1'b1};
     }
 
-    medeleg_instr_ma: coverpoint ins.current.csr[CSR_MEDELEG][0] {
+    medeleg_instr_ma: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[0] {
             bins delegated = {1'b1};
     }
-    medeleg_load_ma: coverpoint ins.current.csr[CSR_MEDELEG][4] {
+    medeleg_load_ma: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[4] {
             bins delegated = {1'b1};
     }
-    medeleg_store_ma: coverpoint ins.current.csr[CSR_MEDELEG][6] {
+    medeleg_store_ma: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[6] {
             bins delegated = {1'b1};
     }
-    medeleg_illegal: coverpoint ins.current.csr[CSR_MEDELEG][2] {
+    medeleg_illegal: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[2] {
             bins delegated = {1'b1};
     }
 
-    medeleg_instr_pf: coverpoint ins.current.csr[CSR_MEDELEG][12] {
+    medeleg_instr_pf: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[12] {
             bins delegated = {1'b1};
     }
-    medeleg_load_pf: coverpoint ins.current.csr[CSR_MEDELEG][13] {
+    medeleg_load_pf: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[13] {
             bins delegated = {1'b1};
     }
-    medeleg_store_pf: coverpoint ins.current.csr[CSR_MEDELEG][15] {
+    medeleg_store_pf: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[15] {
             bins delegated = {1'b1};
     }
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-    medeleg_instr_af: coverpoint ins.current.csr[CSR_MEDELEG][1] {
+    medeleg_instr_af: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[1] {
             bins delegated = {1'b1};
     }
-    medeleg_load_af: coverpoint ins.current.csr[CSR_MEDELEG][5] {
+    medeleg_load_af: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[5] {
             bins delegated = {1'b1};
     }
-    medeleg_store_af: coverpoint ins.current.csr[CSR_MEDELEG][7] {
+    medeleg_store_af: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[7] {
             bins delegated = {1'b1};
     }
     `endif
@@ -90,14 +90,14 @@ covergroup Sstvala_cg with function sample(ins_t ins);
 
     vaddr_d_misaligned: coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] {
     }
-    cause_load_page_fault: coverpoint ins.current.csr[CSR_SCAUSE][5:0] {
-            bins set = {6'd13};
+    cause_load_page_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+            bins set = {LOAD_PAGE_FAULT};
     }
-    cause_store_page_fault: coverpoint ins.current.csr[CSR_SCAUSE][5:0] {
-            bins set = {6'd15};
+    cause_store_page_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+            bins set = {STORE_AMO_PAGE_FAULT};
     }
-    cause_instr_page_fault: coverpoint ins.current.csr[CSR_SCAUSE][5:0] {
-            bins set = {6'd12};
+    cause_instr_page_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+            bins set = {INSTRUCTION_PAGE_FAULT};
     }
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS

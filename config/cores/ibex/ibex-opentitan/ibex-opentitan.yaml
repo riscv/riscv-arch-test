@@ -247,8 +247,10 @@ params:
   #   Quote: ".irq_software_i            (1'b0), .irq_timer_i               (timer_irq),
   #   .irq_external_i            (1'b0),"
   #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/examples/simple_system/rtl/ibex_simple_system.sv#L281-L283
-  MEI_INTR_IMPL: true
-  MSI_INTR_IMPL: true
+  # ACT reads {MEI,MTI,MSI}_INTR_IMPL as the machine interrupts the platform can raise
+  # (tests/env/check_defines.h), so each is true only where rvmodel_macros.h can raise it.
+  MEI_INTR_IMPL: false
+  MSI_INTR_IMPL: false
   MTI_INTR_IMPL: true
   # WFI in U-mode traps only when mstatus.TW is set; with TW clear it executes.
   #   Quote: "assign illegal_umode_insn = (priv_mode_i != PRIV_LVL_M) &

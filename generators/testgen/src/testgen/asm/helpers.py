@@ -131,6 +131,79 @@ def write_sigupd(
         raise ValueError(f"Unknown sig_type: {sig_type}")
 
 
+# Background pattern for store targets. Its bytes differ from each other and from common edge-value bytes.
+STORE_CANARY = 0xD2691EA74DB836E5
+
+# FP stores check 8 bytes even when narrower, so an RV32 store that writes a whole 64-bit FP register
+# instead of the low word fails.
+FP_STORE_AREA_BYTES = 8
+
+
+def _store_area_words(area_bytes: int, test_data: TestData) -> range:
+    """Byte offsets of the XLEN words that cover area_bytes."""
+    xlen_bytes = test_data.xlen // 8
+    return range(0, max(area_bytes, xlen_bytes), xlen_bytes)
+
+
+def fill_store_canary(
+    base_reg: int,
+    temp_reg: int,
+    test_data: TestData,
+    *,
+    area_bytes: int,
+    store_val: int,
+    store_bytes: int,
+    offset: int = 0,
+) -> list[str]:
+    """Point base_reg at scratch and fill area_bytes there (rounded up to whole XLEN words) with a canary.
+
+    The canary is STORE_CANARY, except that the store_bytes bytes at offset are the complement of the
+    low store_bytes bytes of store_val. Each byte the store should write therefore changes, so a store
+    that is dropped or goes to the wrong address fails the check. check_store_canary reads the area back.
+    The area is outside the signature region, which self-checking tests preload with the expected results.
+    """
+    words = _store_area_words(area_bytes, test_data)
+    area = bytearray(STORE_CANARY.to_bytes(8, "little") * ((words.stop + 7) // 8))
+    for i in range(store_bytes):
+        area[offset + i] = ~(store_val >> (8 * i)) & 0xFF
+    lines = [f"LA(x{base_reg}, scratch) # point base at scratch"]
+    for word_offset in words:
+        canary = int.from_bytes(area[word_offset : word_offset + words.step], "little")
+        lines.extend(
+            [
+                load_int_reg("store canary", temp_reg, canary, test_data),
+                f"SREG x{temp_reg}, {word_offset}(x{base_reg}) # fill store target with canary",
+            ]
+        )
+    return lines
+
+
+def check_store_canary(base_reg: int, temp_reg: int, test_data: TestData, *, area_bytes: int) -> list[str]:
+    """Read back and check every XLEN word filled by fill_store_canary."""
+    lines: list[str] = []
+    for word_offset in _store_area_words(area_bytes, test_data):
+        lines.extend(
+            [
+                f"LREG x{temp_reg}, {word_offset}(x{base_reg}) # load store target for checking",
+                write_sigupd(temp_reg, test_data),
+            ]
+        )
+    return lines
+
+
+def int_store_data(rs2: int, rs2val: int, base_reg: int, immval: int, store_bytes: int) -> tuple[int, int]:
+    """Return (value, known bytes) that an integer store with base = scratch - immval writes.
+
+    rs2 = x0 stores 0. If rs2 is the base register, it holds scratch - immval; scratch is 256-byte
+    aligned, so only the low byte is known.
+    """
+    if rs2 == 0:
+        return 0, store_bytes
+    if rs2 == base_reg:
+        return -immval & 0xFF, 1
+    return rs2val, store_bytes
+
+
 def reproducible_hash(s: str) -> int:
     """Return a simple hash of a string for use as a random seed.
 

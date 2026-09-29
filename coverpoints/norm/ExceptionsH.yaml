@@ -23,12 +23,13 @@ normative_rule_definitions:
   # VS-mode are assigned cause 10, whereas those from HS-mode or S-mode use cause 9 as
   # usual.
   - name: H_cause
-    # Representative coverpoints; a VS-mode ecall (cause 10), a virtual-instruction exception (22)
-    # and a VS-level external interrupt (10)
+    # Representative coverpoints; a VS-mode ecall (cause 10), a virtual-instruction exception (22),
+    # guest-page faults (20, 21, 23) and a VS-level external interrupt (10)
     coverpoint:
       [
         "ExceptionsH_cg/cp_ecall_to_hs",
         "ExceptionsH_cg/cp_virtual_instr_vs_execute_hypervisor",
+        "SvH_twostage_cg/cp_twostage_perm",
         "InterruptsH_hs_cg/cp_trigger_vsei",
       ]
   # When V=1, a virtual-instruction exception (code 22) is normally raised instead of an

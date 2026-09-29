@@ -76,15 +76,18 @@ normative_rule_definitions:
   - names: [hstatus_vtvm_op, H_virtinst_vs_sfence_sinval_satp_vtvm1]
     coverpoint: ["HSm_tvm_cg/cp_tvm_vs", "HSm_tvm_cg/cp_sfence"]
 
+  # hfence.vvma and hfence.gvma are valid in M-mode and HS-mode, and order VS-stage and G-stage translation
+  - names: [hfence-vvma_hfence-gvma_op, hfence-vvma_mode]
+    coverpoint:
+      [
+        "HSm_tvm_cg/cp_hfence",
+        "SvH_vsstage_cg/cp_vsatp_perm (hfence.vvma with rs1 = rs2 = x0 after each VS-stage leaf change)",
+        "SvH_gstage_cg/cp_hgatp_perm (hfence.gvma with rs1 = rs2 = x0 after each G-stage leaf change)",
+      ]
+
   # hfence.vvma and hfence.gvma in M-mode and HS-mode, and TVM
   - names:
-      [
-        hfence-vvma_hfence-gvma_op,
-        hfence-vvma_mode,
-        hfence-gvma_mode,
-        hfence-vvma_tvm,
-        hfence-vvma_hfence-gvma_exceptions,
-      ]
+      [hfence-gvma_mode, hfence-vvma_tvm, hfence-vvma_hfence-gvma_exceptions]
     coverpoint: ["HSm_tvm_cg/cp_hfence"]
 
   # mret uses MPV to enter a virtual mode
@@ -162,7 +165,11 @@ normative_rule_definitions:
   # implicit reads; a nonzero rs1 selects one guest physical address and a nonzero rs2 one VMID
   - names: [hfence-gvma_op]
     coverpoint:
-      ["HSm_tvm_cg/cp_hfence", "TODO: hfence.gvma with rs1 or rs2 nonzero"]
+      [
+        "HSm_tvm_cg/cp_hfence",
+        "SvH_gstage_cg/cp_hgatp_perm (hfence.gvma with rs1 = rs2 = x0 after each G-stage leaf change)",
+        "TODO: hfence.gvma with rs1 or rs2 nonzero",
+      ]
 
   # hfence.gvma ignores rs2 bits above VMIDMAX and unimplemented VMID bits
   - names: [hfence-gvma_vmid]

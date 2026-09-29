@@ -12,7 +12,8 @@ normative_rule_definitions:
   # If the hypervisor extension is additionally implemented, the henvcfg.ADUE field is
   # also writable.
   - name: Svadu_hypervisor_adue_writable
-    coverpoint: ["TODO: test in hypervisor tests"]
+    coverpoint:
+      ["SvH_csr_cg/cp_henvcfg_menvcfg", "SvH_vsstage_cg/cp_vsatp_adue"]
 
   # When hardware updating of A/D bits is disabled, the Svade extension, which mandates
   # exceptions when A/D bits need be set, instead takes effect.
@@ -46,4 +47,4 @@ normative_rule_definitions:
   # for implementations with the hypervisor extension, henvcfg.ADUE is read-only zero if
   # menvcfg.ADUE is zero.
   - name: menvcfg_adue_henvcfg_adue_rdonly0
-    coverpoint: ["TODO: test in hypervisor tests"]
+    coverpoint: ["SvH_csr_cg/cp_henvcfg_menvcfg"]

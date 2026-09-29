@@ -347,9 +347,9 @@ normative_rule_definitions:
         "H_hscsr_cg/cp_vscause_write_interrupt",
       ]
 
-  # With V=0, S CSRs and their VS replicas are separate registers
+  # With V=0, S CSRs and their VS replicas are separate registers, but vsstatus applies to HLV, HLVX and HSV
   - names: [H_vscsrs_v0, vsstatus_v0]
-    coverpoint: ["H_hscsr_cg/cp_replica"]
+    coverpoint: ["H_hscsr_cg/cp_replica", "SvH_hlv_cg/cp_hlv_priv"]
 
   # When V=1, the VS CSRs substitute for the corresponding supervisor CSRs, taking over
   # all functions of the usual supervisor CSRs except as specified otherwise. Instructions

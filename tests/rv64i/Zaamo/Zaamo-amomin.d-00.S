@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 504
+#define SIGUPD_COUNT 508
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -3397,6 +3397,36 @@ Zaamo_amomin_d_cg_cp_custom_aqrl_aqrl:
   # Check if x12 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x17, x8, x7, x12, Zaamo_amomin_d_cg_cp_custom_aqrl_aqrl, Zaamo_amomin_d_cg_cp_custom_aqrl_aqrl_str)
 
+/////////////////////////////////
+// cr_memval_rs2_minmax_double
+/////////////////////////////////
+
+# Testcase cr_memval_rs2_minmax_double (memory value = 0x8000000000000000, rs2 = 0x7fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x20, x21) # load value in memory: x21 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x20, x31) # load rs2: x31 = 0x7fffffffffffffff
+  LA(x14, scratch) # load base address into rs1
+  SREG x21, 0(x14) # store value into memory at address in rs1
+Zaamo_amomin_d_cg_cr_memval_rs2_minmax_double_mem_min_rs2_max:
+  amomin.d x25, x31, (x14) # perform operation
+  # Check if x25 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x25, Zaamo_amomin_d_cg_cr_memval_rs2_minmax_double_mem_min_rs2_max, Zaamo_amomin_d_cg_cr_memval_rs2_minmax_double_mem_min_rs2_max_str)
+  LREG x14, 0(x14) # Load the updated value from memory
+  # Check if x14 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x14, Zaamo_amomin_d_cg_cr_memval_rs2_minmax_double_mem_min_rs2_max, Zaamo_amomin_d_cg_cr_memval_rs2_minmax_double_mem_min_rs2_max_str)
+
+# Testcase cr_memval_rs2_minmax_double (memory value = 0x7fffffffffffffff, rs2 = 0x8000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x20, x13) # load value in memory: x13 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x20, x4) # load rs2: x4 = 0x8000000000000000
+  LA(x28, scratch) # load base address into rs1
+  SREG x13, 0(x28) # store value into memory at address in rs1
+Zaamo_amomin_d_cg_cr_memval_rs2_minmax_double_mem_max_rs2_min:
+  amomin.d x26, x4, (x28) # perform operation
+  # Check if x26 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x26, Zaamo_amomin_d_cg_cr_memval_rs2_minmax_double_mem_max_rs2_min, Zaamo_amomin_d_cg_cr_memval_rs2_minmax_double_mem_max_rs2_min_str)
+  LREG x28, 0(x28) # Load the updated value from memory
+  # Check if x28 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x28, Zaamo_amomin_d_cg_cr_memval_rs2_minmax_double_mem_max_rs2_min, Zaamo_amomin_d_cg_cr_memval_rs2_minmax_double_mem_max_rs2_min_str)
+
   mv x2, x17 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -3900,6 +3930,10 @@ RVTEST_DATA_BEGIN
 .dword 0x9c335d28b46a0c34
 .dword 0x82bf442a6c5e81d9
 .dword 0x24446e750d9761c5
+.dword 0x8000000000000000
+.dword 0x7fffffffffffffff
+.dword 0x7fffffffffffffff
+.dword 0x8000000000000000
 
 // Testcase strings
 Zaamo_amomin_d_cg_cp_rs1_nx0_b1_str: .string "\"test: 1; cg: Zaamo_amomin.d_cg; cp: cp_rs1_nx0; bin: b1\""
@@ -4149,6 +4183,8 @@ Zaamo_amomin_d_cg_cp_custom_aqrl_str: .string "\"test: 244; cg: Zaamo_amomin.d_c
 Zaamo_amomin_d_cg_cp_custom_aqrl_aq_str: .string "\"test: 245; cg: Zaamo_amomin.d_cg; cp: cp_custom_aqrl; bin: .aq\""
 Zaamo_amomin_d_cg_cp_custom_aqrl_rl_str: .string "\"test: 246; cg: Zaamo_amomin.d_cg; cp: cp_custom_aqrl; bin: .rl\""
 Zaamo_amomin_d_cg_cp_custom_aqrl_aqrl_str: .string "\"test: 247; cg: Zaamo_amomin.d_cg; cp: cp_custom_aqrl; bin: .aqrl\""
+Zaamo_amomin_d_cg_cr_memval_rs2_minmax_double_mem_min_rs2_max_str: .string "\"test: 248; cg: Zaamo_amomin.d_cg; cp: cr_memval_rs2_minmax_double; bin: mem_min_rs2_max\""
+Zaamo_amomin_d_cg_cr_memval_rs2_minmax_double_mem_max_rs2_min_str: .string "\"test: 249; cg: Zaamo_amomin.d_cg; cp: cr_memval_rs2_minmax_double; bin: mem_max_rs2_min\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

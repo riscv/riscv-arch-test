@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 496
+#define SIGUPD_COUNT 500
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -3358,6 +3358,36 @@ Zaamo_amomaxu_w_cg_cp_custom_aqrl_aqrl:
   # Check if x20 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x9, x8, x7, x20, Zaamo_amomaxu_w_cg_cp_custom_aqrl_aqrl, Zaamo_amomaxu_w_cg_cp_custom_aqrl_aqrl_str)
 
+/////////////////////////////////
+// cr_memval_rs2_minmax_word
+/////////////////////////////////
+
+# Testcase cr_memval_rs2_minmax_word (memory value = 0x80000000, rs2 = 0x7fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x15, x18) # load value in memory: x18 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x15, x21) # load rs2: x21 = 0x7fffffff
+  LA(x2, scratch) # load base address into rs1
+  SREG x18, 0(x2) # store value into memory at address in rs1
+Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_min_rs2_max:
+  amomaxu.w x25, x21, (x2) # perform operation
+  # Check if x25 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x25, Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_min_rs2_max, Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_min_rs2_max_str)
+  LREG x2, 0(x2) # Load the updated value from memory
+  # Check if x2 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x2, Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_min_rs2_max, Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_min_rs2_max_str)
+
+# Testcase cr_memval_rs2_minmax_word (memory value = 0x7fffffff, rs2 = 0x80000000)
+  RVTEST_TESTDATA_LOAD_INT(x15, x1) # load value in memory: x1 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x15, x11) # load rs2: x11 = 0x80000000
+  LA(x21, scratch) # load base address into rs1
+  SREG x1, 0(x21) # store value into memory at address in rs1
+Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_max_rs2_min:
+  amomaxu.w x27, x11, (x21) # perform operation
+  # Check if x27 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x27, Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_max_rs2_min, Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_max_rs2_min_str)
+  LREG x21, 0(x21) # Load the updated value from memory
+  # Check if x21 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x21, Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_max_rs2_min, Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_max_rs2_min_str)
+
   mv x2, x9 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -3853,6 +3883,10 @@ RVTEST_DATA_BEGIN
 .word 0x732c7bfd
 .word 0x7751ed76
 .word 0x5606989d
+.word 0x80000000
+.word 0x7fffffff
+.word 0x7fffffff
+.word 0x80000000
 
 // Testcase strings
 Zaamo_amomaxu_w_cg_cp_rs1_nx0_b1_str: .string "\"test: 1; cg: Zaamo_amomaxu.w_cg; cp: cp_rs1_nx0; bin: b1\""
@@ -4098,6 +4132,8 @@ Zaamo_amomaxu_w_cg_cp_custom_aqrl_str: .string "\"test: 240; cg: Zaamo_amomaxu.w
 Zaamo_amomaxu_w_cg_cp_custom_aqrl_aq_str: .string "\"test: 241; cg: Zaamo_amomaxu.w_cg; cp: cp_custom_aqrl; bin: .aq\""
 Zaamo_amomaxu_w_cg_cp_custom_aqrl_rl_str: .string "\"test: 242; cg: Zaamo_amomaxu.w_cg; cp: cp_custom_aqrl; bin: .rl\""
 Zaamo_amomaxu_w_cg_cp_custom_aqrl_aqrl_str: .string "\"test: 243; cg: Zaamo_amomaxu.w_cg; cp: cp_custom_aqrl; bin: .aqrl\""
+Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_min_rs2_max_str: .string "\"test: 244; cg: Zaamo_amomaxu.w_cg; cp: cr_memval_rs2_minmax_word; bin: mem_min_rs2_max\""
+Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_max_rs2_min_str: .string "\"test: 245; cg: Zaamo_amomaxu.w_cg; cp: cr_memval_rs2_minmax_word; bin: mem_max_rs2_min\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 508
+#define SIGUPD_COUNT 512
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -3436,6 +3436,36 @@ Zaamo_amomaxu_w_cg_cp_custom_aqrl_aqrl:
   # Check if x20 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x20, Zaamo_amomaxu_w_cg_cp_custom_aqrl_aqrl, Zaamo_amomaxu_w_cg_cp_custom_aqrl_aqrl_str)
 
+/////////////////////////////////
+// cr_memval_rs2_minmax_word
+/////////////////////////////////
+
+# Testcase cr_memval_rs2_minmax_word (memory value = 0x80000000, rs2 = 0x7fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load value in memory: x18 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x000000007fffffff
+  LA(x3, scratch) # load base address into rs1
+  SREG x18, 0(x3) # store value into memory at address in rs1
+Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_min_rs2_max:
+  amomaxu.w x25, x20, (x3) # perform operation
+  # Check if x25 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x1, x8, x7, x25, Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_min_rs2_max, Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_min_rs2_max_str)
+  LREG x3, 0(x3) # Load the updated value from memory
+  # Check if x3 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x1, x8, x7, x3, Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_min_rs2_max, Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_min_rs2_max_str)
+
+# Testcase cr_memval_rs2_minmax_word (memory value = 0x7fffffff, rs2 = 0xffffffff80000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load value in memory: x3 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs2: x11 = 0xffffffff80000000
+  LA(x20, scratch) # load base address into rs1
+  SREG x3, 0(x20) # store value into memory at address in rs1
+Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_max_rs2_min:
+  amomaxu.w x27, x11, (x20) # perform operation
+  # Check if x27 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x1, x8, x7, x27, Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_max_rs2_min, Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_max_rs2_min_str)
+  LREG x20, 0(x20) # Load the updated value from memory
+  # Check if x20 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x1, x8, x7, x20, Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_max_rs2_min, Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_max_rs2_min_str)
+
   mv x2, x1 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -3943,6 +3973,10 @@ RVTEST_DATA_BEGIN
 .dword 0x5606989dbdf4861e
 .dword 0x920ef29473b2d946
 .dword 0x66bb7f0eca3bb809
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0xffffffff80000000
 
 // Testcase strings
 Zaamo_amomaxu_w_cg_cp_rs1_nx0_b1_str: .string "\"test: 1; cg: Zaamo_amomaxu.w_cg; cp: cp_rs1_nx0; bin: b1\""
@@ -4194,6 +4228,8 @@ Zaamo_amomaxu_w_cg_cp_custom_aqrl_str: .string "\"test: 246; cg: Zaamo_amomaxu.w
 Zaamo_amomaxu_w_cg_cp_custom_aqrl_aq_str: .string "\"test: 247; cg: Zaamo_amomaxu.w_cg; cp: cp_custom_aqrl; bin: .aq\""
 Zaamo_amomaxu_w_cg_cp_custom_aqrl_rl_str: .string "\"test: 248; cg: Zaamo_amomaxu.w_cg; cp: cp_custom_aqrl; bin: .rl\""
 Zaamo_amomaxu_w_cg_cp_custom_aqrl_aqrl_str: .string "\"test: 249; cg: Zaamo_amomaxu.w_cg; cp: cp_custom_aqrl; bin: .aqrl\""
+Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_min_rs2_max_str: .string "\"test: 250; cg: Zaamo_amomaxu.w_cg; cp: cr_memval_rs2_minmax_word; bin: mem_min_rs2_max\""
+Zaamo_amomaxu_w_cg_cr_memval_rs2_minmax_word_mem_max_rs2_min_str: .string "\"test: 251; cg: Zaamo_amomaxu.w_cg; cp: cr_memval_rs2_minmax_word; bin: mem_max_rs2_min\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

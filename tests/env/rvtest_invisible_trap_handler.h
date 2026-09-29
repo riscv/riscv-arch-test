@@ -153,12 +153,12 @@
       csrw    stval, T4
 
       #ifdef H_SUPPORTED
-        // A trap from a guest is delivered to HS-mode, which has to see where it
-        // came from: SPV records the guest and SPVP its nominal privilege. GVA stays
-        // clear because the only trap forwarded here is an illegal instruction,
-        // whose stval holds the instruction rather than an address. Clearing MPV
-        // makes the mret below enter HS-mode instead of returning to the guest.
-        LI(     T3, HSTATUS_SPV | HSTATUS_SPVP | HSTATUS_GVA)
+        // Reproduce HS-mode trap entry for an illegal instruction: htval and htinst
+        // are zero, SPV and GVA are written, and SPVP is written only from a guest.
+        // Clearing MPV makes the mret below enter HS-mode.
+        csrw    htval, zero
+        csrw    htinst, zero
+        LI(     T3, HSTATUS_SPV | HSTATUS_GVA)
         csrc    hstatus, T3
         #if UDB_MXLEN == 32
           csrr    T4, CSR_MSTATUSH
@@ -168,14 +168,14 @@
           andi    T4, T4, (1 << MPV_LSB)
         #endif
         beqz    T4, invisible_Mforward_host
-        LI(     T3, HSTATUS_SPV)
+        LI(     T3, HSTATUS_SPV | HSTATUS_SPVP)
         csrs    hstatus, T3
         srli    T4, T1, MPP_LSB
         andi    T4, T4, 1                         // nominal privilege: VS = 1, VU = 0
-        beqz    T4, invisible_Mforward_vu
+        bnez    T4, invisible_Mforward_clear_mpv
         LI(     T3, HSTATUS_SPVP)
-        csrs    hstatus, T3
-      invisible_Mforward_vu:
+        csrc    hstatus, T3
+      invisible_Mforward_clear_mpv:
         #if UDB_MXLEN == 32
           li      T3, (1 << MPV_LSB)
           csrc    CSR_MSTATUSH, T3

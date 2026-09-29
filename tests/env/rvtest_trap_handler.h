@@ -118,16 +118,8 @@
 //    S-mode handler:  handles ECALL_TEST, GOTO_S/U, S-mode CSR_ACCESS locally;
 //                     forwards GOTO_M/VS/VU, M-mode CSR_ACCESS, and loads/stores to M-mode via ecall
 //
-//  Calls made from a guest (V=1) resume by jumping to xEPC, which is a guest
-//  virtual address, while the hart is already in host context. A test whose guest
-//  map is not an identity map registers the guest view of its code region in the
-//  V save area (see TSBI_RELOCATE_EPC), and the GOTO ops move the resume address
-//  between that view and the host's.
-//
-//  One limit still applies to a guest: CSR_ACCESS dispatches on the CSR number in
-//  the caller's encoding, so an S-mode CSR name from a guest (sstatus 0x100, say)
-//  is executed by the HS handler and changes HOST state, not the guest's. A guest
-//  that wants its own copy must name the vs* CSR (vsstatus 0x200).
+//  CSR_ACCESS from a guest runs in HS-mode, so S-mode CSR numbers access the
+//  HS-mode CSRs. A guest must use the vs* CSR numbers to access its own state.
 //
 //************************************************************************************
 
@@ -326,11 +318,8 @@
 #define vmem_seg_siz                (tramp_sz+ 7*8) // offset to virtual memory region size
 #define trapsig_ptr_off             (tramp_sz+ 8*8) // offset to current trap signature write pointer
 #define xsatp_sv_off                (tramp_sz+ 9*8) // offset to saved xSATP value
-#define sved_shared_off             (tramp_sz+10*8) // per-area shared slot: the S-mode area
-                                                    //   holds the saved hgatp and the M-mode
-                                                    //   copy the saved hideleg (both written by
-                                                    //   the S prolog); the VS copy is unused
-#define sved_mpp_off   (2*sv_area_sz+sved_shared_off) // saved MPP for MPRV tests (never written yet)
+#define sved_shared_off             (tramp_sz+10*8) // S prolog saves hgatp in the S area's slot
+                                                    //   and hideleg in the M area's slot
 #define tentry_addr_off             (tramp_sz+11*8) // offset to common handler entry point address
 #define xedeleg_sv_off              (tramp_sz+12*8) // offset to saved xEDELEG value
 #define xtvec_new_off               (tramp_sz+13*8) // offset to new xTVEC value (trampoline addr)
@@ -450,11 +439,7 @@
 // Without S-mode there is no satp, and no S save area to register an alias in.
 #ifdef S_SUPPORTED
   #ifdef H_SUPPORTED
-        // A guest gets the same treatment through the V save area's code pointer:
-        // a test that registers the VA its VS-stage map uses for the code region has
-        // its resume address moved between that alias and the host view, so a GOTO
-        // into or out of a guest lands on the caller even when the guest map is not
-        // an identity map. A test that registers nothing is left alone.
+        // Guests use the code alias registered in the V save area.
         LA(     T2, Mtramptbl_sv)
         addi    T2, T2, sv_area_sz                   // step past the M area: two areas overflow the load immediate
         LREG    T3, code_bgn_off+sv_area_sz(T2)      // T3 = registered guest code alias
@@ -555,7 +540,6 @@
 #endif
 .endm
 
-
 //==============================================================================
 // SECTION 8: INSTANTIATE_MODE_MACRO
 //
@@ -566,15 +550,10 @@
 //   RVTEST_TRAP_HANDLER S       — if S_SUPPORTED
 //   RVTEST_TRAP_HANDLER V       — if S_SUPPORTED && H_SUPPORTED
 //
-// There is no separate HS-mode instantiation. HS-mode has no trap CSRs of its
-// own: stvec, sscratch, sepc, scause and stval ARE the S-mode ones, so one
-// handler serves both and hstatus.SPV in trap signature word 0 says which world
-// the trap came from. The hypervisor CSRs that do need saving (hedeleg, hgatp)
-// are handled by the S prolog and epilog under H_SUPPORTED.
+// HS-mode uses the S-mode trap CSRs, so the S instantiation also serves HS.
+// The S prolog and epilog save and restore hedeleg, hideleg, and hgatp.
 //
-// The order must stay M, S, V: the save areas are laid out in this order and the
-// cross-area offsets (sved_mpp_off, the epilog and GOTO_LOWER_MODE area offsets,
-// trap_sig_sv) assume it.
+// The order must stay M, S, V. The save areas and cross-area offsets assume it.
 //
 // Used for PROLOG, HANDLER, EPILOG, and SAVEAREA instantiation.
 // The reverse order (V, S, M) is used for the epilogs in RVTEST_CODE_END.
@@ -1226,17 +1205,16 @@ init_\__MODE__\()edeleg:
        SREG    T2, xedeleg_sv_off(T1)            // store saved xedeleg in save area
   .ifc \__MODE__ , S
     #ifdef H_SUPPORTED
-        li      T2, 0                             // hideleg gets the same treatment as hedeleg:
-        csrrw   T2, CSR_HIDELEG, T2              //   save it and delegate nothing while the
-        SREG    T2, -1*sv_area_sz+sved_shared_off(T1) //   handler runs (M area's spare slot)
+        li      T2, 0
+        csrrw   T2, CSR_HIDELEG, T2              // save hideleg, write 0
+        SREG    T2, -1*sv_area_sz+sved_shared_off(T1) // store in the M area's shared slot
     #endif
   .endif
 
 //---------- Save and set xSATP (non-M-mode only) ----------
 init_\__MODE__\()satp:
 .ifnc \__MODE__ , M                      // if HS, S or VS mode **FIXME: fixed offset frm trapreg_sv?
-        // Bare with every other field zero: a Bare write with a nonzero PPN has an
-        // UNSPECIFIED effect. Tests that enable translation write the whole CSR.
+        // Bare with a nonzero PPN is UNSPECIFIED, so write the whole CSR as zero.
         csrrw   T4, CSR_XSATP, x0                 // xSATP = 0, old value in T4
         SREG    T4, xsatp_sv_off(T1)              // save old xSATP in save area
 .endif
@@ -1808,9 +1786,7 @@ tsbi_\__MODE__\()goto_vu:
 //   - GOTO_UMODE:  set sstatus.SPP=0 (return to U-mode via sret)
 //   - CSR_ACCESS for S/U-mode CSRs: execute locally (CSR addr[9:8] != 11)
 //
-// LOCAL HANDLING, hypervisor builds only:
-//   - ECALL from VS-mode (cause 10), which is what a guest's T-SBI call is
-//   - GOTO_VSMODE / GOTO_VUMODE: sret reaches a virtual mode via hstatus.SPV
+//   - GOTO_VSMODE / GOTO_VUMODE (H only): set sstatus.SPP and hstatus.SPV=1
 //
 // FORWARDED TO M-MODE (requires M-mode privileges):
 //   - GOTO_MMODE:  needs M-mode to set MPP
@@ -1892,15 +1868,8 @@ tsbi_\__MODE__\()ecall_test:
         j       resto_\__MODE__\()rtn              // sret to caller with a0 = ecall address
 
         //--- S-mode GOTO_xMODE dispatch ---
-        //
-        // sret leaves HS-mode for the mode named by two bits: sstatus.SPP picks
-        // the privilege level and, when H is present, hstatus.SPV picks whether
-        // that level is virtual. So HS-mode can reach all four of HS, U, VS and
-        // VU on its own and only GOTO_MMODE has to be forwarded.
-        //
-        //   SPV=0 SPP=1 -> HS      SPV=1 SPP=1 -> VS
-        //   SPV=0 SPP=0 -> U       SPV=1 SPP=0 -> VU
-        //
+        // sret target:  SPV=0 SPP=1 -> HS    SPV=1 SPP=1 -> VS
+        //               SPV=0 SPP=0 -> U     SPV=1 SPP=0 -> VU
 tsbi_\__MODE__\()goto_mode:
         // a0 still holds the caller's operation code
         csrr    T4, CSR_XEPC                        // T4 = sepc (caller's ecall address)
@@ -1949,19 +1918,15 @@ tsbi_\__MODE__\()goto_u:                          // Return to U-mode via sret
 tsbi_\__MODE__\()goto_vs:                         // Return to VS-mode via sret
         LI(     T3, SSTATUS_SPP)                   // T3 = SPP bit mask
         csrs    CSR_XSTATUS, T3                     // set sstatus.SPP = 1 (virtual supervisor)
-#ifdef H_SUPPORTED
         LI(     T3, HSTATUS_SPV)                    // enter virtual mode
         csrs    CSR_HSTATUS, T3
-#endif
         j       resto_\__MODE__\()rtn              // sret returns to VS-mode at sepc
 
 tsbi_\__MODE__\()goto_vu:                         // Return to VU-mode via sret
         LI(     T3, SSTATUS_SPP)                   // T3 = SPP bit mask
         csrc    CSR_XSTATUS, T3                     // clear sstatus.SPP = 0 (virtual user)
-#ifdef H_SUPPORTED
         LI(     T3, HSTATUS_SPV)                    // enter virtual mode
         csrs    CSR_HSTATUS, T3
-#endif
         j       resto_\__MODE__\()rtn              // sret returns to VU-mode at sepc
   #endif
 
@@ -2003,9 +1968,6 @@ tsbi_\__MODE__\()forward_goto_m:
         ecall                                      // trap to M-mode; M sets MPP=M and mrets back HERE in M-mode
         csrr    a0, CSR_XEPC                       // caller's ecall+4 (bumped before forwarding)
         jr      a0                                 // continue at the caller, in M-mode
-                                                   // NB: for a caller in VS/VU this xEPC is a guest
-                                                   // virtual address, so this only returns to the
-                                                   // caller under an identity guest map
 
         //--- S-mode CSR_ACCESS ---
 tsbi_\__MODE__\()csr_access:
@@ -2018,8 +1980,6 @@ tsbi_\__MODE__\()csr_access:
         j       tsbi_\__MODE__\()forward_to_m       // M-mode CSR -> forward to the M-mode handler
 11:
         // S-mode or U-mode CSR: find and execute the approved instruction locally.
-        // Executed in HS context, so a guest asking for an S-mode CSR name gets the
-        // host register; a guest must name the vs* CSR to reach its own copy.
         j       tsbi_\__MODE__\()instr_dispatch
 
 .endif  // --------- END S-MODE T-SBI DISPATCH ---------
@@ -2159,8 +2119,7 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x5A8) // scontext
         TSBI_CSR_INSTR_TABLE(0x6A8) // hcontext
 #ifdef H_SUPPORTED
-        // Hypervisor and VS-mode CSRs. A guest running in VS or VU mode reaches
-        // every one of these through the T-SBI
+        // Hypervisor and VS-mode CSRs
         TSBI_CSR_INSTR_TABLE(0x600) // hstatus
         TSBI_CSR_INSTR_TABLE(0x602) // hedeleg
         TSBI_CSR_INSTR_TABLE(0x603) // hideleg
@@ -2227,7 +2186,7 @@ tsbi_instr_table:
 // or a genuine ecall exception that should be recorded in the signature).
 //
 // This section:
-//   1. Calculates the trap signature entry size (3, 4, or 5 words)
+//   1. Calculates the trap signature entry size (3, 4, or 6 words)
 //   2. Pre-increments the trap signature pointer and checks for overrun
 //   3. Records: vect+mode word, xcause, xepc/xip, xtval/intID
 //   4. For exceptions: records xEPC and bumps past the trapping instruction
@@ -2247,17 +2206,14 @@ tsbi_instr_table:
         j       \__MODE__\()trap_sig_sv            // go to pointer update
 
 \__MODE__\()xcpt_sig_sv:                          // exception: check for hypervisor (6-word entry)
-// An exception entry carries two extra words on a hypervisor build: the second
-// trap value (mtval2 / htval, the faulting guest physical address) and xtinst. The
-// width is a build-time decision: misa.H is allowed to read as zero on a DUT that
-// implements H, and S/HS cannot read misa at all, so both modes key off H_SUPPORTED.
+// M and HS exception entries add mtval2/htval and mtinst/htinst when H is supported.
 .ifc \__MODE__ , M
 #ifdef H_SUPPORTED
         li      T2, 6*REGWIDTH                  // hypervisor build: 6-word exception entries
 #endif
 .else
   .ifc \__MODE__ , V
-        // VS-mode has neither: htval and htinst belong to HS.
+        // VS-mode entries keep 4 words
   .else
 #ifdef H_SUPPORTED
         li      T2, 6*REGWIDTH                    // S/HS on a hypervisor build: 6-word exception entries
@@ -2379,9 +2335,6 @@ sv_\__MODE__\()vect:
         li      T4, 0                                // VS-mode cannot read hstatus
   .else
   #ifdef H_SUPPORTED
-        // S and HS share one handler (the S prolog owns stvec), and a guest's
-        // trap lands in it, so both read hstatus: SPV and SPVP say whether the
-        // trap came from VS or VU, GVA whether xtval holds a guest address.
         csrr    T4, CSR_HSTATUS
   #else
         li      T4, 0                                // no H: nothing to overlay
@@ -2494,13 +2447,8 @@ sv_\__MODE__\()tval:
 skp_\__MODE__\()tval:
 
 // --- Hypervisor-specific fields: second trap value (word 4), xtinst (word 5) ---
-// These must match the entry width chosen in \__MODE__\()xcpt_sig_sv above:
-// reserving six words and writing four leaves words of the trap signature
-// unwritten, which read back as the fill pattern and mismatch.
-//
-// xtinst is checked with TRAP_SIGUPD_ZERO_OK because the H chapter lets a trap
-// write either zero or the defined transformed instruction, so a DUT that always
-// writes zero is conformant even where the reference model reports a value.
+// Must match the entry width chosen in \__MODE__\()xcpt_sig_sv.
+// xtinst may be written with zero instead of the transformed instruction.
   .ifc \__MODE__ , M
         #ifdef H_SUPPORTED
         sv_\__MODE__\()Mtval2:
@@ -2513,10 +2461,6 @@ skp_\__MODE__\()tval:
   .else
     .ifnc \__MODE__ , V
       #ifdef H_SUPPORTED
-        // HS-mode is where a guest's traps land, so htval holds the faulting
-        // guest physical address, shifted right by 2. It reads as zero for a
-        // trap that did not come from a guest, which is what makes the fixed
-        // six-word entry safe for ordinary S-mode traps.
         sv_\__MODE__\()Htval2:
         csrr    T3, CSR_HTVAL
         TRAP_SIGUPD(T4, T3, 4, sv_\__MODE__\()Htval2, sv_Htval2_str) // write word 4: htval
@@ -3212,7 +3156,7 @@ resto_\__MODE__\()satp:
   #ifdef H_SUPPORTED
         LREG    T2, sved_shared_off(T1)            // HS-mode: restore hgatp
         csrw    CSR_HGATP,  T2
-        LREG    T2, -1*sv_area_sz+sved_shared_off(T1) // and hideleg, saved beside hedeleg
+        LREG    T2, -1*sv_area_sz+sved_shared_off(T1) // HS-mode: restore hideleg
         csrw    CSR_HIDELEG, T2
   #endif
 .endif
@@ -3294,7 +3238,7 @@ rvtest_\__MODE__\()end:                            // epilog is done for this mo
 
 \__MODE__\()trap_sig:      .dword  trap_sigptr                               // current trap signature write ptr
 \__MODE__\()satp_sv:       .dword 0                                          // saved xSATP value
-\__MODE__\()sved_shared:    .dword  0                                     // S-mode area: saved hgatp
+\__MODE__\()sved_shared:   .dword  0                                         // see sved_shared_off
 \__MODE__\()tentry_sv:     .dword  \__MODE__\()trampoline + actual_tramp_sz  // common entry point addr
 \__MODE__\()edeleg_sv:     .dword  0                                         // saved xEDELEG
 \__MODE__\()tvec_new:      .dword  0                                         // current xTVEC value (trampoline)

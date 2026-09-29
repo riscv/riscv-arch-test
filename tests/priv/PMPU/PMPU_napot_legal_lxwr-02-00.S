@@ -31,7 +31,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// PMPU cp_cfg_A_napot
+// PMPU cp_cfg_A_napot_jalr, cp_cfg_A_napot_lw and cp_cfg_A_napot_sw
 //   {jalr, sw, lw} from U mode at and around a NAPOT region, L = 0, each legal XWR.
 /////////////////////////////////
 
@@ -76,132 +76,132 @@ RVTEST_BEGIN
 // Execute probes
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_17_jalr_address:
+PMPU_cg_cp_cfg_A_napot_jalr_entry2_lxwr0100_17_jalr_address:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_17_jalr_address, PMPU_cp_cfg_A_napot_entry2_lxwr0100_17_jalr_address_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_jalr_entry2_lxwr0100_17_jalr_address, PMPU_cg_cp_cfg_A_napot_jalr_entry2_lxwr0100_17_jalr_address_str)
   addi a4, a4, -4
   LA(ra, 2f)
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_18_jalr_addressm4:
+PMPU_cg_cp_cfg_A_napot_jalr_entry2_lxwr0100_18_jalr_addressm4:
   jalr x0, 0(a4)
 2:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_18_jalr_addressm4, PMPU_cp_cfg_A_napot_entry2_lxwr0100_18_jalr_addressm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_jalr_entry2_lxwr0100_18_jalr_addressm4, PMPU_cg_cp_cfg_A_napot_jalr_entry2_lxwr0100_18_jalr_addressm4_str)
   addi a4, a4, 8
   LA(ra, 3f)
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_19_jalr_address_4:
+PMPU_cg_cp_cfg_A_napot_jalr_entry2_lxwr0100_19_jalr_address_4:
   jalr x0, 0(a4)
 3:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_19_jalr_address_4, PMPU_cp_cfg_A_napot_entry2_lxwr0100_19_jalr_address_4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_jalr_entry2_lxwr0100_19_jalr_address_4, PMPU_cg_cp_cfg_A_napot_jalr_entry2_lxwr0100_19_jalr_address_4_str)
   add a4, a4, t0
   LA(ra, 4f)
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_20_jalr_address_gm4:
+PMPU_cg_cp_cfg_A_napot_jalr_entry2_lxwr0100_20_jalr_address_gm4:
   jalr x0, 0(a4)
 4:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_20_jalr_address_gm4, PMPU_cp_cfg_A_napot_entry2_lxwr0100_20_jalr_address_gm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_jalr_entry2_lxwr0100_20_jalr_address_gm4, PMPU_cg_cp_cfg_A_napot_jalr_entry2_lxwr0100_20_jalr_address_gm4_str)
   addi a4, a4, 4
   LA(ra, 5f)
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_21_jalr_address_g:
+PMPU_cg_cp_cfg_A_napot_jalr_entry2_lxwr0100_21_jalr_address_g:
   jalr x0, 0(a4)
 5:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_21_jalr_address_g, PMPU_cp_cfg_A_napot_entry2_lxwr0100_21_jalr_address_g_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_jalr_entry2_lxwr0100_21_jalr_address_g, PMPU_cg_cp_cfg_A_napot_jalr_entry2_lxwr0100_21_jalr_address_g_str)
 
 // Store probes
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_1_sb_address:
+PMPU_cg_cp_cfg_W_entry2_lxwr0100_1_sb_address:
   sb a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_1_sb_address, PMPU_cp_cfg_A_napot_entry2_lxwr0100_1_sb_address_str)
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_2_sh_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_W_entry2_lxwr0100_1_sb_address, PMPU_cg_cp_cfg_W_entry2_lxwr0100_1_sb_address_str)
+PMPU_cg_cp_cfg_W_entry2_lxwr0100_2_sh_address:
   sh a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_2_sh_address, PMPU_cp_cfg_A_napot_entry2_lxwr0100_2_sh_address_str)
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_3_sw_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_W_entry2_lxwr0100_2_sh_address, PMPU_cg_cp_cfg_W_entry2_lxwr0100_2_sh_address_str)
+PMPU_cg_cp_cfg_A_napot_sw_entry2_lxwr0100_3_sw_address:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_3_sw_address, PMPU_cp_cfg_A_napot_entry2_lxwr0100_3_sw_address_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_sw_entry2_lxwr0100_3_sw_address, PMPU_cg_cp_cfg_A_napot_sw_entry2_lxwr0100_3_sw_address_str)
   addi a5, a5, -4
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_4_sw_addressm4:
+PMPU_cg_cp_cfg_A_napot_sw_entry2_lxwr0100_4_sw_addressm4:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_4_sw_addressm4, PMPU_cp_cfg_A_napot_entry2_lxwr0100_4_sw_addressm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_sw_entry2_lxwr0100_4_sw_addressm4, PMPU_cg_cp_cfg_A_napot_sw_entry2_lxwr0100_4_sw_addressm4_str)
   addi a5, a5, 8
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_5_sw_address_4:
+PMPU_cg_cp_cfg_A_napot_sw_entry2_lxwr0100_5_sw_address_4:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_5_sw_address_4, PMPU_cp_cfg_A_napot_entry2_lxwr0100_5_sw_address_4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_sw_entry2_lxwr0100_5_sw_address_4, PMPU_cg_cp_cfg_A_napot_sw_entry2_lxwr0100_5_sw_address_4_str)
   add a5, a5, t0
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_6_sw_address_gm4:
+PMPU_cg_cp_cfg_A_napot_sw_entry2_lxwr0100_6_sw_address_gm4:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_6_sw_address_gm4, PMPU_cp_cfg_A_napot_entry2_lxwr0100_6_sw_address_gm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_sw_entry2_lxwr0100_6_sw_address_gm4, PMPU_cg_cp_cfg_A_napot_sw_entry2_lxwr0100_6_sw_address_gm4_str)
   addi a5, a5, 4
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_7_sw_address_g:
+PMPU_cg_cp_cfg_A_napot_sw_entry2_lxwr0100_7_sw_address_g:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_7_sw_address_g, PMPU_cp_cfg_A_napot_entry2_lxwr0100_7_sw_address_g_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_sw_entry2_lxwr0100_7_sw_address_g, PMPU_cg_cp_cfg_A_napot_sw_entry2_lxwr0100_7_sw_address_g_str)
 
 // Load probes
   LA(a5, TEST_FOR_EXECUTION)
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_8_lb_address:
+PMPU_cg_cp_cfg_R_entry2_lxwr0100_8_lb_address:
   lb a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_8_lb_address, PMPU_cp_cfg_A_napot_entry2_lxwr0100_8_lb_address_str)
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_9_lbu_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_R_entry2_lxwr0100_8_lb_address, PMPU_cg_cp_cfg_R_entry2_lxwr0100_8_lb_address_str)
+PMPU_cg_cp_cfg_R_entry2_lxwr0100_9_lbu_address:
   lbu a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_9_lbu_address, PMPU_cp_cfg_A_napot_entry2_lxwr0100_9_lbu_address_str)
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_10_lh_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_R_entry2_lxwr0100_9_lbu_address, PMPU_cg_cp_cfg_R_entry2_lxwr0100_9_lbu_address_str)
+PMPU_cg_cp_cfg_R_entry2_lxwr0100_10_lh_address:
   lh a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_10_lh_address, PMPU_cp_cfg_A_napot_entry2_lxwr0100_10_lh_address_str)
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_11_lhu_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_R_entry2_lxwr0100_10_lh_address, PMPU_cg_cp_cfg_R_entry2_lxwr0100_10_lh_address_str)
+PMPU_cg_cp_cfg_R_entry2_lxwr0100_11_lhu_address:
   lhu a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_11_lhu_address, PMPU_cp_cfg_A_napot_entry2_lxwr0100_11_lhu_address_str)
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_12_lw_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_R_entry2_lxwr0100_11_lhu_address, PMPU_cg_cp_cfg_R_entry2_lxwr0100_11_lhu_address_str)
+PMPU_cg_cp_cfg_A_napot_lw_entry2_lxwr0100_12_lw_address:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_12_lw_address, PMPU_cp_cfg_A_napot_entry2_lxwr0100_12_lw_address_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_lw_entry2_lxwr0100_12_lw_address, PMPU_cg_cp_cfg_A_napot_lw_entry2_lxwr0100_12_lw_address_str)
   addi a5, a5, -4
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_13_lw_addressm4:
+PMPU_cg_cp_cfg_A_napot_lw_entry2_lxwr0100_13_lw_addressm4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_13_lw_addressm4, PMPU_cp_cfg_A_napot_entry2_lxwr0100_13_lw_addressm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_lw_entry2_lxwr0100_13_lw_addressm4, PMPU_cg_cp_cfg_A_napot_lw_entry2_lxwr0100_13_lw_addressm4_str)
   addi a5, a5, 8
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_14_lw_address_4:
+PMPU_cg_cp_cfg_A_napot_lw_entry2_lxwr0100_14_lw_address_4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_14_lw_address_4, PMPU_cp_cfg_A_napot_entry2_lxwr0100_14_lw_address_4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_lw_entry2_lxwr0100_14_lw_address_4, PMPU_cg_cp_cfg_A_napot_lw_entry2_lxwr0100_14_lw_address_4_str)
   add a5, a5, t0
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_15_lw_address_gm4:
+PMPU_cg_cp_cfg_A_napot_lw_entry2_lxwr0100_15_lw_address_gm4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_15_lw_address_gm4, PMPU_cp_cfg_A_napot_entry2_lxwr0100_15_lw_address_gm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_lw_entry2_lxwr0100_15_lw_address_gm4, PMPU_cg_cp_cfg_A_napot_lw_entry2_lxwr0100_15_lw_address_gm4_str)
   addi a5, a5, 4
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_16_lw_address_g:
+PMPU_cg_cp_cfg_A_napot_lw_entry2_lxwr0100_16_lw_address_g:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_16_lw_address_g, PMPU_cp_cfg_A_napot_entry2_lxwr0100_16_lw_address_g_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_lw_entry2_lxwr0100_16_lw_address_g, PMPU_cg_cp_cfg_A_napot_lw_entry2_lxwr0100_16_lw_address_g_str)
 #if __riscv_xlen == 64
   LA(a5, TEST_FOR_EXECUTION)
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_22_sd_address:
+PMPU_cg_cp_cfg_W_entry2_lxwr0100_22_sd_address:
   sd a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_22_sd_address, PMPU_cp_cfg_A_napot_entry2_lxwr0100_22_sd_address_str)
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_23_ld_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_W_entry2_lxwr0100_22_sd_address, PMPU_cg_cp_cfg_W_entry2_lxwr0100_22_sd_address_str)
+PMPU_cg_cp_cfg_R_entry2_lxwr0100_23_ld_address:
   ld a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_23_ld_address, PMPU_cp_cfg_A_napot_entry2_lxwr0100_23_ld_address_str)
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_24_lwu_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_R_entry2_lxwr0100_23_ld_address, PMPU_cg_cp_cfg_R_entry2_lxwr0100_23_ld_address_str)
+PMPU_cg_cp_cfg_R_entry2_lxwr0100_24_lwu_address:
   lwu a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_24_lwu_address, PMPU_cp_cfg_A_napot_entry2_lxwr0100_24_lwu_address_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_R_entry2_lxwr0100_24_lwu_address, PMPU_cg_cp_cfg_R_entry2_lxwr0100_24_lwu_address_str)
 #endif
   RVTEST_TSBI_GOTO_MMODE
 
@@ -224,132 +224,132 @@ PMPU_cp_cfg_A_napot_entry2_lxwr0100_24_lwu_address:
 // Execute probes
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_17_jalr_address:
+PMPU_cg_cp_cfg_A_napot_jalr_entry1_lxwr0101_17_jalr_address:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_17_jalr_address, PMPU_cp_cfg_A_napot_entry1_lxwr0101_17_jalr_address_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_jalr_entry1_lxwr0101_17_jalr_address, PMPU_cg_cp_cfg_A_napot_jalr_entry1_lxwr0101_17_jalr_address_str)
   addi a4, a4, -4
   LA(ra, 2f)
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_18_jalr_addressm4:
+PMPU_cg_cp_cfg_A_napot_jalr_entry1_lxwr0101_18_jalr_addressm4:
   jalr x0, 0(a4)
 2:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_18_jalr_addressm4, PMPU_cp_cfg_A_napot_entry1_lxwr0101_18_jalr_addressm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_jalr_entry1_lxwr0101_18_jalr_addressm4, PMPU_cg_cp_cfg_A_napot_jalr_entry1_lxwr0101_18_jalr_addressm4_str)
   addi a4, a4, 8
   LA(ra, 3f)
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_19_jalr_address_4:
+PMPU_cg_cp_cfg_A_napot_jalr_entry1_lxwr0101_19_jalr_address_4:
   jalr x0, 0(a4)
 3:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_19_jalr_address_4, PMPU_cp_cfg_A_napot_entry1_lxwr0101_19_jalr_address_4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_jalr_entry1_lxwr0101_19_jalr_address_4, PMPU_cg_cp_cfg_A_napot_jalr_entry1_lxwr0101_19_jalr_address_4_str)
   add a4, a4, t0
   LA(ra, 4f)
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_20_jalr_address_gm4:
+PMPU_cg_cp_cfg_A_napot_jalr_entry1_lxwr0101_20_jalr_address_gm4:
   jalr x0, 0(a4)
 4:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_20_jalr_address_gm4, PMPU_cp_cfg_A_napot_entry1_lxwr0101_20_jalr_address_gm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_jalr_entry1_lxwr0101_20_jalr_address_gm4, PMPU_cg_cp_cfg_A_napot_jalr_entry1_lxwr0101_20_jalr_address_gm4_str)
   addi a4, a4, 4
   LA(ra, 5f)
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_21_jalr_address_g:
+PMPU_cg_cp_cfg_A_napot_jalr_entry1_lxwr0101_21_jalr_address_g:
   jalr x0, 0(a4)
 5:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_21_jalr_address_g, PMPU_cp_cfg_A_napot_entry1_lxwr0101_21_jalr_address_g_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_jalr_entry1_lxwr0101_21_jalr_address_g, PMPU_cg_cp_cfg_A_napot_jalr_entry1_lxwr0101_21_jalr_address_g_str)
 
 // Store probes
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_1_sb_address:
+PMPU_cg_cp_cfg_W_entry1_lxwr0101_1_sb_address:
   sb a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_1_sb_address, PMPU_cp_cfg_A_napot_entry1_lxwr0101_1_sb_address_str)
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_2_sh_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_W_entry1_lxwr0101_1_sb_address, PMPU_cg_cp_cfg_W_entry1_lxwr0101_1_sb_address_str)
+PMPU_cg_cp_cfg_W_entry1_lxwr0101_2_sh_address:
   sh a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_2_sh_address, PMPU_cp_cfg_A_napot_entry1_lxwr0101_2_sh_address_str)
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_3_sw_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_W_entry1_lxwr0101_2_sh_address, PMPU_cg_cp_cfg_W_entry1_lxwr0101_2_sh_address_str)
+PMPU_cg_cp_cfg_A_napot_sw_entry1_lxwr0101_3_sw_address:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_3_sw_address, PMPU_cp_cfg_A_napot_entry1_lxwr0101_3_sw_address_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_sw_entry1_lxwr0101_3_sw_address, PMPU_cg_cp_cfg_A_napot_sw_entry1_lxwr0101_3_sw_address_str)
   addi a5, a5, -4
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_4_sw_addressm4:
+PMPU_cg_cp_cfg_A_napot_sw_entry1_lxwr0101_4_sw_addressm4:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_4_sw_addressm4, PMPU_cp_cfg_A_napot_entry1_lxwr0101_4_sw_addressm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_sw_entry1_lxwr0101_4_sw_addressm4, PMPU_cg_cp_cfg_A_napot_sw_entry1_lxwr0101_4_sw_addressm4_str)
   addi a5, a5, 8
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_5_sw_address_4:
+PMPU_cg_cp_cfg_A_napot_sw_entry1_lxwr0101_5_sw_address_4:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_5_sw_address_4, PMPU_cp_cfg_A_napot_entry1_lxwr0101_5_sw_address_4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_sw_entry1_lxwr0101_5_sw_address_4, PMPU_cg_cp_cfg_A_napot_sw_entry1_lxwr0101_5_sw_address_4_str)
   add a5, a5, t0
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_6_sw_address_gm4:
+PMPU_cg_cp_cfg_A_napot_sw_entry1_lxwr0101_6_sw_address_gm4:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_6_sw_address_gm4, PMPU_cp_cfg_A_napot_entry1_lxwr0101_6_sw_address_gm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_sw_entry1_lxwr0101_6_sw_address_gm4, PMPU_cg_cp_cfg_A_napot_sw_entry1_lxwr0101_6_sw_address_gm4_str)
   addi a5, a5, 4
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_7_sw_address_g:
+PMPU_cg_cp_cfg_A_napot_sw_entry1_lxwr0101_7_sw_address_g:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_7_sw_address_g, PMPU_cp_cfg_A_napot_entry1_lxwr0101_7_sw_address_g_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_sw_entry1_lxwr0101_7_sw_address_g, PMPU_cg_cp_cfg_A_napot_sw_entry1_lxwr0101_7_sw_address_g_str)
 
 // Load probes
   LA(a5, TEST_FOR_EXECUTION)
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_8_lb_address:
+PMPU_cg_cp_cfg_R_entry1_lxwr0101_8_lb_address:
   lb a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_8_lb_address, PMPU_cp_cfg_A_napot_entry1_lxwr0101_8_lb_address_str)
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_9_lbu_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_R_entry1_lxwr0101_8_lb_address, PMPU_cg_cp_cfg_R_entry1_lxwr0101_8_lb_address_str)
+PMPU_cg_cp_cfg_R_entry1_lxwr0101_9_lbu_address:
   lbu a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_9_lbu_address, PMPU_cp_cfg_A_napot_entry1_lxwr0101_9_lbu_address_str)
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_10_lh_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_R_entry1_lxwr0101_9_lbu_address, PMPU_cg_cp_cfg_R_entry1_lxwr0101_9_lbu_address_str)
+PMPU_cg_cp_cfg_R_entry1_lxwr0101_10_lh_address:
   lh a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_10_lh_address, PMPU_cp_cfg_A_napot_entry1_lxwr0101_10_lh_address_str)
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_11_lhu_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_R_entry1_lxwr0101_10_lh_address, PMPU_cg_cp_cfg_R_entry1_lxwr0101_10_lh_address_str)
+PMPU_cg_cp_cfg_R_entry1_lxwr0101_11_lhu_address:
   lhu a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_11_lhu_address, PMPU_cp_cfg_A_napot_entry1_lxwr0101_11_lhu_address_str)
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_12_lw_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_R_entry1_lxwr0101_11_lhu_address, PMPU_cg_cp_cfg_R_entry1_lxwr0101_11_lhu_address_str)
+PMPU_cg_cp_cfg_A_napot_lw_entry1_lxwr0101_12_lw_address:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_12_lw_address, PMPU_cp_cfg_A_napot_entry1_lxwr0101_12_lw_address_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_lw_entry1_lxwr0101_12_lw_address, PMPU_cg_cp_cfg_A_napot_lw_entry1_lxwr0101_12_lw_address_str)
   addi a5, a5, -4
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_13_lw_addressm4:
+PMPU_cg_cp_cfg_A_napot_lw_entry1_lxwr0101_13_lw_addressm4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_13_lw_addressm4, PMPU_cp_cfg_A_napot_entry1_lxwr0101_13_lw_addressm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_lw_entry1_lxwr0101_13_lw_addressm4, PMPU_cg_cp_cfg_A_napot_lw_entry1_lxwr0101_13_lw_addressm4_str)
   addi a5, a5, 8
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_14_lw_address_4:
+PMPU_cg_cp_cfg_A_napot_lw_entry1_lxwr0101_14_lw_address_4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_14_lw_address_4, PMPU_cp_cfg_A_napot_entry1_lxwr0101_14_lw_address_4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_lw_entry1_lxwr0101_14_lw_address_4, PMPU_cg_cp_cfg_A_napot_lw_entry1_lxwr0101_14_lw_address_4_str)
   add a5, a5, t0
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_15_lw_address_gm4:
+PMPU_cg_cp_cfg_A_napot_lw_entry1_lxwr0101_15_lw_address_gm4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_15_lw_address_gm4, PMPU_cp_cfg_A_napot_entry1_lxwr0101_15_lw_address_gm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_lw_entry1_lxwr0101_15_lw_address_gm4, PMPU_cg_cp_cfg_A_napot_lw_entry1_lxwr0101_15_lw_address_gm4_str)
   addi a5, a5, 4
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_16_lw_address_g:
+PMPU_cg_cp_cfg_A_napot_lw_entry1_lxwr0101_16_lw_address_g:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_16_lw_address_g, PMPU_cp_cfg_A_napot_entry1_lxwr0101_16_lw_address_g_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_lw_entry1_lxwr0101_16_lw_address_g, PMPU_cg_cp_cfg_A_napot_lw_entry1_lxwr0101_16_lw_address_g_str)
 #if __riscv_xlen == 64
   LA(a5, TEST_FOR_EXECUTION)
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_22_sd_address:
+PMPU_cg_cp_cfg_W_entry1_lxwr0101_22_sd_address:
   sd a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_22_sd_address, PMPU_cp_cfg_A_napot_entry1_lxwr0101_22_sd_address_str)
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_23_ld_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_W_entry1_lxwr0101_22_sd_address, PMPU_cg_cp_cfg_W_entry1_lxwr0101_22_sd_address_str)
+PMPU_cg_cp_cfg_R_entry1_lxwr0101_23_ld_address:
   ld a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_23_ld_address, PMPU_cp_cfg_A_napot_entry1_lxwr0101_23_ld_address_str)
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_24_lwu_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_R_entry1_lxwr0101_23_ld_address, PMPU_cg_cp_cfg_R_entry1_lxwr0101_23_ld_address_str)
+PMPU_cg_cp_cfg_R_entry1_lxwr0101_24_lwu_address:
   lwu a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_24_lwu_address, PMPU_cp_cfg_A_napot_entry1_lxwr0101_24_lwu_address_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_R_entry1_lxwr0101_24_lwu_address, PMPU_cg_cp_cfg_R_entry1_lxwr0101_24_lwu_address_str)
 #endif
   RVTEST_TSBI_GOTO_MMODE
 
@@ -372,132 +372,132 @@ PMPU_cp_cfg_A_napot_entry1_lxwr0101_24_lwu_address:
 // Execute probes
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_17_jalr_address:
+PMPU_cg_cp_cfg_A_napot_jalr_entry0_lxwr0111_17_jalr_address:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_17_jalr_address, PMPU_cp_cfg_A_napot_entry0_lxwr0111_17_jalr_address_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_jalr_entry0_lxwr0111_17_jalr_address, PMPU_cg_cp_cfg_A_napot_jalr_entry0_lxwr0111_17_jalr_address_str)
   addi a4, a4, -4
   LA(ra, 2f)
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_18_jalr_addressm4:
+PMPU_cg_cp_cfg_A_napot_jalr_entry0_lxwr0111_18_jalr_addressm4:
   jalr x0, 0(a4)
 2:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_18_jalr_addressm4, PMPU_cp_cfg_A_napot_entry0_lxwr0111_18_jalr_addressm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_jalr_entry0_lxwr0111_18_jalr_addressm4, PMPU_cg_cp_cfg_A_napot_jalr_entry0_lxwr0111_18_jalr_addressm4_str)
   addi a4, a4, 8
   LA(ra, 3f)
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_19_jalr_address_4:
+PMPU_cg_cp_cfg_A_napot_jalr_entry0_lxwr0111_19_jalr_address_4:
   jalr x0, 0(a4)
 3:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_19_jalr_address_4, PMPU_cp_cfg_A_napot_entry0_lxwr0111_19_jalr_address_4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_jalr_entry0_lxwr0111_19_jalr_address_4, PMPU_cg_cp_cfg_A_napot_jalr_entry0_lxwr0111_19_jalr_address_4_str)
   add a4, a4, t0
   LA(ra, 4f)
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_20_jalr_address_gm4:
+PMPU_cg_cp_cfg_A_napot_jalr_entry0_lxwr0111_20_jalr_address_gm4:
   jalr x0, 0(a4)
 4:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_20_jalr_address_gm4, PMPU_cp_cfg_A_napot_entry0_lxwr0111_20_jalr_address_gm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_jalr_entry0_lxwr0111_20_jalr_address_gm4, PMPU_cg_cp_cfg_A_napot_jalr_entry0_lxwr0111_20_jalr_address_gm4_str)
   addi a4, a4, 4
   LA(ra, 5f)
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_21_jalr_address_g:
+PMPU_cg_cp_cfg_A_napot_jalr_entry0_lxwr0111_21_jalr_address_g:
   jalr x0, 0(a4)
 5:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_21_jalr_address_g, PMPU_cp_cfg_A_napot_entry0_lxwr0111_21_jalr_address_g_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_jalr_entry0_lxwr0111_21_jalr_address_g, PMPU_cg_cp_cfg_A_napot_jalr_entry0_lxwr0111_21_jalr_address_g_str)
 
 // Store probes
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_1_sb_address:
+PMPU_cg_cp_cfg_W_entry0_lxwr0111_1_sb_address:
   sb a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_1_sb_address, PMPU_cp_cfg_A_napot_entry0_lxwr0111_1_sb_address_str)
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_2_sh_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_W_entry0_lxwr0111_1_sb_address, PMPU_cg_cp_cfg_W_entry0_lxwr0111_1_sb_address_str)
+PMPU_cg_cp_cfg_W_entry0_lxwr0111_2_sh_address:
   sh a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_2_sh_address, PMPU_cp_cfg_A_napot_entry0_lxwr0111_2_sh_address_str)
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_3_sw_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_W_entry0_lxwr0111_2_sh_address, PMPU_cg_cp_cfg_W_entry0_lxwr0111_2_sh_address_str)
+PMPU_cg_cp_cfg_A_napot_sw_entry0_lxwr0111_3_sw_address:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_3_sw_address, PMPU_cp_cfg_A_napot_entry0_lxwr0111_3_sw_address_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_sw_entry0_lxwr0111_3_sw_address, PMPU_cg_cp_cfg_A_napot_sw_entry0_lxwr0111_3_sw_address_str)
   addi a5, a5, -4
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_4_sw_addressm4:
+PMPU_cg_cp_cfg_A_napot_sw_entry0_lxwr0111_4_sw_addressm4:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_4_sw_addressm4, PMPU_cp_cfg_A_napot_entry0_lxwr0111_4_sw_addressm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_sw_entry0_lxwr0111_4_sw_addressm4, PMPU_cg_cp_cfg_A_napot_sw_entry0_lxwr0111_4_sw_addressm4_str)
   addi a5, a5, 8
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_5_sw_address_4:
+PMPU_cg_cp_cfg_A_napot_sw_entry0_lxwr0111_5_sw_address_4:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_5_sw_address_4, PMPU_cp_cfg_A_napot_entry0_lxwr0111_5_sw_address_4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_sw_entry0_lxwr0111_5_sw_address_4, PMPU_cg_cp_cfg_A_napot_sw_entry0_lxwr0111_5_sw_address_4_str)
   add a5, a5, t0
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_6_sw_address_gm4:
+PMPU_cg_cp_cfg_A_napot_sw_entry0_lxwr0111_6_sw_address_gm4:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_6_sw_address_gm4, PMPU_cp_cfg_A_napot_entry0_lxwr0111_6_sw_address_gm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_sw_entry0_lxwr0111_6_sw_address_gm4, PMPU_cg_cp_cfg_A_napot_sw_entry0_lxwr0111_6_sw_address_gm4_str)
   addi a5, a5, 4
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_7_sw_address_g:
+PMPU_cg_cp_cfg_A_napot_sw_entry0_lxwr0111_7_sw_address_g:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_7_sw_address_g, PMPU_cp_cfg_A_napot_entry0_lxwr0111_7_sw_address_g_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_sw_entry0_lxwr0111_7_sw_address_g, PMPU_cg_cp_cfg_A_napot_sw_entry0_lxwr0111_7_sw_address_g_str)
 
 // Load probes
   LA(a5, TEST_FOR_EXECUTION)
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_8_lb_address:
+PMPU_cg_cp_cfg_R_entry0_lxwr0111_8_lb_address:
   lb a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_8_lb_address, PMPU_cp_cfg_A_napot_entry0_lxwr0111_8_lb_address_str)
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_9_lbu_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_R_entry0_lxwr0111_8_lb_address, PMPU_cg_cp_cfg_R_entry0_lxwr0111_8_lb_address_str)
+PMPU_cg_cp_cfg_R_entry0_lxwr0111_9_lbu_address:
   lbu a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_9_lbu_address, PMPU_cp_cfg_A_napot_entry0_lxwr0111_9_lbu_address_str)
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_10_lh_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_R_entry0_lxwr0111_9_lbu_address, PMPU_cg_cp_cfg_R_entry0_lxwr0111_9_lbu_address_str)
+PMPU_cg_cp_cfg_R_entry0_lxwr0111_10_lh_address:
   lh a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_10_lh_address, PMPU_cp_cfg_A_napot_entry0_lxwr0111_10_lh_address_str)
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_11_lhu_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_R_entry0_lxwr0111_10_lh_address, PMPU_cg_cp_cfg_R_entry0_lxwr0111_10_lh_address_str)
+PMPU_cg_cp_cfg_R_entry0_lxwr0111_11_lhu_address:
   lhu a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_11_lhu_address, PMPU_cp_cfg_A_napot_entry0_lxwr0111_11_lhu_address_str)
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_12_lw_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_R_entry0_lxwr0111_11_lhu_address, PMPU_cg_cp_cfg_R_entry0_lxwr0111_11_lhu_address_str)
+PMPU_cg_cp_cfg_A_napot_lw_entry0_lxwr0111_12_lw_address:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_12_lw_address, PMPU_cp_cfg_A_napot_entry0_lxwr0111_12_lw_address_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_lw_entry0_lxwr0111_12_lw_address, PMPU_cg_cp_cfg_A_napot_lw_entry0_lxwr0111_12_lw_address_str)
   addi a5, a5, -4
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_13_lw_addressm4:
+PMPU_cg_cp_cfg_A_napot_lw_entry0_lxwr0111_13_lw_addressm4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_13_lw_addressm4, PMPU_cp_cfg_A_napot_entry0_lxwr0111_13_lw_addressm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_lw_entry0_lxwr0111_13_lw_addressm4, PMPU_cg_cp_cfg_A_napot_lw_entry0_lxwr0111_13_lw_addressm4_str)
   addi a5, a5, 8
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_14_lw_address_4:
+PMPU_cg_cp_cfg_A_napot_lw_entry0_lxwr0111_14_lw_address_4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_14_lw_address_4, PMPU_cp_cfg_A_napot_entry0_lxwr0111_14_lw_address_4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_lw_entry0_lxwr0111_14_lw_address_4, PMPU_cg_cp_cfg_A_napot_lw_entry0_lxwr0111_14_lw_address_4_str)
   add a5, a5, t0
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_15_lw_address_gm4:
+PMPU_cg_cp_cfg_A_napot_lw_entry0_lxwr0111_15_lw_address_gm4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_15_lw_address_gm4, PMPU_cp_cfg_A_napot_entry0_lxwr0111_15_lw_address_gm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_lw_entry0_lxwr0111_15_lw_address_gm4, PMPU_cg_cp_cfg_A_napot_lw_entry0_lxwr0111_15_lw_address_gm4_str)
   addi a5, a5, 4
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_16_lw_address_g:
+PMPU_cg_cp_cfg_A_napot_lw_entry0_lxwr0111_16_lw_address_g:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_16_lw_address_g, PMPU_cp_cfg_A_napot_entry0_lxwr0111_16_lw_address_g_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_A_napot_lw_entry0_lxwr0111_16_lw_address_g, PMPU_cg_cp_cfg_A_napot_lw_entry0_lxwr0111_16_lw_address_g_str)
 #if __riscv_xlen == 64
   LA(a5, TEST_FOR_EXECUTION)
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_22_sd_address:
+PMPU_cg_cp_cfg_W_entry0_lxwr0111_22_sd_address:
   sd a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_22_sd_address, PMPU_cp_cfg_A_napot_entry0_lxwr0111_22_sd_address_str)
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_23_ld_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_W_entry0_lxwr0111_22_sd_address, PMPU_cg_cp_cfg_W_entry0_lxwr0111_22_sd_address_str)
+PMPU_cg_cp_cfg_R_entry0_lxwr0111_23_ld_address:
   ld a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_23_ld_address, PMPU_cp_cfg_A_napot_entry0_lxwr0111_23_ld_address_str)
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_24_lwu_address:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_R_entry0_lxwr0111_23_ld_address, PMPU_cg_cp_cfg_R_entry0_lxwr0111_23_ld_address_str)
+PMPU_cg_cp_cfg_R_entry0_lxwr0111_24_lwu_address:
   lwu a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_24_lwu_address, PMPU_cp_cfg_A_napot_entry0_lxwr0111_24_lwu_address_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cg_cp_cfg_R_entry0_lxwr0111_24_lwu_address, PMPU_cg_cp_cfg_R_entry0_lxwr0111_24_lwu_address_str)
 #endif
   RVTEST_TSBI_GOTO_MMODE
 
@@ -531,78 +531,78 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_17_jalr_address_str: .string "\"test: 73; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_17_jalr_address\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_18_jalr_addressm4_str: .string "\"test: 74; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_18_jalr_address-4\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_19_jalr_address_4_str: .string "\"test: 75; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_19_jalr_address+4\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_20_jalr_address_gm4_str: .string "\"test: 76; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_20_jalr_address+g-4\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_21_jalr_address_g_str: .string "\"test: 77; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_21_jalr_address+g\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_1_sb_address_str: .string "\"test: 78; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_1_sb_address\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_2_sh_address_str: .string "\"test: 79; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_2_sh_address\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_3_sw_address_str: .string "\"test: 80; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_3_sw_address\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_4_sw_addressm4_str: .string "\"test: 81; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_4_sw_address-4\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_5_sw_address_4_str: .string "\"test: 82; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_5_sw_address+4\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_6_sw_address_gm4_str: .string "\"test: 83; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_6_sw_address+g-4\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_7_sw_address_g_str: .string "\"test: 84; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_7_sw_address+g\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_8_lb_address_str: .string "\"test: 85; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_8_lb_address\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_9_lbu_address_str: .string "\"test: 86; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_9_lbu_address\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_10_lh_address_str: .string "\"test: 87; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_10_lh_address\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_11_lhu_address_str: .string "\"test: 88; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_11_lhu_address\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_12_lw_address_str: .string "\"test: 89; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_12_lw_address\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_13_lw_addressm4_str: .string "\"test: 90; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_13_lw_address-4\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_14_lw_address_4_str: .string "\"test: 91; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_14_lw_address+4\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_15_lw_address_gm4_str: .string "\"test: 92; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_15_lw_address+g-4\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_16_lw_address_g_str: .string "\"test: 93; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_16_lw_address+g\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_22_sd_address_str: .string "\"test: 94; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_22_sd_address\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_23_ld_address_str: .string "\"test: 95; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_23_ld_address\""
-PMPU_cp_cfg_A_napot_entry2_lxwr0100_24_lwu_address_str: .string "\"test: 96; cg: PMPU; cp: cp_cfg_A_napot; bin: entry2_lxwr0100_24_lwu_address\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_17_jalr_address_str: .string "\"test: 97; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_17_jalr_address\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_18_jalr_addressm4_str: .string "\"test: 98; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_18_jalr_address-4\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_19_jalr_address_4_str: .string "\"test: 99; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_19_jalr_address+4\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_20_jalr_address_gm4_str: .string "\"test: 100; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_20_jalr_address+g-4\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_21_jalr_address_g_str: .string "\"test: 101; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_21_jalr_address+g\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_1_sb_address_str: .string "\"test: 102; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_1_sb_address\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_2_sh_address_str: .string "\"test: 103; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_2_sh_address\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_3_sw_address_str: .string "\"test: 104; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_3_sw_address\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_4_sw_addressm4_str: .string "\"test: 105; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_4_sw_address-4\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_5_sw_address_4_str: .string "\"test: 106; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_5_sw_address+4\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_6_sw_address_gm4_str: .string "\"test: 107; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_6_sw_address+g-4\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_7_sw_address_g_str: .string "\"test: 108; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_7_sw_address+g\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_8_lb_address_str: .string "\"test: 109; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_8_lb_address\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_9_lbu_address_str: .string "\"test: 110; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_9_lbu_address\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_10_lh_address_str: .string "\"test: 111; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_10_lh_address\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_11_lhu_address_str: .string "\"test: 112; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_11_lhu_address\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_12_lw_address_str: .string "\"test: 113; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_12_lw_address\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_13_lw_addressm4_str: .string "\"test: 114; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_13_lw_address-4\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_14_lw_address_4_str: .string "\"test: 115; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_14_lw_address+4\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_15_lw_address_gm4_str: .string "\"test: 116; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_15_lw_address+g-4\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_16_lw_address_g_str: .string "\"test: 117; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_16_lw_address+g\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_22_sd_address_str: .string "\"test: 118; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_22_sd_address\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_23_ld_address_str: .string "\"test: 119; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_23_ld_address\""
-PMPU_cp_cfg_A_napot_entry1_lxwr0101_24_lwu_address_str: .string "\"test: 120; cg: PMPU; cp: cp_cfg_A_napot; bin: entry1_lxwr0101_24_lwu_address\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_17_jalr_address_str: .string "\"test: 121; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_17_jalr_address\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_18_jalr_addressm4_str: .string "\"test: 122; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_18_jalr_address-4\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_19_jalr_address_4_str: .string "\"test: 123; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_19_jalr_address+4\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_20_jalr_address_gm4_str: .string "\"test: 124; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_20_jalr_address+g-4\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_21_jalr_address_g_str: .string "\"test: 125; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_21_jalr_address+g\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_1_sb_address_str: .string "\"test: 126; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_1_sb_address\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_2_sh_address_str: .string "\"test: 127; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_2_sh_address\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_3_sw_address_str: .string "\"test: 128; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_3_sw_address\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_4_sw_addressm4_str: .string "\"test: 129; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_4_sw_address-4\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_5_sw_address_4_str: .string "\"test: 130; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_5_sw_address+4\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_6_sw_address_gm4_str: .string "\"test: 131; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_6_sw_address+g-4\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_7_sw_address_g_str: .string "\"test: 132; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_7_sw_address+g\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_8_lb_address_str: .string "\"test: 133; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_8_lb_address\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_9_lbu_address_str: .string "\"test: 134; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_9_lbu_address\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_10_lh_address_str: .string "\"test: 135; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_10_lh_address\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_11_lhu_address_str: .string "\"test: 136; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_11_lhu_address\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_12_lw_address_str: .string "\"test: 137; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_12_lw_address\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_13_lw_addressm4_str: .string "\"test: 138; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_13_lw_address-4\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_14_lw_address_4_str: .string "\"test: 139; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_14_lw_address+4\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_15_lw_address_gm4_str: .string "\"test: 140; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_15_lw_address+g-4\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_16_lw_address_g_str: .string "\"test: 141; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_16_lw_address+g\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_22_sd_address_str: .string "\"test: 142; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_22_sd_address\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_23_ld_address_str: .string "\"test: 143; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_23_ld_address\""
-PMPU_cp_cfg_A_napot_entry0_lxwr0111_24_lwu_address_str: .string "\"test: 144; cg: PMPU; cp: cp_cfg_A_napot; bin: entry0_lxwr0111_24_lwu_address\""
+PMPU_cg_cp_cfg_A_napot_jalr_entry2_lxwr0100_17_jalr_address_str: .string "\"test: 73; cg: PMPU_cg; cp: cp_cfg_A_napot_jalr; bin: entry2_lxwr0100_17_jalr_address\""
+PMPU_cg_cp_cfg_A_napot_jalr_entry2_lxwr0100_18_jalr_addressm4_str: .string "\"test: 74; cg: PMPU_cg; cp: cp_cfg_A_napot_jalr; bin: entry2_lxwr0100_18_jalr_address-4\""
+PMPU_cg_cp_cfg_A_napot_jalr_entry2_lxwr0100_19_jalr_address_4_str: .string "\"test: 75; cg: PMPU_cg; cp: cp_cfg_A_napot_jalr; bin: entry2_lxwr0100_19_jalr_address+4\""
+PMPU_cg_cp_cfg_A_napot_jalr_entry2_lxwr0100_20_jalr_address_gm4_str: .string "\"test: 76; cg: PMPU_cg; cp: cp_cfg_A_napot_jalr; bin: entry2_lxwr0100_20_jalr_address+g-4\""
+PMPU_cg_cp_cfg_A_napot_jalr_entry2_lxwr0100_21_jalr_address_g_str: .string "\"test: 77; cg: PMPU_cg; cp: cp_cfg_A_napot_jalr; bin: entry2_lxwr0100_21_jalr_address+g\""
+PMPU_cg_cp_cfg_W_entry2_lxwr0100_1_sb_address_str: .string "\"test: 78; cg: PMPU_cg; cp: cp_cfg_W; bin: entry2_lxwr0100_1_sb_address\""
+PMPU_cg_cp_cfg_W_entry2_lxwr0100_2_sh_address_str: .string "\"test: 79; cg: PMPU_cg; cp: cp_cfg_W; bin: entry2_lxwr0100_2_sh_address\""
+PMPU_cg_cp_cfg_A_napot_sw_entry2_lxwr0100_3_sw_address_str: .string "\"test: 80; cg: PMPU_cg; cp: cp_cfg_A_napot_sw; bin: entry2_lxwr0100_3_sw_address\""
+PMPU_cg_cp_cfg_A_napot_sw_entry2_lxwr0100_4_sw_addressm4_str: .string "\"test: 81; cg: PMPU_cg; cp: cp_cfg_A_napot_sw; bin: entry2_lxwr0100_4_sw_address-4\""
+PMPU_cg_cp_cfg_A_napot_sw_entry2_lxwr0100_5_sw_address_4_str: .string "\"test: 82; cg: PMPU_cg; cp: cp_cfg_A_napot_sw; bin: entry2_lxwr0100_5_sw_address+4\""
+PMPU_cg_cp_cfg_A_napot_sw_entry2_lxwr0100_6_sw_address_gm4_str: .string "\"test: 83; cg: PMPU_cg; cp: cp_cfg_A_napot_sw; bin: entry2_lxwr0100_6_sw_address+g-4\""
+PMPU_cg_cp_cfg_A_napot_sw_entry2_lxwr0100_7_sw_address_g_str: .string "\"test: 84; cg: PMPU_cg; cp: cp_cfg_A_napot_sw; bin: entry2_lxwr0100_7_sw_address+g\""
+PMPU_cg_cp_cfg_R_entry2_lxwr0100_8_lb_address_str: .string "\"test: 85; cg: PMPU_cg; cp: cp_cfg_R; bin: entry2_lxwr0100_8_lb_address\""
+PMPU_cg_cp_cfg_R_entry2_lxwr0100_9_lbu_address_str: .string "\"test: 86; cg: PMPU_cg; cp: cp_cfg_R; bin: entry2_lxwr0100_9_lbu_address\""
+PMPU_cg_cp_cfg_R_entry2_lxwr0100_10_lh_address_str: .string "\"test: 87; cg: PMPU_cg; cp: cp_cfg_R; bin: entry2_lxwr0100_10_lh_address\""
+PMPU_cg_cp_cfg_R_entry2_lxwr0100_11_lhu_address_str: .string "\"test: 88; cg: PMPU_cg; cp: cp_cfg_R; bin: entry2_lxwr0100_11_lhu_address\""
+PMPU_cg_cp_cfg_A_napot_lw_entry2_lxwr0100_12_lw_address_str: .string "\"test: 89; cg: PMPU_cg; cp: cp_cfg_A_napot_lw; bin: entry2_lxwr0100_12_lw_address\""
+PMPU_cg_cp_cfg_A_napot_lw_entry2_lxwr0100_13_lw_addressm4_str: .string "\"test: 90; cg: PMPU_cg; cp: cp_cfg_A_napot_lw; bin: entry2_lxwr0100_13_lw_address-4\""
+PMPU_cg_cp_cfg_A_napot_lw_entry2_lxwr0100_14_lw_address_4_str: .string "\"test: 91; cg: PMPU_cg; cp: cp_cfg_A_napot_lw; bin: entry2_lxwr0100_14_lw_address+4\""
+PMPU_cg_cp_cfg_A_napot_lw_entry2_lxwr0100_15_lw_address_gm4_str: .string "\"test: 92; cg: PMPU_cg; cp: cp_cfg_A_napot_lw; bin: entry2_lxwr0100_15_lw_address+g-4\""
+PMPU_cg_cp_cfg_A_napot_lw_entry2_lxwr0100_16_lw_address_g_str: .string "\"test: 93; cg: PMPU_cg; cp: cp_cfg_A_napot_lw; bin: entry2_lxwr0100_16_lw_address+g\""
+PMPU_cg_cp_cfg_W_entry2_lxwr0100_22_sd_address_str: .string "\"test: 94; cg: PMPU_cg; cp: cp_cfg_W; bin: entry2_lxwr0100_22_sd_address\""
+PMPU_cg_cp_cfg_R_entry2_lxwr0100_23_ld_address_str: .string "\"test: 95; cg: PMPU_cg; cp: cp_cfg_R; bin: entry2_lxwr0100_23_ld_address\""
+PMPU_cg_cp_cfg_R_entry2_lxwr0100_24_lwu_address_str: .string "\"test: 96; cg: PMPU_cg; cp: cp_cfg_R; bin: entry2_lxwr0100_24_lwu_address\""
+PMPU_cg_cp_cfg_A_napot_jalr_entry1_lxwr0101_17_jalr_address_str: .string "\"test: 97; cg: PMPU_cg; cp: cp_cfg_A_napot_jalr; bin: entry1_lxwr0101_17_jalr_address\""
+PMPU_cg_cp_cfg_A_napot_jalr_entry1_lxwr0101_18_jalr_addressm4_str: .string "\"test: 98; cg: PMPU_cg; cp: cp_cfg_A_napot_jalr; bin: entry1_lxwr0101_18_jalr_address-4\""
+PMPU_cg_cp_cfg_A_napot_jalr_entry1_lxwr0101_19_jalr_address_4_str: .string "\"test: 99; cg: PMPU_cg; cp: cp_cfg_A_napot_jalr; bin: entry1_lxwr0101_19_jalr_address+4\""
+PMPU_cg_cp_cfg_A_napot_jalr_entry1_lxwr0101_20_jalr_address_gm4_str: .string "\"test: 100; cg: PMPU_cg; cp: cp_cfg_A_napot_jalr; bin: entry1_lxwr0101_20_jalr_address+g-4\""
+PMPU_cg_cp_cfg_A_napot_jalr_entry1_lxwr0101_21_jalr_address_g_str: .string "\"test: 101; cg: PMPU_cg; cp: cp_cfg_A_napot_jalr; bin: entry1_lxwr0101_21_jalr_address+g\""
+PMPU_cg_cp_cfg_W_entry1_lxwr0101_1_sb_address_str: .string "\"test: 102; cg: PMPU_cg; cp: cp_cfg_W; bin: entry1_lxwr0101_1_sb_address\""
+PMPU_cg_cp_cfg_W_entry1_lxwr0101_2_sh_address_str: .string "\"test: 103; cg: PMPU_cg; cp: cp_cfg_W; bin: entry1_lxwr0101_2_sh_address\""
+PMPU_cg_cp_cfg_A_napot_sw_entry1_lxwr0101_3_sw_address_str: .string "\"test: 104; cg: PMPU_cg; cp: cp_cfg_A_napot_sw; bin: entry1_lxwr0101_3_sw_address\""
+PMPU_cg_cp_cfg_A_napot_sw_entry1_lxwr0101_4_sw_addressm4_str: .string "\"test: 105; cg: PMPU_cg; cp: cp_cfg_A_napot_sw; bin: entry1_lxwr0101_4_sw_address-4\""
+PMPU_cg_cp_cfg_A_napot_sw_entry1_lxwr0101_5_sw_address_4_str: .string "\"test: 106; cg: PMPU_cg; cp: cp_cfg_A_napot_sw; bin: entry1_lxwr0101_5_sw_address+4\""
+PMPU_cg_cp_cfg_A_napot_sw_entry1_lxwr0101_6_sw_address_gm4_str: .string "\"test: 107; cg: PMPU_cg; cp: cp_cfg_A_napot_sw; bin: entry1_lxwr0101_6_sw_address+g-4\""
+PMPU_cg_cp_cfg_A_napot_sw_entry1_lxwr0101_7_sw_address_g_str: .string "\"test: 108; cg: PMPU_cg; cp: cp_cfg_A_napot_sw; bin: entry1_lxwr0101_7_sw_address+g\""
+PMPU_cg_cp_cfg_R_entry1_lxwr0101_8_lb_address_str: .string "\"test: 109; cg: PMPU_cg; cp: cp_cfg_R; bin: entry1_lxwr0101_8_lb_address\""
+PMPU_cg_cp_cfg_R_entry1_lxwr0101_9_lbu_address_str: .string "\"test: 110; cg: PMPU_cg; cp: cp_cfg_R; bin: entry1_lxwr0101_9_lbu_address\""
+PMPU_cg_cp_cfg_R_entry1_lxwr0101_10_lh_address_str: .string "\"test: 111; cg: PMPU_cg; cp: cp_cfg_R; bin: entry1_lxwr0101_10_lh_address\""
+PMPU_cg_cp_cfg_R_entry1_lxwr0101_11_lhu_address_str: .string "\"test: 112; cg: PMPU_cg; cp: cp_cfg_R; bin: entry1_lxwr0101_11_lhu_address\""
+PMPU_cg_cp_cfg_A_napot_lw_entry1_lxwr0101_12_lw_address_str: .string "\"test: 113; cg: PMPU_cg; cp: cp_cfg_A_napot_lw; bin: entry1_lxwr0101_12_lw_address\""
+PMPU_cg_cp_cfg_A_napot_lw_entry1_lxwr0101_13_lw_addressm4_str: .string "\"test: 114; cg: PMPU_cg; cp: cp_cfg_A_napot_lw; bin: entry1_lxwr0101_13_lw_address-4\""
+PMPU_cg_cp_cfg_A_napot_lw_entry1_lxwr0101_14_lw_address_4_str: .string "\"test: 115; cg: PMPU_cg; cp: cp_cfg_A_napot_lw; bin: entry1_lxwr0101_14_lw_address+4\""
+PMPU_cg_cp_cfg_A_napot_lw_entry1_lxwr0101_15_lw_address_gm4_str: .string "\"test: 116; cg: PMPU_cg; cp: cp_cfg_A_napot_lw; bin: entry1_lxwr0101_15_lw_address+g-4\""
+PMPU_cg_cp_cfg_A_napot_lw_entry1_lxwr0101_16_lw_address_g_str: .string "\"test: 117; cg: PMPU_cg; cp: cp_cfg_A_napot_lw; bin: entry1_lxwr0101_16_lw_address+g\""
+PMPU_cg_cp_cfg_W_entry1_lxwr0101_22_sd_address_str: .string "\"test: 118; cg: PMPU_cg; cp: cp_cfg_W; bin: entry1_lxwr0101_22_sd_address\""
+PMPU_cg_cp_cfg_R_entry1_lxwr0101_23_ld_address_str: .string "\"test: 119; cg: PMPU_cg; cp: cp_cfg_R; bin: entry1_lxwr0101_23_ld_address\""
+PMPU_cg_cp_cfg_R_entry1_lxwr0101_24_lwu_address_str: .string "\"test: 120; cg: PMPU_cg; cp: cp_cfg_R; bin: entry1_lxwr0101_24_lwu_address\""
+PMPU_cg_cp_cfg_A_napot_jalr_entry0_lxwr0111_17_jalr_address_str: .string "\"test: 121; cg: PMPU_cg; cp: cp_cfg_A_napot_jalr; bin: entry0_lxwr0111_17_jalr_address\""
+PMPU_cg_cp_cfg_A_napot_jalr_entry0_lxwr0111_18_jalr_addressm4_str: .string "\"test: 122; cg: PMPU_cg; cp: cp_cfg_A_napot_jalr; bin: entry0_lxwr0111_18_jalr_address-4\""
+PMPU_cg_cp_cfg_A_napot_jalr_entry0_lxwr0111_19_jalr_address_4_str: .string "\"test: 123; cg: PMPU_cg; cp: cp_cfg_A_napot_jalr; bin: entry0_lxwr0111_19_jalr_address+4\""
+PMPU_cg_cp_cfg_A_napot_jalr_entry0_lxwr0111_20_jalr_address_gm4_str: .string "\"test: 124; cg: PMPU_cg; cp: cp_cfg_A_napot_jalr; bin: entry0_lxwr0111_20_jalr_address+g-4\""
+PMPU_cg_cp_cfg_A_napot_jalr_entry0_lxwr0111_21_jalr_address_g_str: .string "\"test: 125; cg: PMPU_cg; cp: cp_cfg_A_napot_jalr; bin: entry0_lxwr0111_21_jalr_address+g\""
+PMPU_cg_cp_cfg_W_entry0_lxwr0111_1_sb_address_str: .string "\"test: 126; cg: PMPU_cg; cp: cp_cfg_W; bin: entry0_lxwr0111_1_sb_address\""
+PMPU_cg_cp_cfg_W_entry0_lxwr0111_2_sh_address_str: .string "\"test: 127; cg: PMPU_cg; cp: cp_cfg_W; bin: entry0_lxwr0111_2_sh_address\""
+PMPU_cg_cp_cfg_A_napot_sw_entry0_lxwr0111_3_sw_address_str: .string "\"test: 128; cg: PMPU_cg; cp: cp_cfg_A_napot_sw; bin: entry0_lxwr0111_3_sw_address\""
+PMPU_cg_cp_cfg_A_napot_sw_entry0_lxwr0111_4_sw_addressm4_str: .string "\"test: 129; cg: PMPU_cg; cp: cp_cfg_A_napot_sw; bin: entry0_lxwr0111_4_sw_address-4\""
+PMPU_cg_cp_cfg_A_napot_sw_entry0_lxwr0111_5_sw_address_4_str: .string "\"test: 130; cg: PMPU_cg; cp: cp_cfg_A_napot_sw; bin: entry0_lxwr0111_5_sw_address+4\""
+PMPU_cg_cp_cfg_A_napot_sw_entry0_lxwr0111_6_sw_address_gm4_str: .string "\"test: 131; cg: PMPU_cg; cp: cp_cfg_A_napot_sw; bin: entry0_lxwr0111_6_sw_address+g-4\""
+PMPU_cg_cp_cfg_A_napot_sw_entry0_lxwr0111_7_sw_address_g_str: .string "\"test: 132; cg: PMPU_cg; cp: cp_cfg_A_napot_sw; bin: entry0_lxwr0111_7_sw_address+g\""
+PMPU_cg_cp_cfg_R_entry0_lxwr0111_8_lb_address_str: .string "\"test: 133; cg: PMPU_cg; cp: cp_cfg_R; bin: entry0_lxwr0111_8_lb_address\""
+PMPU_cg_cp_cfg_R_entry0_lxwr0111_9_lbu_address_str: .string "\"test: 134; cg: PMPU_cg; cp: cp_cfg_R; bin: entry0_lxwr0111_9_lbu_address\""
+PMPU_cg_cp_cfg_R_entry0_lxwr0111_10_lh_address_str: .string "\"test: 135; cg: PMPU_cg; cp: cp_cfg_R; bin: entry0_lxwr0111_10_lh_address\""
+PMPU_cg_cp_cfg_R_entry0_lxwr0111_11_lhu_address_str: .string "\"test: 136; cg: PMPU_cg; cp: cp_cfg_R; bin: entry0_lxwr0111_11_lhu_address\""
+PMPU_cg_cp_cfg_A_napot_lw_entry0_lxwr0111_12_lw_address_str: .string "\"test: 137; cg: PMPU_cg; cp: cp_cfg_A_napot_lw; bin: entry0_lxwr0111_12_lw_address\""
+PMPU_cg_cp_cfg_A_napot_lw_entry0_lxwr0111_13_lw_addressm4_str: .string "\"test: 138; cg: PMPU_cg; cp: cp_cfg_A_napot_lw; bin: entry0_lxwr0111_13_lw_address-4\""
+PMPU_cg_cp_cfg_A_napot_lw_entry0_lxwr0111_14_lw_address_4_str: .string "\"test: 139; cg: PMPU_cg; cp: cp_cfg_A_napot_lw; bin: entry0_lxwr0111_14_lw_address+4\""
+PMPU_cg_cp_cfg_A_napot_lw_entry0_lxwr0111_15_lw_address_gm4_str: .string "\"test: 140; cg: PMPU_cg; cp: cp_cfg_A_napot_lw; bin: entry0_lxwr0111_15_lw_address+g-4\""
+PMPU_cg_cp_cfg_A_napot_lw_entry0_lxwr0111_16_lw_address_g_str: .string "\"test: 141; cg: PMPU_cg; cp: cp_cfg_A_napot_lw; bin: entry0_lxwr0111_16_lw_address+g\""
+PMPU_cg_cp_cfg_W_entry0_lxwr0111_22_sd_address_str: .string "\"test: 142; cg: PMPU_cg; cp: cp_cfg_W; bin: entry0_lxwr0111_22_sd_address\""
+PMPU_cg_cp_cfg_R_entry0_lxwr0111_23_ld_address_str: .string "\"test: 143; cg: PMPU_cg; cp: cp_cfg_R; bin: entry0_lxwr0111_23_ld_address\""
+PMPU_cg_cp_cfg_R_entry0_lxwr0111_24_lwu_address_str: .string "\"test: 144; cg: PMPU_cg; cp: cp_cfg_R; bin: entry0_lxwr0111_24_lwu_address\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -30,7 +30,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_prefetch
+// cp_prefetch_i, cp_prefetch_r and cp_prefetch_w
 //   prefetch.i/r/w against a locked page-sized NAPOT region with each legal XWR; never faults.
 /////////////////////////////////
 
@@ -84,18 +84,18 @@ RVTEST_BEGIN
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(t0, TEST_FOR_EXECUTION)
-PMPZicbo_cp_prefetch_entry5_lxwr1000_1_prefetch_i:
+PMPZicbo_cg_cp_prefetch_i_entry5_lxwr1000_1_prefetch_i:
   prefetch.i 0(t0)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry5_lxwr1000_1_prefetch_i, PMPZicbo_cp_prefetch_entry5_lxwr1000_1_prefetch_i_str)
-PMPZicbo_cp_prefetch_entry5_lxwr1000_2_prefetch_r:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_prefetch_i_entry5_lxwr1000_1_prefetch_i, PMPZicbo_cg_cp_prefetch_i_entry5_lxwr1000_1_prefetch_i_str)
+PMPZicbo_cg_cp_prefetch_r_entry5_lxwr1000_2_prefetch_r:
   prefetch.r 0(t0)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry5_lxwr1000_2_prefetch_r, PMPZicbo_cp_prefetch_entry5_lxwr1000_2_prefetch_r_str)
-PMPZicbo_cp_prefetch_entry5_lxwr1000_3_prefetch_w:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_prefetch_r_entry5_lxwr1000_2_prefetch_r, PMPZicbo_cg_cp_prefetch_r_entry5_lxwr1000_2_prefetch_r_str)
+PMPZicbo_cg_cp_prefetch_w_entry5_lxwr1000_3_prefetch_w:
   prefetch.w 0(t0)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry5_lxwr1000_3_prefetch_w, PMPZicbo_cp_prefetch_entry5_lxwr1000_3_prefetch_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_prefetch_w_entry5_lxwr1000_3_prefetch_w, PMPZicbo_cg_cp_prefetch_w_entry5_lxwr1000_3_prefetch_w_str)
 
 // PMP configuration 2: L = 1, R permissions, entry 4
   LA(x5, REGIONSTART)
@@ -114,18 +114,18 @@ PMPZicbo_cp_prefetch_entry5_lxwr1000_3_prefetch_w:
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(t0, TEST_FOR_EXECUTION)
-PMPZicbo_cp_prefetch_entry4_lxwr1001_1_prefetch_i:
+PMPZicbo_cg_cp_prefetch_i_entry4_lxwr1001_1_prefetch_i:
   prefetch.i 0(t0)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry4_lxwr1001_1_prefetch_i, PMPZicbo_cp_prefetch_entry4_lxwr1001_1_prefetch_i_str)
-PMPZicbo_cp_prefetch_entry4_lxwr1001_2_prefetch_r:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_prefetch_i_entry4_lxwr1001_1_prefetch_i, PMPZicbo_cg_cp_prefetch_i_entry4_lxwr1001_1_prefetch_i_str)
+PMPZicbo_cg_cp_prefetch_r_entry4_lxwr1001_2_prefetch_r:
   prefetch.r 0(t0)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry4_lxwr1001_2_prefetch_r, PMPZicbo_cp_prefetch_entry4_lxwr1001_2_prefetch_r_str)
-PMPZicbo_cp_prefetch_entry4_lxwr1001_3_prefetch_w:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_prefetch_r_entry4_lxwr1001_2_prefetch_r, PMPZicbo_cg_cp_prefetch_r_entry4_lxwr1001_2_prefetch_r_str)
+PMPZicbo_cg_cp_prefetch_w_entry4_lxwr1001_3_prefetch_w:
   prefetch.w 0(t0)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry4_lxwr1001_3_prefetch_w, PMPZicbo_cp_prefetch_entry4_lxwr1001_3_prefetch_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_prefetch_w_entry4_lxwr1001_3_prefetch_w, PMPZicbo_cg_cp_prefetch_w_entry4_lxwr1001_3_prefetch_w_str)
 
 // PMP configuration 3: L = 1, WR permissions, entry 3
   LA(x5, REGIONSTART)
@@ -140,18 +140,18 @@ PMPZicbo_cp_prefetch_entry4_lxwr1001_3_prefetch_w:
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(t0, TEST_FOR_EXECUTION)
-PMPZicbo_cp_prefetch_entry3_lxwr1011_1_prefetch_i:
+PMPZicbo_cg_cp_prefetch_i_entry3_lxwr1011_1_prefetch_i:
   prefetch.i 0(t0)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry3_lxwr1011_1_prefetch_i, PMPZicbo_cp_prefetch_entry3_lxwr1011_1_prefetch_i_str)
-PMPZicbo_cp_prefetch_entry3_lxwr1011_2_prefetch_r:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_prefetch_i_entry3_lxwr1011_1_prefetch_i, PMPZicbo_cg_cp_prefetch_i_entry3_lxwr1011_1_prefetch_i_str)
+PMPZicbo_cg_cp_prefetch_r_entry3_lxwr1011_2_prefetch_r:
   prefetch.r 0(t0)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry3_lxwr1011_2_prefetch_r, PMPZicbo_cp_prefetch_entry3_lxwr1011_2_prefetch_r_str)
-PMPZicbo_cp_prefetch_entry3_lxwr1011_3_prefetch_w:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_prefetch_r_entry3_lxwr1011_2_prefetch_r, PMPZicbo_cg_cp_prefetch_r_entry3_lxwr1011_2_prefetch_r_str)
+PMPZicbo_cg_cp_prefetch_w_entry3_lxwr1011_3_prefetch_w:
   prefetch.w 0(t0)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry3_lxwr1011_3_prefetch_w, PMPZicbo_cp_prefetch_entry3_lxwr1011_3_prefetch_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_prefetch_w_entry3_lxwr1011_3_prefetch_w, PMPZicbo_cg_cp_prefetch_w_entry3_lxwr1011_3_prefetch_w_str)
 
 // PMP configuration 4: L = 1, X permissions, entry 2
   LA(x5, REGIONSTART)
@@ -166,18 +166,18 @@ PMPZicbo_cp_prefetch_entry3_lxwr1011_3_prefetch_w:
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(t0, TEST_FOR_EXECUTION)
-PMPZicbo_cp_prefetch_entry2_lxwr1100_1_prefetch_i:
+PMPZicbo_cg_cp_prefetch_i_entry2_lxwr1100_1_prefetch_i:
   prefetch.i 0(t0)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry2_lxwr1100_1_prefetch_i, PMPZicbo_cp_prefetch_entry2_lxwr1100_1_prefetch_i_str)
-PMPZicbo_cp_prefetch_entry2_lxwr1100_2_prefetch_r:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_prefetch_i_entry2_lxwr1100_1_prefetch_i, PMPZicbo_cg_cp_prefetch_i_entry2_lxwr1100_1_prefetch_i_str)
+PMPZicbo_cg_cp_prefetch_r_entry2_lxwr1100_2_prefetch_r:
   prefetch.r 0(t0)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry2_lxwr1100_2_prefetch_r, PMPZicbo_cp_prefetch_entry2_lxwr1100_2_prefetch_r_str)
-PMPZicbo_cp_prefetch_entry2_lxwr1100_3_prefetch_w:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_prefetch_r_entry2_lxwr1100_2_prefetch_r, PMPZicbo_cg_cp_prefetch_r_entry2_lxwr1100_2_prefetch_r_str)
+PMPZicbo_cg_cp_prefetch_w_entry2_lxwr1100_3_prefetch_w:
   prefetch.w 0(t0)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry2_lxwr1100_3_prefetch_w, PMPZicbo_cp_prefetch_entry2_lxwr1100_3_prefetch_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_prefetch_w_entry2_lxwr1100_3_prefetch_w, PMPZicbo_cg_cp_prefetch_w_entry2_lxwr1100_3_prefetch_w_str)
 
 // PMP configuration 5: L = 1, XR permissions, entry 1
   LA(x5, REGIONSTART)
@@ -192,18 +192,18 @@ PMPZicbo_cp_prefetch_entry2_lxwr1100_3_prefetch_w:
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(t0, TEST_FOR_EXECUTION)
-PMPZicbo_cp_prefetch_entry1_lxwr1101_1_prefetch_i:
+PMPZicbo_cg_cp_prefetch_i_entry1_lxwr1101_1_prefetch_i:
   prefetch.i 0(t0)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry1_lxwr1101_1_prefetch_i, PMPZicbo_cp_prefetch_entry1_lxwr1101_1_prefetch_i_str)
-PMPZicbo_cp_prefetch_entry1_lxwr1101_2_prefetch_r:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_prefetch_i_entry1_lxwr1101_1_prefetch_i, PMPZicbo_cg_cp_prefetch_i_entry1_lxwr1101_1_prefetch_i_str)
+PMPZicbo_cg_cp_prefetch_r_entry1_lxwr1101_2_prefetch_r:
   prefetch.r 0(t0)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry1_lxwr1101_2_prefetch_r, PMPZicbo_cp_prefetch_entry1_lxwr1101_2_prefetch_r_str)
-PMPZicbo_cp_prefetch_entry1_lxwr1101_3_prefetch_w:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_prefetch_r_entry1_lxwr1101_2_prefetch_r, PMPZicbo_cg_cp_prefetch_r_entry1_lxwr1101_2_prefetch_r_str)
+PMPZicbo_cg_cp_prefetch_w_entry1_lxwr1101_3_prefetch_w:
   prefetch.w 0(t0)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry1_lxwr1101_3_prefetch_w, PMPZicbo_cp_prefetch_entry1_lxwr1101_3_prefetch_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_prefetch_w_entry1_lxwr1101_3_prefetch_w, PMPZicbo_cg_cp_prefetch_w_entry1_lxwr1101_3_prefetch_w_str)
 
 // PMP configuration 6: L = 1, XWR permissions, entry 0
   LA(x5, REGIONSTART)
@@ -218,18 +218,18 @@ PMPZicbo_cp_prefetch_entry1_lxwr1101_3_prefetch_w:
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(t0, TEST_FOR_EXECUTION)
-PMPZicbo_cp_prefetch_entry0_lxwr1111_1_prefetch_i:
+PMPZicbo_cg_cp_prefetch_i_entry0_lxwr1111_1_prefetch_i:
   prefetch.i 0(t0)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry0_lxwr1111_1_prefetch_i, PMPZicbo_cp_prefetch_entry0_lxwr1111_1_prefetch_i_str)
-PMPZicbo_cp_prefetch_entry0_lxwr1111_2_prefetch_r:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_prefetch_i_entry0_lxwr1111_1_prefetch_i, PMPZicbo_cg_cp_prefetch_i_entry0_lxwr1111_1_prefetch_i_str)
+PMPZicbo_cg_cp_prefetch_r_entry0_lxwr1111_2_prefetch_r:
   prefetch.r 0(t0)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry0_lxwr1111_2_prefetch_r, PMPZicbo_cp_prefetch_entry0_lxwr1111_2_prefetch_r_str)
-PMPZicbo_cp_prefetch_entry0_lxwr1111_3_prefetch_w:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_prefetch_r_entry0_lxwr1111_2_prefetch_r, PMPZicbo_cg_cp_prefetch_r_entry0_lxwr1111_2_prefetch_r_str)
+PMPZicbo_cg_cp_prefetch_w_entry0_lxwr1111_3_prefetch_w:
   prefetch.w 0(t0)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry0_lxwr1111_3_prefetch_w, PMPZicbo_cp_prefetch_entry0_lxwr1111_3_prefetch_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cg_cp_prefetch_w_entry0_lxwr1111_3_prefetch_w, PMPZicbo_cg_cp_prefetch_w_entry0_lxwr1111_3_prefetch_w_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -254,24 +254,24 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMPZicbo_cp_prefetch_entry5_lxwr1000_1_prefetch_i_str: .string "\"test: 1; cg: PMPZicbo; cp: cp_prefetch; bin: entry5_lxwr1000_1_prefetch.i\""
-PMPZicbo_cp_prefetch_entry5_lxwr1000_2_prefetch_r_str: .string "\"test: 2; cg: PMPZicbo; cp: cp_prefetch; bin: entry5_lxwr1000_2_prefetch.r\""
-PMPZicbo_cp_prefetch_entry5_lxwr1000_3_prefetch_w_str: .string "\"test: 3; cg: PMPZicbo; cp: cp_prefetch; bin: entry5_lxwr1000_3_prefetch.w\""
-PMPZicbo_cp_prefetch_entry4_lxwr1001_1_prefetch_i_str: .string "\"test: 4; cg: PMPZicbo; cp: cp_prefetch; bin: entry4_lxwr1001_1_prefetch.i\""
-PMPZicbo_cp_prefetch_entry4_lxwr1001_2_prefetch_r_str: .string "\"test: 5; cg: PMPZicbo; cp: cp_prefetch; bin: entry4_lxwr1001_2_prefetch.r\""
-PMPZicbo_cp_prefetch_entry4_lxwr1001_3_prefetch_w_str: .string "\"test: 6; cg: PMPZicbo; cp: cp_prefetch; bin: entry4_lxwr1001_3_prefetch.w\""
-PMPZicbo_cp_prefetch_entry3_lxwr1011_1_prefetch_i_str: .string "\"test: 7; cg: PMPZicbo; cp: cp_prefetch; bin: entry3_lxwr1011_1_prefetch.i\""
-PMPZicbo_cp_prefetch_entry3_lxwr1011_2_prefetch_r_str: .string "\"test: 8; cg: PMPZicbo; cp: cp_prefetch; bin: entry3_lxwr1011_2_prefetch.r\""
-PMPZicbo_cp_prefetch_entry3_lxwr1011_3_prefetch_w_str: .string "\"test: 9; cg: PMPZicbo; cp: cp_prefetch; bin: entry3_lxwr1011_3_prefetch.w\""
-PMPZicbo_cp_prefetch_entry2_lxwr1100_1_prefetch_i_str: .string "\"test: 10; cg: PMPZicbo; cp: cp_prefetch; bin: entry2_lxwr1100_1_prefetch.i\""
-PMPZicbo_cp_prefetch_entry2_lxwr1100_2_prefetch_r_str: .string "\"test: 11; cg: PMPZicbo; cp: cp_prefetch; bin: entry2_lxwr1100_2_prefetch.r\""
-PMPZicbo_cp_prefetch_entry2_lxwr1100_3_prefetch_w_str: .string "\"test: 12; cg: PMPZicbo; cp: cp_prefetch; bin: entry2_lxwr1100_3_prefetch.w\""
-PMPZicbo_cp_prefetch_entry1_lxwr1101_1_prefetch_i_str: .string "\"test: 13; cg: PMPZicbo; cp: cp_prefetch; bin: entry1_lxwr1101_1_prefetch.i\""
-PMPZicbo_cp_prefetch_entry1_lxwr1101_2_prefetch_r_str: .string "\"test: 14; cg: PMPZicbo; cp: cp_prefetch; bin: entry1_lxwr1101_2_prefetch.r\""
-PMPZicbo_cp_prefetch_entry1_lxwr1101_3_prefetch_w_str: .string "\"test: 15; cg: PMPZicbo; cp: cp_prefetch; bin: entry1_lxwr1101_3_prefetch.w\""
-PMPZicbo_cp_prefetch_entry0_lxwr1111_1_prefetch_i_str: .string "\"test: 16; cg: PMPZicbo; cp: cp_prefetch; bin: entry0_lxwr1111_1_prefetch.i\""
-PMPZicbo_cp_prefetch_entry0_lxwr1111_2_prefetch_r_str: .string "\"test: 17; cg: PMPZicbo; cp: cp_prefetch; bin: entry0_lxwr1111_2_prefetch.r\""
-PMPZicbo_cp_prefetch_entry0_lxwr1111_3_prefetch_w_str: .string "\"test: 18; cg: PMPZicbo; cp: cp_prefetch; bin: entry0_lxwr1111_3_prefetch.w\""
+PMPZicbo_cg_cp_prefetch_i_entry5_lxwr1000_1_prefetch_i_str: .string "\"test: 1; cg: PMPZicbo_cg; cp: cp_prefetch_i; bin: entry5_lxwr1000_1_prefetch.i\""
+PMPZicbo_cg_cp_prefetch_r_entry5_lxwr1000_2_prefetch_r_str: .string "\"test: 2; cg: PMPZicbo_cg; cp: cp_prefetch_r; bin: entry5_lxwr1000_2_prefetch.r\""
+PMPZicbo_cg_cp_prefetch_w_entry5_lxwr1000_3_prefetch_w_str: .string "\"test: 3; cg: PMPZicbo_cg; cp: cp_prefetch_w; bin: entry5_lxwr1000_3_prefetch.w\""
+PMPZicbo_cg_cp_prefetch_i_entry4_lxwr1001_1_prefetch_i_str: .string "\"test: 4; cg: PMPZicbo_cg; cp: cp_prefetch_i; bin: entry4_lxwr1001_1_prefetch.i\""
+PMPZicbo_cg_cp_prefetch_r_entry4_lxwr1001_2_prefetch_r_str: .string "\"test: 5; cg: PMPZicbo_cg; cp: cp_prefetch_r; bin: entry4_lxwr1001_2_prefetch.r\""
+PMPZicbo_cg_cp_prefetch_w_entry4_lxwr1001_3_prefetch_w_str: .string "\"test: 6; cg: PMPZicbo_cg; cp: cp_prefetch_w; bin: entry4_lxwr1001_3_prefetch.w\""
+PMPZicbo_cg_cp_prefetch_i_entry3_lxwr1011_1_prefetch_i_str: .string "\"test: 7; cg: PMPZicbo_cg; cp: cp_prefetch_i; bin: entry3_lxwr1011_1_prefetch.i\""
+PMPZicbo_cg_cp_prefetch_r_entry3_lxwr1011_2_prefetch_r_str: .string "\"test: 8; cg: PMPZicbo_cg; cp: cp_prefetch_r; bin: entry3_lxwr1011_2_prefetch.r\""
+PMPZicbo_cg_cp_prefetch_w_entry3_lxwr1011_3_prefetch_w_str: .string "\"test: 9; cg: PMPZicbo_cg; cp: cp_prefetch_w; bin: entry3_lxwr1011_3_prefetch.w\""
+PMPZicbo_cg_cp_prefetch_i_entry2_lxwr1100_1_prefetch_i_str: .string "\"test: 10; cg: PMPZicbo_cg; cp: cp_prefetch_i; bin: entry2_lxwr1100_1_prefetch.i\""
+PMPZicbo_cg_cp_prefetch_r_entry2_lxwr1100_2_prefetch_r_str: .string "\"test: 11; cg: PMPZicbo_cg; cp: cp_prefetch_r; bin: entry2_lxwr1100_2_prefetch.r\""
+PMPZicbo_cg_cp_prefetch_w_entry2_lxwr1100_3_prefetch_w_str: .string "\"test: 12; cg: PMPZicbo_cg; cp: cp_prefetch_w; bin: entry2_lxwr1100_3_prefetch.w\""
+PMPZicbo_cg_cp_prefetch_i_entry1_lxwr1101_1_prefetch_i_str: .string "\"test: 13; cg: PMPZicbo_cg; cp: cp_prefetch_i; bin: entry1_lxwr1101_1_prefetch.i\""
+PMPZicbo_cg_cp_prefetch_r_entry1_lxwr1101_2_prefetch_r_str: .string "\"test: 14; cg: PMPZicbo_cg; cp: cp_prefetch_r; bin: entry1_lxwr1101_2_prefetch.r\""
+PMPZicbo_cg_cp_prefetch_w_entry1_lxwr1101_3_prefetch_w_str: .string "\"test: 15; cg: PMPZicbo_cg; cp: cp_prefetch_w; bin: entry1_lxwr1101_3_prefetch.w\""
+PMPZicbo_cg_cp_prefetch_i_entry0_lxwr1111_1_prefetch_i_str: .string "\"test: 16; cg: PMPZicbo_cg; cp: cp_prefetch_i; bin: entry0_lxwr1111_1_prefetch.i\""
+PMPZicbo_cg_cp_prefetch_r_entry0_lxwr1111_2_prefetch_r_str: .string "\"test: 17; cg: PMPZicbo_cg; cp: cp_prefetch_r; bin: entry0_lxwr1111_2_prefetch.r\""
+PMPZicbo_cg_cp_prefetch_w_entry0_lxwr1111_3_prefetch_w_str: .string "\"test: 18; cg: PMPZicbo_cg; cp: cp_prefetch_w; bin: entry0_lxwr1111_3_prefetch.w\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

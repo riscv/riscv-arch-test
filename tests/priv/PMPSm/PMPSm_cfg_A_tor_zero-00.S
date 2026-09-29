@@ -31,7 +31,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_cfg_A_tor0
+// cp_cfg_A_tor0_x, cp_cfg_A_tor0_r and cp_cfg_A_tor0_w
 //   {sw, lw, jalr} at pmpaddr0, pmpaddr0-4 and 0 with entry 0 = L, TOR, XWR.
 /////////////////////////////////
 
@@ -63,61 +63,61 @@ RVTEST_BEGIN
 // Store probes
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_cfg_A_tor0_region0_1_sw_top:
+PMPSm_cg_cp_cfg_A_tor0_w_region0_1_sw_top:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor0_region0_1_sw_top, PMPSm_cp_cfg_A_tor0_region0_1_sw_top_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor0_w_region0_1_sw_top, PMPSm_cg_cp_cfg_A_tor0_w_region0_1_sw_top_str)
   addi a5, a5, -4
-PMPSm_cp_cfg_A_tor0_region0_2_sw_topm4:
+PMPSm_cg_cp_cfg_A_tor0_w_region0_2_sw_topm4:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor0_region0_2_sw_topm4, PMPSm_cp_cfg_A_tor0_region0_2_sw_topm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor0_w_region0_2_sw_topm4, PMPSm_cg_cp_cfg_A_tor0_w_region0_2_sw_topm4_str)
   LI(a5, 0)
-PMPSm_cp_cfg_A_tor0_region0_3_sw_zero:
+PMPSm_cg_cp_cfg_A_tor0_w_region0_3_sw_zero:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor0_region0_3_sw_zero, PMPSm_cp_cfg_A_tor0_region0_3_sw_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor0_w_region0_3_sw_zero, PMPSm_cg_cp_cfg_A_tor0_w_region0_3_sw_zero_str)
 
 // Load probes
   LA(a5, TEST_FOR_EXECUTION)
-PMPSm_cp_cfg_A_tor0_region0_4_lw_top:
+PMPSm_cg_cp_cfg_A_tor0_r_region0_4_lw_top:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor0_region0_4_lw_top, PMPSm_cp_cfg_A_tor0_region0_4_lw_top_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor0_r_region0_4_lw_top, PMPSm_cg_cp_cfg_A_tor0_r_region0_4_lw_top_str)
   addi a5, a5, -4
-PMPSm_cp_cfg_A_tor0_region0_5_lw_topm4:
+PMPSm_cg_cp_cfg_A_tor0_r_region0_5_lw_topm4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor0_region0_5_lw_topm4, PMPSm_cp_cfg_A_tor0_region0_5_lw_topm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor0_r_region0_5_lw_topm4, PMPSm_cg_cp_cfg_A_tor0_r_region0_5_lw_topm4_str)
   LI(a5, 0)
-PMPSm_cp_cfg_A_tor0_region0_6_lw_zero:
+PMPSm_cg_cp_cfg_A_tor0_r_region0_6_lw_zero:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor0_region0_6_lw_zero, PMPSm_cp_cfg_A_tor0_region0_6_lw_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor0_r_region0_6_lw_zero, PMPSm_cg_cp_cfg_A_tor0_r_region0_6_lw_zero_str)
 
 // Execute probes
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPSm_cp_cfg_A_tor0_region0_7_jalr_top:
+PMPSm_cg_cp_cfg_A_tor0_x_region0_7_jalr_top:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor0_region0_7_jalr_top, PMPSm_cp_cfg_A_tor0_region0_7_jalr_top_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor0_x_region0_7_jalr_top, PMPSm_cg_cp_cfg_A_tor0_x_region0_7_jalr_top_str)
   addi a4, a4, -4
   LA(ra, 2f)
-PMPSm_cp_cfg_A_tor0_region0_8_jalr_topm4:
+PMPSm_cg_cp_cfg_A_tor0_x_region0_8_jalr_topm4:
   jalr x0, 0(a4)
 2:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor0_region0_8_jalr_topm4, PMPSm_cp_cfg_A_tor0_region0_8_jalr_topm4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor0_x_region0_8_jalr_topm4, PMPSm_cg_cp_cfg_A_tor0_x_region0_8_jalr_topm4_str)
   LI(a5, 0)
   LA(ra, 3f)
-PMPSm_cp_cfg_A_tor0_region0_9_jalr_zero:
+PMPSm_cg_cp_cfg_A_tor0_x_region0_9_jalr_zero:
   jalr x0, 0(a5)
 3:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor0_region0_9_jalr_zero, PMPSm_cp_cfg_A_tor0_region0_9_jalr_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_A_tor0_x_region0_9_jalr_zero, PMPSm_cg_cp_cfg_A_tor0_x_region0_9_jalr_zero_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -149,15 +149,15 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMPSm_cp_cfg_A_tor0_region0_1_sw_top_str: .string "\"test: 25; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_1_sw_top\""
-PMPSm_cp_cfg_A_tor0_region0_2_sw_topm4_str: .string "\"test: 26; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_2_sw_top-4\""
-PMPSm_cp_cfg_A_tor0_region0_3_sw_zero_str: .string "\"test: 27; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_3_sw_zero\""
-PMPSm_cp_cfg_A_tor0_region0_4_lw_top_str: .string "\"test: 28; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_4_lw_top\""
-PMPSm_cp_cfg_A_tor0_region0_5_lw_topm4_str: .string "\"test: 29; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_5_lw_top-4\""
-PMPSm_cp_cfg_A_tor0_region0_6_lw_zero_str: .string "\"test: 30; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_6_lw_zero\""
-PMPSm_cp_cfg_A_tor0_region0_7_jalr_top_str: .string "\"test: 31; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_7_jalr_top\""
-PMPSm_cp_cfg_A_tor0_region0_8_jalr_topm4_str: .string "\"test: 32; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_8_jalr_top-4\""
-PMPSm_cp_cfg_A_tor0_region0_9_jalr_zero_str: .string "\"test: 33; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_9_jalr_zero\""
+PMPSm_cg_cp_cfg_A_tor0_w_region0_1_sw_top_str: .string "\"test: 25; cg: PMPSm_cg; cp: cp_cfg_A_tor0_w; bin: region0_1_sw_top\""
+PMPSm_cg_cp_cfg_A_tor0_w_region0_2_sw_topm4_str: .string "\"test: 26; cg: PMPSm_cg; cp: cp_cfg_A_tor0_w; bin: region0_2_sw_top-4\""
+PMPSm_cg_cp_cfg_A_tor0_w_region0_3_sw_zero_str: .string "\"test: 27; cg: PMPSm_cg; cp: cp_cfg_A_tor0_w; bin: region0_3_sw_zero\""
+PMPSm_cg_cp_cfg_A_tor0_r_region0_4_lw_top_str: .string "\"test: 28; cg: PMPSm_cg; cp: cp_cfg_A_tor0_r; bin: region0_4_lw_top\""
+PMPSm_cg_cp_cfg_A_tor0_r_region0_5_lw_topm4_str: .string "\"test: 29; cg: PMPSm_cg; cp: cp_cfg_A_tor0_r; bin: region0_5_lw_top-4\""
+PMPSm_cg_cp_cfg_A_tor0_r_region0_6_lw_zero_str: .string "\"test: 30; cg: PMPSm_cg; cp: cp_cfg_A_tor0_r; bin: region0_6_lw_zero\""
+PMPSm_cg_cp_cfg_A_tor0_x_region0_7_jalr_top_str: .string "\"test: 31; cg: PMPSm_cg; cp: cp_cfg_A_tor0_x; bin: region0_7_jalr_top\""
+PMPSm_cg_cp_cfg_A_tor0_x_region0_8_jalr_topm4_str: .string "\"test: 32; cg: PMPSm_cg; cp: cp_cfg_A_tor0_x; bin: region0_8_jalr_top-4\""
+PMPSm_cg_cp_cfg_A_tor0_x_region0_9_jalr_zero_str: .string "\"test: 33; cg: PMPSm_cg; cp: cp_cfg_A_tor0_x; bin: region0_9_jalr_zero\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

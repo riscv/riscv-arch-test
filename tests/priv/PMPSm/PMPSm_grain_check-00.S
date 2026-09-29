@@ -30,7 +30,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_grain_check
+// cp_grain_check_write and cp_grain_check_read
 //   Write all ones to pmpaddr0 with pmpcfg0 = 0 and read it back; the lowest set bit gives the grain.
 /////////////////////////////////
 
@@ -50,7 +50,7 @@ RVTEST_BEGIN
 
   RVTEST_PMP_SET_BACKGROUND x4
 
-PMPSm_cp_grain_check_readback:
+PMPSm_cg_cp_grain_check_read_readback:
 // Write 0 to pmpcfg0 and all ones to pmpaddr0, then read back pmpaddr0
   csrw pmpcfg0, x0
   LI(x6, -1)
@@ -59,7 +59,7 @@ PMPSm_cp_grain_check_readback:
   csrr x7, pmpaddr0
   and x7, x7, t3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_check_readback, PMPSm_cp_grain_check_readback_str)
+  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cg_cp_grain_check_read_readback, PMPSm_cg_cp_grain_check_read_readback_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -71,7 +71,7 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-PMPSm_cp_grain_check_readback_str: .string "\"test: 935; cg: PMPSm; cp: cp_grain_check; bin: readback\""
+PMPSm_cg_cp_grain_check_read_readback_str: .string "\"test: 935; cg: PMPSm_cg; cp: cp_grain_check_read; bin: readback\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

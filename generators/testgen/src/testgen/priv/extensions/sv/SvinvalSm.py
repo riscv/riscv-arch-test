@@ -21,7 +21,8 @@ from testgen.priv.registry import add_priv_test_generator
 )
 def make_svinvalsm_tvm(test_data: TestData) -> list[TestChunk]:
     chunk = test_data.begin_test_chunk("Svinval_mstatus_tvm")
-    tvm_label = test_data.add_testcase("tvm", "cp_svinval_tvm", "SvinvalSm_cg").removesuffix(":")
+    # The mstatus readback checks the setup that the cp_tvm coverpoint samples.
+    tvm_label = test_data.add_testcase("tvm", "cp_tvm", "SvinvalSm_cg").removesuffix(":")
     number = 0
     code = ["main:"]
     for tvm in (0, 1):

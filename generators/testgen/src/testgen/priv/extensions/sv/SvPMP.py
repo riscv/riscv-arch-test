@@ -11,7 +11,7 @@
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.pmp import helpers as pmp
-from testgen.priv.extensions.sv.access import add_rwx_test
+from testgen.priv.extensions.sv.access import Crosses, add_rwx_test, cross_names
 from testgen.priv.extensions.sv.assembly import DATA_REGION_ALIGNED
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import SV32, SV39, SV48, SV57, PteFlags, SvMode, create_page_mapping
@@ -30,6 +30,12 @@ _PA_CFGS = (
 )
 
 
+def _crosses(target: str, mode: str) -> Crosses:
+    """The crosses for PMP denying access to the translated address (``PA``) or the page table (``pte``)."""
+    m = mode[0].lower()
+    return Crosses("SvPMP_cg", f"pmp0_{target}_nowrite_{m}", f"pmp0_{target}_noread_{m}", f"pmp0_{target}_noexec_{m}")
+
+
 def _begin_test(
     test_data: TestData,
     sv: SvMode,
@@ -37,6 +43,7 @@ def _begin_test(
     topic: str,
     pmp_defines: list[str],
     *,
+    crosses: Crosses,
     pre_va_asm: tuple[str, ...],
     va_defs: tuple[tuple[str, str], ...] | None = None,
     va_code_override: str | None = None,
@@ -47,6 +54,7 @@ def _begin_test(
         sv,
         mode,
         split_name,
+        coverpoint=cross_names(crosses),
         code_prefix=pmp_defines,
         va_defs=va_defs,
         va_code_override=va_code_override,
@@ -55,12 +63,14 @@ def _begin_test(
 
 
 def _make_pmp_on_pa(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
+    crosses = _crosses("PA", mode)
     chunk = _begin_test(
         test_data,
         sv,
         mode,
         "pmp_on_pa",
         pmp.napot_mask_defines(5),
+        crosses=crosses,
         pre_va_asm=(
             "RVTEST_PMP_SET_BACKGROUND x4",
             "",
@@ -72,7 +82,7 @@ def _make_pmp_on_pa(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
     number = 0
     faults = 0
     for cfg, name, case_faults in _PA_CFGS:
-        chunk.code.extend([*pmp.write_pmpcfg0(test_data, cfg, name), ""])
+        chunk.code.extend([*pmp.write_pmpcfg0(test_data, cfg, name, "PMP0_PA"), ""])
         for level in sv.levels_desc:
             number += 1
             faults += case_faults
@@ -90,6 +100,7 @@ def _make_pmp_on_pa(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                         level,
                         f"test{number}",
                         driver_mode="Mmode",
+                        crosses=crosses,
                     ),
                     "",
                 ]
@@ -101,12 +112,14 @@ def _make_pmp_on_pa(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
 
 def _make_pmp_on_pte(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
     va_data, va_code = PMP_PTE_VAS[sv.name]
+    crosses = _crosses("pte", mode)
     chunk = _begin_test(
         test_data,
         sv,
         mode,
         "pmp_on_pte",
         pmp.napot_mask_defines(),
+        crosses=crosses,
         pre_va_asm=("RVTEST_PMP_SET_BACKGROUND x4",),
         va_defs=(("va_data", va_data),),
         va_code_override=va_code,
@@ -122,6 +135,7 @@ def _make_pmp_on_pte(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                         test_data,
                         pmp.cfg_byte("0100", "napot", pmp.cfg_shift(0)),
                         "write_pmpcfg0",
+                        "PMP0_PTE",
                     ),
                     ".if (UDB_PMP_GRANULARITY < 12)",
                 ]
@@ -142,6 +156,7 @@ def _make_pmp_on_pte(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     level,
                     f"test{number}",
                     driver_mode="Mmode",
+                    crosses=crosses,
                 ),
             ]
         )

@@ -76,23 +76,23 @@ RVTEST_BEGIN
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION)
-PMPZalrsc_cp_cfg_RW_entry5_lxwr1000_1_lr_w:
+PMPZalrsc_cg_cp_cfg_RW_entry5_lxwr1000_1_lr_w:
   lr.w a2, (a5)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cp_cfg_RW_entry5_lxwr1000_1_lr_w, PMPZalrsc_cp_cfg_RW_entry5_lxwr1000_1_lr_w_str)
-PMPZalrsc_cp_cfg_RW_entry5_lxwr1000_2_sc_w:
+  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cg_cp_cfg_RW_entry5_lxwr1000_1_lr_w, PMPZalrsc_cg_cp_cfg_RW_entry5_lxwr1000_1_lr_w_str)
+PMPZalrsc_cg_cp_cfg_RW_entry5_lxwr1000_2_sc_w:
   sc.w a2, a2, (a5)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cp_cfg_RW_entry5_lxwr1000_2_sc_w, PMPZalrsc_cp_cfg_RW_entry5_lxwr1000_2_sc_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cg_cp_cfg_RW_entry5_lxwr1000_2_sc_w, PMPZalrsc_cg_cp_cfg_RW_entry5_lxwr1000_2_sc_w_str)
 #if __riscv_xlen == 64
-PMPZalrsc_cp_cfg_RW_entry5_lxwr1000_3_lr_d:
+PMPZalrsc_cg_cp_cfg_RW_entry5_lxwr1000_3_lr_d:
   lr.d a2, (a5)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cp_cfg_RW_entry5_lxwr1000_3_lr_d, PMPZalrsc_cp_cfg_RW_entry5_lxwr1000_3_lr_d_str)
-PMPZalrsc_cp_cfg_RW_entry5_lxwr1000_4_sc_d:
+  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cg_cp_cfg_RW_entry5_lxwr1000_3_lr_d, PMPZalrsc_cg_cp_cfg_RW_entry5_lxwr1000_3_lr_d_str)
+PMPZalrsc_cg_cp_cfg_RW_entry5_lxwr1000_4_sc_d:
   sc.d a2, a2, (a5)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cp_cfg_RW_entry5_lxwr1000_4_sc_d, PMPZalrsc_cp_cfg_RW_entry5_lxwr1000_4_sc_d_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cg_cp_cfg_RW_entry5_lxwr1000_4_sc_d, PMPZalrsc_cg_cp_cfg_RW_entry5_lxwr1000_4_sc_d_str)
 #endif
 
 // PMP configuration 2: L = 1, R permissions, entry 4
@@ -112,23 +112,23 @@ PMPZalrsc_cp_cfg_RW_entry5_lxwr1000_4_sc_d:
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION)
-PMPZalrsc_cp_cfg_RW_entry4_lxwr1001_1_lr_w:
+PMPZalrsc_cg_cp_cfg_RW_entry4_lxwr1001_1_lr_w:
   lr.w a2, (a5)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cp_cfg_RW_entry4_lxwr1001_1_lr_w, PMPZalrsc_cp_cfg_RW_entry4_lxwr1001_1_lr_w_str)
-PMPZalrsc_cp_cfg_RW_entry4_lxwr1001_2_sc_w:
+  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cg_cp_cfg_RW_entry4_lxwr1001_1_lr_w, PMPZalrsc_cg_cp_cfg_RW_entry4_lxwr1001_1_lr_w_str)
+PMPZalrsc_cg_cp_cfg_RW_entry4_lxwr1001_2_sc_w:
   sc.w a2, a2, (a5)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cp_cfg_RW_entry4_lxwr1001_2_sc_w, PMPZalrsc_cp_cfg_RW_entry4_lxwr1001_2_sc_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cg_cp_cfg_RW_entry4_lxwr1001_2_sc_w, PMPZalrsc_cg_cp_cfg_RW_entry4_lxwr1001_2_sc_w_str)
 #if __riscv_xlen == 64
-PMPZalrsc_cp_cfg_RW_entry4_lxwr1001_3_lr_d:
+PMPZalrsc_cg_cp_cfg_RW_entry4_lxwr1001_3_lr_d:
   lr.d a2, (a5)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cp_cfg_RW_entry4_lxwr1001_3_lr_d, PMPZalrsc_cp_cfg_RW_entry4_lxwr1001_3_lr_d_str)
-PMPZalrsc_cp_cfg_RW_entry4_lxwr1001_4_sc_d:
+  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cg_cp_cfg_RW_entry4_lxwr1001_3_lr_d, PMPZalrsc_cg_cp_cfg_RW_entry4_lxwr1001_3_lr_d_str)
+PMPZalrsc_cg_cp_cfg_RW_entry4_lxwr1001_4_sc_d:
   sc.d a2, a2, (a5)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cp_cfg_RW_entry4_lxwr1001_4_sc_d, PMPZalrsc_cp_cfg_RW_entry4_lxwr1001_4_sc_d_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cg_cp_cfg_RW_entry4_lxwr1001_4_sc_d, PMPZalrsc_cg_cp_cfg_RW_entry4_lxwr1001_4_sc_d_str)
 #endif
 
 // PMP configuration 3: L = 1, WR permissions, entry 3
@@ -146,33 +146,33 @@ PMPZalrsc_cp_cfg_RW_entry4_lxwr1001_4_sc_d:
   LA(a5, TEST_FOR_EXECUTION)
   LI(t2, 100)
 entry3_lxwr1011_w_retry:
-PMPZalrsc_cp_cfg_RW_entry3_lxwr1011_1_lr_w:
+PMPZalrsc_cg_cp_cfg_RW_entry3_lxwr1011_1_lr_w:
   lr.w a3, (a5)
-PMPZalrsc_cp_cfg_RW_entry3_lxwr1011_2_sc_w:
+PMPZalrsc_cg_cp_cfg_RW_entry3_lxwr1011_2_sc_w:
   sc.w a2, a3, (a5)
   beqz a2, entry3_lxwr1011_w_success
   addi t2, t2, -1
   bnez t2, entry3_lxwr1011_w_retry
 entry3_lxwr1011_w_success:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMPZalrsc_cp_cfg_RW_entry3_lxwr1011_1_lr_w, PMPZalrsc_cp_cfg_RW_entry3_lxwr1011_1_lr_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMPZalrsc_cg_cp_cfg_RW_entry3_lxwr1011_1_lr_w, PMPZalrsc_cg_cp_cfg_RW_entry3_lxwr1011_1_lr_w_str)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cp_cfg_RW_entry3_lxwr1011_2_sc_w, PMPZalrsc_cp_cfg_RW_entry3_lxwr1011_2_sc_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cg_cp_cfg_RW_entry3_lxwr1011_2_sc_w, PMPZalrsc_cg_cp_cfg_RW_entry3_lxwr1011_2_sc_w_str)
 #if __riscv_xlen == 64
   LI(t2, 100)
 entry3_lxwr1011_d_retry:
-PMPZalrsc_cp_cfg_RW_entry3_lxwr1011_3_lr_d:
+PMPZalrsc_cg_cp_cfg_RW_entry3_lxwr1011_3_lr_d:
   lr.d a3, (a5)
-PMPZalrsc_cp_cfg_RW_entry3_lxwr1011_4_sc_d:
+PMPZalrsc_cg_cp_cfg_RW_entry3_lxwr1011_4_sc_d:
   sc.d a2, a3, (a5)
   beqz a2, entry3_lxwr1011_d_success
   addi t2, t2, -1
   bnez t2, entry3_lxwr1011_d_retry
 entry3_lxwr1011_d_success:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMPZalrsc_cp_cfg_RW_entry3_lxwr1011_3_lr_d, PMPZalrsc_cp_cfg_RW_entry3_lxwr1011_3_lr_d_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMPZalrsc_cg_cp_cfg_RW_entry3_lxwr1011_3_lr_d, PMPZalrsc_cg_cp_cfg_RW_entry3_lxwr1011_3_lr_d_str)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cp_cfg_RW_entry3_lxwr1011_4_sc_d, PMPZalrsc_cp_cfg_RW_entry3_lxwr1011_4_sc_d_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cg_cp_cfg_RW_entry3_lxwr1011_4_sc_d, PMPZalrsc_cg_cp_cfg_RW_entry3_lxwr1011_4_sc_d_str)
 #endif
 
 // PMP configuration 4: L = 1, X permissions, entry 2
@@ -188,23 +188,23 @@ entry3_lxwr1011_d_success:
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION)
-PMPZalrsc_cp_cfg_RW_entry2_lxwr1100_1_lr_w:
+PMPZalrsc_cg_cp_cfg_RW_entry2_lxwr1100_1_lr_w:
   lr.w a2, (a5)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cp_cfg_RW_entry2_lxwr1100_1_lr_w, PMPZalrsc_cp_cfg_RW_entry2_lxwr1100_1_lr_w_str)
-PMPZalrsc_cp_cfg_RW_entry2_lxwr1100_2_sc_w:
+  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cg_cp_cfg_RW_entry2_lxwr1100_1_lr_w, PMPZalrsc_cg_cp_cfg_RW_entry2_lxwr1100_1_lr_w_str)
+PMPZalrsc_cg_cp_cfg_RW_entry2_lxwr1100_2_sc_w:
   sc.w a2, a2, (a5)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cp_cfg_RW_entry2_lxwr1100_2_sc_w, PMPZalrsc_cp_cfg_RW_entry2_lxwr1100_2_sc_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cg_cp_cfg_RW_entry2_lxwr1100_2_sc_w, PMPZalrsc_cg_cp_cfg_RW_entry2_lxwr1100_2_sc_w_str)
 #if __riscv_xlen == 64
-PMPZalrsc_cp_cfg_RW_entry2_lxwr1100_3_lr_d:
+PMPZalrsc_cg_cp_cfg_RW_entry2_lxwr1100_3_lr_d:
   lr.d a2, (a5)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cp_cfg_RW_entry2_lxwr1100_3_lr_d, PMPZalrsc_cp_cfg_RW_entry2_lxwr1100_3_lr_d_str)
-PMPZalrsc_cp_cfg_RW_entry2_lxwr1100_4_sc_d:
+  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cg_cp_cfg_RW_entry2_lxwr1100_3_lr_d, PMPZalrsc_cg_cp_cfg_RW_entry2_lxwr1100_3_lr_d_str)
+PMPZalrsc_cg_cp_cfg_RW_entry2_lxwr1100_4_sc_d:
   sc.d a2, a2, (a5)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cp_cfg_RW_entry2_lxwr1100_4_sc_d, PMPZalrsc_cp_cfg_RW_entry2_lxwr1100_4_sc_d_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cg_cp_cfg_RW_entry2_lxwr1100_4_sc_d, PMPZalrsc_cg_cp_cfg_RW_entry2_lxwr1100_4_sc_d_str)
 #endif
 
 // PMP configuration 5: L = 1, XR permissions, entry 1
@@ -220,23 +220,23 @@ PMPZalrsc_cp_cfg_RW_entry2_lxwr1100_4_sc_d:
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION)
-PMPZalrsc_cp_cfg_RW_entry1_lxwr1101_1_lr_w:
+PMPZalrsc_cg_cp_cfg_RW_entry1_lxwr1101_1_lr_w:
   lr.w a2, (a5)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cp_cfg_RW_entry1_lxwr1101_1_lr_w, PMPZalrsc_cp_cfg_RW_entry1_lxwr1101_1_lr_w_str)
-PMPZalrsc_cp_cfg_RW_entry1_lxwr1101_2_sc_w:
+  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cg_cp_cfg_RW_entry1_lxwr1101_1_lr_w, PMPZalrsc_cg_cp_cfg_RW_entry1_lxwr1101_1_lr_w_str)
+PMPZalrsc_cg_cp_cfg_RW_entry1_lxwr1101_2_sc_w:
   sc.w a2, a2, (a5)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cp_cfg_RW_entry1_lxwr1101_2_sc_w, PMPZalrsc_cp_cfg_RW_entry1_lxwr1101_2_sc_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cg_cp_cfg_RW_entry1_lxwr1101_2_sc_w, PMPZalrsc_cg_cp_cfg_RW_entry1_lxwr1101_2_sc_w_str)
 #if __riscv_xlen == 64
-PMPZalrsc_cp_cfg_RW_entry1_lxwr1101_3_lr_d:
+PMPZalrsc_cg_cp_cfg_RW_entry1_lxwr1101_3_lr_d:
   lr.d a2, (a5)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cp_cfg_RW_entry1_lxwr1101_3_lr_d, PMPZalrsc_cp_cfg_RW_entry1_lxwr1101_3_lr_d_str)
-PMPZalrsc_cp_cfg_RW_entry1_lxwr1101_4_sc_d:
+  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cg_cp_cfg_RW_entry1_lxwr1101_3_lr_d, PMPZalrsc_cg_cp_cfg_RW_entry1_lxwr1101_3_lr_d_str)
+PMPZalrsc_cg_cp_cfg_RW_entry1_lxwr1101_4_sc_d:
   sc.d a2, a2, (a5)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cp_cfg_RW_entry1_lxwr1101_4_sc_d, PMPZalrsc_cp_cfg_RW_entry1_lxwr1101_4_sc_d_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cg_cp_cfg_RW_entry1_lxwr1101_4_sc_d, PMPZalrsc_cg_cp_cfg_RW_entry1_lxwr1101_4_sc_d_str)
 #endif
 
 // PMP configuration 6: L = 1, XWR permissions, entry 0
@@ -254,33 +254,33 @@ PMPZalrsc_cp_cfg_RW_entry1_lxwr1101_4_sc_d:
   LA(a5, TEST_FOR_EXECUTION)
   LI(t2, 100)
 entry0_lxwr1111_w_retry:
-PMPZalrsc_cp_cfg_RW_entry0_lxwr1111_1_lr_w:
+PMPZalrsc_cg_cp_cfg_RW_entry0_lxwr1111_1_lr_w:
   lr.w a3, (a5)
-PMPZalrsc_cp_cfg_RW_entry0_lxwr1111_2_sc_w:
+PMPZalrsc_cg_cp_cfg_RW_entry0_lxwr1111_2_sc_w:
   sc.w a2, a3, (a5)
   beqz a2, entry0_lxwr1111_w_success
   addi t2, t2, -1
   bnez t2, entry0_lxwr1111_w_retry
 entry0_lxwr1111_w_success:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMPZalrsc_cp_cfg_RW_entry0_lxwr1111_1_lr_w, PMPZalrsc_cp_cfg_RW_entry0_lxwr1111_1_lr_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMPZalrsc_cg_cp_cfg_RW_entry0_lxwr1111_1_lr_w, PMPZalrsc_cg_cp_cfg_RW_entry0_lxwr1111_1_lr_w_str)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cp_cfg_RW_entry0_lxwr1111_2_sc_w, PMPZalrsc_cp_cfg_RW_entry0_lxwr1111_2_sc_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cg_cp_cfg_RW_entry0_lxwr1111_2_sc_w, PMPZalrsc_cg_cp_cfg_RW_entry0_lxwr1111_2_sc_w_str)
 #if __riscv_xlen == 64
   LI(t2, 100)
 entry0_lxwr1111_d_retry:
-PMPZalrsc_cp_cfg_RW_entry0_lxwr1111_3_lr_d:
+PMPZalrsc_cg_cp_cfg_RW_entry0_lxwr1111_3_lr_d:
   lr.d a3, (a5)
-PMPZalrsc_cp_cfg_RW_entry0_lxwr1111_4_sc_d:
+PMPZalrsc_cg_cp_cfg_RW_entry0_lxwr1111_4_sc_d:
   sc.d a2, a3, (a5)
   beqz a2, entry0_lxwr1111_d_success
   addi t2, t2, -1
   bnez t2, entry0_lxwr1111_d_retry
 entry0_lxwr1111_d_success:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMPZalrsc_cp_cfg_RW_entry0_lxwr1111_3_lr_d, PMPZalrsc_cp_cfg_RW_entry0_lxwr1111_3_lr_d_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMPZalrsc_cg_cp_cfg_RW_entry0_lxwr1111_3_lr_d, PMPZalrsc_cg_cp_cfg_RW_entry0_lxwr1111_3_lr_d_str)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cp_cfg_RW_entry0_lxwr1111_4_sc_d, PMPZalrsc_cp_cfg_RW_entry0_lxwr1111_4_sc_d_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, PMPZalrsc_cg_cp_cfg_RW_entry0_lxwr1111_4_sc_d, PMPZalrsc_cg_cp_cfg_RW_entry0_lxwr1111_4_sc_d_str)
 #endif
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -306,30 +306,30 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMPZalrsc_cp_cfg_RW_entry5_lxwr1000_1_lr_w_str: .string "\"test: 1; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry5_lxwr1000_1_lr_w\""
-PMPZalrsc_cp_cfg_RW_entry5_lxwr1000_2_sc_w_str: .string "\"test: 2; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry5_lxwr1000_2_sc_w\""
-PMPZalrsc_cp_cfg_RW_entry5_lxwr1000_3_lr_d_str: .string "\"test: 3; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry5_lxwr1000_3_lr_d\""
-PMPZalrsc_cp_cfg_RW_entry5_lxwr1000_4_sc_d_str: .string "\"test: 4; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry5_lxwr1000_4_sc_d\""
-PMPZalrsc_cp_cfg_RW_entry4_lxwr1001_1_lr_w_str: .string "\"test: 5; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry4_lxwr1001_1_lr_w\""
-PMPZalrsc_cp_cfg_RW_entry4_lxwr1001_2_sc_w_str: .string "\"test: 6; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry4_lxwr1001_2_sc_w\""
-PMPZalrsc_cp_cfg_RW_entry4_lxwr1001_3_lr_d_str: .string "\"test: 7; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry4_lxwr1001_3_lr_d\""
-PMPZalrsc_cp_cfg_RW_entry4_lxwr1001_4_sc_d_str: .string "\"test: 8; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry4_lxwr1001_4_sc_d\""
-PMPZalrsc_cp_cfg_RW_entry3_lxwr1011_1_lr_w_str: .string "\"test: 9; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry3_lxwr1011_1_lr_w\""
-PMPZalrsc_cp_cfg_RW_entry3_lxwr1011_2_sc_w_str: .string "\"test: 10; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry3_lxwr1011_2_sc_w\""
-PMPZalrsc_cp_cfg_RW_entry3_lxwr1011_3_lr_d_str: .string "\"test: 11; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry3_lxwr1011_3_lr_d\""
-PMPZalrsc_cp_cfg_RW_entry3_lxwr1011_4_sc_d_str: .string "\"test: 12; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry3_lxwr1011_4_sc_d\""
-PMPZalrsc_cp_cfg_RW_entry2_lxwr1100_1_lr_w_str: .string "\"test: 13; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry2_lxwr1100_1_lr_w\""
-PMPZalrsc_cp_cfg_RW_entry2_lxwr1100_2_sc_w_str: .string "\"test: 14; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry2_lxwr1100_2_sc_w\""
-PMPZalrsc_cp_cfg_RW_entry2_lxwr1100_3_lr_d_str: .string "\"test: 15; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry2_lxwr1100_3_lr_d\""
-PMPZalrsc_cp_cfg_RW_entry2_lxwr1100_4_sc_d_str: .string "\"test: 16; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry2_lxwr1100_4_sc_d\""
-PMPZalrsc_cp_cfg_RW_entry1_lxwr1101_1_lr_w_str: .string "\"test: 17; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry1_lxwr1101_1_lr_w\""
-PMPZalrsc_cp_cfg_RW_entry1_lxwr1101_2_sc_w_str: .string "\"test: 18; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry1_lxwr1101_2_sc_w\""
-PMPZalrsc_cp_cfg_RW_entry1_lxwr1101_3_lr_d_str: .string "\"test: 19; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry1_lxwr1101_3_lr_d\""
-PMPZalrsc_cp_cfg_RW_entry1_lxwr1101_4_sc_d_str: .string "\"test: 20; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry1_lxwr1101_4_sc_d\""
-PMPZalrsc_cp_cfg_RW_entry0_lxwr1111_1_lr_w_str: .string "\"test: 21; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry0_lxwr1111_1_lr_w\""
-PMPZalrsc_cp_cfg_RW_entry0_lxwr1111_2_sc_w_str: .string "\"test: 22; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry0_lxwr1111_2_sc_w\""
-PMPZalrsc_cp_cfg_RW_entry0_lxwr1111_3_lr_d_str: .string "\"test: 23; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry0_lxwr1111_3_lr_d\""
-PMPZalrsc_cp_cfg_RW_entry0_lxwr1111_4_sc_d_str: .string "\"test: 24; cg: PMPZalrsc; cp: cp_cfg_RW; bin: entry0_lxwr1111_4_sc_d\""
+PMPZalrsc_cg_cp_cfg_RW_entry5_lxwr1000_1_lr_w_str: .string "\"test: 1; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry5_lxwr1000_1_lr_w\""
+PMPZalrsc_cg_cp_cfg_RW_entry5_lxwr1000_2_sc_w_str: .string "\"test: 2; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry5_lxwr1000_2_sc_w\""
+PMPZalrsc_cg_cp_cfg_RW_entry5_lxwr1000_3_lr_d_str: .string "\"test: 3; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry5_lxwr1000_3_lr_d\""
+PMPZalrsc_cg_cp_cfg_RW_entry5_lxwr1000_4_sc_d_str: .string "\"test: 4; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry5_lxwr1000_4_sc_d\""
+PMPZalrsc_cg_cp_cfg_RW_entry4_lxwr1001_1_lr_w_str: .string "\"test: 5; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry4_lxwr1001_1_lr_w\""
+PMPZalrsc_cg_cp_cfg_RW_entry4_lxwr1001_2_sc_w_str: .string "\"test: 6; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry4_lxwr1001_2_sc_w\""
+PMPZalrsc_cg_cp_cfg_RW_entry4_lxwr1001_3_lr_d_str: .string "\"test: 7; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry4_lxwr1001_3_lr_d\""
+PMPZalrsc_cg_cp_cfg_RW_entry4_lxwr1001_4_sc_d_str: .string "\"test: 8; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry4_lxwr1001_4_sc_d\""
+PMPZalrsc_cg_cp_cfg_RW_entry3_lxwr1011_1_lr_w_str: .string "\"test: 9; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry3_lxwr1011_1_lr_w\""
+PMPZalrsc_cg_cp_cfg_RW_entry3_lxwr1011_2_sc_w_str: .string "\"test: 10; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry3_lxwr1011_2_sc_w\""
+PMPZalrsc_cg_cp_cfg_RW_entry3_lxwr1011_3_lr_d_str: .string "\"test: 11; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry3_lxwr1011_3_lr_d\""
+PMPZalrsc_cg_cp_cfg_RW_entry3_lxwr1011_4_sc_d_str: .string "\"test: 12; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry3_lxwr1011_4_sc_d\""
+PMPZalrsc_cg_cp_cfg_RW_entry2_lxwr1100_1_lr_w_str: .string "\"test: 13; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry2_lxwr1100_1_lr_w\""
+PMPZalrsc_cg_cp_cfg_RW_entry2_lxwr1100_2_sc_w_str: .string "\"test: 14; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry2_lxwr1100_2_sc_w\""
+PMPZalrsc_cg_cp_cfg_RW_entry2_lxwr1100_3_lr_d_str: .string "\"test: 15; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry2_lxwr1100_3_lr_d\""
+PMPZalrsc_cg_cp_cfg_RW_entry2_lxwr1100_4_sc_d_str: .string "\"test: 16; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry2_lxwr1100_4_sc_d\""
+PMPZalrsc_cg_cp_cfg_RW_entry1_lxwr1101_1_lr_w_str: .string "\"test: 17; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry1_lxwr1101_1_lr_w\""
+PMPZalrsc_cg_cp_cfg_RW_entry1_lxwr1101_2_sc_w_str: .string "\"test: 18; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry1_lxwr1101_2_sc_w\""
+PMPZalrsc_cg_cp_cfg_RW_entry1_lxwr1101_3_lr_d_str: .string "\"test: 19; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry1_lxwr1101_3_lr_d\""
+PMPZalrsc_cg_cp_cfg_RW_entry1_lxwr1101_4_sc_d_str: .string "\"test: 20; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry1_lxwr1101_4_sc_d\""
+PMPZalrsc_cg_cp_cfg_RW_entry0_lxwr1111_1_lr_w_str: .string "\"test: 21; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry0_lxwr1111_1_lr_w\""
+PMPZalrsc_cg_cp_cfg_RW_entry0_lxwr1111_2_sc_w_str: .string "\"test: 22; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry0_lxwr1111_2_sc_w\""
+PMPZalrsc_cg_cp_cfg_RW_entry0_lxwr1111_3_lr_d_str: .string "\"test: 23; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry0_lxwr1111_3_lr_d\""
+PMPZalrsc_cg_cp_cfg_RW_entry0_lxwr1111_4_sc_d_str: .string "\"test: 24; cg: PMPZalrsc_cg; cp: cp_cfg_RW; bin: entry0_lxwr1111_4_sc_d\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

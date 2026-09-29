@@ -30,7 +30,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_cfg_RW
+// cp_cfg_R and cp_cfg_W
 //   Compressed double-precision floating-point loads and stores against a locked NAPOT region with each legal XWR.
 /////////////////////////////////
 
@@ -78,28 +78,28 @@ RVTEST_BEGIN
   li x15, 0x3f800000
   fmv.w.x f8, x15
   LA(x8, TEST_FOR_EXECUTION)
-PMPZca_cp_cfg_RW_entry5_lxwr1000_1_c_fsd:
+PMPZca_cg_cp_cfg_W_entry5_lxwr1000_1_c_fsd:
   c.fsd f8, 0(x8)
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry5_lxwr1000_1_c_fsd, PMPZca_cp_cfg_RW_entry5_lxwr1000_1_c_fsd_str)
-PMPZca_cp_cfg_RW_entry5_lxwr1000_2_c_fld:
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_W_entry5_lxwr1000_1_c_fsd, PMPZca_cg_cp_cfg_W_entry5_lxwr1000_1_c_fsd_str)
+PMPZca_cg_cp_cfg_R_entry5_lxwr1000_2_c_fld:
   c.fld f8, 0(x8)
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry5_lxwr1000_2_c_fld, PMPZca_cp_cfg_RW_entry5_lxwr1000_2_c_fld_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_R_entry5_lxwr1000_2_c_fld, PMPZca_cg_cp_cfg_R_entry5_lxwr1000_2_c_fld_str)
   mv t0, sp
   addi sp, x8, 0
-PMPZca_cp_cfg_RW_entry5_lxwr1000_3_c_fsdsp:
+PMPZca_cg_cp_cfg_W_entry5_lxwr1000_3_c_fsdsp:
   c.fsdsp f8, 0(sp)
   mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry5_lxwr1000_3_c_fsdsp, PMPZca_cp_cfg_RW_entry5_lxwr1000_3_c_fsdsp_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_W_entry5_lxwr1000_3_c_fsdsp, PMPZca_cg_cp_cfg_W_entry5_lxwr1000_3_c_fsdsp_str)
   mv t0, sp
   addi sp, x8, 0
-PMPZca_cp_cfg_RW_entry5_lxwr1000_4_c_fldsp:
+PMPZca_cg_cp_cfg_R_entry5_lxwr1000_4_c_fldsp:
   c.fldsp f8, 0(sp)
   mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry5_lxwr1000_4_c_fldsp, PMPZca_cp_cfg_RW_entry5_lxwr1000_4_c_fldsp_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_R_entry5_lxwr1000_4_c_fldsp, PMPZca_cg_cp_cfg_R_entry5_lxwr1000_4_c_fldsp_str)
 
 // PMP configuration 2: L = 1, R permissions, entry 4
   LA(x5, REGIONSTART)
@@ -120,28 +120,28 @@ PMPZca_cp_cfg_RW_entry5_lxwr1000_4_c_fldsp:
   li x15, 0x3f800000
   fmv.w.x f8, x15
   LA(x8, TEST_FOR_EXECUTION)
-PMPZca_cp_cfg_RW_entry4_lxwr1001_1_c_fsd:
+PMPZca_cg_cp_cfg_W_entry4_lxwr1001_1_c_fsd:
   c.fsd f8, 0(x8)
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry4_lxwr1001_1_c_fsd, PMPZca_cp_cfg_RW_entry4_lxwr1001_1_c_fsd_str)
-PMPZca_cp_cfg_RW_entry4_lxwr1001_2_c_fld:
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_W_entry4_lxwr1001_1_c_fsd, PMPZca_cg_cp_cfg_W_entry4_lxwr1001_1_c_fsd_str)
+PMPZca_cg_cp_cfg_R_entry4_lxwr1001_2_c_fld:
   c.fld f8, 0(x8)
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry4_lxwr1001_2_c_fld, PMPZca_cp_cfg_RW_entry4_lxwr1001_2_c_fld_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_R_entry4_lxwr1001_2_c_fld, PMPZca_cg_cp_cfg_R_entry4_lxwr1001_2_c_fld_str)
   mv t0, sp
   addi sp, x8, 0
-PMPZca_cp_cfg_RW_entry4_lxwr1001_3_c_fsdsp:
+PMPZca_cg_cp_cfg_W_entry4_lxwr1001_3_c_fsdsp:
   c.fsdsp f8, 0(sp)
   mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry4_lxwr1001_3_c_fsdsp, PMPZca_cp_cfg_RW_entry4_lxwr1001_3_c_fsdsp_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_W_entry4_lxwr1001_3_c_fsdsp, PMPZca_cg_cp_cfg_W_entry4_lxwr1001_3_c_fsdsp_str)
   mv t0, sp
   addi sp, x8, 0
-PMPZca_cp_cfg_RW_entry4_lxwr1001_4_c_fldsp:
+PMPZca_cg_cp_cfg_R_entry4_lxwr1001_4_c_fldsp:
   c.fldsp f8, 0(sp)
   mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry4_lxwr1001_4_c_fldsp, PMPZca_cp_cfg_RW_entry4_lxwr1001_4_c_fldsp_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_R_entry4_lxwr1001_4_c_fldsp, PMPZca_cg_cp_cfg_R_entry4_lxwr1001_4_c_fldsp_str)
 
 // PMP configuration 3: L = 1, WR permissions, entry 3
   LA(x5, REGIONSTART)
@@ -158,28 +158,28 @@ PMPZca_cp_cfg_RW_entry4_lxwr1001_4_c_fldsp:
   li x15, 0x3f800000
   fmv.w.x f8, x15
   LA(x8, TEST_FOR_EXECUTION)
-PMPZca_cp_cfg_RW_entry3_lxwr1011_1_c_fsd:
+PMPZca_cg_cp_cfg_W_entry3_lxwr1011_1_c_fsd:
   c.fsd f8, 0(x8)
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry3_lxwr1011_1_c_fsd, PMPZca_cp_cfg_RW_entry3_lxwr1011_1_c_fsd_str)
-PMPZca_cp_cfg_RW_entry3_lxwr1011_2_c_fld:
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_W_entry3_lxwr1011_1_c_fsd, PMPZca_cg_cp_cfg_W_entry3_lxwr1011_1_c_fsd_str)
+PMPZca_cg_cp_cfg_R_entry3_lxwr1011_2_c_fld:
   c.fld f8, 0(x8)
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry3_lxwr1011_2_c_fld, PMPZca_cp_cfg_RW_entry3_lxwr1011_2_c_fld_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_R_entry3_lxwr1011_2_c_fld, PMPZca_cg_cp_cfg_R_entry3_lxwr1011_2_c_fld_str)
   mv t0, sp
   addi sp, x8, 0
-PMPZca_cp_cfg_RW_entry3_lxwr1011_3_c_fsdsp:
+PMPZca_cg_cp_cfg_W_entry3_lxwr1011_3_c_fsdsp:
   c.fsdsp f8, 0(sp)
   mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry3_lxwr1011_3_c_fsdsp, PMPZca_cp_cfg_RW_entry3_lxwr1011_3_c_fsdsp_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_W_entry3_lxwr1011_3_c_fsdsp, PMPZca_cg_cp_cfg_W_entry3_lxwr1011_3_c_fsdsp_str)
   mv t0, sp
   addi sp, x8, 0
-PMPZca_cp_cfg_RW_entry3_lxwr1011_4_c_fldsp:
+PMPZca_cg_cp_cfg_R_entry3_lxwr1011_4_c_fldsp:
   c.fldsp f8, 0(sp)
   mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry3_lxwr1011_4_c_fldsp, PMPZca_cp_cfg_RW_entry3_lxwr1011_4_c_fldsp_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_R_entry3_lxwr1011_4_c_fldsp, PMPZca_cg_cp_cfg_R_entry3_lxwr1011_4_c_fldsp_str)
 
 // PMP configuration 4: L = 1, X permissions, entry 2
   LA(x5, REGIONSTART)
@@ -196,28 +196,28 @@ PMPZca_cp_cfg_RW_entry3_lxwr1011_4_c_fldsp:
   li x15, 0x3f800000
   fmv.w.x f8, x15
   LA(x8, TEST_FOR_EXECUTION)
-PMPZca_cp_cfg_RW_entry2_lxwr1100_1_c_fsd:
+PMPZca_cg_cp_cfg_W_entry2_lxwr1100_1_c_fsd:
   c.fsd f8, 0(x8)
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry2_lxwr1100_1_c_fsd, PMPZca_cp_cfg_RW_entry2_lxwr1100_1_c_fsd_str)
-PMPZca_cp_cfg_RW_entry2_lxwr1100_2_c_fld:
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_W_entry2_lxwr1100_1_c_fsd, PMPZca_cg_cp_cfg_W_entry2_lxwr1100_1_c_fsd_str)
+PMPZca_cg_cp_cfg_R_entry2_lxwr1100_2_c_fld:
   c.fld f8, 0(x8)
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry2_lxwr1100_2_c_fld, PMPZca_cp_cfg_RW_entry2_lxwr1100_2_c_fld_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_R_entry2_lxwr1100_2_c_fld, PMPZca_cg_cp_cfg_R_entry2_lxwr1100_2_c_fld_str)
   mv t0, sp
   addi sp, x8, 0
-PMPZca_cp_cfg_RW_entry2_lxwr1100_3_c_fsdsp:
+PMPZca_cg_cp_cfg_W_entry2_lxwr1100_3_c_fsdsp:
   c.fsdsp f8, 0(sp)
   mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry2_lxwr1100_3_c_fsdsp, PMPZca_cp_cfg_RW_entry2_lxwr1100_3_c_fsdsp_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_W_entry2_lxwr1100_3_c_fsdsp, PMPZca_cg_cp_cfg_W_entry2_lxwr1100_3_c_fsdsp_str)
   mv t0, sp
   addi sp, x8, 0
-PMPZca_cp_cfg_RW_entry2_lxwr1100_4_c_fldsp:
+PMPZca_cg_cp_cfg_R_entry2_lxwr1100_4_c_fldsp:
   c.fldsp f8, 0(sp)
   mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry2_lxwr1100_4_c_fldsp, PMPZca_cp_cfg_RW_entry2_lxwr1100_4_c_fldsp_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_R_entry2_lxwr1100_4_c_fldsp, PMPZca_cg_cp_cfg_R_entry2_lxwr1100_4_c_fldsp_str)
 
 // PMP configuration 5: L = 1, XR permissions, entry 1
   LA(x5, REGIONSTART)
@@ -234,28 +234,28 @@ PMPZca_cp_cfg_RW_entry2_lxwr1100_4_c_fldsp:
   li x15, 0x3f800000
   fmv.w.x f8, x15
   LA(x8, TEST_FOR_EXECUTION)
-PMPZca_cp_cfg_RW_entry1_lxwr1101_1_c_fsd:
+PMPZca_cg_cp_cfg_W_entry1_lxwr1101_1_c_fsd:
   c.fsd f8, 0(x8)
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry1_lxwr1101_1_c_fsd, PMPZca_cp_cfg_RW_entry1_lxwr1101_1_c_fsd_str)
-PMPZca_cp_cfg_RW_entry1_lxwr1101_2_c_fld:
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_W_entry1_lxwr1101_1_c_fsd, PMPZca_cg_cp_cfg_W_entry1_lxwr1101_1_c_fsd_str)
+PMPZca_cg_cp_cfg_R_entry1_lxwr1101_2_c_fld:
   c.fld f8, 0(x8)
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry1_lxwr1101_2_c_fld, PMPZca_cp_cfg_RW_entry1_lxwr1101_2_c_fld_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_R_entry1_lxwr1101_2_c_fld, PMPZca_cg_cp_cfg_R_entry1_lxwr1101_2_c_fld_str)
   mv t0, sp
   addi sp, x8, 0
-PMPZca_cp_cfg_RW_entry1_lxwr1101_3_c_fsdsp:
+PMPZca_cg_cp_cfg_W_entry1_lxwr1101_3_c_fsdsp:
   c.fsdsp f8, 0(sp)
   mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry1_lxwr1101_3_c_fsdsp, PMPZca_cp_cfg_RW_entry1_lxwr1101_3_c_fsdsp_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_W_entry1_lxwr1101_3_c_fsdsp, PMPZca_cg_cp_cfg_W_entry1_lxwr1101_3_c_fsdsp_str)
   mv t0, sp
   addi sp, x8, 0
-PMPZca_cp_cfg_RW_entry1_lxwr1101_4_c_fldsp:
+PMPZca_cg_cp_cfg_R_entry1_lxwr1101_4_c_fldsp:
   c.fldsp f8, 0(sp)
   mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry1_lxwr1101_4_c_fldsp, PMPZca_cp_cfg_RW_entry1_lxwr1101_4_c_fldsp_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_R_entry1_lxwr1101_4_c_fldsp, PMPZca_cg_cp_cfg_R_entry1_lxwr1101_4_c_fldsp_str)
 
 // PMP configuration 6: L = 1, XWR permissions, entry 0
   LA(x5, REGIONSTART)
@@ -272,28 +272,28 @@ PMPZca_cp_cfg_RW_entry1_lxwr1101_4_c_fldsp:
   li x15, 0x3f800000
   fmv.w.x f8, x15
   LA(x8, TEST_FOR_EXECUTION)
-PMPZca_cp_cfg_RW_entry0_lxwr1111_1_c_fsd:
+PMPZca_cg_cp_cfg_W_entry0_lxwr1111_1_c_fsd:
   c.fsd f8, 0(x8)
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry0_lxwr1111_1_c_fsd, PMPZca_cp_cfg_RW_entry0_lxwr1111_1_c_fsd_str)
-PMPZca_cp_cfg_RW_entry0_lxwr1111_2_c_fld:
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_W_entry0_lxwr1111_1_c_fsd, PMPZca_cg_cp_cfg_W_entry0_lxwr1111_1_c_fsd_str)
+PMPZca_cg_cp_cfg_R_entry0_lxwr1111_2_c_fld:
   c.fld f8, 0(x8)
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry0_lxwr1111_2_c_fld, PMPZca_cp_cfg_RW_entry0_lxwr1111_2_c_fld_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_R_entry0_lxwr1111_2_c_fld, PMPZca_cg_cp_cfg_R_entry0_lxwr1111_2_c_fld_str)
   mv t0, sp
   addi sp, x8, 0
-PMPZca_cp_cfg_RW_entry0_lxwr1111_3_c_fsdsp:
+PMPZca_cg_cp_cfg_W_entry0_lxwr1111_3_c_fsdsp:
   c.fsdsp f8, 0(sp)
   mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry0_lxwr1111_3_c_fsdsp, PMPZca_cp_cfg_RW_entry0_lxwr1111_3_c_fsdsp_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_W_entry0_lxwr1111_3_c_fsdsp, PMPZca_cg_cp_cfg_W_entry0_lxwr1111_3_c_fsdsp_str)
   mv t0, sp
   addi sp, x8, 0
-PMPZca_cp_cfg_RW_entry0_lxwr1111_4_c_fldsp:
+PMPZca_cg_cp_cfg_R_entry0_lxwr1111_4_c_fldsp:
   c.fldsp f8, 0(sp)
   mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry0_lxwr1111_4_c_fldsp, PMPZca_cp_cfg_RW_entry0_lxwr1111_4_c_fldsp_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cg_cp_cfg_R_entry0_lxwr1111_4_c_fldsp, PMPZca_cg_cp_cfg_R_entry0_lxwr1111_4_c_fldsp_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -325,30 +325,30 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMPZca_cp_cfg_RW_entry5_lxwr1000_1_c_fsd_str: .string "\"test: 1; cg: PMPZca; cp: cp_cfg_RW; bin: entry5_lxwr1000_1_c.fsd\""
-PMPZca_cp_cfg_RW_entry5_lxwr1000_2_c_fld_str: .string "\"test: 2; cg: PMPZca; cp: cp_cfg_RW; bin: entry5_lxwr1000_2_c.fld\""
-PMPZca_cp_cfg_RW_entry5_lxwr1000_3_c_fsdsp_str: .string "\"test: 3; cg: PMPZca; cp: cp_cfg_RW; bin: entry5_lxwr1000_3_c.fsdsp\""
-PMPZca_cp_cfg_RW_entry5_lxwr1000_4_c_fldsp_str: .string "\"test: 4; cg: PMPZca; cp: cp_cfg_RW; bin: entry5_lxwr1000_4_c.fldsp\""
-PMPZca_cp_cfg_RW_entry4_lxwr1001_1_c_fsd_str: .string "\"test: 5; cg: PMPZca; cp: cp_cfg_RW; bin: entry4_lxwr1001_1_c.fsd\""
-PMPZca_cp_cfg_RW_entry4_lxwr1001_2_c_fld_str: .string "\"test: 6; cg: PMPZca; cp: cp_cfg_RW; bin: entry4_lxwr1001_2_c.fld\""
-PMPZca_cp_cfg_RW_entry4_lxwr1001_3_c_fsdsp_str: .string "\"test: 7; cg: PMPZca; cp: cp_cfg_RW; bin: entry4_lxwr1001_3_c.fsdsp\""
-PMPZca_cp_cfg_RW_entry4_lxwr1001_4_c_fldsp_str: .string "\"test: 8; cg: PMPZca; cp: cp_cfg_RW; bin: entry4_lxwr1001_4_c.fldsp\""
-PMPZca_cp_cfg_RW_entry3_lxwr1011_1_c_fsd_str: .string "\"test: 9; cg: PMPZca; cp: cp_cfg_RW; bin: entry3_lxwr1011_1_c.fsd\""
-PMPZca_cp_cfg_RW_entry3_lxwr1011_2_c_fld_str: .string "\"test: 10; cg: PMPZca; cp: cp_cfg_RW; bin: entry3_lxwr1011_2_c.fld\""
-PMPZca_cp_cfg_RW_entry3_lxwr1011_3_c_fsdsp_str: .string "\"test: 11; cg: PMPZca; cp: cp_cfg_RW; bin: entry3_lxwr1011_3_c.fsdsp\""
-PMPZca_cp_cfg_RW_entry3_lxwr1011_4_c_fldsp_str: .string "\"test: 12; cg: PMPZca; cp: cp_cfg_RW; bin: entry3_lxwr1011_4_c.fldsp\""
-PMPZca_cp_cfg_RW_entry2_lxwr1100_1_c_fsd_str: .string "\"test: 13; cg: PMPZca; cp: cp_cfg_RW; bin: entry2_lxwr1100_1_c.fsd\""
-PMPZca_cp_cfg_RW_entry2_lxwr1100_2_c_fld_str: .string "\"test: 14; cg: PMPZca; cp: cp_cfg_RW; bin: entry2_lxwr1100_2_c.fld\""
-PMPZca_cp_cfg_RW_entry2_lxwr1100_3_c_fsdsp_str: .string "\"test: 15; cg: PMPZca; cp: cp_cfg_RW; bin: entry2_lxwr1100_3_c.fsdsp\""
-PMPZca_cp_cfg_RW_entry2_lxwr1100_4_c_fldsp_str: .string "\"test: 16; cg: PMPZca; cp: cp_cfg_RW; bin: entry2_lxwr1100_4_c.fldsp\""
-PMPZca_cp_cfg_RW_entry1_lxwr1101_1_c_fsd_str: .string "\"test: 17; cg: PMPZca; cp: cp_cfg_RW; bin: entry1_lxwr1101_1_c.fsd\""
-PMPZca_cp_cfg_RW_entry1_lxwr1101_2_c_fld_str: .string "\"test: 18; cg: PMPZca; cp: cp_cfg_RW; bin: entry1_lxwr1101_2_c.fld\""
-PMPZca_cp_cfg_RW_entry1_lxwr1101_3_c_fsdsp_str: .string "\"test: 19; cg: PMPZca; cp: cp_cfg_RW; bin: entry1_lxwr1101_3_c.fsdsp\""
-PMPZca_cp_cfg_RW_entry1_lxwr1101_4_c_fldsp_str: .string "\"test: 20; cg: PMPZca; cp: cp_cfg_RW; bin: entry1_lxwr1101_4_c.fldsp\""
-PMPZca_cp_cfg_RW_entry0_lxwr1111_1_c_fsd_str: .string "\"test: 21; cg: PMPZca; cp: cp_cfg_RW; bin: entry0_lxwr1111_1_c.fsd\""
-PMPZca_cp_cfg_RW_entry0_lxwr1111_2_c_fld_str: .string "\"test: 22; cg: PMPZca; cp: cp_cfg_RW; bin: entry0_lxwr1111_2_c.fld\""
-PMPZca_cp_cfg_RW_entry0_lxwr1111_3_c_fsdsp_str: .string "\"test: 23; cg: PMPZca; cp: cp_cfg_RW; bin: entry0_lxwr1111_3_c.fsdsp\""
-PMPZca_cp_cfg_RW_entry0_lxwr1111_4_c_fldsp_str: .string "\"test: 24; cg: PMPZca; cp: cp_cfg_RW; bin: entry0_lxwr1111_4_c.fldsp\""
+PMPZca_cg_cp_cfg_W_entry5_lxwr1000_1_c_fsd_str: .string "\"test: 1; cg: PMPZca_cg; cp: cp_cfg_W; bin: entry5_lxwr1000_1_c.fsd\""
+PMPZca_cg_cp_cfg_R_entry5_lxwr1000_2_c_fld_str: .string "\"test: 2; cg: PMPZca_cg; cp: cp_cfg_R; bin: entry5_lxwr1000_2_c.fld\""
+PMPZca_cg_cp_cfg_W_entry5_lxwr1000_3_c_fsdsp_str: .string "\"test: 3; cg: PMPZca_cg; cp: cp_cfg_W; bin: entry5_lxwr1000_3_c.fsdsp\""
+PMPZca_cg_cp_cfg_R_entry5_lxwr1000_4_c_fldsp_str: .string "\"test: 4; cg: PMPZca_cg; cp: cp_cfg_R; bin: entry5_lxwr1000_4_c.fldsp\""
+PMPZca_cg_cp_cfg_W_entry4_lxwr1001_1_c_fsd_str: .string "\"test: 5; cg: PMPZca_cg; cp: cp_cfg_W; bin: entry4_lxwr1001_1_c.fsd\""
+PMPZca_cg_cp_cfg_R_entry4_lxwr1001_2_c_fld_str: .string "\"test: 6; cg: PMPZca_cg; cp: cp_cfg_R; bin: entry4_lxwr1001_2_c.fld\""
+PMPZca_cg_cp_cfg_W_entry4_lxwr1001_3_c_fsdsp_str: .string "\"test: 7; cg: PMPZca_cg; cp: cp_cfg_W; bin: entry4_lxwr1001_3_c.fsdsp\""
+PMPZca_cg_cp_cfg_R_entry4_lxwr1001_4_c_fldsp_str: .string "\"test: 8; cg: PMPZca_cg; cp: cp_cfg_R; bin: entry4_lxwr1001_4_c.fldsp\""
+PMPZca_cg_cp_cfg_W_entry3_lxwr1011_1_c_fsd_str: .string "\"test: 9; cg: PMPZca_cg; cp: cp_cfg_W; bin: entry3_lxwr1011_1_c.fsd\""
+PMPZca_cg_cp_cfg_R_entry3_lxwr1011_2_c_fld_str: .string "\"test: 10; cg: PMPZca_cg; cp: cp_cfg_R; bin: entry3_lxwr1011_2_c.fld\""
+PMPZca_cg_cp_cfg_W_entry3_lxwr1011_3_c_fsdsp_str: .string "\"test: 11; cg: PMPZca_cg; cp: cp_cfg_W; bin: entry3_lxwr1011_3_c.fsdsp\""
+PMPZca_cg_cp_cfg_R_entry3_lxwr1011_4_c_fldsp_str: .string "\"test: 12; cg: PMPZca_cg; cp: cp_cfg_R; bin: entry3_lxwr1011_4_c.fldsp\""
+PMPZca_cg_cp_cfg_W_entry2_lxwr1100_1_c_fsd_str: .string "\"test: 13; cg: PMPZca_cg; cp: cp_cfg_W; bin: entry2_lxwr1100_1_c.fsd\""
+PMPZca_cg_cp_cfg_R_entry2_lxwr1100_2_c_fld_str: .string "\"test: 14; cg: PMPZca_cg; cp: cp_cfg_R; bin: entry2_lxwr1100_2_c.fld\""
+PMPZca_cg_cp_cfg_W_entry2_lxwr1100_3_c_fsdsp_str: .string "\"test: 15; cg: PMPZca_cg; cp: cp_cfg_W; bin: entry2_lxwr1100_3_c.fsdsp\""
+PMPZca_cg_cp_cfg_R_entry2_lxwr1100_4_c_fldsp_str: .string "\"test: 16; cg: PMPZca_cg; cp: cp_cfg_R; bin: entry2_lxwr1100_4_c.fldsp\""
+PMPZca_cg_cp_cfg_W_entry1_lxwr1101_1_c_fsd_str: .string "\"test: 17; cg: PMPZca_cg; cp: cp_cfg_W; bin: entry1_lxwr1101_1_c.fsd\""
+PMPZca_cg_cp_cfg_R_entry1_lxwr1101_2_c_fld_str: .string "\"test: 18; cg: PMPZca_cg; cp: cp_cfg_R; bin: entry1_lxwr1101_2_c.fld\""
+PMPZca_cg_cp_cfg_W_entry1_lxwr1101_3_c_fsdsp_str: .string "\"test: 19; cg: PMPZca_cg; cp: cp_cfg_W; bin: entry1_lxwr1101_3_c.fsdsp\""
+PMPZca_cg_cp_cfg_R_entry1_lxwr1101_4_c_fldsp_str: .string "\"test: 20; cg: PMPZca_cg; cp: cp_cfg_R; bin: entry1_lxwr1101_4_c.fldsp\""
+PMPZca_cg_cp_cfg_W_entry0_lxwr1111_1_c_fsd_str: .string "\"test: 21; cg: PMPZca_cg; cp: cp_cfg_W; bin: entry0_lxwr1111_1_c.fsd\""
+PMPZca_cg_cp_cfg_R_entry0_lxwr1111_2_c_fld_str: .string "\"test: 22; cg: PMPZca_cg; cp: cp_cfg_R; bin: entry0_lxwr1111_2_c.fld\""
+PMPZca_cg_cp_cfg_W_entry0_lxwr1111_3_c_fsdsp_str: .string "\"test: 23; cg: PMPZca_cg; cp: cp_cfg_W; bin: entry0_lxwr1111_3_c.fsdsp\""
+PMPZca_cg_cp_cfg_R_entry0_lxwr1111_4_c_fldsp_str: .string "\"test: 24; cg: PMPZca_cg; cp: cp_cfg_R; bin: entry0_lxwr1111_4_c.fldsp\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

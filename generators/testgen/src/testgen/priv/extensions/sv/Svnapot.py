@@ -10,7 +10,7 @@
 
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.sv.access import add_rwx_test
+from testgen.priv.extensions.sv.access import Crosses, add_rwx_test, cross_names
 from testgen.priv.extensions.sv.assembly import NAPOT_DATA, NAPOT_RESERVED_DATA
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
@@ -32,12 +32,19 @@ def _permissions(umode: bool, ppn_bits: str | None = "(1 << 13)") -> PteFlags:
     return PteFlags(user=umode, extra=extra_bits)
 
 
-def _begin_test(test_data: TestData, sv: SvMode, mode: str, topic: str) -> TestChunk:
+def _crosses(encoding: str, mode: str) -> Crosses:
+    m = mode[0].lower()
+    prefix = f"Svnapot_{encoding}"
+    return Crosses("Svnapot_cg", f"{prefix}_write_{m}", f"{prefix}_read_{m}", f"{prefix}_exec_{m}")
+
+
+def _begin_test(test_data: TestData, sv: SvMode, mode: str, topic: str, banner: str) -> TestChunk:
     return begin_sv_test(
         test_data,
         sv,
         mode,
         f"{sv.name}_{topic}_{mode}",
+        coverpoint=banner,
         va_defs=(("va_data", _NAPOT_VA[sv.name]),),
     )
 
@@ -49,7 +56,8 @@ def _finish_test(test_data: TestData, sv: SvMode, data: str) -> TestChunk:
 
 
 def _make_napot(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
-    chunk = _begin_test(test_data, sv, mode, "Svnapot")
+    crosses = _crosses("legal_enc", mode)
+    chunk = _begin_test(test_data, sv, mode, "Svnapot", cross_names(crosses))
     permissions = _permissions(mode == "Umode")
     chunk.code.extend(
         [
@@ -78,6 +86,7 @@ def _make_napot(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     f"va_data{offset}",
                     0,
                     f"test1_access{access}",
+                    crosses=crosses,
                     address=[f"LI(a5, va_data{offset})"],
                 ),
                 "",
@@ -87,7 +96,9 @@ def _make_napot(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
 
 
 def _make_reserved(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
-    chunk = _begin_test(test_data, sv, mode, "Svnapot_reserved_enc")
+    # PTE.N on a superpage is covered by the reserved_ppni crosses, a reserved PPN encoding by reserved_enc.
+    superpage, reserved_ppn = _crosses("reserved_ppni", mode), _crosses("reserved_enc", mode)
+    chunk = _begin_test(test_data, sv, mode, "Svnapot_reserved_enc", cross_names(superpage, reserved_ppn))
     chunk.code.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
     umode = mode == "Umode"
     number = 0
@@ -107,6 +118,7 @@ def _make_reserved(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     level,
                     f"test{number}",
                     driver_mode="Smode",
+                    crosses=superpage,
                 ),
                 "",
             ]
@@ -127,6 +139,7 @@ def _make_reserved(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     0,
                     f"test{number}",
                     driver_mode="Smode",
+                    crosses=reserved_ppn,
                 ),
                 "",
             ]

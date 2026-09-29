@@ -29,7 +29,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_sv39_Svnapot_Umode
+// Svnapot_legal_enc_write_u, Svnapot_legal_enc_read_u, Svnapot_legal_enc_exec_u
 /////////////////////////////////
 
 
@@ -84,76 +84,76 @@ main:
   addi a2, a2, 16
 
 // Store
-Svnapot_cp_sv39_Svnapot_Umode_test1_access1_store:
+Svnapot_cg_Svnapot_legal_enc_write_u_test1_access1_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Svnapot_cp_sv39_Svnapot_Umode_test1_access1_load:
+Svnapot_cg_Svnapot_legal_enc_read_u_test1_access1_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Svnapot_cp_sv39_Svnapot_Umode_test1_access1_exec:
+Svnapot_cg_Svnapot_legal_enc_exec_u_test1_access1_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv39_Svnapot_Umode_test1_access1_store, Svnapot_cp_sv39_Svnapot_Umode_test1_access1_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cg_Svnapot_legal_enc_write_u_test1_access1_store, Svnapot_cg_Svnapot_legal_enc_write_u_test1_access1_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svnapot_cp_sv39_Svnapot_Umode_test1_access1_load, Svnapot_cp_sv39_Svnapot_Umode_test1_access1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svnapot_cg_Svnapot_legal_enc_read_u_test1_access1_load, Svnapot_cg_Svnapot_legal_enc_read_u_test1_access1_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svnapot_cp_sv39_Svnapot_Umode_test1_access1_exec, Svnapot_cp_sv39_Svnapot_Umode_test1_access1_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svnapot_cg_Svnapot_legal_enc_exec_u_test1_access1_exec, Svnapot_cg_Svnapot_legal_enc_exec_u_test1_access1_exec_str)
 
   LI(a5, va_data+0x2000)
   addi a2, a2, 16
 
 // Store
-Svnapot_cp_sv39_Svnapot_Umode_test1_access2_store:
+Svnapot_cg_Svnapot_legal_enc_write_u_test1_access2_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Svnapot_cp_sv39_Svnapot_Umode_test1_access2_load:
+Svnapot_cg_Svnapot_legal_enc_read_u_test1_access2_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Svnapot_cp_sv39_Svnapot_Umode_test1_access2_exec:
+Svnapot_cg_Svnapot_legal_enc_exec_u_test1_access2_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv39_Svnapot_Umode_test1_access2_store, Svnapot_cp_sv39_Svnapot_Umode_test1_access2_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cg_Svnapot_legal_enc_write_u_test1_access2_store, Svnapot_cg_Svnapot_legal_enc_write_u_test1_access2_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svnapot_cp_sv39_Svnapot_Umode_test1_access2_load, Svnapot_cp_sv39_Svnapot_Umode_test1_access2_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svnapot_cg_Svnapot_legal_enc_read_u_test1_access2_load, Svnapot_cg_Svnapot_legal_enc_read_u_test1_access2_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svnapot_cp_sv39_Svnapot_Umode_test1_access2_exec, Svnapot_cp_sv39_Svnapot_Umode_test1_access2_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svnapot_cg_Svnapot_legal_enc_exec_u_test1_access2_exec, Svnapot_cg_Svnapot_legal_enc_exec_u_test1_access2_exec_str)
 
   LI(a5, va_data+0xF000)
   addi a2, a2, 16
 
 // Store
-Svnapot_cp_sv39_Svnapot_Umode_test1_access3_store:
+Svnapot_cg_Svnapot_legal_enc_write_u_test1_access3_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Svnapot_cp_sv39_Svnapot_Umode_test1_access3_load:
+Svnapot_cg_Svnapot_legal_enc_read_u_test1_access3_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Svnapot_cp_sv39_Svnapot_Umode_test1_access3_exec:
+Svnapot_cg_Svnapot_legal_enc_exec_u_test1_access3_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv39_Svnapot_Umode_test1_access3_store, Svnapot_cp_sv39_Svnapot_Umode_test1_access3_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cg_Svnapot_legal_enc_write_u_test1_access3_store, Svnapot_cg_Svnapot_legal_enc_write_u_test1_access3_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svnapot_cp_sv39_Svnapot_Umode_test1_access3_load, Svnapot_cp_sv39_Svnapot_Umode_test1_access3_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svnapot_cg_Svnapot_legal_enc_read_u_test1_access3_load, Svnapot_cg_Svnapot_legal_enc_read_u_test1_access3_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svnapot_cp_sv39_Svnapot_Umode_test1_access3_exec, Svnapot_cp_sv39_Svnapot_Umode_test1_access3_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svnapot_cg_Svnapot_legal_enc_exec_u_test1_access3_exec, Svnapot_cg_Svnapot_legal_enc_exec_u_test1_access3_exec_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -201,15 +201,15 @@ rvtest_slvl1_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Svnapot_cp_sv39_Svnapot_Umode_test1_access1_store_str: .string "\"test: 28; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access1_store\""
-Svnapot_cp_sv39_Svnapot_Umode_test1_access1_load_str: .string "\"test: 29; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access1_load\""
-Svnapot_cp_sv39_Svnapot_Umode_test1_access1_exec_str: .string "\"test: 30; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access1_exec\""
-Svnapot_cp_sv39_Svnapot_Umode_test1_access2_store_str: .string "\"test: 31; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access2_store\""
-Svnapot_cp_sv39_Svnapot_Umode_test1_access2_load_str: .string "\"test: 32; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access2_load\""
-Svnapot_cp_sv39_Svnapot_Umode_test1_access2_exec_str: .string "\"test: 33; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access2_exec\""
-Svnapot_cp_sv39_Svnapot_Umode_test1_access3_store_str: .string "\"test: 34; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access3_store\""
-Svnapot_cp_sv39_Svnapot_Umode_test1_access3_load_str: .string "\"test: 35; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access3_load\""
-Svnapot_cp_sv39_Svnapot_Umode_test1_access3_exec_str: .string "\"test: 36; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access3_exec\""
+Svnapot_cg_Svnapot_legal_enc_write_u_test1_access1_store_str: .string "\"test: 28; cg: Svnapot_cg; cp: Svnapot_legal_enc_write_u; bin: test1_access1_store\""
+Svnapot_cg_Svnapot_legal_enc_read_u_test1_access1_load_str: .string "\"test: 29; cg: Svnapot_cg; cp: Svnapot_legal_enc_read_u; bin: test1_access1_load\""
+Svnapot_cg_Svnapot_legal_enc_exec_u_test1_access1_exec_str: .string "\"test: 30; cg: Svnapot_cg; cp: Svnapot_legal_enc_exec_u; bin: test1_access1_exec\""
+Svnapot_cg_Svnapot_legal_enc_write_u_test1_access2_store_str: .string "\"test: 31; cg: Svnapot_cg; cp: Svnapot_legal_enc_write_u; bin: test1_access2_store\""
+Svnapot_cg_Svnapot_legal_enc_read_u_test1_access2_load_str: .string "\"test: 32; cg: Svnapot_cg; cp: Svnapot_legal_enc_read_u; bin: test1_access2_load\""
+Svnapot_cg_Svnapot_legal_enc_exec_u_test1_access2_exec_str: .string "\"test: 33; cg: Svnapot_cg; cp: Svnapot_legal_enc_exec_u; bin: test1_access2_exec\""
+Svnapot_cg_Svnapot_legal_enc_write_u_test1_access3_store_str: .string "\"test: 34; cg: Svnapot_cg; cp: Svnapot_legal_enc_write_u; bin: test1_access3_store\""
+Svnapot_cg_Svnapot_legal_enc_read_u_test1_access3_load_str: .string "\"test: 35; cg: Svnapot_cg; cp: Svnapot_legal_enc_read_u; bin: test1_access3_load\""
+Svnapot_cg_Svnapot_legal_enc_exec_u_test1_access3_exec_str: .string "\"test: 36; cg: Svnapot_cg; cp: Svnapot_legal_enc_exec_u; bin: test1_access3_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

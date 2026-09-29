@@ -35,7 +35,7 @@ RVTEST_BEGIN
 //   Write ones to pmpaddr CSRs and check bits 63:54 read back as zero.
 /////////////////////////////////
 
-PMPSm_cp_pmpaddr_upper_zero_all_ones:
+PMPSm_cg_cp_pmpaddr_upper_zero_all_ones:
 // Write ones to every pmpaddr CSR and check bits 63:54 read back as zero
   LI(t0, -1)
   LI(t1, 0xFFC0000000000000)
@@ -44,7 +44,7 @@ PMPSm_cp_pmpaddr_upper_zero_all_ones:
 1:  csrw pmpaddri, t0
   csrr t2, pmpaddri
   and t2, t2, t1
-  RVTEST_SIGUPD(x2, x5, x4, x7, 1b, PMPSm_cp_pmpaddr_upper_zero_all_ones_str)
+  RVTEST_SIGUPD(x2, x5, x4, x7, 1b, PMPSm_cg_cp_pmpaddr_upper_zero_all_ones_str)
   .set pmpaddri, pmpaddri+1
   .endr
 
@@ -58,7 +58,7 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-PMPSm_cp_pmpaddr_upper_zero_all_ones_str: .string "\"test: 25; cg: PMPSm; cp: cp_pmpaddr_upper_zero; bin: all_ones\""
+PMPSm_cg_cp_pmpaddr_upper_zero_all_ones_str: .string "\"test: 25; cg: PMPSm_cg; cp: cp_pmpaddr_upper_zero; bin: all_ones\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

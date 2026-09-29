@@ -34,12 +34,12 @@ RVTEST_BEGIN
 //   Write zero to every pmpcfg CSR and check the readback.
 /////////////////////////////////
 
-PMPSm_cp_pmpcfg_walk_zero:
+PMPSm_cg_cp_pmpcfg_walk_zero:
 // Write zero to every pmpcfg CSR
   .set pmpcfgi, CSR_PMPCFG0
   .rept UDB_NUM_PMP_ENTRIES / (UDB_MXLEN / 8)
 1:  LI(t2, 0)
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_zero_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cg_cp_pmpcfg_walk_zero_str)
   .set pmpcfgi, pmpcfgi + (UDB_MXLEN / 32)
   .endr
 
@@ -53,7 +53,7 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-PMPSm_cp_pmpcfg_walk_zero_str: .string "\"test: 1; cg: PMPSm; cp: cp_pmpcfg_walk; bin: zero\""
+PMPSm_cg_cp_pmpcfg_walk_zero_str: .string "\"test: 1; cg: PMPSm_cg; cp: cp_pmpcfg_walk; bin: zero\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

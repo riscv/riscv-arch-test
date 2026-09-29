@@ -31,7 +31,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_priority_off
+// cp_priority_off_jalr, cp_priority_off_lw and cp_priority_off_sw
 //   {jalr, sw, lw} at a region covered by entries 0..3 = OFF, NAPOT XR, OFF, NAPOT XWR; entry 1 decides.
 /////////////////////////////////
 
@@ -79,21 +79,21 @@ RVTEST_BEGIN
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPSm_cp_priority_off_entry1_1_jalr:
+PMPSm_cg_cp_priority_off_jalr_entry1_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_off_entry1_1_jalr, PMPSm_cp_priority_off_entry1_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_off_jalr_entry1_1_jalr, PMPSm_cg_cp_priority_off_jalr_entry1_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_priority_off_entry1_2_sw:
+PMPSm_cg_cp_priority_off_sw_entry1_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_off_entry1_2_sw, PMPSm_cp_priority_off_entry1_2_sw_str)
-PMPSm_cp_priority_off_entry1_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_off_sw_entry1_2_sw, PMPSm_cg_cp_priority_off_sw_entry1_2_sw_str)
+PMPSm_cg_cp_priority_off_lw_entry1_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_off_entry1_3_lw, PMPSm_cp_priority_off_entry1_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_priority_off_lw_entry1_3_lw, PMPSm_cg_cp_priority_off_lw_entry1_3_lw_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -125,9 +125,9 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMPSm_cp_priority_off_entry1_1_jalr_str: .string "\"test: 225; cg: PMPSm; cp: cp_priority_off; bin: entry1_1_jalr\""
-PMPSm_cp_priority_off_entry1_2_sw_str: .string "\"test: 226; cg: PMPSm; cp: cp_priority_off; bin: entry1_2_sw\""
-PMPSm_cp_priority_off_entry1_3_lw_str: .string "\"test: 227; cg: PMPSm; cp: cp_priority_off; bin: entry1_3_lw\""
+PMPSm_cg_cp_priority_off_jalr_entry1_1_jalr_str: .string "\"test: 225; cg: PMPSm_cg; cp: cp_priority_off_jalr; bin: entry1_1_jalr\""
+PMPSm_cg_cp_priority_off_sw_entry1_2_sw_str: .string "\"test: 226; cg: PMPSm_cg; cp: cp_priority_off_sw; bin: entry1_2_sw\""
+PMPSm_cg_cp_priority_off_lw_entry1_3_lw_str: .string "\"test: 227; cg: PMPSm_cg; cp: cp_priority_off_lw; bin: entry1_3_lw\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

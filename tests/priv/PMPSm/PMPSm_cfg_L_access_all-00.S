@@ -30,7 +30,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_cfg_L_access_all and cp_none
+// cp_cfg_L_access_exec, cp_cfg_L_access_read, cp_cfg_L_access_write, cp_none_jalr, cp_none_lw and cp_none_sw
 //   {jalr, sw, lw} with every PMP entry off, then at a region whose entry has L = 0, A = NAPOT, XWR = 000, for every entry; all succeed.
 /////////////////////////////////
 
@@ -56,21 +56,21 @@ RVTEST_BEGIN
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPSm_cp_none_all_off_1_jalr:
+PMPSm_cg_cp_none_jalr_all_off_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_none_all_off_1_jalr, PMPSm_cp_none_all_off_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_none_jalr_all_off_1_jalr, PMPSm_cg_cp_none_jalr_all_off_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_none_all_off_2_sw:
+PMPSm_cg_cp_none_sw_all_off_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_none_all_off_2_sw, PMPSm_cp_none_all_off_2_sw_str)
-PMPSm_cp_none_all_off_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_none_sw_all_off_2_sw, PMPSm_cg_cp_none_sw_all_off_2_sw_str)
+PMPSm_cg_cp_none_lw_all_off_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_none_all_off_3_lw, PMPSm_cp_none_all_off_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_none_lw_all_off_3_lw, PMPSm_cg_cp_none_lw_all_off_3_lw_str)
 
   RVTEST_PMP_SET_BACKGROUND x4
 
@@ -93,21 +93,21 @@ PMPSm_cp_none_all_off_3_lw:
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPSm_cp_cfg_L_access_all_entry14_1_jalr:
+PMPSm_cg_cp_cfg_L_access_exec_entry14_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry14_1_jalr, PMPSm_cp_cfg_L_access_all_entry14_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_exec_entry14_1_jalr, PMPSm_cg_cp_cfg_L_access_exec_entry14_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_cfg_L_access_all_entry14_2_sw:
+PMPSm_cg_cp_cfg_L_access_write_entry14_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry14_2_sw, PMPSm_cp_cfg_L_access_all_entry14_2_sw_str)
-PMPSm_cp_cfg_L_access_all_entry14_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_write_entry14_2_sw, PMPSm_cg_cp_cfg_L_access_write_entry14_2_sw_str)
+PMPSm_cg_cp_cfg_L_access_read_entry14_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry14_3_lw, PMPSm_cp_cfg_L_access_all_entry14_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_read_entry14_3_lw, PMPSm_cg_cp_cfg_L_access_read_entry14_3_lw_str)
 
 // PMP configuration 2: entry 13
   LA(x5, REGIONSTART)
@@ -128,21 +128,21 @@ PMPSm_cp_cfg_L_access_all_entry14_3_lw:
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPSm_cp_cfg_L_access_all_entry13_1_jalr:
+PMPSm_cg_cp_cfg_L_access_exec_entry13_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry13_1_jalr, PMPSm_cp_cfg_L_access_all_entry13_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_exec_entry13_1_jalr, PMPSm_cg_cp_cfg_L_access_exec_entry13_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_cfg_L_access_all_entry13_2_sw:
+PMPSm_cg_cp_cfg_L_access_write_entry13_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry13_2_sw, PMPSm_cp_cfg_L_access_all_entry13_2_sw_str)
-PMPSm_cp_cfg_L_access_all_entry13_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_write_entry13_2_sw, PMPSm_cg_cp_cfg_L_access_write_entry13_2_sw_str)
+PMPSm_cg_cp_cfg_L_access_read_entry13_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry13_3_lw, PMPSm_cp_cfg_L_access_all_entry13_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_read_entry13_3_lw, PMPSm_cg_cp_cfg_L_access_read_entry13_3_lw_str)
 
 // PMP configuration 3: entry 12
   LA(x5, REGIONSTART)
@@ -163,21 +163,21 @@ PMPSm_cp_cfg_L_access_all_entry13_3_lw:
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPSm_cp_cfg_L_access_all_entry12_1_jalr:
+PMPSm_cg_cp_cfg_L_access_exec_entry12_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry12_1_jalr, PMPSm_cp_cfg_L_access_all_entry12_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_exec_entry12_1_jalr, PMPSm_cg_cp_cfg_L_access_exec_entry12_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_cfg_L_access_all_entry12_2_sw:
+PMPSm_cg_cp_cfg_L_access_write_entry12_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry12_2_sw, PMPSm_cp_cfg_L_access_all_entry12_2_sw_str)
-PMPSm_cp_cfg_L_access_all_entry12_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_write_entry12_2_sw, PMPSm_cg_cp_cfg_L_access_write_entry12_2_sw_str)
+PMPSm_cg_cp_cfg_L_access_read_entry12_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry12_3_lw, PMPSm_cp_cfg_L_access_all_entry12_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_read_entry12_3_lw, PMPSm_cg_cp_cfg_L_access_read_entry12_3_lw_str)
 
 // PMP configuration 4: entry 11
   LA(x5, REGIONSTART)
@@ -194,21 +194,21 @@ PMPSm_cp_cfg_L_access_all_entry12_3_lw:
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPSm_cp_cfg_L_access_all_entry11_1_jalr:
+PMPSm_cg_cp_cfg_L_access_exec_entry11_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry11_1_jalr, PMPSm_cp_cfg_L_access_all_entry11_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_exec_entry11_1_jalr, PMPSm_cg_cp_cfg_L_access_exec_entry11_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_cfg_L_access_all_entry11_2_sw:
+PMPSm_cg_cp_cfg_L_access_write_entry11_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry11_2_sw, PMPSm_cp_cfg_L_access_all_entry11_2_sw_str)
-PMPSm_cp_cfg_L_access_all_entry11_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_write_entry11_2_sw, PMPSm_cg_cp_cfg_L_access_write_entry11_2_sw_str)
+PMPSm_cg_cp_cfg_L_access_read_entry11_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry11_3_lw, PMPSm_cp_cfg_L_access_all_entry11_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_read_entry11_3_lw, PMPSm_cg_cp_cfg_L_access_read_entry11_3_lw_str)
 
 // PMP configuration 5: entry 10
   LA(x5, REGIONSTART)
@@ -225,21 +225,21 @@ PMPSm_cp_cfg_L_access_all_entry11_3_lw:
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPSm_cp_cfg_L_access_all_entry10_1_jalr:
+PMPSm_cg_cp_cfg_L_access_exec_entry10_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry10_1_jalr, PMPSm_cp_cfg_L_access_all_entry10_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_exec_entry10_1_jalr, PMPSm_cg_cp_cfg_L_access_exec_entry10_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_cfg_L_access_all_entry10_2_sw:
+PMPSm_cg_cp_cfg_L_access_write_entry10_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry10_2_sw, PMPSm_cp_cfg_L_access_all_entry10_2_sw_str)
-PMPSm_cp_cfg_L_access_all_entry10_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_write_entry10_2_sw, PMPSm_cg_cp_cfg_L_access_write_entry10_2_sw_str)
+PMPSm_cg_cp_cfg_L_access_read_entry10_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry10_3_lw, PMPSm_cp_cfg_L_access_all_entry10_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_read_entry10_3_lw, PMPSm_cg_cp_cfg_L_access_read_entry10_3_lw_str)
 
 // PMP configuration 6: entry 9
   LA(x5, REGIONSTART)
@@ -256,21 +256,21 @@ PMPSm_cp_cfg_L_access_all_entry10_3_lw:
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPSm_cp_cfg_L_access_all_entry9_1_jalr:
+PMPSm_cg_cp_cfg_L_access_exec_entry9_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry9_1_jalr, PMPSm_cp_cfg_L_access_all_entry9_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_exec_entry9_1_jalr, PMPSm_cg_cp_cfg_L_access_exec_entry9_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_cfg_L_access_all_entry9_2_sw:
+PMPSm_cg_cp_cfg_L_access_write_entry9_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry9_2_sw, PMPSm_cp_cfg_L_access_all_entry9_2_sw_str)
-PMPSm_cp_cfg_L_access_all_entry9_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_write_entry9_2_sw, PMPSm_cg_cp_cfg_L_access_write_entry9_2_sw_str)
+PMPSm_cg_cp_cfg_L_access_read_entry9_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry9_3_lw, PMPSm_cp_cfg_L_access_all_entry9_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_read_entry9_3_lw, PMPSm_cg_cp_cfg_L_access_read_entry9_3_lw_str)
 
 // PMP configuration 7: entry 8
   LA(x5, REGIONSTART)
@@ -287,21 +287,21 @@ PMPSm_cp_cfg_L_access_all_entry9_3_lw:
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPSm_cp_cfg_L_access_all_entry8_1_jalr:
+PMPSm_cg_cp_cfg_L_access_exec_entry8_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry8_1_jalr, PMPSm_cp_cfg_L_access_all_entry8_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_exec_entry8_1_jalr, PMPSm_cg_cp_cfg_L_access_exec_entry8_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_cfg_L_access_all_entry8_2_sw:
+PMPSm_cg_cp_cfg_L_access_write_entry8_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry8_2_sw, PMPSm_cp_cfg_L_access_all_entry8_2_sw_str)
-PMPSm_cp_cfg_L_access_all_entry8_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_write_entry8_2_sw, PMPSm_cg_cp_cfg_L_access_write_entry8_2_sw_str)
+PMPSm_cg_cp_cfg_L_access_read_entry8_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry8_3_lw, PMPSm_cp_cfg_L_access_all_entry8_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_read_entry8_3_lw, PMPSm_cg_cp_cfg_L_access_read_entry8_3_lw_str)
 
 // PMP configuration 8: entry 7
   LA(x5, REGIONSTART)
@@ -322,21 +322,21 @@ PMPSm_cp_cfg_L_access_all_entry8_3_lw:
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPSm_cp_cfg_L_access_all_entry7_1_jalr:
+PMPSm_cg_cp_cfg_L_access_exec_entry7_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry7_1_jalr, PMPSm_cp_cfg_L_access_all_entry7_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_exec_entry7_1_jalr, PMPSm_cg_cp_cfg_L_access_exec_entry7_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_cfg_L_access_all_entry7_2_sw:
+PMPSm_cg_cp_cfg_L_access_write_entry7_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry7_2_sw, PMPSm_cp_cfg_L_access_all_entry7_2_sw_str)
-PMPSm_cp_cfg_L_access_all_entry7_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_write_entry7_2_sw, PMPSm_cg_cp_cfg_L_access_write_entry7_2_sw_str)
+PMPSm_cg_cp_cfg_L_access_read_entry7_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry7_3_lw, PMPSm_cp_cfg_L_access_all_entry7_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_read_entry7_3_lw, PMPSm_cg_cp_cfg_L_access_read_entry7_3_lw_str)
 
 // PMP configuration 9: entry 6
   LA(x5, REGIONSTART)
@@ -357,21 +357,21 @@ PMPSm_cp_cfg_L_access_all_entry7_3_lw:
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPSm_cp_cfg_L_access_all_entry6_1_jalr:
+PMPSm_cg_cp_cfg_L_access_exec_entry6_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry6_1_jalr, PMPSm_cp_cfg_L_access_all_entry6_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_exec_entry6_1_jalr, PMPSm_cg_cp_cfg_L_access_exec_entry6_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_cfg_L_access_all_entry6_2_sw:
+PMPSm_cg_cp_cfg_L_access_write_entry6_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry6_2_sw, PMPSm_cp_cfg_L_access_all_entry6_2_sw_str)
-PMPSm_cp_cfg_L_access_all_entry6_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_write_entry6_2_sw, PMPSm_cg_cp_cfg_L_access_write_entry6_2_sw_str)
+PMPSm_cg_cp_cfg_L_access_read_entry6_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry6_3_lw, PMPSm_cp_cfg_L_access_all_entry6_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_read_entry6_3_lw, PMPSm_cg_cp_cfg_L_access_read_entry6_3_lw_str)
 
 // PMP configuration 10: entry 5
   LA(x5, REGIONSTART)
@@ -392,21 +392,21 @@ PMPSm_cp_cfg_L_access_all_entry6_3_lw:
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPSm_cp_cfg_L_access_all_entry5_1_jalr:
+PMPSm_cg_cp_cfg_L_access_exec_entry5_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry5_1_jalr, PMPSm_cp_cfg_L_access_all_entry5_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_exec_entry5_1_jalr, PMPSm_cg_cp_cfg_L_access_exec_entry5_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_cfg_L_access_all_entry5_2_sw:
+PMPSm_cg_cp_cfg_L_access_write_entry5_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry5_2_sw, PMPSm_cp_cfg_L_access_all_entry5_2_sw_str)
-PMPSm_cp_cfg_L_access_all_entry5_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_write_entry5_2_sw, PMPSm_cg_cp_cfg_L_access_write_entry5_2_sw_str)
+PMPSm_cg_cp_cfg_L_access_read_entry5_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry5_3_lw, PMPSm_cp_cfg_L_access_all_entry5_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_read_entry5_3_lw, PMPSm_cg_cp_cfg_L_access_read_entry5_3_lw_str)
 
 // PMP configuration 11: entry 4
   LA(x5, REGIONSTART)
@@ -427,21 +427,21 @@ PMPSm_cp_cfg_L_access_all_entry5_3_lw:
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPSm_cp_cfg_L_access_all_entry4_1_jalr:
+PMPSm_cg_cp_cfg_L_access_exec_entry4_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry4_1_jalr, PMPSm_cp_cfg_L_access_all_entry4_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_exec_entry4_1_jalr, PMPSm_cg_cp_cfg_L_access_exec_entry4_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_cfg_L_access_all_entry4_2_sw:
+PMPSm_cg_cp_cfg_L_access_write_entry4_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry4_2_sw, PMPSm_cp_cfg_L_access_all_entry4_2_sw_str)
-PMPSm_cp_cfg_L_access_all_entry4_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_write_entry4_2_sw, PMPSm_cg_cp_cfg_L_access_write_entry4_2_sw_str)
+PMPSm_cg_cp_cfg_L_access_read_entry4_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry4_3_lw, PMPSm_cp_cfg_L_access_all_entry4_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_read_entry4_3_lw, PMPSm_cg_cp_cfg_L_access_read_entry4_3_lw_str)
 
 // PMP configuration 12: entry 3
   LA(x5, REGIONSTART)
@@ -458,21 +458,21 @@ PMPSm_cp_cfg_L_access_all_entry4_3_lw:
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPSm_cp_cfg_L_access_all_entry3_1_jalr:
+PMPSm_cg_cp_cfg_L_access_exec_entry3_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry3_1_jalr, PMPSm_cp_cfg_L_access_all_entry3_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_exec_entry3_1_jalr, PMPSm_cg_cp_cfg_L_access_exec_entry3_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_cfg_L_access_all_entry3_2_sw:
+PMPSm_cg_cp_cfg_L_access_write_entry3_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry3_2_sw, PMPSm_cp_cfg_L_access_all_entry3_2_sw_str)
-PMPSm_cp_cfg_L_access_all_entry3_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_write_entry3_2_sw, PMPSm_cg_cp_cfg_L_access_write_entry3_2_sw_str)
+PMPSm_cg_cp_cfg_L_access_read_entry3_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry3_3_lw, PMPSm_cp_cfg_L_access_all_entry3_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_read_entry3_3_lw, PMPSm_cg_cp_cfg_L_access_read_entry3_3_lw_str)
 
 // PMP configuration 13: entry 2
   LA(x5, REGIONSTART)
@@ -489,21 +489,21 @@ PMPSm_cp_cfg_L_access_all_entry3_3_lw:
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPSm_cp_cfg_L_access_all_entry2_1_jalr:
+PMPSm_cg_cp_cfg_L_access_exec_entry2_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry2_1_jalr, PMPSm_cp_cfg_L_access_all_entry2_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_exec_entry2_1_jalr, PMPSm_cg_cp_cfg_L_access_exec_entry2_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_cfg_L_access_all_entry2_2_sw:
+PMPSm_cg_cp_cfg_L_access_write_entry2_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry2_2_sw, PMPSm_cp_cfg_L_access_all_entry2_2_sw_str)
-PMPSm_cp_cfg_L_access_all_entry2_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_write_entry2_2_sw, PMPSm_cg_cp_cfg_L_access_write_entry2_2_sw_str)
+PMPSm_cg_cp_cfg_L_access_read_entry2_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry2_3_lw, PMPSm_cp_cfg_L_access_all_entry2_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_read_entry2_3_lw, PMPSm_cg_cp_cfg_L_access_read_entry2_3_lw_str)
 
 // PMP configuration 14: entry 1
   LA(x5, REGIONSTART)
@@ -520,21 +520,21 @@ PMPSm_cp_cfg_L_access_all_entry2_3_lw:
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPSm_cp_cfg_L_access_all_entry1_1_jalr:
+PMPSm_cg_cp_cfg_L_access_exec_entry1_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry1_1_jalr, PMPSm_cp_cfg_L_access_all_entry1_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_exec_entry1_1_jalr, PMPSm_cg_cp_cfg_L_access_exec_entry1_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_cfg_L_access_all_entry1_2_sw:
+PMPSm_cg_cp_cfg_L_access_write_entry1_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry1_2_sw, PMPSm_cp_cfg_L_access_all_entry1_2_sw_str)
-PMPSm_cp_cfg_L_access_all_entry1_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_write_entry1_2_sw, PMPSm_cg_cp_cfg_L_access_write_entry1_2_sw_str)
+PMPSm_cg_cp_cfg_L_access_read_entry1_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry1_3_lw, PMPSm_cp_cfg_L_access_all_entry1_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_read_entry1_3_lw, PMPSm_cg_cp_cfg_L_access_read_entry1_3_lw_str)
 
 // PMP configuration 15: entry 0
   LA(x5, REGIONSTART)
@@ -551,21 +551,21 @@ PMPSm_cp_cfg_L_access_all_entry1_3_lw:
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMPSm_cp_cfg_L_access_all_entry0_1_jalr:
+PMPSm_cg_cp_cfg_L_access_exec_entry0_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry0_1_jalr, PMPSm_cp_cfg_L_access_all_entry0_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_exec_entry0_1_jalr, PMPSm_cg_cp_cfg_L_access_exec_entry0_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMPSm_cp_cfg_L_access_all_entry0_2_sw:
+PMPSm_cg_cp_cfg_L_access_write_entry0_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry0_2_sw, PMPSm_cp_cfg_L_access_all_entry0_2_sw_str)
-PMPSm_cp_cfg_L_access_all_entry0_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_write_entry0_2_sw, PMPSm_cg_cp_cfg_L_access_write_entry0_2_sw_str)
+PMPSm_cg_cp_cfg_L_access_read_entry0_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_L_access_all_entry0_3_lw, PMPSm_cp_cfg_L_access_all_entry0_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cg_cp_cfg_L_access_read_entry0_3_lw, PMPSm_cg_cp_cfg_L_access_read_entry0_3_lw_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -597,54 +597,54 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMPSm_cp_none_all_off_1_jalr_str: .string "\"test: 135; cg: PMPSm; cp: cp_none; bin: all_off_1_jalr\""
-PMPSm_cp_none_all_off_2_sw_str: .string "\"test: 136; cg: PMPSm; cp: cp_none; bin: all_off_2_sw\""
-PMPSm_cp_none_all_off_3_lw_str: .string "\"test: 137; cg: PMPSm; cp: cp_none; bin: all_off_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry14_1_jalr_str: .string "\"test: 138; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry14_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry14_2_sw_str: .string "\"test: 139; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry14_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry14_3_lw_str: .string "\"test: 140; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry14_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry13_1_jalr_str: .string "\"test: 141; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry13_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry13_2_sw_str: .string "\"test: 142; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry13_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry13_3_lw_str: .string "\"test: 143; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry13_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry12_1_jalr_str: .string "\"test: 144; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry12_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry12_2_sw_str: .string "\"test: 145; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry12_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry12_3_lw_str: .string "\"test: 146; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry12_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry11_1_jalr_str: .string "\"test: 147; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry11_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry11_2_sw_str: .string "\"test: 148; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry11_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry11_3_lw_str: .string "\"test: 149; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry11_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry10_1_jalr_str: .string "\"test: 150; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry10_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry10_2_sw_str: .string "\"test: 151; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry10_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry10_3_lw_str: .string "\"test: 152; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry10_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry9_1_jalr_str: .string "\"test: 153; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry9_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry9_2_sw_str: .string "\"test: 154; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry9_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry9_3_lw_str: .string "\"test: 155; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry9_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry8_1_jalr_str: .string "\"test: 156; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry8_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry8_2_sw_str: .string "\"test: 157; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry8_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry8_3_lw_str: .string "\"test: 158; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry8_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry7_1_jalr_str: .string "\"test: 159; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry7_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry7_2_sw_str: .string "\"test: 160; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry7_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry7_3_lw_str: .string "\"test: 161; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry7_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry6_1_jalr_str: .string "\"test: 162; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry6_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry6_2_sw_str: .string "\"test: 163; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry6_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry6_3_lw_str: .string "\"test: 164; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry6_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry5_1_jalr_str: .string "\"test: 165; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry5_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry5_2_sw_str: .string "\"test: 166; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry5_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry5_3_lw_str: .string "\"test: 167; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry5_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry4_1_jalr_str: .string "\"test: 168; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry4_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry4_2_sw_str: .string "\"test: 169; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry4_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry4_3_lw_str: .string "\"test: 170; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry4_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry3_1_jalr_str: .string "\"test: 171; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry3_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry3_2_sw_str: .string "\"test: 172; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry3_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry3_3_lw_str: .string "\"test: 173; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry3_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry2_1_jalr_str: .string "\"test: 174; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry2_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry2_2_sw_str: .string "\"test: 175; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry2_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry2_3_lw_str: .string "\"test: 176; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry2_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry1_1_jalr_str: .string "\"test: 177; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry1_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry1_2_sw_str: .string "\"test: 178; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry1_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry1_3_lw_str: .string "\"test: 179; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry1_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry0_1_jalr_str: .string "\"test: 180; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry0_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry0_2_sw_str: .string "\"test: 181; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry0_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry0_3_lw_str: .string "\"test: 182; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry0_3_lw\""
+PMPSm_cg_cp_none_jalr_all_off_1_jalr_str: .string "\"test: 135; cg: PMPSm_cg; cp: cp_none_jalr; bin: all_off_1_jalr\""
+PMPSm_cg_cp_none_sw_all_off_2_sw_str: .string "\"test: 136; cg: PMPSm_cg; cp: cp_none_sw; bin: all_off_2_sw\""
+PMPSm_cg_cp_none_lw_all_off_3_lw_str: .string "\"test: 137; cg: PMPSm_cg; cp: cp_none_lw; bin: all_off_3_lw\""
+PMPSm_cg_cp_cfg_L_access_exec_entry14_1_jalr_str: .string "\"test: 138; cg: PMPSm_cg; cp: cp_cfg_L_access_exec; bin: entry14_1_jalr\""
+PMPSm_cg_cp_cfg_L_access_write_entry14_2_sw_str: .string "\"test: 139; cg: PMPSm_cg; cp: cp_cfg_L_access_write; bin: entry14_2_sw\""
+PMPSm_cg_cp_cfg_L_access_read_entry14_3_lw_str: .string "\"test: 140; cg: PMPSm_cg; cp: cp_cfg_L_access_read; bin: entry14_3_lw\""
+PMPSm_cg_cp_cfg_L_access_exec_entry13_1_jalr_str: .string "\"test: 141; cg: PMPSm_cg; cp: cp_cfg_L_access_exec; bin: entry13_1_jalr\""
+PMPSm_cg_cp_cfg_L_access_write_entry13_2_sw_str: .string "\"test: 142; cg: PMPSm_cg; cp: cp_cfg_L_access_write; bin: entry13_2_sw\""
+PMPSm_cg_cp_cfg_L_access_read_entry13_3_lw_str: .string "\"test: 143; cg: PMPSm_cg; cp: cp_cfg_L_access_read; bin: entry13_3_lw\""
+PMPSm_cg_cp_cfg_L_access_exec_entry12_1_jalr_str: .string "\"test: 144; cg: PMPSm_cg; cp: cp_cfg_L_access_exec; bin: entry12_1_jalr\""
+PMPSm_cg_cp_cfg_L_access_write_entry12_2_sw_str: .string "\"test: 145; cg: PMPSm_cg; cp: cp_cfg_L_access_write; bin: entry12_2_sw\""
+PMPSm_cg_cp_cfg_L_access_read_entry12_3_lw_str: .string "\"test: 146; cg: PMPSm_cg; cp: cp_cfg_L_access_read; bin: entry12_3_lw\""
+PMPSm_cg_cp_cfg_L_access_exec_entry11_1_jalr_str: .string "\"test: 147; cg: PMPSm_cg; cp: cp_cfg_L_access_exec; bin: entry11_1_jalr\""
+PMPSm_cg_cp_cfg_L_access_write_entry11_2_sw_str: .string "\"test: 148; cg: PMPSm_cg; cp: cp_cfg_L_access_write; bin: entry11_2_sw\""
+PMPSm_cg_cp_cfg_L_access_read_entry11_3_lw_str: .string "\"test: 149; cg: PMPSm_cg; cp: cp_cfg_L_access_read; bin: entry11_3_lw\""
+PMPSm_cg_cp_cfg_L_access_exec_entry10_1_jalr_str: .string "\"test: 150; cg: PMPSm_cg; cp: cp_cfg_L_access_exec; bin: entry10_1_jalr\""
+PMPSm_cg_cp_cfg_L_access_write_entry10_2_sw_str: .string "\"test: 151; cg: PMPSm_cg; cp: cp_cfg_L_access_write; bin: entry10_2_sw\""
+PMPSm_cg_cp_cfg_L_access_read_entry10_3_lw_str: .string "\"test: 152; cg: PMPSm_cg; cp: cp_cfg_L_access_read; bin: entry10_3_lw\""
+PMPSm_cg_cp_cfg_L_access_exec_entry9_1_jalr_str: .string "\"test: 153; cg: PMPSm_cg; cp: cp_cfg_L_access_exec; bin: entry9_1_jalr\""
+PMPSm_cg_cp_cfg_L_access_write_entry9_2_sw_str: .string "\"test: 154; cg: PMPSm_cg; cp: cp_cfg_L_access_write; bin: entry9_2_sw\""
+PMPSm_cg_cp_cfg_L_access_read_entry9_3_lw_str: .string "\"test: 155; cg: PMPSm_cg; cp: cp_cfg_L_access_read; bin: entry9_3_lw\""
+PMPSm_cg_cp_cfg_L_access_exec_entry8_1_jalr_str: .string "\"test: 156; cg: PMPSm_cg; cp: cp_cfg_L_access_exec; bin: entry8_1_jalr\""
+PMPSm_cg_cp_cfg_L_access_write_entry8_2_sw_str: .string "\"test: 157; cg: PMPSm_cg; cp: cp_cfg_L_access_write; bin: entry8_2_sw\""
+PMPSm_cg_cp_cfg_L_access_read_entry8_3_lw_str: .string "\"test: 158; cg: PMPSm_cg; cp: cp_cfg_L_access_read; bin: entry8_3_lw\""
+PMPSm_cg_cp_cfg_L_access_exec_entry7_1_jalr_str: .string "\"test: 159; cg: PMPSm_cg; cp: cp_cfg_L_access_exec; bin: entry7_1_jalr\""
+PMPSm_cg_cp_cfg_L_access_write_entry7_2_sw_str: .string "\"test: 160; cg: PMPSm_cg; cp: cp_cfg_L_access_write; bin: entry7_2_sw\""
+PMPSm_cg_cp_cfg_L_access_read_entry7_3_lw_str: .string "\"test: 161; cg: PMPSm_cg; cp: cp_cfg_L_access_read; bin: entry7_3_lw\""
+PMPSm_cg_cp_cfg_L_access_exec_entry6_1_jalr_str: .string "\"test: 162; cg: PMPSm_cg; cp: cp_cfg_L_access_exec; bin: entry6_1_jalr\""
+PMPSm_cg_cp_cfg_L_access_write_entry6_2_sw_str: .string "\"test: 163; cg: PMPSm_cg; cp: cp_cfg_L_access_write; bin: entry6_2_sw\""
+PMPSm_cg_cp_cfg_L_access_read_entry6_3_lw_str: .string "\"test: 164; cg: PMPSm_cg; cp: cp_cfg_L_access_read; bin: entry6_3_lw\""
+PMPSm_cg_cp_cfg_L_access_exec_entry5_1_jalr_str: .string "\"test: 165; cg: PMPSm_cg; cp: cp_cfg_L_access_exec; bin: entry5_1_jalr\""
+PMPSm_cg_cp_cfg_L_access_write_entry5_2_sw_str: .string "\"test: 166; cg: PMPSm_cg; cp: cp_cfg_L_access_write; bin: entry5_2_sw\""
+PMPSm_cg_cp_cfg_L_access_read_entry5_3_lw_str: .string "\"test: 167; cg: PMPSm_cg; cp: cp_cfg_L_access_read; bin: entry5_3_lw\""
+PMPSm_cg_cp_cfg_L_access_exec_entry4_1_jalr_str: .string "\"test: 168; cg: PMPSm_cg; cp: cp_cfg_L_access_exec; bin: entry4_1_jalr\""
+PMPSm_cg_cp_cfg_L_access_write_entry4_2_sw_str: .string "\"test: 169; cg: PMPSm_cg; cp: cp_cfg_L_access_write; bin: entry4_2_sw\""
+PMPSm_cg_cp_cfg_L_access_read_entry4_3_lw_str: .string "\"test: 170; cg: PMPSm_cg; cp: cp_cfg_L_access_read; bin: entry4_3_lw\""
+PMPSm_cg_cp_cfg_L_access_exec_entry3_1_jalr_str: .string "\"test: 171; cg: PMPSm_cg; cp: cp_cfg_L_access_exec; bin: entry3_1_jalr\""
+PMPSm_cg_cp_cfg_L_access_write_entry3_2_sw_str: .string "\"test: 172; cg: PMPSm_cg; cp: cp_cfg_L_access_write; bin: entry3_2_sw\""
+PMPSm_cg_cp_cfg_L_access_read_entry3_3_lw_str: .string "\"test: 173; cg: PMPSm_cg; cp: cp_cfg_L_access_read; bin: entry3_3_lw\""
+PMPSm_cg_cp_cfg_L_access_exec_entry2_1_jalr_str: .string "\"test: 174; cg: PMPSm_cg; cp: cp_cfg_L_access_exec; bin: entry2_1_jalr\""
+PMPSm_cg_cp_cfg_L_access_write_entry2_2_sw_str: .string "\"test: 175; cg: PMPSm_cg; cp: cp_cfg_L_access_write; bin: entry2_2_sw\""
+PMPSm_cg_cp_cfg_L_access_read_entry2_3_lw_str: .string "\"test: 176; cg: PMPSm_cg; cp: cp_cfg_L_access_read; bin: entry2_3_lw\""
+PMPSm_cg_cp_cfg_L_access_exec_entry1_1_jalr_str: .string "\"test: 177; cg: PMPSm_cg; cp: cp_cfg_L_access_exec; bin: entry1_1_jalr\""
+PMPSm_cg_cp_cfg_L_access_write_entry1_2_sw_str: .string "\"test: 178; cg: PMPSm_cg; cp: cp_cfg_L_access_write; bin: entry1_2_sw\""
+PMPSm_cg_cp_cfg_L_access_read_entry1_3_lw_str: .string "\"test: 179; cg: PMPSm_cg; cp: cp_cfg_L_access_read; bin: entry1_3_lw\""
+PMPSm_cg_cp_cfg_L_access_exec_entry0_1_jalr_str: .string "\"test: 180; cg: PMPSm_cg; cp: cp_cfg_L_access_exec; bin: entry0_1_jalr\""
+PMPSm_cg_cp_cfg_L_access_write_entry0_2_sw_str: .string "\"test: 181; cg: PMPSm_cg; cp: cp_cfg_L_access_write; bin: entry0_2_sw\""
+PMPSm_cg_cp_cfg_L_access_read_entry0_3_lw_str: .string "\"test: 182; cg: PMPSm_cg; cp: cp_cfg_L_access_read; bin: entry0_3_lw\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

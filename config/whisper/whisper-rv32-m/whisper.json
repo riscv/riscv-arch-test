@@ -119,5 +119,5 @@
     "update_whole_mask": true
   },
 
-  "wfi_timeout": 200
+  "wfi_timeout": 0
 }

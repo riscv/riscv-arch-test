@@ -93,7 +93,7 @@
   rvtest_code_end:
 
   // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved.
-  // The RVTEST_GOTO_MMODE sits BELOW the cleanup_epilogs label (not at rvtest_code_end)
+  // The RVTEST_TSBI_GOTO_MMODE sits BELOW the cleanup_epilogs label (not at rvtest_code_end)
   // because cleanup_epilogs is also reached from abort_test and from the default
   // unexpected-interrupt handlers, which can run in S/U/VS/VU mode. The epilogs read
   // mscratch and other M-mode CSRs, so every entry path must switch to M-mode first.

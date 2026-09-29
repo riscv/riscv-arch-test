@@ -71,7 +71,7 @@ S-mode CSR initialization includes
 
 The boot process ends in S-mode if the BOOT_TO_SMODE symbol is defined in the test (for tests intended to run in supervisor mode).
 
-If the test is not intended to run in S-mode, and U-mode is supported, `rvmodel_boot` calls `RVTEST_BOOT_TO_UMODE`, which switches to U-mode by calling `RVTEST_GOTO_LOWER_MODE U`. *** or the correct macro  *** any other .  Again, it can be overridden by `RVMODEL_BOOT_TO_UMODE` for custom M-mode implementations.
+If the test is not intended to run in S-mode, and U-mode is supported, `rvmodel_boot` calls `RVTEST_BOOT_TO_UMODE`, which switches to U-mode through T-SBI. Again, it can be overridden by `RVMODEL_BOOT_TO_UMODE` for custom M-mode implementations.
 
 Finally, `rvmodel_boot` jumps to `rvtest_init`, which calls `RVTEST_INIT_REGS` to initialize GPRs, then sets up the signature pointer and checks a canary if applicable.***
 

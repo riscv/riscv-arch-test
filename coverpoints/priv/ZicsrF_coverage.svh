@@ -200,7 +200,7 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
         cp_underflow_after_rounding_fma_h: cross underflow_fma_h, static_rm;
 
         underflow_fmul_h: coverpoint ins.current.insn iff
-            (ins.current.fs1_val[15:0] == 16'h0401 & ins.current.fs2_val[15:0] == 16'h3BF8) {
+            (ins.current.fs1_val[15:0] == 16'h0401 & ins.current.fs2_val[15:0] == 16'h3BFE) {
                 wildcard bins fmul = {FMUL_H};
             }
         cp_underflow_after_rounding_fmul_h: cross underflow_fmul_h, static_rm;

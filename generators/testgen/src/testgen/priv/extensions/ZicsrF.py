@@ -319,7 +319,7 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
     #   fcvt_s_q fcvt.s.q 0x3F80FFFFFFFE0000000000FFFFFFFFFF
     lines.append("\n#ifdef ZFH_SUPPORTED")
     lines.extend(_tininess_cases(test_data, "fma_h", "fmadd.h", [0x0BC7, 0x03FF, 0x8400], "half"))
-    lines.extend(_tininess_cases(test_data, "fmul_h", "fmul.h", [0x0401, 0x3BF8], "half"))
+    lines.extend(_tininess_cases(test_data, "fmul_h", "fmul.h", [0x0401, 0x3BFE], "half"))
     lines.extend(
         [
             "#else",

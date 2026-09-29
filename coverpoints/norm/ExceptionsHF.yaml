@@ -1,0 +1,8 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # With V = 1, mstatus.FS and vsstatus.FS are both in effect, and floating-point state changes set both to Dirty
+  - names:
+      [vsstatus_fs_op, H_illegalinst_xstatus_fs_vs, mstatus_fs_vs_xs_dirty_op]
+    coverpoint: ["ExceptionsHF_cg/cp_exceptionsHF_fs"]

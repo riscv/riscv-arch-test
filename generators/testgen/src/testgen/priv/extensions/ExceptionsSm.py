@@ -12,7 +12,9 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ExceptionsCommon import (
+    DELEGATED_FAULT_KINDS,
     generate_breakpoint_tests,
+    generate_delegated_fault_tests,
     generate_ecall_tests,
     generate_illegal_instruction_seed_tests,
     generate_illegal_instruction_tests,
@@ -41,6 +43,9 @@ _MEDELEG_WALK = (
     + [0b1011_0001_1111_1111]
 )
 
+# Each delegated exception has its own medeleg coverpoint
+MEDELEG_COVERPOINTS = {kind: f"cp_medeleg_msu_{kind}" for kind in DELEGATED_FAULT_KINDS}
+
 
 def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: int) -> list[str]:
     """Runs 10 exception tests x 17 medeleg values for one privilege mode."""
@@ -59,139 +64,10 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         # set medeleg in M-mode, then enter the mode under test
         lines.extend([f"LI(x{medeleg_reg}, {medeleg_val})", f"csrw medeleg, x{medeleg_reg}", *goto_mode])
 
-        # Instruction misaligned: one aligned and one misaligned jalr target next to the access-fault
-        # address.  Also tests priority of misaligned and access faults.  Simple misalignment tests
-        # are in the ExceptionsCommon generator and are not repeated here.
         lines.extend(
-            [
-                "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
-                test_data.add_testcase(tag, "cp_medeleg_msu_instrmisaligned", covergroup),
-                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-                f"jalr x1, 0(x{addr_reg})  # aligned target",
-                f"jalr x1, 2(x{addr_reg})  # misaligned target",
-                "#endif",
-            ]
-        )
-
-        # Instruction access fault
-        lines.extend(
-            [
-                "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
-                test_data.add_testcase(tag, "cp_medeleg_msu_instraccessfault", covergroup),
-                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-                f"jalr x1, 0(x{addr_reg})",
-                "#endif",
-            ]
-        )
-
-        # Illegal instruction zeros
-        lines.extend(
-            [
-                test_data.add_testcase(f"zeros_{tag}", "cp_medeleg_msu_illegalinstruction", covergroup),
-                ".p2align 2",
-                ".word 0x00000000",
-            ]
-        )
-
-        # Illegal instruction ones
-        lines.extend(
-            [
-                test_data.add_testcase(f"ones_{tag}", "cp_medeleg_msu_illegalinstruction", covergroup),
-                ".p2align 2",
-                ".word 0xFFFFFFFF",
-            ]
-        )
-
-        # Ebreak
-        lines.extend(
-            [
-                test_data.add_testcase(tag, "cp_medeleg_msu_ebreak", covergroup),
-                "ebreak",
-            ]
-        )
-
-        # Load misaligned
-        lines.extend(
-            [test_data.add_testcase(tag, "cp_medeleg_msu_loadmisaligned", covergroup), f"LA(x{addr_reg}, scratch)"]
-        )
-        for offset in range(8):
-            for op in ["lw", "lh", "lhu", "lb", "lbu"]:
-                lines.append(f"{op} x{check_reg}, {offset}(x{addr_reg})")
-            lines.extend(
-                [
-                    "#if __riscv_xlen == 64",
-                    f" ld x{check_reg}, {offset}(x{addr_reg})",
-                    f" lwu x{check_reg}, {offset}(x{addr_reg})",
-                    "#endif",
-                ]
+            generate_delegated_fault_tests(
+                test_data, tag, MEDELEG_COVERPOINTS, covergroup, (addr_reg, data_reg, check_reg)
             )
-
-        # Load access fault
-        lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
-        lines.extend(
-            [
-                test_data.add_testcase(tag, "cp_medeleg_msu_loadaccessfault", covergroup),
-                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-            ]
-        )
-        for op in ["lw", "lh", "lhu", "lb", "lbu"]:
-            lines.append(f"{op} x{check_reg}, 0(x{addr_reg})")
-        lines.extend(
-            [
-                "#if __riscv_xlen == 64",
-                f" ld x{check_reg}, 0(x{addr_reg})",
-                f" lwu x{check_reg}, 0(x{addr_reg})",
-                "#endif",
-                "#endif",
-            ]
-        )
-
-        # Store misaligned
-        lines.extend(
-            [
-                test_data.add_testcase(tag, "cp_medeleg_msu_storemisaligned", covergroup),
-                f"LI(x{data_reg}, 0xDECAFCAB)",
-                f"LA(x{addr_reg}, scratch)",
-            ]
-        )
-        for offset in range(8):
-            for op in ["sw", "sh", "sb"]:
-                lines.append(f"{op} x{data_reg}, {offset}(x{addr_reg})")
-            lines.extend(
-                [
-                    "#if __riscv_xlen == 64",
-                    f" sd x{data_reg}, {offset}(x{addr_reg})",
-                    "#endif",
-                ]
-            )
-
-        # Store access fault
-        lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
-        lines.extend(
-            [
-                test_data.add_testcase(tag, "cp_medeleg_msu_storeaccessfault", covergroup),
-                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-                f"LI(x{data_reg}, 0xADDEDCAB)",
-            ]
-        )
-        for op in ["sw", "sh", "sb"]:
-            lines.append(f"{op} x{data_reg}, 0(x{addr_reg})")
-        lines.extend(
-            [
-                "#if __riscv_xlen == 64",
-                f" sd x{data_reg}, 0(x{addr_reg})",
-                "#endif",
-                "#endif",
-            ]
-        )
-
-        lines.extend(
-            [
-                test_data.add_testcase(tag, "cp_medeleg_msu_ecall", covergroup),
-                "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
-                "# ecall returns xepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
-                write_sigupd(10, test_data),
-            ]
         )
 
         # Return to M-mode.

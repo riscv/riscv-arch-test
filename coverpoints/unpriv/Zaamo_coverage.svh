@@ -41,6 +41,18 @@ covergroup Zaamo_amoadd_w_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
+    cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
+        bins zero = {32'h00000000};
+        bins one  = {32'h00000001};
+        bins max  = {32'h7fffffff};
+        bins min  = {32'h80000000};
+        bins mone = {32'hffffffff};
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -78,6 +90,8 @@ covergroup Zaamo_amoadd_w_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -119,6 +133,18 @@ covergroup Zaamo_amoand_w_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
+    cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
+        bins zero = {32'h00000000};
+        bins one  = {32'h00000001};
+        bins max  = {32'h7fffffff};
+        bins min  = {32'h80000000};
+        bins mone = {32'hffffffff};
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -156,6 +182,8 @@ covergroup Zaamo_amoand_w_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -197,6 +225,18 @@ covergroup Zaamo_amomax_w_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
+    cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
+        bins zero = {32'h00000000};
+        bins one  = {32'h00000001};
+        bins max  = {32'h7fffffff};
+        bins min  = {32'h80000000};
+        bins mone = {32'hffffffff};
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -234,6 +274,8 @@ covergroup Zaamo_amomax_w_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -275,6 +317,18 @@ covergroup Zaamo_amomaxu_w_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
+    cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
+        bins zero = {32'h00000000};
+        bins one  = {32'h00000001};
+        bins max  = {32'h7fffffff};
+        bins min  = {32'h80000000};
+        bins mone = {32'hffffffff};
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -312,6 +366,8 @@ covergroup Zaamo_amomaxu_w_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -353,6 +409,18 @@ covergroup Zaamo_amomin_w_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
+    cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
+        bins zero = {32'h00000000};
+        bins one  = {32'h00000001};
+        bins max  = {32'h7fffffff};
+        bins min  = {32'h80000000};
+        bins mone = {32'hffffffff};
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -390,6 +458,8 @@ covergroup Zaamo_amomin_w_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -431,6 +501,18 @@ covergroup Zaamo_amominu_w_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
+    cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
+        bins zero = {32'h00000000};
+        bins one  = {32'h00000001};
+        bins max  = {32'h7fffffff};
+        bins min  = {32'h80000000};
+        bins mone = {32'hffffffff};
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -468,6 +550,8 @@ covergroup Zaamo_amominu_w_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -509,6 +593,18 @@ covergroup Zaamo_amoor_w_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
+    cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
+        bins zero = {32'h00000000};
+        bins one  = {32'h00000001};
+        bins max  = {32'h7fffffff};
+        bins min  = {32'h80000000};
+        bins mone = {32'hffffffff};
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -546,6 +642,8 @@ covergroup Zaamo_amoor_w_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -587,6 +685,18 @@ covergroup Zaamo_amoswap_w_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
+    cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
+        bins zero = {32'h00000000};
+        bins one  = {32'h00000001};
+        bins max  = {32'h7fffffff};
+        bins min  = {32'h80000000};
+        bins mone = {32'hffffffff};
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -624,6 +734,8 @@ covergroup Zaamo_amoswap_w_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -665,6 +777,18 @@ covergroup Zaamo_amoxor_w_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
+    cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
+        bins zero = {32'h00000000};
+        bins one  = {32'h00000001};
+        bins max  = {32'h7fffffff};
+        bins min  = {32'h80000000};
+        bins mone = {32'hffffffff};
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -702,6 +826,8 @@ covergroup Zaamo_amoxor_w_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -741,6 +867,18 @@ covergroup Zaamo_amoadd_d_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
+    cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {
+        bins zero = {64'h0000000000000000};
+        bins one  = {64'h0000000000000001};
+        bins max  = {64'h7fffffffffffffff};
+        bins min  = {64'h8000000000000000};
+        bins mone = {64'hffffffffffffffff};
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -778,6 +916,8 @@ covergroup Zaamo_amoadd_d_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -816,6 +956,18 @@ covergroup Zaamo_amoand_d_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
+    cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {
+        bins zero = {64'h0000000000000000};
+        bins one  = {64'h0000000000000001};
+        bins max  = {64'h7fffffffffffffff};
+        bins min  = {64'h8000000000000000};
+        bins mone = {64'hffffffffffffffff};
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -853,6 +1005,8 @@ covergroup Zaamo_amoand_d_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -891,6 +1045,18 @@ covergroup Zaamo_amomax_d_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
+    cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {
+        bins zero = {64'h0000000000000000};
+        bins one  = {64'h0000000000000001};
+        bins max  = {64'h7fffffffffffffff};
+        bins min  = {64'h8000000000000000};
+        bins mone = {64'hffffffffffffffff};
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -928,6 +1094,8 @@ covergroup Zaamo_amomax_d_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -966,6 +1134,18 @@ covergroup Zaamo_amomaxu_d_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
+    cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {
+        bins zero = {64'h0000000000000000};
+        bins one  = {64'h0000000000000001};
+        bins max  = {64'h7fffffffffffffff};
+        bins min  = {64'h8000000000000000};
+        bins mone = {64'hffffffffffffffff};
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -1003,6 +1183,8 @@ covergroup Zaamo_amomaxu_d_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -1041,6 +1223,18 @@ covergroup Zaamo_amomin_d_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
+    cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {
+        bins zero = {64'h0000000000000000};
+        bins one  = {64'h0000000000000001};
+        bins max  = {64'h7fffffffffffffff};
+        bins min  = {64'h8000000000000000};
+        bins mone = {64'hffffffffffffffff};
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -1078,6 +1272,8 @@ covergroup Zaamo_amomin_d_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -1116,6 +1312,18 @@ covergroup Zaamo_amominu_d_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
+    cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {
+        bins zero = {64'h0000000000000000};
+        bins one  = {64'h0000000000000001};
+        bins max  = {64'h7fffffffffffffff};
+        bins min  = {64'h8000000000000000};
+        bins mone = {64'hffffffffffffffff};
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -1153,6 +1361,8 @@ covergroup Zaamo_amominu_d_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -1191,6 +1401,18 @@ covergroup Zaamo_amoor_d_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
+    cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {
+        bins zero = {64'h0000000000000000};
+        bins one  = {64'h0000000000000001};
+        bins max  = {64'h7fffffffffffffff};
+        bins min  = {64'h8000000000000000};
+        bins mone = {64'hffffffffffffffff};
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -1228,6 +1450,8 @@ covergroup Zaamo_amoor_d_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -1266,6 +1490,18 @@ covergroup Zaamo_amoswap_d_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
+    cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {
+        bins zero = {64'h0000000000000000};
+        bins one  = {64'h0000000000000001};
+        bins max  = {64'h7fffffffffffffff};
+        bins min  = {64'h8000000000000000};
+        bins mone = {64'hffffffffffffffff};
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -1303,6 +1539,8 @@ covergroup Zaamo_amoswap_d_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -1341,6 +1579,18 @@ covergroup Zaamo_amoxor_d_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
+    cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {
+        bins zero = {64'h0000000000000000};
+        bins one  = {64'h0000000000000001};
+        bins max  = {64'h7fffffffffffffff};
+        bins min  = {64'h8000000000000000};
+        bins mone = {64'hffffffffffffffff};
+    }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -1378,6 +1628,8 @@ covergroup Zaamo_amoxor_d_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};

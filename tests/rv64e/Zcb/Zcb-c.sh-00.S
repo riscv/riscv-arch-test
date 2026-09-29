@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 74
+#define SIGUPD_COUNT 78
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -426,7 +426,31 @@ Zcb_c_sh_cg_cp_rs2_edges_0x100000001:
   # Check if x13 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x14, x5, x4, x13, Zcb_c_sh_cg_cp_rs2_edges_0x100000001, Zcb_c_sh_cg_cp_rs2_edges_0x100000001_str)
 
-  mv x2, x14 # restore signature pointer to default register for teardown
+# Testcase cp_rs2_edges (Test source rs2 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs2: x11 = 0x0000000080000000
+  mv x12, x14 # move signature pointer register
+  addi x12, x12, 0 # adjust base address for offset
+Zcb_c_sh_cg_cp_rs2_edges_0x80000000:
+  c.sh x11, 0(x12) # perform store
+  addi x12, x12, 0 # restore base address
+  addi x12, x12, SIG_STRIDE # increment signature pointer
+  LREG x13, -SIG_STRIDE(x12) # load stored value for checking
+  # Check if x13 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x12, x5, x4, x13, Zcb_c_sh_cg_cp_rs2_edges_0x80000000, Zcb_c_sh_cg_cp_rs2_edges_0x80000000_str)
+
+# Testcase cp_rs2_edges (Test source rs2 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs2: x11 = 0x000000007fffffff
+  mv x15, x12 # move signature pointer register
+  addi x15, x15, -2 # adjust base address for offset
+Zcb_c_sh_cg_cp_rs2_edges_0x7fffffff:
+  c.sh x11, 2(x15) # perform store
+  addi x15, x15, 2 # restore base address
+  addi x15, x15, SIG_STRIDE # increment signature pointer
+  LREG x9, -SIG_STRIDE(x15) # load stored value for checking
+  # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x9, Zcb_c_sh_cg_cp_rs2_edges_0x7fffffff, Zcb_c_sh_cg_cp_rs2_edges_0x7fffffff_str)
+
+  mv x2, x15 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -467,6 +491,8 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000fffffffe
 .dword 0x0000000100000000
 .dword 0x0000000100000001
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
 
 // Testcase strings
 Zcb_c_sh_cg_cp_rs1_p_b8_str: .string "\"test: 1; cg: Zcb_c.sh_cg; cp: cp_rs1_p; bin: b8\""
@@ -501,6 +527,8 @@ Zcb_c_sh_cg_cp_rs2_edges_0xffffffff_str: .string "\"test: 29; cg: Zcb_c.sh_cg; c
 Zcb_c_sh_cg_cp_rs2_edges_0xfffffffe_str: .string "\"test: 30; cg: Zcb_c.sh_cg; cp: cp_rs2_edges; bin: 0xfffffffe\""
 Zcb_c_sh_cg_cp_rs2_edges_0x100000000_str: .string "\"test: 31; cg: Zcb_c.sh_cg; cp: cp_rs2_edges; bin: 0x100000000\""
 Zcb_c_sh_cg_cp_rs2_edges_0x100000001_str: .string "\"test: 32; cg: Zcb_c.sh_cg; cp: cp_rs2_edges; bin: 0x100000001\""
+Zcb_c_sh_cg_cp_rs2_edges_0x80000000_str: .string "\"test: 33; cg: Zcb_c.sh_cg; cp: cp_rs2_edges; bin: 0x80000000\""
+Zcb_c_sh_cg_cp_rs2_edges_0x7fffffff_str: .string "\"test: 34; cg: Zcb_c.sh_cg; cp: cp_rs2_edges; bin: 0x7fffffff\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

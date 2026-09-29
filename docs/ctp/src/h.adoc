@@ -59,12 +59,16 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 
 include::norm/ExceptionsHV_norm_rules.adoc[]
 
-==== InterruptsHSm and InterruptsH Hypervisor Interrupts
+==== InterruptsHSm, InterruptsH and InterruptsHGei Hypervisor Interrupts
 
 InterruptsHSm boots to M-mode and checks mideleg, mie and mip with the hypervisor interrupts and mtinst on interrupts.
 InterruptsH boots to HS-mode and raises VS-level interrupts through hvip, checking hideleg, hie, hip, vsie, vsip,
-priorities and delivery to HS-mode and VS-mode.  Guest external interrupts need the optional
-RVMODEL_SET_GUEST_EXT_INT hook, which the Sail configurations define.
+priorities and delivery to HS-mode and VS-mode.  InterruptsHGei covers guest external interrupts: hgeip, hgeie,
+hip.SGEIP, hstatus.VGEIN, the SGEI priority and mip.SGEIP from M-mode.  hgeip is read-only, so only the platform
+can raise a guest external interrupt, through the optional RVMODEL_SET_GUEST_EXT_INT and
+RVMODEL_CLR_GUEST_EXT_INT hooks.  Without them, InterruptsHGei has no testcases.  The Sail configurations raise them
+through the simple interrupt generator, and the Spike, QEMU and Whisper configurations through IMSIC guest
+interrupt files.
 
 [[t-InterruptsH-coverpoints]]
 .InterruptsH Coverpoints
@@ -75,6 +79,8 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 include::norm/InterruptsHSm_norm_rules.adoc[]
 
 include::norm/InterruptsH_norm_rules.adoc[]
+
+include::norm/InterruptsHGei_norm_rules.adoc[]
 
 ==== EndianH Hypervisor Endianness
 

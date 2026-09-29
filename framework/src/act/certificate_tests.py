@@ -121,6 +121,7 @@ RVA23_TEST_SUITES = frozenset(
         "ExceptionsZicboU",
         # Interrupts Tests
         "InterruptsH",
+        "InterruptsHGei",
         "InterruptsS",
         "InterruptsU",
         # Za extensions

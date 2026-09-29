@@ -43,11 +43,7 @@ normative_rule_definitions:
   # VS-level external interrupts. VSEIP is read-only in hip, and is the logical-OR of
   # these interrupt sources:
   - name: hip_vseip_vseie_op
-    coverpoint:
-      [
-        "InterruptsH_hs_cg/cp_{trigger_vsei, hip_write}",
-        "InterruptsH_hs_cg/cp_{trigger_vsei_hgeip, hgeip0}",
-      ]
+    coverpoint: ["InterruptsH_hs_cg/cp_{trigger_vsei, hip_write}"]
   # Bits csr:hip[vstip] and csr:hie[vstie] are the interrupt-pending and interrupt-enable
   # bits for VS-level timer interrupts.
   - name: hip_vstip_vstie_acc_op
@@ -80,8 +76,7 @@ normative_rule_definitions:
 
   # Simultaneous interrupts destined for HS-mode are taken in the order SEI, SSI, STI, SGEI, VSEI, VSSI, VSTI
   - names: [hsint_priority]
-    coverpoint:
-      ["InterruptsH_hs_cg/cp_priority_{en_vsi, deleg_vsi, s, sgei, sgei_s}"]
+    coverpoint: ["InterruptsH_hs_cg/cp_priority_{en_vsi, deleg_vsi, s}"]
 
   # Bits SGEIP, VSEIP, VSTIP, and VSSIP in mip are aliases for the same bits in hypervisor
   # CSR hip, while SGEIE, VSEIE, VSTIE, and VSSIE in mie are aliases for the same bits in
@@ -137,41 +132,6 @@ normative_rule_definitions:
   - names: [H_trap_xtinst_interrupt, htinst_val]
     coverpoint: ["InterruptsH_hs_cg/cp_htinst"]
 
-  # Bits hip.SGEIP and hie.SGEIE are the interrupt-pending and interrupt-enable bits for
-  # guest external interrupts at supervisor level (HS-level). SGEIP is read-only in hip,
-  # and is 1 if and only if the bitwise logical-AND of CSRs hgeip and hgeie is nonzero in
-  # any bit. (See .)
-  - name: hip_sgeip_sgeie_acc_op
-    coverpoint: ["InterruptsH_hs_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
-  # The hgeip register is an HSXLEN-bit read-only register, formatted as shown in
-  # &lt;&lt;hgeipreg&gt;&gt;, that indicates pending guest external interrupts for this
-  # hart.
-  - name: hgeip_sz_acc_op
-    coverpoint: ["InterruptsH_hs_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
-  # The hgeie register is an HSXLEN-bit read/write register, formatted as shown in
-  # &lt;&lt;norm:hgeie_img&gt;&gt;, that contains enable bits for the guest external
-  # interrupts at this hart.
-  - name: hgeie_sz_acc_op
-    coverpoint: ["InterruptsH_hs_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
-  # Register hgeie selects the subset of guest external interrupts that cause a
-  # supervisor-level (HS-level) guest external interrupt. The enable bits in hgeie do not
-  # affect the VS-level external interrupt signal selected from hgeip by hstatus.VGEIN.
-  - name: hgeie_op
-    coverpoint:
-      ["InterruptsH_hs_cg/cp_{trigger_sgei, hgeie, trigger_vsei_hgeip}"]
-  # Guest external interrupt number i corresponds with bit i in both hgeip and hgeie.
-  - name: hgeip_hgeie_fields
-    coverpoint: ["InterruptsH_hs_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
-  # Each bit of hgeip summarizes all pending interrupts directed to one virtual hart, as
-  # collected and reported by an interrupt controller.
-  - name: hgeip_bit_op
-    coverpoint: ["InterruptsH_hs_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
-
-  # The VGEIN (Virtual Guest External Interrupt Number) field selects a guest external
-  # interrupt source for VS-level external interrupts.
-  - name: hstatus_vgein_op
-    coverpoint: ["InterruptsH_hs_cg/cp_{trigger_vsei_hgeip, hgeip0}"]
-
   # When a virtual supervisor external interrupt (code 10) is delegated to VS-mode, it is
   # automatically translated by the machine into a supervisor external interrupt (code 9)
   # for VS-mode, including the value written to vscause on an interrupt trap. Likewise, a
@@ -192,10 +152,6 @@ normative_rule_definitions:
   # vstvec instead. When V=0, vstvec does not directly affect the behavior of the machine.
   - name: vstvec_sz_acc_op
     coverpoint: ["InterruptsH_hs_cg/cp_vsint_vectored"]
-
-  # When VGEIN=0, no guest external interrupt source is selected for VS-level external interrupts
-  - names: [hstatus_vgein_zero]
-    coverpoint: ["InterruptsH_hs_cg/cp_hgeip0"]
 
   # Shlcofideleg makes hideleg bit 13 writable; while it is zero, vsip.LCOFIP and vsie.LCOFIE are read-only zero,
   # and otherwise they alias sip.LCOFIP and sie.LCOFIE

@@ -9,9 +9,9 @@
 """InterruptsH hypervisor interrupt test generator.
 
 The suite boots to HS-mode, where mideleg delegates the S-level, VS-level and guest external interrupts.
-VS-level interrupts are raised through hvip.  Guest external interrupts need the optional
-RVMODEL_SET/CLR_GUEST_EXT_INT hooks (UDB_SGEI_INTR_IMPL).  Every testcase is sampled in HS-mode, the guest ones at
-the T-SBI call that enters the guest.
+VS-level interrupts are raised through hvip.  Guest external interrupts, which need the optional
+RVMODEL_SET/CLR_GUEST_EXT_INT hooks, are tested in InterruptsHGei.  Every testcase is sampled in HS-mode, the guest
+ones at the T-SBI call that enters the guest.
 """
 
 from testgen.asm.helpers import comment_banner, write_sigupd
@@ -37,11 +37,6 @@ S_INTS = ["SEI", "STI", "SSI"]
 def _vs(combo: int) -> int:
     """VS-level interrupt bits selected by a 3-bit combination: bit 0 VSSI, bit 1 VSTI, bit 2 VSEI."""
     return sum(1 << (4 * i + 2) for i in range(3) if combo >> i & 1)
-
-
-def _gei(op: str, gei: int, tmp_reg: int) -> list[str]:
-    """Raise (SET) or clear (CLR) guest external interrupt gei through the platform, and wait for hgeip."""
-    return [f"RVMODEL_{op}_GUEST_EXT_INT({gei}, a1, a2)", f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})"]
 
 
 def _trigger_tests(test_data: TestData) -> list[str]:
@@ -292,161 +287,6 @@ def _alias_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-def _sgei_tests(test_data: TestData) -> list[str]:
-    """Guest external interrupts: hgeip and hgeie, hip.SGEIP, hstatus.VGEIN and the SGEI priority."""
-    tmp_reg = test_data.int_regs.get_register()
-    geis = range(1, 64)
-
-    def each_gei(body: list[str], gei: int) -> list[str]:
-        """body for one guest external interrupt, assembled only when GEILEN is at least gei."""
-        return [f"#if {gei} <= UDB_NUM_EXTERNAL_GUEST_INTERRUPTS", *body, "#endif"]
-
-    def all_gei(op: str) -> list[str]:
-        """Raise or clear every implemented guest external interrupt."""
-        lines = []
-        for gei in geis:
-            lines.extend(each_gei(_gei(op, gei, tmp_reg), gei))
-        return lines
-
-    def check(bin_name: str, coverpoint: str, hgeie: int | str) -> list[str]:
-        """Write hgeie, then record hgeip and hip."""
-        return [
-            f"LI(x{tmp_reg}, {hgeie})",
-            test_data.add_testcase(bin_name, coverpoint, _CG),
-            f"csrw hgeie, x{tmp_reg}",
-            f"csrr x{tmp_reg}, hgeip",
-            write_sigupd(tmp_reg, test_data),
-            f"csrr x{tmp_reg}, hip",
-            write_sigupd(tmp_reg, test_data),
-        ]
-
-    lines = [
-        "#ifdef UDB_SGEI_INTR_IMPL",
-        comment_banner(
-            "cp_trigger_sgei",
-            "With guest external interrupt 1 pending and enabled in hgeie, set hie.SGEIE = 0/1 with\n"
-            "sstatus.SIE = 0/1.  hip.SGEIP = 1; HS-mode takes cause 12 when SIE = 1 and SGEIE = 1",
-        ),
-        "csrw hideleg, zero",
-        "csrw hie, zero",
-        f"LI(x{tmp_reg}, 2)",
-        f"csrw hgeie, x{tmp_reg}",
-    ]
-    for sie in (0, 1):
-        for ie in (0, 1):
-            lines.extend(
-                [
-                    f"csr{'s' if sie else 'c'}i sstatus, SSTATUS_SIE",
-                    *_gei("SET", 1, tmp_reg),
-                    f"LI(x{tmp_reg}, {'MIP_SGEIP' if ie else 0})",
-                    test_data.add_testcase(f"sie{sie}_sgeie{ie}", "cp_trigger_sgei", _CG),
-                    f"csrw hie, x{tmp_reg}",
-                    f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
-                    "csrci sstatus, SSTATUS_SIE",
-                    f"csrr x{tmp_reg}, hip",
-                    write_sigupd(tmp_reg, test_data),
-                    *_gei("CLR", 1, tmp_reg),
-                    "csrw hie, zero",
-                ]
-            )
-    lines.append(
-        comment_banner(
-            "cp_priority_sgei, cp_priority_sgei_s",
-            "With guest external interrupt 1 and hvip = 0x444 pending, hideleg = 0, hie = 0x1444, sie = 1s and\n"
-            "SEI, STI, SSI or no S-level interrupt pending, set sstatus.SIE.  The S-level interrupt is taken\n"
-            "first, then SGEI, VSEI, VSSI and VSTI",
-        )
-    )
-    for s_int in [None, *S_INTS]:
-        coverpoint = "cp_priority_sgei_s" if s_int else "cp_priority_sgei"
-        lines.extend(
-            [
-                f"LI(x{tmp_reg}, MIP_VS_MASK)",
-                f"csrw hvip, x{tmp_reg}",
-                f"LI(x{tmp_reg}, MIP_HS_MASK)",
-                f"csrw hie, x{tmp_reg}",
-                f"LI(x{tmp_reg}, -1)",
-                f"csrw sie, x{tmp_reg}",
-                *([f"RVTEST_SET_{int_macro[s_int]}_INT_S"] if s_int else []),
-                *_gei("SET", 1, tmp_reg),
-                test_data.add_testcase(s_int.lower() if s_int else "sgei", coverpoint, _CG),
-                f"csrr x{tmp_reg}, sip",
-                write_sigupd(tmp_reg, test_data),
-                "csrsi sstatus, SSTATUS_SIE",
-                f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
-                "csrci sstatus, SSTATUS_SIE",
-                *([f"RVTEST_CLR_{int_macro[s_int]}_INT_S"] if s_int else []),
-                *_gei("CLR", 1, tmp_reg),
-                "csrw sie, zero",
-                "csrw hie, zero",
-                "csrw hvip, zero",
-            ]
-        )
-    lines.append(
-        comment_banner(
-            "cp_hgeie",
-            "With sstatus.SIE = 0, for each guest external interrupt i, set hgeie to bit i with hgeip = 0,\n"
-            "bit i and every implemented bit.  hip.SGEIP = 1 when hgeip & hgeie != 0",
-        )
-    )
-    for pending in ("none", "i", "all"):
-        if pending == "all":
-            lines.extend(all_gei("SET"))
-        for gei in geis:
-            body = [
-                *(_gei("SET", gei, tmp_reg) if pending == "i" else []),
-                *check(f"hgeie_{gei}_hgeip_{pending}", "cp_hgeie", 1 << gei),
-                *(_gei("CLR", gei, tmp_reg) if pending == "i" else []),
-            ]
-            lines.extend(each_gei(body, gei))
-        if pending == "all":
-            lines.extend(all_gei("CLR"))
-    lines.append(
-        comment_banner(
-            "cp_trigger_vsei_hgeip",
-            "With hvip = hideleg = hie = 0, for each guest external interrupt i, set hstatus.VGEIN = i with\n"
-            "hgeip = 0, bit i and every implemented bit but i, and hgeie bit i = 0/1.  hip.VSEIP = hgeip[i]",
-        )
-    )
-    # "others" raises every guest external interrupt once and clears bit i around each case
-    for pending in ("none", "i", "others"):
-        if pending == "others":
-            lines.extend(all_gei("SET"))
-        for gei in geis:
-            body = [
-                *(_gei("SET", gei, tmp_reg) if pending == "i" else []),
-                *(_gei("CLR", gei, tmp_reg) if pending == "others" else []),
-                f"LI(x{tmp_reg}, HSTATUS_VGEIN)",
-                f"csrc hstatus, x{tmp_reg}",
-                f"LI(x{tmp_reg}, {gei << 12:#x})",
-                f"csrs hstatus, x{tmp_reg}",
-            ]
-            for ie in (0, 1):
-                body.extend(check(f"vgein_{gei}_hgeip_{pending}_hgeie{ie}", "cp_trigger_vsei_hgeip", ie << gei))
-            body.extend(_gei("CLR", gei, tmp_reg) if pending == "i" else [])
-            body.extend(_gei("SET", gei, tmp_reg) if pending == "others" else [])
-            lines.extend(each_gei(body, gei))
-        if pending == "others":
-            lines.extend(all_gei("CLR"))
-    lines.extend(
-        [
-            comment_banner(
-                "cp_hgeip0",
-                "With hgeip = hgeie = every implemented bit and hstatus.VGEIN = 0, hip.SGEIP = 1 and hip.VSEIP = 0",
-            ),
-            f"LI(x{tmp_reg}, HSTATUS_VGEIN)",
-            f"csrc hstatus, x{tmp_reg}",
-            *all_gei("SET"),
-            *check("vgein_0", "cp_hgeip0", -1),
-            *all_gei("CLR"),
-            "csrw hgeie, zero",
-            "#endif // UDB_SGEI_INTR_IMPL",
-        ]
-    )
-    test_data.int_regs.return_register(tmp_reg)
-    return lines
-
-
 def _guest_tests(
     test_data: TestData, coverpoint: str, mode: str, cases: list[tuple[str, int, int, int, int]]
 ) -> list[str]:
@@ -589,9 +429,6 @@ def make_interruptsh(test_data: TestData) -> list[TestChunk]:
 
     tc = test_data.new_test_chunk(test_chunks, "alias")
     tc.code.extend(_alias_tests(test_data))
-
-    tc = test_data.new_test_chunk(test_chunks, "sgei")
-    tc.code.extend(_sgei_tests(test_data))
 
     every = _vs(0b111)
     tc = test_data.new_test_chunk(test_chunks, "vs")

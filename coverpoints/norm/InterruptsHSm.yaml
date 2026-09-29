@@ -8,7 +8,7 @@ normative_rule_definitions:
 
   # mip and mie hold the hip and hie bits
   - names: [mip_mie_vs, mip_mie_alias]
-    coverpoint: ["InterruptsHSm_m_cg/cp_{mie, mip, mie_gilen, mip_gilen}"]
+    coverpoint: ["InterruptsHSm_m_cg/cp_{mie, mip, mie_gilen}"]
 
   # hie.SGEIE is writable when guest external interrupts can become pending
   - names: [hie_acc]

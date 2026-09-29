@@ -589,8 +589,8 @@ def _gen_vl_walking1s_sew_lmul(test_data: TestData, temp_reg: int, test_chunks: 
 
 @add_priv_test_generator(
     "SmV",
-    required_extensions=["Sm", "M", "V", "Zicsr"],
-    march_extensions=["M", "V"],
+    required_extensions=["Sm", "Zve32x", "Zicsr"],
+    march_extensions=["Zve32x"],
     extra_defines=[
         "#define RVTEST_VECTOR",
         "#define RVTEST_SEW 0",

@@ -153,8 +153,8 @@ def _gen_fs_off(test_data: TestData, temp_reg: int) -> list[str]:
 
 @add_priv_test_generator(
     "SmVF",
-    required_extensions=["Sm", "M", "V", "F", "Zicsr"],
-    march_extensions=["M", "F", "V"],
+    required_extensions=["Sm", "Zve32f", "F", "Zicsr"],
+    march_extensions=["F", "Zve32f"],
     extra_defines=[
         "#define RVTEST_VECTOR",
         "#define RVTEST_SEW 0",

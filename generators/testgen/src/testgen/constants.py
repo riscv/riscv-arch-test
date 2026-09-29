@@ -31,6 +31,9 @@ def indent_asm(line: str) -> str:
 TESTCASES_PER_FILE = 1000
 TESTCASES_PER_PRIV_FILE = 512
 
+# Traps reserved in the signature of a privileged test that sets no count of its own
+PRIV_TRAP_SIGUPD_COUNT = 1500
+
 # =============================================================================
 # Extension Configuration
 # =============================================================================

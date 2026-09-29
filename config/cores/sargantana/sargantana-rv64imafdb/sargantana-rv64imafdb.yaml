@@ -34,7 +34,7 @@ description: >-
 #     flow tests them, and ACT's invisible trap handler rejects H outright
 #     ("Invisible trap emulation does not support traps from VS or VU mode yet.",
 #     tests/env/check_defines.h).
-# Both are recorded in the discrepancy notes rather than modelled here.
+# Neither is claimed.
 implemented_extensions:
   # "localparam logic [63:0] ISA_CODE = ... | (1 << 8) // I ... | (1 << 63); // RV64"
   #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/def_pkg.sv#L81-L94

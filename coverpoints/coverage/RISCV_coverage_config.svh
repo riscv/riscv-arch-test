@@ -158,6 +158,9 @@
 `ifdef PMPF_COVERAGE
   `include "PMPF_coverage.svh"
 `endif
+`ifdef PMPH_COVERAGE
+  `include "PMPH_coverage.svh"
+`endif
 `ifdef PMPS_COVERAGE
   `include "PMPS_coverage.svh"
 `endif
@@ -277,6 +280,9 @@
 `endif
 `ifdef SVHSM_COVERAGE
   `include "SvHSm_coverage.svh"
+`endif
+`ifdef SVHZICBO_COVERAGE
+  `include "SvHZicbo_coverage.svh"
 `endif
 `ifdef SVPMP_COVERAGE
   `include "SvPMP_coverage.svh"

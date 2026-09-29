@@ -74,7 +74,7 @@ RVTEST_BEGIN
 
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
-  LI(t0, (1 << 17) | (3 << 11))
+  LI(t0, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, t0
   LI(t0, MPP_LOWER)
   csrs mstatus, t0
@@ -86,7 +86,7 @@ PMPS_cp_mprv_lock0_mprv0_1_jalr:
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_mprv_lock0_mprv0_1_jalr, PMPS_cp_mprv_lock0_mprv0_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-  LI(t0, (1 << 17) | (3 << 11))
+  LI(t0, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, t0
   LI(t0, MPP_LOWER)
   csrs mstatus, t0
@@ -94,7 +94,7 @@ PMPS_cp_mprv_lock0_mprv0_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_mprv_lock0_mprv0_2_sw, PMPS_cp_mprv_lock0_mprv0_2_sw_str)
-  LI(t0, (1 << 17) | (3 << 11))
+  LI(t0, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, t0
   LI(t0, MPP_LOWER)
   csrs mstatus, t0
@@ -102,7 +102,7 @@ PMPS_cp_mprv_lock0_mprv0_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_mprv_lock0_mprv0_3_lw, PMPS_cp_mprv_lock0_mprv0_3_lw_str)
-  LI(t0, (1 << 17) | (3 << 11))
+  LI(t0, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, t0
   LI(t0, 0)
   csrs mstatus, t0
@@ -111,7 +111,7 @@ PMPS_cp_mprv_lock0_mprv0_3_lw:
 
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
-  LI(t0, (1 << 17) | (3 << 11))
+  LI(t0, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, t0
   LI(t0, MPP_LOWER|MPRV)
   csrs mstatus, t0
@@ -123,7 +123,7 @@ PMPS_cp_mprv_lock0_mprv1_1_jalr:
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_mprv_lock0_mprv1_1_jalr, PMPS_cp_mprv_lock0_mprv1_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-  LI(t0, (1 << 17) | (3 << 11))
+  LI(t0, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, t0
   LI(t0, MPP_LOWER|MPRV)
   csrs mstatus, t0
@@ -131,7 +131,7 @@ PMPS_cp_mprv_lock0_mprv1_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_mprv_lock0_mprv1_2_sw, PMPS_cp_mprv_lock0_mprv1_2_sw_str)
-  LI(t0, (1 << 17) | (3 << 11))
+  LI(t0, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, t0
   LI(t0, MPP_LOWER|MPRV)
   csrs mstatus, t0
@@ -139,7 +139,7 @@ PMPS_cp_mprv_lock0_mprv1_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_mprv_lock0_mprv1_3_lw, PMPS_cp_mprv_lock0_mprv1_3_lw_str)
-  LI(t0, (1 << 17) | (3 << 11))
+  LI(t0, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, t0
   LI(t0, 0)
   csrs mstatus, t0
@@ -159,7 +159,7 @@ PMPS_cp_mprv_lock0_mprv1_3_lw:
 
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
-  LI(t0, (1 << 17) | (3 << 11))
+  LI(t0, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, t0
   LI(t0, MPP_LOWER)
   csrs mstatus, t0
@@ -171,7 +171,7 @@ PMPS_cp_mprv_lock1_mprv0_1_jalr:
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_mprv_lock1_mprv0_1_jalr, PMPS_cp_mprv_lock1_mprv0_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-  LI(t0, (1 << 17) | (3 << 11))
+  LI(t0, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, t0
   LI(t0, MPP_LOWER)
   csrs mstatus, t0
@@ -179,7 +179,7 @@ PMPS_cp_mprv_lock1_mprv0_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_mprv_lock1_mprv0_2_sw, PMPS_cp_mprv_lock1_mprv0_2_sw_str)
-  LI(t0, (1 << 17) | (3 << 11))
+  LI(t0, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, t0
   LI(t0, MPP_LOWER)
   csrs mstatus, t0
@@ -187,7 +187,7 @@ PMPS_cp_mprv_lock1_mprv0_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_mprv_lock1_mprv0_3_lw, PMPS_cp_mprv_lock1_mprv0_3_lw_str)
-  LI(t0, (1 << 17) | (3 << 11))
+  LI(t0, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, t0
   LI(t0, 0)
   csrs mstatus, t0
@@ -196,7 +196,7 @@ PMPS_cp_mprv_lock1_mprv0_3_lw:
 
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
-  LI(t0, (1 << 17) | (3 << 11))
+  LI(t0, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, t0
   LI(t0, MPP_LOWER|MPRV)
   csrs mstatus, t0
@@ -208,7 +208,7 @@ PMPS_cp_mprv_lock1_mprv1_1_jalr:
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_mprv_lock1_mprv1_1_jalr, PMPS_cp_mprv_lock1_mprv1_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-  LI(t0, (1 << 17) | (3 << 11))
+  LI(t0, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, t0
   LI(t0, MPP_LOWER|MPRV)
   csrs mstatus, t0
@@ -216,7 +216,7 @@ PMPS_cp_mprv_lock1_mprv1_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_mprv_lock1_mprv1_2_sw, PMPS_cp_mprv_lock1_mprv1_2_sw_str)
-  LI(t0, (1 << 17) | (3 << 11))
+  LI(t0, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, t0
   LI(t0, MPP_LOWER|MPRV)
   csrs mstatus, t0
@@ -224,7 +224,7 @@ PMPS_cp_mprv_lock1_mprv1_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_mprv_lock1_mprv1_3_lw, PMPS_cp_mprv_lock1_mprv1_3_lw_str)
-  LI(t0, (1 << 17) | (3 << 11))
+  LI(t0, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, t0
   LI(t0, 0)
   csrs mstatus, t0

@@ -157,6 +157,9 @@
     `ifdef COVER_PMPF
         pmpf_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_PMPH
+        pmph_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_PMPS
         pmps_sample(hart, issue, ins);
     `endif
@@ -276,6 +279,9 @@
     `endif
     `ifdef COVER_SVHSM
         svhsm_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SVHZICBO
+        svhzicbo_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SVPMP
         svpmp_sample(hart, issue, ins);

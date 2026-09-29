@@ -9,6 +9,7 @@
 """Shared helpers for generating Zicbo (cache-block operation) exception tests
 across different privilege-modes."""
 
+from itertools import product
 from typing import NamedTuple
 
 from testgen.asm.helpers import comment_banner, write_sigupd
@@ -179,6 +180,46 @@ def cbo_config_helper(
         lines.append("#endif // U_SUPPORTED")
     lines.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
 
+    test_data.int_regs.return_registers([addr_reg, cfg_reg, mask_reg, val_reg])
+    return lines
+
+
+def cbo_henvcfg_helper(test_data: TestData, covergroup: str, field: str, *, mode: str) -> list[str]:
+    """Execute ``field``'s instructions in VS-mode or VU-mode for each value of menvcfg, henvcfg and, in VU-mode,
+    senvcfg.  Runs from M-mode, with vsatp and hgatp Bare.
+
+    A field that menvcfg disables raises an illegal-instruction exception; otherwise one that henvcfg, or
+    senvcfg in VU-mode, disables raises a virtual-instruction exception (cmo.adoc, "CSR controls").
+    """
+    cfg = _CBO_FIELDS[field]
+    width = len(cfg.bins[0])
+    field_mask = ((1 << width) - 1) << cfg.shift
+    csrs = ["menvcfg", "henvcfg", *(["senvcfg"] if mode == "VU" else [])]
+    addr_reg, cfg_reg, mask_reg, val_reg = test_data.int_regs.get_registers(4)
+    lines = [
+        comment_banner(
+            f"cp_{field}_{mode.lower()}",
+            f"Exercise {', '.join(cfg.instrs)} in {mode}-mode across {', '.join(f'{csr}.{field}' for csr in csrs)}",
+        ),
+        f"#ifdef {cfg.guard}",
+        f"LA(x{addr_reg}, scratch)",
+        f"LI(x{mask_reg}, {field_mask:#x})  # {field} field mask",
+    ]
+    for values in product(cfg.bins, repeat=len(csrs)):
+        for csr, value in zip(csrs, values, strict=True):
+            lines.append(f"csrc {csr}, x{mask_reg}")
+            if int(value, 2):
+                lines.extend([f"LI(x{cfg_reg}, {int(value, 2) << cfg.shift:#x})", f"csrs {csr}, x{cfg_reg}"])
+        lines.append(f"RVTEST_TSBI_GOTO_{mode}MODE")
+        tag = "_".join(f"{csr}.{field}{value}" for csr, value in zip(csrs, values, strict=True))
+        for instr in cfg.instrs:
+            lines.extend(
+                _cbo_test(
+                    instr, f"{instr}_{tag}", f"cp_{field}_{mode.lower()}", covergroup, addr_reg, val_reg, test_data
+                )
+            )
+        lines.append("RVTEST_TSBI_GOTO_MMODE")
+    lines.append(f"#endif // {cfg.guard}")
     test_data.int_regs.return_registers([addr_reg, cfg_reg, mask_reg, val_reg])
     return lines
 

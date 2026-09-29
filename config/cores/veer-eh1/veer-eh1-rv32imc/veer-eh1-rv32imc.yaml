@@ -158,8 +158,10 @@ params:
   #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/complex-port-list.md#L54
   #   Quote: ".timer_int ( 1'b0 ), .extintsrc_req ( '0 ),"
   #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/testbench/tb_top.sv#L699
-  MEI_INTR_IMPL: true
-  MTI_INTR_IMPL: true
+  # ACT reads {MEI,MTI,MSI}_INTR_IMPL as the machine interrupts the platform can raise
+  # (tests/env/check_defines.h), so each is true only where rvmodel_macros.h can raise it.
+  MEI_INTR_IMPL: false
+  MTI_INTR_IMPL: false
   # Machine software interrupts are NOT implemented: mip has no msip bit, there is no
   # msip input, and mcause lists no 0x8000_0003. mie.MSIE is nonetheless a writable
   # flop with nothing behind it, where UDB's false models it as read-only zero.

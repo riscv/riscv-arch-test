@@ -1095,32 +1095,32 @@
         #endif
       #endif
 
-      // Enable necessary state for unpriv instructions
-      // Disable privileged extensions until they are turned on explicitly by tests that need them
-      // mstateen0.SE0 = 0: disable access to hststateen0, hstatene0h, ssstateen0
-      // mstateen0.ENVCFG = 0: disable access to henvcfg, henvcfgh, senvcfg
-      // mstateen0.CSRIND = 0: disable access to Sscrind siselect, sireg* registers (until turned on for those tests)
-      // mstateen0.AIA = 0: disable access to Ssaia advanced interrupt architecture state
-      // mstateen0.IMSIC = 0: disable access to MISIC state
-      // mstateen0.P1P13 = 0: disable access to hedelegh for 1P13 until turned on
-      // mstateen0.SRMCFG = 0: disable access to srmcfg for Ssqosid until turned on
-      // mstateen0.CTR = 0: disable access to Smctr control transfer records until turned on
-      // mstateen0.JVT = 1: Enable jvt for Zcmt
-      // mstateen0.FCSR = 1: Enable fcsr access for Zfinx only if supported ZFINX_SUPPORTED (to avoid conflicts with F)
-      // mstateen0.C = 0: Disable custom state
+      // Enable access to standard state from lower privilege modes.
+      // mstateen0.SE0 = 1: Enable access to hstateen0, hstateen0h, and sstateen0
+      // mstateen0.ENVCFG = 1: Enable access to henvcfg, henvcfgh, and senvcfg
+      // mstateen0.CSRIND = 1: Enable access to supervisor indirect CSR state
+      // mstateen0.AIA = 1: Enable access to Ssaia advanced interrupt architecture state
+      // mstateen0.IMSIC = 1: Enable access to IMSIC state
+      // mstateen0.CONTEXT = 1: Enable access to supervisor and hypervisor context registers
+      // mstateen0.P1P13 = 1: Enable access to hedelegh
+      // mstateen0.SRMCFG = 1: Enable access to srmcfg for Ssqosid
+      // mstateen0.CTR = 1: Enable access to control transfer record state
+      // mstateen0.JVT = 1: Enable access to jvt for Zcmt
+      // mstateen0.FCSR = 1: Enable access to floating-point CSRs for Zfinx
+      // Keep custom state and reserved bits disabled.
       #ifdef SMSTATEEN_SUPPORTED
         #if __riscv_xlen == 64
-          li t0, MSTATEEN0_JVT
+          LI(t0, MSTATEEN_HSTATEEN | MSTATEEN0_HENVCFG | MSTATEEN0_CSRIND | MSTATEEN0_AIA | \
+                 MSTATEEN0_IMSIC | MSTATEEN0_HCONTEXT | MSTATEEN0_PRIV113 | MSTATEEN0_PRIV114 | \
+                 MSTATEEN0_CTR | MSTATEEN0_JVT | MSTATEEN0_FCSR)
           csrw mstateen0, t0
         #else    // RV32
-          csrw mstateen0h, zero
-          li t0, MSTATEEN0_JVT
+          LI(t0, MSTATEENH_HSTATEEN | MSTATEEN0H_HENVCFG | MSTATEEN0H_CSRIND | MSTATEEN0H_AIA | \
+                 MSTATEEN0H_IMSIC | MSTATEEN0H_HCONTEXT | MSTATEEN0H_PRIV113 | MSTATEEN0H_PRIV114 | \
+                 MSTATEEN0H_CTR)
+          csrw mstateen0h, t0
+          LI(t0, MSTATEEN0_JVT | MSTATEEN0_FCSR)
           csrw mstateen0, t0
-        #endif
-        #ifdef ZFINX_SUPPORTED
-          li t0, MSTATEEN0_FCSR
-          csrs mstateen0, t0 // Set mstateen0.FCSR
-          li t0, 0
         #endif
       #endif
 
@@ -1324,21 +1324,9 @@
     csrw mideleg, t0
 
     // Enable necessary state for access from lower privilege modes
-    // mstateen0.SE0 = 1: enable access to hststateen0, hstatene0h, ssstateen0
-    // mstateen0.ENVCFG = 1: enable access to henvcfg, henvcfgh, senvcfg
     // sstateen0.JVT = 1: Enable jvt for Zcmt
-    // sstateen0.FCSR = 1: Enable fcsr access for Zfinx only if supported ZFINX_SUPPORTED (to avoid conflicts with F)
-    // sstateen0.C = 0: Disable custom state
-
-    #ifdef SMSTATEEN_SUPPORTED
-      #if __riscv_xlen == 64
-        li t0, MSTATEEN_HSTATEEN | MSTATEEN0_HENVCFG  # alternate names for SE0 and ENVCFG in encoding.h
-        csrs mstateen0, t0  // Set these fields
-      #else    // RV32
-        li t0, MSTATEENH_HSTATEEN | MSTATEEN0H_HENVCFG   # alternate names for SE0 and ENVCFG in encoding.h
-        csrs mstateen0h, t0 // Set these fields
-      #endif
-    #endif
+    // sstateen0.FCSR = 1: Enable access to floating-point CSRs for Zfinx
+    // Keep custom state and reserved bits disabled.
     #ifdef SSSTATEEN_SUPPORTED
       li t0, SSTATEEN0_JVT | SSTATEEN0_FCSR
       csrs sstateen0, t0 // enable access from lower privilege mode

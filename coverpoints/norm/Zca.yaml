@@ -30,9 +30,15 @@ normative_rule_definitions:
   - name: c-andi_op
     coverpoint: ["Zca_c_andi_cg/{cp_rs1_p, cr_rs1_imm_edges_6bit}"]
   - name: c-beqz_op
-    coverpoint: ["Zca_c_beqz_cg/{cp_rs1_p, cp_rs1_edges, cp_offset}"]
+    coverpoint:
+      [
+        "Zca_c_beqz_cg/{cp_rs1_p, cp_rs1_edges, cp_offset, cp_imm_edges_c_branch}",
+      ]
   - name: c-bnez_op
-    coverpoint: ["Zca_c_bnez_cg/{cp_rs1_p, cp_rs1_edges, cp_offset}"]
+    coverpoint:
+      [
+        "Zca_c_bnez_cg/{cp_rs1_p, cp_rs1_edges, cp_offset, cp_imm_edges_c_branch}",
+      ]
   - name: c-j_op
     coverpoint: ["Zca_c_j_cg/{cp_imm_edges_c_jal}"]
   - name: c-jal_op

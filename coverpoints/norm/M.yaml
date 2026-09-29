@@ -33,17 +33,20 @@ normative_rule_definitions:
     coverpoint:
       ["{M_remw_cg, M_remuw_cg}/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
   - name: div_by_zero
-    coverpoint: ["{M_div_cg, M_divu_cg}/{cr_rs1_rs2_edges}"]
+    coverpoint:
+      ["{M_div_cg, M_divu_cg, M_divw_cg, M_divuw_cg}/{cr_rs1_rs2_edges}"]
   - name: rem_by_zero
-    coverpoint: ["{M_rem_cg, M_remu_cg}/{cr_rs1_rs2_edges}"]
+    coverpoint:
+      ["{M_rem_cg, M_remu_cg, M_remw_cg, M_remuw_cg}/{cr_rs1_rs2_edges}"]
   - name: signed_div_overflow
-    coverpoint: ["{M_div_cg, M_rem_cg}/cr_rs1_rs2_edges"]
+    coverpoint:
+      ["{M_div_cg, M_rem_cg, M_divw_cg, M_remw_cg}/{cr_rs1_rs2_edges}"]
   - name: rem_result_sign
-    coverpoint: ["{M_rem_cg}/{cr_rs1_rs2_edges}"]
+    coverpoint: ["{M_rem_cg, M_remw_cg}/{cr_rs1_rs2_edges}"]
   # Both insn:remw[] and insn:remuw[] always sign-extend the 32-bit result to 64 bits,
   # including on a divide by zero.
   - name: remw_remuw_result_sign
-    coverpoint: ["{M_remw_cg, M_remuw_cg}/cr_rs1_rs2_edges"]
+    coverpoint: ["{M_remw_cg, M_remuw_cg}/{cr_rs1_rs2_edges}"]
   - name: mulw_op
     coverpoint: ["M_mulw_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
 

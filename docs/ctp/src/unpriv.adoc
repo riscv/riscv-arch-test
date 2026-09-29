@@ -47,12 +47,12 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cp_align|≤ 8|Alignment of naturally-aligned sub-doubleword load/store operand within doubleword
 |cp_memval|5|Edge values for integer memory values loaded by load instructions.
 3+^|Coverpoints for Compressed Instructions
-|cp_rs1p|8|The rs1 register number used in compressed instructions supporting x8-x15.
-|cp_rs2p|8|The rs2 register number used in compressed instructions supporting x8-x15.
-|cp_rdp|8|The rd register number used in compressed instructions supporting x8-x15.
-|cp_fdp|8|The fd register number used in compressed floating-point instructions supporting x8-x15.
-|cp_fs2p|8|The fs2 register number used in compressed floating-point instructions supporting x8-x15.
-|cp_imm_mul|8|7-bit immediate that is a multiple of 4 (for word-sized load/store instructions).
+|cp_rs1_p|8|The rs1 register number used in compressed instructions supporting x8-x15.
+|cp_rs2_p|8|The rs2 register number used in compressed instructions supporting x8-x15.
+|cp_rd_p|8|The rd register number used in compressed instructions supporting x8-x15.
+|cp_fd_p|8|The fd register number used in compressed floating-point instructions supporting f8-f15.
+|cp_fs2_p|8|The fs2 register number used in compressed floating-point instructions supporting f8-f15.
+|cp_imm_mul|32|Immediate offset for word-sized compressed loads/stores: multiples of 4 from 0 to 124.
 3+^|Coverpoints for Floating-Point Instructions
 |cp_fs1|32|The fs1 register number used in the instruction.
 |cp_fs2|32|The fs2 register number used in the instruction.

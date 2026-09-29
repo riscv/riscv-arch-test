@@ -19,6 +19,10 @@ normative_rule_definitions:
   # extensions.
   - name: Zfinx_Zdinx_incompatible_F_D
     coverpoint: ["Definition, checked through UDB"]
+  # The ext:f[] extension adds 32 floating-point registers,
+  # f0&amp;#8205;&amp;#8211;&amp;#8205;f31, each 32 bits wide, i.e., FLEN=32.
+  - name: flen
+    coverpoint: ["F_fadd_s_cg/cr_fs1_fs2_edges_frm"] # one of many possible
   # insn:fadd.s[] and insn:fmul.s[] perform single-precision floating-point addition and
   # multiplication respectively, between rs1 and rs2
   - name: fadd-s_fmul-s_op
@@ -303,6 +307,18 @@ normative_rule_definitions:
         "F_fle_s_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges}",
         "F_flt_s_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges}",
       ]
+  # For all three instructions, the result is 0 if either operand is NaN
+  - name: feq-s_flt-s_fle-s_nan_input
+    coverpoint: ["{F_feq_s_cg, F_fle_s_cg, F_flt_s_cg}/cr_fs1_fs2_edges"]
+  # insn:feq.s[] performs a quiet comparison: it only sets the invalid operation exception
+  # flag if either input is a signaling NaN
+  - name: feq-s_quiet
+    coverpoint: ["F_feq_s_cg/{cr_fs1_fs2_edges, cp_csr_fflags_v}"]
+  # insn:flt.s[] and insn:fle.s[] perform what IEEE 754-2008 refers to as signaling
+  # comparisons: that is, they set the invalid operation exception flag if either input is
+  # NaN
+  - name: flt-s_fle-s_signaling
+    coverpoint: ["{F_fle_s_cg, F_flt_s_cg}/{cr_fs1_fs2_edges, cp_csr_fflags_v}"]
   # Floating-point loads and stores use the same base+offset addressing mode as the
   # integer base ISAs, with a base address in register rs1 and a 12-bit signed byte
   # offset. The insn:flw[] instruction loads a single-precision floating-point value from

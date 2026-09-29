@@ -1,10 +1,6 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  # The ext:f[] extension adds 32 floating-point registers,
-  # f0&amp;#8205;&amp;#8211;&amp;#8205;f31, each 32 bits wide, i.e., FLEN=32.
-  - name: flen
-    coverpoint: ["D_fadd_d_cg/{cr_fs1_fs2_edges_frm_D}"] # one of many possible
   # The ext:d[] extension widens the 32 floating-point registers,
   # f0&amp;#8205;&amp;#8211;&amp;#8205;f31, to 64 bits, i.e., FLEN=64.
   - name: D_flen_64
@@ -106,17 +102,12 @@ normative_rule_definitions:
   # least-significant bits of the input are used as the input value, otherwise the input
   # value is treated as an n-bit canonical NaN.
   - name: fp_nontransfer_instrs_improper_nan_boxed_input
+    # Representative coverpoints; also the cp_fs*_badNB_D_S coverpoints of the other D_*_s covergroups
     coverpoint:
       [
-        "D_fadd_d_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm_D}",
-        "D_fdiv_d_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_vdoun, cp_csr_frm, cr_fs1_fs2_edges_frm_D}",
-        "D_fmadd_d_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_D, cr_fs1_fs3_edges_frm4_D}",
-        "D_fmsub_d_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_D, cr_fs1_fs3_edges_frm4_D}",
-        "D_fmul_d_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm_D}",
-        "D_fnmadd_d_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_D, cr_fs1_fs3_edges_frm4_D}",
-        "D_fnmsub_d_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_D, cr_fs1_fs3_edges_frm4_D}",
-        "D_fsqrt_d_cg/{cp_fs1, cp_fd, cp_fs1_edges_D, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
-        "D_fsub_d_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm_D}",
+        "D_fadd_s_cg/{cp_fs1_badNB_D_S, cp_fs2_badNB_D_S}",
+        "D_fmadd_s_cg/cp_fs3_badNB_D_S",
+        "D_fsqrt_s_cg/cp_fs1_badNB_D_S",
       ]
   # Operations on subnormal numbers are handled in accordance with IEEE 754-2008.
   - name: ieee_std_subnormal

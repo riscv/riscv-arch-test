@@ -33,11 +33,11 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cp_rs1|32|The rs1 register number used in the instruction.
 |cp_rs2|32|The rs2 register number used in the instruction.
 |cp_rd|32|The rd register number used in the instruction.
-|cp_rs1_edges|16|Edge values for rs1 (see <<t-integer-edge-definitions>>).
-|cp_rs2_edges|16|Edge values for rs2 (see <<t-integer-edge-definitions>>).
+|cp_rs1_edges|12 (RV32), 18 (RV64)|Edge values for rs1 (see <<t-integer-edge-definitions>>).
+|cp_rs2_edges|12 (RV32), 18 (RV64)|Edge values for rs2 (see <<t-integer-edge-definitions>>).
 |cp_imm_edges|20|Edge values for 12-bit immediates (see <<t-immediate-edge-definitions>>).
-|cr_rs1_imm_edges|16*20|Cross-product of rs1 and 12-bit immediate edges (see <<t-immediate-edge-definitions>>).
-|cr_rs1_rs2_edges|16*16|Cross-product of rs1 and rs2 edges, used for instructions with two source registers.
+|cr_rs1_imm_edges|12*20 (RV32), 18*20 (RV64)|Cross-product of rs1 and 12-bit immediate edges (see <<t-immediate-edge-definitions>>).
+|cr_rs1_rs2_edges|12*12 (RV32), 18*18 (RV64)|Cross-product of rs1 and rs2 edges, used for instructions with two source registers.
 |cmp_rs1_rs2|32|The rs1 and rs2 registers have the same register number.
 |cmp_rd_rs1|32|The rd register has the same register number as the rs1 register.
 |cmp_rd_rs2|32|The rd register has the same register number as the rs2 register.
@@ -121,6 +121,8 @@ Notes:
 |Wmaxm1  |n/a|`0000000000000000000000000000000011111111111111111111111111111110`
 |Wmaxp1  |n/a|`0000000000000000000000000000000100000000000000000000000000000000`
 |Wmaxp2  |n/a|`0000000000000000000000000000000100000000000000000000000000000001`
+|W80     |n/a|`0000000000000000000000000000000010000000000000000000000000000000`
+|W7F     |n/a|`0000000000000000000000000000000001111111111111111111111111111111`
 |===
 
 [[t-immediate-edge-definitions]]

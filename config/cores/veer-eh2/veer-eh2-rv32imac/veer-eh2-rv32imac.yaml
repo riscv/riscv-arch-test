@@ -82,6 +82,12 @@ params:
   MUTABLE_MISA_M: false
   MUTABLE_MISA_C: false
   MUTABLE_MISA_A: false
+  # misa.X is 0 in the fixed misa value (0x4000_1105 has bit 23 clear). EH2's custom CSRs
+  # (mrac, mcpc, ...) are not a non-standard instruction extension, and the Zb* bitmanip
+  # options that would add draft instructions are disabled in this build.
+  #   Quote: "0x4000_1105 (with atomics support [^57]) 0x4000_1104 (without atomics support [^57])"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/docs/source/csrs.md#L27
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
 
   # Endianness: RISC-V little-endian; EH2 implements no mstatus.MBE/SBE/UBE fields.
   M_MODE_ENDIANNESS: little
@@ -156,6 +162,29 @@ params:
 
   # Sm parameters.
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+
+  # WFI is a NOP, so it always resumes after a finite time. There is no U-mode, so WFI can
+  # never execute in U-mode.
+  #   Quote: "Currently, the WFI instruction is implemented as NOP, which is a fully
+  #   RISC-V-compliant option."
+  #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/docs/source/power.md#L750
+  WFI_FINITE: true
+  WFI_U_MODE: false
+
+  # The core implements all three standard machine interrupts: mie.MEIE/MTIE/MSIE are
+  # R/W and are latched from write-data bits 11/7/3.
+  #   Quote: "meie | 11 | Machine external interrupt enable | R/W", "mtie | 7 | Machine timer
+  #   interrupt enable | R/W", "msie | 3 | Machine software interrupt enable | R/W"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/docs/source/adaptations.md#L55-L79
+  #   Quote: "assign mie_ns[5:0] = wr_mie_wb ? {dec_i0_csr_wrdata_wb[30:28], dec_i0_csr_wrdata_wb[11], dec_i0_csr_wrdata_wb[7], dec_i0_csr_wrdata_wb[3]} : mie[5:0];"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/design/dec/eh2_dec_tlu_ctl.sv#L1282
+  # The testbench ties the timer_int, soft_int and extintsrc_req inputs to 0, so none of
+  # these interrupts can actually be raised in this configuration's runs.
+  #   Quote: ".timer_int ( '0 ), .extintsrc_req ( '0 ), ... .soft_int ('0),"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/testbench/tb_top.sv#L785-L833
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
   # No PMA hardware: region attributes come from mrac, whose granularity is one
   # 256 MB region, but the natural access granule on the 64-bit AHB/AXI bus is 8 bytes.
   PMA_GRANULARITY: 3
@@ -209,6 +238,16 @@ params:
       false,
       false,
     ]
+  # Each mhpmcounter is a full 64-bit counter: the low word plus an mhpmcounterNh upper
+  # word that the 64-bit increment carries into.
+  #   Quote: "assign mhpmc3_incr[63:0] = {mhpmc3h[31:0],mhpmc3[31:0]} + ..."
+  #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/design/dec/eh2_dec_tlu_ctl.sv#L2126-L2132
+  #   Quote: "mhpmcounter3h | Upper 32 bits of `mhpmcounter3`, RV32I only"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/docs/source/csrs.md#L230-L231
+  HPM_COUNTER3_WIDTH: 64
+  HPM_COUNTER4_WIDTH: 64
+  HPM_COUNTER5_WIDTH: 64
+  HPM_COUNTER6_WIDTH: 64
 
   # mcountinhibit (0x320) exists on EH2, unlike EH1 which had the non-standard mgpmc.
   #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/docs/source/csrs.md

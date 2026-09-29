@@ -22,8 +22,44 @@ normative_rule_definitions:
   - name: A_seq_cst_semantics
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 
+  # A = Zaamo + Zalrsc; representative: an instruction from each half executes
+  - name: A_comprises
+    coverpoint:
+      ["Zaamo_amoadd_w_cg/cp_asm_count", "Zalrsc_lr_w_cg/cp_asm_count"]
+
+  # Load into rd, operate with rs2, store back; representative: memory and rs2 edge values
+  - name: amo_op
+    coverpoint:
+      [
+        "Zaamo_amoadd_w_cg/{cp_memval_word, cp_rs2_edges}",
+        "Zaamo_amoadd_d_cg/{cp_memval_double, cp_rs2_edges}",
+      ]
+
+  # swap, add, and, or, xor, signed and unsigned min/max; the min/max pairs of
+  # signed extremes distinguish signed from unsigned comparison
+  - name: amo_ops_supported
+    coverpoint:
+      [
+        "{Zaamo_amoswap_w_cg, Zaamo_amoadd_w_cg, Zaamo_amoand_w_cg, Zaamo_amoor_w_cg, Zaamo_amoxor_w_cg}/cp_asm_count",
+        "{Zaamo_amomin_w_cg, Zaamo_amomax_w_cg, Zaamo_amominu_w_cg, Zaamo_amomaxu_w_cg}/cr_memval_rs2_minmax_word",
+      ]
+
+  # W-form rd sign extension is exercised by memory words with bit 31 set (cp_memval_word).
+  # On RV64 the rs2 edges include values whose upper word is nonzero and whose low
+  # word is 0x80000000 or 0x7fffffff; a W-form AMO must use only the low word.
   - name: amo_operand_size
-    coverpoint: ["{Zaamo_amoadd_w_cg, Zaamo_amoadd_d_cg}/cp_rs2_edges"]
+    coverpoint:
+      [
+        "Zaamo_amoadd_w_cg/{cp_memval_word, cp_rs2_edges}",
+        "Zaamo_amoadd_d_cg/{cp_memval_double, cp_rs2_edges}",
+      ]
+
+  # The unprivileged Zaamo suite performs only naturally aligned AMOs
+  - name: misaligned_atomicity_granule_size
+    coverpoint:
+      [
+        "OUT-OF-SCOPE: aligned AMOs only; misaligned AMOs are exercised by Zama16b and ExceptionsZaamo",
+      ]
 
   - name: amo_alignment
     coverpoint: ["Zaamo_amoadd_w_cg/cp_align_word"]

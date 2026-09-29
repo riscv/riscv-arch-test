@@ -112,7 +112,7 @@ params:
   REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
   REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
-  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true # majority behaviour; EL2 leaves mtval 0 for illegal CSR accesses - see el2-discrepancies.md
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true # majority behaviour; EL2 leaves mtval 0 for illegal CSR accesses
   MTVAL_WIDTH: 32
 
   # Misaligned load/store: handled in hardware for ordinary (idempotent) memory.

@@ -32,6 +32,17 @@ normative_rule_definitions:
       [
         "ZfaF_fround_s_cg/{cp_fs1, cp_fd, cp_fs1_edges, cp_frm_2, cp_csr_fflags_v, cp_csr_frm}",
       ]
+  # Zero and infinite inputs are copied to rd unmodified
+  - name: fround-s_zero_inf
+    coverpoint: ["{ZfaF_fround_s_cg, ZfaF_froundnx_s_cg}/cp_fs1_edges"]
+  # Signaling NaN inputs cause the invalid operation exception flag to be set; no other exception
+  # flags are set
+  - name: fround-s_nan_nv
+    coverpoint:
+      [
+        "ZfaF_fround_s_cg/{cp_fs1_edges, cp_csr_fflags_v}",
+        "ZfaF_froundnx_s_cg/{cp_fs1_edges, cp_csr_fflags_vn}",
+      ]
   - name: froundnx-s_op
     # The FROUNDNX.S instruction is defined similarly, but it also sets the inexact exception flag if the input differs from the rounded result and is not NaN. FROUNDNX.S is encoded like FCVT.S.D, but with rs2=5.
     coverpoint:

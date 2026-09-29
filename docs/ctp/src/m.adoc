@@ -1,7 +1,7 @@
 
 === M Extension for Integer Multiplication and Division
 
-<<t-M-coverpoints>> summarizes the coverpoints for the M extension. <<t-M-normative-rules>> summarizes the relevant normative rules. Division by zero and signed division overflow are covered by the `cr_rs1_rs2_edges` cross of each division and remainder instruction.
+<<t-M-coverpoints>> summarizes the coverpoints for the M extension. <<t-M-normative-rules>> summarizes the relevant normative rules.
 
 include::{testplansdir}/M.adoc[]
 

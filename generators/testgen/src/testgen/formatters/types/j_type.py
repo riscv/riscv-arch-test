@@ -10,7 +10,7 @@ from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
 
-j_config = InstructionTypeConfig(required_params={"rd", "temp_reg"})
+j_config = InstructionTypeConfig(required_params={"rd", "temp_reg", "temp_val"})
 
 
 @add_instruction_formatter("J", j_config)

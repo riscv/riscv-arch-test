@@ -10,7 +10,6 @@
 from testgen.asm.helpers import load_int_reg, write_sigupd
 from testgen.constants import INDENT
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.data.random import random_int
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.instructions.params import generate_random_params
@@ -26,9 +25,6 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
         params = generate_random_params(test_data, instr_type, rd=1)
     elif instr_name == "c.jr":
         params = generate_random_params(test_data, instr_type, rd=0)
-    elif instr_type == "J":
-        # The J formatter does not need a check value, so supply one
-        params = generate_random_params(test_data, instr_type, temp_val=random_int(bits=test_data.xlen))
     else:
         params = generate_random_params(test_data, instr_type)
 

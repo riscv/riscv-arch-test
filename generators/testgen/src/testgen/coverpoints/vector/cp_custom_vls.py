@@ -83,9 +83,11 @@ def make_cp_custom_ffLS(instr_name: str, instr_type: str, coverpoint: str, test_
     assert eew is not None, f"Could not extract eew from fault-only-first instruction {instr_name}"
     emul = eew * lmul / test_data.config.sew
 
-    # We might need an ifdef if vl=1 is vlmax (on lmul = 1, which could be required (e.g. 8 segments))
-    # But, we only need it if we require a VLEN > max(32, sew) as max(32, sew) is the minimum VLEN
-    ifdef = f"ZVL{eew * 2}B_SUPPORTED" if emul * info.segments > 8 and eew * 2 > max(32, test_data.config.sew) else ""
+    # The test needs a faulting address. It also needs VLEN > eew if vl=1 is vlmax (on lmul = 1, which could be
+    # required (e.g. 8 segments)), but only if that exceeds max(32, sew), the minimum VLEN
+    guard = "defined(RVMODEL_ACCESS_FAULT_ADDRESS)"
+    if emul * info.segments > 8 and eew * 2 > max(32, test_data.config.sew):
+        guard += f" && defined(ZVL{eew * 2}B_SUPPORTED)"
     if emul * info.segments > 8:
         lmul = 1
         emul = eew * lmul / test_data.config.sew
@@ -118,12 +120,8 @@ def make_cp_custom_ffLS(instr_name: str, instr_type: str, coverpoint: str, test_
 
     tc.code.extend([setup, label_line, test, check])
 
-    guards = ["RVMODEL_ACCESS_FAULT_ADDRESS"]
-    if ifdef != "":
-        guards.append(ifdef)
-    for guard in reversed(guards):
-        tc.code.insert(0, f"#ifdef {guard}")
-        tc.code.append("#endif")
+    tc.code.insert(0, f"#if {guard}")
+    tc.code.append("#endif")
 
     tc = test_data.end_test_chunk()
 

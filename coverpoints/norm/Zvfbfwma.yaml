@@ -25,12 +25,21 @@ normative_rule_definitions:
       ]
   # SEW is any value other than 16
   - name: vfwmaccbf16_sew_rsv
-    coverpoint:
-      [
-        "TODO: no SsstrictV coverage exists for the vfwmaccbf16 reserved SEW encodings",
-      ]
+    coverpoint: [""]
   # In the vector-vector version, the BF16 elements are read from vs1 and vs2 and FP32
   # accumulate value is read from vd. The FP32 result is written to the destination
   # register vd.
   - name: vfwmaccbf16-vv
     coverpoint: ["Zvfbfwma_vfwmaccbf16_vv_cg/cr_vs2_vs1_edges_f_bf16_sew16"]
+
+  # This extension depends upon the Zvfbfmin and Zfbfmin extensions.
+  - name: Zvfbfwma_depends
+    coverpoint: ["Definition, checked through UDB"]
+
+  # Encoding (Vector-Vector) (vfwmaccbf16.vv)
+  - name: vfwmaccbf16_encoding_vv
+    coverpoint: ["Zvfbfwma_vfwmaccbf16_vv_cg/cp_asm_count"]
+
+  # Encoding (Vector-Scalar) (vfwmaccbf16.vf)
+  - name: vfwmaccbf16_encoding_vf
+    coverpoint: ["Zvfbfwma_vfwmaccbf16_vf_cg/cp_asm_count"]

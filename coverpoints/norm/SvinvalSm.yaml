@@ -16,7 +16,7 @@ normative_rule_definitions:
   # or write the csr:satp[] CSR or execute an insn:sfence.vma[] or insn:sinval.vma[]
   # instruction while executing in S-mode will raise an illegal-instruction exception.
   # When csr::[tvm]=0, these operations are permitted in S-mode. csr::[tvm] is read-only
-  # 0 when S-mode is not supported or if csr:satp[mode] is read-only 0; otherwise, it
+  # 0 when S-mode is not supported or if satp.MODE is read-only 0; otherwise, it
   # must be writable.
   - names: [mstatus_tvm_op, mstatus_tvm_warl]
     coverpoint: ["SvinvalSm_cg/cr_svinival"]

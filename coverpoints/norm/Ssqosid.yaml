@@ -1,12 +1,6 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  - name: Ssqosid_shared_resource_need_management
-    coverpoint: [""]
-
-  - name: Ssqosid_hw_monitoring_required
-    coverpoint: [""]
-
   - name: Ssqosid_srmcfg_introduced
     coverpoint: [""]
 
@@ -17,9 +11,6 @@ normative_rule_definitions:
   - name: Ssqosid_rcid_mcid_accompany_requests
     coverpoint: [""]
 
-  - name: Ssqosid_cbqri_spec
-    coverpoint: [""]
-
   - name: Ssqosid_srmcfg_register_size
     coverpoint: [""]
 
@@ -27,10 +18,10 @@ normative_rule_definitions:
     coverpoint: [""]
 
   - name: Ssqosid_Smstateen_srmcfg_requires_mstateen0
-    coverpoint: [""]
+    coverpoint: ["Smstateen_cg/{cp_walking_ones, cp_srmcfg}"]
 
   - name: Ssqosid_srmcfg_access_illegal_instruction
-    coverpoint: [""]
+    coverpoint: ["Smstateen_cg/cp_srmcfg"]
 
   - name: Ssqosid_srmcfg_access_virtual_instruction
     coverpoint: [""]

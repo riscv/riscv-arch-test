@@ -94,3 +94,15 @@ normative_rule_definitions:
         "Vls16_vl8re32_v_cg/cp_asm_count",
         "Vls16_vl8re64_v_cg/cp_asm_count",
       ]
+
+  # Masked vector loads do not update inactive elements in the destination vector register group,
+  # unless masked agnostic is specified (vtype.vma=1).
+  - name: vector_masked_inactive_behavior
+    # Representative coverpoints; cr_vtype_agnostic in every maskable Vls load covergroup
+    coverpoint:
+      [
+        "Vls8_vle8_v_cg/cr_vtype_agnostic_e8",
+        "Vls16_vle16_v_cg/cr_vtype_agnostic_e16",
+        "Vls32_vle32_v_cg/cr_vtype_agnostic_e32",
+        "Vls64_vle64_v_cg/cr_vtype_agnostic_e64",
+      ]

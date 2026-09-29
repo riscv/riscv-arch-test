@@ -45,11 +45,11 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
     reg_is_pair = False
     if coverpoint == "cp_rd":
         rd_regs = list(range(test_data.int_regs.reg_count))
-    elif coverpoint.endswith("_nx0"):
+    elif coverpoint == "cp_rd_nx0":
         rd_regs = list(range(1, test_data.int_regs.reg_count))  # Exclude x0
-    elif coverpoint.endswith("rd_p"):
+    elif coverpoint == "cp_rd_p":
         rd_regs = list(range(8, 16))  # x8-x15 for compressed instructions
-    elif coverpoint.endswith("_pair"):
+    elif coverpoint == "cp_rd_pair":
         rd_regs = list(range(0, test_data.int_regs.reg_count, 2))  # Only even registers
         reg_is_pair = True
     else:
@@ -121,19 +121,15 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
 @add_coverpoint_generator("cp_rs1")
 def make_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for source register 1 coverpoints covering both matching and non-matching states."""
-    reg_is_pair = False
     if coverpoint == "cp_rs1":
         rs1_regs = list(range(test_data.int_regs.reg_count))
-    elif coverpoint.endswith(("_nx0", "_nx0_pair")):
+    elif coverpoint == "cp_rs1_nx0":
         rs1_regs = list(range(1, test_data.int_regs.reg_count))  # Exclude x0
-    elif coverpoint.endswith("_nx2"):
+    elif coverpoint == "cp_rs1_nx2":
         rs1_regs = list(range(1, test_data.int_regs.reg_count))  # Exclude x0
         rs1_regs.remove(2)  # Exclude x2
-    elif coverpoint.endswith("_p"):
+    elif coverpoint == "cp_rs1_p":
         rs1_regs = list(range(8, 16))  # x8-x15 for compressed instructions
-    elif coverpoint.endswith("_pair"):
-        rs1_regs = list(range(0, test_data.int_regs.reg_count, 2))  # Only even registers
-        reg_is_pair = True
     else:
         raise ValueError(f"Unknown cp_rs1 coverpoint variant: {coverpoint} for {instr_name}")
 
@@ -152,10 +148,7 @@ def make_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 
     for rs1 in rs1_regs:
         for equal_case in equal_cases:
-            if reg_is_pair:
-                asm_setup = test_data.int_regs.consume_register_pair(rs1)
-            else:
-                asm_setup = test_data.int_regs.consume_registers([rs1])
+            asm_setup = test_data.int_regs.consume_registers([rs1])
 
             if is_zacas:
                 rd_val = random_range(0, all_ones)
@@ -204,11 +197,11 @@ def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     reg_is_pair = False
     if coverpoint == "cp_rs2":
         rs2_regs = list(range(test_data.int_regs.reg_count))
-    elif coverpoint.endswith("_nx0"):
+    elif coverpoint == "cp_rs2_nx0":
         rs2_regs = list(range(1, test_data.int_regs.reg_count))  # Exclude x0
-    elif coverpoint.endswith("_p"):
+    elif coverpoint == "cp_rs2_p":
         rs2_regs = list(range(8, 16))  # x8-x15 for compressed instructions
-    elif coverpoint.endswith("_pair"):
+    elif coverpoint == "cp_rs2_pair":
         rs2_regs = list(range(0, test_data.int_regs.reg_count, 2))  # Only even registers
         reg_is_pair = True
     else:

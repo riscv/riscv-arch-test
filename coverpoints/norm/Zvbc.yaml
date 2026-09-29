@@ -6,20 +6,17 @@
 normative_rule_definitions:
   # ext:zvbc[] depends upon the ext:zve64x[] extension.
   - name: Zvbc_dependent_Zve64x
-    coverpoint:
-      [
-        "TODO: extension-composition fact; no dedicated coverpoint exists for it",
-      ]
+    coverpoint: ["Definition, checked through UDB"]
 
   # The instructions in ext:zvbc[] are only defined for SEW=64.
   - name: Zvbc_sew64only
+    # Other SEW values are reserved; see vclmul_sewn64_rsv and vclmulh_sewn64_rsv in SsstrictV.yaml
     coverpoint:
       [
         "Zvbc64_vclmul_vv_cg/cp_asm_count",
         "Zvbc64_vclmul_vx_cg/cp_asm_count",
         "Zvbc64_vclmulh_vv_cg/cp_asm_count",
         "Zvbc64_vclmulh_vx_cg/cp_asm_count",
-        "TODO: Needs Vector Crypto Ssstrict Coverage",
       ]
 
   # SEW is any value other than 64 [is reserved].

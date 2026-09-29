@@ -231,3 +231,27 @@ normative_rule_definitions:
       [
         "Out-of-Scope: reserved because of CSR state (vtype.sew); Zvksed only generates SEW=32 tests and there is no Ssstrict-equivalent suite for vector-crypto",
       ]
+
+  # Instructions that violate the csr:vl[] or csr:vstart[] requirements are reserved.
+  - name: veccrypto_vl_vstart_rsv
+    coverpoint: ["TODO"]
+
+  # For implementations with VLEN ≥ 128, vs2 refers to a single register. Thus, the vd register
+  # group must not overlap the vs2 register. However, in implementations where VLEN < 128, vs2
+  # refers to a register group comprised of the number of registers needed to hold the 128-bit
+  # scalar element group. In this case, the vd register group must not overlap this vs2 register
+  # group.
+  - name: veccrypto_vsins_vdvs2overlap
+    coverpoint: ["TODO"]
+
+  # ext:zvknha[]: SEW is any value other than 32
+  - name: vsha2chl-vv_Zvknha_sewn32_rsv
+    coverpoint: ["TODO"]
+
+  # ext:zvknhb[]: SEW is any value other than 32 or 64
+  - name: vsha2chl-vv_Zvknhb_sewn32or64_rsv
+    coverpoint: ["TODO"]
+
+  # The vd register group overlaps with either vs1 or vs2
+  - name: vsha2chl-vv_vdoverlapvs1vs2_rsv
+    coverpoint: ["TODO"]

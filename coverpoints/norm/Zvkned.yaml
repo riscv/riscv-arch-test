@@ -20,18 +20,18 @@ normative_rule_definitions:
   # To help avoid side-channel timing attacks, these instructions shall be implemented
   # with data-independent timing.
   - name: Zvkned_dataindeptiming
-    coverpoint:
-      [
-        "TODO: data-independent execution timing cannot be observed from a final-state signature comparison",
-      ]
+    coverpoint: ["Untestable: microarchitectural timing"]
 
   # The number of element groups to be processed is vl/EGS. vl must be set to the
   # number of SEW=32 elements to be processed and therefore must be a multiple of
   # EGS=4.
   - name: Zvkned_vl
+    # Representative coverpoints; cr_vl_lmul_egs4_sew32 in every Zvkned covergroup
     coverpoint:
       [
-        "TODO: no coverpoint verifies vl is rejected when not a multiple of EGS - the functional suite only ever generates compliant values",
+        "Zvkned_vaesef_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvkned_vaeskf1_vi_cg/cr_vl_lmul_egs4_sew32",
+        "Zvkned_vaesz_vs_cg/cr_vl_lmul_egs4_sew32",
       ]
 
   # Likewise, vstart must be a multiple of EGS=4.
@@ -290,3 +290,92 @@ normative_rule_definitions:
         "Zvkned_vaesz_vs_cg/cp_vs2_edges_egs4",
         "Zvkned_vaesz_vs_cg/cr_vl_lmul_egs4_sew32",
       ]
+
+  # All instructions shall be implemented with data-independent timing. That is, the latency of the
+  # execution of these instructions shall not vary with different input values.
+  - name: zvk_dataindep_timing
+    coverpoint: ["Untestable: microarchitectural timing"]
+
+  # For all of the vector crypto instructions in this specification, EEW=SEW.
+  - name: veccrypto_eeweqsew
+    # Representative coverpoints; cr_vl_lmul_egs* in every vector crypto covergroup
+    coverpoint:
+      [
+        "Zvkned_vaesef_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvkg_vghsh_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknhb64_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew64",
+        "Zvksh_vsm3c_vi_cg/cr_vl_lmul_egs8_sew32",
+      ]
+
+  # Since vl and vstart refer to elements, Vector Crypto instructions that use elements groups
+  # require that these values are an integer multiple of the Element Group Size (EGS).
+  - name: veccrypto_vl_vstart_egsconstr
+    # Representative coverpoints; cr_vl_lmul_egs* in every vector crypto covergroup
+    coverpoint:
+      [
+        "Zvkned_vaesef_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvksh_vsm3me_vv_cg/cr_vl_lmul_egs8_sew32",
+        "TODO: vstart set to a nonzero multiple of EGS",
+      ]
+
+  # For element-group instructions, LMUL×VLEN must always be at least as large as EGW, otherwise an
+  # illegal-instruction exception is raised, even if vl=0.
+  - name: veccrypto_lmul_egwconstr
+    coverpoint:
+      [
+        "TODO: LMUL×VLEN < EGW, even with vl=0, raises an illegal-instruction exception",
+      ]
+
+  # In the case of the *.vs instructions defined in this specification, vs2 holds a 128-bit scalar
+  # element group.
+  - name: veccrypto_vsins_vs2
+    # Representative coverpoints; cp_vs2_edges_egs4 in every Zvkned and Zvksed *.vs covergroup
+    coverpoint:
+      [
+        "Zvkned_vaesef_vs_cg/cp_vs2_edges_egs4",
+        "Zvkned_vaesz_vs_cg/cp_vs2_edges_egs4",
+        "Zvksed_vsm4r_vs_cg/cp_vs2_edges_egs4",
+      ]
+
+  # they return vector results to vd, which is also a source vector operand.
+  - name: veccrypto_vsins_vd
+    # Representative coverpoints; the same coverpoints in the other Zvkned *.vs covergroups
+    coverpoint:
+      [
+        "Zvkned_vaesef_vs_cg/{cp_vd_edges_egs4_byte_0, cr_vl_lmul_egs4_sew32}",
+        "Zvksed_vsm4r_vs_cg/{cp_vd_edges_egs4_sm_byte_0, cr_vl_lmul_egs4_sew32}",
+      ]
+
+  # These instructions enable a single key, specified as a scalar element group in vs2, to be
+  # applied to each element group of register group vd.
+  - name: veccrypto_vsins_vs2function
+    # Representative coverpoints; also Zvkned_vaesdm_vs_cg and Zvkned_vaesem_vs_cg
+    coverpoint:
+      [
+        "Zvkned_vaesef_vs_cg/cr_vl_lmul_egs4_sew32",
+        "Zvkned_vaesdf_vs_cg/cr_vl_lmul_egs4_sew32",
+        "Zvkned_vaesz_vs_cg/cr_vl_lmul_egs4_sew32",
+        "Zvksed_vsm4r_vs_cg/cr_vl_lmul_egs4_sew32",
+      ]
+
+  # It is important to note that the Vector Crypto instructions are independent of the
+  # implementation of the Zkt extension and do not require that Zkt is implemented.
+  - name: veccrypto_indepZkt
+    coverpoint: ["Definition, checked through UDB"]
+
+  # This extension (Zvkn) is shorthand for the following set of other extensions: Zvkned, Zvknhb,
+  # Zvkb, Zvkt.
+  - name: Zvkn_def
+    coverpoint: ["Definition, checked through UDB"]
+
+  # This extension (Zvknc) is shorthand for the following set of other extensions: Zvkn, Zvbc.
+  - name: Zvknc_def
+    coverpoint: ["Definition, checked through UDB"]
+
+  # This extension (Zvkng) is shorthand for the following set of other extensions: Zvkn, Zvkg.
+  - name: Zvkng_def
+    coverpoint: ["Definition, checked through UDB"]
+
+  # There is only a *.vs form of the instruction.
+  - name: vaesz-vs_only
+    coverpoint: ["Zvkned_vaesz_vs_cg/cp_asm_count"]

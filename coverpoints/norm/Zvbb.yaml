@@ -10,17 +10,17 @@
 normative_rule_definitions:
   # ext:zvbb[] depends upon the ext:zve32x[] extension.
   - name: Zvbb_dependent_Zve32x
-    coverpoint:
-      [
-        "TODO: extension-composition fact; no dedicated coverpoint exists for it",
-      ]
+    coverpoint: ["Definition, checked through UDB"]
 
   # ext:zvbb[] provides support for EEW of 8, 16, and 32. If ext:zve64x[] is supported then
   # ext:zvbb[] also adds support for EEW=64.
   - name: Zvbb_eew
+    # Representative coverpoints; cp_asm_count in every Zvbb8, Zvbb16 and Zvbb32 covergroup
     coverpoint:
       [
-        "TODO: extension-support requirement (which EEWs are supported); no dedicated coverpoint exists for it",
+        "Zvbb8_vclz_v_cg/cp_asm_count",
+        "Zvbb16_vclz_v_cg/cp_asm_count",
+        "Zvbb32_vclz_v_cg/cp_asm_count",
       ]
 
   # Each bit of Op1 is inverted and logically ANDed with the corresponding bits in vs2.
@@ -116,4 +116,19 @@ normative_rule_definitions:
         "Zvbb8_vwsll_vx_cg/cr_vs2_rs1_edges",
         "Zvbb8_vwsll_vi_cg/cr_vs2_imm_edges",
         "Zvbb32_vwsll_vv_cg/cr_vs2_vs1_edges",
+      ]
+
+  # If Zve64x is supported then Zvbb also adds support for EEW=64.
+  - name: Zvbb_eew_Zve64x
+    # Representative coverpoints; cp_asm_count in every Zvbb64 covergroup
+    coverpoint: ["Zvbb64_vclz_v_cg/cp_asm_count"]
+
+  # The result for zero-valued inputs is the value SEW.
+  - name: vclz-v_op_zeroinput
+    coverpoint:
+      [
+        "Zvbb8_vclz_v_cg/cp_vs2_edges",
+        "Zvbb16_vclz_v_cg/cp_vs2_edges",
+        "Zvbb32_vclz_v_cg/cp_vs2_edges",
+        "Zvbb64_vclz_v_cg/cp_vs2_edges",
       ]

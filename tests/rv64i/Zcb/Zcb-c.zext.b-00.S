@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 34
+#define SIGUPD_COUNT 36
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -205,6 +205,20 @@ Zcb_c_zext_b_cg_cp_rs1_edges_0x100000001:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Zcb_c_zext_b_cg_cp_rs1_edges_0x100000001, Zcb_c_zext_b_cg_cp_rs1_edges_0x100000001_str)
 
+# Testcase cp_rs1_edges (Test source rs1 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rd/rs1: x12 = 0x0000000080000000
+Zcb_c_zext_b_cg_cp_rs1_edges_0x80000000:
+  c.zext.b x12 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, Zcb_c_zext_b_cg_cp_rs1_edges_0x80000000, Zcb_c_zext_b_cg_cp_rs1_edges_0x80000000_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rd/rs1: x15 = 0x000000007fffffff
+Zcb_c_zext_b_cg_cp_rs1_edges_0x7fffffff:
+  c.zext.b x15 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zcb_c_zext_b_cg_cp_rs1_edges_0x7fffffff, Zcb_c_zext_b_cg_cp_rs1_edges_0x7fffffff_str)
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 
@@ -236,6 +250,8 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000fffffffe
 .dword 0x0000000100000000
 .dword 0x0000000100000001
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
 
 // Testcase strings
 Zcb_c_zext_b_cg_cp_rs1_p_b8_str: .string "\"test: 1; cg: Zcb_c.zext.b_cg; cp: cp_rs1_p; bin: b8\""
@@ -262,6 +278,8 @@ Zcb_c_zext_b_cg_cp_rs1_edges_0xffffffff_str: .string "\"test: 21; cg: Zcb_c.zext
 Zcb_c_zext_b_cg_cp_rs1_edges_0xfffffffe_str: .string "\"test: 22; cg: Zcb_c.zext.b_cg; cp: cp_rs1_edges; bin: 0xfffffffe\""
 Zcb_c_zext_b_cg_cp_rs1_edges_0x100000000_str: .string "\"test: 23; cg: Zcb_c.zext.b_cg; cp: cp_rs1_edges; bin: 0x100000000\""
 Zcb_c_zext_b_cg_cp_rs1_edges_0x100000001_str: .string "\"test: 24; cg: Zcb_c.zext.b_cg; cp: cp_rs1_edges; bin: 0x100000001\""
+Zcb_c_zext_b_cg_cp_rs1_edges_0x80000000_str: .string "\"test: 25; cg: Zcb_c.zext.b_cg; cp: cp_rs1_edges; bin: 0x80000000\""
+Zcb_c_zext_b_cg_cp_rs1_edges_0x7fffffff_str: .string "\"test: 26; cg: Zcb_c.zext.b_cg; cp: cp_rs1_edges; bin: 0x7fffffff\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

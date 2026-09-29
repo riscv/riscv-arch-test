@@ -180,10 +180,7 @@ normative_rule_definitions:
   # While it is anticipated the larger vsew[2:0] encodings (100-111) will be used to
   # encode larger SEW, the encodings are formally reserved at this point.
   - name: vtype_vsew_rsv
-    coverpoint:
-      [
-        "TODO: SmV_cg's rs2_sew coverpoint explicitly ignore_bins the reserved vsew encodings (100/101/110/111) rather than sampling them, and the one template that would exercise them (cp_vtype_walking1s.sv) is not wired into any generated covergroup",
-      ]
+    coverpoint: [""]
 
   # Implementations must support LMUL integer values of 1, 2, 4, and 8.
   - name: vtype_lmul_val
@@ -343,18 +340,12 @@ normative_rule_definitions:
 
   # reset the vstart CSR to zero at the end of execution.
   - name: vstart_update
-    coverpoint:
-      [
-        "TODO: no coverpoint isolates vstart being reset to zero on successful completion of an instruction",
-      ]
+    coverpoint: [""]
 
   # vstart is not modified by vector instructions that raise illegal-instruction
   # exceptions.
   - name: vstart_unmodified
-    coverpoint:
-      [
-        "TODO: no coverpoint checks that vstart is unmodified after an illegal-instruction exception; cp_vstart only checks that the exception is raised",
-      ]
+    coverpoint: [""]
 
   # The vstart CSR is defined to have only enough writable bits to hold the largest
   # element index (one less than the maximum VLMAX).
@@ -1001,7 +992,7 @@ normative_rule_definitions:
   # When the fault-only-first instruction takes a trap due to an interrupt,
   # implementations should not reduce vl and should instead set a vstart value.
   - name: vector_ff_interrupt_behavior
-    coverpoint: ["TODO: InterruptsV?"]
+    coverpoint: [""]
 
   # The three-bit nf field in the vector instruction encoding is an unsigned integer that
   # contains one less than the number of fields per segment, NFIELDS.
@@ -1334,7 +1325,7 @@ normative_rule_definitions:
   # value, in which case the least-significant SEW bits of the f register are used,
   # else the canonical NaN value is used.
   - name: vfop_freg_nanbox_lsb_sewbits
-    coverpoint: ["TODO: Needs to be implemented in ACT4"]
+    coverpoint: [""]
 
   # Vector instructions where any floating-point vector operand's EEW is not a
   # supported floating-point type width (which includes when FLEN &lt; SEW) are
@@ -1348,7 +1339,7 @@ normative_rule_definitions:
   # not checked for a NaN box; bits XLEN-1:EEW are ignored. For RV32_Zdinx, EEW=64
   # scalar arguments are supplied by an x-register pair.
   - name: V_zinx_fp_scalar
-    coverpoint: ["TODO: Need to implement something like ZfinxV"]
+    coverpoint: [""]
 
   # Vector arithmetic instructions are masked under control of the vm field.
   - name: V_masked
@@ -1694,7 +1685,7 @@ normative_rule_definitions:
   # If any destination element is saturated, the vxsat bit is set in the vxsat
   # register.
   - name: vxsat_op_vnclip_u
-    coverpoint: ["TODO: add cp_csr_vxsat to vnclip"]
+    coverpoint: [""]
 
   # If the EEW of a vector floating-point operand does not correspond to a supported
   # IEEE floating-point type, the instruction encoding is reserved.
@@ -1717,19 +1708,13 @@ normative_rule_definitions:
   # csr:mstatus[fs] is Off then any attempt to execute a vector floating-point instruction
   # will raise an illegal-instruction exception.
   - name: vsstatus_mstatus_fs_off_hypervisor_V_fp_ill
-    coverpoint:
-      [
-        "TODO: ExceptionsHV_cg only has mstatus.VS/vsstatus.VS coverpoints (cp_mstatus_vs_off, cp_vsstatus_vs_off), nothing for FS under the hypervisor extension",
-      ]
+    coverpoint: [""]
 
   # Any vector floating-point instruction that modifies any floating-point extension state
   # (i.e., floating-point CSRs or f registers) must set both csr:mstatus[fs] and
   # csr:vsstatus[fs] to Dirty.
   - name: vsstatus_mstatus_fs_dirty_hypervisor_V_fp
-    coverpoint:
-      [
-        "TODO: no coverpoint samples vsstatus.FS/mstatus.FS dirtying under the hypervisor extension; SmVF_cg is M-mode only and ExceptionsHV_cg has no FS coverpoints",
-      ]
+    coverpoint: [""]
 
   # A vector floating-point exception at any active floating-point element sets the
   # standard FP exception flags in the fflags register. Inactive elements do not set
@@ -1866,8 +1851,11 @@ normative_rule_definitions:
   # The destination mask vector is always held in a single vector register, with a layout
   # of elements as described in &lt;&lt;sec-mask-register-layout&gt;&gt;.
   - name: vmfeq_vmfne_vmflt_vmfle_vmfgt_vmfge_vd_single_vreg
+    # Representative coverpoints; also the vmfgt/vmfge .vf covergroups and the Vf16/Vf64 covergroups
     coverpoint:
-      ["TODO: These need something like cp_custom_vmask_write_lmulge1"]
+      [
+        "{Vf32_vmfeq_vv_cg, Vf32_vmflt_vv_cg, Vf32_vmfle_vv_cg, Vf32_vmfne_vv_cg}/cr_vl_lmul_sew32",
+      ]
 
   # The destination mask vector register may be the same as the source vector mask
   # register (v0).
@@ -2004,10 +1992,7 @@ normative_rule_definitions:
 
   # Traps on vector reduction instructions are always reported with a vstart of 0.
   - name: vreduction_trap
-    coverpoint:
-      [
-        "TODO: no coverpoint checks that vstart is reported as 0 after a trap on vector reduction; cp_vstart only checks that a non-zero vstart raises an illegal-instruction exception",
-      ]
+    coverpoint: [""]
 
   # Vector reduction operations raise an illegal-instruction exception if vstart is
   # non-zero.
@@ -2271,10 +2256,7 @@ normative_rule_definitions:
 
   # Traps on vcpop.m are always reported with a vstart of 0.
   - name: vcpop_trap
-    coverpoint:
-      [
-        "TODO: no coverpoint checks that vstart is reported as 0 after a trap on vcpop.m; cp_vstart only checks that a non-zero vstart raises an illegal-instruction exception",
-      ]
+    coverpoint: [""]
 
   # The vcpop.m instruction will raise an illegal-instruction exception if vstart is
   # non-zero.
@@ -2298,10 +2280,7 @@ normative_rule_definitions:
 
   # Traps on vfirst are always reported with a vstart of 0.
   - name: vfirst_trap
-    coverpoint:
-      [
-        "TODO: no coverpoint checks that vstart is reported as 0 after a trap on vfirst.m; cp_vstart only checks that a non-zero vstart raises an illegal-instruction exception",
-      ]
+    coverpoint: [""]
 
   # The vfirst instruction will raise an illegal-instruction exception if vstart is
   # non-zero.
@@ -2327,10 +2306,7 @@ normative_rule_definitions:
 
   # Traps on vmsbf.m are always reported with a vstart of 0.
   - name: vmsbf_trap
-    coverpoint:
-      [
-        "TODO: no coverpoint checks that vstart is reported as 0 after a trap on vmsbf.m; cp_vstart only checks that a non-zero vstart raises an illegal-instruction exception",
-      ]
+    coverpoint: [""]
 
   # The vmsbf instruction will raise an illegal-instruction exception if vstart is
   # non-zero.
@@ -2358,10 +2334,7 @@ normative_rule_definitions:
 
   # Traps on vmsif.m are always reported with a vstart of 0.
   - name: vmsif_trap
-    coverpoint:
-      [
-        "TODO: no coverpoint checks that vstart is reported as 0 after a trap on vmsif.m; cp_vstart only checks that a non-zero vstart raises an illegal-instruction exception",
-      ]
+    coverpoint: [""]
 
   # The vmsif instruction will raise an illegal-instruction exception if vstart is
   # non-zero.
@@ -2389,10 +2362,7 @@ normative_rule_definitions:
 
   # Traps on vmsof.m are always reported with a vstart of 0.
   - name: vmsof_trap
-    coverpoint:
-      [
-        "TODO: no coverpoint checks that vstart is reported as 0 after a trap on vmsof.m; cp_vstart only checks that a non-zero vstart raises an illegal-instruction exception",
-      ]
+    coverpoint: [""]
 
   # The vmsof instruction will raise an illegal-instruction exception if vstart is
   # non-zero.
@@ -2434,10 +2404,7 @@ normative_rule_definitions:
 
   # Traps on viota.m are always reported with a vstart of 0,
   - name: viota_trap
-    coverpoint:
-      [
-        "TODO: no coverpoint checks that vstart is reported as 0 after a trap on viota.m; cp_vstart only checks that a non-zero vstart raises an illegal-instruction exception",
-      ]
+    coverpoint: [""]
 
   # An illegal-instruction exception is raised if vstart is non-zero.
   - name: viota_vstart_n0_ill
@@ -2789,10 +2756,7 @@ normative_rule_definitions:
 
   # A trap on a vcompress instruction is always reported with a vstart of 0.
   - name: vcompress_trap
-    coverpoint:
-      [
-        "TODO: no coverpoint checks that vstart is reported as 0 after a trap on vcompress.vm; cp_vstart only checks that a non-zero vstart raises an illegal-instruction exception",
-      ]
+    coverpoint: [""]
 
   # Executing a vcompress instruction with a non-zero vstart raises an
   # illegal-instruction exception.
@@ -3204,3 +3168,15 @@ normative_rule_definitions:
       [
         "Implicit: extension-support requirement exercised implicitly by which instructions the generated suite runs at all",
       ]
+
+  # The configuration-setting instructions do not depend on vstart; they reset vstart to zero.
+  - name: vset_vstart
+    coverpoint:
+      [
+        "TODO: vset* with nonzero vstart; result unaffected and vstart reset to 0",
+      ]
+
+  # Non-idempotent memory regions must not have been updated for indices equal to or greater than
+  # the element that caused a synchronous trap during a vector store instruction.
+  - name: vec_store_nonidempotent_no_update
+    coverpoint: ["Untestable: no I/O devices defined in profile"]

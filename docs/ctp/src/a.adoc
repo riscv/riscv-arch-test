@@ -36,15 +36,20 @@ include::{testplansdir}/Zalrsc.adoc[]
 |cp_custom_rd_edges|3|rd_value = 0, 1, -1
 3+^|cp_custom_sc coverpoints
 |cp_custom_aqrl|3|none, rl, aqrl
-|cp_custom_sc_after_sc|2|sc followed by sc
+|cp_custom_sc_after_sc|2|sc immediately preceded or not preceded by another sc
 |cp_custom_sc_lr|2|lr followed by sc that fails and passes, sc pairs with most recent lr
-|cp_custom_sc_addresses|32*2|lr followed by sc at address of 8, ..., 248 offset from lr address.  For RV64, exercise both lr.d and lr.w
+|cp_custom_sc_addresses|32|lr followed by sc of the same size at an address 0, 8, ..., 248 bytes above the lr address
 |===
 
 include::norm/Zalrsc_norm_rules.adoc[]
 
-The spec imposes no requirements on reservation set form, including alignment, NAPOT, or even being contiguous.  Therefore, it is not practical to build reference models that reliably predict whether a `sc` would succeed or fail on every DUT.  Current profiles require Za64rs or Za1284s, which can be supported by reference models. However, unusual DUTs that do not match any reasonable reference model may not be able to pass this test suite.
+The spec imposes no requirements on reservation set form, including alignment, NAPOT, or even being contiguous.  Therefore, it is not practical to build reference models that reliably predict whether a `sc` would succeed or fail on every DUT.  Current profiles require Za64rs or Za128rs, which can be supported by reference models. However, unusual DUTs that do not match any reasonable reference model may not be able to pass this test suite. The expected outcome of an `sc` to an address other than that of the latest `lr` but within its reservation set follows the LRSC_RESERVATION_STRATEGY and LRSC_FAIL_ON_NON_EXACT_LRSC parameters.
 
-TODO: On implementations that support the C extension, compressed forms of the
-I instructions permitted inside constrained LR/SC sequences, as
-described in <<sec:lrscseq>>, are also permitted.
+The `sc` tests follow these conventions:
+
+* An `sc` may fail spuriously, so every testcase that expects an `sc` to succeed runs the `lr`/`sc` pair in a constrained LR/SC loop (<<sec:lrscseq>>) that retries up to 100 times. If _rd_ is also _rs1_ or _rs2_, the loop restores that register from a copy before each attempt, because a failing `sc` overwrites it with the failure code. When _rd_ is `x0`, the `sc` reports no status, so the loop reads back the target to decide whether to retry. That load takes the loop out of the constrained form, but the loop is still bounded.
+* Before each `sc`, the XLEN-bit word at the target is filled with the complement of _rs2_, so the `sc` changes every bit it writes. The test reads the target back afterward, so an `sc` that reports success but drops its store or writes another address fails, as does an `sc` that reports failure but writes memory.
+* A failing `sc` is checked for _rd_ = 1. The other nonzero failure codes are reserved.
+* cp_custom_sc_after_sc executes `lr`, then an `sc` to the address 8 bytes above, whose outcome is not checked, then an `sc` to the `lr` address. That second `sc` must fail and leave its target unchanged, whether or not the first one succeeded.
+* The cp_custom_sc_addresses testcases and the testcase for sc_pairs_latest_lr make a single attempt, because their `sc` is either expected to fail or is outside a constrained loop.
+* The suite does not deliberately place compressed instructions in its constrained loops, so constrained_lrsc_compressed_allowed is not tested.

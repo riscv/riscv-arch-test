@@ -6,7 +6,7 @@
 
 normative_rule_definitions:
   # All vector loads and stores may generate and accept a non-zero vstart value.
-  - name: VECTOR_LS_VSTART
+  - name: vector_ls_vstart
     coverpoint: ["ExceptionsVls_vle8_v_cg/cp_vstart"]
 
   # For implementations with precise vector traps, exceptions on indexed-unordered stores
@@ -16,7 +16,7 @@ normative_rule_definitions:
 
   # Load instructions may overwrite active destination vector register group elements past
   # the element index at which the trap is reported.
-  - name: VECTOR_LS_OVERWRITE_PAST_TRAP
+  - name: vector_ls_overwrite_past_trap
     coverpoint: ["ExceptionsVls_vle8_v_cg/cp_exceptionsv_address_fault"]
 
   # The vstart value is in units of whole segments.
@@ -32,7 +32,7 @@ normative_rule_definitions:
 
   # If a trap occurs during access to a segment, it is implementation-defined whether a
   # subset of the faulting segment's accesses are performed before the trap is taken.
-  - name: VECTOR_LS_SEG_PARTIAL_ACCESS
+  - name: vector_ls_seg_partial_access
     coverpoint: ["ExceptionsVls_vlseg2e8_v_cg/cp_exceptionsv_address_fault"]
 
   # For fault-only-first segment loads, if an exception is detected partway through

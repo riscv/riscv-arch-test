@@ -24,7 +24,7 @@ normative_rule_definitions:
   # Vector memory unit-stride and constant-stride operations directly encode EEW of the data
   # to be transferred statically in the instruction to reduce the number of vtype changes
   # when accessing memory in a mixed-width routine.
-  - name: vector_ls_strided_EEW
+  - name: vector_ls_strided_eew
     coverpoint:
       ["{Vls16_vlse16_v_cg,Vls32_vlse32_v_cg,Vls64_vlse64_v_cg}/cp_asm_count"]
 
@@ -42,7 +42,7 @@ normative_rule_definitions:
 
   # If the implementation does not support the EEW of the offset elements, the instruction
   # is reserved.
-  - name: vector_ls_EEW_rsv
+  - name: vector_ls_eew_rsv
     coverpoint: ["ExceptionsVls_vloxei16_v_cg/cp_exceptionsv_index_eew16"]
 
   # The nf[2:0] field encodes the number of fields in each segment. For regular vector loads
@@ -54,7 +54,7 @@ normative_rule_definitions:
 
   # If the EMUL would be out of range (EMUL>8 or EMUL<1/8), the instruction encoding is
   # reserved.
-  - name: vector_ls_EMUL_rsv
+  - name: vector_ls_emul_rsv
     coverpoint: ["ExceptionsVls_vloxei16_v_cg/cp_exceptionsv_index_eew16"]
 
   # The mew bit (inst[28]) when set is expected to be used to encode expanded memory sizes
@@ -64,14 +64,33 @@ normative_rule_definitions:
 
   # The EMUL setting must be such that EMUL * NFIELDS ≤ 8, otherwise the instruction
   # encoding is reserved.
-  - name: EMUL_NFIELDS_rsv
+  - name: emul_nfields_rsv
     coverpoint: ["SsstrictV_vlseg2e8_v_cg/cp_ssstrictv_ls_seg_vd_overflow"]
 
   # The EMUL * NFIELDS ≤ 8 constraint applies to the data vector register group.
-  - name: vector_ls_seg_indexed_EMUL_NFIELDS_val
+  - name: vector_ls_seg_indexed_emul_nfields_val
     coverpoint: ["SsstrictV_vlseg2e8_v_cg/cp_ssstrictv_ls_seg_vd_overflow"]
 
   # The load instructions have an EEW encoded in the mew and width fields following the
   # pattern of regular unit-stride loads.
-  - name: vector_ls_seg_wholereg_EEW
-    coverpoint: ["Vls16_vl1re16_v_cg/cp_custom_vwholeRegLS_lmul"]
+  - name: vector_ls_seg_wholereg_eew
+    coverpoint:
+      [
+        "Vls16_vl1re16_v_cg/cp_custom_vwholeRegLS_lmul",
+        "Vls16_vl1re8_v_cg/cp_asm_count",
+        "Vls16_vl1re16_v_cg/cp_asm_count",
+        "Vls16_vl1re32_v_cg/cp_asm_count",
+        "Vls16_vl1re64_v_cg/cp_asm_count",
+        "Vls16_vl2re8_v_cg/cp_asm_count",
+        "Vls16_vl2re16_v_cg/cp_asm_count",
+        "Vls16_vl2re32_v_cg/cp_asm_count",
+        "Vls16_vl2re64_v_cg/cp_asm_count",
+        "Vls16_vl4re8_v_cg/cp_asm_count",
+        "Vls16_vl4re16_v_cg/cp_asm_count",
+        "Vls16_vl4re32_v_cg/cp_asm_count",
+        "Vls16_vl4re64_v_cg/cp_asm_count",
+        "Vls16_vl8re8_v_cg/cp_asm_count",
+        "Vls16_vl8re16_v_cg/cp_asm_count",
+        "Vls16_vl8re32_v_cg/cp_asm_count",
+        "Vls16_vl8re64_v_cg/cp_asm_count",
+      ]

@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 178
+#define SIGUPD_COUNT 234
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -810,6 +810,262 @@ Zfh_flh_cg_cp_NaNBox_S_H_NaNBox:
   RVTEST_SIGUPD_F(x3, x8, x7, f4, f25, Zfh_flh_cg_cp_NaNBox_S_H_NaNBox, Zfh_flh_cg_cp_NaNBox_S_H_NaNBox_str)
   addi x2, x2, SIG_STRIDE # increment data_ptr
 
+/////////////////////////////////
+// cp_memval_fp_half
+/////////////////////////////////
+
+# Testcase cp_memval_fp_half (memory value = 0x00000000)
+  fsflagsi 0b00000 # clear all fflags
+  addi x16, x2, 1773 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0x0:
+  flh f12, -1773(x16) # perform load (0x00000000)
+  # Check if f12 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f12, Zfh_flh_cg_cp_memval_fp_half_0x0, Zfh_flh_cg_cp_memval_fp_half_0x0_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x00008000)
+  fsflagsi 0b00000 # clear all fflags
+  addi x27, x2, -1363 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0x8000:
+  flh f12, 1363(x27) # perform load (0x00008000)
+  # Check if f12 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f12, Zfh_flh_cg_cp_memval_fp_half_0x8000, Zfh_flh_cg_cp_memval_fp_half_0x8000_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x00003c00)
+  fsflagsi 0b00000 # clear all fflags
+  addi x25, x2, 728 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0x3c00:
+  flh f22, -728(x25) # perform load (0x00003c00)
+  # Check if f22 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f22, Zfh_flh_cg_cp_memval_fp_half_0x3c00, Zfh_flh_cg_cp_memval_fp_half_0x3c00_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x0000bc00)
+  fsflagsi 0b00000 # clear all fflags
+  addi x29, x2, -354 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0xbc00:
+  flh f20, 354(x29) # perform load (0x0000bc00)
+  # Check if f20 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f20, Zfh_flh_cg_cp_memval_fp_half_0xbc00, Zfh_flh_cg_cp_memval_fp_half_0xbc00_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x00004100)
+  fsflagsi 0b00000 # clear all fflags
+  addi x27, x2, -1076 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0x4100:
+  flh f6, 1076(x27) # perform load (0x00004100)
+  # Check if f6 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f6, Zfh_flh_cg_cp_memval_fp_half_0x4100, Zfh_flh_cg_cp_memval_fp_half_0x4100_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x0000c100)
+  fsflagsi 0b00000 # clear all fflags
+  addi x18, x2, -238 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0xc100:
+  flh f14, 238(x18) # perform load (0x0000c100)
+  # Check if f14 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f14, Zfh_flh_cg_cp_memval_fp_half_0xc100, Zfh_flh_cg_cp_memval_fp_half_0xc100_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x00006800)
+  fsflagsi 0b00000 # clear all fflags
+  addi x6, x2, -1561 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0x6800:
+  flh f16, 1561(x6) # perform load (0x00006800)
+  # Check if f16 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f16, Zfh_flh_cg_cp_memval_fp_half_0x6800, Zfh_flh_cg_cp_memval_fp_half_0x6800_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x0000e800)
+  fsflagsi 0b00000 # clear all fflags
+  addi x9, x2, 1703 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0xe800:
+  flh f3, -1703(x9) # perform load (0x0000e800)
+  # Check if f3 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f3, Zfh_flh_cg_cp_memval_fp_half_0xe800, Zfh_flh_cg_cp_memval_fp_half_0xe800_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x00000400)
+  fsflagsi 0b00000 # clear all fflags
+  addi x11, x2, 1712 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0x400:
+  flh f19, -1712(x11) # perform load (0x00000400)
+  # Check if f19 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f19, Zfh_flh_cg_cp_memval_fp_half_0x400, Zfh_flh_cg_cp_memval_fp_half_0x400_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x00008400)
+  fsflagsi 0b00000 # clear all fflags
+  addi x28, x2, -376 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0x8400:
+  flh f1, 376(x28) # perform load (0x00008400)
+  # Check if f1 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f1, Zfh_flh_cg_cp_memval_fp_half_0x8400, Zfh_flh_cg_cp_memval_fp_half_0x8400_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x00007bff)
+  fsflagsi 0b00000 # clear all fflags
+  addi x21, x2, -245 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0x7bff:
+  flh f25, 245(x21) # perform load (0x00007bff)
+  # Check if f25 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f25, Zfh_flh_cg_cp_memval_fp_half_0x7bff, Zfh_flh_cg_cp_memval_fp_half_0x7bff_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x0000fbff)
+  fsflagsi 0b00000 # clear all fflags
+  addi x26, x2, 1291 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0xfbff:
+  flh f22, -1291(x26) # perform load (0x0000fbff)
+  # Check if f22 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f22, Zfh_flh_cg_cp_memval_fp_half_0xfbff, Zfh_flh_cg_cp_memval_fp_half_0xfbff_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x000003ff)
+  fsflagsi 0b00000 # clear all fflags
+  addi x26, x2, -1153 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0x3ff:
+  flh f28, 1153(x26) # perform load (0x000003ff)
+  # Check if f28 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f28, Zfh_flh_cg_cp_memval_fp_half_0x3ff, Zfh_flh_cg_cp_memval_fp_half_0x3ff_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x000083ff)
+  fsflagsi 0b00000 # clear all fflags
+  addi x22, x2, -1930 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0x83ff:
+  flh f26, 1930(x22) # perform load (0x000083ff)
+  # Check if f26 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f26, Zfh_flh_cg_cp_memval_fp_half_0x83ff, Zfh_flh_cg_cp_memval_fp_half_0x83ff_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x00000200)
+  fsflagsi 0b00000 # clear all fflags
+  addi x24, x2, 1410 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0x200:
+  flh f30, -1410(x24) # perform load (0x00000200)
+  # Check if f30 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f30, Zfh_flh_cg_cp_memval_fp_half_0x200, Zfh_flh_cg_cp_memval_fp_half_0x200_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x00008200)
+  fsflagsi 0b00000 # clear all fflags
+  addi x30, x2, -935 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0x8200:
+  flh f31, 935(x30) # perform load (0x00008200)
+  # Check if f31 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f31, Zfh_flh_cg_cp_memval_fp_half_0x8200, Zfh_flh_cg_cp_memval_fp_half_0x8200_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x00000001)
+  fsflagsi 0b00000 # clear all fflags
+  addi x15, x2, 1403 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0x1:
+  flh f16, -1403(x15) # perform load (0x00000001)
+  # Check if f16 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f16, Zfh_flh_cg_cp_memval_fp_half_0x1, Zfh_flh_cg_cp_memval_fp_half_0x1_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x00008001)
+  fsflagsi 0b00000 # clear all fflags
+  addi x17, x2, -1890 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0x8001:
+  flh f10, 1890(x17) # perform load (0x00008001)
+  # Check if f10 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f10, Zfh_flh_cg_cp_memval_fp_half_0x8001, Zfh_flh_cg_cp_memval_fp_half_0x8001_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x00007c00)
+  fsflagsi 0b00000 # clear all fflags
+  addi x9, x2, -1806 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0x7c00:
+  flh f12, 1806(x9) # perform load (0x00007c00)
+  # Check if f12 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f12, Zfh_flh_cg_cp_memval_fp_half_0x7c00, Zfh_flh_cg_cp_memval_fp_half_0x7c00_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x0000fc00)
+  fsflagsi 0b00000 # clear all fflags
+  addi x13, x2, -531 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0xfc00:
+  flh f6, 531(x13) # perform load (0x0000fc00)
+  # Check if f6 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f6, Zfh_flh_cg_cp_memval_fp_half_0xfc00, Zfh_flh_cg_cp_memval_fp_half_0xfc00_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x00007e00)
+  fsflagsi 0b00000 # clear all fflags
+  addi x4, x2, 587 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0x7e00:
+  flh f11, -587(x4) # perform load (0x00007e00)
+  # Check if f11 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f11, Zfh_flh_cg_cp_memval_fp_half_0x7e00, Zfh_flh_cg_cp_memval_fp_half_0x7e00_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x00007fff)
+  fsflagsi 0b00000 # clear all fflags
+  addi x26, x2, 1930 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0x7fff:
+  flh f15, -1930(x26) # perform load (0x00007fff)
+  # Check if f15 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f15, Zfh_flh_cg_cp_memval_fp_half_0x7fff, Zfh_flh_cg_cp_memval_fp_half_0x7fff_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x0000fe00)
+  fsflagsi 0b00000 # clear all fflags
+  addi x11, x2, 2037 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0xfe00:
+  flh f21, -2037(x11) # perform load (0x0000fe00)
+  # Check if f21 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f21, Zfh_flh_cg_cp_memval_fp_half_0xfe00, Zfh_flh_cg_cp_memval_fp_half_0xfe00_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x00007c01)
+  fsflagsi 0b00000 # clear all fflags
+  addi x21, x2, 149 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0x7c01:
+  flh f12, -149(x21) # perform load (0x00007c01)
+  # Check if f12 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f12, Zfh_flh_cg_cp_memval_fp_half_0x7c01, Zfh_flh_cg_cp_memval_fp_half_0x7c01_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x00007dff)
+  fsflagsi 0b00000 # clear all fflags
+  addi x27, x2, 650 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0x7dff:
+  flh f29, -650(x27) # perform load (0x00007dff)
+  # Check if f29 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f29, Zfh_flh_cg_cp_memval_fp_half_0x7dff, Zfh_flh_cg_cp_memval_fp_half_0x7dff_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x0000fc01)
+  fsflagsi 0b00000 # clear all fflags
+  addi x5, x2, 2047 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0xfc01:
+  flh f25, -2047(x5) # perform load (0x0000fc01)
+  # Check if f25 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f25, Zfh_flh_cg_cp_memval_fp_half_0xfc01, Zfh_flh_cg_cp_memval_fp_half_0xfc01_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x000058b4)
+  fsflagsi 0b00000 # clear all fflags
+  addi x26, x2, -11 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0x58b4:
+  flh f8, 11(x26) # perform load (0x000058b4)
+  # Check if f8 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f8, Zfh_flh_cg_cp_memval_fp_half_0x58b4, Zfh_flh_cg_cp_memval_fp_half_0x58b4_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_fp_half (memory value = 0x0000c93a)
+  fsflagsi 0b00000 # clear all fflags
+  addi x20, x2, -357 # copy data_ptr to rs1 and adjust for offset
+Zfh_flh_cg_cp_memval_fp_half_0xc93a:
+  flh f11, 357(x20) # perform load (0x0000c93a)
+  # Check if f11 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x3, x8, x7, f4, f11, Zfh_flh_cg_cp_memval_fp_half_0xc93a, Zfh_flh_cg_cp_memval_fp_half_0xc93a_str)
+  addi x2, x2, SIG_STRIDE # increment data_ptr
+
   mv x2, x3 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -903,6 +1159,34 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000028f160c
 .dword 0x000000004f251278
 .dword 0xffffffffded8bc21
+.dword 0x0000000000000000
+.dword 0x0000000000008000
+.dword 0x0000000000003c00
+.dword 0x000000000000bc00
+.dword 0x0000000000004100
+.dword 0x000000000000c100
+.dword 0x0000000000006800
+.dword 0x000000000000e800
+.dword 0x0000000000000400
+.dword 0x0000000000008400
+.dword 0x0000000000007bff
+.dword 0x000000000000fbff
+.dword 0x00000000000003ff
+.dword 0x00000000000083ff
+.dword 0x0000000000000200
+.dword 0x0000000000008200
+.dword 0x0000000000000001
+.dword 0x0000000000008001
+.dword 0x0000000000007c00
+.dword 0x000000000000fc00
+.dword 0x0000000000007e00
+.dword 0x0000000000007fff
+.dword 0x000000000000fe00
+.dword 0x0000000000007c01
+.dword 0x0000000000007dff
+.dword 0x000000000000fc01
+.dword 0x00000000000058b4
+.dword 0x000000000000c93a
 
 // Testcase strings
 Zfh_flh_cg_cp_rs1_nx0_b1_str: .string "\"test: 1; cg: Zfh_flh_cg; cp: cp_rs1_nx0; bin: b1\""
@@ -989,6 +1273,34 @@ Zfh_flh_cg_cp_fd_b29_str: .string "\"test: 81; cg: Zfh_flh_cg; cp: cp_fd; bin: b
 Zfh_flh_cg_cp_fd_b30_str: .string "\"test: 82; cg: Zfh_flh_cg; cp: cp_fd; bin: b30\""
 Zfh_flh_cg_cp_fd_b31_str: .string "\"test: 83; cg: Zfh_flh_cg; cp: cp_fd; bin: b31\""
 Zfh_flh_cg_cp_NaNBox_S_H_NaNBox_str: .string "\"test: 84; cg: Zfh_flh_cg; cp: cp_NaNBox_S_H; bin: NaNBox\""
+Zfh_flh_cg_cp_memval_fp_half_0x0_str: .string "\"test: 85; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0x0\""
+Zfh_flh_cg_cp_memval_fp_half_0x8000_str: .string "\"test: 86; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0x8000\""
+Zfh_flh_cg_cp_memval_fp_half_0x3c00_str: .string "\"test: 87; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0x3c00\""
+Zfh_flh_cg_cp_memval_fp_half_0xbc00_str: .string "\"test: 88; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0xbc00\""
+Zfh_flh_cg_cp_memval_fp_half_0x4100_str: .string "\"test: 89; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0x4100\""
+Zfh_flh_cg_cp_memval_fp_half_0xc100_str: .string "\"test: 90; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0xc100\""
+Zfh_flh_cg_cp_memval_fp_half_0x6800_str: .string "\"test: 91; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0x6800\""
+Zfh_flh_cg_cp_memval_fp_half_0xe800_str: .string "\"test: 92; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0xe800\""
+Zfh_flh_cg_cp_memval_fp_half_0x400_str: .string "\"test: 93; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0x400\""
+Zfh_flh_cg_cp_memval_fp_half_0x8400_str: .string "\"test: 94; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0x8400\""
+Zfh_flh_cg_cp_memval_fp_half_0x7bff_str: .string "\"test: 95; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0x7bff\""
+Zfh_flh_cg_cp_memval_fp_half_0xfbff_str: .string "\"test: 96; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0xfbff\""
+Zfh_flh_cg_cp_memval_fp_half_0x3ff_str: .string "\"test: 97; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0x3ff\""
+Zfh_flh_cg_cp_memval_fp_half_0x83ff_str: .string "\"test: 98; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0x83ff\""
+Zfh_flh_cg_cp_memval_fp_half_0x200_str: .string "\"test: 99; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0x200\""
+Zfh_flh_cg_cp_memval_fp_half_0x8200_str: .string "\"test: 100; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0x8200\""
+Zfh_flh_cg_cp_memval_fp_half_0x1_str: .string "\"test: 101; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0x1\""
+Zfh_flh_cg_cp_memval_fp_half_0x8001_str: .string "\"test: 102; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0x8001\""
+Zfh_flh_cg_cp_memval_fp_half_0x7c00_str: .string "\"test: 103; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0x7c00\""
+Zfh_flh_cg_cp_memval_fp_half_0xfc00_str: .string "\"test: 104; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0xfc00\""
+Zfh_flh_cg_cp_memval_fp_half_0x7e00_str: .string "\"test: 105; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0x7e00\""
+Zfh_flh_cg_cp_memval_fp_half_0x7fff_str: .string "\"test: 106; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0x7fff\""
+Zfh_flh_cg_cp_memval_fp_half_0xfe00_str: .string "\"test: 107; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0xfe00\""
+Zfh_flh_cg_cp_memval_fp_half_0x7c01_str: .string "\"test: 108; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0x7c01\""
+Zfh_flh_cg_cp_memval_fp_half_0x7dff_str: .string "\"test: 109; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0x7dff\""
+Zfh_flh_cg_cp_memval_fp_half_0xfc01_str: .string "\"test: 110; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0xfc01\""
+Zfh_flh_cg_cp_memval_fp_half_0x58b4_str: .string "\"test: 111; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0x58b4\""
+Zfh_flh_cg_cp_memval_fp_half_0xc93a_str: .string "\"test: 112; cg: Zfh_flh_cg; cp: cp_memval_fp_half; bin: 0xc93a\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

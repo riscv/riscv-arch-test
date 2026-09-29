@@ -1,39 +1,44 @@
 normative_rule_definitions:
-  # The Zicfilp extension adds the SPELP and MPELP fields that hold the previous
-  # ELP, and are updated as specified in &lt;&lt;ZICFILP_FORWARD_TRAPS&gt;&gt;.
-  - names: [mstatus_spelp_op, mstatus_mpelp_op]
+  # The ext:zicfilp[] extension adds the csr::[spelp] and csr::[mpelp] fields that hold
+  # the previous csr::[elp], and are updated as specified in
+  # &lt;&lt;ZICFILP_FORWARD_TRAPS&gt;&gt;.
+  - name: mstatus_spelp_mpelp_op
+    coverpoint: [""]
+  # To store the previous ELP state on trap delivery to S/HS-mode, an csr::[spelp] bit is
+  # provided in the csr:mstatus[] CSR.
+  - name: cfi_mstatus_spelp_op
+    coverpoint: [""]
+  # To store the previous ELP state on trap delivery to M-mode, an csr::[mpelp] bit is
+  # provided in the csr:mstatus[] CSR.
+  - name: cfi_mstatus_mpelp_op
     coverpoint: [""]
 
-  # The x`PELP` fields are encoded as follows: 0 - NO_LP_EXPECTED - no landing pad
-  # instruction expected. 1 - LP_EXPECTED - a landing pad instruction is expected.
-  - names: [mstatus_spelp_enc, mstatus_mpelp_enc]
+  # The x`PELP` fields are encoded as follows:
+  - name: mstatus_spelp_mpelp_enc_lead_in
+    coverpoint: [""]
+  # 0 - NO_LP_EXPECTED - no landing pad instruction expected. 1 - LP_EXPECTED - a landing
+  # pad instruction is expected.
+  - name: mstatus_spelp_mpelp_enc_list
     coverpoint: [""]
 
-  # Access to the SPELP field, added by Zicfilp, accesses the homonymous fields of
-  # mstatus when V=0, and the homonymous fields of vsstatus when V=1.
-  - names:
-      [
-        sstatus_spelp_sz,
-        sstatus_spelp_acc,
-        sstatus_spelp_op,
-        sstatus_spelp_Zicfilp,
-      ]
+  # Access to the SPELP field, added by Zicfilp, accesses the homonymous fields of mstatus
+  # when V=0, and the homonymous fields of vsstatus when V=1.
+  - name: sstatus_spelp
     coverpoint: [""]
 
-  # The Zicfilp extension adds the LPE field in senvcfg. When the LPE field is set
-  # to 1, the Zicfilp extension is enabled in VU/U-mode. When the LPE field is 0,
-  # the Zicfilp extension is not enabled in VU/U-mode and the following rules apply
-  # to VU/U-mode:
-  - names: [senvcfg_lpe_Zicfilp_acc, senvcfg_lpe_Zicfilp_op]
+  # The Zicfilp extension adds the LPE field in senvcfg. When the LPE field is set to 1,
+  # the Zicfilp extension is enabled in VU/U-mode. When the LPE field is 0, the Zicfilp
+  # extension is not enabled in VU/U-mode and the following rules apply to VU/U-mode:
+  - name: senvcfg_lpe_Zicfilp
     coverpoint: [""]
 
-  # A trap may need to be delivered to the same or to a higher privilege mode upon
-  # completion of JALR/C.JALR/C.JR, but before the instruction at the target of
-  # indirect call/jump was decoded Asynchronous interrupts. Synchronous exceptions
-  # with priority higher than that of a software-check exception with xtval set to
-  # "landing pad fault (code=2)" (See &lt;&lt;norm:exc_priority&gt;&gt; of
+  # Asynchronous interrupts.
+  - name: Zicfilp_forward_trap_async_interrupt
+    coverpoint: [""]
+  # Synchronous exceptions with priority higher than that of a software-check exception
+  # with xtval set to landing pad fault (code=2) (See &lt;&lt;norm:exc_priority&gt;&gt; of
   # Privileged Specification).
-  - name: Zicfilp_forward_traps
+  - name: Zicfilp_forward_trap_async_exception
     coverpoint: [""]
 
   # The software-check exception caused by Zicfilp has higher priority than an
@@ -48,29 +53,25 @@ normative_rule_definitions:
   - name: lpad_sw_exception
     coverpoint: [""]
 
-  # To store the previous ELP state on trap delivery to M-mode, an MPELP bit is
-  # provided in the mstatus CSR.
-  - name: mstatus-mpelp_op
-    coverpoint: [""]
-
-  # To store the previous ELP state on trap delivery to S/HS-mode, an SPELP bit is
-  # provided in the mstatus CSR. The SPELP bit in mstatus can be accessed through
-  # the sstatus CSR.
-  - name: Zicfilp_forward_traps_s_hs_mode
+  # The csr::[spelp] bit in mstatus can be accessed through the csr:sstatus[] CSR.
+  - name: cfi_sstatus_spelp_op
     coverpoint: [""]
 
   # To store the previous ELP state on traps to VS-mode, a SPELP bit is defined in
   # the vsstatus (VS-modes version of sstatus).
-  - name: vsstatus_spelp_op2
+  - name: vsstatus_spelp_exists
     coverpoint: [""]
 
-  # To store the previous ELP state on transition to Debug Mode, a pelp bit is
-  # defined in the dcsr register. Upon entry into Debug Mode, the pelp bit in dcsr
-  # is updated with the ELP at the privilege level the hart was previously in, and
-  # the ELP is set to NO_LP_EXPECTED. When a hart resumes from Debug Mode, if the
-  # new privilege mode is y, then ELP is set to the value of pelp if yLPE (see ) is
-  # 1; otherwise, it is set to NO_LP_EXPECTED.
-  - name: Zicfilp_forward_traps_debug_mode
+  # To store the previous ELP state on transition to Debug Mode, a csr::[pelp] bit is
+  # defined in the csr:dcsr[] register.
+  - name: dcsr_pelp_op
+    coverpoint: [""]
+  # Upon entry into Debug Mode, the csr::[pelp] bit in csr:dcsr[] is updated with the ELP
+  # at the privilege level the hart was previously in, and the ELP is set to
+  # NO_LP_EXPECTED. When a hart resumes from Debug Mode, if the new privilege mode is y,
+  # then ELP is set to the value of csr::[pelp] if yLPE (see ) is 1; otherwise, it is set
+  # to NO_LP_EXPECTED.
+  - name: Zicfilp_pelp_debug_mode
     coverpoint: [""]
 
   # When a trap is taken into privilege mode x, the xPELP is set to ELP and ELP is

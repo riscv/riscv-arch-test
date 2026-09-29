@@ -7,41 +7,20 @@
 normative_rule_definitions:
   # The destination mask vector register may be the same as the source vector mask register
   # (v0).
-  - names:
-      [
-        vmfeq_vd_eq_v0,
-        vmfne_vd_eq_v0,
-        vmflt_vd_eq_v0,
-        vmfle_vd_eq_v0,
-        vmfgt_vd_eq_v0,
-        vmfge_vd_eq_v0,
-      ]
+  - name: vmfeq_vmfne_vmflt_vmfle_vmfgt_vmfge_vd_eq_v0
     coverpoint: ["SsstrictV_vmfeq_vv_cg/cp_ssstrictv_masking_vd_eq_v0"]
 
   # vmflt, vmfle, vmfgt, and vmfge raise the invalid operation exception on both signaling
   # and quiet NaN inputs.
-  - names:
-      [
-        vmflt_sqNaN_invalid,
-        vmfle_sqNaN_invalid,
-        vmfgt_sqNaN_invalid,
-        vmfge_sqNaN_invalid,
-      ]
+  - name: vmflt_vmfle_vmfgt_vmfge_sqnan_invalid
     coverpoint: ["Vf16_vmflt_vv_cg/cp_custom_vfp_flags_nv"]
 
   # vmfne writes 1 to the destination element when either operand is NaN,
-  - name: vmfne_vdval1_NaN
+  - name: vmfne_vdval1_nan
     coverpoint: ["Vf16_vmfeq_vv_cg/cp_custom_vfp_NaN_input"]
 
   # whereas the other compares write 0 when either operand is NaN.
-  - names:
-      [
-        vmfeq_vdval0_NaN,
-        vmflt_vdval0_NaN,
-        vmfle_vdval0_NaN,
-        vmfgt_vdval0_NaN,
-        vmfge_vdval0_NaN,
-      ]
+  - name: vmfeq_vmflt_vmfle_vmfgt_vmfge_vdval0_nan
     coverpoint: ["Vf16_vmfeq_vv_cg/cp_custom_vfp_NaN_input"]
 
   # The instruction must have the vs2 field set to v0, with all other values for vs2
@@ -60,9 +39,15 @@ normative_rule_definitions:
   # single-width floating-point reductions (<<sec-vector-float-reduce>>) for EEW=32 and
   # EEW=64 are supported as well as widening reductions from FP32 to FP64.
   - name: V_dependent_F_D
-    coverpoint: ["implicit"]
+    coverpoint:
+      [
+        "Implicit: the F and D dependency is satisfied by the configuration under test; the vector floating-point tests cannot run without it",
+      ]
 
   # Vector floating-point instructions require the presence of base scalar floating-point
   # extensions corresponding to the supported vector floating-point element widths.
-  - name: Vf_requires_Vx
-    coverpoint: ["implicit"]
+  - name: vf_requires_vx
+    coverpoint:
+      [
+        "Implicit: the vector floating-point tests cannot run unless the scalar floating-point extensions are present",
+      ]

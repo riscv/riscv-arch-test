@@ -350,6 +350,7 @@
         jal _LINK_REG, failedtest_vec_base_##_LINK_REG##_##_TEMP_REG         ;\
         RVTEST_WORD_PTR _INST_PTR                                   ;\
         RVTEST_WORD_PTR _STR_PTR                                    ;\
+        vxor.vv _VREG, _VREG, _VREG    /* Dummy NOP that encodes VR for use in failure code */  ;\
     2:                                                              ;\
         RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)     ;\
         .option pop
@@ -368,6 +369,7 @@
         jal _LINK_REG, failedtest_vec_base_##_LINK_REG##_##_TEMP_REG         ;\
         RVTEST_WORD_PTR _INST_PTR                                   ;\
         RVTEST_WORD_PTR _STR_PTR                                    ;\
+        vxor.vv _VREG, _VREG, _VREG        /* Dummy NOP that encodes VR for use in failure code */ ;\
     2:                                                              ;\
         RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)     ;\
         .option pop
@@ -607,6 +609,7 @@
         jal         _LINK_REG, failedtest_vec_mask_##_LINK_REG##_##_TEMP_REG ;                                      \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+        vxor.vv     _VR, _VR, _VR            ;  /* Dummy NOP that encodes VR for use in failure code */             \
     10:                                                                                                             \
         /* active region FAIL path */                                                                               \
         vsetvli     _LINK_REG, x0, e##_VD_EEW, m1, ta, ma ;  /* Set LMUL=1 to prevent vmv.v.v trapping */           \
@@ -621,6 +624,7 @@
         jal         _LINK_REG, failedtest_vec_active_##_LINK_REG##_##_TEMP_REG ;                                    \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+        vxor.vv     _VR, _VR, _VR            ;  /* Dummy NOP that encodes VR for use in failure code */             \
     20:                                                                                                             \
         /* tail region FAIL path */                                                                                 \
         vsetvli     _LINK_REG, x0, e##_VD_EEW, m1, ta, ma ;  /* Set LMUL=1 to prevent vmv.v.v trapping */           \
@@ -635,6 +639,7 @@
         jal         _LINK_REG, failedtest_vec_tail_##_LINK_REG##_##_TEMP_REG ;                                      \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+        vxor.vv     _VR, _VR, _VR            ;  /* Dummy NOP that encodes VR for use in failure code */             \
     12:                                                                                                             \
         /* PASS */                                                                                                  \
         RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG3)                                                    ;\
@@ -792,6 +797,7 @@
         jal         _LINK_REG, failedtest_vec_mask_##_LINK_REG##_##_TEMP_REG ;                                      \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+        vxor.vv     _VR, _VR, _VR            ;  /* Dummy NOP that encodes VR for use in failure code */             \
     10:                                                                                                             \
         /* active region FAIL path */                                                                               \
         nop                                  ;                                                                      \
@@ -806,6 +812,7 @@
         jal         _LINK_REG, failedtest_vec_active_##_LINK_REG##_##_TEMP_REG ;                                    \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+        vxor.vv     _VR, _VR, _VR            ;  /* Dummy NOP that encodes VR for use in failure code */             \
     20:                                                                                                             \
         /* tail region FAIL path */                                                                                 \
         nop                                  ;                                                                      \
@@ -820,6 +827,7 @@
         jal         _LINK_REG, failedtest_vec_tail_##_LINK_REG##_##_TEMP_REG ;                                      \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+        vxor.vv     _VR, _VR, _VR            ;  /* Dummy NOP that encodes VR for use in failure code */             \
     12:                                                                                                             \
         /* PASS */                                                                                                  \
         RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG3)                                                    ;\

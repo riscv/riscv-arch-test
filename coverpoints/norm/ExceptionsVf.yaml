@@ -6,5 +6,5 @@
 normative_rule_definitions:
   # If the EEW of a vector floating-point operand does not correspond to a supported IEEE
   # floating-point type, the instruction encoding is reserved.
-  - name: V_fp_EEW_IEEE_nsupported_rsv
+  - name: V_fp_eew_ieee_nsupported_rsv
     coverpoint: ["ExceptionsVf16_vfmv_f_s_cg/cp_vill"]

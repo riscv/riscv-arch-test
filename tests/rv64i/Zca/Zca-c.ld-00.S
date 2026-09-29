@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 66
+#define SIGUPD_COUNT 71
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -493,6 +493,50 @@ Zca_c_ld_cg_cp_imm_mul_8_b0xf8:
   RVTEST_SIGUPD(x2, x5, x4, x12, Zca_c_ld_cg_cp_imm_mul_8_b0xf8, Zca_c_ld_cg_cp_imm_mul_8_b0xf8_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
+/////////////////////////////////
+// cp_memval_double
+/////////////////////////////////
+
+# Testcase cp_memval_double (memory value = 0x0)
+  addi x13, x3, -176 # adjust base address for load
+Zca_c_ld_cg_cp_memval_double_0x0:
+  c.ld x12, 176(x13) # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, Zca_c_ld_cg_cp_memval_double_0x0, Zca_c_ld_cg_cp_memval_double_0x0_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_double (memory value = 0x1)
+  addi x9, x3, -168 # adjust base address for load
+Zca_c_ld_cg_cp_memval_double_0x1:
+  c.ld x11, 168(x9) # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x11, Zca_c_ld_cg_cp_memval_double_0x1, Zca_c_ld_cg_cp_memval_double_0x1_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_double (memory value = 0x7fffffffffffffff)
+  addi x15, x3, -8 # adjust base address for load
+Zca_c_ld_cg_cp_memval_double_0x7fffffffffffffff:
+  c.ld x9, 8(x15) # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Zca_c_ld_cg_cp_memval_double_0x7fffffffffffffff, Zca_c_ld_cg_cp_memval_double_0x7fffffffffffffff_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_double (memory value = 0x8000000000000000)
+  addi x14, x3, -40 # adjust base address for load
+Zca_c_ld_cg_cp_memval_double_0x8000000000000000:
+  c.ld x10, 40(x14) # perform operation
+  # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x10, Zca_c_ld_cg_cp_memval_double_0x8000000000000000, Zca_c_ld_cg_cp_memval_double_0x8000000000000000_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_memval_double (memory value = 0xffffffffffffffff)
+  addi x14, x3, -80 # adjust base address for load
+Zca_c_ld_cg_cp_memval_double_0xffffffffffffffff:
+  c.ld x11, 80(x14) # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x11, Zca_c_ld_cg_cp_memval_double_0xffffffffffffffff, Zca_c_ld_cg_cp_memval_double_0xffffffffffffffff_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 
@@ -556,6 +600,11 @@ RVTEST_DATA_BEGIN
 .dword 0x74b3495cae206bc1
 .dword 0x71b0fc72c1ded399
 .dword 0x0e474dde4e0f14a0
+.dword 0x0000000000000000
+.dword 0x0000000000000001
+.dword 0x7fffffffffffffff
+.dword 0x8000000000000000
+.dword 0xffffffffffffffff
 
 // Testcase strings
 Zca_c_ld_cg_cp_rs1_p_b8_str: .string "\"test: 1; cg: Zca_c.ld_cg; cp: cp_rs1_p; bin: b8\""
@@ -614,6 +663,11 @@ Zca_c_ld_cg_cp_imm_mul_8_b0xe0_str: .string "\"test: 53; cg: Zca_c.ld_cg; cp: cp
 Zca_c_ld_cg_cp_imm_mul_8_b0xe8_str: .string "\"test: 54; cg: Zca_c.ld_cg; cp: cp_imm_mul_8; bin: b0xe8\""
 Zca_c_ld_cg_cp_imm_mul_8_b0xf0_str: .string "\"test: 55; cg: Zca_c.ld_cg; cp: cp_imm_mul_8; bin: b0xf0\""
 Zca_c_ld_cg_cp_imm_mul_8_b0xf8_str: .string "\"test: 56; cg: Zca_c.ld_cg; cp: cp_imm_mul_8; bin: b0xf8\""
+Zca_c_ld_cg_cp_memval_double_0x0_str: .string "\"test: 57; cg: Zca_c.ld_cg; cp: cp_memval_double; bin: 0x0\""
+Zca_c_ld_cg_cp_memval_double_0x1_str: .string "\"test: 58; cg: Zca_c.ld_cg; cp: cp_memval_double; bin: 0x1\""
+Zca_c_ld_cg_cp_memval_double_0x7fffffffffffffff_str: .string "\"test: 59; cg: Zca_c.ld_cg; cp: cp_memval_double; bin: 0x7fffffffffffffff\""
+Zca_c_ld_cg_cp_memval_double_0x8000000000000000_str: .string "\"test: 60; cg: Zca_c.ld_cg; cp: cp_memval_double; bin: 0x8000000000000000\""
+Zca_c_ld_cg_cp_memval_double_0xffffffffffffffff_str: .string "\"test: 61; cg: Zca_c.ld_cg; cp: cp_memval_double; bin: 0xffffffffffffffff\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

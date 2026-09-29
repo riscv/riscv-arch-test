@@ -53,13 +53,8 @@ RVTEST_BEGIN
 
 #define REGIONSTART TEST_FOR_EXECUTION_1
 #define REGION_SIZE PMP_NAPOT_REGION_BYTES
-#if UDB_PMP_GRANULARITY != 2
-#define PMP_MASK        ~((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
-#define PMP_REGION_SIZE ((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
-#else
-#define PMP_MASK        ~0
-#define PMP_REGION_SIZE 0
-#endif
+#define PMP_REGION_SIZE (((1 << (UDB_PMP_GRANULARITY - 2)) - 1) >> 1)
+#define PMP_MASK        ~PMP_REGION_SIZE
 
   RVTEST_PMP_SET_BACKGROUND x4
 // PMP configuration: three consecutive NAPOT regions, the third locked with XWR = 000

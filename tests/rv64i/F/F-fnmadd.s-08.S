@@ -27,6 +27,18 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x80000001 fs3 = 0x7fc00000, frm = dyn)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x1a6f4045
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0x7fc00000
+  fsflagsi 0b00000 # clear all fflags
+  fsrmi 4
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fc00000_frm_dyn:
+  fnmadd.s f30, f28, f6, f11, dyn # perform operation
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fc00000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fc00000_frm_dyn_str)
+  fsrmi 0x0
+
 # Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x80000001 fs3 = 0x7fc00000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x80000001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs2: f30 = 0x2bda411d
@@ -759,253 +771,253 @@ F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbf800000_frm_rup:
   # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbf800000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbf800000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x3fc00000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x40200000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs2: f29 = 0x38e36dc0
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_dyn:
   fnmadd.s f25, f30, f29, f4, dyn # perform operation
   # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x3fc00000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x40200000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs2: f30 = 0xfb59b42c
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs3: f21 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs3: f21 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_rdn:
   fnmadd.s f19, f10, f30, f21, rdn # perform operation
   # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x3fc00000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x40200000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs2: f22 = 0x7ad07669
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_rmm:
   fnmadd.s f18, f2, f22, f15, rmm # perform operation
   # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x3fc00000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x40200000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs2: f3 = 0x7ca37bb0
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs3: f25 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs3: f25 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_rne:
   fnmadd.s f28, f30, f3, f25, rne # perform operation
   # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x3fc00000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x40200000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs2: f17 = 0x9419689b
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_rtz:
   fnmadd.s f16, f8, f17, f18, rtz # perform operation
   # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x3fc00000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x40200000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs2: f12 = 0xc0871cc1
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_rup:
   fnmadd.s f20, f29, f12, f1, rup # perform operation
   # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xbfc00000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xc0200000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs2: f17 = 0x934c6087
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 2
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_dyn:
   fnmadd.s f14, f13, f17, f18, dyn # perform operation
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xbfc00000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xc0200000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs2: f9 = 0x8fb4db7a
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs3: f14 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs3: f14 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_rdn:
   fnmadd.s f2, f11, f9, f14, rdn # perform operation
   # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xbfc00000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xc0200000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs2: f25 = 0xe91d06a2
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs3: f16 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs3: f16 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_rmm:
   fnmadd.s f23, f29, f25, f16, rmm # perform operation
   # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xbfc00000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xc0200000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs2: f21 = 0x465b388c
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_rne:
   fnmadd.s f15, f22, f21, f10, rne # perform operation
   # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xbfc00000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xc0200000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs2: f17 = 0x955fb6c8
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_rtz:
   fnmadd.s f8, f10, f17, f30, rtz # perform operation
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xbfc00000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xc0200000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs2: f30 = 0x086a5d21
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_rup:
   fnmadd.s f25, f19, f30, f1, rup # perform operation
   # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x40000000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x4b800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs2: f16 = 0x215f886c
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 0
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_dyn:
   fnmadd.s f31, f27, f16, f10, dyn # perform operation
   # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x40000000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x4b800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs2: f28 = 0x1aff7fde
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_rdn:
   fnmadd.s f19, f4, f28, f15, rdn # perform operation
   # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x40000000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x4b800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs2: f1 = 0xf625d723
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_rmm:
   fnmadd.s f18, f22, f1, f4, rmm # perform operation
   # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x40000000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x4b800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0xfd4b26ce
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_rne:
   fnmadd.s f29, f10, f4, f19, rne # perform operation
   # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x40000000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x4b800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs2: f28 = 0x9ce7b213
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_rtz:
   fnmadd.s f6, f30, f28, f12, rtz # perform operation
   # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x40000000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x4b800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0x921f09a4
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs3: f14 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs3: f14 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_rup:
   fnmadd.s f1, f28, f15, f14, rup # perform operation
   # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xc0000000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xcb800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs2: f2 = 0x08e0feaa
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 2
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_dyn:
   fnmadd.s f23, f1, f2, f18, dyn # perform operation
   # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xc0000000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xcb800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs2: f14 = 0xa393dfd3
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_rdn:
   fnmadd.s f22, f19, f14, f15, rdn # perform operation
   # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xc0000000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xcb800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs2: f31 = 0x31169eab
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_rmm:
   fnmadd.s f2, f22, f31, f13, rmm # perform operation
   # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xc0000000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xcb800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs2: f2 = 0x54e1ac88
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_rne:
   fnmadd.s f27, f8, f2, f18, rne # perform operation
   # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xc0000000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xcb800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs2: f11 = 0xedac2222
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_rtz:
   fnmadd.s f12, f13, f11, f15, rtz # perform operation
   # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xc0000000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0xcb800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0xd1e4fcd6
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs3: f9 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs3: f9 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_rup:
   fnmadd.s f31, f14, f15, f9, rup # perform operation
   # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_rup_str)
 
 # Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800000 fs3 = 0x00800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x7f800000
@@ -2495,253 +2507,253 @@ F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbf800000_frm_rup:
   # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbf800000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbf800000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x3fc00000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x40200000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs2: f14 = 0xcf001684
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs3: f24 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs3: f24 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 2
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_dyn:
   fnmadd.s f2, f15, f14, f24, dyn # perform operation
   # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x3fc00000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x40200000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs2: f1 = 0xbdad9cdc
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_rdn:
   fnmadd.s f26, f6, f1, f27, rdn # perform operation
   # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x3fc00000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x40200000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs2: f26 = 0x41aa82a4
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs3: f8 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs3: f8 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_rmm:
   fnmadd.s f10, f16, f26, f8, rmm # perform operation
   # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x3fc00000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x40200000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs2: f2 = 0x524482da
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_rne:
   fnmadd.s f9, f23, f2, f30, rne # perform operation
   # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x3fc00000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x40200000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs2: f23 = 0x79027933
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_rtz:
   fnmadd.s f2, f17, f23, f19, rtz # perform operation
   # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x3fc00000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x40200000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs2: f26 = 0x90590a83
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_rup:
   fnmadd.s f4, f3, f26, f2, rup # perform operation
   # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xbfc00000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xc0200000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs2: f30 = 0x778f34f2
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs3: f8 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs3: f8 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 3
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_dyn:
   fnmadd.s f25, f10, f30, f8, dyn # perform operation
   # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xbfc00000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xc0200000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs2: f26 = 0x202f72b3
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_rdn:
   fnmadd.s f29, f8, f26, f27, rdn # perform operation
   # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xbfc00000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xc0200000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs2: f3 = 0xfa090842
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_rmm:
   fnmadd.s f29, f16, f3, f4, rmm # perform operation
   # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xbfc00000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xc0200000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs2: f21 = 0xe64c8d4e
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_rne:
   fnmadd.s f17, f27, f21, f2, rne # perform operation
   # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xbfc00000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xc0200000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0x2bd26cfd
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_rtz:
   fnmadd.s f11, f5, f15, f29, rtz # perform operation
   # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xbfc00000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xc0200000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs2: f14 = 0x0e7e6e94
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs3: f16 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs3: f16 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_rup:
   fnmadd.s f21, f1, f14, f16, rup # perform operation
   # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x40000000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x4b800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0xb3961793
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 2
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_dyn:
   fnmadd.s f23, f21, f4, f12, dyn # perform operation
   # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x40000000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x4b800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs2: f23 = 0x5652744b
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_rdn:
   fnmadd.s f17, f22, f23, f10, rdn # perform operation
   # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x40000000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x4b800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs2: f1 = 0x97fecc2d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs3: f21 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs3: f21 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_rmm:
   fnmadd.s f16, f14, f1, f21, rmm # perform operation
   # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x40000000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x4b800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs1: f20 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs2: f29 = 0xb469c22d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs3: f24 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs3: f24 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_rne:
   fnmadd.s f31, f20, f29, f24, rne # perform operation
   # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x40000000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x4b800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs2: f27 = 0x1e411a15
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs3: f3 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs3: f3 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_rtz:
   fnmadd.s f18, f4, f27, f3, rtz # perform operation
   # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x40000000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x4b800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs2: f22 = 0x6111a95f
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs3: f16 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs3: f16 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_rup:
   fnmadd.s f17, f19, f22, f16, rup # perform operation
   # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xc0000000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xcb800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs2: f24 = 0xb47449d7
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 3
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_dyn:
   fnmadd.s f26, f11, f24, f30, dyn # perform operation
   # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xc0000000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xcb800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs2: f1 = 0xa613a3f2
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_rdn:
   fnmadd.s f27, f21, f1, f31, rdn # perform operation
   # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xc0000000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xcb800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs2: f25 = 0xd7b0dea8
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs3: f22 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs3: f22 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_rmm:
   fnmadd.s f19, f17, f25, f22, rmm # perform operation
   # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xc0000000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xcb800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs2: f8 = 0x0389dbda
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_rne:
   fnmadd.s f14, f30, f8, f17, rne # perform operation
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xc0000000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xcb800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs2: f19 = 0x33896b3a
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs3: f9 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs3: f9 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_rtz:
   fnmadd.s f6, f22, f19, f9, rtz # perform operation
   # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xc0000000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0xcb800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs2: f9 = 0x23194a3e
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_rup:
   fnmadd.s f24, f2, f9, f18, rup # perform operation
   # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_rup_str)
 
 # Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xff800000 fs3 = 0x00800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0xff800000
@@ -4231,253 +4243,253 @@ F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbf800000_frm_rup:
   # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbf800000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbf800000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x3fc00000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x40200000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x292aa10a
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 2
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_dyn:
   fnmadd.s f12, f19, f6, f2, dyn # perform operation
   # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x3fc00000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x40200000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs2: f24 = 0x9a1ce95b
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_rdn:
   fnmadd.s f18, f23, f24, f15, rdn # perform operation
   # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x3fc00000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x40200000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs2: f29 = 0x45d30710
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_rmm:
   fnmadd.s f19, f27, f29, f10, rmm # perform operation
   # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x3fc00000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x40200000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs2: f19 = 0x3268ef30
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_rne:
   fnmadd.s f14, f16, f19, f30, rne # perform operation
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x3fc00000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x40200000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs2: f26 = 0x59eceeb3
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_rtz:
   fnmadd.s f20, f14, f26, f27, rtz # perform operation
   # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x3fc00000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x40200000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x0fad854e
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs3: f20 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs3: f20 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_rup:
   fnmadd.s f29, f30, f6, f20, rup # perform operation
   # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xbfc00000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xc0200000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs2: f25 = 0x851662e2
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_dyn:
   fnmadd.s f20, f12, f25, f19, dyn # perform operation
   # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xbfc00000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xc0200000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0xc2e653c1
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_rdn:
   fnmadd.s f23, f3, f15, f1, rdn # perform operation
   # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xbfc00000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xc0200000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs2: f21 = 0x47e244c9
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs3: f20 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs3: f20 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_rmm:
   fnmadd.s f14, f13, f21, f20, rmm # perform operation
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xbfc00000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xc0200000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs2: f25 = 0xb233868b
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_rne:
   fnmadd.s f12, f30, f25, f4, rne # perform operation
   # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xbfc00000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xc0200000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0x03cd8203
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_rtz:
   fnmadd.s f17, f14, f15, f31, rtz # perform operation
   # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xbfc00000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xc0200000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs2: f19 = 0x22bcce4b
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_rup:
   fnmadd.s f18, f5, f19, f2, rup # perform operation
   # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x40000000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x4b800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs2: f19 = 0x1e4cbfcc
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs3: f25 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs3: f25 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 2
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_dyn:
   fnmadd.s f21, f9, f19, f25, dyn # perform operation
   # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x40000000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x4b800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs2: f18 = 0x850bbca8
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs3: f24 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs3: f24 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_rdn:
   fnmadd.s f9, f23, f18, f24, rdn # perform operation
   # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x40000000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x4b800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs2: f22 = 0x873aecb0
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs3: f9 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs3: f9 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_rmm:
   fnmadd.s f24, f19, f22, f9, rmm # perform operation
   # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x40000000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x4b800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs2: f23 = 0xb7e5d389
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs3: f21 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs3: f21 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_rne:
   fnmadd.s f19, f24, f23, f21, rne # perform operation
   # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x40000000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x4b800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs2: f30 = 0x67faac17
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs3: f3 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs3: f3 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_rtz:
   fnmadd.s f14, f19, f30, f3, rtz # perform operation
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x40000000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x4b800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x5fedf707
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_rup:
   fnmadd.s f14, f27, f5, f30, rup # perform operation
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xc0000000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xcb800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs1: f20 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs2: f30 = 0xb6a1994d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 0
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_dyn:
   fnmadd.s f16, f20, f30, f10, dyn # perform operation
   # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xc0000000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xcb800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs2: f16 = 0x49818693
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_rdn:
   fnmadd.s f23, f11, f16, f10, rdn # perform operation
   # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xc0000000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xcb800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs2: f21 = 0xb80ee06e
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_rmm:
   fnmadd.s f30, f5, f21, f12, rmm # perform operation
   # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xc0000000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xcb800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs2: f28 = 0x0adbc1d4
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_rne:
   fnmadd.s f10, f3, f28, f1, rne # perform operation
   # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xc0000000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xcb800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0x7714627c
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_rtz:
   fnmadd.s f10, f4, f15, f29, rtz # perform operation
   # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xc0000000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0xcb800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs2: f18 = 0x68957d9b
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_rup:
   fnmadd.s f1, f2, f18, f5, rup # perform operation
   # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_rup_str)
 
 # Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fc00000 fs3 = 0x00800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0x7fc00000
@@ -5967,253 +5979,253 @@ F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbf800000_frm_rup:
   # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbf800000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbf800000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x3fc00000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x40200000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs2: f2 = 0x2a8acb4c
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs3: f23 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs3: f23 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_dyn:
   fnmadd.s f4, f29, f2, f23, dyn # perform operation
   # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x3fc00000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x40200000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs2: f19 = 0xa1070913
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_rdn:
   fnmadd.s f5, f28, f19, f12, rdn # perform operation
   # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x3fc00000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x40200000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs2: f21 = 0x35873994
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs3: f24 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs3: f24 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_rmm:
   fnmadd.s f28, f25, f21, f24, rmm # perform operation
   # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x3fc00000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x40200000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs2: f30 = 0x9aa352c3
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs3: f20 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs3: f20 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_rne:
   fnmadd.s f22, f31, f30, f20, rne # perform operation
   # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x3fc00000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x40200000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs2: f29 = 0x0c661ac8
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs3: f23 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs3: f23 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_rtz:
   fnmadd.s f5, f27, f29, f23, rtz # perform operation
   # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x3fc00000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x40200000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs2: f21 = 0xed48b67d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs3: f9 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs3: f9 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_rup:
   fnmadd.s f11, f18, f21, f9, rup # perform operation
   # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xbfc00000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xc0200000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs2: f12 = 0x6d1ca027
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs3: f22 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs3: f22 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 3
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_dyn:
   fnmadd.s f17, f28, f12, f22, dyn # perform operation
   # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xbfc00000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xc0200000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs2: f23 = 0x2a5105c2
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs3: f22 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs3: f22 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_rdn:
   fnmadd.s f10, f21, f23, f22, rdn # perform operation
   # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xbfc00000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xc0200000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs2: f10 = 0xff178b83
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_rmm:
   fnmadd.s f21, f14, f10, f5, rmm # perform operation
   # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xbfc00000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xc0200000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0xa69c955c
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_rne:
   fnmadd.s f19, f1, f5, f29, rne # perform operation
   # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xbfc00000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xc0200000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs2: f13 = 0x03086727
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs3: f8 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs3: f8 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_rtz:
   fnmadd.s f10, f16, f13, f8, rtz # perform operation
   # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xbfc00000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xc0200000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs2: f13 = 0x4428695e
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs3: f25 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs3: f25 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_rup:
   fnmadd.s f26, f21, f13, f25, rup # perform operation
   # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x40000000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x4b800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs2: f8 = 0x019aa19f
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_dyn:
   fnmadd.s f17, f24, f8, f10, dyn # perform operation
   # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x40000000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x4b800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs2: f25 = 0x4da82e8d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_rdn:
   fnmadd.s f2, f19, f25, f31, rdn # perform operation
   # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x40000000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x4b800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs2: f17 = 0x96b8c051
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_rmm:
   fnmadd.s f29, f1, f17, f30, rmm # perform operation
   # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x40000000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x4b800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0x44961cbe
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_rne:
   fnmadd.s f3, f24, f15, f27, rne # perform operation
   # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x40000000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x4b800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs2: f18 = 0x11d75f5f
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_rtz:
   fnmadd.s f26, f5, f18, f29, rtz # perform operation
   # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x40000000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x4b800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs2: f25 = 0x3f304ed3
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_rup:
   fnmadd.s f23, f31, f25, f2, rup # perform operation
   # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xc0000000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xcb800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs2: f31 = 0x0a1a0ffd
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_dyn:
   fnmadd.s f4, f30, f31, f13, dyn # perform operation
   # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xc0000000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xcb800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x6468b1e1
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs3: f26 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs3: f26 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_rdn:
   fnmadd.s f22, f8, f4, f26, rdn # perform operation
   # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xc0000000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xcb800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x99f22f2b
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_rmm:
   fnmadd.s f29, f22, f4, f15, rmm # perform operation
   # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xc0000000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xcb800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs2: f9 = 0x6535d897
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_rne:
   fnmadd.s f2, f22, f9, f18, rne # perform operation
   # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xc0000000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xcb800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs2: f11 = 0x46cc15d0
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs3: f24 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs3: f24 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_rtz:
   fnmadd.s f31, f2, f11, f24, rtz # perform operation
   # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xc0000000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0xcb800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0x28507fe1
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs3: f9 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs3: f9 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_rup:
   fnmadd.s f30, f17, f15, f9, rup # perform operation
   # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_rup_str)
 
 # Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7fffffff fs3 = 0x00800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs1: f20 = 0x7fffffff
@@ -7703,253 +7715,253 @@ F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbf800000_frm_rup:
   # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbf800000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbf800000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x3fc00000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x40200000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs2: f9 = 0x515d45af
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs3: f14 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs3: f14 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_dyn:
   fnmadd.s f27, f29, f9, f14, dyn # perform operation
   # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x3fc00000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x40200000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs2: f3 = 0x47ed1bd8
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_rdn:
   fnmadd.s f9, f31, f3, f13, rdn # perform operation
   # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x3fc00000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x40200000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs2: f26 = 0x951ffd67
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_rmm:
   fnmadd.s f3, f23, f26, f27, rmm # perform operation
   # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x3fc00000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x40200000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs2: f17 = 0x2cc465f5
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_rne:
   fnmadd.s f22, f5, f17, f11, rne # perform operation
   # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x3fc00000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x40200000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0x2010c779
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs3: f24 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs3: f24 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_rtz:
   fnmadd.s f26, f19, f15, f24, rtz # perform operation
   # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x3fc00000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x40200000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x61fb39e7
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs3: f21 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs3: f21 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_rup:
   fnmadd.s f26, f1, f5, f21, rup # perform operation
   # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xbfc00000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xc0200000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0xfdf98092
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 3
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_dyn:
   fnmadd.s f30, f24, f15, f1, dyn # perform operation
   # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xbfc00000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xc0200000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs2: f2 = 0x433cc173
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_rdn:
   fnmadd.s f21, f19, f2, f6, rdn # perform operation
   # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xbfc00000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xc0200000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs2: f14 = 0x971045a2
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_rmm:
   fnmadd.s f17, f10, f14, f1, rmm # perform operation
   # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xbfc00000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xc0200000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs2: f25 = 0x40039f48
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_rne:
   fnmadd.s f30, f15, f25, f11, rne # perform operation
   # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xbfc00000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xc0200000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs2: f30 = 0xa86c69bc
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs3: f9 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs3: f9 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_rtz:
   fnmadd.s f19, f14, f30, f9, rtz # perform operation
   # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xbfc00000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xc0200000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs2: f10 = 0x46854ca5
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs3: f23 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs3: f23 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_rup:
   fnmadd.s f12, f14, f10, f23, rup # perform operation
   # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x40000000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x4b800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs2: f8 = 0x6d63e1d6
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_dyn:
   fnmadd.s f5, f1, f8, f4, dyn # perform operation
   # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x40000000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x4b800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs2: f10 = 0xd92a50e0
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_rdn:
   fnmadd.s f28, f25, f10, f11, rdn # perform operation
   # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x40000000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x4b800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs2: f26 = 0x5f0ffe7a
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs3: f14 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs3: f14 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_rmm:
   fnmadd.s f27, f4, f26, f14, rmm # perform operation
   # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x40000000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x4b800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs2: f12 = 0x7306e913
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_rne:
   fnmadd.s f6, f18, f12, f10, rne # perform operation
   # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x40000000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x4b800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs2: f19 = 0x768d081a
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs3: f28 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs3: f28 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_rtz:
   fnmadd.s f17, f11, f19, f28, rtz # perform operation
   # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x40000000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x4b800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs2: f9 = 0x0c5e1cf7
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_rup:
   fnmadd.s f2, f19, f9, f13, rup # perform operation
   # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xc0000000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xcb800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs2: f30 = 0x355e6031
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs3: f21 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs3: f21 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_dyn:
   fnmadd.s f2, f9, f30, f21, dyn # perform operation
   # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xc0000000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xcb800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs2: f17 = 0xdaf5add7
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs3: f8 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs3: f8 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_rdn:
   fnmadd.s f1, f16, f17, f8, rdn # perform operation
   # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xc0000000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xcb800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs2: f22 = 0x5d6c02bb
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_rmm:
   fnmadd.s f14, f2, f22, f31, rmm # perform operation
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xc0000000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xcb800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs2: f11 = 0xa6640a00
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs3: f9 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs3: f9 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_rne:
   fnmadd.s f29, f31, f11, f9, rne # perform operation
   # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xc0000000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xcb800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs2: f29 = 0x0aa30366
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_rtz:
   fnmadd.s f6, f25, f29, f13, rtz # perform operation
   # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xc0000000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0xcb800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x3f218d54
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_rup:
   fnmadd.s f14, f12, f5, f29, rup # perform operation
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_rup_str)
 
 # Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0xffffffff fs3 = 0x00800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xffffffff
@@ -9439,253 +9451,253 @@ F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbf800000_frm_rup:
   # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbf800000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbf800000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x3fc00000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x40200000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs2: f23 = 0x6814efef
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 2
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_dyn:
   fnmadd.s f21, f25, f23, f12, dyn # perform operation
   # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x3fc00000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x40200000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs2: f12 = 0x8a289b17
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_rdn:
   fnmadd.s f28, f9, f12, f30, rdn # perform operation
   # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x3fc00000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x40200000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs2: f24 = 0x4da1ab92
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_rmm:
   fnmadd.s f9, f27, f24, f15, rmm # perform operation
   # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x3fc00000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x40200000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs2: f21 = 0x6bfe294e
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_rne:
   fnmadd.s f2, f29, f21, f15, rne # perform operation
   # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x3fc00000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x40200000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs2: f25 = 0x3ea5e755
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_rtz:
   fnmadd.s f13, f17, f25, f30, rtz # perform operation
   # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x3fc00000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x40200000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs2: f17 = 0xe0842c52
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs3: f25 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs3: f25 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_rup:
   fnmadd.s f9, f3, f17, f25, rup # perform operation
   # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xbfc00000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xc0200000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs2: f29 = 0x06170c3f
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_dyn:
   fnmadd.s f20, f13, f29, f19, dyn # perform operation
   # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xbfc00000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xc0200000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs2: f17 = 0x604da539
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_rdn:
   fnmadd.s f2, f21, f17, f29, rdn # perform operation
   # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xbfc00000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xc0200000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x23b3c6f4
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_rmm:
   fnmadd.s f8, f29, f6, f12, rmm # perform operation
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xbfc00000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xc0200000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0xca2546de
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_rne:
   fnmadd.s f18, f17, f15, f30, rne # perform operation
   # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xbfc00000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xc0200000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0x29b6b03d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_rtz:
   fnmadd.s f12, f18, f15, f13, rtz # perform operation
   # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xbfc00000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xc0200000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0xe772d1f8
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_rup:
   fnmadd.s f21, f18, f15, f5, rup # perform operation
   # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x40000000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x4b800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0xdb004a37
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs3: f8 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs3: f8 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_dyn:
   fnmadd.s f1, f12, f15, f8, dyn # perform operation
   # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x40000000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x4b800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs2: f13 = 0x7aa54df3
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_rdn:
   fnmadd.s f17, f22, f13, f5, rdn # perform operation
   # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x40000000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x4b800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs2: f19 = 0x2b83e3a8
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_rmm:
   fnmadd.s f21, f30, f19, f6, rmm # perform operation
   # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x40000000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x4b800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0x4a93221e
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_rne:
   fnmadd.s f6, f18, f15, f12, rne # perform operation
   # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x40000000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x4b800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs2: f11 = 0x35c0da3d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_rtz:
   fnmadd.s f29, f8, f11, f30, rtz # perform operation
   # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x40000000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x4b800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs2: f27 = 0x4f9bb546
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs3: f8 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs3: f8 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_rup:
   fnmadd.s f13, f15, f27, f8, rup # perform operation
   # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_rup_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xc0000000, frm = dyn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xcb800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs2: f16 = 0x3da5f4d8
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_dyn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_dyn:
   fnmadd.s f3, f10, f16, f12, dyn # perform operation
   # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_dyn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xc0000000, frm = rdn)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xcb800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs2: f1 = 0xb1dddf2b
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_rdn:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_rdn:
   fnmadd.s f13, f12, f1, f31, rdn # perform operation
   # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_rdn, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_rdn_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xc0000000, frm = rmm)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xcb800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs2: f28 = 0xccf68541
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_rmm:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_rmm:
   fnmadd.s f19, f23, f28, f11, rmm # perform operation
   # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_rmm, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_rmm_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xc0000000, frm = rne)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xcb800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs2: f9 = 0xbfee4d78
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs3: f26 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs3: f26 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_rne:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_rne:
   fnmadd.s f28, f21, f9, f26, rne # perform operation
   # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xc0000000, frm = rtz)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xcb800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs2: f30 = 0x08925567
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_rtz:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_rtz:
   fnmadd.s f4, f31, f30, f13, rtz # perform operation
   # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_rtz_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xc0000000, frm = rup)
+# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0xcb800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs2: f11 = 0x2dbe9088
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs3: f26 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs3: f26 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_rup:
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_rup:
   fnmadd.s f9, f3, f11, f26, rup # perform operation
   # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_rup, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_rup_str)
 
 # Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x00800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x7f800001
@@ -10349,16 +10361,6 @@ F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f800000_frm_rne:
   # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f800000_frm_rne, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f800000_frm_rne_str)
 
-# Testcase cr_fs1_fs3_edges_frm4 (Test source fs1 = 0x7f800001 fs3 = 0x7f800000, frm = rtz)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs2: f30 = 0xb47e8a9d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x7f800000
-  fsflagsi 0b00000 # clear all fflags
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f800000_frm_rtz:
-  fnmadd.s f17, f28, f30, f5, rtz # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f800000_frm_rtz, F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f800000_frm_rtz_str)
-
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 
@@ -10366,6 +10368,9 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test data
+.dword 0x0000000080000001
+.dword 0x000000001a6f4045
+.dword 0x000000007fc00000
 .dword 0x0000000080000001
 .dword 0x000000002bda411d
 .dword 0x000000007fc00000
@@ -10581,76 +10586,76 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000bf800000
 .dword 0x000000007f800000
 .dword 0x0000000038e36dc0
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007f800000
 .dword 0xfffffffffb59b42c
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007f800000
 .dword 0x000000007ad07669
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007f800000
 .dword 0x000000007ca37bb0
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007f800000
 .dword 0xffffffff9419689b
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007f800000
 .dword 0xffffffffc0871cc1
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007f800000
 .dword 0xffffffff934c6087
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007f800000
 .dword 0xffffffff8fb4db7a
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007f800000
 .dword 0xffffffffe91d06a2
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007f800000
 .dword 0x00000000465b388c
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007f800000
 .dword 0xffffffff955fb6c8
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007f800000
 .dword 0x00000000086a5d21
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007f800000
 .dword 0x00000000215f886c
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007f800000
 .dword 0x000000001aff7fde
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007f800000
 .dword 0xfffffffff625d723
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007f800000
 .dword 0xfffffffffd4b26ce
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007f800000
 .dword 0xffffffff9ce7b213
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007f800000
 .dword 0xffffffff921f09a4
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007f800000
 .dword 0x0000000008e0feaa
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007f800000
 .dword 0xffffffffa393dfd3
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007f800000
 .dword 0x0000000031169eab
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007f800000
 .dword 0x0000000054e1ac88
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007f800000
 .dword 0xffffffffedac2222
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007f800000
 .dword 0xffffffffd1e4fcd6
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007f800000
 .dword 0x00000000015dc04f
 .dword 0x0000000000800000
@@ -11085,76 +11090,76 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000bf800000
 .dword 0x00000000ff800000
 .dword 0xffffffffcf001684
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x00000000ff800000
 .dword 0xffffffffbdad9cdc
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x00000000ff800000
 .dword 0x0000000041aa82a4
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x00000000ff800000
 .dword 0x00000000524482da
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x00000000ff800000
 .dword 0x0000000079027933
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x00000000ff800000
 .dword 0xffffffff90590a83
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x00000000ff800000
 .dword 0x00000000778f34f2
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x00000000ff800000
 .dword 0x00000000202f72b3
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x00000000ff800000
 .dword 0xfffffffffa090842
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x00000000ff800000
 .dword 0xffffffffe64c8d4e
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x00000000ff800000
 .dword 0x000000002bd26cfd
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x00000000ff800000
 .dword 0x000000000e7e6e94
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x00000000ff800000
 .dword 0xffffffffb3961793
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x00000000ff800000
 .dword 0x000000005652744b
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x00000000ff800000
 .dword 0xffffffff97fecc2d
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x00000000ff800000
 .dword 0xffffffffb469c22d
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x00000000ff800000
 .dword 0x000000001e411a15
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x00000000ff800000
 .dword 0x000000006111a95f
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x00000000ff800000
 .dword 0xffffffffb47449d7
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x00000000ff800000
 .dword 0xffffffffa613a3f2
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x00000000ff800000
 .dword 0xffffffffd7b0dea8
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x00000000ff800000
 .dword 0x000000000389dbda
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x00000000ff800000
 .dword 0x0000000033896b3a
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x00000000ff800000
 .dword 0x0000000023194a3e
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x00000000ff800000
 .dword 0xffffffff9beae14e
 .dword 0x0000000000800000
@@ -11589,76 +11594,76 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000bf800000
 .dword 0x000000007fc00000
 .dword 0x00000000292aa10a
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007fc00000
 .dword 0xffffffff9a1ce95b
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007fc00000
 .dword 0x0000000045d30710
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007fc00000
 .dword 0x000000003268ef30
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007fc00000
 .dword 0x0000000059eceeb3
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007fc00000
 .dword 0x000000000fad854e
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007fc00000
 .dword 0xffffffff851662e2
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007fc00000
 .dword 0xffffffffc2e653c1
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007fc00000
 .dword 0x0000000047e244c9
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007fc00000
 .dword 0xffffffffb233868b
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007fc00000
 .dword 0x0000000003cd8203
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007fc00000
 .dword 0x0000000022bcce4b
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007fc00000
 .dword 0x000000001e4cbfcc
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007fc00000
 .dword 0xffffffff850bbca8
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007fc00000
 .dword 0xffffffff873aecb0
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007fc00000
 .dword 0xffffffffb7e5d389
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007fc00000
 .dword 0x0000000067faac17
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007fc00000
 .dword 0x000000005fedf707
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007fc00000
 .dword 0xffffffffb6a1994d
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007fc00000
 .dword 0x0000000049818693
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007fc00000
 .dword 0xffffffffb80ee06e
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007fc00000
 .dword 0x000000000adbc1d4
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007fc00000
 .dword 0x000000007714627c
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007fc00000
 .dword 0x0000000068957d9b
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007fc00000
 .dword 0x0000000030f73e0e
 .dword 0x0000000000800000
@@ -12093,76 +12098,76 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000bf800000
 .dword 0x000000007fffffff
 .dword 0x000000002a8acb4c
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007fffffff
 .dword 0xffffffffa1070913
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007fffffff
 .dword 0x0000000035873994
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007fffffff
 .dword 0xffffffff9aa352c3
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007fffffff
 .dword 0x000000000c661ac8
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007fffffff
 .dword 0xffffffffed48b67d
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007fffffff
 .dword 0x000000006d1ca027
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007fffffff
 .dword 0x000000002a5105c2
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007fffffff
 .dword 0xffffffffff178b83
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007fffffff
 .dword 0xffffffffa69c955c
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007fffffff
 .dword 0x0000000003086727
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007fffffff
 .dword 0x000000004428695e
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007fffffff
 .dword 0x00000000019aa19f
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007fffffff
 .dword 0x000000004da82e8d
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007fffffff
 .dword 0xffffffff96b8c051
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007fffffff
 .dword 0x0000000044961cbe
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007fffffff
 .dword 0x0000000011d75f5f
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007fffffff
 .dword 0x000000003f304ed3
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007fffffff
 .dword 0x000000000a1a0ffd
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007fffffff
 .dword 0x000000006468b1e1
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007fffffff
 .dword 0xffffffff99f22f2b
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007fffffff
 .dword 0x000000006535d897
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007fffffff
 .dword 0x0000000046cc15d0
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007fffffff
 .dword 0x0000000028507fe1
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007fffffff
 .dword 0x00000000468fb903
 .dword 0x0000000000800000
@@ -12597,76 +12602,76 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000bf800000
 .dword 0x00000000ffffffff
 .dword 0x00000000515d45af
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x00000000ffffffff
 .dword 0x0000000047ed1bd8
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x00000000ffffffff
 .dword 0xffffffff951ffd67
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x00000000ffffffff
 .dword 0x000000002cc465f5
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x00000000ffffffff
 .dword 0x000000002010c779
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x00000000ffffffff
 .dword 0x0000000061fb39e7
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x00000000ffffffff
 .dword 0xfffffffffdf98092
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x00000000ffffffff
 .dword 0x00000000433cc173
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x00000000ffffffff
 .dword 0xffffffff971045a2
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x00000000ffffffff
 .dword 0x0000000040039f48
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x00000000ffffffff
 .dword 0xffffffffa86c69bc
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x00000000ffffffff
 .dword 0x0000000046854ca5
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x00000000ffffffff
 .dword 0x000000006d63e1d6
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x00000000ffffffff
 .dword 0xffffffffd92a50e0
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x00000000ffffffff
 .dword 0x000000005f0ffe7a
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x00000000ffffffff
 .dword 0x000000007306e913
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x00000000ffffffff
 .dword 0x00000000768d081a
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x00000000ffffffff
 .dword 0x000000000c5e1cf7
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x00000000ffffffff
 .dword 0x00000000355e6031
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x00000000ffffffff
 .dword 0xffffffffdaf5add7
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x00000000ffffffff
 .dword 0x000000005d6c02bb
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x00000000ffffffff
 .dword 0xffffffffa6640a00
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x00000000ffffffff
 .dword 0x000000000aa30366
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x00000000ffffffff
 .dword 0x000000003f218d54
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x00000000ffffffff
 .dword 0xffffffffad61538e
 .dword 0x0000000000800000
@@ -13101,76 +13106,76 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000bf800000
 .dword 0x000000007f800001
 .dword 0x000000006814efef
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007f800001
 .dword 0xffffffff8a289b17
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007f800001
 .dword 0x000000004da1ab92
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007f800001
 .dword 0x000000006bfe294e
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007f800001
 .dword 0x000000003ea5e755
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007f800001
 .dword 0xffffffffe0842c52
-.dword 0x000000003fc00000
+.dword 0x0000000040200000
 .dword 0x000000007f800001
 .dword 0x0000000006170c3f
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007f800001
 .dword 0x00000000604da539
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007f800001
 .dword 0x0000000023b3c6f4
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007f800001
 .dword 0xffffffffca2546de
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007f800001
 .dword 0x0000000029b6b03d
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007f800001
 .dword 0xffffffffe772d1f8
-.dword 0x00000000bfc00000
+.dword 0x00000000c0200000
 .dword 0x000000007f800001
 .dword 0xffffffffdb004a37
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007f800001
 .dword 0x000000007aa54df3
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007f800001
 .dword 0x000000002b83e3a8
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007f800001
 .dword 0x000000004a93221e
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007f800001
 .dword 0x0000000035c0da3d
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007f800001
 .dword 0x000000004f9bb546
-.dword 0x0000000040000000
+.dword 0x000000004b800000
 .dword 0x000000007f800001
 .dword 0x000000003da5f4d8
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007f800001
 .dword 0xffffffffb1dddf2b
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007f800001
 .dword 0xffffffffccf68541
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007f800001
 .dword 0xffffffffbfee4d78
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007f800001
 .dword 0x0000000008925567
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007f800001
 .dword 0x000000002dbe9088
-.dword 0x00000000c0000000
+.dword 0x00000000cb800000
 .dword 0x000000007f800001
 .dword 0x000000000da612eb
 .dword 0x0000000000800000
@@ -13363,1011 +13368,1008 @@ RVTEST_DATA_BEGIN
 .dword 0x000000007f800001
 .dword 0x0000000024672018
 .dword 0x000000007f800000
-.dword 0x000000007f800001
-.dword 0xffffffffb47e8a9d
-.dword 0x000000007f800000
 
 // Testcase strings
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fc00000_frm_rdn_str: .string "\"test: 8001; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fc00000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fc00000_frm_rmm_str: .string "\"test: 8002; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fc00000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fc00000_frm_rne_str: .string "\"test: 8003; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fc00000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fc00000_frm_rtz_str: .string "\"test: 8004; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fc00000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fc00000_frm_rup_str: .string "\"test: 8005; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fc00000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fffffff_frm_dyn_str: .string "\"test: 8006; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fffffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fffffff_frm_rdn_str: .string "\"test: 8007; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fffffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fffffff_frm_rmm_str: .string "\"test: 8008; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fffffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fffffff_frm_rne_str: .string "\"test: 8009; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fffffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fffffff_frm_rtz_str: .string "\"test: 8010; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fffffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fffffff_frm_rup_str: .string "\"test: 8011; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fffffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffffffff_frm_dyn_str: .string "\"test: 8012; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffffffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffffffff_frm_rdn_str: .string "\"test: 8013; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffffffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffffffff_frm_rmm_str: .string "\"test: 8014; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffffffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffffffff_frm_rne_str: .string "\"test: 8015; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffffffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffffffff_frm_rtz_str: .string "\"test: 8016; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffffffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffffffff_frm_rup_str: .string "\"test: 8017; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffffffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7f800001_frm_dyn_str: .string "\"test: 8018; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7f800001, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7f800001_frm_rdn_str: .string "\"test: 8019; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7f800001, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7f800001_frm_rmm_str: .string "\"test: 8020; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7f800001, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7f800001_frm_rne_str: .string "\"test: 8021; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7f800001, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7f800001_frm_rtz_str: .string "\"test: 8022; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7f800001, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7f800001_frm_rup_str: .string "\"test: 8023; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7f800001, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fbfffff_frm_dyn_str: .string "\"test: 8024; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fbfffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fbfffff_frm_rdn_str: .string "\"test: 8025; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fbfffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fbfffff_frm_rmm_str: .string "\"test: 8026; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fbfffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fbfffff_frm_rne_str: .string "\"test: 8027; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fbfffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fbfffff_frm_rtz_str: .string "\"test: 8028; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fbfffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fbfffff_frm_rup_str: .string "\"test: 8029; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fbfffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffbfffff_frm_dyn_str: .string "\"test: 8030; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffbfffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffbfffff_frm_rdn_str: .string "\"test: 8031; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffbfffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffbfffff_frm_rmm_str: .string "\"test: 8032; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffbfffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffbfffff_frm_rne_str: .string "\"test: 8033; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffbfffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffbfffff_frm_rtz_str: .string "\"test: 8034; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffbfffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffbfffff_frm_rup_str: .string "\"test: 8035; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffbfffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7ef8654f_frm_dyn_str: .string "\"test: 8036; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7ef8654f, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7ef8654f_frm_rdn_str: .string "\"test: 8037; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7ef8654f, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7ef8654f_frm_rmm_str: .string "\"test: 8038; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7ef8654f, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7ef8654f_frm_rne_str: .string "\"test: 8039; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7ef8654f, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7ef8654f_frm_rtz_str: .string "\"test: 8040; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7ef8654f, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7ef8654f_frm_rup_str: .string "\"test: 8041; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7ef8654f, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x813d9ab0_frm_dyn_str: .string "\"test: 8042; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x813d9ab0, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x813d9ab0_frm_rdn_str: .string "\"test: 8043; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x813d9ab0, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x813d9ab0_frm_rmm_str: .string "\"test: 8044; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x813d9ab0, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x813d9ab0_frm_rne_str: .string "\"test: 8045; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x813d9ab0, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x813d9ab0_frm_rtz_str: .string "\"test: 8046; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x813d9ab0, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x813d9ab0_frm_rup_str: .string "\"test: 8047; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x813d9ab0, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x0_frm_dyn_str: .string "\"test: 8048; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x0, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x0_frm_rdn_str: .string "\"test: 8049; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x0, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x0_frm_rmm_str: .string "\"test: 8050; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x0, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x0_frm_rne_str: .string "\"test: 8051; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x0, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x0_frm_rtz_str: .string "\"test: 8052; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x0, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x0_frm_rup_str: .string "\"test: 8053; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x0, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000000_frm_dyn_str: .string "\"test: 8054; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000000_frm_rdn_str: .string "\"test: 8055; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000000_frm_rmm_str: .string "\"test: 8056; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000000_frm_rne_str: .string "\"test: 8057; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000000_frm_rtz_str: .string "\"test: 8058; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000000_frm_rup_str: .string "\"test: 8059; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3f800000_frm_dyn_str: .string "\"test: 8060; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x3f800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3f800000_frm_rdn_str: .string "\"test: 8061; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x3f800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3f800000_frm_rmm_str: .string "\"test: 8062; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x3f800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3f800000_frm_rne_str: .string "\"test: 8063; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x3f800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3f800000_frm_rtz_str: .string "\"test: 8064; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x3f800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3f800000_frm_rup_str: .string "\"test: 8065; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x3f800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbf800000_frm_dyn_str: .string "\"test: 8066; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xbf800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbf800000_frm_rdn_str: .string "\"test: 8067; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xbf800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbf800000_frm_rmm_str: .string "\"test: 8068; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xbf800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbf800000_frm_rne_str: .string "\"test: 8069; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xbf800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbf800000_frm_rtz_str: .string "\"test: 8070; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xbf800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbf800000_frm_rup_str: .string "\"test: 8071; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xbf800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_dyn_str: .string "\"test: 8072; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x3fc00000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_rdn_str: .string "\"test: 8073; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x3fc00000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_rmm_str: .string "\"test: 8074; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x3fc00000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_rne_str: .string "\"test: 8075; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x3fc00000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_rtz_str: .string "\"test: 8076; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x3fc00000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3fc00000_frm_rup_str: .string "\"test: 8077; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x3fc00000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_dyn_str: .string "\"test: 8078; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xbfc00000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_rdn_str: .string "\"test: 8079; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xbfc00000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_rmm_str: .string "\"test: 8080; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xbfc00000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_rne_str: .string "\"test: 8081; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xbfc00000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_rtz_str: .string "\"test: 8082; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xbfc00000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbfc00000_frm_rup_str: .string "\"test: 8083; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xbfc00000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_dyn_str: .string "\"test: 8084; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x40000000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_rdn_str: .string "\"test: 8085; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x40000000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_rmm_str: .string "\"test: 8086; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x40000000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_rne_str: .string "\"test: 8087; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x40000000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_rtz_str: .string "\"test: 8088; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x40000000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40000000_frm_rup_str: .string "\"test: 8089; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x40000000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_dyn_str: .string "\"test: 8090; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xc0000000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_rdn_str: .string "\"test: 8091; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xc0000000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_rmm_str: .string "\"test: 8092; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xc0000000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_rne_str: .string "\"test: 8093; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xc0000000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_rtz_str: .string "\"test: 8094; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xc0000000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0000000_frm_rup_str: .string "\"test: 8095; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xc0000000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x800000_frm_dyn_str: .string "\"test: 8096; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x800000_frm_rdn_str: .string "\"test: 8097; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x800000_frm_rmm_str: .string "\"test: 8098; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x800000_frm_rne_str: .string "\"test: 8099; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x800000_frm_rtz_str: .string "\"test: 8100; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x800000_frm_rup_str: .string "\"test: 8101; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80800000_frm_dyn_str: .string "\"test: 8102; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80800000_frm_rdn_str: .string "\"test: 8103; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80800000_frm_rmm_str: .string "\"test: 8104; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80800000_frm_rne_str: .string "\"test: 8105; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80800000_frm_rtz_str: .string "\"test: 8106; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80800000_frm_rup_str: .string "\"test: 8107; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f7fffff_frm_dyn_str: .string "\"test: 8108; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f7fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f7fffff_frm_rdn_str: .string "\"test: 8109; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f7fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f7fffff_frm_rmm_str: .string "\"test: 8110; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f7fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f7fffff_frm_rne_str: .string "\"test: 8111; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f7fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f7fffff_frm_rtz_str: .string "\"test: 8112; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f7fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f7fffff_frm_rup_str: .string "\"test: 8113; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f7fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff7fffff_frm_dyn_str: .string "\"test: 8114; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff7fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff7fffff_frm_rdn_str: .string "\"test: 8115; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff7fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff7fffff_frm_rmm_str: .string "\"test: 8116; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff7fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff7fffff_frm_rne_str: .string "\"test: 8117; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff7fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff7fffff_frm_rtz_str: .string "\"test: 8118; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff7fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff7fffff_frm_rup_str: .string "\"test: 8119; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff7fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffff_frm_dyn_str: .string "\"test: 8120; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffff_frm_rdn_str: .string "\"test: 8121; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffff_frm_rmm_str: .string "\"test: 8122; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffff_frm_rne_str: .string "\"test: 8123; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffff_frm_rtz_str: .string "\"test: 8124; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffff_frm_rup_str: .string "\"test: 8125; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x807fffff_frm_dyn_str: .string "\"test: 8126; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x807fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x807fffff_frm_rdn_str: .string "\"test: 8127; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x807fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x807fffff_frm_rmm_str: .string "\"test: 8128; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x807fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x807fffff_frm_rne_str: .string "\"test: 8129; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x807fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x807fffff_frm_rtz_str: .string "\"test: 8130; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x807fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x807fffff_frm_rup_str: .string "\"test: 8131; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x807fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x400000_frm_dyn_str: .string "\"test: 8132; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x400000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x400000_frm_rdn_str: .string "\"test: 8133; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x400000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x400000_frm_rmm_str: .string "\"test: 8134; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x400000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x400000_frm_rne_str: .string "\"test: 8135; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x400000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x400000_frm_rtz_str: .string "\"test: 8136; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x400000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x400000_frm_rup_str: .string "\"test: 8137; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x400000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80400000_frm_dyn_str: .string "\"test: 8138; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80400000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80400000_frm_rdn_str: .string "\"test: 8139; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80400000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80400000_frm_rmm_str: .string "\"test: 8140; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80400000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80400000_frm_rne_str: .string "\"test: 8141; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80400000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80400000_frm_rtz_str: .string "\"test: 8142; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80400000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80400000_frm_rup_str: .string "\"test: 8143; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80400000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x1_frm_dyn_str: .string "\"test: 8144; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x1, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x1_frm_rdn_str: .string "\"test: 8145; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x1, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x1_frm_rmm_str: .string "\"test: 8146; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x1, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x1_frm_rne_str: .string "\"test: 8147; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x1, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x1_frm_rtz_str: .string "\"test: 8148; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x1, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x1_frm_rup_str: .string "\"test: 8149; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x1, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000001_frm_dyn_str: .string "\"test: 8150; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000001, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000001_frm_rdn_str: .string "\"test: 8151; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000001, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000001_frm_rmm_str: .string "\"test: 8152; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000001, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000001_frm_rne_str: .string "\"test: 8153; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000001, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000001_frm_rtz_str: .string "\"test: 8154; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000001, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000001_frm_rup_str: .string "\"test: 8155; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000001, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800000_frm_dyn_str: .string "\"test: 8156; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800000_frm_rdn_str: .string "\"test: 8157; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800000_frm_rmm_str: .string "\"test: 8158; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800000_frm_rne_str: .string "\"test: 8159; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800000_frm_rtz_str: .string "\"test: 8160; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800000_frm_rup_str: .string "\"test: 8161; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff800000_frm_dyn_str: .string "\"test: 8162; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff800000_frm_rdn_str: .string "\"test: 8163; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff800000_frm_rmm_str: .string "\"test: 8164; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff800000_frm_rne_str: .string "\"test: 8165; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff800000_frm_rtz_str: .string "\"test: 8166; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff800000_frm_rup_str: .string "\"test: 8167; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fc00000_frm_dyn_str: .string "\"test: 8168; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fc00000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fc00000_frm_rdn_str: .string "\"test: 8169; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fc00000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fc00000_frm_rmm_str: .string "\"test: 8170; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fc00000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fc00000_frm_rne_str: .string "\"test: 8171; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fc00000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fc00000_frm_rtz_str: .string "\"test: 8172; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fc00000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fc00000_frm_rup_str: .string "\"test: 8173; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fc00000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffffff_frm_dyn_str: .string "\"test: 8174; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffffff_frm_rdn_str: .string "\"test: 8175; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffffff_frm_rmm_str: .string "\"test: 8176; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffffff_frm_rne_str: .string "\"test: 8177; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffffff_frm_rtz_str: .string "\"test: 8178; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffffff_frm_rup_str: .string "\"test: 8179; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffffffff_frm_dyn_str: .string "\"test: 8180; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffffffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffffffff_frm_rdn_str: .string "\"test: 8181; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffffffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffffffff_frm_rmm_str: .string "\"test: 8182; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffffffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffffffff_frm_rne_str: .string "\"test: 8183; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffffffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffffffff_frm_rtz_str: .string "\"test: 8184; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffffffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffffffff_frm_rup_str: .string "\"test: 8185; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffffffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800001_frm_dyn_str: .string "\"test: 8186; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800001, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800001_frm_rdn_str: .string "\"test: 8187; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800001, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800001_frm_rmm_str: .string "\"test: 8188; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800001, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800001_frm_rne_str: .string "\"test: 8189; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800001, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800001_frm_rtz_str: .string "\"test: 8190; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800001, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800001_frm_rup_str: .string "\"test: 8191; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800001, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fbfffff_frm_dyn_str: .string "\"test: 8192; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fbfffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fbfffff_frm_rdn_str: .string "\"test: 8193; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fbfffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fbfffff_frm_rmm_str: .string "\"test: 8194; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fbfffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fbfffff_frm_rne_str: .string "\"test: 8195; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fbfffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fbfffff_frm_rtz_str: .string "\"test: 8196; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fbfffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fbfffff_frm_rup_str: .string "\"test: 8197; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fbfffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffbfffff_frm_dyn_str: .string "\"test: 8198; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffbfffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffbfffff_frm_rdn_str: .string "\"test: 8199; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffbfffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffbfffff_frm_rmm_str: .string "\"test: 8200; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffbfffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffbfffff_frm_rne_str: .string "\"test: 8201; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffbfffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffbfffff_frm_rtz_str: .string "\"test: 8202; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffbfffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffbfffff_frm_rup_str: .string "\"test: 8203; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffbfffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7ef8654f_frm_dyn_str: .string "\"test: 8204; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7ef8654f, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7ef8654f_frm_rdn_str: .string "\"test: 8205; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7ef8654f, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7ef8654f_frm_rmm_str: .string "\"test: 8206; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7ef8654f, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7ef8654f_frm_rne_str: .string "\"test: 8207; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7ef8654f, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7ef8654f_frm_rtz_str: .string "\"test: 8208; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7ef8654f, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7ef8654f_frm_rup_str: .string "\"test: 8209; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7ef8654f, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x813d9ab0_frm_dyn_str: .string "\"test: 8210; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x813d9ab0, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x813d9ab0_frm_rdn_str: .string "\"test: 8211; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x813d9ab0, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x813d9ab0_frm_rmm_str: .string "\"test: 8212; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x813d9ab0, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x813d9ab0_frm_rne_str: .string "\"test: 8213; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x813d9ab0, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x813d9ab0_frm_rtz_str: .string "\"test: 8214; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x813d9ab0, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x813d9ab0_frm_rup_str: .string "\"test: 8215; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x813d9ab0, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x0_frm_dyn_str: .string "\"test: 8216; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x0, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x0_frm_rdn_str: .string "\"test: 8217; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x0, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x0_frm_rmm_str: .string "\"test: 8218; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x0, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x0_frm_rne_str: .string "\"test: 8219; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x0, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x0_frm_rtz_str: .string "\"test: 8220; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x0, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x0_frm_rup_str: .string "\"test: 8221; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x0, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000000_frm_dyn_str: .string "\"test: 8222; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000000_frm_rdn_str: .string "\"test: 8223; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000000_frm_rmm_str: .string "\"test: 8224; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000000_frm_rne_str: .string "\"test: 8225; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000000_frm_rtz_str: .string "\"test: 8226; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000000_frm_rup_str: .string "\"test: 8227; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3f800000_frm_dyn_str: .string "\"test: 8228; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x3f800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3f800000_frm_rdn_str: .string "\"test: 8229; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x3f800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3f800000_frm_rmm_str: .string "\"test: 8230; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x3f800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3f800000_frm_rne_str: .string "\"test: 8231; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x3f800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3f800000_frm_rtz_str: .string "\"test: 8232; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x3f800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3f800000_frm_rup_str: .string "\"test: 8233; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x3f800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbf800000_frm_dyn_str: .string "\"test: 8234; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xbf800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbf800000_frm_rdn_str: .string "\"test: 8235; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xbf800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbf800000_frm_rmm_str: .string "\"test: 8236; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xbf800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbf800000_frm_rne_str: .string "\"test: 8237; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xbf800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbf800000_frm_rtz_str: .string "\"test: 8238; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xbf800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbf800000_frm_rup_str: .string "\"test: 8239; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xbf800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_dyn_str: .string "\"test: 8240; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x3fc00000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_rdn_str: .string "\"test: 8241; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x3fc00000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_rmm_str: .string "\"test: 8242; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x3fc00000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_rne_str: .string "\"test: 8243; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x3fc00000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_rtz_str: .string "\"test: 8244; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x3fc00000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3fc00000_frm_rup_str: .string "\"test: 8245; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x3fc00000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_dyn_str: .string "\"test: 8246; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xbfc00000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_rdn_str: .string "\"test: 8247; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xbfc00000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_rmm_str: .string "\"test: 8248; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xbfc00000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_rne_str: .string "\"test: 8249; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xbfc00000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_rtz_str: .string "\"test: 8250; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xbfc00000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbfc00000_frm_rup_str: .string "\"test: 8251; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xbfc00000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_dyn_str: .string "\"test: 8252; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x40000000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_rdn_str: .string "\"test: 8253; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x40000000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_rmm_str: .string "\"test: 8254; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x40000000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_rne_str: .string "\"test: 8255; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x40000000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_rtz_str: .string "\"test: 8256; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x40000000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40000000_frm_rup_str: .string "\"test: 8257; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x40000000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_dyn_str: .string "\"test: 8258; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xc0000000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_rdn_str: .string "\"test: 8259; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xc0000000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_rmm_str: .string "\"test: 8260; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xc0000000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_rne_str: .string "\"test: 8261; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xc0000000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_rtz_str: .string "\"test: 8262; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xc0000000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0000000_frm_rup_str: .string "\"test: 8263; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xc0000000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x800000_frm_dyn_str: .string "\"test: 8264; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x800000_frm_rdn_str: .string "\"test: 8265; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x800000_frm_rmm_str: .string "\"test: 8266; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x800000_frm_rne_str: .string "\"test: 8267; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x800000_frm_rtz_str: .string "\"test: 8268; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x800000_frm_rup_str: .string "\"test: 8269; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80800000_frm_dyn_str: .string "\"test: 8270; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80800000_frm_rdn_str: .string "\"test: 8271; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80800000_frm_rmm_str: .string "\"test: 8272; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80800000_frm_rne_str: .string "\"test: 8273; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80800000_frm_rtz_str: .string "\"test: 8274; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80800000_frm_rup_str: .string "\"test: 8275; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f7fffff_frm_dyn_str: .string "\"test: 8276; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f7fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f7fffff_frm_rdn_str: .string "\"test: 8277; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f7fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f7fffff_frm_rmm_str: .string "\"test: 8278; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f7fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f7fffff_frm_rne_str: .string "\"test: 8279; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f7fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f7fffff_frm_rtz_str: .string "\"test: 8280; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f7fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f7fffff_frm_rup_str: .string "\"test: 8281; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f7fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff7fffff_frm_dyn_str: .string "\"test: 8282; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff7fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff7fffff_frm_rdn_str: .string "\"test: 8283; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff7fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff7fffff_frm_rmm_str: .string "\"test: 8284; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff7fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff7fffff_frm_rne_str: .string "\"test: 8285; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff7fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff7fffff_frm_rtz_str: .string "\"test: 8286; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff7fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff7fffff_frm_rup_str: .string "\"test: 8287; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff7fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffff_frm_dyn_str: .string "\"test: 8288; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffff_frm_rdn_str: .string "\"test: 8289; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffff_frm_rmm_str: .string "\"test: 8290; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffff_frm_rne_str: .string "\"test: 8291; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffff_frm_rtz_str: .string "\"test: 8292; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffff_frm_rup_str: .string "\"test: 8293; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x807fffff_frm_dyn_str: .string "\"test: 8294; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x807fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x807fffff_frm_rdn_str: .string "\"test: 8295; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x807fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x807fffff_frm_rmm_str: .string "\"test: 8296; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x807fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x807fffff_frm_rne_str: .string "\"test: 8297; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x807fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x807fffff_frm_rtz_str: .string "\"test: 8298; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x807fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x807fffff_frm_rup_str: .string "\"test: 8299; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x807fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x400000_frm_dyn_str: .string "\"test: 8300; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x400000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x400000_frm_rdn_str: .string "\"test: 8301; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x400000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x400000_frm_rmm_str: .string "\"test: 8302; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x400000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x400000_frm_rne_str: .string "\"test: 8303; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x400000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x400000_frm_rtz_str: .string "\"test: 8304; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x400000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x400000_frm_rup_str: .string "\"test: 8305; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x400000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80400000_frm_dyn_str: .string "\"test: 8306; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80400000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80400000_frm_rdn_str: .string "\"test: 8307; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80400000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80400000_frm_rmm_str: .string "\"test: 8308; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80400000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80400000_frm_rne_str: .string "\"test: 8309; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80400000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80400000_frm_rtz_str: .string "\"test: 8310; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80400000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80400000_frm_rup_str: .string "\"test: 8311; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80400000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x1_frm_dyn_str: .string "\"test: 8312; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x1, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x1_frm_rdn_str: .string "\"test: 8313; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x1, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x1_frm_rmm_str: .string "\"test: 8314; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x1, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x1_frm_rne_str: .string "\"test: 8315; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x1, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x1_frm_rtz_str: .string "\"test: 8316; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x1, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x1_frm_rup_str: .string "\"test: 8317; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x1, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000001_frm_dyn_str: .string "\"test: 8318; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000001, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000001_frm_rdn_str: .string "\"test: 8319; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000001, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000001_frm_rmm_str: .string "\"test: 8320; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000001, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000001_frm_rne_str: .string "\"test: 8321; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000001, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000001_frm_rtz_str: .string "\"test: 8322; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000001, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000001_frm_rup_str: .string "\"test: 8323; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000001, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800000_frm_dyn_str: .string "\"test: 8324; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800000_frm_rdn_str: .string "\"test: 8325; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800000_frm_rmm_str: .string "\"test: 8326; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800000_frm_rne_str: .string "\"test: 8327; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800000_frm_rtz_str: .string "\"test: 8328; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800000_frm_rup_str: .string "\"test: 8329; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff800000_frm_dyn_str: .string "\"test: 8330; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff800000_frm_rdn_str: .string "\"test: 8331; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff800000_frm_rmm_str: .string "\"test: 8332; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff800000_frm_rne_str: .string "\"test: 8333; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff800000_frm_rtz_str: .string "\"test: 8334; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff800000_frm_rup_str: .string "\"test: 8335; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fc00000_frm_dyn_str: .string "\"test: 8336; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fc00000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fc00000_frm_rdn_str: .string "\"test: 8337; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fc00000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fc00000_frm_rmm_str: .string "\"test: 8338; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fc00000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fc00000_frm_rne_str: .string "\"test: 8339; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fc00000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fc00000_frm_rtz_str: .string "\"test: 8340; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fc00000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fc00000_frm_rup_str: .string "\"test: 8341; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fc00000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffffff_frm_dyn_str: .string "\"test: 8342; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffffff_frm_rdn_str: .string "\"test: 8343; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffffff_frm_rmm_str: .string "\"test: 8344; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffffff_frm_rne_str: .string "\"test: 8345; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffffff_frm_rtz_str: .string "\"test: 8346; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffffff_frm_rup_str: .string "\"test: 8347; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffffffff_frm_dyn_str: .string "\"test: 8348; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffffffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffffffff_frm_rdn_str: .string "\"test: 8349; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffffffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffffffff_frm_rmm_str: .string "\"test: 8350; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffffffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffffffff_frm_rne_str: .string "\"test: 8351; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffffffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffffffff_frm_rtz_str: .string "\"test: 8352; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffffffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffffffff_frm_rup_str: .string "\"test: 8353; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffffffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800001_frm_dyn_str: .string "\"test: 8354; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800001, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800001_frm_rdn_str: .string "\"test: 8355; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800001, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800001_frm_rmm_str: .string "\"test: 8356; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800001, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800001_frm_rne_str: .string "\"test: 8357; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800001, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800001_frm_rtz_str: .string "\"test: 8358; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800001, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800001_frm_rup_str: .string "\"test: 8359; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800001, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fbfffff_frm_dyn_str: .string "\"test: 8360; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fbfffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fbfffff_frm_rdn_str: .string "\"test: 8361; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fbfffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fbfffff_frm_rmm_str: .string "\"test: 8362; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fbfffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fbfffff_frm_rne_str: .string "\"test: 8363; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fbfffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fbfffff_frm_rtz_str: .string "\"test: 8364; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fbfffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fbfffff_frm_rup_str: .string "\"test: 8365; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fbfffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffbfffff_frm_dyn_str: .string "\"test: 8366; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffbfffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffbfffff_frm_rdn_str: .string "\"test: 8367; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffbfffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffbfffff_frm_rmm_str: .string "\"test: 8368; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffbfffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffbfffff_frm_rne_str: .string "\"test: 8369; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffbfffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffbfffff_frm_rtz_str: .string "\"test: 8370; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffbfffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffbfffff_frm_rup_str: .string "\"test: 8371; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffbfffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7ef8654f_frm_dyn_str: .string "\"test: 8372; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7ef8654f, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7ef8654f_frm_rdn_str: .string "\"test: 8373; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7ef8654f, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7ef8654f_frm_rmm_str: .string "\"test: 8374; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7ef8654f, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7ef8654f_frm_rne_str: .string "\"test: 8375; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7ef8654f, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7ef8654f_frm_rtz_str: .string "\"test: 8376; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7ef8654f, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7ef8654f_frm_rup_str: .string "\"test: 8377; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7ef8654f, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x813d9ab0_frm_dyn_str: .string "\"test: 8378; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x813d9ab0, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x813d9ab0_frm_rdn_str: .string "\"test: 8379; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x813d9ab0, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x813d9ab0_frm_rmm_str: .string "\"test: 8380; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x813d9ab0, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x813d9ab0_frm_rne_str: .string "\"test: 8381; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x813d9ab0, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x813d9ab0_frm_rtz_str: .string "\"test: 8382; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x813d9ab0, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x813d9ab0_frm_rup_str: .string "\"test: 8383; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x813d9ab0, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x0_frm_dyn_str: .string "\"test: 8384; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x0, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x0_frm_rdn_str: .string "\"test: 8385; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x0, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x0_frm_rmm_str: .string "\"test: 8386; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x0, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x0_frm_rne_str: .string "\"test: 8387; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x0, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x0_frm_rtz_str: .string "\"test: 8388; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x0, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x0_frm_rup_str: .string "\"test: 8389; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x0, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000000_frm_dyn_str: .string "\"test: 8390; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000000_frm_rdn_str: .string "\"test: 8391; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000000_frm_rmm_str: .string "\"test: 8392; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000000_frm_rne_str: .string "\"test: 8393; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000000_frm_rtz_str: .string "\"test: 8394; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000000_frm_rup_str: .string "\"test: 8395; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3f800000_frm_dyn_str: .string "\"test: 8396; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x3f800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3f800000_frm_rdn_str: .string "\"test: 8397; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x3f800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3f800000_frm_rmm_str: .string "\"test: 8398; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x3f800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3f800000_frm_rne_str: .string "\"test: 8399; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x3f800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3f800000_frm_rtz_str: .string "\"test: 8400; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x3f800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3f800000_frm_rup_str: .string "\"test: 8401; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x3f800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbf800000_frm_dyn_str: .string "\"test: 8402; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xbf800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbf800000_frm_rdn_str: .string "\"test: 8403; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xbf800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbf800000_frm_rmm_str: .string "\"test: 8404; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xbf800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbf800000_frm_rne_str: .string "\"test: 8405; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xbf800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbf800000_frm_rtz_str: .string "\"test: 8406; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xbf800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbf800000_frm_rup_str: .string "\"test: 8407; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xbf800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_dyn_str: .string "\"test: 8408; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x3fc00000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_rdn_str: .string "\"test: 8409; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x3fc00000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_rmm_str: .string "\"test: 8410; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x3fc00000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_rne_str: .string "\"test: 8411; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x3fc00000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_rtz_str: .string "\"test: 8412; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x3fc00000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3fc00000_frm_rup_str: .string "\"test: 8413; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x3fc00000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_dyn_str: .string "\"test: 8414; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xbfc00000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_rdn_str: .string "\"test: 8415; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xbfc00000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_rmm_str: .string "\"test: 8416; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xbfc00000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_rne_str: .string "\"test: 8417; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xbfc00000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_rtz_str: .string "\"test: 8418; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xbfc00000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbfc00000_frm_rup_str: .string "\"test: 8419; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xbfc00000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_dyn_str: .string "\"test: 8420; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x40000000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_rdn_str: .string "\"test: 8421; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x40000000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_rmm_str: .string "\"test: 8422; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x40000000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_rne_str: .string "\"test: 8423; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x40000000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_rtz_str: .string "\"test: 8424; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x40000000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40000000_frm_rup_str: .string "\"test: 8425; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x40000000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_dyn_str: .string "\"test: 8426; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xc0000000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_rdn_str: .string "\"test: 8427; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xc0000000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_rmm_str: .string "\"test: 8428; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xc0000000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_rne_str: .string "\"test: 8429; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xc0000000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_rtz_str: .string "\"test: 8430; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xc0000000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0000000_frm_rup_str: .string "\"test: 8431; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xc0000000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x800000_frm_dyn_str: .string "\"test: 8432; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x800000_frm_rdn_str: .string "\"test: 8433; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x800000_frm_rmm_str: .string "\"test: 8434; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x800000_frm_rne_str: .string "\"test: 8435; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x800000_frm_rtz_str: .string "\"test: 8436; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x800000_frm_rup_str: .string "\"test: 8437; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80800000_frm_dyn_str: .string "\"test: 8438; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80800000_frm_rdn_str: .string "\"test: 8439; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80800000_frm_rmm_str: .string "\"test: 8440; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80800000_frm_rne_str: .string "\"test: 8441; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80800000_frm_rtz_str: .string "\"test: 8442; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80800000_frm_rup_str: .string "\"test: 8443; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f7fffff_frm_dyn_str: .string "\"test: 8444; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f7fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f7fffff_frm_rdn_str: .string "\"test: 8445; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f7fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f7fffff_frm_rmm_str: .string "\"test: 8446; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f7fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f7fffff_frm_rne_str: .string "\"test: 8447; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f7fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f7fffff_frm_rtz_str: .string "\"test: 8448; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f7fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f7fffff_frm_rup_str: .string "\"test: 8449; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f7fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff7fffff_frm_dyn_str: .string "\"test: 8450; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff7fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff7fffff_frm_rdn_str: .string "\"test: 8451; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff7fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff7fffff_frm_rmm_str: .string "\"test: 8452; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff7fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff7fffff_frm_rne_str: .string "\"test: 8453; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff7fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff7fffff_frm_rtz_str: .string "\"test: 8454; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff7fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff7fffff_frm_rup_str: .string "\"test: 8455; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff7fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffff_frm_dyn_str: .string "\"test: 8456; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffff_frm_rdn_str: .string "\"test: 8457; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffff_frm_rmm_str: .string "\"test: 8458; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffff_frm_rne_str: .string "\"test: 8459; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffff_frm_rtz_str: .string "\"test: 8460; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffff_frm_rup_str: .string "\"test: 8461; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x807fffff_frm_dyn_str: .string "\"test: 8462; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x807fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x807fffff_frm_rdn_str: .string "\"test: 8463; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x807fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x807fffff_frm_rmm_str: .string "\"test: 8464; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x807fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x807fffff_frm_rne_str: .string "\"test: 8465; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x807fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x807fffff_frm_rtz_str: .string "\"test: 8466; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x807fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x807fffff_frm_rup_str: .string "\"test: 8467; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x807fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x400000_frm_dyn_str: .string "\"test: 8468; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x400000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x400000_frm_rdn_str: .string "\"test: 8469; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x400000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x400000_frm_rmm_str: .string "\"test: 8470; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x400000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x400000_frm_rne_str: .string "\"test: 8471; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x400000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x400000_frm_rtz_str: .string "\"test: 8472; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x400000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x400000_frm_rup_str: .string "\"test: 8473; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x400000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80400000_frm_dyn_str: .string "\"test: 8474; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80400000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80400000_frm_rdn_str: .string "\"test: 8475; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80400000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80400000_frm_rmm_str: .string "\"test: 8476; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80400000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80400000_frm_rne_str: .string "\"test: 8477; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80400000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80400000_frm_rtz_str: .string "\"test: 8478; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80400000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80400000_frm_rup_str: .string "\"test: 8479; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80400000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x1_frm_dyn_str: .string "\"test: 8480; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x1, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x1_frm_rdn_str: .string "\"test: 8481; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x1, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x1_frm_rmm_str: .string "\"test: 8482; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x1, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x1_frm_rne_str: .string "\"test: 8483; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x1, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x1_frm_rtz_str: .string "\"test: 8484; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x1, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x1_frm_rup_str: .string "\"test: 8485; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x1, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000001_frm_dyn_str: .string "\"test: 8486; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000001, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000001_frm_rdn_str: .string "\"test: 8487; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000001, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000001_frm_rmm_str: .string "\"test: 8488; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000001, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000001_frm_rne_str: .string "\"test: 8489; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000001, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000001_frm_rtz_str: .string "\"test: 8490; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000001, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000001_frm_rup_str: .string "\"test: 8491; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000001, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800000_frm_dyn_str: .string "\"test: 8492; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800000_frm_rdn_str: .string "\"test: 8493; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800000_frm_rmm_str: .string "\"test: 8494; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800000_frm_rne_str: .string "\"test: 8495; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800000_frm_rtz_str: .string "\"test: 8496; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800000_frm_rup_str: .string "\"test: 8497; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff800000_frm_dyn_str: .string "\"test: 8498; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff800000_frm_rdn_str: .string "\"test: 8499; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff800000_frm_rmm_str: .string "\"test: 8500; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff800000_frm_rne_str: .string "\"test: 8501; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff800000_frm_rtz_str: .string "\"test: 8502; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff800000_frm_rup_str: .string "\"test: 8503; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fc00000_frm_dyn_str: .string "\"test: 8504; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fc00000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fc00000_frm_rdn_str: .string "\"test: 8505; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fc00000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fc00000_frm_rmm_str: .string "\"test: 8506; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fc00000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fc00000_frm_rne_str: .string "\"test: 8507; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fc00000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fc00000_frm_rtz_str: .string "\"test: 8508; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fc00000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fc00000_frm_rup_str: .string "\"test: 8509; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fc00000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffffff_frm_dyn_str: .string "\"test: 8510; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffffff_frm_rdn_str: .string "\"test: 8511; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffffff_frm_rmm_str: .string "\"test: 8512; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffffff_frm_rne_str: .string "\"test: 8513; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffffff_frm_rtz_str: .string "\"test: 8514; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffffff_frm_rup_str: .string "\"test: 8515; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffffffff_frm_dyn_str: .string "\"test: 8516; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffffffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffffffff_frm_rdn_str: .string "\"test: 8517; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffffffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffffffff_frm_rmm_str: .string "\"test: 8518; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffffffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffffffff_frm_rne_str: .string "\"test: 8519; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffffffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffffffff_frm_rtz_str: .string "\"test: 8520; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffffffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffffffff_frm_rup_str: .string "\"test: 8521; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffffffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800001_frm_dyn_str: .string "\"test: 8522; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800001, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800001_frm_rdn_str: .string "\"test: 8523; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800001, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800001_frm_rmm_str: .string "\"test: 8524; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800001, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800001_frm_rne_str: .string "\"test: 8525; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800001, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800001_frm_rtz_str: .string "\"test: 8526; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800001, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800001_frm_rup_str: .string "\"test: 8527; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800001, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fbfffff_frm_dyn_str: .string "\"test: 8528; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fbfffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fbfffff_frm_rdn_str: .string "\"test: 8529; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fbfffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fbfffff_frm_rmm_str: .string "\"test: 8530; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fbfffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fbfffff_frm_rne_str: .string "\"test: 8531; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fbfffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fbfffff_frm_rtz_str: .string "\"test: 8532; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fbfffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fbfffff_frm_rup_str: .string "\"test: 8533; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fbfffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffbfffff_frm_dyn_str: .string "\"test: 8534; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffbfffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffbfffff_frm_rdn_str: .string "\"test: 8535; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffbfffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffbfffff_frm_rmm_str: .string "\"test: 8536; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffbfffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffbfffff_frm_rne_str: .string "\"test: 8537; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffbfffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffbfffff_frm_rtz_str: .string "\"test: 8538; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffbfffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffbfffff_frm_rup_str: .string "\"test: 8539; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffbfffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7ef8654f_frm_dyn_str: .string "\"test: 8540; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7ef8654f, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7ef8654f_frm_rdn_str: .string "\"test: 8541; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7ef8654f, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7ef8654f_frm_rmm_str: .string "\"test: 8542; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7ef8654f, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7ef8654f_frm_rne_str: .string "\"test: 8543; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7ef8654f, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7ef8654f_frm_rtz_str: .string "\"test: 8544; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7ef8654f, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7ef8654f_frm_rup_str: .string "\"test: 8545; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7ef8654f, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x813d9ab0_frm_dyn_str: .string "\"test: 8546; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x813d9ab0, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x813d9ab0_frm_rdn_str: .string "\"test: 8547; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x813d9ab0, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x813d9ab0_frm_rmm_str: .string "\"test: 8548; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x813d9ab0, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x813d9ab0_frm_rne_str: .string "\"test: 8549; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x813d9ab0, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x813d9ab0_frm_rtz_str: .string "\"test: 8550; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x813d9ab0, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x813d9ab0_frm_rup_str: .string "\"test: 8551; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x813d9ab0, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x0_frm_dyn_str: .string "\"test: 8552; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x0, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x0_frm_rdn_str: .string "\"test: 8553; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x0, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x0_frm_rmm_str: .string "\"test: 8554; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x0, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x0_frm_rne_str: .string "\"test: 8555; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x0, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x0_frm_rtz_str: .string "\"test: 8556; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x0, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x0_frm_rup_str: .string "\"test: 8557; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x0, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000000_frm_dyn_str: .string "\"test: 8558; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000000_frm_rdn_str: .string "\"test: 8559; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000000_frm_rmm_str: .string "\"test: 8560; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000000_frm_rne_str: .string "\"test: 8561; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000000_frm_rtz_str: .string "\"test: 8562; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000000_frm_rup_str: .string "\"test: 8563; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3f800000_frm_dyn_str: .string "\"test: 8564; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x3f800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3f800000_frm_rdn_str: .string "\"test: 8565; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x3f800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3f800000_frm_rmm_str: .string "\"test: 8566; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x3f800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3f800000_frm_rne_str: .string "\"test: 8567; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x3f800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3f800000_frm_rtz_str: .string "\"test: 8568; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x3f800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3f800000_frm_rup_str: .string "\"test: 8569; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x3f800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbf800000_frm_dyn_str: .string "\"test: 8570; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xbf800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbf800000_frm_rdn_str: .string "\"test: 8571; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xbf800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbf800000_frm_rmm_str: .string "\"test: 8572; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xbf800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbf800000_frm_rne_str: .string "\"test: 8573; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xbf800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbf800000_frm_rtz_str: .string "\"test: 8574; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xbf800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbf800000_frm_rup_str: .string "\"test: 8575; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xbf800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_dyn_str: .string "\"test: 8576; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x3fc00000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_rdn_str: .string "\"test: 8577; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x3fc00000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_rmm_str: .string "\"test: 8578; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x3fc00000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_rne_str: .string "\"test: 8579; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x3fc00000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_rtz_str: .string "\"test: 8580; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x3fc00000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3fc00000_frm_rup_str: .string "\"test: 8581; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x3fc00000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_dyn_str: .string "\"test: 8582; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xbfc00000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_rdn_str: .string "\"test: 8583; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xbfc00000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_rmm_str: .string "\"test: 8584; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xbfc00000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_rne_str: .string "\"test: 8585; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xbfc00000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_rtz_str: .string "\"test: 8586; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xbfc00000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbfc00000_frm_rup_str: .string "\"test: 8587; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xbfc00000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_dyn_str: .string "\"test: 8588; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x40000000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_rdn_str: .string "\"test: 8589; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x40000000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_rmm_str: .string "\"test: 8590; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x40000000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_rne_str: .string "\"test: 8591; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x40000000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_rtz_str: .string "\"test: 8592; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x40000000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40000000_frm_rup_str: .string "\"test: 8593; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x40000000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_dyn_str: .string "\"test: 8594; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xc0000000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_rdn_str: .string "\"test: 8595; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xc0000000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_rmm_str: .string "\"test: 8596; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xc0000000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_rne_str: .string "\"test: 8597; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xc0000000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_rtz_str: .string "\"test: 8598; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xc0000000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0000000_frm_rup_str: .string "\"test: 8599; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xc0000000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x800000_frm_dyn_str: .string "\"test: 8600; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x800000_frm_rdn_str: .string "\"test: 8601; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x800000_frm_rmm_str: .string "\"test: 8602; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x800000_frm_rne_str: .string "\"test: 8603; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x800000_frm_rtz_str: .string "\"test: 8604; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x800000_frm_rup_str: .string "\"test: 8605; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80800000_frm_dyn_str: .string "\"test: 8606; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80800000_frm_rdn_str: .string "\"test: 8607; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80800000_frm_rmm_str: .string "\"test: 8608; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80800000_frm_rne_str: .string "\"test: 8609; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80800000_frm_rtz_str: .string "\"test: 8610; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80800000_frm_rup_str: .string "\"test: 8611; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f7fffff_frm_dyn_str: .string "\"test: 8612; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f7fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f7fffff_frm_rdn_str: .string "\"test: 8613; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f7fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f7fffff_frm_rmm_str: .string "\"test: 8614; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f7fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f7fffff_frm_rne_str: .string "\"test: 8615; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f7fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f7fffff_frm_rtz_str: .string "\"test: 8616; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f7fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f7fffff_frm_rup_str: .string "\"test: 8617; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f7fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff7fffff_frm_dyn_str: .string "\"test: 8618; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff7fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff7fffff_frm_rdn_str: .string "\"test: 8619; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff7fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff7fffff_frm_rmm_str: .string "\"test: 8620; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff7fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff7fffff_frm_rne_str: .string "\"test: 8621; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff7fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff7fffff_frm_rtz_str: .string "\"test: 8622; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff7fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff7fffff_frm_rup_str: .string "\"test: 8623; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff7fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffff_frm_dyn_str: .string "\"test: 8624; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffff_frm_rdn_str: .string "\"test: 8625; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffff_frm_rmm_str: .string "\"test: 8626; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffff_frm_rne_str: .string "\"test: 8627; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffff_frm_rtz_str: .string "\"test: 8628; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffff_frm_rup_str: .string "\"test: 8629; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x807fffff_frm_dyn_str: .string "\"test: 8630; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x807fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x807fffff_frm_rdn_str: .string "\"test: 8631; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x807fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x807fffff_frm_rmm_str: .string "\"test: 8632; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x807fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x807fffff_frm_rne_str: .string "\"test: 8633; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x807fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x807fffff_frm_rtz_str: .string "\"test: 8634; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x807fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x807fffff_frm_rup_str: .string "\"test: 8635; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x807fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x400000_frm_dyn_str: .string "\"test: 8636; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x400000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x400000_frm_rdn_str: .string "\"test: 8637; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x400000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x400000_frm_rmm_str: .string "\"test: 8638; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x400000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x400000_frm_rne_str: .string "\"test: 8639; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x400000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x400000_frm_rtz_str: .string "\"test: 8640; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x400000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x400000_frm_rup_str: .string "\"test: 8641; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x400000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80400000_frm_dyn_str: .string "\"test: 8642; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80400000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80400000_frm_rdn_str: .string "\"test: 8643; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80400000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80400000_frm_rmm_str: .string "\"test: 8644; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80400000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80400000_frm_rne_str: .string "\"test: 8645; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80400000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80400000_frm_rtz_str: .string "\"test: 8646; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80400000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80400000_frm_rup_str: .string "\"test: 8647; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80400000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x1_frm_dyn_str: .string "\"test: 8648; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x1, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x1_frm_rdn_str: .string "\"test: 8649; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x1, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x1_frm_rmm_str: .string "\"test: 8650; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x1, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x1_frm_rne_str: .string "\"test: 8651; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x1, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x1_frm_rtz_str: .string "\"test: 8652; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x1, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x1_frm_rup_str: .string "\"test: 8653; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x1, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000001_frm_dyn_str: .string "\"test: 8654; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000001, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000001_frm_rdn_str: .string "\"test: 8655; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000001, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000001_frm_rmm_str: .string "\"test: 8656; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000001, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000001_frm_rne_str: .string "\"test: 8657; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000001, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000001_frm_rtz_str: .string "\"test: 8658; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000001, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000001_frm_rup_str: .string "\"test: 8659; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000001, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800000_frm_dyn_str: .string "\"test: 8660; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800000_frm_rdn_str: .string "\"test: 8661; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800000_frm_rmm_str: .string "\"test: 8662; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800000_frm_rne_str: .string "\"test: 8663; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800000_frm_rtz_str: .string "\"test: 8664; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800000_frm_rup_str: .string "\"test: 8665; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff800000_frm_dyn_str: .string "\"test: 8666; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff800000_frm_rdn_str: .string "\"test: 8667; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff800000_frm_rmm_str: .string "\"test: 8668; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff800000_frm_rne_str: .string "\"test: 8669; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff800000_frm_rtz_str: .string "\"test: 8670; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff800000_frm_rup_str: .string "\"test: 8671; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fc00000_frm_dyn_str: .string "\"test: 8672; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fc00000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fc00000_frm_rdn_str: .string "\"test: 8673; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fc00000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fc00000_frm_rmm_str: .string "\"test: 8674; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fc00000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fc00000_frm_rne_str: .string "\"test: 8675; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fc00000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fc00000_frm_rtz_str: .string "\"test: 8676; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fc00000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fc00000_frm_rup_str: .string "\"test: 8677; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fc00000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffffff_frm_dyn_str: .string "\"test: 8678; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffffff_frm_rdn_str: .string "\"test: 8679; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffffff_frm_rmm_str: .string "\"test: 8680; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffffff_frm_rne_str: .string "\"test: 8681; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffffff_frm_rtz_str: .string "\"test: 8682; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffffff_frm_rup_str: .string "\"test: 8683; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffffffff_frm_dyn_str: .string "\"test: 8684; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffffffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffffffff_frm_rdn_str: .string "\"test: 8685; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffffffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffffffff_frm_rmm_str: .string "\"test: 8686; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffffffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffffffff_frm_rne_str: .string "\"test: 8687; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffffffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffffffff_frm_rtz_str: .string "\"test: 8688; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffffffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffffffff_frm_rup_str: .string "\"test: 8689; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffffffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800001_frm_dyn_str: .string "\"test: 8690; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800001, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800001_frm_rdn_str: .string "\"test: 8691; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800001, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800001_frm_rmm_str: .string "\"test: 8692; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800001, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800001_frm_rne_str: .string "\"test: 8693; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800001, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800001_frm_rtz_str: .string "\"test: 8694; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800001, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800001_frm_rup_str: .string "\"test: 8695; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800001, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fbfffff_frm_dyn_str: .string "\"test: 8696; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fbfffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fbfffff_frm_rdn_str: .string "\"test: 8697; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fbfffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fbfffff_frm_rmm_str: .string "\"test: 8698; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fbfffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fbfffff_frm_rne_str: .string "\"test: 8699; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fbfffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fbfffff_frm_rtz_str: .string "\"test: 8700; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fbfffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fbfffff_frm_rup_str: .string "\"test: 8701; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fbfffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffbfffff_frm_dyn_str: .string "\"test: 8702; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffbfffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffbfffff_frm_rdn_str: .string "\"test: 8703; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffbfffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffbfffff_frm_rmm_str: .string "\"test: 8704; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffbfffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffbfffff_frm_rne_str: .string "\"test: 8705; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffbfffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffbfffff_frm_rtz_str: .string "\"test: 8706; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffbfffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffbfffff_frm_rup_str: .string "\"test: 8707; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffbfffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7ef8654f_frm_dyn_str: .string "\"test: 8708; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7ef8654f, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7ef8654f_frm_rdn_str: .string "\"test: 8709; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7ef8654f, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7ef8654f_frm_rmm_str: .string "\"test: 8710; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7ef8654f, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7ef8654f_frm_rne_str: .string "\"test: 8711; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7ef8654f, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7ef8654f_frm_rtz_str: .string "\"test: 8712; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7ef8654f, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7ef8654f_frm_rup_str: .string "\"test: 8713; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7ef8654f, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x813d9ab0_frm_dyn_str: .string "\"test: 8714; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x813d9ab0, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x813d9ab0_frm_rdn_str: .string "\"test: 8715; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x813d9ab0, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x813d9ab0_frm_rmm_str: .string "\"test: 8716; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x813d9ab0, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x813d9ab0_frm_rne_str: .string "\"test: 8717; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x813d9ab0, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x813d9ab0_frm_rtz_str: .string "\"test: 8718; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x813d9ab0, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x813d9ab0_frm_rup_str: .string "\"test: 8719; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x813d9ab0, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x0_frm_dyn_str: .string "\"test: 8720; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x0, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x0_frm_rdn_str: .string "\"test: 8721; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x0, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x0_frm_rmm_str: .string "\"test: 8722; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x0, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x0_frm_rne_str: .string "\"test: 8723; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x0, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x0_frm_rtz_str: .string "\"test: 8724; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x0, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x0_frm_rup_str: .string "\"test: 8725; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x0, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000000_frm_dyn_str: .string "\"test: 8726; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000000_frm_rdn_str: .string "\"test: 8727; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000000_frm_rmm_str: .string "\"test: 8728; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000000_frm_rne_str: .string "\"test: 8729; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000000_frm_rtz_str: .string "\"test: 8730; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000000_frm_rup_str: .string "\"test: 8731; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3f800000_frm_dyn_str: .string "\"test: 8732; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x3f800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3f800000_frm_rdn_str: .string "\"test: 8733; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x3f800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3f800000_frm_rmm_str: .string "\"test: 8734; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x3f800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3f800000_frm_rne_str: .string "\"test: 8735; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x3f800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3f800000_frm_rtz_str: .string "\"test: 8736; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x3f800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3f800000_frm_rup_str: .string "\"test: 8737; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x3f800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbf800000_frm_dyn_str: .string "\"test: 8738; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xbf800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbf800000_frm_rdn_str: .string "\"test: 8739; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xbf800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbf800000_frm_rmm_str: .string "\"test: 8740; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xbf800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbf800000_frm_rne_str: .string "\"test: 8741; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xbf800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbf800000_frm_rtz_str: .string "\"test: 8742; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xbf800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbf800000_frm_rup_str: .string "\"test: 8743; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xbf800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_dyn_str: .string "\"test: 8744; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x3fc00000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_rdn_str: .string "\"test: 8745; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x3fc00000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_rmm_str: .string "\"test: 8746; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x3fc00000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_rne_str: .string "\"test: 8747; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x3fc00000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_rtz_str: .string "\"test: 8748; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x3fc00000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3fc00000_frm_rup_str: .string "\"test: 8749; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x3fc00000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_dyn_str: .string "\"test: 8750; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xbfc00000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_rdn_str: .string "\"test: 8751; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xbfc00000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_rmm_str: .string "\"test: 8752; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xbfc00000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_rne_str: .string "\"test: 8753; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xbfc00000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_rtz_str: .string "\"test: 8754; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xbfc00000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbfc00000_frm_rup_str: .string "\"test: 8755; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xbfc00000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_dyn_str: .string "\"test: 8756; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x40000000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_rdn_str: .string "\"test: 8757; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x40000000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_rmm_str: .string "\"test: 8758; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x40000000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_rne_str: .string "\"test: 8759; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x40000000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_rtz_str: .string "\"test: 8760; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x40000000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40000000_frm_rup_str: .string "\"test: 8761; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x40000000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_dyn_str: .string "\"test: 8762; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xc0000000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_rdn_str: .string "\"test: 8763; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xc0000000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_rmm_str: .string "\"test: 8764; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xc0000000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_rne_str: .string "\"test: 8765; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xc0000000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_rtz_str: .string "\"test: 8766; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xc0000000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0000000_frm_rup_str: .string "\"test: 8767; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xc0000000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x800000_frm_dyn_str: .string "\"test: 8768; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x800000_frm_rdn_str: .string "\"test: 8769; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x800000_frm_rmm_str: .string "\"test: 8770; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x800000_frm_rne_str: .string "\"test: 8771; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x800000_frm_rtz_str: .string "\"test: 8772; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x800000_frm_rup_str: .string "\"test: 8773; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80800000_frm_dyn_str: .string "\"test: 8774; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80800000_frm_rdn_str: .string "\"test: 8775; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80800000_frm_rmm_str: .string "\"test: 8776; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80800000_frm_rne_str: .string "\"test: 8777; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80800000_frm_rtz_str: .string "\"test: 8778; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80800000_frm_rup_str: .string "\"test: 8779; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f7fffff_frm_dyn_str: .string "\"test: 8780; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f7fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f7fffff_frm_rdn_str: .string "\"test: 8781; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f7fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f7fffff_frm_rmm_str: .string "\"test: 8782; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f7fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f7fffff_frm_rne_str: .string "\"test: 8783; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f7fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f7fffff_frm_rtz_str: .string "\"test: 8784; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f7fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f7fffff_frm_rup_str: .string "\"test: 8785; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f7fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff7fffff_frm_dyn_str: .string "\"test: 8786; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff7fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff7fffff_frm_rdn_str: .string "\"test: 8787; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff7fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff7fffff_frm_rmm_str: .string "\"test: 8788; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff7fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff7fffff_frm_rne_str: .string "\"test: 8789; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff7fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff7fffff_frm_rtz_str: .string "\"test: 8790; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff7fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff7fffff_frm_rup_str: .string "\"test: 8791; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff7fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffff_frm_dyn_str: .string "\"test: 8792; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffff_frm_rdn_str: .string "\"test: 8793; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffff_frm_rmm_str: .string "\"test: 8794; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffff_frm_rne_str: .string "\"test: 8795; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffff_frm_rtz_str: .string "\"test: 8796; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffff_frm_rup_str: .string "\"test: 8797; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x807fffff_frm_dyn_str: .string "\"test: 8798; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x807fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x807fffff_frm_rdn_str: .string "\"test: 8799; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x807fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x807fffff_frm_rmm_str: .string "\"test: 8800; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x807fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x807fffff_frm_rne_str: .string "\"test: 8801; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x807fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x807fffff_frm_rtz_str: .string "\"test: 8802; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x807fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x807fffff_frm_rup_str: .string "\"test: 8803; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x807fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x400000_frm_dyn_str: .string "\"test: 8804; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x400000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x400000_frm_rdn_str: .string "\"test: 8805; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x400000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x400000_frm_rmm_str: .string "\"test: 8806; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x400000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x400000_frm_rne_str: .string "\"test: 8807; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x400000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x400000_frm_rtz_str: .string "\"test: 8808; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x400000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x400000_frm_rup_str: .string "\"test: 8809; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x400000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80400000_frm_dyn_str: .string "\"test: 8810; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80400000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80400000_frm_rdn_str: .string "\"test: 8811; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80400000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80400000_frm_rmm_str: .string "\"test: 8812; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80400000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80400000_frm_rne_str: .string "\"test: 8813; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80400000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80400000_frm_rtz_str: .string "\"test: 8814; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80400000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80400000_frm_rup_str: .string "\"test: 8815; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80400000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x1_frm_dyn_str: .string "\"test: 8816; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x1, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x1_frm_rdn_str: .string "\"test: 8817; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x1, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x1_frm_rmm_str: .string "\"test: 8818; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x1, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x1_frm_rne_str: .string "\"test: 8819; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x1, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x1_frm_rtz_str: .string "\"test: 8820; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x1, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x1_frm_rup_str: .string "\"test: 8821; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x1, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000001_frm_dyn_str: .string "\"test: 8822; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000001, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000001_frm_rdn_str: .string "\"test: 8823; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000001, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000001_frm_rmm_str: .string "\"test: 8824; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000001, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000001_frm_rne_str: .string "\"test: 8825; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000001, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000001_frm_rtz_str: .string "\"test: 8826; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000001, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000001_frm_rup_str: .string "\"test: 8827; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000001, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800000_frm_dyn_str: .string "\"test: 8828; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800000_frm_rdn_str: .string "\"test: 8829; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800000_frm_rmm_str: .string "\"test: 8830; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800000_frm_rne_str: .string "\"test: 8831; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800000_frm_rtz_str: .string "\"test: 8832; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800000_frm_rup_str: .string "\"test: 8833; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff800000_frm_dyn_str: .string "\"test: 8834; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff800000_frm_rdn_str: .string "\"test: 8835; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff800000_frm_rmm_str: .string "\"test: 8836; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff800000_frm_rne_str: .string "\"test: 8837; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff800000_frm_rtz_str: .string "\"test: 8838; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff800000_frm_rup_str: .string "\"test: 8839; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fc00000_frm_dyn_str: .string "\"test: 8840; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fc00000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fc00000_frm_rdn_str: .string "\"test: 8841; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fc00000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fc00000_frm_rmm_str: .string "\"test: 8842; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fc00000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fc00000_frm_rne_str: .string "\"test: 8843; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fc00000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fc00000_frm_rtz_str: .string "\"test: 8844; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fc00000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fc00000_frm_rup_str: .string "\"test: 8845; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fc00000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffffff_frm_dyn_str: .string "\"test: 8846; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffffff_frm_rdn_str: .string "\"test: 8847; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffffff_frm_rmm_str: .string "\"test: 8848; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffffff_frm_rne_str: .string "\"test: 8849; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffffff_frm_rtz_str: .string "\"test: 8850; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffffff_frm_rup_str: .string "\"test: 8851; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffffffff_frm_dyn_str: .string "\"test: 8852; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffffffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffffffff_frm_rdn_str: .string "\"test: 8853; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffffffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffffffff_frm_rmm_str: .string "\"test: 8854; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffffffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffffffff_frm_rne_str: .string "\"test: 8855; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffffffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffffffff_frm_rtz_str: .string "\"test: 8856; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffffffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffffffff_frm_rup_str: .string "\"test: 8857; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffffffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800001_frm_dyn_str: .string "\"test: 8858; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800001, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800001_frm_rdn_str: .string "\"test: 8859; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800001, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800001_frm_rmm_str: .string "\"test: 8860; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800001, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800001_frm_rne_str: .string "\"test: 8861; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800001, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800001_frm_rtz_str: .string "\"test: 8862; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800001, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800001_frm_rup_str: .string "\"test: 8863; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800001, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fbfffff_frm_dyn_str: .string "\"test: 8864; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fbfffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fbfffff_frm_rdn_str: .string "\"test: 8865; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fbfffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fbfffff_frm_rmm_str: .string "\"test: 8866; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fbfffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fbfffff_frm_rne_str: .string "\"test: 8867; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fbfffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fbfffff_frm_rtz_str: .string "\"test: 8868; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fbfffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fbfffff_frm_rup_str: .string "\"test: 8869; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fbfffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffbfffff_frm_dyn_str: .string "\"test: 8870; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffbfffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffbfffff_frm_rdn_str: .string "\"test: 8871; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffbfffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffbfffff_frm_rmm_str: .string "\"test: 8872; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffbfffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffbfffff_frm_rne_str: .string "\"test: 8873; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffbfffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffbfffff_frm_rtz_str: .string "\"test: 8874; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffbfffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffbfffff_frm_rup_str: .string "\"test: 8875; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffbfffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7ef8654f_frm_dyn_str: .string "\"test: 8876; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7ef8654f, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7ef8654f_frm_rdn_str: .string "\"test: 8877; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7ef8654f, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7ef8654f_frm_rmm_str: .string "\"test: 8878; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7ef8654f, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7ef8654f_frm_rne_str: .string "\"test: 8879; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7ef8654f, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7ef8654f_frm_rtz_str: .string "\"test: 8880; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7ef8654f, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7ef8654f_frm_rup_str: .string "\"test: 8881; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7ef8654f, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x813d9ab0_frm_dyn_str: .string "\"test: 8882; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x813d9ab0, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x813d9ab0_frm_rdn_str: .string "\"test: 8883; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x813d9ab0, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x813d9ab0_frm_rmm_str: .string "\"test: 8884; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x813d9ab0, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x813d9ab0_frm_rne_str: .string "\"test: 8885; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x813d9ab0, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x813d9ab0_frm_rtz_str: .string "\"test: 8886; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x813d9ab0, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x813d9ab0_frm_rup_str: .string "\"test: 8887; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x813d9ab0, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x0_frm_dyn_str: .string "\"test: 8888; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x0, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x0_frm_rdn_str: .string "\"test: 8889; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x0, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x0_frm_rmm_str: .string "\"test: 8890; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x0, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x0_frm_rne_str: .string "\"test: 8891; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x0, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x0_frm_rtz_str: .string "\"test: 8892; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x0, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x0_frm_rup_str: .string "\"test: 8893; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x0, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000000_frm_dyn_str: .string "\"test: 8894; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000000_frm_rdn_str: .string "\"test: 8895; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000000_frm_rmm_str: .string "\"test: 8896; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000000_frm_rne_str: .string "\"test: 8897; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000000_frm_rtz_str: .string "\"test: 8898; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000000_frm_rup_str: .string "\"test: 8899; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3f800000_frm_dyn_str: .string "\"test: 8900; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x3f800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3f800000_frm_rdn_str: .string "\"test: 8901; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x3f800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3f800000_frm_rmm_str: .string "\"test: 8902; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x3f800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3f800000_frm_rne_str: .string "\"test: 8903; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x3f800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3f800000_frm_rtz_str: .string "\"test: 8904; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x3f800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3f800000_frm_rup_str: .string "\"test: 8905; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x3f800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbf800000_frm_dyn_str: .string "\"test: 8906; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xbf800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbf800000_frm_rdn_str: .string "\"test: 8907; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xbf800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbf800000_frm_rmm_str: .string "\"test: 8908; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xbf800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbf800000_frm_rne_str: .string "\"test: 8909; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xbf800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbf800000_frm_rtz_str: .string "\"test: 8910; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xbf800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbf800000_frm_rup_str: .string "\"test: 8911; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xbf800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_dyn_str: .string "\"test: 8912; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x3fc00000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_rdn_str: .string "\"test: 8913; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x3fc00000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_rmm_str: .string "\"test: 8914; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x3fc00000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_rne_str: .string "\"test: 8915; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x3fc00000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_rtz_str: .string "\"test: 8916; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x3fc00000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3fc00000_frm_rup_str: .string "\"test: 8917; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x3fc00000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_dyn_str: .string "\"test: 8918; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xbfc00000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_rdn_str: .string "\"test: 8919; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xbfc00000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_rmm_str: .string "\"test: 8920; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xbfc00000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_rne_str: .string "\"test: 8921; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xbfc00000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_rtz_str: .string "\"test: 8922; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xbfc00000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbfc00000_frm_rup_str: .string "\"test: 8923; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xbfc00000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_dyn_str: .string "\"test: 8924; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x40000000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_rdn_str: .string "\"test: 8925; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x40000000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_rmm_str: .string "\"test: 8926; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x40000000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_rne_str: .string "\"test: 8927; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x40000000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_rtz_str: .string "\"test: 8928; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x40000000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40000000_frm_rup_str: .string "\"test: 8929; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x40000000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_dyn_str: .string "\"test: 8930; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xc0000000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_rdn_str: .string "\"test: 8931; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xc0000000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_rmm_str: .string "\"test: 8932; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xc0000000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_rne_str: .string "\"test: 8933; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xc0000000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_rtz_str: .string "\"test: 8934; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xc0000000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0000000_frm_rup_str: .string "\"test: 8935; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xc0000000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x800000_frm_dyn_str: .string "\"test: 8936; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x800000_frm_rdn_str: .string "\"test: 8937; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x800000_frm_rmm_str: .string "\"test: 8938; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x800000_frm_rne_str: .string "\"test: 8939; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x800000_frm_rtz_str: .string "\"test: 8940; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x800000_frm_rup_str: .string "\"test: 8941; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80800000_frm_dyn_str: .string "\"test: 8942; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80800000_frm_rdn_str: .string "\"test: 8943; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80800000_frm_rmm_str: .string "\"test: 8944; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80800000_frm_rne_str: .string "\"test: 8945; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80800000_frm_rtz_str: .string "\"test: 8946; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80800000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80800000_frm_rup_str: .string "\"test: 8947; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80800000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f7fffff_frm_dyn_str: .string "\"test: 8948; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f7fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f7fffff_frm_rdn_str: .string "\"test: 8949; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f7fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f7fffff_frm_rmm_str: .string "\"test: 8950; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f7fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f7fffff_frm_rne_str: .string "\"test: 8951; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f7fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f7fffff_frm_rtz_str: .string "\"test: 8952; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f7fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f7fffff_frm_rup_str: .string "\"test: 8953; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f7fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xff7fffff_frm_dyn_str: .string "\"test: 8954; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xff7fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xff7fffff_frm_rdn_str: .string "\"test: 8955; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xff7fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xff7fffff_frm_rmm_str: .string "\"test: 8956; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xff7fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xff7fffff_frm_rne_str: .string "\"test: 8957; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xff7fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xff7fffff_frm_rtz_str: .string "\"test: 8958; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xff7fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xff7fffff_frm_rup_str: .string "\"test: 8959; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xff7fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7fffff_frm_dyn_str: .string "\"test: 8960; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7fffff_frm_rdn_str: .string "\"test: 8961; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7fffff_frm_rmm_str: .string "\"test: 8962; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7fffff_frm_rne_str: .string "\"test: 8963; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7fffff_frm_rtz_str: .string "\"test: 8964; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7fffff_frm_rup_str: .string "\"test: 8965; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x807fffff_frm_dyn_str: .string "\"test: 8966; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x807fffff, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x807fffff_frm_rdn_str: .string "\"test: 8967; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x807fffff, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x807fffff_frm_rmm_str: .string "\"test: 8968; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x807fffff, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x807fffff_frm_rne_str: .string "\"test: 8969; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x807fffff, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x807fffff_frm_rtz_str: .string "\"test: 8970; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x807fffff, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x807fffff_frm_rup_str: .string "\"test: 8971; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x807fffff, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x400000_frm_dyn_str: .string "\"test: 8972; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x400000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x400000_frm_rdn_str: .string "\"test: 8973; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x400000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x400000_frm_rmm_str: .string "\"test: 8974; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x400000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x400000_frm_rne_str: .string "\"test: 8975; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x400000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x400000_frm_rtz_str: .string "\"test: 8976; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x400000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x400000_frm_rup_str: .string "\"test: 8977; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x400000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80400000_frm_dyn_str: .string "\"test: 8978; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80400000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80400000_frm_rdn_str: .string "\"test: 8979; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80400000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80400000_frm_rmm_str: .string "\"test: 8980; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80400000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80400000_frm_rne_str: .string "\"test: 8981; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80400000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80400000_frm_rtz_str: .string "\"test: 8982; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80400000, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80400000_frm_rup_str: .string "\"test: 8983; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80400000, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x1_frm_dyn_str: .string "\"test: 8984; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x1, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x1_frm_rdn_str: .string "\"test: 8985; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x1, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x1_frm_rmm_str: .string "\"test: 8986; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x1, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x1_frm_rne_str: .string "\"test: 8987; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x1, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x1_frm_rtz_str: .string "\"test: 8988; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x1, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x1_frm_rup_str: .string "\"test: 8989; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x1, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000001_frm_dyn_str: .string "\"test: 8990; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000001, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000001_frm_rdn_str: .string "\"test: 8991; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000001, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000001_frm_rmm_str: .string "\"test: 8992; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000001, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000001_frm_rne_str: .string "\"test: 8993; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000001, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000001_frm_rtz_str: .string "\"test: 8994; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000001, frm=rtz\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000001_frm_rup_str: .string "\"test: 8995; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000001, frm=rup\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f800000_frm_dyn_str: .string "\"test: 8996; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f800000, frm=dyn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f800000_frm_rdn_str: .string "\"test: 8997; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f800000, frm=rdn\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f800000_frm_rmm_str: .string "\"test: 8998; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f800000, frm=rmm\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f800000_frm_rne_str: .string "\"test: 8999; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f800000, frm=rne\""
-F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f800000_frm_rtz_str: .string "\"test: 9000; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fc00000_frm_dyn_str: .string "\"test: 8001; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fc00000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fc00000_frm_rdn_str: .string "\"test: 8002; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fc00000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fc00000_frm_rmm_str: .string "\"test: 8003; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fc00000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fc00000_frm_rne_str: .string "\"test: 8004; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fc00000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fc00000_frm_rtz_str: .string "\"test: 8005; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fc00000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fc00000_frm_rup_str: .string "\"test: 8006; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fc00000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fffffff_frm_dyn_str: .string "\"test: 8007; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fffffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fffffff_frm_rdn_str: .string "\"test: 8008; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fffffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fffffff_frm_rmm_str: .string "\"test: 8009; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fffffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fffffff_frm_rne_str: .string "\"test: 8010; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fffffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fffffff_frm_rtz_str: .string "\"test: 8011; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fffffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fffffff_frm_rup_str: .string "\"test: 8012; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fffffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffffffff_frm_dyn_str: .string "\"test: 8013; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffffffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffffffff_frm_rdn_str: .string "\"test: 8014; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffffffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffffffff_frm_rmm_str: .string "\"test: 8015; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffffffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffffffff_frm_rne_str: .string "\"test: 8016; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffffffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffffffff_frm_rtz_str: .string "\"test: 8017; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffffffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffffffff_frm_rup_str: .string "\"test: 8018; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffffffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7f800001_frm_dyn_str: .string "\"test: 8019; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7f800001, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7f800001_frm_rdn_str: .string "\"test: 8020; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7f800001, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7f800001_frm_rmm_str: .string "\"test: 8021; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7f800001, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7f800001_frm_rne_str: .string "\"test: 8022; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7f800001, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7f800001_frm_rtz_str: .string "\"test: 8023; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7f800001, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7f800001_frm_rup_str: .string "\"test: 8024; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7f800001, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fbfffff_frm_dyn_str: .string "\"test: 8025; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fbfffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fbfffff_frm_rdn_str: .string "\"test: 8026; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fbfffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fbfffff_frm_rmm_str: .string "\"test: 8027; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fbfffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fbfffff_frm_rne_str: .string "\"test: 8028; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fbfffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fbfffff_frm_rtz_str: .string "\"test: 8029; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fbfffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7fbfffff_frm_rup_str: .string "\"test: 8030; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7fbfffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffbfffff_frm_dyn_str: .string "\"test: 8031; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffbfffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffbfffff_frm_rdn_str: .string "\"test: 8032; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffbfffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffbfffff_frm_rmm_str: .string "\"test: 8033; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffbfffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffbfffff_frm_rne_str: .string "\"test: 8034; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffbfffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffbfffff_frm_rtz_str: .string "\"test: 8035; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffbfffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0xffbfffff_frm_rup_str: .string "\"test: 8036; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0xffbfffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7ef8654f_frm_dyn_str: .string "\"test: 8037; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7ef8654f, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7ef8654f_frm_rdn_str: .string "\"test: 8038; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7ef8654f, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7ef8654f_frm_rmm_str: .string "\"test: 8039; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7ef8654f, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7ef8654f_frm_rne_str: .string "\"test: 8040; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7ef8654f, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7ef8654f_frm_rtz_str: .string "\"test: 8041; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7ef8654f, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x7ef8654f_frm_rup_str: .string "\"test: 8042; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x7ef8654f, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x813d9ab0_frm_dyn_str: .string "\"test: 8043; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x813d9ab0, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x813d9ab0_frm_rdn_str: .string "\"test: 8044; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x813d9ab0, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x813d9ab0_frm_rmm_str: .string "\"test: 8045; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x813d9ab0, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x813d9ab0_frm_rne_str: .string "\"test: 8046; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x813d9ab0, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x813d9ab0_frm_rtz_str: .string "\"test: 8047; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x813d9ab0, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x80000001_fs3val_0x813d9ab0_frm_rup_str: .string "\"test: 8048; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x80000001, fs3val=0x813d9ab0, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x0_frm_dyn_str: .string "\"test: 8049; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x0, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x0_frm_rdn_str: .string "\"test: 8050; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x0, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x0_frm_rmm_str: .string "\"test: 8051; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x0, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x0_frm_rne_str: .string "\"test: 8052; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x0, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x0_frm_rtz_str: .string "\"test: 8053; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x0, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x0_frm_rup_str: .string "\"test: 8054; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x0, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000000_frm_dyn_str: .string "\"test: 8055; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000000_frm_rdn_str: .string "\"test: 8056; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000000_frm_rmm_str: .string "\"test: 8057; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000000_frm_rne_str: .string "\"test: 8058; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000000_frm_rtz_str: .string "\"test: 8059; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000000_frm_rup_str: .string "\"test: 8060; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3f800000_frm_dyn_str: .string "\"test: 8061; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x3f800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3f800000_frm_rdn_str: .string "\"test: 8062; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x3f800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3f800000_frm_rmm_str: .string "\"test: 8063; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x3f800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3f800000_frm_rne_str: .string "\"test: 8064; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x3f800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3f800000_frm_rtz_str: .string "\"test: 8065; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x3f800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x3f800000_frm_rup_str: .string "\"test: 8066; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x3f800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbf800000_frm_dyn_str: .string "\"test: 8067; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xbf800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbf800000_frm_rdn_str: .string "\"test: 8068; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xbf800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbf800000_frm_rmm_str: .string "\"test: 8069; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xbf800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbf800000_frm_rne_str: .string "\"test: 8070; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xbf800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbf800000_frm_rtz_str: .string "\"test: 8071; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xbf800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xbf800000_frm_rup_str: .string "\"test: 8072; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xbf800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_dyn_str: .string "\"test: 8073; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x40200000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_rdn_str: .string "\"test: 8074; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x40200000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_rmm_str: .string "\"test: 8075; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x40200000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_rne_str: .string "\"test: 8076; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x40200000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_rtz_str: .string "\"test: 8077; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x40200000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x40200000_frm_rup_str: .string "\"test: 8078; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x40200000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_dyn_str: .string "\"test: 8079; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xc0200000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_rdn_str: .string "\"test: 8080; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xc0200000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_rmm_str: .string "\"test: 8081; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xc0200000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_rne_str: .string "\"test: 8082; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xc0200000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_rtz_str: .string "\"test: 8083; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xc0200000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xc0200000_frm_rup_str: .string "\"test: 8084; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xc0200000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_dyn_str: .string "\"test: 8085; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x4b800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_rdn_str: .string "\"test: 8086; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x4b800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_rmm_str: .string "\"test: 8087; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x4b800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_rne_str: .string "\"test: 8088; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x4b800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_rtz_str: .string "\"test: 8089; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x4b800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x4b800000_frm_rup_str: .string "\"test: 8090; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x4b800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_dyn_str: .string "\"test: 8091; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xcb800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_rdn_str: .string "\"test: 8092; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xcb800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_rmm_str: .string "\"test: 8093; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xcb800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_rne_str: .string "\"test: 8094; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xcb800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_rtz_str: .string "\"test: 8095; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xcb800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xcb800000_frm_rup_str: .string "\"test: 8096; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xcb800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x800000_frm_dyn_str: .string "\"test: 8097; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x800000_frm_rdn_str: .string "\"test: 8098; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x800000_frm_rmm_str: .string "\"test: 8099; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x800000_frm_rne_str: .string "\"test: 8100; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x800000_frm_rtz_str: .string "\"test: 8101; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x800000_frm_rup_str: .string "\"test: 8102; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80800000_frm_dyn_str: .string "\"test: 8103; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80800000_frm_rdn_str: .string "\"test: 8104; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80800000_frm_rmm_str: .string "\"test: 8105; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80800000_frm_rne_str: .string "\"test: 8106; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80800000_frm_rtz_str: .string "\"test: 8107; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80800000_frm_rup_str: .string "\"test: 8108; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f7fffff_frm_dyn_str: .string "\"test: 8109; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f7fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f7fffff_frm_rdn_str: .string "\"test: 8110; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f7fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f7fffff_frm_rmm_str: .string "\"test: 8111; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f7fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f7fffff_frm_rne_str: .string "\"test: 8112; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f7fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f7fffff_frm_rtz_str: .string "\"test: 8113; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f7fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f7fffff_frm_rup_str: .string "\"test: 8114; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f7fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff7fffff_frm_dyn_str: .string "\"test: 8115; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff7fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff7fffff_frm_rdn_str: .string "\"test: 8116; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff7fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff7fffff_frm_rmm_str: .string "\"test: 8117; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff7fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff7fffff_frm_rne_str: .string "\"test: 8118; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff7fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff7fffff_frm_rtz_str: .string "\"test: 8119; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff7fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff7fffff_frm_rup_str: .string "\"test: 8120; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff7fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffff_frm_dyn_str: .string "\"test: 8121; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffff_frm_rdn_str: .string "\"test: 8122; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffff_frm_rmm_str: .string "\"test: 8123; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffff_frm_rne_str: .string "\"test: 8124; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffff_frm_rtz_str: .string "\"test: 8125; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffff_frm_rup_str: .string "\"test: 8126; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x807fffff_frm_dyn_str: .string "\"test: 8127; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x807fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x807fffff_frm_rdn_str: .string "\"test: 8128; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x807fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x807fffff_frm_rmm_str: .string "\"test: 8129; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x807fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x807fffff_frm_rne_str: .string "\"test: 8130; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x807fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x807fffff_frm_rtz_str: .string "\"test: 8131; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x807fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x807fffff_frm_rup_str: .string "\"test: 8132; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x807fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x400000_frm_dyn_str: .string "\"test: 8133; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x400000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x400000_frm_rdn_str: .string "\"test: 8134; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x400000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x400000_frm_rmm_str: .string "\"test: 8135; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x400000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x400000_frm_rne_str: .string "\"test: 8136; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x400000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x400000_frm_rtz_str: .string "\"test: 8137; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x400000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x400000_frm_rup_str: .string "\"test: 8138; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x400000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80400000_frm_dyn_str: .string "\"test: 8139; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80400000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80400000_frm_rdn_str: .string "\"test: 8140; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80400000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80400000_frm_rmm_str: .string "\"test: 8141; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80400000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80400000_frm_rne_str: .string "\"test: 8142; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80400000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80400000_frm_rtz_str: .string "\"test: 8143; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80400000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80400000_frm_rup_str: .string "\"test: 8144; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80400000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x1_frm_dyn_str: .string "\"test: 8145; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x1, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x1_frm_rdn_str: .string "\"test: 8146; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x1, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x1_frm_rmm_str: .string "\"test: 8147; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x1, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x1_frm_rne_str: .string "\"test: 8148; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x1, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x1_frm_rtz_str: .string "\"test: 8149; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x1, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x1_frm_rup_str: .string "\"test: 8150; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x1, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000001_frm_dyn_str: .string "\"test: 8151; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000001, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000001_frm_rdn_str: .string "\"test: 8152; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000001, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000001_frm_rmm_str: .string "\"test: 8153; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000001, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000001_frm_rne_str: .string "\"test: 8154; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000001, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000001_frm_rtz_str: .string "\"test: 8155; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000001, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x80000001_frm_rup_str: .string "\"test: 8156; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x80000001, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800000_frm_dyn_str: .string "\"test: 8157; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800000_frm_rdn_str: .string "\"test: 8158; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800000_frm_rmm_str: .string "\"test: 8159; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800000_frm_rne_str: .string "\"test: 8160; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800000_frm_rtz_str: .string "\"test: 8161; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800000_frm_rup_str: .string "\"test: 8162; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff800000_frm_dyn_str: .string "\"test: 8163; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff800000_frm_rdn_str: .string "\"test: 8164; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff800000_frm_rmm_str: .string "\"test: 8165; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff800000_frm_rne_str: .string "\"test: 8166; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff800000_frm_rtz_str: .string "\"test: 8167; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xff800000_frm_rup_str: .string "\"test: 8168; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xff800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fc00000_frm_dyn_str: .string "\"test: 8169; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fc00000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fc00000_frm_rdn_str: .string "\"test: 8170; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fc00000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fc00000_frm_rmm_str: .string "\"test: 8171; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fc00000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fc00000_frm_rne_str: .string "\"test: 8172; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fc00000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fc00000_frm_rtz_str: .string "\"test: 8173; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fc00000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fc00000_frm_rup_str: .string "\"test: 8174; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fc00000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffffff_frm_dyn_str: .string "\"test: 8175; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffffff_frm_rdn_str: .string "\"test: 8176; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffffff_frm_rmm_str: .string "\"test: 8177; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffffff_frm_rne_str: .string "\"test: 8178; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffffff_frm_rtz_str: .string "\"test: 8179; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fffffff_frm_rup_str: .string "\"test: 8180; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fffffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffffffff_frm_dyn_str: .string "\"test: 8181; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffffffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffffffff_frm_rdn_str: .string "\"test: 8182; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffffffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffffffff_frm_rmm_str: .string "\"test: 8183; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffffffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffffffff_frm_rne_str: .string "\"test: 8184; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffffffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffffffff_frm_rtz_str: .string "\"test: 8185; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffffffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffffffff_frm_rup_str: .string "\"test: 8186; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffffffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800001_frm_dyn_str: .string "\"test: 8187; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800001, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800001_frm_rdn_str: .string "\"test: 8188; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800001, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800001_frm_rmm_str: .string "\"test: 8189; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800001, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800001_frm_rne_str: .string "\"test: 8190; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800001, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800001_frm_rtz_str: .string "\"test: 8191; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800001, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7f800001_frm_rup_str: .string "\"test: 8192; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7f800001, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fbfffff_frm_dyn_str: .string "\"test: 8193; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fbfffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fbfffff_frm_rdn_str: .string "\"test: 8194; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fbfffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fbfffff_frm_rmm_str: .string "\"test: 8195; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fbfffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fbfffff_frm_rne_str: .string "\"test: 8196; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fbfffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fbfffff_frm_rtz_str: .string "\"test: 8197; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fbfffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7fbfffff_frm_rup_str: .string "\"test: 8198; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7fbfffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffbfffff_frm_dyn_str: .string "\"test: 8199; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffbfffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffbfffff_frm_rdn_str: .string "\"test: 8200; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffbfffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffbfffff_frm_rmm_str: .string "\"test: 8201; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffbfffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffbfffff_frm_rne_str: .string "\"test: 8202; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffbfffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffbfffff_frm_rtz_str: .string "\"test: 8203; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffbfffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0xffbfffff_frm_rup_str: .string "\"test: 8204; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0xffbfffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7ef8654f_frm_dyn_str: .string "\"test: 8205; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7ef8654f, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7ef8654f_frm_rdn_str: .string "\"test: 8206; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7ef8654f, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7ef8654f_frm_rmm_str: .string "\"test: 8207; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7ef8654f, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7ef8654f_frm_rne_str: .string "\"test: 8208; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7ef8654f, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7ef8654f_frm_rtz_str: .string "\"test: 8209; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7ef8654f, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x7ef8654f_frm_rup_str: .string "\"test: 8210; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x7ef8654f, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x813d9ab0_frm_dyn_str: .string "\"test: 8211; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x813d9ab0, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x813d9ab0_frm_rdn_str: .string "\"test: 8212; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x813d9ab0, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x813d9ab0_frm_rmm_str: .string "\"test: 8213; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x813d9ab0, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x813d9ab0_frm_rne_str: .string "\"test: 8214; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x813d9ab0, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x813d9ab0_frm_rtz_str: .string "\"test: 8215; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x813d9ab0, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800000_fs3val_0x813d9ab0_frm_rup_str: .string "\"test: 8216; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800000, fs3val=0x813d9ab0, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x0_frm_dyn_str: .string "\"test: 8217; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x0, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x0_frm_rdn_str: .string "\"test: 8218; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x0, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x0_frm_rmm_str: .string "\"test: 8219; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x0, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x0_frm_rne_str: .string "\"test: 8220; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x0, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x0_frm_rtz_str: .string "\"test: 8221; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x0, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x0_frm_rup_str: .string "\"test: 8222; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x0, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000000_frm_dyn_str: .string "\"test: 8223; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000000_frm_rdn_str: .string "\"test: 8224; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000000_frm_rmm_str: .string "\"test: 8225; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000000_frm_rne_str: .string "\"test: 8226; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000000_frm_rtz_str: .string "\"test: 8227; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000000_frm_rup_str: .string "\"test: 8228; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3f800000_frm_dyn_str: .string "\"test: 8229; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x3f800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3f800000_frm_rdn_str: .string "\"test: 8230; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x3f800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3f800000_frm_rmm_str: .string "\"test: 8231; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x3f800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3f800000_frm_rne_str: .string "\"test: 8232; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x3f800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3f800000_frm_rtz_str: .string "\"test: 8233; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x3f800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x3f800000_frm_rup_str: .string "\"test: 8234; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x3f800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbf800000_frm_dyn_str: .string "\"test: 8235; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xbf800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbf800000_frm_rdn_str: .string "\"test: 8236; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xbf800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbf800000_frm_rmm_str: .string "\"test: 8237; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xbf800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbf800000_frm_rne_str: .string "\"test: 8238; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xbf800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbf800000_frm_rtz_str: .string "\"test: 8239; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xbf800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xbf800000_frm_rup_str: .string "\"test: 8240; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xbf800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_dyn_str: .string "\"test: 8241; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x40200000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_rdn_str: .string "\"test: 8242; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x40200000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_rmm_str: .string "\"test: 8243; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x40200000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_rne_str: .string "\"test: 8244; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x40200000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_rtz_str: .string "\"test: 8245; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x40200000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x40200000_frm_rup_str: .string "\"test: 8246; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x40200000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_dyn_str: .string "\"test: 8247; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xc0200000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_rdn_str: .string "\"test: 8248; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xc0200000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_rmm_str: .string "\"test: 8249; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xc0200000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_rne_str: .string "\"test: 8250; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xc0200000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_rtz_str: .string "\"test: 8251; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xc0200000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xc0200000_frm_rup_str: .string "\"test: 8252; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xc0200000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_dyn_str: .string "\"test: 8253; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x4b800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_rdn_str: .string "\"test: 8254; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x4b800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_rmm_str: .string "\"test: 8255; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x4b800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_rne_str: .string "\"test: 8256; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x4b800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_rtz_str: .string "\"test: 8257; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x4b800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x4b800000_frm_rup_str: .string "\"test: 8258; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x4b800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_dyn_str: .string "\"test: 8259; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xcb800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_rdn_str: .string "\"test: 8260; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xcb800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_rmm_str: .string "\"test: 8261; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xcb800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_rne_str: .string "\"test: 8262; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xcb800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_rtz_str: .string "\"test: 8263; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xcb800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xcb800000_frm_rup_str: .string "\"test: 8264; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xcb800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x800000_frm_dyn_str: .string "\"test: 8265; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x800000_frm_rdn_str: .string "\"test: 8266; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x800000_frm_rmm_str: .string "\"test: 8267; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x800000_frm_rne_str: .string "\"test: 8268; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x800000_frm_rtz_str: .string "\"test: 8269; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x800000_frm_rup_str: .string "\"test: 8270; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80800000_frm_dyn_str: .string "\"test: 8271; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80800000_frm_rdn_str: .string "\"test: 8272; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80800000_frm_rmm_str: .string "\"test: 8273; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80800000_frm_rne_str: .string "\"test: 8274; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80800000_frm_rtz_str: .string "\"test: 8275; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80800000_frm_rup_str: .string "\"test: 8276; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f7fffff_frm_dyn_str: .string "\"test: 8277; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f7fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f7fffff_frm_rdn_str: .string "\"test: 8278; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f7fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f7fffff_frm_rmm_str: .string "\"test: 8279; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f7fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f7fffff_frm_rne_str: .string "\"test: 8280; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f7fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f7fffff_frm_rtz_str: .string "\"test: 8281; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f7fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f7fffff_frm_rup_str: .string "\"test: 8282; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f7fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff7fffff_frm_dyn_str: .string "\"test: 8283; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff7fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff7fffff_frm_rdn_str: .string "\"test: 8284; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff7fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff7fffff_frm_rmm_str: .string "\"test: 8285; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff7fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff7fffff_frm_rne_str: .string "\"test: 8286; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff7fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff7fffff_frm_rtz_str: .string "\"test: 8287; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff7fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff7fffff_frm_rup_str: .string "\"test: 8288; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff7fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffff_frm_dyn_str: .string "\"test: 8289; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffff_frm_rdn_str: .string "\"test: 8290; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffff_frm_rmm_str: .string "\"test: 8291; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffff_frm_rne_str: .string "\"test: 8292; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffff_frm_rtz_str: .string "\"test: 8293; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffff_frm_rup_str: .string "\"test: 8294; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x807fffff_frm_dyn_str: .string "\"test: 8295; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x807fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x807fffff_frm_rdn_str: .string "\"test: 8296; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x807fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x807fffff_frm_rmm_str: .string "\"test: 8297; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x807fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x807fffff_frm_rne_str: .string "\"test: 8298; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x807fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x807fffff_frm_rtz_str: .string "\"test: 8299; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x807fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x807fffff_frm_rup_str: .string "\"test: 8300; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x807fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x400000_frm_dyn_str: .string "\"test: 8301; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x400000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x400000_frm_rdn_str: .string "\"test: 8302; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x400000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x400000_frm_rmm_str: .string "\"test: 8303; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x400000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x400000_frm_rne_str: .string "\"test: 8304; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x400000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x400000_frm_rtz_str: .string "\"test: 8305; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x400000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x400000_frm_rup_str: .string "\"test: 8306; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x400000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80400000_frm_dyn_str: .string "\"test: 8307; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80400000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80400000_frm_rdn_str: .string "\"test: 8308; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80400000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80400000_frm_rmm_str: .string "\"test: 8309; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80400000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80400000_frm_rne_str: .string "\"test: 8310; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80400000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80400000_frm_rtz_str: .string "\"test: 8311; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80400000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80400000_frm_rup_str: .string "\"test: 8312; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80400000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x1_frm_dyn_str: .string "\"test: 8313; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x1, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x1_frm_rdn_str: .string "\"test: 8314; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x1, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x1_frm_rmm_str: .string "\"test: 8315; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x1, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x1_frm_rne_str: .string "\"test: 8316; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x1, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x1_frm_rtz_str: .string "\"test: 8317; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x1, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x1_frm_rup_str: .string "\"test: 8318; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x1, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000001_frm_dyn_str: .string "\"test: 8319; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000001, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000001_frm_rdn_str: .string "\"test: 8320; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000001, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000001_frm_rmm_str: .string "\"test: 8321; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000001, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000001_frm_rne_str: .string "\"test: 8322; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000001, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000001_frm_rtz_str: .string "\"test: 8323; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000001, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x80000001_frm_rup_str: .string "\"test: 8324; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x80000001, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800000_frm_dyn_str: .string "\"test: 8325; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800000_frm_rdn_str: .string "\"test: 8326; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800000_frm_rmm_str: .string "\"test: 8327; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800000_frm_rne_str: .string "\"test: 8328; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800000_frm_rtz_str: .string "\"test: 8329; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800000_frm_rup_str: .string "\"test: 8330; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff800000_frm_dyn_str: .string "\"test: 8331; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff800000_frm_rdn_str: .string "\"test: 8332; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff800000_frm_rmm_str: .string "\"test: 8333; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff800000_frm_rne_str: .string "\"test: 8334; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff800000_frm_rtz_str: .string "\"test: 8335; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xff800000_frm_rup_str: .string "\"test: 8336; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xff800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fc00000_frm_dyn_str: .string "\"test: 8337; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fc00000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fc00000_frm_rdn_str: .string "\"test: 8338; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fc00000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fc00000_frm_rmm_str: .string "\"test: 8339; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fc00000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fc00000_frm_rne_str: .string "\"test: 8340; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fc00000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fc00000_frm_rtz_str: .string "\"test: 8341; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fc00000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fc00000_frm_rup_str: .string "\"test: 8342; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fc00000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffffff_frm_dyn_str: .string "\"test: 8343; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffffff_frm_rdn_str: .string "\"test: 8344; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffffff_frm_rmm_str: .string "\"test: 8345; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffffff_frm_rne_str: .string "\"test: 8346; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffffff_frm_rtz_str: .string "\"test: 8347; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fffffff_frm_rup_str: .string "\"test: 8348; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fffffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffffffff_frm_dyn_str: .string "\"test: 8349; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffffffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffffffff_frm_rdn_str: .string "\"test: 8350; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffffffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffffffff_frm_rmm_str: .string "\"test: 8351; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffffffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffffffff_frm_rne_str: .string "\"test: 8352; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffffffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffffffff_frm_rtz_str: .string "\"test: 8353; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffffffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffffffff_frm_rup_str: .string "\"test: 8354; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffffffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800001_frm_dyn_str: .string "\"test: 8355; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800001, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800001_frm_rdn_str: .string "\"test: 8356; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800001, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800001_frm_rmm_str: .string "\"test: 8357; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800001, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800001_frm_rne_str: .string "\"test: 8358; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800001, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800001_frm_rtz_str: .string "\"test: 8359; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800001, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7f800001_frm_rup_str: .string "\"test: 8360; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7f800001, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fbfffff_frm_dyn_str: .string "\"test: 8361; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fbfffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fbfffff_frm_rdn_str: .string "\"test: 8362; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fbfffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fbfffff_frm_rmm_str: .string "\"test: 8363; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fbfffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fbfffff_frm_rne_str: .string "\"test: 8364; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fbfffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fbfffff_frm_rtz_str: .string "\"test: 8365; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fbfffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7fbfffff_frm_rup_str: .string "\"test: 8366; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7fbfffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffbfffff_frm_dyn_str: .string "\"test: 8367; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffbfffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffbfffff_frm_rdn_str: .string "\"test: 8368; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffbfffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffbfffff_frm_rmm_str: .string "\"test: 8369; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffbfffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffbfffff_frm_rne_str: .string "\"test: 8370; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffbfffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffbfffff_frm_rtz_str: .string "\"test: 8371; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffbfffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0xffbfffff_frm_rup_str: .string "\"test: 8372; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0xffbfffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7ef8654f_frm_dyn_str: .string "\"test: 8373; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7ef8654f, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7ef8654f_frm_rdn_str: .string "\"test: 8374; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7ef8654f, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7ef8654f_frm_rmm_str: .string "\"test: 8375; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7ef8654f, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7ef8654f_frm_rne_str: .string "\"test: 8376; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7ef8654f, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7ef8654f_frm_rtz_str: .string "\"test: 8377; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7ef8654f, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x7ef8654f_frm_rup_str: .string "\"test: 8378; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x7ef8654f, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x813d9ab0_frm_dyn_str: .string "\"test: 8379; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x813d9ab0, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x813d9ab0_frm_rdn_str: .string "\"test: 8380; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x813d9ab0, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x813d9ab0_frm_rmm_str: .string "\"test: 8381; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x813d9ab0, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x813d9ab0_frm_rne_str: .string "\"test: 8382; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x813d9ab0, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x813d9ab0_frm_rtz_str: .string "\"test: 8383; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x813d9ab0, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xff800000_fs3val_0x813d9ab0_frm_rup_str: .string "\"test: 8384; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xff800000, fs3val=0x813d9ab0, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x0_frm_dyn_str: .string "\"test: 8385; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x0, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x0_frm_rdn_str: .string "\"test: 8386; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x0, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x0_frm_rmm_str: .string "\"test: 8387; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x0, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x0_frm_rne_str: .string "\"test: 8388; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x0, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x0_frm_rtz_str: .string "\"test: 8389; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x0, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x0_frm_rup_str: .string "\"test: 8390; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x0, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000000_frm_dyn_str: .string "\"test: 8391; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000000_frm_rdn_str: .string "\"test: 8392; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000000_frm_rmm_str: .string "\"test: 8393; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000000_frm_rne_str: .string "\"test: 8394; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000000_frm_rtz_str: .string "\"test: 8395; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000000_frm_rup_str: .string "\"test: 8396; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3f800000_frm_dyn_str: .string "\"test: 8397; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x3f800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3f800000_frm_rdn_str: .string "\"test: 8398; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x3f800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3f800000_frm_rmm_str: .string "\"test: 8399; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x3f800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3f800000_frm_rne_str: .string "\"test: 8400; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x3f800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3f800000_frm_rtz_str: .string "\"test: 8401; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x3f800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x3f800000_frm_rup_str: .string "\"test: 8402; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x3f800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbf800000_frm_dyn_str: .string "\"test: 8403; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xbf800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbf800000_frm_rdn_str: .string "\"test: 8404; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xbf800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbf800000_frm_rmm_str: .string "\"test: 8405; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xbf800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbf800000_frm_rne_str: .string "\"test: 8406; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xbf800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbf800000_frm_rtz_str: .string "\"test: 8407; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xbf800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xbf800000_frm_rup_str: .string "\"test: 8408; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xbf800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_dyn_str: .string "\"test: 8409; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x40200000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_rdn_str: .string "\"test: 8410; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x40200000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_rmm_str: .string "\"test: 8411; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x40200000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_rne_str: .string "\"test: 8412; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x40200000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_rtz_str: .string "\"test: 8413; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x40200000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x40200000_frm_rup_str: .string "\"test: 8414; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x40200000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_dyn_str: .string "\"test: 8415; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xc0200000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_rdn_str: .string "\"test: 8416; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xc0200000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_rmm_str: .string "\"test: 8417; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xc0200000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_rne_str: .string "\"test: 8418; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xc0200000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_rtz_str: .string "\"test: 8419; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xc0200000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xc0200000_frm_rup_str: .string "\"test: 8420; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xc0200000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_dyn_str: .string "\"test: 8421; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x4b800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_rdn_str: .string "\"test: 8422; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x4b800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_rmm_str: .string "\"test: 8423; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x4b800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_rne_str: .string "\"test: 8424; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x4b800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_rtz_str: .string "\"test: 8425; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x4b800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x4b800000_frm_rup_str: .string "\"test: 8426; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x4b800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_dyn_str: .string "\"test: 8427; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xcb800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_rdn_str: .string "\"test: 8428; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xcb800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_rmm_str: .string "\"test: 8429; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xcb800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_rne_str: .string "\"test: 8430; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xcb800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_rtz_str: .string "\"test: 8431; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xcb800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xcb800000_frm_rup_str: .string "\"test: 8432; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xcb800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x800000_frm_dyn_str: .string "\"test: 8433; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x800000_frm_rdn_str: .string "\"test: 8434; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x800000_frm_rmm_str: .string "\"test: 8435; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x800000_frm_rne_str: .string "\"test: 8436; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x800000_frm_rtz_str: .string "\"test: 8437; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x800000_frm_rup_str: .string "\"test: 8438; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80800000_frm_dyn_str: .string "\"test: 8439; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80800000_frm_rdn_str: .string "\"test: 8440; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80800000_frm_rmm_str: .string "\"test: 8441; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80800000_frm_rne_str: .string "\"test: 8442; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80800000_frm_rtz_str: .string "\"test: 8443; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80800000_frm_rup_str: .string "\"test: 8444; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f7fffff_frm_dyn_str: .string "\"test: 8445; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f7fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f7fffff_frm_rdn_str: .string "\"test: 8446; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f7fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f7fffff_frm_rmm_str: .string "\"test: 8447; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f7fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f7fffff_frm_rne_str: .string "\"test: 8448; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f7fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f7fffff_frm_rtz_str: .string "\"test: 8449; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f7fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f7fffff_frm_rup_str: .string "\"test: 8450; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f7fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff7fffff_frm_dyn_str: .string "\"test: 8451; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff7fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff7fffff_frm_rdn_str: .string "\"test: 8452; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff7fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff7fffff_frm_rmm_str: .string "\"test: 8453; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff7fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff7fffff_frm_rne_str: .string "\"test: 8454; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff7fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff7fffff_frm_rtz_str: .string "\"test: 8455; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff7fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff7fffff_frm_rup_str: .string "\"test: 8456; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff7fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffff_frm_dyn_str: .string "\"test: 8457; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffff_frm_rdn_str: .string "\"test: 8458; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffff_frm_rmm_str: .string "\"test: 8459; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffff_frm_rne_str: .string "\"test: 8460; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffff_frm_rtz_str: .string "\"test: 8461; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffff_frm_rup_str: .string "\"test: 8462; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x807fffff_frm_dyn_str: .string "\"test: 8463; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x807fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x807fffff_frm_rdn_str: .string "\"test: 8464; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x807fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x807fffff_frm_rmm_str: .string "\"test: 8465; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x807fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x807fffff_frm_rne_str: .string "\"test: 8466; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x807fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x807fffff_frm_rtz_str: .string "\"test: 8467; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x807fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x807fffff_frm_rup_str: .string "\"test: 8468; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x807fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x400000_frm_dyn_str: .string "\"test: 8469; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x400000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x400000_frm_rdn_str: .string "\"test: 8470; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x400000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x400000_frm_rmm_str: .string "\"test: 8471; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x400000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x400000_frm_rne_str: .string "\"test: 8472; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x400000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x400000_frm_rtz_str: .string "\"test: 8473; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x400000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x400000_frm_rup_str: .string "\"test: 8474; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x400000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80400000_frm_dyn_str: .string "\"test: 8475; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80400000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80400000_frm_rdn_str: .string "\"test: 8476; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80400000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80400000_frm_rmm_str: .string "\"test: 8477; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80400000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80400000_frm_rne_str: .string "\"test: 8478; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80400000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80400000_frm_rtz_str: .string "\"test: 8479; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80400000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80400000_frm_rup_str: .string "\"test: 8480; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80400000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x1_frm_dyn_str: .string "\"test: 8481; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x1, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x1_frm_rdn_str: .string "\"test: 8482; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x1, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x1_frm_rmm_str: .string "\"test: 8483; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x1, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x1_frm_rne_str: .string "\"test: 8484; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x1, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x1_frm_rtz_str: .string "\"test: 8485; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x1, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x1_frm_rup_str: .string "\"test: 8486; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x1, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000001_frm_dyn_str: .string "\"test: 8487; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000001, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000001_frm_rdn_str: .string "\"test: 8488; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000001, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000001_frm_rmm_str: .string "\"test: 8489; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000001, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000001_frm_rne_str: .string "\"test: 8490; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000001, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000001_frm_rtz_str: .string "\"test: 8491; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000001, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x80000001_frm_rup_str: .string "\"test: 8492; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x80000001, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800000_frm_dyn_str: .string "\"test: 8493; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800000_frm_rdn_str: .string "\"test: 8494; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800000_frm_rmm_str: .string "\"test: 8495; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800000_frm_rne_str: .string "\"test: 8496; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800000_frm_rtz_str: .string "\"test: 8497; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800000_frm_rup_str: .string "\"test: 8498; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff800000_frm_dyn_str: .string "\"test: 8499; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff800000_frm_rdn_str: .string "\"test: 8500; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff800000_frm_rmm_str: .string "\"test: 8501; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff800000_frm_rne_str: .string "\"test: 8502; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff800000_frm_rtz_str: .string "\"test: 8503; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xff800000_frm_rup_str: .string "\"test: 8504; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xff800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fc00000_frm_dyn_str: .string "\"test: 8505; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fc00000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fc00000_frm_rdn_str: .string "\"test: 8506; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fc00000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fc00000_frm_rmm_str: .string "\"test: 8507; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fc00000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fc00000_frm_rne_str: .string "\"test: 8508; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fc00000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fc00000_frm_rtz_str: .string "\"test: 8509; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fc00000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fc00000_frm_rup_str: .string "\"test: 8510; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fc00000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffffff_frm_dyn_str: .string "\"test: 8511; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffffff_frm_rdn_str: .string "\"test: 8512; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffffff_frm_rmm_str: .string "\"test: 8513; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffffff_frm_rne_str: .string "\"test: 8514; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffffff_frm_rtz_str: .string "\"test: 8515; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fffffff_frm_rup_str: .string "\"test: 8516; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fffffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffffffff_frm_dyn_str: .string "\"test: 8517; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffffffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffffffff_frm_rdn_str: .string "\"test: 8518; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffffffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffffffff_frm_rmm_str: .string "\"test: 8519; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffffffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffffffff_frm_rne_str: .string "\"test: 8520; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffffffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffffffff_frm_rtz_str: .string "\"test: 8521; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffffffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffffffff_frm_rup_str: .string "\"test: 8522; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffffffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800001_frm_dyn_str: .string "\"test: 8523; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800001, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800001_frm_rdn_str: .string "\"test: 8524; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800001, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800001_frm_rmm_str: .string "\"test: 8525; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800001, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800001_frm_rne_str: .string "\"test: 8526; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800001, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800001_frm_rtz_str: .string "\"test: 8527; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800001, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7f800001_frm_rup_str: .string "\"test: 8528; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7f800001, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fbfffff_frm_dyn_str: .string "\"test: 8529; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fbfffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fbfffff_frm_rdn_str: .string "\"test: 8530; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fbfffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fbfffff_frm_rmm_str: .string "\"test: 8531; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fbfffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fbfffff_frm_rne_str: .string "\"test: 8532; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fbfffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fbfffff_frm_rtz_str: .string "\"test: 8533; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fbfffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7fbfffff_frm_rup_str: .string "\"test: 8534; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7fbfffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffbfffff_frm_dyn_str: .string "\"test: 8535; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffbfffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffbfffff_frm_rdn_str: .string "\"test: 8536; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffbfffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffbfffff_frm_rmm_str: .string "\"test: 8537; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffbfffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffbfffff_frm_rne_str: .string "\"test: 8538; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffbfffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffbfffff_frm_rtz_str: .string "\"test: 8539; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffbfffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0xffbfffff_frm_rup_str: .string "\"test: 8540; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0xffbfffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7ef8654f_frm_dyn_str: .string "\"test: 8541; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7ef8654f, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7ef8654f_frm_rdn_str: .string "\"test: 8542; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7ef8654f, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7ef8654f_frm_rmm_str: .string "\"test: 8543; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7ef8654f, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7ef8654f_frm_rne_str: .string "\"test: 8544; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7ef8654f, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7ef8654f_frm_rtz_str: .string "\"test: 8545; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7ef8654f, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x7ef8654f_frm_rup_str: .string "\"test: 8546; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x7ef8654f, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x813d9ab0_frm_dyn_str: .string "\"test: 8547; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x813d9ab0, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x813d9ab0_frm_rdn_str: .string "\"test: 8548; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x813d9ab0, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x813d9ab0_frm_rmm_str: .string "\"test: 8549; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x813d9ab0, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x813d9ab0_frm_rne_str: .string "\"test: 8550; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x813d9ab0, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x813d9ab0_frm_rtz_str: .string "\"test: 8551; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x813d9ab0, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fc00000_fs3val_0x813d9ab0_frm_rup_str: .string "\"test: 8552; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fc00000, fs3val=0x813d9ab0, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x0_frm_dyn_str: .string "\"test: 8553; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x0, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x0_frm_rdn_str: .string "\"test: 8554; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x0, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x0_frm_rmm_str: .string "\"test: 8555; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x0, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x0_frm_rne_str: .string "\"test: 8556; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x0, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x0_frm_rtz_str: .string "\"test: 8557; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x0, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x0_frm_rup_str: .string "\"test: 8558; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x0, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000000_frm_dyn_str: .string "\"test: 8559; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000000_frm_rdn_str: .string "\"test: 8560; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000000_frm_rmm_str: .string "\"test: 8561; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000000_frm_rne_str: .string "\"test: 8562; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000000_frm_rtz_str: .string "\"test: 8563; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000000_frm_rup_str: .string "\"test: 8564; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3f800000_frm_dyn_str: .string "\"test: 8565; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x3f800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3f800000_frm_rdn_str: .string "\"test: 8566; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x3f800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3f800000_frm_rmm_str: .string "\"test: 8567; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x3f800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3f800000_frm_rne_str: .string "\"test: 8568; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x3f800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3f800000_frm_rtz_str: .string "\"test: 8569; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x3f800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x3f800000_frm_rup_str: .string "\"test: 8570; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x3f800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbf800000_frm_dyn_str: .string "\"test: 8571; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xbf800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbf800000_frm_rdn_str: .string "\"test: 8572; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xbf800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbf800000_frm_rmm_str: .string "\"test: 8573; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xbf800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbf800000_frm_rne_str: .string "\"test: 8574; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xbf800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbf800000_frm_rtz_str: .string "\"test: 8575; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xbf800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xbf800000_frm_rup_str: .string "\"test: 8576; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xbf800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_dyn_str: .string "\"test: 8577; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x40200000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_rdn_str: .string "\"test: 8578; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x40200000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_rmm_str: .string "\"test: 8579; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x40200000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_rne_str: .string "\"test: 8580; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x40200000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_rtz_str: .string "\"test: 8581; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x40200000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x40200000_frm_rup_str: .string "\"test: 8582; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x40200000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_dyn_str: .string "\"test: 8583; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xc0200000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_rdn_str: .string "\"test: 8584; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xc0200000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_rmm_str: .string "\"test: 8585; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xc0200000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_rne_str: .string "\"test: 8586; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xc0200000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_rtz_str: .string "\"test: 8587; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xc0200000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xc0200000_frm_rup_str: .string "\"test: 8588; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xc0200000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_dyn_str: .string "\"test: 8589; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x4b800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_rdn_str: .string "\"test: 8590; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x4b800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_rmm_str: .string "\"test: 8591; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x4b800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_rne_str: .string "\"test: 8592; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x4b800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_rtz_str: .string "\"test: 8593; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x4b800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x4b800000_frm_rup_str: .string "\"test: 8594; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x4b800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_dyn_str: .string "\"test: 8595; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xcb800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_rdn_str: .string "\"test: 8596; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xcb800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_rmm_str: .string "\"test: 8597; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xcb800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_rne_str: .string "\"test: 8598; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xcb800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_rtz_str: .string "\"test: 8599; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xcb800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xcb800000_frm_rup_str: .string "\"test: 8600; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xcb800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x800000_frm_dyn_str: .string "\"test: 8601; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x800000_frm_rdn_str: .string "\"test: 8602; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x800000_frm_rmm_str: .string "\"test: 8603; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x800000_frm_rne_str: .string "\"test: 8604; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x800000_frm_rtz_str: .string "\"test: 8605; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x800000_frm_rup_str: .string "\"test: 8606; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80800000_frm_dyn_str: .string "\"test: 8607; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80800000_frm_rdn_str: .string "\"test: 8608; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80800000_frm_rmm_str: .string "\"test: 8609; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80800000_frm_rne_str: .string "\"test: 8610; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80800000_frm_rtz_str: .string "\"test: 8611; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80800000_frm_rup_str: .string "\"test: 8612; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f7fffff_frm_dyn_str: .string "\"test: 8613; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f7fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f7fffff_frm_rdn_str: .string "\"test: 8614; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f7fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f7fffff_frm_rmm_str: .string "\"test: 8615; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f7fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f7fffff_frm_rne_str: .string "\"test: 8616; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f7fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f7fffff_frm_rtz_str: .string "\"test: 8617; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f7fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f7fffff_frm_rup_str: .string "\"test: 8618; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f7fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff7fffff_frm_dyn_str: .string "\"test: 8619; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff7fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff7fffff_frm_rdn_str: .string "\"test: 8620; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff7fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff7fffff_frm_rmm_str: .string "\"test: 8621; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff7fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff7fffff_frm_rne_str: .string "\"test: 8622; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff7fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff7fffff_frm_rtz_str: .string "\"test: 8623; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff7fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff7fffff_frm_rup_str: .string "\"test: 8624; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff7fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffff_frm_dyn_str: .string "\"test: 8625; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffff_frm_rdn_str: .string "\"test: 8626; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffff_frm_rmm_str: .string "\"test: 8627; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffff_frm_rne_str: .string "\"test: 8628; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffff_frm_rtz_str: .string "\"test: 8629; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffff_frm_rup_str: .string "\"test: 8630; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x807fffff_frm_dyn_str: .string "\"test: 8631; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x807fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x807fffff_frm_rdn_str: .string "\"test: 8632; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x807fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x807fffff_frm_rmm_str: .string "\"test: 8633; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x807fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x807fffff_frm_rne_str: .string "\"test: 8634; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x807fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x807fffff_frm_rtz_str: .string "\"test: 8635; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x807fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x807fffff_frm_rup_str: .string "\"test: 8636; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x807fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x400000_frm_dyn_str: .string "\"test: 8637; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x400000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x400000_frm_rdn_str: .string "\"test: 8638; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x400000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x400000_frm_rmm_str: .string "\"test: 8639; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x400000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x400000_frm_rne_str: .string "\"test: 8640; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x400000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x400000_frm_rtz_str: .string "\"test: 8641; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x400000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x400000_frm_rup_str: .string "\"test: 8642; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x400000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80400000_frm_dyn_str: .string "\"test: 8643; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80400000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80400000_frm_rdn_str: .string "\"test: 8644; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80400000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80400000_frm_rmm_str: .string "\"test: 8645; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80400000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80400000_frm_rne_str: .string "\"test: 8646; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80400000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80400000_frm_rtz_str: .string "\"test: 8647; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80400000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80400000_frm_rup_str: .string "\"test: 8648; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80400000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x1_frm_dyn_str: .string "\"test: 8649; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x1, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x1_frm_rdn_str: .string "\"test: 8650; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x1, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x1_frm_rmm_str: .string "\"test: 8651; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x1, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x1_frm_rne_str: .string "\"test: 8652; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x1, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x1_frm_rtz_str: .string "\"test: 8653; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x1, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x1_frm_rup_str: .string "\"test: 8654; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x1, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000001_frm_dyn_str: .string "\"test: 8655; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000001, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000001_frm_rdn_str: .string "\"test: 8656; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000001, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000001_frm_rmm_str: .string "\"test: 8657; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000001, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000001_frm_rne_str: .string "\"test: 8658; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000001, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000001_frm_rtz_str: .string "\"test: 8659; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000001, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x80000001_frm_rup_str: .string "\"test: 8660; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x80000001, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800000_frm_dyn_str: .string "\"test: 8661; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800000_frm_rdn_str: .string "\"test: 8662; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800000_frm_rmm_str: .string "\"test: 8663; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800000_frm_rne_str: .string "\"test: 8664; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800000_frm_rtz_str: .string "\"test: 8665; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800000_frm_rup_str: .string "\"test: 8666; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff800000_frm_dyn_str: .string "\"test: 8667; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff800000_frm_rdn_str: .string "\"test: 8668; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff800000_frm_rmm_str: .string "\"test: 8669; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff800000_frm_rne_str: .string "\"test: 8670; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff800000_frm_rtz_str: .string "\"test: 8671; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xff800000_frm_rup_str: .string "\"test: 8672; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xff800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fc00000_frm_dyn_str: .string "\"test: 8673; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fc00000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fc00000_frm_rdn_str: .string "\"test: 8674; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fc00000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fc00000_frm_rmm_str: .string "\"test: 8675; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fc00000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fc00000_frm_rne_str: .string "\"test: 8676; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fc00000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fc00000_frm_rtz_str: .string "\"test: 8677; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fc00000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fc00000_frm_rup_str: .string "\"test: 8678; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fc00000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffffff_frm_dyn_str: .string "\"test: 8679; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffffff_frm_rdn_str: .string "\"test: 8680; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffffff_frm_rmm_str: .string "\"test: 8681; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffffff_frm_rne_str: .string "\"test: 8682; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffffff_frm_rtz_str: .string "\"test: 8683; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fffffff_frm_rup_str: .string "\"test: 8684; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fffffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffffffff_frm_dyn_str: .string "\"test: 8685; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffffffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffffffff_frm_rdn_str: .string "\"test: 8686; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffffffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffffffff_frm_rmm_str: .string "\"test: 8687; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffffffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffffffff_frm_rne_str: .string "\"test: 8688; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffffffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffffffff_frm_rtz_str: .string "\"test: 8689; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffffffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffffffff_frm_rup_str: .string "\"test: 8690; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffffffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800001_frm_dyn_str: .string "\"test: 8691; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800001, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800001_frm_rdn_str: .string "\"test: 8692; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800001, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800001_frm_rmm_str: .string "\"test: 8693; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800001, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800001_frm_rne_str: .string "\"test: 8694; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800001, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800001_frm_rtz_str: .string "\"test: 8695; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800001, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7f800001_frm_rup_str: .string "\"test: 8696; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7f800001, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fbfffff_frm_dyn_str: .string "\"test: 8697; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fbfffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fbfffff_frm_rdn_str: .string "\"test: 8698; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fbfffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fbfffff_frm_rmm_str: .string "\"test: 8699; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fbfffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fbfffff_frm_rne_str: .string "\"test: 8700; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fbfffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fbfffff_frm_rtz_str: .string "\"test: 8701; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fbfffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7fbfffff_frm_rup_str: .string "\"test: 8702; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7fbfffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffbfffff_frm_dyn_str: .string "\"test: 8703; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffbfffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffbfffff_frm_rdn_str: .string "\"test: 8704; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffbfffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffbfffff_frm_rmm_str: .string "\"test: 8705; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffbfffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffbfffff_frm_rne_str: .string "\"test: 8706; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffbfffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffbfffff_frm_rtz_str: .string "\"test: 8707; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffbfffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0xffbfffff_frm_rup_str: .string "\"test: 8708; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0xffbfffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7ef8654f_frm_dyn_str: .string "\"test: 8709; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7ef8654f, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7ef8654f_frm_rdn_str: .string "\"test: 8710; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7ef8654f, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7ef8654f_frm_rmm_str: .string "\"test: 8711; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7ef8654f, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7ef8654f_frm_rne_str: .string "\"test: 8712; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7ef8654f, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7ef8654f_frm_rtz_str: .string "\"test: 8713; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7ef8654f, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x7ef8654f_frm_rup_str: .string "\"test: 8714; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x7ef8654f, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x813d9ab0_frm_dyn_str: .string "\"test: 8715; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x813d9ab0, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x813d9ab0_frm_rdn_str: .string "\"test: 8716; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x813d9ab0, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x813d9ab0_frm_rmm_str: .string "\"test: 8717; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x813d9ab0, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x813d9ab0_frm_rne_str: .string "\"test: 8718; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x813d9ab0, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x813d9ab0_frm_rtz_str: .string "\"test: 8719; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x813d9ab0, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7fffffff_fs3val_0x813d9ab0_frm_rup_str: .string "\"test: 8720; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7fffffff, fs3val=0x813d9ab0, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x0_frm_dyn_str: .string "\"test: 8721; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x0, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x0_frm_rdn_str: .string "\"test: 8722; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x0, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x0_frm_rmm_str: .string "\"test: 8723; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x0, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x0_frm_rne_str: .string "\"test: 8724; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x0, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x0_frm_rtz_str: .string "\"test: 8725; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x0, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x0_frm_rup_str: .string "\"test: 8726; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x0, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000000_frm_dyn_str: .string "\"test: 8727; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000000_frm_rdn_str: .string "\"test: 8728; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000000_frm_rmm_str: .string "\"test: 8729; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000000_frm_rne_str: .string "\"test: 8730; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000000_frm_rtz_str: .string "\"test: 8731; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000000_frm_rup_str: .string "\"test: 8732; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3f800000_frm_dyn_str: .string "\"test: 8733; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x3f800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3f800000_frm_rdn_str: .string "\"test: 8734; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x3f800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3f800000_frm_rmm_str: .string "\"test: 8735; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x3f800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3f800000_frm_rne_str: .string "\"test: 8736; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x3f800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3f800000_frm_rtz_str: .string "\"test: 8737; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x3f800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x3f800000_frm_rup_str: .string "\"test: 8738; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x3f800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbf800000_frm_dyn_str: .string "\"test: 8739; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xbf800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbf800000_frm_rdn_str: .string "\"test: 8740; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xbf800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbf800000_frm_rmm_str: .string "\"test: 8741; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xbf800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbf800000_frm_rne_str: .string "\"test: 8742; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xbf800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbf800000_frm_rtz_str: .string "\"test: 8743; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xbf800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xbf800000_frm_rup_str: .string "\"test: 8744; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xbf800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_dyn_str: .string "\"test: 8745; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x40200000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_rdn_str: .string "\"test: 8746; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x40200000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_rmm_str: .string "\"test: 8747; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x40200000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_rne_str: .string "\"test: 8748; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x40200000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_rtz_str: .string "\"test: 8749; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x40200000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x40200000_frm_rup_str: .string "\"test: 8750; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x40200000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_dyn_str: .string "\"test: 8751; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xc0200000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_rdn_str: .string "\"test: 8752; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xc0200000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_rmm_str: .string "\"test: 8753; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xc0200000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_rne_str: .string "\"test: 8754; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xc0200000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_rtz_str: .string "\"test: 8755; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xc0200000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xc0200000_frm_rup_str: .string "\"test: 8756; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xc0200000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_dyn_str: .string "\"test: 8757; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x4b800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_rdn_str: .string "\"test: 8758; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x4b800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_rmm_str: .string "\"test: 8759; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x4b800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_rne_str: .string "\"test: 8760; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x4b800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_rtz_str: .string "\"test: 8761; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x4b800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x4b800000_frm_rup_str: .string "\"test: 8762; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x4b800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_dyn_str: .string "\"test: 8763; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xcb800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_rdn_str: .string "\"test: 8764; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xcb800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_rmm_str: .string "\"test: 8765; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xcb800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_rne_str: .string "\"test: 8766; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xcb800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_rtz_str: .string "\"test: 8767; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xcb800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xcb800000_frm_rup_str: .string "\"test: 8768; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xcb800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x800000_frm_dyn_str: .string "\"test: 8769; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x800000_frm_rdn_str: .string "\"test: 8770; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x800000_frm_rmm_str: .string "\"test: 8771; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x800000_frm_rne_str: .string "\"test: 8772; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x800000_frm_rtz_str: .string "\"test: 8773; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x800000_frm_rup_str: .string "\"test: 8774; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80800000_frm_dyn_str: .string "\"test: 8775; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80800000_frm_rdn_str: .string "\"test: 8776; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80800000_frm_rmm_str: .string "\"test: 8777; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80800000_frm_rne_str: .string "\"test: 8778; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80800000_frm_rtz_str: .string "\"test: 8779; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80800000_frm_rup_str: .string "\"test: 8780; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f7fffff_frm_dyn_str: .string "\"test: 8781; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f7fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f7fffff_frm_rdn_str: .string "\"test: 8782; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f7fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f7fffff_frm_rmm_str: .string "\"test: 8783; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f7fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f7fffff_frm_rne_str: .string "\"test: 8784; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f7fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f7fffff_frm_rtz_str: .string "\"test: 8785; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f7fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f7fffff_frm_rup_str: .string "\"test: 8786; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f7fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff7fffff_frm_dyn_str: .string "\"test: 8787; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff7fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff7fffff_frm_rdn_str: .string "\"test: 8788; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff7fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff7fffff_frm_rmm_str: .string "\"test: 8789; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff7fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff7fffff_frm_rne_str: .string "\"test: 8790; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff7fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff7fffff_frm_rtz_str: .string "\"test: 8791; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff7fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff7fffff_frm_rup_str: .string "\"test: 8792; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff7fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffff_frm_dyn_str: .string "\"test: 8793; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffff_frm_rdn_str: .string "\"test: 8794; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffff_frm_rmm_str: .string "\"test: 8795; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffff_frm_rne_str: .string "\"test: 8796; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffff_frm_rtz_str: .string "\"test: 8797; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffff_frm_rup_str: .string "\"test: 8798; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x807fffff_frm_dyn_str: .string "\"test: 8799; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x807fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x807fffff_frm_rdn_str: .string "\"test: 8800; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x807fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x807fffff_frm_rmm_str: .string "\"test: 8801; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x807fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x807fffff_frm_rne_str: .string "\"test: 8802; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x807fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x807fffff_frm_rtz_str: .string "\"test: 8803; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x807fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x807fffff_frm_rup_str: .string "\"test: 8804; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x807fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x400000_frm_dyn_str: .string "\"test: 8805; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x400000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x400000_frm_rdn_str: .string "\"test: 8806; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x400000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x400000_frm_rmm_str: .string "\"test: 8807; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x400000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x400000_frm_rne_str: .string "\"test: 8808; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x400000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x400000_frm_rtz_str: .string "\"test: 8809; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x400000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x400000_frm_rup_str: .string "\"test: 8810; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x400000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80400000_frm_dyn_str: .string "\"test: 8811; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80400000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80400000_frm_rdn_str: .string "\"test: 8812; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80400000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80400000_frm_rmm_str: .string "\"test: 8813; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80400000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80400000_frm_rne_str: .string "\"test: 8814; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80400000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80400000_frm_rtz_str: .string "\"test: 8815; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80400000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80400000_frm_rup_str: .string "\"test: 8816; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80400000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x1_frm_dyn_str: .string "\"test: 8817; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x1, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x1_frm_rdn_str: .string "\"test: 8818; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x1, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x1_frm_rmm_str: .string "\"test: 8819; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x1, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x1_frm_rne_str: .string "\"test: 8820; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x1, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x1_frm_rtz_str: .string "\"test: 8821; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x1, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x1_frm_rup_str: .string "\"test: 8822; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x1, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000001_frm_dyn_str: .string "\"test: 8823; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000001, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000001_frm_rdn_str: .string "\"test: 8824; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000001, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000001_frm_rmm_str: .string "\"test: 8825; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000001, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000001_frm_rne_str: .string "\"test: 8826; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000001, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000001_frm_rtz_str: .string "\"test: 8827; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000001, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x80000001_frm_rup_str: .string "\"test: 8828; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x80000001, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800000_frm_dyn_str: .string "\"test: 8829; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800000_frm_rdn_str: .string "\"test: 8830; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800000_frm_rmm_str: .string "\"test: 8831; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800000_frm_rne_str: .string "\"test: 8832; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800000_frm_rtz_str: .string "\"test: 8833; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800000_frm_rup_str: .string "\"test: 8834; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff800000_frm_dyn_str: .string "\"test: 8835; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff800000_frm_rdn_str: .string "\"test: 8836; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff800000_frm_rmm_str: .string "\"test: 8837; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff800000_frm_rne_str: .string "\"test: 8838; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff800000_frm_rtz_str: .string "\"test: 8839; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xff800000_frm_rup_str: .string "\"test: 8840; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xff800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fc00000_frm_dyn_str: .string "\"test: 8841; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fc00000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fc00000_frm_rdn_str: .string "\"test: 8842; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fc00000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fc00000_frm_rmm_str: .string "\"test: 8843; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fc00000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fc00000_frm_rne_str: .string "\"test: 8844; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fc00000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fc00000_frm_rtz_str: .string "\"test: 8845; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fc00000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fc00000_frm_rup_str: .string "\"test: 8846; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fc00000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffffff_frm_dyn_str: .string "\"test: 8847; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffffff_frm_rdn_str: .string "\"test: 8848; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffffff_frm_rmm_str: .string "\"test: 8849; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffffff_frm_rne_str: .string "\"test: 8850; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffffff_frm_rtz_str: .string "\"test: 8851; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fffffff_frm_rup_str: .string "\"test: 8852; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fffffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffffffff_frm_dyn_str: .string "\"test: 8853; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffffffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffffffff_frm_rdn_str: .string "\"test: 8854; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffffffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffffffff_frm_rmm_str: .string "\"test: 8855; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffffffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffffffff_frm_rne_str: .string "\"test: 8856; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffffffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffffffff_frm_rtz_str: .string "\"test: 8857; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffffffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffffffff_frm_rup_str: .string "\"test: 8858; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffffffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800001_frm_dyn_str: .string "\"test: 8859; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800001, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800001_frm_rdn_str: .string "\"test: 8860; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800001, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800001_frm_rmm_str: .string "\"test: 8861; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800001, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800001_frm_rne_str: .string "\"test: 8862; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800001, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800001_frm_rtz_str: .string "\"test: 8863; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800001, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7f800001_frm_rup_str: .string "\"test: 8864; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7f800001, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fbfffff_frm_dyn_str: .string "\"test: 8865; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fbfffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fbfffff_frm_rdn_str: .string "\"test: 8866; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fbfffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fbfffff_frm_rmm_str: .string "\"test: 8867; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fbfffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fbfffff_frm_rne_str: .string "\"test: 8868; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fbfffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fbfffff_frm_rtz_str: .string "\"test: 8869; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fbfffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7fbfffff_frm_rup_str: .string "\"test: 8870; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7fbfffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffbfffff_frm_dyn_str: .string "\"test: 8871; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffbfffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffbfffff_frm_rdn_str: .string "\"test: 8872; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffbfffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffbfffff_frm_rmm_str: .string "\"test: 8873; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffbfffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffbfffff_frm_rne_str: .string "\"test: 8874; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffbfffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffbfffff_frm_rtz_str: .string "\"test: 8875; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffbfffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0xffbfffff_frm_rup_str: .string "\"test: 8876; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0xffbfffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7ef8654f_frm_dyn_str: .string "\"test: 8877; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7ef8654f, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7ef8654f_frm_rdn_str: .string "\"test: 8878; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7ef8654f, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7ef8654f_frm_rmm_str: .string "\"test: 8879; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7ef8654f, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7ef8654f_frm_rne_str: .string "\"test: 8880; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7ef8654f, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7ef8654f_frm_rtz_str: .string "\"test: 8881; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7ef8654f, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x7ef8654f_frm_rup_str: .string "\"test: 8882; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x7ef8654f, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x813d9ab0_frm_dyn_str: .string "\"test: 8883; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x813d9ab0, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x813d9ab0_frm_rdn_str: .string "\"test: 8884; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x813d9ab0, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x813d9ab0_frm_rmm_str: .string "\"test: 8885; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x813d9ab0, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x813d9ab0_frm_rne_str: .string "\"test: 8886; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x813d9ab0, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x813d9ab0_frm_rtz_str: .string "\"test: 8887; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x813d9ab0, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0xffffffff_fs3val_0x813d9ab0_frm_rup_str: .string "\"test: 8888; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0xffffffff, fs3val=0x813d9ab0, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x0_frm_dyn_str: .string "\"test: 8889; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x0, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x0_frm_rdn_str: .string "\"test: 8890; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x0, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x0_frm_rmm_str: .string "\"test: 8891; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x0, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x0_frm_rne_str: .string "\"test: 8892; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x0, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x0_frm_rtz_str: .string "\"test: 8893; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x0, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x0_frm_rup_str: .string "\"test: 8894; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x0, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000000_frm_dyn_str: .string "\"test: 8895; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000000_frm_rdn_str: .string "\"test: 8896; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000000_frm_rmm_str: .string "\"test: 8897; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000000_frm_rne_str: .string "\"test: 8898; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000000_frm_rtz_str: .string "\"test: 8899; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000000_frm_rup_str: .string "\"test: 8900; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3f800000_frm_dyn_str: .string "\"test: 8901; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x3f800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3f800000_frm_rdn_str: .string "\"test: 8902; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x3f800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3f800000_frm_rmm_str: .string "\"test: 8903; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x3f800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3f800000_frm_rne_str: .string "\"test: 8904; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x3f800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3f800000_frm_rtz_str: .string "\"test: 8905; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x3f800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x3f800000_frm_rup_str: .string "\"test: 8906; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x3f800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbf800000_frm_dyn_str: .string "\"test: 8907; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xbf800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbf800000_frm_rdn_str: .string "\"test: 8908; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xbf800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbf800000_frm_rmm_str: .string "\"test: 8909; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xbf800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbf800000_frm_rne_str: .string "\"test: 8910; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xbf800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbf800000_frm_rtz_str: .string "\"test: 8911; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xbf800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xbf800000_frm_rup_str: .string "\"test: 8912; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xbf800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_dyn_str: .string "\"test: 8913; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x40200000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_rdn_str: .string "\"test: 8914; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x40200000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_rmm_str: .string "\"test: 8915; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x40200000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_rne_str: .string "\"test: 8916; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x40200000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_rtz_str: .string "\"test: 8917; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x40200000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x40200000_frm_rup_str: .string "\"test: 8918; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x40200000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_dyn_str: .string "\"test: 8919; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xc0200000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_rdn_str: .string "\"test: 8920; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xc0200000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_rmm_str: .string "\"test: 8921; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xc0200000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_rne_str: .string "\"test: 8922; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xc0200000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_rtz_str: .string "\"test: 8923; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xc0200000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xc0200000_frm_rup_str: .string "\"test: 8924; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xc0200000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_dyn_str: .string "\"test: 8925; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x4b800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_rdn_str: .string "\"test: 8926; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x4b800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_rmm_str: .string "\"test: 8927; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x4b800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_rne_str: .string "\"test: 8928; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x4b800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_rtz_str: .string "\"test: 8929; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x4b800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x4b800000_frm_rup_str: .string "\"test: 8930; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x4b800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_dyn_str: .string "\"test: 8931; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xcb800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_rdn_str: .string "\"test: 8932; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xcb800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_rmm_str: .string "\"test: 8933; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xcb800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_rne_str: .string "\"test: 8934; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xcb800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_rtz_str: .string "\"test: 8935; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xcb800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xcb800000_frm_rup_str: .string "\"test: 8936; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xcb800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x800000_frm_dyn_str: .string "\"test: 8937; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x800000_frm_rdn_str: .string "\"test: 8938; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x800000_frm_rmm_str: .string "\"test: 8939; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x800000_frm_rne_str: .string "\"test: 8940; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x800000_frm_rtz_str: .string "\"test: 8941; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x800000_frm_rup_str: .string "\"test: 8942; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80800000_frm_dyn_str: .string "\"test: 8943; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80800000_frm_rdn_str: .string "\"test: 8944; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80800000_frm_rmm_str: .string "\"test: 8945; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80800000_frm_rne_str: .string "\"test: 8946; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80800000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80800000_frm_rtz_str: .string "\"test: 8947; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80800000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80800000_frm_rup_str: .string "\"test: 8948; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80800000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f7fffff_frm_dyn_str: .string "\"test: 8949; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f7fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f7fffff_frm_rdn_str: .string "\"test: 8950; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f7fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f7fffff_frm_rmm_str: .string "\"test: 8951; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f7fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f7fffff_frm_rne_str: .string "\"test: 8952; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f7fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f7fffff_frm_rtz_str: .string "\"test: 8953; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f7fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f7fffff_frm_rup_str: .string "\"test: 8954; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f7fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xff7fffff_frm_dyn_str: .string "\"test: 8955; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xff7fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xff7fffff_frm_rdn_str: .string "\"test: 8956; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xff7fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xff7fffff_frm_rmm_str: .string "\"test: 8957; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xff7fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xff7fffff_frm_rne_str: .string "\"test: 8958; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xff7fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xff7fffff_frm_rtz_str: .string "\"test: 8959; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xff7fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0xff7fffff_frm_rup_str: .string "\"test: 8960; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0xff7fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7fffff_frm_dyn_str: .string "\"test: 8961; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7fffff_frm_rdn_str: .string "\"test: 8962; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7fffff_frm_rmm_str: .string "\"test: 8963; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7fffff_frm_rne_str: .string "\"test: 8964; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7fffff_frm_rtz_str: .string "\"test: 8965; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7fffff_frm_rup_str: .string "\"test: 8966; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x807fffff_frm_dyn_str: .string "\"test: 8967; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x807fffff, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x807fffff_frm_rdn_str: .string "\"test: 8968; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x807fffff, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x807fffff_frm_rmm_str: .string "\"test: 8969; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x807fffff, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x807fffff_frm_rne_str: .string "\"test: 8970; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x807fffff, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x807fffff_frm_rtz_str: .string "\"test: 8971; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x807fffff, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x807fffff_frm_rup_str: .string "\"test: 8972; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x807fffff, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x400000_frm_dyn_str: .string "\"test: 8973; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x400000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x400000_frm_rdn_str: .string "\"test: 8974; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x400000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x400000_frm_rmm_str: .string "\"test: 8975; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x400000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x400000_frm_rne_str: .string "\"test: 8976; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x400000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x400000_frm_rtz_str: .string "\"test: 8977; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x400000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x400000_frm_rup_str: .string "\"test: 8978; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x400000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80400000_frm_dyn_str: .string "\"test: 8979; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80400000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80400000_frm_rdn_str: .string "\"test: 8980; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80400000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80400000_frm_rmm_str: .string "\"test: 8981; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80400000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80400000_frm_rne_str: .string "\"test: 8982; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80400000, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80400000_frm_rtz_str: .string "\"test: 8983; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80400000, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80400000_frm_rup_str: .string "\"test: 8984; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80400000, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x1_frm_dyn_str: .string "\"test: 8985; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x1, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x1_frm_rdn_str: .string "\"test: 8986; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x1, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x1_frm_rmm_str: .string "\"test: 8987; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x1, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x1_frm_rne_str: .string "\"test: 8988; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x1, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x1_frm_rtz_str: .string "\"test: 8989; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x1, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x1_frm_rup_str: .string "\"test: 8990; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x1, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000001_frm_dyn_str: .string "\"test: 8991; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000001, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000001_frm_rdn_str: .string "\"test: 8992; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000001, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000001_frm_rmm_str: .string "\"test: 8993; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000001, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000001_frm_rne_str: .string "\"test: 8994; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000001, frm=rne\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000001_frm_rtz_str: .string "\"test: 8995; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000001, frm=rtz\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x80000001_frm_rup_str: .string "\"test: 8996; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x80000001, frm=rup\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f800000_frm_dyn_str: .string "\"test: 8997; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f800000, frm=dyn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f800000_frm_rdn_str: .string "\"test: 8998; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f800000, frm=rdn\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f800000_frm_rmm_str: .string "\"test: 8999; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f800000, frm=rmm\""
+F_fnmadd_s_cg_cr_fs1_fs3_edges_frm4_fs1val_0x7f800001_fs3val_0x7f800000_frm_rne_str: .string "\"test: 9000; cg: F_fnmadd.s_cg; cp: cr_fs1_fs3_edges_frm4; bin: fs1val=0x7f800001, fs3val=0x7f800000, frm=rne\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

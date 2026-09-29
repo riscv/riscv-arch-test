@@ -290,9 +290,9 @@ def _generate_csr_sweep_body(
                     f"\t{test_data.add_testcase(f'csrr_{ih}', 'cp_csrr', covergroup)}",
                     f"\tcsrr x{r1}, {ih}",  # save CSR value
                     f"\tli x{r2}, -1",  # all-ones value
-                    f"\t{test_data.add_testcase(f'csrw_ones_{ih}', 'cp_csrw_corners', covergroup)}",
+                    f"\t{test_data.add_testcase(f'csrw_ones_{ih}', 'cp_csrw_edges', covergroup)}",
                     f"\tcsrrw x{r3}, {ih}, x{r2}",  # write all-ones
-                    f"\t{test_data.add_testcase(f'csrw_zeros_{ih}', 'cp_csrw_corners', covergroup)}",
+                    f"\t{test_data.add_testcase(f'csrw_zeros_{ih}', 'cp_csrw_edges', covergroup)}",
                     f"\tcsrrw x{r3}, {ih}, x0",  # write all-zeros
                     f"\t{test_data.add_testcase(f'csrrs_{ih}', 'cp_csrcs', covergroup)}",
                     f"\tcsrrs x{r3}, {ih}, x{r2}",  # set all bits
@@ -314,25 +314,25 @@ def _generate_illegal_instr(
     test_data: TestData,
     covergroup: str,
 ) -> list[TestChunk]:
-    """cp_illegal_instruction — reserved/illegal 32-bit encoding sweep.
+    """Reserved/illegal 32-bit encoding sweep (testplan cp_illegal_instruction).
 
     Each encoding block becomes a self-contained chunk that re-runs
     _scratch_setup (reload the scratch base) so it is valid in any split file.
+    Each sweep's comment names the covergroup cross it covers.
     """
-    coverpoint = "cp_illegal_instruction"
     test_chunks: list[TestChunk] = []
-    # Only the first chunk carries the coverpoint testcase label and section banner.
-    label: tuple[str, str, str] | None = ("illegal_instr_sweep", coverpoint, covergroup)
-    section_header: str | None = comment_banner(coverpoint)
+    # Only the first chunk carries the testcase label (on the cp_illegal sweep) and section banner.
+    label: tuple[str, str, str] | None = ("illegal_instr_sweep", "cp_illegal", covergroup)
+    section_header: str | None = comment_banner("Illegal 32-bit instruction sweep")
     split_name = "IllegalInstr"
 
     scalar_sweeps = [
         [
-            RawSweep("Reserved op7", "RRRRRRRRRRRRRRRRRRRRRRRRR0011111"),
-            RawSweep("Reserved op15", "RRRRRRRRRRRRRRRRRRRRRRRRR0111111"),
-            RawSweep("Reserved op23", "RRRRRRRRRRRRRRRRRRRRRRRRR1011111"),
-            RawSweep("Reserved op26", "RRRRRRRRRRRRRRRRRRRRRRRRR1101011"),
-            RawSweep("Reserved op31", "RRRRRRRRRRRRRRRRRRRRRRRRR1111111"),
+            RawSweep("cp_illegal op7", "RRRRRRRRRRRRRRRRRRRRRRRRR0011111"),
+            RawSweep("cp_illegal op15", "RRRRRRRRRRRRRRRRRRRRRRRRR0111111"),
+            RawSweep("cp_illegal op23", "RRRRRRRRRRRRRRRRRRRRRRRRR1011111"),
+            RawSweep("cp_illegal op26", "RRRRRRRRRRRRRRRRRRRRRRRRR1101011"),
+            RawSweep("cp_illegal op31", "RRRRRRRRRRRRRRRRRRRRRRRRR1111111"),
         ],
         [
             RawSweep("cp_load", "000000000000BBBBBEEE011RR0000011"),
@@ -356,20 +356,20 @@ def _generate_illegal_instr(
                 "EEEEERRRRRRRBBBBB01E011RR0101111",
                 exclusion=("01001XXXXXXXXXXXX01XXXXXX0101111",),
             ),
-            RawSweep("cp_lrsc", "00010RREEEEEBBBBB01E011RR0101111"),
+            RawSweep("lrsc", "00010RREEEEEBBBBB01E011RR0101111"),
             RawSweep("cp_amocas_odd", "00101RRRRRREBBBBBEEE011RE0101111"),
         ],
         [
             RawSweep("cp_Itype", "EEEEEEEEEEEERRRRRE01RRRRR0010011"),
-            RawSweep("cp_llAItype", "RRRRRRRRRRRRRRRRREEERRRRR0010011"),
+            RawSweep("cp_Itypef3", "RRRRRRRRRRRRRRRRREEERRRRR0010011"),
             RawSweep("cp_aes64ks1i", "0011000EEEEERRRRR001RRRRR0010011"),
             RawSweep("cp_IWtype", "RRRRRRRRRRRRRRRRREEERRRRR0011011"),
             RawSweep("cp_IWshift", "EEEEEEERRRRRRRRRRE01RRRRR0011011"),
-            RawSweep("cp_rtype", "EEEEEEERRRRRRRRRREEERRRRR0110011"),
-            RawSweep("cp_rwtype", "EEEEEEERRRRRRRRRREEERRRRR0111011"),
+            RawSweep("cp_Rtype", "EEEEEEERRRRRRRRRREEERRRRR0110011"),
+            RawSweep("cp_RWtype", "EEEEEEERRRRRRRRRREEERRRRR0111011"),
         ],
         [
-            RawSweep("cp_ftype", "EEEEERRRRRRRRRRRREEERRRRR1010011"),
+            RawSweep("cp_Ftype", "EEEEERRRRRRRRRRRREEERRRRR1010011"),
             RawSweep("cp_fsqrt", "0101100EEEEERRRRRRRRRRRRR1010011"),
             RawSweep("cp_fclass", "1110000EEEEERRRRR001RRRRR1010011"),
             RawSweep("cp_fcvtif", "1100000EEE00RRRRR000RRRRR1010011"),
@@ -384,19 +384,19 @@ def _generate_illegal_instr(
             RawSweep("cp_fmvh", "11100EEEEEEERRRRR000RRRRR1010011"),
             RawSweep("cp_fmvp", "10110EERRRRRRRRRR000RRRRR1010011"),
             RawSweep("cp_cvtmodwd", "11000EEEEEEERRRRR001RRRRR1010011"),
-            RawSweep("cp_fcvtmodwdfrm", "110000101000RRRRREEERRRRR1010011"),
+            RawSweep("cp_cvtmodwdfrm", "110000101000RRRRREEERRRRR1010011"),
         ],
         [
-            RawSweep("cp_branch2", "RRRRRRRRRRRRRRRRR010RRRRR1100011"),
-            RawSweep("cp_branch3", "RRRRRRRRRRRRRRRRR011RRRRR1100011"),
-            RawSweep("cp_jalr0", "RRRRRRRRRRRRRRRRREE1RRRRR1100111"),
-            RawSweep("cp_jalr1", "RRRRRRRRRRRRRRRRR010RRRRR1100111"),
-            RawSweep("cp_jalr2", "RRRRRRRRRRRRRRRRR100RRRRR1100111"),
-            RawSweep("cp_jalr3", "RRRRRRRRRRRRRRRRR110RRRRR1100111"),
+            RawSweep("cp_branch funct3=010", "RRRRRRRRRRRRRRRRR010RRRRR1100011"),
+            RawSweep("cp_branch funct3=011", "RRRRRRRRRRRRRRRRR011RRRRR1100011"),
+            RawSweep("cp_jalr funct3=xx1", "RRRRRRRRRRRRRRRRREE1RRRRR1100111"),
+            RawSweep("cp_jalr funct3=010", "RRRRRRRRRRRRRRRRR010RRRRR1100111"),
+            RawSweep("cp_jalr funct3=100", "RRRRRRRRRRRRRRRRR100RRRRR1100111"),
+            RawSweep("cp_jalr funct3=110", "RRRRRRRRRRRRRRRRR110RRRRR1100111"),
         ],
         [
             RawSweep(
-                "cp_privileged_f3",
+                "cp_privileged_funct3",
                 "00000000000100000EEE000001110011",
                 # funct3=000 is ebreak: legal, traps as breakpoint (cause 3), and the
                 # slow handler's +8 sepc adjustment would skip the funct3=001 word.
@@ -423,14 +423,14 @@ def _generate_illegal_instr(
             ),
         ],
         [
-            RawSweep("cp_reserved_fma", "RRRRRRRRRRRRRRRRREEERRRRR100EE11"),
-            RawSweep("cp_reserved_fence_fm", "EEEE00000000RRRRR000RRRRR0001111"),
+            RawSweep("cp_reserved fma rm", "RRRRRRRRRRRRRRRRREEERRRRR100EE11"),
+            RawSweep("cp_reserved fence fm", "EEEE00000000RRRRR000RRRRR0001111"),
             RawSweep(
-                "cp_reserved_fence_rs1",
+                "cp_reserved fence rs1",
                 "00001111111100001000RRRRE0001111",
                 exclusion=("XXXXXXXXXXXXXXXXXXXX00010XXXXXXX", "XXXXXXXXXXXXXXXXXXXX01000XXXXXXX"),
             ),
-            RawSweep("cp_reserved_fence_rd", "000011111111RRRRE000000010001111"),
+            RawSweep("cp_reserved fence rd", "000011111111RRRRE000000010001111"),
         ],
     ]
     for sweep_group in scalar_sweeps:
@@ -447,28 +447,30 @@ def _generate_illegal_instr(
         section_header = None
 
     # ── Upper register sweep (E extension) ── x16-x31 trap when E active ──
-    upperreg_header: str | None = comment_banner("cp_upperreg", "x16-x31 — trap when E extension active")
+    upperreg_header: str | None = comment_banner(
+        "cp_upperreg_rs1/rs2/rd/imm_rs1/imm_rd/fmv_rs1/fmv_rd", "x16-x31 — trap when E extension active"
+    )
     _emit_raw_sweeps(
         test_data,
         test_chunks,
         [
-            RawSweep("cp_upperreg_rs1_add", "0000000000011EEEE000000010110011"),
-            RawSweep("cp_upperreg_rs2_add", "00000001EEEE00001000011100110011"),
-            RawSweep("cp_upperreg_rd_add", "000000000001000010001EEEE0110011"),
-            RawSweep("cp_upperreg_rs1_mul", "0000001000011EEEE000000010110011"),
-            RawSweep("cp_upperreg_rs2_mul", "00000011EEEE00001000011100110011"),
-            RawSweep("cp_upperreg_rd_mul", "000000100001000010001EEEE0110011"),
-            RawSweep("cp_upperreg_rs1_fadd-s", "0000000000011EEEE000000011010011"),
-            RawSweep("cp_upperreg_rs2_fadd-s", "00000001EEEE00001000011101010011"),
-            RawSweep("cp_upperreg_rd_fadd-s", "000000000001000010001EEEE1010011"),
-            RawSweep("cp_upperreg_imm_rs1_addi0", "0000000000001EEEE000011100010011"),
-            RawSweep("cp_upperreg_imm_rs1_addi1", "1111111111111EEEE000011100010011"),
-            RawSweep("cp_upperreg_imm_rd_addi0", "000000000000000010001EEEE0010011"),
-            RawSweep("cp_upperreg_imm_rd_addi1", "111111111111000010001EEEE0010011"),
-            RawSweep("cp_upperreg_fmv_x_w_rs1", "1110000000001EEEE000000011010011"),
-            RawSweep("cp_upperreg_fmv_x_w_rd", "111000000000000010001EEEE1010011"),
-            RawSweep("cp_upperreg_fmv_w_x_rs1", "1111000000001EEEE000011101010011"),
-            RawSweep("cp_upperreg_fmv_w_x_rd", "111100000000000010001EEEE1010011"),
+            RawSweep("cp_upperreg_rs1 add", "0000000000011EEEE000000010110011"),
+            RawSweep("cp_upperreg_rs2 add", "00000001EEEE00001000011100110011"),
+            RawSweep("cp_upperreg_rd add", "000000000001000010001EEEE0110011"),
+            RawSweep("cp_upperreg_rs1 mul", "0000001000011EEEE000000010110011"),
+            RawSweep("cp_upperreg_rs2 mul", "00000011EEEE00001000011100110011"),
+            RawSweep("cp_upperreg_rd mul", "000000100001000010001EEEE0110011"),
+            RawSweep("cp_upperreg_rs1 fadd.s", "0000000000011EEEE000000011010011"),
+            RawSweep("cp_upperreg_rs2 fadd.s", "00000001EEEE00001000011101010011"),
+            RawSweep("cp_upperreg_rd fadd.s", "000000000001000010001EEEE1010011"),
+            RawSweep("cp_upperreg_imm_rs1 imm=0", "0000000000001EEEE000011100010011"),
+            RawSweep("cp_upperreg_imm_rs1 imm=-1", "1111111111111EEEE000011100010011"),
+            RawSweep("cp_upperreg_imm_rd imm=0", "000000000000000010001EEEE0010011"),
+            RawSweep("cp_upperreg_imm_rd imm=-1", "111111111111000010001EEEE0010011"),
+            RawSweep("cp_upperreg_fmv_rs1 fmv.x.w", "1110000000001EEEE000000011010011"),
+            RawSweep("cp_upperreg_fmv_rd fmv.x.w", "111000000000000010001EEEE1010011"),
+            RawSweep("cp_upperreg_fmv_rs1 fmv.w.x", "1111000000001EEEE000011101010011"),
+            RawSweep("cp_upperreg_fmv_rd fmv.w.x", "111100000000000010001EEEE1010011"),
         ],
         setup=_scratch_setup,
         section_header=upperreg_header,
@@ -500,20 +502,19 @@ def _generate_vector_illegal_instr(
     test_data: TestData,
     covergroup: str,
 ) -> list[TestChunk]:
-    """cp_illegal_vector_instruction — reserved/illegal vector encoding sweep.
+    """Reserved/illegal vector encoding sweep (testplan cp_illegal_vector_instruction).
 
     Each encoding block becomes a self-contained chunk that re-runs the vector
     setup (reload the scratch base + the right vsetivli for the block) so it is
-    valid in any split file.
+    valid in any split file. Each sweep's comment names the covergroup cross it covers.
     """
-    coverpoint = "cp_illegal_vector_instruction"
     test_chunks: list[TestChunk] = []
-    # Only the first chunk carries the coverpoint testcase label.
-    label: tuple[str, str, str] | None = ("vector_illegal_sweep", coverpoint, covergroup)
+    # Only the first chunk carries the testcase label (on the cp_v_vsetvl sweep).
+    label: tuple[str, str, str] | None = ("vector_illegal_sweep", "cp_v_vsetvl", covergroup)
 
     # ── vset* configuration instructions ──────────────────────────────
     vset_header = comment_banner(
-        coverpoint,
+        "Vector illegal instruction sweep",
         "Exhaustive reserved/illegal vector encoding sweep.",
     ) + comment_banner("vset* reserved encodings", "Reserved bits in vsetvl/vsetvli/vsetivli")
     _emit_raw_sweeps(
@@ -539,11 +540,11 @@ def _generate_vector_illegal_instr(
         test_data,
         test_chunks,
         [
-            RawSweep("cp_vl_0_000", "RRRERRRRRRRRBBBBBEEE011RR0000111"),
-            RawSweep("cp_vl_lumop_8", "RRR000REEEEEBBBBB000011RR0000111"),
-            RawSweep("cp_vl_lumop_16", "RRR000REEEEEBBBBB101011RR0000111"),
-            RawSweep("cp_vl_lumop_32", "RRR000REEEEEBBBBB110011RR0000111"),
-            RawSweep("cp_vl_lumop_64", "RRR000REEEEEBBBBB111011RR0000111"),
+            RawSweep("cp_vl_width", "RRRERRRRRRRRBBBBBEEE011RR0000111"),
+            RawSweep("cp_vl_lumop width=8", "RRR000REEEEEBBBBB000011RR0000111"),
+            RawSweep("cp_vl_lumop width=16", "RRR000REEEEEBBBBB101011RR0000111"),
+            RawSweep("cp_vl_lumop width=32", "RRR000REEEEEBBBBB110011RR0000111"),
+            RawSweep("cp_vl_lumop width=64", "RRR000REEEEEBBBBB111011RR0000111"),
         ],
         setup=_vector_setup(),
         section_header=comment_banner("Vector load reserved encodings", "Reserved mew/width/lumop for vector loads"),
@@ -554,11 +555,11 @@ def _generate_vector_illegal_instr(
         test_data,
         test_chunks,
         [
-            RawSweep("cp_vl_0_000", "RRRERRRRRRRRBBBBBEEE011RR0100111"),
-            RawSweep("cp_vl_sumop_8", "RRR000REEEEEBBBBB000011RR0100111"),
-            RawSweep("cp_vl_sumop_16", "RRR000REEEEEBBBBB101011RR0100111"),
-            RawSweep("cp_vl_sumop_32", "RRR000REEEEEBBBBB110011RR0100111"),
-            RawSweep("cp_vl_sumop_64", "RRR000REEEEEBBBBB111011RR0100111"),
+            RawSweep("cp_vs_width", "RRRERRRRRRRRBBBBBEEE011RR0100111"),
+            RawSweep("cp_vs_sumop width=8", "RRR000REEEEEBBBBB000011RR0100111"),
+            RawSweep("cp_vs_sumop width=16", "RRR000REEEEEBBBBB101011RR0100111"),
+            RawSweep("cp_vs_sumop width=32", "RRR000REEEEEBBBBB110011RR0100111"),
+            RawSweep("cp_vs_sumop width=64", "RRR000REEEEEBBBBB111011RR0100111"),
         ],
         setup=_vector_setup(),
         section_header=comment_banner("Vector store reserved encodings", "Reserved mew/width/lumop for vector stores"),
@@ -571,23 +572,23 @@ def _generate_vector_illegal_instr(
             test_data,
             test_chunks,
             [
-                RawSweep(f"cp_IVV_f6_e{sew}", "EEEEEEERRRRRRRRRR000RRRRR1010111"),
-                RawSweep(f"cp_FVV_f6_e{sew}", "EEEEEEERRRRRRRRRR001RRRRR1010111"),
-                RawSweep(f"cp_MVV_f6_e{sew}", "EEEEEEERRRRRRRRRR010RRRRR1010111"),
-                RawSweep(f"cp_IVI_f6_e{sew}", "EEEEEEERRRRRRRRRR011RRRRR1010111"),
-                RawSweep(f"cp_IVX_f6_e{sew}", "EEEEEEERRRRRRRRRR100RRRRR1010111"),
-                RawSweep(f"cp_FVF_f6_e{sew}", "EEEEEEERRRRRRRRRR101RRRRR1010111"),
-                RawSweep(f"cp_MVX_f6_e{sew}", "EEEEEEERRRRRRRRRR110RRRRR1010111"),
-                RawSweep(f"cp_MVV_VWRXUNARY0_e{sew}", "010000ERRRRREEEEE010RRRRR1010111"),
-                RawSweep(f"cp_MVX_VRXUNARY0_e{sew}", "010000EEEEEERRRRR110RRRRR1010111"),
-                RawSweep(f"cp_MVV_VXUNARY0_e{sew}", "010010ERRRRREEEEE010RRRRR1010111"),
-                RawSweep(f"cp_MVV_VMUNARY0_e{sew}", "010100ERRRRREEEEE010RRRRR1010111"),
-                RawSweep(f"cp_FVV_VWFUNARY0_e{sew}", "010000ERRRRREEEEE001RRRRR1010111"),
-                RawSweep(f"cp_FVF_VRFUNARY0_e{sew}", "010000EEEEEERRRRR101RRRRR1010111"),
-                RawSweep(f"cp_FVV_VFUNARY0_e{sew}", "010010ERRRRREEEEE001RRRRR1010111"),
-                RawSweep(f"cp_FVV_VFUNARY1_e{sew}", "010011ERRRRREEEEE001RRRRR1010111"),
-                RawSweep(f"cp_MVV_vaesvv_e{sew}", "101000ERRRRREEEEE010RRRRR1110111"),
-                RawSweep(f"cp_MVV_vaesvs_e{sew}", "101001ERRRRREEEEE010RRRRR1110111"),
+                RawSweep(f"cp_v_IVV_f6 e{sew}", "EEEEEEERRRRRRRRRR000RRRRR1010111"),
+                RawSweep(f"cp_v_FVV_f6 e{sew}", "EEEEEEERRRRRRRRRR001RRRRR1010111"),
+                RawSweep(f"cp_v_MVV_f6 e{sew}", "EEEEEEERRRRRRRRRR010RRRRR1010111"),
+                RawSweep(f"cp_v_IVI_f6 e{sew}", "EEEEEEERRRRRRRRRR011RRRRR1010111"),
+                RawSweep(f"cp_v_IVX_f6 e{sew}", "EEEEEEERRRRRRRRRR100RRRRR1010111"),
+                RawSweep(f"cp_v_FVF_f6 e{sew}", "EEEEEEERRRRRRRRRR101RRRRR1010111"),
+                RawSweep(f"cp_v_MVX_f6 e{sew}", "EEEEEEERRRRRRRRRR110RRRRR1010111"),
+                RawSweep(f"cp_v_VWRXUNARY0 e{sew}", "010000ERRRRREEEEE010RRRRR1010111"),
+                RawSweep(f"cp_v_VRXUNARY0 e{sew}", "010000EEEEEERRRRR110RRRRR1010111"),
+                RawSweep(f"cp_v_VXUNARY0 e{sew}", "010010ERRRRREEEEE010RRRRR1010111"),
+                RawSweep(f"cp_v_VMUNARY0 e{sew}", "010100ERRRRREEEEE010RRRRR1010111"),
+                RawSweep(f"cp_v_VWFUNARY0 e{sew}", "010000ERRRRREEEEE001RRRRR1010111"),
+                RawSweep(f"cp_v_VRFUNARY0 e{sew}", "010000EEEEEERRRRR101RRRRR1010111"),
+                RawSweep(f"cp_v_VFUNARY0 e{sew}", "010010ERRRRREEEEE001RRRRR1010111"),
+                RawSweep(f"cp_v_VFUNARY1 e{sew}", "010011ERRRRREEEEE001RRRRR1010111"),
+                RawSweep(f"cp_v_vaesvv e{sew}", "101000ERRRRREEEEE010RRRRR1110111"),
+                RawSweep(f"cp_v_vaesvs e{sew}", "101001ERRRRREEEEE010RRRRR1110111"),
             ],
             setup=_vector_setup(sew, avl=1),
             section_header=sew_header,
@@ -604,7 +605,7 @@ def _generate_vector_illegal_instr(
                 test_data,
                 test_chunks,
                 [
-                    RawSweep(f"cp_vopve_e{sew}", "EEEEEEERRR00RRR00EEERRR001110111"),
+                    RawSweep(f"cp_vopve e{sew}", "EEEEEEERRR00RRR00EEERRR001110111"),
                 ],
                 setup=_vector_setup(sew, avl=vl, lmul=4),
                 section_header=sew_header,
@@ -620,17 +621,16 @@ def _generate_compressed_instr(
     test_data: TestData,
     covergroup: str,
 ) -> list[TestChunk]:
-    """cp_illegal_compressed_instruction — exhaustive 16-bit quadrant sweeps.
+    """Exhaustive 16-bit quadrant sweeps (testplan cp_illegal_compressed_instruction).
 
     Compressed encodings need no scratch setup; sp-relative and jump/branch
     encodings are excluded so no chunk corrupts the signature area.
     """
-    coverpoint = "cp_illegal_compressed_instruction"
     test_chunks: list[TestChunk] = []
     compressed_sweeps = [
         # Quadrant 00: Exclude loads and stores that could cause exceptions for bad addresses
         RawSweep(
-            "compressed00",
+            "cp_compressed00",
             "EEEEEEEEEEEEEE00",
             length=16,
             exclusion=(
@@ -649,7 +649,7 @@ def _generate_compressed_instr(
         # Quadrant 01: exclude jumps and branches that could go to unknown places.
         # Avoid clobbering signature pointer in x2
         RawSweep(
-            "compressed01",
+            "cp_compressed01",
             "EEEEEEEEEEEEEE01",
             length=16,
             exclusion=(
@@ -661,7 +661,7 @@ def _generate_compressed_instr(
         ),
         # Quadrant 10:
         RawSweep(
-            "compressed10",
+            "cp_compressed10",
             "EEEEEEEEEEEEEE10",
             length=16,
             exclusion=(
@@ -678,14 +678,14 @@ def _generate_compressed_instr(
                 "1010XXXXXXXXXX10",  # nop-like edge — unpredictable on some platforms
             ),
         ),
-        RawSweep("illegal_c_jr", "1000000000000010", length=16),
+        RawSweep("cp_compressed10 illegal_c_jr", "1000000000000010", length=16),
     ]
     _emit_raw_sweeps(
         test_data,
         test_chunks,
         compressed_sweeps,
-        label=("compressed_sweep", coverpoint, covergroup),
-        section_header=comment_banner(coverpoint, "Exhaustive 16-bit quadrant sweep."),
+        label=("compressed_sweep", "cp_compressed00", covergroup),
+        section_header=comment_banner("cp_compressed00/01/10", "Exhaustive 16-bit quadrant sweep."),
         split_name="CompressedInstr",
     )
 
@@ -720,7 +720,7 @@ def _generate_csr_sweep(test_data: TestData, suite: str, priv_mode: str, csr_ski
     all_csrs = [a for a in range(4096) if a not in csr_skip]
     preamble = _M_MODE_PMP_LOCK if priv_mode == "M" else None
     section_header = comment_banner(
-        f"cp_csrr / cp_csrw_corners / cp_csrcs ({label})",
+        f"cp_csrr / cp_csrw_edges / cp_csrcs ({label})",
         f"Read, write 0s/1s, set, clear every swept CSR from {label}.\n"
         "Higher-privilege, custom, and reserved CSRs are excluded via the\n"
         "suite's skip set (architecturally-known traps add no coverage).",

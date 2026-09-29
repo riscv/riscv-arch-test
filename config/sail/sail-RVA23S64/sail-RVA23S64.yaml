@@ -488,6 +488,6 @@ params:
       true,
     ]
   # Pointer masking params
-  SUPPORTED_PMLEN_SSNPM: [0, 16]
+  SUPPORTED_PMLEN_SSNPM: [0, 7]
   # Zawrs params
   ZAWRS_NTO_IS_NOP: true

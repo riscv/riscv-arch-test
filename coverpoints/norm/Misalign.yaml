@@ -24,3 +24,26 @@ normative_rule_definitions:
     coverpoint: ["Misalign_ld_cg/{cp_misalign}"]
   - name: sd_sw_sh_sb_op_rv64i
     coverpoint: ["Misalign_sd_cg/{cp_misalign}"]
+  # Misalign is the suite that checks that misaligned loads and stores complete and return
+  # or write the right bytes. ExceptionsSm maps the same rules to the trapping outcome.
+  #
+  # Loads and stores whose effective address is not naturally aligned to the
+  # referenced datatype (i.e., the effective address is not divisible by the size of
+  # the access in bytes) have behavior dependent on the EEI.
+  - name: misaligned_ldst_eei_dependent_behavior
+    # Representative: every Misalign* covergroup's cp_misalign exercises the same behavior
+    coverpoint: ["{Misalign_lw_cg,Misalign_sw_cg}/{cp_misalign}"]
+  # misaligned loads and stores can be handled in hardware, or via an invisible trap into
+  # the execution environment implementation, or possibly a combination of hardware and
+  # invisible trap depending on address.
+  - name: misaligned_ldst_hw_support
+    # Representative: every Misalign* covergroup's cp_misalign exercises the same behavior
+    coverpoint:
+      [
+        "{Misalign_lw_cg,Misalign_sw_cg,Misalign_ld_cg,Misalign_sd_cg}/{cp_misalign}",
+      ]
+  # loads and stores that are not naturally aligned may either complete execution
+  # successfully or raise an exception.
+  - name: misaligned_ldst_exc_type
+    # Representative: the completes-successfully branch; every Misalign* covergroup's cp_misalign exercises it
+    coverpoint: ["{Misalign_lw_cg,Misalign_sw_cg}/{cp_misalign}"]

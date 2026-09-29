@@ -42,6 +42,15 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
     fflags: coverpoint ins.current.insn[31:20] {
         bins fflags = {CSR_FFLAGS};
     }
+    // csrrw/csrrs/csrrc that write (rs1 != x0) and return the old value in rd != x0
+    csr_swap_op: coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b1110011 & ins.current.insn[19:15] != 5'b00000) {
+        bins csrrw = {3'b001};
+        bins csrrs = {3'b010};
+        bins csrrc = {3'b011};
+    }
+    rd_nonzero: coverpoint ins.current.insn[11:7] iff (ins.current.rd_val != 0) { // old value is nonzero
+        bins nonzero = {[1:31]};
+    }
     fcsr_frm_edges: coverpoint ins.current.rs1_val[7:5] {
         // auto fills 0 through 7
     }
@@ -103,6 +112,7 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
     cp_fcsr_fflags_write:     cross csrrw, fcsr,         fflags_edges;
     cp_frm_write:             cross csrrw, frm,          frm_edges;
     cp_fflags_write:          cross csrrw, fflags,       fflags_edges;
+    cp_fcsr_swap:             cross csr_swap_op, fcsrname, rd_nonzero;
     cp_fflags_set_m_NV:       cross fsub,  fs1_infinity, fs2_infinity;
     cp_fflags_set_m_DZ:       cross fdiv,  fs1_one,      fs2_zero;
     cp_fflags_set_m_OF:       cross fadd,  fs1_largest,  fs2_largest;

@@ -27,7 +27,7 @@ normative_rule_definitions:
   - name: fflags_frm_op_sz_acc
     coverpoint:
       [
-        "ZicsrF_cg/{cp_fcsr_frm_write, cp_frm_write, cp_fcsr_fflags_write, cp_fflags_write}",
+        "ZicsrF_cg/{cp_fcsr_frm_write, cp_frm_write, cp_fcsr_fflags_write, cp_fflags_write, cp_fcsr_swap}",
       ]
 
   # Rounding Mode|Mnemonic|Meaning === 000|RNE|Round to Nearest, ties to

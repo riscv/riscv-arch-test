@@ -162,7 +162,40 @@ def _generate_fcsr_write(test_data: TestData) -> list[str]:
             ]
         )
 
-    test_data.int_regs.return_registers([r1])
+    ######################################
+    coverpoint = "cp_fcsr_swap"
+    ######################################
+
+    lines.append(
+        comment_banner(
+            "cp_fcsr_swap",
+            "csrrw/csrrs/csrrc with rd != x0 on fcsr, frm and fflags return the old value:\n"
+            "fcsr in bits 7:0, frm in bits 2:0, fflags in bits 4:0, zeros above.\n"
+            "fcsr is then read back to check the write.",
+        )
+    )
+
+    r2, r3 = test_data.int_regs.get_registers(2)
+    # (op, prior fcsr, rs1 value): each prior fcsr has nonzero frm and fflags fields
+    swaps = [("csrrw", 0xB5, 0xF4A), ("csrrs", 0x6A, 0x125), ("csrrc", 0xFF, 0x1D6)]
+    for csr in ("fcsr", "frm", "fflags"):
+        for op, prior, val in swaps:
+            lines.extend(
+                [
+                    "",
+                    f"# Testcase: {op} on {csr} with fcsr = {prior:#04x} returns the old {csr}",
+                    f"LI(x{r1}, {prior:#x})           # prior fcsr value",
+                    f"csrw fcsr, x{r1}",
+                    f"LI(x{r2}, {val:#x})           # {op} source value",
+                    test_data.add_testcase(f"{op}_{csr}", coverpoint, covergroup),
+                    f"{op} x{r3}, {csr}, x{r2}    # old {csr} -> x{r3}",
+                    write_sigupd(r3, test_data, "int"),
+                    test_data.add_testcase(f"{op}_{csr}_fcsr", coverpoint, covergroup),
+                    gen_csr_read_sigupd(r3, ("fcsr", None), test_data),
+                ]
+            )
+
+    test_data.int_regs.return_registers([r1, r2, r3])
 
     return lines
 

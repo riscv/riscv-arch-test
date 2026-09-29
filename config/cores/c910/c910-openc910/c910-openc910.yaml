@@ -282,9 +282,11 @@ params:
   #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cpu/rtl/openC910.v#L1655-L1656
   #   Quote: "assign clint_core0_ms_int = msip0_reg;" / "assign clint_core0_mt_int = ..."
   #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/clint/rtl/ct_clint_func.v#L495-L501
-  MEI_INTR_IMPL: true
+  # ACT reads {MEI,MTI,MSI}_INTR_IMPL as the machine interrupts the platform can raise
+  # (tests/env/check_defines.h), so each is true only where rvmodel_macros.h can raise it.
+  MEI_INTR_IMPL: false
   MSI_INTR_IMPL: true
-  MTI_INTR_IMPL: true
+  MTI_INTR_IMPL: false
   # WFI has no timeout: the core stays in low-power mode until an enabled interrupt
   # is pending, a debug request arrives, or reset.
   #   Quote: "else if((had_cp0_xx_dbg || regs_lpmd_int_vld) && cpu_in_lpmd || rtu_yy_xx_dbgon)

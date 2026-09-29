@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 42
+#define SIGUPD_COUNT 44
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -457,6 +457,32 @@ Zcb_c_sb_cg_cp_rs2_edges_0x100000001:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Zcb_c_sb_cg_cp_rs2_edges_0x100000001, Zcb_c_sb_cg_cp_rs2_edges_0x100000001_str)
 
+# Testcase cp_rs2_edges (Test source rs2 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs2: x10 = 0x0000000080000000
+  LA(x11, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load store canary: x15 = 0xd2691ea74db836ff
+  SREG x15, 0(x11) # fill store target with canary
+  addi x11, x11, -1 # adjust base address for offset
+Zcb_c_sb_cg_cp_rs2_edges_0x80000000:
+  c.sb x10, 1(x11) # perform store
+  addi x11, x11, 1 # restore base address
+  LREG x15, 0(x11) # load store target for checking
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zcb_c_sb_cg_cp_rs2_edges_0x80000000, Zcb_c_sb_cg_cp_rs2_edges_0x80000000_str)
+
+# Testcase cp_rs2_edges (Test source rs2 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load rs2: x8 = 0x000000007fffffff
+  LA(x11, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0xd2691ea74db83600
+  SREG x12, 0(x11) # fill store target with canary
+  addi x11, x11, -3 # adjust base address for offset
+Zcb_c_sb_cg_cp_rs2_edges_0x7fffffff:
+  c.sb x8, 3(x11) # perform store
+  addi x11, x11, 3 # restore base address
+  LREG x12, 0(x11) # load store target for checking
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, Zcb_c_sb_cg_cp_rs2_edges_0x7fffffff, Zcb_c_sb_cg_cp_rs2_edges_0x7fffffff_str)
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 
@@ -528,6 +554,10 @@ RVTEST_DATA_BEGIN
 .dword 0xd2691ea74db836ff
 .dword 0x0000000100000001
 .dword 0xd2691ea74db836fe
+.dword 0x0000000080000000
+.dword 0xd2691ea74db836ff
+.dword 0x000000007fffffff
+.dword 0xd2691ea74db83600
 
 // Testcase strings
 Zcb_c_sb_cg_cp_rs1_p_b8_str: .string "\"test: 1; cg: Zcb_c.sb_cg; cp: cp_rs1_p; bin: b8\""
@@ -562,6 +592,8 @@ Zcb_c_sb_cg_cp_rs2_edges_0xffffffff_str: .string "\"test: 29; cg: Zcb_c.sb_cg; c
 Zcb_c_sb_cg_cp_rs2_edges_0xfffffffe_str: .string "\"test: 30; cg: Zcb_c.sb_cg; cp: cp_rs2_edges; bin: 0xfffffffe\""
 Zcb_c_sb_cg_cp_rs2_edges_0x100000000_str: .string "\"test: 31; cg: Zcb_c.sb_cg; cp: cp_rs2_edges; bin: 0x100000000\""
 Zcb_c_sb_cg_cp_rs2_edges_0x100000001_str: .string "\"test: 32; cg: Zcb_c.sb_cg; cp: cp_rs2_edges; bin: 0x100000001\""
+Zcb_c_sb_cg_cp_rs2_edges_0x80000000_str: .string "\"test: 33; cg: Zcb_c.sb_cg; cp: cp_rs2_edges; bin: 0x80000000\""
+Zcb_c_sb_cg_cp_rs2_edges_0x7fffffff_str: .string "\"test: 34; cg: Zcb_c.sb_cg; cp: cp_rs2_edges; bin: 0x7fffffff\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

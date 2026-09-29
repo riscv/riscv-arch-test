@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 117
+#define SIGUPD_COUNT 119
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -1087,6 +1087,32 @@ I_sb_cg_cp_rs2_edges_0x100000001:
   # Check if x21 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x15, x8, x7, x21, I_sb_cg_cp_rs2_edges_0x100000001, I_sb_cg_cp_rs2_edges_0x100000001_str)
 
+# Testcase cp_rs2_edges (Test source rs2 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x10, x1) # load rs2: x1 = 0x0000000080000000
+  LA(x26, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load store canary: x9 = 0xd2691ea74db836ff
+  SREG x9, 0(x26) # fill store target with canary
+  addi x26, x26, 116 # adjust base address for offset
+I_sb_cg_cp_rs2_edges_0x80000000:
+  sb x1, -116(x26) # perform store
+  addi x26, x26, -116 # restore base address
+  LREG x9, 0(x26) # load store target for checking
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, I_sb_cg_cp_rs2_edges_0x80000000, I_sb_cg_cp_rs2_edges_0x80000000_str)
+
+# Testcase cp_rs2_edges (Test source rs2 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x10, x27) # load rs2: x27 = 0x000000007fffffff
+  LA(x25, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x30) # load store canary: x30 = 0xd2691ea74db83600
+  SREG x30, 0(x25) # fill store target with canary
+  addi x25, x25, -389 # adjust base address for offset
+I_sb_cg_cp_rs2_edges_0x7fffffff:
+  sb x27, 389(x25) # perform store
+  addi x25, x25, 389 # restore base address
+  LREG x30, 0(x25) # load store target for checking
+  # Check if x30 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x30, I_sb_cg_cp_rs2_edges_0x7fffffff, I_sb_cg_cp_rs2_edges_0x7fffffff_str)
+
 /////////////////////////////////
 // cp_imm_edges
 /////////////////////////////////
@@ -1612,6 +1638,10 @@ RVTEST_DATA_BEGIN
 .dword 0xd2691ea74db836ff
 .dword 0x0000000100000001
 .dword 0xd2691ea74db836fe
+.dword 0x0000000080000000
+.dword 0xd2691ea74db836ff
+.dword 0x000000007fffffff
+.dword 0xd2691ea74db83600
 .dword 0x0b36d9a2b2c87321
 .dword 0xd2691ea74db836de
 .dword 0xba443fbd53d862b0
@@ -1749,34 +1779,36 @@ I_sb_cg_cp_rs2_edges_0xffffffff_str: .string "\"test: 76; cg: I_sb_cg; cp: cp_rs
 I_sb_cg_cp_rs2_edges_0xfffffffe_str: .string "\"test: 77; cg: I_sb_cg; cp: cp_rs2_edges; bin: 0xfffffffe\""
 I_sb_cg_cp_rs2_edges_0x100000000_str: .string "\"test: 78; cg: I_sb_cg; cp: cp_rs2_edges; bin: 0x100000000\""
 I_sb_cg_cp_rs2_edges_0x100000001_str: .string "\"test: 79; cg: I_sb_cg; cp: cp_rs2_edges; bin: 0x100000001\""
-I_sb_cg_cp_imm_edges_0x0_str: .string "\"test: 80; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x0\""
-I_sb_cg_cp_imm_edges_0x1_str: .string "\"test: 81; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x1\""
-I_sb_cg_cp_imm_edges_0x2_str: .string "\"test: 82; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x2\""
-I_sb_cg_cp_imm_edges_0x3_str: .string "\"test: 83; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x3\""
-I_sb_cg_cp_imm_edges_0x4_str: .string "\"test: 84; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x4\""
-I_sb_cg_cp_imm_edges_0x8_str: .string "\"test: 85; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x8\""
-I_sb_cg_cp_imm_edges_0x10_str: .string "\"test: 86; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x10\""
-I_sb_cg_cp_imm_edges_0x20_str: .string "\"test: 87; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x20\""
-I_sb_cg_cp_imm_edges_0x40_str: .string "\"test: 88; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x40\""
-I_sb_cg_cp_imm_edges_0x80_str: .string "\"test: 89; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x80\""
-I_sb_cg_cp_imm_edges_0x100_str: .string "\"test: 90; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x100\""
-I_sb_cg_cp_imm_edges_0x200_str: .string "\"test: 91; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x200\""
-I_sb_cg_cp_imm_edges_0x3ff_str: .string "\"test: 92; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x3ff\""
-I_sb_cg_cp_imm_edges_0x400_str: .string "\"test: 93; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x400\""
-I_sb_cg_cp_imm_edges_0x703_str: .string "\"test: 94; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x703\""
-I_sb_cg_cp_imm_edges_0x7ff_str: .string "\"test: 95; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x7ff\""
-I_sb_cg_cp_imm_edges_m0x800_str: .string "\"test: 96; cg: I_sb_cg; cp: cp_imm_edges; bin: -0x800\""
-I_sb_cg_cp_imm_edges_m0x7ff_str: .string "\"test: 97; cg: I_sb_cg; cp: cp_imm_edges; bin: -0x7ff\""
-I_sb_cg_cp_imm_edges_m0x2_str: .string "\"test: 98; cg: I_sb_cg; cp: cp_imm_edges; bin: -0x2\""
-I_sb_cg_cp_imm_edges_m0x1_str: .string "\"test: 99; cg: I_sb_cg; cp: cp_imm_edges; bin: -0x1\""
-I_sb_cg_cp_align_byte_b0_str: .string "\"test: 100; cg: I_sb_cg; cp: cp_align_byte; bin: b0\""
-I_sb_cg_cp_align_byte_b1_str: .string "\"test: 101; cg: I_sb_cg; cp: cp_align_byte; bin: b1\""
-I_sb_cg_cp_align_byte_b2_str: .string "\"test: 102; cg: I_sb_cg; cp: cp_align_byte; bin: b2\""
-I_sb_cg_cp_align_byte_b3_str: .string "\"test: 103; cg: I_sb_cg; cp: cp_align_byte; bin: b3\""
-I_sb_cg_cp_align_byte_b4_str: .string "\"test: 104; cg: I_sb_cg; cp: cp_align_byte; bin: b4\""
-I_sb_cg_cp_align_byte_b5_str: .string "\"test: 105; cg: I_sb_cg; cp: cp_align_byte; bin: b5\""
-I_sb_cg_cp_align_byte_b6_str: .string "\"test: 106; cg: I_sb_cg; cp: cp_align_byte; bin: b6\""
-I_sb_cg_cp_align_byte_b7_str: .string "\"test: 107; cg: I_sb_cg; cp: cp_align_byte; bin: b7\""
+I_sb_cg_cp_rs2_edges_0x80000000_str: .string "\"test: 80; cg: I_sb_cg; cp: cp_rs2_edges; bin: 0x80000000\""
+I_sb_cg_cp_rs2_edges_0x7fffffff_str: .string "\"test: 81; cg: I_sb_cg; cp: cp_rs2_edges; bin: 0x7fffffff\""
+I_sb_cg_cp_imm_edges_0x0_str: .string "\"test: 82; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x0\""
+I_sb_cg_cp_imm_edges_0x1_str: .string "\"test: 83; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x1\""
+I_sb_cg_cp_imm_edges_0x2_str: .string "\"test: 84; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x2\""
+I_sb_cg_cp_imm_edges_0x3_str: .string "\"test: 85; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x3\""
+I_sb_cg_cp_imm_edges_0x4_str: .string "\"test: 86; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x4\""
+I_sb_cg_cp_imm_edges_0x8_str: .string "\"test: 87; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x8\""
+I_sb_cg_cp_imm_edges_0x10_str: .string "\"test: 88; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x10\""
+I_sb_cg_cp_imm_edges_0x20_str: .string "\"test: 89; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x20\""
+I_sb_cg_cp_imm_edges_0x40_str: .string "\"test: 90; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x40\""
+I_sb_cg_cp_imm_edges_0x80_str: .string "\"test: 91; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x80\""
+I_sb_cg_cp_imm_edges_0x100_str: .string "\"test: 92; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x100\""
+I_sb_cg_cp_imm_edges_0x200_str: .string "\"test: 93; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x200\""
+I_sb_cg_cp_imm_edges_0x3ff_str: .string "\"test: 94; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x3ff\""
+I_sb_cg_cp_imm_edges_0x400_str: .string "\"test: 95; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x400\""
+I_sb_cg_cp_imm_edges_0x703_str: .string "\"test: 96; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x703\""
+I_sb_cg_cp_imm_edges_0x7ff_str: .string "\"test: 97; cg: I_sb_cg; cp: cp_imm_edges; bin: 0x7ff\""
+I_sb_cg_cp_imm_edges_m0x800_str: .string "\"test: 98; cg: I_sb_cg; cp: cp_imm_edges; bin: -0x800\""
+I_sb_cg_cp_imm_edges_m0x7ff_str: .string "\"test: 99; cg: I_sb_cg; cp: cp_imm_edges; bin: -0x7ff\""
+I_sb_cg_cp_imm_edges_m0x2_str: .string "\"test: 100; cg: I_sb_cg; cp: cp_imm_edges; bin: -0x2\""
+I_sb_cg_cp_imm_edges_m0x1_str: .string "\"test: 101; cg: I_sb_cg; cp: cp_imm_edges; bin: -0x1\""
+I_sb_cg_cp_align_byte_b0_str: .string "\"test: 102; cg: I_sb_cg; cp: cp_align_byte; bin: b0\""
+I_sb_cg_cp_align_byte_b1_str: .string "\"test: 103; cg: I_sb_cg; cp: cp_align_byte; bin: b1\""
+I_sb_cg_cp_align_byte_b2_str: .string "\"test: 104; cg: I_sb_cg; cp: cp_align_byte; bin: b2\""
+I_sb_cg_cp_align_byte_b3_str: .string "\"test: 105; cg: I_sb_cg; cp: cp_align_byte; bin: b3\""
+I_sb_cg_cp_align_byte_b4_str: .string "\"test: 106; cg: I_sb_cg; cp: cp_align_byte; bin: b4\""
+I_sb_cg_cp_align_byte_b5_str: .string "\"test: 107; cg: I_sb_cg; cp: cp_align_byte; bin: b5\""
+I_sb_cg_cp_align_byte_b6_str: .string "\"test: 108; cg: I_sb_cg; cp: cp_align_byte; bin: b6\""
+I_sb_cg_cp_align_byte_b7_str: .string "\"test: 109; cg: I_sb_cg; cp: cp_align_byte; bin: b7\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

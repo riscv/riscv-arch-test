@@ -99,7 +99,7 @@ covergroup ZcbM_c_mul_cg with function sample(ins_t ins);
         // RS2 register assignment
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 

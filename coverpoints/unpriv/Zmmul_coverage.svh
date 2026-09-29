@@ -115,7 +115,7 @@ covergroup Zmmul_mul_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -224,7 +224,7 @@ covergroup Zmmul_mulh_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -333,7 +333,7 @@ covergroup Zmmul_mulhsu_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -442,7 +442,7 @@ covergroup Zmmul_mulhu_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 
@@ -552,7 +552,7 @@ covergroup Zmmul_mulw_cg with function sample(ins_t ins);
         `endif
     }
 
-    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  {
+    cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
 

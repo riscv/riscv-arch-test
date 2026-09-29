@@ -1,3 +1,118 @@
 # Mapping of normative rules to coverpoints for a test suite
+#
+# Zvkb is the general home for normative rules that apply across all vector-crypto (Zvk*)
+# extensions: data-independent timing, EGS/EGW/vl/vstart constraints, and shared
+# extension-dependency facts. Zvkb's own instructions (vandn, vbrev8, vrev8, vrol, vror)
+# are the same instructions as Zvbb's under a different extension gate; their functional
+# _op rules are homed in Zvbb.yaml and are not duplicated here.
 
 normative_rule_definitions:
+  # All instructions shall be implemented with data-independent timing. That is, the latency
+  # of the execution of these instructions shall not vary with different input values.
+  - name: zvk_dataindep_timing
+    coverpoint:
+      [
+        "TODO: data-independent execution timing (a side-channel-resistance property) cannot be observed from a final-state signature comparison",
+      ]
+
+  # For all of the vector crypto instructions in this specification, EEW=SEW.
+  - name: veccrypto_eeweqsew
+    coverpoint:
+      [
+        "TODO: EEW=SEW is inherent in every vector-crypto instruction's encoding; no dedicated coverpoint isolates it",
+      ]
+
+  # Since vl and vstart refer to elements, Vector Crypto instructions that use element
+  # groups require that these values are an integer multiple of the Element Group Size
+  # (EGS).
+  - names: [veccrypto_vl_egsconstr, veccrypto_vstart_egsconstr]
+    coverpoint:
+      [
+        "TODO: no coverpoint verifies vl/vstart are rejected when not a multiple of EGS - the functional suites only ever generate compliant values",
+      ]
+
+  # Instructions that violate the vl or vstart requirements are reserved.
+  - names: [veccrypto_vl_rsv, veccrypto_vstart_rsv]
+    coverpoint:
+      [
+        "TODO: no Ssstrict-equivalent suite exists for the vector-crypto extensions to exercise vl/vstart values that violate the EGS constraint",
+      ]
+
+  # For element-group instructions, LMUL*VLEN must always be at least as large as EGW,
+  # otherwise an illegal-instruction exception is raised, even if vl=0.
+  - name: veccrypto_lmul_egwconstr
+    coverpoint:
+      [
+        "TODO: no ExceptionsZvk-style suite exists yet to exercise the LMUL*VLEN<EGW illegal-instruction condition",
+      ]
+
+  # Some Vector Crypto instructions are only defined for a specific SEW. In such a case all
+  # other SEW values are reserved.
+  - name: veccrypto_sew_rsv
+    coverpoint:
+      [
+        "Out-of-Scope: reserved because of CSR state (vtype.sew); no Ssstrict-equivalent suite exists to exercise these reserved SEW encodings; see the per-instruction _sewn32_rsv/_sewn64_rsv rules in each extension's own file",
+      ]
+
+  # In the case of the *.vs instructions defined in this specification, vs2 holds a 128-bit
+  # scalar element group. These instructions enable a single key, specified as a scalar
+  # element group in vs2, to be applied to each element group of register group vd.
+  - name: veccrypto_vsins_vs2
+    coverpoint: ["Zvkned_vaesdf_vs_cg/cp_vs2_egs4"]
+
+  # For implementations with VLEN >= 128, vs2 refers to a single register. Thus, the vd
+  # register group must not overlap the vs2 register. However, in implementations where VLEN
+  # < 128, vs2 refers to a register group comprised of the number of registers needed to
+  # hold the 128-bit scalar element group. In this case, the vd register group must not
+  # overlap this vs2 register group.
+  - name: veccrypto_vsins_vdvs2overlap
+    coverpoint:
+      [
+        "TODO: this is an SsstrictV-style reserved-encoding test; no register-overlap coverpoint exists yet for the *.vs instruction forms (e.g. Zvkned_vaesdf_vs_cg has no cmp_vd_vs2-style coverpoint)",
+      ]
+
+  # they return vector results to vd, which is also a source vector operand.
+  - name: veccrypto_vsins_vd
+    coverpoint: ["Zvkg_vghsh_vv_cg/cp_vd_egs4"]
+
+  # The Zvknhb, Zvkn, Zvknc, Zvkng, and Zvksc extensions depend on ext:zve64x[].
+  - names:
+      [
+        Zvknhb_depZve64x,
+        Zvkn_depZve64x,
+        Zvknc_depZve64x,
+        Zvkng_depZve64x,
+        Zvksc_depZve64x,
+      ]
+    coverpoint:
+      [
+        "TODO: extension-composition fact; no dedicated coverpoint exists for it (Zvkn/Zvknc/Zvkng/Zvksc are not separate suites in this repo)",
+      ]
+
+  # All of the other Vector Crypto Extensions depend on ext:zve32x[].
+  - names:
+      [
+        Zvkb_depZve32x,
+        Zvkg_depZve32x,
+        Zvkned_depZve32x,
+        Zvknha_depZve32x,
+        Zvksed_depZve32x,
+        Zvksh_depZve32x,
+        Zvks_depZve32x,
+        Zvksc_depZve32x,
+        Zvksg_depZve32x,
+        Zvkt_depZve32x,
+      ]
+    coverpoint:
+      [
+        "TODO: extension-composition fact; no dedicated coverpoint exists for it (Zvks/Zvksc/Zvksg/Zvkt are not separate suites in this repo)",
+      ]
+
+  # It is important to note that the Vector Crypto instructions are independent of the
+  # implementation of the ext:zkt[] extension and do not require that ext:zkt[] is
+  # implemented.
+  - name: veccrypto_indepZkt
+    coverpoint:
+      [
+        "TODO: independence from an unrelated extension's implementation is not something a coverpoint can assert one way or the other",
+      ]

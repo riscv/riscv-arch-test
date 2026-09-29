@@ -159,6 +159,30 @@ params:
   TRAP_ON_ECALL_FROM_S: true
   TRAP_ON_ECALL_FROM_U: true
   TRAP_ON_EBREAK: true
+  # WFI stalls until an interrupt is both pending and enabled, or a debug halt request
+  # arrives; there is no timeout:
+  #   "if ((((|mip_q) || irq_q[0] || irq_q[1]) && interrupt_cause[63]) || debug_halt_req_i) begin
+  #        wfi_d = 1'b0;"
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L2749-L2760
+  WFI_FINITE: false
+  # WFI is decoded as a system instruction at privilege S (rw_addr[9:8] = 01), so in U mode
+  # "if ((system_insn && !priv_sufficient) || ... privilege_violation = 1'b1;"
+  # raises an illegal-instruction exception:
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L2602-L2606
+  WFI_U_MODE: false
+  # mie.MEIE/MSIE/MTIE are writable ("mask = riscv_pkg::MIP_SSIP | riscv_pkg::MIP_STIP |
+  # riscv_pkg::MIP_SEIP | riscv_pkg::MIP_MSIP | riscv_pkg::MIP_MTIP | riscv_pkg::MIP_MEIP | ...",
+  # https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L1565-L1577)
+  # and mip.MEIP/MTIP/MSIP follow the core's irq_i[0], time_irq_i and m_soft_irq_i inputs:
+  #   "// the IRQ_M_EXT = irq_i || rocc_interrupt_i, IRQ_M_SOFT = m_soft_irq_i and IRQ_M_TIMER = time_irq_i"
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L1053-L1054
+  # The core implements all three.  The standalone testbench ties those pins to zero
+  # ("// No support for timer, interrupts, etc in simulation / .irq_i(1'b0), .soft_irq_i(1'b0),
+  # .time_irq_i(1'b0),", https://github.com/bsc-loca/core_tile/blob/2528e7df6507fa06d372f001e55cfd46efae4a4b/simulator/sim_top.sv#L263-L269)
+  # and has no CLINT, so in this environment the pending bits can never be set.
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
   # "riscv_pkg::CSR_MVENDORID:          csr_rdata = 64'b0; // not implemented"
   #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L694
   VENDOR_ID_BANK: 0
@@ -176,6 +200,11 @@ params:
   #    riscv_pkg::CSR_MISA:;"
   #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L1532-L1533
   MISA_CSR_IMPLEMENTED: true
+  # misa.X is "(NSX << 23)" with "localparam bit NSX = XF16 | XF16ALT | XF8 | XFVEC;" and all
+  # four of those 1'b0, so misa.X reads 0:
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/def_pkg.sv#L45-L48
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/def_pkg.sv#L74
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
   MUTABLE_MISA_A: false
   MUTABLE_MISA_B: false
   MUTABLE_MISA_D: false
@@ -302,6 +331,38 @@ params:
       true,
       true,
     ]
+  # Every mhpmcounter is a full 64-bit register:
+  #   "logic [63:0] mhpmcounter_d[HPM_NUM_COUNTERS+3-1:3];"
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/hpm_counters.sv#L73-L74
+  HPM_COUNTER3_WIDTH: 64
+  HPM_COUNTER4_WIDTH: 64
+  HPM_COUNTER5_WIDTH: 64
+  HPM_COUNTER6_WIDTH: 64
+  HPM_COUNTER7_WIDTH: 64
+  HPM_COUNTER8_WIDTH: 64
+  HPM_COUNTER9_WIDTH: 64
+  HPM_COUNTER10_WIDTH: 64
+  HPM_COUNTER11_WIDTH: 64
+  HPM_COUNTER12_WIDTH: 64
+  HPM_COUNTER13_WIDTH: 64
+  HPM_COUNTER14_WIDTH: 64
+  HPM_COUNTER15_WIDTH: 64
+  HPM_COUNTER16_WIDTH: 64
+  HPM_COUNTER17_WIDTH: 64
+  HPM_COUNTER18_WIDTH: 64
+  HPM_COUNTER19_WIDTH: 64
+  HPM_COUNTER20_WIDTH: 64
+  HPM_COUNTER21_WIDTH: 64
+  HPM_COUNTER22_WIDTH: 64
+  HPM_COUNTER23_WIDTH: 64
+  HPM_COUNTER24_WIDTH: 64
+  HPM_COUNTER25_WIDTH: 64
+  HPM_COUNTER26_WIDTH: 64
+  HPM_COUNTER27_WIDTH: 64
+  HPM_COUNTER28_WIDTH: 64
+  HPM_COUNTER29_WIDTH: 64
+  HPM_COUNTER30_WIDTH: 64
+  HPM_COUNTER31_WIDTH: 64
   # "Event 0 is hardwired to always zero, as per the spec."
   #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/events.md#L47
   HPM_EVENTS: [0]
@@ -434,6 +495,15 @@ params:
   REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT: true
   REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION: true
   STVAL_WIDTH: 64
+  # mie.SEIE/SSIE/STIE are writable (same mask, csr_bsc.sv#L1565-L1577), mideleg.SEI/SSI/STI
+  # are writable ("mask = riscv_pkg::MIP_SSIP | riscv_pkg::MIP_STIP | riscv_pkg::MIP_SEIP | riscv_pkg::MIP_LCOFIP;",
+  # https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L1557-L1563),
+  # and M-mode software can set mip.SEIP/SSIP/STIP (csr_bsc.sv#L1600-L1610).  SEIP is also
+  # driven by the core's irq_i[1] input, which the standalone testbench ties to zero
+  # (core_tile simulator/sim_top.sv#L263-L269); there is no Sstc, so STIP is software-only.
+  SEI_INTR_IMPL: true
+  SSI_INTR_IMPL: true
+  STI_INTR_IMPL: true
   # "riscv_pkg::CSR_SCOUNTEREN:         scounteren_d =  {csr_wdata[31:0]};" (csr_bsc.sv#L1240)
   SCOUNTENABLE_EN:
     [

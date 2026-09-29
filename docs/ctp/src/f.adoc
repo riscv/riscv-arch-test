@@ -124,8 +124,37 @@ a spreadsheet and manual coverpoints rather than a CSV, they do not assume
 any privileged capabilities, including the existence of machine mode. Hence
 they are compatible with RVI20 and simple cores that lack privileged modes.
 
-Note that this suite also tests that the underflow flag is set only if the
-result is tiny after rounding, per the RISC-V spec.
+This suite also holds directed floating-point edge cases whose results depend
+on the rounding mode. Each runs a few operand values under all five static
+rounding modes and checks the result and fflags. The same crosses in the F, D,
+Zfh, Zfbfmin and Zfa suites would multiply their size. The edge cases are in
+separate test files (`ZicsrF_fma`, `ZicsrF_cvt` and `ZicsrF_zfa`), except for the
+tininess cases, which are in the main file. Each group is skipped when the
+extension it needs is absent. <<t-ZicsrF-directed-coverpoints>> lists them.
+
+[[t-ZicsrF-directed-coverpoints]]
+.ZicsrF Directed Floating-Point Coverpoints
+[cols="3,1,10" options=header]
+|===
+|Coverpoint|Bins|Definition
+|cp_underflow_after_rounding_{fma,fmul}_{s,d,h}, _fcvt_s_d, _fcvt_h_s|8*5|TestFloat operand sets that are tiny before rounding, under each static rounding mode. In some modes the result is not tiny after rounding (UF = 0); in others it is tiny after rounding although the delivered result is ±2^emin^ (UF = 1).
+|cp_underflow_after_rounding_fmul_emin_{s,d,h}|3*5|2^emin^ × (1 − 2^−p^): tiny after rounding in every mode, so UF = 1 even where the result rounds to ±2^emin^.
+|cp_underflow_after_rounding_fdiv_{s,d,h}|3*5|A quotient just below 2^emin^ that rounds to ±2^emin^ only when rounding away from zero, with UF = 1. fdiv has no case that is tiny before rounding but not after.
+|cp_frm_reserved_static_rm|3*5*3|frm = 5, 6, 7 with each static rounding mode and three fadd.s whose results together differ in every mode.
+|cp_fma_inf_zero_{s,d,h}|4*3 each|fmadd, fmsub, fnmadd, fnmsub with multiplicands +∞ and +0 and a quiet NaN, signaling NaN or 1.0 addend: canonical NaN with NV.
+|cp_fma_exact_zero_{s,d,h}|4*5 each|Each FMA whose exact product (1 + 2^−k^)(1 − 2^−k^) cancels the addend, under each static rounding mode: +0, or −0 under RDN.
+|cp_fcvt_{s_d,h_d,bf16_s}_rounding|7*5 each|Narrowing conversion of the destination's max + ½ ulp and the value one source ulp below it (negated), ±(1 + ½ ulp), 1 + ¾ ulp, 2^emin^(1 − 2^−(p+1)^) and one source ulp below it, under each static rounding mode.
+|cp_fcvt_h_s_rounding|6*5|As above, without 2^emin^(1 − 2^−(p+1)^), which cp_underflow_after_rounding_fcvt_h_s covers.
+|cp_fcvt_{s,d,h}_{w,l}_rounding|3*5 each|Signed integers that round in the destination: a positive and a negative tie with an even lower neighbour, and a value ¾ ulp above a representable one (2^24^ + 1, −2^24^ − 1 and 2^25^ + 3 for fcvt.s.w), under each static rounding mode. fcvt.h.w also converts 65520 (max + ½ ulp) and −65519 (5*5 bins). fcvt.d.w is always exact and is not included.
+|cp_fcvt_{s,d,h}_{wu,lu}_rounding|3*5 each|Unsigned integers that round in the destination: ties with an even and an odd lower neighbour, and a value ¼ ulp above a representable one, under each static rounding mode. fcvt.h.wu also converts 65520 and 65519 (5*5 bins).
+|cp_fround_{s,d,h}|2*4*5 each|fround and froundnx of 2.5, −2.5, 2^p−3^ + 0.75 and −0.5 under each static rounding mode; only froundnx sets NX.
+|cp_fcvtmod_w_d|13|fcvtmod.w.d of ±2^31^ boundaries, 2^32^ + 5 and its negation, 2^32^ + 2^31^ + 0.25, 1.5 × 2^84^, −0.75, ±∞ and NaN.
+|===
+
+Each group runs only when its extensions are present: D for double-precision
+operands or results, Zfh for half-precision arithmetic and integer conversions,
+Zfh or Zfhmin for fcvt.h.s and fcvt.h.d, Zfbfmin for fcvt.bf16.s, Zfa for
+fround, froundnx and fcvtmod.w.d, and RV64 for the l and lu conversions.
 
 [[t-ZicsrF-coverpoints]]
 .ZicsrF Coverpoints

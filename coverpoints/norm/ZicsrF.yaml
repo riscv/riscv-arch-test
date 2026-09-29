@@ -1,47 +1,19 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  - name: csrrc_op
-    coverpoint: ["Zicsr_csrrc_cg/{cp_rs1, cp_rd, cp_rs1_edges}"]
-  # The insn:csrrwi[], insn:csrrsi[], and insn:csrrci[] variants are similar to
-  # insn:csrrw[], insn:csrrs[], and insn:csrrc[] respectively, except they update the CSR
-  # using an XLEN-bit value obtained by zero-extending a 5-bit unsigned immediate
-  # (uimm[4:0]) field encoded in the rs1 field instead of a value from an integer
-  # register. For insn:csrrsi[] and insn:csrrci[], if the uimm[4:0] field is zero, then
-  # these instructions will not write to the CSR, and shall not cause any of the side
-  # effects that might otherwise occur on a CSR write, nor raise illegal-instruction
-  # exceptions on accesses to read-only CSRs. For insn:csrrwi[], if rd=x0, then the
-  # instruction shall not read the CSR and shall not cause any of the side effects that
-  # might occur on a CSR read. Both insn:csrrsi[] and insn:csrrci[] will always read the
-  # CSR and cause any read side effects regardless of rd and rs1 fields.
-  - name: csrrwi_csrrsi_csrrci_ops
-    coverpoint:
-      [
-        "Zicsr_csrrci_cg/{cp_rd, cp_uimm_5}",
-        "Zicsr_csrrsi_cg/{cp_rd, cp_uimm_5}",
-        "Zicsr_csrrwi_cg/{cp_rd, cp_uimm_5}",
-      ]
-  - name: csrrs_op
-    coverpoint: ["Zicsr_csrrs_cg/{cp_rs1, cp_rd, cp_rs1_edges}"]
-  - name: csrrw_op
-    coverpoint: ["Zicsr_csrrw_cg/{cp_rs1, cp_rd, cp_rs1_edges}"]
-
   # The floating-point CSR, csr:fcsr[], is a 32-bit read/write register that selects the
   # dynamic rounding mode for floating-point arithmetic operations and holds the accrued
   # exception flags, as shown in .
   - name: fcsr_op_sz_acc
     coverpoint:
-      [
-        "ZicsrF_cg/{cp_fcsr_access, cp_fcsr_walk}",
-        "ZicsrF_cg/cp_fflags_set, F_fadd_s_cg/cp_csr_frm",
-      ]
+      ["ZicsrF_cg/{cp_fcsr_access, cp_fcsr_walk}", "F_fadd_s_cg/cp_csr_frm"]
 
   # Bits 31&#8205;&#8211;&#8205;8 of the csr:fcsr[] are reserved for other standard
   # extensions. If these extensions are not present, implementations shall ignore writes
   # to these bits and supply a zero value when read. Standard software should preserve the
   # contents of these bits.
   - name: fcsr_rsv
-    coverpoint: ["ZicsrF_cg/cp_fflags_set, F_fadd_s_cg/cp_csr_frm"]
+    coverpoint: ["ZicsrF_cg/{cp_fcsr_walk, cp_fcsr_access}"]
 
   # The fields within the csr:fcsr[] can also be accessed individually through different
   # CSR addresses, and separate assembler pseudoinstructions are defined for these
@@ -55,9 +27,7 @@ normative_rule_definitions:
   - name: fflags_frm_op_sz_acc
     coverpoint:
       [
-        "ZicsrF_cg/{cp_fcsr_access, cp_fcsr_frm_write, cp_frm_write}",
-        "F_fadd_s_cg/cp_csr_frm",
-        "ZicsrF_cg/{cp_fcsr_access, cp_fcsr_fflags_write, cp_fflags_write}",
+        "ZicsrF_cg/{cp_fcsr_frm_write, cp_frm_write, cp_fcsr_fflags_write, cp_fflags_write, cp_fcsr_swap}",
       ]
 
   # Rounding Mode|Mnemonic|Meaning === 000|RNE|Round to Nearest, ties to
@@ -67,7 +37,7 @@ normative_rule_definitions:
   # dynamic rounding mode; In Rounding Mode register, reserved. ===
   - name: dyn_round_enc
     coverpoint:
-      ["F_fadd_s_cg/cp_csr_frm", "ZicsrF_cg/cp_underflow_after_rounding_*"]
+      ["ZicsrF_cg/cp_frm_reserved_static_rm", "F_fadd_s_cg/cp_csr_frm"]
   # Floating-point operations use either a static rounding mode encoded in the
   # instruction, or a dynamic rounding mode held in frm. Rounding modes are encoded as
   # shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the instruction's rm
@@ -75,39 +45,103 @@ normative_rule_definitions:
   - name: roundingmode_dynamic
     coverpoint:
       [
-        "F_fadd_s_cg/cp_csr_frm",
-        "ZicsrF_cg/cp_underflow_after_rounding_*",
         "ZicsrF_cg/cp_frm_reserved_static_rm",
+        "F_fadd_s_cg/{cp_frm_3, cp_csr_frm}",
       ]
 
   # The accrued exception flags indicate the exception conditions that have arisen on any
   # floating-point arithmetic instruction since the field was last reset by software, as
   # shown in &lt;&lt;bitdef&gt;&gt;
   - name: fcsr_fflags_op
+    # each flag is set from zero here; accrual (preset flags kept) is tested by F's cp_csr_fflags_*
     coverpoint:
-      ["ZicsrF_cg/{cp_fcsr_access, cp_fcsr_fflags_write, cp_fflags_write}"]
+      [
+        "ZicsrF_cg/{cp_fflags_set_m_NV, cp_fflags_set_m_DZ, cp_fflags_set_m_OF, cp_fflags_set_m_UF, cp_fflags_set_m_NX}",
+        "F_fdiv_s_cg/cp_csr_fflags_vdoun",
+      ]
 
-  # insn:fmadd.s[] multiplies the values in rs1 and rs2, adds the value in rs3, and writes
-  # the final result to rd. insn:fmadd.s[] computes (rs1×rs2)+rs3.
-  - name: fmadd-s_op
-    coverpoint: ["ZicsrF_cg/cp_underflow_after_rounding_*"]
-  # Floating-point fused multiply-add (FMA) instructions require a new standard
-  # instruction format. R4-type instructions specify three source registers (rs1, rs2, and
-  # rs3) and a destination register (rd). This format is only used by the floating-point
-  # fused multiply-add instructions.
-  - name: fma_rs3
-    coverpoint: ["ZicsrF_cg/cp_underflow_after_rounding_*"]
-  # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00)
-  # for all instructions in the ext:f[] extension.
-  - name: F_fmt_single
-    coverpoint: ["ZicsrF_cg/cp_underflow_after_rounding_*"]
+  # Operations on subnormal numbers are handled in accordance with IEEE 754-2008.
+  - name: ieee_std_subnormal
+    coverpoint: ["ZicsrF_cg/cp_underflow_after_rounding_fma_s"]
+  # In the parlance of IEEE 754-2008, tininess is detected after rounding.
+  - name: ieee_std_tininess
+    coverpoint:
+      [
+        "ZicsrF_cg/{cp_underflow_after_rounding_fma_s, cp_underflow_after_rounding_fmul_s, cp_underflow_after_rounding_fmul_emin_s, cp_underflow_after_rounding_fdiv_s}",
+        "ZicsrF_cg/{cp_underflow_after_rounding_fma_d, cp_underflow_after_rounding_fmul_d, cp_underflow_after_rounding_fcvt_s_d, cp_underflow_after_rounding_fmul_emin_d, cp_underflow_after_rounding_fdiv_d}",
+        "ZicsrF_cg/{cp_underflow_after_rounding_fma_h, cp_underflow_after_rounding_fmul_h, cp_underflow_after_rounding_fmul_emin_h, cp_underflow_after_rounding_fdiv_h, cp_underflow_after_rounding_fcvt_h_s}",
+        "ZicsrF_cg/{cp_fcvt_s_d_rounding, cp_fcvt_h_s_rounding, cp_fcvt_h_d_rounding}",
+      ]
+
   # The fused multiply-add instructions must set the invalid operation exception flag when
   # the multiplicands are ∞ and zero, even when the addend is a quiet NaN.
   - name: fma_nv_flag
-    coverpoint: ["ZicsrF_cg/cp_underflow_after_rounding_*"]
-  # Operations on subnormal numbers are handled in accordance with IEEE 754-2008.
-  - name: ieee_std_subnormal
-    coverpoint: ["ZicsrF_cg/cp_underflow_after_rounding_*"]
-  # In the parlance of IEEE 754-2008, tininess is detected after rounding.
-  - name: ieee_std_tininess
-    coverpoint: ["ZicsrF_cg/cp_underflow_after_rounding_*"]
+    coverpoint:
+      ["ZicsrF_cg/{cp_fma_inf_zero_s, cp_fma_inf_zero_d, cp_fma_inf_zero_h}"]
+
+  # computational instructions compliant with the IEEE 754-2008 arithmetic standard's binary32
+  # format and operations.
+  # (IEEE 754-2008 6.3: an exact zero sum is +0 in every rounding mode except roundTowardNegative)
+  - name: F_ieee_compliance
+    coverpoint:
+      [
+        "ZicsrF_cg/{cp_fma_exact_zero_s, cp_fma_exact_zero_d, cp_fma_exact_zero_h}",
+      ]
+  # insn:fnmsub.s[] multiplies the values in rs1 and rs2, negates the product, adds the value
+  # in rs3, and writes the final result to rd. insn:fnmsub.s[] computes −(rs1×rs2)+rs3.
+  - name: fnmsub-s_op
+    coverpoint: ["ZicsrF_cg/cp_fma_exact_zero_s"]
+  # insn:fnmadd.s[] multiplies the values in rs1 and rs2, negates the product, subtracts the
+  # value in rs3, and writes the final result to rd. insn:fnmadd.s[] computes −(rs1×rs2)−rs3.
+  - name: fnmadd-s_op
+    coverpoint: ["ZicsrF_cg/cp_fma_exact_zero_s"]
+
+  # All floating-point to integer and integer to floating-point conversion instructions round
+  # according to the rm field.
+  - name: fcvt_round
+    coverpoint:
+      [
+        "ZicsrF_cg/{cp_fcvt_s_w_rounding, cp_fcvt_s_wu_rounding, cp_fcvt_s_l_rounding, cp_fcvt_s_lu_rounding}",
+        "ZicsrF_cg/{cp_fcvt_d_l_rounding, cp_fcvt_d_lu_rounding}",
+        "ZicsrF_cg/{cp_fcvt_h_w_rounding, cp_fcvt_h_wu_rounding, cp_fcvt_h_l_rounding, cp_fcvt_h_lu_rounding}",
+      ]
+  # insn:fcvt.s.d[] rounds according to the rm field; insn:fcvt.d.s[] will never round
+  - name: fcvt_float_rounding
+    coverpoint:
+      [
+        "ZicsrF_cg/{cp_fcvt_s_d_rounding, cp_fcvt_h_s_rounding, cp_fcvt_h_d_rounding}",
+      ]
+  # Narrowing convert FP32 value to a BF16 value. Round according to the RM field.
+  - name: fcvt-bf16-s_op
+    coverpoint: ["ZicsrF_cg/cp_fcvt_bf16_s_rounding"]
+  # BF16 computational instructions defined in this chapter support all IEEE 754-2008
+  # features, including all rounding modes, subnormal inputs and outputs, overflow and
+  # underflow, and default exception handling. Tininess is detected after rounding.
+  - name: bf16_subnorm
+    coverpoint: ["ZicsrF_cg/cp_fcvt_bf16_s_rounding"]
+
+  # The insn:fround.s[] instruction rounds the single-precision floating-point number in
+  # floating-point register rs1 to an integer, according to the rounding mode specified in
+  # the instruction's rm field.
+  - name: fround-s_op
+    coverpoint: ["ZicsrF_cg/cp_fround_s"]
+  # The insn:froundnx.s[] instruction is defined similarly, but it also sets the inexact
+  # exception flag if the input differs from the rounded result and is not NaN.
+  - name: froundnx-s_op
+    coverpoint: ["ZicsrF_cg/cp_fround_s"]
+  - name: fround-d_froundnx-d_op
+    coverpoint: ["ZicsrF_cg/cp_fround_d"]
+  - name: fround-h_froundnx-h_op
+    coverpoint: ["ZicsrF_cg/cp_fround_h"]
+
+  # The insn:fcvtmod.w.d[] instruction is defined similarly to the insn:fcvt.w.d[]
+  # instruction, with the following differences. insn:fcvtmod.w.d[] always rounds towards
+  # zero. Bits 31:0 are taken from the rounded, unbounded two's complement result, then
+  # sign-extended to XLEN bits and written to integer register rd. ±∞ and NaN are converted
+  # to zero.
+  - name: fcvtmod-w-d_op
+    coverpoint: ["ZicsrF_cg/cp_fcvtmod_w_d"]
+  # Floating-point exception flags are raised the same as they would be for insn:fcvt.w.d[]
+  # with the same input operand.
+  - name: fcvtmod-w-d_flags
+    coverpoint: ["ZicsrF_cg/cp_fcvtmod_w_d"]

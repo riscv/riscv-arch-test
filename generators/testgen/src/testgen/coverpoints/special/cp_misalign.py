@@ -20,9 +20,9 @@ _PATTERN = (0x44556677, 0x00112233, 0x89ABCDEF, 0x01234567)
 _PATTERN_INV = tuple(~w & 0xFFFFFFFF for w in _PATTERN)
 
 # Window base offsets from scratch (256-byte aligned, 264 bytes long; see RVTEST_DATA_BEGIN).
-# cp_misalign uses scratch+0. cp_misalign_cross64 uses scratch+56, so the 16-byte window [56, 72) spans
-# scratch+64 and misaligned accesses there cross a 16/32/64-byte cache-line or bus-beat boundary.
-_WINDOW_BASE = {"cp_misalign": 0, "cp_misalign_cross64": 56}
+# cp_misalign uses scratch+0. cp_misalign_cross64_{hword,word,double} use scratch+56, so the 16-byte window
+# [56, 72) spans scratch+64 and misaligned accesses there cross a 16/32/64-byte cache-line or bus-beat boundary.
+_CROSS64 = {"cp_misalign_cross64_hword": 2, "cp_misalign_cross64_word": 4, "cp_misalign_cross64_double": 8}
 
 # Byte offsets tested within the window; 8 is not strictly required by cp_misalign, but shows wrapping works.
 _OFFSETS = range(9)
@@ -49,13 +49,18 @@ def _fill_window(r1: int, r2: int, words: tuple[int, ...], test_data: TestData) 
 def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for misalignment coverpoints."""
     tc = test_data.begin_test_chunk()
-    if coverpoint not in _WINDOW_BASE:
-        raise ValueError(f"Unknown cp_misalign coverpoint variant: {coverpoint} for {instr_name}")
-    base = _WINDOW_BASE[coverpoint]
     size = _access_bytes(instr_name)
+    if coverpoint in _CROSS64:
+        if _CROSS64[coverpoint] != size:
+            raise ValueError(f"{coverpoint} does not match the {size}-byte access of {instr_name}")
+        base = 56
+    elif coverpoint == "cp_misalign":
+        base = 0
+    else:
+        raise ValueError(f"Unknown cp_misalign coverpoint variant: {coverpoint} for {instr_name}")
 
     def bin_name(offset: int, suffix: str = "") -> str:
-        if coverpoint == "cp_misalign_cross64":
+        if coverpoint in _CROSS64:
             start = base + offset
             name = f"{'yes' if start < 64 < start + size else 'no'}_{offset}"  # does the access straddle scratch+64?
         else:

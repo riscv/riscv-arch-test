@@ -23,14 +23,10 @@ covergroup Misalign_lh_cg with function sample(ins_t ins);
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64 : coverpoint (7'({ins.current.rs1_val + ins.current.imm}[5:0]) +
-            (("lh" inside {"lh", "lhu", "sh"}) ? 7'd2 :
-             ("lh" inside {"ld", "sd", "fld", "fsd", "c.ld", "c.sd", "c.ldsp", "c.sdsp"}) ? 7'd8 : 7'd4)) > 7'd64
-            iff (ins.trap == 0) {
-        // Does the access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
-        // The access size in bytes comes from the mnemonic: 2 for halfwords, 8 for doublewords, else 4.
-        bins no  = {0};
-        bins yes = {1};
+    cp_misalign_cross64_hword : coverpoint 6'(ins.current.rs1_val + ins.current.imm) iff (ins.trap == 0) {
+        // Does the 2-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:62]};
+        bins yes = {[63:63]};
     }
 
 endgroup
@@ -46,14 +42,10 @@ covergroup Misalign_lhu_cg with function sample(ins_t ins);
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64 : coverpoint (7'({ins.current.rs1_val + ins.current.imm}[5:0]) +
-            (("lhu" inside {"lh", "lhu", "sh"}) ? 7'd2 :
-             ("lhu" inside {"ld", "sd", "fld", "fsd", "c.ld", "c.sd", "c.ldsp", "c.sdsp"}) ? 7'd8 : 7'd4)) > 7'd64
-            iff (ins.trap == 0) {
-        // Does the access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
-        // The access size in bytes comes from the mnemonic: 2 for halfwords, 8 for doublewords, else 4.
-        bins no  = {0};
-        bins yes = {1};
+    cp_misalign_cross64_hword : coverpoint 6'(ins.current.rs1_val + ins.current.imm) iff (ins.trap == 0) {
+        // Does the 2-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:62]};
+        bins yes = {[63:63]};
     }
 
 endgroup
@@ -69,14 +61,10 @@ covergroup Misalign_lw_cg with function sample(ins_t ins);
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64 : coverpoint (7'({ins.current.rs1_val + ins.current.imm}[5:0]) +
-            (("lw" inside {"lh", "lhu", "sh"}) ? 7'd2 :
-             ("lw" inside {"ld", "sd", "fld", "fsd", "c.ld", "c.sd", "c.ldsp", "c.sdsp"}) ? 7'd8 : 7'd4)) > 7'd64
-            iff (ins.trap == 0) {
-        // Does the access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
-        // The access size in bytes comes from the mnemonic: 2 for halfwords, 8 for doublewords, else 4.
-        bins no  = {0};
-        bins yes = {1};
+    cp_misalign_cross64_word : coverpoint 6'(ins.current.rs1_val + ins.current.imm) iff (ins.trap == 0) {
+        // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:60]};
+        bins yes = {[61:63]};
     }
 
 endgroup
@@ -92,14 +80,10 @@ covergroup Misalign_sh_cg with function sample(ins_t ins);
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64 : coverpoint (7'({ins.current.rs1_val + ins.current.imm}[5:0]) +
-            (("sh" inside {"lh", "lhu", "sh"}) ? 7'd2 :
-             ("sh" inside {"ld", "sd", "fld", "fsd", "c.ld", "c.sd", "c.ldsp", "c.sdsp"}) ? 7'd8 : 7'd4)) > 7'd64
-            iff (ins.trap == 0) {
-        // Does the access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
-        // The access size in bytes comes from the mnemonic: 2 for halfwords, 8 for doublewords, else 4.
-        bins no  = {0};
-        bins yes = {1};
+    cp_misalign_cross64_hword : coverpoint 6'(ins.current.rs1_val + ins.current.imm) iff (ins.trap == 0) {
+        // Does the 2-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:62]};
+        bins yes = {[63:63]};
     }
 
 endgroup
@@ -115,14 +99,10 @@ covergroup Misalign_sw_cg with function sample(ins_t ins);
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64 : coverpoint (7'({ins.current.rs1_val + ins.current.imm}[5:0]) +
-            (("sw" inside {"lh", "lhu", "sh"}) ? 7'd2 :
-             ("sw" inside {"ld", "sd", "fld", "fsd", "c.ld", "c.sd", "c.ldsp", "c.sdsp"}) ? 7'd8 : 7'd4)) > 7'd64
-            iff (ins.trap == 0) {
-        // Does the access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
-        // The access size in bytes comes from the mnemonic: 2 for halfwords, 8 for doublewords, else 4.
-        bins no  = {0};
-        bins yes = {1};
+    cp_misalign_cross64_word : coverpoint 6'(ins.current.rs1_val + ins.current.imm) iff (ins.trap == 0) {
+        // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:60]};
+        bins yes = {[61:63]};
     }
 
 endgroup
@@ -139,14 +119,10 @@ covergroup Misalign_ld_cg with function sample(ins_t ins);
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64 : coverpoint (7'({ins.current.rs1_val + ins.current.imm}[5:0]) +
-            (("ld" inside {"lh", "lhu", "sh"}) ? 7'd2 :
-             ("ld" inside {"ld", "sd", "fld", "fsd", "c.ld", "c.sd", "c.ldsp", "c.sdsp"}) ? 7'd8 : 7'd4)) > 7'd64
-            iff (ins.trap == 0) {
-        // Does the access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
-        // The access size in bytes comes from the mnemonic: 2 for halfwords, 8 for doublewords, else 4.
-        bins no  = {0};
-        bins yes = {1};
+    cp_misalign_cross64_double : coverpoint 6'(ins.current.rs1_val + ins.current.imm) iff (ins.trap == 0) {
+        // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:56]};
+        bins yes = {[57:63]};
     }
 
 endgroup
@@ -162,14 +138,10 @@ covergroup Misalign_lwu_cg with function sample(ins_t ins);
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64 : coverpoint (7'({ins.current.rs1_val + ins.current.imm}[5:0]) +
-            (("lwu" inside {"lh", "lhu", "sh"}) ? 7'd2 :
-             ("lwu" inside {"ld", "sd", "fld", "fsd", "c.ld", "c.sd", "c.ldsp", "c.sdsp"}) ? 7'd8 : 7'd4)) > 7'd64
-            iff (ins.trap == 0) {
-        // Does the access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
-        // The access size in bytes comes from the mnemonic: 2 for halfwords, 8 for doublewords, else 4.
-        bins no  = {0};
-        bins yes = {1};
+    cp_misalign_cross64_word : coverpoint 6'(ins.current.rs1_val + ins.current.imm) iff (ins.trap == 0) {
+        // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:60]};
+        bins yes = {[61:63]};
     }
 
 endgroup
@@ -185,14 +157,10 @@ covergroup Misalign_sd_cg with function sample(ins_t ins);
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64 : coverpoint (7'({ins.current.rs1_val + ins.current.imm}[5:0]) +
-            (("sd" inside {"lh", "lhu", "sh"}) ? 7'd2 :
-             ("sd" inside {"ld", "sd", "fld", "fsd", "c.ld", "c.sd", "c.ldsp", "c.sdsp"}) ? 7'd8 : 7'd4)) > 7'd64
-            iff (ins.trap == 0) {
-        // Does the access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
-        // The access size in bytes comes from the mnemonic: 2 for halfwords, 8 for doublewords, else 4.
-        bins no  = {0};
-        bins yes = {1};
+    cp_misalign_cross64_double : coverpoint 6'(ins.current.rs1_val + ins.current.imm) iff (ins.trap == 0) {
+        // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:56]};
+        bins yes = {[57:63]};
     }
 
 endgroup

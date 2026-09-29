@@ -37,7 +37,7 @@ The Zifencei tests must write an instruction to an address, execute `fence.i`, a
 
 Misaligned loads/stores to main memory optionally can be handled in hardware.  When the UDB MISALIGNED_LDST parameter is true, misaligned scalar loads and stores to main memory do not throw an exception.  This parameter is a simplification of the "Access Type PMAs" which could define misaligned behavior on each memory region.
 
-The misaligned family of tests exercises integer, compressed, and single/double-precision floating-point loads/stores.  It uses the new cp_misalign and cp_misalign_cross64 coverpoints defined in <<t-Misalign-coverpoint-definitions>>. Each instruction is tested at byte offsets 0-8 in two 16-byte windows of the scratch area: one at the start of the 256-byte-aligned scratch area, and one starting 56 bytes in, so that misaligned accesses straddle the 64-byte boundary (and hence any 16-, 32- or 64-byte cache line or bus beat) at scratch+64. Each window is filled with 16 distinct bytes before the accesses. Loads are repeated with the bitwise complement of the pattern so that every width and offset is loaded with both a clear and a set sign bit, checking sign and zero extension. Stores check all 16 bytes of the window. It assumes that if these work, then Zfh and Zcb loads/stores will also work correctly.  Misaligned atomics are exercised with {ExceptionsZaamo, ExceptionsZalrsc}/{cp_amo/load/store_address_misaligned}. Misaligned vector load/stores are exercised in <<MisalignV>>.
+The misaligned family of tests exercises integer, compressed, and single/double-precision floating-point loads/stores.  It uses the new cp_misalign and cp_misalign_cross64_{hword/word/double} coverpoints defined in <<t-Misalign-coverpoint-definitions>>. Each instruction is tested at byte offsets 0-8 in two 16-byte windows of the scratch area: one at the start of the 256-byte-aligned scratch area, and one starting 56 bytes in, so that misaligned accesses straddle the 64-byte boundary (and hence any 16-, 32- or 64-byte cache line or bus beat) at scratch+64. Each window is filled with 16 distinct bytes before the accesses. Loads are repeated with the bitwise complement of the pattern so that every width and offset is loaded with both a clear and a set sign bit, checking sign and zero extension. Stores check all 16 bytes of the window. It assumes that if these work, then Zfh and Zcb loads/stores will also work correctly.  Misaligned atomics are exercised with {ExceptionsZaamo, ExceptionsZalrsc}/{cp_amo/load/store_address_misaligned}. Misaligned vector load/stores are exercised in <<MisalignV>>.
 
 include::{testplansdir}/Misalign.adoc[]
 
@@ -61,7 +61,7 @@ include::norm/MisalignZca_norm_rules.adoc[]
 |===
 |Modified Coverpoint|Bins|Definition
 |cp_misalign|8|All 8 byte offsets within a doubleword: the three least significant bits of the effective address, on both RV32 and RV64.
-|cp_misalign_cross64|2|Whether the access crosses a 64-byte boundary (effective address bits [5:0] plus the access size in bytes exceeds 64).
+|cp_misalign_cross64_{hword/word/double}|2|Whether a 2-, 4-, or 8-byte access crosses a 64-byte boundary, from effective address bits [5:0].
 |===
 
 ==== Zicclsm Misaligned Loads/Stores

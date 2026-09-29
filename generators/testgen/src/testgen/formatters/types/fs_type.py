@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import check_store_canary, fill_store_canary, load_float_reg, write_sigupd
+from testgen.asm.helpers import FP_STORE_AREA_BYTES, check_store_canary, fill_store_canary, load_float_reg, write_sigupd
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -42,7 +42,7 @@ def format_fs_type(
             params.rs1,
             params.temp_reg,
             test_data,
-            area_bytes=store_bytes,
+            area_bytes=FP_STORE_AREA_BYTES,
             store_val=params.fs2val,
             store_bytes=store_bytes,
         ),
@@ -62,7 +62,7 @@ def format_fs_type(
     test = [f"{instr_name} f{params.fs2}, {params.immval}(x{params.rs1}) # perform store"]
     check = [
         f"addi x{params.rs1}, x{params.rs1}, {params.immval} # restore base address",
-        *check_store_canary(params.rs1, params.temp_reg, test_data, area_bytes=store_bytes),
+        *check_store_canary(params.rs1, params.temp_reg, test_data, area_bytes=FP_STORE_AREA_BYTES),
         write_sigupd(None, test_data, "fflags"),
     ]
     return (setup, test, check)

@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 38
+#define SIGUPD_COUNT 52
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -39,11 +39,16 @@ RVTEST_BEGIN
   LA(x25, scratch) # point base at scratch
   RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0x4db8ffff
   SREG x13, 0(x25) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0xd2691ea7
+  SREG x13, 4(x25) # fill store target with canary
   addi x25, x25, 969 # adjust base address for offset
 ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffff00000000:
   fsh f9, -969(x25) # perform store
   addi x25, x25, -969 # restore base address
   LREG x13, 0(x25) # load store target for checking
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffff00000000, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffff00000000_str)
+  LREG x13, 4(x25) # load store target for checking
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffff00000000, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffff00000000_str)
   # Check fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -55,11 +60,16 @@ ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffff00000000:
   LA(x7, scratch) # point base at scratch
   RVTEST_TESTDATA_LOAD_INT(x3, x26) # load store canary: x26 = 0x4db87fff
   SREG x26, 0(x7) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load store canary: x26 = 0xd2691ea7
+  SREG x26, 4(x7) # fill store target with canary
   addi x7, x7, -130 # adjust base address for offset
 ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfffffffffffe8000:
   fsh f23, 130(x7) # perform store
   addi x7, x7, 130 # restore base address
   LREG x26, 0(x7) # load store target for checking
+  # Check if x26 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x26, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfffffffffffe8000, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfffffffffffe8000_str)
+  LREG x26, 4(x7) # load store target for checking
   # Check if x26 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x26, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfffffffffffe8000, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfffffffffffe8000_str)
   # Check fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -71,11 +81,16 @@ ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfffffffffffe8000:
   LA(x11, scratch) # point base at scratch
   RVTEST_TESTDATA_LOAD_INT(x3, x25) # load store canary: x25 = 0x4db8c3ff
   SREG x25, 0(x11) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load store canary: x25 = 0xd2691ea7
+  SREG x25, 4(x11) # fill store target with canary
   addi x11, x11, -1030 # adjust base address for offset
 ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0x7fffffffffff3c00:
   fsh f26, 1030(x11) # perform store
   addi x11, x11, 1030 # restore base address
   LREG x25, 0(x11) # load store target for checking
+  # Check if x25 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x25, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0x7fffffffffff3c00, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0x7fffffffffff3c00_str)
+  LREG x25, 4(x11) # load store target for checking
   # Check if x25 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x25, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0x7fffffffffff3c00, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0x7fffffffffff3c00_str)
   # Check fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -87,11 +102,16 @@ ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0x7fffffffffff3c00:
   LA(x28, scratch) # point base at scratch
   RVTEST_TESTDATA_LOAD_INT(x3, x15) # load store canary: x15 = 0x4db843ff
   SREG x15, 0(x28) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load store canary: x15 = 0xd2691ea7
+  SREG x15, 4(x28) # fill store target with canary
   addi x28, x28, 45 # adjust base address for offset
 ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfeedbee5beefbc00:
   fsh f29, -45(x28) # perform store
   addi x28, x28, -45 # restore base address
   LREG x15, 0(x28) # load store target for checking
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfeedbee5beefbc00, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfeedbee5beefbc00_str)
+  LREG x15, 4(x28) # load store target for checking
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfeedbee5beefbc00, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfeedbee5beefbc00_str)
   # Check fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -103,11 +123,16 @@ ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfeedbee5beefbc00:
   LA(x14, scratch) # point base at scratch
   RVTEST_TESTDATA_LOAD_INT(x3, x15) # load store canary: x15 = 0x4db8fbff
   SREG x15, 0(x14) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load store canary: x15 = 0xd2691ea7
+  SREG x15, 4(x14) # fill store target with canary
   addi x14, x14, -1789 # adjust base address for offset
 ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffefffff0400:
   fsh f24, 1789(x14) # perform store
   addi x14, x14, 1789 # restore base address
   LREG x15, 0(x14) # load store target for checking
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffefffff0400, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffefffff0400_str)
+  LREG x15, 4(x14) # load store target for checking
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffefffff0400, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffefffff0400_str)
   # Check fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -119,11 +144,16 @@ ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffefffff0400:
   LA(x11, scratch) # point base at scratch
   RVTEST_TESTDATA_LOAD_INT(x3, x6) # load store canary: x6 = 0x4db87bff
   SREG x6, 0(x11) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load store canary: x6 = 0xd2691ea7
+  SREG x6, 4(x11) # fill store target with canary
   addi x11, x11, 1550 # adjust base address for offset
 ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffff8400:
   fsh f25, -1550(x11) # perform store
   addi x11, x11, -1550 # restore base address
   LREG x6, 0(x11) # load store target for checking
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffff8400, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffff8400_str)
+  LREG x6, 4(x11) # load store target for checking
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffff8400, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffff8400_str)
   # Check fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -135,11 +165,16 @@ ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffff8400:
   LA(x29, scratch) # point base at scratch
   RVTEST_TESTDATA_LOAD_INT(x3, x16) # load store canary: x16 = 0x4db88400
   SREG x16, 0(x29) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_INT(x3, x16) # load store canary: x16 = 0xd2691ea7
+  SREG x16, 4(x29) # fill store target with canary
   addi x29, x29, -372 # adjust base address for offset
 ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xefffffffffff7bff:
   fsh f25, 372(x29) # perform store
   addi x29, x29, 372 # restore base address
   LREG x16, 0(x29) # load store target for checking
+  # Check if x16 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x16, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xefffffffffff7bff, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xefffffffffff7bff_str)
+  LREG x16, 4(x29) # load store target for checking
   # Check if x16 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x16, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xefffffffffff7bff, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xefffffffffff7bff_str)
   # Check fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -151,11 +186,16 @@ ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xefffffffffff7bff:
   LA(x11, scratch) # point base at scratch
   RVTEST_TESTDATA_LOAD_INT(x3, x19) # load store canary: x19 = 0x4db80400
   SREG x19, 0(x11) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load store canary: x19 = 0xd2691ea7
+  SREG x19, 4(x11) # fill store target with canary
   addi x11, x11, -931 # adjust base address for offset
 ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xc0dec0dec0defbff:
   fsh f6, 931(x11) # perform store
   addi x11, x11, 931 # restore base address
   LREG x19, 0(x11) # load store target for checking
+  # Check if x19 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x19, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xc0dec0dec0defbff, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xc0dec0dec0defbff_str)
+  LREG x19, 4(x11) # load store target for checking
   # Check if x19 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x19, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xc0dec0dec0defbff, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xc0dec0dec0defbff_str)
   # Check fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -167,11 +207,16 @@ ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xc0dec0dec0defbff:
   LA(x28, scratch) # point base at scratch
   RVTEST_TESTDATA_LOAD_INT(x3, x14) # load store canary: x14 = 0x4db883ff
   SREG x14, 0(x28) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load store canary: x14 = 0xd2691ea7
+  SREG x14, 4(x28) # fill store target with canary
   addi x28, x28, 2015 # adjust base address for offset
 ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xa83ef1cc4f1a7c00:
   fsh f14, -2015(x28) # perform store
   addi x28, x28, -2015 # restore base address
   LREG x14, 0(x28) # load store target for checking
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xa83ef1cc4f1a7c00, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xa83ef1cc4f1a7c00_str)
+  LREG x14, 4(x28) # load store target for checking
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xa83ef1cc4f1a7c00, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xa83ef1cc4f1a7c00_str)
   # Check fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -183,11 +228,16 @@ ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xa83ef1cc4f1a7c00:
   LA(x26, scratch) # point base at scratch
   RVTEST_TESTDATA_LOAD_INT(x3, x27) # load store canary: x27 = 0x4db803ff
   SREG x27, 0(x26) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load store canary: x27 = 0xd2691ea7
+  SREG x27, 4(x26) # fill store target with canary
   addi x26, x26, -1351 # adjust base address for offset
 ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffff0ffffc00:
   fsh f12, 1351(x26) # perform store
   addi x26, x26, 1351 # restore base address
   LREG x27, 0(x26) # load store target for checking
+  # Check if x27 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x27, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffff0ffffc00, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffff0ffffc00_str)
+  LREG x27, 4(x26) # load store target for checking
   # Check if x27 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x27, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffff0ffffc00, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffff0ffffc00_str)
   # Check fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -199,11 +249,16 @@ ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffff0ffffc00:
   LA(x18, scratch) # point base at scratch
   RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0x4db881ff
   SREG x12, 0(x18) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0xd2691ea7
+  SREG x12, 4(x18) # fill store target with canary
   addi x18, x18, -2033 # adjust base address for offset
 ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfffeffffffff7e00:
   fsh f30, 2033(x18) # perform store
   addi x18, x18, 2033 # restore base address
   LREG x12, 0(x18) # load store target for checking
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfffeffffffff7e00, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfffeffffffff7e00_str)
+  LREG x12, 4(x18) # load store target for checking
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfffeffffffff7e00, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfffeffffffff7e00_str)
   # Check fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -215,11 +270,16 @@ ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfffeffffffff7e00:
   LA(x16, scratch) # point base at scratch
   RVTEST_TESTDATA_LOAD_INT(x3, x7) # load store canary: x7 = 0x4db88000
   SREG x7, 0(x16) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load store canary: x7 = 0xd2691ea7
+  SREG x7, 4(x16) # fill store target with canary
   addi x16, x16, -779 # adjust base address for offset
 ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffefffff7fff:
   fsh f16, 779(x16) # perform store
   addi x16, x16, 779 # restore base address
   LREG x7, 0(x16) # load store target for checking
+  # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x7, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffefffff7fff, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffefffff7fff_str)
+  LREG x7, 4(x16) # load store target for checking
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffefffff7fff, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffefffff7fff_str)
   # Check fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -231,11 +291,16 @@ ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffefffff7fff:
   LA(x6, scratch) # point base at scratch
   RVTEST_TESTDATA_LOAD_INT(x3, x25) # load store canary: x25 = 0x4db883fe
   SREG x25, 0(x6) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load store canary: x25 = 0xd2691ea7
+  SREG x25, 4(x6) # fill store target with canary
   addi x6, x6, -332 # adjust base address for offset
 ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xa1b2c3d4e5f67c01:
   fsh f25, 332(x6) # perform store
   addi x6, x6, 332 # restore base address
   LREG x25, 0(x6) # load store target for checking
+  # Check if x25 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x25, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xa1b2c3d4e5f67c01, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xa1b2c3d4e5f67c01_str)
+  LREG x25, 4(x6) # load store target for checking
   # Check if x25 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x25, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xa1b2c3d4e5f67c01, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xa1b2c3d4e5f67c01_str)
   # Check fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -247,11 +312,16 @@ ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xa1b2c3d4e5f67c01:
   LA(x31, scratch) # point base at scratch
   RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0x4db88200
   SREG x12, 0(x31) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0xd2691ea7
+  SREG x12, 4(x31) # fill store target with canary
   addi x31, x31, 958 # adjust base address for offset
 ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfffffffcffff7dff:
   fsh f20, -958(x31) # perform store
   addi x31, x31, -958 # restore base address
   LREG x12, 0(x31) # load store target for checking
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfffffffcffff7dff, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfffffffcffff7dff_str)
+  LREG x12, 4(x31) # load store target for checking
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfffffffcffff7dff, ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xfffffffcffff7dff_str)
   # Check fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -266,32 +336,46 @@ RVTEST_DATA_BEGIN
 // Test data
 .dword 0xffffffff00000000
 .dword 0x000000004db8ffff
+.dword 0x00000000d2691ea7
 .dword 0xfffffffffffe8000
 .dword 0x000000004db87fff
+.dword 0x00000000d2691ea7
 .dword 0x7fffffffffff3c00
 .dword 0x000000004db8c3ff
+.dword 0x00000000d2691ea7
 .dword 0xfeedbee5beefbc00
 .dword 0x000000004db843ff
+.dword 0x00000000d2691ea7
 .dword 0xffffffefffff0400
 .dword 0x000000004db8fbff
+.dword 0x00000000d2691ea7
 .dword 0x00000000ffff8400
 .dword 0x000000004db87bff
+.dword 0x00000000d2691ea7
 .dword 0xefffffffffff7bff
 .dword 0x000000004db88400
+.dword 0x00000000d2691ea7
 .dword 0xc0dec0dec0defbff
 .dword 0x000000004db80400
+.dword 0x00000000d2691ea7
 .dword 0xa83ef1cc4f1a7c00
 .dword 0x000000004db883ff
+.dword 0x00000000d2691ea7
 .dword 0xffffffff0ffffc00
 .dword 0x000000004db803ff
+.dword 0x00000000d2691ea7
 .dword 0xfffeffffffff7e00
 .dword 0x000000004db881ff
+.dword 0x00000000d2691ea7
 .dword 0xffffffefffff7fff
 .dword 0x000000004db88000
+.dword 0x00000000d2691ea7
 .dword 0xa1b2c3d4e5f67c01
 .dword 0x000000004db883fe
+.dword 0x00000000d2691ea7
 .dword 0xfffffffcffff7dff
 .dword 0x000000004db88200
+.dword 0x00000000d2691ea7
 
 // Testcase strings
 ZfhminD_fsh_cg_cp_fs2_badNB_D_H_b0xffffffff00000000_str: .string "\"test: 1; cg: ZfhminD_fsh_cg; cp: cp_fs2_badNB_D_H; bin: b0xffffffff00000000\""

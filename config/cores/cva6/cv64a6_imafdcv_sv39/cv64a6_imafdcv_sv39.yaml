@@ -154,6 +154,20 @@ implemented_extensions:
   #            https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_soc.sv#L462
 
 params:
+  # misa.X reads 1.  The Ara SoC turns on CVA6's scalar half-precision FPU (XF16) from
+  # FPUSupport, which defaults to FPUSupportHalfSingleDouble, and CVA6 counts XF16 as a
+  # non-standard extension.  Measured misa = 0x8000_0000_00B4_112D (bit 23 set); see
+  # discrepancy D10.
+  #   Quote: "cfg.XF16                  = FPUSupport[3];"
+  #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_soc.sv#L456
+  #   Quote: "FPUSupportHalfSingleDouble = 6'b111000,"
+  #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/include/ara_pkg.sv#L56
+  #   Quote: "bit NSX = CVA6Cfg.XF16 | CVA6Cfg.XF16ALT | CVA6Cfg.XF8 | CVA6Cfg.XF8ALT | CVA6Cfg.XFVec;"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/build_config_pkg.sv#L7
+  #   Quote: "| (CVA6Cfg.XLEN'(CVA6Cfg.NSX) << 23)  // X - Non-standard extensions present"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L320
+  NON_STANDARD_EXTENSION_IMPLEMENTED: true
+
   # No A params: with Zaamo and Zalrsc undeclared, MISALIGNED_AMO, the LRSC_* parameters
   # and MUTABLE_MISA_A are not defined for this configuration.
   # misa is write-ignored, so no misa bit is mutable.
@@ -180,6 +194,11 @@ params:
   #   Quote: "mstatus_d.ube   = 1'b0;  // CVA6 is little-endian"
   #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1565
   U_MODE_ENDIANNESS: little
+  # WFI in U-mode always raises an illegal-instruction exception.
+  #   Quote: "// we don't support U mode interrupts so WFI is illegal in this context
+  #           if (CVA6Cfg.RVU && priv_lvl_i == riscv::PRIV_LVL_U) begin"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/decoder.sv#L281
+  WFI_U_MODE: false
   UXLEN: [64]
   TRAP_ON_ECALL_FROM_U: true
 
@@ -192,6 +211,20 @@ params:
   #  https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/build_config_pkg.sv#L43 )
   ASID_WIDTH: 16
   S_MODE_ENDIANNESS: little
+  # Supervisor software, timer and external interrupts are all implemented: SSIP, STIP
+  # and SEIP are writable in mip, mie and mideleg, and SEIP is also ORed with irq_i[1].
+  # In the Ara testbench every interrupt pin (irq_i, ipi_i, time_irq_i) is tied to zero,
+  # so only software writes to mip can raise them there.
+  #   Quote: "mask = CVA6Cfg.XLEN'(riscv::MIP_SSIP) | CVA6Cfg.XLEN'(riscv::MIP_STIP)
+  #           | CVA6Cfg.XLEN'(riscv::MIP_SEIP);"  (CSR_MIDELEG)
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1564
+  #   Quote: the same three bits in the CSR_MIP write mask
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1661
+  #   Quote: ".irq_i            ('0                      ),"
+  #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_system.sv#L144
+  SEI_INTR_IMPL: true
+  SSI_INTR_IMPL: true
+  STI_INTR_IMPL: true
   SXLEN: [64]
   # TvalEn = 1, so every trap that has a faulting address reports it in [ms]tval.
   REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: true
@@ -258,6 +291,30 @@ params:
   TRAP_ON_ECALL_FROM_S: true
 
   # ---------------------------------------------------------------- Sm params
+  # Machine software, timer and external interrupts are all implemented: MSIE, MTIE and
+  # MEIE are writable in mie (SoftwareInterruptEn = 1 in this configuration), and MSIP,
+  # MTIP and MEIP follow the ipi_i, time_irq_i and irq_i[0] pins.  In the Ara testbench
+  # those pins are tied to zero, so these interrupts can never actually fire there.
+  #   Quote: "mask = ... | CVA6Cfg.XLEN'(riscv::MIP_MSIP) | CVA6Cfg.XLEN'(riscv::MIP_MTIP)
+  #           | CVA6Cfg.XLEN'(riscv::MIP_MEIP);"  (CSR_MIE, RVS branch)
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1592
+  #   Quote: "mip_d[riscv::IRQ_M_EXT] = irq_i[0]; ... mip_d[riscv::IRQ_M_SOFT] =
+  #           CVA6Cfg.SoftwareInterruptEn && ipi_i; ... mip_d[riscv::IRQ_M_TIMER] = time_irq_i;"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1970
+  #   Quote: "SoftwareInterruptEn: bit'(1),"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/cv64a6_imafdcv_sv39_config_pkg.sv#L121
+  #   Quote: ".irq_i ('0), .ipi_i ('0), .time_irq_i ('0),"
+  #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_system.sv#L144
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+  # WFI has no timeout: the core stays halted until an enabled interrupt is pending or
+  # debug is requested.  (With the interrupt pins tied to zero in the Ara testbench, a
+  # WFI with nothing pending in mip never resumes.)
+  #   Quote: "if ((CVA6Cfg.DebugEn && debug_req_i) || (!clic_mode_o && (|(mip_q & mie_q) || irq_i[1])) || clic_irq_ready_o) begin
+  #           wfi_d = 1'b0;"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L2578
+  WFI_FINITE: false
   MXLEN: 64
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
@@ -381,6 +438,15 @@ params:
       false,
       false,
     ]
+  # The six implemented counters are full 64-bit registers.
+  #   Quote: "logic [63:0] generic_counter_q[MHPMCounterNum:1];"
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/perf_counters.sv#L66
+  HPM_COUNTER3_WIDTH: 64
+  HPM_COUNTER4_WIDTH: 64
+  HPM_COUNTER5_WIDTH: 64
+  HPM_COUNTER6_WIDTH: 64
+  HPM_COUNTER7_WIDTH: 64
+  HPM_COUNTER8_WIDTH: 64
   HPM_EVENTS: [0]
   MCOUNTINHIBIT_IMPLEMENTED: true
   # mcountinhibit: bit 0 (CY) and bits 2..8 are writable; bit 1 (TM) is forced to zero,

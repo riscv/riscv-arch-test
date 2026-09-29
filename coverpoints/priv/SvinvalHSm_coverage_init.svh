@@ -2,12 +2,10 @@
 //
 // RISC-V Architectural Functional Coverage Covergroups Initialization File
 //
-// Written: Julia Gong jgong@g.hmc.edu November 10, 2025
-//
-// Copyright (C) 2025 Harvey Mudd College
+// Copyright (C) 2026 Harvey Mudd College
 //
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ZicntrH_cg = new();         ZicntrH_cg.set_inst_name("obj_ZicntrH");
+    SvinvalHSm_cg = new(); SvinvalHSm_cg.set_inst_name("obj_SvinvalHSm");

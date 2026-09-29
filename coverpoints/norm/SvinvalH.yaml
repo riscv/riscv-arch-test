@@ -1,0 +1,42 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # These have the same semantics as SINVAL.VMA, except that they combine with
+  # SFENCE.W.INVAL and SFENCE.INVAL.IR to replace HFENCE.VVMA and HFENCE.GVMA,
+  # respectively, instead of SFENCE.VMA.
+  - name: Svinval_hinval_vvma_gvma
+    coverpoint: ["SvinvalH_cg/cp_svinval"]
+
+  # HINVAL.GVMA uses VMIDs instead of ASIDs.
+  - name: Svinval_hinval_gvma_uses_vmid
+    coverpoint:
+      [
+        "Not tested: address-translation cache contents are not observable in signature tests",
+      ]
+
+  # In particular, an attempt to execute any of these instructions in U-mode always
+  # raises an illegal-instruction exception.
+  - names:
+      [Svinval_illegal_instruction_u_mode, Svinval_sfence_w_inval_inval_u_mode]
+    coverpoint: ["SvinvalH_cg/cp_svinval"]
+
+  # An attempt to execute HINVAL.VVMA or HINVAL.GVMA in VS-mode or VU-mode, or to execute
+  # SINVAL.VMA in VU-mode, raises a virtual-instruction exception.
+  - names:
+      [Svinval_virtual_instruction_vu_vs, Svinval_sfence_w_inval_inval_vu_mode]
+    coverpoint: ["SvinvalH_cg/cp_svinval"]
+
+  # When hstatus.VTVM=1, an attempt to execute SINVAL.VMA in VS-mode also raises a
+  # virtual-instruction exception.
+  - names:
+      [
+        Svinval_virtual_instruction_vtvms,
+        H_virtinst_vs_sfence_sinval_satp_vtvm1,
+      ]
+    coverpoint: ["SvinvalH_cg/cp_svinval"]
+
+  # SFENCE.W.INVAL and SFENCE.INVAL.IR are unaffected by the mstatus.TVM and hstatus.VTVM
+  # fields and hence are always permitted in S-mode and VS-mode.
+  - name: Svinval_sfence_w_inval_inval_s_vs_mode
+    coverpoint: ["SvinvalH_cg/cp_svinval"]

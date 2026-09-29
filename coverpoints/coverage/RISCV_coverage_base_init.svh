@@ -246,13 +246,29 @@
         `cover_info("//      SdtrigSm - Enabled");
         `include "SdtrigSm_coverage_init.svh"
     `endif
+    `ifdef COVER_SHCOUNTERENW
+        `cover_info("//      Shcounterenw - Enabled");
+        `include "Shcounterenw_coverage_init.svh"
+    `endif
+    `ifdef COVER_SHGATPA
+        `cover_info("//      Shgatpa - Enabled");
+        `include "Shgatpa_coverage_init.svh"
+    `endif
     `ifdef COVER_SHTVALA
         `cover_info("//      Shtvala - Enabled");
         `include "Shtvala_coverage_init.svh"
     `endif
+    `ifdef COVER_SHVSATPA
+        `cover_info("//      Shvsatpa - Enabled");
+        `include "Shvsatpa_coverage_init.svh"
+    `endif
     `ifdef COVER_SHVSTVALA
         `cover_info("//      Shvstvala - Enabled");
         `include "Shvstvala_coverage_init.svh"
+    `endif
+    `ifdef COVER_SHVSTVECD
+        `cover_info("//      Shvstvecd - Enabled");
+        `include "Shvstvecd_coverage_init.svh"
     `endif
     `ifdef COVER_SM
         `cover_info("//      Sm - Enabled");
@@ -417,6 +433,10 @@
     `ifdef COVER_SVINVALH
         `cover_info("//      SvinvalH - Enabled");
         `include "SvinvalH_coverage_init.svh"
+    `endif
+    `ifdef COVER_SVINVALHSM
+        `cover_info("//      SvinvalHSm - Enabled");
+        `include "SvinvalHSm_coverage_init.svh"
     `endif
     `ifdef COVER_SVINVALSM
         `cover_info("//      SvinvalSm - Enabled");
@@ -665,6 +685,10 @@
     `ifdef COVER_ZICNTRH
         `cover_info("//      ZicntrH - Enabled");
         `include "ZicntrH_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZICNTRHSM
+        `cover_info("//      ZicntrHSm - Enabled");
+        `include "ZicntrHSm_coverage_init.svh"
     `endif
     `ifdef COVER_ZICNTRS
         `cover_info("//      ZicntrS - Enabled");

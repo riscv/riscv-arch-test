@@ -67,5 +67,81 @@ normative_rule_definitions:
   - name: ieee_std_tininess
     coverpoint:
       [
-        "ZicsrF_cg/{cp_underflow_after_rounding_fma_s, cp_underflow_after_rounding_fmul_s}",
+        "ZicsrF_cg/{cp_underflow_after_rounding_fma_s, cp_underflow_after_rounding_fmul_s, cp_underflow_after_rounding_fmul_emin_s, cp_underflow_after_rounding_fdiv_s}",
+        "ZicsrF_cg/{cp_underflow_after_rounding_fma_d, cp_underflow_after_rounding_fmul_d, cp_underflow_after_rounding_fcvt_s_d, cp_underflow_after_rounding_fmul_emin_d, cp_underflow_after_rounding_fdiv_d}",
+        "ZicsrF_cg/{cp_underflow_after_rounding_fma_h, cp_underflow_after_rounding_fmul_h, cp_underflow_after_rounding_fmul_emin_h, cp_underflow_after_rounding_fdiv_h, cp_underflow_after_rounding_fcvt_h_s}",
+        "ZicsrF_cg/{cp_fcvt_s_d_rounding, cp_fcvt_h_s_rounding, cp_fcvt_h_d_rounding}",
       ]
+
+  # The fused multiply-add instructions must set the invalid operation exception flag when
+  # the multiplicands are ∞ and zero, even when the addend is a quiet NaN.
+  - name: fma_nv_flag
+    coverpoint:
+      ["ZicsrF_cg/{cp_fma_inf_zero_s, cp_fma_inf_zero_d, cp_fma_inf_zero_h}"]
+
+  # computational instructions compliant with the IEEE 754-2008 arithmetic standard's binary32
+  # format and operations.
+  # (IEEE 754-2008 6.3: an exact zero sum is +0 in every rounding mode except roundTowardNegative)
+  - name: F_ieee_compliance
+    coverpoint:
+      [
+        "ZicsrF_cg/{cp_fma_exact_zero_s, cp_fma_exact_zero_d, cp_fma_exact_zero_h}",
+      ]
+  # insn:fnmsub.s[] multiplies the values in rs1 and rs2, negates the product, adds the value
+  # in rs3, and writes the final result to rd. insn:fnmsub.s[] computes −(rs1×rs2)+rs3.
+  - name: fnmsub-s_op
+    coverpoint: ["ZicsrF_cg/cp_fma_exact_zero_s"]
+  # insn:fnmadd.s[] multiplies the values in rs1 and rs2, negates the product, subtracts the
+  # value in rs3, and writes the final result to rd. insn:fnmadd.s[] computes −(rs1×rs2)−rs3.
+  - name: fnmadd-s_op
+    coverpoint: ["ZicsrF_cg/cp_fma_exact_zero_s"]
+
+  # All floating-point to integer and integer to floating-point conversion instructions round
+  # according to the rm field.
+  - name: fcvt_round
+    coverpoint:
+      [
+        "ZicsrF_cg/{cp_fcvt_s_w_rounding, cp_fcvt_s_wu_rounding, cp_fcvt_s_l_rounding, cp_fcvt_s_lu_rounding}",
+        "ZicsrF_cg/{cp_fcvt_d_l_rounding, cp_fcvt_d_lu_rounding}",
+        "ZicsrF_cg/{cp_fcvt_h_w_rounding, cp_fcvt_h_wu_rounding, cp_fcvt_h_l_rounding, cp_fcvt_h_lu_rounding}",
+      ]
+  # insn:fcvt.s.d[] rounds according to the rm field; insn:fcvt.d.s[] will never round
+  - name: fcvt_float_rounding
+    coverpoint:
+      [
+        "ZicsrF_cg/{cp_fcvt_s_d_rounding, cp_fcvt_h_s_rounding, cp_fcvt_h_d_rounding}",
+      ]
+  # Narrowing convert FP32 value to a BF16 value. Round according to the RM field.
+  - name: fcvt-bf16-s_op
+    coverpoint: ["ZicsrF_cg/cp_fcvt_bf16_s_rounding"]
+  # BF16 computational instructions defined in this chapter support all IEEE 754-2008
+  # features, including all rounding modes, subnormal inputs and outputs, overflow and
+  # underflow, and default exception handling. Tininess is detected after rounding.
+  - name: bf16_subnorm
+    coverpoint: ["ZicsrF_cg/cp_fcvt_bf16_s_rounding"]
+
+  # The insn:fround.s[] instruction rounds the single-precision floating-point number in
+  # floating-point register rs1 to an integer, according to the rounding mode specified in
+  # the instruction's rm field.
+  - name: fround-s_op
+    coverpoint: ["ZicsrF_cg/cp_fround_s"]
+  # The insn:froundnx.s[] instruction is defined similarly, but it also sets the inexact
+  # exception flag if the input differs from the rounded result and is not NaN.
+  - name: froundnx-s_op
+    coverpoint: ["ZicsrF_cg/cp_fround_s"]
+  - name: fround-d_froundnx-d_op
+    coverpoint: ["ZicsrF_cg/cp_fround_d"]
+  - name: fround-h_froundnx-h_op
+    coverpoint: ["ZicsrF_cg/cp_fround_h"]
+
+  # The insn:fcvtmod.w.d[] instruction is defined similarly to the insn:fcvt.w.d[]
+  # instruction, with the following differences. insn:fcvtmod.w.d[] always rounds towards
+  # zero. Bits 31:0 are taken from the rounded, unbounded two's complement result, then
+  # sign-extended to XLEN bits and written to integer register rd. ±∞ and NaN are converted
+  # to zero.
+  - name: fcvtmod-w-d_op
+    coverpoint: ["ZicsrF_cg/cp_fcvtmod_w_d"]
+  # Floating-point exception flags are raised the same as they would be for insn:fcvt.w.d[]
+  # with the same input operand.
+  - name: fcvtmod-w-d_flags
+    coverpoint: ["ZicsrF_cg/cp_fcvtmod_w_d"]

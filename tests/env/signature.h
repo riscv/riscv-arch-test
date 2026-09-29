@@ -91,6 +91,35 @@
     2:                                                          ;
 #endif
 
+// TRAP_SIGUPD_ZERO_OK(tempreg, sigreg, offset, instptr, strptr)
+// TRAP_SIGUPD for a field that may be written with zero instead of its defined
+// value, such as xtinst. Passes if the DUT value matches the reference or is zero.
+#ifdef RVTEST_SELFCHECK
+  #define TRAP_SIGUPD_ZERO_OK(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR) \
+    LREG _TMPREG, _OFF*REGWIDTH(T1)                             ;\
+    beq  _TMPREG, _R, 2f                                        ;\
+    beqz _R, 2f                                                 ;\
+    mv   T1, _R                                                 ;\
+    mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
+    jal  T2, failedtest_trap_x7_x9                              ;\
+    RVTEST_WORD_PTR _INST_PTR                                   ;\
+    RVTEST_WORD_PTR _STR_PTR                                    ;\
+    .word CSR_XEPC                                              ;\
+    2:                                                          ;
+#else
+  #define TRAP_SIGUPD_ZERO_OK(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR) \
+    SREG _R, _OFF*REGWIDTH(T1)                                  ;\
+    beq  x0, x0, 2f                                             ;\
+    beqz _R, 2f                                                 ;\
+    mv   T1, _R                                                 ;\
+    mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
+    jal  T2, failedtest_trap_x7_x9                              ;\
+    RVTEST_WORD_PTR _INST_PTR                                   ;\
+    RVTEST_WORD_PTR _STR_PTR                                    ;\
+    .word CSR_XEPC                                              ;\
+    2:                                                          ;
+#endif
+
 // RVTEST_SIGUPD_FFLAGS(sigptr, linkreg, tempreg, instptr, strptr)
 // Reads fflags and compares/stores it to the signature at 0(sigptr).
 // In SELFCHECK mode, compares the value in fflags with the value in memory

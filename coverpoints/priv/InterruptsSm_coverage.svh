@@ -12,11 +12,6 @@
 
 `define COVER_INTERRUPTSSM
 
-// Bits 15:0 of mie, mip and mideleg, assembled from their named fields (the other bits are read-only zero)
-`define SM_MIE16(when) {1'b0, 1'b0, get_csr_val(ins.hart, ins.issue, when, "mie", "lcofie")[0], get_csr_val(ins.hart, ins.issue, when, "mie", "sgeie")[0], get_csr_val(ins.hart, ins.issue, when, "mie", "meie")[0], get_csr_val(ins.hart, ins.issue, when, "mie", "vgeie")[0], get_csr_val(ins.hart, ins.issue, when, "mie", "seie")[0], 1'b0, get_csr_val(ins.hart, ins.issue, when, "mie", "mtie")[0], get_csr_val(ins.hart, ins.issue, when, "mie", "vstie")[0], get_csr_val(ins.hart, ins.issue, when, "mie", "stie")[0], 1'b0, get_csr_val(ins.hart, ins.issue, when, "mie", "msie")[0], get_csr_val(ins.hart, ins.issue, when, "mie", "vssie")[0], get_csr_val(ins.hart, ins.issue, when, "mie", "ssie")[0], 1'b0}
-`define SM_MIP16(when) {1'b0, 1'b0, get_csr_val(ins.hart, ins.issue, when, "mip", "lcofip")[0], get_csr_val(ins.hart, ins.issue, when, "mip", "sgeip")[0], get_csr_val(ins.hart, ins.issue, when, "mip", "meip")[0], get_csr_val(ins.hart, ins.issue, when, "mip", "vgeip")[0], get_csr_val(ins.hart, ins.issue, when, "mip", "seip")[0], 1'b0, get_csr_val(ins.hart, ins.issue, when, "mip", "mtip")[0], get_csr_val(ins.hart, ins.issue, when, "mip", "vstip")[0], get_csr_val(ins.hart, ins.issue, when, "mip", "stip")[0], 1'b0, get_csr_val(ins.hart, ins.issue, when, "mip", "msip")[0], get_csr_val(ins.hart, ins.issue, when, "mip", "vssip")[0], get_csr_val(ins.hart, ins.issue, when, "mip", "ssip")[0], 1'b0}
-`define SM_MIDELEG16(when) {1'b0, 1'b0, get_csr_val(ins.hart, ins.issue, when, "mideleg", "lcofip")[0], get_csr_val(ins.hart, ins.issue, when, "mideleg", "sgeip")[0], get_csr_val(ins.hart, ins.issue, when, "mideleg", "meip")[0], get_csr_val(ins.hart, ins.issue, when, "mideleg", "vgeip")[0], get_csr_val(ins.hart, ins.issue, when, "mideleg", "seip")[0], 1'b0, get_csr_val(ins.hart, ins.issue, when, "mideleg", "mtip")[0], get_csr_val(ins.hart, ins.issue, when, "mideleg", "vstip")[0], get_csr_val(ins.hart, ins.issue, when, "mideleg", "stip")[0], 1'b0, get_csr_val(ins.hart, ins.issue, when, "mideleg", "msip")[0], get_csr_val(ins.hart, ins.issue, when, "mideleg", "vssip")[0], get_csr_val(ins.hart, ins.issue, when, "mideleg", "ssip")[0], 1'b0}
-
 covergroup InterruptsSm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -68,7 +63,7 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     // mideleg does not exist without S, so it becomes a trivial always-hit bin that leaves the
     // crosses below intact.
     `ifdef S_SUPPORTED
-        mideleg_both: coverpoint `SM_MIDELEG16(`SAMPLE_AFTER) {
+        mideleg_both: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "mideleg")[15:0] {
             // Sail does not let M-level interrupts be delegated (mideleg MEI, MTI, and MSI stay 0),
             // so bits 11, 7, and 3 are don't care in ones.
             `ifdef SSCOFPMF_SUPPORTED
@@ -89,7 +84,7 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     // mideleg does not exist without S, so it becomes a trivial always-hit bin that leaves the
     // crosses below intact.
     `ifdef S_SUPPORTED
-        mideleg_zeros: coverpoint `SM_MIDELEG16(`SAMPLE_AFTER) {
+        mideleg_zeros: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "mideleg")[15:0] {
             wildcard bins zeros = {16'b??0?0?0?0?0?0?0?};
         }
     `else
@@ -106,8 +101,6 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     `else
         `define SM_NOH_MASK 16'h0222
     `endif
-    `define SM_MIDELEG_NOH (`SM_MIDELEG16(`SAMPLE_AFTER) & `SM_NOH_MASK)
-    `define SM_MIP_NOH (`SM_MIP16(`SAMPLE_AFTER) & `SM_NOH_MASK)
 
     // Interrupt bits this config supports: MEI, MTI, MSI, plus the S, Sscofpmf, and H interrupts
     `ifdef S_SUPPORTED
@@ -124,8 +117,10 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     // x & -x keeps the lowest set bit; x & (x-1) clears it, leaving the higher bit of the pair.
     `ifdef S_SUPPORTED
         mideleg_one_of_mip_pair: coverpoint
-            ((`SM_MIDELEG_NOH == (`SM_MIP_NOH & -`SM_MIP_NOH))          ? 2'd1 :
-             (`SM_MIDELEG_NOH == (`SM_MIP_NOH & (`SM_MIP_NOH - 16'd1))) ? 2'd2 : 2'd0) {
+            (((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "mideleg")[15:0] & `SM_NOH_MASK) ==
+              ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mip")[15:0] & `SM_NOH_MASK) & -(get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mip")[15:0] & `SM_NOH_MASK))) ? 2'd1 :
+             ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "mideleg")[15:0] & `SM_NOH_MASK) ==
+              ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mip")[15:0] & `SM_NOH_MASK) & ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mip")[15:0] & `SM_NOH_MASK) - 16'd1))) ? 2'd2 : 2'd0) {
             bins lower_delegated  = {2'd1};
             bins higher_delegated = {2'd2};
         }
@@ -163,7 +158,7 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
 
     // Exactly one interrupt enabled. Each bin requires mie[15:0] to contain exactly one supported
     // interrupt-enable bit and no other set bits.
-    walking_mie_one: coverpoint `SM_MIE16(`SAMPLE_AFTER) {
+    walking_mie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")[15:0] {
         bins meie = {16'h0800};
         bins mtie = {16'h0080};
         bins msie = {16'h0008};
@@ -184,7 +179,7 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
 
     // Every interrupt enabled except one: the complement of mie, masked to the bits this config
     // supports, is one-hot. The bin names the single interrupt left disabled.
-    walking_mie_zero: coverpoint ((~`SM_MIE16(`SAMPLE_AFTER)) & `SM_INT_MASK) {
+    walking_mie_zero: coverpoint ((~get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")[15:0]) & `SM_INT_MASK) {
         bins meie = {16'h0800};
         bins mtie = {16'h0080};
         bins msie = {16'h0008};
@@ -204,19 +199,19 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     }
 
     // The single enabled interrupt in walking_mie_one is pending
-    mip_matches_mie_one: coverpoint ((`SM_MIP16(`SAMPLE_AFTER) & `SM_MIE16(`SAMPLE_AFTER)) != 16'h0) {
+    mip_matches_mie_one: coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mip")[15:0] & get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")[15:0]) != 16'h0) {
         bins pending = {1'b1};
     }
 
     // The single disabled interrupt in walking_mie_zero is pending
-    mip_matches_mie_zero: coverpoint ((`SM_MIP16(`SAMPLE_AFTER) & ~`SM_MIE16(`SAMPLE_AFTER) & `SM_INT_MASK) != 16'h0) {
+    mip_matches_mie_zero: coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mip")[15:0] & ~get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")[15:0] & `SM_INT_MASK) != 16'h0) {
         bins pending = {1'b1};
     }
 
     // Exactly two interrupts enabled: mie masked to the bits this config supports has exactly two
     // bits set. One bin per pair of supported interrupt bits: 3 for M only, 15 for M+S,
     // 21 for M+S+Sscofpmf, 36 for M+S+H, and 45 for M+S+H+Sscofpmf.
-    mie_pairs: coverpoint (`SM_MIE16(`SAMPLE_AFTER) & `SM_INT_MASK) {
+    mie_pairs: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")[15:0] & `SM_INT_MASK) {
         // The second term drops pairs naming a bit this config does not implement, which would
         // otherwise be declared as bins that can never be hit.
         bins pairs[] = {[0:$]} with ($countones(item) == 2 && (item & ~`SM_INT_MASK) == 0);
@@ -224,7 +219,7 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
 
     // One interrupt pending at a time. Bits 15:14, 12, 8, 4, and 0 are don't care because they are
     // either tied to zero or driven by the platform (SGEIP) rather than by the test.
-    mip_walking: coverpoint `SM_MIP16(`SAMPLE_AFTER) {
+    mip_walking: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mip")[15:0] {
         wildcard bins meip = {16'b??0?100?000?000?};
         wildcard bins mtip = {16'b??0?000?100?000?};
         wildcard bins msip = {16'b??0?000?000?100?};
@@ -246,7 +241,7 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     // Two interrupts pending at once: mip masked to the bits this config supports has exactly two
     // bits set. One bin per pair of supported interrupt bits: 3 for M only, 15 for M+S,
     // 21 for M+S+Sscofpmf, 36 for M+S+H, and 45 for M+S+H+Sscofpmf.
-    mip_pairs: coverpoint (`SM_MIP16(`SAMPLE_AFTER) & `SM_INT_MASK) {
+    mip_pairs: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mip")[15:0] & `SM_INT_MASK) {
         // The second term drops pairs naming a bit this config does not implement, which would
         // otherwise be declared as bins that can never be hit.
         bins pairs[] = {[0:$]} with ($countones(item) == 2 && (item & ~`SM_INT_MASK) == 0);
@@ -254,7 +249,7 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
 
     // Exactly two S-level interrupts pending (no M-level or H interrupts)
     `ifdef S_SUPPORTED
-        mip_pairs_noh: coverpoint `SM_MIP_NOH {
+        mip_pairs_noh: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mip")[15:0] & `SM_NOH_MASK) {
             bins pairs[] = {[0:$]} with ($countones(item) == 2 && (item & ~`SM_NOH_MASK) == 0);
         }
     `endif
@@ -361,7 +356,7 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         }
 
     `endif
-    mie_zeros: coverpoint `SM_MIE16(`SAMPLE_AFTER) {
+    mie_zeros: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")[15:0] {
         wildcard bins zeros = {16'b????0?0?0?0?0?0?};
     }
     wfi: coverpoint ins.current.insn {
@@ -527,8 +522,6 @@ endgroup
 
 `undef SM_INT_MASK
 `undef SM_NOH_MASK
-`undef SM_MIDELEG_NOH
-`undef SM_MIP_NOH
 `ifdef SM_WFI_PRIV
     `undef SM_WFI_PRIV
 `endif

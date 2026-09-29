@@ -289,6 +289,8 @@ def gen_compile_tasks(
         *march_flags,
         f"-mabi={mabi}",
         "-DRVTEST_SELFCHECK",
+        # Same Sail platform addresses as the signature build, so shared code has the same layout
+        *signature_compile_flags,
         *([f'-DSIGNATURE_FILE="{result_file}"'] if test_metadata.needs_signature else ["-DRVTEST_NOSIG"]),
         f"-DXLEN={xlen}",
         f"-DTEST_FLEN={test_flen}",

@@ -66,14 +66,21 @@ normative_rule_definitions:
   # F rules
   # The behavior of floating-point instructions that depend on rounding mode when executed with a
   # reserved rounding mode is reserved, including both static reserved rounding modes (101–110) and
-  # dynamic reserved rounding modes (101–111). Some instructions, including widening conversions, have
-  # the rm field but are nevertheless mathematically unaffected by the rounding mode; software should
-  # set their rm field to RNE (000) but implementations must treat the rm field as usual (in particular,
-  # with regard to decoding legal vs. reserved encodings).
+  # dynamic reserved rounding modes (101–111).
   - name: roundingmode_rsv
     # static rounding mode check; cp_reserved covers the fused multiply-add opcodes
     coverpoint:
       ["SsstrictS_instr_cg/cp_Ftype", "SsstrictS_instr_cg/cp_reserved"]
+
+  # Some instructions, including widening conversions, have the rm field but are nevertheless
+  # mathematically unaffected by the rounding mode; software should set their rm field to RNE (000)
+  # but implementations must treat the rm field as usual (in particular, with regard to decoding legal
+  # vs. reserved encodings).
+  - name: roundingmode_unaffected_rm_decode
+    coverpoint:
+      [
+        "TODO: sweep reserved rm values (101, 110, and 111 with reserved frm) on widening conversions such as fcvt.d.s, fcvt.s.h, and fcvt.d.w",
+      ]
 
   # Zfa rules
   # It is encoded like fcvt.w.d, but with the rs2 field set to 8 and the rm field set to 1 (RTZ). Other

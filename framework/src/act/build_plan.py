@@ -289,6 +289,8 @@ def gen_compile_tasks(
         *march_flags,
         f"-mabi={mabi}",
         "-DRVTEST_SELFCHECK",
+        # Same Sail platform addresses as the signature build, so shared code has the same layout
+        *signature_compile_flags,
         *([f'-DSIGNATURE_FILE="{result_file}"'] if test_metadata.needs_signature else ["-DRVTEST_NOSIG"]),
         f"-DXLEN={xlen}",
         f"-DTEST_FLEN={test_flen}",
@@ -584,10 +586,11 @@ def generate_build_plan(
 
     # Sail config affects reference model output (Spike has no equivalent file).
     ref_model_inputs: tuple[Path, ...] = ()
-    signature_compile_flags: tuple[str, ...] = ()
+    # sail_macros.h is included by every test, so the platform defines are needed
+    # whatever the reference model is; only the model's own inputs are Sail-specific.
+    sail_config = config.dut_include_dir / "sail.json"
+    signature_compile_flags = _sail_platform_defines(sail_config)
     if config.ref_model_type == RefModelType.SAIL:
-        sail_config = config.dut_include_dir / "sail.json"
-        signature_compile_flags = _sail_platform_defines(sail_config)
         ref_model_inputs = (sail_config.absolute(),)
 
     for test_name_str, test_metadata in sorted(selected_tests.items()):

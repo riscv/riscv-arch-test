@@ -4,5 +4,6 @@ normative_rule_definitions:
   - name: diff_rv32e_rv32i
     coverpoint:
       [
-        "I_add_cg/{cp_rs1, cp_rs2, cp_rd, cmp_rd_rs1, cmp_rd_rs2, cmp_rs1_rs2, cmp_rd_rs1_rs2}, {SsstrictS_cg,SsstricM_cg}/{cp_upperreg}",
+        "E_add_cg/{cp_rs1, cp_rs2, cp_rd, cmp_rd_rs1, cmp_rd_rs2, cmp_rs1_rs2, cmp_rd_rs1_rs2}",
+        "{SsstrictSm_instr_cg, SsstrictS_instr_cg, SsstrictU_instr_cg}/{cp_upperreg_rs1, cp_upperreg_rs2, cp_upperreg_rd}",
       ]

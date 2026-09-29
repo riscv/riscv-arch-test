@@ -112,6 +112,12 @@
     `ifdef COVER_F
         f_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_H
+        h_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_HSM
+        hsm_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_HV
         hv_sample(hart, issue, ins);
     `endif

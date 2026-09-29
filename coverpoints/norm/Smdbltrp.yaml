@@ -41,7 +41,7 @@ normative_rule_definitions:
   - name: sstatus_sdt_clr_mret_sret
     coverpoint: [""]
 
-  # Additionally, if it is VU, then csr:vsstatus[sdt] is also set to 0.
+  # Additionally, if it is VU, then vsstatus.SDT is also set to 0.
   - name: vsstatus_sdt_clr_mret_sret
     coverpoint: [""]
 

@@ -2,3 +2,17 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
+  # If mtval is written with a nonzero value when an instruction access-fault, page-fault, or
+  # hardware-error exception occurs on a hart with variable-length instructions, then mtval will
+  # contain the virtual address of the portion of the instruction that caused the fault
+  - name: mtval_varlen_wr
+    coverpoint:
+      [
+        "PMPZca_cg/{cp_misaligned_tor, cp_misaligned_napot, cp_misaligned_na4}",
+        "TODO: instruction page fault on the second half of a 32-bit instruction that straddles a page",
+      ]
+
+  # mepc will point to the beginning of the instruction.
+  - name: mepc_varlen_wr
+    coverpoint:
+      ["PMPZca_cg/{cp_misaligned_tor, cp_misaligned_napot, cp_misaligned_na4}"]

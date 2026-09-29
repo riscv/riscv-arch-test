@@ -1,4 +1,15 @@
 normative_rule_definitions:
+  # This extension adds the S-level stimecmp CSR
+  - name: stimecmp_exist
+    coverpoint: ["Sstc_cg/{cp_supervisor_stce, cp_supervisor_tm}"]
+  # This extension adds the STCE bit to the menvcfg and henvcfg CSRs.
+  - name: stce_bit_exist
+    coverpoint:
+      [
+        "Sstc_cg/{cp_supervisor_stce, cp_user_stce}",
+        "SstcH_vs_cg/cp_vs_stimecmp_accessible (henvcfg.STCE)",
+      ]
+
   # The Sstc extension adds the STCE (STimecmp Enable) bit to menvcfg CSR.
   - name: menvcfg_stce_exists
     coverpoint: ["Sstc_cg/cp_{supervisor,user}_stce.  See also SstcH"]

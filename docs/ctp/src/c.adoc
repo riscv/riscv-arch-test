@@ -33,6 +33,8 @@ Modified coverpoints for Zc* are summarized in <<t-Zc-modified-coverpoints>>.  A
 |cp_imm_mul_addi16sp|63|Multiples of 16 from -512 to 496
 |cp_imm_mul_addi4spn|255|Multiples of 4 from 4 to 1020
 |cp_offset_jr|2 + 4|cp_offset + rs1_val[1:0] affecting lsb of load/store address
+|cp_uimm_2|4|Zcb byte offsets 0-3 for `c.lbu` and `c.sb`. The memory holds a distinct byte at each offset.
+|cp_uimm_2h|2|Zcb halfword offsets 0 and 2 for `c.lh`, `c.lhu`, and `c.sh`. The memory holds a distinct halfword at each offset.
 |cp_c_hint_{nop,add,addi,li,lui,mv}|63+31+64+63+31+31|Compressed standard hints using `c.nop`, `c.addi`, `c.li`, `c.lui`, `c.mv`, `c.add`
 |===
 

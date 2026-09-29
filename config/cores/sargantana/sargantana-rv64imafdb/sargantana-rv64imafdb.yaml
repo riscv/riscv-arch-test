@@ -180,9 +180,11 @@ params:
   # ("// No support for timer, interrupts, etc in simulation / .irq_i(1'b0), .soft_irq_i(1'b0),
   # .time_irq_i(1'b0),", https://github.com/bsc-loca/core_tile/blob/2528e7df6507fa06d372f001e55cfd46efae4a4b/simulator/sim_top.sv#L263-L269)
   # and has no CLINT, so in this environment the pending bits can never be set.
-  MEI_INTR_IMPL: true
-  MSI_INTR_IMPL: true
-  MTI_INTR_IMPL: true
+  # ACT reads {MEI,MTI,MSI}_INTR_IMPL as the machine interrupts the platform can raise
+  # (tests/env/check_defines.h), so each is true only where rvmodel_macros.h can raise it.
+  MEI_INTR_IMPL: false
+  MSI_INTR_IMPL: false
+  MTI_INTR_IMPL: false
   # "riscv_pkg::CSR_MVENDORID:          csr_rdata = 64'b0; // not implemented"
   #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L694
   VENDOR_ID_BANK: 0

@@ -293,7 +293,7 @@ normative_rule_definitions:
   - name: fsh_flh_op
     coverpoint:
       [
-        "Zfh_flh_cg/{cp_rs1_nx0, cp_imm_edges, cp_fd, cp_NaNBox_S_H}",
+        "Zfh_flh_cg/{cp_rs1_nx0, cp_imm_edges, cp_fd, cp_memval_fp_half, cp_NaNBox_S_H}",
         "Zfh_fsh_cg/{cp_rs1_nx0, cp_imm_edges, cp_fs2, cp_fs2_edges_H, cp_fs2_badNB_S_H}",
       ]
   # insn:fmadd.s[] multiplies the values in rs1 and rs2, adds the value in rs3, and writes

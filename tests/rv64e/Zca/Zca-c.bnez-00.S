@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 35
+#define SIGUPD_COUNT 37
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -277,6 +277,26 @@ Zca_c_bnez_cg_cp_rs1_edges_0x100000001:
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Zca_c_bnez_cg_cp_rs1_edges_0x100000001, Zca_c_bnez_cg_cp_rs1_edges_0x100000001_str)
 
+# Testcase cp_rs1_edges (Test source rs1 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs1: x11 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load branch taken value: x13 = 0x060aeaf6091d251b
+Zca_c_bnez_cg_cp_rs1_edges_0x80000000:
+  c.bnez x11, 1f # perform operation
+  LI(x13, 0) # branch not taken, set temp_reg to 0
+1:
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Zca_c_bnez_cg_cp_rs1_edges_0x80000000, Zca_c_bnez_cg_cp_rs1_edges_0x80000000_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs1: x11 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load branch taken value: x10 = 0x6002d76a8c9af94a
+Zca_c_bnez_cg_cp_rs1_edges_0x7fffffff:
+  c.bnez x11, 1f # perform operation
+  LI(x10, 0) # branch not taken, set temp_reg to 0
+1:
+  # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x10, Zca_c_bnez_cg_cp_rs1_edges_0x7fffffff, Zca_c_bnez_cg_cp_rs1_edges_0x7fffffff_str)
+
 /////////////////////////////////
 // cp_offset
 /////////////////////////////////
@@ -349,6 +369,10 @@ RVTEST_DATA_BEGIN
 .dword 0x5a645840c265cb29
 .dword 0x0000000100000001
 .dword 0x14e4106b1f8f7386
+.dword 0x0000000080000000
+.dword 0x060aeaf6091d251b
+.dword 0x000000007fffffff
+.dword 0x6002d76a8c9af94a
 .dword 0xa599d1c5426dd777
 
 // Testcase strings
@@ -376,7 +400,9 @@ Zca_c_bnez_cg_cp_rs1_edges_0xffffffff_str: .string "\"test: 21; cg: Zca_c.bnez_c
 Zca_c_bnez_cg_cp_rs1_edges_0xfffffffe_str: .string "\"test: 22; cg: Zca_c.bnez_cg; cp: cp_rs1_edges; bin: 0xfffffffe\""
 Zca_c_bnez_cg_cp_rs1_edges_0x100000000_str: .string "\"test: 23; cg: Zca_c.bnez_cg; cp: cp_rs1_edges; bin: 0x100000000\""
 Zca_c_bnez_cg_cp_rs1_edges_0x100000001_str: .string "\"test: 24; cg: Zca_c.bnez_cg; cp: cp_rs1_edges; bin: 0x100000001\""
-Zca_c_bnez_cg_cp_offset_neg_str: .string "\"test: 25; cg: Zca_c.bnez_cg; cp: cp_offset; bin: neg\""
+Zca_c_bnez_cg_cp_rs1_edges_0x80000000_str: .string "\"test: 25; cg: Zca_c.bnez_cg; cp: cp_rs1_edges; bin: 0x80000000\""
+Zca_c_bnez_cg_cp_rs1_edges_0x7fffffff_str: .string "\"test: 26; cg: Zca_c.bnez_cg; cp: cp_rs1_edges; bin: 0x7fffffff\""
+Zca_c_bnez_cg_cp_offset_neg_str: .string "\"test: 27; cg: Zca_c.bnez_cg; cp: cp_offset; bin: neg\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

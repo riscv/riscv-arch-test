@@ -16,20 +16,20 @@ covergroup ExceptionsSvSm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    mstatus_mprv_one: coverpoint ins.current.csr[CSR_MSTATUS][17] {
+    mstatus_mprv_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mprv")[0] {
         bins one = {1};
     }
-    mstatus_mpp: coverpoint ins.prev.csr[CSR_MSTATUS][12:11] {
+    mstatus_mpp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] {
         bins u_mode = {2'b00};
         bins s_mode = {2'b01};
     }
-    instr_page_fault: coverpoint (ins.current.csr[CSR_MCAUSE][31:0] == 32'd12) {
+    instr_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") == INSTRUCTION_PAGE_FAULT) {
         // auto fill 0/1
     }
-    load_page_fault: coverpoint (ins.current.csr[CSR_MCAUSE][31:0] == 32'd13) {
+    load_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") == LOAD_PAGE_FAULT) {
         // auto fill 0/1
     }
-    store_page_fault: coverpoint (ins.current.csr[CSR_MCAUSE][31:0] == 32'd15) {
+    store_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") == STORE_AMO_PAGE_FAULT) {
         // auto fill 0/1
     }
     i_page_table_entry_invalid: coverpoint ins.current.pte_i[0] {
@@ -46,7 +46,7 @@ covergroup ExceptionsSvSm_cg with function sample(ins_t ins);
         wildcard bins sw = {SW};
         wildcard bins lw = {LW};
     }
-    medeleg_walk: coverpoint ins.current.csr[CSR_MEDELEG] {
+    medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg") {
         bins zeros                    = {16'b0000_0000_0000_0000};
         `ifndef ZCA_SUPPORTED
             bins instrmisaligned_enabled = {16'b0000_0000_0000_0001};

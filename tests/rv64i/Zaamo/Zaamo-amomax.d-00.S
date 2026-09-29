@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 482
+#define SIGUPD_COUNT 504
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -1514,6 +1514,32 @@ Zaamo_amomax_d_cg_cp_rs2_edges_0x100000001:
   LREG x2, 0(x2) # Load the updated value from memory
   # Check if x2 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x11, x8, x7, x2, Zaamo_amomax_d_cg_cp_rs2_edges_0x100000001, Zaamo_amomax_d_cg_cp_rs2_edges_0x100000001_str)
+
+# Testcase cp_rs2_edges (Test source rs2 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x9, x19) # load value in memory: x19 = 0x62c28757cb8b2dfc
+  RVTEST_TESTDATA_LOAD_INT(x9, x22) # load rs2: x22 = 0x0000000080000000
+  LA(x17, scratch) # load base address into rs1
+  SREG x19, 0(x17) # store value into memory at address in rs1
+Zaamo_amomax_d_cg_cp_rs2_edges_0x80000000:
+  amomax.d x18, x22, (x17) # perform operation
+  # Check if x18 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x18, Zaamo_amomax_d_cg_cp_rs2_edges_0x80000000, Zaamo_amomax_d_cg_cp_rs2_edges_0x80000000_str)
+  LREG x17, 0(x17) # Load the updated value from memory
+  # Check if x17 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x17, Zaamo_amomax_d_cg_cp_rs2_edges_0x80000000, Zaamo_amomax_d_cg_cp_rs2_edges_0x80000000_str)
+
+# Testcase cp_rs2_edges (Test source rs2 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x9, x25) # load value in memory: x25 = 0x83b033bc41999e42
+  RVTEST_TESTDATA_LOAD_INT(x9, x13) # load rs2: x13 = 0x000000007fffffff
+  LA(x2, scratch) # load base address into rs1
+  SREG x25, 0(x2) # store value into memory at address in rs1
+Zaamo_amomax_d_cg_cp_rs2_edges_0x7fffffff:
+  amomax.d x22, x13, (x2) # perform operation
+  # Check if x22 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x22, Zaamo_amomax_d_cg_cp_rs2_edges_0x7fffffff, Zaamo_amomax_d_cg_cp_rs2_edges_0x7fffffff_str)
+  LREG x2, 0(x2) # Load the updated value from memory
+  # Check if x2 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x2, Zaamo_amomax_d_cg_cp_rs2_edges_0x7fffffff, Zaamo_amomax_d_cg_cp_rs2_edges_0x7fffffff_str)
 
 /////////////////////////////////
 // cmp_rs1_rs2_nx0
@@ -3250,6 +3276,131 @@ Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b31:
   # Check if x31 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x16, x8, x7, x31, Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b31, Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b31_str)
 
+/////////////////////////////////
+// cp_memval_double
+/////////////////////////////////
+
+# Testcase cp_memval_double (memory value = 0x0)
+  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load value in memory: x3 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x5) # load rs2: x5 = 0xb70e0a4206ac6832
+  LA(x17, scratch) # load base address into rs1
+  SREG x3, 0(x17) # store value into memory at address in rs1
+Zaamo_amomax_d_cg_cp_memval_double_0x0:
+  amomax.d x19, x5, (x17) # perform operation
+  # Check if x19 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x19, Zaamo_amomax_d_cg_cp_memval_double_0x0, Zaamo_amomax_d_cg_cp_memval_double_0x0_str)
+  LREG x17, 0(x17) # Load the updated value from memory
+  # Check if x17 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x17, Zaamo_amomax_d_cg_cp_memval_double_0x0, Zaamo_amomax_d_cg_cp_memval_double_0x0_str)
+
+# Testcase cp_memval_double (memory value = 0x1)
+  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load value in memory: x12 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs2: x26 = 0xfdd2a94c2cedf10f
+  LA(x13, scratch) # load base address into rs1
+  SREG x12, 0(x13) # store value into memory at address in rs1
+Zaamo_amomax_d_cg_cp_memval_double_0x1:
+  amomax.d x18, x26, (x13) # perform operation
+  # Check if x18 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x18, Zaamo_amomax_d_cg_cp_memval_double_0x1, Zaamo_amomax_d_cg_cp_memval_double_0x1_str)
+  LREG x13, 0(x13) # Load the updated value from memory
+  # Check if x13 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x13, Zaamo_amomax_d_cg_cp_memval_double_0x1, Zaamo_amomax_d_cg_cp_memval_double_0x1_str)
+
+# Testcase cp_memval_double (memory value = 0x7fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x2, x20) # load value in memory: x20 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs2: x24 = 0x1a771c77ad8248a7
+  LA(x17, scratch) # load base address into rs1
+  SREG x20, 0(x17) # store value into memory at address in rs1
+Zaamo_amomax_d_cg_cp_memval_double_0x7fffffffffffffff:
+  amomax.d x15, x24, (x17) # perform operation
+  # Check if x15 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x15, Zaamo_amomax_d_cg_cp_memval_double_0x7fffffffffffffff, Zaamo_amomax_d_cg_cp_memval_double_0x7fffffffffffffff_str)
+  LREG x17, 0(x17) # Load the updated value from memory
+  # Check if x17 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x17, Zaamo_amomax_d_cg_cp_memval_double_0x7fffffffffffffff, Zaamo_amomax_d_cg_cp_memval_double_0x7fffffffffffffff_str)
+
+# Testcase cp_memval_double (memory value = 0x8000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x2, x20) # load value in memory: x20 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x25) # load rs2: x25 = 0x1bc592c37cbaa36c
+  LA(x29, scratch) # load base address into rs1
+  SREG x20, 0(x29) # store value into memory at address in rs1
+Zaamo_amomax_d_cg_cp_memval_double_0x8000000000000000:
+  amomax.d x19, x25, (x29) # perform operation
+  # Check if x19 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x19, Zaamo_amomax_d_cg_cp_memval_double_0x8000000000000000, Zaamo_amomax_d_cg_cp_memval_double_0x8000000000000000_str)
+  LREG x29, 0(x29) # Load the updated value from memory
+  # Check if x29 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x29, Zaamo_amomax_d_cg_cp_memval_double_0x8000000000000000, Zaamo_amomax_d_cg_cp_memval_double_0x8000000000000000_str)
+
+# Testcase cp_memval_double (memory value = 0xffffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load value in memory: x30 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x5) # load rs2: x5 = 0x09ac596a840c97ca
+  LA(x12, scratch) # load base address into rs1
+  SREG x30, 0(x12) # store value into memory at address in rs1
+Zaamo_amomax_d_cg_cp_memval_double_0xffffffffffffffff:
+  amomax.d x10, x5, (x12) # perform operation
+  # Check if x10 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x10, Zaamo_amomax_d_cg_cp_memval_double_0xffffffffffffffff, Zaamo_amomax_d_cg_cp_memval_double_0xffffffffffffffff_str)
+  LREG x12, 0(x12) # Load the updated value from memory
+  # Check if x12 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x12, Zaamo_amomax_d_cg_cp_memval_double_0xffffffffffffffff, Zaamo_amomax_d_cg_cp_memval_double_0xffffffffffffffff_str)
+
+/////////////////////////////////
+// cp_custom_amo_aqrl
+/////////////////////////////////
+
+# Testcase cp_custom_aqrl (ordering suffix = '')
+  RVTEST_TESTDATA_LOAD_INT(x2, x23) # load value in memory: x23 = 0xb12658b1c85eca8f
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs2: x6 = 0x8419cf7638f21b8d
+  LA(x11, scratch) # load base address into rs1
+  SREG x23, 0(x11) # store value into memory at address in rs1
+Zaamo_amomax_d_cg_cp_custom_aqrl:
+  amomax.d x29, x6, (x11) # perform operation
+  # Check if x29 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x29, Zaamo_amomax_d_cg_cp_custom_aqrl, Zaamo_amomax_d_cg_cp_custom_aqrl_str)
+  LREG x11, 0(x11) # Load the updated value from memory
+  # Check if x11 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x11, Zaamo_amomax_d_cg_cp_custom_aqrl, Zaamo_amomax_d_cg_cp_custom_aqrl_str)
+
+# Testcase cp_custom_aqrl (ordering suffix = '.aq')
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load value in memory: x30 = 0x7f8f8d10e4044700
+  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs2: x24 = 0xede32f43285691f9
+  LA(x13, scratch) # load base address into rs1
+  SREG x30, 0(x13) # store value into memory at address in rs1
+Zaamo_amomax_d_cg_cp_custom_aqrl_aq:
+  amomax.d.aq x20, x24, (x13) # perform operation
+  # Check if x20 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x20, Zaamo_amomax_d_cg_cp_custom_aqrl_aq, Zaamo_amomax_d_cg_cp_custom_aqrl_aq_str)
+  LREG x13, 0(x13) # Load the updated value from memory
+  # Check if x13 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x13, Zaamo_amomax_d_cg_cp_custom_aqrl_aq, Zaamo_amomax_d_cg_cp_custom_aqrl_aq_str)
+
+# Testcase cp_custom_aqrl (ordering suffix = '.rl')
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load value in memory: x17 = 0x75d217a0ab770b8f
+  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs2: x21 = 0x64f6b6a7443f847e
+  LA(x31, scratch) # load base address into rs1
+  SREG x17, 0(x31) # store value into memory at address in rs1
+Zaamo_amomax_d_cg_cp_custom_aqrl_rl:
+  amomax.d.rl x23, x21, (x31) # perform operation
+  # Check if x23 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x23, Zaamo_amomax_d_cg_cp_custom_aqrl_rl, Zaamo_amomax_d_cg_cp_custom_aqrl_rl_str)
+  LREG x31, 0(x31) # Load the updated value from memory
+  # Check if x31 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x31, Zaamo_amomax_d_cg_cp_custom_aqrl_rl, Zaamo_amomax_d_cg_cp_custom_aqrl_rl_str)
+
+# Testcase cp_custom_aqrl (ordering suffix = '.aqrl')
+  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load value in memory: x11 = 0xc915c454dbc944d8
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs2: x30 = 0x08defb18f9680ca9
+  LA(x20, scratch) # load base address into rs1
+  SREG x11, 0(x20) # store value into memory at address in rs1
+Zaamo_amomax_d_cg_cp_custom_aqrl_aqrl:
+  amomax.d.aqrl x26, x30, (x20) # perform operation
+  # Check if x26 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x26, Zaamo_amomax_d_cg_cp_custom_aqrl_aqrl, Zaamo_amomax_d_cg_cp_custom_aqrl_aqrl_str)
+  LREG x20, 0(x20) # Load the updated value from memory
+  # Check if x20 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x20, Zaamo_amomax_d_cg_cp_custom_aqrl_aqrl, Zaamo_amomax_d_cg_cp_custom_aqrl_aqrl_str)
+
   mv x2, x16 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -3481,6 +3632,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0x3b572f1edad077bf
 .dword 0x0000000100000001
+.dword 0x62c28757cb8b2dfc
+.dword 0x0000000080000000
+.dword 0x83b033bc41999e42
+.dword 0x000000007fffffff
 .dword 0x807f86121466e30d
 .dword 0xbc91442e7f62a675
 .dword 0x67fc9c40cc5947a1
@@ -3731,6 +3886,24 @@ RVTEST_DATA_BEGIN
 .dword 0xcb743bd303b5e974
 .dword 0x820e620c1c426834
 .dword 0xa252163a5469d996
+.dword 0x0000000000000000
+.dword 0xb70e0a4206ac6832
+.dword 0x0000000000000001
+.dword 0xfdd2a94c2cedf10f
+.dword 0x7fffffffffffffff
+.dword 0x1a771c77ad8248a7
+.dword 0x8000000000000000
+.dword 0x1bc592c37cbaa36c
+.dword 0xffffffffffffffff
+.dword 0x09ac596a840c97ca
+.dword 0xb12658b1c85eca8f
+.dword 0x8419cf7638f21b8d
+.dword 0x7f8f8d10e4044700
+.dword 0xede32f43285691f9
+.dword 0x75d217a0ab770b8f
+.dword 0x64f6b6a7443f847e
+.dword 0xc915c454dbc944d8
+.dword 0x08defb18f9680ca9
 
 // Testcase strings
 Zaamo_amomax_d_cg_cp_rs1_nx0_b1_str: .string "\"test: 1; cg: Zaamo_amomax.d_cg; cp: cp_rs1_nx0; bin: b1\""
@@ -3844,131 +4017,142 @@ Zaamo_amomax_d_cg_cp_rs2_edges_0xffffffff_str: .string "\"test: 108; cg: Zaamo_a
 Zaamo_amomax_d_cg_cp_rs2_edges_0xfffffffe_str: .string "\"test: 109; cg: Zaamo_amomax.d_cg; cp: cp_rs2_edges; bin: 0xfffffffe\""
 Zaamo_amomax_d_cg_cp_rs2_edges_0x100000000_str: .string "\"test: 110; cg: Zaamo_amomax.d_cg; cp: cp_rs2_edges; bin: 0x100000000\""
 Zaamo_amomax_d_cg_cp_rs2_edges_0x100000001_str: .string "\"test: 111; cg: Zaamo_amomax.d_cg; cp: cp_rs2_edges; bin: 0x100000001\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b1_str: .string "\"test: 112; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b1\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b2_str: .string "\"test: 113; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b2\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b3_str: .string "\"test: 114; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b3\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b4_str: .string "\"test: 115; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b4\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b5_str: .string "\"test: 116; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b5\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b6_str: .string "\"test: 117; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b6\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b7_str: .string "\"test: 118; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b7\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b8_str: .string "\"test: 119; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b8\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b9_str: .string "\"test: 120; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b9\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b10_str: .string "\"test: 121; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b10\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b11_str: .string "\"test: 122; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b11\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b12_str: .string "\"test: 123; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b12\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b13_str: .string "\"test: 124; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b13\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b14_str: .string "\"test: 125; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b14\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b15_str: .string "\"test: 126; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b15\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b16_str: .string "\"test: 127; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b16\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b17_str: .string "\"test: 128; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b17\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b18_str: .string "\"test: 129; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b18\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b19_str: .string "\"test: 130; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b19\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b20_str: .string "\"test: 131; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b20\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b21_str: .string "\"test: 132; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b21\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b22_str: .string "\"test: 133; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b22\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b23_str: .string "\"test: 134; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b23\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b24_str: .string "\"test: 135; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b24\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b25_str: .string "\"test: 136; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b25\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b26_str: .string "\"test: 137; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b26\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b27_str: .string "\"test: 138; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b27\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b28_str: .string "\"test: 139; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b28\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b29_str: .string "\"test: 140; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b29\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b30_str: .string "\"test: 141; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b30\""
-Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b31_str: .string "\"test: 142; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b31\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b1_str: .string "\"test: 143; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b1\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b2_str: .string "\"test: 144; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b2\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b3_str: .string "\"test: 145; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b3\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b4_str: .string "\"test: 146; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b4\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b5_str: .string "\"test: 147; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b5\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b6_str: .string "\"test: 148; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b6\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b7_str: .string "\"test: 149; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b7\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b8_str: .string "\"test: 150; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b8\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b9_str: .string "\"test: 151; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b9\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b10_str: .string "\"test: 152; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b10\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b11_str: .string "\"test: 153; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b11\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b12_str: .string "\"test: 154; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b12\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b13_str: .string "\"test: 155; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b13\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b14_str: .string "\"test: 156; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b14\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b15_str: .string "\"test: 157; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b15\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b16_str: .string "\"test: 158; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b16\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b17_str: .string "\"test: 159; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b17\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b18_str: .string "\"test: 160; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b18\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b19_str: .string "\"test: 161; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b19\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b20_str: .string "\"test: 162; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b20\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b21_str: .string "\"test: 163; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b21\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b22_str: .string "\"test: 164; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b22\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b23_str: .string "\"test: 165; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b23\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b24_str: .string "\"test: 166; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b24\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b25_str: .string "\"test: 167; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b25\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b26_str: .string "\"test: 168; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b26\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b27_str: .string "\"test: 169; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b27\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b28_str: .string "\"test: 170; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b28\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b29_str: .string "\"test: 171; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b29\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b30_str: .string "\"test: 172; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b30\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b31_str: .string "\"test: 173; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b31\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b0_str: .string "\"test: 174; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b0\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b1_str: .string "\"test: 175; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b1\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b2_str: .string "\"test: 176; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b2\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b3_str: .string "\"test: 177; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b3\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b4_str: .string "\"test: 178; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b4\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b5_str: .string "\"test: 179; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b5\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b6_str: .string "\"test: 180; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b6\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b7_str: .string "\"test: 181; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b7\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b8_str: .string "\"test: 182; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b8\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b9_str: .string "\"test: 183; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b9\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b10_str: .string "\"test: 184; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b10\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b11_str: .string "\"test: 185; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b11\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b12_str: .string "\"test: 186; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b12\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b13_str: .string "\"test: 187; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b13\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b14_str: .string "\"test: 188; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b14\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b15_str: .string "\"test: 189; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b15\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b16_str: .string "\"test: 190; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b16\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b17_str: .string "\"test: 191; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b17\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b18_str: .string "\"test: 192; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b18\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b19_str: .string "\"test: 193; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b19\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b20_str: .string "\"test: 194; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b20\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b21_str: .string "\"test: 195; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b21\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b22_str: .string "\"test: 196; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b22\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b23_str: .string "\"test: 197; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b23\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b24_str: .string "\"test: 198; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b24\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b25_str: .string "\"test: 199; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b25\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b26_str: .string "\"test: 200; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b26\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b27_str: .string "\"test: 201; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b27\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b28_str: .string "\"test: 202; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b28\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b29_str: .string "\"test: 203; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b29\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b30_str: .string "\"test: 204; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b30\""
-Zaamo_amomax_d_cg_cmp_rd_rs2_b31_str: .string "\"test: 205; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b31\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b1_str: .string "\"test: 206; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b1\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b2_str: .string "\"test: 207; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b2\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b3_str: .string "\"test: 208; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b3\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b4_str: .string "\"test: 209; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b4\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b5_str: .string "\"test: 210; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b5\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b6_str: .string "\"test: 211; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b6\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b7_str: .string "\"test: 212; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b7\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b8_str: .string "\"test: 213; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b8\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b9_str: .string "\"test: 214; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b9\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b10_str: .string "\"test: 215; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b10\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b11_str: .string "\"test: 216; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b11\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b12_str: .string "\"test: 217; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b12\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b13_str: .string "\"test: 218; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b13\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b14_str: .string "\"test: 219; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b14\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b15_str: .string "\"test: 220; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b15\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b16_str: .string "\"test: 221; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b16\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b17_str: .string "\"test: 222; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b17\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b18_str: .string "\"test: 223; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b18\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b19_str: .string "\"test: 224; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b19\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b20_str: .string "\"test: 225; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b20\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b21_str: .string "\"test: 226; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b21\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b22_str: .string "\"test: 227; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b22\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b23_str: .string "\"test: 228; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b23\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b24_str: .string "\"test: 229; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b24\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b25_str: .string "\"test: 230; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b25\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b26_str: .string "\"test: 231; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b26\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b27_str: .string "\"test: 232; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b27\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b28_str: .string "\"test: 233; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b28\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b29_str: .string "\"test: 234; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b29\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b30_str: .string "\"test: 235; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b30\""
-Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b31_str: .string "\"test: 236; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b31\""
+Zaamo_amomax_d_cg_cp_rs2_edges_0x80000000_str: .string "\"test: 112; cg: Zaamo_amomax.d_cg; cp: cp_rs2_edges; bin: 0x80000000\""
+Zaamo_amomax_d_cg_cp_rs2_edges_0x7fffffff_str: .string "\"test: 113; cg: Zaamo_amomax.d_cg; cp: cp_rs2_edges; bin: 0x7fffffff\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b1_str: .string "\"test: 114; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b1\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b2_str: .string "\"test: 115; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b2\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b3_str: .string "\"test: 116; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b3\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b4_str: .string "\"test: 117; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b4\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b5_str: .string "\"test: 118; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b5\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b6_str: .string "\"test: 119; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b6\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b7_str: .string "\"test: 120; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b7\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b8_str: .string "\"test: 121; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b8\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b9_str: .string "\"test: 122; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b9\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b10_str: .string "\"test: 123; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b10\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b11_str: .string "\"test: 124; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b11\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b12_str: .string "\"test: 125; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b12\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b13_str: .string "\"test: 126; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b13\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b14_str: .string "\"test: 127; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b14\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b15_str: .string "\"test: 128; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b15\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b16_str: .string "\"test: 129; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b16\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b17_str: .string "\"test: 130; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b17\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b18_str: .string "\"test: 131; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b18\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b19_str: .string "\"test: 132; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b19\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b20_str: .string "\"test: 133; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b20\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b21_str: .string "\"test: 134; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b21\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b22_str: .string "\"test: 135; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b22\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b23_str: .string "\"test: 136; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b23\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b24_str: .string "\"test: 137; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b24\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b25_str: .string "\"test: 138; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b25\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b26_str: .string "\"test: 139; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b26\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b27_str: .string "\"test: 140; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b27\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b28_str: .string "\"test: 141; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b28\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b29_str: .string "\"test: 142; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b29\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b30_str: .string "\"test: 143; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b30\""
+Zaamo_amomax_d_cg_cmp_rs1_rs2_nx0_b31_str: .string "\"test: 144; cg: Zaamo_amomax.d_cg; cp: cmp_rs1_rs2_nx0; bin: b31\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b1_str: .string "\"test: 145; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b1\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b2_str: .string "\"test: 146; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b2\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b3_str: .string "\"test: 147; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b3\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b4_str: .string "\"test: 148; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b4\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b5_str: .string "\"test: 149; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b5\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b6_str: .string "\"test: 150; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b6\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b7_str: .string "\"test: 151; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b7\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b8_str: .string "\"test: 152; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b8\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b9_str: .string "\"test: 153; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b9\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b10_str: .string "\"test: 154; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b10\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b11_str: .string "\"test: 155; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b11\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b12_str: .string "\"test: 156; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b12\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b13_str: .string "\"test: 157; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b13\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b14_str: .string "\"test: 158; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b14\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b15_str: .string "\"test: 159; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b15\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b16_str: .string "\"test: 160; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b16\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b17_str: .string "\"test: 161; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b17\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b18_str: .string "\"test: 162; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b18\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b19_str: .string "\"test: 163; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b19\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b20_str: .string "\"test: 164; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b20\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b21_str: .string "\"test: 165; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b21\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b22_str: .string "\"test: 166; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b22\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b23_str: .string "\"test: 167; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b23\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b24_str: .string "\"test: 168; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b24\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b25_str: .string "\"test: 169; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b25\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b26_str: .string "\"test: 170; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b26\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b27_str: .string "\"test: 171; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b27\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b28_str: .string "\"test: 172; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b28\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b29_str: .string "\"test: 173; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b29\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b30_str: .string "\"test: 174; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b30\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_nx0_b31_str: .string "\"test: 175; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_nx0; bin: b31\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b0_str: .string "\"test: 176; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b0\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b1_str: .string "\"test: 177; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b1\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b2_str: .string "\"test: 178; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b2\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b3_str: .string "\"test: 179; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b3\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b4_str: .string "\"test: 180; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b4\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b5_str: .string "\"test: 181; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b5\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b6_str: .string "\"test: 182; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b6\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b7_str: .string "\"test: 183; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b7\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b8_str: .string "\"test: 184; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b8\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b9_str: .string "\"test: 185; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b9\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b10_str: .string "\"test: 186; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b10\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b11_str: .string "\"test: 187; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b11\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b12_str: .string "\"test: 188; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b12\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b13_str: .string "\"test: 189; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b13\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b14_str: .string "\"test: 190; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b14\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b15_str: .string "\"test: 191; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b15\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b16_str: .string "\"test: 192; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b16\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b17_str: .string "\"test: 193; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b17\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b18_str: .string "\"test: 194; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b18\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b19_str: .string "\"test: 195; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b19\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b20_str: .string "\"test: 196; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b20\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b21_str: .string "\"test: 197; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b21\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b22_str: .string "\"test: 198; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b22\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b23_str: .string "\"test: 199; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b23\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b24_str: .string "\"test: 200; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b24\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b25_str: .string "\"test: 201; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b25\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b26_str: .string "\"test: 202; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b26\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b27_str: .string "\"test: 203; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b27\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b28_str: .string "\"test: 204; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b28\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b29_str: .string "\"test: 205; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b29\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b30_str: .string "\"test: 206; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b30\""
+Zaamo_amomax_d_cg_cmp_rd_rs2_b31_str: .string "\"test: 207; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs2; bin: b31\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b1_str: .string "\"test: 208; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b1\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b2_str: .string "\"test: 209; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b2\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b3_str: .string "\"test: 210; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b3\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b4_str: .string "\"test: 211; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b4\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b5_str: .string "\"test: 212; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b5\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b6_str: .string "\"test: 213; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b6\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b7_str: .string "\"test: 214; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b7\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b8_str: .string "\"test: 215; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b8\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b9_str: .string "\"test: 216; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b9\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b10_str: .string "\"test: 217; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b10\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b11_str: .string "\"test: 218; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b11\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b12_str: .string "\"test: 219; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b12\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b13_str: .string "\"test: 220; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b13\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b14_str: .string "\"test: 221; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b14\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b15_str: .string "\"test: 222; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b15\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b16_str: .string "\"test: 223; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b16\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b17_str: .string "\"test: 224; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b17\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b18_str: .string "\"test: 225; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b18\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b19_str: .string "\"test: 226; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b19\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b20_str: .string "\"test: 227; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b20\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b21_str: .string "\"test: 228; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b21\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b22_str: .string "\"test: 229; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b22\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b23_str: .string "\"test: 230; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b23\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b24_str: .string "\"test: 231; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b24\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b25_str: .string "\"test: 232; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b25\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b26_str: .string "\"test: 233; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b26\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b27_str: .string "\"test: 234; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b27\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b28_str: .string "\"test: 235; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b28\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b29_str: .string "\"test: 236; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b29\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b30_str: .string "\"test: 237; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b30\""
+Zaamo_amomax_d_cg_cmp_rd_rs1_rs2_nx0_b31_str: .string "\"test: 238; cg: Zaamo_amomax.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b31\""
+Zaamo_amomax_d_cg_cp_memval_double_0x0_str: .string "\"test: 239; cg: Zaamo_amomax.d_cg; cp: cp_memval_double; bin: 0x0\""
+Zaamo_amomax_d_cg_cp_memval_double_0x1_str: .string "\"test: 240; cg: Zaamo_amomax.d_cg; cp: cp_memval_double; bin: 0x1\""
+Zaamo_amomax_d_cg_cp_memval_double_0x7fffffffffffffff_str: .string "\"test: 241; cg: Zaamo_amomax.d_cg; cp: cp_memval_double; bin: 0x7fffffffffffffff\""
+Zaamo_amomax_d_cg_cp_memval_double_0x8000000000000000_str: .string "\"test: 242; cg: Zaamo_amomax.d_cg; cp: cp_memval_double; bin: 0x8000000000000000\""
+Zaamo_amomax_d_cg_cp_memval_double_0xffffffffffffffff_str: .string "\"test: 243; cg: Zaamo_amomax.d_cg; cp: cp_memval_double; bin: 0xffffffffffffffff\""
+Zaamo_amomax_d_cg_cp_custom_aqrl_str: .string "\"test: 244; cg: Zaamo_amomax.d_cg; cp: cp_custom_aqrl; bin: \""
+Zaamo_amomax_d_cg_cp_custom_aqrl_aq_str: .string "\"test: 245; cg: Zaamo_amomax.d_cg; cp: cp_custom_aqrl; bin: .aq\""
+Zaamo_amomax_d_cg_cp_custom_aqrl_rl_str: .string "\"test: 246; cg: Zaamo_amomax.d_cg; cp: cp_custom_aqrl; bin: .rl\""
+Zaamo_amomax_d_cg_cp_custom_aqrl_aqrl_str: .string "\"test: 247; cg: Zaamo_amomax.d_cg; cp: cp_custom_aqrl; bin: .aqrl\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

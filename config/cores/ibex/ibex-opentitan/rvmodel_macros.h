@@ -112,7 +112,9 @@
 #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/shared/rtl/timer.sv#L55-L56
 #define RVMODEL_MTIME_ADDRESS     0x00030000
 #define RVMODEL_MTIMECMP_ADDRESS  0x00030008
-#define RVMODEL_TIMER_INT_SOON_DELAY 2000
+# Arming the timer from U-mode takes four T-SBI round trips of about 900 cycles each, so the
+# delay must exceed about 2700 cycles for the interrupt to arrive after the setup returns.
+#define RVMODEL_TIMER_INT_SOON_DELAY 10000
 
 ##### Machine Interrupts #####
 

@@ -22,10 +22,10 @@ normative_rule_definitions:
   - name: A_seq_cst_semantics
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 
-  # A = Zaamo + Zalrsc; representative: an instruction from each half executes
+  # The A extension comprises the Zalrsc and Zaamo extensions, which are
+  # defined in the following sections.
   - name: A_comprises
-    coverpoint:
-      ["Zaamo_amoadd_w_cg/cp_asm_count", "Zalrsc_lr_w_cg/cp_asm_count"]
+    coverpoint: ["Definition, checked through UDB"]
 
   # Load into rd, operate with rs2, store back; representative: memory and rs2 edge values
   - name: amo_op
@@ -35,9 +35,10 @@ normative_rule_definitions:
         "Zaamo_amoadd_d_cg/{cp_memval_double, cp_rs2_edges}",
       ]
 
-  # swap, add, and, or, xor, signed and unsigned min/max; the min/max pairs of
-  # signed extremes distinguish signed from unsigned comparison
+  # The operations supported are swap, integer add, bitwise AND, bitwise OR, bitwise XOR, and signed
+  # and unsigned integer maximum and minimum.
   - name: amo_ops_supported
+    # The min/max pairs of signed extremes distinguish signed from unsigned comparison
     coverpoint:
       [
         "{Zaamo_amoswap_w_cg, Zaamo_amoadd_w_cg, Zaamo_amoand_w_cg, Zaamo_amoor_w_cg, Zaamo_amoxor_w_cg}/cp_asm_count",
@@ -63,3 +64,9 @@ normative_rule_definitions:
 
   - name: amo_alignment
     coverpoint: ["Zaamo_amoadd_w_cg/cp_align_word"]
+
+  # For each level of support, naturally aligned AMOs of a given width are supported if the underlying
+  # memory region supports reads and writes of that width.
+  - name: pma_amo_sz_support
+    # Representative coverpoints; cp_asm_count of the other Zaamo covergroups
+    coverpoint: ["{Zaamo_amoadd_w_cg, Zaamo_amoadd_d_cg}/cp_asm_count"]

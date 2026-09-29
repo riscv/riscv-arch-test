@@ -59,14 +59,33 @@ normative_rule_definitions:
     coverpoint:
       ["TODO: write an unsupported satp.MODE and check that satp is unchanged"]
 
-  # The number of ASID bits is UNSPECIFIED and may be zero. The number of implemented
-  # ASID bits, termed ASIDLEN, may be determined by writing one to every bit position in
-  # the ASID field, then reading back the value in satp to see which bit positions in
-  # the ASID field hold a one. The least-significant bits of ASID are implemented first:
-  # that is, if ASIDLEN > 0, ASID[ASIDLEN-1:0] is writable. The maximal value of
-  # ASIDLEN, termed ASIDMAX, is 9 for Sv32 or 16 for Sv39, Sv48, and Sv57.
+  # The number of ASID bits is UNSPECIFIED and may be zero.
   - name: asidlen
     coverpoint: ["Sv_satp_cg/asid_length"]
+
+  # The least-significant bits of ASID are implemented first: that is, if ASIDLEN > 0,
+  # ASID[ASIDLEN-1:0] is writable.
+  - name: asid_lsb_first
+    coverpoint: ["Sv_satp_cg/asid_length"]
+
+  # The maximal value of ASIDLEN, termed ASIDMAX, is 9 for Sv32 or 16 for Sv39, Sv48,
+  # and Sv57.
+  - name: asidmax
+    coverpoint: ["Sv_satp_cg/asid_length"]
+
+  # SXLEN=32 === Value|Name|Description¶0|Bare|No translation or protection.¶1|Sv32|
+  # Page-based 32-bit virtual addressing.¶SXLEN=64¶Value|Name|Description¶0|Bare|No
+  # translation or protection.¶1-7|-|Reserved for standard use¶8|Sv39|Page-based 39-bit
+  # virtual addressing.¶9|Sv48|Page-based 48-bit virtual addressing.¶10|Sv57|Page-based
+  # 57-bit virtual addressing.¶11|Sv64|Reserved for page-based 64-bit virtual
+  # addressing.¶12-13|-|Reserved for standard use¶14-15|-|Designated for custom use ===
+  - name: satp_mode_enc
+    coverpoint:
+      [
+        "Sv_VA_cg/mode_supported",
+        "Svbare_cg/satp_bare",
+        "TODO: write reserved and custom MODE values (see satp_mode_op_unsupported)",
+      ]
 
   # The satp CSR is considered active when the effective privilege mode is S-mode or
   # U-mode. Executions of the address-translation algorithm may only begin using a given
@@ -113,6 +132,11 @@ normative_rule_definitions:
   # associated with a hart (see <<sv32algorithm>>).
   - name: sfence_vma_invalidation
     coverpoint: ["Sv_sfence_cg/cp_ins"]
+
+  # SFENCE.VMA orders only the local hart’s implicit references to the memory-management
+  # data structures.
+  - name: sfence_vma_local_only
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
 
   # If rs1=x0 and rs2=x0, the fence orders all reads and writes made to any level of the
   # page tables, for all address spaces. The fence also invalidates all address-
@@ -212,6 +236,13 @@ normative_rule_definitions:
   - name: asid_hart_private
     coverpoint: ["Not tested in single-hart configurations"]
 
+  # The 20-bit VPN is translated into a 22-bit physical page number (PPN) for Sv32.
+  - name: satp_ppn_Sv32_sz
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+      ]
+
   # Attempting to fetch an instruction from a page that does not have execute
   # permissions raises a fetch page-fault exception.
   - name: fetch_page_fault_no_x
@@ -236,6 +267,71 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sv_vm_permissions_cg/{cp_spage_nowrite_s_d,cp_spage_rwx_s_d_nowrite,cp_upage_umode_nowrite_u}",
+      ]
+
+  # The U bit indicates whether the page is accessible to user mode. U-mode software may
+  # only access the page when U=1. If the SUM bit in the sstatus register is set,
+  # supervisor mode software may also access pages with U=1.
+  - name: pte_u_op
+    # Representative coverpoints; also cp_upage_umode_{write,exec}_u, cp_spage_rwx_s_{i_noexec,d_nowrite}, cp_upage_smode_sumset_write_s, cp_upage_smode_sumunset_nowrite_s
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_upage_umode_read_u, cp_spage_rwx_s_d_noread, cp_upage_smode_sumset_read_s, cp_upage_smode_sumunset_noread_s}",
+      ]
+
+  # Irrespective of SUM, the supervisor may not execute code on pages with U=1.
+  - name: pte_u_no_s_exec
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_upage_smode_sumunset_noexec_s, cp_upage_smode_sumset_noexec_s}",
+      ]
+
+  # The G bit designates a global mapping. Global mappings are those that exist in all
+  # address spaces. For non-leaf PTEs, the global setting implies that all mappings in
+  # the subsequent levels of the page table are global.
+  - name: pte_g_op
+    # Representative coverpoints; also cp_global_{write,exec}_u
+    coverpoint:
+      [
+        "Sv_res_global_pte_cg/{cp_global_read_s, cp_global_write_s, cp_global_exec_s, cp_global_read_u}",
+      ]
+
+  # The RSW field is reserved for use by supervisor software; the implementation shall
+  # ignore this field.
+  - name: pte_rsw_ignored
+    coverpoint: ["Sv_res_global_pte_cg/cp_rsw_pte"]
+
+  # Each leaf PTE contains an accessed (A) and dirty (D) bit. The A bit indicates the
+  # virtual page has been read, written, or fetched from since the last time the A bit
+  # was cleared.
+  - name: pte_a_def
+    # Representative coverpoints; also the other {Svadu_cg, Svade_cg}/Abit_unset_{exec,read,write}_{s,u}
+    coverpoint:
+      [
+        "Svadu_cg/{Abit_unset_exec_s, Abit_unset_read_u}",
+        "Svade_cg/{Abit_unset_write_s, Abit_unset_read_u}",
+      ]
+
+  # The D bit indicates the virtual page has been written since the last time the D bit
+  # was cleared.
+  - name: pte_d_def
+    coverpoint:
+      [
+        "Svadu_cg/{Dbit_unset_write_s, Dbit_unset_write_u}",
+        "Svade_cg/{Dbit_unset_write_s, Dbit_unset_write_u}",
+      ]
+
+  # All harts in a system must employ the same PTE-update scheme as each other.
+  - name: pte_ad_scheme_uniform
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+
+  # For implementations with both page-based virtual memory and the A standard extension,
+  # the LR/SC reservation set must lie completely within a single base physical page
+  # (i.e., a naturally aligned 4 KiB physical-memory region).
+  - name: lr_sc_rsrv_set_page
+    coverpoint:
+      [
+        "TODO: an LR to one 4 KiB page followed by an SC to a different page must fail",
       ]
 
   # This section describes a simple paged virtual-memory system for SXLEN=64, which

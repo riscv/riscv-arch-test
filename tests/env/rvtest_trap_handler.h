@@ -2195,7 +2195,7 @@ tsbi_instr_table:
 //   bits 10: 6 = vector number (compressed from 12*N to 5 bits)
 //   bit    11 = xIE[cause] (interrupt enable for this cause)
 //   bit    12 = xIP[cause] (interrupt pending for this cause)
-//   bits 30:13 = xstatus[17:0] (filtered: XS,FS,VS cleared)
+//   bits 30:13 = xstatus[17:0], with xstatus bits 2, 3 and 8 cleared (XS, FS and VS are kept)
 
 sv_\__MODE__\()vect:
         LREG    T3, xtvec_new_off(sp)              // T3 = actual trampoline table address
@@ -2226,7 +2226,7 @@ sv_\__MODE__\()vect:
         csrr    T2, CSR_XSTATUS                 // deposit xstatus(17:0) into [30:13)
         slli    T2, T2, UDB_MXLEN-17
         srli    T2, T2, UDB_MXLEN-17-13
-        LI(     T3, 0x219FE5)                   // clear 16:13 (XS,FS) 10:9 (VS) and unused bits 4,2,0
+        LI(     T3, 0x219FE5)                   // clear word bits 21, 16, 15 = xstatus bits 8, 3, 2 (bits 12:0 are already 0)
         xori    T3, T3, -1
         and     T3, T2, T3
         or      T3, T6, T3                      // merge with other bits

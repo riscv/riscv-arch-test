@@ -80,11 +80,6 @@ normative_rule_definitions:
   # interrupts at this hart.
   - name: hgeie_sz_acc_op
     coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hgeie"]
-  # Register hgeie selects the subset of guest external interrupts that cause a
-  # supervisor-level (HS-level) guest external interrupt. The enable bits in hgeie do not
-  # affect the VS-level external interrupt signal selected from hgeip by hstatus.VGEIN.
-  - name: hgeie_op
-    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hgeie"]
   - name: hgeie_img
     coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hgeie"]
   # The number of bits implemented in hgeip and hgeie for guest external interrupts is
@@ -110,13 +105,6 @@ normative_rule_definitions:
   # availability of the hardware performance monitoring counters to the guest virtual
   # machine.
   - name: hcounteren_sz
-    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hcounteren"]
-  # In addition, when the TM bit in the hcounteren register is clear, attempts to access
-  # the vstimecmp register (via stimecmp) while executing in VS-mode will cause a
-  # virtual-instruction exception if the same bit in mcounteren is set. When this bit and
-  # the same bit in mcounteren are both set, access to the vstimecmp register (if
-  # implemented) is permitted in VS-mode.
-  - name: hcounteren_acc
     coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hcounteren"]
   # hcounteren must be implemented. However, any of the bits may be read-only zero,
   # indicating reads to the corresponding counter will cause an exception when V=1. Hence,
@@ -335,7 +323,7 @@ normative_rule_definitions:
       ]
 
   # hstatus.VGEIN holds 0 through GEILEN
-  - names: [hstatus_vgein_op, hstatus_vgein_wlrl]
+  - names: [hstatus_vgein_wlrl]
     coverpoint: ["H_hscsr_cg/cp_hstatus_vgein"]
 
   # The vscause register is a VSXLEN-bit read/write register that is VS-mode’s version of

@@ -21,20 +21,25 @@ normative_rule_definitions:
 
   # The Zicbom extension adds the CBCFE (Cache Block Clean and Flush instruction
   # Enable) field to senvcfg to control execution of the CBO.CLEAN and CBO.FLUSH
-  # instructions in U-mode. Execution of these instructions in U-mode is enabled
-  # only if execution of these instructions is enabled for use in S-mode and CBCFE
-  # is set to 1; otherwise, an illegal-instruction exception is raised. When the
-  # Zicbom extension is not implemented, CBCFE is read-only zero.
+  # instructions in U-mode.
   - name: senvcfg_cbcfe
+    coverpoint: ["ExceptionsZicboS_cg/cp_cbcfe"]
+  # Execution of these instructions in U-mode is enabled only if execution of these
+  # instructions is enabled for use in S-mode and CBCFE is set to 1; otherwise, an
+  # illegal-instruction exception is raised.
+  - name: senvcfg_cbcfe_umode_op
     coverpoint: ["ExceptionsZicboS_cg/cp_cbcfe"]
 
   # The Zicbom extension adds the CBIE (Cache Block Invalidate instruction Enable)
   # WARL field to senvcfg to control execution of the CBO.INVAL instruction in
-  # U-mode. The encoding 10b is reserved. When the Zicbom extension is not
-  # implemented, CBIE is read-only zero. Execution of CBO.INVAL in U-mode is enabled
-  # only if execution of the instruction is enabled for use in S-mode and CBIE is
-  # set to 01b or 11b; otherwise, an illegal-instruction exception is raised.
+  # U-mode.
   - name: senvcfg_cbie
+    coverpoint: ["ExceptionsZicboS_cg/cp_cbie"]
+
+  # Execution of CBO.INVAL in U-mode is enabled only if execution of the instruction is
+  # enabled for use in S-mode and CBIE is set to 0b01 or 0b11; otherwise, an
+  # illegal-instruction exception is raised.
+  - name: senvcfg_cbie_umode_op
     coverpoint: ["ExceptionsZicboS_cg/cp_cbie"]
 
   # If CBO.INVAL is enabled in S-mode to perform a flush operation, then when the
@@ -48,12 +53,17 @@ normative_rule_definitions:
     coverpoint: ["ExceptionsZicboS_cg/cp_cbie"]
 
   # The Zicboz extension adds the CBZE (Cache Block Zero instruction enable) field
-  # to senvcfg. The CBZE field controls execution of the cache block zero
-  # instruction (CBO.ZERO) in U-mode. Execution of CBO.ZERO in U-mode is enabled
-  # only if execution of the instruction is enabled for use in S-mode and CBZE is
-  # set to 1; otherwise, an illegal-instruction exception is raised. When the Zicboz
-  # extension is not implemented, CBZE is read-only zero.
+  # to senvcfg.
   - name: senvcfg_cbze
+    coverpoint: ["ExceptionsZicboS_cg/cp_cbze"]
+  # The CBZE field controls execution of the cache block zero instruction (CBO.ZERO) in
+  # U-mode.
+  - name: senvcfg_cbze_op
+    coverpoint: ["ExceptionsZicboS_cg/cp_cbze"]
+  # Execution of CBO.ZERO in U-mode is enabled only if execution of the instruction is
+  # enabled for use in S-mode and CBZE is set to 1; otherwise, an illegal-instruction
+  # exception is raised.
+  - name: senvcfg_cbze_umode_op
     coverpoint: ["ExceptionsZicboS_cg/cp_cbze"]
 
   # The CBIE/CBCFE/CBZE fields in each xenvcfg register do not affect the read and

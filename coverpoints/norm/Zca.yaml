@@ -1,10 +1,13 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # The C extension depends upon the Zca extension.
+  - name: C_dep_Zca
+    coverpoint: ["Definition, checked through UDB"]
   - name: Zca_offsets_mul2
     coverpoint:
       [
-        "Zca_c_beqz_cg/cp_offset, Zca_c_bnez_cg/cp_offset, Zca_c_j_cg/cp_offset, Zca_c_jal_cg/cp_offset, Zca_c_jalr_cg/cp_offset_c_jr, Zca_c_jr_cg/cp_offset_c_jr",
+        "Zca_c_beqz_cg/cp_offset, Zca_c_bnez_cg/cp_offset, Zca_c_j_cg/cp_offset, Zca_c_jal_cg/cp_offset, Zca_c_jalr_cg/cp_offset, Zca_c_jr_cg/cp_offset",
       ]
   - name: Zca_regs8
     # Use a representative coverpoint; applies to others too

@@ -1,19 +1,41 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  # shows the encodings of the MODE field when SXLEN=32 and SXLEN=64. When MODE=Bare,
-  # supervisor virtual addresses are equal to supervisor physical addresses, and there
-  # is no additional memory protection beyond the physical memory protection scheme
-  # described in . To select MODE=Bare, software must write zero to the remaining fields
-  # of satp (bits 30–0 when SXLEN=32, or bits 59–0 when SXLEN=64). Attempting to select
-  # MODE=Bare with a nonzero pattern in the remaining fields has an UNSPECIFIED effect
-  # on the value that the remaining fields assume and an UNSPECIFIED effect on address
-  # translation and protection behavior.
+  # The satp MODE encoding table shows the encodings of the MODE field when SXLEN=32
+  # and SXLEN=64.
   - name: satp_mode
     coverpoint:
       [
         "Svbare_cg/{satp_bare,cp_satp_bare_load,cp_satp_bare_store,cp_satp_bare_exec}",
       ]
+
+  # When MODE=Bare, supervisor virtual addresses are equal to supervisor physical
+  # addresses, and there is no additional memory protection beyond the physical memory
+  # protection scheme described in the PMP section.
+  - name: satp_mode_bare_op
+    coverpoint:
+      ["Svbare_cg/{cp_satp_bare_load, cp_satp_bare_store, cp_satp_bare_exec}"]
+
+  # To select MODE=Bare, software must write zero to the remaining fields of satp (bits
+  # 30–0 when SXLEN=32, or bits 59–0 when SXLEN=64).
+  - name: satp_mode_bare_zero_fields
+    coverpoint:
+      [
+        "Descriptive spec text with no separately testable behavior (software requirement; Svbare writes satp=0)",
+      ]
+
+  # Attempting to select MODE=Bare with a nonzero pattern in the remaining fields has an
+  # UNSPECIFIED effect on the value that the remaining fields assume and an UNSPECIFIED
+  # effect on address translation and protection behavior.
+  - name: satp_mode_bare_nonzero_unspec
+    coverpoint: ["Behavior is UNSPECIFIED by the specification; not tested"]
+
+  # When SXLEN=32, the satp encodings corresponding to MODE=Bare and ASID[8:7]=3 are
+  # designated for custom use, whereas the encodings corresponding to MODE=Bare and
+  # ASID[8:7]≠3 are reserved for future standard use. When SXLEN=64, all satp encodings
+  # corresponding to MODE=Bare are reserved for future standard use.
+  - name: satp_bare_rsv_custom
+    coverpoint: ["Reserved encoding for future use; nothing to test"]
 
   # If an implementation supports the Svbare extension, then the satp register's MODE
   # field must be capable of holding the value Bare.

@@ -10,6 +10,10 @@ normative_rule_definitions:
         "ZfhminD_fcvt_d_h_cg/{cp_fs1, cp_fd, cp_fs1_edges_H, cp_csr_fflags_v, cp_fs1_badNB_D_H}",
         "ZfhminD_fcvt_h_d_cg/{cp_fs1, cp_fd, cr_fs1_edges_frm_D, cp_frm_2, cp_csr_fflags_voun, cp_csr_frm, cp_NaNBox_D_H}",
       ]
+  # If the Q extension is present, FCVT.Q.H or FCVT.H.Q converts a half-precision
+  # floating-point number to a quad-precision floating-point number, or vice-versa, respectively
+  - name: fcvt-q-h_fcvt-h-q_op
+    coverpoint: ["TODO: needs a Q test suite"]
   # insn:fcvt.s.d[] rounds according to the rm field; insn:fcvt.d.s[] will never round
   - name: fcvt_float_rounding
     coverpoint:

@@ -1295,430 +1295,430 @@ D_fsd_cg_cp_fs2_b31:
   RVTEST_SIGUPD_FFLAGS(x9, x5, x4, D_fsd_cg_cp_fs2_b31, D_fsd_cg_cp_fs2_b31_str)
 
 /////////////////////////////////
-// cp_fs2_edges
+// cp_fs2_edges_D
 /////////////////////////////////
 
-# Testcase cp_fs2_edges (Test source fs2 value = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f23) # load fs2: f23 = 0x0000000000000000
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0x0000000000000000)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f19) # load fs2: f19 = 0x0000000000000000
   fsflagsi 0b00000 # clear all fflags
-  mv x22, x9 # move signature pointer register
-  addi x22, x22, 865 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x0:
-  fsd f23, -865(x22) # perform store
-  addi x22, x22, -865 # restore base address
-  addi x22, x22, SIG_STRIDE # increment signature pointer
-  LREG x20, -SIG_STRIDE(x22) # load stored value for checking
-  # Check if x20 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x20, D_fsd_cg_cp_fs2_edges_b0x0, D_fsd_cg_cp_fs2_edges_b0x0_str)
-  # Check fflags. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x22, x5, x4, D_fsd_cg_cp_fs2_edges_b0x0, D_fsd_cg_cp_fs2_edges_b0x0_str)
+  mv x31, x9 # move signature pointer register
+  addi x31, x31, 1110 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0x0:
+  fsd f19, -1110(x31) # perform store
+  addi x31, x31, -1110 # restore base address
+  addi x31, x31, SIG_STRIDE # increment signature pointer
+  LREG x13, -SIG_STRIDE(x31) # load stored value for checking
+  # Check if x13 contains the expected result. x31 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x31, x5, x4, x13, D_fsd_cg_cp_fs2_edges_D_b0x0, D_fsd_cg_cp_fs2_edges_D_b0x0_str)
+  # Check fflags. x31 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x31, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0x0, D_fsd_cg_cp_fs2_edges_D_b0x0_str)
 
-# Testcase cp_fs2_edges (Test source fs2 value = 0x0000000080000000)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f6) # load fs2: f6 = 0x0000000080000000
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0x8000000000000000)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f2) # load fs2: f2 = 0x8000000000000000
   fsflagsi 0b00000 # clear all fflags
-  mv x30, x22 # move signature pointer register
-  addi x30, x30, 123 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x80000000:
-  fsd f6, -123(x30) # perform store
-  addi x30, x30, -123 # restore base address
-  addi x30, x30, SIG_STRIDE # increment signature pointer
-  LREG x24, -SIG_STRIDE(x30) # load stored value for checking
-  # Check if x24 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x24, D_fsd_cg_cp_fs2_edges_b0x80000000, D_fsd_cg_cp_fs2_edges_b0x80000000_str)
-  # Check fflags. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x30, x5, x4, D_fsd_cg_cp_fs2_edges_b0x80000000, D_fsd_cg_cp_fs2_edges_b0x80000000_str)
+  mv x26, x31 # move signature pointer register
+  addi x26, x26, 1595 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0x8000000000000000:
+  fsd f2, -1595(x26) # perform store
+  addi x26, x26, -1595 # restore base address
+  addi x26, x26, SIG_STRIDE # increment signature pointer
+  LREG x3, -SIG_STRIDE(x26) # load stored value for checking
+  # Check if x3 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x3, D_fsd_cg_cp_fs2_edges_D_b0x8000000000000000, D_fsd_cg_cp_fs2_edges_D_b0x8000000000000000_str)
+  # Check fflags. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x26, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0x8000000000000000, D_fsd_cg_cp_fs2_edges_D_b0x8000000000000000_str)
 
-# Testcase cp_fs2_edges (Test source fs2 value = 0x000000003f800000)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f26) # load fs2: f26 = 0x000000003f800000
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0x3ff0000000000000)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f14) # load fs2: f14 = 0x3ff0000000000000
   fsflagsi 0b00000 # clear all fflags
-  mv x29, x30 # move signature pointer register
-  addi x29, x29, 1308 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x3f800000:
-  fsd f26, -1308(x29) # perform store
-  addi x29, x29, -1308 # restore base address
-  addi x29, x29, SIG_STRIDE # increment signature pointer
-  LREG x8, -SIG_STRIDE(x29) # load stored value for checking
-  # Check if x8 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x8, D_fsd_cg_cp_fs2_edges_b0x3f800000, D_fsd_cg_cp_fs2_edges_b0x3f800000_str)
-  # Check fflags. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x29, x5, x4, D_fsd_cg_cp_fs2_edges_b0x3f800000, D_fsd_cg_cp_fs2_edges_b0x3f800000_str)
+  mv x3, x26 # move signature pointer register
+  addi x3, x3, 2017 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0x3ff0000000000000:
+  fsd f14, -2017(x3) # perform store
+  addi x3, x3, -2017 # restore base address
+  addi x3, x3, SIG_STRIDE # increment signature pointer
+  LREG x19, -SIG_STRIDE(x3) # load stored value for checking
+  # Check if x19 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x19, D_fsd_cg_cp_fs2_edges_D_b0x3ff0000000000000, D_fsd_cg_cp_fs2_edges_D_b0x3ff0000000000000_str)
+  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0x3ff0000000000000, D_fsd_cg_cp_fs2_edges_D_b0x3ff0000000000000_str)
 
-# Testcase cp_fs2_edges (Test source fs2 value = 0x00000000bf800000)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f31) # load fs2: f31 = 0x00000000bf800000
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0xbff0000000000000)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f20) # load fs2: f20 = 0xbff0000000000000
   fsflagsi 0b00000 # clear all fflags
-  mv x1, x29 # move signature pointer register
-  addi x1, x1, -2018 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0xbf800000:
-  fsd f31, 2018(x1) # perform store
-  addi x1, x1, 2018 # restore base address
+  mv x1, x3 # move signature pointer register
+  addi x1, x1, 1829 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0xbff0000000000000:
+  fsd f20, -1829(x1) # perform store
+  addi x1, x1, -1829 # restore base address
   addi x1, x1, SIG_STRIDE # increment signature pointer
-  LREG x10, -SIG_STRIDE(x1) # load stored value for checking
-  # Check if x10 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x10, D_fsd_cg_cp_fs2_edges_b0xbf800000, D_fsd_cg_cp_fs2_edges_b0xbf800000_str)
+  LREG x21, -SIG_STRIDE(x1) # load stored value for checking
+  # Check if x21 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x21, D_fsd_cg_cp_fs2_edges_D_b0xbff0000000000000, D_fsd_cg_cp_fs2_edges_D_b0xbff0000000000000_str)
   # Check fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x1, x5, x4, D_fsd_cg_cp_fs2_edges_b0xbf800000, D_fsd_cg_cp_fs2_edges_b0xbf800000_str)
+  RVTEST_SIGUPD_FFLAGS(x1, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0xbff0000000000000, D_fsd_cg_cp_fs2_edges_D_b0xbff0000000000000_str)
 
-# Testcase cp_fs2_edges (Test source fs2 value = 0x0000000040200000)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f7) # load fs2: f7 = 0x0000000040200000
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0x4004000000000000)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f11) # load fs2: f11 = 0x4004000000000000
   fsflagsi 0b00000 # clear all fflags
-  mv x23, x1 # move signature pointer register
-  addi x23, x23, 727 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x40200000:
-  fsd f7, -727(x23) # perform store
-  addi x23, x23, -727 # restore base address
-  addi x23, x23, SIG_STRIDE # increment signature pointer
-  LREG x22, -SIG_STRIDE(x23) # load stored value for checking
-  # Check if x22 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x22, D_fsd_cg_cp_fs2_edges_b0x40200000, D_fsd_cg_cp_fs2_edges_b0x40200000_str)
-  # Check fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x23, x5, x4, D_fsd_cg_cp_fs2_edges_b0x40200000, D_fsd_cg_cp_fs2_edges_b0x40200000_str)
-
-# Testcase cp_fs2_edges (Test source fs2 value = 0x00000000c0200000)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f2) # load fs2: f2 = 0x00000000c0200000
-  fsflagsi 0b00000 # clear all fflags
-  mv x16, x23 # move signature pointer register
-  addi x16, x16, -1915 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0xc0200000:
-  fsd f2, 1915(x16) # perform store
-  addi x16, x16, 1915 # restore base address
-  addi x16, x16, SIG_STRIDE # increment signature pointer
-  LREG x20, -SIG_STRIDE(x16) # load stored value for checking
-  # Check if x20 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x16, x5, x4, x20, D_fsd_cg_cp_fs2_edges_b0xc0200000, D_fsd_cg_cp_fs2_edges_b0xc0200000_str)
-  # Check fflags. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x16, x5, x4, D_fsd_cg_cp_fs2_edges_b0xc0200000, D_fsd_cg_cp_fs2_edges_b0xc0200000_str)
-
-# Testcase cp_fs2_edges (Test source fs2 value = 0x000000004b800000)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f27) # load fs2: f27 = 0x000000004b800000
-  fsflagsi 0b00000 # clear all fflags
-  mv x28, x16 # move signature pointer register
-  addi x28, x28, 158 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x4b800000:
-  fsd f27, -158(x28) # perform store
-  addi x28, x28, -158 # restore base address
-  addi x28, x28, SIG_STRIDE # increment signature pointer
-  LREG x11, -SIG_STRIDE(x28) # load stored value for checking
-  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x11, D_fsd_cg_cp_fs2_edges_b0x4b800000, D_fsd_cg_cp_fs2_edges_b0x4b800000_str)
-  # Check fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x28, x5, x4, D_fsd_cg_cp_fs2_edges_b0x4b800000, D_fsd_cg_cp_fs2_edges_b0x4b800000_str)
-
-# Testcase cp_fs2_edges (Test source fs2 value = 0x00000000cb800000)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f25) # load fs2: f25 = 0x00000000cb800000
-  fsflagsi 0b00000 # clear all fflags
-  mv x7, x28 # move signature pointer register
-  addi x7, x7, 1823 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0xcb800000:
-  fsd f25, -1823(x7) # perform store
-  addi x7, x7, -1823 # restore base address
+  mv x7, x1 # move signature pointer register
+  addi x7, x7, -376 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0x4004000000000000:
+  fsd f11, 376(x7) # perform store
+  addi x7, x7, 376 # restore base address
   addi x7, x7, SIG_STRIDE # increment signature pointer
-  LREG x20, -SIG_STRIDE(x7) # load stored value for checking
-  # Check if x20 contains the expected result. x7 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x7, x5, x4, x20, D_fsd_cg_cp_fs2_edges_b0xcb800000, D_fsd_cg_cp_fs2_edges_b0xcb800000_str)
+  LREG x31, -SIG_STRIDE(x7) # load stored value for checking
+  # Check if x31 contains the expected result. x7 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x7, x5, x4, x31, D_fsd_cg_cp_fs2_edges_D_b0x4004000000000000, D_fsd_cg_cp_fs2_edges_D_b0x4004000000000000_str)
   # Check fflags. x7 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x7, x5, x4, D_fsd_cg_cp_fs2_edges_b0xcb800000, D_fsd_cg_cp_fs2_edges_b0xcb800000_str)
+  RVTEST_SIGUPD_FFLAGS(x7, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0x4004000000000000, D_fsd_cg_cp_fs2_edges_D_b0x4004000000000000_str)
 
-# Testcase cp_fs2_edges (Test source fs2 value = 0x0000000000800000)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f17) # load fs2: f17 = 0x0000000000800000
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0xc004000000000000)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f11) # load fs2: f11 = 0xc004000000000000
   fsflagsi 0b00000 # clear all fflags
   mv x15, x7 # move signature pointer register
-  addi x15, x15, 1814 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x800000:
-  fsd f17, -1814(x15) # perform store
-  addi x15, x15, -1814 # restore base address
+  addi x15, x15, -1887 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0xc004000000000000:
+  fsd f11, 1887(x15) # perform store
+  addi x15, x15, 1887 # restore base address
   addi x15, x15, SIG_STRIDE # increment signature pointer
-  LREG x1, -SIG_STRIDE(x15) # load stored value for checking
-  # Check if x1 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x15, x5, x4, x1, D_fsd_cg_cp_fs2_edges_b0x800000, D_fsd_cg_cp_fs2_edges_b0x800000_str)
+  LREG x3, -SIG_STRIDE(x15) # load stored value for checking
+  # Check if x3 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x3, D_fsd_cg_cp_fs2_edges_D_b0xc004000000000000, D_fsd_cg_cp_fs2_edges_D_b0xc004000000000000_str)
   # Check fflags. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x15, x5, x4, D_fsd_cg_cp_fs2_edges_b0x800000, D_fsd_cg_cp_fs2_edges_b0x800000_str)
+  RVTEST_SIGUPD_FFLAGS(x15, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0xc004000000000000, D_fsd_cg_cp_fs2_edges_D_b0xc004000000000000_str)
 
-# Testcase cp_fs2_edges (Test source fs2 value = 0x0000000080800000)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f20) # load fs2: f20 = 0x0000000080800000
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0x4340000000000000)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f20) # load fs2: f20 = 0x4340000000000000
   fsflagsi 0b00000 # clear all fflags
-  mv x16, x15 # move signature pointer register
-  addi x16, x16, -103 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x80800000:
-  fsd f20, 103(x16) # perform store
-  addi x16, x16, 103 # restore base address
-  addi x16, x16, SIG_STRIDE # increment signature pointer
-  LREG x11, -SIG_STRIDE(x16) # load stored value for checking
-  # Check if x11 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x16, x5, x4, x11, D_fsd_cg_cp_fs2_edges_b0x80800000, D_fsd_cg_cp_fs2_edges_b0x80800000_str)
-  # Check fflags. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x16, x5, x4, D_fsd_cg_cp_fs2_edges_b0x80800000, D_fsd_cg_cp_fs2_edges_b0x80800000_str)
-
-# Testcase cp_fs2_edges (Test source fs2 value = 0x000000007f7fffff)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f27) # load fs2: f27 = 0x000000007f7fffff
-  fsflagsi 0b00000 # clear all fflags
-  mv x1, x16 # move signature pointer register
-  addi x1, x1, -624 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x7f7fffff:
-  fsd f27, 624(x1) # perform store
-  addi x1, x1, 624 # restore base address
-  addi x1, x1, SIG_STRIDE # increment signature pointer
-  LREG x15, -SIG_STRIDE(x1) # load stored value for checking
-  # Check if x15 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x15, D_fsd_cg_cp_fs2_edges_b0x7f7fffff, D_fsd_cg_cp_fs2_edges_b0x7f7fffff_str)
-  # Check fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x1, x5, x4, D_fsd_cg_cp_fs2_edges_b0x7f7fffff, D_fsd_cg_cp_fs2_edges_b0x7f7fffff_str)
-
-# Testcase cp_fs2_edges (Test source fs2 value = 0x00000000ff7fffff)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f19) # load fs2: f19 = 0x00000000ff7fffff
-  fsflagsi 0b00000 # clear all fflags
-  mv x28, x1 # move signature pointer register
-  addi x28, x28, 642 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0xff7fffff:
-  fsd f19, -642(x28) # perform store
-  addi x28, x28, -642 # restore base address
+  mv x28, x15 # move signature pointer register
+  addi x28, x28, -2025 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0x4340000000000000:
+  fsd f20, 2025(x28) # perform store
+  addi x28, x28, 2025 # restore base address
   addi x28, x28, SIG_STRIDE # increment signature pointer
-  LREG x15, -SIG_STRIDE(x28) # load stored value for checking
-  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x15, D_fsd_cg_cp_fs2_edges_b0xff7fffff, D_fsd_cg_cp_fs2_edges_b0xff7fffff_str)
+  LREG x16, -SIG_STRIDE(x28) # load stored value for checking
+  # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x16, D_fsd_cg_cp_fs2_edges_D_b0x4340000000000000, D_fsd_cg_cp_fs2_edges_D_b0x4340000000000000_str)
   # Check fflags. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x28, x5, x4, D_fsd_cg_cp_fs2_edges_b0xff7fffff, D_fsd_cg_cp_fs2_edges_b0xff7fffff_str)
+  RVTEST_SIGUPD_FFLAGS(x28, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0x4340000000000000, D_fsd_cg_cp_fs2_edges_D_b0x4340000000000000_str)
 
-# Testcase cp_fs2_edges (Test source fs2 value = 0x00000000007fffff)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f11) # load fs2: f11 = 0x00000000007fffff
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0xc340000000000000)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f23) # load fs2: f23 = 0xc340000000000000
   fsflagsi 0b00000 # clear all fflags
-  mv x25, x28 # move signature pointer register
-  addi x25, x25, -1314 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x7fffff:
-  fsd f11, 1314(x25) # perform store
-  addi x25, x25, 1314 # restore base address
-  addi x25, x25, SIG_STRIDE # increment signature pointer
-  LREG x19, -SIG_STRIDE(x25) # load stored value for checking
-  # Check if x19 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x19, D_fsd_cg_cp_fs2_edges_b0x7fffff, D_fsd_cg_cp_fs2_edges_b0x7fffff_str)
-  # Check fflags. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x25, x5, x4, D_fsd_cg_cp_fs2_edges_b0x7fffff, D_fsd_cg_cp_fs2_edges_b0x7fffff_str)
+  mv x16, x28 # move signature pointer register
+  addi x16, x16, 194 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0xc340000000000000:
+  fsd f23, -194(x16) # perform store
+  addi x16, x16, -194 # restore base address
+  addi x16, x16, SIG_STRIDE # increment signature pointer
+  LREG x15, -SIG_STRIDE(x16) # load stored value for checking
+  # Check if x15 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x15, D_fsd_cg_cp_fs2_edges_D_b0xc340000000000000, D_fsd_cg_cp_fs2_edges_D_b0xc340000000000000_str)
+  # Check fflags. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x16, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0xc340000000000000, D_fsd_cg_cp_fs2_edges_D_b0xc340000000000000_str)
 
-# Testcase cp_fs2_edges (Test source fs2 value = 0x00000000807fffff)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f28) # load fs2: f28 = 0x00000000807fffff
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0x0010000000000000)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f9) # load fs2: f9 = 0x0010000000000000
   fsflagsi 0b00000 # clear all fflags
-  mv x21, x25 # move signature pointer register
-  addi x21, x21, 252 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x807fffff:
-  fsd f28, -252(x21) # perform store
-  addi x21, x21, -252 # restore base address
-  addi x21, x21, SIG_STRIDE # increment signature pointer
-  LREG x20, -SIG_STRIDE(x21) # load stored value for checking
-  # Check if x20 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x20, D_fsd_cg_cp_fs2_edges_b0x807fffff, D_fsd_cg_cp_fs2_edges_b0x807fffff_str)
-  # Check fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x21, x5, x4, D_fsd_cg_cp_fs2_edges_b0x807fffff, D_fsd_cg_cp_fs2_edges_b0x807fffff_str)
-
-# Testcase cp_fs2_edges (Test source fs2 value = 0x0000000000400000)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f10) # load fs2: f10 = 0x0000000000400000
-  fsflagsi 0b00000 # clear all fflags
-  mv x19, x21 # move signature pointer register
-  addi x19, x19, 1950 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x400000:
-  fsd f10, -1950(x19) # perform store
-  addi x19, x19, -1950 # restore base address
-  addi x19, x19, SIG_STRIDE # increment signature pointer
-  LREG x3, -SIG_STRIDE(x19) # load stored value for checking
-  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x3, D_fsd_cg_cp_fs2_edges_b0x400000, D_fsd_cg_cp_fs2_edges_b0x400000_str)
-  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, D_fsd_cg_cp_fs2_edges_b0x400000, D_fsd_cg_cp_fs2_edges_b0x400000_str)
-
-# Testcase cp_fs2_edges (Test source fs2 value = 0x0000000080400000)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f17) # load fs2: f17 = 0x0000000080400000
-  fsflagsi 0b00000 # clear all fflags
-  mv x29, x19 # move signature pointer register
-  addi x29, x29, -1472 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x80400000:
-  fsd f17, 1472(x29) # perform store
-  addi x29, x29, 1472 # restore base address
-  addi x29, x29, SIG_STRIDE # increment signature pointer
-  LREG x15, -SIG_STRIDE(x29) # load stored value for checking
-  # Check if x15 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x15, D_fsd_cg_cp_fs2_edges_b0x80400000, D_fsd_cg_cp_fs2_edges_b0x80400000_str)
-  # Check fflags. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x29, x5, x4, D_fsd_cg_cp_fs2_edges_b0x80400000, D_fsd_cg_cp_fs2_edges_b0x80400000_str)
-
-# Testcase cp_fs2_edges (Test source fs2 value = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f31) # load fs2: f31 = 0x0000000000000001
-  fsflagsi 0b00000 # clear all fflags
-  mv x11, x29 # move signature pointer register
-  addi x11, x11, 1829 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x1:
-  fsd f31, -1829(x11) # perform store
-  addi x11, x11, -1829 # restore base address
-  addi x11, x11, SIG_STRIDE # increment signature pointer
-  LREG x28, -SIG_STRIDE(x11) # load stored value for checking
-  # Check if x28 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x28, D_fsd_cg_cp_fs2_edges_b0x1, D_fsd_cg_cp_fs2_edges_b0x1_str)
-  # Check fflags. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x11, x5, x4, D_fsd_cg_cp_fs2_edges_b0x1, D_fsd_cg_cp_fs2_edges_b0x1_str)
-
-# Testcase cp_fs2_edges (Test source fs2 value = 0x0000000080000001)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f21) # load fs2: f21 = 0x0000000080000001
-  fsflagsi 0b00000 # clear all fflags
-  mv x17, x11 # move signature pointer register
-  addi x17, x17, 756 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x80000001:
-  fsd f21, -756(x17) # perform store
-  addi x17, x17, -756 # restore base address
-  addi x17, x17, SIG_STRIDE # increment signature pointer
-  LREG x18, -SIG_STRIDE(x17) # load stored value for checking
-  # Check if x18 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x18, D_fsd_cg_cp_fs2_edges_b0x80000001, D_fsd_cg_cp_fs2_edges_b0x80000001_str)
-  # Check fflags. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x17, x5, x4, D_fsd_cg_cp_fs2_edges_b0x80000001, D_fsd_cg_cp_fs2_edges_b0x80000001_str)
-
-# Testcase cp_fs2_edges (Test source fs2 value = 0x000000007f800000)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f30) # load fs2: f30 = 0x000000007f800000
-  fsflagsi 0b00000 # clear all fflags
-  mv x12, x17 # move signature pointer register
-  addi x12, x12, -983 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x7f800000:
-  fsd f30, 983(x12) # perform store
-  addi x12, x12, 983 # restore base address
-  addi x12, x12, SIG_STRIDE # increment signature pointer
-  LREG x25, -SIG_STRIDE(x12) # load stored value for checking
-  # Check if x25 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x12, x5, x4, x25, D_fsd_cg_cp_fs2_edges_b0x7f800000, D_fsd_cg_cp_fs2_edges_b0x7f800000_str)
-  # Check fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x12, x5, x4, D_fsd_cg_cp_fs2_edges_b0x7f800000, D_fsd_cg_cp_fs2_edges_b0x7f800000_str)
-
-# Testcase cp_fs2_edges (Test source fs2 value = 0x00000000ff800000)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f25) # load fs2: f25 = 0x00000000ff800000
-  fsflagsi 0b00000 # clear all fflags
-  mv x25, x12 # move signature pointer register
-  addi x25, x25, 352 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0xff800000:
-  fsd f25, -352(x25) # perform store
-  addi x25, x25, -352 # restore base address
-  addi x25, x25, SIG_STRIDE # increment signature pointer
-  LREG x13, -SIG_STRIDE(x25) # load stored value for checking
-  # Check if x13 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x13, D_fsd_cg_cp_fs2_edges_b0xff800000, D_fsd_cg_cp_fs2_edges_b0xff800000_str)
-  # Check fflags. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x25, x5, x4, D_fsd_cg_cp_fs2_edges_b0xff800000, D_fsd_cg_cp_fs2_edges_b0xff800000_str)
-
-# Testcase cp_fs2_edges (Test source fs2 value = 0x000000007fc00000)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f20) # load fs2: f20 = 0x000000007fc00000
-  fsflagsi 0b00000 # clear all fflags
-  mv x3, x25 # move signature pointer register
-  addi x3, x3, 1295 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x7fc00000:
-  fsd f20, -1295(x3) # perform store
-  addi x3, x3, -1295 # restore base address
-  addi x3, x3, SIG_STRIDE # increment signature pointer
-  LREG x1, -SIG_STRIDE(x3) # load stored value for checking
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, D_fsd_cg_cp_fs2_edges_b0x7fc00000, D_fsd_cg_cp_fs2_edges_b0x7fc00000_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, D_fsd_cg_cp_fs2_edges_b0x7fc00000, D_fsd_cg_cp_fs2_edges_b0x7fc00000_str)
-
-# Testcase cp_fs2_edges (Test source fs2 value = 0x000000007fffffff)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f25) # load fs2: f25 = 0x000000007fffffff
-  fsflagsi 0b00000 # clear all fflags
-  mv x24, x3 # move signature pointer register
-  addi x24, x24, 894 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x7fffffff:
-  fsd f25, -894(x24) # perform store
-  addi x24, x24, -894 # restore base address
+  mv x24, x16 # move signature pointer register
+  addi x24, x24, -1845 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0x10000000000000:
+  fsd f9, 1845(x24) # perform store
+  addi x24, x24, 1845 # restore base address
   addi x24, x24, SIG_STRIDE # increment signature pointer
-  LREG x22, -SIG_STRIDE(x24) # load stored value for checking
-  # Check if x22 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x22, D_fsd_cg_cp_fs2_edges_b0x7fffffff, D_fsd_cg_cp_fs2_edges_b0x7fffffff_str)
+  LREG x28, -SIG_STRIDE(x24) # load stored value for checking
+  # Check if x28 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x28, D_fsd_cg_cp_fs2_edges_D_b0x10000000000000, D_fsd_cg_cp_fs2_edges_D_b0x10000000000000_str)
   # Check fflags. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x24, x5, x4, D_fsd_cg_cp_fs2_edges_b0x7fffffff, D_fsd_cg_cp_fs2_edges_b0x7fffffff_str)
+  RVTEST_SIGUPD_FFLAGS(x24, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0x10000000000000, D_fsd_cg_cp_fs2_edges_D_b0x10000000000000_str)
 
-# Testcase cp_fs2_edges (Test source fs2 value = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f19) # load fs2: f19 = 0x00000000ffffffff
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0x8010000000000000)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f3) # load fs2: f3 = 0x8010000000000000
+  fsflagsi 0b00000 # clear all fflags
+  mv x25, x24 # move signature pointer register
+  addi x25, x25, 787 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0x8010000000000000:
+  fsd f3, -787(x25) # perform store
+  addi x25, x25, -787 # restore base address
+  addi x25, x25, SIG_STRIDE # increment signature pointer
+  LREG x30, -SIG_STRIDE(x25) # load stored value for checking
+  # Check if x30 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x30, D_fsd_cg_cp_fs2_edges_D_b0x8010000000000000, D_fsd_cg_cp_fs2_edges_D_b0x8010000000000000_str)
+  # Check fflags. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x25, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0x8010000000000000, D_fsd_cg_cp_fs2_edges_D_b0x8010000000000000_str)
+
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0x7fefffffffffffff)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f21) # load fs2: f21 = 0x7fefffffffffffff
+  fsflagsi 0b00000 # clear all fflags
+  mv x16, x25 # move signature pointer register
+  addi x16, x16, -2003 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0x7fefffffffffffff:
+  fsd f21, 2003(x16) # perform store
+  addi x16, x16, 2003 # restore base address
+  addi x16, x16, SIG_STRIDE # increment signature pointer
+  LREG x7, -SIG_STRIDE(x16) # load stored value for checking
+  # Check if x7 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x16, x5, x4, x7, D_fsd_cg_cp_fs2_edges_D_b0x7fefffffffffffff, D_fsd_cg_cp_fs2_edges_D_b0x7fefffffffffffff_str)
+  # Check fflags. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x16, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0x7fefffffffffffff, D_fsd_cg_cp_fs2_edges_D_b0x7fefffffffffffff_str)
+
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0xffefffffffffffff)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f15) # load fs2: f15 = 0xffefffffffffffff
+  fsflagsi 0b00000 # clear all fflags
+  mv x29, x16 # move signature pointer register
+  addi x29, x29, 1299 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0xffefffffffffffff:
+  fsd f15, -1299(x29) # perform store
+  addi x29, x29, -1299 # restore base address
+  addi x29, x29, SIG_STRIDE # increment signature pointer
+  LREG x20, -SIG_STRIDE(x29) # load stored value for checking
+  # Check if x20 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x20, D_fsd_cg_cp_fs2_edges_D_b0xffefffffffffffff, D_fsd_cg_cp_fs2_edges_D_b0xffefffffffffffff_str)
+  # Check fflags. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x29, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0xffefffffffffffff, D_fsd_cg_cp_fs2_edges_D_b0xffefffffffffffff_str)
+
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0x000fffffffffffff)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f17) # load fs2: f17 = 0x000fffffffffffff
+  fsflagsi 0b00000 # clear all fflags
+  mv x25, x29 # move signature pointer register
+  addi x25, x25, -821 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0xfffffffffffff:
+  fsd f17, 821(x25) # perform store
+  addi x25, x25, 821 # restore base address
+  addi x25, x25, SIG_STRIDE # increment signature pointer
+  LREG x22, -SIG_STRIDE(x25) # load stored value for checking
+  # Check if x22 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x22, D_fsd_cg_cp_fs2_edges_D_b0xfffffffffffff, D_fsd_cg_cp_fs2_edges_D_b0xfffffffffffff_str)
+  # Check fflags. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x25, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0xfffffffffffff, D_fsd_cg_cp_fs2_edges_D_b0xfffffffffffff_str)
+
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0x800fffffffffffff)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f26) # load fs2: f26 = 0x800fffffffffffff
+  fsflagsi 0b00000 # clear all fflags
+  mv x24, x25 # move signature pointer register
+  addi x24, x24, 1180 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0x800fffffffffffff:
+  fsd f26, -1180(x24) # perform store
+  addi x24, x24, -1180 # restore base address
+  addi x24, x24, SIG_STRIDE # increment signature pointer
+  LREG x8, -SIG_STRIDE(x24) # load stored value for checking
+  # Check if x8 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x8, D_fsd_cg_cp_fs2_edges_D_b0x800fffffffffffff, D_fsd_cg_cp_fs2_edges_D_b0x800fffffffffffff_str)
+  # Check fflags. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x24, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0x800fffffffffffff, D_fsd_cg_cp_fs2_edges_D_b0x800fffffffffffff_str)
+
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0x0008000000000000)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f21) # load fs2: f21 = 0x0008000000000000
+  fsflagsi 0b00000 # clear all fflags
+  mv x22, x24 # move signature pointer register
+  addi x22, x22, -673 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0x8000000000000:
+  fsd f21, 673(x22) # perform store
+  addi x22, x22, 673 # restore base address
+  addi x22, x22, SIG_STRIDE # increment signature pointer
+  LREG x31, -SIG_STRIDE(x22) # load stored value for checking
+  # Check if x31 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x31, D_fsd_cg_cp_fs2_edges_D_b0x8000000000000, D_fsd_cg_cp_fs2_edges_D_b0x8000000000000_str)
+  # Check fflags. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x22, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0x8000000000000, D_fsd_cg_cp_fs2_edges_D_b0x8000000000000_str)
+
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0x8008000000000000)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f25) # load fs2: f25 = 0x8008000000000000
+  fsflagsi 0b00000 # clear all fflags
+  mv x9, x22 # move signature pointer register
+  addi x9, x9, -1182 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0x8008000000000000:
+  fsd f25, 1182(x9) # perform store
+  addi x9, x9, 1182 # restore base address
+  addi x9, x9, SIG_STRIDE # increment signature pointer
+  LREG x14, -SIG_STRIDE(x9) # load stored value for checking
+  # Check if x14 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x14, D_fsd_cg_cp_fs2_edges_D_b0x8008000000000000, D_fsd_cg_cp_fs2_edges_D_b0x8008000000000000_str)
+  # Check fflags. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x9, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0x8008000000000000, D_fsd_cg_cp_fs2_edges_D_b0x8008000000000000_str)
+
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0x0000000000000001)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f11) # load fs2: f11 = 0x0000000000000001
+  fsflagsi 0b00000 # clear all fflags
+  mv x24, x9 # move signature pointer register
+  addi x24, x24, -1824 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0x1:
+  fsd f11, 1824(x24) # perform store
+  addi x24, x24, 1824 # restore base address
+  addi x24, x24, SIG_STRIDE # increment signature pointer
+  LREG x19, -SIG_STRIDE(x24) # load stored value for checking
+  # Check if x19 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x19, D_fsd_cg_cp_fs2_edges_D_b0x1, D_fsd_cg_cp_fs2_edges_D_b0x1_str)
+  # Check fflags. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x24, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0x1, D_fsd_cg_cp_fs2_edges_D_b0x1_str)
+
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0x8000000000000001)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f16) # load fs2: f16 = 0x8000000000000001
+  fsflagsi 0b00000 # clear all fflags
+  mv x31, x24 # move signature pointer register
+  addi x31, x31, 1776 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0x8000000000000001:
+  fsd f16, -1776(x31) # perform store
+  addi x31, x31, -1776 # restore base address
+  addi x31, x31, SIG_STRIDE # increment signature pointer
+  LREG x10, -SIG_STRIDE(x31) # load stored value for checking
+  # Check if x10 contains the expected result. x31 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x31, x5, x4, x10, D_fsd_cg_cp_fs2_edges_D_b0x8000000000000001, D_fsd_cg_cp_fs2_edges_D_b0x8000000000000001_str)
+  # Check fflags. x31 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x31, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0x8000000000000001, D_fsd_cg_cp_fs2_edges_D_b0x8000000000000001_str)
+
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0x7ff0000000000000)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f17) # load fs2: f17 = 0x7ff0000000000000
+  fsflagsi 0b00000 # clear all fflags
+  mv x29, x31 # move signature pointer register
+  addi x29, x29, -216 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0x7ff0000000000000:
+  fsd f17, 216(x29) # perform store
+  addi x29, x29, 216 # restore base address
+  addi x29, x29, SIG_STRIDE # increment signature pointer
+  LREG x10, -SIG_STRIDE(x29) # load stored value for checking
+  # Check if x10 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x10, D_fsd_cg_cp_fs2_edges_D_b0x7ff0000000000000, D_fsd_cg_cp_fs2_edges_D_b0x7ff0000000000000_str)
+  # Check fflags. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x29, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0x7ff0000000000000, D_fsd_cg_cp_fs2_edges_D_b0x7ff0000000000000_str)
+
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0xfff0000000000000)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f20) # load fs2: f20 = 0xfff0000000000000
+  fsflagsi 0b00000 # clear all fflags
+  mv x15, x29 # move signature pointer register
+  addi x15, x15, -452 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0xfff0000000000000:
+  fsd f20, 452(x15) # perform store
+  addi x15, x15, 452 # restore base address
+  addi x15, x15, SIG_STRIDE # increment signature pointer
+  LREG x8, -SIG_STRIDE(x15) # load stored value for checking
+  # Check if x8 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x8, D_fsd_cg_cp_fs2_edges_D_b0xfff0000000000000, D_fsd_cg_cp_fs2_edges_D_b0xfff0000000000000_str)
+  # Check fflags. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x15, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0xfff0000000000000, D_fsd_cg_cp_fs2_edges_D_b0xfff0000000000000_str)
+
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0x7ff8000000000000)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f16) # load fs2: f16 = 0x7ff8000000000000
+  fsflagsi 0b00000 # clear all fflags
+  mv x27, x15 # move signature pointer register
+  addi x27, x27, 581 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0x7ff8000000000000:
+  fsd f16, -581(x27) # perform store
+  addi x27, x27, -581 # restore base address
+  addi x27, x27, SIG_STRIDE # increment signature pointer
+  LREG x7, -SIG_STRIDE(x27) # load stored value for checking
+  # Check if x7 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x27, x5, x4, x7, D_fsd_cg_cp_fs2_edges_D_b0x7ff8000000000000, D_fsd_cg_cp_fs2_edges_D_b0x7ff8000000000000_str)
+  # Check fflags. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x27, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0x7ff8000000000000, D_fsd_cg_cp_fs2_edges_D_b0x7ff8000000000000_str)
+
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0x7fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f17) # load fs2: f17 = 0x7fffffffffffffff
+  fsflagsi 0b00000 # clear all fflags
+  mv x31, x27 # move signature pointer register
+  addi x31, x31, 1114 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0x7fffffffffffffff:
+  fsd f17, -1114(x31) # perform store
+  addi x31, x31, -1114 # restore base address
+  addi x31, x31, SIG_STRIDE # increment signature pointer
+  LREG x26, -SIG_STRIDE(x31) # load stored value for checking
+  # Check if x26 contains the expected result. x31 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x31, x5, x4, x26, D_fsd_cg_cp_fs2_edges_D_b0x7fffffffffffffff, D_fsd_cg_cp_fs2_edges_D_b0x7fffffffffffffff_str)
+  # Check fflags. x31 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x31, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0x7fffffffffffffff, D_fsd_cg_cp_fs2_edges_D_b0x7fffffffffffffff_str)
+
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0xfff8000000000000)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f3) # load fs2: f3 = 0xfff8000000000000
+  fsflagsi 0b00000 # clear all fflags
+  mv x15, x31 # move signature pointer register
+  addi x15, x15, 1781 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0xfff8000000000000:
+  fsd f3, -1781(x15) # perform store
+  addi x15, x15, -1781 # restore base address
+  addi x15, x15, SIG_STRIDE # increment signature pointer
+  LREG x16, -SIG_STRIDE(x15) # load stored value for checking
+  # Check if x16 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x16, D_fsd_cg_cp_fs2_edges_D_b0xfff8000000000000, D_fsd_cg_cp_fs2_edges_D_b0xfff8000000000000_str)
+  # Check fflags. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x15, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0xfff8000000000000, D_fsd_cg_cp_fs2_edges_D_b0xfff8000000000000_str)
+
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0x7ff0000000000001)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f5) # load fs2: f5 = 0x7ff0000000000001
+  fsflagsi 0b00000 # clear all fflags
+  mv x24, x15 # move signature pointer register
+  addi x24, x24, 806 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0x7ff0000000000001:
+  fsd f5, -806(x24) # perform store
+  addi x24, x24, -806 # restore base address
+  addi x24, x24, SIG_STRIDE # increment signature pointer
+  LREG x28, -SIG_STRIDE(x24) # load stored value for checking
+  # Check if x28 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x28, D_fsd_cg_cp_fs2_edges_D_b0x7ff0000000000001, D_fsd_cg_cp_fs2_edges_D_b0x7ff0000000000001_str)
+  # Check fflags. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x24, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0x7ff0000000000001, D_fsd_cg_cp_fs2_edges_D_b0x7ff0000000000001_str)
+
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0x7ff7ffffffffffff)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f16) # load fs2: f16 = 0x7ff7ffffffffffff
   fsflagsi 0b00000 # clear all fflags
   mv x12, x24 # move signature pointer register
-  addi x12, x12, 1907 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0xffffffff:
-  fsd f19, -1907(x12) # perform store
-  addi x12, x12, -1907 # restore base address
+  addi x12, x12, -1155 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0x7ff7ffffffffffff:
+  fsd f16, 1155(x12) # perform store
+  addi x12, x12, 1155 # restore base address
   addi x12, x12, SIG_STRIDE # increment signature pointer
-  LREG x8, -SIG_STRIDE(x12) # load stored value for checking
-  # Check if x8 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x12, x5, x4, x8, D_fsd_cg_cp_fs2_edges_b0xffffffff, D_fsd_cg_cp_fs2_edges_b0xffffffff_str)
+  LREG x16, -SIG_STRIDE(x12) # load stored value for checking
+  # Check if x16 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x12, x5, x4, x16, D_fsd_cg_cp_fs2_edges_D_b0x7ff7ffffffffffff, D_fsd_cg_cp_fs2_edges_D_b0x7ff7ffffffffffff_str)
   # Check fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x12, x5, x4, D_fsd_cg_cp_fs2_edges_b0xffffffff, D_fsd_cg_cp_fs2_edges_b0xffffffff_str)
+  RVTEST_SIGUPD_FFLAGS(x12, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0x7ff7ffffffffffff, D_fsd_cg_cp_fs2_edges_D_b0x7ff7ffffffffffff_str)
 
-# Testcase cp_fs2_edges (Test source fs2 value = 0x000000007f800001)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f14) # load fs2: f14 = 0x000000007f800001
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0xfff0000000000001)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f3) # load fs2: f3 = 0xfff0000000000001
   fsflagsi 0b00000 # clear all fflags
-  mv x30, x12 # move signature pointer register
-  addi x30, x30, -1867 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x7f800001:
-  fsd f14, 1867(x30) # perform store
-  addi x30, x30, 1867 # restore base address
+  mv x31, x12 # move signature pointer register
+  addi x31, x31, -1839 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0xfff0000000000001:
+  fsd f3, 1839(x31) # perform store
+  addi x31, x31, 1839 # restore base address
+  addi x31, x31, SIG_STRIDE # increment signature pointer
+  LREG x8, -SIG_STRIDE(x31) # load stored value for checking
+  # Check if x8 contains the expected result. x31 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x31, x5, x4, x8, D_fsd_cg_cp_fs2_edges_D_b0xfff0000000000001, D_fsd_cg_cp_fs2_edges_D_b0xfff0000000000001_str)
+  # Check fflags. x31 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x31, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0xfff0000000000001, D_fsd_cg_cp_fs2_edges_D_b0xfff0000000000001_str)
+
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0x5a392534a57711ad)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f26) # load fs2: f26 = 0x5a392534a57711ad
+  fsflagsi 0b00000 # clear all fflags
+  mv x18, x31 # move signature pointer register
+  addi x18, x18, 1979 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0x5a392534a57711ad:
+  fsd f26, -1979(x18) # perform store
+  addi x18, x18, -1979 # restore base address
+  addi x18, x18, SIG_STRIDE # increment signature pointer
+  LREG x22, -SIG_STRIDE(x18) # load stored value for checking
+  # Check if x22 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x22, D_fsd_cg_cp_fs2_edges_D_b0x5a392534a57711ad, D_fsd_cg_cp_fs2_edges_D_b0x5a392534a57711ad_str)
+  # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x18, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0x5a392534a57711ad, D_fsd_cg_cp_fs2_edges_D_b0x5a392534a57711ad_str)
+
+# Testcase cp_fs2_edges_D (Test source fs2 value = 0xa6e895993737426c)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f27) # load fs2: f27 = 0xa6e895993737426c
+  fsflagsi 0b00000 # clear all fflags
+  mv x30, x18 # move signature pointer register
+  addi x30, x30, 1348 # adjust base address for offset
+D_fsd_cg_cp_fs2_edges_D_b0xa6e895993737426c:
+  fsd f27, -1348(x30) # perform store
+  addi x30, x30, -1348 # restore base address
   addi x30, x30, SIG_STRIDE # increment signature pointer
-  LREG x13, -SIG_STRIDE(x30) # load stored value for checking
-  # Check if x13 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x13, D_fsd_cg_cp_fs2_edges_b0x7f800001, D_fsd_cg_cp_fs2_edges_b0x7f800001_str)
+  LREG x9, -SIG_STRIDE(x30) # load stored value for checking
+  # Check if x9 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x9, D_fsd_cg_cp_fs2_edges_D_b0xa6e895993737426c, D_fsd_cg_cp_fs2_edges_D_b0xa6e895993737426c_str)
   # Check fflags. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x30, x5, x4, D_fsd_cg_cp_fs2_edges_b0x7f800001, D_fsd_cg_cp_fs2_edges_b0x7f800001_str)
+  RVTEST_SIGUPD_FFLAGS(x30, x5, x4, D_fsd_cg_cp_fs2_edges_D_b0xa6e895993737426c, D_fsd_cg_cp_fs2_edges_D_b0xa6e895993737426c_str)
 
-# Testcase cp_fs2_edges (Test source fs2 value = 0x000000007fbfffff)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f12) # load fs2: f12 = 0x000000007fbfffff
-  fsflagsi 0b00000 # clear all fflags
-  mv x8, x30 # move signature pointer register
-  addi x8, x8, 1202 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x7fbfffff:
-  fsd f12, -1202(x8) # perform store
-  addi x8, x8, -1202 # restore base address
-  addi x8, x8, SIG_STRIDE # increment signature pointer
-  LREG x19, -SIG_STRIDE(x8) # load stored value for checking
-  # Check if x19 contains the expected result. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x8, x5, x4, x19, D_fsd_cg_cp_fs2_edges_b0x7fbfffff, D_fsd_cg_cp_fs2_edges_b0x7fbfffff_str)
-  # Check fflags. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x8, x5, x4, D_fsd_cg_cp_fs2_edges_b0x7fbfffff, D_fsd_cg_cp_fs2_edges_b0x7fbfffff_str)
-
-# Testcase cp_fs2_edges (Test source fs2 value = 0x00000000ffbfffff)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f25) # load fs2: f25 = 0x00000000ffbfffff
-  fsflagsi 0b00000 # clear all fflags
-  mv x26, x8 # move signature pointer register
-  addi x26, x26, -1827 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0xffbfffff:
-  fsd f25, 1827(x26) # perform store
-  addi x26, x26, 1827 # restore base address
-  addi x26, x26, SIG_STRIDE # increment signature pointer
-  LREG x21, -SIG_STRIDE(x26) # load stored value for checking
-  # Check if x21 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x26, x5, x4, x21, D_fsd_cg_cp_fs2_edges_b0xffbfffff, D_fsd_cg_cp_fs2_edges_b0xffbfffff_str)
-  # Check fflags. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x26, x5, x4, D_fsd_cg_cp_fs2_edges_b0xffbfffff, D_fsd_cg_cp_fs2_edges_b0xffbfffff_str)
-
-# Testcase cp_fs2_edges (Test source fs2 value = 0x000000007ef8654f)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f16) # load fs2: f16 = 0x000000007ef8654f
-  fsflagsi 0b00000 # clear all fflags
-  mv x14, x26 # move signature pointer register
-  addi x14, x14, 502 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x7ef8654f:
-  fsd f16, -502(x14) # perform store
-  addi x14, x14, -502 # restore base address
-  addi x14, x14, SIG_STRIDE # increment signature pointer
-  LREG x8, -SIG_STRIDE(x14) # load stored value for checking
-  # Check if x8 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x8, D_fsd_cg_cp_fs2_edges_b0x7ef8654f, D_fsd_cg_cp_fs2_edges_b0x7ef8654f_str)
-  # Check fflags. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x14, x5, x4, D_fsd_cg_cp_fs2_edges_b0x7ef8654f, D_fsd_cg_cp_fs2_edges_b0x7ef8654f_str)
-
-# Testcase cp_fs2_edges (Test source fs2 value = 0x00000000813d9ab0)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x6, f7) # load fs2: f7 = 0x00000000813d9ab0
-  fsflagsi 0b00000 # clear all fflags
-  mv x27, x14 # move signature pointer register
-  addi x27, x27, 884 # adjust base address for offset
-D_fsd_cg_cp_fs2_edges_b0x813d9ab0:
-  fsd f7, -884(x27) # perform store
-  addi x27, x27, -884 # restore base address
-  addi x27, x27, SIG_STRIDE # increment signature pointer
-  LREG x16, -SIG_STRIDE(x27) # load stored value for checking
-  # Check if x16 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x16, D_fsd_cg_cp_fs2_edges_b0x813d9ab0, D_fsd_cg_cp_fs2_edges_b0x813d9ab0_str)
-  # Check fflags. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x27, x5, x4, D_fsd_cg_cp_fs2_edges_b0x813d9ab0, D_fsd_cg_cp_fs2_edges_b0x813d9ab0_str)
-
-  mv x2, x27 # restore signature pointer to default register for teardown
+  mv x2, x30 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -1811,33 +1811,33 @@ RVTEST_DATA_BEGIN
 .dword 0xafb16db58e9ba59e
 .dword 0x6907bd2ce983ec8b
 .dword 0x0000000000000000
-.dword 0x0000000080000000
-.dword 0x000000003f800000
-.dword 0x00000000bf800000
-.dword 0x0000000040200000
-.dword 0x00000000c0200000
-.dword 0x000000004b800000
-.dword 0x00000000cb800000
-.dword 0x0000000000800000
-.dword 0x0000000080800000
-.dword 0x000000007f7fffff
-.dword 0x00000000ff7fffff
-.dword 0x00000000007fffff
-.dword 0x00000000807fffff
-.dword 0x0000000000400000
-.dword 0x0000000080400000
+.dword 0x8000000000000000
+.dword 0x3ff0000000000000
+.dword 0xbff0000000000000
+.dword 0x4004000000000000
+.dword 0xc004000000000000
+.dword 0x4340000000000000
+.dword 0xc340000000000000
+.dword 0x0010000000000000
+.dword 0x8010000000000000
+.dword 0x7fefffffffffffff
+.dword 0xffefffffffffffff
+.dword 0x000fffffffffffff
+.dword 0x800fffffffffffff
+.dword 0x0008000000000000
+.dword 0x8008000000000000
 .dword 0x0000000000000001
-.dword 0x0000000080000001
-.dword 0x000000007f800000
-.dword 0x00000000ff800000
-.dword 0x000000007fc00000
-.dword 0x000000007fffffff
-.dword 0x00000000ffffffff
-.dword 0x000000007f800001
-.dword 0x000000007fbfffff
-.dword 0x00000000ffbfffff
-.dword 0x000000007ef8654f
-.dword 0x00000000813d9ab0
+.dword 0x8000000000000001
+.dword 0x7ff0000000000000
+.dword 0xfff0000000000000
+.dword 0x7ff8000000000000
+.dword 0x7fffffffffffffff
+.dword 0xfff8000000000000
+.dword 0x7ff0000000000001
+.dword 0x7ff7ffffffffffff
+.dword 0xfff0000000000001
+.dword 0x5a392534a57711ad
+.dword 0xa6e895993737426c
 
 // Testcase strings
 D_fsd_cg_cp_rs1_nx0_b1_str: .string "\"test: 1; cg: D_fsd_cg; cp: cp_rs1_nx0; bin: b1\""
@@ -1923,34 +1923,34 @@ D_fsd_cg_cp_fs2_b28_str: .string "\"test: 80; cg: D_fsd_cg; cp: cp_fs2; bin: b28
 D_fsd_cg_cp_fs2_b29_str: .string "\"test: 81; cg: D_fsd_cg; cp: cp_fs2; bin: b29\""
 D_fsd_cg_cp_fs2_b30_str: .string "\"test: 82; cg: D_fsd_cg; cp: cp_fs2; bin: b30\""
 D_fsd_cg_cp_fs2_b31_str: .string "\"test: 83; cg: D_fsd_cg; cp: cp_fs2; bin: b31\""
-D_fsd_cg_cp_fs2_edges_b0x0_str: .string "\"test: 84; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x0\""
-D_fsd_cg_cp_fs2_edges_b0x80000000_str: .string "\"test: 85; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x80000000\""
-D_fsd_cg_cp_fs2_edges_b0x3f800000_str: .string "\"test: 86; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x3f800000\""
-D_fsd_cg_cp_fs2_edges_b0xbf800000_str: .string "\"test: 87; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0xbf800000\""
-D_fsd_cg_cp_fs2_edges_b0x40200000_str: .string "\"test: 88; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x40200000\""
-D_fsd_cg_cp_fs2_edges_b0xc0200000_str: .string "\"test: 89; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0xc0200000\""
-D_fsd_cg_cp_fs2_edges_b0x4b800000_str: .string "\"test: 90; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x4b800000\""
-D_fsd_cg_cp_fs2_edges_b0xcb800000_str: .string "\"test: 91; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0xcb800000\""
-D_fsd_cg_cp_fs2_edges_b0x800000_str: .string "\"test: 92; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x800000\""
-D_fsd_cg_cp_fs2_edges_b0x80800000_str: .string "\"test: 93; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x80800000\""
-D_fsd_cg_cp_fs2_edges_b0x7f7fffff_str: .string "\"test: 94; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x7f7fffff\""
-D_fsd_cg_cp_fs2_edges_b0xff7fffff_str: .string "\"test: 95; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0xff7fffff\""
-D_fsd_cg_cp_fs2_edges_b0x7fffff_str: .string "\"test: 96; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x7fffff\""
-D_fsd_cg_cp_fs2_edges_b0x807fffff_str: .string "\"test: 97; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x807fffff\""
-D_fsd_cg_cp_fs2_edges_b0x400000_str: .string "\"test: 98; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x400000\""
-D_fsd_cg_cp_fs2_edges_b0x80400000_str: .string "\"test: 99; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x80400000\""
-D_fsd_cg_cp_fs2_edges_b0x1_str: .string "\"test: 100; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x1\""
-D_fsd_cg_cp_fs2_edges_b0x80000001_str: .string "\"test: 101; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x80000001\""
-D_fsd_cg_cp_fs2_edges_b0x7f800000_str: .string "\"test: 102; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x7f800000\""
-D_fsd_cg_cp_fs2_edges_b0xff800000_str: .string "\"test: 103; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0xff800000\""
-D_fsd_cg_cp_fs2_edges_b0x7fc00000_str: .string "\"test: 104; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x7fc00000\""
-D_fsd_cg_cp_fs2_edges_b0x7fffffff_str: .string "\"test: 105; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x7fffffff\""
-D_fsd_cg_cp_fs2_edges_b0xffffffff_str: .string "\"test: 106; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0xffffffff\""
-D_fsd_cg_cp_fs2_edges_b0x7f800001_str: .string "\"test: 107; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x7f800001\""
-D_fsd_cg_cp_fs2_edges_b0x7fbfffff_str: .string "\"test: 108; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x7fbfffff\""
-D_fsd_cg_cp_fs2_edges_b0xffbfffff_str: .string "\"test: 109; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0xffbfffff\""
-D_fsd_cg_cp_fs2_edges_b0x7ef8654f_str: .string "\"test: 110; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x7ef8654f\""
-D_fsd_cg_cp_fs2_edges_b0x813d9ab0_str: .string "\"test: 111; cg: D_fsd_cg; cp: cp_fs2_edges; bin: b0x813d9ab0\""
+D_fsd_cg_cp_fs2_edges_D_b0x0_str: .string "\"test: 84; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0x0\""
+D_fsd_cg_cp_fs2_edges_D_b0x8000000000000000_str: .string "\"test: 85; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0x8000000000000000\""
+D_fsd_cg_cp_fs2_edges_D_b0x3ff0000000000000_str: .string "\"test: 86; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0x3ff0000000000000\""
+D_fsd_cg_cp_fs2_edges_D_b0xbff0000000000000_str: .string "\"test: 87; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0xbff0000000000000\""
+D_fsd_cg_cp_fs2_edges_D_b0x4004000000000000_str: .string "\"test: 88; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0x4004000000000000\""
+D_fsd_cg_cp_fs2_edges_D_b0xc004000000000000_str: .string "\"test: 89; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0xc004000000000000\""
+D_fsd_cg_cp_fs2_edges_D_b0x4340000000000000_str: .string "\"test: 90; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0x4340000000000000\""
+D_fsd_cg_cp_fs2_edges_D_b0xc340000000000000_str: .string "\"test: 91; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0xc340000000000000\""
+D_fsd_cg_cp_fs2_edges_D_b0x10000000000000_str: .string "\"test: 92; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0x10000000000000\""
+D_fsd_cg_cp_fs2_edges_D_b0x8010000000000000_str: .string "\"test: 93; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0x8010000000000000\""
+D_fsd_cg_cp_fs2_edges_D_b0x7fefffffffffffff_str: .string "\"test: 94; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0x7fefffffffffffff\""
+D_fsd_cg_cp_fs2_edges_D_b0xffefffffffffffff_str: .string "\"test: 95; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0xffefffffffffffff\""
+D_fsd_cg_cp_fs2_edges_D_b0xfffffffffffff_str: .string "\"test: 96; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0xfffffffffffff\""
+D_fsd_cg_cp_fs2_edges_D_b0x800fffffffffffff_str: .string "\"test: 97; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0x800fffffffffffff\""
+D_fsd_cg_cp_fs2_edges_D_b0x8000000000000_str: .string "\"test: 98; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0x8000000000000\""
+D_fsd_cg_cp_fs2_edges_D_b0x8008000000000000_str: .string "\"test: 99; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0x8008000000000000\""
+D_fsd_cg_cp_fs2_edges_D_b0x1_str: .string "\"test: 100; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0x1\""
+D_fsd_cg_cp_fs2_edges_D_b0x8000000000000001_str: .string "\"test: 101; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0x8000000000000001\""
+D_fsd_cg_cp_fs2_edges_D_b0x7ff0000000000000_str: .string "\"test: 102; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0x7ff0000000000000\""
+D_fsd_cg_cp_fs2_edges_D_b0xfff0000000000000_str: .string "\"test: 103; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0xfff0000000000000\""
+D_fsd_cg_cp_fs2_edges_D_b0x7ff8000000000000_str: .string "\"test: 104; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0x7ff8000000000000\""
+D_fsd_cg_cp_fs2_edges_D_b0x7fffffffffffffff_str: .string "\"test: 105; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0x7fffffffffffffff\""
+D_fsd_cg_cp_fs2_edges_D_b0xfff8000000000000_str: .string "\"test: 106; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0xfff8000000000000\""
+D_fsd_cg_cp_fs2_edges_D_b0x7ff0000000000001_str: .string "\"test: 107; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0x7ff0000000000001\""
+D_fsd_cg_cp_fs2_edges_D_b0x7ff7ffffffffffff_str: .string "\"test: 108; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0x7ff7ffffffffffff\""
+D_fsd_cg_cp_fs2_edges_D_b0xfff0000000000001_str: .string "\"test: 109; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0xfff0000000000001\""
+D_fsd_cg_cp_fs2_edges_D_b0x5a392534a57711ad_str: .string "\"test: 110; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0x5a392534a57711ad\""
+D_fsd_cg_cp_fs2_edges_D_b0xa6e895993737426c_str: .string "\"test: 111; cg: D_fsd_cg; cp: cp_fs2_edges_D; bin: b0xa6e895993737426c\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

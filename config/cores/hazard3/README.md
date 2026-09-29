@@ -4,9 +4,9 @@
 Raspberry Pi RP2350. The configuration runs the RTL under Verilator 5.036, pinned to the `develop`
 branch at `ba0c83c`.
 
-| Config                    | ISA                                                          | Modes                 |
-| ------------------------- | ------------------------------------------------------------ | --------------------- |
-| `hazard3-rv32imacb-u-pmp` | RV32IMAC_Zba_Zbb_Zbc_Zbs_Zbkb_Zbkx_Zcb_Zicsr_Zifencei_Zicntr | M + U, 16 PMP regions |
+| Config                    | ISA                                                               | Modes                 |
+| ------------------------- | ----------------------------------------------------------------- | --------------------- |
+| `hazard3-rv32imacb-u-pmp` | RV32IMAC_Zba_Zbb_Zbc_Zbs_Zbkb_Zbkc_Zbkx_Zcb_Zicsr_Zifencei_Zicntr | M + U, 16 PMP regions |
 
 - Privileged specification 1.12 (`Sm 1.12.0`); no F/D, no virtual memory.
 - PMP: 16 regions, 4-byte granule, OFF/NA4/NAPOT/TOR.

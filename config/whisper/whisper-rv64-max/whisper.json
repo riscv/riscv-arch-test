@@ -13,7 +13,7 @@
   "clear_tinst_on_cbo_inval": false,
   "enable_pmp_na4": false,
   "enable_pmp_tor": true,
-  "guest_interrupt_count": 5,
+  "guest_interrupt_count": 63, // GEILEN: hgeie bits 63:1 are writable
   "indexed_nmi": false,
 
   "memmap": {
@@ -65,9 +65,12 @@
       "poke_mask": "0x3eee" //determines what bits of mip can be set by simulator injecting external events
     },
     "mideleg": {
-      "mask": "0x3666" // determines what bits of mideleg can be set by M-mode software [SEIP, STIP, SSIP]
+      "mask": "0x3666" // [LCOFIP, SEIP, STIP, SSIP] writable; H makes SGEIP, VSEIP, VSTIP and VSSIP read-only one
     },
     "stvec": {
+      "mask": "0xFFFFFFFFFFFFFFFD" // don't allow setting MODE field to 2 (reserved)
+    },
+    "vstvec": {
       "mask": "0xFFFFFFFFFFFFFFFD" // don't allow setting MODE field to 2 (reserved)
     },
     "mcounteren": {
@@ -75,6 +78,12 @@
     },
     "scounteren": {
       "mask": "0x000007FF"
+    },
+    "hcounteren": {
+      "mask": "0x000007FF"
+    },
+    "hstatus": {
+      "mask": "0x0073f3c0" // VSBE read-only zero: VS-mode is little-endian (VS_MODE_ENDIANNESS)
     }
   },
 

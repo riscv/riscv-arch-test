@@ -15,7 +15,7 @@ from pathlib import Path
 def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
     # Regular expression to match instruction lines
     #                             [STEP]     [MODE]:    0xPC              (0xINSN)           DISASM
-    insn_pattern = re.compile(r"\[(\d+)\] \[(HS|M|S|U)\]: 0x([0-9a-fA-F]+) \(0x([0-9a-fA-F]+)\) (.*)")
+    insn_pattern = re.compile(r"\[(\d+)\] \[(HS|VS|VU|M|S|U)\]: 0x([0-9a-fA-F]+) \(0x([0-9a-fA-F]+)\) (.*)")
 
     # Regular expressions to match register updates
     reg_patterns = {
@@ -28,8 +28,9 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
     # Memory operand in the disassembly, such as "0x4(x9)" in "lw x13, 0x4(x9)" or "(x6)" in "amoadd.w x8, x14, (x6)"
     mem_operand_pattern = re.compile(r"(-?0x[0-9a-fA-F]+)?\(x(\d+)\)")
 
-    # Mode mapping
-    mode_map = {"M": "3", "S": "1", "HS": "1", "U": "0"}
+    # Mode mapping: privilege level and virtualization mode
+    mode_map = {"M": "3", "S": "1", "HS": "1", "U": "0", "VS": "1", "VU": "0"}
+    virt_map = {"VS": "1", "VU": "1"}
 
     # sip and sie are restricted views of mip and mie through mideleg, and Sail logs only the view
     # that was accessed. A csrrs to sip therefore leaves the mip the covergroups read unchanged, so
@@ -50,6 +51,7 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
         prev_mode_num: str | None = None
         # Integer register values, tracked from the logged writes, to compute effective addresses
         xregs = [0] * 32
+        prev_virt: str = "0"
         for i in range(len(lines)):
             line = lines[i]
 
@@ -58,11 +60,12 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
             if insn_match:
                 order, prev_mode, pc, insn, disasm = insn_match.groups()
                 prev_mode_num = mode_map.get(prev_mode)
+                prev_virt = virt_map.get(prev_mode, "0")
 
                 # Format the beginning of the instruction line
                 # mode_num is set later based on the mode for the next instruction because RVVI expects the
                 # mode at the end of the instruction but Sail logs have the mode at the start of the instruction.
-                next_output = f"ORDER {order} PC {pc} INSN {insn} MODE " + "{mode_num}"
+                next_output = f"ORDER {order} PC {pc} INSN {insn} MODE " + "{mode_num} MODE_VIRT {mode_virt}"
 
                 # VIRT_ADR_I is the PC. VIRT_ADR_D is the effective address of a scalar load, store, AMO, or CMO,
                 # whether or not the access faults. jalr names a jump target, prefetch does not access memory, and
@@ -110,7 +113,7 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
                 next_output += "\n"
 
                 # Update the previous instruction with the new privilege mode and output it to the trace file
-                output_line = output_line.format(mode_num=prev_mode_num)
+                output_line = output_line.format(mode_num=prev_mode_num, mode_virt=prev_virt)
                 outfile.write(output_line)
                 output_line = next_output
 
@@ -119,4 +122,4 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
         # inherit from; fall back to its own start mode as the closest
         # approximation rather than dropping it from the trace.
         if output_line and prev_mode_num is not None:
-            outfile.write(output_line.format(mode_num=prev_mode_num))
+            outfile.write(output_line.format(mode_num=prev_mode_num, mode_virt=prev_virt))

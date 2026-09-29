@@ -23,10 +23,10 @@ hlv.wu,LR,,x
 hlv.d,LR,,x
 hlvx.hu,LR,x,x
 hlvx.wu,LR,x,x
-hsv.b,S,x,x
-hsv.h,S,x,x
-hsv.w,S,x,x
-hsv.d,S,,x
+hsv.b,SR,x,x
+hsv.h,SR,x,x
+hsv.w,SR,x,x
+hsv.d,SR,,x
 lpad,IMM,x,x
 ssamoswap.w,A,x,x
 ssamoswap.d,A,,x

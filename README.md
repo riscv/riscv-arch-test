@@ -272,6 +272,8 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_SET_SSW_INT(_R1, _R2)`
 - `RVMODEL_CLR_SSW_INT(_R1, _R2)`
 - `RVMODEL_CLR_SSW_INT_M(_R1, _R2)`
+- `RVMODEL_SET_GUEST_EXT_INT(_GEI, _R1, _R2)` (sets `hgeip` bit `_GEI`; guest external interrupts are tested only when it is defined)
+- `RVMODEL_CLR_GUEST_EXT_INT(_GEI, _R1, _R2)`
 - `RVMODEL_INTERRUPT_LATENCY`
 
 Complete examples are available for an example DUT ([config/cores/cvw/cvw-rv64gc/rvmodel_macros.h](./config/cores/cvw/cvw-rv64gc/rvmodel_macros.h)) and for the RISC-V Sail reference model ([config/sail/sail-RVA23S64/rvmodel_macros.h](./config/sail/sail-RVA23S64/rvmodel_macros.h)).

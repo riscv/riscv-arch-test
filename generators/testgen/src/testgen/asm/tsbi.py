@@ -99,6 +99,7 @@ _CSR_ALIASES = {
     "sip": 0x144,
     "senvcfg": 0x10A,
     "satp": 0x180,
+    "hcounteren": 0x606,
     "mstatus": 0x300,
     "misa": 0x301,
     "medeleg": 0x302,

@@ -104,12 +104,8 @@ class TrapEntry:
     test_label: str | None
 
 
-def _parse_symbol_table(nm_exe: Path, elf_path: Path) -> tuple[dict[int, str], int]:
-    """Run nm on the ELF and return (address->label mapping, code_begin address).
-
-    Returns symbols for text section and the rvtest_code_begin address (needed to
-    convert relocated XEPC offsets back to absolute addresses for label lookup).
-    """
+def _parse_symbol_table(nm_exe: Path, elf_path: Path) -> dict[int, str]:
+    """Run nm on the ELF and return an address->label mapping for the text section."""
     result = subprocess.run(
         [str(nm_exe), "--numeric-sort", str(elf_path)],
         capture_output=True,
@@ -117,19 +113,14 @@ def _parse_symbol_table(nm_exe: Path, elf_path: Path) -> tuple[dict[int, str], i
         check=False,
     )
     if result.returncode != 0:
-        return {}, 0
+        return {}
 
     symbols: dict[int, str] = {}
-    code_begin = 0
     for line in result.stdout.splitlines():
         parts = line.split()
         if len(parts) >= 3 and parts[1] in ("t", "T"):
-            addr = int(parts[0], 16)
-            name = parts[2]
-            symbols[addr] = name
-            if name == "rvtest_code_begin":
-                code_begin = addr
-    return symbols, code_begin
+            symbols[int(parts[0], 16)] = parts[2]
+    return symbols
 
 
 def _find_nearest_label(address: int, sorted_addrs: list[int], symbols: dict[int, str]) -> str | None:
@@ -195,7 +186,6 @@ def _decode_all_traps(
     xlen: int,
     sorted_addrs: list[int],
     symbols: dict[int, str],
-    code_begin: int = 0,
 ) -> list[TrapEntry]:
     """Walk through raw trap signature words and decode each variable-length entry."""
     deadbeef = DEADBEEF_32 if xlen == 32 else DEADBEEF_64
@@ -243,8 +233,8 @@ def _decode_all_traps(
             if entry_size >= 4 and raw_words[pos + 3] != deadbeef:
                 int_id = raw_words[pos + 3]
         else:
-            # XEPC is a relocated offset from code_begin; convert back to absolute address
-            xepc = raw_words[pos + 2] + code_begin
+            # XEPC is recorded raw by the trap handler
+            xepc = raw_words[pos + 2]
             test_label = _find_nearest_label(xepc, sorted_addrs, symbols)
             if entry_size >= 4:
                 xtval = raw_words[pos + 3]
@@ -284,14 +274,15 @@ def _format_hex(value: int, xlen: int) -> str:
     return f"0x{value:0{width}x}"
 
 
-def _decode_xstatus(status_bits: int) -> str:
+def _decode_xstatus(status_bits: int, mode: str) -> str:
     """Decode the encoded xstatus field stored in signature word0 bits 30:13.
 
     The trap handler packs mstatus[17:0] into bits [30:13] of word0, then applies
     a mask to clear xstatus bits 16:13 (XS,FS) 10:9 (VS) and unused bits 4,2,0.
     For M-mode traps, mstatus[39:38]/mstatush[7:6] (GVA, MPV) are OR'd into
-    word0 bits [15:14]. For H-mode traps, hstatus[8:6] (SPVP, SPV, GVA) are OR'd
-    into word0 bits [16:14].
+    word0 bits [28:27] (xstatus 15:14). For H-mode traps, hstatus[8:6] (SPVP, SPV,
+    GVA) are OR'd into word0 bits [29:27] (xstatus 16:14).  Bit 15 is therefore MPV on
+    an M-mode entry and SPV on an HS-mode one; ``mode`` is the entry's MODE_NAMES string.
     """
     # Skip WPRI bit 0
     sie = (status_bits >> 1) & 1
@@ -309,13 +300,14 @@ def _decode_xstatus(status_bits: int) -> str:
     mprv = (status_bits >> 17) & 1
     # Overlaid bits
     gva = (status_bits >> 14) & 1
-    mpv = (status_bits >> 15) & 1
+    xpv = (status_bits >> 15) & 1
     spvp = (status_bits >> 16) & 1
+    xpv_name = "MPV" if mode == "M" else "SPV"
 
     return (
         f"SIE={sie}, MIE={mie}, SPIE={spie}, MPIE={mpie}, "
         f"SPP={spp}, MPP={mpp} ({MPP_NAMES.get(mpp, '?')}), MPRV={mprv}, "
-        f"GVA={gva}, MPV={mpv}, SPVP={spvp}"
+        f"GVA={gva}, {xpv_name}={xpv}, SPVP={spvp}"
     )
 
 
@@ -348,7 +340,7 @@ def _format_trap_report(entries: list[TrapEntry], test_name: str, xlen: int) -> 
         if entry.mtinst is not None:
             lines.append(f"  MTINST:  {_format_hex(entry.mtinst, xlen)}")
 
-        lines.append(f"  Status:  {_decode_xstatus(entry.xstatus_bits)}")
+        lines.append(f"  Status:  {_decode_xstatus(entry.xstatus_bits, entry.mode)}")
         lines.append(f"  XIE[cause]: {int(entry.xie_bit)}  XIP[cause]: {int(entry.xip_bit)}")
 
     lines.append("")
@@ -380,12 +372,11 @@ def generate_trap_report(sig_path: Path, xlen: int, elf_path: Path | None, nm_ex
 
     # Parse symbol table if elf is available
     symbols: dict[int, str] = {}
-    code_begin = 0
     if elf_path is not None and elf_path.exists() and nm_exe is not None:
-        symbols, code_begin = _parse_symbol_table(nm_exe, elf_path)
+        symbols = _parse_symbol_table(nm_exe, elf_path)
 
     sorted_addrs = sorted(symbols.keys())
 
-    entries = _decode_all_traps(trap_words, xlen, sorted_addrs, symbols, code_begin)
+    entries = _decode_all_traps(trap_words, xlen, sorted_addrs, symbols)
     report = _format_trap_report(entries, test_name, xlen)
     report_path.write_text(report)

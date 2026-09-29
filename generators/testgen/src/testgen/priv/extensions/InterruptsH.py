@@ -18,7 +18,6 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.InterruptsCommon import (
-    REG_TRIGGER_DEFINES,
     int_bit,
     int_macro,
     interrupt_xtinst_tests,
@@ -409,7 +408,7 @@ def _user_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "InterruptsH",
     required_extensions=["H"],
-    extra_defines=[*REG_TRIGGER_DEFINES, "#define BOOT_TO_SMODE"],
+    extra_defines=["#define BOOT_TO_SMODE"],
     # VS and VU traps need the visible trap handler
     params=["TIME_CSR_IMPLEMENTED: true"],
 )

@@ -20,7 +20,7 @@ M-mode (vstopei, vsiselect and vsireg), so the hs file first sets mstateen0.IMSI
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.InterruptsCommon import REG_TRIGGER_DEFINES, int_macro
+from testgen.priv.extensions.InterruptsCommon import int_macro
 from testgen.priv.extensions.InterruptsH import S_INTS
 from testgen.priv.registry import add_priv_test_generator
 
@@ -226,7 +226,7 @@ def _sgei_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "InterruptsHGei",
     required_extensions=["H"],
-    extra_defines=[*REG_TRIGGER_DEFINES, "#define BOOT_TO_SMODE"],
+    extra_defines=["#define BOOT_TO_SMODE"],
     params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_interruptshgei(test_data: TestData) -> list[TestChunk]:

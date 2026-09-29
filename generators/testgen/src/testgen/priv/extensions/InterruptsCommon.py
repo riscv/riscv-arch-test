@@ -27,7 +27,9 @@ reg_ints = {"MIP_SEIP": 9, "MIP_SSIP": 1, "SIP_SSIP": 1, "SIP_LCOFIP": 13}
 # write must not raise it (cp_trigger_sti_sstc)
 sstc_ints = {"SSTC_STCE0": 5, "SSTC_STCE1": 5}
 # mip/mie bit position of every interrupt type
-int_bit = machine_ints | supervisor_ints | reg_ints | sstc_ints
+# VS-level interrupts, which only the H suites raise
+vs_ints = {"VSEI": 10, "VSTI": 6, "VSSI": 2}
+int_bit = machine_ints | supervisor_ints | reg_ints | sstc_ints | vs_ints
 # Guard symbol and coverpoint for types that do not use the UDB_<int>_INTR_IMPL / cp_trigger defaults
 int_guard = {"MIP_SEIP": "UDB_SEI_INTR_IMPL", "MIP_SSIP": "UDB_SSI_INTR_IMPL", "SIP_SSIP": "UDB_SSI_INTR_IMPL"}
 int_guard |= {"LCOFI": "SSCOFPMF_SUPPORTED", "SIP_LCOFIP": "SSCOFPMF_SUPPORTED"}

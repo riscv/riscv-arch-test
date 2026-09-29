@@ -24,8 +24,7 @@ description: XuanTie OpenC910 (open-source release) in its bundled SoC testbench
 
 implemented_extensions:
   # misa = 0x800000000094112D, read only.  A(0) C(2) D(3) F(5) I(8) M(12) S(18) U(20)
-  # X(23), MXL=2.  Note bit 6 (G) is 0 even though the manual calls the core RV64GC -
-  # recorded as a discrepancy, see ~/reviews/act-ports/c910-discrepancies.md.
+  # X(23), MXL=2.  Bit 6 (G) is 0 even though the manual calls the core RV64GC.
   #   Quote: "assign extensions[25:0] = {2'b0, 2'b10, misa_vector, 1'b1, 4'b0100,
   #                                      4'b0001, 4'b0001, misa_hypervisor, 3'b010, 4'b1101};"
   #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L1736-L1738

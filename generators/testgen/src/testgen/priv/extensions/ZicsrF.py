@@ -8,6 +8,8 @@
 
 """Unprivileged floating-point fcsr tests generator."""
 
+from typing import Literal
+
 from testgen.asm.csr import csr_access_test, csr_walk_test, gen_csr_read_sigupd, gen_csr_write_sigupd
 from testgen.asm.helpers import comment_banner, load_float_reg, write_sigupd
 from testgen.constants import INDENT
@@ -186,6 +188,36 @@ def make_op(
     return lines
 
 
+STATIC_RMS = ("rne", "rtz", "rdn", "rup", "rmm")
+
+
+def _tininess_cases(
+    test_data: TestData,
+    name: str,
+    mnemonic: str,
+    operands: list[int],
+    fp_load_type: Literal["single", "double", "half"],
+) -> list[str]:
+    """Load one directed tininess operand set and run it under each static rounding mode."""
+    covergroup = "ZicsrF_cg"
+    coverpoint = f"cp_underflow_after_rounding_{name}"
+    regs = [10, 11, 12][: len(operands)]
+    lines = [""]
+    lines.extend(load_float_reg(src, reg, val, test_data, fp_load_type) for src, reg, val in zip("abc", regs, operands))
+    sources = ", ".join(f"f{reg}" for reg in regs)
+    for rm in STATIC_RMS:
+        lines.extend(
+            [
+                "",
+                "csrwi fflags, 0 # reset flags",
+                test_data.add_testcase(rm, coverpoint, covergroup),
+                f"{mnemonic} f13, {sources}, {rm}",
+                write_sigupd(13, test_data, "float"),
+            ]
+        )
+    return lines
+
+
 def _generate_instr_tests(test_data: TestData) -> list[str]:
     """Operations to set each flag."""
     ######################################
@@ -220,105 +252,53 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
 
     lines.append(
         comment_banner(
-            "Underflow after rounding",
-            "Check underflow flag is determined after rounding",
+            "cp_underflow_after_rounding_*",
+            "Check underflow flag is determined after rounding.\n"
+            "Each operand set is run under all five static rounding modes. Depending on the mode, the result\n"
+            "is tiny before rounding but not after (UF = 0), or tiny after rounding even when the delivered\n"
+            "result is +/-2^emin (UF = 1).",
         )
     )
 
+    lines.extend(_tininess_cases(test_data, "fma_s", "fmadd.s", [0x3F00FBFF, 0x80000001, 0x807FFFFF], "single"))
+    lines.extend(_tininess_cases(test_data, "fmul_s", "fmul.s", [0x00800001, 0x3F7FFFFE], "single"))
+    lines.append("\n#ifdef D_SUPPORTED")
+    lines.extend(
+        _tininess_cases(
+            test_data, "fma_d", "fmadd.d", [0x802FFFFFFFBFFEFF, 0x000FFFFFFFFFFFFE, 0x0010000000000000], "double"
+        )
+    )
+    lines.extend(_tininess_cases(test_data, "fmul_d", "fmul.d", [0x0010000000000001, 0xBFEFFFFFFFFFFFFE], "double"))
+    lines.extend(_tininess_cases(test_data, "fcvt_s_d", "fcvt.s.d", [0xB80FFFFFFFFDFEFF], "double"))
     lines.extend(
         [
-            "",
-            "csrwi fflags, 0 # reset flags",
-            load_float_reg("a", 10, 0x3F00FBFF, test_data, "single"),
-            load_float_reg("b", 11, 0x80000001, test_data, "single"),
-            load_float_reg("c", 12, 0x807FFFFF, test_data, "single"),
-            test_data.add_testcase("fmadd", "cp_underflow_after_rounding_fma_s_rdn", covergroup),
-            "fmadd.s f13, f10, f11, f12, rdn",
-            write_sigupd(13, test_data, "float"),
-            "",
-            "csrwi fflags, 0 # reset flags",
-            load_float_reg("a", 10, 0x00800001, test_data, "single"),
-            load_float_reg("b", 11, 0x3F7FFFFE, test_data, "single"),
-            test_data.add_testcase("fmul", "cp_underflow_after_rounding_fmul_s_rup", covergroup),
-            "fmul.s f13, f10, f11, rup",
-            write_sigupd(13, test_data, "float"),
-            "\n#ifdef D_SUPPORTED",
-            "csrwi fflags, 0 # reset flags",
-            load_float_reg("a", 10, 0x802FFFFFFFBFFEFF, test_data, "double"),
-            load_float_reg("b", 11, 0x000FFFFFFFFFFFFE, test_data, "double"),
-            load_float_reg("c", 12, 0x0010000000000000, test_data, "double"),
-            test_data.add_testcase("fmadd", "cp_underflow_after_rounding_fma_d_rup", covergroup),
-            "fmadd.d f13, f10, f11, f12, rup",
-            write_sigupd(13, test_data, "float"),
-            "",
-            "csrwi fflags, 0 # reset flags",
-            load_float_reg("a", 10, 0x0010000000000001, test_data, "double"),
-            load_float_reg("b", 11, 0xBFEFFFFFFFFFFFFE, test_data, "double"),
-            test_data.add_testcase("fmul", "cp_underflow_after_rounding_fmul_d_rdn", covergroup),
-            "fmul.d f13, f10, f11, rdn",
-            write_sigupd(13, test_data, "float"),
-            "",
-            "csrwi fflags, 0 # reset flags",
-            load_float_reg("a", 10, 0xB80FFFFFFFFDFEFF, test_data, "double"),
-            test_data.add_testcase("fcvt", "cp_underflow_after_rounding_fcvt_s_d_rne", covergroup),
-            "fcvt.s.d f13, f10, rne",
-            write_sigupd(13, test_data, "float"),
             "#else",
             f"{INDENT}# increment data pointer to skip over these tests",
             f"addi x{test_data.int_regs.data_reg}, x{test_data.int_regs.data_reg}, {6 * test_data.flen // 8}",
             "#endif",
-            # Quads are not yet supported by Sail.  load_float_reg is only writing out 8 bytes
-            # (without Q supported).  Comment out until support is ready.
-            # f"\n#ifdef Q_SUPPORTED",
-            # f"csrwi fflags, 0 # reset flags",
-            # load_float_reg("a", 10, 0x3F9800000000000001FFFFFFFF7FFFFE, test_data, "quad"),
-            # load_float_reg("b", 11, 0x00000000000000000000000000000001, test_data, "quad"),
-            # load_float_reg("c", 12, 0x80010000000000000000000000000000, test_data, "quad"),
-            # test_data.add_testcase("fmadd", "cp_underflow_after_rounding_fma_q_rdn", covergroup),
-            # f"\tfmadd.q f13, f10, f11, f12, rdn",
-            # write_sigupd(13, test_data, "float"),
-            # "",
-            # f"csrwi fflags, 0 # reset flags",
-            # load_float_reg("a", 10, 0x0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF, test_data, "quad"),
-            # load_float_reg("b", 11, 0x3FFF0000000000000000000000000001, test_data, "quad"),
-            # test_data.add_testcase("fmul", "cp_underflow_after_rounding_fmul_q_rne", covergroup),
-            # f"\tfmul.q f13, f10, f11, rne",
-            # write_sigupd(13, test_data, "float"),
-            # "",
-            # f"csrwi fflags, 0 # reset flags",
-            # load_float_reg("a", 10, 0x3F80FFFFFFFE0000000000FFFFFFFFFF, test_data, "quad"),
-            # test_data.add_testcase("fcvt", "cp_underflow_after_rounding_fcvt_s_q_rup", covergroup),
-            # f"\tfcvt.s.q f13, f10, rup",
-            # write_sigupd(13, test_data, "float"),
-            # f"#else",
-            # f"{INDENT}# increment data pointer to skip over these tests",
-            # f"addi x{test_data.int_regs.data_reg}, x{test_data.int_regs.data_reg}, {6 * test_data.flen // 8}",
-            # f"#endif",
-            "\n#ifdef ZFH_SUPPORTED",
-            "csrwi fflags, 0 # reset flags",
-            load_float_reg("a", 10, 0x0BC7, test_data, "half"),
-            load_float_reg("b", 11, 0x03FF, test_data, "half"),
-            load_float_reg("c", 12, 0x8400, test_data, "half"),
-            test_data.add_testcase("fmadd", "cp_underflow_after_rounding_fma_h_rne", covergroup),
-            "fmadd.h f13, f10, f11, f12, rne",
-            write_sigupd(13, test_data, "float"),
-            "",
-            "csrwi fflags, 0 # reset flags",
-            load_float_reg("a", 10, 0x0401, test_data, "half"),
-            load_float_reg("b", 11, 0x3BF8, test_data, "half"),
-            test_data.add_testcase("fmul", "cp_underflow_after_rounding_fmul_h_rup", covergroup),
-            "fmul.h f13, f10, f11, rup",
-            write_sigupd(13, test_data, "float"),
+        ]
+    )
+    # Quads are not yet supported by Sail, and load_float_reg only writes out 8 bytes without Q.
+    # Add these operand sets under #ifdef Q_SUPPORTED once support is ready:
+    #   fma_q    fmadd.q  0x3F9800000000000001FFFFFFFF7FFFFE, 0x00000000000000000000000000000001,
+    #                     0x80010000000000000000000000000000
+    #   fmul_q   fmul.q   0x0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF, 0x3FFF0000000000000000000000000001
+    #   fcvt_s_q fcvt.s.q 0x3F80FFFFFFFE0000000000FFFFFFFFFF
+    lines.append("\n#ifdef ZFH_SUPPORTED")
+    lines.extend(_tininess_cases(test_data, "fma_h", "fmadd.h", [0x0BC7, 0x03FF, 0x8400], "half"))
+    lines.extend(_tininess_cases(test_data, "fmul_h", "fmul.h", [0x0401, 0x3BF8], "half"))
+    lines.extend(
+        [
             "#else",
             f"{INDENT}# increment data pointer to skip over these tests",
             f"addi x{test_data.int_regs.data_reg}, x{test_data.int_regs.data_reg}, {5 * test_data.flen // 8}",
             "#endif",
             "\n#if defined(ZFHMIN_SUPPORTED) || defined(ZFH_SUPPORTED)",
-            "csrwi fflags, 0 # reset flags",
-            load_float_reg("a", 10, 0x387FF000, test_data, "single"),
-            test_data.add_testcase("fcvt", "cp_underflow_after_rounding_fcvt_h_s_rne", covergroup),
-            "\tfcvt.h.s f13, f10, rne",
-            write_sigupd(13, test_data, "float"),
+        ]
+    )
+    lines.extend(_tininess_cases(test_data, "fcvt_h_s", "fcvt.h.s", [0x387FF000], "single"))
+    lines.extend(
+        [
             "#else",
             f"{INDENT}# increment data pointer to skip over these tests",
             f"addi x{test_data.int_regs.data_reg}, x{test_data.int_regs.data_reg}, {1 * test_data.flen // 8}",

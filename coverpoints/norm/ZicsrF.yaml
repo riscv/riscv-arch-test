@@ -62,10 +62,10 @@ normative_rule_definitions:
 
   # Operations on subnormal numbers are handled in accordance with IEEE 754-2008.
   - name: ieee_std_subnormal
-    coverpoint: ["ZicsrF_cg/cp_underflow_after_rounding_fma_s_rdn"]
+    coverpoint: ["ZicsrF_cg/cp_underflow_after_rounding_fma_s"]
   # In the parlance of IEEE 754-2008, tininess is detected after rounding.
   - name: ieee_std_tininess
     coverpoint:
       [
-        "ZicsrF_cg/{cp_underflow_after_rounding_fma_s_rdn, cp_underflow_after_rounding_fmul_s_rup}",
+        "ZicsrF_cg/{cp_underflow_after_rounding_fma_s, cp_underflow_after_rounding_fmul_s}",
       ]

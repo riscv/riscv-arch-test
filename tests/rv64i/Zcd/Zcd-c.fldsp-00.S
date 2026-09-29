@@ -1042,44 +1042,44 @@ Zcd_c_fldsp_cg_cp_memval_fp_double_0xbff0000000000000:
   RVTEST_SIGUPD_F(x10, x5, x4, f4, f3, Zcd_c_fldsp_cg_cp_memval_fp_double_0xbff0000000000000, Zcd_c_fldsp_cg_cp_memval_fp_double_0xbff0000000000000_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
-# Testcase cp_memval_fp_double (memory value = 0x3ff8000000000000)
+# Testcase cp_memval_fp_double (memory value = 0x4004000000000000)
   fsflagsi 0b00000 # clear all fflags
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -328 # adjust base address for load
-Zcd_c_fldsp_cg_cp_memval_fp_double_0x3ff8000000000000:
-  c.fldsp f11, 328(sp) # perform load (0x3ff8000000000000)
+Zcd_c_fldsp_cg_cp_memval_fp_double_0x4004000000000000:
+  c.fldsp f11, 328(sp) # perform load (0x4004000000000000)
   # Check if f11 contains the expected result. Also checks fflags. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x10, x5, x4, f4, f11, Zcd_c_fldsp_cg_cp_memval_fp_double_0x3ff8000000000000, Zcd_c_fldsp_cg_cp_memval_fp_double_0x3ff8000000000000_str)
+  RVTEST_SIGUPD_F(x10, x5, x4, f4, f11, Zcd_c_fldsp_cg_cp_memval_fp_double_0x4004000000000000, Zcd_c_fldsp_cg_cp_memval_fp_double_0x4004000000000000_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
-# Testcase cp_memval_fp_double (memory value = 0xbff8000000000000)
+# Testcase cp_memval_fp_double (memory value = 0xc004000000000000)
   fsflagsi 0b00000 # clear all fflags
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -80 # adjust base address for load
-Zcd_c_fldsp_cg_cp_memval_fp_double_0xbff8000000000000:
-  c.fldsp f20, 80(sp) # perform load (0xbff8000000000000)
+Zcd_c_fldsp_cg_cp_memval_fp_double_0xc004000000000000:
+  c.fldsp f20, 80(sp) # perform load (0xc004000000000000)
   # Check if f20 contains the expected result. Also checks fflags. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x10, x5, x4, f4, f20, Zcd_c_fldsp_cg_cp_memval_fp_double_0xbff8000000000000, Zcd_c_fldsp_cg_cp_memval_fp_double_0xbff8000000000000_str)
+  RVTEST_SIGUPD_F(x10, x5, x4, f4, f20, Zcd_c_fldsp_cg_cp_memval_fp_double_0xc004000000000000, Zcd_c_fldsp_cg_cp_memval_fp_double_0xc004000000000000_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
-# Testcase cp_memval_fp_double (memory value = 0x4000000000000000)
+# Testcase cp_memval_fp_double (memory value = 0x4340000000000000)
   fsflagsi 0b00000 # clear all fflags
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -40 # adjust base address for load
-Zcd_c_fldsp_cg_cp_memval_fp_double_0x4000000000000000:
-  c.fldsp f20, 40(sp) # perform load (0x4000000000000000)
+Zcd_c_fldsp_cg_cp_memval_fp_double_0x4340000000000000:
+  c.fldsp f20, 40(sp) # perform load (0x4340000000000000)
   # Check if f20 contains the expected result. Also checks fflags. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x10, x5, x4, f4, f20, Zcd_c_fldsp_cg_cp_memval_fp_double_0x4000000000000000, Zcd_c_fldsp_cg_cp_memval_fp_double_0x4000000000000000_str)
+  RVTEST_SIGUPD_F(x10, x5, x4, f4, f20, Zcd_c_fldsp_cg_cp_memval_fp_double_0x4340000000000000, Zcd_c_fldsp_cg_cp_memval_fp_double_0x4340000000000000_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
-# Testcase cp_memval_fp_double (memory value = 0xc000000000000000)
+# Testcase cp_memval_fp_double (memory value = 0xc340000000000000)
   fsflagsi 0b00000 # clear all fflags
   mv sp, x3 # move data_ptr to sp
   addi sp, sp, -472 # adjust base address for load
-Zcd_c_fldsp_cg_cp_memval_fp_double_0xc000000000000000:
-  c.fldsp f6, 472(sp) # perform load (0xc000000000000000)
+Zcd_c_fldsp_cg_cp_memval_fp_double_0xc340000000000000:
+  c.fldsp f6, 472(sp) # perform load (0xc340000000000000)
   # Check if f6 contains the expected result. Also checks fflags. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x10, x5, x4, f4, f6, Zcd_c_fldsp_cg_cp_memval_fp_double_0xc000000000000000, Zcd_c_fldsp_cg_cp_memval_fp_double_0xc000000000000000_str)
+  RVTEST_SIGUPD_F(x10, x5, x4, f4, f6, Zcd_c_fldsp_cg_cp_memval_fp_double_0xc340000000000000, Zcd_c_fldsp_cg_cp_memval_fp_double_0xc340000000000000_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_memval_fp_double (memory value = 0x0010000000000000)
@@ -1391,10 +1391,10 @@ RVTEST_DATA_BEGIN
 .dword 0x8000000000000000
 .dword 0x3ff0000000000000
 .dword 0xbff0000000000000
-.dword 0x3ff8000000000000
-.dword 0xbff8000000000000
-.dword 0x4000000000000000
-.dword 0xc000000000000000
+.dword 0x4004000000000000
+.dword 0xc004000000000000
+.dword 0x4340000000000000
+.dword 0xc340000000000000
 .dword 0x0010000000000000
 .dword 0x8010000000000000
 .dword 0x7fefffffffffffff
@@ -1517,10 +1517,10 @@ Zcd_c_fldsp_cg_cp_memval_fp_double_0x0_str: .string "\"test: 97; cg: Zcd_c.fldsp
 Zcd_c_fldsp_cg_cp_memval_fp_double_0x8000000000000000_str: .string "\"test: 98; cg: Zcd_c.fldsp_cg; cp: cp_memval_fp_double; bin: 0x8000000000000000\""
 Zcd_c_fldsp_cg_cp_memval_fp_double_0x3ff0000000000000_str: .string "\"test: 99; cg: Zcd_c.fldsp_cg; cp: cp_memval_fp_double; bin: 0x3ff0000000000000\""
 Zcd_c_fldsp_cg_cp_memval_fp_double_0xbff0000000000000_str: .string "\"test: 100; cg: Zcd_c.fldsp_cg; cp: cp_memval_fp_double; bin: 0xbff0000000000000\""
-Zcd_c_fldsp_cg_cp_memval_fp_double_0x3ff8000000000000_str: .string "\"test: 101; cg: Zcd_c.fldsp_cg; cp: cp_memval_fp_double; bin: 0x3ff8000000000000\""
-Zcd_c_fldsp_cg_cp_memval_fp_double_0xbff8000000000000_str: .string "\"test: 102; cg: Zcd_c.fldsp_cg; cp: cp_memval_fp_double; bin: 0xbff8000000000000\""
-Zcd_c_fldsp_cg_cp_memval_fp_double_0x4000000000000000_str: .string "\"test: 103; cg: Zcd_c.fldsp_cg; cp: cp_memval_fp_double; bin: 0x4000000000000000\""
-Zcd_c_fldsp_cg_cp_memval_fp_double_0xc000000000000000_str: .string "\"test: 104; cg: Zcd_c.fldsp_cg; cp: cp_memval_fp_double; bin: 0xc000000000000000\""
+Zcd_c_fldsp_cg_cp_memval_fp_double_0x4004000000000000_str: .string "\"test: 101; cg: Zcd_c.fldsp_cg; cp: cp_memval_fp_double; bin: 0x4004000000000000\""
+Zcd_c_fldsp_cg_cp_memval_fp_double_0xc004000000000000_str: .string "\"test: 102; cg: Zcd_c.fldsp_cg; cp: cp_memval_fp_double; bin: 0xc004000000000000\""
+Zcd_c_fldsp_cg_cp_memval_fp_double_0x4340000000000000_str: .string "\"test: 103; cg: Zcd_c.fldsp_cg; cp: cp_memval_fp_double; bin: 0x4340000000000000\""
+Zcd_c_fldsp_cg_cp_memval_fp_double_0xc340000000000000_str: .string "\"test: 104; cg: Zcd_c.fldsp_cg; cp: cp_memval_fp_double; bin: 0xc340000000000000\""
 Zcd_c_fldsp_cg_cp_memval_fp_double_0x10000000000000_str: .string "\"test: 105; cg: Zcd_c.fldsp_cg; cp: cp_memval_fp_double; bin: 0x10000000000000\""
 Zcd_c_fldsp_cg_cp_memval_fp_double_0x8010000000000000_str: .string "\"test: 106; cg: Zcd_c.fldsp_cg; cp: cp_memval_fp_double; bin: 0x8010000000000000\""
 Zcd_c_fldsp_cg_cp_memval_fp_double_0x7fefffffffffffff_str: .string "\"test: 107; cg: Zcd_c.fldsp_cg; cp: cp_memval_fp_double; bin: 0x7fefffffffffffff\""

@@ -119,7 +119,7 @@
           "None": null
         },
         "lrsc": {
-          "Some": "AccessFault"
+          "None": null
         }
       },
       "order_decreasing": false,
@@ -131,6 +131,44 @@
       "value": "0x1000"
     },
     "regions": [
+      {
+        "base": {
+          "len": 64,
+          "value": "0x0"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x1000"
+        },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": false,
+          "executable": false,
+          "readable": false,
+          "writable": false,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": {
+              "Some": "AccessFault"
+            },
+            "vector": {
+              "None": null
+            },
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": false
+      },
       {
         "base": {
           "len": 64,
@@ -233,7 +271,7 @@
               "None": null
             },
             "amo": "AlignmentException",
-            "lrsc": "AccessFault"
+            "lrsc": "AlignmentException"
           },
           "atomic_support": "AMOCASQ",
           "misaligned_atomicity_granule_size_exp": 0,

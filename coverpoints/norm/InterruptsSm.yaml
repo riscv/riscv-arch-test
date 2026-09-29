@@ -22,11 +22,11 @@ normative_rule_definitions:
   - name: mcause_exccode_op
     coverpoint: ["InterruptsSm/cp_priority"]
 
-  - name: mcause_exccode_enc
+  - name: mcause_exccode_enc_img
     coverpoint: ["InterruptsSm/cp_priority"]
 
   # By default, all traps at any privilege level are handled in machine mode
-  - name: trap_def_M_mode
+  - name: trap_def_m_mode
     coverpoint: ["InterruptsSm/cp_priority"]
 
   # Value|Name|Description === 0 1 ≥2|Direct Vectored ---|All traps set pc to BASE.
@@ -45,22 +45,25 @@ normative_rule_definitions:
   - name: mtvec_mode_vectored_op
     coverpoint: ["InterruptsSm_cg/cp_vectored"]
 
-  # Global interrupt-enable bits, MIE and SIE, are provided for M-mode and S-mode
-  # respectively. When a hart is executing in privilege mode x, interrupts are
-  # globally enabled when xIE=1 and globally disabled when xIE=0.
-  - names: [mstatus_mie_op]
+  # Global interrupt-enable bits, csr::[mie] and csr::[sie], are provided for M-mode and
+  # S-mode respectively.
+  - name: mstatus_mie_sie_exist
+    coverpoint: ["InterruptsSm_cg/cp_interrupts"]
+  # When a hart is executing in privilege mode x, interrupts are globally enabled when
+  # xIE=1 and globally disabled when xIE=0.
+  - name: mstatus_mie_sie_op
     coverpoint: ["InterruptsSm_cg/cp_interrupts"]
 
   # each privilege mode x that can respond to interrupts has a two-level stack of
   # interrupt-enable bits and privilege modes. xPIE holds the value of the
-  # interrupt-enable bit active prior to the trap, and xPP holds the previous
-  # privilege mode.
-  - names: [mstatus_xpie_op, mstatus_xpp_op]
+  # interrupt-enable bit active prior to the trap, and xPP holds the previous privilege
+  # mode.
+  - name: mstatus_xpie_xpp_op
     coverpoint: ["InterruptsSm_cg/cp_interrupts"]
 
-  # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to
-  # the value of xIE; xIE is set to 0; and xPP is set to y.
-  - names: [mstatus_xpie_trap_op, mstatus_xie_trap_op, mstatus_xpp_trap_op]
+  # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to the
+  # value of xIE; xIE is set to 0; and xPP is set to y.
+  - name: mstatus_xpie_xie_xpp_trap_op
     coverpoint: ["InterruptsSm_cg/cp_interrupts"]
 
   # The TW (Timeout Wait) bit is a WARL field that supports intercepting the WFI
@@ -68,28 +71,27 @@ normative_rule_definitions:
   - name: mstatus_tw_warl
     coverpoint: ["InterruptsSm_cg/cp_wfi"]
 
-  # Interrupt cause number i (as reported in CSR mcause, &lt;&lt;mcause&gt;&gt;)
-  # corresponds with bit i in both mip and mie. Bits 15:0 are allocated to standard
-  # interrupt causes only, while bits 16 and above are designated for platform use.
-  - name: mip_enc
+  # Interrupt cause number i (as reported in CSR csr:mcause[], &lt;&lt;mcause&gt;&gt;)
+  # corresponds with bit i in both csr:mip[] and csr:mie[]. Bits 15:0 are allocated to
+  # standard interrupt causes only, while bits 16 and above are designated for platform
+  # use.
+  - name: mip_mie_enc_txt
+    coverpoint: ["InterruptsSm/cp_priority"]
+  - name: mip_enc_img
     coverpoint: ["InterruptsSm/cp_priority"]
 
-  # Interrupt cause number i (as reported in CSR mcause, &lt;&lt;mcause&gt;&gt;)
-  # corresponds with bit i in both mip and mie. Bits 15:0 are allocated to standard
-  # interrupt causes only, while bits 16 and above are designated for platform use.
-  - name: mie_enc
+  - name: mie_enc_img
     coverpoint: ["InterruptsSm/cp_priority"]
 
-  # The standard portions (bits 15:0) of the mip and mie registers are formatted as
-  # shown in &lt;&lt;norm:mip_std_enc_img&gt;&gt; and
+  # The standard portions (bits 15:0) of the csr:mip[] and csr:mie[] registers are
+  # formatted as shown in &lt;&lt;norm:mip_std_enc_img&gt;&gt; and
   # &lt;&lt;norm:mie_std_enc_img&gt;&gt; respectively.
-  - name: mip_std_enc
+  - name: mip_mie_std_enc_txt
+    coverpoint: ["InterruptsSm/cp_priority"]
+  - name: mip_std_enc_img
     coverpoint: ["InterruptsSm/cp_priority"]
 
-  # The standard portions (bits 15:0) of the mip and mie registers are formatted as
-  # shown in &lt;&lt;norm:mip_std_enc_img&gt;&gt; and
-  # &lt;&lt;norm:mie_std_enc_img&gt;&gt; respectively.
-  - name: mie_std_enc
+  - name: mie_std_enc_img
     coverpoint: ["InterruptsSm/cp_priority"]
 
   # If interrupt i can become pending but bit i in mip is read-only, the
@@ -98,9 +100,9 @@ normative_rule_definitions:
   - name: mip_bits_rdonly_op
     coverpoint: ["InterruptsSm/cp_interrupts"]
 
-  # Bits mip.MEIP and mie.MEIE are the interrupt-pending and interrupt-enable bits
-  # for machine-level external interrupts.
-  - names: [mip_meip_op, mie_meie_op]
+  # Bits csr:mip[meip] and csr:mie[meie] are the interrupt-pending and interrupt-enable
+  # bits for machine-level external interrupts.
+  - name: mip_meip_mie_meie_op
     coverpoint: ["InterruptsSm/cp_interrupts"]
 
   # MEIP is read-only in mip, and is set and cleared by a platform-specific
@@ -108,9 +110,9 @@ normative_rule_definitions:
   - name: mip_meip_rdonly
     coverpoint: ["Sm_cg/cp_mcsr_access/mip, InterruptsSm/trigger_mei"]
 
-  # Bits mip.MTIP and mie.MTIE are the interrupt-pending and interrupt-enable bits
-  # for machine timer interrupts.
-  - names: [mip_mtip_op, mie_mtie_op]
+  # Bits csr:mip[mtip] and csr:mie[mtie] are the interrupt-pending and interrupt-enable
+  # bits for machine timer interrupts.
+  - name: mip_mtip_mie_mtie_op
     coverpoint: ["InterruptsSm/cp_interrupts"]
 
   # MTIP is read-only in the mip register, and is cleared by writing to the
@@ -118,9 +120,9 @@ normative_rule_definitions:
   - name: mip_mtip_rdonly
     coverpoint: ["Sm_cg/cp_mcsr_access/mip, InterruptsSm/trigger_mti"]
 
-  # Bits mip.MSIP and mie.MSIE are the interrupt-pending and interrupt-enable bits
-  # for machine-level software interrupts.
-  - names: [mip_msip_op, mie_msie_op]
+  # Bits csr:mip[msip] and csr:mie[msie] are the interrupt-pending and interrupt-enable
+  # bits for machine-level software interrupts.
+  - name: mip_msip_mie_msie_op
     coverpoint: ["InterruptsSm/cp_interrupts"]
 
   # MSIP is read-only in mip, and is written by accesses to memory-mapped control
@@ -128,8 +130,8 @@ normative_rule_definitions:
   - name: mip_msip_rdonly
     coverpoint: ["Sm_cg/cp_mcsr_access/mip, InterruptsSm/trigger_msi"]
 
-  # A hart's memory-mapped msip register is a 32-bit read/write register
-  - names: [msip_sz, msip_acc]
+  # A hart's memory-mapped csr:msip[] register is a 32-bit read/write register
+  - name: msip_sz_acc
     coverpoint: ["InterruptsSm/trigger_msi"]
 
   # bits 31--1 read as zero and bit 0 contains the MSIP bit.
@@ -172,5 +174,5 @@ normative_rule_definitions:
 
   # Multiple simultaneous interrupts destined for M-mode are handled in the
   # following decreasing priority order: MEI, MSI, MTI, SEI, SSI, STI, LCOFI.
-  - name: intr_M_mode_pri
+  - name: intr_m_mode_pri
     coverpoint: ["InterruptsSm/cp_priority"]

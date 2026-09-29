@@ -82,9 +82,6 @@ def write_test_file(
     extra_defines = list(extra_defines or [])
     if trap_sigupd_count:
         extra_defines.append(f"#define TRAP_SIGUPD_COUNT {trap_sigupd_count}")
-    elif instr_name is not None:
-        # Unprivileged tests must not trap, so an unexpected trap overflows an empty trap signature.
-        extra_defines.append("#define TRAP_SIGUPD_COUNT 0")
     if any("RVTEST_TEST_CSR" in line for tc in test_chunks for line in tc.code):
         extra_defines.append("#define RVTEST_USES_TEST_CSR")
 

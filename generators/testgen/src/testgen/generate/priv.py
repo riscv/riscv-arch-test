@@ -12,6 +12,7 @@ from pathlib import Path
 from random import seed
 
 from testgen.asm.helpers import reproducible_hash
+from testgen.constants import PRIV_TRAP_SIGUPD_COUNT
 from testgen.data.config import TestConfig
 from testgen.data.state import TestData
 from testgen.data.test_chunk import group_test_chunks
@@ -83,6 +84,11 @@ def _generate_priv_test_entry(
         first_file_idx = next_file_indices.get(split_name, 0)
         for file_idx, test_file_chunks in enumerate(test_files, start=first_file_idx):
             extra_defines = entry.extra_defines
+            # The default trap signature is empty, so privileged tests reserve one unless they size their own
+            if not any(tc.trap_sigupd_count for tc in test_file_chunks) and not any(
+                d.startswith("#define TRAP_SIGUPD_COUNT") for d in extra_defines
+            ):
+                extra_defines = [*extra_defines, f"#define TRAP_SIGUPD_COUNT {PRIV_TRAP_SIGUPD_COUNT}"]
             generated_files.add(
                 write_test_file(test_config, None, test_file_chunks, output_path, file_idx, extra_defines, split_name)
             )

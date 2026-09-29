@@ -3,11 +3,12 @@
 
 The Hypervisor Extension adds an H coverage file containing new Hypervisor instructions, and additional coverage files related to exceptions, interrupts, endian, and virtual memory.
 
-[[t-H-normative-rules]]
-.Hypervisor Normative Rules
-***
+==== HSm and H Hypervisor CSRs and Instructions
 
-==== H Hypervisor CSRs and Instructions
+HSm boots to M-mode and tests the hypervisor CSRs and instructions from M-mode.  It also holds the
+mstatus.TVM tests of HS-mode and VS-mode, whose traps must be taken in M-mode because the HS-mode trap
+handler reads satp, vsatp and hgatp.  H boots to HS-mode and tests hypervisor CSRs and instructions in
+HS, VS, U and VU modes.
 
 [[t-H-coverpoints]]
 .H Coverpoints
@@ -15,7 +16,16 @@ The Hypervisor Extension adds an H coverage file containing new Hypervisor instr
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=262865576#gid=262865576[Google Sheet Testplan]
 ,===
 
-==== ExceptionsH Hypervisor Exceptions
+include::norm/HSm_norm_rules.adoc[]
+
+include::norm/H_norm_rules.adoc[]
+
+==== ExceptionsHSm and ExceptionsH Hypervisor Exceptions
+
+ExceptionsHSm boots to M-mode with nothing delegated and checks that exceptions from VS and VU reach M-mode whatever
+hedeleg holds, ecall and ebreak records, HLV/HSV faults taken in M-mode, and mtinst.  ExceptionsH boots to HS-mode,
+walks hedeleg for exceptions from VS and VU, checks that exceptions from HS and U ignore hedeleg, and checks
+hstatus.GVA, htval and htinst.  The misaligned cp_xtinst cases run only on harts that trap misaligned accesses.
 
 [[t-ExceptionsH-coverpoints]]
 .ExceptionsH Coverpoints
@@ -23,7 +33,23 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1980169189#gid=1980169189[Google Sheet Testplan]
 ,===
 
-==== ExceptionsHV Hypervisor Vector Exceptions
+include::norm/ExceptionsHSm_norm_rules.adoc[]
+
+include::norm/ExceptionsH_norm_rules.adoc[]
+
+==== ExceptionsHF and ExceptionsHV Hypervisor Floating-Point and Vector Exceptions
+
+ExceptionsHF and ExceptionsHV boot to HS-mode.  In HS, VS, U and VU modes, with each combination of mstatus.FS/VS and
+vsstatus.FS/VS, they access fcsr or vl and execute a floating-point or vector instruction that changes state, which raises an
+illegal instruction when either field in effect is Off and otherwise sets both to Dirty.
+
+[[t-ExceptionsHF-coverpoints]]
+.ExceptionsHF Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1859267821#gid=1859267821[Google Sheet Testplan]
+,===
+
+include::norm/ExceptionsHF_norm_rules.adoc[]
 
 [[t-ExceptionsHV-coverpoints]]
 .ExceptionsHV Coverpoints
@@ -31,7 +57,14 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=552219666#gid=552219666[Google Sheet Testplan]
 ,===
 
-==== InterruptsH Hypervisor Interrupts
+include::norm/ExceptionsHV_norm_rules.adoc[]
+
+==== InterruptsHSm and InterruptsH Hypervisor Interrupts
+
+InterruptsHSm boots to M-mode and checks mideleg, mie and mip with the hypervisor interrupts and mtinst on interrupts.
+InterruptsH boots to HS-mode and raises VS-level interrupts through hvip, checking hideleg, hie, hip, vsie, vsip,
+priorities and delivery to HS-mode and VS-mode.  Guest external interrupts need the optional
+RVMODEL_SET_GUEST_EXT_INT hook, which the Sail configurations define.
 
 [[t-InterruptsH-coverpoints]]
 .InterruptsH Coverpoints
@@ -39,14 +72,9 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=552831967#gid=552831967[Google Sheet Testplan]
 ,===
 
-==== HV Hypervisor Vector CSRs
+include::norm/InterruptsHSm_norm_rules.adoc[]
 
-[[t-HV-coverpoints]]
-.HV Coverpoints
-,===
-***[Google Sheet Testplan]
-,===
-
+include::norm/InterruptsH_norm_rules.adoc[]
 
 ==== EndianH Hypervisor Endianness
 
@@ -56,7 +84,11 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=923631685#gid=923631685[Google Sheet Testplan]
 ,===
 
-==== ZicntrH Hypervisor Counters
+==== ZicntrHSm and ZicntrH Hypervisor Counters
+
+ZicntrHSm walks hcounteren from M-mode.  ZicntrH checks counter access from HS, VS, U and VU modes against
+mcounteren, hcounteren and scounteren, and time with htimedelta in each mode.  ZicntrH exercises hcounteren for all
+32 counters, so no separate ZihpmH suite is needed.
 
 [[t-ZicntrH-coverpoints]]
 .ZicntrH Coverpoints
@@ -64,12 +96,14 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=2079344243#gid=2079344243[Google Sheet Testplan]
 ,===
 
-[NOTE]
-====
-ZicntrH exercises hcounteren for all 32 counters, so no separate ZihpmH suite is needed.
-====
+include::norm/ZicntrHSm_norm_rules.adoc[]
+
+include::norm/ZicntrH_norm_rules.adoc[]
 
 ==== PMPH Hypervisor Physical Memory Protection
+
+PMPH boots to M-mode and checks PMP on accesses from VS and VU modes, on HLV, HLVX and HSV, and on G-stage and
+VS-stage page-table reads.
 
 [[t-PMPH-coverpoints]]
 .PMPH Coverpoints
@@ -77,7 +111,14 @@ ZicntrH exercises hcounteren for all 32 counters, so no separate ZihpmH suite is
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=161540329#gid=161540329[Google Sheet Testplan]
 ,===
 
-==== SvH Hypervisor 2-Stage Virtual Memory
+include::norm/PMPH_norm_rules.adoc[]
+
+==== SvHSm and SvH Hypervisor Two-Stage Virtual Memory
+
+SvH boots to HS-mode and runs guest code under two-stage translation: VS-stage and G-stage permissions, page sizes,
+NAPOT and Svadu cases, guest-page faults and their htval and htinst, HLV/HLVX/HSV, and GPA widths.  SvHSm boots to
+M-mode for mstatus.MPRV with MPV = 1 and guest-page faults taken in M-mode.  SvH also covers the SvnapotH and SvaduH
+tabs.
 
 [[t-SvH-coverpoints]]
 .SvH Coverpoints
@@ -85,13 +126,22 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=747120884#gid=747120884[Google Sheet Testplan]
 ,===
 
-==== SvHZicbo Hypervisor VirtMem + Cache Block Operations
+include::norm/SvHSm_norm_rules.adoc[]
+
+include::norm/SvH_norm_rules.adoc[]
+
+==== SvHZicbo Hypervisor Virtual Memory with Cache-Block Operations
+
+SvHZicbo checks cache-block operations under two-stage translation, their permission and fault reporting, and the
+henvcfg enables in VS and VU modes.
 
 [[t-SvHZicbo-coverpoints]]
 .SvHZicbo Coverpoints
 ,===
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=2005939128#gid=2005939128[Google Sheet Testplan]
 ,===
+
+include::norm/SvHZicbo_norm_rules.adoc[]
 
 ==== Shcounterenw Writable Counter Enables
 
@@ -101,6 +151,8 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=359491363#gid=359491363[Google Sheet Testplan]
 ,===
 
+include::norm/Shcounterenw_norm_rules.adoc[]
+
 ==== Shvsatpa Virtual Memory Modes Supported
 
 [[t-Shvsatpa-coverpoints]]
@@ -108,6 +160,8 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 ,===
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1777147736#gid=1777147736[Google Sheet Testplan]
 ,===
+
+include::norm/Shvsatpa_norm_rules.adoc[]
 
 ==== Shgatpa Virtual Memory x4 Modes Supported
 
@@ -117,6 +171,8 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=262220701#gid=262220701[Google Sheet Testplan]
 ,===
 
+include::norm/Shgatpa_norm_rules.adoc[]
+
 ==== Shvstvecd VS-Mode Direct Vectors
 
 [[t-Shvstvecd-coverpoints]]
@@ -124,6 +180,8 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 ,===
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1109621355#gid=1109621355[Google Sheet Testplan]
 ,===
+
+include::norm/Shvstvecd_norm_rules.adoc[]
 
 ==== Shvstvala VS-Mode Trap Address
 
@@ -133,6 +191,8 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=970539312#gid=970539312[Google Sheet Testplan]
 ,===
 
+include::norm/Shvstvala_norm_rules.adoc[]
+
 ==== Shtvala HS-Mode Trap Address
 
 [[t-Shtvala-coverpoints]]
@@ -140,6 +200,8 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 ,===
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1365004927#gid=1365004927[Google Sheet Testplan]
 ,===
+
+include::norm/Shtvala_norm_rules.adoc[]
 
 ==== Shlcofideleg Hypervisor Counter Overflow Delegation
 
@@ -157,13 +219,20 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=443731814#gid=443731814[Google Sheet Testplan]
 ,===
 
-==== SstcH Hypervisor Timer Compare
+==== SstcHSm and SstcH Hypervisor Timer Compare
+
+SstcHSm checks vstimecmp access and hip.VSTIP from M-mode.  SstcH checks vstimecmp access from HS, VS and VU modes
+and VS timer interrupts with htimedelta.
 
 [[t-SstcH-coverpoints]]
 .SstcH Coverpoints
 ,===
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1537373133#gid=1537373133[Google Sheet Testplan]
 ,===
+
+include::norm/SstcHSm_norm_rules.adoc[]
+
+include::norm/SstcH_norm_rules.adoc[]
 
 ==== SsstateenH Hypervisor State Enable
 
@@ -199,7 +268,10 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=858128446#gid=858128446[Google Sheet Testplan]
 ,===
 
-==== SvinvalH Hypervisor Memory Management Table Invalidation
+==== SvinvalHSm and SvinvalH Hypervisor Memory Management Table Invalidation
+
+SvinvalH executes the Svinval instructions in HS, VS, U and VU modes.  SvinvalHSm covers mstatus.TVM and
+hstatus.VTVM, whose traps are taken in M-mode.
 
 [[t-SvinvalH-coverpoints]]
 .SvinvalH Coverpoints
@@ -207,7 +279,13 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=292965592#gid=292965592[Google Sheet Testplan]
 ,===
 
+include::norm/SvinvalHSm_norm_rules.adoc[]
+
+include::norm/SvinvalH_norm_rules.adoc[]
+
 ==== SvaduH Hypervisor Hardware Page Table A/D Updates
+
+SvH covers this tab.
 
 [[t-SvaduH-coverpoints]]
 .SvaduH Coverpoints

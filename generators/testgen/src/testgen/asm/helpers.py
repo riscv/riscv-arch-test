@@ -161,6 +161,10 @@ def write_sigupd(
 # Background pattern for store targets. Its bytes differ from each other and from common edge-value bytes.
 STORE_CANARY = 0xD2691EA74DB836E5
 
+# FP stores check 8 bytes even when narrower, so an RV32 store that writes a whole 64-bit FP register
+# instead of the low word fails.
+FP_STORE_AREA_BYTES = 8
+
 
 def _store_area_words(area_bytes: int, test_data: TestData) -> range:
     """Byte offsets of the XLEN words that cover area_bytes."""

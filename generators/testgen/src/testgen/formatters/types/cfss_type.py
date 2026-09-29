@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import check_store_canary, fill_store_canary, load_float_reg, write_sigupd
+from testgen.asm.helpers import FP_STORE_AREA_BYTES, check_store_canary, fill_store_canary, load_float_reg, write_sigupd
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -55,7 +55,7 @@ def format_cfss_type(
                 2,
                 params.temp_reg,
                 test_data,
-                area_bytes=alignment,
+                area_bytes=FP_STORE_AREA_BYTES,
                 store_val=params.fs2val,
                 store_bytes=alignment,
             ),
@@ -67,7 +67,7 @@ def format_cfss_type(
 
     check = [
         f"addi sp, sp, {params.immval} # remove offset from sp",
-        *check_store_canary(2, params.temp_reg, test_data, area_bytes=alignment),
+        *check_store_canary(2, params.temp_reg, test_data, area_bytes=FP_STORE_AREA_BYTES),
         write_sigupd(None, test_data, "fflags"),
     ]
 

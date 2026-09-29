@@ -166,8 +166,7 @@ params:
 
   # mtvec is DIRECT MODE ONLY.  The trap PC is the stored mtvec with its low two bits forced
   # to zero; the MODE field is never examined.  Note that mtvec is held verbatim in the
-  # register file, so the low two bits READ BACK AS WRITTEN - a WARL violation recorded in
-  # ~/reviews/act-ports/serv-discrepancies.md.
+  # register file, so the low two bits READ BACK AS WRITTEN - a WARL violation.
   #   Quote: "assign new_pc = i_trap ? (i_csr_pc & !(i_cnt0 || i_cnt1)) : ..."
   #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_ctrl.v#L75
   MTVEC_MODES: [0]

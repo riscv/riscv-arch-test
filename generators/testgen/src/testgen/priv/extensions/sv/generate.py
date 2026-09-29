@@ -143,6 +143,9 @@ def sv_data(
     lines.extend(region.strip("\n").splitlines())
     lines.extend(["", "// Page tables"])
     for level in range(sv.levels - 1):
+        if page_table_align != 12:
+            # A page table must be page aligned; PMP tests also align it to the PMP grain
+            lines.append(".p2align 12")
         lines.extend(
             [
                 f".p2align {page_table_align}",

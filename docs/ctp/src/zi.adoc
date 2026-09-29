@@ -126,18 +126,20 @@ include::norm/Zihpm_norm_rules.adoc[]
 [cols="2, 1, 4" options=header]
 |===
 |Coverpoint|Bins|Definition
-|cp_cntr_hpm|29|Read each of the HPMs twice and check that the difference is non-negative.  For RV32, also check the high halves of each HPM.
+|cp_cntr_hpm|up to 29 (58 on RV32)|Read each implemented `hpmcounter<n>` twice using `csrrs rd, csr, x0` (and `csrrc`) and check that the difference is non-negative.
+For RV32, also read `hpmcounter<n>h` and check that the difference is exactly 0.
+There is one bin per counter with HPM_COUNTER_EN[n] = True; other counters are not read.
+The boot code writes `mhpmevent<n> = 0` (no event), so the counters are frozen and this is an accessibility check: each read must not trap and the value must be stable.
 |===
 
-Note that this coverpoint assumes that reading hpmcounter* never traps.
+Accessing an unimplemented counter may trap or return a constant value, so those counters are not read.
+The suite assumes that `mcounteren` and `scounteren` allow reads of the implemented counters from U-mode (the boot code sets every bit).
 See https://github.com/riscv/riscv-isa-manual/issues/2558[RISC-V ISA Manual Issue #2558] for discussion.
-There may not be a graceful way to certify Zihpm on an implementation that allows hpmcounter* reads to
-sometimes trap because unprivileged tests should not trap.
 
 [NOTE]
-===
-MCOUNTENABLE_EN, SCOUNTENABLE_EN, HCOUNTENABLE_EN parameters are exercised by ZicsrS/U/H cp_xcounteren_access_y tests (<<t-ZicntrS-coverpoints>>). COUNTINHIBIT_EN is exercised by Sm/cp_inhibit tests (<<t-Sm-coverpoints>>).
-===
+====
+MCOUNTENABLE_EN, SCOUNTENABLE_EN and HCOUNTENABLE_EN are exercised by the ZicntrS/U/H `cp_mcounteren_access_*`, `cp_scounteren_access_*` and `cp_hcounteren_access_*` coverpoints (<<t-ZicntrS-coverpoints>>). COUNTINHIBIT_EN is exercised by the Sm `cp_inhibit_*` coverpoints (<<t-Sm-coverpoints>>).
+====
 
 ==== Zihintpause Pause Hint
 

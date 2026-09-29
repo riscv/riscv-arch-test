@@ -17,6 +17,35 @@ normative_rule_definitions:
   - name: hpmcounter_op_sz_mode
     coverpoint: ["Zihpm_csrrs_cg/{cp_cntr_hpm}"]
 
+  # When XLEN=32, the upper 32 bits of these performance counters are accessible
+  # via additional CSRs hpmcounter3h-hpmcounter31h.
+  - name: hpm_counter_op_sz_mode_xlen32
+    coverpoint:
+      [
+        "Zihpm_csrrs_cg/cp_cntr_hpm/{hpmcounter3h, hpmcounter4h, hpmcounter5h, hpmcounter6h, hpmcounter7h, hpmcounter8h, hpmcounter9h, hpmcounter10h, hpmcounter11h, hpmcounter12h, hpmcounter13h, hpmcounter14h, hpmcounter15h, hpmcounter16h, hpmcounter17h, hpmcounter18h, hpmcounter19h, hpmcounter20h, hpmcounter21h, hpmcounter22h, hpmcounter23h, hpmcounter24h, hpmcounter25h, hpmcounter26h, hpmcounter27h, hpmcounter28h, hpmcounter29h, hpmcounter30h, hpmcounter31h}",
+      ]
+
+  # The Zihpm extension depends on the Zicsr extension.
+  - name: hpm_counter_op_sz_mode_dependency
+    coverpoint:
+      ["Not tested: extension dependency checked by the UDB configuration"]
+
+  # The implemented number and width of these additional counters, and the set of
+  # events they count, are platform-specific.
+  - name: hpm_platform_specific_impl
+    coverpoint:
+      [
+        "Not tested: platform-specific. The implemented counters come from HPM_COUNTER_EN, and events are not tested.",
+      ]
+
+  # If the configuration used to select the events counted by a counter is
+  # misconfigured, the counter may return a constant value.
+  - name: hpm_misconfigured_event_behavior
+    coverpoint:
+      [
+        "Not tested: event selection is platform-specific, so there is no portable misconfiguration to test.",
+      ]
+
   # Not tested: accessing an unimplemented counter is implementation-defined behavior, and the
   # two permitted responses (an illegal-instruction exception, or a constant value) are equally
   # conformant, so a reference signature cannot require either one. cp_cntr_hpm accordingly reads

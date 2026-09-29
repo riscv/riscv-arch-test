@@ -57,6 +57,7 @@
 --override cpu*/Zcmop=T
 --override cpu*/Smstateen=T
 --override cpu*/Ssstateen=T
+--override cpu*/Sscofpmf=T
 
 # Misaligned access (Zicclsm)
 --override cpu*/unaligned=T
@@ -73,7 +74,7 @@
 
 # More extensions
 --override cpu*/Smdbltrp=T
---override cpu*/Ssdbltrp=T
+--override cpu*/Ssdbltrp=F # Imperas exposes mtval2 (0x34b) when Ssdbltrp is enabled, but H is absent
 --override cpu*/Zicfilp=T
 --override cpu*/Zicfiss=T
 --override cpu*/d_requires_f=T

@@ -50,6 +50,7 @@ class TestMetadata(BaseModel):
     forbidden_extensions: frozenset[str] = Field(alias="FORBIDDEN_EXTENSIONS", default_factory=frozenset)
     march: str = Field(alias="MARCH", pattern=r"rv(?:32|64|\$\{XLEN\})[ieg].*")
     needs_signature: bool = Field(alias="NEEDS_SIGNATURE", default=True)
+    min_harts: int = Field(alias="MIN_HARTS", default=1, ge=1)
     params: dict[str, int | bool | str] = Field(default_factory=dict)
 
     model_config = {"extra": "forbid", "frozen": True}

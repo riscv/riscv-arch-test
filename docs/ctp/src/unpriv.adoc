@@ -33,11 +33,11 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cp_rs1|32|The rs1 register number used in the instruction.
 |cp_rs2|32|The rs2 register number used in the instruction.
 |cp_rd|32|The rd register number used in the instruction.
-|cp_rs1_edges|16|Edge values for rs1 (see <<t-integer-edge-definitions>>).
-|cp_rs2_edges|16|Edge values for rs2 (see <<t-integer-edge-definitions>>).
+|cp_rs1_edges|12 (RV32), 18 (RV64)|Edge values for rs1 (see <<t-integer-edge-definitions>>).
+|cp_rs2_edges|12 (RV32), 18 (RV64)|Edge values for rs2 (see <<t-integer-edge-definitions>>).
 |cp_imm_edges|20|Edge values for 12-bit immediates (see <<t-immediate-edge-definitions>>).
-|cr_rs1_imm_edges|16*20|Cross-product of rs1 and 12-bit immediate edges (see <<t-immediate-edge-definitions>>).
-|cr_rs1_rs2_edges|16*16|Cross-product of rs1 and rs2 edges, used for instructions with two source registers.
+|cr_rs1_imm_edges|12*20 (RV32), 18*20 (RV64)|Cross-product of rs1 and 12-bit immediate edges (see <<t-immediate-edge-definitions>>).
+|cr_rs1_rs2_edges|12*12 (RV32), 18*18 (RV64)|Cross-product of rs1 and rs2 edges, used for instructions with two source registers.
 |cmp_rs1_rs2|32|The rs1 and rs2 registers have the same register number.
 |cmp_rd_rs1|32|The rd register has the same register number as the rs1 register.
 |cmp_rd_rs2|32|The rd register has the same register number as the rs2 register.
@@ -45,13 +45,14 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cp_offset|2|A branch or jalr instruction has a positive and negative offset.
 |cp_uimm|`XLEN`|Exercise all XLEN unsigned immediate values, such as shift amounts.
 |cp_align|≤ 8|Alignment of naturally-aligned sub-doubleword load/store operand within doubleword
+|cp_memval|5|Edge values for integer memory values loaded by load instructions.
 3+^|Coverpoints for Compressed Instructions
-|cp_rs1p|8|The rs1 register number used in compressed instructions supporting x8-x15.
-|cp_rs2p|8|The rs2 register number used in compressed instructions supporting x8-x15.
-|cp_rdp|8|The rd register number used in compressed instructions supporting x8-x15.
-|cp_fdp|8|The fd register number used in compressed floating-point instructions supporting x8-x15.
-|cp_fs2p|8|The fs2 register number used in compressed floating-point instructions supporting x8-x15.
-|cp_imm_mul|8|7-bit immediate that is a multiple of 4 (for word-sized load/store instructions).
+|cp_rs1_p|8|The rs1 register number used in compressed instructions supporting x8-x15.
+|cp_rs2_p|8|The rs2 register number used in compressed instructions supporting x8-x15.
+|cp_rd_p|8|The rd register number used in compressed instructions supporting x8-x15.
+|cp_fd_p|8|The fd register number used in compressed floating-point instructions supporting f8-f15.
+|cp_fs2_p|8|The fs2 register number used in compressed floating-point instructions supporting f8-f15.
+|cp_imm_mul|32|Immediate offset for word-sized compressed loads/stores: multiples of 4 from 0 to 124.
 3+^|Coverpoints for Floating-Point Instructions
 |cp_fs1|32|The fs1 register number used in the instruction.
 |cp_fs2|32|The fs2 register number used in the instruction.
@@ -65,7 +66,7 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cmp_fd_fs3|32|The fd register has the same register number as the fs3 register.
 |cp_frm|5|The floating-point rounding mode used in the instruction: rne, rdn, rup, rtz, rmm, dyn.
 |cp_csr_fflags|10|The instruction sets the {NV, DZ, OF, UF, NX} flags in the fflags CSR.
-|cp_csr_frm|6|Dynamic rounding mode in the frm CSR: rne, rdn, rup, rtz, rmm, illegal
+|cp_csr_frm|5|Dynamic rounding mode in the frm CSR: rne, rdn, rup, rtz, rmm
 |cr_fs1_fs2_edges|26*26|Cross product of edges of fs1 and fs2 registers.
 |cr_fs1_fs3_edges|26*26|Cross product of edges of fs1 and fs3 registers.
 |cp_fclass|10|All 10 fclass classes.
@@ -120,6 +121,8 @@ Notes:
 |Wmaxm1  |n/a|`0000000000000000000000000000000011111111111111111111111111111110`
 |Wmaxp1  |n/a|`0000000000000000000000000000000100000000000000000000000000000000`
 |Wmaxp2  |n/a|`0000000000000000000000000000000100000000000000000000000000000001`
+|W80     |n/a|`0000000000000000000000000000000010000000000000000000000000000000`
+|W7F     |n/a|`0000000000000000000000000000000001111111111111111111111111111111`
 |===
 
 [[t-immediate-edge-definitions]]
@@ -154,34 +157,37 @@ Notes:
 .Floating-Point Edge Case Definitions
 [options=header]
 |===
-|Bin|Half|Float|Double
-|pos0|`0000`|`00000000`|`0000000000000000`
-|neg0|`8000`|`80000000`|`8000000000000000`
-|pos1|`3C00`|`3F800000`|`3FF0000000000000`
-|neg1|`BC00`|`BF800000`|`BFF0000000000000`
-|pos1p5|`3E00`|`3F000000`|`3FE0000000000000`
-|neg1p5|`BE00`|`BF000000`|`BFE0000000000000`
-|pos2|`4000`|`40000000`|`4000000000000000`
-|neg2|`C000`|`C0000000`|`C000000000000000`
-|posminnorm|`0400`|`00800000`|`0010000000000000`
-|negminnorm|`8400`|`80800000`|`8010000000000000`
-|posmaxnorm|`7BFF`|`7F7FFFFF`|`7FEFFFFFFFFFFFFF`
-|negmaxnorm|`FBFF`|`FF7FFFFF`|`FFEFFFFFFFFFFFFF`
-|posmax_subnorm|`03FF`|`007FFFFF`|`000FFFFFFFFFFFFF`
-|negmax_subnorm|`83FF`|`807FFFFF`|`800FFFFFFFFFFFFF`
-|posmid_subnorm|`0200`|`00400000`|`0008000000000000`
-|negmid_subnorm|`8200`|`80400000`|`8008000000000000`
-|posmin_subnorm|`0001`|`00000001`|`0000000000000001`
-|negmin_subnorm|`8001`|`80000001`|`8000000000000001`
-|posinfinity|`7C00`|`7F800000`|`7FF0000000000000`
-|neginfinity|`FC00`|`FF800000`|`FFF0000000000000`
-|posQNaN|`7E00`-`7FFF`|`7FC00000`-`7FFFFFFF`|`7FF8000000000000`-`7FFFFFFFFFFFFFFF`
-|posSNaN|`7C01`-`7DFF`|`7F800001`-`7FBFFFFF`|`7FF0000000000001`-`7FF7FFFFFFFFFFFF`
-|negQNaN|`FE00`-`FFFF`|`FFC00000`-`FFFFFFFF`|`FFF8000000000000`-`FFFFFFFFFFFFFFFF`
-|negSNaN|`FC01`-`FDFF`|`FF800001`-`FFBFFFFF`|`FFF0000000000001`-`FFF7FFFFFFFFFFFF`
-|posrandom|`58B4`|`7ef8654f`|`3FF58B4C00000000`
-|negrandom|`C93A`|`813d9ab0`|`A6E895993737426C`
+|Bin|Half|BF16|Float|Double
+|pos0|`0000`|`0000`|`00000000`|`0000000000000000`
+|neg0|`8000`|`8000`|`80000000`|`8000000000000000`
+|pos1|`3C00`|`3F80`|`3F800000`|`3FF0000000000000`
+|neg1|`BC00`|`BF80`|`BF800000`|`BFF0000000000000`
+|pos2p5|`4100`|`4020`|`40200000`|`4004000000000000`
+|neg2p5|`C100`|`C020`|`C0200000`|`C004000000000000`
+|pos2prec|`6800`|`4380`|`4B800000`|`4340000000000000`
+|neg2prec|`E800`|`C380`|`CB800000`|`C340000000000000`
+|posminnorm|`0400`|`0080`|`00800000`|`0010000000000000`
+|negminnorm|`8400`|`8080`|`80800000`|`8010000000000000`
+|posmaxnorm|`7BFF`|`7F7F`|`7F7FFFFF`|`7FEFFFFFFFFFFFFF`
+|negmaxnorm|`FBFF`|`FF7F`|`FF7FFFFF`|`FFEFFFFFFFFFFFFF`
+|posmax_subnorm|`03FF`|`007F`|`007FFFFF`|`000FFFFFFFFFFFFF`
+|negmax_subnorm|`83FF`|`807F`|`807FFFFF`|`800FFFFFFFFFFFFF`
+|posmid_subnorm|`0200`|`0040`|`00400000`|`0008000000000000`
+|negmid_subnorm|`8200`|`8040`|`80400000`|`8008000000000000`
+|posmin_subnorm|`0001`|`0001`|`00000001`|`0000000000000001`
+|negmin_subnorm|`8001`|`8001`|`80000001`|`8000000000000001`
+|posinfinity|`7C00`|`7F80`|`7F800000`|`7FF0000000000000`
+|neginfinity|`FC00`|`FF80`|`FF800000`|`FFF0000000000000`
+|posQNaN|`7E00`-`7FFF`|`7FC0`-`7FFF`|`7FC00000`-`7FFFFFFF`|`7FF8000000000000`-`7FFFFFFFFFFFFFFF`
+|posSNaN|`7C01`-`7DFF`|`7F81`-`7FBF`|`7F800001`-`7FBFFFFF`|`7FF0000000000001`-`7FF7FFFFFFFFFFFF`
+|negQNaN|`FE00`-`FFFF`|`FFC0`-`FFFF`|`FFC00000`-`FFFFFFFF`|`FFF8000000000000`-`FFFFFFFFFFFFFFFF`
+|negSNaN|`FC01`-`FDFF`|`FF81`-`FFBF`|`FF800001`-`FFBFFFFF`|`FFF0000000000001`-`FFF7FFFFFFFFFFFF`
+|posrandom|`58B4`|`7EF8`|`7EF8654F`|`5A392534A57711AD`
+|negrandom|`C93A`|`813D`|`813D9AB0`|`A6E895993737426C`
 |===
+
+±2.5 and ±2^p^ (p is the format's precision: 11 for half, 8 for BF16, 24 for float, 53 for double) are exact ties for some operations, so they distinguish RMM from RNE. Converting ±2.5 to an integer is a tie between 2 and 3. Adding ±1.0 to ±2^p^ is a tie between 2^p^ and 2^p^+2.
+
 
 
 [NOTE]

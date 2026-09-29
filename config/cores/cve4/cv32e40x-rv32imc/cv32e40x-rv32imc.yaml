@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 
 # UDB Architecture Configuration for the CV32E40X v0.10.0, a configuration of the CORE-V project.
-# Manual: https://github.com/openhwgroup/cv32e40x/tree/main/docs/user_manual
+# Manual: https://github.com/openhwfoundation/cv32e40x/tree/main/docs/user_manual
 # Default parameters: RV32=RV32I, M_EXT=M, A_EXT=A_NONE, B_EXT=B_NONE, X_EXT=0,
 #                     NUM_MHPMCOUNTERS=1, PMA_NUM_REGIONS=0 (no explicit PMA regions),
 #                     PMP is not implemented (no PMP CSRs).
@@ -28,6 +28,7 @@ implemented_extensions: # VERIFIED against User Manual (Introduction)
   - { name: Sm, version: "= 1.12.0" } # VERIFIED -- references Priv spec v20211203 (v1.12)
 
 params:
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
   # XLEN parameters (VERIFIED -- User Manual, Introduction; RV32I base ISA)
   MXLEN: 32
   PHYS_ADDR_WIDTH: 32 # VERIFIED -- 32-bit addressing, no virtual memory
@@ -80,6 +81,11 @@ params:
   MTVEC_BASE_ALIGNMENT_DIRECT: 128 # same 128-byte alignment constraint applies in direct mode
 
   # Sm params
+  WFI_U_MODE: true
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+  WFI_FINITE: true
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true # VERIFIED -- User Manual, Exceptions and Interrupts: "All exceptions are precise"
   MARCHID_IMPLEMENTED: true # VERIFIED -- marchid CSR (0xF12) in CSR map
   MIMPID_IMPLEMENTED: true # VERIFIED -- mimpid CSR (0xF13) in CSR map
@@ -132,6 +138,7 @@ params:
       false,
       false, # 24..31 (unimplemented)
     ]
+  HPM_COUNTER3_WIDTH: 64
   MCOUNTINHIBIT_IMPLEMENTED: true # VERIFIED -- mcountinhibit CSR (0x320) in CSR map; inhibit bits for mcycle/minstret/mhpmcounterX
 
   COUNTINHIBIT_EN: # VERIFIED -- User Manual, Performance Counters: bit 0=mcycle, bit 2=minstret, bit X=mhpmcounterX

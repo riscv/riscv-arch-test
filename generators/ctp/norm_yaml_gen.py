@@ -147,7 +147,7 @@ def generate_yaml_content(
     Generate YAML content for the given instructions.
 
     For each instruction, if a corresponding rule exists in the JSON,
-    create a YAML entry with the rule name and text comments from tags.
+    create a YAML entry with the rule name and the rule's text as comments.
     The coverpoint is generated based on CSV columns.
     """
     yaml_lines = [
@@ -163,10 +163,9 @@ def generate_yaml_content(
         if rule:
             yaml_lines.append(f"  - name: {rule_name}")
 
-            # Add comments from tags
-            tags = rule.get("tags", [])
-            for tag in tags:
-                text = tag.get("text", "")
+            # Add comments from the rule's text (older JSON kept it in a list of tags)
+            texts = [rule["text"]] if "text" in rule else [tag.get("text", "") for tag in rule.get("tags", [])]
+            for text in texts:
                 if text:
                     # Format multi-line text as YAML comments
                     yaml_lines.extend(f"    # {line}" for line in text.split("\n"))

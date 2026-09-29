@@ -1,14 +1,22 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # If XLEN=32 and the F extension is present, the C extension additionally depends upon
+  # the Zcf extension.
+  - name: C_dep_Zcf
+    coverpoint: ["Definition, checked through UDB"]
+  # If XLEN=32 and the F extension is present, Zce additionally depends upon the Zcf extension.
+  - name: Zce_dep_Zcf
+    coverpoint: ["Definition, checked through UDB"]
   - name: Zc_fp_regs
     # Use a representative coverpoint; applies to others too
-    coverpoint: ["Zcf_c_flw_cg/{cp_fdp}"]
+    coverpoint: ["Zcf_c_flw_cg/{cp_fd_p}"]
   - name: c-flw_op
-    coverpoint: ["Zcf_c_flw_cg/{cp_rs1p, cp_fdp, cp_imm_mul4}"]
+    coverpoint:
+      ["Zcf_c_flw_cg/{cp_rs1_p, cp_fd_p, cp_imm_mul, cp_memval_fp_single}"]
   - name: c-flwsp_op
-    coverpoint: ["Zcf_c_flwsp_cg/{cp_rs1p, cp_fdp, cp_imm_mul4sp}"]
+    coverpoint: ["Zcf_c_flwsp_cg/{cp_fd, cp_imm_mul_4sp, cp_memval_fp_single}"]
   - name: c-fsw_op
-    coverpoint: ["Zcf_c_fsw_cg/{cp_rs1p, cp_fs2p, cp_imm_mul4}"]
+    coverpoint: ["Zcf_c_fsw_cg/{cp_rs1_p, cp_fs2_p, cp_imm_mul}"]
   - name: c-fswsp_op
-    coverpoint: ["Zcf_c_fswsp_cg/{cp_rs1p, cp_fs2p, cp_imm_mul4sp}"]
+    coverpoint: ["Zcf_c_fswsp_cg/{cp_fs2, cp_imm_mul_4sp}"]

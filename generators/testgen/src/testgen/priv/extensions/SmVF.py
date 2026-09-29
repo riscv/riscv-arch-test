@@ -8,7 +8,8 @@
 
 """SmVF privileged test generator: vector-FP × mstatus.FS state."""
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.csr import gen_csr_read_sigupd
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
@@ -17,6 +18,15 @@ _CG = "SmVF_cg"
 
 _FS_MASK = 3 << 13  # mstatus.FS = bits [14:13]
 _VS_MASK = 3 << 9  # mstatus.VS = bits [10:9]
+
+# vfadd.vv operand patterns as (vs2_reg, vs1_reg, name), covering the 4 vs1_zero x vs2_zero
+# combinations. v1 and v4 hold 1.0; v2 holds 0.
+_VFADD_PATTERNS = [
+    ("v2", "v2", "vs1_0_vs2_0"),  # both zero
+    ("v1", "v2", "vs1_0_vs2_n"),  # vs1=0, vs2!=0
+    ("v2", "v1", "vs1_n_vs2_0"),  # vs1!=0, vs2=0
+    ("v1", "v4", "vs1_n_vs2_n"),  # both nonzero
+]
 
 
 def _set_fs_vs(fs: int, vs: int, temp_reg: int) -> list[str]:
@@ -40,10 +50,12 @@ def _load_v_zero_one(temp_reg: int) -> list[str]:
     lines = []
     lines.append(f"LI(x{temp_reg}, 0x3f800000)  # 1.0f")
     lines.append(f"fmv.w.x f1, x{temp_reg}")
+    lines.append(f"vsetvli x{temp_reg}, x0, e32, m1, ta, ma  # vl = VLMAX so the fills cover whole registers")
     lines.append("vfmv.v.f v1, f1   # v1 = 1.0 in each lane")
     lines.append("vmv.v.i v2, 0     # v2 = 0")
     lines.append("vfmv.v.f v4, f1   # v4 = 1.0")
     lines.append("vfmv.v.f v5, f1   # v5 = 1.0")
+    lines.extend(_vector_setup(temp_reg))
     return lines
 
 
@@ -55,12 +67,11 @@ def _gen_fs_state_affecting_register(test_data: TestData, temp_reg: int) -> list
     ]
     for fs in (1, 2):
         lines.extend(_set_fs_vs(fs=3, vs=3, temp_reg=temp_reg))
-        lines.extend(_vector_setup(temp_reg))
         lines.extend(_load_v_zero_one(temp_reg))
         lines.extend(_set_fs_vs(fs=fs, vs=3, temp_reg=temp_reg))
         lines.append(test_data.add_testcase(f"vfmv_f_s_fs{fs}", coverpoint, _CG))
         lines.append("vfmv.f.s f1, v2")
-        lines.append("nop")
+        lines.append(gen_csr_read_sigupd(temp_reg, ("mstatus", None), test_data))
     return lines
 
 
@@ -73,7 +84,6 @@ def _gen_fs_state_affecting_csr(test_data: TestData, temp_reg: int) -> list[str]
     for fs in (1, 2):
         for trial in range(3):
             lines.extend(_set_fs_vs(fs=3, vs=3, temp_reg=temp_reg))
-            lines.extend(_vector_setup(temp_reg))
             lines.extend(_load_v_zero_one(temp_reg))
             lines.append(
                 "csrwi fcsr, 0  # clear fcsr (fflags+frm) under FS=Dirty; clearing fflags alone leaves fcsr stale in some traces"
@@ -81,11 +91,12 @@ def _gen_fs_state_affecting_csr(test_data: TestData, temp_reg: int) -> list[str]
             lines.extend(_set_fs_vs(fs=fs, vs=3, temp_reg=temp_reg))
             lines.append(test_data.add_testcase(f"vfdiv_vv_fs{fs}_t{trial}", coverpoint, _CG))
             lines.append("vfdiv.vv v3, v1, v2  # 1.0/0.0 -> +inf, DZ flag")
-            lines.append("nop")
+            # mstatus first: reading fflags may itself dirty FS on a conservative DUT
+            lines.append(gen_csr_read_sigupd(temp_reg, ("mstatus", None), test_data))
+            lines.append(write_sigupd(None, test_data, "fflags"))
     # Also exercise an exception with vfadd inf-inf and vfmul 0*inf
     for fs in (1, 2):
         lines.extend(_set_fs_vs(fs=3, vs=3, temp_reg=temp_reg))
-        lines.extend(_vector_setup(temp_reg))
         lines.extend(_load_v_zero_one(temp_reg))
         # build +inf in v6 by 1.0/0.0 first under FS=Dirty
         lines.append("vfdiv.vv v6, v1, v2  # v6 = +inf")
@@ -96,7 +107,8 @@ def _gen_fs_state_affecting_csr(test_data: TestData, temp_reg: int) -> list[str]
         lines.extend(_set_fs_vs(fs=fs, vs=3, temp_reg=temp_reg))
         lines.append(test_data.add_testcase(f"vfadd_inf_minf_fs{fs}", coverpoint, _CG))
         lines.append("vfadd.vv v3, v6, v7  # inf + -inf -> NV flag")
-        lines.append("nop")
+        lines.append(gen_csr_read_sigupd(temp_reg, ("mstatus", None), test_data))
+        lines.append(write_sigupd(None, test_data, "fflags"))
     return lines
 
 
@@ -106,24 +118,18 @@ def _gen_fs_state_nonaffecting(test_data: TestData, temp_reg: int) -> list[str]:
     lines = [
         comment_banner(coverpoint, "vfadd.vv under FS=Initial/Clean across all 4 vs1_zero × vs2_zero combinations"),
     ]
-    # 4 combinations: (vs1_zero, vs2_zero)
-    # vs1 = v1 (1.0 nonzero) vs v2 (0) ; vs2 likewise
-    pattern_pairs = [
-        ("v2", "v2", "vs1_0_vs2_0"),  # both zero
-        ("v1", "v2", "vs1_n_vs2_0"),  # vs1!=0, vs2=0
-        ("v2", "v1", "vs1_0_vs2_n"),  # vs1=0, vs2!=0
-        ("v1", "v4", "vs1_n_vs2_n"),  # both nonzero
-    ]
     for fs in (1, 2):
-        for vs2_reg, vs1_reg, name in pattern_pairs:
+        for vs2_reg, vs1_reg, name in _VFADD_PATTERNS:
             lines.extend(_set_fs_vs(fs=3, vs=3, temp_reg=temp_reg))
-            lines.extend(_vector_setup(temp_reg))
             lines.extend(_load_v_zero_one(temp_reg))
+            lines.append("csrwi fcsr, 0  # clear fcsr under FS=Dirty")
             lines.extend(_set_fs_vs(fs=fs, vs=3, temp_reg=temp_reg))
             lines.append(test_data.add_testcase(f"vfadd_{name}_fs{fs}", coverpoint, _CG))
             # vfadd.vv vd, vs2, vs1  — operand order: result = vs2 + vs1
             lines.append(f"vfadd.vv v3, {vs2_reg}, {vs1_reg}")
-            lines.append("nop")
+            # All four patterns are exact, so no flag may be raised: that is the evidence
+            # no FP state moved. FS is not committed; it may legally stay or go dirty.
+            lines.append(write_sigupd(None, test_data, "fflags"))
     return lines
 
 
@@ -135,15 +141,8 @@ def _gen_fs_off(test_data: TestData, temp_reg: int) -> list[str]:
             coverpoint, "vfadd.vv with FS=Off (VS=Dirty) -> illegal-instruction trap; cover all vs1/vs2 patterns"
         ),
     ]
-    pattern_pairs = [
-        ("v2", "v2", "vs1_0_vs2_0"),
-        ("v1", "v2", "vs1_n_vs2_0"),
-        ("v2", "v1", "vs1_0_vs2_n"),
-        ("v1", "v4", "vs1_n_vs2_n"),
-    ]
-    for vs2_reg, vs1_reg, name in pattern_pairs:
+    for vs2_reg, vs1_reg, name in _VFADD_PATTERNS:
         lines.extend(_set_fs_vs(fs=3, vs=3, temp_reg=temp_reg))
-        lines.extend(_vector_setup(temp_reg))
         lines.extend(_load_v_zero_one(temp_reg))
         lines.extend(_set_fs_vs(fs=0, vs=3, temp_reg=temp_reg))
         lines.append(test_data.add_testcase(f"vfadd_{name}_fs_off", coverpoint, _CG))

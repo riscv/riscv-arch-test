@@ -7,7 +7,7 @@
 set -euo pipefail
 
 INSTALL_DIR="${1:?Usage: install-qemu.sh <install-dir>}"
-QEMU_VERSION="11.1.0"
+QEMU_VERSION="11.1.1"
 
 curl --location "https://download.qemu.org/qemu-${QEMU_VERSION}.tar.xz" | tar xvJ
 cd "qemu-${QEMU_VERSION}"

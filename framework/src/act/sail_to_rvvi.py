@@ -15,7 +15,7 @@ from pathlib import Path
 def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
     # Regular expression to match instruction lines
     #                             [STEP]     [MODE]:    0xPC              (0xINSN)           DISASM
-    insn_pattern = re.compile(r"\[(\d+)\] \[([MSU])\]: 0x([0-9a-fA-F]+) \(0x([0-9a-fA-F]+)\) (.*)")
+    insn_pattern = re.compile(r"\[(\d+)\] \[(HS|M|S|U)\]: 0x([0-9a-fA-F]+) \(0x([0-9a-fA-F]+)\) (.*)")
 
     # Regular expressions to match register updates
     reg_patterns = {
@@ -25,23 +25,38 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
         "V": re.compile(r"v(\d+) <- 0x([0-9a-fA-F]+)"),
     }
 
-    # Mode mapping
-    mode_map = {"M": "3", "S": "1", "U": "0"}
+    # Memory operand in the disassembly, such as "0x4(x9)" in "lw x13, 0x4(x9)" or "(x6)" in "amoadd.w x8, x14, (x6)"
+    mem_operand_pattern = re.compile(r"(-?0x[0-9a-fA-F]+)?\(x(\d+)\)")
 
-    # TODO: Add support for parsing traps, interrupts, and VM signals
+    # Mode mapping
+    mode_map = {"M": "3", "S": "1", "HS": "1", "U": "0"}
+
+    # sip and sie are restricted views of mip and mie through mideleg, and Sail logs only the view
+    # that was accessed. A csrrs to sip therefore leaves the mip the covergroups read unchanged, so
+    # an interrupt S-mode raised for itself is invisible to any coverpoint keyed on mip. Mirror the
+    # S view back into the M register: the delegated bits take the logged value and the rest keep
+    # what mip/mie already held. A read mirrors to the same value it already has, so it costs
+    # nothing and resynchronises after a write this converter did not see.
+    SIP, MIP, SIE, MIE, MIDELEG = 0x144, 0x344, 0x104, 0x304, 0x303
+    s_view_of = {SIP: MIP, SIE: MIE}
+    csr_state: dict[int, int] = {}
+
+    # TODO: Add support for parsing traps, interrupts, and the remaining VM signals
 
     # Main parsing of log file
     with inputLogFile.open() as f, outputTraceFile.open("w") as outfile:
         lines = f.readlines()
         output_line = ""
         prev_mode_num: str | None = None
+        # Integer register values, tracked from the logged writes, to compute effective addresses
+        xregs = [0] * 32
         for i in range(len(lines)):
             line = lines[i]
 
             # Check for instruction line
             insn_match = insn_pattern.search(line)
             if insn_match:
-                order, prev_mode, pc, insn, _ = insn_match.groups()
+                order, prev_mode, pc, insn, disasm = insn_match.groups()
                 prev_mode_num = mode_map.get(prev_mode)
 
                 # Format the beginning of the instruction line
@@ -49,21 +64,47 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
                 # mode at the end of the instruction but Sail logs have the mode at the start of the instruction.
                 next_output = f"ORDER {order} PC {pc} INSN {insn} MODE " + "{mode_num}"
 
-                # Check for register updates until the next instruction line
+                # VIRT_ADR_I is the PC. VIRT_ADR_D is the effective address of a scalar load, store, AMO, or CMO,
+                # whether or not the access faults. jalr names a jump target, prefetch does not access memory, and
+                # a vector access has an address per element, so they get no VIRT_ADR_D.
+                # Sail prints the PC with XLEN/4 hex digits.
+                next_output += f" VIRT_ADR_I {pc}"
+                mnemonic = disasm.partition(" ")[0]
+                mem_match = mem_operand_pattern.search(disasm)
+                if mem_match and mnemonic != "jalr" and not mnemonic.startswith(("prefetch.", "v")):
+                    offset, base = mem_match.groups()
+                    vaddr = (xregs[int(base)] + int(offset or "0", 16)) & ((1 << (4 * len(pc))) - 1)
+                    next_output += f" VIRT_ADR_D {vaddr:0{len(pc)}X}"
+
+                # Check for register updates until the next instruction line.  Sail logs every
+                # element a vector instruction writes as a separate whole-register update, so a
+                # vector load can log a register a thousand times; only the final value of each
+                # register matters, so keep the last write per register in first-write order.
+                reg_writes: dict[tuple[str, str], str] = {}
                 j = i + 1
                 while j < len(lines):
-                    reg_match = None
-                    reg_type = None
                     for reg, pattern in reg_patterns.items():
                         reg_match = pattern.search(lines[j])
                         if reg_match:
-                            reg_type = reg
                             reg_num, reg_val = reg_match.groups()
-                            next_output += f" {reg_type} {reg_num} {reg_val}"
+                            reg_writes[(reg, reg_num)] = reg_val
+                            if reg == "CSR":
+                                csr_num, csr_val = int(reg_num, 16), int(reg_val, 16)
+                                csr_state[csr_num] = csr_val
+                                m_num = s_view_of.get(csr_num)
+                                if m_num is not None:
+                                    mideleg = csr_state.get(MIDELEG, 0)
+                                    m_val = (csr_state.get(m_num, 0) & ~mideleg) | (csr_val & mideleg)
+                                    csr_state[m_num] = m_val
+                                    reg_writes[("CSR", f"{m_num:x}")] = f"{m_val:016x}"
                             break
                     if insn_pattern.search(lines[j]):
                         break
                     j += 1
+                for (reg_type, reg_num), reg_val in reg_writes.items():
+                    next_output += f" {reg_type} {reg_num} {reg_val}"
+                    if reg_type == "X":
+                        xregs[int(reg_num)] = int(reg_val, 16)
 
                 # Reached end of instruction
                 next_output += "\n"

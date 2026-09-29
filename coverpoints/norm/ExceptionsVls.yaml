@@ -1,3 +1,58 @@
 # Mapping of normative rules to coverpoints for a test suite
+#
+# ExceptionsVls exercises illegal-instruction and address-fault behavior for the vector
+# load/store suite: vstart-dependent, trap, and partial-access normative rules that are
+# specifically evidenced by the exception paths.
 
 normative_rule_definitions:
+  # All vector loads and stores may generate and accept a non-zero vstart value.
+  - name: vector_ls_vstart
+    coverpoint: ["ExceptionsVls_vle8_v_cg/cp_vstart"]
+
+  # For implementations with precise vector traps, exceptions on indexed-unordered stores
+  # must also be precise.
+  - name: vector_ls_stride_unordered_precise
+    coverpoint: ["ExceptionsVls_vsoxei16_v_cg/cp_exceptionsv_address_fault"]
+
+  # Load instructions may overwrite active destination vector register group elements past
+  # the element index at which the trap is reported.
+  - name: vector_ls_overwrite_past_trap
+    coverpoint: ["ExceptionsVls_vle8_v_cg/cp_exceptionsv_address_fault"]
+
+  # The vstart value is in units of whole segments.
+  - name: vector_ls_seg_vstart_dep
+    coverpoint: ["ExceptionsVls_vlseg2e8_v_cg/cp_vstart"]
+
+  # Fault-only-first load instructions may update active destination elements past the
+  # element that causes trimming of the vector length (but not past the original vector
+  # length). The values of these spurious updates do not have to correspond to the values in
+  # memory at the addressed memory locations.
+  - name: VECTOR_FF_PAST_TRAP
+    coverpoint: ["ExceptionsVls_vle8ff_v_cg/cp_exceptionsv_ffLS_first_elm_trap"]
+
+  # If a trap occurs during access to a segment, it is implementation-defined whether a
+  # subset of the faulting segment's accesses are performed before the trap is taken.
+  - name: vector_ls_seg_partial_access
+    coverpoint: ["ExceptionsVls_vlseg2e8_v_cg/cp_exceptionsv_address_fault"]
+
+  # For fault-only-first segment loads, if an exception is detected partway through
+  # accessing the zeroth segment, the trap is taken. If an exception is detected partway
+  # through accessing a subsequent segment, vl is reduced to the index of that segment. In
+  # both cases, it is implementation-defined whether a subset of the segment is loaded.
+  - name: VECTOR_FF_SEG_PARTIAL_ACCESS
+    coverpoint:
+      ["ExceptionsVls_vlseg2e8ff_v_cg/cp_exceptionsv_ffLS_first_elm_trap"]
+
+  # Fault-only-first segment loads may overwrite destination vector register group elements
+  # past the point at which a trap is reported or past the point at which vector length is
+  # trimmed.
+  - name: VECTOR_LS_SEG_FF_OVERLOAD
+    coverpoint:
+      ["ExceptionsVls_vlseg2e8ff_v_cg/cp_exceptionsv_ffLS_first_elm_trap"]
+
+  # In idempotent memory regions, vector store instructions may have updated elements in
+  # memory past the element causing a synchronous trap. Non-idempotent memory regions must
+  # not have been updated for indices equal to or greater than the element that caused a
+  # synchronous trap during a vector store instruction.
+  - name: vec_store_nonidempotent_no_update
+    coverpoint: ["ExceptionsVls_vse8_v_cg/cp_exceptionsv_address_fault"]

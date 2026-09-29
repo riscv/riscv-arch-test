@@ -27,15 +27,6 @@ normative_rule_definitions:
         "{Zibi_beqi_cg, Zibi_bnei_cg}/{cp_imm_edges_5bit_u_n0, cr_rs1_imm_edges_5bit_u_n0_offset}",
       ]
 
-  # BEQI and BNEI neither write an integer register nor access memory. The
-  # self-checking branch tests exercise both taken and not-taken paths and
-  # verify the control-flow marker without relying on an instruction result.
-  - name: zibi_no_state
-    coverpoint:
-      [
-        "{Zibi_beqi_cg, Zibi_bnei_cg}/{cp_imm_edges_5bit_u_n0, cr_rs1_imm_edges_5bit_u_n0_offset}",
-      ]
-
   # An instruction-address-misaligned exception is generated only when the
   # branch condition is true and its target is not IALIGN-bit aligned. Zibi
   # follows the general conditional-branch exception behavior, which is tested

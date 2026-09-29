@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 212
+#define SIGUPD_COUNT 232
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -525,6 +525,26 @@ Zibi_beqi_cg_cp_rs1_edges_0x100000001:
 1:
   # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x12, Zibi_beqi_cg_cp_rs1_edges_0x100000001, Zibi_beqi_cg_cp_rs1_edges_0x100000001_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x2, x31) # load rs1: x31 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x25) # load branch taken value: x25 = 0xfb8f424b71acf226
+Zibi_beqi_cg_cp_rs1_edges_0x80000000:
+  beqi x31, 7, 1f # perform operation
+  LI(x25, -1) # branch not taken, set temp_reg to -1
+1:
+  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x25, Zibi_beqi_cg_cp_rs1_edges_0x80000000, Zibi_beqi_cg_cp_rs1_edges_0x80000000_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs1: x27 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x29) # load branch taken value: x29 = 0x037d16579143a41e
+Zibi_beqi_cg_cp_rs1_edges_0x7fffffff:
+  beqi x27, 26, 1f # perform operation
+  LI(x29, -1) # branch not taken, set temp_reg to -1
+1:
+  # Check if x29 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x29, Zibi_beqi_cg_cp_rs1_edges_0x7fffffff, Zibi_beqi_cg_cp_rs1_edges_0x7fffffff_str)
 
 /////////////////////////////////
 // cr_rs1_imm_edges_5bit_u_n0_offset
@@ -2691,6 +2711,276 @@ Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_31:
   # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x24, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_31, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_31_str)
 
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_m1:
+# cr_rs1_imm_edges_5bit_u_n0_offset (Test source rs1 = 0x0000000080000000 imm = -1)
+  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs1: x12 = 0x0000000080000000
+  LI(x19, 0) # marker: records which branches are taken
+  j 2f # enter the test past the backward-branch target
+1: ori x19, x19, 2 # backward branch taken
+  j 3f # continue with the forward branch
+2: beqi x12, -1, 1b # backward branch
+3: beqi x12, -1, 4f # forward branch
+  j 5f # forward branch not taken
+4: ori x19, x19, 1 # forward branch taken
+5: # done with test
+  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x19, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_m1, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_m1_str)
+
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_1:
+# cr_rs1_imm_edges_5bit_u_n0_offset (Test source rs1 = 0x0000000080000000 imm = 1)
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs1: x17 = 0x0000000080000000
+  LI(x9, 0) # marker: records which branches are taken
+  j 2f # enter the test past the backward-branch target
+1: ori x9, x9, 2 # backward branch taken
+  j 3f # continue with the forward branch
+2: beqi x17, 1, 1b # backward branch
+3: beqi x17, 1, 4f # forward branch
+  j 5f # forward branch not taken
+4: ori x9, x9, 1 # forward branch taken
+5: # done with test
+  # Check if x9 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x9, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_1, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_1_str)
+
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_2:
+# cr_rs1_imm_edges_5bit_u_n0_offset (Test source rs1 = 0x0000000080000000 imm = 2)
+  RVTEST_TESTDATA_LOAD_INT(x2, x20) # load rs1: x20 = 0x0000000080000000
+  LI(x29, 0) # marker: records which branches are taken
+  j 2f # enter the test past the backward-branch target
+1: ori x29, x29, 2 # backward branch taken
+  j 3f # continue with the forward branch
+2: beqi x20, 2, 1b # backward branch
+3: beqi x20, 2, 4f # forward branch
+  j 5f # forward branch not taken
+4: ori x29, x29, 1 # forward branch taken
+5: # done with test
+  # Check if x29 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x29, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_2, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_2_str)
+
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_3:
+# cr_rs1_imm_edges_5bit_u_n0_offset (Test source rs1 = 0x0000000080000000 imm = 3)
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs1: x8 = 0x0000000080000000
+  LI(x18, 0) # marker: records which branches are taken
+  j 2f # enter the test past the backward-branch target
+1: ori x18, x18, 2 # backward branch taken
+  j 3f # continue with the forward branch
+2: beqi x8, 3, 1b # backward branch
+3: beqi x8, 3, 4f # forward branch
+  j 5f # forward branch not taken
+4: ori x18, x18, 1 # forward branch taken
+5: # done with test
+  # Check if x18 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x18, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_3, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_3_str)
+
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_4:
+# cr_rs1_imm_edges_5bit_u_n0_offset (Test source rs1 = 0x0000000080000000 imm = 4)
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs1: x8 = 0x0000000080000000
+  LI(x30, 0) # marker: records which branches are taken
+  j 2f # enter the test past the backward-branch target
+1: ori x30, x30, 2 # backward branch taken
+  j 3f # continue with the forward branch
+2: beqi x8, 4, 1b # backward branch
+3: beqi x8, 4, 4f # forward branch
+  j 5f # forward branch not taken
+4: ori x30, x30, 1 # forward branch taken
+5: # done with test
+  # Check if x30 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x30, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_4, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_4_str)
+
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_8:
+# cr_rs1_imm_edges_5bit_u_n0_offset (Test source rs1 = 0x0000000080000000 imm = 8)
+  RVTEST_TESTDATA_LOAD_INT(x2, x29) # load rs1: x29 = 0x0000000080000000
+  LI(x13, 0) # marker: records which branches are taken
+  j 2f # enter the test past the backward-branch target
+1: ori x13, x13, 2 # backward branch taken
+  j 3f # continue with the forward branch
+2: beqi x29, 8, 1b # backward branch
+3: beqi x29, 8, 4f # forward branch
+  j 5f # forward branch not taken
+4: ori x13, x13, 1 # forward branch taken
+5: # done with test
+  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x13, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_8, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_8_str)
+
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_16:
+# cr_rs1_imm_edges_5bit_u_n0_offset (Test source rs1 = 0x0000000080000000 imm = 16)
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs1: x18 = 0x0000000080000000
+  LI(x9, 0) # marker: records which branches are taken
+  j 2f # enter the test past the backward-branch target
+1: ori x9, x9, 2 # backward branch taken
+  j 3f # continue with the forward branch
+2: beqi x18, 16, 1b # backward branch
+3: beqi x18, 16, 4f # forward branch
+  j 5f # forward branch not taken
+4: ori x9, x9, 1 # forward branch taken
+5: # done with test
+  # Check if x9 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x9, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_16, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_16_str)
+
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_30:
+# cr_rs1_imm_edges_5bit_u_n0_offset (Test source rs1 = 0x0000000080000000 imm = 30)
+  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs1: x1 = 0x0000000080000000
+  LI(x8, 0) # marker: records which branches are taken
+  j 2f # enter the test past the backward-branch target
+1: ori x8, x8, 2 # backward branch taken
+  j 3f # continue with the forward branch
+2: beqi x1, 30, 1b # backward branch
+3: beqi x1, 30, 4f # forward branch
+  j 5f # forward branch not taken
+4: ori x8, x8, 1 # forward branch taken
+5: # done with test
+  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x8, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_30, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_30_str)
+
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_31:
+# cr_rs1_imm_edges_5bit_u_n0_offset (Test source rs1 = 0x0000000080000000 imm = 31)
+  RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs1: x16 = 0x0000000080000000
+  LI(x1, 0) # marker: records which branches are taken
+  j 2f # enter the test past the backward-branch target
+1: ori x1, x1, 2 # backward branch taken
+  j 3f # continue with the forward branch
+2: beqi x16, 31, 1b # backward branch
+3: beqi x16, 31, 4f # forward branch
+  j 5f # forward branch not taken
+4: ori x1, x1, 1 # forward branch taken
+5: # done with test
+  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x1, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_31, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_31_str)
+
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_m1:
+# cr_rs1_imm_edges_5bit_u_n0_offset (Test source rs1 = 0x000000007fffffff imm = -1)
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs1: x6 = 0x000000007fffffff
+  LI(x17, 0) # marker: records which branches are taken
+  j 2f # enter the test past the backward-branch target
+1: ori x17, x17, 2 # backward branch taken
+  j 3f # continue with the forward branch
+2: beqi x6, -1, 1b # backward branch
+3: beqi x6, -1, 4f # forward branch
+  j 5f # forward branch not taken
+4: ori x17, x17, 1 # forward branch taken
+5: # done with test
+  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x17, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_m1, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_m1_str)
+
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_1:
+# cr_rs1_imm_edges_5bit_u_n0_offset (Test source rs1 = 0x000000007fffffff imm = 1)
+  RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs1: x23 = 0x000000007fffffff
+  LI(x16, 0) # marker: records which branches are taken
+  j 2f # enter the test past the backward-branch target
+1: ori x16, x16, 2 # backward branch taken
+  j 3f # continue with the forward branch
+2: beqi x23, 1, 1b # backward branch
+3: beqi x23, 1, 4f # forward branch
+  j 5f # forward branch not taken
+4: ori x16, x16, 1 # forward branch taken
+5: # done with test
+  # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x16, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_1, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_1_str)
+
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_2:
+# cr_rs1_imm_edges_5bit_u_n0_offset (Test source rs1 = 0x000000007fffffff imm = 2)
+  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs1: x22 = 0x000000007fffffff
+  LI(x17, 0) # marker: records which branches are taken
+  j 2f # enter the test past the backward-branch target
+1: ori x17, x17, 2 # backward branch taken
+  j 3f # continue with the forward branch
+2: beqi x22, 2, 1b # backward branch
+3: beqi x22, 2, 4f # forward branch
+  j 5f # forward branch not taken
+4: ori x17, x17, 1 # forward branch taken
+5: # done with test
+  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x17, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_2, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_2_str)
+
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_3:
+# cr_rs1_imm_edges_5bit_u_n0_offset (Test source rs1 = 0x000000007fffffff imm = 3)
+  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs1: x13 = 0x000000007fffffff
+  LI(x8, 0) # marker: records which branches are taken
+  j 2f # enter the test past the backward-branch target
+1: ori x8, x8, 2 # backward branch taken
+  j 3f # continue with the forward branch
+2: beqi x13, 3, 1b # backward branch
+3: beqi x13, 3, 4f # forward branch
+  j 5f # forward branch not taken
+4: ori x8, x8, 1 # forward branch taken
+5: # done with test
+  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x8, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_3, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_3_str)
+
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_4:
+# cr_rs1_imm_edges_5bit_u_n0_offset (Test source rs1 = 0x000000007fffffff imm = 4)
+  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs1: x3 = 0x000000007fffffff
+  LI(x13, 0) # marker: records which branches are taken
+  j 2f # enter the test past the backward-branch target
+1: ori x13, x13, 2 # backward branch taken
+  j 3f # continue with the forward branch
+2: beqi x3, 4, 1b # backward branch
+3: beqi x3, 4, 4f # forward branch
+  j 5f # forward branch not taken
+4: ori x13, x13, 1 # forward branch taken
+5: # done with test
+  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x13, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_4, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_4_str)
+
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_8:
+# cr_rs1_imm_edges_5bit_u_n0_offset (Test source rs1 = 0x000000007fffffff imm = 8)
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs1: x6 = 0x000000007fffffff
+  LI(x23, 0) # marker: records which branches are taken
+  j 2f # enter the test past the backward-branch target
+1: ori x23, x23, 2 # backward branch taken
+  j 3f # continue with the forward branch
+2: beqi x6, 8, 1b # backward branch
+3: beqi x6, 8, 4f # forward branch
+  j 5f # forward branch not taken
+4: ori x23, x23, 1 # forward branch taken
+5: # done with test
+  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x23, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_8, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_8_str)
+
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_16:
+# cr_rs1_imm_edges_5bit_u_n0_offset (Test source rs1 = 0x000000007fffffff imm = 16)
+  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs1: x22 = 0x000000007fffffff
+  LI(x14, 0) # marker: records which branches are taken
+  j 2f # enter the test past the backward-branch target
+1: ori x14, x14, 2 # backward branch taken
+  j 3f # continue with the forward branch
+2: beqi x22, 16, 1b # backward branch
+3: beqi x22, 16, 4f # forward branch
+  j 5f # forward branch not taken
+4: ori x14, x14, 1 # forward branch taken
+5: # done with test
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_16, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_16_str)
+
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_30:
+# cr_rs1_imm_edges_5bit_u_n0_offset (Test source rs1 = 0x000000007fffffff imm = 30)
+  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs1: x3 = 0x000000007fffffff
+  LI(x9, 0) # marker: records which branches are taken
+  j 2f # enter the test past the backward-branch target
+1: ori x9, x9, 2 # backward branch taken
+  j 3f # continue with the forward branch
+2: beqi x3, 30, 1b # backward branch
+3: beqi x3, 30, 4f # forward branch
+  j 5f # forward branch not taken
+4: ori x9, x9, 1 # forward branch taken
+5: # done with test
+  # Check if x9 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x9, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_30, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_30_str)
+
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_31:
+# cr_rs1_imm_edges_5bit_u_n0_offset (Test source rs1 = 0x000000007fffffff imm = 31)
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs1: x18 = 0x000000007fffffff
+  LI(x3, 0) # marker: records which branches are taken
+  j 2f # enter the test past the backward-branch target
+1: ori x3, x3, 2 # backward branch taken
+  j 3f # continue with the forward branch
+2: beqi x18, 31, 1b # backward branch
+3: beqi x18, 31, 4f # forward branch
+  j 5f # forward branch not taken
+4: ori x3, x3, 1 # forward branch taken
+5: # done with test
+  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x3, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_31, Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_31_str)
+
 /////////////////////////////////
 // cp_offset
 /////////////////////////////////
@@ -2907,6 +3197,10 @@ RVTEST_DATA_BEGIN
 .dword 0x28133a83c887b8cb
 .dword 0x0000000100000001
 .dword 0x36979a1426b735dc
+.dword 0x0000000080000000
+.dword 0xfb8f424b71acf226
+.dword 0x000000007fffffff
+.dword 0x037d16579143a41e
 .dword 0x0000000000000000
 .dword 0x0000000000000000
 .dword 0x0000000000000000
@@ -3051,6 +3345,24 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000001
 .dword 0x0000000100000001
 .dword 0x0000000100000001
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
 .dword 0x522e040018ce58c9
 .dword 0xd9d8cefd6e723fb5
 .dword 0xa5f9cca226b643f0
@@ -3120,160 +3432,180 @@ Zibi_beqi_cg_cp_rs1_edges_0xffffffff_str: .string "\"test: 45; cg: Zibi_beqi_cg;
 Zibi_beqi_cg_cp_rs1_edges_0xfffffffe_str: .string "\"test: 46; cg: Zibi_beqi_cg; cp: cp_rs1_edges; bin: 0xfffffffe\""
 Zibi_beqi_cg_cp_rs1_edges_0x100000000_str: .string "\"test: 47; cg: Zibi_beqi_cg; cp: cp_rs1_edges; bin: 0x100000000\""
 Zibi_beqi_cg_cp_rs1_edges_0x100000001_str: .string "\"test: 48; cg: Zibi_beqi_cg; cp: cp_rs1_edges; bin: 0x100000001\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_m1_str: .string "\"test: 49; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000000_imm_-1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_1_str: .string "\"test: 50; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000000_imm_1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_2_str: .string "\"test: 51; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000000_imm_2\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_3_str: .string "\"test: 52; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000000_imm_3\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_4_str: .string "\"test: 53; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000000_imm_4\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_8_str: .string "\"test: 54; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000000_imm_8\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_16_str: .string "\"test: 55; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000000_imm_16\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_30_str: .string "\"test: 56; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000000_imm_30\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_31_str: .string "\"test: 57; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000000_imm_31\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_m1_str: .string "\"test: 58; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000001_imm_-1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_1_str: .string "\"test: 59; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000001_imm_1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_2_str: .string "\"test: 60; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000001_imm_2\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_3_str: .string "\"test: 61; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000001_imm_3\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_4_str: .string "\"test: 62; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000001_imm_4\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_8_str: .string "\"test: 63; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000001_imm_8\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_16_str: .string "\"test: 64; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000001_imm_16\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_30_str: .string "\"test: 65; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000001_imm_30\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_31_str: .string "\"test: 66; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000001_imm_31\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_m1_str: .string "\"test: 67; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000002_imm_-1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_1_str: .string "\"test: 68; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000002_imm_1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_2_str: .string "\"test: 69; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000002_imm_2\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_3_str: .string "\"test: 70; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000002_imm_3\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_4_str: .string "\"test: 71; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000002_imm_4\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_8_str: .string "\"test: 72; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000002_imm_8\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_16_str: .string "\"test: 73; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000002_imm_16\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_30_str: .string "\"test: 74; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000002_imm_30\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_31_str: .string "\"test: 75; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000002_imm_31\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_m1_str: .string "\"test: 76; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000000_imm_-1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_1_str: .string "\"test: 77; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000000_imm_1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_2_str: .string "\"test: 78; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000000_imm_2\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_3_str: .string "\"test: 79; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000000_imm_3\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_4_str: .string "\"test: 80; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000000_imm_4\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_8_str: .string "\"test: 81; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000000_imm_8\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_16_str: .string "\"test: 82; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000000_imm_16\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_30_str: .string "\"test: 83; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000000_imm_30\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_31_str: .string "\"test: 84; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000000_imm_31\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_m1_str: .string "\"test: 85; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000001_imm_-1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_1_str: .string "\"test: 86; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000001_imm_1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_2_str: .string "\"test: 87; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000001_imm_2\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_3_str: .string "\"test: 88; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000001_imm_3\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_4_str: .string "\"test: 89; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000001_imm_4\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_8_str: .string "\"test: 90; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000001_imm_8\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_16_str: .string "\"test: 91; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000001_imm_16\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_30_str: .string "\"test: 92; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000001_imm_30\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_31_str: .string "\"test: 93; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000001_imm_31\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_m1_str: .string "\"test: 94; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7fffffffffffffff_imm_-1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_1_str: .string "\"test: 95; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7fffffffffffffff_imm_1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_2_str: .string "\"test: 96; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7fffffffffffffff_imm_2\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_3_str: .string "\"test: 97; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7fffffffffffffff_imm_3\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_4_str: .string "\"test: 98; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7fffffffffffffff_imm_4\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_8_str: .string "\"test: 99; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7fffffffffffffff_imm_8\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_16_str: .string "\"test: 100; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7fffffffffffffff_imm_16\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_30_str: .string "\"test: 101; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7fffffffffffffff_imm_30\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_31_str: .string "\"test: 102; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7fffffffffffffff_imm_31\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_m1_str: .string "\"test: 103; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7ffffffffffffffe_imm_-1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_1_str: .string "\"test: 104; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7ffffffffffffffe_imm_1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_2_str: .string "\"test: 105; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7ffffffffffffffe_imm_2\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_3_str: .string "\"test: 106; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7ffffffffffffffe_imm_3\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_4_str: .string "\"test: 107; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7ffffffffffffffe_imm_4\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_8_str: .string "\"test: 108; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7ffffffffffffffe_imm_8\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_16_str: .string "\"test: 109; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7ffffffffffffffe_imm_16\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_30_str: .string "\"test: 110; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7ffffffffffffffe_imm_30\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_31_str: .string "\"test: 111; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7ffffffffffffffe_imm_31\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_m1_str: .string "\"test: 112; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xffffffffffffffff_imm_-1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_1_str: .string "\"test: 113; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xffffffffffffffff_imm_1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_2_str: .string "\"test: 114; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xffffffffffffffff_imm_2\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_3_str: .string "\"test: 115; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xffffffffffffffff_imm_3\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_4_str: .string "\"test: 116; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xffffffffffffffff_imm_4\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_8_str: .string "\"test: 117; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xffffffffffffffff_imm_8\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_16_str: .string "\"test: 118; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xffffffffffffffff_imm_16\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_30_str: .string "\"test: 119; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xffffffffffffffff_imm_30\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_31_str: .string "\"test: 120; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xffffffffffffffff_imm_31\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_m1_str: .string "\"test: 121; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xfffffffffffffffe_imm_-1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_1_str: .string "\"test: 122; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xfffffffffffffffe_imm_1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_2_str: .string "\"test: 123; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xfffffffffffffffe_imm_2\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_3_str: .string "\"test: 124; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xfffffffffffffffe_imm_3\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_4_str: .string "\"test: 125; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xfffffffffffffffe_imm_4\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_8_str: .string "\"test: 126; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xfffffffffffffffe_imm_8\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_16_str: .string "\"test: 127; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xfffffffffffffffe_imm_16\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_30_str: .string "\"test: 128; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xfffffffffffffffe_imm_30\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_31_str: .string "\"test: 129; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xfffffffffffffffe_imm_31\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_m1_str: .string "\"test: 130; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5bbc887763ae86f2_imm_-1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_1_str: .string "\"test: 131; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5bbc887763ae86f2_imm_1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_2_str: .string "\"test: 132; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5bbc887763ae86f2_imm_2\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_3_str: .string "\"test: 133; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5bbc887763ae86f2_imm_3\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_4_str: .string "\"test: 134; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5bbc887763ae86f2_imm_4\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_8_str: .string "\"test: 135; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5bbc887763ae86f2_imm_8\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_16_str: .string "\"test: 136; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5bbc887763ae86f2_imm_16\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_30_str: .string "\"test: 137; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5bbc887763ae86f2_imm_30\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_31_str: .string "\"test: 138; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5bbc887763ae86f2_imm_31\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_m1_str: .string "\"test: 139; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xaaaaaaaaaaaaaaaa_imm_-1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_1_str: .string "\"test: 140; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xaaaaaaaaaaaaaaaa_imm_1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_2_str: .string "\"test: 141; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xaaaaaaaaaaaaaaaa_imm_2\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_3_str: .string "\"test: 142; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xaaaaaaaaaaaaaaaa_imm_3\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_4_str: .string "\"test: 143; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xaaaaaaaaaaaaaaaa_imm_4\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_8_str: .string "\"test: 144; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xaaaaaaaaaaaaaaaa_imm_8\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_16_str: .string "\"test: 145; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xaaaaaaaaaaaaaaaa_imm_16\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_30_str: .string "\"test: 146; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xaaaaaaaaaaaaaaaa_imm_30\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_31_str: .string "\"test: 147; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xaaaaaaaaaaaaaaaa_imm_31\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_m1_str: .string "\"test: 148; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5555555555555555_imm_-1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_1_str: .string "\"test: 149; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5555555555555555_imm_1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_2_str: .string "\"test: 150; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5555555555555555_imm_2\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_3_str: .string "\"test: 151; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5555555555555555_imm_3\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_4_str: .string "\"test: 152; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5555555555555555_imm_4\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_8_str: .string "\"test: 153; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5555555555555555_imm_8\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_16_str: .string "\"test: 154; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5555555555555555_imm_16\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_30_str: .string "\"test: 155; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5555555555555555_imm_30\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_31_str: .string "\"test: 156; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5555555555555555_imm_31\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_m1_str: .string "\"test: 157; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000ffffffff_imm_-1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_1_str: .string "\"test: 158; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000ffffffff_imm_1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_2_str: .string "\"test: 159; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000ffffffff_imm_2\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_3_str: .string "\"test: 160; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000ffffffff_imm_3\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_4_str: .string "\"test: 161; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000ffffffff_imm_4\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_8_str: .string "\"test: 162; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000ffffffff_imm_8\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_16_str: .string "\"test: 163; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000ffffffff_imm_16\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_30_str: .string "\"test: 164; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000ffffffff_imm_30\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_31_str: .string "\"test: 165; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000ffffffff_imm_31\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_m1_str: .string "\"test: 166; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000fffffffe_imm_-1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_1_str: .string "\"test: 167; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000fffffffe_imm_1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_2_str: .string "\"test: 168; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000fffffffe_imm_2\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_3_str: .string "\"test: 169; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000fffffffe_imm_3\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_4_str: .string "\"test: 170; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000fffffffe_imm_4\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_8_str: .string "\"test: 171; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000fffffffe_imm_8\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_16_str: .string "\"test: 172; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000fffffffe_imm_16\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_30_str: .string "\"test: 173; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000fffffffe_imm_30\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_31_str: .string "\"test: 174; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000fffffffe_imm_31\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_m1_str: .string "\"test: 175; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000000_imm_-1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_1_str: .string "\"test: 176; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000000_imm_1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_2_str: .string "\"test: 177; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000000_imm_2\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_3_str: .string "\"test: 178; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000000_imm_3\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_4_str: .string "\"test: 179; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000000_imm_4\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_8_str: .string "\"test: 180; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000000_imm_8\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_16_str: .string "\"test: 181; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000000_imm_16\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_30_str: .string "\"test: 182; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000000_imm_30\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_31_str: .string "\"test: 183; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000000_imm_31\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_m1_str: .string "\"test: 184; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000001_imm_-1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_1_str: .string "\"test: 185; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000001_imm_1\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_2_str: .string "\"test: 186; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000001_imm_2\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_3_str: .string "\"test: 187; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000001_imm_3\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_4_str: .string "\"test: 188; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000001_imm_4\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_8_str: .string "\"test: 189; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000001_imm_8\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_16_str: .string "\"test: 190; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000001_imm_16\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_30_str: .string "\"test: 191; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000001_imm_30\""
-Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_31_str: .string "\"test: 192; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000001_imm_31\""
-Zibi_beqi_cg_cp_offset_neg_str: .string "\"test: 193; cg: Zibi_beqi_cg; cp: cp_offset; bin: neg\""
-Zibi_beqi_cg_cp_imm_edges_5bit_u_n0_m0x1_str: .string "\"test: 194; cg: Zibi_beqi_cg; cp: cp_imm_edges_5bit_u_n0; bin: -0x1\""
-Zibi_beqi_cg_cp_imm_edges_5bit_u_n0_0x1_str: .string "\"test: 195; cg: Zibi_beqi_cg; cp: cp_imm_edges_5bit_u_n0; bin: 0x1\""
-Zibi_beqi_cg_cp_imm_edges_5bit_u_n0_0x2_str: .string "\"test: 196; cg: Zibi_beqi_cg; cp: cp_imm_edges_5bit_u_n0; bin: 0x2\""
-Zibi_beqi_cg_cp_imm_edges_5bit_u_n0_0x3_str: .string "\"test: 197; cg: Zibi_beqi_cg; cp: cp_imm_edges_5bit_u_n0; bin: 0x3\""
-Zibi_beqi_cg_cp_imm_edges_5bit_u_n0_0x4_str: .string "\"test: 198; cg: Zibi_beqi_cg; cp: cp_imm_edges_5bit_u_n0; bin: 0x4\""
-Zibi_beqi_cg_cp_imm_edges_5bit_u_n0_0x8_str: .string "\"test: 199; cg: Zibi_beqi_cg; cp: cp_imm_edges_5bit_u_n0; bin: 0x8\""
-Zibi_beqi_cg_cp_imm_edges_5bit_u_n0_0x10_str: .string "\"test: 200; cg: Zibi_beqi_cg; cp: cp_imm_edges_5bit_u_n0; bin: 0x10\""
-Zibi_beqi_cg_cp_imm_edges_5bit_u_n0_0x1e_str: .string "\"test: 201; cg: Zibi_beqi_cg; cp: cp_imm_edges_5bit_u_n0; bin: 0x1e\""
-Zibi_beqi_cg_cp_imm_edges_5bit_u_n0_0x1f_str: .string "\"test: 202; cg: Zibi_beqi_cg; cp: cp_imm_edges_5bit_u_n0; bin: 0x1f\""
+Zibi_beqi_cg_cp_rs1_edges_0x80000000_str: .string "\"test: 49; cg: Zibi_beqi_cg; cp: cp_rs1_edges; bin: 0x80000000\""
+Zibi_beqi_cg_cp_rs1_edges_0x7fffffff_str: .string "\"test: 50; cg: Zibi_beqi_cg; cp: cp_rs1_edges; bin: 0x7fffffff\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_m1_str: .string "\"test: 51; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000000_imm_-1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_1_str: .string "\"test: 52; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000000_imm_1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_2_str: .string "\"test: 53; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000000_imm_2\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_3_str: .string "\"test: 54; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000000_imm_3\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_4_str: .string "\"test: 55; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000000_imm_4\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_8_str: .string "\"test: 56; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000000_imm_8\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_16_str: .string "\"test: 57; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000000_imm_16\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_30_str: .string "\"test: 58; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000000_imm_30\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_31_str: .string "\"test: 59; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000000_imm_31\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_m1_str: .string "\"test: 60; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000001_imm_-1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_1_str: .string "\"test: 61; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000001_imm_1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_2_str: .string "\"test: 62; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000001_imm_2\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_3_str: .string "\"test: 63; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000001_imm_3\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_4_str: .string "\"test: 64; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000001_imm_4\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_8_str: .string "\"test: 65; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000001_imm_8\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_16_str: .string "\"test: 66; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000001_imm_16\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_30_str: .string "\"test: 67; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000001_imm_30\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_31_str: .string "\"test: 68; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000001_imm_31\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_m1_str: .string "\"test: 69; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000002_imm_-1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_1_str: .string "\"test: 70; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000002_imm_1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_2_str: .string "\"test: 71; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000002_imm_2\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_3_str: .string "\"test: 72; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000002_imm_3\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_4_str: .string "\"test: 73; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000002_imm_4\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_8_str: .string "\"test: 74; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000002_imm_8\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_16_str: .string "\"test: 75; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000002_imm_16\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_30_str: .string "\"test: 76; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000002_imm_30\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_31_str: .string "\"test: 77; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000000000002_imm_31\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_m1_str: .string "\"test: 78; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000000_imm_-1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_1_str: .string "\"test: 79; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000000_imm_1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_2_str: .string "\"test: 80; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000000_imm_2\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_3_str: .string "\"test: 81; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000000_imm_3\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_4_str: .string "\"test: 82; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000000_imm_4\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_8_str: .string "\"test: 83; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000000_imm_8\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_16_str: .string "\"test: 84; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000000_imm_16\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_30_str: .string "\"test: 85; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000000_imm_30\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_31_str: .string "\"test: 86; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000000_imm_31\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_m1_str: .string "\"test: 87; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000001_imm_-1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_1_str: .string "\"test: 88; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000001_imm_1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_2_str: .string "\"test: 89; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000001_imm_2\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_3_str: .string "\"test: 90; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000001_imm_3\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_4_str: .string "\"test: 91; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000001_imm_4\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_8_str: .string "\"test: 92; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000001_imm_8\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_16_str: .string "\"test: 93; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000001_imm_16\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_30_str: .string "\"test: 94; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000001_imm_30\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_31_str: .string "\"test: 95; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x8000000000000001_imm_31\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_m1_str: .string "\"test: 96; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7fffffffffffffff_imm_-1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_1_str: .string "\"test: 97; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7fffffffffffffff_imm_1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_2_str: .string "\"test: 98; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7fffffffffffffff_imm_2\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_3_str: .string "\"test: 99; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7fffffffffffffff_imm_3\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_4_str: .string "\"test: 100; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7fffffffffffffff_imm_4\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_8_str: .string "\"test: 101; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7fffffffffffffff_imm_8\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_16_str: .string "\"test: 102; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7fffffffffffffff_imm_16\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_30_str: .string "\"test: 103; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7fffffffffffffff_imm_30\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_31_str: .string "\"test: 104; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7fffffffffffffff_imm_31\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_m1_str: .string "\"test: 105; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7ffffffffffffffe_imm_-1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_1_str: .string "\"test: 106; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7ffffffffffffffe_imm_1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_2_str: .string "\"test: 107; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7ffffffffffffffe_imm_2\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_3_str: .string "\"test: 108; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7ffffffffffffffe_imm_3\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_4_str: .string "\"test: 109; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7ffffffffffffffe_imm_4\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_8_str: .string "\"test: 110; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7ffffffffffffffe_imm_8\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_16_str: .string "\"test: 111; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7ffffffffffffffe_imm_16\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_30_str: .string "\"test: 112; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7ffffffffffffffe_imm_30\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_31_str: .string "\"test: 113; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x7ffffffffffffffe_imm_31\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_m1_str: .string "\"test: 114; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xffffffffffffffff_imm_-1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_1_str: .string "\"test: 115; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xffffffffffffffff_imm_1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_2_str: .string "\"test: 116; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xffffffffffffffff_imm_2\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_3_str: .string "\"test: 117; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xffffffffffffffff_imm_3\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_4_str: .string "\"test: 118; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xffffffffffffffff_imm_4\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_8_str: .string "\"test: 119; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xffffffffffffffff_imm_8\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_16_str: .string "\"test: 120; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xffffffffffffffff_imm_16\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_30_str: .string "\"test: 121; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xffffffffffffffff_imm_30\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_31_str: .string "\"test: 122; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xffffffffffffffff_imm_31\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_m1_str: .string "\"test: 123; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xfffffffffffffffe_imm_-1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_1_str: .string "\"test: 124; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xfffffffffffffffe_imm_1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_2_str: .string "\"test: 125; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xfffffffffffffffe_imm_2\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_3_str: .string "\"test: 126; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xfffffffffffffffe_imm_3\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_4_str: .string "\"test: 127; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xfffffffffffffffe_imm_4\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_8_str: .string "\"test: 128; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xfffffffffffffffe_imm_8\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_16_str: .string "\"test: 129; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xfffffffffffffffe_imm_16\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_30_str: .string "\"test: 130; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xfffffffffffffffe_imm_30\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_31_str: .string "\"test: 131; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xfffffffffffffffe_imm_31\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_m1_str: .string "\"test: 132; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5bbc887763ae86f2_imm_-1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_1_str: .string "\"test: 133; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5bbc887763ae86f2_imm_1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_2_str: .string "\"test: 134; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5bbc887763ae86f2_imm_2\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_3_str: .string "\"test: 135; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5bbc887763ae86f2_imm_3\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_4_str: .string "\"test: 136; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5bbc887763ae86f2_imm_4\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_8_str: .string "\"test: 137; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5bbc887763ae86f2_imm_8\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_16_str: .string "\"test: 138; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5bbc887763ae86f2_imm_16\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_30_str: .string "\"test: 139; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5bbc887763ae86f2_imm_30\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_31_str: .string "\"test: 140; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5bbc887763ae86f2_imm_31\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_m1_str: .string "\"test: 141; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xaaaaaaaaaaaaaaaa_imm_-1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_1_str: .string "\"test: 142; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xaaaaaaaaaaaaaaaa_imm_1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_2_str: .string "\"test: 143; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xaaaaaaaaaaaaaaaa_imm_2\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_3_str: .string "\"test: 144; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xaaaaaaaaaaaaaaaa_imm_3\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_4_str: .string "\"test: 145; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xaaaaaaaaaaaaaaaa_imm_4\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_8_str: .string "\"test: 146; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xaaaaaaaaaaaaaaaa_imm_8\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_16_str: .string "\"test: 147; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xaaaaaaaaaaaaaaaa_imm_16\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_30_str: .string "\"test: 148; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xaaaaaaaaaaaaaaaa_imm_30\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_31_str: .string "\"test: 149; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0xaaaaaaaaaaaaaaaa_imm_31\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_m1_str: .string "\"test: 150; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5555555555555555_imm_-1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_1_str: .string "\"test: 151; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5555555555555555_imm_1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_2_str: .string "\"test: 152; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5555555555555555_imm_2\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_3_str: .string "\"test: 153; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5555555555555555_imm_3\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_4_str: .string "\"test: 154; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5555555555555555_imm_4\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_8_str: .string "\"test: 155; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5555555555555555_imm_8\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_16_str: .string "\"test: 156; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5555555555555555_imm_16\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_30_str: .string "\"test: 157; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5555555555555555_imm_30\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_31_str: .string "\"test: 158; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x5555555555555555_imm_31\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_m1_str: .string "\"test: 159; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000ffffffff_imm_-1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_1_str: .string "\"test: 160; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000ffffffff_imm_1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_2_str: .string "\"test: 161; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000ffffffff_imm_2\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_3_str: .string "\"test: 162; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000ffffffff_imm_3\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_4_str: .string "\"test: 163; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000ffffffff_imm_4\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_8_str: .string "\"test: 164; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000ffffffff_imm_8\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_16_str: .string "\"test: 165; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000ffffffff_imm_16\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_30_str: .string "\"test: 166; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000ffffffff_imm_30\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_31_str: .string "\"test: 167; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000ffffffff_imm_31\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_m1_str: .string "\"test: 168; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000fffffffe_imm_-1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_1_str: .string "\"test: 169; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000fffffffe_imm_1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_2_str: .string "\"test: 170; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000fffffffe_imm_2\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_3_str: .string "\"test: 171; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000fffffffe_imm_3\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_4_str: .string "\"test: 172; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000fffffffe_imm_4\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_8_str: .string "\"test: 173; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000fffffffe_imm_8\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_16_str: .string "\"test: 174; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000fffffffe_imm_16\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_30_str: .string "\"test: 175; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000fffffffe_imm_30\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_31_str: .string "\"test: 176; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x00000000fffffffe_imm_31\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_m1_str: .string "\"test: 177; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000000_imm_-1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_1_str: .string "\"test: 178; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000000_imm_1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_2_str: .string "\"test: 179; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000000_imm_2\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_3_str: .string "\"test: 180; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000000_imm_3\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_4_str: .string "\"test: 181; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000000_imm_4\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_8_str: .string "\"test: 182; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000000_imm_8\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_16_str: .string "\"test: 183; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000000_imm_16\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_30_str: .string "\"test: 184; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000000_imm_30\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_31_str: .string "\"test: 185; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000000_imm_31\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_m1_str: .string "\"test: 186; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000001_imm_-1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_1_str: .string "\"test: 187; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000001_imm_1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_2_str: .string "\"test: 188; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000001_imm_2\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_3_str: .string "\"test: 189; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000001_imm_3\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_4_str: .string "\"test: 190; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000001_imm_4\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_8_str: .string "\"test: 191; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000001_imm_8\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_16_str: .string "\"test: 192; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000001_imm_16\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_30_str: .string "\"test: 193; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000001_imm_30\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_31_str: .string "\"test: 194; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000100000001_imm_31\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_m1_str: .string "\"test: 195; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000080000000_imm_-1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_1_str: .string "\"test: 196; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000080000000_imm_1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_2_str: .string "\"test: 197; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000080000000_imm_2\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_3_str: .string "\"test: 198; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000080000000_imm_3\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_4_str: .string "\"test: 199; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000080000000_imm_4\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_8_str: .string "\"test: 200; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000080000000_imm_8\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_16_str: .string "\"test: 201; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000080000000_imm_16\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_30_str: .string "\"test: 202; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000080000000_imm_30\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000080000000_imm_31_str: .string "\"test: 203; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x0000000080000000_imm_31\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_m1_str: .string "\"test: 204; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x000000007fffffff_imm_-1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_1_str: .string "\"test: 205; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x000000007fffffff_imm_1\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_2_str: .string "\"test: 206; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x000000007fffffff_imm_2\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_3_str: .string "\"test: 207; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x000000007fffffff_imm_3\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_4_str: .string "\"test: 208; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x000000007fffffff_imm_4\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_8_str: .string "\"test: 209; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x000000007fffffff_imm_8\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_16_str: .string "\"test: 210; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x000000007fffffff_imm_16\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_30_str: .string "\"test: 211; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x000000007fffffff_imm_30\""
+Zibi_beqi_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x000000007fffffff_imm_31_str: .string "\"test: 212; cg: Zibi_beqi_cg; cp: cr_rs1_imm_edges_5bit_u_n0_offset; bin: rs1_0x000000007fffffff_imm_31\""
+Zibi_beqi_cg_cp_offset_neg_str: .string "\"test: 213; cg: Zibi_beqi_cg; cp: cp_offset; bin: neg\""
+Zibi_beqi_cg_cp_imm_edges_5bit_u_n0_m0x1_str: .string "\"test: 214; cg: Zibi_beqi_cg; cp: cp_imm_edges_5bit_u_n0; bin: -0x1\""
+Zibi_beqi_cg_cp_imm_edges_5bit_u_n0_0x1_str: .string "\"test: 215; cg: Zibi_beqi_cg; cp: cp_imm_edges_5bit_u_n0; bin: 0x1\""
+Zibi_beqi_cg_cp_imm_edges_5bit_u_n0_0x2_str: .string "\"test: 216; cg: Zibi_beqi_cg; cp: cp_imm_edges_5bit_u_n0; bin: 0x2\""
+Zibi_beqi_cg_cp_imm_edges_5bit_u_n0_0x3_str: .string "\"test: 217; cg: Zibi_beqi_cg; cp: cp_imm_edges_5bit_u_n0; bin: 0x3\""
+Zibi_beqi_cg_cp_imm_edges_5bit_u_n0_0x4_str: .string "\"test: 218; cg: Zibi_beqi_cg; cp: cp_imm_edges_5bit_u_n0; bin: 0x4\""
+Zibi_beqi_cg_cp_imm_edges_5bit_u_n0_0x8_str: .string "\"test: 219; cg: Zibi_beqi_cg; cp: cp_imm_edges_5bit_u_n0; bin: 0x8\""
+Zibi_beqi_cg_cp_imm_edges_5bit_u_n0_0x10_str: .string "\"test: 220; cg: Zibi_beqi_cg; cp: cp_imm_edges_5bit_u_n0; bin: 0x10\""
+Zibi_beqi_cg_cp_imm_edges_5bit_u_n0_0x1e_str: .string "\"test: 221; cg: Zibi_beqi_cg; cp: cp_imm_edges_5bit_u_n0; bin: 0x1e\""
+Zibi_beqi_cg_cp_imm_edges_5bit_u_n0_0x1f_str: .string "\"test: 222; cg: Zibi_beqi_cg; cp: cp_imm_edges_5bit_u_n0; bin: 0x1f\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

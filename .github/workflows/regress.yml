@@ -12,11 +12,6 @@ concurrency:
   group: "${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}"
   cancel-in-progress: true
 
-env:
-  SAIL_VERSION: "0.13.1"
-  RISCV_TOOLCHAIN_VERSION: "2026.08.24"
-  LLVM_VERSION: "22"
-
 permissions:
   contents: read
 
@@ -32,7 +27,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
+        uses: $/.github/actions/setup-tools
 
       - name: Run prek
         uses: j178/prek-action@4e14d07f9231acabce116ccfca13b13dd9755ece # v3.0.0
@@ -54,7 +49,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
+        uses: $/.github/actions/setup-tools
         with:
           udb-gems: "true"
 
@@ -98,8 +93,9 @@ jobs:
           persist-credentials: false
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
+        uses: $/.github/actions/setup-tools
         with:
+          install-architecture-tools: ${{ matrix.extensions != '' }}
           udb-gems: "true"
 
       - name: Report shard assignment
@@ -112,54 +108,6 @@ jobs:
           else
             echo "Shard $((MATRIX_SHARD_INDEX + 1))/${MATRIX_SHARD_TOTAL} extensions: ${MATRIX_EXTENSIONS}"
           fi
-
-      - name: Install sail-riscv model
-        if: matrix.extensions != ''
-        run: |
-          runner_uname=$(uname)
-          runner_arch=$(arch)
-          sudo mkdir -p /usr/local
-          curl --location "https://github.com/riscv/sail-riscv/releases/download/${SAIL_VERSION}/sail-riscv-${runner_uname}-${runner_arch}.tar.gz" \
-          | sudo tar xvz --directory=/usr/local --strip-components=1
-
-      - name: Install RISC-V GCC toolchain
-        if: matrix.extensions != ''
-        run: |
-          curl --location "https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${RISCV_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz" \
-          | sudo tar xvJ --directory=/usr/local --strip-components=1
-
-      - name: Install Clang
-        if: matrix.extensions != ''
-        run: |
-          retry() {
-            local max_attempts="$1"
-            shift
-            local attempt=1
-            while ! "$@"; do
-              if [ "$attempt" -ge "$max_attempts" ]; then
-                echo "Command failed after ${attempt} attempts: $*"
-                return 1
-              fi
-              local backoff=$((attempt * 10))
-              echo "Attempt ${attempt} failed: $*"
-              echo "Retrying in ${backoff}s..."
-              sleep "$backoff"
-              attempt=$((attempt + 1))
-            done
-          }
-
-          curl --fail --location --retry 5 --retry-all-errors --retry-delay 5 \
-            https://apt.llvm.org/llvm.sh \
-            --output /tmp/llvm.sh
-          chmod +x /tmp/llvm.sh
-
-          retry 3 sudo bash /tmp/llvm.sh "$LLVM_VERSION"
-          retry 3 sudo apt-get update
-          retry 3 sudo apt-get install -y -o Acquire::Retries=3 \
-            clang-"$LLVM_VERSION" lld-"$LLVM_VERSION" llvm-"$LLVM_VERSION"
-          for tool in clang clang++ lld llvm-objdump llvm-as llvm-ar llvm-nm llvm-readelf; do
-            sudo ln -sf "/usr/bin/${tool}-${LLVM_VERSION}" "/usr/bin/${tool}"
-          done
 
       - name: Install runtime dependencies
         if: matrix.extensions != '' && matrix.apt_packages != ''
@@ -242,7 +190,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
+        uses: $/.github/actions/setup-tools
 
       - name: Generate vector tests
         run: make vector-tests --jobs "$(nproc)"
@@ -256,12 +204,20 @@ jobs:
           persist-credentials: false
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
+        uses: $/.github/actions/setup-tools
 
       - run: git submodule update --init docs/docs-resources
 
       - name: Build CTP
         run: cd docs/ctp && make docker-pull-latest && make -j6
+
+      - name: Upload CTP
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ctp
+          path: |
+            docs/ctp/build/ctp.pdf
+            docs/ctp/build/ctp.html
 
   crd-build:
     name: Build CRD
@@ -276,6 +232,14 @@ jobs:
       - name: Build CRD
         run: cd docs/crd && make docker-pull-latest && make -j6
 
+      - name: Upload CRD
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: crd
+          path: |
+            docs/crd/build/rva23_crd.pdf
+            docs/crd/build/rva23_crd.html
+
   check-tests:
     name: Check generated tests
     runs-on: ubuntu-latest
@@ -287,14 +251,14 @@ jobs:
           persist-credentials: false
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
+        uses: $/.github/actions/setup-tools
 
       - name: Regenerate tests and coverpoints
-        run: make clean-tests tests
+        run: make tests
 
       - name: Check for differences
         run: |
-          dirs=(tests/rv32i tests/rv32e tests/rv64i tests/rv64e coverpoints/unpriv coverpoints/coverage)
+          dirs=(tests coverpoints)
           changed=$(git diff --name-only -- "${dirs[@]}")
           untracked=$(git ls-files --others --exclude-standard -- "${dirs[@]}")
           if [ -n "$changed" ] || [ -n "$untracked" ]; then
@@ -323,25 +287,13 @@ jobs:
         run: echo "${{ matrix.python-version }}" > .python-version
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
+        uses: $/.github/actions/setup-tools
         with:
+          install-architecture-tools: "true"
           udb-gems: "true"
 
       - name: Verify Python version
         run: uv run python --version
-
-      - name: Install sail-riscv model
-        run: |
-          runner_uname=$(uname)
-          runner_arch=$(arch)
-          sudo mkdir -p /usr/local
-          curl --location "https://github.com/riscv/sail-riscv/releases/download/${SAIL_VERSION}/sail-riscv-${runner_uname}-${runner_arch}.tar.gz" \
-          | sudo tar xvz --directory=/usr/local --strip-components=1
-
-      - name: Install RISC-V GCC toolchain
-        run: |
-          curl --location "https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${RISCV_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz" \
-          | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Build ELFs (exercises full act build DAG)
         run: |

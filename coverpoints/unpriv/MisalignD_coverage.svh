@@ -19,16 +19,19 @@ covergroup MisalignD_fld_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
 
-    `ifdef UDB_MXLEN_32
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
-            // test all 4 possible offsets of word alignments
-        }
-    `else
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
-            // test all 8 possible offsets of doubleword alignments
-        }
-    `endif
+    cp_misalign_cross64 : coverpoint (7'({ins.current.rs1_val + ins.current.imm}[5:0]) +
+            (("fld" inside {"lh", "lhu", "sh"}) ? 7'd2 :
+             ("fld" inside {"ld", "sd", "fld", "fsd", "c.ld", "c.sd", "c.ldsp", "c.sdsp"}) ? 7'd8 : 7'd4)) > 7'd64
+            iff (ins.trap == 0) {
+        // Does the access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        // The access size in bytes comes from the mnemonic: 2 for halfwords, 8 for doublewords, else 4.
+        bins no  = {0};
+        bins yes = {1};
+    }
 
 endgroup
 // ---------------------
@@ -39,16 +42,19 @@ covergroup MisalignD_fsd_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
 
-    `ifdef UDB_MXLEN_32
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
-            // test all 4 possible offsets of word alignments
-        }
-    `else
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
-            // test all 8 possible offsets of doubleword alignments
-        }
-    `endif
+    cp_misalign_cross64 : coverpoint (7'({ins.current.rs1_val + ins.current.imm}[5:0]) +
+            (("fsd" inside {"lh", "lhu", "sh"}) ? 7'd2 :
+             ("fsd" inside {"ld", "sd", "fld", "fsd", "c.ld", "c.sd", "c.ldsp", "c.sdsp"}) ? 7'd8 : 7'd4)) > 7'd64
+            iff (ins.trap == 0) {
+        // Does the access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        // The access size in bytes comes from the mnemonic: 2 for halfwords, 8 for doublewords, else 4.
+        bins no  = {0};
+        bins yes = {1};
+    }
 
 endgroup
 // ---------------------

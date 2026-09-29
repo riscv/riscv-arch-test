@@ -19,16 +19,19 @@ covergroup Misalign_lh_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
 
-    `ifdef UDB_MXLEN_32
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
-            // test all 4 possible offsets of word alignments
-        }
-    `else
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
-            // test all 8 possible offsets of doubleword alignments
-        }
-    `endif
+    cp_misalign_cross64 : coverpoint (7'({ins.current.rs1_val + ins.current.imm}[5:0]) +
+            (("lh" inside {"lh", "lhu", "sh"}) ? 7'd2 :
+             ("lh" inside {"ld", "sd", "fld", "fsd", "c.ld", "c.sd", "c.ldsp", "c.sdsp"}) ? 7'd8 : 7'd4)) > 7'd64
+            iff (ins.trap == 0) {
+        // Does the access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        // The access size in bytes comes from the mnemonic: 2 for halfwords, 8 for doublewords, else 4.
+        bins no  = {0};
+        bins yes = {1};
+    }
 
 endgroup
 // ---------------------
@@ -39,16 +42,19 @@ covergroup Misalign_lhu_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
 
-    `ifdef UDB_MXLEN_32
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
-            // test all 4 possible offsets of word alignments
-        }
-    `else
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
-            // test all 8 possible offsets of doubleword alignments
-        }
-    `endif
+    cp_misalign_cross64 : coverpoint (7'({ins.current.rs1_val + ins.current.imm}[5:0]) +
+            (("lhu" inside {"lh", "lhu", "sh"}) ? 7'd2 :
+             ("lhu" inside {"ld", "sd", "fld", "fsd", "c.ld", "c.sd", "c.ldsp", "c.sdsp"}) ? 7'd8 : 7'd4)) > 7'd64
+            iff (ins.trap == 0) {
+        // Does the access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        // The access size in bytes comes from the mnemonic: 2 for halfwords, 8 for doublewords, else 4.
+        bins no  = {0};
+        bins yes = {1};
+    }
 
 endgroup
 // ---------------------
@@ -59,16 +65,19 @@ covergroup Misalign_lw_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
 
-    `ifdef UDB_MXLEN_32
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
-            // test all 4 possible offsets of word alignments
-        }
-    `else
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
-            // test all 8 possible offsets of doubleword alignments
-        }
-    `endif
+    cp_misalign_cross64 : coverpoint (7'({ins.current.rs1_val + ins.current.imm}[5:0]) +
+            (("lw" inside {"lh", "lhu", "sh"}) ? 7'd2 :
+             ("lw" inside {"ld", "sd", "fld", "fsd", "c.ld", "c.sd", "c.ldsp", "c.sdsp"}) ? 7'd8 : 7'd4)) > 7'd64
+            iff (ins.trap == 0) {
+        // Does the access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        // The access size in bytes comes from the mnemonic: 2 for halfwords, 8 for doublewords, else 4.
+        bins no  = {0};
+        bins yes = {1};
+    }
 
 endgroup
 // ---------------------
@@ -79,16 +88,19 @@ covergroup Misalign_sh_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
 
-    `ifdef UDB_MXLEN_32
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
-            // test all 4 possible offsets of word alignments
-        }
-    `else
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
-            // test all 8 possible offsets of doubleword alignments
-        }
-    `endif
+    cp_misalign_cross64 : coverpoint (7'({ins.current.rs1_val + ins.current.imm}[5:0]) +
+            (("sh" inside {"lh", "lhu", "sh"}) ? 7'd2 :
+             ("sh" inside {"ld", "sd", "fld", "fsd", "c.ld", "c.sd", "c.ldsp", "c.sdsp"}) ? 7'd8 : 7'd4)) > 7'd64
+            iff (ins.trap == 0) {
+        // Does the access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        // The access size in bytes comes from the mnemonic: 2 for halfwords, 8 for doublewords, else 4.
+        bins no  = {0};
+        bins yes = {1};
+    }
 
 endgroup
 // ---------------------
@@ -99,16 +111,19 @@ covergroup Misalign_sw_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
 
-    `ifdef UDB_MXLEN_32
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
-            // test all 4 possible offsets of word alignments
-        }
-    `else
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
-            // test all 8 possible offsets of doubleword alignments
-        }
-    `endif
+    cp_misalign_cross64 : coverpoint (7'({ins.current.rs1_val + ins.current.imm}[5:0]) +
+            (("sw" inside {"lh", "lhu", "sh"}) ? 7'd2 :
+             ("sw" inside {"ld", "sd", "fld", "fsd", "c.ld", "c.sd", "c.ldsp", "c.sdsp"}) ? 7'd8 : 7'd4)) > 7'd64
+            iff (ins.trap == 0) {
+        // Does the access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        // The access size in bytes comes from the mnemonic: 2 for halfwords, 8 for doublewords, else 4.
+        bins no  = {0};
+        bins yes = {1};
+    }
 
 endgroup
 // ---------------------
@@ -120,16 +135,19 @@ covergroup Misalign_ld_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
 
-    `ifdef UDB_MXLEN_32
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
-            // test all 4 possible offsets of word alignments
-        }
-    `else
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
-            // test all 8 possible offsets of doubleword alignments
-        }
-    `endif
+    cp_misalign_cross64 : coverpoint (7'({ins.current.rs1_val + ins.current.imm}[5:0]) +
+            (("ld" inside {"lh", "lhu", "sh"}) ? 7'd2 :
+             ("ld" inside {"ld", "sd", "fld", "fsd", "c.ld", "c.sd", "c.ldsp", "c.sdsp"}) ? 7'd8 : 7'd4)) > 7'd64
+            iff (ins.trap == 0) {
+        // Does the access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        // The access size in bytes comes from the mnemonic: 2 for halfwords, 8 for doublewords, else 4.
+        bins no  = {0};
+        bins yes = {1};
+    }
 
 endgroup
 // ---------------------
@@ -140,16 +158,19 @@ covergroup Misalign_lwu_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
 
-    `ifdef UDB_MXLEN_32
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
-            // test all 4 possible offsets of word alignments
-        }
-    `else
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
-            // test all 8 possible offsets of doubleword alignments
-        }
-    `endif
+    cp_misalign_cross64 : coverpoint (7'({ins.current.rs1_val + ins.current.imm}[5:0]) +
+            (("lwu" inside {"lh", "lhu", "sh"}) ? 7'd2 :
+             ("lwu" inside {"ld", "sd", "fld", "fsd", "c.ld", "c.sd", "c.ldsp", "c.sdsp"}) ? 7'd8 : 7'd4)) > 7'd64
+            iff (ins.trap == 0) {
+        // Does the access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        // The access size in bytes comes from the mnemonic: 2 for halfwords, 8 for doublewords, else 4.
+        bins no  = {0};
+        bins yes = {1};
+    }
 
 endgroup
 // ---------------------
@@ -160,16 +181,19 @@ covergroup Misalign_sd_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
 
-    `ifdef UDB_MXLEN_32
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
-            // test all 4 possible offsets of word alignments
-        }
-    `else
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
-            // test all 8 possible offsets of doubleword alignments
-        }
-    `endif
+    cp_misalign_cross64 : coverpoint (7'({ins.current.rs1_val + ins.current.imm}[5:0]) +
+            (("sd" inside {"lh", "lhu", "sh"}) ? 7'd2 :
+             ("sd" inside {"ld", "sd", "fld", "fsd", "c.ld", "c.sd", "c.ldsp", "c.sdsp"}) ? 7'd8 : 7'd4)) > 7'd64
+            iff (ins.trap == 0) {
+        // Does the access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        // The access size in bytes comes from the mnemonic: 2 for halfwords, 8 for doublewords, else 4.
+        bins no  = {0};
+        bins yes = {1};
+    }
 
 endgroup
 // ---------------------

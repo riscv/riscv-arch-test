@@ -64,6 +64,30 @@ covergroup Zfbfmin_fcvt_bf16_s_cg with function sample(ins_t ins);
         // FS1 register assignment
     }
 
+    cp_fs1_cvt_edges_S_BF16 : coverpoint unsigned'(ins.current.fs1_val[31:0])  iff (ins.trap == 0 )  {
+        // FS1 values near the destination's rounding, overflow and underflow boundaries
+        bins posmax_half_ulp          = {32'h7f7f8000};
+        bins negmax_half_ulp          = {32'hff7f8000};
+        bins tiny_before_rounding     = {32'h007fc000};
+        bins posmin_subnorm_half      = {32'h00008000};
+        bins negmin_subnorm_half      = {32'h80008000};
+        bins pos1_half_ulp            = {32'h3f808000};
+        bins neg1_half_ulp            = {32'hbf808000};
+        bins pos1_3half_ulp           = {32'h3f818000};
+    }
+
+    cp_fs1_cvt_exact_S_BF16 : coverpoint unsigned'(ins.current.fs1_val[31:0])  iff (ins.trap == 0 )  {
+        // FS1 destination max, minnorm and min subnormal, exactly representable
+        bins posmaxnorm               = {32'h7f7f0000};
+        bins posminnorm               = {32'h00800000};
+        bins posmin_subnorm           = {32'h00010000};
+    }
+
+    cr_fs1_cvt_edges_frm_S_BF16 : cross cp_fs1_cvt_edges_S_BF16,cp_frm_2  iff (ins.trap == 0 )  {
+        // Cross coverage FS1 conversion edges, static rounding modes
+        ignore_bins dyn = binsof(cp_frm_2) intersect {dyn};
+    }
+
     cp_fs1_edges : coverpoint unsigned'(ins.current.fs1_val[31:0])  iff (ins.trap == 0 )  {
         // FS1 edges
         bins pos0             = {32'h00000000};
@@ -270,6 +294,36 @@ covergroup Zfbfmin_fmv_h_x_cg with function sample(ins_t ins);
             bins walkeven = {64'b0101010101010101010101010101010101010101010101010101010101010101};
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
+    }
+
+    cp_rs1_fp_edges_H : coverpoint unsigned'(ins.current.rs1_val[15:0])  iff (ins.trap == 0 )  {
+        // Floating-point edge bit patterns in rs1 (Half Precision)
+        bins pos0             = {16'h0000};
+        bins neg0             = {16'h8000};
+        bins pos1             = {16'h3C00};
+        bins neg1             = {16'hBC00};
+        bins pos2p5           = {16'h4100};
+        bins neg2p5           = {16'hC100};
+        bins pos2prec         = {16'h6800};
+        bins neg2prec         = {16'hE800};
+        bins posminnorm       = {16'h0400};
+        bins negminnorm       = {16'h8400};
+        bins posmaxnorm       = {16'h7BFF};
+        bins negmaxnorm       = {16'hFBFF};
+        bins posmax_subnorm   = {16'h03FF};
+        bins negmax_subnorm   = {16'h83FF};
+        bins posmid_subnorm   = {16'h0200};
+        bins negmid_subnorm   = {16'h8200};
+        bins posmin_subnorm   = {16'h0001};
+        bins negmin_subnorm   = {16'h8001};
+        bins posinfinity      = {16'h7C00};
+        bins neginfinity      = {16'hFC00};
+        bins posQNaN          = {[16'h7E00:16'h7FFF]};
+        bins posSNaN          = {[16'h7C01:16'h7DFF]};
+        bins negQNaN          = {[16'hFE00:16'hFFFF]};
+        bins negSNaN          = {[16'hFC01:16'hFDFF]};
+        bins posrandom        = {16'h58B4};
+        bins negrandom        = {16'hC93A};
     }
 
 endgroup

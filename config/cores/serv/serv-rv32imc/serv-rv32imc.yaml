@@ -58,6 +58,11 @@ params:
   MISA_CSR_IMPLEMENTED: false
   MUTABLE_MISA_M: false
   MUTABLE_MISA_C: false
+  # No custom instructions: the extension interface carries only the MDU (M), which is a
+  # standard extension.  There is no misa, so this only records that misa.X would be 0.
+  #   Quote: "wire co_mdu_op     = MDU & (opcode == 5'b01100) & imm25;"
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_decode.v#L81
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
 
   M_MODE_ENDIANNESS: little
 
@@ -122,6 +127,36 @@ params:
   # Exceptions are precise: SERV retires one instruction at a time, 32+ cycles each, and the
   # trap is taken at the end of the offending instruction's own state sequence.
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+
+  # The only interrupt source in the core is the machine timer: serv_top has a single
+  # i_timer_irq input, mie stores only MTIE (bit 7), and mcause can only report cause 7.
+  # There is no software or external interrupt input, so MSIE and MEIE are read-only zero.
+  # servant drives i_timer_irq from its servant_timer (mtimecmp-style compare) peripheral.
+  #   Quote: "input wire i_timer_irq,"
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_top.v#L23
+  #   Quote: "if (i_mie_en & i_cnt7) / mie_mtie <= csr_in[B];"
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_csr.v#L104-L105
+  #   Quote: "During an external interrupt the exception code is set to / 7, since SERV only
+  #   support timer interrupts"
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_csr.v#L135-L136
+  #   Quote: ".o_irq    (timer_irq),"
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/servant/servant.v#L111
+  #   Quote: ".i_timer_irq  (timer_irq),"
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/servant/servant.v#L148
+  MTI_INTR_IMPL: true
+  MSI_INTR_IMPL: false
+  MEI_INTR_IMPL: false
+
+  # SERV never waits in wfi.  wfi (0x10500073) has funct3 = 0, bit 21 = 0 and bit 20 = 1, so
+  # it decodes as co_e_op with co_ebreak and takes a Breakpoint trap (mcause 3) immediately.
+  # Execution therefore always resumes after a finite time (at the trap handler).
+  #   Quote: "wire co_e_op = opcode[4] & opcode[2] & !op21 & !(|funct3);"
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_decode.v#L149
+  #   Quote: "wire co_ebreak = op20;"
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_decode.v#L141
+  WFI_FINITE: true
+  # M-mode only: there is no U-mode in which to execute wfi.
+  WFI_U_MODE: false
 
   # The Wishbone data port carries a 4-bit byte-enable, so the smallest distinguishable
   # granule is 4 bytes.

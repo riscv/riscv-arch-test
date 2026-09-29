@@ -3,8 +3,19 @@
 
 normative_rule_definitions:
   - name: Zabha_rd_sign_extension
-    coverpoint: ["{Zabha_amoswap_b_cg, Zabha_amoswap_h_cg}/cp_rs2_edges"]
+    coverpoint:
+      [
+        "{Zabha_amoswap_b_cg, Zabha_amoswap_h_cg}/cp_rs2_edges",
+        "Zabha_amoswap_b_cg/cp_memval_byte",
+        "Zabha_amoswap_h_cg/cp_memval_hword",
+      ]
 
   - name: Zabha_rs1_align_addr
     coverpoint:
       ["Zabha_amoswap_b_cg/cp_align_byte, Zabha_amoswap_h_cg/cp_align_hword"]
+
+  # For each level of support, naturally aligned AMOs of a given width are supported if the underlying
+  # memory region supports reads and writes of that width.
+  - name: pma_amo_sz_support
+    # Representative coverpoints; cp_asm_count of the other Zabha covergroups
+    coverpoint: ["{Zabha_amoadd_b_cg, Zabha_amoadd_h_cg}/cp_asm_count"]

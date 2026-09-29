@@ -1,15 +1,34 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # The Zmmul extension implements the multiplication subset of the M extension. It adds
+  # the following instructions defined in M: MUL, MULH, MULHU,
+  # MULHSU, and (for RV64 only) MULW.
+  - name: Zmmul_insns
+    # Representative coverpoints; also Zmmul_mulw_cg/cp_asm_count
+    coverpoint:
+      [
+        "{Zmmul_mul_cg, Zmmul_mulh_cg, Zmmul_mulhu_cg, Zmmul_mulhsu_cg}/cp_asm_count",
+      ]
+  # The encodings and semantics are identical to those of the corresponding instructions in M.
+  - name: Zmmul_enc_same
+    # Representative coverpoints; also Zmmul_mulw_cg/cr_rs1_rs2_edges
+    coverpoint:
+      [
+        "{Zmmul_mul_cg, Zmmul_mulh_cg, Zmmul_mulhu_cg, Zmmul_mulhsu_cg}/cr_rs1_rs2_edges",
+      ]
+  # M implies Zmmul.
+  - name: M_implies_Zmmul
+    coverpoint: ["Definition, checked through UDB"]
   - name: mul_op
-    coverpoint: ["M_mul_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
+    coverpoint: ["Zmmul_mul_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
   # insn:mulh[], insn:mulhu[], and insn:mulhsu[] perform the same multiplication but
   # return the upper XLEN bits of the full 2×XLEN-bit product, for signed×signed,
   # unsigned×unsigned, and rs1×unsigned rs2 multiplication.
   - name: mulh_mulhu_mulhsu_op
     coverpoint:
       [
-        "{M_mulh_cg, M_mulhu_cg, M_mulhsu_cg}/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}}",
+        "{Zmmul_mulh_cg, Zmmul_mulhu_cg, Zmmul_mulhsu_cg}/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}",
       ]
   - name: mulw_op
-    coverpoint: ["M_mulw_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
+    coverpoint: ["Zmmul_mulw_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]

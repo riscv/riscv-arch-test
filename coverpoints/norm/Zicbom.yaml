@@ -61,13 +61,8 @@ normative_rule_definitions:
   - name: cbo-clean_op
     coverpoint: ["Zicbom_cbo_clean_cg/cp_custom_cbo"]
 
-  # The offset operand may be omitted; otherwise, any expression that computes the
-  # offset shall evaluate to zero.
-  - name: cbo-clean_offset
-    coverpoint: ["Assembler information, not a normative rule"]
-
-  # A cbo.flush instruction performs a flush operation on the cache block whose that
-  # contains the address specified in rs1.
+  # A cbo.flush instruction performs a flush operation on the cache block that contains
+  # the address specified in rs1.
   - name: cbo-flush_op
     coverpoint: ["Zicbom_cbo_flush_cg/cp_custom_cbo"]
 

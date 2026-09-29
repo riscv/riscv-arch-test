@@ -584,10 +584,11 @@ def generate_build_plan(
 
     # Sail config affects reference model output (Spike has no equivalent file).
     ref_model_inputs: tuple[Path, ...] = ()
-    signature_compile_flags: tuple[str, ...] = ()
+    # sail_macros.h is included by every test, so the platform defines are needed
+    # whatever the reference model is; only the model's own inputs are Sail-specific.
+    sail_config = config.dut_include_dir / "sail.json"
+    signature_compile_flags = _sail_platform_defines(sail_config)
     if config.ref_model_type == RefModelType.SAIL:
-        sail_config = config.dut_include_dir / "sail.json"
-        signature_compile_flags = _sail_platform_defines(sail_config)
         ref_model_inputs = (sail_config.absolute(),)
 
     for test_name_str, test_metadata in sorted(selected_tests.items()):

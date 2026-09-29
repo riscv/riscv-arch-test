@@ -14,6 +14,7 @@ ci_enabled: true
 # S:  sie mismatches on bit 13 (LCOFIE) https://gitlab.com/qemu-project/qemu/-/work_items/3969;
 #     QEMU accepts UXL=1, which Sail cannot model yet (https://github.com/riscv/sail-riscv/issues/1150)
 # Zacas/ZacasZabha: amocas with rd=x0 corrupts subsequent branch on x0 (https://gitlab.com/qemu-project/qemu/-/work_items/3526)
+# InterruptsSm/InterruptsS: https://gitlab.com/qemu-project/qemu/-/work_items/3969 seems to apply to mip.LCOFIP not writable either
 # ExceptionsZalrsc/ExceptionsSvZalrsc/ExceptionsSvZalrscSm: sc.w to no-permission region returns failure instead of raising
 #        store/AMO access fault (https://gitlab.com/qemu-project/qemu/-/work_items/4100, still failing in v11.1.1)
 # ExceptionsZicboU/S/Sm, SvZicbo: Zicbom CBOs skip PMA/PMP permission checks (https://gitlab.com/qemu-project/qemu/-/work_items/3501)

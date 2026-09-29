@@ -24,11 +24,13 @@ from testgen.priv.extensions.sv.page_tables import (
     create_page_walk,
 )
 from testgen.priv.extensions.sv.Sv import (
+    SATP_FIELDS,
     change_pte_to_be,
     emit_access,
     level_header,
     satp_access_ops,
     satp_csr_read,
+    satp_mode_value,
 )
 from testgen.priv.registry import add_priv_test_generator
 
@@ -163,7 +165,10 @@ def _t_satp_access(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode
         return
     chunk = test_data.begin_test_chunk(f"{sv.name}_satp_access_Mmode")
     chunk.section_header = comment_banner("cp_satp_access")
-    chunk.code.extend(["main:", *satp_access_ops(test_data, "Mmode", (1, 2, 1))])
+    # MODE = sv with PPN = 0 (M-mode is not translated), then set and clear the lowest ASID bit.
+    asid_shift = SATP_FIELDS[sv.name][2]
+    chunk.code.extend(["main:", *satp_mode_value(sv, "a1", root=False), f"LI(a2, 1 << {asid_shift})"])
+    chunk.code.extend([*satp_access_ops(test_data, "Mmode", ("a1", "a2", "a2")), "csrw satp, zero"])
     test_chunks.append(test_data.end_test_chunk())
 
 
@@ -275,7 +280,8 @@ def make_svsm_mstatus_tvm(test_data: TestData) -> list[TestChunk]:
     chunk.code.extend(
         [
             # TVM does not restrict M-mode, so all three accesses complete here.
-            *satp_access_ops(test_data, "Mmode", (0, 0, 0)),
+            "li a0, 0",
+            *satp_access_ops(test_data, "Mmode", ("a0", "a0", "a0")),
             "sfence.vma",
             "RVTEST_TSBI_GOTO_SMODE",
             "csrw satp, zero",

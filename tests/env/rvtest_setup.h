@@ -108,6 +108,9 @@
         RVTEST_TRAP_EPILOG S          // actual s-mode prolog/epilog/handler code
       #endif
       RVTEST_TRAP_EPILOG M            // actual m-mode prolog/epilog/handler code
+      LA(T1, rvtest_trap_prolog_error)
+      LREG T1, 0(T1)
+      bnez T1, rvtest_trap_setup_failed
     #endif
 
   #ifndef RVTEST_NOSIG
@@ -211,6 +214,14 @@
   .global rvtest_fail_summary
   rvtest_fail_summary:
     LA(a0, failstr)
+    call rvmodel_io_write_str
+    call rvmodel_halt_fail
+
+  rvtest_trap_setup_failed:
+    LA(a0, failstr)
+    call rvmodel_io_write_str
+    LA(a0, rvtest_trap_prolog_error)
+    LREG a0, 0(a0)
     call rvmodel_io_write_str
     call rvmodel_halt_fail
 

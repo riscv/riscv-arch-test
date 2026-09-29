@@ -878,9 +878,32 @@ def get_general_edges(xlen: int) -> tuple[int, ...]:
             0b0000000000000000000000000000000011111111111111111111111111111110,  # Wmaxm1
             0b0000000000000000000000000000000100000000000000000000000000000000,  # Wmaxp1
             0b0000000000000000000000000000000100000000000000000000000000000001,  # Wmaxp2
+            0b0000000000000000000000000000000010000000000000000000000000000000,  # W80: low word INT32_MIN
+            0b0000000000000000000000000000000001111111111111111111111111111111,  # W7F: low word INT32_MAX
         )
 
     return base_edges
+
+
+def _sign_extend_edges(edges: tuple[int, ...], width: int, xlen: int) -> tuple[int, ...]:
+    """Sign-extend width-bit edge values to XLEN, keeping them unsigned."""
+    if width >= xlen:
+        return edges
+    return tuple(edge + 2**xlen - 2**width if edge & (1 << (width - 1)) else edge for edge in edges)
+
+
+def get_walkone_edges(xlen: int, width: int) -> tuple[int, ...]:
+    """Get general edges plus a walking one, sweeping clz/ctz over every result."""
+    base = get_general_edges(xlen)
+    sweep = _sign_extend_edges(tuple(1 << i for i in range(width)), width, xlen)
+    return base + tuple(val for val in sweep if val not in base)
+
+
+def get_walkmask_edges(xlen: int, width: int) -> tuple[int, ...]:
+    """Get general edges plus a walking low-order mask, sweeping cpop over every result."""
+    base = get_general_edges(xlen)
+    sweep = _sign_extend_edges(tuple((1 << k) - 1 for k in range(width + 1)), width, xlen)
+    return base + tuple(val for val in sweep if val not in base)
 
 
 # TODO: Do we really need these extra edges for orcb?

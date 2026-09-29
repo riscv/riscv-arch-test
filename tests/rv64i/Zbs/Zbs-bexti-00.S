@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 346
+#define SIGUPD_COUNT 368
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -619,6 +619,20 @@ Zbs_bexti_cg_cp_rs1_edges_0x100000001:
   bexti x9, x2, 53 # perform operation
   # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x9, Zbs_bexti_cg_cp_rs1_edges_0x100000001, Zbs_bexti_cg_cp_rs1_edges_0x100000001_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x26, x16) # load rs1: x16 = 0x0000000080000000
+Zbs_bexti_cg_cp_rs1_edges_0x80000000:
+  bexti x14, x16, 62 # perform operation
+  # Check if x14 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x14, Zbs_bexti_cg_cp_rs1_edges_0x80000000, Zbs_bexti_cg_cp_rs1_edges_0x80000000_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x26, x2) # load rs1: x2 = 0x000000007fffffff
+Zbs_bexti_cg_cp_rs1_edges_0x7fffffff:
+  bexti x19, x2, 8 # perform operation
+  # Check if x19 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x19, Zbs_bexti_cg_cp_rs1_edges_0x7fffffff, Zbs_bexti_cg_cp_rs1_edges_0x7fffffff_str)
 
 /////////////////////////////////
 // cmp_rd_rs1
@@ -2431,6 +2445,146 @@ Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x3f:
   # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x12, x8, x7, x2, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x3f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x3f_str)
 
+# Testcase cr_rs1_imm_edges_uimm (rs1 = 0x0000000080000000, imm = 0)
+  RVTEST_TESTDATA_LOAD_INT(x22, x1) # load rs1: x1 = 0x0000000080000000
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x0:
+  bexti x31, x1, 0 # perform operation
+  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x31, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x0_str)
+
+# Testcase cr_rs1_imm_edges_uimm (rs1 = 0x0000000080000000, imm = 1)
+  RVTEST_TESTDATA_LOAD_INT(x22, x15) # load rs1: x15 = 0x0000000080000000
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1:
+  bexti x29, x15, 1 # perform operation
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1_str)
+
+# Testcase cr_rs1_imm_edges_uimm (rs1 = 0x0000000080000000, imm = 19)
+  RVTEST_TESTDATA_LOAD_INT(x22, x1) # load rs1: x1 = 0x0000000080000000
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x13:
+  bexti x26, x1, 19 # perform operation
+  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x26, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x13_str)
+
+# Testcase cr_rs1_imm_edges_uimm (rs1 = 0x0000000080000000, imm = 30)
+  RVTEST_TESTDATA_LOAD_INT(x22, x25) # load rs1: x25 = 0x0000000080000000
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1e:
+  bexti x2, x25, 30 # perform operation
+  # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x2, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1e_str)
+
+# Testcase cr_rs1_imm_edges_uimm (rs1 = 0x0000000080000000, imm = 31)
+  RVTEST_TESTDATA_LOAD_INT(x22, x18) # load rs1: x18 = 0x0000000080000000
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1f:
+  bexti x2, x18, 31 # perform operation
+  # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x2, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1f_str)
+
+# Testcase cr_rs1_imm_edges_uimm (rs1 = 0x0000000080000000, imm = 32)
+  RVTEST_TESTDATA_LOAD_INT(x22, x11) # load rs1: x11 = 0x0000000080000000
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x20:
+  bexti x21, x11, 32 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x20, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x20_str)
+
+# Testcase cr_rs1_imm_edges_uimm (rs1 = 0x0000000080000000, imm = 33)
+  RVTEST_TESTDATA_LOAD_INT(x22, x25) # load rs1: x25 = 0x0000000080000000
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x21:
+  bexti x24, x25, 33 # perform operation
+  # Check if x24 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x24, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x21, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x21_str)
+
+# Testcase cr_rs1_imm_edges_uimm (rs1 = 0x0000000080000000, imm = 45)
+  RVTEST_TESTDATA_LOAD_INT(x22, x24) # load rs1: x24 = 0x0000000080000000
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x2d:
+  bexti x9, x24, 45 # perform operation
+  # Check if x9 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x9, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x2d, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x2d_str)
+
+# Testcase cr_rs1_imm_edges_uimm (rs1 = 0x0000000080000000, imm = 62)
+  RVTEST_TESTDATA_LOAD_INT(x22, x18) # load rs1: x18 = 0x0000000080000000
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x3e:
+  bexti x24, x18, 62 # perform operation
+  # Check if x24 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x24, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x3e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x3e_str)
+
+# Testcase cr_rs1_imm_edges_uimm (rs1 = 0x0000000080000000, imm = 63)
+  RVTEST_TESTDATA_LOAD_INT(x22, x25) # load rs1: x25 = 0x0000000080000000
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x3f:
+  bexti x14, x25, 63 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x3f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x3f_str)
+
+# Testcase cr_rs1_imm_edges_uimm (rs1 = 0x000000007fffffff, imm = 0)
+  RVTEST_TESTDATA_LOAD_INT(x22, x19) # load rs1: x19 = 0x000000007fffffff
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x0:
+  bexti x31, x19, 0 # perform operation
+  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x31, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x0_str)
+
+# Testcase cr_rs1_imm_edges_uimm (rs1 = 0x000000007fffffff, imm = 1)
+  RVTEST_TESTDATA_LOAD_INT(x22, x14) # load rs1: x14 = 0x000000007fffffff
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1:
+  bexti x18, x14, 1 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1_str)
+
+# Testcase cr_rs1_imm_edges_uimm (rs1 = 0x000000007fffffff, imm = 19)
+  RVTEST_TESTDATA_LOAD_INT(x22, x10) # load rs1: x10 = 0x000000007fffffff
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x13:
+  bexti x15, x10, 19 # perform operation
+  # Check if x15 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x15, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x13_str)
+
+# Testcase cr_rs1_imm_edges_uimm (rs1 = 0x000000007fffffff, imm = 30)
+  RVTEST_TESTDATA_LOAD_INT(x22, x16) # load rs1: x16 = 0x000000007fffffff
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1e:
+  bexti x31, x16, 30 # perform operation
+  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x31, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1e_str)
+
+# Testcase cr_rs1_imm_edges_uimm (rs1 = 0x000000007fffffff, imm = 31)
+  RVTEST_TESTDATA_LOAD_INT(x22, x26) # load rs1: x26 = 0x000000007fffffff
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1f:
+  bexti x20, x26, 31 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1f_str)
+
+# Testcase cr_rs1_imm_edges_uimm (rs1 = 0x000000007fffffff, imm = 32)
+  RVTEST_TESTDATA_LOAD_INT(x22, x18) # load rs1: x18 = 0x000000007fffffff
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x20:
+  bexti x23, x18, 32 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x20, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x20_str)
+
+# Testcase cr_rs1_imm_edges_uimm (rs1 = 0x000000007fffffff, imm = 33)
+  RVTEST_TESTDATA_LOAD_INT(x22, x4) # load rs1: x4 = 0x000000007fffffff
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x21:
+  bexti x24, x4, 33 # perform operation
+  # Check if x24 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x24, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x21, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x21_str)
+
+# Testcase cr_rs1_imm_edges_uimm (rs1 = 0x000000007fffffff, imm = 45)
+  RVTEST_TESTDATA_LOAD_INT(x22, x28) # load rs1: x28 = 0x000000007fffffff
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x2d:
+  bexti x24, x28, 45 # perform operation
+  # Check if x24 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x24, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x2d, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x2d_str)
+
+# Testcase cr_rs1_imm_edges_uimm (rs1 = 0x000000007fffffff, imm = 62)
+  RVTEST_TESTDATA_LOAD_INT(x22, x10) # load rs1: x10 = 0x000000007fffffff
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x3e:
+  bexti x29, x10, 62 # perform operation
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x3e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x3e_str)
+
+# Testcase cr_rs1_imm_edges_uimm (rs1 = 0x000000007fffffff, imm = 63)
+  RVTEST_TESTDATA_LOAD_INT(x22, x29) # load rs1: x29 = 0x000000007fffffff
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x3f:
+  bexti x14, x29, 63 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x3f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x3f_str)
+
   mv x2, x12 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -2520,6 +2674,8 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000fffffffe
 .dword 0x0000000100000000
 .dword 0x0000000100000001
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
 .dword 0x6536f055d752365e
 .dword 0x1d52467ea5fdbefa
 .dword 0xfd72bb2b781c8b4f
@@ -2776,6 +2932,26 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000001
 .dword 0x0000000100000001
 .dword 0x0000000100000001
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
 
 // Testcase strings
 Zbs_bexti_cg_cp_rs1_b0_str: .string "\"test: 1; cg: Zbs_bexti_cg; cp: cp_rs1; bin: b0\""
@@ -2858,262 +3034,284 @@ Zbs_bexti_cg_cp_rs1_edges_0xffffffff_str: .string "\"test: 77; cg: Zbs_bexti_cg;
 Zbs_bexti_cg_cp_rs1_edges_0xfffffffe_str: .string "\"test: 78; cg: Zbs_bexti_cg; cp: cp_rs1_edges; bin: 0xfffffffe\""
 Zbs_bexti_cg_cp_rs1_edges_0x100000000_str: .string "\"test: 79; cg: Zbs_bexti_cg; cp: cp_rs1_edges; bin: 0x100000000\""
 Zbs_bexti_cg_cp_rs1_edges_0x100000001_str: .string "\"test: 80; cg: Zbs_bexti_cg; cp: cp_rs1_edges; bin: 0x100000001\""
-Zbs_bexti_cg_cmp_rd_rs1_b0_str: .string "\"test: 81; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b0\""
-Zbs_bexti_cg_cmp_rd_rs1_b1_str: .string "\"test: 82; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b1\""
-Zbs_bexti_cg_cmp_rd_rs1_b2_str: .string "\"test: 83; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b2\""
-Zbs_bexti_cg_cmp_rd_rs1_b3_str: .string "\"test: 84; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b3\""
-Zbs_bexti_cg_cmp_rd_rs1_b4_str: .string "\"test: 85; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b4\""
-Zbs_bexti_cg_cmp_rd_rs1_b5_str: .string "\"test: 86; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b5\""
-Zbs_bexti_cg_cmp_rd_rs1_b6_str: .string "\"test: 87; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b6\""
-Zbs_bexti_cg_cmp_rd_rs1_b7_str: .string "\"test: 88; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b7\""
-Zbs_bexti_cg_cmp_rd_rs1_b8_str: .string "\"test: 89; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b8\""
-Zbs_bexti_cg_cmp_rd_rs1_b9_str: .string "\"test: 90; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b9\""
-Zbs_bexti_cg_cmp_rd_rs1_b10_str: .string "\"test: 91; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b10\""
-Zbs_bexti_cg_cmp_rd_rs1_b11_str: .string "\"test: 92; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b11\""
-Zbs_bexti_cg_cmp_rd_rs1_b12_str: .string "\"test: 93; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b12\""
-Zbs_bexti_cg_cmp_rd_rs1_b13_str: .string "\"test: 94; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b13\""
-Zbs_bexti_cg_cmp_rd_rs1_b14_str: .string "\"test: 95; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b14\""
-Zbs_bexti_cg_cmp_rd_rs1_b15_str: .string "\"test: 96; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b15\""
-Zbs_bexti_cg_cmp_rd_rs1_b16_str: .string "\"test: 97; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b16\""
-Zbs_bexti_cg_cmp_rd_rs1_b17_str: .string "\"test: 98; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b17\""
-Zbs_bexti_cg_cmp_rd_rs1_b18_str: .string "\"test: 99; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b18\""
-Zbs_bexti_cg_cmp_rd_rs1_b19_str: .string "\"test: 100; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b19\""
-Zbs_bexti_cg_cmp_rd_rs1_b20_str: .string "\"test: 101; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b20\""
-Zbs_bexti_cg_cmp_rd_rs1_b21_str: .string "\"test: 102; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b21\""
-Zbs_bexti_cg_cmp_rd_rs1_b22_str: .string "\"test: 103; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b22\""
-Zbs_bexti_cg_cmp_rd_rs1_b23_str: .string "\"test: 104; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b23\""
-Zbs_bexti_cg_cmp_rd_rs1_b24_str: .string "\"test: 105; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b24\""
-Zbs_bexti_cg_cmp_rd_rs1_b25_str: .string "\"test: 106; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b25\""
-Zbs_bexti_cg_cmp_rd_rs1_b26_str: .string "\"test: 107; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b26\""
-Zbs_bexti_cg_cmp_rd_rs1_b27_str: .string "\"test: 108; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b27\""
-Zbs_bexti_cg_cmp_rd_rs1_b28_str: .string "\"test: 109; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b28\""
-Zbs_bexti_cg_cmp_rd_rs1_b29_str: .string "\"test: 110; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b29\""
-Zbs_bexti_cg_cmp_rd_rs1_b30_str: .string "\"test: 111; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b30\""
-Zbs_bexti_cg_cmp_rd_rs1_b31_str: .string "\"test: 112; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b31\""
-Zbs_bexti_cg_cp_uimm_uimm0_str: .string "\"test: 113; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm0\""
-Zbs_bexti_cg_cp_uimm_uimm1_str: .string "\"test: 114; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm1\""
-Zbs_bexti_cg_cp_uimm_uimm2_str: .string "\"test: 115; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm2\""
-Zbs_bexti_cg_cp_uimm_uimm3_str: .string "\"test: 116; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm3\""
-Zbs_bexti_cg_cp_uimm_uimm4_str: .string "\"test: 117; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm4\""
-Zbs_bexti_cg_cp_uimm_uimm5_str: .string "\"test: 118; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm5\""
-Zbs_bexti_cg_cp_uimm_uimm6_str: .string "\"test: 119; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm6\""
-Zbs_bexti_cg_cp_uimm_uimm7_str: .string "\"test: 120; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm7\""
-Zbs_bexti_cg_cp_uimm_uimm8_str: .string "\"test: 121; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm8\""
-Zbs_bexti_cg_cp_uimm_uimm9_str: .string "\"test: 122; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm9\""
-Zbs_bexti_cg_cp_uimm_uimm10_str: .string "\"test: 123; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm10\""
-Zbs_bexti_cg_cp_uimm_uimm11_str: .string "\"test: 124; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm11\""
-Zbs_bexti_cg_cp_uimm_uimm12_str: .string "\"test: 125; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm12\""
-Zbs_bexti_cg_cp_uimm_uimm13_str: .string "\"test: 126; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm13\""
-Zbs_bexti_cg_cp_uimm_uimm14_str: .string "\"test: 127; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm14\""
-Zbs_bexti_cg_cp_uimm_uimm15_str: .string "\"test: 128; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm15\""
-Zbs_bexti_cg_cp_uimm_uimm16_str: .string "\"test: 129; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm16\""
-Zbs_bexti_cg_cp_uimm_uimm17_str: .string "\"test: 130; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm17\""
-Zbs_bexti_cg_cp_uimm_uimm18_str: .string "\"test: 131; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm18\""
-Zbs_bexti_cg_cp_uimm_uimm19_str: .string "\"test: 132; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm19\""
-Zbs_bexti_cg_cp_uimm_uimm20_str: .string "\"test: 133; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm20\""
-Zbs_bexti_cg_cp_uimm_uimm21_str: .string "\"test: 134; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm21\""
-Zbs_bexti_cg_cp_uimm_uimm22_str: .string "\"test: 135; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm22\""
-Zbs_bexti_cg_cp_uimm_uimm23_str: .string "\"test: 136; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm23\""
-Zbs_bexti_cg_cp_uimm_uimm24_str: .string "\"test: 137; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm24\""
-Zbs_bexti_cg_cp_uimm_uimm25_str: .string "\"test: 138; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm25\""
-Zbs_bexti_cg_cp_uimm_uimm26_str: .string "\"test: 139; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm26\""
-Zbs_bexti_cg_cp_uimm_uimm27_str: .string "\"test: 140; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm27\""
-Zbs_bexti_cg_cp_uimm_uimm28_str: .string "\"test: 141; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm28\""
-Zbs_bexti_cg_cp_uimm_uimm29_str: .string "\"test: 142; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm29\""
-Zbs_bexti_cg_cp_uimm_uimm30_str: .string "\"test: 143; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm30\""
-Zbs_bexti_cg_cp_uimm_uimm31_str: .string "\"test: 144; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm31\""
-Zbs_bexti_cg_cp_uimm_uimm32_str: .string "\"test: 145; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm32\""
-Zbs_bexti_cg_cp_uimm_uimm33_str: .string "\"test: 146; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm33\""
-Zbs_bexti_cg_cp_uimm_uimm34_str: .string "\"test: 147; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm34\""
-Zbs_bexti_cg_cp_uimm_uimm35_str: .string "\"test: 148; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm35\""
-Zbs_bexti_cg_cp_uimm_uimm36_str: .string "\"test: 149; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm36\""
-Zbs_bexti_cg_cp_uimm_uimm37_str: .string "\"test: 150; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm37\""
-Zbs_bexti_cg_cp_uimm_uimm38_str: .string "\"test: 151; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm38\""
-Zbs_bexti_cg_cp_uimm_uimm39_str: .string "\"test: 152; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm39\""
-Zbs_bexti_cg_cp_uimm_uimm40_str: .string "\"test: 153; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm40\""
-Zbs_bexti_cg_cp_uimm_uimm41_str: .string "\"test: 154; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm41\""
-Zbs_bexti_cg_cp_uimm_uimm42_str: .string "\"test: 155; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm42\""
-Zbs_bexti_cg_cp_uimm_uimm43_str: .string "\"test: 156; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm43\""
-Zbs_bexti_cg_cp_uimm_uimm44_str: .string "\"test: 157; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm44\""
-Zbs_bexti_cg_cp_uimm_uimm45_str: .string "\"test: 158; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm45\""
-Zbs_bexti_cg_cp_uimm_uimm46_str: .string "\"test: 159; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm46\""
-Zbs_bexti_cg_cp_uimm_uimm47_str: .string "\"test: 160; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm47\""
-Zbs_bexti_cg_cp_uimm_uimm48_str: .string "\"test: 161; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm48\""
-Zbs_bexti_cg_cp_uimm_uimm49_str: .string "\"test: 162; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm49\""
-Zbs_bexti_cg_cp_uimm_uimm50_str: .string "\"test: 163; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm50\""
-Zbs_bexti_cg_cp_uimm_uimm51_str: .string "\"test: 164; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm51\""
-Zbs_bexti_cg_cp_uimm_uimm52_str: .string "\"test: 165; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm52\""
-Zbs_bexti_cg_cp_uimm_uimm53_str: .string "\"test: 166; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm53\""
-Zbs_bexti_cg_cp_uimm_uimm54_str: .string "\"test: 167; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm54\""
-Zbs_bexti_cg_cp_uimm_uimm55_str: .string "\"test: 168; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm55\""
-Zbs_bexti_cg_cp_uimm_uimm56_str: .string "\"test: 169; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm56\""
-Zbs_bexti_cg_cp_uimm_uimm57_str: .string "\"test: 170; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm57\""
-Zbs_bexti_cg_cp_uimm_uimm58_str: .string "\"test: 171; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm58\""
-Zbs_bexti_cg_cp_uimm_uimm59_str: .string "\"test: 172; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm59\""
-Zbs_bexti_cg_cp_uimm_uimm60_str: .string "\"test: 173; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm60\""
-Zbs_bexti_cg_cp_uimm_uimm61_str: .string "\"test: 174; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm61\""
-Zbs_bexti_cg_cp_uimm_uimm62_str: .string "\"test: 175; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm62\""
-Zbs_bexti_cg_cp_uimm_uimm63_str: .string "\"test: 176; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm63\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x0_str: .string "\"test: 177; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x0, immval=0x0\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1_str: .string "\"test: 178; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x0, immval=0x1\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x13_str: .string "\"test: 179; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x0, immval=0x13\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1e_str: .string "\"test: 180; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x0, immval=0x1e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1f_str: .string "\"test: 181; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x0, immval=0x1f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x20_str: .string "\"test: 182; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x0, immval=0x20\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x21_str: .string "\"test: 183; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x0, immval=0x21\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x2d_str: .string "\"test: 184; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x0, immval=0x2d\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x3e_str: .string "\"test: 185; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x0, immval=0x3e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x3f_str: .string "\"test: 186; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x0, immval=0x3f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x0_str: .string "\"test: 187; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x1, immval=0x0\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1_str: .string "\"test: 188; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x1, immval=0x1\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x13_str: .string "\"test: 189; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x1, immval=0x13\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1e_str: .string "\"test: 190; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x1, immval=0x1e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1f_str: .string "\"test: 191; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x1, immval=0x1f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x20_str: .string "\"test: 192; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x1, immval=0x20\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x21_str: .string "\"test: 193; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x1, immval=0x21\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x2d_str: .string "\"test: 194; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x1, immval=0x2d\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x3e_str: .string "\"test: 195; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x1, immval=0x3e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x3f_str: .string "\"test: 196; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x1, immval=0x3f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x0_str: .string "\"test: 197; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x2, immval=0x0\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1_str: .string "\"test: 198; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x2, immval=0x1\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x13_str: .string "\"test: 199; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x2, immval=0x13\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1e_str: .string "\"test: 200; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x2, immval=0x1e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1f_str: .string "\"test: 201; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x2, immval=0x1f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x20_str: .string "\"test: 202; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x2, immval=0x20\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x21_str: .string "\"test: 203; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x2, immval=0x21\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x2d_str: .string "\"test: 204; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x2, immval=0x2d\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x3e_str: .string "\"test: 205; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x2, immval=0x3e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x3f_str: .string "\"test: 206; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x2, immval=0x3f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000000_immval_0x0_str: .string "\"test: 207; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000000, immval=0x0\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000000_immval_0x1_str: .string "\"test: 208; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000000, immval=0x1\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000000_immval_0x13_str: .string "\"test: 209; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000000, immval=0x13\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000000_immval_0x1e_str: .string "\"test: 210; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000000, immval=0x1e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000000_immval_0x1f_str: .string "\"test: 211; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000000, immval=0x1f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000000_immval_0x20_str: .string "\"test: 212; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000000, immval=0x20\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000000_immval_0x21_str: .string "\"test: 213; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000000, immval=0x21\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000000_immval_0x2d_str: .string "\"test: 214; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000000, immval=0x2d\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000000_immval_0x3e_str: .string "\"test: 215; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000000, immval=0x3e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000000_immval_0x3f_str: .string "\"test: 216; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000000, immval=0x3f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000001_immval_0x0_str: .string "\"test: 217; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000001, immval=0x0\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000001_immval_0x1_str: .string "\"test: 218; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000001, immval=0x1\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000001_immval_0x13_str: .string "\"test: 219; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000001, immval=0x13\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000001_immval_0x1e_str: .string "\"test: 220; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000001, immval=0x1e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000001_immval_0x1f_str: .string "\"test: 221; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000001, immval=0x1f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000001_immval_0x20_str: .string "\"test: 222; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000001, immval=0x20\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000001_immval_0x21_str: .string "\"test: 223; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000001, immval=0x21\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000001_immval_0x2d_str: .string "\"test: 224; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000001, immval=0x2d\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000001_immval_0x3e_str: .string "\"test: 225; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000001, immval=0x3e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000001_immval_0x3f_str: .string "\"test: 226; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000001, immval=0x3f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffffffffffff_immval_0x0_str: .string "\"test: 227; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffffffffffff, immval=0x0\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffffffffffff_immval_0x1_str: .string "\"test: 228; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffffffffffff, immval=0x1\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffffffffffff_immval_0x13_str: .string "\"test: 229; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffffffffffff, immval=0x13\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffffffffffff_immval_0x1e_str: .string "\"test: 230; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffffffffffff, immval=0x1e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffffffffffff_immval_0x1f_str: .string "\"test: 231; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffffffffffff, immval=0x1f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffffffffffff_immval_0x20_str: .string "\"test: 232; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffffffffffff, immval=0x20\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffffffffffff_immval_0x21_str: .string "\"test: 233; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffffffffffff, immval=0x21\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffffffffffff_immval_0x2d_str: .string "\"test: 234; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffffffffffff, immval=0x2d\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffffffffffff_immval_0x3e_str: .string "\"test: 235; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffffffffffff, immval=0x3e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffffffffffff_immval_0x3f_str: .string "\"test: 236; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffffffffffff, immval=0x3f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffffffffffe_immval_0x0_str: .string "\"test: 237; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7ffffffffffffffe, immval=0x0\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffffffffffe_immval_0x1_str: .string "\"test: 238; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7ffffffffffffffe, immval=0x1\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffffffffffe_immval_0x13_str: .string "\"test: 239; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7ffffffffffffffe, immval=0x13\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffffffffffe_immval_0x1e_str: .string "\"test: 240; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7ffffffffffffffe, immval=0x1e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffffffffffe_immval_0x1f_str: .string "\"test: 241; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7ffffffffffffffe, immval=0x1f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffffffffffe_immval_0x20_str: .string "\"test: 242; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7ffffffffffffffe, immval=0x20\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffffffffffe_immval_0x21_str: .string "\"test: 243; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7ffffffffffffffe, immval=0x21\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffffffffffe_immval_0x2d_str: .string "\"test: 244; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7ffffffffffffffe, immval=0x2d\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffffffffffe_immval_0x3e_str: .string "\"test: 245; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7ffffffffffffffe, immval=0x3e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffffffffffe_immval_0x3f_str: .string "\"test: 246; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7ffffffffffffffe, immval=0x3f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffffffffffff_immval_0x0_str: .string "\"test: 247; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffffffffffff, immval=0x0\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffffffffffff_immval_0x1_str: .string "\"test: 248; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffffffffffff, immval=0x1\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffffffffffff_immval_0x13_str: .string "\"test: 249; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffffffffffff, immval=0x13\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffffffffffff_immval_0x1e_str: .string "\"test: 250; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffffffffffff, immval=0x1e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffffffffffff_immval_0x1f_str: .string "\"test: 251; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffffffffffff, immval=0x1f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffffffffffff_immval_0x20_str: .string "\"test: 252; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffffffffffff, immval=0x20\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffffffffffff_immval_0x21_str: .string "\"test: 253; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffffffffffff, immval=0x21\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffffffffffff_immval_0x2d_str: .string "\"test: 254; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffffffffffff, immval=0x2d\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffffffffffff_immval_0x3e_str: .string "\"test: 255; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffffffffffff, immval=0x3e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffffffffffff_immval_0x3f_str: .string "\"test: 256; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffffffffffff, immval=0x3f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffffffffffe_immval_0x0_str: .string "\"test: 257; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffffffffffe, immval=0x0\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffffffffffe_immval_0x1_str: .string "\"test: 258; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffffffffffe, immval=0x1\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffffffffffe_immval_0x13_str: .string "\"test: 259; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffffffffffe, immval=0x13\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffffffffffe_immval_0x1e_str: .string "\"test: 260; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffffffffffe, immval=0x1e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffffffffffe_immval_0x1f_str: .string "\"test: 261; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffffffffffe, immval=0x1f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffffffffffe_immval_0x20_str: .string "\"test: 262; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffffffffffe, immval=0x20\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffffffffffe_immval_0x21_str: .string "\"test: 263; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffffffffffe, immval=0x21\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffffffffffe_immval_0x2d_str: .string "\"test: 264; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffffffffffe, immval=0x2d\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffffffffffe_immval_0x3e_str: .string "\"test: 265; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffffffffffe, immval=0x3e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffffffffffe_immval_0x3f_str: .string "\"test: 266; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffffffffffe, immval=0x3f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc887763ae86f2_immval_0x0_str: .string "\"test: 267; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5bbc887763ae86f2, immval=0x0\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc887763ae86f2_immval_0x1_str: .string "\"test: 268; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5bbc887763ae86f2, immval=0x1\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc887763ae86f2_immval_0x13_str: .string "\"test: 269; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5bbc887763ae86f2, immval=0x13\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc887763ae86f2_immval_0x1e_str: .string "\"test: 270; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5bbc887763ae86f2, immval=0x1e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc887763ae86f2_immval_0x1f_str: .string "\"test: 271; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5bbc887763ae86f2, immval=0x1f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc887763ae86f2_immval_0x20_str: .string "\"test: 272; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5bbc887763ae86f2, immval=0x20\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc887763ae86f2_immval_0x21_str: .string "\"test: 273; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5bbc887763ae86f2, immval=0x21\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc887763ae86f2_immval_0x2d_str: .string "\"test: 274; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5bbc887763ae86f2, immval=0x2d\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc887763ae86f2_immval_0x3e_str: .string "\"test: 275; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5bbc887763ae86f2, immval=0x3e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc887763ae86f2_immval_0x3f_str: .string "\"test: 276; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5bbc887763ae86f2, immval=0x3f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x0_str: .string "\"test: 277; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x0\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x1_str: .string "\"test: 278; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x1\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x13_str: .string "\"test: 279; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x13\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x1e_str: .string "\"test: 280; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x1e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x1f_str: .string "\"test: 281; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x1f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x20_str: .string "\"test: 282; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x20\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x21_str: .string "\"test: 283; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x21\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x2d_str: .string "\"test: 284; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x2d\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x3e_str: .string "\"test: 285; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x3e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x3f_str: .string "\"test: 286; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x3f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5555555555555555_immval_0x0_str: .string "\"test: 287; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5555555555555555, immval=0x0\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5555555555555555_immval_0x1_str: .string "\"test: 288; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5555555555555555, immval=0x1\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5555555555555555_immval_0x13_str: .string "\"test: 289; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5555555555555555, immval=0x13\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5555555555555555_immval_0x1e_str: .string "\"test: 290; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5555555555555555, immval=0x1e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5555555555555555_immval_0x1f_str: .string "\"test: 291; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5555555555555555, immval=0x1f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5555555555555555_immval_0x20_str: .string "\"test: 292; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5555555555555555, immval=0x20\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5555555555555555_immval_0x21_str: .string "\"test: 293; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5555555555555555, immval=0x21\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5555555555555555_immval_0x2d_str: .string "\"test: 294; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5555555555555555, immval=0x2d\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5555555555555555_immval_0x3e_str: .string "\"test: 295; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5555555555555555, immval=0x3e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5555555555555555_immval_0x3f_str: .string "\"test: 296; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5555555555555555, immval=0x3f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x0_str: .string "\"test: 297; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffff, immval=0x0\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1_str: .string "\"test: 298; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffff, immval=0x1\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x13_str: .string "\"test: 299; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffff, immval=0x13\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1e_str: .string "\"test: 300; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffff, immval=0x1e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1f_str: .string "\"test: 301; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffff, immval=0x1f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x20_str: .string "\"test: 302; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffff, immval=0x20\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x21_str: .string "\"test: 303; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffff, immval=0x21\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x2d_str: .string "\"test: 304; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffff, immval=0x2d\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x3e_str: .string "\"test: 305; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffff, immval=0x3e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x3f_str: .string "\"test: 306; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffff, immval=0x3f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x0_str: .string "\"test: 307; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffe, immval=0x0\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1_str: .string "\"test: 308; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffe, immval=0x1\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x13_str: .string "\"test: 309; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffe, immval=0x13\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1e_str: .string "\"test: 310; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffe, immval=0x1e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1f_str: .string "\"test: 311; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffe, immval=0x1f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x20_str: .string "\"test: 312; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffe, immval=0x20\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x21_str: .string "\"test: 313; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffe, immval=0x21\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x2d_str: .string "\"test: 314; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffe, immval=0x2d\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x3e_str: .string "\"test: 315; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffe, immval=0x3e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x3f_str: .string "\"test: 316; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffe, immval=0x3f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000000_immval_0x0_str: .string "\"test: 317; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000000, immval=0x0\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000000_immval_0x1_str: .string "\"test: 318; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000000, immval=0x1\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000000_immval_0x13_str: .string "\"test: 319; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000000, immval=0x13\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000000_immval_0x1e_str: .string "\"test: 320; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000000, immval=0x1e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000000_immval_0x1f_str: .string "\"test: 321; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000000, immval=0x1f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000000_immval_0x20_str: .string "\"test: 322; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000000, immval=0x20\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000000_immval_0x21_str: .string "\"test: 323; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000000, immval=0x21\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000000_immval_0x2d_str: .string "\"test: 324; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000000, immval=0x2d\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000000_immval_0x3e_str: .string "\"test: 325; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000000, immval=0x3e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000000_immval_0x3f_str: .string "\"test: 326; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000000, immval=0x3f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x0_str: .string "\"test: 327; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000001, immval=0x0\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x1_str: .string "\"test: 328; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000001, immval=0x1\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x13_str: .string "\"test: 329; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000001, immval=0x13\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x1e_str: .string "\"test: 330; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000001, immval=0x1e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x1f_str: .string "\"test: 331; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000001, immval=0x1f\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x20_str: .string "\"test: 332; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000001, immval=0x20\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x21_str: .string "\"test: 333; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000001, immval=0x21\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x2d_str: .string "\"test: 334; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000001, immval=0x2d\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x3e_str: .string "\"test: 335; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000001, immval=0x3e\""
-Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x3f_str: .string "\"test: 336; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000001, immval=0x3f\""
+Zbs_bexti_cg_cp_rs1_edges_0x80000000_str: .string "\"test: 81; cg: Zbs_bexti_cg; cp: cp_rs1_edges; bin: 0x80000000\""
+Zbs_bexti_cg_cp_rs1_edges_0x7fffffff_str: .string "\"test: 82; cg: Zbs_bexti_cg; cp: cp_rs1_edges; bin: 0x7fffffff\""
+Zbs_bexti_cg_cmp_rd_rs1_b0_str: .string "\"test: 83; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b0\""
+Zbs_bexti_cg_cmp_rd_rs1_b1_str: .string "\"test: 84; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b1\""
+Zbs_bexti_cg_cmp_rd_rs1_b2_str: .string "\"test: 85; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b2\""
+Zbs_bexti_cg_cmp_rd_rs1_b3_str: .string "\"test: 86; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b3\""
+Zbs_bexti_cg_cmp_rd_rs1_b4_str: .string "\"test: 87; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b4\""
+Zbs_bexti_cg_cmp_rd_rs1_b5_str: .string "\"test: 88; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b5\""
+Zbs_bexti_cg_cmp_rd_rs1_b6_str: .string "\"test: 89; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b6\""
+Zbs_bexti_cg_cmp_rd_rs1_b7_str: .string "\"test: 90; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b7\""
+Zbs_bexti_cg_cmp_rd_rs1_b8_str: .string "\"test: 91; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b8\""
+Zbs_bexti_cg_cmp_rd_rs1_b9_str: .string "\"test: 92; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b9\""
+Zbs_bexti_cg_cmp_rd_rs1_b10_str: .string "\"test: 93; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b10\""
+Zbs_bexti_cg_cmp_rd_rs1_b11_str: .string "\"test: 94; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b11\""
+Zbs_bexti_cg_cmp_rd_rs1_b12_str: .string "\"test: 95; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b12\""
+Zbs_bexti_cg_cmp_rd_rs1_b13_str: .string "\"test: 96; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b13\""
+Zbs_bexti_cg_cmp_rd_rs1_b14_str: .string "\"test: 97; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b14\""
+Zbs_bexti_cg_cmp_rd_rs1_b15_str: .string "\"test: 98; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b15\""
+Zbs_bexti_cg_cmp_rd_rs1_b16_str: .string "\"test: 99; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b16\""
+Zbs_bexti_cg_cmp_rd_rs1_b17_str: .string "\"test: 100; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b17\""
+Zbs_bexti_cg_cmp_rd_rs1_b18_str: .string "\"test: 101; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b18\""
+Zbs_bexti_cg_cmp_rd_rs1_b19_str: .string "\"test: 102; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b19\""
+Zbs_bexti_cg_cmp_rd_rs1_b20_str: .string "\"test: 103; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b20\""
+Zbs_bexti_cg_cmp_rd_rs1_b21_str: .string "\"test: 104; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b21\""
+Zbs_bexti_cg_cmp_rd_rs1_b22_str: .string "\"test: 105; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b22\""
+Zbs_bexti_cg_cmp_rd_rs1_b23_str: .string "\"test: 106; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b23\""
+Zbs_bexti_cg_cmp_rd_rs1_b24_str: .string "\"test: 107; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b24\""
+Zbs_bexti_cg_cmp_rd_rs1_b25_str: .string "\"test: 108; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b25\""
+Zbs_bexti_cg_cmp_rd_rs1_b26_str: .string "\"test: 109; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b26\""
+Zbs_bexti_cg_cmp_rd_rs1_b27_str: .string "\"test: 110; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b27\""
+Zbs_bexti_cg_cmp_rd_rs1_b28_str: .string "\"test: 111; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b28\""
+Zbs_bexti_cg_cmp_rd_rs1_b29_str: .string "\"test: 112; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b29\""
+Zbs_bexti_cg_cmp_rd_rs1_b30_str: .string "\"test: 113; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b30\""
+Zbs_bexti_cg_cmp_rd_rs1_b31_str: .string "\"test: 114; cg: Zbs_bexti_cg; cp: cmp_rd_rs1; bin: b31\""
+Zbs_bexti_cg_cp_uimm_uimm0_str: .string "\"test: 115; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm0\""
+Zbs_bexti_cg_cp_uimm_uimm1_str: .string "\"test: 116; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm1\""
+Zbs_bexti_cg_cp_uimm_uimm2_str: .string "\"test: 117; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm2\""
+Zbs_bexti_cg_cp_uimm_uimm3_str: .string "\"test: 118; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm3\""
+Zbs_bexti_cg_cp_uimm_uimm4_str: .string "\"test: 119; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm4\""
+Zbs_bexti_cg_cp_uimm_uimm5_str: .string "\"test: 120; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm5\""
+Zbs_bexti_cg_cp_uimm_uimm6_str: .string "\"test: 121; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm6\""
+Zbs_bexti_cg_cp_uimm_uimm7_str: .string "\"test: 122; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm7\""
+Zbs_bexti_cg_cp_uimm_uimm8_str: .string "\"test: 123; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm8\""
+Zbs_bexti_cg_cp_uimm_uimm9_str: .string "\"test: 124; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm9\""
+Zbs_bexti_cg_cp_uimm_uimm10_str: .string "\"test: 125; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm10\""
+Zbs_bexti_cg_cp_uimm_uimm11_str: .string "\"test: 126; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm11\""
+Zbs_bexti_cg_cp_uimm_uimm12_str: .string "\"test: 127; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm12\""
+Zbs_bexti_cg_cp_uimm_uimm13_str: .string "\"test: 128; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm13\""
+Zbs_bexti_cg_cp_uimm_uimm14_str: .string "\"test: 129; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm14\""
+Zbs_bexti_cg_cp_uimm_uimm15_str: .string "\"test: 130; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm15\""
+Zbs_bexti_cg_cp_uimm_uimm16_str: .string "\"test: 131; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm16\""
+Zbs_bexti_cg_cp_uimm_uimm17_str: .string "\"test: 132; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm17\""
+Zbs_bexti_cg_cp_uimm_uimm18_str: .string "\"test: 133; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm18\""
+Zbs_bexti_cg_cp_uimm_uimm19_str: .string "\"test: 134; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm19\""
+Zbs_bexti_cg_cp_uimm_uimm20_str: .string "\"test: 135; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm20\""
+Zbs_bexti_cg_cp_uimm_uimm21_str: .string "\"test: 136; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm21\""
+Zbs_bexti_cg_cp_uimm_uimm22_str: .string "\"test: 137; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm22\""
+Zbs_bexti_cg_cp_uimm_uimm23_str: .string "\"test: 138; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm23\""
+Zbs_bexti_cg_cp_uimm_uimm24_str: .string "\"test: 139; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm24\""
+Zbs_bexti_cg_cp_uimm_uimm25_str: .string "\"test: 140; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm25\""
+Zbs_bexti_cg_cp_uimm_uimm26_str: .string "\"test: 141; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm26\""
+Zbs_bexti_cg_cp_uimm_uimm27_str: .string "\"test: 142; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm27\""
+Zbs_bexti_cg_cp_uimm_uimm28_str: .string "\"test: 143; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm28\""
+Zbs_bexti_cg_cp_uimm_uimm29_str: .string "\"test: 144; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm29\""
+Zbs_bexti_cg_cp_uimm_uimm30_str: .string "\"test: 145; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm30\""
+Zbs_bexti_cg_cp_uimm_uimm31_str: .string "\"test: 146; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm31\""
+Zbs_bexti_cg_cp_uimm_uimm32_str: .string "\"test: 147; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm32\""
+Zbs_bexti_cg_cp_uimm_uimm33_str: .string "\"test: 148; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm33\""
+Zbs_bexti_cg_cp_uimm_uimm34_str: .string "\"test: 149; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm34\""
+Zbs_bexti_cg_cp_uimm_uimm35_str: .string "\"test: 150; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm35\""
+Zbs_bexti_cg_cp_uimm_uimm36_str: .string "\"test: 151; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm36\""
+Zbs_bexti_cg_cp_uimm_uimm37_str: .string "\"test: 152; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm37\""
+Zbs_bexti_cg_cp_uimm_uimm38_str: .string "\"test: 153; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm38\""
+Zbs_bexti_cg_cp_uimm_uimm39_str: .string "\"test: 154; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm39\""
+Zbs_bexti_cg_cp_uimm_uimm40_str: .string "\"test: 155; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm40\""
+Zbs_bexti_cg_cp_uimm_uimm41_str: .string "\"test: 156; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm41\""
+Zbs_bexti_cg_cp_uimm_uimm42_str: .string "\"test: 157; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm42\""
+Zbs_bexti_cg_cp_uimm_uimm43_str: .string "\"test: 158; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm43\""
+Zbs_bexti_cg_cp_uimm_uimm44_str: .string "\"test: 159; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm44\""
+Zbs_bexti_cg_cp_uimm_uimm45_str: .string "\"test: 160; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm45\""
+Zbs_bexti_cg_cp_uimm_uimm46_str: .string "\"test: 161; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm46\""
+Zbs_bexti_cg_cp_uimm_uimm47_str: .string "\"test: 162; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm47\""
+Zbs_bexti_cg_cp_uimm_uimm48_str: .string "\"test: 163; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm48\""
+Zbs_bexti_cg_cp_uimm_uimm49_str: .string "\"test: 164; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm49\""
+Zbs_bexti_cg_cp_uimm_uimm50_str: .string "\"test: 165; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm50\""
+Zbs_bexti_cg_cp_uimm_uimm51_str: .string "\"test: 166; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm51\""
+Zbs_bexti_cg_cp_uimm_uimm52_str: .string "\"test: 167; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm52\""
+Zbs_bexti_cg_cp_uimm_uimm53_str: .string "\"test: 168; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm53\""
+Zbs_bexti_cg_cp_uimm_uimm54_str: .string "\"test: 169; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm54\""
+Zbs_bexti_cg_cp_uimm_uimm55_str: .string "\"test: 170; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm55\""
+Zbs_bexti_cg_cp_uimm_uimm56_str: .string "\"test: 171; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm56\""
+Zbs_bexti_cg_cp_uimm_uimm57_str: .string "\"test: 172; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm57\""
+Zbs_bexti_cg_cp_uimm_uimm58_str: .string "\"test: 173; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm58\""
+Zbs_bexti_cg_cp_uimm_uimm59_str: .string "\"test: 174; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm59\""
+Zbs_bexti_cg_cp_uimm_uimm60_str: .string "\"test: 175; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm60\""
+Zbs_bexti_cg_cp_uimm_uimm61_str: .string "\"test: 176; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm61\""
+Zbs_bexti_cg_cp_uimm_uimm62_str: .string "\"test: 177; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm62\""
+Zbs_bexti_cg_cp_uimm_uimm63_str: .string "\"test: 178; cg: Zbs_bexti_cg; cp: cp_uimm; bin: uimm63\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x0_str: .string "\"test: 179; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x0, immval=0x0\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1_str: .string "\"test: 180; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x0, immval=0x1\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x13_str: .string "\"test: 181; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x0, immval=0x13\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1e_str: .string "\"test: 182; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x0, immval=0x1e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1f_str: .string "\"test: 183; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x0, immval=0x1f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x20_str: .string "\"test: 184; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x0, immval=0x20\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x21_str: .string "\"test: 185; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x0, immval=0x21\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x2d_str: .string "\"test: 186; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x0, immval=0x2d\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x3e_str: .string "\"test: 187; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x0, immval=0x3e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x3f_str: .string "\"test: 188; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x0, immval=0x3f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x0_str: .string "\"test: 189; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x1, immval=0x0\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1_str: .string "\"test: 190; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x1, immval=0x1\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x13_str: .string "\"test: 191; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x1, immval=0x13\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1e_str: .string "\"test: 192; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x1, immval=0x1e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1f_str: .string "\"test: 193; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x1, immval=0x1f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x20_str: .string "\"test: 194; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x1, immval=0x20\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x21_str: .string "\"test: 195; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x1, immval=0x21\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x2d_str: .string "\"test: 196; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x1, immval=0x2d\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x3e_str: .string "\"test: 197; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x1, immval=0x3e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x3f_str: .string "\"test: 198; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x1, immval=0x3f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x0_str: .string "\"test: 199; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x2, immval=0x0\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1_str: .string "\"test: 200; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x2, immval=0x1\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x13_str: .string "\"test: 201; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x2, immval=0x13\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1e_str: .string "\"test: 202; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x2, immval=0x1e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1f_str: .string "\"test: 203; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x2, immval=0x1f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x20_str: .string "\"test: 204; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x2, immval=0x20\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x21_str: .string "\"test: 205; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x2, immval=0x21\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x2d_str: .string "\"test: 206; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x2, immval=0x2d\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x3e_str: .string "\"test: 207; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x2, immval=0x3e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x3f_str: .string "\"test: 208; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x2, immval=0x3f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000000_immval_0x0_str: .string "\"test: 209; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000000, immval=0x0\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000000_immval_0x1_str: .string "\"test: 210; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000000, immval=0x1\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000000_immval_0x13_str: .string "\"test: 211; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000000, immval=0x13\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000000_immval_0x1e_str: .string "\"test: 212; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000000, immval=0x1e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000000_immval_0x1f_str: .string "\"test: 213; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000000, immval=0x1f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000000_immval_0x20_str: .string "\"test: 214; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000000, immval=0x20\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000000_immval_0x21_str: .string "\"test: 215; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000000, immval=0x21\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000000_immval_0x2d_str: .string "\"test: 216; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000000, immval=0x2d\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000000_immval_0x3e_str: .string "\"test: 217; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000000, immval=0x3e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000000_immval_0x3f_str: .string "\"test: 218; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000000, immval=0x3f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000001_immval_0x0_str: .string "\"test: 219; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000001, immval=0x0\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000001_immval_0x1_str: .string "\"test: 220; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000001, immval=0x1\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000001_immval_0x13_str: .string "\"test: 221; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000001, immval=0x13\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000001_immval_0x1e_str: .string "\"test: 222; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000001, immval=0x1e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000001_immval_0x1f_str: .string "\"test: 223; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000001, immval=0x1f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000001_immval_0x20_str: .string "\"test: 224; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000001, immval=0x20\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000001_immval_0x21_str: .string "\"test: 225; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000001, immval=0x21\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000001_immval_0x2d_str: .string "\"test: 226; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000001, immval=0x2d\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000001_immval_0x3e_str: .string "\"test: 227; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000001, immval=0x3e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x8000000000000001_immval_0x3f_str: .string "\"test: 228; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x8000000000000001, immval=0x3f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffffffffffff_immval_0x0_str: .string "\"test: 229; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffffffffffff, immval=0x0\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffffffffffff_immval_0x1_str: .string "\"test: 230; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffffffffffff, immval=0x1\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffffffffffff_immval_0x13_str: .string "\"test: 231; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffffffffffff, immval=0x13\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffffffffffff_immval_0x1e_str: .string "\"test: 232; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffffffffffff, immval=0x1e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffffffffffff_immval_0x1f_str: .string "\"test: 233; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffffffffffff, immval=0x1f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffffffffffff_immval_0x20_str: .string "\"test: 234; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffffffffffff, immval=0x20\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffffffffffff_immval_0x21_str: .string "\"test: 235; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffffffffffff, immval=0x21\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffffffffffff_immval_0x2d_str: .string "\"test: 236; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffffffffffff, immval=0x2d\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffffffffffff_immval_0x3e_str: .string "\"test: 237; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffffffffffff, immval=0x3e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffffffffffff_immval_0x3f_str: .string "\"test: 238; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffffffffffff, immval=0x3f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffffffffffe_immval_0x0_str: .string "\"test: 239; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7ffffffffffffffe, immval=0x0\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffffffffffe_immval_0x1_str: .string "\"test: 240; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7ffffffffffffffe, immval=0x1\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffffffffffe_immval_0x13_str: .string "\"test: 241; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7ffffffffffffffe, immval=0x13\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffffffffffe_immval_0x1e_str: .string "\"test: 242; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7ffffffffffffffe, immval=0x1e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffffffffffe_immval_0x1f_str: .string "\"test: 243; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7ffffffffffffffe, immval=0x1f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffffffffffe_immval_0x20_str: .string "\"test: 244; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7ffffffffffffffe, immval=0x20\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffffffffffe_immval_0x21_str: .string "\"test: 245; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7ffffffffffffffe, immval=0x21\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffffffffffe_immval_0x2d_str: .string "\"test: 246; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7ffffffffffffffe, immval=0x2d\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffffffffffe_immval_0x3e_str: .string "\"test: 247; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7ffffffffffffffe, immval=0x3e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffffffffffe_immval_0x3f_str: .string "\"test: 248; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7ffffffffffffffe, immval=0x3f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffffffffffff_immval_0x0_str: .string "\"test: 249; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffffffffffff, immval=0x0\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffffffffffff_immval_0x1_str: .string "\"test: 250; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffffffffffff, immval=0x1\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffffffffffff_immval_0x13_str: .string "\"test: 251; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffffffffffff, immval=0x13\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffffffffffff_immval_0x1e_str: .string "\"test: 252; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffffffffffff, immval=0x1e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffffffffffff_immval_0x1f_str: .string "\"test: 253; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffffffffffff, immval=0x1f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffffffffffff_immval_0x20_str: .string "\"test: 254; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffffffffffff, immval=0x20\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffffffffffff_immval_0x21_str: .string "\"test: 255; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffffffffffff, immval=0x21\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffffffffffff_immval_0x2d_str: .string "\"test: 256; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffffffffffff, immval=0x2d\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffffffffffff_immval_0x3e_str: .string "\"test: 257; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffffffffffff, immval=0x3e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffffffffffff_immval_0x3f_str: .string "\"test: 258; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffffffffffff, immval=0x3f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffffffffffe_immval_0x0_str: .string "\"test: 259; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffffffffffe, immval=0x0\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffffffffffe_immval_0x1_str: .string "\"test: 260; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffffffffffe, immval=0x1\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffffffffffe_immval_0x13_str: .string "\"test: 261; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffffffffffe, immval=0x13\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffffffffffe_immval_0x1e_str: .string "\"test: 262; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffffffffffe, immval=0x1e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffffffffffe_immval_0x1f_str: .string "\"test: 263; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffffffffffe, immval=0x1f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffffffffffe_immval_0x20_str: .string "\"test: 264; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffffffffffe, immval=0x20\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffffffffffe_immval_0x21_str: .string "\"test: 265; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffffffffffe, immval=0x21\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffffffffffe_immval_0x2d_str: .string "\"test: 266; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffffffffffe, immval=0x2d\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffffffffffe_immval_0x3e_str: .string "\"test: 267; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffffffffffe, immval=0x3e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffffffffffe_immval_0x3f_str: .string "\"test: 268; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffffffffffe, immval=0x3f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc887763ae86f2_immval_0x0_str: .string "\"test: 269; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5bbc887763ae86f2, immval=0x0\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc887763ae86f2_immval_0x1_str: .string "\"test: 270; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5bbc887763ae86f2, immval=0x1\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc887763ae86f2_immval_0x13_str: .string "\"test: 271; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5bbc887763ae86f2, immval=0x13\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc887763ae86f2_immval_0x1e_str: .string "\"test: 272; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5bbc887763ae86f2, immval=0x1e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc887763ae86f2_immval_0x1f_str: .string "\"test: 273; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5bbc887763ae86f2, immval=0x1f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc887763ae86f2_immval_0x20_str: .string "\"test: 274; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5bbc887763ae86f2, immval=0x20\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc887763ae86f2_immval_0x21_str: .string "\"test: 275; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5bbc887763ae86f2, immval=0x21\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc887763ae86f2_immval_0x2d_str: .string "\"test: 276; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5bbc887763ae86f2, immval=0x2d\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc887763ae86f2_immval_0x3e_str: .string "\"test: 277; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5bbc887763ae86f2, immval=0x3e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc887763ae86f2_immval_0x3f_str: .string "\"test: 278; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5bbc887763ae86f2, immval=0x3f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x0_str: .string "\"test: 279; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x0\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x1_str: .string "\"test: 280; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x1\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x13_str: .string "\"test: 281; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x13\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x1e_str: .string "\"test: 282; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x1e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x1f_str: .string "\"test: 283; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x1f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x20_str: .string "\"test: 284; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x20\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x21_str: .string "\"test: 285; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x21\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x2d_str: .string "\"test: 286; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x2d\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x3e_str: .string "\"test: 287; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x3e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x3f_str: .string "\"test: 288; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x3f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5555555555555555_immval_0x0_str: .string "\"test: 289; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5555555555555555, immval=0x0\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5555555555555555_immval_0x1_str: .string "\"test: 290; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5555555555555555, immval=0x1\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5555555555555555_immval_0x13_str: .string "\"test: 291; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5555555555555555, immval=0x13\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5555555555555555_immval_0x1e_str: .string "\"test: 292; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5555555555555555, immval=0x1e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5555555555555555_immval_0x1f_str: .string "\"test: 293; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5555555555555555, immval=0x1f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5555555555555555_immval_0x20_str: .string "\"test: 294; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5555555555555555, immval=0x20\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5555555555555555_immval_0x21_str: .string "\"test: 295; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5555555555555555, immval=0x21\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5555555555555555_immval_0x2d_str: .string "\"test: 296; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5555555555555555, immval=0x2d\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5555555555555555_immval_0x3e_str: .string "\"test: 297; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5555555555555555, immval=0x3e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5555555555555555_immval_0x3f_str: .string "\"test: 298; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x5555555555555555, immval=0x3f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x0_str: .string "\"test: 299; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffff, immval=0x0\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1_str: .string "\"test: 300; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffff, immval=0x1\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x13_str: .string "\"test: 301; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffff, immval=0x13\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1e_str: .string "\"test: 302; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffff, immval=0x1e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1f_str: .string "\"test: 303; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffff, immval=0x1f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x20_str: .string "\"test: 304; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffff, immval=0x20\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x21_str: .string "\"test: 305; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffff, immval=0x21\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x2d_str: .string "\"test: 306; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffff, immval=0x2d\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x3e_str: .string "\"test: 307; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffff, immval=0x3e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x3f_str: .string "\"test: 308; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xffffffff, immval=0x3f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x0_str: .string "\"test: 309; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffe, immval=0x0\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1_str: .string "\"test: 310; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffe, immval=0x1\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x13_str: .string "\"test: 311; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffe, immval=0x13\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1e_str: .string "\"test: 312; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffe, immval=0x1e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1f_str: .string "\"test: 313; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffe, immval=0x1f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x20_str: .string "\"test: 314; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffe, immval=0x20\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x21_str: .string "\"test: 315; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffe, immval=0x21\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x2d_str: .string "\"test: 316; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffe, immval=0x2d\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x3e_str: .string "\"test: 317; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffe, immval=0x3e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x3f_str: .string "\"test: 318; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0xfffffffe, immval=0x3f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000000_immval_0x0_str: .string "\"test: 319; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000000, immval=0x0\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000000_immval_0x1_str: .string "\"test: 320; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000000, immval=0x1\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000000_immval_0x13_str: .string "\"test: 321; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000000, immval=0x13\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000000_immval_0x1e_str: .string "\"test: 322; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000000, immval=0x1e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000000_immval_0x1f_str: .string "\"test: 323; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000000, immval=0x1f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000000_immval_0x20_str: .string "\"test: 324; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000000, immval=0x20\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000000_immval_0x21_str: .string "\"test: 325; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000000, immval=0x21\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000000_immval_0x2d_str: .string "\"test: 326; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000000, immval=0x2d\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000000_immval_0x3e_str: .string "\"test: 327; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000000, immval=0x3e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000000_immval_0x3f_str: .string "\"test: 328; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000000, immval=0x3f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x0_str: .string "\"test: 329; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000001, immval=0x0\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x1_str: .string "\"test: 330; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000001, immval=0x1\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x13_str: .string "\"test: 331; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000001, immval=0x13\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x1e_str: .string "\"test: 332; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000001, immval=0x1e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x1f_str: .string "\"test: 333; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000001, immval=0x1f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x20_str: .string "\"test: 334; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000001, immval=0x20\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x21_str: .string "\"test: 335; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000001, immval=0x21\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x2d_str: .string "\"test: 336; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000001, immval=0x2d\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x3e_str: .string "\"test: 337; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000001, immval=0x3e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x100000001_immval_0x3f_str: .string "\"test: 338; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x100000001, immval=0x3f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x0_str: .string "\"test: 339; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x80000000, immval=0x0\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1_str: .string "\"test: 340; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x80000000, immval=0x1\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x13_str: .string "\"test: 341; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x80000000, immval=0x13\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1e_str: .string "\"test: 342; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x80000000, immval=0x1e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1f_str: .string "\"test: 343; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x80000000, immval=0x1f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x20_str: .string "\"test: 344; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x80000000, immval=0x20\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x21_str: .string "\"test: 345; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x80000000, immval=0x21\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x2d_str: .string "\"test: 346; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x80000000, immval=0x2d\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x3e_str: .string "\"test: 347; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x80000000, immval=0x3e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x3f_str: .string "\"test: 348; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x80000000, immval=0x3f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x0_str: .string "\"test: 349; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffff, immval=0x0\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1_str: .string "\"test: 350; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffff, immval=0x1\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x13_str: .string "\"test: 351; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffff, immval=0x13\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1e_str: .string "\"test: 352; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffff, immval=0x1e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1f_str: .string "\"test: 353; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffff, immval=0x1f\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x20_str: .string "\"test: 354; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffff, immval=0x20\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x21_str: .string "\"test: 355; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffff, immval=0x21\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x2d_str: .string "\"test: 356; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffff, immval=0x2d\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x3e_str: .string "\"test: 357; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffff, immval=0x3e\""
+Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x3f_str: .string "\"test: 358; cg: Zbs_bexti_cg; cp: cr_rs1_imm_edges_uimm; bin: rs1val=0x7fffffff, immval=0x3f\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

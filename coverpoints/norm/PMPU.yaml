@@ -7,15 +7,23 @@ normative_rule_definitions:
   # accesses in M-mode when the MPRV bit in mstatus is set and the MPP field in
   # mstatus contains S or U.
   - name: pmp_check_priv_modes
-    coverpoint: ["PMPU_cg/{cp_mprv},PMPS_cg/{cp_mprv}"]
+    # Representative coverpoints; also cp_cfg_{X,R,W} and cp_mprv_{jalr,lw,sw} in both covergroups
+    coverpoint:
+      ["PMPS_cg/{cp_cfg_X, cp_mprv_lw}", "PMPU_cg/{cp_cfg_R, cp_mprv_sw}"]
 
   # PMP CSRs are only accessible to M-mode.
   - name: pmp_csr_mode
     coverpoint:
       [
-        "PMPU_cg/{cp_pmpaddr_access_u,cp_pmpcfg_access},PMPS_cg/{cp_pmpaddr_access_u,cp_pmpcfg_access}",
+        "PMPU_cg/{cp_pmpaddr_access_u, cp_pmpcfg_access_u}",
+        "PMPS_cg/{cp_pmpaddr_access_s, cp_pmpcfg_access_s}",
       ]
 
   # The PMP address registers are CSRs named pmpaddr0-pmpaddr63.
   - name: pmp_addr_registers
-    coverpoint: ["PMPU_cg/{cp_pmpaddr_access_u},PMPS_cg/{cp_pmpaddr_access_u}"]
+    coverpoint:
+      [
+        "PMPU_cg/cp_pmpaddr_access_u",
+        "PMPS_cg/cp_pmpaddr_access_s",
+        "PMPSm_cg/cp_pmpaddr_upper_zero",
+      ]

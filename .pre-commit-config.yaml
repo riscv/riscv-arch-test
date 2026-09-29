@@ -115,7 +115,7 @@ repos:
 
   # Validate Renovate configuration
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 895cc8548027265849051104090f3a434540c1bf # frozen: 44.104.2
+    rev: 2d888c2bb94b7f5a42ebd1b08d2e2ec7c5f31e63 # frozen: 44.106.0
     hooks:
       - id: renovate-config-validator
 

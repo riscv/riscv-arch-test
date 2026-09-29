@@ -12,11 +12,13 @@ COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/
 # EXTENSIONS is a comma-separated list of extensions to generate tests for. Leave blank to generate for all tests.
 # EXCLUDE_EXTENSIONS overrides EXTENSIONS to exclude particular extensions from test generation. Applies as a negative filter after EXTENSIONS.
 # CERTIFICATE limits the selected tests to those relevant to the specified certificate.
+# ENABLE_EXPERIMENTAL_EXTENSIONS enables tests for extensions that are not ratified.
 # Default exclusion reasons:
 #  - Sm: Insufficient WARL configuration options.
 EXTENSIONS  ?=
 EXCLUDE_EXTENSIONS ?= SdtrigSm,SdtrigS,SdtrigU
 CERTIFICATE ?=
+ENABLE_EXPERIMENTAL_EXTENSIONS ?=
 
 # DEBUG, FAST, VERBOSE, and CLEAN_INTERMEDIATES are runtime options for controlling build output. DEBUG is mutually exclusive with FAST and CLEAN_INTERMEDIATES.
 # Set to True to enable, or leave blank to disable.
@@ -150,6 +152,7 @@ help:
 	  'EXTENSIONS'          'Comma-separated extensions to generate (default: all)' \
 	  'EXCLUDE_EXTENSIONS'  'Comma-separated extensions to skip' \
 	  'CERTIFICATE'         'Only select tests for the specified certificate' \
+	  'ENABLE_EXPERIMENTAL_EXTENSIONS' 'Enable tests for unratified extensions' \
 	  'JOBS'                'Parallel build jobs (0 = auto, also honors -j)' \
 	  'DEBUG'               'Emit objdump/trace/trap reports (slower)' \
 	  'FAST'                'Skip objdump for faster ELF builds' \
@@ -177,6 +180,7 @@ elfs: tests
 		$(if $(EXTENSIONS),--extensions $(EXTENSIONS)) \
 		$(if $(CERTIFICATE),--certificate $(CERTIFICATE)) \
 		$(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) \
+		$(if $(ENABLE_EXPERIMENTAL_EXTENSIONS),--enable-experimental-extensions) \
 		$(if $(DEBUG),--debug) \
 		$(if $(FAST),--fast) \
 		$(if $(CLEAN_INTERMEDIATES),--clean-intermediates) \

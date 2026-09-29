@@ -104,12 +104,8 @@ class TrapEntry:
     test_label: str | None
 
 
-def _parse_symbol_table(nm_exe: Path, elf_path: Path) -> tuple[dict[int, str], int]:
-    """Run nm on the ELF and return (address->label mapping, code_begin address).
-
-    Returns symbols for text section and the rvtest_code_begin address (needed to
-    convert relocated XEPC offsets back to absolute addresses for label lookup).
-    """
+def _parse_symbol_table(nm_exe: Path, elf_path: Path) -> dict[int, str]:
+    """Run nm on the ELF and return an address->label mapping for the text section."""
     result = subprocess.run(
         [str(nm_exe), "--numeric-sort", str(elf_path)],
         capture_output=True,
@@ -117,19 +113,14 @@ def _parse_symbol_table(nm_exe: Path, elf_path: Path) -> tuple[dict[int, str], i
         check=False,
     )
     if result.returncode != 0:
-        return {}, 0
+        return {}
 
     symbols: dict[int, str] = {}
-    code_begin = 0
     for line in result.stdout.splitlines():
         parts = line.split()
         if len(parts) >= 3 and parts[1] in ("t", "T"):
-            addr = int(parts[0], 16)
-            name = parts[2]
-            symbols[addr] = name
-            if name == "rvtest_code_begin":
-                code_begin = addr
-    return symbols, code_begin
+            symbols[int(parts[0], 16)] = parts[2]
+    return symbols
 
 
 def _find_nearest_label(address: int, sorted_addrs: list[int], symbols: dict[int, str]) -> str | None:
@@ -195,7 +186,6 @@ def _decode_all_traps(
     xlen: int,
     sorted_addrs: list[int],
     symbols: dict[int, str],
-    code_begin: int = 0,
 ) -> list[TrapEntry]:
     """Walk through raw trap signature words and decode each variable-length entry."""
     deadbeef = DEADBEEF_32 if xlen == 32 else DEADBEEF_64
@@ -243,8 +233,8 @@ def _decode_all_traps(
             if entry_size >= 4 and raw_words[pos + 3] != deadbeef:
                 int_id = raw_words[pos + 3]
         else:
-            # XEPC is a relocated offset from code_begin; convert back to absolute address
-            xepc = raw_words[pos + 2] + code_begin
+            # XEPC is recorded raw by the trap handler
+            xepc = raw_words[pos + 2]
             test_label = _find_nearest_label(xepc, sorted_addrs, symbols)
             if entry_size >= 4:
                 xtval = raw_words[pos + 3]
@@ -380,12 +370,11 @@ def generate_trap_report(sig_path: Path, xlen: int, elf_path: Path | None, nm_ex
 
     # Parse symbol table if elf is available
     symbols: dict[int, str] = {}
-    code_begin = 0
     if elf_path is not None and elf_path.exists() and nm_exe is not None:
-        symbols, code_begin = _parse_symbol_table(nm_exe, elf_path)
+        symbols = _parse_symbol_table(nm_exe, elf_path)
 
     sorted_addrs = sorted(symbols.keys())
 
-    entries = _decode_all_traps(trap_words, xlen, sorted_addrs, symbols, code_begin)
+    entries = _decode_all_traps(trap_words, xlen, sorted_addrs, symbols)
     report = _format_trap_report(entries, test_name, xlen)
     report_path.write_text(report)

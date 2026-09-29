@@ -278,7 +278,7 @@ The SBI is invoked with the `ecall` instruction.  The operation is passed in `a0
 |TSBI_SD|0x00c5b023|SD a2, 0(a1) - Store doubleword to physical address in `a1` with machine-mode privileges.  Used to write memory-mapped I/O.  RV64 only
 |===
 
-For example, an S-mode program can request setting `mstatus.TVM` with a CSR_SET call corresponding to `csrrs x0, mstatus, a1` (`a0` = 0x3005a073) with `a1` containing a 1 in bit 20 (the `TVM` bit) and all other bits 0.  A possible implementation with standard M-mode is for the trap handler to write this value to memory, perform `fence.i` to synchronize the instruction stream, execute the instruction, and return to the test.  If a custom M-mode does not implement `mstatus.TVM`, it must emulate the behavior in some other way. Similarly, S-mode can read `mip` to `a0` with a CSR_READ call corresponding to `csrrs a0, mip, x0` (`a0` = 0x34402573).
+For example, an S-mode program can request setting `mstatus.TVM` with a CSR_SET call corresponding to `csrrs x0, mstatus, a1` (`a0` = 0x3005a073) with `a1` containing a 1 in bit 20 (the `TVM` bit) and all other bits 0. The ACT trap handler implements this using an instruction table. If a custom M-mode does not implement `mstatus.TVM`, it must emulate the behavior in some other way. Similarly, S-mode can read `mip` to `a0` with a CSR_READ call corresponding to `csrrs a0, mip, x0` (`a0` = 0x34402573).
 
 
 The ACT trap handlers implement an additional set of convenience calls changing between privilege modes in a standard fashion.  This includes changing to M-mode.  The behavior in M-mode is only predictable if STANDARD_SM_SUPPORTED is true. Another suite with different trap handlers might not support these calls.

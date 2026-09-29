@@ -33,8 +33,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "ZicsrF_cg/{cp_fcsr_access, cp_fcsr_walk}",
-        "ZicsrF_cg/{cp_fflags_set_m_NV, cp_fflags_set_m_DZ, cp_fflags_set_m_OF, cp_fflags_set_m_UF, cp_fflags_set_m_NX}",
-        "F_fadd_s_cg/cp_csr_frm",
+        "ZicsrF_cg/cp_fflags_set, F_fadd_s_cg/cp_csr_frm",
       ]
 
   # Bits 31&#8205;&#8211;&#8205;8 of the csr:fcsr[] are reserved for other standard
@@ -42,7 +41,7 @@ normative_rule_definitions:
   # to these bits and supply a zero value when read. Standard software should preserve the
   # contents of these bits.
   - name: fcsr_rsv
-    coverpoint: ["ZicsrF_cg/{cp_fcsr_access, cp_fcsr_walk}"]
+    coverpoint: ["ZicsrF_cg/cp_fflags_set, F_fadd_s_cg/cp_csr_frm"]
 
   # The fields within the csr:fcsr[] can also be accessed individually through different
   # CSR addresses, and separate assembler pseudoinstructions are defined for these
@@ -75,7 +74,11 @@ normative_rule_definitions:
   # field selects the dynamic rounding mode held in frm
   - name: roundingmode_dynamic
     coverpoint:
-      ["F_fadd_s_cg/cp_csr_frm", "ZicsrF_cg/cp_underflow_after_rounding_*"]
+      [
+        "F_fadd_s_cg/cp_csr_frm",
+        "ZicsrF_cg/cp_underflow_after_rounding_*",
+        "ZicsrF_cg/cp_frm_reserved_static_rm",
+      ]
 
   # The accrued exception flags indicate the exception conditions that have arisen on any
   # floating-point arithmetic instruction since the field was last reset by software, as

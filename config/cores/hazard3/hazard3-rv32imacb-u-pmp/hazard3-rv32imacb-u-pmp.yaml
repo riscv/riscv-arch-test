@@ -55,6 +55,13 @@ implemented_extensions:
   - { name: Zbb, version: "= 1.0.0" }
   - { name: Zbs, version: "= 1.0.0" }
   - { name: Zbc, version: "= 1.0.0" }
+  # Zbkc (clmul/clmulh) is an instruction subset of Zbc, so building Zbc provides it; the
+  # core reports it as present in h3.misa whenever Zbc is.
+  #   Quote: "// Zbkc is a subset of Zbc: localparam [0:0] EXTENSION_ZBKC = |EXTENSION_ZBC;"
+  #   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/hdl/hazard3_csr.v#L516-L517
+  #   Quote: "| Zbkc | 0 | 31"
+  #   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/csr.adoc#L980
+  - { name: Zbkc, version: "= 1.0.0" }
   - { name: Zbkb, version: "= 1.0.0" }
   - { name: Zbkx, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }
@@ -119,6 +126,17 @@ params:
   #   Quote: "==== misa / Address: `0x301` / Read-only, constant."
   #   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/csr.adoc#L94-L98
   MISA_CSR_IMPLEMENTED: true
+  # misa.X is hardwired to 1 because the custom Xh3misa extension (the h3.misa CSR) is
+  # always present when the M-mode CSRs are; config_act.vh turns off only the optional
+  # Xh3* extensions (Xh3irq, Xh3pmpm, Xh3power, Xh3bextm, Xh3sfx).
+  #   Quote: "| 23 | `x` | Always 1 to indicate presence of <<extension-xh3misa-section>>, and
+  #   possibly other custom extensions."
+  #   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/csr.adoc#L104
+  #   Quote: "1'b1,              // X is always set due to (at least) Xh3misa"
+  #   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/hdl/hazard3_csr.v#L410
+  #   Quote: "32'h01_00_00_00 & {32{|CSR_M_MANDATORY}}     // Xh3misa"
+  #   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/hdl/hazard3_csr.v#L566
+  NON_STANDARD_EXTENSION_IMPLEMENTED: true
   MUTABLE_MISA_A: false
   MUTABLE_MISA_B: false
   MUTABLE_MISA_C: false
@@ -178,6 +196,38 @@ params:
   #   `mepc` to the exact address of the load/store instruction which encountered the fault."
   #   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/csr.adoc#L238
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+
+  # ------------------------------------------------------------------ interrupts
+  # All three standard machine interrupts exist: mie.MEIE, mie.MTIE and mie.MSIE are the
+  # only writable bits of mie. In this flow the testbench drives all three sources: the
+  # soft_irq pin from its IO_SET/CLR_SOFTIRQ registers, the timer pin from its
+  # mtime/mtimecmp, and irq[] (ORed into mip.MEIP with Xh3irq off) from IO_SET/CLR_IRQ;
+  # see rvmodel_macros.h.
+  #   Quote: "| 11 | `meie` | External interrupt enable. ... | 7 | `mtie` | Timer interrupt
+  #   enable. ... | 3 | `msie` | Software interrupt enable."
+  #   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/csr.adoc#L166-L168
+  #   Quote: "localparam MIE_WMASK = 32'h00000888; // meie, mtie, msie"
+  #   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/hdl/hazard3_csr.v#L322
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+
+  # ------------------------------------------------------------------ WFI
+  # WFI is legal in U-mode and traps there only when mstatus.TW is set.
+  #   Quote: "| 21 | `tw` | Timeout wait. Only present if U-mode is supported. When 1,
+  #   attempting to execute a WFI instruction in U-mode will instantly cause an illegal
+  #   instruction exception."
+  #   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/csr.adoc#L126
+  #   Quote: "assign trap_wfi = mstatus_tw && !(debug_mode || m_mode);"
+  #   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/hdl/hazard3_csr.v#L265
+  WFI_U_MODE: true
+  # WFI stalls until an enabled interrupt is pending (or a debug event); there is no
+  # timeout, so it can wait forever.
+  #   Quote: "| `wfi` | 2+ | No upper limit."
+  #   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/instruction_timings.adoc#L129
+  #   Quote: "assign pwr_wfi_wakeup_req = |(mip & mie) || dcsr_step || debug_mode ||"
+  #   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/hdl/hazard3_csr.v#L1447
+  WFI_FINITE: false
 
   # ------------------------------------------------------------------ misaligned access
   # Hazard3 has no misaligned load/store support in hardware: every bus access is naturally

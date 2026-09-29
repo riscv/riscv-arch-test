@@ -652,8 +652,9 @@
     "Zbkb": {
       "supported": true
     },
+    // Zbkc is an instruction subset of Zbc and is present whenever Zbc is (see the UDB yaml).
     "Zbkc": {
-      "supported": false
+      "supported": true
     },
     "Zbkx": {
       "supported": true

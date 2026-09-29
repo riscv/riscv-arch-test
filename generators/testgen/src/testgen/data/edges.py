@@ -446,6 +446,212 @@ class FLOAT_EDGES:
     )
 
 
+class CONVERSION_EDGES:
+    """Operand values for conversions, keyed by "<source>_<destination>".
+
+    Formats: S, D, H, BF16 (floating point), W, L (32- and 64-bit integers),
+    I (any integer width) and R (an integral value in the source format, for fround).
+    ``rounded`` values convert differently in different rounding modes and are tested in each
+    static rounding mode. ``exact`` values convert exactly and are tested once.
+    W values are 32-bit patterns; they are sign-extended on RV64.
+    """
+
+    rounded: ClassVar[dict[str, tuple[int, ...]]] = {
+        # Float to integer. With the +-2.5 edges, each pair of rounding modes gives a different
+        # result or flags for at least one value, for signed and unsigned destinations.
+        "S_I": (
+            0x3FE00000,  # 1.75
+            0xBF000000,  # -0.5 (rounds to -1 in rdn and rmm: invalid for unsigned)
+        ),
+        "D_I": (
+            0x3FFC000000000000,  # 1.75
+            0xBFE0000000000000,  # -0.5
+            0x41DFFFFFFFE00000,  # 2^31 - 0.5 (rne, rup, rmm overflow int32)
+            0xC1E0000000100000,  # -2^31 - 0.5 (rdn, rmm overflow int32)
+            0x41EFFFFFFFF00000,  # 2^32 - 0.5 (rne, rup, rmm overflow uint32)
+        ),
+        "H_I": (
+            0x3F00,  # 1.75
+            0xB800,  # -0.5
+        ),
+        # Round to integral (fround, froundnx)
+        "S_R": (
+            0x40200000,  # 2.5
+            0xC0200000,  # -2.5
+            0x3FE00000,  # 1.75
+            0xBF000000,  # -0.5
+            0x4AFFFFFF,  # 2^23 - 0.5 (largest non-integer)
+        ),
+        "D_R": (
+            0x4004000000000000,  # 2.5
+            0xC004000000000000,  # -2.5
+            0x3FFC000000000000,  # 1.75
+            0xBFE0000000000000,  # -0.5
+            0x432FFFFFFFFFFFFF,  # 2^52 - 0.5 (largest non-integer)
+        ),
+        "H_R": (
+            0x4100,  # 2.5
+            0xC100,  # -2.5
+            0x3F00,  # 1.75
+            0xB800,  # -0.5
+            0x63FF,  # 2^10 - 0.5 (largest non-integer)
+        ),
+        # Narrowing floating-point conversions: destination boundaries in the source format
+        "D_S": (
+            0x47EFFFFFF0000000,  # max + 1/2 ulp (overflows in rne, rmm, rup)
+            0xC7EFFFFFF0000000,  # -(max + 1/2 ulp)
+            0x380FFFFFF0000000,  # minnorm * (1 - 2^-25): tiny before rounding, not after in rne
+            0x3690000000000000,  # min subnormal / 2
+            0xB690000000000000,  # -min subnormal / 2
+            0x3FF0000010000000,  # 1 + 1/2 ulp (a tie)
+            0xBFF0000010000000,  # -(1 + 1/2 ulp)
+            0x3FF0000030000000,  # 1 + 3/2 ulp (a tie)
+        ),
+        "S_H": (
+            0x477FF000,  # max + 1/2 ulp
+            0xC77FF000,  # -(max + 1/2 ulp)
+            0x387FF000,  # minnorm * (1 - 2^-12)
+            0x33000000,  # min subnormal / 2
+            0xB3000000,  # -min subnormal / 2
+            0x3F801000,  # 1 + 1/2 ulp
+            0xBF801000,  # -(1 + 1/2 ulp)
+            0x3F803000,  # 1 + 3/2 ulp
+        ),
+        "D_H": (
+            0x40EFFE0000000000,  # max + 1/2 ulp
+            0xC0EFFE0000000000,  # -(max + 1/2 ulp)
+            0x3F0FFE0000000000,  # minnorm * (1 - 2^-12)
+            0x3E60000000000000,  # min subnormal / 2
+            0xBE60000000000000,  # -min subnormal / 2
+            0x3FF0020000000000,  # 1 + 1/2 ulp
+            0xBFF0020000000000,  # -(1 + 1/2 ulp)
+            0x3FF0060000000000,  # 1 + 3/2 ulp
+        ),
+        "S_BF16": (
+            0x7F7F8000,  # max + 1/2 ulp
+            0xFF7F8000,  # -(max + 1/2 ulp)
+            0x007FC000,  # minnorm * (1 - 2^-9)
+            0x00008000,  # min subnormal / 2
+            0x80008000,  # -min subnormal / 2
+            0x3F808000,  # 1 + 1/2 ulp
+            0xBF808000,  # -(1 + 1/2 ulp)
+            0x3F818000,  # 1 + 3/2 ulp
+        ),
+        # Integer to float: ties, values just above or below a tie, and values that round up
+        # into the next binade or overflow
+        "W_S": (
+            0x01000001,  # 2^24 + 1 (a tie; rne rounds down)
+            0x01000003,  # 2^24 + 3 (a tie; rne rounds up)
+            0xFEFFFFFF,  # -(2^24 + 1)
+            0x02000001,  # 2^25 + 1 (below a tie; rup rounds up, rmm down)
+            0x40000041,  # 2^30 + 2^6 + 1 (above a tie only because of the sticky bit)
+            0x7FFFFFC0,  # 2^31 - 2^6 (a tie; rne rounds up to 2^31)
+            0xFFFFFF80,  # -2^7 signed; 2^32 - 2^7 unsigned (a tie; rne rounds up to 2^32)
+            0x80000000,  # INT32_MIN
+            0x7FFFFFFF,  # INT32_MAX
+        ),
+        "L_S": (
+            0x0000000001000001,  # 2^24 + 1
+            0x0000000001000003,  # 2^24 + 3
+            0xFFFFFFFFFEFFFFFF,  # -(2^24 + 1)
+            0x0000000002000001,  # 2^25 + 1
+            0x0000010000010001,  # 2^40 + 2^16 + 1 (above a tie only because of the sticky bit)
+            0x7FFFFFC000000000,  # 2^63 - 2^38 (a tie; rne rounds up to 2^63)
+            0xFFFFFF8000000000,  # -2^39 signed; 2^64 - 2^39 unsigned (a tie; rne rounds up to 2^64)
+            0x8000000000000000,  # INT64_MIN
+            0x7FFFFFFFFFFFFFFF,  # INT64_MAX
+        ),
+        "L_D": (
+            0x0020000000000001,  # 2^53 + 1
+            0x0020000000000003,  # 2^53 + 3
+            0xFFDFFFFFFFFFFFFF,  # -(2^53 + 1)
+            0x0040000000000001,  # 2^54 + 1
+            0x4000000000000201,  # 2^62 + 2^9 + 1 (above a tie only because of the sticky bit)
+            0x7FFFFFFFFFFFFE00,  # 2^63 - 2^9 (a tie; rne rounds up to 2^63)
+            0xFFFFFFFFFFFFFC00,  # -2^10 signed; 2^64 - 2^10 unsigned (a tie; rne rounds up to 2^64)
+            0x8000000000000000,  # INT64_MIN
+            0x7FFFFFFFFFFFFFFF,  # INT64_MAX
+        ),
+        "W_H": (
+            0x00000801,  # 2^11 + 1
+            0x00000803,  # 2^11 + 3
+            0xFFFFF7FF,  # -(2^11 + 1)
+            0x00001001,  # 2^12 + 1
+            0x00004009,  # 2^14 + 2^3 + 1 (above a tie only because of the sticky bit)
+            0x0000FFEF,  # 65519 (rounds to max in rne, overflows in rup)
+            0x0000FFF0,  # 65520 = max + 1/2 ulp (overflows in rne, rmm, rup)
+            0xFFFF0010,  # -65520
+            0x80000000,  # INT32_MIN
+        ),
+        "L_H": (
+            0x0000000000000801,  # 2^11 + 1
+            0x0000000000000803,  # 2^11 + 3
+            0xFFFFFFFFFFFFF7FF,  # -(2^11 + 1)
+            0x0000000000001001,  # 2^12 + 1
+            0x0000000000004009,  # 2^14 + 2^3 + 1
+            0x000000000000FFEF,  # 65519
+            0x000000000000FFF0,  # 65520
+            0xFFFFFFFFFFFF0010,  # -65520
+            0x8000000000000000,  # INT64_MIN
+        ),
+    }
+
+    exact: ClassVar[dict[str, tuple[int, ...]]] = {
+        # Float to integer: the saturation boundaries of 32- and 64-bit signed and unsigned destinations
+        "S_I": (
+            0x4EFFFFFF,  # 2^31 - 2^7
+            0x4F000000,  # 2^31
+            0xCF000000,  # -2^31
+            0xCF000001,  # -2^31 - 2^8
+            0x4F7FFFFF,  # 2^32 - 2^8
+            0x4F800000,  # 2^32
+            0x5EFFFFFF,  # 2^63 - 2^39
+            0x5F000000,  # 2^63
+            0xDF000000,  # -2^63
+            0xDF000001,  # -2^63 - 2^40
+            0x5F7FFFFF,  # 2^64 - 2^40
+            0x5F800000,  # 2^64
+        ),
+        "D_I": (
+            0x41E0000000000000,  # 2^31
+            0xC1E0000000000000,  # -2^31
+            0x41F0000000000000,  # 2^32
+            0x43DFFFFFFFFFFFFF,  # 2^63 - 2^10
+            0x43E0000000000000,  # 2^63
+            0xC3E0000000000000,  # -2^63
+            0xC3E0000000000001,  # -2^63 - 2^11
+            0x43EFFFFFFFFFFFFF,  # 2^64 - 2^11
+            0x43F0000000000000,  # 2^64
+        ),
+        # Narrowing floating-point conversions
+        "D_S": (
+            0x47EFFFFFE0000000,  # max
+            0x3810000000000000,  # minnorm
+            0x36A0000000000000,  # min subnormal
+        ),
+        "S_H": (
+            0x477FE000,  # max
+            0x38800000,  # minnorm
+            0x33800000,  # min subnormal
+        ),
+        "D_H": (
+            0x40EFFC0000000000,  # max
+            0x3F10000000000000,  # minnorm
+            0x3E70000000000000,  # min subnormal
+        ),
+        "S_BF16": (
+            0x7F7F0000,  # max
+            0x00800000,  # minnorm
+            0x00010000,  # min subnormal
+        ),
+        # Integer to double: every 32-bit integer is exact
+        "W_D": (
+            0x80000000,  # INT32_MIN
+            0x7FFFFFFF,  # INT32_MAX
+        ),
+    }
+
+
 class VECTOR_EDGES:
     vx_edges = (
         "zero",

@@ -2,9 +2,9 @@
 
 normative_rule_definitions:
   - name: addiw_op
-    coverpoint: ["I_addw_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}"]
+    coverpoint: ["I_addiw_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}"]
   - name: addiw_overflow
-    coverpoint: ["I_addw_cg/cr_rs1_imm_edges"]
+    coverpoint: ["I_addiw_cg/cr_rs1_imm_edges"]
   # insn:addw[] and insn:subw[] are RV64I-only instructions that are defined analogously
   # to insn:add[] and insn:sub[] but operate on 32-bit values and produce signed 32-bit
   # results.
@@ -14,7 +14,7 @@ normative_rule_definitions:
   # Overflows are ignored, and the low 32-bits of the result is sign-extended to 64-bits
   # and written to the destination register.
   - name: addw_subw_overflow
-    coverpoint: ["I_addw_cg/cr_rs1_rs2_edges", "I_subw_cg/cr_rs1_imm_edges"]
+    coverpoint: ["I_addw_cg/cr_rs1_rs2_edges", "I_subw_cg/cr_rs1_rs2_edges"]
   - name: auipc_op_rv64i
     coverpoint: ["I_auipc_cg/{cp_rd, cp_imm_edges_20bit}"]
   # The insn:ld[] instruction loads a 64-bit value from memory into register rd for RV64I.
@@ -24,8 +24,8 @@ normative_rule_definitions:
         "I_lb_cg/cp_memval_byte",
         "I_lbu_cg/cp_memval_byte",
         "I_ld_cg/cp_memval_double",
-        "I_lh_cg/cp_memval_half",
-        "I_lhu_cg/cp_memval_half",
+        "I_lh_cg/cp_memval_hword",
+        "I_lhu_cg/cp_memval_hword",
       ]
   # The insn:lw[] instruction loads a 32-bit value from memory and sign-extends this to 64
   # bits before storing it in register rd for RV64I.
@@ -34,8 +34,8 @@ normative_rule_definitions:
       [
         "I_lb_cg/cp_memval_byte",
         "I_lbu_cg/cp_memval_byte",
-        "I_lh_cg/cp_memval_half",
-        "I_lhu_cg/cp_memval_half",
+        "I_lh_cg/cp_memval_hword",
+        "I_lhu_cg/cp_memval_hword",
         "I_lw_cg/cp_memval_word",
       ]
   # insn:lh[] and insn:lhu[] are defined analogously for 16-bit values, as are insn:lb[]
@@ -45,8 +45,8 @@ normative_rule_definitions:
       [
         "I_lb_cg/cp_memval_byte",
         "I_lbu_cg/cp_memval_byte",
-        "I_lh_cg/cp_memval_half",
-        "I_lhu_cg/cp_memval_half",
+        "I_lh_cg/cp_memval_hword",
+        "I_lhu_cg/cp_memval_hword",
       ]
   - name: lui_op_rv64i
     coverpoint: ["I_lui_cg/cp_imm_edges_20bit"]
@@ -93,9 +93,9 @@ normative_rule_definitions:
   - name: slliw_srliw_sraiw_op
     coverpoint:
       [
-        "I_slliw_cg/{cp_rs1, cp_rd, cp_uimm_5, cr_rs1_imm_edges_uimm}",
-        "I_sraiw_cg/{cp_rs1, cp_rd, cp_uimm_5, cr_rs1_imm_edges_uimm}",
-        "I_srliw_cg/{cp_rs1, cp_rd, cp_uimm_5, cr_rs1_imm_edges_uimm}",
+        "I_slliw_cg/{cp_rs1, cp_rd_nx0, cp_uimm_5, cr_rs1_imm_edges_uimmw}",
+        "I_sraiw_cg/{cp_rs1, cp_rd_nx0, cp_uimm_5, cr_rs1_imm_edges_uimmw}",
+        "I_srliw_cg/{cp_rs1, cp_rd_nx0, cp_uimm_5, cr_rs1_imm_edges_uimmw}",
       ]
   # insn:sllw[], insn:srlw[], and insn:sraw[] are RV64I-only instructions that are
   # analogously defined but operate on 32-bit values and sign-extend their 32-bit results
@@ -107,3 +107,42 @@ normative_rule_definitions:
         "I_sraw_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}",
         "I_srlw_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}",
       ]
+
+  # RV64I Base Instruction Set encodings (RV32/64G Instruction Set Listings)
+
+  # LWU
+  - name: lwu_enc
+    coverpoint: ["I_lwu_cg/cp_asm_count"]
+  # LD
+  - name: ld_enc
+    coverpoint: ["I_ld_cg/cp_asm_count"]
+  # SD
+  - name: sd_enc
+    coverpoint: ["I_sd_cg/cp_asm_count"]
+  # ADDIW
+  - name: addiw_enc
+    coverpoint: ["I_addiw_cg/cp_asm_count"]
+  # SLLIW
+  - name: slliw_enc
+    coverpoint: ["I_slliw_cg/cp_asm_count"]
+  # SRLIW
+  - name: srliw_enc
+    coverpoint: ["I_srliw_cg/cp_asm_count"]
+  # SRAIW
+  - name: sraiw_enc
+    coverpoint: ["I_sraiw_cg/cp_asm_count"]
+  # ADDW
+  - name: addw_enc
+    coverpoint: ["I_addw_cg/cp_asm_count"]
+  # SUBW
+  - name: subw_enc
+    coverpoint: ["I_subw_cg/cp_asm_count"]
+  # SLLW
+  - name: sllw_enc
+    coverpoint: ["I_sllw_cg/cp_asm_count"]
+  # SRLW
+  - name: srlw_enc
+    coverpoint: ["I_srlw_cg/cp_asm_count"]
+  # SRAW
+  - name: sraw_enc
+    coverpoint: ["I_sraw_cg/cp_asm_count"]

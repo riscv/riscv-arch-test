@@ -20,3 +20,11 @@ normative_rule_definitions:
         "ZfaZfhD_fmaxm_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H}",
         "ZfaZfhD_fminm_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H}",
       ]
+  # If the Zfh extension is implemented, FROUND.H and FROUNDNX.H instructions are
+  # analogously defined to operate on half-precision numbers. They are encoded like FCVT.H.S,
+  # but with rs2=4 and 5, respectively,
+  - name: fround-h_froundnx-h_op
+    coverpoint:
+      [
+        "{ZfaZfhD_fround_h_cg, ZfaZfhD_froundnx_h_cg}/{cp_NaNBox_D_H, cp_fs1_badNB_D_H}",
+      ]

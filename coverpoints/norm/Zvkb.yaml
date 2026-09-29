@@ -1,3 +1,110 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # All of the other Vector Crypto Extensions depend on Zve32x.
+  - name: Zvkb_Zvkg_Zvkned_Zvknha_Zvksed_Zvksh_Zvks_Zvksc_Zvksg_Zvkt_depZve32x
+    coverpoint: ["Definition, checked through UDB"]
+
+  # Each bit of Op1 is inverted and logically ANDed with the corresponding bits in vs2.
+  - name: vandn_op
+    # Representative coverpoints; also Zvkb16, Zvkb32 and the Zvbb vandn covergroups
+    coverpoint:
+      [
+        "Zvkb8_vandn_vv_cg/cr_vs2_vs1_edges",
+        "Zvkb8_vandn_vx_cg/cr_vs2_rs1_edges",
+        "Zvkb64_vandn_vv_cg/cr_vs2_vs1_edges",
+        "Zvkb64_vandn_vx_cg/cr_vs2_rs1_edges",
+      ]
+
+  # In the vector-scalar version, Op1 is the sign-extended or truncated value in scalar register
+  # rs1.
+  - name: vandn-vx_rs1
+    # Representative coverpoints; also the Zvbb vandn.vx covergroups
+    coverpoint:
+      [
+        "Zvkb8_vandn_vx_cg/cr_vs2_rs1_edges",
+        "Zvkb16_vandn_vx_cg/cr_vs2_rs1_edges",
+        "Zvkb32_vandn_vx_cg/cr_vs2_rs1_edges",
+        "Zvkb64_vandn_vx_cg/cr_vs2_rs1_edges",
+      ]
+
+  # In the vector-vector version, Op1 is vs1.
+  - name: vandn-vv_vs1
+    # Representative coverpoints; also the Zvbb vandn.vv covergroups
+    coverpoint:
+      [
+        "Zvkb8_vandn_vv_cg/cr_vs2_vs1_edges",
+        "Zvkb16_vandn_vv_cg/cr_vs2_vs1_edges",
+        "Zvkb32_vandn_vv_cg/cr_vs2_vs1_edges",
+        "Zvkb64_vandn_vv_cg/cr_vs2_vs1_edges",
+      ]
+
+  # A bit reversal is performed on the bits of each byte.
+  - name: vbrev8-v_op
+    # Representative coverpoints; also Zvkb16, Zvkb32 and the Zvbb vbrev8 covergroups
+    coverpoint:
+      [
+        "Zvkb8_vbrev8_v_cg/{cp_vs2_edges, cr_vl_lmul_sew8}",
+        "Zvkb64_vbrev8_v_cg/{cp_vs2_edges, cr_vl_lmul_sew64}",
+      ]
+
+  # A byte reversal is performed on each element of vs2, effectively performing an endian swap.
+  - name: vrev8-v_op
+    # Representative coverpoints; also Zvkb16, Zvkb32 and the Zvbb vrev8 covergroups
+    coverpoint:
+      [
+        "Zvkb8_vrev8_v_cg/{cp_vs2_edges, cr_vl_lmul_sew8}",
+        "Zvkb64_vrev8_v_cg/{cp_vs2_edges, cr_vl_lmul_sew64}",
+      ]
+
+  # The elements in vs2 are rotated left by the rotate amount specified by either the corresponding
+  # elements of vs1 (vector-vector), or integer register rs1 (vector-scalar). Only the low log2(SEW)
+  # bits of the rotate-amount value are used, all other bits are ignored.
+  - name: vrol_op
+    # Representative coverpoints; also Zvkb16, Zvkb32 and the Zvbb vrol covergroups
+    coverpoint:
+      [
+        "Zvkb8_vrol_vv_cg/cr_vs2_vs1_edges",
+        "Zvkb8_vrol_vx_cg/cr_vs2_rs1_edges",
+        "Zvkb64_vrol_vv_cg/cr_vs2_vs1_edges",
+        "Zvkb64_vrol_vx_cg/cr_vs2_rs1_edges",
+      ]
+
+  # The elements in vs2 are rotated right by the rotate amount specified by either the corresponding
+  # elements of vs1 (vector-vector), integer register rs1 (vector-scalar), or an immediate value
+  # (vector-immediate). Only the low log2(SEW) bits of the rotate-amount value are used, all other
+  # bits are ignored.
+  - name: vror_op
+    # Representative coverpoints; also Zvkb16, Zvkb32, Zvkb64 and the Zvbb vror covergroups
+    coverpoint:
+      [
+        "Zvkb8_vror_vv_cg/cr_vs2_vs1_edges",
+        "Zvkb8_vror_vx_cg/cr_vs2_rs1_edges",
+        "Zvkb8_vror_vi_cg/cr_vs2_imm_edges",
+        "Zvkb64_vror_vi_cg/cr_vs2_imm_edges",
+        "TODO: vror.vi with i5=1 (rotate amounts 32-63 at SEW=64)",
+      ]
+
+  # The Zvkt extension requires all implemented instructions from the following list to be executed
+  # with data-independent execution latency as defined in the RISC-V Scalar Cryptography Extensions
+  # specification.
+  - name: Zvkt_req
+    coverpoint: ["Untestable: microarchitectural timing"]
+
+  # Data-independent execution latency (DIEL) applies to all data operands of an instruction, even
+  # those that are not a part of the body or that are inactive. However, DIEL does not apply to
+  # other values such as vl, vtype, and the mask (when used to control execution of a masked vector
+  # instruction).
+  - name: Zvkt_diel_def
+    coverpoint: ["Untestable: microarchitectural timing"]
+
+  # Also, DIEL does not apply to constant values specified in the instruction encoding such as the
+  # use of the zero register (x0), and, in the case of immediate forms of an instruction, the values
+  # in the immediate fields (i.e., imm and uimm).
+  - name: Zvkt_diel_constants_exempt
+    coverpoint: ["Untestable: microarchitectural timing"]
+
+  # In some cases—which are explicitly specified in the lists below—operands that are used as
+  # control rather than data are exempt from DIEL.
+  - name: Zvkt_diel_control_exempt
+    coverpoint: ["Untestable: microarchitectural timing"]

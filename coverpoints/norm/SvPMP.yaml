@@ -6,6 +6,16 @@ normative_rule_definitions:
   - names: [pmp_check_pagetable_access, pmp_with_paging]
     coverpoint: ["SvPMP_cg/pmp0_pte_{noread,nowrite,noexec}_{s,u}"]
 
+  # Implementations with virtual memory are permitted to perform address translations
+  # speculatively and earlier than required by an explicit memory access, and are
+  # permitted to cache them in address translation cache structures—including possibly
+  # caching the identity mappings from effective address to physical address used in
+  # Bare translation modes and M-mode. The PMP settings for the resulting physical
+  # address may be checked (and possibly cached) at any point between the address
+  # translation and the explicit memory access.
+  - name: pmp_speculative_translations
+    coverpoint: ["Untestable: microarchitectural timing"]
+
   # when the PMP settings are modified, M-mode software must synchronize the PMP
   # settings with the virtual memory system and any PMP or address-translation caches.
   # This is accomplished by executing an SFENCE.VMA instruction with rs1=x0 and rs2=x0,

@@ -49,3 +49,44 @@ normative_rule_definitions:
     coverpoint: ["{M_remw_cg, M_remuw_cg}/{cr_rs1_rs2_edges}"]
   - name: mulw_op
     coverpoint: ["M_mulw_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
+
+  # RV32M and RV64M encodings (RV32/64G Instruction Set Listings)
+  # MUL
+  - name: mul_enc
+    coverpoint: ["M_mul_cg/cp_asm_count"]
+  # MULH
+  - name: mulh_enc
+    coverpoint: ["M_mulh_cg/cp_asm_count"]
+  # MULHSU
+  - name: mulhsu_enc
+    coverpoint: ["M_mulhsu_cg/cp_asm_count"]
+  # MULHU
+  - name: mulhu_enc
+    coverpoint: ["M_mulhu_cg/cp_asm_count"]
+  # DIV
+  - name: div_enc
+    coverpoint: ["M_div_cg/cp_asm_count"]
+  # DIVU
+  - name: divu_enc
+    coverpoint: ["M_divu_cg/cp_asm_count"]
+  # REM
+  - name: rem_enc
+    coverpoint: ["M_rem_cg/cp_asm_count"]
+  # REMU
+  - name: remu_enc
+    coverpoint: ["M_remu_cg/cp_asm_count"]
+  # MULW
+  - name: mulw_enc
+    coverpoint: ["M_mulw_cg/cp_asm_count"]
+  # DIVW
+  - name: divw_enc
+    coverpoint: ["M_divw_cg/cp_asm_count"]
+  # DIVUW
+  - name: divuw_enc
+    coverpoint: ["M_divuw_cg/cp_asm_count"]
+  # REMW
+  - name: remw_enc
+    coverpoint: ["M_remw_cg/cp_asm_count"]
+  # REMUW
+  - name: remuw_enc
+    coverpoint: ["M_remuw_cg/cp_asm_count"]

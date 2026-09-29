@@ -15,6 +15,16 @@ normative_rule_definitions:
   - name: Svnapot_range_napot
     coverpoint: ["Svnapot_cg/Svnapot_legal_enc_exec_{s, u}"]
 
+  # i|pte.ppn[i]|Description|pte.napot_bits === 0 0 0 0 0 ≥1|x xxxx xxx1 x xxxx xx1x x
+  # xxxx x1xx x xxxx 1000 x xxxx 0xxx x xxxx xxxx|Reserved Reserved Reserved 64 KiB
+  # contiguous region Reserved Reserved|- - - 4 - - ===
+  - name: Svnapot_enc_tbl
+    # Representative coverpoints; also the other Svnapot_{legal_enc,reserved_enc,reserved_ppni}_{exec,read,write}_{s,u}
+    coverpoint:
+      [
+        "Svnapot_cg/{Svnapot_legal_enc_exec_s, Svnapot_legal_enc_read_u, Svnapot_reserved_enc_write_s, Svnapot_reserved_ppni_read_s}",
+      ]
+
   # If the encoding in pte is valid according to &lt;&lt;norm:Svnapot_enc_tbl&gt;&gt;,
   # then instead of returning the original value of pte, implicit reads of a NAPOT PTE
   # return a copy of pte in which pte.ppn[i][pte.napot_bits-1:0] is replaced by

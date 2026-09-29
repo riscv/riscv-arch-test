@@ -1,3 +1,81 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # Zvbb depends upon the Zve32x extension.
+  - name: Zvbb_dependent_Zve32x
+    coverpoint: ["Definition, checked through UDB"]
+
+  # Zvbb provides support for EEW of 8, 16, and 32.
+  - name: Zvbb_eew
+    # Representative coverpoints; cp_asm_count in every Zvbb8, Zvbb16 and Zvbb32 covergroup
+    coverpoint:
+      [
+        "Zvbb8_vclz_v_cg/cp_asm_count",
+        "Zvbb16_vclz_v_cg/cp_asm_count",
+        "Zvbb32_vclz_v_cg/cp_asm_count",
+      ]
+
+  # If Zve64x is supported then Zvbb also adds support for EEW=64.
+  - name: Zvbb_eew_Zve64x
+    # Representative coverpoints; cp_asm_count in every Zvbb64 covergroup
+    coverpoint: ["Zvbb64_vclz_v_cg/cp_asm_count"]
+
+  # A bit reversal is performed on the bits of each element.
+  - name: vbrev-v_op
+    # Representative coverpoints; also Zvbb16_vbrev_v_cg and Zvbb32_vbrev_v_cg
+    coverpoint:
+      [
+        "Zvbb8_vbrev_v_cg/{cp_vs2_edges, cr_vl_lmul_sew8}",
+        "Zvbb64_vbrev_v_cg/{cp_vs2_edges, cr_vl_lmul_sew64}",
+      ]
+
+  # A leading zero count is performed on each element.
+  - name: vclz-v_op
+    # Representative coverpoints; also Zvbb16_vclz_v_cg and Zvbb32_vclz_v_cg
+    coverpoint:
+      [
+        "Zvbb8_vclz_v_cg/{cp_vs2_edges, cr_vl_lmul_sew8}",
+        "Zvbb64_vclz_v_cg/{cp_vs2_edges, cr_vl_lmul_sew64}",
+      ]
+
+  # The result for zero-valued inputs is the value SEW.
+  - name: vclz-v_op_zeroinput
+    coverpoint:
+      [
+        "Zvbb8_vclz_v_cg/cp_vs2_edges",
+        "Zvbb16_vclz_v_cg/cp_vs2_edges",
+        "Zvbb32_vclz_v_cg/cp_vs2_edges",
+        "Zvbb64_vclz_v_cg/cp_vs2_edges",
+      ]
+
+  # A population count is performed on each element.
+  - name: vcpop-v_op
+    # Representative coverpoints; also Zvbb16_vcpop_v_cg and Zvbb32_vcpop_v_cg
+    coverpoint:
+      [
+        "Zvbb8_vcpop_v_cg/{cp_vs2_edges, cr_vl_lmul_sew8}",
+        "Zvbb64_vcpop_v_cg/{cp_vs2_edges, cr_vl_lmul_sew64}",
+      ]
+
+  # A trailing zero count is performed on each element.
+  - name: vctz-v_op
+    # Representative coverpoints; also Zvbb16_vctz_v_cg and Zvbb32_vctz_v_cg
+    coverpoint:
+      [
+        "Zvbb8_vctz_v_cg/{cp_vs2_edges, cr_vl_lmul_sew8}",
+        "Zvbb64_vctz_v_cg/{cp_vs2_edges, cr_vl_lmul_sew64}",
+      ]
+
+  # The elements in vs2 are zero-extended to 2×SEW bits, then shifted left by the shift amount
+  # specified by either the corresponding elements of vs1 (vector-vector), integer register rs1
+  # (vector-scalar), or an immediate value (vector-immediate). Only the low log2(2×SEW) bits of the
+  # shift-amount value are used, all other bits are ignored.
+  - name: vwsll_op
+    # Representative coverpoints; also the other Zvbb16 and Zvbb32 vwsll covergroups
+    coverpoint:
+      [
+        "Zvbb8_vwsll_vv_cg/cr_vs2_vs1_edges",
+        "Zvbb8_vwsll_vx_cg/cr_vs2_rs1_edges",
+        "Zvbb8_vwsll_vi_cg/cr_vs2_imm_edges",
+        "Zvbb32_vwsll_vv_cg/cr_vs2_vs1_edges",
+      ]

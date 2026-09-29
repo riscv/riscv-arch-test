@@ -6,7 +6,13 @@ normative_rule_definitions:
   # address translation does not permit any access or raises a store access-fault
   # exception otherwise.
   - name: cbm_unperm_fault
-    coverpoint: ["PMPZicbo_cg/cp_cbo_{inval, flush, clean}"]
+    coverpoint: ["PMPZicbo_cg/{cp_cbo_inval, cp_cbo_flush, cp_cbo_clean}"]
+
+  # The permissions required for a cache-block management instruction to access a PMP region are
+  # defined in the CMO chapter; when such access is not permitted, the instruction raises a store
+  # access-fault exception.
+  - name: pmp_cbm_fault
+    coverpoint: ["PMPZicbo_cg/{cp_cbo_inval, cp_cbo_flush, cp_cbo_clean}"]
 
   # If access to the cache block is not permitted, a cache-block zero instruction
   # raises a store page-fault or store guest-page-fault exception if address
@@ -19,4 +25,4 @@ normative_rule_definitions:
   # instruction does not raise any exceptions and shall not access any caches or
   # memory.
   - name: cbp_unperm_noexcep
-    coverpoint: ["PMPZicbo_cg/cp_prefetch_{w, r, i}"]
+    coverpoint: ["PMPZicbo_cg/{cp_prefetch_w, cp_prefetch_r, cp_prefetch_i}"]

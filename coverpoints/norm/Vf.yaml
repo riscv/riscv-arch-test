@@ -1,3 +1,37 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # Vector single-width floating-point reductions for EEW=32 and EEW=64 are supported as well as
+  # widening reductions from FP32 to FP64.
+  - name: V_fp_reductions
+    # Representative coverpoints; also the Vf32/Vf64 vfredusum, vfredmax and vfredmin covergroups
+    coverpoint:
+      [
+        "Vf32_vfredosum_vs_cg/cp_asm_count",
+        "Vf64_vfredosum_vs_cg/cp_asm_count",
+        "Vf32_vfwredosum_vs_cg/cp_asm_count",
+        "Vf32_vfwredusum_vs_cg/cp_asm_count",
+      ]
+
+  # Zve32f supports all vector floating-point permutation instructions for floating-point operands
+  # with EEW=32.
+  - name: Zve32f_instr_perm
+    coverpoint:
+      [
+        "Vf32_vfmv_f_s_cg/cp_asm_count",
+        "Vf32_vfmv_s_f_cg/cp_asm_count",
+        "Vf32_vfslide1up_vf_cg/cp_asm_count",
+        "Vf32_vfslide1down_vf_cg/cp_asm_count",
+      ]
+
+  # Zve64d supports all vector floating-point permutation instructions for floating-point operands
+  # with EEW=32 or EEW=64.
+  - name: Zve64d_instr_perm
+    # Representative coverpoints; EEW=32: the Vf32 covergroups cited for Zve32f_instr_perm
+    coverpoint:
+      [
+        "Vf64_vfmv_f_s_cg/cp_asm_count",
+        "Vf64_vfmv_s_f_cg/cp_asm_count",
+        "Vf64_vfslide1up_vf_cg/cp_asm_count",
+        "Vf64_vfslide1down_vf_cg/cp_asm_count",
+      ]

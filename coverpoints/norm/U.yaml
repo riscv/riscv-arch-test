@@ -2,6 +2,44 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
+  # At any time, a RISC-V hardware thread (hart) is running at some privilege level encoded as
+  # a mode in one or more CSRs (control and status registers).
+  - name: always_priv_level
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # Three RISC-V privilege levels are currently defined
+  - name: priv_levels_txt
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # Level|Encoding|Name|Abbreviation === 0|00|User/Application|U¶1|01|Supervisor|S¶2|10|
+  # Reserved|¶3|11|Machine|M ===
+  - name: priv_levels_tbl
+    coverpoint: ["Sm_mprivinst_cg/cp_mret", "Sm_mcsr_cg/cp_mcsrwalk_masked"]
+
+  # attempts to perform operations not permitted by the current privilege mode will cause an
+  # exception to be raised.
+  - name: non_priv_exc
+    coverpoint:
+      ["U_ucsr_cg/cp_csr_insufficient_priv", "U_uprivinst_cg/cp_uprivinst"]
+
+  # The machine level has the highest privileges and is the only mandatory privilege level for
+  # a RISC-V hardware platform.
+  - name: m_level_high_priv_only_mandatory
+    coverpoint: ["Definition, checked through UDB"]
+
+  # Implementations might provide anywhere from 1 to 3 privilege modes
+  - name: priv_combs_txt
+    coverpoint: ["Definition, checked through UDB"]
+
+  # Number of levels|Supported Modes|Intended Usage === 1|M|Simple embedded systems¶2|M,
+  # U|Secure embedded systems¶3|M, S, U|Systems running Unix-like operating systems ===
+  - name: priv_combs_tbl
+    coverpoint: ["Definition, checked through UDB"]
+
+  # All hardware implementations must provide M-mode
+  - name: m_mode_mandatory
+    coverpoint: ["Definition, checked through UDB"]
+
   # The top two bits (csr[11:10]) indicate whether the register is read/write
   # (00,01, or 10) or read-only (11).
   - name: Zicsr_rw

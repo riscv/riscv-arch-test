@@ -43,12 +43,10 @@ SvSm_cg_cp_satp_access_tvm:
 SvSm_cg_cp_satp_access_m_csrw:
   # Read satp into x13 and check against expected.
   RVTEST_SIGUPD_CSR_READ(satp, x13, SvSm_cg_cp_satp_access_m_csrw, SvSm_cg_cp_satp_access_m_csrw_str)
-  li x6, 0
   csrs satp, x6
 SvSm_cg_cp_satp_access_m_csrs:
   # Read satp into x13 and check against expected.
   RVTEST_SIGUPD_CSR_READ(satp, x13, SvSm_cg_cp_satp_access_m_csrs, SvSm_cg_cp_satp_access_m_csrs_str)
-  li x6, 0
   csrc satp, x6
 SvSm_cg_cp_satp_access_m_csrc:
   # Read satp into x13 and check against expected.

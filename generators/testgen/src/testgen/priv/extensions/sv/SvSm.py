@@ -26,11 +26,13 @@ from testgen.priv.extensions.sv.page_tables import (
     create_page_walk,
 )
 from testgen.priv.extensions.sv.Sv import (
+    SATP_FIELDS,
     change_pte_to_be,
     emit_access,
     level_header,
     satp_access_ops,
     satp_csr_read,
+    satp_mode_value,
 )
 from testgen.priv.registry import add_priv_test_generator
 
@@ -176,11 +178,16 @@ def _t_satp_access(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode
     # Sv48/Sv57 configs also implement Sv39, so one M-mode satp test per xlen is enough.
     if sv.name not in ("sv32", "sv39"):
         return
-    value_reg, check_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    value_reg, bit_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
     chunk = test_data.begin_test_chunk(f"{sv.name}_satp_access_Mmode")
     chunk.section_header = comment_banner("cp_satp_access")
-    chunk.code.extend(satp_access_ops(test_data, "Mmode", (1, 2, 1), value_reg, check_reg))
-    test_data.int_regs.return_registers([value_reg, check_reg])
+    # MODE = sv with PPN = 0 (M-mode is not translated), then set and clear the lowest ASID bit.
+    asid_shift = SATP_FIELDS[sv.name][2]
+    chunk.code.extend([*satp_mode_value(sv, value_reg, bit_reg, root=False), f"LI(x{bit_reg}, 1 << {asid_shift})"])
+    chunk.code.extend(
+        [*satp_access_ops(test_data, "Mmode", (value_reg, bit_reg, bit_reg), check_reg), "csrw satp, zero"]
+    )
+    test_data.int_regs.return_registers([value_reg, bit_reg, check_reg])
     test_chunks.append(test_data.end_test_chunk())
 
 
@@ -299,7 +306,8 @@ def make_svsm_mstatus_tvm(test_data: TestData) -> list[TestChunk]:
     chunk.code.extend(
         [
             # TVM does not restrict M-mode, so all three accesses complete here.
-            *satp_access_ops(test_data, "Mmode", (0, 0, 0), value_reg, check_reg),
+            f"li x{value_reg}, 0",
+            *satp_access_ops(test_data, "Mmode", (value_reg, value_reg, value_reg), check_reg),
             "sfence.vma",
             "RVTEST_TSBI_GOTO_SMODE",
             "csrw satp, zero",

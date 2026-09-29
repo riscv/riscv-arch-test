@@ -2,9 +2,14 @@
 
 normative_rule_definitions:
   - name: fp_misaligned
-    coverpoint: ["{MisalignQ_flq_cg,MisalignQ_fsq_cg}/{cp_misalign}"]
+    coverpoint:
+      [
+        "TODO: MisalignQ has no coverage yet; needs misaligned flq and fsq coverpoints",
+      ]
   # New 128-bit variants of LOAD-FP and STORE-FP instructions are added, encoded with a
   # new value for the funct3 width field.
   - name: fsq_flq_op
     coverpoint:
-      ["MisalignQ_flq_cg/{cp_misalign}", "MisalignQ_fsq_cg/{cp_misalign}"]
+      [
+        "TODO: MisalignQ has no coverage yet; needs misaligned flq and fsq coverpoints",
+      ]

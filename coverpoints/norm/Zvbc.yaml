@@ -1,3 +1,37 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # Zvbc depends upon the Zve64x extension.
+  - name: Zvbc_dependent_Zve64x
+    coverpoint: ["Definition, checked through UDB"]
+
+  # The instructions in Zvbc are only defined for SEW=64.
+  - name: Zvbc_sew64only
+    # Other SEW values are reserved; see vclmul_sewn64_rsv and vclmulh_sewn64_rsv in SsstrictV.yaml
+    coverpoint:
+      [
+        "Zvbc64_vclmul_vv_cg/cp_asm_count",
+        "Zvbc64_vclmul_vx_cg/cp_asm_count",
+        "Zvbc64_vclmulh_vv_cg/cp_asm_count",
+        "Zvbc64_vclmulh_vx_cg/cp_asm_count",
+      ]
+
+  # Each 64-bit element in the vs2 vector register is carry-less multiplied by either each 64-bit
+  # element in vs1 (vector-vector), or the 64-bit value from integer register rs1 (vector-scalar).
+  # The result is the least significant 64 bits of the carry-less product.
+  - name: vclmul_op
+    coverpoint:
+      [
+        "Zvbc64_vclmul_vv_cg/{cr_vs2_vs1_edges, cr_vl_lmul_sew64}",
+        "Zvbc64_vclmul_vx_cg/{cr_vs2_rs1_edges, cr_vl_lmul_sew64}",
+      ]
+
+  # Each 64-bit element in the vs2 vector register is carry-less multiplied by either each 64-bit
+  # element in vs1 (vector-vector), or the 64-bit value from integer register rs1 (vector-scalar).
+  # The result is the most significant 64 bits of the carry-less product.
+  - name: vclmulh_op
+    coverpoint:
+      [
+        "Zvbc64_vclmulh_vv_cg/{cr_vs2_vs1_edges, cr_vl_lmul_sew64}",
+        "Zvbc64_vclmulh_vx_cg/{cr_vs2_rs1_edges, cr_vl_lmul_sew64}",
+      ]

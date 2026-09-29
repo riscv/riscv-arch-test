@@ -34,21 +34,24 @@ RVTEST_BEGIN
 /////////////////////////////////
 
   csrw scause, zero
-  li x14, 4
-  csrw satp, x14
+  LA(x8, rvtest_Sroot_pg_tbl)
+  srli x8, x8, 12
+  LI(x14, SATP_MODE_SV39 << 60)
+  or x8, x8, x14
+  LI(x9, 1 << 44)
+  csrw satp, x8
 Sv_cg_cp_satp_access_s_csrw:
   # Read satp into x6 and check against expected.
   RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_cg_cp_satp_access_s_csrw, Sv_cg_cp_satp_access_s_csrw_str)
-  li x14, 8
-  csrs satp, x14
+  csrs satp, x9
 Sv_cg_cp_satp_access_s_csrs:
   # Read satp into x6 and check against expected.
   RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_cg_cp_satp_access_s_csrs, Sv_cg_cp_satp_access_s_csrs_str)
-  li x14, 4
-  csrc satp, x14
+  csrc satp, x9
 Sv_cg_cp_satp_access_s_csrc:
   # Read satp into x6 and check against expected.
   RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_cg_cp_satp_access_s_csrc, Sv_cg_cp_satp_access_s_csrc_str)
+  csrw satp, zero
   RVTEST_TSBI_GOTO_UMODE
   csrw satp, x0
   csrs satp, x0

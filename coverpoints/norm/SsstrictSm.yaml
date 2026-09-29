@@ -51,3 +51,10 @@ normative_rule_definitions:
       [
         "SsstrictSm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}/{mcyclecfgh, minstretcfgh}",
       ]
+
+  # If U-mode is not supported, then registers menvcfg and menvcfgh do not exist.
+  - name: menvcfg_menvcfgh_no_u_mode
+    coverpoint:
+      [
+        "SsstrictSm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}/{menvcfg, menvcfgh}",
+      ]

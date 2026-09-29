@@ -1,3 +1,128 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # The Zvknhb, Zvkn, Zvknc, Zvkng, and Zvksc depend on Zve64x.
+  - name: Zvknhb_Zvkn_Zvknc_Zvkng_Zvksc_depZve64x
+    coverpoint: ["Definition, checked through UDB"]
+
+  # Zvknhb implies Zvknha.
+  - name: Zvknhb_impZvknha
+    coverpoint: ["Definition, checked through UDB"]
+
+  # SHA-256: these instructions work on 128-bit element groups comprised of four 32-bit elements.
+  - name: Zvknha_Zvknhb_sha256_egw128b_elem32b
+    # Representative coverpoints; also the Zvknha and Zvknhb32 vsha2cl covergroups
+    coverpoint:
+      [
+        "Zvknha_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknha_vsha2ms_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknhb32_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknhb32_vsha2ms_vv_cg/cr_vl_lmul_egs4_sew32",
+      ]
+
+  # SHA-512: these instructions work on 256-bit element groups comprised of four 64-bit elements.
+  - name: Zvknhb_sha512_egw256b_elem64b
+    coverpoint:
+      [
+        "Zvknhb64_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew64",
+        "Zvknhb64_vsha2cl_vv_cg/cr_vl_lmul_egs4_sew64",
+        "Zvknhb64_vsha2ms_vv_cg/cr_vl_lmul_egs4_sew64",
+      ]
+
+  # Zvknhb supports SHA-256 and SHA-512.
+  - name: Zvknhb_sha256_sha512
+    # Representative coverpoints; also the Zvknhb32 and Zvknhb64 vsha2cl covergroups
+    coverpoint:
+      [
+        "Zvknhb32_vsha2ch_vv_cg/cp_asm_count",
+        "Zvknhb32_vsha2ms_vv_cg/cp_asm_count",
+        "Zvknhb64_vsha2ch_vv_cg/cp_asm_count",
+        "Zvknhb64_vsha2ms_vv_cg/cp_asm_count",
+      ]
+
+  # Zvknha supports only SHA-256.
+  - name: Zvknha_sha256
+    # SEW=64 is reserved for Zvknha; see vsha2chl-vv_Zvknha_sewn32_rsv and
+    # vsha2ms-vv_Zvknha_sewn32_rsv in SsstrictV.yaml
+    coverpoint:
+      [
+        "Zvknha_vsha2ch_vv_cg/cp_asm_count",
+        "Zvknha_vsha2cl_vv_cg/cp_asm_count",
+        "Zvknha_vsha2ms_vv_cg/cp_asm_count",
+      ]
+
+  # To help avoid side-channel timing attacks, these instructions shall be implemented with
+  # data-independent timing.
+  - name: Zvknha_Zvknhb_dataindeptiming
+    coverpoint: ["Untestable: microarchitectural timing"]
+
+  # The number of element groups to be processed is vl/EGS. vl must be set to the number of SEW
+  # elements to be processed and therefore must be a multiple of EGS=4.
+  - name: Zvknha_Zvknhb_vl
+    # Representative coverpoints; also the vsha2cl and vsha2ms covergroups
+    coverpoint:
+      [
+        "Zvknha_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknhb32_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknhb64_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew64",
+      ]
+
+  # Likewise, vstart must be a multiple of EGS=4.
+  - name: Zvknha_Zvknhb_vstart
+    coverpoint: ["TODO: execute with vstart set to a nonzero multiple of EGS=4"]
+
+  # SEW=32: 2 rounds of SHA-256 compression are performed (Zvknha and Zvknhb)
+  - name: vsha2chl-vv_op_sew32
+    # Representative coverpoints; also cr_vs2_vs1_edges_egs4 and cr_vs1_vd_edges_egs4
+    coverpoint:
+      [
+        "Zvknha_vsha2ch_vv_cg/cr_vs2_vd_edges_egs4",
+        "Zvknha_vsha2cl_vv_cg/cr_vs2_vd_edges_egs4",
+        "Zvknhb32_vsha2ch_vv_cg/cr_vs2_vd_edges_egs4",
+        "Zvknhb32_vsha2cl_vv_cg/cr_vs2_vd_edges_egs4",
+      ]
+
+  # SEW=64: 2 rounds of SHA-512 compression are performed (Zvknhb)
+  - name: vsha2chl-vv_op_sew64
+    # Representative coverpoints; also cr_vs1_vd_edges_egs4 in these covergroups
+    coverpoint:
+      [
+        "Zvknhb64_vsha2ch_vv_cg/{cr_vs2_vd_edges_egs4, cr_vs2_vs1_edges_egs4}",
+        "Zvknhb64_vsha2cl_vv_cg/{cr_vs2_vd_edges_egs4, cr_vs2_vs1_edges_egs4}",
+      ]
+
+  # Two words of vs1 are processed with the 8 words of current state held in vd and vs2 to perform
+  # two rounds of hash computation producing four words of the next state.
+  - name: vsha2chl-vv_op
+    # Representative coverpoints; also cr_vs2_vd_edges_egs4, and the Zvknhb32/Zvknhb64 crosses
+    coverpoint:
+      [
+        "Zvknha_vsha2ch_vv_cg/{cr_vs2_vs1_edges_egs4, cr_vs1_vd_edges_egs4}",
+        "Zvknha_vsha2cl_vv_cg/{cr_vs2_vs1_edges_egs4, cr_vs1_vd_edges_egs4}",
+      ]
+
+  # SEW=32: Four rounds of SHA-256 message schedule expansion are performed (Zvknha and Zvknhb)
+  - name: vsha2ms-vv_op_sew32
+    # Representative coverpoints; also cr_vs2_vd_edges_egs4 in these covergroups
+    coverpoint:
+      [
+        "Zvknha_vsha2ms_vv_cg/{cr_vs2_vs1_edges_egs4, cr_vs1_vd_edges_egs4}",
+        "Zvknhb32_vsha2ms_vv_cg/{cr_vs2_vs1_edges_egs4, cr_vs1_vd_edges_egs4}",
+      ]
+
+  # SEW=64: Four rounds of SHA-512 message schedule expansion are performed (Zvknhb)
+  - name: vsha2ms-vv_op_sew64
+    coverpoint:
+      [
+        "Zvknhb64_vsha2ms_vv_cg/{cr_vs2_vs1_edges_egs4, cr_vs1_vd_edges_egs4, cr_vs2_vd_edges_egs4}",
+      ]
+
+  # Eleven of the last 16 SEW-sized message-schedule words from vd (oldest), vs2, and vs1 (most
+  # recent) are processed to produce the next 4 message-schedule words.
+  - name: vsha2ms-vv_op
+    # Representative coverpoints; also the Zvknhb32/Zvknhb64 vsha2ms crosses
+    coverpoint:
+      [
+        "Zvknha_vsha2ms_vv_cg/{cr_vs2_vs1_edges_egs4, cr_vs1_vd_edges_egs4, cr_vs2_vd_edges_egs4}",
+        "Zvknhb64_vsha2ms_vv_cg/cr_vs2_vs1_edges_egs4",
+      ]

@@ -486,7 +486,8 @@ normative_rule_definitions:
   # vector registers v0&amp;#8205;&amp;#8211;&amp;#8205;v31 and the CSRs csr:vcsr[],
   # csr:vxrm[], csr:vxsat[], csr:vstart[], csr:vl[], csr:vtype[], and csr:vlenb[].
   - name: mstatus_vs_op
-    coverpoint: ["TODO: test with vector"]
+    coverpoint:
+      ["SmV_cg/{cp_mstatus_vs_set_dirty_vcsr, cp_mstatus_vs_set_dirty_csr}"]
   # A vector context status field, csr::[vs], is added to csr:mstatus[][10:9] and shadowed
   # in csr:sstatus[][10:9]. It is defined analogously to the floating-point context status
   # field, csr::[fs].

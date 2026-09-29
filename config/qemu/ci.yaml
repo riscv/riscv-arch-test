@@ -14,6 +14,7 @@ ci_enabled: true
 # S:  sie mismatches on bit 13 (LCOFIE) https://gitlab.com/qemu-project/qemu/-/work_items/3969;
 #     QEMU accepts UXL=1, which Sail cannot model yet (https://github.com/riscv/sail-riscv/issues/1150)
 # Zacas/ZacasZabha: amocas with rd=x0 corrupts subsequent branch on x0 (https://gitlab.com/qemu-project/qemu/-/work_items/3526)
+# InterruptsSm/InterruptsS: https://gitlab.com/qemu-project/qemu/-/work_items/3969 seems to apply to mip.LCOFIP not writable either
 # ExceptionsZalrsc/ExceptionsSvZalrsc/ExceptionsSvZalrscSm: sc.w to no-permission region returns failure instead of raising
 #        store/AMO access fault (https://gitlab.com/qemu-project/qemu/-/work_items/4100, still failing in v11.1.1)
 # ExceptionsZicboU/S/Sm, SvZicbo: Zicbom CBOs skip PMA/PMP permission checks (https://gitlab.com/qemu-project/qemu/-/work_items/3501)
@@ -26,18 +27,18 @@ ci_enabled: true
 #     on RV32 the IMSIC bit is writable although Sail does not model IMSIC
 # ZawrsU and ZawrsS fail on qemu due to stval mismatching, filed QEMU issue https://gitlab.com/qemu-project/qemu/-/work_items/4080
 # Sdtrig*: Sail does not implement Sdtrig yet (https://github.com/riscv/sail-riscv/issues/222)
-# ZicfissU, ZicfissS, ZicfissSm: QEMU bugs
+# ZicfissU, ZicfissS, ZicfissSm, ZicfissV: QEMU bugs
 #  1. a shadow stack instruction on a non-SS page other than xwr=001 gets the ordinary permission
 #     check instead of a store/AMO access fault: SSPOPCHK on an RW page raises a software check
 #     (https://gitlab.com/qemu-project/qemu/-/work_items/4379), and SSPUSH/SSAMOSWAP on RW/RWX pages
-#     write, and on X/RX pages raise a store/AMO page fault (not yet reported)
+#     write, and on X/RX pages raise a store/AMO page fault (https://github.com/riscv/riscv-arch-test/issues/2603)
 #  2. the M-mode SSAMOSWAP access fault leaves a stale mtval, the previous fault's address, rather than
 #     zero or the faulting address (https://gitlab.com/qemu-project/qemu/-/work_items/4380)
 #  3. SSPOPCHK with satp.MODE=Bare below M does not fault (https://gitlab.com/qemu-project/qemu/-/work_items/4432)
 #  4. senvcfg.SSE keeps 1 after menvcfg.SSE is cleared (https://gitlab.com/qemu-project/qemu/-/work_items/4224)
-#  5. not yet reported: ssp[1:0] are writable; SSPOPCHK to a PMP read-only region does not fault;
-#     cbo.* on an SS page does not fault
-exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,ZicfissU,ZicfissS,ZicfissSm"
+#  5. ssp[1:0] are writable; SSPOPCHK to a PMP read-only region does not fault; cbo.* on an SS page
+#     does not fault after a load has cached its translation (https://github.com/riscv/riscv-arch-test/issues/2603)
+exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,ZicfissU,ZicfissS,ZicfissSm,ZicfissV"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"
 shards: 1

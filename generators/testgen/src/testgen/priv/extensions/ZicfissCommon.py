@@ -63,13 +63,11 @@ XWR_PERMS = {
     "111": "PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V",
 }
 
-# SSAMOSWAP.W/D follow the A-extension alignment rules, but whether the misaligned atomicity
-# granule (Zama16b) relaxation applies to them is not settled: Sail 0.14.1 executes a misaligned
-# SSAMOSWAP that stays inside a 16-byte granule, while Spike, QEMU and Whisper raise a store/AMO
-# access fault, and Sail has no option to choose. So the sweep starts 8 bytes into a 16-byte
-# block, where every misaligned SSAMOSWAP.D, and SSAMOSWAP.W at addr[2:0] of 5-7, crosses the
-# granule and must fault on every model. SSAMOSWAP.W at addr[2:0] of 1-3 cannot cross it, so
-# those offsets are left out until Sail can model both behaviours.
+# SSAMOSWAP follows the A-extension alignment rules, but the spec does not say whether the misaligned
+# atomicity granule applies to it (https://github.com/riscv/riscv-isa-manual/issues/3425): Sail honors
+# the granule and executes such an access, while Spike, QEMU and Whisper fault. The alignment sweep
+# starts 8 bytes into a 16-byte granule so that every misaligned access crosses it and must fault.
+# SSAMOSWAP.W with addr[2:0] of 1-3 cannot cross, so it is left out until that issue is resolved.
 SSAMOSWAP_SWEEP_BASE = 0x408
 
 

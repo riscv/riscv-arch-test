@@ -425,9 +425,10 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     cp_ss_address_alignment_ssp:   cross priv_mode_u, ss_push_instr, ssp_LSBs;
     cp_ss_address_alignment_pop:   cross priv_mode_u, ss_pop_instr, ssp_LSBs;
     cp_ss_address_alignment_swap:  cross priv_mode_u, ssamoswap_instr, ssamoswap_adr_LSBs {
-        // SSAMOSWAP.W at addr[2:0] of 1-3 stays inside one misaligned atomicity granule, where Sail
-        // executes it and Spike, QEMU and Whisper raise an access fault; see SSAMOSWAP_SWEEP_BASE in
-        // ZicfissCommon.py. Untested until Sail can model both.
+        // A misaligned SSAMOSWAP.W at addr[2:0] of 1-3 stays inside one misaligned atomicity
+        // granule. Whether the granule applies to SSAMOSWAP is an open spec question
+        // (https://github.com/riscv/riscv-isa-manual/issues/3425): Sail executes such an access and
+        // Spike, QEMU and Whisper fault, so it is untested until that is settled.
         ignore_bins w_within_granule =
             binsof(ssamoswap_instr.ssamoswap_w) && binsof(ssamoswap_adr_LSBs) intersect {[3'd1:3'd3]};
     }

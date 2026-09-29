@@ -1,3 +1,319 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # All instructions shall be implemented with data-independent timing. That is, the latency of the
+  # execution of these instructions shall not vary with different input values.
+  - name: zvk_dataindep_timing
+    coverpoint: ["Untestable: microarchitectural timing"]
+
+  # For all of the vector crypto instructions in this specification, EEW=SEW.
+  - name: veccrypto_eeweqsew
+    # Representative coverpoints; cr_vl_lmul_egs* in every vector crypto covergroup
+    coverpoint:
+      [
+        "Zvkned_vaesef_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvkg_vghsh_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknhb64_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew64",
+        "Zvksh_vsm3c_vi_cg/cr_vl_lmul_egs8_sew32",
+      ]
+
+  # Since vl and vstart refer to elements, Vector Crypto instructions that use elements groups
+  # require that these values are an integer multiple of the Element Group Size (EGS).
+  - name: veccrypto_vl_vstart_egsconstr
+    # Representative coverpoints; cr_vl_lmul_egs* in every vector crypto covergroup
+    coverpoint:
+      [
+        "Zvkned_vaesef_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvksh_vsm3me_vv_cg/cr_vl_lmul_egs8_sew32",
+        "TODO: vstart set to a nonzero multiple of EGS",
+      ]
+
+  # For element-group instructions, LMUL×VLEN must always be at least as large as EGW, otherwise an
+  # illegal-instruction exception is raised, even if vl=0.
+  - name: veccrypto_lmul_egwconstr
+    coverpoint:
+      [
+        "TODO: LMUL×VLEN < EGW, even with vl=0, raises an illegal-instruction exception",
+      ]
+
+  # In the case of the *.vs instructions defined in this specification, vs2 holds a 128-bit scalar
+  # element group.
+  - name: veccrypto_vsins_vs2
+    # Representative coverpoints; cp_vs2_edges_egs4 in every Zvkned and Zvksed *.vs covergroup
+    coverpoint:
+      [
+        "Zvkned_vaesef_vs_cg/cp_vs2_edges_egs4",
+        "Zvkned_vaesz_vs_cg/cp_vs2_edges_egs4",
+        "Zvksed_vsm4r_vs_cg/cp_vs2_edges_egs4",
+      ]
+
+  # they return vector results to vd, which is also a source vector operand.
+  - name: veccrypto_vsins_vd
+    # Representative coverpoints; the same coverpoints in the other Zvkned *.vs covergroups
+    coverpoint:
+      [
+        "Zvkned_vaesef_vs_cg/{cp_vd_edges_egs4_byte_0, cr_vl_lmul_egs4_sew32}",
+        "Zvksed_vsm4r_vs_cg/{cp_vd_edges_egs4_sm_byte_0, cr_vl_lmul_egs4_sew32}",
+      ]
+
+  # These instructions enable a single key, specified as a scalar element group in vs2, to be
+  # applied to each element group of register group vd.
+  - name: veccrypto_vsins_vs2function
+    # Representative coverpoints; also Zvkned_vaesdm_vs_cg and Zvkned_vaesem_vs_cg
+    coverpoint:
+      [
+        "Zvkned_vaesef_vs_cg/cr_vl_lmul_egs4_sew32",
+        "Zvkned_vaesdf_vs_cg/cr_vl_lmul_egs4_sew32",
+        "Zvkned_vaesz_vs_cg/cr_vl_lmul_egs4_sew32",
+        "Zvksed_vsm4r_vs_cg/cr_vl_lmul_egs4_sew32",
+      ]
+
+  # It is important to note that the Vector Crypto instructions are independent of the
+  # implementation of the Zkt extension and do not require that Zkt is implemented.
+  - name: veccrypto_indepZkt
+    coverpoint: ["Definition, checked through UDB"]
+
+  # All of these instructions work on 128-bit element groups comprised of four 32-bit elements.
+  - name: Zvkned_egw128b_elem32b
+    # Representative coverpoints; cr_vl_lmul_egs4_sew32 in every Zvkned covergroup
+    coverpoint:
+      [
+        "Zvkned_vaesef_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvkned_vaeskf1_vi_cg/cr_vl_lmul_egs4_sew32",
+        "Zvkned_vaesz_vs_cg/cr_vl_lmul_egs4_sew32",
+      ]
+
+  # To help avoid side-channel timing attacks, these instructions shall be implemented with
+  # data-independent timing.
+  - name: Zvkned_dataindeptiming
+    coverpoint: ["Untestable: microarchitectural timing"]
+
+  # The number of element groups to be processed is vl/EGS. vl must be set to the number of SEW=32
+  # elements to be processed and therefore must be a multiple of EGS=4.
+  - name: Zvkned_vl
+    # Representative coverpoints; cr_vl_lmul_egs4_sew32 in every Zvkned covergroup
+    coverpoint:
+      [
+        "Zvkned_vaesef_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvkned_vaeskf1_vi_cg/cr_vl_lmul_egs4_sew32",
+        "Zvkned_vaesz_vs_cg/cr_vl_lmul_egs4_sew32",
+      ]
+
+  # Likewise, vstart must be a multiple of EGS=4.
+  - name: Zvkned_vstart
+    coverpoint: ["TODO: execute with vstart set to a nonzero multiple of EGS=4"]
+
+  # This extension (Zvkn) is shorthand for the following set of other extensions: Zvkned, Zvknhb,
+  # Zvkb, Zvkt.
+  - name: Zvkn_def
+    coverpoint: ["Definition, checked through UDB"]
+
+  # This extension (Zvknc) is shorthand for the following set of other extensions: Zvkn, Zvbc.
+  - name: Zvknc_def
+    coverpoint: ["Definition, checked through UDB"]
+
+  # This extension (Zvkng) is shorthand for the following set of other extensions: Zvkn, Zvkg.
+  - name: Zvkng_def
+    coverpoint: ["Definition, checked through UDB"]
+
+  # A final-round AES block cipher decryption is performed.
+  - name: vaesdf_final
+    # Representative coverpoints; also cr_vs2_vd_edges_egs4_subbytes_1 through _15
+    coverpoint:
+      [
+        "Zvkned_vaesdf_vv_cg/{cr_vs2_vd_edges_egs4_subbytes_0, cr_vl_lmul_egs4_sew32}",
+        "Zvkned_vaesdf_vs_cg/{cr_vs2_vd_edges_egs4_subbytes_0, cr_vl_lmul_egs4_sew32}",
+      ]
+
+  # The InvShiftRows and InvSubBytes steps are applied to each round state element group from vd.
+  - name: vaesdf_ops
+    # Representative coverpoints; also cp_vd_edges_egs4_byte_1 through _14
+    coverpoint:
+      [
+        "Zvkned_vaesdf_vv_cg/{cp_vd_edges_egs4_byte_0, cp_vd_edges_egs4_byte_15}",
+        "Zvkned_vaesdf_vs_cg/{cp_vd_edges_egs4_byte_0, cp_vd_edges_egs4_byte_15}",
+      ]
+
+  # This is then XORed with the round key in either the corresponding element group in vs2
+  # (vector-vector form) or scalar element group in vs2 (vector-scalar form).
+  - name: vaesdf_xor_form
+    # Representative coverpoints; also cr_vs2_vd_edges_egs4_subbytes_1 through _15
+    coverpoint:
+      [
+        "Zvkned_vaesdf_vv_cg/{cp_vs2_edges_egs4, cr_vs2_vd_edges_egs4_subbytes_0}",
+        "Zvkned_vaesdf_vs_cg/{cp_vs2_edges_egs4, cr_vs2_vd_edges_egs4_subbytes_0}",
+      ]
+
+  # A middle-round AES block cipher decryption is performed.
+  - name: vaesdm_mid
+    # Representative coverpoints; also cr_vs2_vd_edges_egs4_subbytes_1 through _15
+    coverpoint:
+      [
+        "Zvkned_vaesdm_vv_cg/{cr_vs2_vd_edges_egs4_subbytes_0, cr_vl_lmul_egs4_sew32}",
+        "Zvkned_vaesdm_vs_cg/{cr_vs2_vd_edges_egs4_subbytes_0, cr_vl_lmul_egs4_sew32}",
+      ]
+
+  # The InvShiftRows and InvSubBytes steps are applied to each round state element group from vd.
+  - name: vaesdm_ops
+    # Representative coverpoints; also cp_vd_edges_egs4_byte_1 through _14
+    coverpoint:
+      [
+        "Zvkned_vaesdm_vv_cg/{cp_vd_edges_egs4_byte_0, cp_vd_edges_egs4_byte_15}",
+        "Zvkned_vaesdm_vs_cg/{cp_vd_edges_egs4_byte_0, cp_vd_edges_egs4_byte_15}",
+      ]
+
+  # This is then XORed with the round key in either the corresponding element group in vs2
+  # (vector-vector form) or the scalar element group in vs2 (vector-scalar form).
+  - name: vaesdm_xor_form
+    # Representative coverpoints; also cr_vs2_vd_edges_egs4_subbytes_1 through _15
+    coverpoint:
+      [
+        "Zvkned_vaesdm_vv_cg/{cp_vs2_edges_egs4, cr_vs2_vd_edges_egs4_subbytes_0}",
+        "Zvkned_vaesdm_vs_cg/{cp_vs2_edges_egs4, cr_vs2_vd_edges_egs4_subbytes_0}",
+      ]
+
+  # InvMixColumns step.
+  - name: vaesdm_invmix
+    # Representative coverpoints; also cr_vs2_vd_edges_egs4_subbytes_1 through _15
+    coverpoint:
+      [
+        "Zvkned_vaesdm_vv_cg/cr_vs2_vd_edges_egs4_subbytes_0",
+        "Zvkned_vaesdm_vs_cg/cr_vs2_vd_edges_egs4_subbytes_0",
+      ]
+
+  # A final-round encryption function of the AES block cipher is performed.
+  - name: vaesef_final
+    # Representative coverpoints; also cr_vs2_vd_edges_egs4_subbytes_1 through _15
+    coverpoint:
+      [
+        "Zvkned_vaesef_vv_cg/{cr_vs2_vd_edges_egs4_subbytes_0, cr_vl_lmul_egs4_sew32}",
+        "Zvkned_vaesef_vs_cg/{cr_vs2_vd_edges_egs4_subbytes_0, cr_vl_lmul_egs4_sew32}",
+      ]
+
+  # The SubBytes and ShiftRows steps are applied to each round state element group from vd.
+  - name: vaesef_ops
+    # Representative coverpoints; also cp_vd_edges_egs4_byte_1 through _14
+    coverpoint:
+      [
+        "Zvkned_vaesef_vv_cg/{cp_vd_edges_egs4_byte_0, cp_vd_edges_egs4_byte_15}",
+        "Zvkned_vaesef_vs_cg/{cp_vd_edges_egs4_byte_0, cp_vd_edges_egs4_byte_15}",
+      ]
+
+  # This is then XORed with the round key in either the corresponding element group in vs2
+  # (vector-vector form) or the scalar element group in vs2 (vector-scalar form).
+  - name: vaesef_xor_form
+    # Representative coverpoints; also cr_vs2_vd_edges_egs4_subbytes_1 through _15
+    coverpoint:
+      [
+        "Zvkned_vaesef_vv_cg/{cp_vs2_edges_egs4, cr_vs2_vd_edges_egs4_subbytes_0}",
+        "Zvkned_vaesef_vs_cg/{cp_vs2_edges_egs4, cr_vs2_vd_edges_egs4_subbytes_0}",
+      ]
+
+  # A middle-round encryption function of the AES block cipher is performed.
+  - name: vaesem_mid
+    # Representative coverpoints; also cr_vs2_vd_edges_egs4_subbytes_1 through _15
+    coverpoint:
+      [
+        "Zvkned_vaesem_vv_cg/{cr_vs2_vd_edges_egs4_subbytes_0, cr_vl_lmul_egs4_sew32}",
+        "Zvkned_vaesem_vs_cg/{cr_vs2_vd_edges_egs4_subbytes_0, cr_vl_lmul_egs4_sew32}",
+      ]
+
+  # The SubBytes, ShiftRows, and MixColumns steps are applied to each round state element group from
+  # vd.
+  - name: vaesem_ops
+    # Representative coverpoints; also cp_vd_edges_egs4_byte_1 through _14
+    coverpoint:
+      [
+        "Zvkned_vaesem_vv_cg/{cp_vd_edges_egs4_byte_0, cp_vd_edges_egs4_byte_15}",
+        "Zvkned_vaesem_vs_cg/{cp_vd_edges_egs4_byte_0, cp_vd_edges_egs4_byte_15}",
+      ]
+
+  # This is then XORed with the round key in either the corresponding element group in vs2
+  # (vector-vector form) or the scalar element group in vs2 (vector-scalar form).
+  - name: vaesem_xor_form
+    # Representative coverpoints; also cr_vs2_vd_edges_egs4_subbytes_1 through _15
+    coverpoint:
+      [
+        "Zvkned_vaesem_vv_cg/{cp_vs2_edges_egs4, cr_vs2_vd_edges_egs4_subbytes_0}",
+        "Zvkned_vaesem_vs_cg/{cp_vs2_edges_egs4, cr_vs2_vd_edges_egs4_subbytes_0}",
+      ]
+
+  # A single round of the forward AES-128 KeySchedule is performed.
+  - name: vaeskf1_round
+    # Representative coverpoints; also cp_vs2_edges_egs4_byte_1 through _14
+    coverpoint:
+      [
+        "Zvkned_vaeskf1_vi_cg/{cp_imm_5bit_u, cp_vs2_edges_egs4_byte_0, cp_vs2_edges_egs4_byte_15, cr_vl_lmul_egs4_sew32}",
+      ]
+
+  # The next round key is generated word by word from the current round key element group in vs2 and
+  # the immediately previous word of the round key.
+  - name: vaeskf1_wordgen
+    # Representative coverpoints; also cp_vs2_edges_egs4_byte_1 through _14
+    coverpoint:
+      [
+        "Zvkned_vaeskf1_vi_cg/{cp_vs2_edges_egs4_byte_0, cp_vs2_edges_egs4_byte_15}",
+      ]
+
+  # ranges from 1 to 10, comes from uimm[3:0]; uimm[4] is ignored.
+  - name: vaeskf1_uimm_src
+    coverpoint: ["Zvkned_vaeskf1_vi_cg/cp_imm_5bit_u"]
+
+  # The out-of-range uimm[3:0] values of 0 and 11–15 are mapped to in-range values by inverting
+  # uimm[3].
+  - name: vaeskf1_uimm_map
+    coverpoint: ["Zvkned_vaeskf1_vi_cg/cp_imm_5bit_u"]
+
+  # A single round of the forward AES-256 KeySchedule is performed.
+  - name: vaeskf2_round
+    # Representative coverpoints; also cr_vs2_vd_edges_egs4_subbytes_vs2_1 through _14
+    coverpoint:
+      [
+        "Zvkned_vaeskf2_vi_cg/{cp_imm_5bit_u, cr_vs2_vd_edges_egs4_subbytes_vs2_0, cr_vs2_vd_edges_egs4_subbytes_vs2_15, cr_vl_lmul_egs4_sew32}",
+      ]
+
+  # The next round key is generated word by word from the previous round key element group in vd and
+  # the immediately previous word of the round key.
+  - name: vaeskf2_wordgen
+    # Representative coverpoints; also cr_vs2_vd_edges_egs4_subbytes_vs2_1 through _15
+    coverpoint:
+      [
+        "Zvkned_vaeskf2_vi_cg/{cp_vd_edges_egs4, cr_vs2_vd_edges_egs4_subbytes_vs2_0}",
+      ]
+
+  # least significant word of the next round key is generated by applying a function to the most
+  # significant word of the current round key and then XORing the result with the round constant.
+  - name: vaeskf2_rcon_lsw
+    # Representative coverpoints; also cp_vs2_edges_egs4_byte_13 and _14
+    coverpoint:
+      [
+        "Zvkned_vaeskf2_vi_cg/{cp_imm_5bit_u, cp_vs2_edges_egs4_byte_12, cp_vs2_edges_egs4_byte_15}",
+      ]
+
+  # The round number is used to select the round constant as well as the function.
+  - name: vaeskf2_rcon_func
+    coverpoint: ["Zvkned_vaeskf2_vi_cg/cp_imm_5bit_u"]
+
+  # ranges from 2 to 14, comes from uimm[3:0]; uimm[4] is ignored.
+  - name: vaeskf2_uimm_src
+    coverpoint: ["Zvkned_vaeskf2_vi_cg/cp_imm_5bit_u"]
+
+  # The out-of-range uimm[3:0] values of 0–1 and 15 are mapped to in-range values by inverting
+  # uimm[3].
+  - name: vaeskf2_uimm_map
+    coverpoint: ["Zvkned_vaeskf2_vi_cg/cp_imm_5bit_u"]
+
+  # A round-0 AES block cipher operation is performed.
+  - name: vaesz_round0
+    coverpoint:
+      ["Zvkned_vaesz_vs_cg/{cr_vs2_vd_edges_egs4, cr_vl_lmul_egs4_sew32}"]
+
+  # There is only a *.vs form of the instruction.
+  - name: vaesz-vs_only
+    coverpoint: ["Zvkned_vaesz_vs_cg/cp_asm_count"]
+
+  # vs2 holds a scalar element group that is used as the round key for all of the round state
+  # element groups.
+  - name: vaesz_vs2_rk
+    coverpoint:
+      ["Zvkned_vaesz_vs_cg/{cp_vs2_edges_egs4, cr_vl_lmul_egs4_sew32}"]

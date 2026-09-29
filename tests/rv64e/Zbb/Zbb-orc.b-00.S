@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 78
+#define SIGUPD_COUNT 80
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -393,33 +393,47 @@ Zbb_orc_b_cg_cp_rs1_edges_orcb_0x100000001:
   # Check if x11 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x11, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x100000001, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x100000001_str)
 
-# Testcase cp_rs1_edges_orcb (Test source rs1 value = 0x1020408001020408)
-  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x1020408001020408
-Zbb_orc_b_cg_cp_rs1_edges_orcb_0x1020408001020408:
+# Testcase cp_rs1_edges_orcb (Test source rs1 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x0000000080000000
+Zbb_orc_b_cg_cp_rs1_edges_orcb_0x80000000:
   orc.b x11, x12 # perform operation
   # Check if x11 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x11, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x1020408001020408, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x1020408001020408_str)
+  RVTEST_SIGUPD(x10, x5, x4, x11, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x80000000, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x80000000_str)
 
-# Testcase cp_rs1_edges_orcb (Test source rs1 value = 0x2040801002040801)
-  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs1: x8 = 0x2040801002040801
-Zbb_orc_b_cg_cp_rs1_edges_orcb_0x2040801002040801:
+# Testcase cp_rs1_edges_orcb (Test source rs1 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs1: x8 = 0x000000007fffffff
+Zbb_orc_b_cg_cp_rs1_edges_orcb_0x7fffffff:
   orc.b x12, x8 # perform operation
   # Check if x12 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x12, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x2040801002040801, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x2040801002040801_str)
+  RVTEST_SIGUPD(x10, x5, x4, x12, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x7fffffff, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x7fffffff_str)
 
-# Testcase cp_rs1_edges_orcb (Test source rs1 value = 0x4080102004080102)
-  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load rs1: x7 = 0x4080102004080102
-Zbb_orc_b_cg_cp_rs1_edges_orcb_0x4080102004080102:
+# Testcase cp_rs1_edges_orcb (Test source rs1 value = 0x1020408001020408)
+  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load rs1: x7 = 0x1020408001020408
+Zbb_orc_b_cg_cp_rs1_edges_orcb_0x1020408001020408:
   orc.b x6, x7 # perform operation
   # Check if x6 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x6, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x4080102004080102, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x4080102004080102_str)
+  RVTEST_SIGUPD(x10, x5, x4, x6, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x1020408001020408, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x1020408001020408_str)
 
-# Testcase cp_rs1_edges_orcb (Test source rs1 value = 0x8010204008010204)
-  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x8010204008010204
-Zbb_orc_b_cg_cp_rs1_edges_orcb_0x8010204008010204:
+# Testcase cp_rs1_edges_orcb (Test source rs1 value = 0x2040801002040801)
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x2040801002040801
+Zbb_orc_b_cg_cp_rs1_edges_orcb_0x2040801002040801:
   orc.b x8, x6 # perform operation
   # Check if x8 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x8, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x8010204008010204, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x8010204008010204_str)
+  RVTEST_SIGUPD(x10, x5, x4, x8, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x2040801002040801, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x2040801002040801_str)
+
+# Testcase cp_rs1_edges_orcb (Test source rs1 value = 0x4080102004080102)
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x4080102004080102
+Zbb_orc_b_cg_cp_rs1_edges_orcb_0x4080102004080102:
+  orc.b x14, x3 # perform operation
+  # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x14, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x4080102004080102, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x4080102004080102_str)
+
+# Testcase cp_rs1_edges_orcb (Test source rs1 value = 0x8010204008010204)
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x8010204008010204
+Zbb_orc_b_cg_cp_rs1_edges_orcb_0x8010204008010204:
+  orc.b x7, x2 # perform operation
+  # Check if x7 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x7, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x8010204008010204, Zbb_orc_b_cg_cp_rs1_edges_orcb_0x8010204008010204_str)
 
 /////////////////////////////////
 // cmp_rd_rs1
@@ -603,6 +617,8 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000fffffffe
 .dword 0x0000000100000000
 .dword 0x0000000100000001
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
 .dword 0x1020408001020408
 .dword 0x2040801002040801
 .dword 0x4080102004080102
@@ -673,26 +689,28 @@ Zbb_orc_b_cg_cp_rs1_edges_orcb_0xffffffff_str: .string "\"test: 45; cg: Zbb_orc.
 Zbb_orc_b_cg_cp_rs1_edges_orcb_0xfffffffe_str: .string "\"test: 46; cg: Zbb_orc.b_cg; cp: cp_rs1_edges_orcb; bin: 0xfffffffe\""
 Zbb_orc_b_cg_cp_rs1_edges_orcb_0x100000000_str: .string "\"test: 47; cg: Zbb_orc.b_cg; cp: cp_rs1_edges_orcb; bin: 0x100000000\""
 Zbb_orc_b_cg_cp_rs1_edges_orcb_0x100000001_str: .string "\"test: 48; cg: Zbb_orc.b_cg; cp: cp_rs1_edges_orcb; bin: 0x100000001\""
-Zbb_orc_b_cg_cp_rs1_edges_orcb_0x1020408001020408_str: .string "\"test: 49; cg: Zbb_orc.b_cg; cp: cp_rs1_edges_orcb; bin: 0x1020408001020408\""
-Zbb_orc_b_cg_cp_rs1_edges_orcb_0x2040801002040801_str: .string "\"test: 50; cg: Zbb_orc.b_cg; cp: cp_rs1_edges_orcb; bin: 0x2040801002040801\""
-Zbb_orc_b_cg_cp_rs1_edges_orcb_0x4080102004080102_str: .string "\"test: 51; cg: Zbb_orc.b_cg; cp: cp_rs1_edges_orcb; bin: 0x4080102004080102\""
-Zbb_orc_b_cg_cp_rs1_edges_orcb_0x8010204008010204_str: .string "\"test: 52; cg: Zbb_orc.b_cg; cp: cp_rs1_edges_orcb; bin: 0x8010204008010204\""
-Zbb_orc_b_cg_cmp_rd_rs1_b0_str: .string "\"test: 53; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b0\""
-Zbb_orc_b_cg_cmp_rd_rs1_b1_str: .string "\"test: 54; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b1\""
-Zbb_orc_b_cg_cmp_rd_rs1_b2_str: .string "\"test: 55; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b2\""
-Zbb_orc_b_cg_cmp_rd_rs1_b3_str: .string "\"test: 56; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b3\""
-Zbb_orc_b_cg_cmp_rd_rs1_b4_str: .string "\"test: 57; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b4\""
-Zbb_orc_b_cg_cmp_rd_rs1_b5_str: .string "\"test: 58; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b5\""
-Zbb_orc_b_cg_cmp_rd_rs1_b6_str: .string "\"test: 59; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b6\""
-Zbb_orc_b_cg_cmp_rd_rs1_b7_str: .string "\"test: 60; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b7\""
-Zbb_orc_b_cg_cmp_rd_rs1_b8_str: .string "\"test: 61; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b8\""
-Zbb_orc_b_cg_cmp_rd_rs1_b9_str: .string "\"test: 62; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b9\""
-Zbb_orc_b_cg_cmp_rd_rs1_b10_str: .string "\"test: 63; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b10\""
-Zbb_orc_b_cg_cmp_rd_rs1_b11_str: .string "\"test: 64; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b11\""
-Zbb_orc_b_cg_cmp_rd_rs1_b12_str: .string "\"test: 65; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b12\""
-Zbb_orc_b_cg_cmp_rd_rs1_b13_str: .string "\"test: 66; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b13\""
-Zbb_orc_b_cg_cmp_rd_rs1_b14_str: .string "\"test: 67; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b14\""
-Zbb_orc_b_cg_cmp_rd_rs1_b15_str: .string "\"test: 68; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b15\""
+Zbb_orc_b_cg_cp_rs1_edges_orcb_0x80000000_str: .string "\"test: 49; cg: Zbb_orc.b_cg; cp: cp_rs1_edges_orcb; bin: 0x80000000\""
+Zbb_orc_b_cg_cp_rs1_edges_orcb_0x7fffffff_str: .string "\"test: 50; cg: Zbb_orc.b_cg; cp: cp_rs1_edges_orcb; bin: 0x7fffffff\""
+Zbb_orc_b_cg_cp_rs1_edges_orcb_0x1020408001020408_str: .string "\"test: 51; cg: Zbb_orc.b_cg; cp: cp_rs1_edges_orcb; bin: 0x1020408001020408\""
+Zbb_orc_b_cg_cp_rs1_edges_orcb_0x2040801002040801_str: .string "\"test: 52; cg: Zbb_orc.b_cg; cp: cp_rs1_edges_orcb; bin: 0x2040801002040801\""
+Zbb_orc_b_cg_cp_rs1_edges_orcb_0x4080102004080102_str: .string "\"test: 53; cg: Zbb_orc.b_cg; cp: cp_rs1_edges_orcb; bin: 0x4080102004080102\""
+Zbb_orc_b_cg_cp_rs1_edges_orcb_0x8010204008010204_str: .string "\"test: 54; cg: Zbb_orc.b_cg; cp: cp_rs1_edges_orcb; bin: 0x8010204008010204\""
+Zbb_orc_b_cg_cmp_rd_rs1_b0_str: .string "\"test: 55; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b0\""
+Zbb_orc_b_cg_cmp_rd_rs1_b1_str: .string "\"test: 56; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b1\""
+Zbb_orc_b_cg_cmp_rd_rs1_b2_str: .string "\"test: 57; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b2\""
+Zbb_orc_b_cg_cmp_rd_rs1_b3_str: .string "\"test: 58; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b3\""
+Zbb_orc_b_cg_cmp_rd_rs1_b4_str: .string "\"test: 59; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b4\""
+Zbb_orc_b_cg_cmp_rd_rs1_b5_str: .string "\"test: 60; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b5\""
+Zbb_orc_b_cg_cmp_rd_rs1_b6_str: .string "\"test: 61; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b6\""
+Zbb_orc_b_cg_cmp_rd_rs1_b7_str: .string "\"test: 62; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b7\""
+Zbb_orc_b_cg_cmp_rd_rs1_b8_str: .string "\"test: 63; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b8\""
+Zbb_orc_b_cg_cmp_rd_rs1_b9_str: .string "\"test: 64; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b9\""
+Zbb_orc_b_cg_cmp_rd_rs1_b10_str: .string "\"test: 65; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b10\""
+Zbb_orc_b_cg_cmp_rd_rs1_b11_str: .string "\"test: 66; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b11\""
+Zbb_orc_b_cg_cmp_rd_rs1_b12_str: .string "\"test: 67; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b12\""
+Zbb_orc_b_cg_cmp_rd_rs1_b13_str: .string "\"test: 68; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b13\""
+Zbb_orc_b_cg_cmp_rd_rs1_b14_str: .string "\"test: 69; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b14\""
+Zbb_orc_b_cg_cmp_rd_rs1_b15_str: .string "\"test: 70; cg: Zbb_orc.b_cg; cp: cmp_rd_rs1; bin: b15\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

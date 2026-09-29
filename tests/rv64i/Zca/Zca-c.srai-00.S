@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 353
+#define SIGUPD_COUNT 387
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -204,6 +204,20 @@ Zca_c_srai_cg_cp_rs1_edges_0x100000001:
   c.srai x9, 19 # perform operation
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Zca_c_srai_cg_cp_rs1_edges_0x100000001, Zca_c_srai_cg_cp_rs1_edges_0x100000001_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load rd/rs1: x8 = 0x0000000080000000
+Zca_c_srai_cg_cp_rs1_edges_0x80000000:
+  c.srai x8, 63 # perform operation
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Zca_c_srai_cg_cp_rs1_edges_0x80000000, Zca_c_srai_cg_cp_rs1_edges_0x80000000_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rd/rs1: x14 = 0x000000007fffffff
+Zca_c_srai_cg_cp_rs1_edges_0x7fffffff:
+  c.srai x14, 8 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_srai_cg_cp_rs1_edges_0x7fffffff, Zca_c_srai_cg_cp_rs1_edges_0x7fffffff_str)
 
 /////////////////////////////////
 // cr_rs1_imm_edges_c
@@ -2001,6 +2015,230 @@ Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x3f:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x3f, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x3f_str)
 
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x0000000080000000, imm = 1)
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rd/rs1: x11 = 0x0000000080000000
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x1:
+  c.srai x11, 1 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x11, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x1, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x1_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x0000000080000000, imm = 2)
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rd/rs1: x11 = 0x0000000080000000
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x2:
+  c.srai x11, 2 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x11, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x2, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x2_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x0000000080000000, imm = 3)
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rd/rs1: x14 = 0x0000000080000000
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x3:
+  c.srai x14, 3 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x3, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x3_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x0000000080000000, imm = 4)
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rd/rs1: x12 = 0x0000000080000000
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x4:
+  c.srai x12, 4 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x4, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x4_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x0000000080000000, imm = 8)
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rd/rs1: x10 = 0x0000000080000000
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x8:
+  c.srai x10, 8 # perform operation
+  # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x10, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x8, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x8_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x0000000080000000, imm = 14)
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rd/rs1: x11 = 0x0000000080000000
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0xe:
+  c.srai x11, 14 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x11, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0xe, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0xe_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x0000000080000000, imm = 15)
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rd/rs1: x11 = 0x0000000080000000
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0xf:
+  c.srai x11, 15 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x11, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0xf, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0xf_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x0000000080000000, imm = 16)
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rd/rs1: x15 = 0x0000000080000000
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x10:
+  c.srai x15, 16 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x10, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x10_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x0000000080000000, imm = 17)
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rd/rs1: x11 = 0x0000000080000000
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x11:
+  c.srai x11, 17 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x11, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x11, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x11_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x0000000080000000, imm = 30)
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rd/rs1: x15 = 0x0000000080000000
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x1e:
+  c.srai x15, 30 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x1e, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x1e_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x0000000080000000, imm = 31)
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rd/rs1: x9 = 0x0000000080000000
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x1f:
+  c.srai x9, 31 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x1f, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x1f_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x0000000080000000, imm = 32)
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rd/rs1: x15 = 0x0000000080000000
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x20:
+  c.srai x15, 32 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x20, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x20_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x0000000080000000, imm = 33)
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rd/rs1: x12 = 0x0000000080000000
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x21:
+  c.srai x12, 33 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x21, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x21_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x0000000080000000, imm = 48)
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rd/rs1: x14 = 0x0000000080000000
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x30:
+  c.srai x14, 48 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x30, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x30_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x0000000080000000, imm = 62)
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rd/rs1: x15 = 0x0000000080000000
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x3e:
+  c.srai x15, 62 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x3e, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x3e_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x0000000080000000, imm = 63)
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rd/rs1: x14 = 0x0000000080000000
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x3f:
+  c.srai x14, 63 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x3f, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x3f_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x000000007fffffff, imm = 1)
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rd/rs1: x10 = 0x000000007fffffff
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x1:
+  c.srai x10, 1 # perform operation
+  # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x10, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x1, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x1_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x000000007fffffff, imm = 2)
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rd/rs1: x12 = 0x000000007fffffff
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x2:
+  c.srai x12, 2 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x2, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x2_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x000000007fffffff, imm = 3)
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rd/rs1: x13 = 0x000000007fffffff
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x3:
+  c.srai x13, 3 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x3, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x3_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x000000007fffffff, imm = 4)
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rd/rs1: x9 = 0x000000007fffffff
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x4:
+  c.srai x9, 4 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x4, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x4_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x000000007fffffff, imm = 8)
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rd/rs1: x13 = 0x000000007fffffff
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x8:
+  c.srai x13, 8 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x8, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x8_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x000000007fffffff, imm = 14)
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rd/rs1: x11 = 0x000000007fffffff
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0xe:
+  c.srai x11, 14 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x11, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0xe, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0xe_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x000000007fffffff, imm = 15)
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rd/rs1: x13 = 0x000000007fffffff
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0xf:
+  c.srai x13, 15 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0xf, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0xf_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x000000007fffffff, imm = 16)
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rd/rs1: x11 = 0x000000007fffffff
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x10:
+  c.srai x11, 16 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x11, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x10, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x10_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x000000007fffffff, imm = 17)
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rd/rs1: x9 = 0x000000007fffffff
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x11:
+  c.srai x9, 17 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x11, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x11_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x000000007fffffff, imm = 30)
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rd/rs1: x11 = 0x000000007fffffff
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x1e:
+  c.srai x11, 30 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x11, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x1e, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x1e_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x000000007fffffff, imm = 31)
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rd/rs1: x9 = 0x000000007fffffff
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x1f:
+  c.srai x9, 31 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x1f, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x1f_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x000000007fffffff, imm = 32)
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rd/rs1: x13 = 0x000000007fffffff
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x20:
+  c.srai x13, 32 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x20, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x20_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x000000007fffffff, imm = 33)
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rd/rs1: x9 = 0x000000007fffffff
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x21:
+  c.srai x9, 33 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x21, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x21_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x000000007fffffff, imm = 48)
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rd/rs1: x13 = 0x000000007fffffff
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x30:
+  c.srai x13, 48 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x30, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x30_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x000000007fffffff, imm = 62)
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rd/rs1: x11 = 0x000000007fffffff
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x3e:
+  c.srai x11, 62 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x11, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x3e, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x3e_str)
+
+# Testcase cr_rs1_imm_edges_c (rs1 = 0x000000007fffffff, imm = 63)
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rd/rs1: x10 = 0x000000007fffffff
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x3f:
+  c.srai x10, 63 # perform operation
+  # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x10, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x3f, Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x3f_str)
+
 /////////////////////////////////
 // cp_uimm_n0
 /////////////////////////////////
@@ -2477,6 +2715,8 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000fffffffe
 .dword 0x0000000100000000
 .dword 0x0000000100000001
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
 .dword 0x0000000000000000
 .dword 0x0000000000000000
 .dword 0x0000000000000000
@@ -2733,6 +2973,38 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000001
 .dword 0x0000000100000001
 .dword 0x0000000100000001
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
 .dword 0x19a8d971279a2977
 .dword 0xbf9be910484f4ed9
 .dword 0x4dd0b1223c0edd43
@@ -2822,325 +3094,359 @@ Zca_c_srai_cg_cp_rs1_edges_0xffffffff_str: .string "\"test: 21; cg: Zca_c.srai_c
 Zca_c_srai_cg_cp_rs1_edges_0xfffffffe_str: .string "\"test: 22; cg: Zca_c.srai_cg; cp: cp_rs1_edges; bin: 0xfffffffe\""
 Zca_c_srai_cg_cp_rs1_edges_0x100000000_str: .string "\"test: 23; cg: Zca_c.srai_cg; cp: cp_rs1_edges; bin: 0x100000000\""
 Zca_c_srai_cg_cp_rs1_edges_0x100000001_str: .string "\"test: 24; cg: Zca_c.srai_cg; cp: cp_rs1_edges; bin: 0x100000001\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x1_str: .string "\"test: 25; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x1\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x2_str: .string "\"test: 26; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x2\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x3_str: .string "\"test: 27; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x3\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x4_str: .string "\"test: 28; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x4\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x8_str: .string "\"test: 29; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x8\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0xe_str: .string "\"test: 30; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0xe\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0xf_str: .string "\"test: 31; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0xf\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x10_str: .string "\"test: 32; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x10\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x11_str: .string "\"test: 33; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x11\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x1e_str: .string "\"test: 34; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x1e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x1f_str: .string "\"test: 35; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x1f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x20_str: .string "\"test: 36; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x20\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x21_str: .string "\"test: 37; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x21\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x30_str: .string "\"test: 38; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x30\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x3e_str: .string "\"test: 39; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x3e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x3f_str: .string "\"test: 40; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x3f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x1_str: .string "\"test: 41; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x1\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x2_str: .string "\"test: 42; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x2\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x3_str: .string "\"test: 43; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x3\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x4_str: .string "\"test: 44; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x4\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x8_str: .string "\"test: 45; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x8\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0xe_str: .string "\"test: 46; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0xe\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0xf_str: .string "\"test: 47; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0xf\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x10_str: .string "\"test: 48; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x10\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x11_str: .string "\"test: 49; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x11\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x1e_str: .string "\"test: 50; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x1e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x1f_str: .string "\"test: 51; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x1f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x20_str: .string "\"test: 52; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x20\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x21_str: .string "\"test: 53; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x21\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x30_str: .string "\"test: 54; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x30\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x3e_str: .string "\"test: 55; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x3e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x3f_str: .string "\"test: 56; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x3f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x1_str: .string "\"test: 57; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x1\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x2_str: .string "\"test: 58; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x2\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x3_str: .string "\"test: 59; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x3\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x4_str: .string "\"test: 60; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x4\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x8_str: .string "\"test: 61; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x8\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0xe_str: .string "\"test: 62; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0xe\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0xf_str: .string "\"test: 63; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0xf\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x10_str: .string "\"test: 64; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x10\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x11_str: .string "\"test: 65; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x11\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x1e_str: .string "\"test: 66; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x1e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x1f_str: .string "\"test: 67; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x1f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x20_str: .string "\"test: 68; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x20\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x21_str: .string "\"test: 69; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x21\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x30_str: .string "\"test: 70; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x30\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x3e_str: .string "\"test: 71; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x3e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x3f_str: .string "\"test: 72; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x3f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x1_str: .string "\"test: 73; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x1\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x2_str: .string "\"test: 74; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x2\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x3_str: .string "\"test: 75; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x3\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x4_str: .string "\"test: 76; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x4\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x8_str: .string "\"test: 77; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x8\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0xe_str: .string "\"test: 78; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0xe\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0xf_str: .string "\"test: 79; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0xf\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x10_str: .string "\"test: 80; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x10\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x11_str: .string "\"test: 81; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x11\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x1e_str: .string "\"test: 82; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x1e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x1f_str: .string "\"test: 83; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x1f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x20_str: .string "\"test: 84; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x20\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x21_str: .string "\"test: 85; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x21\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x30_str: .string "\"test: 86; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x30\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x3e_str: .string "\"test: 87; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x3e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x3f_str: .string "\"test: 88; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x3f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x1_str: .string "\"test: 89; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x1\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x2_str: .string "\"test: 90; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x2\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x3_str: .string "\"test: 91; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x3\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x4_str: .string "\"test: 92; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x4\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x8_str: .string "\"test: 93; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x8\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0xe_str: .string "\"test: 94; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0xe\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0xf_str: .string "\"test: 95; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0xf\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x10_str: .string "\"test: 96; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x10\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x11_str: .string "\"test: 97; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x11\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x1e_str: .string "\"test: 98; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x1e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x1f_str: .string "\"test: 99; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x1f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x20_str: .string "\"test: 100; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x20\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x21_str: .string "\"test: 101; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x21\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x30_str: .string "\"test: 102; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x30\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x3e_str: .string "\"test: 103; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x3e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x3f_str: .string "\"test: 104; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x3f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x1_str: .string "\"test: 105; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x1\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x2_str: .string "\"test: 106; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x2\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x3_str: .string "\"test: 107; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x3\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x4_str: .string "\"test: 108; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x4\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x8_str: .string "\"test: 109; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x8\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0xe_str: .string "\"test: 110; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0xe\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0xf_str: .string "\"test: 111; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0xf\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x10_str: .string "\"test: 112; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x10\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x11_str: .string "\"test: 113; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x11\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x1e_str: .string "\"test: 114; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x1e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x1f_str: .string "\"test: 115; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x1f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x20_str: .string "\"test: 116; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x20\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x21_str: .string "\"test: 117; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x21\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x30_str: .string "\"test: 118; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x30\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x3e_str: .string "\"test: 119; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x3e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x3f_str: .string "\"test: 120; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x3f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x1_str: .string "\"test: 121; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x1\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x2_str: .string "\"test: 122; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x2\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x3_str: .string "\"test: 123; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x3\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x4_str: .string "\"test: 124; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x4\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x8_str: .string "\"test: 125; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x8\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0xe_str: .string "\"test: 126; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0xe\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0xf_str: .string "\"test: 127; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0xf\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x10_str: .string "\"test: 128; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x10\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x11_str: .string "\"test: 129; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x11\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x1e_str: .string "\"test: 130; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x1e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x1f_str: .string "\"test: 131; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x1f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x20_str: .string "\"test: 132; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x20\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x21_str: .string "\"test: 133; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x21\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x30_str: .string "\"test: 134; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x30\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x3e_str: .string "\"test: 135; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x3e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x3f_str: .string "\"test: 136; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x3f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x1_str: .string "\"test: 137; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x1\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x2_str: .string "\"test: 138; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x2\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x3_str: .string "\"test: 139; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x3\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x4_str: .string "\"test: 140; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x4\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x8_str: .string "\"test: 141; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x8\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0xe_str: .string "\"test: 142; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0xe\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0xf_str: .string "\"test: 143; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0xf\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x10_str: .string "\"test: 144; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x10\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x11_str: .string "\"test: 145; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x11\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x1e_str: .string "\"test: 146; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x1e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x1f_str: .string "\"test: 147; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x1f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x20_str: .string "\"test: 148; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x20\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x21_str: .string "\"test: 149; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x21\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x30_str: .string "\"test: 150; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x30\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x3e_str: .string "\"test: 151; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x3e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x3f_str: .string "\"test: 152; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x3f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x1_str: .string "\"test: 153; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x1\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x2_str: .string "\"test: 154; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x2\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x3_str: .string "\"test: 155; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x3\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x4_str: .string "\"test: 156; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x4\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x8_str: .string "\"test: 157; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x8\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0xe_str: .string "\"test: 158; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0xe\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0xf_str: .string "\"test: 159; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0xf\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x10_str: .string "\"test: 160; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x10\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x11_str: .string "\"test: 161; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x11\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x1e_str: .string "\"test: 162; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x1e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x1f_str: .string "\"test: 163; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x1f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x20_str: .string "\"test: 164; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x20\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x21_str: .string "\"test: 165; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x21\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x30_str: .string "\"test: 166; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x30\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x3e_str: .string "\"test: 167; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x3e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x3f_str: .string "\"test: 168; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x3f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x1_str: .string "\"test: 169; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x1\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x2_str: .string "\"test: 170; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x2\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x3_str: .string "\"test: 171; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x3\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x4_str: .string "\"test: 172; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x4\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x8_str: .string "\"test: 173; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x8\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0xe_str: .string "\"test: 174; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0xe\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0xf_str: .string "\"test: 175; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0xf\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x10_str: .string "\"test: 176; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x10\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x11_str: .string "\"test: 177; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x11\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x1e_str: .string "\"test: 178; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x1e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x1f_str: .string "\"test: 179; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x1f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x20_str: .string "\"test: 180; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x20\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x21_str: .string "\"test: 181; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x21\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x30_str: .string "\"test: 182; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x30\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x3e_str: .string "\"test: 183; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x3e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x3f_str: .string "\"test: 184; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x3f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x1_str: .string "\"test: 185; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x1\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x2_str: .string "\"test: 186; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x2\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x3_str: .string "\"test: 187; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x3\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x4_str: .string "\"test: 188; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x4\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x8_str: .string "\"test: 189; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x8\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0xe_str: .string "\"test: 190; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0xe\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0xf_str: .string "\"test: 191; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0xf\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x10_str: .string "\"test: 192; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x10\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x11_str: .string "\"test: 193; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x11\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x1e_str: .string "\"test: 194; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x1e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x1f_str: .string "\"test: 195; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x1f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x20_str: .string "\"test: 196; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x20\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x21_str: .string "\"test: 197; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x21\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x30_str: .string "\"test: 198; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x30\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x3e_str: .string "\"test: 199; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x3e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x3f_str: .string "\"test: 200; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x3f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x1_str: .string "\"test: 201; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x1\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x2_str: .string "\"test: 202; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x2\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x3_str: .string "\"test: 203; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x3\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x4_str: .string "\"test: 204; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x4\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x8_str: .string "\"test: 205; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x8\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0xe_str: .string "\"test: 206; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0xe\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0xf_str: .string "\"test: 207; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0xf\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x10_str: .string "\"test: 208; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x10\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x11_str: .string "\"test: 209; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x11\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x1e_str: .string "\"test: 210; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x1e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x1f_str: .string "\"test: 211; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x1f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x20_str: .string "\"test: 212; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x20\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x21_str: .string "\"test: 213; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x21\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x30_str: .string "\"test: 214; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x30\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x3e_str: .string "\"test: 215; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x3e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x3f_str: .string "\"test: 216; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x3f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x1_str: .string "\"test: 217; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x1\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x2_str: .string "\"test: 218; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x2\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x3_str: .string "\"test: 219; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x3\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x4_str: .string "\"test: 220; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x4\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x8_str: .string "\"test: 221; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x8\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0xe_str: .string "\"test: 222; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0xe\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0xf_str: .string "\"test: 223; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0xf\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x10_str: .string "\"test: 224; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x10\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x11_str: .string "\"test: 225; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x11\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x1e_str: .string "\"test: 226; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x1e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x1f_str: .string "\"test: 227; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x1f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x20_str: .string "\"test: 228; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x20\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x21_str: .string "\"test: 229; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x21\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x30_str: .string "\"test: 230; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x30\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x3e_str: .string "\"test: 231; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x3e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x3f_str: .string "\"test: 232; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x3f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x1_str: .string "\"test: 233; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x1\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x2_str: .string "\"test: 234; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x2\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x3_str: .string "\"test: 235; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x3\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x4_str: .string "\"test: 236; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x4\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x8_str: .string "\"test: 237; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x8\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0xe_str: .string "\"test: 238; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0xe\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0xf_str: .string "\"test: 239; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0xf\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x10_str: .string "\"test: 240; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x10\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x11_str: .string "\"test: 241; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x11\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x1e_str: .string "\"test: 242; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x1e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x1f_str: .string "\"test: 243; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x1f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x20_str: .string "\"test: 244; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x20\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x21_str: .string "\"test: 245; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x21\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x30_str: .string "\"test: 246; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x30\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x3e_str: .string "\"test: 247; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x3e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x3f_str: .string "\"test: 248; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x3f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x1_str: .string "\"test: 249; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x1\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x2_str: .string "\"test: 250; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x2\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x3_str: .string "\"test: 251; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x3\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x4_str: .string "\"test: 252; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x4\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x8_str: .string "\"test: 253; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x8\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0xe_str: .string "\"test: 254; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0xe\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0xf_str: .string "\"test: 255; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0xf\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x10_str: .string "\"test: 256; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x10\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x11_str: .string "\"test: 257; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x11\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x1e_str: .string "\"test: 258; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x1e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x1f_str: .string "\"test: 259; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x1f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x20_str: .string "\"test: 260; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x20\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x21_str: .string "\"test: 261; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x21\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x30_str: .string "\"test: 262; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x30\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x3e_str: .string "\"test: 263; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x3e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x3f_str: .string "\"test: 264; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x3f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x1_str: .string "\"test: 265; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x1\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x2_str: .string "\"test: 266; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x2\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x3_str: .string "\"test: 267; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x3\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x4_str: .string "\"test: 268; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x4\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x8_str: .string "\"test: 269; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x8\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0xe_str: .string "\"test: 270; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0xe\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0xf_str: .string "\"test: 271; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0xf\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x10_str: .string "\"test: 272; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x10\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x11_str: .string "\"test: 273; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x11\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x1e_str: .string "\"test: 274; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x1e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x1f_str: .string "\"test: 275; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x1f\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x20_str: .string "\"test: 276; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x20\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x21_str: .string "\"test: 277; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x21\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x30_str: .string "\"test: 278; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x30\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x3e_str: .string "\"test: 279; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x3e\""
-Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x3f_str: .string "\"test: 280; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x3f\""
-Zca_c_srai_cg_cp_uimm_n0_uimm1_str: .string "\"test: 281; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm1\""
-Zca_c_srai_cg_cp_uimm_n0_uimm2_str: .string "\"test: 282; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm2\""
-Zca_c_srai_cg_cp_uimm_n0_uimm3_str: .string "\"test: 283; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm3\""
-Zca_c_srai_cg_cp_uimm_n0_uimm4_str: .string "\"test: 284; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm4\""
-Zca_c_srai_cg_cp_uimm_n0_uimm5_str: .string "\"test: 285; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm5\""
-Zca_c_srai_cg_cp_uimm_n0_uimm6_str: .string "\"test: 286; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm6\""
-Zca_c_srai_cg_cp_uimm_n0_uimm7_str: .string "\"test: 287; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm7\""
-Zca_c_srai_cg_cp_uimm_n0_uimm8_str: .string "\"test: 288; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm8\""
-Zca_c_srai_cg_cp_uimm_n0_uimm9_str: .string "\"test: 289; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm9\""
-Zca_c_srai_cg_cp_uimm_n0_uimm10_str: .string "\"test: 290; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm10\""
-Zca_c_srai_cg_cp_uimm_n0_uimm11_str: .string "\"test: 291; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm11\""
-Zca_c_srai_cg_cp_uimm_n0_uimm12_str: .string "\"test: 292; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm12\""
-Zca_c_srai_cg_cp_uimm_n0_uimm13_str: .string "\"test: 293; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm13\""
-Zca_c_srai_cg_cp_uimm_n0_uimm14_str: .string "\"test: 294; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm14\""
-Zca_c_srai_cg_cp_uimm_n0_uimm15_str: .string "\"test: 295; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm15\""
-Zca_c_srai_cg_cp_uimm_n0_uimm16_str: .string "\"test: 296; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm16\""
-Zca_c_srai_cg_cp_uimm_n0_uimm17_str: .string "\"test: 297; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm17\""
-Zca_c_srai_cg_cp_uimm_n0_uimm18_str: .string "\"test: 298; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm18\""
-Zca_c_srai_cg_cp_uimm_n0_uimm19_str: .string "\"test: 299; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm19\""
-Zca_c_srai_cg_cp_uimm_n0_uimm20_str: .string "\"test: 300; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm20\""
-Zca_c_srai_cg_cp_uimm_n0_uimm21_str: .string "\"test: 301; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm21\""
-Zca_c_srai_cg_cp_uimm_n0_uimm22_str: .string "\"test: 302; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm22\""
-Zca_c_srai_cg_cp_uimm_n0_uimm23_str: .string "\"test: 303; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm23\""
-Zca_c_srai_cg_cp_uimm_n0_uimm24_str: .string "\"test: 304; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm24\""
-Zca_c_srai_cg_cp_uimm_n0_uimm25_str: .string "\"test: 305; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm25\""
-Zca_c_srai_cg_cp_uimm_n0_uimm26_str: .string "\"test: 306; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm26\""
-Zca_c_srai_cg_cp_uimm_n0_uimm27_str: .string "\"test: 307; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm27\""
-Zca_c_srai_cg_cp_uimm_n0_uimm28_str: .string "\"test: 308; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm28\""
-Zca_c_srai_cg_cp_uimm_n0_uimm29_str: .string "\"test: 309; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm29\""
-Zca_c_srai_cg_cp_uimm_n0_uimm30_str: .string "\"test: 310; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm30\""
-Zca_c_srai_cg_cp_uimm_n0_uimm31_str: .string "\"test: 311; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm31\""
-Zca_c_srai_cg_cp_uimm_n0_uimm32_str: .string "\"test: 312; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm32\""
-Zca_c_srai_cg_cp_uimm_n0_uimm33_str: .string "\"test: 313; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm33\""
-Zca_c_srai_cg_cp_uimm_n0_uimm34_str: .string "\"test: 314; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm34\""
-Zca_c_srai_cg_cp_uimm_n0_uimm35_str: .string "\"test: 315; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm35\""
-Zca_c_srai_cg_cp_uimm_n0_uimm36_str: .string "\"test: 316; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm36\""
-Zca_c_srai_cg_cp_uimm_n0_uimm37_str: .string "\"test: 317; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm37\""
-Zca_c_srai_cg_cp_uimm_n0_uimm38_str: .string "\"test: 318; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm38\""
-Zca_c_srai_cg_cp_uimm_n0_uimm39_str: .string "\"test: 319; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm39\""
-Zca_c_srai_cg_cp_uimm_n0_uimm40_str: .string "\"test: 320; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm40\""
-Zca_c_srai_cg_cp_uimm_n0_uimm41_str: .string "\"test: 321; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm41\""
-Zca_c_srai_cg_cp_uimm_n0_uimm42_str: .string "\"test: 322; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm42\""
-Zca_c_srai_cg_cp_uimm_n0_uimm43_str: .string "\"test: 323; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm43\""
-Zca_c_srai_cg_cp_uimm_n0_uimm44_str: .string "\"test: 324; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm44\""
-Zca_c_srai_cg_cp_uimm_n0_uimm45_str: .string "\"test: 325; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm45\""
-Zca_c_srai_cg_cp_uimm_n0_uimm46_str: .string "\"test: 326; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm46\""
-Zca_c_srai_cg_cp_uimm_n0_uimm47_str: .string "\"test: 327; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm47\""
-Zca_c_srai_cg_cp_uimm_n0_uimm48_str: .string "\"test: 328; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm48\""
-Zca_c_srai_cg_cp_uimm_n0_uimm49_str: .string "\"test: 329; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm49\""
-Zca_c_srai_cg_cp_uimm_n0_uimm50_str: .string "\"test: 330; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm50\""
-Zca_c_srai_cg_cp_uimm_n0_uimm51_str: .string "\"test: 331; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm51\""
-Zca_c_srai_cg_cp_uimm_n0_uimm52_str: .string "\"test: 332; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm52\""
-Zca_c_srai_cg_cp_uimm_n0_uimm53_str: .string "\"test: 333; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm53\""
-Zca_c_srai_cg_cp_uimm_n0_uimm54_str: .string "\"test: 334; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm54\""
-Zca_c_srai_cg_cp_uimm_n0_uimm55_str: .string "\"test: 335; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm55\""
-Zca_c_srai_cg_cp_uimm_n0_uimm56_str: .string "\"test: 336; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm56\""
-Zca_c_srai_cg_cp_uimm_n0_uimm57_str: .string "\"test: 337; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm57\""
-Zca_c_srai_cg_cp_uimm_n0_uimm58_str: .string "\"test: 338; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm58\""
-Zca_c_srai_cg_cp_uimm_n0_uimm59_str: .string "\"test: 339; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm59\""
-Zca_c_srai_cg_cp_uimm_n0_uimm60_str: .string "\"test: 340; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm60\""
-Zca_c_srai_cg_cp_uimm_n0_uimm61_str: .string "\"test: 341; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm61\""
-Zca_c_srai_cg_cp_uimm_n0_uimm62_str: .string "\"test: 342; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm62\""
-Zca_c_srai_cg_cp_uimm_n0_uimm63_str: .string "\"test: 343; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm63\""
+Zca_c_srai_cg_cp_rs1_edges_0x80000000_str: .string "\"test: 25; cg: Zca_c.srai_cg; cp: cp_rs1_edges; bin: 0x80000000\""
+Zca_c_srai_cg_cp_rs1_edges_0x7fffffff_str: .string "\"test: 26; cg: Zca_c.srai_cg; cp: cp_rs1_edges; bin: 0x7fffffff\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x1_str: .string "\"test: 27; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x1\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x2_str: .string "\"test: 28; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x2\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x3_str: .string "\"test: 29; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x3\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x4_str: .string "\"test: 30; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x4\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x8_str: .string "\"test: 31; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x8\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0xe_str: .string "\"test: 32; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0xe\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0xf_str: .string "\"test: 33; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0xf\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x10_str: .string "\"test: 34; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x10\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x11_str: .string "\"test: 35; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x11\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x1e_str: .string "\"test: 36; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x1e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x1f_str: .string "\"test: 37; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x1f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x20_str: .string "\"test: 38; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x20\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x21_str: .string "\"test: 39; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x21\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x30_str: .string "\"test: 40; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x30\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x3e_str: .string "\"test: 41; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x3e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x0_immval_0x3f_str: .string "\"test: 42; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x0, immval=0x3f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x1_str: .string "\"test: 43; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x1\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x2_str: .string "\"test: 44; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x2\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x3_str: .string "\"test: 45; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x3\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x4_str: .string "\"test: 46; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x4\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x8_str: .string "\"test: 47; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x8\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0xe_str: .string "\"test: 48; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0xe\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0xf_str: .string "\"test: 49; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0xf\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x10_str: .string "\"test: 50; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x10\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x11_str: .string "\"test: 51; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x11\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x1e_str: .string "\"test: 52; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x1e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x1f_str: .string "\"test: 53; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x1f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x20_str: .string "\"test: 54; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x20\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x21_str: .string "\"test: 55; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x21\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x30_str: .string "\"test: 56; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x30\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x3e_str: .string "\"test: 57; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x3e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x1_immval_0x3f_str: .string "\"test: 58; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x1, immval=0x3f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x1_str: .string "\"test: 59; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x1\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x2_str: .string "\"test: 60; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x2\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x3_str: .string "\"test: 61; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x3\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x4_str: .string "\"test: 62; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x4\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x8_str: .string "\"test: 63; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x8\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0xe_str: .string "\"test: 64; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0xe\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0xf_str: .string "\"test: 65; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0xf\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x10_str: .string "\"test: 66; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x10\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x11_str: .string "\"test: 67; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x11\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x1e_str: .string "\"test: 68; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x1e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x1f_str: .string "\"test: 69; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x1f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x20_str: .string "\"test: 70; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x20\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x21_str: .string "\"test: 71; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x21\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x30_str: .string "\"test: 72; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x30\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x3e_str: .string "\"test: 73; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x3e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x2_immval_0x3f_str: .string "\"test: 74; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x2, immval=0x3f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x1_str: .string "\"test: 75; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x1\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x2_str: .string "\"test: 76; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x2\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x3_str: .string "\"test: 77; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x3\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x4_str: .string "\"test: 78; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x4\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x8_str: .string "\"test: 79; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x8\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0xe_str: .string "\"test: 80; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0xe\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0xf_str: .string "\"test: 81; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0xf\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x10_str: .string "\"test: 82; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x10\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x11_str: .string "\"test: 83; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x11\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x1e_str: .string "\"test: 84; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x1e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x1f_str: .string "\"test: 85; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x1f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x20_str: .string "\"test: 86; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x20\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x21_str: .string "\"test: 87; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x21\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x30_str: .string "\"test: 88; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x30\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x3e_str: .string "\"test: 89; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x3e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000000_immval_0x3f_str: .string "\"test: 90; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000000, immval=0x3f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x1_str: .string "\"test: 91; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x1\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x2_str: .string "\"test: 92; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x2\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x3_str: .string "\"test: 93; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x3\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x4_str: .string "\"test: 94; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x4\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x8_str: .string "\"test: 95; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x8\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0xe_str: .string "\"test: 96; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0xe\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0xf_str: .string "\"test: 97; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0xf\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x10_str: .string "\"test: 98; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x10\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x11_str: .string "\"test: 99; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x11\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x1e_str: .string "\"test: 100; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x1e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x1f_str: .string "\"test: 101; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x1f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x20_str: .string "\"test: 102; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x20\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x21_str: .string "\"test: 103; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x21\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x30_str: .string "\"test: 104; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x30\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x3e_str: .string "\"test: 105; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x3e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x8000000000000001_immval_0x3f_str: .string "\"test: 106; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x8000000000000001, immval=0x3f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x1_str: .string "\"test: 107; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x1\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x2_str: .string "\"test: 108; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x2\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x3_str: .string "\"test: 109; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x3\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x4_str: .string "\"test: 110; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x4\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x8_str: .string "\"test: 111; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x8\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0xe_str: .string "\"test: 112; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0xe\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0xf_str: .string "\"test: 113; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0xf\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x10_str: .string "\"test: 114; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x10\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x11_str: .string "\"test: 115; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x11\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x1e_str: .string "\"test: 116; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x1e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x1f_str: .string "\"test: 117; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x1f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x20_str: .string "\"test: 118; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x20\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x21_str: .string "\"test: 119; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x21\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x30_str: .string "\"test: 120; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x30\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x3e_str: .string "\"test: 121; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x3e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffffffffffff_immval_0x3f_str: .string "\"test: 122; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffffffffffff, immval=0x3f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x1_str: .string "\"test: 123; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x1\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x2_str: .string "\"test: 124; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x2\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x3_str: .string "\"test: 125; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x3\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x4_str: .string "\"test: 126; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x4\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x8_str: .string "\"test: 127; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x8\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0xe_str: .string "\"test: 128; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0xe\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0xf_str: .string "\"test: 129; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0xf\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x10_str: .string "\"test: 130; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x10\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x11_str: .string "\"test: 131; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x11\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x1e_str: .string "\"test: 132; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x1e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x1f_str: .string "\"test: 133; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x1f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x20_str: .string "\"test: 134; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x20\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x21_str: .string "\"test: 135; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x21\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x30_str: .string "\"test: 136; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x30\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x3e_str: .string "\"test: 137; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x3e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7ffffffffffffffe_immval_0x3f_str: .string "\"test: 138; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7ffffffffffffffe, immval=0x3f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x1_str: .string "\"test: 139; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x1\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x2_str: .string "\"test: 140; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x2\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x3_str: .string "\"test: 141; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x3\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x4_str: .string "\"test: 142; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x4\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x8_str: .string "\"test: 143; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x8\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0xe_str: .string "\"test: 144; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0xe\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0xf_str: .string "\"test: 145; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0xf\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x10_str: .string "\"test: 146; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x10\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x11_str: .string "\"test: 147; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x11\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x1e_str: .string "\"test: 148; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x1e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x1f_str: .string "\"test: 149; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x1f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x20_str: .string "\"test: 150; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x20\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x21_str: .string "\"test: 151; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x21\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x30_str: .string "\"test: 152; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x30\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x3e_str: .string "\"test: 153; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x3e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffffffffffff_immval_0x3f_str: .string "\"test: 154; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffffffffffff, immval=0x3f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x1_str: .string "\"test: 155; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x1\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x2_str: .string "\"test: 156; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x2\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x3_str: .string "\"test: 157; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x3\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x4_str: .string "\"test: 158; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x4\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x8_str: .string "\"test: 159; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x8\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0xe_str: .string "\"test: 160; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0xe\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0xf_str: .string "\"test: 161; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0xf\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x10_str: .string "\"test: 162; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x10\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x11_str: .string "\"test: 163; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x11\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x1e_str: .string "\"test: 164; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x1e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x1f_str: .string "\"test: 165; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x1f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x20_str: .string "\"test: 166; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x20\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x21_str: .string "\"test: 167; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x21\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x30_str: .string "\"test: 168; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x30\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x3e_str: .string "\"test: 169; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x3e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffffffffffe_immval_0x3f_str: .string "\"test: 170; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffffffffffe, immval=0x3f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x1_str: .string "\"test: 171; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x1\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x2_str: .string "\"test: 172; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x2\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x3_str: .string "\"test: 173; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x3\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x4_str: .string "\"test: 174; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x4\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x8_str: .string "\"test: 175; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x8\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0xe_str: .string "\"test: 176; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0xe\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0xf_str: .string "\"test: 177; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0xf\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x10_str: .string "\"test: 178; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x10\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x11_str: .string "\"test: 179; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x11\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x1e_str: .string "\"test: 180; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x1e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x1f_str: .string "\"test: 181; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x1f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x20_str: .string "\"test: 182; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x20\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x21_str: .string "\"test: 183; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x21\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x30_str: .string "\"test: 184; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x30\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x3e_str: .string "\"test: 185; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x3e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5bbc887763ae86f2_immval_0x3f_str: .string "\"test: 186; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5bbc887763ae86f2, immval=0x3f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x1_str: .string "\"test: 187; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x1\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x2_str: .string "\"test: 188; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x2\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x3_str: .string "\"test: 189; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x3\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x4_str: .string "\"test: 190; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x4\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x8_str: .string "\"test: 191; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x8\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0xe_str: .string "\"test: 192; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0xe\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0xf_str: .string "\"test: 193; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0xf\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x10_str: .string "\"test: 194; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x10\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x11_str: .string "\"test: 195; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x11\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x1e_str: .string "\"test: 196; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x1e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x1f_str: .string "\"test: 197; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x1f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x20_str: .string "\"test: 198; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x20\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x21_str: .string "\"test: 199; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x21\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x30_str: .string "\"test: 200; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x30\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x3e_str: .string "\"test: 201; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x3e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x3f_str: .string "\"test: 202; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x3f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x1_str: .string "\"test: 203; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x1\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x2_str: .string "\"test: 204; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x2\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x3_str: .string "\"test: 205; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x3\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x4_str: .string "\"test: 206; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x4\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x8_str: .string "\"test: 207; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x8\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0xe_str: .string "\"test: 208; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0xe\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0xf_str: .string "\"test: 209; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0xf\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x10_str: .string "\"test: 210; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x10\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x11_str: .string "\"test: 211; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x11\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x1e_str: .string "\"test: 212; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x1e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x1f_str: .string "\"test: 213; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x1f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x20_str: .string "\"test: 214; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x20\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x21_str: .string "\"test: 215; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x21\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x30_str: .string "\"test: 216; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x30\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x3e_str: .string "\"test: 217; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x3e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x5555555555555555_immval_0x3f_str: .string "\"test: 218; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x5555555555555555, immval=0x3f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x1_str: .string "\"test: 219; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x1\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x2_str: .string "\"test: 220; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x2\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x3_str: .string "\"test: 221; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x3\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x4_str: .string "\"test: 222; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x4\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x8_str: .string "\"test: 223; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x8\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0xe_str: .string "\"test: 224; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0xe\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0xf_str: .string "\"test: 225; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0xf\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x10_str: .string "\"test: 226; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x10\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x11_str: .string "\"test: 227; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x11\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x1e_str: .string "\"test: 228; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x1e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x1f_str: .string "\"test: 229; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x1f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x20_str: .string "\"test: 230; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x20\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x21_str: .string "\"test: 231; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x21\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x30_str: .string "\"test: 232; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x30\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x3e_str: .string "\"test: 233; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x3e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xffffffff_immval_0x3f_str: .string "\"test: 234; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xffffffff, immval=0x3f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x1_str: .string "\"test: 235; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x1\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x2_str: .string "\"test: 236; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x2\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x3_str: .string "\"test: 237; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x3\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x4_str: .string "\"test: 238; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x4\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x8_str: .string "\"test: 239; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x8\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0xe_str: .string "\"test: 240; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0xe\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0xf_str: .string "\"test: 241; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0xf\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x10_str: .string "\"test: 242; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x10\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x11_str: .string "\"test: 243; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x11\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x1e_str: .string "\"test: 244; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x1e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x1f_str: .string "\"test: 245; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x1f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x20_str: .string "\"test: 246; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x20\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x21_str: .string "\"test: 247; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x21\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x30_str: .string "\"test: 248; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x30\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x3e_str: .string "\"test: 249; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x3e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0xfffffffe_immval_0x3f_str: .string "\"test: 250; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0xfffffffe, immval=0x3f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x1_str: .string "\"test: 251; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x1\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x2_str: .string "\"test: 252; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x2\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x3_str: .string "\"test: 253; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x3\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x4_str: .string "\"test: 254; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x4\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x8_str: .string "\"test: 255; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x8\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0xe_str: .string "\"test: 256; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0xe\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0xf_str: .string "\"test: 257; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0xf\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x10_str: .string "\"test: 258; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x10\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x11_str: .string "\"test: 259; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x11\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x1e_str: .string "\"test: 260; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x1e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x1f_str: .string "\"test: 261; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x1f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x20_str: .string "\"test: 262; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x20\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x21_str: .string "\"test: 263; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x21\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x30_str: .string "\"test: 264; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x30\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x3e_str: .string "\"test: 265; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x3e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000000_immval_0x3f_str: .string "\"test: 266; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000000, immval=0x3f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x1_str: .string "\"test: 267; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x1\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x2_str: .string "\"test: 268; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x2\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x3_str: .string "\"test: 269; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x3\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x4_str: .string "\"test: 270; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x4\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x8_str: .string "\"test: 271; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x8\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0xe_str: .string "\"test: 272; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0xe\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0xf_str: .string "\"test: 273; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0xf\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x10_str: .string "\"test: 274; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x10\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x11_str: .string "\"test: 275; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x11\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x1e_str: .string "\"test: 276; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x1e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x1f_str: .string "\"test: 277; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x1f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x20_str: .string "\"test: 278; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x20\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x21_str: .string "\"test: 279; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x21\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x30_str: .string "\"test: 280; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x30\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x3e_str: .string "\"test: 281; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x3e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x100000001_immval_0x3f_str: .string "\"test: 282; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x100000001, immval=0x3f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x1_str: .string "\"test: 283; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x80000000, immval=0x1\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x2_str: .string "\"test: 284; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x80000000, immval=0x2\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x3_str: .string "\"test: 285; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x80000000, immval=0x3\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x4_str: .string "\"test: 286; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x80000000, immval=0x4\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x8_str: .string "\"test: 287; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x80000000, immval=0x8\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0xe_str: .string "\"test: 288; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x80000000, immval=0xe\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0xf_str: .string "\"test: 289; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x80000000, immval=0xf\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x10_str: .string "\"test: 290; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x80000000, immval=0x10\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x11_str: .string "\"test: 291; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x80000000, immval=0x11\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x1e_str: .string "\"test: 292; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x80000000, immval=0x1e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x1f_str: .string "\"test: 293; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x80000000, immval=0x1f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x20_str: .string "\"test: 294; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x80000000, immval=0x20\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x21_str: .string "\"test: 295; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x80000000, immval=0x21\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x30_str: .string "\"test: 296; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x80000000, immval=0x30\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x3e_str: .string "\"test: 297; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x80000000, immval=0x3e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x80000000_immval_0x3f_str: .string "\"test: 298; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x80000000, immval=0x3f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x1_str: .string "\"test: 299; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffff, immval=0x1\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x2_str: .string "\"test: 300; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffff, immval=0x2\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x3_str: .string "\"test: 301; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffff, immval=0x3\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x4_str: .string "\"test: 302; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffff, immval=0x4\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x8_str: .string "\"test: 303; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffff, immval=0x8\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0xe_str: .string "\"test: 304; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffff, immval=0xe\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0xf_str: .string "\"test: 305; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffff, immval=0xf\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x10_str: .string "\"test: 306; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffff, immval=0x10\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x11_str: .string "\"test: 307; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffff, immval=0x11\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x1e_str: .string "\"test: 308; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffff, immval=0x1e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x1f_str: .string "\"test: 309; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffff, immval=0x1f\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x20_str: .string "\"test: 310; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffff, immval=0x20\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x21_str: .string "\"test: 311; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffff, immval=0x21\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x30_str: .string "\"test: 312; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffff, immval=0x30\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x3e_str: .string "\"test: 313; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffff, immval=0x3e\""
+Zca_c_srai_cg_cr_rs1_imm_edges_c_rs1val_0x7fffffff_immval_0x3f_str: .string "\"test: 314; cg: Zca_c.srai_cg; cp: cr_rs1_imm_edges_c; bin: rs1val=0x7fffffff, immval=0x3f\""
+Zca_c_srai_cg_cp_uimm_n0_uimm1_str: .string "\"test: 315; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm1\""
+Zca_c_srai_cg_cp_uimm_n0_uimm2_str: .string "\"test: 316; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm2\""
+Zca_c_srai_cg_cp_uimm_n0_uimm3_str: .string "\"test: 317; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm3\""
+Zca_c_srai_cg_cp_uimm_n0_uimm4_str: .string "\"test: 318; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm4\""
+Zca_c_srai_cg_cp_uimm_n0_uimm5_str: .string "\"test: 319; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm5\""
+Zca_c_srai_cg_cp_uimm_n0_uimm6_str: .string "\"test: 320; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm6\""
+Zca_c_srai_cg_cp_uimm_n0_uimm7_str: .string "\"test: 321; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm7\""
+Zca_c_srai_cg_cp_uimm_n0_uimm8_str: .string "\"test: 322; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm8\""
+Zca_c_srai_cg_cp_uimm_n0_uimm9_str: .string "\"test: 323; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm9\""
+Zca_c_srai_cg_cp_uimm_n0_uimm10_str: .string "\"test: 324; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm10\""
+Zca_c_srai_cg_cp_uimm_n0_uimm11_str: .string "\"test: 325; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm11\""
+Zca_c_srai_cg_cp_uimm_n0_uimm12_str: .string "\"test: 326; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm12\""
+Zca_c_srai_cg_cp_uimm_n0_uimm13_str: .string "\"test: 327; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm13\""
+Zca_c_srai_cg_cp_uimm_n0_uimm14_str: .string "\"test: 328; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm14\""
+Zca_c_srai_cg_cp_uimm_n0_uimm15_str: .string "\"test: 329; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm15\""
+Zca_c_srai_cg_cp_uimm_n0_uimm16_str: .string "\"test: 330; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm16\""
+Zca_c_srai_cg_cp_uimm_n0_uimm17_str: .string "\"test: 331; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm17\""
+Zca_c_srai_cg_cp_uimm_n0_uimm18_str: .string "\"test: 332; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm18\""
+Zca_c_srai_cg_cp_uimm_n0_uimm19_str: .string "\"test: 333; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm19\""
+Zca_c_srai_cg_cp_uimm_n0_uimm20_str: .string "\"test: 334; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm20\""
+Zca_c_srai_cg_cp_uimm_n0_uimm21_str: .string "\"test: 335; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm21\""
+Zca_c_srai_cg_cp_uimm_n0_uimm22_str: .string "\"test: 336; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm22\""
+Zca_c_srai_cg_cp_uimm_n0_uimm23_str: .string "\"test: 337; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm23\""
+Zca_c_srai_cg_cp_uimm_n0_uimm24_str: .string "\"test: 338; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm24\""
+Zca_c_srai_cg_cp_uimm_n0_uimm25_str: .string "\"test: 339; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm25\""
+Zca_c_srai_cg_cp_uimm_n0_uimm26_str: .string "\"test: 340; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm26\""
+Zca_c_srai_cg_cp_uimm_n0_uimm27_str: .string "\"test: 341; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm27\""
+Zca_c_srai_cg_cp_uimm_n0_uimm28_str: .string "\"test: 342; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm28\""
+Zca_c_srai_cg_cp_uimm_n0_uimm29_str: .string "\"test: 343; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm29\""
+Zca_c_srai_cg_cp_uimm_n0_uimm30_str: .string "\"test: 344; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm30\""
+Zca_c_srai_cg_cp_uimm_n0_uimm31_str: .string "\"test: 345; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm31\""
+Zca_c_srai_cg_cp_uimm_n0_uimm32_str: .string "\"test: 346; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm32\""
+Zca_c_srai_cg_cp_uimm_n0_uimm33_str: .string "\"test: 347; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm33\""
+Zca_c_srai_cg_cp_uimm_n0_uimm34_str: .string "\"test: 348; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm34\""
+Zca_c_srai_cg_cp_uimm_n0_uimm35_str: .string "\"test: 349; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm35\""
+Zca_c_srai_cg_cp_uimm_n0_uimm36_str: .string "\"test: 350; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm36\""
+Zca_c_srai_cg_cp_uimm_n0_uimm37_str: .string "\"test: 351; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm37\""
+Zca_c_srai_cg_cp_uimm_n0_uimm38_str: .string "\"test: 352; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm38\""
+Zca_c_srai_cg_cp_uimm_n0_uimm39_str: .string "\"test: 353; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm39\""
+Zca_c_srai_cg_cp_uimm_n0_uimm40_str: .string "\"test: 354; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm40\""
+Zca_c_srai_cg_cp_uimm_n0_uimm41_str: .string "\"test: 355; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm41\""
+Zca_c_srai_cg_cp_uimm_n0_uimm42_str: .string "\"test: 356; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm42\""
+Zca_c_srai_cg_cp_uimm_n0_uimm43_str: .string "\"test: 357; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm43\""
+Zca_c_srai_cg_cp_uimm_n0_uimm44_str: .string "\"test: 358; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm44\""
+Zca_c_srai_cg_cp_uimm_n0_uimm45_str: .string "\"test: 359; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm45\""
+Zca_c_srai_cg_cp_uimm_n0_uimm46_str: .string "\"test: 360; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm46\""
+Zca_c_srai_cg_cp_uimm_n0_uimm47_str: .string "\"test: 361; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm47\""
+Zca_c_srai_cg_cp_uimm_n0_uimm48_str: .string "\"test: 362; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm48\""
+Zca_c_srai_cg_cp_uimm_n0_uimm49_str: .string "\"test: 363; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm49\""
+Zca_c_srai_cg_cp_uimm_n0_uimm50_str: .string "\"test: 364; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm50\""
+Zca_c_srai_cg_cp_uimm_n0_uimm51_str: .string "\"test: 365; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm51\""
+Zca_c_srai_cg_cp_uimm_n0_uimm52_str: .string "\"test: 366; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm52\""
+Zca_c_srai_cg_cp_uimm_n0_uimm53_str: .string "\"test: 367; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm53\""
+Zca_c_srai_cg_cp_uimm_n0_uimm54_str: .string "\"test: 368; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm54\""
+Zca_c_srai_cg_cp_uimm_n0_uimm55_str: .string "\"test: 369; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm55\""
+Zca_c_srai_cg_cp_uimm_n0_uimm56_str: .string "\"test: 370; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm56\""
+Zca_c_srai_cg_cp_uimm_n0_uimm57_str: .string "\"test: 371; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm57\""
+Zca_c_srai_cg_cp_uimm_n0_uimm58_str: .string "\"test: 372; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm58\""
+Zca_c_srai_cg_cp_uimm_n0_uimm59_str: .string "\"test: 373; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm59\""
+Zca_c_srai_cg_cp_uimm_n0_uimm60_str: .string "\"test: 374; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm60\""
+Zca_c_srai_cg_cp_uimm_n0_uimm61_str: .string "\"test: 375; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm61\""
+Zca_c_srai_cg_cp_uimm_n0_uimm62_str: .string "\"test: 376; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm62\""
+Zca_c_srai_cg_cp_uimm_n0_uimm63_str: .string "\"test: 377; cg: Zca_c.srai_cg; cp: cp_uimm_n0; bin: uimm63\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

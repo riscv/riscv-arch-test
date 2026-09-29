@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 138
+#define SIGUPD_COUNT 142
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -424,6 +424,30 @@ Zca_c_sd_cg_cp_rs2_edges_0x100000001:
   LREG x14, -SIG_STRIDE(x15) # load stored value for checking
   # Check if x14 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x14, Zca_c_sd_cg_cp_rs2_edges_0x100000001, Zca_c_sd_cg_cp_rs2_edges_0x100000001_str)
+
+# Testcase cp_rs2_edges (Test source rs2 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs2: x10 = 0x0000000080000000
+  mv x11, x15 # move signature pointer register
+  addi x11, x11, 0 # adjust base address for offset
+Zca_c_sd_cg_cp_rs2_edges_0x80000000:
+  c.sd x10, 0(x11) # perform store
+  addi x11, x11, 0 # restore base address
+  addi x11, x11, SIG_STRIDE # increment signature pointer
+  LREG x9, -SIG_STRIDE(x11) # load stored value for checking
+  # Check if x9 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x9, Zca_c_sd_cg_cp_rs2_edges_0x80000000, Zca_c_sd_cg_cp_rs2_edges_0x80000000_str)
+
+# Testcase cp_rs2_edges (Test source rs2 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs2: x9 = 0x000000007fffffff
+  mv x15, x11 # move signature pointer register
+  addi x15, x15, -216 # adjust base address for offset
+Zca_c_sd_cg_cp_rs2_edges_0x7fffffff:
+  c.sd x9, 216(x15) # perform store
+  addi x15, x15, 216 # restore base address
+  addi x15, x15, SIG_STRIDE # increment signature pointer
+  LREG x13, -SIG_STRIDE(x15) # load stored value for checking
+  # Check if x13 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x13, Zca_c_sd_cg_cp_rs2_edges_0x7fffffff, Zca_c_sd_cg_cp_rs2_edges_0x7fffffff_str)
 
 /////////////////////////////////
 // cp_imm_mul_8
@@ -854,6 +878,8 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000fffffffe
 .dword 0x0000000100000000
 .dword 0x0000000100000001
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
 .dword 0x4438358b40ed2caf
 .dword 0xc548e12214302b5d
 .dword 0xf348069f6dee3bae
@@ -920,38 +946,40 @@ Zca_c_sd_cg_cp_rs2_edges_0xffffffff_str: .string "\"test: 29; cg: Zca_c.sd_cg; c
 Zca_c_sd_cg_cp_rs2_edges_0xfffffffe_str: .string "\"test: 30; cg: Zca_c.sd_cg; cp: cp_rs2_edges; bin: 0xfffffffe\""
 Zca_c_sd_cg_cp_rs2_edges_0x100000000_str: .string "\"test: 31; cg: Zca_c.sd_cg; cp: cp_rs2_edges; bin: 0x100000000\""
 Zca_c_sd_cg_cp_rs2_edges_0x100000001_str: .string "\"test: 32; cg: Zca_c.sd_cg; cp: cp_rs2_edges; bin: 0x100000001\""
-Zca_c_sd_cg_cp_imm_mul_8_b0x0_str: .string "\"test: 33; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x0\""
-Zca_c_sd_cg_cp_imm_mul_8_b0x8_str: .string "\"test: 34; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x8\""
-Zca_c_sd_cg_cp_imm_mul_8_b0x10_str: .string "\"test: 35; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x10\""
-Zca_c_sd_cg_cp_imm_mul_8_b0x18_str: .string "\"test: 36; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x18\""
-Zca_c_sd_cg_cp_imm_mul_8_b0x20_str: .string "\"test: 37; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x20\""
-Zca_c_sd_cg_cp_imm_mul_8_b0x28_str: .string "\"test: 38; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x28\""
-Zca_c_sd_cg_cp_imm_mul_8_b0x30_str: .string "\"test: 39; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x30\""
-Zca_c_sd_cg_cp_imm_mul_8_b0x38_str: .string "\"test: 40; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x38\""
-Zca_c_sd_cg_cp_imm_mul_8_b0x40_str: .string "\"test: 41; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x40\""
-Zca_c_sd_cg_cp_imm_mul_8_b0x48_str: .string "\"test: 42; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x48\""
-Zca_c_sd_cg_cp_imm_mul_8_b0x50_str: .string "\"test: 43; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x50\""
-Zca_c_sd_cg_cp_imm_mul_8_b0x58_str: .string "\"test: 44; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x58\""
-Zca_c_sd_cg_cp_imm_mul_8_b0x60_str: .string "\"test: 45; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x60\""
-Zca_c_sd_cg_cp_imm_mul_8_b0x68_str: .string "\"test: 46; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x68\""
-Zca_c_sd_cg_cp_imm_mul_8_b0x70_str: .string "\"test: 47; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x70\""
-Zca_c_sd_cg_cp_imm_mul_8_b0x78_str: .string "\"test: 48; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x78\""
-Zca_c_sd_cg_cp_imm_mul_8_b0x80_str: .string "\"test: 49; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x80\""
-Zca_c_sd_cg_cp_imm_mul_8_b0x88_str: .string "\"test: 50; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x88\""
-Zca_c_sd_cg_cp_imm_mul_8_b0x90_str: .string "\"test: 51; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x90\""
-Zca_c_sd_cg_cp_imm_mul_8_b0x98_str: .string "\"test: 52; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x98\""
-Zca_c_sd_cg_cp_imm_mul_8_b0xa0_str: .string "\"test: 53; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xa0\""
-Zca_c_sd_cg_cp_imm_mul_8_b0xa8_str: .string "\"test: 54; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xa8\""
-Zca_c_sd_cg_cp_imm_mul_8_b0xb0_str: .string "\"test: 55; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xb0\""
-Zca_c_sd_cg_cp_imm_mul_8_b0xb8_str: .string "\"test: 56; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xb8\""
-Zca_c_sd_cg_cp_imm_mul_8_b0xc0_str: .string "\"test: 57; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xc0\""
-Zca_c_sd_cg_cp_imm_mul_8_b0xc8_str: .string "\"test: 58; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xc8\""
-Zca_c_sd_cg_cp_imm_mul_8_b0xd0_str: .string "\"test: 59; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xd0\""
-Zca_c_sd_cg_cp_imm_mul_8_b0xd8_str: .string "\"test: 60; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xd8\""
-Zca_c_sd_cg_cp_imm_mul_8_b0xe0_str: .string "\"test: 61; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xe0\""
-Zca_c_sd_cg_cp_imm_mul_8_b0xe8_str: .string "\"test: 62; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xe8\""
-Zca_c_sd_cg_cp_imm_mul_8_b0xf0_str: .string "\"test: 63; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xf0\""
-Zca_c_sd_cg_cp_imm_mul_8_b0xf8_str: .string "\"test: 64; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xf8\""
+Zca_c_sd_cg_cp_rs2_edges_0x80000000_str: .string "\"test: 33; cg: Zca_c.sd_cg; cp: cp_rs2_edges; bin: 0x80000000\""
+Zca_c_sd_cg_cp_rs2_edges_0x7fffffff_str: .string "\"test: 34; cg: Zca_c.sd_cg; cp: cp_rs2_edges; bin: 0x7fffffff\""
+Zca_c_sd_cg_cp_imm_mul_8_b0x0_str: .string "\"test: 35; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x0\""
+Zca_c_sd_cg_cp_imm_mul_8_b0x8_str: .string "\"test: 36; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x8\""
+Zca_c_sd_cg_cp_imm_mul_8_b0x10_str: .string "\"test: 37; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x10\""
+Zca_c_sd_cg_cp_imm_mul_8_b0x18_str: .string "\"test: 38; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x18\""
+Zca_c_sd_cg_cp_imm_mul_8_b0x20_str: .string "\"test: 39; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x20\""
+Zca_c_sd_cg_cp_imm_mul_8_b0x28_str: .string "\"test: 40; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x28\""
+Zca_c_sd_cg_cp_imm_mul_8_b0x30_str: .string "\"test: 41; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x30\""
+Zca_c_sd_cg_cp_imm_mul_8_b0x38_str: .string "\"test: 42; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x38\""
+Zca_c_sd_cg_cp_imm_mul_8_b0x40_str: .string "\"test: 43; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x40\""
+Zca_c_sd_cg_cp_imm_mul_8_b0x48_str: .string "\"test: 44; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x48\""
+Zca_c_sd_cg_cp_imm_mul_8_b0x50_str: .string "\"test: 45; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x50\""
+Zca_c_sd_cg_cp_imm_mul_8_b0x58_str: .string "\"test: 46; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x58\""
+Zca_c_sd_cg_cp_imm_mul_8_b0x60_str: .string "\"test: 47; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x60\""
+Zca_c_sd_cg_cp_imm_mul_8_b0x68_str: .string "\"test: 48; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x68\""
+Zca_c_sd_cg_cp_imm_mul_8_b0x70_str: .string "\"test: 49; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x70\""
+Zca_c_sd_cg_cp_imm_mul_8_b0x78_str: .string "\"test: 50; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x78\""
+Zca_c_sd_cg_cp_imm_mul_8_b0x80_str: .string "\"test: 51; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x80\""
+Zca_c_sd_cg_cp_imm_mul_8_b0x88_str: .string "\"test: 52; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x88\""
+Zca_c_sd_cg_cp_imm_mul_8_b0x90_str: .string "\"test: 53; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x90\""
+Zca_c_sd_cg_cp_imm_mul_8_b0x98_str: .string "\"test: 54; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0x98\""
+Zca_c_sd_cg_cp_imm_mul_8_b0xa0_str: .string "\"test: 55; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xa0\""
+Zca_c_sd_cg_cp_imm_mul_8_b0xa8_str: .string "\"test: 56; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xa8\""
+Zca_c_sd_cg_cp_imm_mul_8_b0xb0_str: .string "\"test: 57; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xb0\""
+Zca_c_sd_cg_cp_imm_mul_8_b0xb8_str: .string "\"test: 58; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xb8\""
+Zca_c_sd_cg_cp_imm_mul_8_b0xc0_str: .string "\"test: 59; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xc0\""
+Zca_c_sd_cg_cp_imm_mul_8_b0xc8_str: .string "\"test: 60; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xc8\""
+Zca_c_sd_cg_cp_imm_mul_8_b0xd0_str: .string "\"test: 61; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xd0\""
+Zca_c_sd_cg_cp_imm_mul_8_b0xd8_str: .string "\"test: 62; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xd8\""
+Zca_c_sd_cg_cp_imm_mul_8_b0xe0_str: .string "\"test: 63; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xe0\""
+Zca_c_sd_cg_cp_imm_mul_8_b0xe8_str: .string "\"test: 64; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xe8\""
+Zca_c_sd_cg_cp_imm_mul_8_b0xf0_str: .string "\"test: 65; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xf0\""
+Zca_c_sd_cg_cp_imm_mul_8_b0xf8_str: .string "\"test: 66; cg: Zca_c.sd_cg; cp: cp_imm_mul_8; bin: b0xf8\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

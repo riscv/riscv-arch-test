@@ -525,10 +525,10 @@
       "supported": true
     },
     "Zihintntl": {
-      "supported": false
+      "supported": true
     },
     "Zihintpause": {
-      "supported": false
+      "supported": true
     },
     "Zihpm": {
       "supported": false

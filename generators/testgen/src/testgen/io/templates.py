@@ -147,9 +147,6 @@ def canonicalize_extensions(
             if no_sew_suffix in ext_components:
                 ext_components.remove(no_sew_suffix)
 
-    if any(ext.startswith(("V", "Zv")) for ext in ext_components):
-        ext_components.append("M")  # Add M if V is present (required for gcc 15)
-
     ext_components = list(dict.fromkeys(ext_components))  # Remove duplicates while preserving order
 
     return ext_components, params

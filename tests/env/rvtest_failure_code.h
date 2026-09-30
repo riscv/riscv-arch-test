@@ -729,7 +729,7 @@
         add  x6, x6, x7            # base + offset
 
         # add index * element_size (assume SEW known = shift)
-        mul  x8, x8, x17           # failing_index * eew_bytes
+        sll x8, x8, x16            # Shift by vsew, which multiplies the index by the EEW
         add  x6, x6, x8
 
         # store SEW-length expected value bytewise
@@ -762,7 +762,20 @@
         la x7, failing_reg
         lw x6, 0(x7)                      # vd index
         li   x7, VLEN_BYTES
-        mul  x6, x6, x7                   # offset of vd in bytes = vd_index * vlen_bytes
+        #ifdef M_SUPPORTED
+            .option push
+            .option arch, +m
+            mul  x6, x6, x7                # offset of vd in bytes = vd_index * vlen_bytes
+            .option pop
+        #else
+            # Multiply clobbering x7, Assume x7 is a power of 2
+            0:
+                srli x7, x7, 1
+                beq x7, x0, 1f             # Loop ends when x7 starts the loop at 1 (because that is multiplying by 1)
+                slli x6, x6, 1
+                j 0b
+            1:
+        #endif
         la x7, vecreg_scratch
         add  x6, x7, x6
 
@@ -812,7 +825,20 @@
         # --- compute src = vecreg_scratch + vd * vlenb ---
         la x6, vecreg_scratch
         li   x7, VLEN_BYTES
-        mul  x19, x19, x7                   # offset of vd in bytes = vd_index * vlen_bytes
+        #ifdef M_SUPPORTED
+            .option push
+            .option arch, +m
+            mul x19, x19, x7           # offset of vd in bytes = vd_index * vlen_bytes
+            .option pop
+        #else
+            # Multiply clobbering x7, Assume x7 is a power of 2
+            0:
+                srli x7, x7, 1
+                beq x7, x0, 1f          # Loop ends when x7 starts the loop at 1 (because that is multiplying by 1)
+                slli x19, x19, 1
+                j 0b
+            1:
+        #endif
         add x6, x6, x19                   # offset to where mismatch register is saved in scratch
 
         # --- dst = failing_mask_vec ---
@@ -2105,6 +2131,8 @@
         .fill 2, 4, 0
     csr_context_ret_addr:                        # return address save slot for failedtest_print_csr_context
         .fill 2, 4, 0
+    rvtest_trap_prolog_error:                    # failure string pointer if trap setup failed
+        .fill 2, 4, 0
     # The four saved_x* slots hold the trapping mode's xEPC/xCAUSE/xTVAL/xSTATUS,
     # snapshotted by the trap handler before trap signature word 0
     # (rvtest_trap_handler.h). Each slot is 8 bytes, regardless of XLEN.
@@ -2291,6 +2319,10 @@
         .string "\nRVCP: DEBUG INFORMATION FOLLOWS\n"
     abortstr:
         .string "\"The trap handler aborted the test before normal completion!\"";
+    trap_vector_overlap_str:
+        .string "RVCP: Fixed trap vector overlaps the test image. Change the linker script to reserve space for the trap handler outside the test image.\n"
+    trap_vector_copy_failed_str:
+        .string "RVCP: Cannot write the fixed trap vector. Reserve writable memory for the trap handler.\n"
     trap_sig_overflowstr:
         #ifdef RVTEST_SELFCHECK
             .string "\nRVCP: Trap signature overflow in self-check mode. DUT generated too many traps.     \n"

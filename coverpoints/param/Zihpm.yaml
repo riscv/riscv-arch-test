@@ -1,0 +1,9 @@
+# Parameter mappings
+
+parameter_definitions:
+  - name: HPM_COUNTER_EN
+    coverpoint: ["cp_cntr_hpm"]
+    effect:
+      [
+        "Reads only hpmcounter<n> (and hpmcounter<n>h on RV32) with HPM_COUNTER_EN[n] true",
+      ]

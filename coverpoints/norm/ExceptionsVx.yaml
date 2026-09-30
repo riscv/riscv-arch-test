@@ -1,3 +1,27 @@
 # Mapping of normative rules to coverpoints for a test suite
+#
+# ExceptionsVx exercises illegal-instruction behavior for the vector arithmetic suite. The
+# vstart-dependent normative rules below are specifically evidenced by this suite's
+# cp_vstart/cp_vstart_gt_vl coverage.
 
 normative_rule_definitions:
+  # vstart is not modified by vector instructions that raise illegal-instruction exceptions.
+  - name: vstart_unmodified
+    coverpoint:
+      [
+        "TODO: no coverpoint checks that vstart is unmodified after an illegal-instruction exception; cp_vstart only checks that the exception is raised",
+      ]
+
+  # The use of vstart values greater than the largest element index for the current vtype
+  # setting is reserved.
+  - name: vstart_val_rsv
+    coverpoint: ["ExceptionsVx_vsaddu_vv_cg/cp_vstart_gt_vl"]
+
+  # Implementations are permitted to raise illegal-instruction exceptions when attempting to
+  # execute a vector instruction with a value of vstart that the implementation can never
+  # produce when executing that same instruction with the same vtype setting.
+  - name: vstart_vtype_dep
+    coverpoint:
+      [
+        "Untestable: implementations are permitted, not required, to raise this exception, so no behavior can be asserted",
+      ]

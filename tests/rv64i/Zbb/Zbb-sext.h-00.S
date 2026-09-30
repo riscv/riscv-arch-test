@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 122
+#define SIGUPD_COUNT 124
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -617,6 +617,20 @@ Zbb_sext_h_cg_cp_rs1_edges_0x100000001:
   # Check if x16 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x16, Zbb_sext_h_cg_cp_rs1_edges_0x100000001, Zbb_sext_h_cg_cp_rs1_edges_0x100000001_str)
 
+# Testcase cp_rs1_edges (Test source rs1 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x17, x9) # load rs1: x9 = 0x0000000080000000
+Zbb_sext_h_cg_cp_rs1_edges_0x80000000:
+  sext.h x26, x9 # perform operation
+  # Check if x26 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x26, Zbb_sext_h_cg_cp_rs1_edges_0x80000000, Zbb_sext_h_cg_cp_rs1_edges_0x80000000_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x17, x16) # load rs1: x16 = 0x000000007fffffff
+Zbb_sext_h_cg_cp_rs1_edges_0x7fffffff:
+  sext.h x8, x16 # perform operation
+  # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x8, Zbb_sext_h_cg_cp_rs1_edges_0x7fffffff, Zbb_sext_h_cg_cp_rs1_edges_0x7fffffff_str)
+
 /////////////////////////////////
 // cmp_rd_rs1
 /////////////////////////////////
@@ -942,6 +956,8 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000fffffffe
 .dword 0x0000000100000000
 .dword 0x0000000100000001
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
 .dword 0xf7a1f26e986f91c8
 .dword 0x2f1ca4b3d258a5d5
 .dword 0xd3e012f4ca3978b8
@@ -1056,38 +1072,40 @@ Zbb_sext_h_cg_cp_rs1_edges_0xffffffff_str: .string "\"test: 77; cg: Zbb_sext.h_c
 Zbb_sext_h_cg_cp_rs1_edges_0xfffffffe_str: .string "\"test: 78; cg: Zbb_sext.h_cg; cp: cp_rs1_edges; bin: 0xfffffffe\""
 Zbb_sext_h_cg_cp_rs1_edges_0x100000000_str: .string "\"test: 79; cg: Zbb_sext.h_cg; cp: cp_rs1_edges; bin: 0x100000000\""
 Zbb_sext_h_cg_cp_rs1_edges_0x100000001_str: .string "\"test: 80; cg: Zbb_sext.h_cg; cp: cp_rs1_edges; bin: 0x100000001\""
-Zbb_sext_h_cg_cmp_rd_rs1_b0_str: .string "\"test: 81; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b0\""
-Zbb_sext_h_cg_cmp_rd_rs1_b1_str: .string "\"test: 82; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b1\""
-Zbb_sext_h_cg_cmp_rd_rs1_b2_str: .string "\"test: 83; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b2\""
-Zbb_sext_h_cg_cmp_rd_rs1_b3_str: .string "\"test: 84; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b3\""
-Zbb_sext_h_cg_cmp_rd_rs1_b4_str: .string "\"test: 85; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b4\""
-Zbb_sext_h_cg_cmp_rd_rs1_b5_str: .string "\"test: 86; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b5\""
-Zbb_sext_h_cg_cmp_rd_rs1_b6_str: .string "\"test: 87; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b6\""
-Zbb_sext_h_cg_cmp_rd_rs1_b7_str: .string "\"test: 88; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b7\""
-Zbb_sext_h_cg_cmp_rd_rs1_b8_str: .string "\"test: 89; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b8\""
-Zbb_sext_h_cg_cmp_rd_rs1_b9_str: .string "\"test: 90; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b9\""
-Zbb_sext_h_cg_cmp_rd_rs1_b10_str: .string "\"test: 91; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b10\""
-Zbb_sext_h_cg_cmp_rd_rs1_b11_str: .string "\"test: 92; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b11\""
-Zbb_sext_h_cg_cmp_rd_rs1_b12_str: .string "\"test: 93; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b12\""
-Zbb_sext_h_cg_cmp_rd_rs1_b13_str: .string "\"test: 94; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b13\""
-Zbb_sext_h_cg_cmp_rd_rs1_b14_str: .string "\"test: 95; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b14\""
-Zbb_sext_h_cg_cmp_rd_rs1_b15_str: .string "\"test: 96; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b15\""
-Zbb_sext_h_cg_cmp_rd_rs1_b16_str: .string "\"test: 97; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b16\""
-Zbb_sext_h_cg_cmp_rd_rs1_b17_str: .string "\"test: 98; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b17\""
-Zbb_sext_h_cg_cmp_rd_rs1_b18_str: .string "\"test: 99; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b18\""
-Zbb_sext_h_cg_cmp_rd_rs1_b19_str: .string "\"test: 100; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b19\""
-Zbb_sext_h_cg_cmp_rd_rs1_b20_str: .string "\"test: 101; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b20\""
-Zbb_sext_h_cg_cmp_rd_rs1_b21_str: .string "\"test: 102; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b21\""
-Zbb_sext_h_cg_cmp_rd_rs1_b22_str: .string "\"test: 103; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b22\""
-Zbb_sext_h_cg_cmp_rd_rs1_b23_str: .string "\"test: 104; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b23\""
-Zbb_sext_h_cg_cmp_rd_rs1_b24_str: .string "\"test: 105; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b24\""
-Zbb_sext_h_cg_cmp_rd_rs1_b25_str: .string "\"test: 106; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b25\""
-Zbb_sext_h_cg_cmp_rd_rs1_b26_str: .string "\"test: 107; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b26\""
-Zbb_sext_h_cg_cmp_rd_rs1_b27_str: .string "\"test: 108; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b27\""
-Zbb_sext_h_cg_cmp_rd_rs1_b28_str: .string "\"test: 109; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b28\""
-Zbb_sext_h_cg_cmp_rd_rs1_b29_str: .string "\"test: 110; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b29\""
-Zbb_sext_h_cg_cmp_rd_rs1_b30_str: .string "\"test: 111; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b30\""
-Zbb_sext_h_cg_cmp_rd_rs1_b31_str: .string "\"test: 112; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b31\""
+Zbb_sext_h_cg_cp_rs1_edges_0x80000000_str: .string "\"test: 81; cg: Zbb_sext.h_cg; cp: cp_rs1_edges; bin: 0x80000000\""
+Zbb_sext_h_cg_cp_rs1_edges_0x7fffffff_str: .string "\"test: 82; cg: Zbb_sext.h_cg; cp: cp_rs1_edges; bin: 0x7fffffff\""
+Zbb_sext_h_cg_cmp_rd_rs1_b0_str: .string "\"test: 83; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b0\""
+Zbb_sext_h_cg_cmp_rd_rs1_b1_str: .string "\"test: 84; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b1\""
+Zbb_sext_h_cg_cmp_rd_rs1_b2_str: .string "\"test: 85; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b2\""
+Zbb_sext_h_cg_cmp_rd_rs1_b3_str: .string "\"test: 86; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b3\""
+Zbb_sext_h_cg_cmp_rd_rs1_b4_str: .string "\"test: 87; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b4\""
+Zbb_sext_h_cg_cmp_rd_rs1_b5_str: .string "\"test: 88; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b5\""
+Zbb_sext_h_cg_cmp_rd_rs1_b6_str: .string "\"test: 89; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b6\""
+Zbb_sext_h_cg_cmp_rd_rs1_b7_str: .string "\"test: 90; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b7\""
+Zbb_sext_h_cg_cmp_rd_rs1_b8_str: .string "\"test: 91; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b8\""
+Zbb_sext_h_cg_cmp_rd_rs1_b9_str: .string "\"test: 92; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b9\""
+Zbb_sext_h_cg_cmp_rd_rs1_b10_str: .string "\"test: 93; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b10\""
+Zbb_sext_h_cg_cmp_rd_rs1_b11_str: .string "\"test: 94; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b11\""
+Zbb_sext_h_cg_cmp_rd_rs1_b12_str: .string "\"test: 95; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b12\""
+Zbb_sext_h_cg_cmp_rd_rs1_b13_str: .string "\"test: 96; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b13\""
+Zbb_sext_h_cg_cmp_rd_rs1_b14_str: .string "\"test: 97; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b14\""
+Zbb_sext_h_cg_cmp_rd_rs1_b15_str: .string "\"test: 98; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b15\""
+Zbb_sext_h_cg_cmp_rd_rs1_b16_str: .string "\"test: 99; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b16\""
+Zbb_sext_h_cg_cmp_rd_rs1_b17_str: .string "\"test: 100; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b17\""
+Zbb_sext_h_cg_cmp_rd_rs1_b18_str: .string "\"test: 101; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b18\""
+Zbb_sext_h_cg_cmp_rd_rs1_b19_str: .string "\"test: 102; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b19\""
+Zbb_sext_h_cg_cmp_rd_rs1_b20_str: .string "\"test: 103; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b20\""
+Zbb_sext_h_cg_cmp_rd_rs1_b21_str: .string "\"test: 104; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b21\""
+Zbb_sext_h_cg_cmp_rd_rs1_b22_str: .string "\"test: 105; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b22\""
+Zbb_sext_h_cg_cmp_rd_rs1_b23_str: .string "\"test: 106; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b23\""
+Zbb_sext_h_cg_cmp_rd_rs1_b24_str: .string "\"test: 107; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b24\""
+Zbb_sext_h_cg_cmp_rd_rs1_b25_str: .string "\"test: 108; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b25\""
+Zbb_sext_h_cg_cmp_rd_rs1_b26_str: .string "\"test: 109; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b26\""
+Zbb_sext_h_cg_cmp_rd_rs1_b27_str: .string "\"test: 110; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b27\""
+Zbb_sext_h_cg_cmp_rd_rs1_b28_str: .string "\"test: 111; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b28\""
+Zbb_sext_h_cg_cmp_rd_rs1_b29_str: .string "\"test: 112; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b29\""
+Zbb_sext_h_cg_cmp_rd_rs1_b30_str: .string "\"test: 113; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b30\""
+Zbb_sext_h_cg_cmp_rd_rs1_b31_str: .string "\"test: 114; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b31\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

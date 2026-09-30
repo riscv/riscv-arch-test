@@ -16,9 +16,6 @@
     `ifdef COVER_E
         e_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ENDIANH
-        endianh_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_ENDIANS
         endians_sample(hart, issue, ins);
     `endif

@@ -17,9 +17,6 @@
 `ifdef E_COVERAGE
   `include "E_coverage.svh"
 `endif
-`ifdef ENDIANH_COVERAGE
-  `include "EndianH_coverage.svh"
-`endif
 `ifdef ENDIANS_COVERAGE
   `include "EndianS_coverage.svh"
 `endif

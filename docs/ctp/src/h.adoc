@@ -1,7 +1,7 @@
 
 === H Hypervisor
 
-The Hypervisor Extension adds an H coverage file containing new Hypervisor instructions, and additional coverage files related to exceptions, interrupts, endian, and virtual memory.
+The Hypervisor Extension adds an H coverage file containing new Hypervisor instructions, and additional coverage files related to exceptions, interrupts, and virtual memory.
 
 ==== HSm and H Hypervisor CSRs and Instructions
 
@@ -81,14 +81,6 @@ include::norm/InterruptsHSm_norm_rules.adoc[]
 include::norm/InterruptsH_norm_rules.adoc[]
 
 include::norm/InterruptsHGei_norm_rules.adoc[]
-
-==== EndianH Hypervisor Endianness
-
-[[t-EndianH-coverpoints]]
-.EndianH Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=923631685#gid=923631685[Google Sheet Testplan]
-,===
 
 ==== ZicntrHSm and ZicntrH Hypervisor Counters
 

@@ -1,1 +1,1 @@
-../whisper-rv64-m/rvmodel_macros.h
+../whisper-rv64-max/rvmodel_macros.h

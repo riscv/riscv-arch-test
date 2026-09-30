@@ -206,7 +206,40 @@
   exit_cleanup:
     LA(a0, successstr)
     call rvmodel_io_write_str
+    LA(a0, rvcp_sigdigest_str)
+    call rvmodel_io_write_str
     call rvmodel_halt_pass
+
+  // Signature provenance for the returned log. The two instructions above are
+  // emitted unconditionally so the reference and final builds stay the same size;
+  // only the string differs, and it lives in .text.rvmodel (after .data) so its
+  // length can never move a signature-visible symbol.
+  #ifndef RVCP_SIG_DIGEST
+    #define RVCP_SIG_DIGEST "reference-build"
+  #endif
+  // Kit identity, stamped in by act-package. The signature digest above is derived
+  // from the test sources, so a rebuilt test reproduces it; the kit id is random and
+  // only the certifying authority holds it, so it is what ties a log to the objects
+  // that were actually shipped. Both lines come out of one string and one call, so
+  // this costs no extra instructions.
+  #ifndef RVCP_KIT_ID
+    #define RVCP_KIT_ID "not-a-kit-build"
+  #endif
+  #ifndef RVCP_KIT_BUILT
+    #define RVCP_KIT_BUILT "unstamped"
+  #endif
+  .pushsection .text.rvmodel,"ax",@progbits
+  .balign 4
+  rvcp_sigdigest_str:
+    .ascii "RVCP-SIGNATURES: results verified against sha256="
+    .ascii RVCP_SIG_DIGEST
+    .ascii "\nRVCP-KIT: id="
+    .ascii RVCP_KIT_ID
+    .ascii " built="
+    .ascii RVCP_KIT_BUILT
+    .asciz "\n"
+  .balign 4                 // string length is variable; keep following code aligned
+  .popsection
 
   // Terminate the test with a failure message
   // Does not include any debug information.
@@ -268,11 +301,18 @@
 
   // Model specific boot code
   rvmodel_boot:
-    #ifdef RVMODEL_BOOT
-      RVMODEL_BOOT
-    #endif
-    #ifdef RVMODEL_IO_INIT
-      RVMODEL_IO_INIT(T1, T2, T3)
+    #ifdef RVMODEL_SHIM_EXTERN
+      // Kit build: boot/IO-init come from the shim. ra is dead here (rvmodel_boot
+      // ends with `jr T1`), so `call` is free to clobber it.
+      call rvmodel_dut_boot
+      call rvmodel_dut_io_init
+    #else
+      #ifdef RVMODEL_BOOT
+        RVMODEL_BOOT
+      #endif
+      #ifdef RVMODEL_IO_INIT
+        RVMODEL_IO_INIT(T1, T2, T3)
+      #endif
     #endif
 
     // Boot to the lowest supported privilege mode unless a test requests M-mode or S-mode.
@@ -331,6 +371,10 @@
 
     LA (T1, rvtest_code_begin)
     jr T1                         // Jump back to the start of the test
+
+  // Everything below expands DUT-private RVMODEL_* macros. In a kit build the
+  // shim supplies these instead, keeping DUT code out of the test object.
+  #ifndef RVMODEL_SHIM_EXTERN
 
   rvmodel_io_write_str:
     // a0 = string pointer; T1-T3 (x6-x8) are scratch. Clobbers ra.
@@ -807,6 +851,7 @@
         ret
     #endif // SSTC_SUPPORTED
   #endif // S_SUPPORTED
+  #endif // RVMODEL_SHIM_EXTERN
 
   nop // Padding to ensure valid memory at the edge of the section
 
@@ -980,8 +1025,10 @@
 
   // Model specific data region (tohost/fromhost, etc). Defined in rvmodel_macros.h.
   // Placed after the signature so variable-size DUT data does not affect any
-  // test-visible symbol addresses.
-  RVMODEL_DATA_SECTION
+  // test-visible symbol addresses. In a kit build it comes from the shim.
+  #ifndef RVMODEL_SHIM_EXTERN
+    RVMODEL_DATA_SECTION
+  #endif
 .endm
 /*********************************** end of RVTEST_SIG_SETUP *********************************/
 

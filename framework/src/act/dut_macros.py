@@ -49,10 +49,9 @@ def generate_rvmodel_svh(dut_include_dir: Path, output_dir: Path) -> None:
     """
     input_h = dut_include_dir / "rvmodel_macros.h"
     output_svh = output_dir / "rvmodel_macros.svh"
-    if not input_h.exists():
-        raise FileNotFoundError(f"rvmodel_macros.h not found at {input_h}")
-
-    defines = _scan_h_defines(input_h, _MIRRORED_DEFINES)
+    # A certification-kit config has no rvmodel_macros.h at all: the DUT's macros
+    # are supplied later, as a library. Emit an empty header rather than failing.
+    defines = _scan_h_defines(input_h, _MIRRORED_DEFINES) if input_h.exists() else {}
 
     guard = f"_RVMODEL_MACROS_SVH_{dut_include_dir.name.upper().replace('-', '_')}_"
     lines = [

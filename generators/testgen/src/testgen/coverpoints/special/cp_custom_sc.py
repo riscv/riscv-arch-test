@@ -121,16 +121,22 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         and params.temp_reg is not None
         and params.temp_val is not None
     )
+    label_line = test_data.add_testcase("true", "cp_custom_sc_after_sc")
+    # Retry both SCs. Not a constrained LR/SC loop in the spec's sense, because the second SC follows the sequence.
+    retry_reg = test_data.int_regs.get_register(exclude_regs=[0])
+    retry_start, retry_end = lrsc_retry_loop(test_data.current_testcase_label, retry_reg, params.rd)
     tc.code.extend(
         [
             "# Testcase: cp_custom_sc_after_sc (should fail because of intervening sc)",
             load_int_reg("rs2", params.rs2, params.rs2val, test_data),
             load_int_reg("temp_reg", params.temp_reg, params.temp_val, test_data),
             f"LA(x{params.rs1}, scratch) # rs1 = base address",
+            *retry_start,
             f"{lr_insn} x0, (x{params.rs1}) # establish reservation",
-            test_data.add_testcase("true", "cp_custom_sc_after_sc"),
+            label_line,
             f"{instr_name} x{params.rd}, x{params.rs2}, (x{params.rs1}) # perform operation",
             f"{instr_name} x{params.temp_reg}, x{params.temp_reg}, (x{params.rs1}) # perform operation again, should fail",
+            *retry_end,
             f"{INDENT}# Check destination of both sc instructions:",
             write_sigupd(params.rd, test_data),
             write_sigupd(params.temp_reg, test_data),
@@ -141,6 +147,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
             "",
         ]
     )
+    test_data.int_regs.return_register(retry_reg)
     return_testcase_registers(test_data, params)
 
     # cp_custom_sc_addresses

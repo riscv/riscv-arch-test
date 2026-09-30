@@ -1,29 +1,26 @@
 # Copyright (c) 2026, Harvey Mudd College
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 # CI configuration for the cva6 family (only cv64a6_imafdcv_sv39 is runnable)
 
 ci_enabled: true
 
-# pulp-platform/ara @ 34bd3bc, cva6 @ 99eac9a:
-#   Vx*, Vls*       vfirst.m and vcpop.m ignore vl, so the vector self-check fails; vrgather,
-#                   vrgatherei16, vmadc, vmsbc and vcompress tests hang.
-#   S, U, SmF, SmVF, Sstvala, Sstvecd, Ssu64xl, ZicsrF
-#                   sstatus.VS reads as 0 (the S-mode status read mask omits VS).
-#   UV, SmV         the acc_dispatcher "Too many pending stores" assertion aborts the
-#                   simulation; SmV also: vsetvl with vill set in rs2 returns vl = 1.
-#   Exceptions{F,S,Sm,Sv,U,Zc}
-#                   PMP entries are tied to zero, so no data access fault can be raised; an
-#                   access to an undecoded address deadlocks. ExceptionsSm does not build
-#                   (riscv/riscv-arch-test#2457 item A2, fixed by #2460).
-#   D, F            wrong fflags or results in fdiv, fsqrt, fused multiply-add and
-#                   fcvt.d.s/fcvt.s.d (e.g. fcvt.d.s of +inf sets NX).
-#   Sm              mstatus WPRI bits 38..62 are writable; mstatus.SD ignores mstatus.VS.
-#   Sv, Svade       sstatus.VS reads as 0; a non-leaf PTE with A, D or U set does not fault.
-#   ExceptionsSvSm  misaligned mprv loads trip a load_unit assertion; medeleg tests record
-#                   mstatus.SPIE = 0 where the model has 1.
-#   InterruptsS, InterruptsSm
-#                   all interrupt pins are tied to zero.
-exclude_extensions: "Vx8,Vx16,Vx32,Vx64,Vls8,Vls16,Vls32,Vls64,S,U,UV,SmF,SmVF,Sstvala,Sstvecd,Ssu64xl,ZicsrF,ExceptionsF,ExceptionsS,ExceptionsSm,ExceptionsSv,ExceptionsU,ExceptionsZc,D,F,Sm,Sv,Svade,ExceptionsSvSm,InterruptsS,InterruptsSm,SmV"
+# Ara 34bd3bc1 with CVA6 99eac9a6. Findings are collected in https://github.com/openhwfoundation/cva6/issues/3585.
+# Vx8, Vx16, Vx32, Vx64, Vls8, Vls16, Vls32, Vls64: vfirst.m and vcpop.m ignore vl, so the self-check fails: https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/masku/masku.sv#L858-L861
+# S: sstatus.VS reads 0: https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/ariane_pkg.sv#L114-L127
+# U, ExceptionsS, ExceptionsU: ebreak writes the instruction to xtval: https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/decoder.sv#L1605
+# UV: the acc_dispatcher store-overflow assertion stops the simulation: https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/acc_dispatcher.sv#L433-L435
+# SmV: vsetvl ignores rs2 above bit 7, so rs2.vill is lost, and SmV_vcsr hits the UV assertion: https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_dispatcher.sv#L639
+# SmF: mstatus.SD ignores mstatus.VS: https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1940
+# SmVF: vfdiv.vv of 1.0/0.0 sets NV as well as DZ: https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/lane/vmfpu.sv#L1332
+# Sm: mstatus WPRI bits 36-62 are writable: https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1498-L1529
+# Sstvecd: stvec reads bits 5:1 as 0: https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L480
+# Sstvala, ExceptionsF, ExceptionsSm, ExceptionsZc, ExceptionsSvZaamo, ExceptionsSvZaamoSm, ExceptionsSvZalrsc, ExceptionsSvZalrscSm: misaligned accesses do not trap, because the MMU drops the misaligned exception: https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/cva6_mmu/cva6_mmu.sv#L513-L514
+# ExceptionsSv, ExceptionsSvSm: a misaligned lw under Sv39 trips a load_unit assertion: https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/load_unit.sv#L554-L556
+# Sv: a non-leaf PTE with A, D or U set does not fault, and an ASID change trips the TLB multi-hit assertion: https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/cva6_mmu/cva6_ptw.sv#L497-L508
+# InterruptsSm: the interrupt is chosen before mideleg is applied, so a pending delegated SEI hides an undelegated STI: https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/decoder.sv#L1672-L1700
+# D, F, ZicsrF: wrong fflags or results from fdiv, fsqrt, fused multiply-add and fcvt: https://github.com/openhwfoundation/cva6/issues/3585
+# Zaamo, Zalrsc: testbench; the L2 has no atomic support, so AMOs return 0 and SC fails: https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_soc.sv#L191-L204
+exclude_extensions: "Vx8,Vx16,Vx32,Vx64,Vls8,Vls16,Vls32,Vls64,S,U,ExceptionsS,ExceptionsU,UV,SmV,SmF,SmVF,Sm,Sstvecd,Sstvala,ExceptionsF,ExceptionsSm,ExceptionsZc,ExceptionsSvZaamo,ExceptionsSvZaamoSm,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,ExceptionsSv,ExceptionsSvSm,Sv,InterruptsSm,D,F,ZicsrF,Zaamo,Zalrsc"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache libelf-dev"
 install_script: ".github/scripts/install-ara.sh"

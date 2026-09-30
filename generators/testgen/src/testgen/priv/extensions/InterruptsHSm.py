@@ -54,13 +54,17 @@ def _mcsr_tests(test_data: TestData) -> list[str]:
         f"csrr x{check_reg}, mie",
         write_sigupd(check_reg, test_data),
         comment_banner(
-            "cp_mie_gilen", "With hie = 0x1444, read mie.  SGEIE is writable if GEILEN > 0 and read-only 0 otherwise"
+            "cp_mie_gilen",
+            "With hie = 0x1444, read mie.  SGEIE is writable when GEILEN > 0; otherwise mideleg[12] and so SGEIE\n"
+            "are implementation-defined, and the case is skipped",
         ),
+        "#if UDB_NUM_EXTERNAL_GUEST_INTERRUPTS >= 1",
         f"LI(x{tmp_reg}, MIP_HS_MASK)",
         f"csrw hie, x{tmp_reg}",
         test_data.add_testcase("hie_1444", "cp_mie_gilen", _CG),
         f"csrr x{check_reg}, mie",
         write_sigupd(check_reg, test_data),
+        "#endif",
         "csrw hie, zero",
         comment_banner("cp_mip", "With hvip = 0x444, read the VS-level and SGEI bits of mip, and hip"),
         f"LI(x{tmp_reg}, MIP_VS_MASK)",

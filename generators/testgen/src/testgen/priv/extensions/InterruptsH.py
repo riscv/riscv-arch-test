@@ -274,12 +274,18 @@ def _alias_tests(test_data: TestData) -> list[str]:
         [
             "csrw hie, zero",
             "csrw hideleg, zero",
-            comment_banner("cp_hie_gilen", "With mie = 0x1444, read hie.  SGEIE is writable if GEILEN > 0"),
+            comment_banner(
+                "cp_hie_gilen",
+                "With mie = 0x1444, read hie.  SGEIE is writable when GEILEN > 0; otherwise mideleg[12] and so\n"
+                "SGEIE are implementation-defined, and the case is skipped",
+            ),
+            "#if UDB_NUM_EXTERNAL_GUEST_INTERRUPTS >= 1",
             "RVTEST_TSBI_CSR_WRITE(CSR_MIE, MIP_HS_MASK)",
             test_data.add_testcase("mie_1444", "cp_hie_gilen", _CG),
             f"csrr x{tmp_reg}, hie",
             write_sigupd(tmp_reg, test_data),
             "RVTEST_TSBI_CSR_WRITE(CSR_MIE, 0)",
+            "#endif",
         ]
     )
     test_data.int_regs.return_registers([tmp_reg, mask_reg])

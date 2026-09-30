@@ -56,7 +56,7 @@ covergroup InterruptsHSm_m_cg with function sample(ins_t ins);
     cp_mie: cross priv_mode_m, csrr, mie, hie_vs;
     cp_mip: cross priv_mode_m, csrr, mip, hvip_all;
 
-    // hie.SGEIE is read-only zero when GEILEN = 0
+    // hie.SGEIE is writable when GEILEN > 0 and implementation-defined otherwise
     `ifndef UDB_NUM_EXTERNAL_GUEST_INTERRUPTS_0
         hie_sgei_vs : coverpoint ins.prev.csr[CSR_HIE][12:0] {
             bins sgei_vs = {13'h1444};

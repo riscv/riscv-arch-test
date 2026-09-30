@@ -134,7 +134,7 @@ covergroup InterruptsH_hs_cg with function sample(ins_t ins);
     cp_vsip:          cross priv_mode_hs, csrr, vsip, hideleg_vs, hvip_vs;
     cp_vsie_from_hie: cross priv_mode_hs, csrrw, vsie, ones_16, hideleg_vs;
 
-    // hie.SGEIE is an alias of mie.SGEIE, which is read-only zero when GEILEN = 0
+    // hie.SGEIE is an alias of mie.SGEIE, which is writable when GEILEN > 0 and implementation-defined otherwise
     `ifndef UDB_NUM_EXTERNAL_GUEST_INTERRUPTS_0
         mie_1444 : coverpoint ins.prev.csr[CSR_MIE][12:0] {
             bins sgei_vs = {13'h1444};

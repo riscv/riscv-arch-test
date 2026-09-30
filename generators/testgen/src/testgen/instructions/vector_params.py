@@ -516,6 +516,6 @@ def generate_random_vector_params(
     params.sew = sew
     params.vector_suite = suite
     if params.vl is None:
-        params.vl = 1
+        params.vl = instr_type_config.vector_data.egs
 
     return params

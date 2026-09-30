@@ -11,7 +11,7 @@ vrol.vv,VVV,x,x,x,x,x,x,x,x,,x,,x,,,,x,x,x,x,x,x,x,,,,,,,x,x,x,x,,
 vrol.vx,VVX,x,x,x,x,x,x,x,x,,x,,,x,,,x,,,,x,,,,x,x,,,,x,x,x,x,,
 vror.vv,VVV,x,x,x,x,x,x,x,x,,x,,x,,,,x,x,x,x,x,x,x,,,,,,,x,x,x,x,,
 vror.vx,VVX,x,x,x,x,x,x,x,x,,x,,,x,,,x,,,,x,,,,x,x,,,,x,x,x,x,,
-vror.vi,VVI,x,x,x,x,x,x,x,x,,x,,,,u,,x,,,,x,,,,,,,u,,x,x,x,x,,
+vror.vi,VVIU,x,x,x,x,x,x,x,x,,x,,,,u,,x,,,,x,,,,,,,u,,x,x,x,x,,
 vwsll.vv,WVV,x,x,x,x,x,,x,emul2,,x,,x,,,,,,x,,x,x,x,,,,,,,x,lmul4max,lmul4max,x,x,wvv_all
 vwsll.vx,WVX,x,x,x,x,x,,x,emul2,,x,,,x,,,,,,,x,,,,x,x,,,,x,lmul4max,lmul4max,x,x,wvx_all
 vwsll.vi,WVI,x,x,x,x,x,,x,emul2,,x,,,,u,,,,,,x,,,,,,,u,,x,lmul4max,lmul4max,x,x,wvx_all

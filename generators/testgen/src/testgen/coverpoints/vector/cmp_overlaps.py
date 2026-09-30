@@ -7,6 +7,7 @@
 
 import re
 
+from testgen.asm.vector_helpers import get_egs_lmul_for_register
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData, return_testcase_registers
@@ -79,8 +80,9 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
         upper_bound = int(lte_match.group(1)) + 1
 
     egs_match = re.search(r"egs(\d)", suffix)
+    egs = 1
     if egs_match is not None:
-        raise NotImplementedError("Handle EGS")
+        egs = int(egs_match.group(1))
 
     test_chunks = []
     lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
@@ -89,6 +91,9 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
     for v in range(lower_bound, upper_bound, emul):
         presets = {v1: v, v2: v}
 
+        if egs != 1:
+            lmul = get_egs_lmul_for_register(v, egs)
+
         # For certain overlaps with load/store instructions, the overlap can depend on SEW, so we do an overlap
         # check here to ensure we test a valid overlap
         temp_params = InstructionParams(**presets)  # pyright: ignore
@@ -96,7 +101,7 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
             temp_params,
             info,
             no_overlap,
-            1,  # lmul
+            lmul,
             test_data.config.sew,
             instr_type_config.vector_data.scalar_regs,
             instr_type_config.vector_data.mask_regs,
@@ -146,13 +151,17 @@ def make_three_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_d
         lower_bound = 1
 
     egs_match = re.search(r"egs(\d)", suffix)
+    egs = 1
     if egs_match is not None:
-        raise NotImplementedError("Handle EGS")
+        egs = int(egs_match.group(1))
 
     test_chunks = []
     lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
 
     for v in range(lower_bound, upper_bound, emul):
+        if egs != 1:
+            lmul = get_egs_lmul_for_register(v, egs)
+
         presets = {v1: v, v2: v, v3: v}
         test_data.vec_regs.allocate_operand(v1, v, int(max(lmul, 1)))
         test_data.vec_regs.allocate_operand(v2, v, int(max(lmul, 1)), suppress_overlap=True)
@@ -161,7 +170,7 @@ def make_three_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_d
             test_data,
             instr_name,
             instr_type,
-            lmul=1,
+            lmul=lmul,
             additional_no_overlap=set(),
             suite="base",
             masked=False,

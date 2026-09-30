@@ -887,15 +887,27 @@ def _t_hedeleg(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs:
 ###########################
 
 
+# (VS-stage, G-stage) permissions for HLV and HLVX with each MXR.  MXR makes execute-only pages readable for HLV;
+# HLVX needs execute permission in both stages, and MXR does not grant it.
+HLV_PERM_CASES = (
+    ("x", "rwx", "cp_hlv_mxr", ("hlv", "hlvx")),
+    ("rwx", "x", "cp_hlv_mxr", ("hlv", "hlvx")),
+    ("r", "rwx", "cp_hlvx_perm", ("hlvx",)),
+    ("rwx", "r", "cp_hlvx_perm", ("hlvx",)),
+)
+
+
 def _t_hlv(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode) -> None:
-    """HLV, HLVX and HSV privilege from hstatus.SPVP against the VS-stage U bit, and MXR in each stage."""
+    """HLV, HLVX and HSV privilege from hstatus.SPVP against the VS-stage U bit, MXR in each stage, and the execute
+    permission that HLVX needs in both stages."""
     chunk = begin_chunk(
         test_data,
         f"{g.name}_hlv",
-        "cp_hlv_priv, cp_hlv_mxr",
+        "cp_hlv_priv, cp_hlv_mxr, cp_hlvx_perm",
         "In HS-mode, execute hlv.w, hlvx.wu and hsv.w on VS-stage pages with U = 0, 1, with hstatus.SPVP = 0, 1,\n"
-        "vsstatus.SUM = 0, 1 and sstatus.SUM = 0, 1 (ignored), and hlv.w and hlvx.wu on execute-only VS-stage and\n"
-        "G-stage pages with vsstatus.MXR = 0, 1 and sstatus.MXR = 0, 1",
+        "vsstatus.SUM = 0, 1 and sstatus.SUM = 0, 1 (ignored), hlv.w and hlvx.wu on execute-only VS-stage and\n"
+        "G-stage pages, and hlvx.wu on read-only VS-stage and G-stage pages (a load page fault or load guest-page\n"
+        "fault, because HLVX needs execute permission), with vsstatus.MXR = 0, 1 and sstatus.MXR = 0, 1",
         stages=(g, vs),
     )
     va = f"{vs.data_va} + 8"
@@ -914,7 +926,7 @@ def _t_hlv(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvM
                     name = f"spvp{spvp}_vssum{vs_sum}_ssum{s_sum}_u{int(user)}"
                     ops = ("hlv", "hlvx", "hsv")
                     code.extend(guest_access(test_data, HLV_CG, "cp_hlv_priv", name, None, va, setup=setup, ops=ops))
-    for vs_perm, g_perm in (("x", "rwx"), ("rwx", "x")):
+    for vs_perm, g_perm, coverpoint, ops in HLV_PERM_CASES:
         for vs_mxr in (0, 1):
             for s_mxr in (0, 1):
                 setup = [
@@ -926,9 +938,7 @@ def _t_hlv(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvM
                     *status_bits("sstatus", reg, mxr=s_mxr),
                 ]
                 name = f"vs_{vs_perm}_g_{g_perm}_vsmxr{vs_mxr}_smxr{s_mxr}"
-                code.extend(
-                    guest_access(test_data, HLV_CG, "cp_hlv_mxr", name, None, va, setup=setup, ops=("hlv", "hlvx"))
-                )
+                code.extend(guest_access(test_data, HLV_CG, coverpoint, name, None, va, setup=setup, ops=ops))
     code.extend(set_csr_bits("hstatus", "HSTATUS_SPVP", "0", reg))
     test_data.int_regs.return_register(reg)
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])

@@ -374,6 +374,9 @@ covergroup SvH_hlv_cg with function sample(ins_t ins);
         wildcard bins hlv_w   = {HLV_W};
         wildcard bins hlvx_wu = {HLVX_WU};
     }
+    hlvx : coverpoint ins.current.insn {
+        wildcard bins hlvx_wu = {HLVX_WU};
+    }
     // Each pair of VS-stage and G-stage modes with the same number of levels that the hart supports
     stage_modes : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode")[3:0],
                               get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0]} {
@@ -397,6 +400,11 @@ covergroup SvH_hlv_cg with function sample(ins_t ins);
             bins sv32_sv32x4 = {8'h11};
         `endif
     }
+    // The load page fault (VS-stage) or load guest-page fault (G-stage) that HLVX takes on a non-executable page
+    load_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], ins.current.csr[CSR_SCAUSE][4:0]} {
+        bins page_fault       = {6'b101101};
+        bins guest_page_fault = {6'b110101};
+    }
     hstatus_spvp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp") {
         bins vu = {0};
         bins vs = {1};
@@ -419,9 +427,11 @@ covergroup SvH_hlv_cg with function sample(ins_t ins);
     }
 
     // hstatus.SPVP selects VU-level or VS-level access; vsstatus.SUM applies and sstatus.SUM does not
-    cp_hlv_priv : cross priv_mode_hs, hlv, stage_modes, hstatus_spvp, vsstatus_sum, sstatus_sum;
+    cp_hlv_priv  : cross priv_mode_hs, hlv, stage_modes, hstatus_spvp, vsstatus_sum, sstatus_sum;
     // sstatus.MXR affects both stages, vsstatus.MXR only the VS-stage
-    cp_hlv_mxr  : cross priv_mode_hs, hlv_load, stage_modes, vsstatus_mxr, sstatus_mxr;
+    cp_hlv_mxr   : cross priv_mode_hs, hlv_load, stage_modes, vsstatus_mxr, sstatus_mxr;
+    // HLVX needs execute permission in both stages, which neither MXR grants
+    cp_hlvx_perm : cross priv_mode_hs, hlvx, stage_modes, vsstatus_mxr, sstatus_mxr, load_fault;
 endgroup
 
 covergroup SvH_csr_cg with function sample(ins_t ins);

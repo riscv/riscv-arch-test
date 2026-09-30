@@ -37,20 +37,9 @@
 
 ##### STARTUP #####
 
-# RVMODEL_BOOT does three things, all of them required.
+# RVMODEL_BOOT does two things, both required.
 #
-# (1) The reset trampoline.  pad_core0_rvba is tied to 0, so hart 0 starts fetching at
-#     address 0 in M-mode, but ACT links its tests at TEST_BASE = 0x1000.  A two
-#     instruction absolute jump is emitted into .text.reset, which link.ld places at 0.
-#     (%hi/%lo rather than `la` so the jump is absolute and independent of the code
-#     model.)  This section is empty in the Sail reference build, where RVMODEL_BOOT is
-#     #undef'd and the model enters at the ELF entry point.
-#       Quote: ".pad_core0_rvba    (40'b0        ),"
-#       https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/smart_run/logical/common/cpu_sub_system_axi.v#L226
-#       Quote: "assign mrvbr_value[63:0] = {24'b0, mrvbr_reg[38:0], 1'b0};" -> cp0_ifu_rvbr
-#       https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L3065
-#
-# (2) Clear mxstatus.THEADISAEE (bit 22) and mxstatus.MAEE (bit 21), which BOTH RESET
+# (1) Clear mxstatus.THEADISAEE (bit 22) and mxstatus.MAEE (bit 21), which BOTH RESET
 #     TO 1.  This is the single most important line in this file.
 #       Quote: "if (!cpurst_b) begin cskyisaee <= 1'b1; maee <= 1'b1; ... clintee <= 1'b1; ucme <= 1'b1;"
 #       https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L2720-L2731
@@ -90,7 +79,7 @@
 #       Quote (user manual 16.1.7.1, p.330): "UCME-U 态执行扩展 cache 指令"
 #       ("UCME - execute extended cache instructions in U state")
 #
-# (3) Enable the caches.  mcor (0x7C2) = 0x70011 invalidates I-cache, D-cache and BTB;
+# (2) Enable the caches.  mcor (0x7C2) = 0x70011 invalidates I-cache, D-cache and BTB;
 #     mhcr (0x7C1) |= 0x3 sets IE and DE.  Both reset to 0, i.e. the core boots with
 #     every cache off and every fetch going to the AXI SRAM.
 #     MEASURED on this build: a 2000-iteration ALU loop takes 102,132 cycles with the
@@ -99,13 +88,6 @@
 # Registers: RVMODEL_BOOT runs at label rvmodel_boot before any test state exists, so
 # t0 is free.
 #define RVMODEL_BOOT                                            \
-  .pushsection .text.reset,"ax",@progbits                      ;\
-  .globl c910_reset_trampoline                                 ;\
-  c910_reset_trampoline:                                       ;\
-    lui  t0, %hi(rvtest_entry_point)                           ;\
-    addi t0, t0, %lo(rvtest_entry_point)                       ;\
-    jr   t0                                                    ;\
-  .popsection                                                  ;\
   li   t0, (1 << 22) | (1 << 21)                               ;\
   csrc 0x7c0, t0        /* mxstatus: THEADISAEE=0, MAEE=0 */   ;\
   li   t0, 0x70011                                             ;\
@@ -198,7 +180,7 @@
 # RVMODEL_MTIMECMP_ADDRESS is also left undefined.  It is only reachable together
 # with RVMODEL_MTIME_ADDRESS, and defining it alone would make rvtest_setup.h emit
 # LA(t0, 0xB4004000) at boot.  LA expands to `la`, which under -mcmodel=medany is
-# auipc+addi with a +/-2 GB reach; the tests link at 0x1000 and the CLINT is 2.8 GB
+# auipc+addi with a +/-2 GB reach; the tests link at 0 and the CLINT is 2.8 GB
 # away, so the assembler reports "offset too large".  Every CLINT access in this file
 # therefore goes through `li`, which materialises the full 64-bit constant.
 #define CLINT_BASE_ADDRESS 0xB4000000

@@ -81,8 +81,8 @@ WORK="${ELF%.elf}.c910run"
 rm -rf "$WORK"
 mkdir -p "$WORK" || exit 2
 
-# The image is a flat binary starting at address 0 (link.ld puts the reset trampoline
-# there), emitted as one 32-bit hex word per line with byte 0 in the top nibble pair.
+# The image is a flat binary starting at address 0, the reset vector, emitted as one
+# 32-bit hex word per line with byte 0 in the top nibble pair.
 "$CROSS-objcopy" -O binary --gap-fill 0 "$ELF" "$WORK/image.bin" || exit 2
 od -An -tx1 -v -w4 "$WORK/image.bin" | tr -d ' ' | grep -v '^$' >"$WORK/mem.pat" || exit 2
 rm -f "$WORK/image.bin"

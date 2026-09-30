@@ -403,11 +403,24 @@ covergroup H_vscsr_cg with function sample(ins_t ins);
         `ifdef S1P12P0_OR_LATER_SUPPORTED
             bins senvcfg = {CSR_SENVCFG};
         `endif
-        `ifdef SSCCFG_SUPPORTED
-            bins scountinhibit = {CSR_SCOUNTINHIBIT};
-        `endif
     }
     cp_nonreplica:          cross priv_mode_vs, snonreplicated, csraccesses;
+
+    // scountinhibit raises illegal instruction with menvcfg.CDE = 0 and virtual instruction with CDE = 1
+    `ifdef SSCCFG_SUPPORTED
+        scountinhibit : coverpoint ins.current.insn[31:20] {
+            bins scountinhibit = {CSR_SCOUNTINHIBIT};
+        }
+        `ifdef UDB_MXLEN_64
+            menvcfg_cde : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cde") {
+        `else
+            menvcfg_cde : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "cde") {
+        `endif
+            bins off = {0};
+            bins on  = {1};
+        }
+        cp_scountinhibit_vs:    cross priv_mode_vs, scountinhibit, csraccesses, menvcfg_cde;
+    `endif
 
     // vsstatus.SD is read-only and summarizes FS, VS and XS
     csrrw : coverpoint ins.current.insn {

@@ -132,12 +132,13 @@ def _case(
     stage: SvMode,
     level: int,
     offset: str = _DATA,
+    va: str | None = None,
     guest: tuple[list[str], list[str]] = ([], []),
     ifdef: str | None = None,
 ) -> list[str]:
-    """Write ``ptes``, form the guest virtual address of ``offset`` in ``stage``'s mapping at ``level``, and run the
-    CBOs in ``mode`` between the ``guest`` setup and cleanup lines.  M-mode checks what cbo.zero did to the test
-    data."""
+    """Write ``ptes``, form the guest virtual address of ``offset`` in the mapping of ``va`` (by default
+    stage.data_va) at ``level``, and run the CBOs in ``mode`` between the ``guest`` setup and cleanup lines.  M-mode
+    checks what cbo.zero did to the test data."""
     addr, val = test_data.int_regs.get_registers(2)
     check = c.family == "zicboz" and offset == _DATA
     lines = [
@@ -147,7 +148,7 @@ def _case(
         "hfence.vvma",
         *virtual_address(
             stage,
-            stage.data_va,
+            va or stage.data_va,
             level,
             destination=f"x{c.gva}",
             physical_address=offset,
@@ -262,12 +263,13 @@ def _vs_cases(test_data: TestData, c: _Chunk, mode: str) -> list[str]:
         )
         if level < vs.levels - 1:
             # The non-leaf PTE above the leaf points at a table at guest physical address g_base, which is unmapped,
-            # or which a G-stage kilopage maps to the access-fault region
+            # or which a G-stage kilopage maps to the page of the access-fault region.  There, the access-fault case's
+            # index selects a PTE inside the region.
             table = [
                 *_mapping(test_data, vs, level, user),
                 *_pte(test_data, vs, level + 1, PteFlags.nonleaf(), vs.data_va, g_base),
             ]
-            faulting_table = _mapping(test_data, g, 0, PteFlags(user=True), "RVMODEL_ACCESS_FAULT_ADDRESS", va=g_base)
+            faulting_table = _mapping(test_data, g, 0, PteFlags(user=True), vs.access_fault_pte_address(), va=g_base)
             lines.extend(
                 [
                     *_case(
@@ -291,6 +293,7 @@ def _vs_cases(test_data: TestData, c: _Chunk, mode: str) -> list[str]:
                         [*table, *faulting_table],
                         stage=vs,
                         level=level,
+                        va=vs.access_fault_walk_va(vs.data_va, level),
                         ifdef="RVMODEL_ACCESS_FAULT_ADDRESS",
                     ),
                 ]
@@ -340,7 +343,8 @@ def _g_cases(test_data: TestData, c: _Chunk, mode: str) -> list[str]:
 
 
 def _g_walk_cases(test_data: TestData, c: _Chunk, mode: str) -> list[str]:
-    """A non-leaf G-stage PTE that points at the access-fault region, at each level."""
+    """A non-leaf G-stage PTE that points at the page of the access-fault region, at each level, with an index there
+    that selects a PTE inside the region."""
     # TODO: Sail writes mtval2 = GPA >> 2 on these access faults; hypervisor.adoc requires mtval2 = 0
     g = c.g
     lines = []
@@ -348,7 +352,7 @@ def _g_walk_cases(test_data: TestData, c: _Chunk, mode: str) -> list[str]:
         ptes = [
             *_vs_identity(test_data, c, mode),
             *_mapping(test_data, g, level, PteFlags(user=True)),
-            *_pte(test_data, g, level + 1, PteFlags.nonleaf(), g.data_va, "RVMODEL_ACCESS_FAULT_ADDRESS"),
+            *_pte(test_data, g, level + 1, PteFlags.nonleaf(), g.data_va, g.access_fault_pte_address()),
         ]
         lines.extend(
             _case(
@@ -361,6 +365,7 @@ def _g_walk_cases(test_data: TestData, c: _Chunk, mode: str) -> list[str]:
                 ptes,
                 stage=g,
                 level=level,
+                va=g.access_fault_walk_va(g.data_va, level),
                 ifdef="RVMODEL_ACCESS_FAULT_ADDRESS",
             )
         )

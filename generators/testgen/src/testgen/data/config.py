@@ -33,7 +33,7 @@ class TestConfig:
                           If None, march is built from required_extensions.
         extra_params: Optional list of extra parameter requirements for the test.
         extra_extensions: Extensions required in addition to the testsuite's own, from a testplan row's
-                          REQUIRED_EXTENSIONS column. They extend the file and covergroup name prefix.
+                          REQUIRED_EXTENSIONS column. They are appended to the file and covergroup name prefix.
     """
 
     xlen: int
@@ -49,8 +49,8 @@ class TestConfig:
 
     @property
     def name_prefix(self) -> str:
-        """Prefix for test file and covergroup names, e.g. "Zfhmin" or "Zfhmin_D" for a row that also needs D."""
-        return "_".join((self.testsuite, *self.extra_extensions))
+        """Prefix for test file and covergroup names, e.g. "Zfhmin" or "ZfhminD" for a row that also needs D."""
+        return "".join((self.testsuite, *self.extra_extensions))
 
     @property
     def xlen_format_str(self) -> str:

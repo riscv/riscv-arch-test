@@ -496,7 +496,7 @@ covergroup Zfhmin_fsh_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 `ifdef D_SUPPORTED
-covergroup Zfhmin_D_fcvt_d_h_cg with function sample(ins_t ins);
+covergroup ZfhminD_fcvt_d_h_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cmp_fd_fs1 : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.current.fd == ins.current.fs1 & ins.trap == 0 )  {
         // FD and FS1 register (assignment) WAR Hazard
@@ -572,7 +572,7 @@ covergroup Zfhmin_D_fcvt_d_h_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zfhmin_D_fcvt_h_d_cg with function sample(ins_t ins);
+covergroup ZfhminD_fcvt_h_d_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_frm_2 : coverpoint get_frm(ins.ops[2].val)  iff (ins.trap == 0 )  {
         // Floating-point rounding mode in instruction
@@ -660,7 +660,7 @@ covergroup Zfhmin_D_fcvt_h_d_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zfhmin_D_fcvt_h_s_cg with function sample(ins_t ins);
+covergroup ZfhminD_fcvt_h_s_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_NaNBox_D_H : coverpoint unsigned'(ins.current.fd_val[63:16])  iff (ins.trap == 0 )  {
         // NaNBoxing (half result in a double register)
@@ -669,7 +669,7 @@ covergroup Zfhmin_D_fcvt_h_s_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zfhmin_D_fcvt_s_h_cg with function sample(ins_t ins);
+covergroup ZfhminD_fcvt_s_h_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_fs1_badNB_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         //// "FS1 Bad NaNBox edges (half NaNBoxed to 64 bits)";
@@ -689,7 +689,7 @@ covergroup Zfhmin_D_fcvt_s_h_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zfhmin_D_flh_cg with function sample(ins_t ins);
+covergroup ZfhminD_flh_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_NaNBox_D_H : coverpoint unsigned'(ins.current.fd_val[63:16])  iff (ins.trap == 0 )  {
         // NaNBoxing (half result in a double register)
@@ -698,7 +698,7 @@ covergroup Zfhmin_D_flh_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zfhmin_D_fmv_h_x_cg with function sample(ins_t ins);
+covergroup ZfhminD_fmv_h_x_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_NaNBox_D_H : coverpoint unsigned'(ins.current.fd_val[63:16])  iff (ins.trap == 0 )  {
         // NaNBoxing (half result in a double register)
@@ -707,7 +707,7 @@ covergroup Zfhmin_D_fmv_h_x_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zfhmin_D_fmv_x_h_cg with function sample(ins_t ins);
+covergroup ZfhminD_fmv_x_h_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_fs1_badNB_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         //// "FS1 Bad NaNBox edges (half NaNBoxed to 64 bits)";
@@ -727,7 +727,7 @@ covergroup Zfhmin_D_fmv_x_h_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zfhmin_D_fsh_cg with function sample(ins_t ins);
+covergroup ZfhminD_fsh_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_fs2_badNB_D_H : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (half NaNBoxed to 64 bits)";
@@ -753,48 +753,48 @@ function void zfhmin_sample(int hart, int issue, ins_t ins);
     case (traceDataQ[hart][issue][0].inst_name)
 `ifdef D_SUPPORTED
         "fcvt.d.h"     : begin
-            Zfhmin_D_fcvt_d_h_cg.sample(ins);
+            ZfhminD_fcvt_d_h_cg.sample(ins);
         end
 `endif
 `ifdef D_SUPPORTED
         "fcvt.h.d"     : begin
-            Zfhmin_D_fcvt_h_d_cg.sample(ins);
+            ZfhminD_fcvt_h_d_cg.sample(ins);
         end
 `endif
         "fcvt.h.s"     : begin
             Zfhmin_fcvt_h_s_cg.sample(ins);
 `ifdef D_SUPPORTED
-            Zfhmin_D_fcvt_h_s_cg.sample(ins);
+            ZfhminD_fcvt_h_s_cg.sample(ins);
 `endif
         end
         "fcvt.s.h"     : begin
             Zfhmin_fcvt_s_h_cg.sample(ins);
 `ifdef D_SUPPORTED
-            Zfhmin_D_fcvt_s_h_cg.sample(ins);
+            ZfhminD_fcvt_s_h_cg.sample(ins);
 `endif
         end
         "flh"     : begin
             Zfhmin_flh_cg.sample(ins);
 `ifdef D_SUPPORTED
-            Zfhmin_D_flh_cg.sample(ins);
+            ZfhminD_flh_cg.sample(ins);
 `endif
         end
         "fmv.h.x"     : begin
             Zfhmin_fmv_h_x_cg.sample(ins);
 `ifdef D_SUPPORTED
-            Zfhmin_D_fmv_h_x_cg.sample(ins);
+            ZfhminD_fmv_h_x_cg.sample(ins);
 `endif
         end
         "fmv.x.h"     : begin
             Zfhmin_fmv_x_h_cg.sample(ins);
 `ifdef D_SUPPORTED
-            Zfhmin_D_fmv_x_h_cg.sample(ins);
+            ZfhminD_fmv_x_h_cg.sample(ins);
 `endif
         end
         "fsh"     : begin
             Zfhmin_fsh_cg.sample(ins);
 `ifdef D_SUPPORTED
-            Zfhmin_D_fsh_cg.sample(ins);
+            ZfhminD_fsh_cg.sample(ins);
 `endif
         end
         default: ; // a case needs at least one item, and some configurations select none

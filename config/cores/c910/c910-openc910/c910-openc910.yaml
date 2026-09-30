@@ -50,6 +50,15 @@ implemented_extensions:
   #   Quote: "32'b0000_0000_0000_00000_001_00000_0001111 : ... // fence.i"
   #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/idu/rtl/ct_idu_id_decd.v#L1634
   - { name: Zifencei, version: "= 2.0.0" }
+  # The Zihintntl and Zihintpause hints execute as no-ops.  ntl.* is add x0, x0, x2-x5
+  # and decodes as a plain add whose x0 result is dropped; c.ntl.* is c.add x0, x2-x5,
+  # which writes no register and is not in the compressed illegal list; pause is a
+  # FENCE, and every funct3 = 000 MISC-MEM encoding decodes as fence.
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/idu/rtl/ct_idu_id_decd.v#L1417
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/idu/rtl/ct_idu_id_decd.v#L1130-L1138
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/idu/rtl/ct_idu_id_decd.v#L1631
+  - { name: Zihintntl, version: "= 1.0.0" }
+  - { name: Zihintpause, version: "= 2.0.0" }
   # cycle, time and instret are all present.  `time` is implemented natively, reading
   # the system counter the SoC brings in on pad_cpu_sys_cnt, so no emulation is needed.
   #   Quote: "TIME : data_out[63:0] = biu_hpcp_time[63:0];"

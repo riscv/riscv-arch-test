@@ -16,6 +16,7 @@ out-of-order application-class core. The configuration runs the `smart_run/` SoC
 - C910 implements privileged specification 1.10. `Sm` and `S` are declared at 1.11.0, the lowest
   version UDB offers.
 - PMP: 16 entries, of which 8 are usable, with a 4 KB granule. 16 hardware performance counters.
+- `Zihintntl` and `Zihintpause` are claimed: their hint encodings execute as no-ops.
 
 ## RTL configuration
 

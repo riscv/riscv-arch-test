@@ -509,12 +509,11 @@
     "Zifencei": {
       "supported": true
     },
-    // ntl.*, c.ntl.* and pause execute as no-ops (see ibex-opentitan.yaml).
     "Zihintntl": {
-      "supported": true
+      "supported": false
     },
     "Zihintpause": {
-      "supported": true
+      "supported": false
     },
     // hpmcounter3..31 exist as read-only U-mode aliases gated by mcounteren; only
     // 3..12 are backed by real counters (see writable_hpm_counters above).

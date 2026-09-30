@@ -678,6 +678,18 @@ SvH_vsstage_cg_cp_vsatp_perm_reserved_all_exec:
 
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
   RVTEST_TSBI_CSR_SET(CSR_MENVCFG, MENVCFG_PBMTE)
+#ifdef ZICBOM_SUPPORTED
+  RVTEST_TSBI_CSR_SET(CSR_MENVCFG, MENVCFG_CBCFE)
+#endif
+  fence iorw, iorw
+#ifdef ZICBOM_SUPPORTED
+  LA(x9, svh_page)
+  .option push
+  .option arch, +zicbom
+  cbo.flush (x9)
+  .option pop
+  fence iorw, iorw
+#endif
   LI(x9, HENVCFG_ADUE | HENVCFG_PBMTE)
   csrc henvcfg, x9
   LA(x14, rvtest_Vroot_pg_tbl + (((0x028500403000) >> 39) & 0x1ff) * 8)
@@ -724,6 +736,15 @@ SvH_vsstage_cg_cp_vsatp_pbmt_pbmte0_pbmt1_exec:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, SvH_vsstage_cg_cp_vsatp_pbmt_pbmte0_pbmt1_load, SvH_vsstage_cg_cp_vsatp_pbmt_pbmte0_pbmt1_load_str)
 
+  fence iorw, iorw
+#ifdef ZICBOM_SUPPORTED
+  LA(x9, svh_page)
+  .option push
+  .option arch, +zicbom
+  cbo.flush (x9)
+  .option pop
+  fence iorw, iorw
+#endif
   LI(x9, HENVCFG_ADUE | HENVCFG_PBMTE)
   csrc henvcfg, x9
   LA(x8, rvtest_Vroot_pg_tbl + (((0x028500403000) >> 39) & 0x1ff) * 8)
@@ -770,6 +791,15 @@ SvH_vsstage_cg_cp_vsatp_pbmt_pbmte0_pbmt2_exec:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvH_vsstage_cg_cp_vsatp_pbmt_pbmte0_pbmt2_load, SvH_vsstage_cg_cp_vsatp_pbmt_pbmte0_pbmt2_load_str)
 
+  fence iorw, iorw
+#ifdef ZICBOM_SUPPORTED
+  LA(x9, svh_page)
+  .option push
+  .option arch, +zicbom
+  cbo.flush (x9)
+  .option pop
+  fence iorw, iorw
+#endif
   LI(x9, HENVCFG_ADUE | HENVCFG_PBMTE)
   csrc henvcfg, x9
   LA(x13, rvtest_Vroot_pg_tbl + (((0x028500403000) >> 39) & 0x1ff) * 8)
@@ -816,6 +846,15 @@ SvH_vsstage_cg_cp_vsatp_pbmt_pbmte0_pbmt3_exec:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvH_vsstage_cg_cp_vsatp_pbmt_pbmte0_pbmt3_load, SvH_vsstage_cg_cp_vsatp_pbmt_pbmte0_pbmt3_load_str)
 
+  fence iorw, iorw
+#ifdef ZICBOM_SUPPORTED
+  LA(x9, svh_page)
+  .option push
+  .option arch, +zicbom
+  cbo.flush (x9)
+  .option pop
+  fence iorw, iorw
+#endif
   LI(x9, HENVCFG_ADUE | HENVCFG_PBMTE)
   csrc henvcfg, x9
   LI(x9, HENVCFG_PBMTE)
@@ -864,6 +903,15 @@ SvH_vsstage_cg_cp_vsatp_pbmt_pbmte1_pbmt1_exec:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvH_vsstage_cg_cp_vsatp_pbmt_pbmte1_pbmt1_load, SvH_vsstage_cg_cp_vsatp_pbmt_pbmte1_pbmt1_load_str)
 
+  fence iorw, iorw
+#ifdef ZICBOM_SUPPORTED
+  LA(x9, svh_page)
+  .option push
+  .option arch, +zicbom
+  cbo.flush (x9)
+  .option pop
+  fence iorw, iorw
+#endif
   LI(x9, HENVCFG_ADUE | HENVCFG_PBMTE)
   csrc henvcfg, x9
   LI(x9, HENVCFG_PBMTE)
@@ -912,6 +960,15 @@ SvH_vsstage_cg_cp_vsatp_pbmt_pbmte1_pbmt2_exec:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, SvH_vsstage_cg_cp_vsatp_pbmt_pbmte1_pbmt2_load, SvH_vsstage_cg_cp_vsatp_pbmt_pbmte1_pbmt2_load_str)
 
+  fence iorw, iorw
+#ifdef ZICBOM_SUPPORTED
+  LA(x9, svh_page)
+  .option push
+  .option arch, +zicbom
+  cbo.flush (x9)
+  .option pop
+  fence iorw, iorw
+#endif
   LI(x9, HENVCFG_ADUE | HENVCFG_PBMTE)
   csrc henvcfg, x9
   LI(x9, HENVCFG_PBMTE)
@@ -960,6 +1017,18 @@ SvH_vsstage_cg_cp_vsatp_pbmt_pbmte1_pbmt3_exec:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvH_vsstage_cg_cp_vsatp_pbmt_pbmte1_pbmt3_load, SvH_vsstage_cg_cp_vsatp_pbmt_pbmte1_pbmt3_load_str)
 
+  fence iorw, iorw
+#ifdef ZICBOM_SUPPORTED
+  LA(x9, svh_page)
+  .option push
+  .option arch, +zicbom
+  cbo.flush (x9)
+  .option pop
+  fence iorw, iorw
+#endif
+#ifdef ZICBOM_SUPPORTED
+  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_CBCFE)
+#endif
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
   LI(x9, HENVCFG_ADUE | HENVCFG_PBMTE)
   csrc henvcfg, x9

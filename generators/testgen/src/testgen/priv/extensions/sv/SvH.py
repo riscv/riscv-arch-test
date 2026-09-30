@@ -140,6 +140,39 @@ def henvcfg_bits(xlen: int, reg: int, *, adue: int, pbmte: int = 0) -> list[str]
     return set_csr_bits(csr, f"{adue_mask} | {pbmte_mask}", bits, reg)
 
 
+def svpbmt_flush(reg: int) -> list[str]:
+    """Separate accesses to svh_page with different cacheability attributes (Svpbmt).
+
+    fence iorw, iorw; cbo.flush; fence iorw, iorw prevents loss of coherence and of memory ordering. Without
+    Zicbom there is no cbo.flush, and only the fence is emitted.
+    """
+    return [
+        "fence iorw, iorw",
+        "#ifdef ZICBOM_SUPPORTED",
+        f"LA(x{reg}, svh_page)",
+        ".option push",
+        ".option arch, +zicbom",
+        f"cbo.flush (x{reg})",
+        ".option pop",
+        "fence iorw, iorw",
+        "#endif",
+    ]
+
+
+def pbmt_block(lines: list[str], reg: int) -> list[str]:
+    """Wrap the PBMT testcases: enable cbo.flush in HS-mode, and flush svh_page before and after them."""
+    return [
+        "#ifdef ZICBOM_SUPPORTED",
+        "RVTEST_TSBI_CSR_SET(CSR_MENVCFG, MENVCFG_CBCFE)",
+        "#endif",
+        *lines,
+        *svpbmt_flush(reg),
+        "#ifdef ZICBOM_SUPPORTED",
+        "RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_CBCFE)",
+        "#endif",
+    ]
+
+
 def map_test_page(
     test_data: TestData,
     g: SvMode | None,
@@ -375,15 +408,18 @@ def _t_vs_pte(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode) -> 
         )
     if vs.xlen == 64:
         code.extend(menvcfg_bits(64, adue=0, pbmte=1))
+        pbmt_cases: list[str] = []
         for pbmte in (0, 1):
             for pbmt in (1, 2, 3):
                 setup = [
+                    *svpbmt_flush(reg),
                     *henvcfg_bits(64, reg, adue=0, pbmte=pbmte),
                     *map_test_page(test_data, None, vs, vs_flags=PteFlags(extra=(f"({pbmt} << 61)",))),
                 ]
-                code.extend(
+                pbmt_cases.extend(
                     guest_access(test_data, VS_CG, "cp_vsatp_pbmt", f"pbmte{pbmte}_pbmt{pbmt}", "VS", va, setup=setup)
                 )
+        code.extend(pbmt_block(pbmt_cases, reg))
     for m_adue, h_adue, flags, ops in AD_CASES:
         name = f"madue{m_adue}_hadue{h_adue}_a{int(flags.accessed)}_d{int(flags.dirty)}_{ops[0]}"
         setup = [
@@ -479,14 +515,19 @@ def _t_g_pte(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> No
         test_data.int_regs.return_registers([pte, addr, tmp])
         code.extend(guest_access(test_data, G_CG, "cp_hgatp_perm", f"misaligned_lvl{level}", "VS", va, setup=setup))
     if g.xlen == 64:
+        reg = test_data.int_regs.get_register()
+        pbmt_cases: list[str] = []
         for pbmte in (0, 1):
             for pbmt in (1, 2, 3):
                 setup = [
+                    *svpbmt_flush(reg),
                     *menvcfg_bits(64, adue=0, pbmte=pbmte),
                     *map_test_page(test_data, g, None, g_flags=PteFlags(user=True, extra=(f"({pbmt} << 61)",))),
                 ]
                 name = f"pbmte{pbmte}_pbmt{pbmt}"
-                code.extend(guest_access(test_data, G_CG, "cp_hgatp_pbmt", name, "VS", va, setup=setup))
+                pbmt_cases.extend(guest_access(test_data, G_CG, "cp_hgatp_pbmt", name, "VS", va, setup=setup))
+        code.extend(pbmt_block(pbmt_cases, reg))
+        test_data.int_regs.return_register(reg)
     for m_adue, flags, ops in G_AD_CASES:
         name = f"madue{m_adue}_a{int(flags.accessed)}_d{int(flags.dirty)}_{ops[0]}"
         setup = [*menvcfg_bits(g.xlen, adue=m_adue), *map_test_page(test_data, g, None, g_flags=flags)]

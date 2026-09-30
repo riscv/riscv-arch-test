@@ -34,6 +34,8 @@ implemented_extensions:
   - { name: Svbare, version: "= 1.0.0" }
 
 params:
+  # The U74 implements only standard ISA extensions (misa.X resets to zero).
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
   # A params
   MISALIGNED_AMO: false
   LRSC_RESERVATION_STRATEGY: "reserve naturally-aligned 64-byte region"
@@ -68,6 +70,7 @@ params:
   U_MODE_ENDIANNESS: little
   UXLEN: [64]
   TRAP_ON_ECALL_FROM_U: true
+  WFI_U_MODE: false
   # S params
   MUTABLE_MISA_S: false
   ASID_WIDTH: 0
@@ -128,11 +131,19 @@ params:
   STVEC_BASE_ALIGNMENT_VECTORED: 256
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
+  SEI_INTR_IMPL: true
+  SSI_INTR_IMPL: true
+  STI_INTR_IMPL: true
   MSTATUS_VS_LEGAL_VALUES: [0]
   # Sm params
   MXLEN: 64
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+  # U74 WFI may wait indefinitely until a wake-up event occurs.
+  WFI_FINITE: false
   TRAP_ON_EBREAK: true
   MARCHID_IMPLEMENTED: true
   ARCH_ID_VALUE: 0x8000000000000007
@@ -212,6 +223,9 @@ params:
       false,
       false,
     ]
+  # U74 mhpmcounter3 and mhpmcounter4 have 40 bits of implemented precision.
+  HPM_COUNTER3_WIDTH: 40
+  HPM_COUNTER4_WIDTH: 40
   HPM_EVENTS: [0]
   COUNTINHIBIT_EN:
     [

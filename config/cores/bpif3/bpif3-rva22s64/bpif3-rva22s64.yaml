@@ -45,6 +45,7 @@ implemented_extensions:
   - { name: Zba, version: "= 1.0.0" }
   - { name: Zbb, version: "= 1.0.0" }
   - { name: Zbc, version: "= 1.0.0" }
+  - { name: Zbkc, version: "= 1.0.0" } # required by Zbc 1.0 in current UDB
   - { name: Zbs, version: "= 1.0.0" }
   - { name: Zkt, version: "= 1.0.0" }
 
@@ -93,6 +94,8 @@ implemented_extensions:
   - { name: Zvl256b, version: "= 1.0.0" }   # VLEN=256 satisfies this
 
 params:
+  # The SpacemiT X60 implements vendor-specific instruction extensions.
+  NON_STANDARD_EXTENSION_IMPLEMENTED: true
   # A params
   MISALIGNED_AMO: false
   LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
@@ -125,6 +128,7 @@ params:
   U_MODE_ENDIANNESS: little
   UXLEN: [64]
   TRAP_ON_ECALL_FROM_U: true
+  WFI_U_MODE: false
   # S params
   MUTABLE_MISA_S: false
   ASID_WIDTH: 16
@@ -184,11 +188,19 @@ params:
   STVEC_BASE_ALIGNMENT_VECTORED: 4
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
+  SEI_INTR_IMPL: true
+  SSI_INTR_IMPL: true
+  STI_INTR_IMPL: true
   MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
   # Sm params
   MXLEN: 64
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+  # K1 WFI may wait indefinitely until a wake-up event occurs.
+  WFI_FINITE: false
   TRAP_ON_EBREAK: true
   MARCHID_IMPLEMENTED: false
   MIMPID_IMPLEMENTED: false
@@ -262,6 +274,23 @@ params:
       false, # 30
       false, # 31
     ]
+  # The implemented K1/X60 HPM counters expose 64 bits of precision on RV64.
+  HPM_COUNTER3_WIDTH: 64
+  HPM_COUNTER4_WIDTH: 64
+  HPM_COUNTER5_WIDTH: 64
+  HPM_COUNTER6_WIDTH: 64
+  HPM_COUNTER7_WIDTH: 64
+  HPM_COUNTER8_WIDTH: 64
+  HPM_COUNTER9_WIDTH: 64
+  HPM_COUNTER10_WIDTH: 64
+  HPM_COUNTER11_WIDTH: 64
+  HPM_COUNTER12_WIDTH: 64
+  HPM_COUNTER13_WIDTH: 64
+  HPM_COUNTER14_WIDTH: 64
+  HPM_COUNTER15_WIDTH: 64
+  HPM_COUNTER16_WIDTH: 64
+  HPM_COUNTER17_WIDTH: 64
+  HPM_COUNTER18_WIDTH: 64
   HPM_EVENTS: [0]
   MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:

@@ -566,13 +566,12 @@
     "Zihintpause": {
       "supported": false
     },
-    // Zihpm provides the unprivileged hpmcounter3..31 shadows for S/U access. Hazard3
-    // decodes neither those nor any real M-mode HPM counter: mhpmcounter3..31 and
-    // mhpmevent3..31 are hardwired to 0, and 0xC03..0xC1F are not decoded at all.
-    //   Quote: "==== mhpmcounter3...31 / Address: `0xb03` through `0xb1f` / Hardwired to 0."
-    //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/csr.adoc#L392-L394
+    // Sail's Zihpm flag also gates mhpmcounter3..31 and mhpmevent3..31, which Hazard3 decodes
+    // as read-only zero. With writable_hpm_counters and mcounteren[31:3] zero, U-mode
+    // hpmcounter3..31 still raise illegal instruction, as on Hazard3. UDB does not claim Zihpm.
+    // https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/hdl/hazard3_csr.v#L877
     "Zihpm": {
-      "supported": false
+      "supported": true
     },
     "Zimop": {
       "supported": false

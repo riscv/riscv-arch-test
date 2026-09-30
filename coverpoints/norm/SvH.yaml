@@ -181,7 +181,4 @@ normative_rule_definitions:
   # With V=1, SFENCE.VMA takes a guest virtual address and a VS-level ASID and orders VS-stage translation for the
   # current VMID
   - names: [sfence_vma_v1]
-    coverpoint:
-      [
-        "Not tested: TODO change a VS-stage leaf, execute sfence.vma in VS-mode, and check that the next guest access uses the new leaf",
-      ]
+    coverpoint: ["SvH_fence_cg/cp_sfence_vma_vs"]

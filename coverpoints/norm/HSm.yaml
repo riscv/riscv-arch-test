@@ -84,8 +84,8 @@ normative_rule_definitions:
     coverpoint:
       [
         "HSm_tvm_cg/cp_hfence",
-        "SvH_vsstage_cg/cp_vsatp_perm (hfence.vvma with rs1 = rs2 = x0 after each VS-stage leaf change)",
-        "SvH_gstage_cg/cp_hgatp_perm (hfence.gvma with rs1 = rs2 = x0 after each G-stage leaf change)",
+        "SvH_fence_cg/cp_hfence_vvma",
+        "SvH_fence_cg/cp_hfence_gvma",
       ]
 
   # hfence.vvma and hfence.gvma in M-mode and HS-mode, and TVM
@@ -167,31 +167,23 @@ normative_rule_definitions:
   # hfence.gvma is valid in HS-mode with mstatus.TVM=0 and in M-mode, and orders prior stores before G-stage
   # implicit reads; a nonzero rs1 selects one guest physical address and a nonzero rs2 one VMID
   - names: [hfence-gvma_op]
-    coverpoint:
-      [
-        "HSm_tvm_cg/cp_hfence",
-        "SvH_gstage_cg/cp_hgatp_perm (hfence.gvma with rs1 = rs2 = x0 after each G-stage leaf change)",
-        "TODO: hfence.gvma with rs1 or rs2 nonzero",
-      ]
+    coverpoint: ["HSm_tvm_cg/cp_hfence", "SvH_fence_cg/cp_hfence_gvma"]
 
   # hfence.gvma ignores rs2 bits above VMIDMAX and unimplemented VMID bits
   - names: [hfence-gvma_vmid]
     coverpoint:
       [
-        "TODO: hfence.gvma with reserved and unimplemented VMID bits set in rs2 after changing a G-stage leaf",
+        "SvH_fence_cg/cp_hfence_gvma (rs2 with every VMIDMAX bit set; ignoring bits above VMIDMAX is only a should)",
       ]
 
   # hfence.vvma ignores rs2 bits above ASIDMAX and unimplemented ASID bits
   - names: [hfence-vvma_asid]
     coverpoint:
       [
-        "TODO: hfence.vvma with reserved and unimplemented ASID bits set in rs2 after changing a VS-stage leaf",
+        "SvH_fence_cg/cp_hfence_vvma (rs2 with every ASIDMAX bit set; ignoring bits above ASIDMAX is only a should)",
       ]
 
   # hfence.vvma need not order implicit reads under a different hgatp.VMID; a nonzero rs1 selects one guest
   # virtual address and a nonzero rs2 one ASID
   - names: [hfence-vvma_limits]
-    coverpoint:
-      [
-        "TODO: hfence.vvma with rs1 = a guest virtual address or rs2 = an ASID after changing a VS-stage leaf",
-      ]
+    coverpoint: ["SvH_fence_cg/cp_hfence_vvma"]

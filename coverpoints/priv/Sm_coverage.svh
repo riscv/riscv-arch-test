@@ -561,13 +561,14 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         ignore_bins mtval_not_walked = binsof(mcsrname.mtval);
     }
     // Avoid testing WPRI bits and those that don't like being poked.
-    // Keep the lists below in sync with the masks in Sm.py.
+    // Keep the lists below in sync with the masks in Sm.py. Sail does not yet implement
+    // Ssdbltrp, Smdbltrp or Smcdeleg, so SDT, MDT, DTE and CDE are not walked.
     cp_mcsrwalk_masked :        cross priv_mode_m, mcsrname_masked, csrop, walking_ones {
         ignore_bins mstatus_not_walked = binsof(mcsrname_masked.mstatus) &&
-            binsof(walking_ones) intersect {0, 2, 4, 6, [25:30], [32:37], 40, [43:62]};
+            binsof(walking_ones) intersect {0, 2, 4, 6, [24:30], [32:37], 40, [42:62]};
         `ifdef SM1P12P0_OR_LATER_SUPPORTED
             ignore_bins menvcfg_not_walked = binsof(mcsrname_masked.menvcfg) &&
-                binsof(walking_ones) intersect {1, [8:31], [34:58]};
+                binsof(walking_ones) intersect {1, [8:31], [34:60]};
         `endif
         `ifdef MSECCFG_SUPPORTED
             ignore_bins mseccfg_not_walked = binsof(mcsrname_masked.mseccfg) &&
@@ -576,9 +577,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `ifdef UDB_MXLEN_32
             `ifdef SM1P12P0_OR_LATER_SUPPORTED
                 ignore_bins mstatush_not_walked = binsof(mcsrname_masked.mstatush) &&
-                    binsof(walking_ones) intersect {[0:5], 8, [11:31]};
+                    binsof(walking_ones) intersect {[0:5], 8, [10:31]};
                 ignore_bins menvcfgh_not_walked = binsof(mcsrname_masked.menvcfgh) &&
-                    binsof(walking_ones) intersect {[2:26]};
+                    binsof(walking_ones) intersect {[2:28]};
             `endif
             `ifdef MSECCFG_SUPPORTED
                 ignore_bins mseccfgh_not_walked = binsof(mcsrname_masked.mseccfgh) &&

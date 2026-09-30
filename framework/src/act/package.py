@@ -69,8 +69,9 @@ SHIM_SYMBOLS: tuple[str, ...] = (
 )
 
 # CSR_SEDELEG/CSR_SIDELEG are .set to undefined symbols in rvtest_trap_handler.h
-# (pre-existing bug; linker resolves them to 0). Not the shim's job, so don't flag.
-_KNOWN_UNRESOLVED: frozenset[str] = frozenset({"CSR_SEDELEG", "CSR_SIDELEG"})
+# (pre-existing bug; linker resolves them to 0). _end is defined by act_link.ld, so
+# it is undefined in an object by construction. Not the shim's job, so don't flag.
+_KNOWN_UNRESOLVED: frozenset[str] = frozenset({"CSR_SEDELEG", "CSR_SIDELEG", "_end"})
 
 package_app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
 

@@ -9,8 +9,8 @@ description: >-
   Written against core_tile 2528e7df6507fa06d372f001e55cfd46efae4a4b, whose
   rtl/core/sargantana submodule is pinned at
   403975c8a3c64c8eb369021a1ac2a374e5df441b.  Every parameter below is taken
-  from that RTL; `sargantana` permalinks are into bsc-loca/sargantana and
-  `core_tile` permalinks into bsc-loca/core_tile.
+  from that RTL; permalinks point into bsc-loca/sargantana, bsc-loca/core_tile
+  and their csr, mmu and cv-hpdcache submodules.
 #
 # The ISA string comes from the misa constant, def_pkg::ISA_CODE:
 #   "| (1   <<  8)  // I - RV32I/64I/128I base ISA
@@ -55,7 +55,7 @@ implemented_extensions:
   # flh/fsh plus the FP16<->FP32/FP64 conversions:
   #   "assign valid_zfhmin_i = ((op == fpnew_pkg::F2F) & ((src_fmt == fpnew_pkg::FP16) |
   #    (dst_fmt == fpnew_pkg::FP16))) | ..."
-  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/datapath/rtl/exe_stage/rtl/fpu/old_fpu/fpu_drac_wrapper.sv#L350-L351
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/datapath/rtl/exe_stage/rtl/old_fpu/fpu_drac_wrapper.sv#L348-L349
   # Zfh (FP16 arithmetic) is NOT claimed: "localparam bit XF16    = 1'b0;"
   #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/def_pkg.sv#L44
   - { name: Zfhmin, version: "= 1.0.0" }
@@ -92,7 +92,7 @@ implemented_extensions:
   #   "riscv_pkg::CSR_CYCLE:              csr_rdata = cycle_q;
   #    riscv_pkg::CSR_TIME: begin csr_rdata = reg_time_q;
   #    riscv_pkg::CSR_INSTRET:            csr_rdata = instret_q;"
-  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L741-L749
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L741-L749
   # NOTE: `time` is driven by a top-level port that the standalone testbench ties to
   # zero ("// No support for timer, interrupts, etc in simulation / .time_i(64'd0),",
   # core_tile simulator/sim_top.sv#L263-L268), so in this environment `time` never
@@ -103,13 +103,13 @@ implemented_extensions:
   # permit ("privilege_violation = ~mcounteren_q[csr_addr.address[4:0]];",
   # csr_bsc.sv#L2554-L2560):
   #   "// This module implements the Zihpm (v2.0) ... extensions" / "parameter HPM_NUM_COUNTERS = 29"
-  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/hpm_counters.sv#L22-L27
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/hpm_counters.sv#L22-L27
   - { name: Zihpm, version: "= 2.0.0" }
   # "F3_CBO: begin //Zicbom extension (CMO instructions)" (decoder.sv#L2900) and cbo.zero
   # at decoder.sv#L2985; prefetch.r/.w at decoder.sv#L469-L487.  menvcfg/senvcfg
   # implement exactly the CBIE/CBCFE/CBZE bits:
   #   "csr_rdata = {56'b0, menvcfg_q[7:4], 3'b0, menvcfg_q[0]}; // only FIOM & CMO bits implemented"
-  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L693
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L693
   - { name: Zicbom, version: "= 1.0.0" }
   - { name: Zicbop, version: "= 1.0.0" }
   - { name: Zicboz, version: "= 1.0.0" }
@@ -125,7 +125,7 @@ implemented_extensions:
   - { name: Ziccrse, version: "= 1.0.0" }
   # "mstateen0-3" and "sstateen0-3" are implemented with the SE and ENVCFG bits writable:
   #   "mask = riscv_pkg::MSTATEEN0_SE | riscv_pkg::MSTATEEN0_ENVCFG;"
-  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L1612-L1631
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L1612-L1631
   - { name: Smstateen, version: "= 1.0.0" }
   - { name: Ssstateen, version: "= 1.0.0" }
   # "| (1   << 20)  // U - User mode implemented" / "| (1   << 18)  // S - Supervisor mode implemented"
@@ -133,7 +133,7 @@ implemented_extensions:
   - { name: S, version: "= 1.12.0" }
   # menvcfg exists, so the hart is at least Sm/Ss 1.12; the CSR README claims
   # "- Privilege-Level ISA  v1.11"
-  # (https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/README.md#L3-L9)
+  # (https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/README.md#L3-L9)
   # but that predates the menvcfg/mstateen/mcountinhibit support now in the file.
   # RV64 means mstatush does not exist to be read, so the 1.12-vs-1.11 choice cannot
   # misfire the way it does on RV32 cores.
@@ -143,12 +143,12 @@ implemented_extensions:
   # and satp only accepts those two modes:
   #   "// only update if we actually support this mode
   #    if ((satp.mode == def_pkg::MODE_OFF) || (satp.mode == def_pkg::MODE_SV39)) satp_d = satp;"
-  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L1248-L1260
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L1248-L1260
   # No Sv48/Sv57 (grep for Sv48|Sv57 over rtl/ returns nothing).
   - { name: Sv39, version: "= 1.0.0" }
   - { name: Svbare, version: "= 1.0.0" }
   # The page-table walker only ever issues reads ("assign ptw_dmem_comm_o.req.cmd = M_XRD;",
-  # https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/mmu/rtl/ptw/ptw.sv#L386)
+  # https://github.com/bsc-loca/mmu/blob/0f4727a7ed57651f465f4eeeae509859693ad4dc/rtl/ptw/ptw.sv#L386)
   # so A/D are never set by hardware: this is Svade, not Svadu.
   - { name: Svade, version: "= 1.0.0" }
   # The page-table walker reads PTEs from main memory through the HPDcache.
@@ -163,7 +163,7 @@ implemented_extensions:
   - { name: Sstvecd, version: "= 1.0.0" }
   # "This module implements the Zihpm (v2.0) ... and Sscofpmf (v0.5.2) extensions": mhpmevent
   # OF and inhibit bits, scountovf, and the LCOFI interrupt in mip/mie/mideleg.
-  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/hpm_counters.sv#L21
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/hpm_counters.sv#L21
   - { name: Sscofpmf, version: "= 1.0.0" }
 
 params:
@@ -182,19 +182,19 @@ params:
   # arrives; there is no timeout:
   #   "if ((((|mip_q) || irq_q[0] || irq_q[1]) && interrupt_cause[63]) || debug_halt_req_i) begin
   #        wfi_d = 1'b0;"
-  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L2749-L2760
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L2749-L2760
   WFI_FINITE: false
   # WFI is decoded as a system instruction at privilege S (rw_addr[9:8] = 01), so in U mode
   # "if ((system_insn && !priv_sufficient) || ... privilege_violation = 1'b1;"
   # raises an illegal-instruction exception:
-  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L2602-L2606
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L2602-L2606
   WFI_U_MODE: false
   # mie.MEIE/MSIE/MTIE are writable ("mask = riscv_pkg::MIP_SSIP | riscv_pkg::MIP_STIP |
   # riscv_pkg::MIP_SEIP | riscv_pkg::MIP_MSIP | riscv_pkg::MIP_MTIP | riscv_pkg::MIP_MEIP | ...",
-  # https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L1565-L1577)
+  # https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L1565-L1577)
   # and mip.MEIP/MTIP/MSIP follow the core's irq_i[0], time_irq_i and m_soft_irq_i inputs:
   #   "// the IRQ_M_EXT = irq_i || rocc_interrupt_i, IRQ_M_SOFT = m_soft_irq_i and IRQ_M_TIMER = time_irq_i"
-  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L1053-L1054
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L1053-L1054
   # The core implements all three.  The standalone testbench ties those pins to zero
   # ("// No support for timer, interrupts, etc in simulation / .irq_i(1'b0), .soft_irq_i(1'b0),
   # .time_irq_i(1'b0),", https://github.com/bsc-loca/core_tile/blob/2528e7df6507fa06d372f001e55cfd46efae4a4b/simulator/sim_top.sv#L263-L269)
@@ -205,7 +205,7 @@ params:
   MSI_INTR_IMPL: false
   MTI_INTR_IMPL: false
   # "riscv_pkg::CSR_MVENDORID:          csr_rdata = 64'b0; // not implemented"
-  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L694
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L694
   VENDOR_ID_BANK: 0
   VENDOR_ID_OFFSET: 0
   # "riscv_pkg::CSR_MARCHID:            csr_rdata = 64'd51;"  (csr_bsc.sv#L695)
@@ -219,7 +219,7 @@ params:
   # misa reads the ISA_CODE constant and writes are dropped without trapping:
   #   "// MISA is WARL (Write Any Value, Reads Legal Value)
   #    riscv_pkg::CSR_MISA:;"
-  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L1532-L1533
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L1532-L1533
   MISA_CSR_IMPLEMENTED: true
   # misa.X is "(NSX << 23)" with "localparam bit NSX = XF16 | XF16ALT | XF8 | XFVEC;" and all
   # four of those 1'b0, so misa.X reads 0:
@@ -250,7 +250,7 @@ params:
   #  // we are in vector mode, this implementation requires the additional
   #  // alignment constraint of 64 * 4 bytes
   #  if (csr_wdata[0]) mtvec_d = {csr_wdata[63:8], 7'b0, csr_wdata[0]};"
-  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L1580-L1585
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L1580-L1585
   # Bit 1 is hardwired 0, so MODE is 0 (direct) or 1 (vectored) and nothing else; a
   # write of MODE=2 reads back 0 and MODE=3 reads back 1, i.e. the illegal value is
   # legalized rather than retained.
@@ -309,7 +309,7 @@ params:
   # arms that neither drive csr_rdata (so they read the default 64'b0) nor set an
   # exception:
   #   "riscv_pkg::CSR_PMPCFG_0:;  ...  riscv_pkg::CSR_PMPADDR_15:;"
-  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L881-L903
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L881-L903
   # There is no address matcher anywhere in rtl/, and no mseccfg.
   NUM_PMP_ENTRIES: 0
   # "InitMappedBase: {40'h0040000000, ...}" — the address decoder works on whole
@@ -354,7 +354,7 @@ params:
     ]
   # Every mhpmcounter is a full 64-bit register:
   #   "logic [63:0] mhpmcounter_d[HPM_NUM_COUNTERS+3-1:3];"
-  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/hpm_counters.sv#L73-L74
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/hpm_counters.sv#L73-L74
   HPM_COUNTER3_WIDTH: 64
   HPM_COUNTER4_WIDTH: 64
   HPM_COUNTER5_WIDTH: 64
@@ -495,7 +495,7 @@ params:
   # architecturally visible but has no effect on translation.
   ASID_WIDTH: 13
   # "riscv_pkg::CSR_STVEC:              stvec_d     = {csr_wdata[63:2], 1'b0, csr_wdata[0]};"
-  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L1241
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L1241
   # Unlike mtvec, stvec does NOT force the extra 256-byte alignment in vectored mode,
   # yet the dispatch adder is the same truncated 6-bit add
   # ("trunc_sum_6bits(stvec_q[7:2] + ex_cause_i[5:0])", csr_bsc.sv#L2817-L2820), so a
@@ -519,7 +519,7 @@ params:
   STVAL_WIDTH: 64
   # mie.SEIE/SSIE/STIE are writable (same mask, csr_bsc.sv#L1565-L1577), mideleg.SEI/SSI/STI
   # are writable ("mask = riscv_pkg::MIP_SSIP | riscv_pkg::MIP_STIP | riscv_pkg::MIP_SEIP | riscv_pkg::MIP_LCOFIP;",
-  # https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L1557-L1563),
+  # https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L1557-L1563),
   # and M-mode software can set mip.SEIP/SSIP/STIP (csr_bsc.sv#L1600-L1610).  SEIP is also
   # driven by the core's irq_i[1] input, which the standalone testbench ties to zero
   # (core_tile simulator/sim_top.sv#L263-L269); there is no Sstc, so STIP is software-only.
@@ -564,5 +564,5 @@ params:
     ]
   # ---------------- Smstateen ----------------
   # "mask = riscv_pkg::MSTATEEN0_SE | riscv_pkg::MSTATEEN0_ENVCFG;"
-  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L1612-L1631
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L1612-L1631
   MSTATEEN_ENVCFG_TYPE: rw

@@ -55,7 +55,8 @@
 //    tramp_sz + 14*8        | 8             | xtvec_save     — original xTVEC value before prolog
 //    tramp_sz + 15*8        | 8             | xscratch_save  — original xSCRATCH value before prolog
 //    tramp_sz + 16*8        | 8             | medeleg_illegal_sv — shadow value of medeleg[2]
-//    tramp_sz + 17*8        | 8*REGWIDTH    | trapreg_sv     — ra scratch (slot 0), T1..T6 (slots 1-6), sp (slot 7)
+//    tramp_sz + 17*8        | 8             | tramp_copy_size — bytes saved for trampoline relocation
+//    tramp_sz + 18*8        | 8*REGWIDTH    | trapreg_sv     — ra scratch (slot 0), T1..T6 (slots 1-6), sp (slot 7)
 //    (after trapreg_sv)     | 8*REGWIDTH    | rvmodel_sv     — shared scratch area:
 //                           |               |   slot 0: fast-handler invisible-trap handoff marker
 //                           |               |   slots 2-3: fast-handler a1 and a2 save
@@ -279,7 +280,7 @@
 
 #define actual_tramp_sz ((UDB_MXLEN + 3* NUM_SPECD_INTCAUSES + 9 + 5) * 4)  // total trampoline bytes
 #define tramp_sz        ((actual_tramp_sz+4) & -8)                       // round up to dword alignment
-#define ptr_sv_sz       (17*8)                                           // 17 metadata slots × 8 bytes each
+#define ptr_sv_sz       (18*8)                                           // 18 metadata slots × 8 bytes each
 #define reg_sv_sz       ( 8*REGWIDTH)                                    // 8 handler temp regs saved
 #define model_sv_sz     ( 8*REGWIDTH)                                    // 8 slots for RVMODEL macro scratch
 #define int_clr_sv_sz   ( 4*REGWIDTH)                                    // 4 slots: a0-a2 across interrupt clearing
@@ -298,7 +299,8 @@
 //   [tramp_sz + 1*8]            code_seg_siz    — code segment size
 //   ...                         (see full layout in FILE OVERVIEW above)
 //   [tramp_sz + 16*8]           medeleg_illegal_sv_off — logical medeleg[2] value
-//   [tramp_sz + 17*8]           trap_sv_off     — start of handler register save (T1..T6,sp,spare)
+//   [tramp_sz + 17*8]           tramp_copy_size_off — bytes saved for trampoline relocation
+//   [tramp_sz + 18*8]           trap_sv_off     — start of handler register save (T1..T6,sp,spare)
 //   [after trap_sv]             rvmodel_sv_off  — start of RVMODEL macro scratch area
 //   [after rvmodel_sv]          int_clr_sv_off  — a0-a2 save across interrupt clearing
 //
@@ -326,7 +328,8 @@
 #define xtvec_sav_off               (tramp_sz+14*8) // offset to saved original xTVEC value
 #define xscr_save_off               (tramp_sz+15*8) // offset to saved original xSCRATCH value
 #define medeleg_illegal_sv_off      (tramp_sz+16*8) // offset to logical medeleg[2] value
-#define trap_sv_off                 (tramp_sz+17*8) // offset to handler register save area (8 regs)
+#define tramp_copy_size_off         (tramp_sz+17*8) // number of bytes saved before overwriting the fixed vector
+#define trap_sv_off                 (tramp_sz+18*8) // offset to handler register save area (8 regs)
 // rvmodel_sv starts right after the 8 REGWIDTH-sized trapreg_sv slots. This must
 // be expressed in REGWIDTH (not 8*8) so the offset also matches the emitted
 // .data layout on RV32, where REGWIDTH is 4.
@@ -1163,6 +1166,7 @@
         XCSR_RENAME_FROM_M \__MODE__             // set CSR_X* aliases for this mode (prolog runs in M-mode)
 
         LA(     T1, \__MODE__\()tramptbl_sv)     // T1 = address of this mode's save area in .data
+        SREG    zero, tramp_copy_size_off(T1)
 
 //---------- Initialize xSCRATCH ----------
 init_\__MODE__\()scratch:
@@ -1284,8 +1288,6 @@ init_\__MODE__\()tvec:
 #endif
         // xTVEC is NOT fully writable — need to copy trampoline to xTVEC target
         csrw    CSR_XTVEC, T3                      // restore original xTVEC (we'll overwrite its target)
-        andi    T5, T3, ~WDBYTMSK                  // T5 = original xTVEC BASE (MODE bits stripped)
-        beqz    T5, abort\__MODE__\()test           // if BASE is 0 (uninitialized reset value), can't relocate there — abort
         SREG    T3, xtvec_new_off(T1)               // update tvec_new with the original (now-in-use) xTVEC
 
 //---------- Copy trampoline to fixed xTVEC target ----------
@@ -1294,20 +1296,24 @@ init_\__MODE__\()tramp:
         addi    T3, T2, actual_tramp_sz            // T3 = end of target area
         mv      sp, T1                             // sp = save area base (for saving original code)
 
-// If the copy destination [T2,T3) overlaps the code below, the loop clobbers
-// itself and leaves a half-written trampoline, which shows up later as a bogus
-// SELFCHECK failure. Bail out instead; nothing has been written yet, so xTVEC
-// is still as the boot code left it.
-        LA(     T5, overwt_tt_\__MODE__\()loop)    // T5 = first instruction that must survive
-        LA(     T6, rvtest_\__MODE__\()prolog_done) // T6 = end of protected range (exclusive)
-        bgeu    T2, T6, ovlpok_\__MODE__\()tramp   // dest begins after protected code -> disjoint
-        bgeu    T5, T3, ovlpok_\__MODE__\()tramp   // protected code begins after dest  -> disjoint
-        j       abort\__MODE__\()test              // overlap -> cannot copy here; abort
+// Reserve the entire linked image, including framework code, data, and stack.
+// A fixed trap vector needs separate space outside [rvtest_entry_point, _end).
+        bgeu    T2, T3, overlap_\__MODE__\()tramp  // destination range wraps around XLEN
+        LA(     T5, rvtest_entry_point)
+        LA(     T6, _end)
+        bgeu    T2, T6, ovlpok_\__MODE__\()tramp
+        bgeu    T5, T3, ovlpok_\__MODE__\()tramp
+overlap_\__MODE__\()tramp:
+        LA(     T5, trap_vector_overlap_str)
+        j       abort\__MODE__\()test
 ovlpok_\__MODE__\()tramp:
 
 overwt_tt_\__MODE__\()loop:
         lw      T6, 0(T2)                          // read original instruction at xTVEC target
         sw      T6, 0(T1)                          // save it in trampoline save area
+        addi    T6, T1, WDBYTSZ
+        sub     T6, T6, sp
+        SREG    T6, tramp_copy_size_off(sp)        // include this word even if the write fails readback
         lw      T5, 0(T4)                          // read our trampoline instruction
         sw      T5, 0(T2)                          // write it to xTVEC target
         lw      T6, 0(T2)                          // read back to verify write succeeded
@@ -1327,8 +1333,10 @@ endcopy_\__MODE__\()tramp:
         csrr    T1, CSR_XSCRATCH                    // reload save area ptr from xSCRATCH (may have been modified)
         SREG    T4, tentry_addr_off(T1)              // update common entry point address (may differ if partial copy)
         beq     T3,T2, rvtest_\__MODE__\()prolog_done  // if full copy completed, prolog is done
+        LA(     T5, trap_vector_copy_failed_str)
 abort\__MODE__\()test:
-        mv      T3, T2                              // save copy progress for epilog cleanup
+        LA(     T6, rvtest_trap_prolog_error)
+        SREG    T5, 0(T6)
         LA(     T6, exit_\__MODE__\()cleanup)        // load address of cleanup label
         jr      T6                                   // long jump to cleanup (may be too far for branch)
 
@@ -2335,7 +2343,7 @@ sv_\__MODE__\()vect:
         li      T4, 0                                // VS-mode cannot read hstatus
   .else
   #ifdef H_SUPPORTED
-        csrr    T4, CSR_HSTATUS
+        csrr    T4, CSR_HSTATUS                      // S/HS handler: hstatus SPVP, SPV, GVA
   #else
         li      T4, 0                                // no H: nothing to overlay
   #endif
@@ -3101,7 +3109,7 @@ fast_Stval_mismatch:
 //    The epilogs are only emitted for STANDARD_SM_SUPPORTED; a platform with
 //    a custom (non-standard) M-mode compiles them out entirely and is
 //    responsible for its own cleanup.
-//  Uses: T1..T4, T6, mscratch to find the correct save area (T5 is preserved:
+//  Uses: T1..T4, T6 (T5 is preserved:
 //    it carries the abort_test 0xBAD0DEAD marker across the epilogs)
 //
 //==============================================================================
@@ -3112,17 +3120,8 @@ fast_Stval_mismatch:
 .option norvc
 
         XCSR_RENAME_FROM_M \__MODE__              // set CSR aliases for this mode (epilog runs in M-mode)
-        LI(T3, actual_tramp_sz)                   // T3 = trampoline size (used as loop bound)
-
 exit_\__MODE__\()cleanup:                         // entry point (also used by abort path)
-        csrr  T1, mscratch                        // T1 = M-mode save area base (from mscratch)
-      .ifc \__MODE__ , S
-        addi T1, T1, 1*sv_area_sz                 // S: offset to S save area
-      .else
-        .ifc \__MODE__ , V
-          addi T1, T1, 2*sv_area_sz               // V: offset to VS save area
-        .endif
-      .endif
+        LA(     T1, \__MODE__\()tramptbl_sv)
 
 // --- Restore xEDELEG ---
 resto_\__MODE__\()edeleg:
@@ -3169,12 +3168,12 @@ resto_\__MODE__\()scratch:
 // --- Restore xTVEC (and original trampoline code if it was overwritten) ---
 resto_\__MODE__\()xtvec:
         LREG    T4, xtvec_sav_off(T1)             // T4 = saved original xtvec
-        csrrw   T2, CSR_XTVEC, T4                  // restore xtvec, T2 = current xtvec
-        andi    T4, T4, ~WDBYTMSK                  // clear mode bits from saved xtvec
-        andi    T2, T2, ~WDBYTMSK                  // clear mode bits from current xtvec
-        bne     T4, T2, 1f                          // if saved != current -> trampoline wasn't overwritten, skip
+        csrw    CSR_XTVEC, T4                     // restore xtvec independently of relocation progress
+        andi    T2, T4, ~WDBYTMSK                 // destination BASE used by the prolog
+        LREG    T3, tramp_copy_size_off(T1)
+        beqz    T3, 1f                            // no saved bytes, including aborts before the first copy
 
-resto_\__MODE__\()tramp:                           // trampoline WAS overwritten -> restore original code
+resto_\__MODE__\()tramp:
         addi    T4, T1, tramp_sv_off               // T4 = saved trampoline code in save area
 
 resto_\__MODE__\()loop:
@@ -3182,7 +3181,9 @@ resto_\__MODE__\()loop:
         sw      T6, 0(T2)                          // write it back to xtvec target
         addi    T2, T2, WDBYTSZ                    // advance target pointer
         addi    T4, T4, WDBYTSZ                    // advance source pointer
-        blt     T2, T3, resto_\__MODE__\()loop     // continue until end of trampoline
+        addi    T3, T3, -WDBYTSZ
+        bnez    T3, resto_\__MODE__\()loop
+        SREG    zero, tramp_copy_size_off(T1)
   1:
         RVTEST_FENCEI                              // sync icache after restoring code
 
@@ -3245,6 +3246,7 @@ rvtest_\__MODE__\()end:                            // epilog is done for this mo
 \__MODE__\()tvec_save:     .dword  0                                         // original xTVEC before prolog
 \__MODE__\()scratch_save:  .dword  0                                         // original xSCRATCH before prolog
 \__MODE__\()medeleg_illegal_sv: .dword 0                                     // logical medeleg[2] value
+\__MODE__\()tramp_copy_size: .dword 0                                       // bytes saved for trampoline relocation
 \__MODE__\()trapreg_sv:    .fill   8, REGWIDTH, 0xdeadbeef                   // handler reg save: ra scratch (slot 0), T1..T6 (1-6), sp (7)
 
 // rvmodel_sv is shared scratch space. The fast trap handlers use slot 0 as the

@@ -2143,6 +2143,8 @@
         .fill 2, 4, 0
     csr_context_ret_addr:                        # return address save slot for failedtest_print_csr_context
         .fill 2, 4, 0
+    rvtest_trap_prolog_error:                    # failure string pointer if trap setup failed
+        .fill 2, 4, 0
     # The four saved_x* slots hold the trapping mode's xEPC/xCAUSE/xTVAL/xSTATUS,
     # snapshotted by the trap handler before trap signature word 0
     # (rvtest_trap_handler.h). Each slot is 8 bytes, regardless of XLEN.
@@ -2329,6 +2331,10 @@
         .string "\nRVCP: DEBUG INFORMATION FOLLOWS\n"
     abortstr:
         .string "\"The trap handler aborted the test before normal completion!\"";
+    trap_vector_overlap_str:
+        .string "RVCP: Fixed trap vector overlaps the test image. Change the linker script to reserve space for the trap handler outside the test image.\n"
+    trap_vector_copy_failed_str:
+        .string "RVCP: Cannot write the fixed trap vector. Reserve writable memory for the trap handler.\n"
     trap_sig_overflowstr:
         #ifdef RVTEST_SELFCHECK
             .string "\nRVCP: Trap signature overflow in self-check mode. DUT generated too many traps.     \n"

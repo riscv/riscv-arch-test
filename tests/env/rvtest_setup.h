@@ -1331,6 +1331,60 @@
           sfence.vma
         #endif // SV32 or SV39
       #endif // PMP
+
+      #ifdef H_SUPPORTED
+      // Initialize HS-mode CSRs, whose reset values are UNSPECIFIED. This runs for every test,
+      // including those that stay in M-mode; hstateen0 is set in RVTEST_BOOT_TO_SMODE once
+      // mstateen0 lets its bits be written.
+      // hstatus: every field zero except VSXL = 64 on RV64.
+      // Tests that need other values set them themselves.
+      LI(t0, HSTATUS_SPV | HSTATUS_SPVP | HSTATUS_HU | HSTATUS_VGEIN | \
+             HSTATUS_VTVM | HSTATUS_VTW | HSTATUS_VTSR | HSTATUS_VSBE)
+      csrc hstatus, t0
+      #if __riscv_xlen == 64
+        csrr t1, hstatus
+        LI(t0, ~HSTATUS_VSXL)
+        and t1, t1, t0
+        LI(t0, 0x0000000200000000)  // VSXL = 2
+        or t1, t1, t0
+        csrw hstatus, t1
+      #endif
+
+      // vsstatus: every field zero except UXL = 64 on RV64 and FS/VS dirty when supported.
+      li t0, 0
+      #if __riscv_xlen == 64
+        LI(t0, 0x0000000200000000)  // UXL = 2
+      #endif
+      #ifdef F_SUPPORTED
+        LI(t1, SSTATUS_FS)
+        or t0, t0, t1
+      #endif
+      #ifdef ZVL32B_SUPPORTED
+        LI(t1, SSTATUS_VS)
+        or t0, t0, t1
+      #endif
+      csrw vsstatus, t0
+
+      csrw htimedelta, zero
+      #if __riscv_xlen == 32
+        csrw htimedeltah, zero
+      #endif
+
+      // No pending virtual interrupts and no guest external interrupts enabled.
+      // hedeleg and hideleg are saved and cleared by RVTEST_TRAP_PROLOG S.
+      csrw hvip, zero
+      csrw hgeie, zero
+
+      // Make counters accessible from VS/VU-mode
+      li t0, -1
+      csrw hcounteren, t0
+
+      // henvcfg mirrors senvcfg: unprivileged configuration enabled, privileged features disabled.
+      #ifdef S1P12P0_OR_LATER_SUPPORTED
+        li t0, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE
+        csrw henvcfg, t0
+      #endif
+      #endif // H_SUPPORTED
     #endif // STANDARD_SM_SUPPORTED
 
   #endif // !RVMODEL_BOOT_TO_MMODE
@@ -1445,56 +1499,6 @@
     #endif
 
     #ifdef H_SUPPORTED
-      // Initialize HS-mode CSRs.
-      // hstatus: every field zero except VSXL = 64 on RV64.
-      // Tests that need other values set them themselves.
-      LI(t0, HSTATUS_SPV | HSTATUS_SPVP | HSTATUS_HU | HSTATUS_VGEIN | \
-             HSTATUS_VTVM | HSTATUS_VTW | HSTATUS_VTSR | HSTATUS_VSBE)
-      csrc hstatus, t0
-      #if __riscv_xlen == 64
-        csrr t1, hstatus
-        LI(t0, ~HSTATUS_VSXL)
-        and t1, t1, t0
-        LI(t0, 0x0000000200000000)  // VSXL = 2
-        or t1, t1, t0
-        csrw hstatus, t1
-      #endif
-
-      // vsstatus: every field zero except UXL = 64 on RV64 and FS/VS dirty when supported.
-      li t0, 0
-      #if __riscv_xlen == 64
-        LI(t0, 0x0000000200000000)  // UXL = 2
-      #endif
-      #ifdef F_SUPPORTED
-        LI(t1, SSTATUS_FS)
-        or t0, t0, t1
-      #endif
-      #ifdef ZVL32B_SUPPORTED
-        LI(t1, SSTATUS_VS)
-        or t0, t0, t1
-      #endif
-      csrw vsstatus, t0
-
-      csrw htimedelta, zero
-      #if __riscv_xlen == 32
-        csrw htimedeltah, zero
-      #endif
-
-      // No pending virtual interrupts and no guest external interrupts enabled.
-      // hedeleg and hideleg are saved and cleared by RVTEST_TRAP_PROLOG S.
-      csrw hvip, zero
-      csrw hgeie, zero
-
-      // Make counters accessible from VS/VU-mode
-      li t0, -1
-      csrw hcounteren, t0
-
-      // henvcfg mirrors senvcfg: unprivileged configuration enabled, privileged features disabled.
-      #ifdef S1P12P0_OR_LATER_SUPPORTED
-        li t0, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE
-        csrw henvcfg, t0
-      #endif
-
       // hstateen0 gives VS-mode the same state that sstateen0 gives lower modes, plus
       // access to sstateen0 (SE0) and senvcfg (ENVCFG).
       #ifdef SSSTATEEN_SUPPORTED

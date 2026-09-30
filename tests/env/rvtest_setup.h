@@ -1395,6 +1395,7 @@
       csrs mstatus, t0 // Set VS to dirty to enable vector
       csrr t0, vlenb   // Read VLENB so coverage trace records VLEN/8 (used by vlmax computation)
       csrw vstart, x0  // vstart = 0
+      csrw vcsr, x0    // vxrm = 0 (rnu), vxsat = 0: both have arbitrary values at reset
       #ifdef ZVE32X_SUPPORTED // this should be defined if EEW of 32 is supported
         .option push
         .option arch, RVTEST_VEC_INIT_ARCH

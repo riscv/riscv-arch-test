@@ -37,7 +37,9 @@ See also normative rules from <<t-Zbb-normative-rules,Zbb>>.
 
 include::{testplansdir}/Zbkc.adoc[]
 
-See normative rules from <<t-Zbc-normative-rules,Zbc>>.
+include::norm/Zbkc_norm_rules.adoc[]
+
+See also normative rules from <<t-Zbc-normative-rules,Zbc>>.
 
 ==== Zbkx Permutation
 

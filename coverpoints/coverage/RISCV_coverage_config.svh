@@ -251,6 +251,9 @@
 `ifdef SSNPM_COVERAGE
   `include "Ssnpm_coverage.svh"
 `endif
+`ifdef SSNPMH_COVERAGE
+  `include "SsnpmH_coverage.svh"
+`endif
 `ifdef SSSTATEEN_COVERAGE
   `include "Ssstateen_coverage.svh"
 `endif

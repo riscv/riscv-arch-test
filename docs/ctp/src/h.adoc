@@ -325,6 +325,12 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 
 ==== SsnpmH Hypervisor Pointer Masking
 
+SsnpmH boots to HS-mode and runs with vsatp = Bare and hgatp = Sv57x4 or Sv48x4, so pointer masking zero-extends
+guest physical addresses, including their two bits beyond the VS-stage widths.  It checks that henvcfg.PMM masks
+VS-mode accesses and senvcfg.PMM VU-mode accesses; that HLV and HSV take henvcfg.PMM with hstatus.SPVP = 1, and
+senvcfg.PMM from HS-mode or hstatus.HUPMM from U-mode with SPVP = 0; and that HLVX, and accesses with
+vsstatus.MXR = 1, are not masked.
+
 [[t-SsnpmH-coverpoints]]
 .SsnpmH Coverpoints
 ,===

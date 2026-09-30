@@ -330,6 +330,10 @@
         `cover_info("//      Ssnpm - Enabled");
         `include "Ssnpm_coverage_init.svh"
     `endif
+    `ifdef COVER_SSNPMH
+        `cover_info("//      SsnpmH - Enabled");
+        `include "SsnpmH_coverage_init.svh"
+    `endif
     `ifdef COVER_SSSTATEEN
         `cover_info("//      Ssstateen - Enabled");
         `include "Ssstateen_coverage_init.svh"

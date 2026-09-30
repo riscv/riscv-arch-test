@@ -15,7 +15,7 @@
     // (writable_hpm_counters[2 .. 0]) are ignored.
     "writable_hpm_counters": {
       "len": 32,
-      "value": "0xFFFF_FFFF"
+      "value": "0xFFFF_FFF8"
     },
     // The bits in this value control whether the corresponding bits
     // of the `scounteren` CSR that control access to HPM counters,
@@ -103,8 +103,8 @@
         // csr_bsc.sv#L1536-L1553 builds the medeleg write mask from INSTR_ADDR_MISALIGNED,
         // INSTR_ACCESS_FAULT, ILLEGAL_INSTR, BREAKPOINT, LD_ADDR_MISALIGNED,
         // LD_ACCESS_FAULT, ST_AMO_ADDR_MISALIGNED, ST_AMO_ACCESS_FAULT, USER_ECALL,
-        // SUPERVISOR_ECALL, INSTR_PAGE_FAULT, LOAD_PAGE_FAULT and ST_AMO_PAGE_FAULT.
-        "value": "0x0000_0000_0000_b3FF"
+        // INSTR_PAGE_FAULT, LOAD_PAGE_FAULT and ST_AMO_PAGE_FAULT; SUPERVISOR_ECALL is not in it.
+        "value": "0x0000_0000_0000_b1FF"
       }
     },
     "mideleg": {
@@ -120,8 +120,7 @@
         "len": "xlen",
         // "mask = riscv_pkg::MIP_SSIP | riscv_pkg::MIP_STIP | riscv_pkg::MIP_SEIP
         //         | ... | riscv_pkg::MIP_LCOFIP;"  (csr_bsc.sv#L1558-L1563)
-        // LCOFIP (bit 13) belongs to Sscofpmf, which this configuration does not claim.
-        "value": "0x0000_0000_0000_0222"
+        "value": "0x0000_0000_0000_2222"
       }
     },
     // These settings control whether the specified exceptions
@@ -424,7 +423,9 @@
     // `wfi_is_nop` is set to `true` above, it will still not be
     // available to User mode unless `wfi_available_to_user_mode` is
     // also `true`.
-    "wfi_available_to_user_mode": true,
+    // WFI is an S-level system instruction, so U-mode WFI raises an illegal-instruction exception
+    // at once (csr_bsc.sv#L2603).
+    "wfi_available_to_user_mode": false,
     // The maximum increment in the time CSR before a wait instruction
     // (e.g. WFI, WRS.NTO, WRS.STO) that is not a NOP expires its
     // wait. It is not possible to wait indefinitely.
@@ -787,7 +788,7 @@
       "supported": true
     },
     "Sscofpmf": {
-      "supported": false
+      "supported": true
     },
     "Sscounterenw": {
       "supported": true
@@ -854,7 +855,7 @@
         "supported": true
       },
       "Ssstateen": {
-        "supported": false
+        "supported": true
       },
       "C_readonly_zero": true,
       "SE0_readonly_zero": false

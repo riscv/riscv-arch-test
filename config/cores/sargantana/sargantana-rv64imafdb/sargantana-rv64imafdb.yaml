@@ -30,11 +30,9 @@ description: >-
 #     loads/stores, mew must be 0, only the 1-register whole-register forms, and one
 #     non-standard opcode ("F6_VCNT = 6'b010001, //Custom instruction",
 #     https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/riscv_pkg.sv#L380).
-#   * H (bit 7).  The hypervisor CSRs and HLV/HSV exist, but nothing in the vendor
-#     flow tests them, and ACT's invisible trap handler rejects H outright
-#     ("Invisible trap emulation does not support traps from VS or VU mode yet.",
-#     tests/env/check_defines.h).
-# Neither is claimed.
+#   * H (bit 7).  def_pkg::RVH = 1, so the hypervisor CSRs, HLV/HSV and the H bits of
+#     mstatus, mie, mip and mideleg exist, but nothing in the vendor flow tests them.
+# Neither is claimed, so the Sm and S suites see the extra misa, mstatus, mie and mip bits.
 implemented_extensions:
   # "localparam logic [63:0] ISA_CODE = ... | (1 << 8) // I ... | (1 << 63); // RV64"
   #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/def_pkg.sv#L81-L94
@@ -118,6 +116,13 @@ implemented_extensions:
   # HPDcache line width is 512 bits = 64 bytes ("DCacheLineWidth: 512",
   # https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/drac_pkg.sv#L1310)
   - { name: Zic64b, version: "= 1.0.0" }
+  # Main memory (InitMappedBase[0] = 0x0040000000 .. InitMappedEnd[0] = 0x3fffffffff) is
+  # cacheable. The tile supports every AMO there, LR/SC ("Reservation set for LR instruction
+  # is always 8-bytes in this implementation.") and instruction fetch through the I-cache.
+  #   https://github.com/bsc-loca/cv-hpdcache/blob/c523164515b7c3e0949f24468a7d3f2d80e33cee/rtl/src/hpdcache_uncached.sv#L285-L286
+  - { name: Ziccamoa, version: "= 1.0.0" }
+  - { name: Ziccif, version: "= 1.0.0" }
+  - { name: Ziccrse, version: "= 1.0.0" }
   # "mstateen0-3" and "sstateen0-3" are implemented with the SE and ENVCFG bits writable:
   #   "mask = riscv_pkg::MSTATEEN0_SE | riscv_pkg::MSTATEEN0_ENVCFG;"
   #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/csr_bsc.sv#L1612-L1631
@@ -146,6 +151,20 @@ implemented_extensions:
   # https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/mmu/rtl/ptw/ptw.sv#L386)
   # so A/D are never set by hardware: this is Svade, not Svadu.
   - { name: Svade, version: "= 1.0.0" }
+  # The page-table walker reads PTEs from main memory through the HPDcache.
+  - { name: Ssccptr, version: "= 1.0.0" }
+  # Every scounteren bit is writable ("scounteren_d = {csr_wdata[31:0]};", csr_bsc.sv#L1240).
+  - { name: Sscounterenw, version: "= 1.0.0" }
+  # stval gets the faulting address for every misaligned, access and page fault and the
+  # encoding for an illegal instruction (csr_bsc.sv#L2003-L2019, REPORT_*_IN_STVAL below).
+  - { name: Sstvala, version: "= 1.0.0" }
+  # In Direct mode stvec.BASE holds any 4-byte-aligned address
+  # ("stvec_d = {csr_wdata[63:2], 1'b0, csr_wdata[0]};", csr_bsc.sv#L1241).
+  - { name: Sstvecd, version: "= 1.0.0" }
+  # "This module implements the Zihpm (v2.0) ... and Sscofpmf (v0.5.2) extensions": mhpmevent
+  # OF and inhibit bits, scountovf, and the LCOFI interrupt in mip/mie/mideleg.
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/csr/rtl/hpm_counters.sv#L21
+  - { name: Sscofpmf, version: "= 1.0.0" }
 
 params:
   # ---------------- Sm ----------------
@@ -453,7 +472,8 @@ params:
   # though the vector unit is not modelled in this configuration.
   MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
   # ---------------- A ----------------
-  # The HPDcache reservation is one cache line wide.
+  # The HPDcache reserves the naturally aligned 8-byte word (hpdcache_uncached.sv#L285-L286;
+  # Sail reservation_set_size_exp = 3).
   LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
   LRSC_FAIL_ON_VA_SYNONYM: false
   # A misaligned LR/SC raises the misaligned exception like any other access:

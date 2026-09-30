@@ -6,6 +6,7 @@ normative_rule_definitions:
   # instructions in the ext:zalrsc[] extension be contiguous, naturally aligned, and
   # at most 128 bytes in size.
   - name: Za128rs_res_set_req
+    # TODO: a Za128rs variant of the Za64rs test (LR at a 128-byte-aligned base, SC at offsets 0 to 128)
     coverpoint: [""]
 
   # The ext:za64rs[] extension requires that the reservation sets used by the
@@ -16,4 +17,4 @@ normative_rule_definitions:
 
   # The ext:za64rs[] extension implies the ext:za128rs[] extension.
   - name: Za64rs_implies_Za128rs
-    coverpoint: [""]
+    coverpoint: ["Definition, checked through UDB"]

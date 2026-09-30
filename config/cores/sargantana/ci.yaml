@@ -4,27 +4,35 @@
 
 ci_enabled: true
 
-# bsc-loca/core_tile @ 2528e7df (core 403975c):
-#   F, ZicsrF             FMA and fcvt.h.s with a subnormal result set underflow as well as inexact.
-#   ZfaF, ZfaD            fleq/fltq raise NV on a quiet NaN; fround/froundnx and the quiet compares
-#                         ignore NaN-boxing; fcvtmod.w.d drops inexact.
-#   Zfhmin, ZfhminD       fcvt.s.h/fcvt.d.h ignore NaN-boxing; fcvt.h.d rounds a value just below
-#                         the FP16 subnormal range up instead of to zero.
-#   SmF                   mstatus.SD stays clear after FS becomes Dirty.
-#   Zicntr, ZicntrS,      The testbench ties the time input to zero.
-#   ZicntrU
-#   Zifencei              fence.i does not wait for the HPDcache write buffer to drain, so fetch
-#                         reads the stale instruction.
-#   Sm, S                 sepc bit 1 is writable; menvcfg.CBIE accepts 0b10; mstatus.MPP accepts
-#                         0b10; mie/sip expose VS and LCOFI bits; mip.MTIP never sets (no timer).
-#   InterruptsSm          After a csrw mie enables a pending interrupt, the core retires two more
-#                         instructions before taking it; it must be taken at once
-#                         [norm:intr_mip_mie_xret_csrwr].
-#   Sv, SvZicbo,          Non-canonical Sv39 addresses raise access faults (41-bit check); a store
-#   ExceptionsSv          to an R=0/W=1 PTE raises a load page fault; a PTE pointing at unimplemented
-#                         memory raises a page fault; non-leaf A/D/U is accepted; N, PBMT or other
-#                         reserved PTE bits hang the core.
-exclude_extensions: "F,ZfaF,ZfaD,Zfhmin,ZfhminD,ZicsrF,SmF,Zicntr,ZicntrS,ZicntrU,Zifencei,Sm,S,InterruptsSm,Sv,SvZicbo,ExceptionsSv"
+# bsc-loca/core_tile @ 2528e7df. Paths are under
+#   tile:  https://github.com/bsc-loca/core_tile/blob/2528e7df/
+#   core:  https://github.com/bsc-loca/sargantana/blob/403975c8/rtl/
+#   fpu:   https://github.com/bsc-loca/sargantana/blob/403975c8/rtl/datapath/rtl/exe_stage/rtl/old_fpu/
+#   csr:   https://github.com/bsc-loca/csr/blob/c5c8a1d1/rtl/
+#   mmu:   https://github.com/bsc-loca/mmu/blob/0f4727a7/rtl/
+#   cvfpu: https://github.com/openhwgroup/cvfpu/blob/84066933/src/
+#   F             FMA sets UF when the result rounds up to the smallest normal: cvfpu:fpnew_fma_multi.sv#L801-L803
+#   ZicsrF        fmul.s has the same UF bug: cvfpu:fpnew_fma_multi.sv#L801-L803
+#   ZfaF          fleq.s/fltq.s raise NV on a quiet NaN: fpu:zfa_post_process.sv#L88-L98
+#   ZfaD          fleq/fltq raise NV on a quiet NaN; fround.s/froundnx.s ignore NaN-boxing; fcvtmod.w.d drops NX
+#   Zfhmin        fcvt.s.h ignores NaN-boxing; fcvt.h.s rounds a tiny value up under RMM: fpu:conv_zfhmin.sv
+#   ZfhminD       fcvt.d.h/fcvt.s.h ignore NaN-boxing; fcvt.h.d rounds a tiny value up under RMM: fpu:conv_zfhmin.sv
+#   SmF           csrr mstatus just after an FP write reads SD = 0: csr:csr_bsc.sv#L1009
+#   Zicntr        Testbench: time is tied to 0: tile:simulator/sim_top.sv#L263-L268
+#   ZicntrS       U mode may read a counter if mcounteren or scounteren allows it: csr:csr_bsc.sv#L2558
+#   ZicntrU       Same counter-enable bug: csr:csr_bsc.sv#L2558
+#   Zifencei      fence.i does not drain the HPDcache write buffer first: core:control_unit/rtl/control_unit.sv#L323
+#   Sm            mstatus.MPP and menvcfg.CBIE keep the reserved 0b10: csr:csr_bsc.sv#L1525, #L1595; misa and the
+#                 mstatus/mie/mip bits show V and H, which are not claimed
+#   S             sepc[1] is writable with IALIGN = 32: csr:csr_bsc.sv#L1244; senvcfg.CBIE keeps 0b10: #L1242
+#   InterruptsSm  mideleg is applied after the interrupt is picked by cause, so a delegated SEI hides an M-level STI:
+#                 csr:csr_bsc.sv#L1888-L1936
+#   Sv            A non-canonical VA gives an access fault and is checked at 41 bits:
+#                 core:datapath/rtl/exe_stage/rtl/load_store_queue.sv#L197; bad PTEs hang or give the wrong fault
+#   SvZicbo       PTE reads are never PMA-checked, so a walk to a faulting address page-faults:
+#                 mmu:dcache_adapters/bsc_mmu_hpdc_adapter.sv#L87-L93
+#   ExceptionsSv  A translated fetch is not PMA-checked: core:datapath/rtl/if_stage_1/rtl/if_stage_1.sv#L139-L141
+exclude_extensions: "F,ZicsrF,ZfaF,ZfaD,Zfhmin,ZfhminD,SmF,Zicntr,ZicntrS,ZicntrU,Zifencei,Sm,S,InterruptsSm,Sv,SvZicbo,ExceptionsSv"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler libboost-dev libboost-regex-dev libboost-system-dev"
 install_script: ".github/scripts/install-sargantana.sh"

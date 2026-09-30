@@ -515,11 +515,11 @@
 `ifdef ZICBOZ_COVERAGE
   `include "Zicboz_coverage.svh"
 `endif
+`ifdef ZICFILPH_COVERAGE
+  `include "ZicfilpH_coverage.svh"
+`endif
 `ifdef ZICFILPS_COVERAGE
   `include "ZicfilpS_coverage.svh"
-`endif
-`ifdef ZICFILPSU_COVERAGE
-  `include "ZicfilpSU_coverage.svh"
 `endif
 `ifdef ZICFILPSM_COVERAGE
   `include "ZicfilpSm_coverage.svh"

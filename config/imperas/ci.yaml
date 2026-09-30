@@ -33,6 +33,10 @@
 # - SmstateenH (TODO: file issue): on RV64 the reserved bit 56 of hstateen0 is writable, like mstateen0.P1P13 above
 # - SsnpmH: HLV/HSV from U-mode with hstatus.SPVP = 0 take their pointer masking from senvcfg.PMM instead of
 #   hstatus.HUPMM, and HLVX applies pointer masking, which it must not. TODO: file issue
+# - ZicfilpSm/ZicfilpS: MRET and SRET leave xPELP set instead of clearing it, for both yLPE=0 and
+#   yLPE=1 (first failures mret_to_M_mlpe0_slpe0_ulpe0_pelp_1 and sret_to_S_slpe0_ulpe0_pelp_1).
+#   norm:Zicfilp_pelp_trap_return requires xRET to set xPELP to NO_LP_EXPECTED unconditionally, and
+#   Sail, Spike, Whisper and QEMU all clear it. ZicfilpU passes.
 #
 ci_enabled: false
-exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,PMPH,SvH,SvHZicbo,InterruptsH,SstcH,SstcHSm,SmstateenH,SsnpmH"
+exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,PMPH,SvH,SvHZicbo,InterruptsH,SstcH,SstcHSm,SmstateenH,SsnpmH,ZicfilpSm,ZicfilpS"

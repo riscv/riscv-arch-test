@@ -682,13 +682,13 @@
         `cover_info("//      Zicboz - Enabled");
         `include "Zicboz_coverage_init.svh"
     `endif
+    `ifdef COVER_ZICFILPH
+        `cover_info("//      ZicfilpH - Enabled");
+        `include "ZicfilpH_coverage_init.svh"
+    `endif
     `ifdef COVER_ZICFILPS
         `cover_info("//      ZicfilpS - Enabled");
         `include "ZicfilpS_coverage_init.svh"
-    `endif
-    `ifdef COVER_ZICFILPSU
-        `cover_info("//      ZicfilpSU - Enabled");
-        `include "ZicfilpSU_coverage_init.svh"
     `endif
     `ifdef COVER_ZICFILPSM
         `cover_info("//      ZicfilpSm - Enabled");

@@ -37,13 +37,21 @@
 # (2) Enable the caches, which reset off.  mcor (0x7C2) = 0x70011 invalidates the
 #     I-cache, D-cache and BTB; mhcr (0x7C1) |= 0x3 sets IE and DE.  This makes each
 #     test about 4x faster.
+#
+# (3) Clear mtimecmp, so that mip.MTIP is pending as it is in Sail, whose CLINT resets
+#     mtimecmp to 0.  C910's resets to all ones, and the framework cannot initialize
+#     it because RVMODEL_MTIMECMP_ADDRESS is undefined (see below).
+#       https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/clint/rtl/ct_clint_func.v#L313
 #define RVMODEL_BOOT                                            \
   li   t0, (1 << 22) | (1 << 21)                               ;\
   csrc 0x7c0, t0        /* mxstatus: THEADISAEE=0, MAEE=0 */   ;\
   li   t0, 0x70011                                             ;\
   csrw 0x7c2, t0        /* mcor: invalidate I$, D$ and BTB */  ;\
   li   t0, 0x3                                                 ;\
-  csrs 0x7c1, t0        /* mhcr: IE | DE */                    ;
+  csrs 0x7c1, t0        /* mhcr: IE | DE */                    ;\
+  li   t0, C910_MTIMECMP_ADDRESS                               ;\
+  sw   x0, 0(t0)                                               ;\
+  sw   x0, 4(t0)                                               ;
 
 ##### TERMINATION #####
 
@@ -102,6 +110,7 @@
 #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/ciu/rtl/ct_ciu_apbif.v#L367-L375
 #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/smart_run/logical/tb/tb_verilator.v#L53
 #define CLINT_BASE_ADDRESS 0xB4000000
+#define C910_MTIMECMP_ADDRESS (CLINT_BASE_ADDRESS + 0x4000)
 
 ##### Machine Interrupts #####
 

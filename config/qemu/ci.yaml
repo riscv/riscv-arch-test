@@ -29,7 +29,9 @@ ci_enabled: true
 # Sdtrig*: Sail does not implement Sdtrig yet (https://github.com/riscv/sail-riscv/issues/222)
 # H: mstatus.MPV and mstatus.GVA are read-only zero, so mret never enters VS/VU: a guest's
 #    ecall is reported as cause 9/8 instead of 10, and a hypervisor CSR access from VS raises
-#    an illegal instruction instead of a virtual instruction exception. QEMU issue not yet filed.
+#    an illegal instruction instead of a virtual instruction exception
+#    (https://gitlab.com/qemu-project/qemu/-/issues/4620). QEMU has further hypervisor bugs
+#    filed the same day, 4611 through 4617, so this exclusion will be needed for a while.
 exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H"
 # qemu-rv32-mu, qemu-rv64-mu: U-mode cbo.zero/clean/flush/inval raise illegal-instruction without S-mode
 #   because check_zicbo_envcfg() also requires senvcfg, which does not exist

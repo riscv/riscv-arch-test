@@ -2,3 +2,21 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
+  # Attempting to execute a store, store-conditional, AMO, or cache-block zero
+  # instruction which accesses a physical address within a PMP region without write
+  # permissions raises a store access-fault exception.
+  - name: pmp_store_fault
+    coverpoint: ["PMPZaamo_cg/cp_cfg_RW"]
+
+  # store, store-conditional, and AMO instructions generate store/AMO exceptions.
+  - name: mcause_exccode_st_sc_amo
+    coverpoint: ["PMPZaamo_cg/cp_cfg_RW"]
+
+  # When the L bit is set, the R/W/X permissions are enforced for all privilege modes.
+  - name: pmp_l_bit_m_mode_enforcement
+    coverpoint: ["PMPZaamo_cg/cp_cfg_RW"]
+
+  # PMP violations are always trapped precisely at the processor.
+  - name: pmp_violation_precise_trap
+    # rd is checked after every AMO, and a later AMO's return value shows any write by a faulting one
+    coverpoint: ["PMPZaamo_cg/cp_cfg_RW"]

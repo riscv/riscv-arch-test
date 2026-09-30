@@ -1,3 +1,3 @@
-Instruction,Type,RV32,RV64,cp_asm_count,cp_misalign
-fld,FL,x,x,x,x
-fsd,FS,x,x,x,x
+Instruction,Type,RV32,RV64,cp_asm_count,cp_misalign,cp_misalign_cross64
+fld,FL,x,x,x,x,double
+fsd,FS,x,x,x,x,double

@@ -2,16 +2,22 @@
 
 normative_rule_definitions:
   - name: Zimop_mop-r_op
-    coverpoint:
-      ["Zimop_mop_r_cg/{cp_asm_count, cp_rs1, cp_rd, cp_rs1_edges, cmp_rd_rs1}"]
+    # Representative coverpoints; also cp_asm_count, cp_rs1, cmp_rd_rs1, and Zimop_mop_r_{1..30}_cg
+    coverpoint: ["{Zimop_mop_r_0_cg, Zimop_mop_r_31_cg}/{cp_rd, cp_rs1_edges}"]
   - name: Zimop_mop-rr_op
-    coverpoint:
-      [
-        "Zimop_mop_rr_cg/{cp_asm_count, cp_rs1, cp_rs2, cp_rd, cp_rs1_edges, cp_rs2_edges, cmp_rd_rs1, cmp_rd_rs2, cmp_rd_rs1_rs2}",
-      ]
+    # Representative coverpoints; also cp_rs2_edges, register coverpoints, Zimop_mop_rr_{1..6}_cg
+    coverpoint: ["{Zimop_mop_rr_0_cg, Zimop_mop_rr_7_cg}/{cp_rd, cp_rs1_edges}"]
 
   - name: Zimop_mop-r_enc
-    coverpoint: ["Zimop_mop_r_cg/cp_asm_count"]
+    # Representative coverpoints; also Zimop_mop_r_{2..29}_cg/cp_asm_count
+    coverpoint:
+      [
+        "{Zimop_mop_r_0_cg, Zimop_mop_r_1_cg, Zimop_mop_r_30_cg, Zimop_mop_r_31_cg}/cp_asm_count",
+      ]
 
   - name: Zimop_mop-rr_enc
-    coverpoint: ["Zimop_mop_rr_cg/cp_asm_count"]
+    # Representative coverpoints; also Zimop_mop_rr_{2..5}_cg/cp_asm_count
+    coverpoint:
+      [
+        "{Zimop_mop_rr_0_cg, Zimop_mop_rr_1_cg, Zimop_mop_rr_6_cg, Zimop_mop_rr_7_cg}/cp_asm_count",
+      ]

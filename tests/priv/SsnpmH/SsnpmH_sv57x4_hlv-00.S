@@ -11,7 +11,6 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'H', 'Ssnpm']
 # params:
-#   TIME_CSR_IMPLEMENTED: true
 #   SV57X4_TRANSLATION: true
 # MARCH: rv${XLEN}ih_zicsr_zifencei_ssnpm
 ##### END_TEST_CONFIG #####

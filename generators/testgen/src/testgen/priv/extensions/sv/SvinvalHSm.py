@@ -22,8 +22,6 @@ from testgen.priv.registry import add_priv_test_generator
     "SvinvalHSm",
     required_extensions=["Sm", "H", "Svinval"],
     extra_defines=["#define BOOT_TO_MMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_svinvalhsm(test_data: TestData) -> list[TestChunk]:
     chunk = test_data.begin_test_chunk("Svinval_mstatus_tvm")

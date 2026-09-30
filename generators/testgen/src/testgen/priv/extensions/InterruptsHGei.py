@@ -228,7 +228,6 @@ def _sgei_tests(test_data: TestData) -> list[str]:
     "InterruptsHGei",
     required_extensions=["H"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_interruptshgei(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the InterruptsHGei guest external interrupt suite."""

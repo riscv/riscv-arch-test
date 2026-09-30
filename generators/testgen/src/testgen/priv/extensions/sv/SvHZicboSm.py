@@ -68,9 +68,8 @@ def _make_svhzicbosm(test_data: TestData, g: SvMode, vs: SvMode, family: str) ->
 
 
 # PMP entry 0 is a NAPOT region that covers the 4 KiB test page, which holds whole cache blocks; the last entry is
-# the background region.  VS and VU traps need the visible trap handler.
+# the background region.
 _PARAMS = [
-    "TIME_CSR_IMPLEMENTED: true",
     "NUM_PMP_ENTRIES: '>1'",
     "PMP_NAPOT_SUPPORTED: true",
     "PMP_GRANULARITY: '<=10'",

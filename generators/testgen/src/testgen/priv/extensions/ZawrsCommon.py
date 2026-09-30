@@ -457,8 +457,7 @@ def wrs_timeout_helper(
     lines = [comment_banner(coverpoint, "\n".join(description))]
 
     if virtualized:
-        # VS and VU traps need the visible trap handler, which a config that emulates time does not use
-        lines.append("#if defined(H_SUPPORTED) && defined(UDB_TIME_CSR_IMPLEMENTED)")
+        lines.append("#ifdef H_SUPPORTED")
     for mode in mode_list:
         for tw_val in tw_list:
             lines.extend(

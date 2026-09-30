@@ -11,7 +11,6 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'H', 'Shtvala']
 # params:
-#   TIME_CSR_IMPLEMENTED: true
 #   MISALIGNED_LDST: true
 #   MISALIGNED_SPLIT_STRATEGY: sequential_bytes
 # MARCH: rv${XLEN}ih_zicsr_zifencei_shtvala

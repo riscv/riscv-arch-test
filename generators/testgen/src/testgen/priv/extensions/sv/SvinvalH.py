@@ -58,8 +58,6 @@ def svinval_h_tests(test_data: TestData, boot: str, tvms: tuple[int, ...]) -> li
     "SvinvalH",
     required_extensions=["H", "Svinval"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_svinvalh(test_data: TestData) -> list[TestChunk]:
     chunk = test_data.begin_test_chunk("Svinval_hstatus_vtvm")
@@ -75,7 +73,7 @@ INVAL_FENCES = (HINVAL_VVMA, HINVAL_GVMA, SINVAL_VMA_VS)
     "SvinvalH",
     required_extensions=["H", "Svinval"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    params=["TIME_CSR_IMPLEMENTED: true", "SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
+    params=["SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
 )
 def make_svinvalh_sv39x4(test_data: TestData) -> list[TestChunk]:
     return [fence_chunk(test_data, SV39X4, VS_SV39, "sv39x4_inval", INVAL_FENCES, "SvinvalH_cg")]
@@ -85,7 +83,7 @@ def make_svinvalh_sv39x4(test_data: TestData) -> list[TestChunk]:
     "SvinvalH",
     required_extensions=["H", "Svinval"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    params=["TIME_CSR_IMPLEMENTED: true", "SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
+    params=["SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
 )
 def make_svinvalh_sv32x4(test_data: TestData) -> list[TestChunk]:
     return [fence_chunk(test_data, SV32X4, VS_SV32, "sv32x4_inval", INVAL_FENCES, "SvinvalH_cg")]

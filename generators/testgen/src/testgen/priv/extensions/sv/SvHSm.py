@@ -271,8 +271,7 @@ def _make_svhsm(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
     "SvHSm",
     required_extensions=["Sm", "H"],
     extra_defines=["#define BOOT_TO_MMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true", "SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
+    params=["SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
 )
 def make_svhsm_sv32(test_data: TestData) -> list[TestChunk]:
     return _make_svhsm(test_data, SV32X4, VS_SV32)
@@ -282,8 +281,7 @@ def make_svhsm_sv32(test_data: TestData) -> list[TestChunk]:
     "SvHSm",
     required_extensions=["Sm", "H"],
     extra_defines=["#define BOOT_TO_MMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true", "SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
+    params=["SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
 )
 def make_svhsm_sv39(test_data: TestData) -> list[TestChunk]:
     return _make_svhsm(test_data, SV39X4, VS_SV39)

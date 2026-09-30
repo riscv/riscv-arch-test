@@ -11,7 +11,6 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'H', 'Zicboz']
 # params:
-#   TIME_CSR_IMPLEMENTED: true
 #   SV39X4_TRANSLATION: true
 #   SV39_VSMODE_TRANSLATION: true
 # MARCH: rv${XLEN}ih_zicboz_zicsr_zifencei

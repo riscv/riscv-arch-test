@@ -12,7 +12,6 @@
 # REQUIRED_EXTENSIONS: ['I', 'Sm', 'H']
 # params:
 #   NUM_PMP_ENTRIES: '>0'
-#   TIME_CSR_IMPLEMENTED: true
 #   PMP_TOR_SUPPORTED: true
 # MARCH: rv${XLEN}ih_zicsr_zifencei
 ##### END_TEST_CONFIG #####

@@ -134,8 +134,6 @@ def _user_tests(test_data: TestData) -> list[str]:
     "SstcH",
     required_extensions=["H", "Sstc"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_sstch(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the SstcH suite."""

@@ -39,8 +39,6 @@ _WALKS: list[tuple[str, Mode, str, Counteren | None, Counteren | None, Counteren
     "ZicntrH",
     required_extensions=["H", "Zicntr"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_zicntrh(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZicntrH coverpoints."""

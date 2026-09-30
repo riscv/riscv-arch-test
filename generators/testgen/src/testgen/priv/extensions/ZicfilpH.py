@@ -317,8 +317,6 @@ def _sstatus_alias_tests(test_data: TestData) -> TestChunk:
     "ZicfilpH",
     required_extensions=["H", "Zicfilp"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_zicfilph(test_data: TestData) -> list[TestChunk]:
     """Generate Zicfilp landing pad tests in VS-mode and VU-mode."""

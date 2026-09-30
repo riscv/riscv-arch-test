@@ -24,8 +24,6 @@ CG = "ExceptionsHF_cg"
     "ExceptionsHF",
     required_extensions=["H", "F"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_exceptionshf(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the ExceptionsHF hypervisor floating-point exception testsuite."""

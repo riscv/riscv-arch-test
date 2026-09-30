@@ -519,8 +519,6 @@ def _wfi_tests(test_data: TestData) -> list[str]:
     "InterruptsH",
     required_extensions=["H"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_interruptsh(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the InterruptsH hypervisor interrupt suite."""

@@ -11,7 +11,6 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'H', 'Zca']
 # params:
-#   TIME_CSR_IMPLEMENTED: true
 #   SV39X4_TRANSLATION: true
 #   SV39_VSMODE_TRANSLATION: true
 # MARCH: rv${XLEN}ih_zicsr_zifencei_zca

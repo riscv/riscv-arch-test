@@ -18,8 +18,6 @@ from testgen.priv.registry import add_priv_test_generator
     "Shvstvecd",
     required_extensions=["H", "Shvstvecd"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_shvstvecd(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Shvstvecd coverpoints."""

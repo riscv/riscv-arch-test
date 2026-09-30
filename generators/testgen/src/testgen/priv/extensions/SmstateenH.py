@@ -156,8 +156,6 @@ def _hstateen0_roz_tests(test_data: TestData) -> list[str]:
     "SmstateenH",
     required_extensions=["H", "Smstateen"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_smstateenh(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the SmstateenH suite."""

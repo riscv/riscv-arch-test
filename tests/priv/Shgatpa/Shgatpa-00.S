@@ -10,8 +10,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'H', 'Shgatpa']
-# params:
-#   TIME_CSR_IMPLEMENTED: true
+# # # no param constraints
 # MARCH: rv${XLEN}ih_zicsr_zifencei_shgatpa
 ##### END_TEST_CONFIG #####
 

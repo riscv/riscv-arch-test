@@ -161,8 +161,6 @@ def _tsr_tests(test_data: TestData) -> list[str]:
     "ExceptionsHSm",
     required_extensions=["Sm", "H"],
     extra_defines=["#define BOOT_TO_MMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_exceptionshsm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the ExceptionsHSm hypervisor exception testsuite."""

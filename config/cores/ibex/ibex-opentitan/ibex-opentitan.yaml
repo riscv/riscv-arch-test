@@ -62,9 +62,8 @@ implemented_extensions:
   #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/01_overview/compliance.rst#L57-L59
   - { name: Zifencei, version: "= 2.0" }
   # RV32B = RV32BOTEarlGrey, which is every bit-manipulation sub-extension except Zbe.
-  # Only Zba/Zbb/Zbc/Zbs are ratified at 1.0.0 and only those are claimed; the draft
-  # 0.93 Zbf/Zbp/Zbr/Zbt instructions Ibex additionally decodes are not modelled by
-  # UDB or Sail and are recorded as a divergence in the discrepancy report.
+  # Only Zba/Zbb/Zbc/Zbs are ratified at 1.0.0 and only those are claimed; UDB and Sail
+  # do not model the draft 0.93 Zbf/Zbp/Zbr/Zbt instructions Ibex additionally decodes.
   #   Quote: "RV32B                    : "ibex_pkg::RV32BOTEarlGrey""
   #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/ibex_configs.yaml#L45
   #   Quote: ""ibex_pkg::RV32BOTEarlGrey": All sub-extensions except Zbe"
@@ -77,7 +76,8 @@ implemented_extensions:
   - { name: Zba, version: "= 1.0.0" }
   - { name: Zbb, version: "= 1.0.0" }
   - { name: Zbc, version: "= 1.0.0" }
-  # Zbkc (clmul, clmulh) is a subset of Zbc, so it comes with Zbc; UDB requires it.
+  # Zbkc (clmul, clmulh) is a subset of Zbc; RV32BOTEarlGrey decodes both.
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_decoder.sv#L642-L646
   - { name: Zbkc, version: "= 1.0.0" }
   - { name: Zbs, version: "= 1.0.0" }
   # Zicntr: mcycle/minstret and their unprivileged cycle/instret aliases exist. The

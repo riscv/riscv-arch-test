@@ -20,7 +20,7 @@
       "value": "0x0000_1FF8"
     },
     // The top 29 bits control whether the corresponding bits of `scounteren`
-    // that control HPM counters are read-only zero. CV32E20 has no S-mode,
+    // that control HPM counters are read-only zero. Ibex has no S-mode,
     // so all bits are read-only zero.
     "scounteren_writable_bits": {
       "len": 32,
@@ -609,8 +609,10 @@
     "Zbkb": {
       "supported": false
     },
+    // clmul and clmulh are decoded in RV32BOTEarlGrey, so Zbc implies Zbkc.
+    //   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_decoder.sv#L642-L646
     "Zbkc": {
-      "supported": false
+      "supported": true
     },
     "Zbkx": {
       "supported": false

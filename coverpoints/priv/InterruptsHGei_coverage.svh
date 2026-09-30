@@ -90,10 +90,13 @@ covergroup InterruptsHGei_hs_cg with function sample(ins_t ins);
     hgeie_bit : coverpoint $clog2(ins.prev.csr[CSR_HGEIE]) iff ($onehot(ins.prev.csr[CSR_HGEIE])) {
         bins b[] = {[1:`UDB_NUM_EXTERNAL_GUEST_INTERRUPTS]};
     }
+    // With GEILEN = 1, every implemented bit is bit i, so "all" is the same case as "i"
     hgeip_vs_hgeie : coverpoint (ins.prev.csr[CSR_HGEIP] == 0 ? 0 : ins.prev.csr[CSR_HGEIP] == ins.prev.csr[CSR_HGEIE] ? 1 : 2) {
         bins none = {0};
         bins i    = {1};
-        bins all  = {2};
+        `ifndef UDB_NUM_EXTERNAL_GUEST_INTERRUPTS_1
+            bins all = {2};
+        `endif
     }
     cp_hgeie: cross priv_mode_hs, csrr, hip, hgeie_bit, hgeip_vs_hgeie;
 
@@ -109,7 +112,10 @@ covergroup InterruptsHGei_hs_cg with function sample(ins_t ins);
                                  ins.prev.csr[CSR_HGEIP][ins.prev.csr[CSR_HSTATUS][17:12]] ? 3 : 2) {
         bins none   = {0};
         bins i      = {1};
-        bins others = {2};
+        // With GEILEN = 1 there is no implemented bit other than i, so "others" is the same case as "none"
+        `ifndef UDB_NUM_EXTERNAL_GUEST_INTERRUPTS_1
+            bins others = {2};
+        `endif
     }
     hgeie_vgein : coverpoint ins.prev.csr[CSR_HGEIE][ins.prev.csr[CSR_HSTATUS][17:12]];
     hgeip_nonzero : coverpoint (ins.prev.csr[CSR_HGEIP] != 0) {

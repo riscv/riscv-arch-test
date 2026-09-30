@@ -505,10 +505,10 @@
       "supported": true
     },
     "Zihintntl": {
-      "supported": false
+      "supported": true
     },
     "Zihintpause": {
-      "supported": false
+      "supported": true
     },
     // The M+U build decodes hpmcounter3..6 and their high halves; writable_hpm_counters
     // above and HPM_COUNTER_EN in the yaml say which counters exist.

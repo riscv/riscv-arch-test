@@ -50,6 +50,13 @@ implemented_extensions:
   # NOTE: only 3..6 exist; 7..31 do not, so Zihpm is implemented only in part.
   - { name: Zihpm, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0" }
+  # The NTL hints are add and c.add with rd=x0, and pause is a FENCE with pred=W, succ=0.
+  # EL2 decodes all three as ordinary instructions with no architectural effect.
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/decode#L177
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/decode#L229
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/cdecode#L6-L11
+  - { name: Zihintntl, version: "= 1.0.0" }
+  - { name: Zihintpause, version: "= 2.0.0" }
   # U-mode is optional in EL2 and enabled here (-set user_mode=1), which is the maximum
   # ratified feature set. Smepmp is deliberately left off.
   #   Quote: "Originally, VeeR EL2 only implemented machine mode, and user mode support was

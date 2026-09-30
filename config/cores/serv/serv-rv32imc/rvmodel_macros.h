@@ -2,6 +2,7 @@
 // RVMODEL macro definitions for SERV, the award-winning bit-serial RISC-V CPU,
 // in the `servant` reference SoC running under the stock Verilator testbench.
 // Written against olofk/serv commit f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8.
+// Copyright (c) 2026, Harvey Mudd College
 // SPDX-License-Identifier: Apache-2.0
 
 #ifndef _RVMODEL_MACROS_H

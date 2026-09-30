@@ -5,15 +5,11 @@
 ci_enabled: true
 
 # chipsalliance/Cores-VeeR-EH2 @ a7203d02:
-#   Zaamo, Zalrsc  Atomic instructions are illegal outside the 64 KB DCCM, and ACT images run from
-#                  system memory, so every AMO and LR/SC faults; the suites do not build.
-#   Sm             Trap-count and mtval mismatches; mip is read-only to software and a mcycle write
-#                  does not stick.
-#   ExceptionsSm,  mtval mismatches: mtval population is undocumented, so at least one
-#   ExceptionsZc   REPORT_VA_IN_MTVAL_ON_* parameter is wrong for this core.
-#   Zifencei       The testbench's instruction and data memories are separate, so stores are never
-#                  fetched and fence.i returns the stale instruction.
-exclude_extensions: "Zaamo,Zalrsc,Sm,ExceptionsSm,ExceptionsZc,Zifencei"
+#   Zaamo     AMOs fault outside the DCCM and ACT data is in system memory: https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/design/lsu/eh2_lsu_addrcheck.sv#L199-L200
+#   Zalrsc    LR/SC fault outside the DCCM, as for Zaamo.
+#   Sm        minstret bits 31:8 advance by 0x41 per carry: https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/design/dec/eh2_dec_tlu_ctl.sv#L1338
+#   Zifencei  The testbench instruction memory ignores stores: https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/testbench/tb_top.sv#L1011
+exclude_extensions: "Zaamo,Zalrsc,Sm,Zifencei"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-veer-eh2.sh"

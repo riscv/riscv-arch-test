@@ -32,10 +32,6 @@ csr_tdata1: coverpoint ins.current.insn[31:20] {
     type_option.weight = 0;
     bins tdata1 = {CSR_TDATA1};
 }
-nop: coverpoint ins.current.insn {
-    type_option.weight = 0;
-    bins nop = {NOP};
-}
 
 // mcontrol6 fields of the selected trigger's tdata1
 tdata1_type_mcontrol6: coverpoint ins.current.csr[CSR_TDATA1][XLEN-1:XLEN-4] {
@@ -56,17 +52,20 @@ tdata1_xsl: coverpoint ins.current.csr[CSR_TDATA1][2:0] {
 }
 tdata1_size: coverpoint ins.current.csr[CSR_TDATA1][18:16] {
     type_option.weight = 0;
-    bins size[] = {[0:6]};
+    bins any = {3'd0};
+    `ifdef UDB_SDTRIG_MCONTROL6_SIZE_AVAILABLE
+        bins size[] = {[1:6]};
+    `endif
 }
 
 // tdata2 of the selected trigger against the sampled access
-tdata2_adr: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.mem_addr) {
+tdata2_adr: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.rs1_val + ins.current.imm) {
     type_option.weight = 0;
     bins scratch = {1'b1};
     bins zero    = {1'b0} iff (ins.current.csr[CSR_TDATA2] == '0);
 }
-tdata2_data: coverpoint (ins.current.csr[CSR_TDATA2][31:0] == (ins.current.has_rd ? ins.current.rd_val[31:0] : ins.current.rs2_val[31:0])) {
+tdata2_data: coverpoint (ins.current.csr[CSR_TDATA2] ^ (ins.current.has_rd ? ins.current.rd_val_pre : ins.current.rs2_val)) {
     type_option.weight = 0;
-    bins data = {1'b1};
-    bins zero = {1'b0} iff (ins.current.csr[CSR_TDATA2] == '0);
+    bins data   = {'0};
+    bins nofire = {1};
 }

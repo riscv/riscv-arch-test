@@ -394,6 +394,10 @@
         `cover_info("//      SvHZicbo - Enabled");
         `include "SvHZicbo_coverage_init.svh"
     `endif
+    `ifdef COVER_SVHZICBOSM
+        `cover_info("//      SvHZicboSm - Enabled");
+        `include "SvHZicboSm_coverage_init.svh"
+    `endif
     `ifdef COVER_SVPMP
         `cover_info("//      SvPMP - Enabled");
         `include "SvPMP_coverage_init.svh"

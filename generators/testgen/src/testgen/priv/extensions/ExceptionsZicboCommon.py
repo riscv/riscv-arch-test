@@ -186,7 +186,7 @@ def cbo_config_helper(
 
 def cbo_henvcfg_helper(test_data: TestData, covergroup: str, field: str, *, mode: str) -> list[str]:
     """Execute ``field``'s instructions in VS-mode or VU-mode for each value of menvcfg, henvcfg and, in VU-mode,
-    senvcfg.  Runs from M-mode, with vsatp and hgatp Bare.
+    senvcfg.  Runs from HS-mode, with vsatp and hgatp Bare; menvcfg is written through T-SBI.
 
     A field that menvcfg disables raises an illegal-instruction exception; otherwise one that henvcfg, or
     senvcfg in VU-mode, disables raises a virtual-instruction exception (cmo.adoc, "CSR controls").
@@ -207,9 +207,15 @@ def cbo_henvcfg_helper(test_data: TestData, covergroup: str, field: str, *, mode
     ]
     for values in product(cfg.bins, repeat=len(csrs)):
         for csr, value in zip(csrs, values, strict=True):
-            lines.append(f"csrc {csr}, x{mask_reg}")
+            clear, set_ = f"csrc {csr}, x{mask_reg}", f"csrs {csr}, x{cfg_reg}"
+            lines.append(tsbi_call(clear) if csr == "menvcfg" else clear)
             if int(value, 2):
-                lines.extend([f"LI(x{cfg_reg}, {int(value, 2) << cfg.shift:#x})", f"csrs {csr}, x{cfg_reg}"])
+                lines.extend(
+                    [
+                        f"LI(x{cfg_reg}, {int(value, 2) << cfg.shift:#x})",
+                        tsbi_call(set_) if csr == "menvcfg" else set_,
+                    ]
+                )
         lines.append(f"RVTEST_TSBI_GOTO_{mode}MODE")
         tag = "_".join(f"{csr}.{field}{value}" for csr, value in zip(csrs, values, strict=True))
         for instr in cfg.instrs:
@@ -218,7 +224,7 @@ def cbo_henvcfg_helper(test_data: TestData, covergroup: str, field: str, *, mode
                     instr, f"{instr}_{tag}", f"cp_{field}_{mode.lower()}", covergroup, addr_reg, val_reg, test_data
                 )
             )
-        lines.append("RVTEST_TSBI_GOTO_MMODE")
+        lines.append("RVTEST_TSBI_GOTO_SMODE")
     lines.append(f"#endif // {cfg.guard}")
     test_data.int_regs.return_registers([addr_reg, cfg_reg, mask_reg, val_reg])
     return lines

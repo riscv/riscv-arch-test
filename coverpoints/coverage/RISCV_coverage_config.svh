@@ -299,6 +299,9 @@
 `ifdef SVHZICBO_COVERAGE
   `include "SvHZicbo_coverage.svh"
 `endif
+`ifdef SVHZICBOSM_COVERAGE
+  `include "SvHZicboSm_coverage.svh"
+`endif
 `ifdef SVPMP_COVERAGE
   `include "SvPMP_coverage.svh"
 `endif

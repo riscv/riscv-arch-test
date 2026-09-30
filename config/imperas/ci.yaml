@@ -25,7 +25,7 @@
 #   completes instead of raising an instruction guest-page fault:
 #   https://solvnetplus.synopsys.com/s/case/500WQ000029sv6VYAQ/with-adue1-a-fetch-whose-abit-update-targets-a-table-the-gstage-maps-readonly-completes-instead-of-faulting
 # - SvHZicbo: a guest-page fault on the implicit VS-stage page-table read of a CBO writes the PTE's
-#   guest physical address rounded down to its 64-byte cache block to mtval2 instead of the PTE's address:
+#   guest physical address rounded down to its 64-byte cache block to htval instead of the PTE's address:
 #   https://solvnetplus.synopsys.com/s/case/500WQ000029tFJcYAM/after-a-fault-on-an-implicit-pagetable-read-mtval2-holds-the-tables-base-address-instead-of-the-ptes-address
 # - InterruptsH, SstcH, SstcHSm: csrrc/csrrs/csrrw return 0 in the old value for the delegated
 #   read-only vsip.STIP/SEIP bits (csrr reads them correctly):

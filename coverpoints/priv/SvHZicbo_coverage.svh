@@ -2,8 +2,8 @@
 //
 // RISC-V Architectural Functional Coverage Covergroups
 //
-// Cache-block operations from VS-mode and VU-mode: the henvcfg enables, each VS-stage and G-stage
-// PTE under two-stage translation, and PMP on the final address.
+// Cache-block operations from VS-mode and VU-mode: the henvcfg enables, and each VS-stage and G-stage
+// PTE under two-stage translation.
 // Written: David_Harris@hmc.edu 24 September 2026
 //
 // Copyright (C) 2026 Harvey Mudd College
@@ -15,15 +15,17 @@
 `define COVER_SVHZICBO
 
 // Guest virtual addresses of SvHZicbo.py's cases: VS-stage cases use VS_SV39/VS_SV32 data_va, and
-// G-stage cases SV39X4/SV32X4 data_va through a VS-stage identity superpage.
-`ifdef UDB_MXLEN_64
-  `define SVHZICBO_GVA_SUPERPAGE(addr) addr[63:30]
-  `define SVHZICBO_VS_SUPERPAGE 5
-  `define SVHZICBO_G_SUPERPAGE 11
-`else
-  `define SVHZICBO_GVA_SUPERPAGE(addr) addr[31:22]
-  `define SVHZICBO_VS_SUPERPAGE 'h241
-  `define SVHZICBO_G_SUPERPAGE 'h341
+// G-stage cases SV39X4/SV32X4 data_va through a VS-stage identity superpage.  SvHZicboSm uses them too.
+`ifndef SVHZICBO_GVA_SUPERPAGE
+  `ifdef UDB_MXLEN_64
+    `define SVHZICBO_GVA_SUPERPAGE(addr) addr[63:30]
+    `define SVHZICBO_VS_SUPERPAGE 5
+    `define SVHZICBO_G_SUPERPAGE 11
+  `else
+    `define SVHZICBO_GVA_SUPERPAGE(addr) addr[31:22]
+    `define SVHZICBO_VS_SUPERPAGE 'h241
+    `define SVHZICBO_G_SUPERPAGE 'h341
+  `endif
 `endif
 
 covergroup SvHZicbo_cg with function sample(ins_t ins);
@@ -52,44 +54,35 @@ covergroup SvHZicbo_cg with function sample(ins_t ins);
   g_stage: coverpoint `SVHZICBO_GVA_SUPERPAGE(ins.current.rs1_val) {
     bins g = {`SVHZICBO_G_SUPERPAGE};
   }
-  stage: coverpoint `SVHZICBO_GVA_SUPERPAGE(ins.current.rs1_val) {
-    bins vs = {`SVHZICBO_VS_SUPERPAGE};
-    bins g  = {`SVHZICBO_G_SUPERPAGE};
-  }
 
-  // The trap the CBO takes, from the mcause the trace shows it writing
-  vs_pte_outcome: coverpoint {ins.current.csr_wb[CSR_MCAUSE], ins.current.csr[CSR_MCAUSE][4:0]} {
+  // The trap the CBO takes, from the scause the trace shows it writing
+  vs_pte_outcome: coverpoint {ins.current.csr_wb[CSR_SCAUSE], ins.current.csr[CSR_SCAUSE][4:0]} {
     wildcard bins no_fault = {6'b0?????};
     bins store_page_fault  = {6'b101111};
   }
-  g_pte_outcome: coverpoint {ins.current.csr_wb[CSR_MCAUSE], ins.current.csr[CSR_MCAUSE][4:0]} {
+  g_pte_outcome: coverpoint {ins.current.csr_wb[CSR_SCAUSE], ins.current.csr[CSR_SCAUSE][4:0]} {
     wildcard bins no_fault       = {6'b0?????};
     bins store_guest_page_fault  = {6'b110111};
   }
-  gpa_outcome: coverpoint {ins.current.csr_wb[CSR_MCAUSE], ins.current.csr[CSR_MCAUSE][4:0]} {
+  gpa_outcome: coverpoint {ins.current.csr_wb[CSR_SCAUSE], ins.current.csr[CSR_SCAUSE][4:0]} {
     bins store_guest_page_fault = {6'b110111};
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
       bins store_access_fault   = {6'b100111};
     `endif
   }
-  no_fault: coverpoint ins.current.csr_wb[CSR_MCAUSE] {
+  no_fault: coverpoint ins.current.csr_wb[CSR_SCAUSE] {
     bins no_fault = {0};
   }
-  store_access_fault: coverpoint {ins.current.csr_wb[CSR_MCAUSE], ins.current.csr[CSR_MCAUSE][4:0]} {
+  store_access_fault: coverpoint {ins.current.csr_wb[CSR_SCAUSE], ins.current.csr[CSR_SCAUSE][4:0]} {
     bins store_access_fault = {6'b100111};
   }
-  // mtinst holds the pseudoinstruction of a guest-page fault on an implicit VS-stage page-table read
-  pseudoinstruction: coverpoint ins.current.csr[CSR_MTINST] iff (ins.current.csr_wb[CSR_MTINST]) {
+  // htinst holds the pseudoinstruction of a guest-page fault on an implicit VS-stage page-table read
+  pseudoinstruction: coverpoint ins.current.csr[CSR_HTINST] iff (ins.current.csr_wb[CSR_HTINST]) {
     bins read = {'h2000, 'h3000};
   }
   // In VS-mode the trace logs vsstatus as sstatus
   vsstatus_sum: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sum") {
     bins set = {1};
-  }
-  // PMP entry 0 covers the test page with no permissions, or with read permission only
-  pmp_xwr: coverpoint ins.current.csr[CSR_PMPCFG0][7:0] {
-    bins none = {8'b00011000};
-    bins r    = {8'b00011001};
   }
 
   cp_vs_pte:          cross priv_mode_vs_vu, cbo, vs_stage, vs_pte_outcome, vsatp_paged, hgatp_paged;
@@ -100,7 +93,6 @@ covergroup SvHZicbo_cg with function sample(ins_t ins);
   `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
     cp_g_pa:          cross priv_mode_vs_vu, cbo, g_stage, store_access_fault;
   `endif
-  cp_pmp:             cross priv_mode_vs_vu, cbo, stage, pmp_xwr;
 endgroup
 
 // CBOs in VS-mode and VU-mode across the menvcfg, henvcfg and senvcfg enables, with translation Bare

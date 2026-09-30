@@ -86,19 +86,13 @@ normative_rule_definitions:
   - names: [sstatus_sum, H_vm_gpapriv]
     coverpoint: ["SvHZicbo_cg/{cp_vs_sum,cp_g_pte}"]
 
-  # Guest-page faults write mtval2, with a pseudoinstruction in mtinst for implicit VS-stage accesses
-  - names:
-      [
-        mtval2_trapval,
-        mtval2_trapval_vstrans,
-        H_trap_xtinst_guestpage,
-        fault_excep_csr,
-      ]
+  # Guest-page faults write htval, with a pseudoinstruction in htinst for implicit VS-stage accesses
+  - names: [htval_trapval, H_trap_xtinst_guestpage, fault_excep_csr]
     coverpoint: ["SvHZicbo_cg/{cp_vs_gpa,cp_vs_gpa_implicit,cp_g_pte}"]
 
-  # PMA and PMP apply to the supervisor physical address
-  - names: [pma_chk_paddr, H_pmp]
-    coverpoint: ["SvHZicbo_cg/{cp_vs_gpa,cp_g_pa,cp_pmp}"]
+  # PMAs apply to the supervisor physical address
+  - names: [pma_chk_paddr]
+    coverpoint: ["SvHZicbo_cg/{cp_vs_gpa,cp_g_pa}"]
 
   # If CBO.INVAL is enabled in HS-mode to perform a flush operation, then when the
   # instruction is enabled in VS- or VU-mode it performs a flush operation, even if CBIE

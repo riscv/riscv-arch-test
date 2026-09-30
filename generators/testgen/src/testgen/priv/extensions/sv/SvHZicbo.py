@@ -8,14 +8,14 @@
 
 """SvHZicbo suite: cache-block management and zero instructions from VS-mode and VU-mode.
 
-The suite boots to M-mode and delegates nothing, so the M-mode handler takes every trap.  It checks the
-henvcfg CBO enables, the fault that each VS-stage and G-stage PTE gives a CBO, and PMP on the final
-address.  A CBO faults like a store.  A cache-block management instruction needs read or write
-permission and never checks D; cbo.zero needs write permission and checks D (cmo.adoc).  Boot leaves
-menvcfg.ADUE = henvcfg.ADUE = 0, so a clear A or needed D bit raises a fault (Svade behavior).
+The suite boots to HS-mode with hedeleg clear, so the HS-mode handler takes every guest trap.  It checks the
+henvcfg CBO enables and the fault that each VS-stage and G-stage PTE gives a CBO; SvHZicboSm checks PMP on the
+final address.  A CBO faults like a store.  A cache-block management instruction needs read or write permission
+and never checks D; cbo.zero needs write permission and checks D (cmo.adoc).  Boot leaves menvcfg.ADUE = 0,
+which makes henvcfg.ADUE read-only zero, so a clear A or needed D bit raises a fault (Svade behavior).
 """
 
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import replace
 from typing import NamedTuple
 
@@ -23,14 +23,6 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ExceptionsZicboCommon import cbo_henvcfg_helper
-from testgen.priv.extensions.pmp.helpers import (
-    cfg_byte,
-    cfg_shift,
-    napot_mask_defines,
-    set_pmpaddr,
-    set_pmpcfg,
-    zero_pmp_regs,
-)
 from testgen.priv.extensions.sv.access import virtual_address
 from testgen.priv.extensions.sv.generate import guest_translation_setup, guest_translation_teardown
 from testgen.priv.extensions.sv.page_tables import (
@@ -46,32 +38,31 @@ from testgen.priv.extensions.sv.page_tables import (
 )
 from testgen.priv.registry import add_priv_test_generator
 
-_CG = "SvHZicbo_cg"
 _ENVCFG_CG = "SvHZicbo_envcfg_cg"
-_OPS = {"zicbom": ("cbo.clean", "cbo.flush", "cbo.inval"), "zicboz": ("cbo.zero",)}
+OPS = {"zicbom": ("cbo.clean", "cbo.flush", "cbo.inval"), "zicboz": ("cbo.zero",)}
 _FIELDS = {"zicbom": ("cbie", "cbcfe"), "zicboz": ("cbze",)}
-_DATA = "svhzicbo_data"
-_DATA_REGION = [".p2align 12", f"{_DATA}:", ".fill 1024, 4, 0x0C0B0000"]
-# PMP entry 0 is a NAPOT region that covers the 4 KiB test page, which holds whole cache blocks; the last entry is
-# the background region
-_PMP_GATE = "UDB_NUM_PMP_ENTRIES > 1 && defined(UDB_PMP_NAPOT_SUPPORTED) && UDB_PMP_GRANULARITY <= 10"
+DATA = "svhzicbo_data"
+_DATA_REGION = [".p2align 12", f"{DATA}:", ".fill 1024, 4, 0x0C0B0000"]
 
 
-class _Chunk(NamedTuple):
-    """The CBO family and translation modes of one chunk, and the register that holds each case's guest address."""
+class Chunk(NamedTuple):
+    """One chunk's CBO family, translation modes, covergroup and home mode ("S" or "M", which checks the results), and
+    the register that holds each case's guest address."""
 
     family: str
     g: SvMode
     vs: SvMode
+    covergroup: str
+    home: str
     gva: int
 
 
-def _mapping(
+def mapping(
     test_data: TestData,
     stage: SvMode,
     level: int,
     flags: PteExpression,
-    pa: str = _DATA,
+    pa: str = DATA,
     *,
     va: str | None = None,
     superpage: bool | None = None,
@@ -89,7 +80,7 @@ def _mapping(
         walk_overrides=walk_overrides,
         superpage=superpage,
         regs=(pte, addr, tmp),
-        pa_is_label=pa == _DATA,
+        pa_is_label=pa == DATA,
     )
     test_data.int_regs.return_registers([pte, addr, tmp])
     return lines
@@ -114,15 +105,15 @@ def _pte(
     return lines
 
 
-def _vs_identity(test_data: TestData, c: _Chunk, mode: str) -> list[str]:
+def vs_identity(test_data: TestData, c: Chunk, mode: str) -> list[str]:
     """The VS-stage superpage leaf that maps g.data_va to the same guest physical address."""
     flags = PteFlags(user=mode == "vu")
     return _pte(test_data, c.vs, c.vs.levels - 1, flags, c.g.data_va, c.g.data_va, superpage=True)
 
 
-def _case(
+def case(
     test_data: TestData,
-    c: _Chunk,
+    c: Chunk,
     mode: str,
     name: str,
     coverpoint: str,
@@ -131,16 +122,16 @@ def _case(
     *,
     stage: SvMode,
     level: int,
-    offset: str = _DATA,
+    offset: str = DATA,
     va: str | None = None,
     guest: tuple[list[str], list[str]] = ([], []),
     ifdef: str | None = None,
 ) -> list[str]:
     """Write ``ptes``, form the guest virtual address of ``offset`` in the mapping of ``va`` (by default
-    stage.data_va) at ``level``, and run the CBOs in ``mode`` between the ``guest`` setup and cleanup lines.  M-mode
-    checks what cbo.zero did to the test data."""
+    stage.data_va) at ``level``, and run the CBOs in ``mode`` between the ``guest`` setup and cleanup lines.  The home
+    mode checks what cbo.zero did to the test data."""
     addr, val = test_data.int_regs.get_registers(2)
-    check = c.family == "zicboz" and offset == _DATA
+    check = c.family == "zicboz" and offset == DATA
     lines = [
         f"// {mode.upper()}-mode, {stage.name} level {level}, {name}: {expected}",
         *ptes,
@@ -152,22 +143,22 @@ def _case(
             level,
             destination=f"x{c.gva}",
             physical_address=offset,
-            physical_address_is_label=offset == _DATA,
+            physical_address_is_label=offset == DATA,
             merge_sv32_base_page=True,
             scratch=f"x{addr}",
         ),
     ]
     if check:
-        lines.extend([f"LA(x{addr}, {_DATA})", f"LI(x{val}, 0x0C0B0000)", f"sw x{val}, 0(x{addr})"])
+        lines.extend([f"LA(x{addr}, {DATA})", f"LI(x{val}, 0x0C0B0000)", f"sw x{val}, 0(x{addr})"])
     lines.extend([f"RVTEST_TSBI_GOTO_{mode.upper()}MODE", *guest[0]])
-    for op in _OPS[c.family]:
+    for op in OPS[c.family]:
         lines.extend(
             [
-                test_data.add_testcase(f"{mode}_{stage.name}_l{level}_{name}_{op}", coverpoint, _CG),
+                test_data.add_testcase(f"{mode}_{stage.name}_l{level}_{name}_{op}", coverpoint, c.covergroup),
                 f"{op} (x{c.gva})",
             ]
         )
-    lines.extend([*guest[1], "RVTEST_TSBI_GOTO_MMODE"])
+    lines.extend([*guest[1], f"RVTEST_TSBI_GOTO_{c.home}MODE"])
     if check:
         lines.extend([f"lw x{val}, 0(x{addr})", write_sigupd(val, test_data)])
     test_data.int_regs.return_registers([addr, val])
@@ -175,7 +166,7 @@ def _case(
 
 
 def _leaf_cases(
-    test_data: TestData, c: _Chunk, mode: str, stage: SvMode, level: int, flags: PteFlags, fault: str, prefix: list[str]
+    test_data: TestData, c: Chunk, mode: str, stage: SvMode, level: int, flags: PteFlags, fault: str, prefix: list[str]
 ) -> list[str]:
     """The cases that both stages share: each permission of the leaf at ``level`` (``flags`` when valid), a pointer in
     place of a kilopage leaf, reserved bits in the non-leaf PTE above, and a misaligned superpage.  ``prefix``
@@ -195,22 +186,22 @@ def _leaf_cases(
     if level == 0:
         pointer = PteFlags.nonleaf(*(["PTE_U"] if flags.user else []))
         leaves.append(("pointer", f"{fault}: a pointer in place of a leaf", pointer))
-    cases = [(name, expected, _mapping(test_data, stage, level, leaf)) for name, expected, leaf in leaves]
+    cases = [(name, expected, mapping(test_data, stage, level, leaf)) for name, expected, leaf in leaves]
     if level < stage.levels - 1:
         for bit in ("D", "A", "U"):
-            ptes = _mapping(test_data, stage, level, flags, walk_overrides={level + 1: PteFlags.nonleaf(f"PTE_{bit}")})
+            ptes = mapping(test_data, stage, level, flags, walk_overrides={level + 1: PteFlags.nonleaf(f"PTE_{bit}")})
             cases.append((f"nonleaf_{bit.lower()}", f"{fault}: {bit} is reserved in a non-leaf PTE", ptes))
     cp = f"cp_{stage.stage}_pte"
     lines = []
     for name, expected, ptes in cases:
-        lines.extend(_case(test_data, c, mode, name, cp, expected, [*prefix, *ptes], stage=stage, level=level))
+        lines.extend(case(test_data, c, mode, name, cp, expected, [*prefix, *ptes], stage=stage, level=level))
     if level > 0:
-        ptes = [*prefix, *_mapping(test_data, stage, level, flags, superpage=False)]
-        lines.extend(_case(test_data, c, mode, "misaligned", cp, fault, ptes, stage=stage, level=level, offset="0x0"))
+        ptes = [*prefix, *mapping(test_data, stage, level, flags, superpage=False)]
+        lines.extend(case(test_data, c, mode, "misaligned", cp, fault, ptes, stage=stage, level=level, offset="0x0"))
     return lines
 
 
-def _vs_cases(test_data: TestData, c: _Chunk, mode: str) -> list[str]:
+def _vs_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
     """VS-stage PTE cases at each level.  The G-stage identity maps the test data."""
     vs, g = c.vs, c.g
     user = PteFlags(user=mode == "vu")
@@ -225,16 +216,16 @@ def _vs_cases(test_data: TestData, c: _Chunk, mode: str) -> list[str]:
         lines.extend(_leaf_cases(test_data, c, mode, vs, level, user, fault, []))
         if mode == "vu":
             expected = f"{fault}: VU-mode cannot access a supervisor page"
-            ptes = _mapping(test_data, vs, level, PteFlags())
-            lines.extend(_case(test_data, c, mode, "u0", "cp_vs_pte", expected, ptes, stage=vs, level=level))
+            ptes = mapping(test_data, vs, level, PteFlags())
+            lines.extend(case(test_data, c, mode, "u0", "cp_vs_pte", expected, ptes, stage=vs, level=level))
         else:
-            user_page = _mapping(test_data, vs, level, PteFlags(user=True))
+            user_page = mapping(test_data, vs, level, PteFlags(user=True))
             expected = f"{fault}: VS-mode cannot access a user page with vsstatus.SUM = 0"
             sum_on = [f"LI(x{sum_reg}, SSTATUS_SUM)", f"csrs sstatus, x{sum_reg}"]
             lines.extend(
                 [
-                    *_case(test_data, c, mode, "u1_sum0", "cp_vs_pte", expected, user_page, stage=vs, level=level),
-                    *_case(
+                    *case(test_data, c, mode, "u1_sum0", "cp_vs_pte", expected, user_page, stage=vs, level=level),
+                    *case(
                         test_data,
                         c,
                         mode,
@@ -249,14 +240,14 @@ def _vs_cases(test_data: TestData, c: _Chunk, mode: str) -> list[str]:
                 ]
             )
         lines.extend(
-            _case(
+            case(
                 test_data,
                 c,
                 mode,
                 "leaf_gpa_unmapped",
                 "cp_vs_gpa",
                 "store guest-page fault on the final guest physical address",
-                [*_mapping(test_data, vs, level, user, g.data_va), *unmapped_gpa],
+                [*mapping(test_data, vs, level, user, g.data_va), *unmapped_gpa],
                 stage=vs,
                 level=level,
             )
@@ -266,13 +257,13 @@ def _vs_cases(test_data: TestData, c: _Chunk, mode: str) -> list[str]:
             # or which a G-stage kilopage maps to the page of the access-fault region.  There, the access-fault case's
             # index selects a PTE inside the region.
             table = [
-                *_mapping(test_data, vs, level, user),
+                *mapping(test_data, vs, level, user),
                 *_pte(test_data, vs, level + 1, PteFlags.nonleaf(), vs.data_va, g_base),
             ]
-            faulting_table = _mapping(test_data, g, 0, PteFlags(user=True), vs.access_fault_pte_address(), va=g_base)
+            faulting_table = mapping(test_data, g, 0, PteFlags(user=True), vs.access_fault_pte_address(), va=g_base)
             lines.extend(
                 [
-                    *_case(
+                    *case(
                         test_data,
                         c,
                         mode,
@@ -283,7 +274,7 @@ def _vs_cases(test_data: TestData, c: _Chunk, mode: str) -> list[str]:
                         stage=vs,
                         level=level,
                     ),
-                    *_case(
+                    *case(
                         test_data,
                         c,
                         mode,
@@ -302,36 +293,36 @@ def _vs_cases(test_data: TestData, c: _Chunk, mode: str) -> list[str]:
     return lines
 
 
-def _g_cases(test_data: TestData, c: _Chunk, mode: str) -> list[str]:
+def _g_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
     """G-stage PTE cases at each level, reached through a VS-stage identity superpage."""
     g = c.g
     user = PteFlags(user=True)
     fault = "store guest-page fault"
-    identity = _vs_identity(test_data, c, mode)
+    identity = vs_identity(test_data, c, mode)
     lines = []
     for level in g.levels_desc:
         lines.extend(
             [
                 *_leaf_cases(test_data, c, mode, g, level, user, fault, identity),
-                *_case(
+                *case(
                     test_data,
                     c,
                     mode,
                     "u0",
                     "cp_g_pte",
                     f"{fault}: every G-stage access is a user access",
-                    [*identity, *_mapping(test_data, g, level, PteFlags())],
+                    [*identity, *mapping(test_data, g, level, PteFlags())],
                     stage=g,
                     level=level,
                 ),
-                *_case(
+                *case(
                     test_data,
                     c,
                     mode,
                     "leaf_access_fault",
                     "cp_g_pa",
                     "store access fault on the final supervisor physical address",
-                    [*identity, *_mapping(test_data, g, level, user, "RVMODEL_ACCESS_FAULT_ADDRESS")],
+                    [*identity, *mapping(test_data, g, level, user, "RVMODEL_ACCESS_FAULT_ADDRESS")],
                     stage=g,
                     level=level,
                     offset="RVMODEL_ACCESS_FAULT_ADDRESS",
@@ -342,20 +333,21 @@ def _g_cases(test_data: TestData, c: _Chunk, mode: str) -> list[str]:
     return lines
 
 
-def _g_walk_cases(test_data: TestData, c: _Chunk, mode: str) -> list[str]:
+def _g_walk_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
     """A non-leaf G-stage PTE that points at the page of the access-fault region, at each level, with an index there
     that selects a PTE inside the region."""
-    # TODO: Sail writes mtval2 = GPA >> 2 on these access faults; hypervisor.adoc requires mtval2 = 0
+    # TODO: remove when riscv/sail-riscv#1970 merges: Sail writes htval = GPA >> 2 on these access faults, and
+    # hypervisor.adoc requires htval = 0
     g = c.g
     lines = []
     for level in range(g.levels - 2, -1, -1):
         ptes = [
-            *_vs_identity(test_data, c, mode),
-            *_mapping(test_data, g, level, PteFlags(user=True)),
+            *vs_identity(test_data, c, mode),
+            *mapping(test_data, g, level, PteFlags(user=True)),
             *_pte(test_data, g, level + 1, PteFlags.nonleaf(), g.data_va, g.access_fault_pte_address()),
         ]
         lines.extend(
-            _case(
+            case(
                 test_data,
                 c,
                 mode,
@@ -372,75 +364,70 @@ def _g_walk_cases(test_data: TestData, c: _Chunk, mode: str) -> list[str]:
     return lines
 
 
-def _pmp_cases(test_data: TestData, c: _Chunk, mode: str) -> list[str]:
-    """PMP denies the test page (XWR = 000), then allows only reads (XWR = 001), through both stages' kilopages.
-
-    set_pmpaddr clobbers x5 and x6 before each case loads its registers.
-    """
-    lines = []
-    for xwr in ("000", "001"):
-        region = [
-            *zero_pmp_regs(),
-            *set_pmpaddr("napot", 0, _DATA),
-            *set_pmpcfg(0, cfg_byte(f"0{xwr}", "napot", cfg_shift(0))),
-            "sfence.vma",
-        ]
-        expected = "store access fault" if c.family == "zicboz" or xwr == "000" else "no fault: reads are allowed"
-        vs_ptes = [*region, *_mapping(test_data, c.vs, 0, PteFlags(user=mode == "vu"))]
-        g_ptes = [*region, *_vs_identity(test_data, c, mode), *_mapping(test_data, c.g, 0, PteFlags(user=True))]
-        lines.extend(
-            [
-                *_case(test_data, c, mode, f"pmp{xwr}", "cp_pmp", expected, vs_ptes, stage=c.vs, level=0),
-                *_case(test_data, c, mode, f"pmp{xwr}", "cp_pmp", expected, g_ptes, stage=c.g, level=0),
-            ]
-        )
-    return [*lines, *zero_pmp_regs()]
-
-
-# (file name, coverpoints, description, gate, cases for one mode)
+# (file name, coverpoints, description, cases for one mode)
 _SECTIONS = (
     (
         "vs",
         "cp_vs_pte, cp_vs_sum, cp_vs_gpa",
         "Each VS-stage PTE, and VS-stage PTEs at unmapped or faulting guest physical addresses",
-        None,
         _vs_cases,
     ),
     (
         "g",
         "cp_g_pte, cp_g_pa",
         "Each G-stage PTE, and a G-stage leaf at a faulting supervisor physical address",
-        None,
         _g_cases,
     ),
-    ("g_walk", "cp_g_pa", "A non-leaf G-stage PTE at a faulting supervisor physical address", None, _g_walk_cases),
-    ("pmp", "cp_pmp", "PMP denies the test page, then allows only reads", _PMP_GATE, _pmp_cases),
+    ("g_walk", "cp_g_pa", "A non-leaf G-stage PTE at a faulting supervisor physical address", _g_walk_cases),
 )
 
 
+def make_chunk(
+    test_data: TestData,
+    family: str,
+    g: SvMode,
+    vs: SvMode,
+    *,
+    covergroup: str,
+    home: str,
+    section: tuple[str, str, str, Callable[[TestData, Chunk, str], list[str]]],
+    setup: tuple[str, ...] = (),
+) -> TestChunk:
+    """One file of a section's cases from VS-mode and VU-mode, after ``setup``.
+
+    section is (file name, coverpoints, description, cases for one mode).  The CBOs are enabled in henvcfg and
+    senvcfg; boot enables them in menvcfg.
+    """
+    name, title, description, cases = section
+    tc = test_data.begin_test_chunk(f"{g.name}_{family}_{name}")
+    tc.section_header = comment_banner(title, f"{description}, for {', '.join(OPS[family])} from VS and VU")
+    chunk = Chunk(family, g, vs, covergroup, home, test_data.int_regs.get_register())
+    body = [
+        f"LI(x{chunk.gva}, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE)",
+        f"csrs henvcfg, x{chunk.gva}",
+        f"LI(x{chunk.gva}, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE)",
+        f"csrs senvcfg, x{chunk.gva}",
+        *setup,
+    ]
+    for mode in ("vs", "vu"):
+        body.extend(
+            [
+                *guest_translation_setup(test_data, g, vs, f"{mode.upper()}mode"),
+                *cases(test_data, chunk, mode),
+                *guest_translation_teardown(test_data),
+            ]
+        )
+    test_data.int_regs.return_register(chunk.gva)
+    tc.code.extend(body)
+    tc.raw_data.extend(_DATA_REGION)
+    return test_data.end_test_chunk()
+
+
 def _make_svhzicbo(test_data: TestData, g: SvMode, vs: SvMode, family: str) -> list[TestChunk]:
-    chunks = []
-    for name, title, description, gate, cases in _SECTIONS:
-        tc = test_data.begin_test_chunk(f"{g.name}_{family}_{name}")
-        tc.section_header = comment_banner(title, f"{description}, for {', '.join(_OPS[family])} from VS and VU")
-        c = _Chunk(family, g, vs, test_data.int_regs.get_register())
-        # Boot enables the CBOs in menvcfg and henvcfg; a boot to M-mode leaves senvcfg, which VU-mode uses, alone
-        body = [f"LI(x{c.gva}, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE)", f"csrs senvcfg, x{c.gva}"]
-        if name == "pmp":
-            body.extend([*napot_mask_defines(12), "RVTEST_PMP_SET_BACKGROUND x4"])
-        for mode in ("vs", "vu"):
-            body.extend(
-                [
-                    *guest_translation_setup(test_data, g, vs, f"{mode.upper()}mode"),
-                    *cases(test_data, c, mode),
-                    *guest_translation_teardown(test_data),
-                ]
-            )
-        test_data.int_regs.return_register(c.gva)
-        tc.code.extend([f"#if {gate}", *body, "#endif"] if gate else body)
-        tc.raw_data.extend(_DATA_REGION)
-        chunks.append(test_data.end_test_chunk())
-    return chunks
+    return [
+        make_chunk(test_data, family, g, vs, covergroup="SvHZicbo_cg", home="S", section=section)
+        for section in _SECTIONS
+    ]
 
 
 def _make_henvcfg(test_data: TestData, family: str) -> list[TestChunk]:
@@ -454,8 +441,8 @@ def _make_henvcfg(test_data: TestData, family: str) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvHZicbo",
-    required_extensions=["Sm", "H", "Zicbom"],
-    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["H", "Zicbom"],
+    extra_defines=["#define BOOT_TO_SMODE"],
     # VS and VU traps need the visible trap handler
     params=["TIME_CSR_IMPLEMENTED: true"],
 )
@@ -465,8 +452,8 @@ def make_svhzicbo_zicbom_henvcfg(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvHZicbo",
-    required_extensions=["Sm", "H", "Zicboz"],
-    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["H", "Zicboz"],
+    extra_defines=["#define BOOT_TO_SMODE"],
     # VS and VU traps need the visible trap handler
     params=["TIME_CSR_IMPLEMENTED: true"],
 )
@@ -476,8 +463,8 @@ def make_svhzicbo_zicboz_henvcfg(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvHZicbo",
-    required_extensions=["Sm", "H", "Zicbom"],
-    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["H", "Zicbom"],
+    extra_defines=["#define BOOT_TO_SMODE"],
     params=["TIME_CSR_IMPLEMENTED: true", "SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
 )
 def make_svhzicbo_sv39x4_zicbom(test_data: TestData) -> list[TestChunk]:
@@ -486,8 +473,8 @@ def make_svhzicbo_sv39x4_zicbom(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvHZicbo",
-    required_extensions=["Sm", "H", "Zicboz"],
-    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["H", "Zicboz"],
+    extra_defines=["#define BOOT_TO_SMODE"],
     params=["TIME_CSR_IMPLEMENTED: true", "SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
 )
 def make_svhzicbo_sv39x4_zicboz(test_data: TestData) -> list[TestChunk]:
@@ -496,8 +483,8 @@ def make_svhzicbo_sv39x4_zicboz(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvHZicbo",
-    required_extensions=["Sm", "H", "Zicbom"],
-    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["H", "Zicbom"],
+    extra_defines=["#define BOOT_TO_SMODE"],
     params=["TIME_CSR_IMPLEMENTED: true", "SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
 )
 def make_svhzicbo_sv32x4_zicbom(test_data: TestData) -> list[TestChunk]:
@@ -506,8 +493,8 @@ def make_svhzicbo_sv32x4_zicbom(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "SvHZicbo",
-    required_extensions=["Sm", "H", "Zicboz"],
-    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["H", "Zicboz"],
+    extra_defines=["#define BOOT_TO_SMODE"],
     params=["TIME_CSR_IMPLEMENTED: true", "SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
 )
 def make_svhzicbo_sv32x4_zicboz(test_data: TestData) -> list[TestChunk]:

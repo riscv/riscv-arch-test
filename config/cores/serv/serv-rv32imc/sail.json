@@ -10,7 +10,7 @@
       "value": "0x0"
     },
     // The top 29 bits control whether the corresponding bits of `scounteren`
-    // that control HPM counters are read-only zero. CV32E20 has no S-mode,
+    // that control HPM counters are read-only zero. SERV has no S-mode,
     // so all bits are read-only zero.
     "scounteren_writable_bits": {
       "len": 32,
@@ -296,16 +296,19 @@
     ]
   },
   "platform": {
-    "vendorid": 1538,
-    "archid": 36,
-    "impid": 256,
+    // SERV has no mvendorid, marchid or mimpid: it decodes only seven CSR addresses.  0 matches
+    // VENDOR_ID_BANK/VENDOR_ID_OFFSET, MARCHID_IMPLEMENTED and MIMPID_IMPLEMENTED in the UDB config.
+    //   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_decode.v#L168-L186
+    "vendorid": 0,
+    "archid": 0,
+    "impid": 0,
     "hartid": 0,
     // Cache block size, specified as a power of 2.
     "cache_block_size_exp": 6,
     "reservation": {
       // Reservation set size/alignment as a power of 2. Minimum 2 on RV32.
       "reservation_set_size_exp": 3,
-      // CV32E20 has no A extension so LR/SC is never executed.
+      // SERV has no A extension so LR/SC is never executed.
       "require_exact_reservation_addr": false,
       // Some implementations (e.g. SiFive U74) also invalidate the
       // reservation on stores from the same hart.  If this is set to `true`, the

@@ -6,14 +6,14 @@
     "writable_misa": false,
     "writable_fiom": true,
     // VeeR EH2 implements mhpmcounter3..6 / mhpmevent3..6 only (see HPM_COUNTER_EN in
-    // veer-eh1.yaml), so bits 3..6 are the only HPM counters that exist.
-    //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/docs/source/csr-address-map.md
+    // veer-eh2-rv32imac.yaml), so bits 3..6 are the only HPM counters that exist.
+    //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/docs/source/csrs.md#L192-L231
     "writable_hpm_counters": {
       "len": 32,
       "value": "0x0000_0078"
     },
     // The top 29 bits control whether the corresponding bits of `scounteren`
-    // that control HPM counters are read-only zero. CV32E20 has no S-mode,
+    // that control HPM counters are read-only zero. VeeR EH2 has no S-mode,
     // so all bits are read-only zero.
     "scounteren_writable_bits": {
       "len": 32,
@@ -47,7 +47,7 @@
     // 4-byte aligned (base_alignment 2) and both MODE=0 (Direct) and MODE=1 (Vectored)
     // are representable. Must agree with MTVEC_MODES and MTVEC_BASE_ALIGNMENT_* in the
     // UDB config.
-    //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/design/dec/dec_tlu_ctl.sv#L1145
+    //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/design/dec/eh2_dec_tlu_ctl.sv#L1253
     "mtvec": {
       "direct": {
         "supported": true,
@@ -181,8 +181,7 @@
     // checked before address translation. `misaligned_exceptions` in
     // `regions` is checked after address translation.
     "misaligned": {
-      // CV32E20 LSU handles misaligned loads/stores in hardware (splits into two
-      // aligned transactions). No alignment exception is ever raised.
+      // Misaligned loads and stores are handled per region in memory.regions.
       "exceptions": {
         "load_store": { "None": null },
         "vector": { "None": null },
@@ -220,7 +219,7 @@
           "writable": true,
           "read_idempotent": true,
           "write_idempotent": true,
-          // CV32E20 handles misaligned loads/stores in hardware; no per-region fault.
+          // Misaligned loads and stores to idempotent memory complete in hardware.
           "misaligned_exceptions": {
             "load_store": { "None": null },
             "vector": { "None": null },
@@ -239,7 +238,10 @@
       },
       // IO memory: the VeeR testbench console/termination mailbox at 0xD058_0000.
       // A byte store of 0xFF ends the simulation as TEST_PASSED, 0x01 as TEST_FAILED,
-      // and 0x06..0x7E are echoed to the console.
+      // and 0x06..0x7E are echoed to the console. RVMODEL_BOOT marks this region
+      // side-effect in mrac, and a misaligned access to a side-effect region raises
+      // an address-misaligned exception.
+      //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/design/lsu/eh2_lsu_addrcheck.sv#L222-L225
       {
         "base": {
           "len": 64,
@@ -259,7 +261,7 @@
           "read_idempotent": false,
           "write_idempotent": false,
           "misaligned_exceptions": {
-            "load_store": { "None": null },
+            "load_store": { "Some": "AlignmentException" },
             "vector": { "None": null },
             "amo": "AccessFault",
             "lrsc": "AccessFault"
@@ -286,7 +288,7 @@
     "reservation": {
       // Reservation set size/alignment as a power of 2. Minimum 2 on RV32.
       "reservation_set_size_exp": 3,
-      // CV32E20 has no A extension so LR/SC is never executed.
+      // LR/SC outside the DCCM raises an access fault, so no reservation is ever made.
       "require_exact_reservation_addr": false,
       // Some implementations (e.g. SiFive U74) also invalidate the
       // reservation on stores from the same hart.  If this is set to `true`, the
@@ -315,7 +317,9 @@
     },
     "clock_frequency": 1000000000,
     "instructions_per_tick": 2,
-    "wfi_is_nop": false,
+    // WFI decodes as an ALU no-op.
+    //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/docs/source/power.md#L750
+    "wfi_is_nop": true,
     // WFI is optionally available to User mode.  Note that even if
     // `wfi_is_nop` is set to `true` above, it will still not be
     // available to User mode unless `wfi_available_to_user_mode` is

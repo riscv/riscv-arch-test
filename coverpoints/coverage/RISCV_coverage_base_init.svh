@@ -18,10 +18,6 @@
         `cover_info("//      E - Enabled");
         `include "E_coverage_init.svh"
     `endif
-    `ifdef COVER_ENDIANH
-        `cover_info("//      EndianH - Enabled");
-        `include "EndianH_coverage_init.svh"
-    `endif
     `ifdef COVER_ENDIANS
         `cover_info("//      EndianS - Enabled");
         `include "EndianS_coverage_init.svh"

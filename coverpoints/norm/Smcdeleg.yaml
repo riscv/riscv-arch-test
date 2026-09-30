@@ -49,10 +49,10 @@ normative_rule_definitions:
     coverpoint: [""]
 
   - name: Ssccfg_illegal_scountinhibit_cde0
-    coverpoint: [""]
+    coverpoint: ["H_vscsr_cg/cp_scountinhibit_vs"]
 
   - name: Ssccfg_illegal_scountinhibit_vs_vu
-    coverpoint: [""]
+    coverpoint: ["H_vscsr_cg/cp_scountinhibit_vs"]
 
   - name: Ssccfg_virtual_scountovf_vs_vu
     coverpoint: [""]

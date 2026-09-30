@@ -61,8 +61,10 @@ S_REPLICATED_CSRS = [
 S_UNREPLICATED_CSRS = [
     HCsr("scounteren"),
     HCsr("senvcfg", gate="defined(S1P12P0_OR_LATER_SUPPORTED)"),
-    HCsr("scountinhibit", gate="defined(SSCCFG_SUPPORTED)"),
 ]
+# scountinhibit raises illegal instruction with menvcfg.CDE = 0, as boot leaves it, and virtual instruction in
+# VS-mode and VU-mode with CDE = 1
+SCOUNTINHIBIT = HCsr("scountinhibit", gate="defined(SSCCFG_SUPPORTED)")
 
 
 def _csr_trap_ops(test_data: TestData, csr: HCsr, covergroup: str, coverpoint: str) -> list[str]:
@@ -219,6 +221,19 @@ def _vs_csr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
         tc.code.extend(gated(csr_access_test(test_data, (csr.name, csr.mask), VS_CG, "cp_nonreplica"), csr.gate))
     tc.code.extend([*sstatus_sd_tests(test_data, VS_CG, "cp_vsstatus_sd_write", uxl=False), "RVTEST_TSBI_GOTO_SMODE"])
 
+    # TODO: also access scountinhibit with menvcfg.CDE = 1 (virtual instruction) once Sail implements menvcfg.CDE
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.section_header = comment_banner(
+        "cp_scountinhibit_vs", "In VS-mode, access scountinhibit with menvcfg.CDE = 0 (illegal instruction)"
+    )
+    tc.code.extend(
+        [
+            "RVTEST_TSBI_GOTO_VSMODE",
+            *_csr_trap_ops(test_data, SCOUNTINHIBIT, VS_CG, "cp_scountinhibit_vs"),
+            "RVTEST_TSBI_GOTO_SMODE",
+        ]
+    )
+
 
 def _user_csr_tests(test_data: TestData, test_chunks: list[TestChunk], mode: str) -> None:
     """Every H CSR and S CSR access traps from U-mode and VU-mode."""
@@ -236,7 +251,7 @@ def _user_csr_tests(test_data: TestData, test_chunks: list[TestChunk], mode: str
         tc.code.extend(_csr_trap_ops(test_data, csr, U_CG, coverpoint))
     for csr in H_UPPER_CSRS:
         tc.code.extend(_csr_trap_ops(test_data, csr, U_CG, "cp_illegalupper"))
-    for csr in [*S_REPLICATED_CSRS, *S_UNREPLICATED_CSRS]:
+    for csr in [*S_REPLICATED_CSRS, *S_UNREPLICATED_CSRS, SCOUNTINHIBIT]:
         tc.code.extend(_csr_trap_ops(test_data, csr, U_CG, "cp_scsr"))
     tc.code.append("RVTEST_TSBI_GOTO_SMODE")
 
@@ -244,7 +259,7 @@ def _user_csr_tests(test_data: TestData, test_chunks: list[TestChunk], mode: str
 def _xret_tests(test_data: TestData) -> list[str]:
     """Illegal mret and sret, and sret from HS-mode and VS-mode.
 
-    After each sret, a read of mscratch traps into HS-mode and the trap record shows the mode reached.
+    After each sret, a read of mscratch traps and the trap record shows the mode reached.
     """
     lines = [
         comment_banner("cp_mret_illegal, cp_sret_illegal", "Execute mret in HS, VS and VU modes and sret in VU-mode"),

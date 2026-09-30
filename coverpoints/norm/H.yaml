@@ -257,13 +257,17 @@ normative_rule_definitions:
   - name: vsepc_sz_acc_op
     coverpoint:
       [
-        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/vsepc",
+        "H_hscsr_cg/cp_hcsr_access/vsepc",
+        "H_hscsr_cg/{cp_vsepc_vaddr_walk1, cp_vsepc_vaddr_walk0, cp_vsepc_vaddr_pc, cp_vsepc_vaddr_scratch}",
         "H_vscsr_cg/cp_replica/sepc",
       ]
   # vsepc is a WARL register that must be able to hold the same set of values that sepc
   # can hold.
   - name: vsepc_warl
-    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/vsepc"]
+    coverpoint:
+      [
+        "H_hscsr_cg/{cp_vsepc_vaddr_walk1, cp_vsepc_vaddr_walk0, cp_vsepc_vaddr_pc, cp_vsepc_vaddr_scratch}",
+      ]
   # The vstval register is a VSXLEN-bit read/write register that is VS-mode’s version of
   # supervisor register stval, formatted as shown in . When V=1, vstval substitutes for
   # the usual stval, so instructions that normally read or modify stval actually access
@@ -271,13 +275,17 @@ normative_rule_definitions:
   - name: vstval_sz_acc_op
     coverpoint:
       [
-        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/vstval",
+        "H_hscsr_cg/cp_hcsr_access/vstval",
+        "H_hscsr_cg/{cp_vstval_vaddr_walk1, cp_vstval_vaddr_walk0, cp_vstval_vaddr_pc, cp_vstval_vaddr_scratch}",
         "H_vscsr_cg/cp_replica/stval",
       ]
   # vstval is a WARL register that must be able to hold the same set of values that stval
   # can hold.
   - name: vstval_warl
-    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/vstval"]
+    coverpoint:
+      [
+        "H_hscsr_cg/{cp_vstval_vaddr_walk1, cp_vstval_vaddr_walk0, cp_vstval_vaddr_pc, cp_vstval_vaddr_scratch}",
+      ]
   # The vsatp register is a VSXLEN-bit read/write register that is VS-mode’s version of
   # supervisor register satp, formatted as shown in for VSXLEN=32 and for VSXLEN=64. When
   # V=1, vsatp substitutes for the usual satp, so instructions that normally read or

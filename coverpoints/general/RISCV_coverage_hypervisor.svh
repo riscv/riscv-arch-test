@@ -35,4 +35,17 @@
     `endif
 `endif
 
+// H_VADDR_WALK_MSB: vsepc and vstval hold the same values as sepc and stval, so they must hold every canonical
+// virtual address.  Canonical addresses have bits XLEN-1:VALEN-1 equal, so bit VALEN-2 is the msb walked on its own
+// (31 for Sv32, where VALEN = XLEN), as VADDR_TIERS in PrivCommon.py.
+`ifdef SV57_SUPPORTED
+    `define H_VADDR_WALK_MSB 55
+`elsif SV48_SUPPORTED
+    `define H_VADDR_WALK_MSB 46
+`elsif SV39_SUPPORTED
+    `define H_VADDR_WALK_MSB 37
+`elsif SV32_SUPPORTED
+    `define H_VADDR_WALK_MSB 31
+`endif
+
 `endif // RISCV_COVERAGE_HYPERVISOR_SVH

@@ -9,8 +9,8 @@
 """HSm hypervisor extension test generator.
 
 The suite boots to M-mode and delegates nothing, so the M-mode handler takes every trap.  The
-mstatus.TVM tests run in lower modes but live here because the HS-mode trap handler reads satp,
-vsatp and hgatp, which trap in HS-mode when TVM = 1.
+mstatus.TVM tests run in lower modes but live here because the HS-mode trap handler accesses satp
+and hgatp, which trap in HS-mode when TVM = 1.
 """
 
 from testgen.asm.csr import gen_csr_read_sigupd
@@ -86,7 +86,7 @@ def _mtvala_tests(test_data: TestData) -> list[str]:
 
 
 def _tvm_tests(test_data: TestData) -> list[str]:
-    """satp/hgatp accesses and fences in each mode with mstatus.TVM and hstatus.VTVM."""
+    """satp, hgatp and vsatp accesses and fences in each mode with mstatus.TVM and hstatus.VTVM."""
     temp_reg, rd = test_data.int_regs.get_registers(2)
 
     def tvm_bits(tvm: int, vtvm: int | None = None) -> list[str]:
@@ -97,11 +97,15 @@ def _tvm_tests(test_data: TestData) -> list[str]:
         return lines
 
     lines = [
-        comment_banner("cp_tvm_hs", "Read and write satp and hgatp in HS-mode with mstatus.TVM = 0, 1.  TVM = 1 traps")
+        comment_banner(
+            "cp_tvm_hs",
+            "Read and write satp, hgatp and vsatp in HS-mode with mstatus.TVM = 0, 1.  TVM = 1 traps satp and\n"
+            "hgatp accesses but not vsatp accesses",
+        )
     ]
     for tvm in (0, 1):
         lines.extend([*tvm_bits(tvm), "RVTEST_TSBI_GOTO_SMODE"])
-        for csr in ("satp", "hgatp"):
+        for csr in ("satp", "hgatp", "vsatp"):
             lines.extend(
                 [
                     f"LI(x{rd}, 42)",

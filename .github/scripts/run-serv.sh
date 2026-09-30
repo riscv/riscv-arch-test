@@ -2,7 +2,7 @@
 # Copyright (c) 2026, Harvey Mudd College
 # SPDX-License-Identifier: Apache-2.0
 # Run one ACT self-checking ELF on SERV in the servant SoC under Verilator.
-# Usage: run-serv.sh [--snapshot DIR] [--timeout SEC] [--sim-timeout NS] [--keep] --elf <path>
+# Usage: run-serv.sh [--snapshot DIR] [--timeout SEC] [--sim-timeout TICKS] [--keep] --elf <path>
 # Env:   SERV_SNAPSHOT  directory holding obj/Vservant_sim (default: ~/repos/serv-builds/act)
 #        CROSS          toolchain prefix (default: riscv64-unknown-elf)
 set -uo pipefail
@@ -11,8 +11,9 @@ SNAPSHOT="${SERV_SNAPSHOT:-$HOME/repos/serv-builds/act}"
 CROSS="${CROSS:-riscv64-unknown-elf}"
 # Wall-clock limit in seconds.  SERV takes 32+ cycles per instruction.
 TIMEOUT=3600
-# Simulated-time limit in ns, passed as +timeout.
-SIM_TIMEOUT=4000000000
+# Simulated-time limit, passed as +timeout.  servant_tb reads it with atoi, so it must fit in
+# an int; at 62 time units per clock cycle this is about 32 M cycles.
+SIM_TIMEOUT=2000000000
 KEEP=0
 ELF=""
 

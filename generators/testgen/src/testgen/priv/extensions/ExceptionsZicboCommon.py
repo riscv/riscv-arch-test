@@ -14,6 +14,7 @@ from typing import NamedTuple
 
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call
+from testgen.data.random import random_int
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 
@@ -189,7 +190,9 @@ def cbo_henvcfg_helper(test_data: TestData, covergroup: str, field: str, *, mode
     senvcfg.  Runs from HS-mode, with vsatp and hgatp Bare; menvcfg is written through T-SBI.
 
     A field that menvcfg disables raises an illegal-instruction exception; otherwise one that henvcfg, or
-    senvcfg in VU-mode, disables raises a virtual-instruction exception (cmo.adoc, "CSR controls").
+    senvcfg in VU-mode, disables raises a virtual-instruction exception (cmo.adoc, "CSR controls").  When
+    cbo.inval is enabled and any of the CBIE fields is 01, it performs a flush (hypervisor.adoc, henvcfg CBIE),
+    so a load after it returns the data stored before it.
     """
     cfg = _CBO_FIELDS[field]
     width = len(cfg.bins[0])
@@ -218,12 +221,23 @@ def cbo_henvcfg_helper(test_data: TestData, covergroup: str, field: str, *, mode
                 )
         lines.append(f"RVTEST_TSBI_GOTO_{mode}MODE")
         tag = "_".join(f"{csr}.{field}{value}" for csr, value in zip(csrs, values, strict=True))
+        flush = field == "cbie" and "00" not in values and "01" in values
         for instr in cfg.instrs:
-            lines.extend(
-                _cbo_test(
-                    instr, f"{instr}_{tag}", f"cp_{field}_{mode.lower()}", covergroup, addr_reg, val_reg, test_data
+            name = f"{instr}_{tag}"
+            coverpoint = f"cp_{field}_{mode.lower()}"
+            if flush:
+                lines.extend(
+                    [
+                        f"LI(x{val_reg}, {random_int(32, signed=False):#x})",
+                        f"sw x{val_reg}, 0(x{addr_reg})",
+                        test_data.add_testcase(name, coverpoint, covergroup),
+                        f"{instr}    0(x{addr_reg})",
+                        f"lw x{val_reg}, 0(x{addr_reg})",
+                        write_sigupd(val_reg, test_data),
+                    ]
                 )
-            )
+            else:
+                lines.extend(_cbo_test(instr, name, coverpoint, covergroup, addr_reg, val_reg, test_data))
         lines.append("RVTEST_TSBI_GOTO_SMODE")
     lines.append(f"#endif // {cfg.guard}")
     test_data.int_regs.return_registers([addr_reg, cfg_reg, mask_reg, val_reg])

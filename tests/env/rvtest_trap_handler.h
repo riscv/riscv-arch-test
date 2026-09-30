@@ -2610,7 +2610,8 @@ skp_\__MODE__\()tval:
       .endif
         // Record a transformation of the trapping instruction (T6) as zero, which is always legal
         // (hypervisor.adoc tinst values; cmo.adoc for CBOs): loads, stores, AMOs, HLV/HSV and CBOs on
-        // causes 4-7, 13, 15, 21 and 23. Bits 1:0 = 01 mark a transformed compressed instruction.
+        // causes 4-7, 13, 15, 21 and 23. A compressed load or store is expanded, transformed, and
+        // has bit 1 cleared.
         LI(     T2, 0xA0A0F0)                        // causes 4-7, 13, 15, 21, 23
         srl     T2, T2, T5
         andi    T2, T2, 1
@@ -2618,9 +2619,75 @@ skp_\__MODE__\()tval:
         andi    T2, T6, 3
         addi    T2, T2, -3
         beqz    T2, 6f
-        andi    T2, T3, 3                            // compressed trapping instruction
-        addi    T2, T2, -1
-        bnez    T2, 7f                               // not a transformed compressed instruction
+        // Compressed: T2 = register number, T4 = c.funct3 (inst[15:13]) on the way to 12f
+        srli    T4, T6, 13
+        andi    T2, T6, 3                            // quadrant
+        beqz    T2, 10f
+        addi    T2, T2, -2
+        bnez    T2, 7f                               // quadrant 1 has no loads or stores
+        andi    T2, T4, 3
+        beqz    T2, 7f                               // c.funct3 000 or 100: not a load or store
+        andi    T2, T4, 4
+        bnez    T2, 11f
+        srli    T2, T6, 7                            // c.fldsp, c.lwsp, c.ldsp, c.flwsp: rd in 11:7
+        j       9f
+11:     srli    T2, T6, 2                            // c.fsdsp, c.swsp, c.sdsp, c.fswsp: rs2 in 6:2
+9:      andi    T2, T2, 0x1F
+        j       12f
+10:     beqz    T4, 7f                               // c.addi4spn
+        srli    T2, T6, 2
+        andi    T2, T2, 7
+        addi    T2, T2, 8                            // rd' or rs2' in 4:2
+        addi    T4, T4, -4
+        beqz    T4, 15f                              // Zcb loads and stores
+        addi    T4, T4, 4
+12:     andi    T6, T4, 4
+        bnez    T6, 16f
+        slli    T6, T2, 7                            // load: rd
+        j       17f
+16:     slli    T6, T2, 20                           // store: rs2
+        ori     T6, T6, 0x20                         // STORE or STORE-FP
+17:     andi    T4, T4, 3                            // c.funct3[1:0]
+        LI(     T2, 0x3005)                          // 1: FLD or FSD
+        addi    T4, T4, -1
+        beqz    T4, 13f
+        LI(     T2, 0x2001)                          // 2: LW or SW
+        addi    T4, T4, -1
+        beqz    T4, 13f
+  #if UDB_MXLEN == 64 || defined(ZCLSD_SUPPORTED)
+        LI(     T2, 0x3001)                          // 3: LD or SD
+  #else
+        LI(     T2, 0x2005)                          // 3: FLW or FSW
+  #endif
+        j       13f
+15:     srli    T4, T6, 10
+        andi    T4, T4, 7                            // inst[12:10]: 0 c.lbu, 1 c.lhu or c.lh, 2 c.sb, 3 c.sh
+        andi    T6, T6, 0x40                         // inst[6] = 1: c.lh
+        beqz    T4, 18f
+        addi    T4, T4, -1
+        beqz    T4, 19f
+        slli    T2, T2, 20                           // c.sb and c.sh: rs2'
+        addi    T4, T4, -1
+        mv      T6, T2
+        LI(     T2, 0x0021)                          // c.sb: SB
+        beqz    T4, 13f
+        addi    T4, T4, -1
+        bnez    T4, 7f                               // reserved
+        LI(     T2, 0x1021)                          // c.sh: SH
+        j       13f
+18:     slli    T6, T2, 7
+        LI(     T2, 0x4001)                          // c.lbu: LBU
+        j       13f
+19:     slli    T2, T2, 7
+        LI(     T4, 0x5001)                          // c.lhu: LHU
+        beqz    T6, 14f
+        LI(     T4, 0x1001)                          // c.lh: LH
+14:     mv      T6, T2
+        mv      T2, T4
+13:     or      T6, T6, T2                           // expected transformation, bit 1 cleared
+        LI(     T4, ~0xF8000)
+        and     T4, T4, T3                           // recorded value without Addr. Offset
+        bne     T4, T6, 7f
         j       8f
 6:      andi    T4, T6, 0x5B                         // LOAD, LOAD-FP, STORE and STORE-FP -> 0x03
         LI(     T2, 0x03)

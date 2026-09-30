@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copyright (c) 2026, Harvey Mudd College
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 # Set up the environment for Hazard3 after install / cache restore
 # Usage: setup-hazard3.sh <install-dir>
 

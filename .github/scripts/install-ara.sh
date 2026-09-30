@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copyright (c) 2026, Harvey Mudd College
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 # Install the CVA6 + Ara Verilator model for CI.
 # Usage: install-ara.sh <install-dir>
 # Cache key derives from sha256(this file); bump the pins below to invalidate.

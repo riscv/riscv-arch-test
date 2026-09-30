@@ -4,7 +4,9 @@
     "xlen": 32,
     "E": false,
     "writable_misa": false,
-    "writable_fiom": true,
+    // menvcfg reads as zero.
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L3002
+    "writable_fiom": false,
     // VeeR EL2 implements mhpmcounter3..6 / mhpmevent3..6 only (see HPM_COUNTER_EN in
     // veer-el2-rv32imc-u-pmp.yaml), so bits 3..6 are the only HPM counters that exist.
     //   Quote: "0xB03 ... mhpmcounter3" through "0xB06 ... mhpmcounter6"
@@ -26,10 +28,10 @@
     // modes, are read-only zero. A set bit specifies that the
     // corresponding bit of `mcounteren` is writable, otherwise the
     // bit is read-only zero.
-    // VeeR EL2 implements mcounteren in the U-mode build and makes CY (0), IR (2) and
-    // HPM3..HPM6 (6:3) writable; TM (1) is read-only zero because there is no time CSR.
-    //   Quote: "rvdffs #(6) mcounteren_ff (.*, ... .din({dec_csr_wrdata_r[6:2], dec_csr_wrdata_r[0]}))"
-    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv
+    // VeeR EL2 makes CY (0), IR (2) and HPM3..HPM6 (6:3) writable; TM (1) is read-only zero
+    // because there is no time CSR. MCOUNTENABLE_EN in the yaml marks only bits 3..6, because
+    // UDB requires bits 0..2 to be read-only zero without Zicntr.
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L2856
     "mcounteren_writable_bits": {
       "len": 32,
       "value": "0x0000_007D"
@@ -101,26 +103,26 @@
     // These settings control whether the specified exceptions
     // cause information to be written into the appropriate
     // `xtval` registers.
+    // mtval takes the PC for ebreak and fetch access faults, the encoding for illegal
+    // instructions, and the address for load/store misaligned and access faults.
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L1887-L1899
     "xtval_nonzero": {
-      // EL2 is INCONSISTENT here and no single value is right. It writes the faulting
-      // encoding into mtval for most illegal instructions, but leaves mtval 0 for an
-      // illegal CSR access (PMPU_csr_access-00 expected 0x3b021073 and got 0x0). Setting
-      // this false fixes that one test and breaks five Sm/U tests, so the majority
-      // behaviour is modelled here and the CSR case is recorded as a discrepancy.
+      // A U-mode CSR privilege violation (csr_acc_r) sets mtval to 0 instead, which this
+      // single flag cannot express.
       "illegal_instruction": true,
       "virtual_instruction": false,
       "load_guest_page_fault": false,
       "samo_guest_page_fault": false,
       "fetch_guest_page_fault": false,
-      "software_breakpoint": false,
+      "software_breakpoint": true,
       "hardware_breakpoint": false,
-      "load_address_misaligned": false,
+      "load_address_misaligned": true,
       "load_access_fault": true,
       "load_page_fault": false,
-      "samo_address_misaligned": false,
+      "samo_address_misaligned": true,
       "samo_access_fault": true,
       "samo_page_fault": false,
-      "fetch_address_misaligned": false,
+      "fetch_address_misaligned": true,
       "fetch_access_fault": true,
       "fetch_page_fault": false,
       "software_check": false,
@@ -167,6 +169,10 @@
       "fs_legal_states": "ExtContext_Off",
       "vs_legal_states": "ExtContext_Off"
     },
+    // The yaml declares Sm 1.11 because EL2 has no mstatush or mconfigptr, but Sail rejects
+    // more than 16 PMP entries before 1.12. EL2 implements the 1.12 CSRs menvcfg(h) and
+    // mseccfg(h) and all 64 PMP entries, so 1.12 is the closer model here.
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/csrdecode_mu#L79-L85
     "privileged_isa_version": "Privileged_ISA_1_12"
   },
   "memory": {
@@ -208,9 +214,8 @@
       "value": "0x1000"
     },
     "regions": [
-      // Main memory: code and data. VeeR EL2 boots from address 0 (the testbench
-      // hardcodes reset_vector = 32'h0), so ACT links the whole image into region 0.
-      // Must match RAM_ORIGIN/RAM_LENGTH in link.ld.
+      // Main memory: code and data, at the reset vector 0x8000_0000. Must match
+      // RAM_ORIGIN/RAM_LENGTH in link.ld.
       {
         "base": {
           "len": 64,
@@ -481,8 +486,11 @@
     "Zicond": {
       "supported": false
     },
+    // EL2 has mcycle, minstret, cycle and instret but no time CSR, so the yaml cannot claim
+    // Zicntr. Sail 0.14.1 makes mcycle(h) and minstret(h) accessible only with Zicntr
+    // (model/extensions/Zicntr/zicntr_control.sail:39), so it is enabled here to model them.
     "Zicntr": {
-      "supported": false
+      "supported": true
     },
     "Zicsr": {
       "supported": true
@@ -496,14 +504,9 @@
     "Zihintpause": {
       "supported": false
     },
-    // Zihpm provides the unprivileged hpmcounter3..31 shadows, and the M+U build of
-    // VeeR EL2 decodes hpmcounter3..6 and their high halves, so it is implemented in
-    // part. Which counters exist is carried by writable_hpm_counters above and by
-    // HPM_COUNTER_EN in veer-el2-rv32imc-u-pmp.yaml, which claims Zihpm for the same
-    // reason; the two must agree or the reference model traps on every access the
-    // Zihpm tests make.
-    //   Quote: "csr_hpmc3 ... csr_hpmc6" (and their high halves) in the M+U decode table
-    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/csrdecode_mu
+    // The M+U build decodes hpmcounter3..6 and their high halves; writable_hpm_counters
+    // above and HPM_COUNTER_EN in the yaml say which counters exist.
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/csrdecode_mu#L90-L97
     "Zihpm": {
       "supported": true
     },

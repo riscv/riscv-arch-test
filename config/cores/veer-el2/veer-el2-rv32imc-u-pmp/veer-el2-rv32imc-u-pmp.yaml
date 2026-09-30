@@ -25,9 +25,6 @@ description: CHIPS Alliance VeeR EL2 - RV32IMC with U-mode and 64 PMP entries
 # The bundled tests are built -march=rv32imc_zicsr_zifencei, confirming Zicsr and Zifencei.
 #   Quote: "ABI = -mabi=ilp32 -march=rv32imc_zicsr_zifencei"
 #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/tools/Makefile#L23
-# There is no A, no F/D, no bit-manipulation and no U-mode in EL2: configs/veer.config
-# contains no atomic_enable, bitmanip_* or user_mode knob, so this IS the maximum
-# feature set for this core.
 implemented_extensions:
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
@@ -49,18 +46,16 @@ implemented_extensions:
   #   mode only, so to enable user mode, use the `-set` option"
   #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/user-mode.md#L3
   - { name: U, version: "= 1.0.0" }
-  # VeeR EL2 implements privileged spec 1.11, not 1.12: mstatush, which 1.12 added, does
-  # not exist on this core, and ACT's trap handler correctly skips it for Sm < 1.12.
+  # Sm 1.11: EL2 has no mstatush or mconfigptr, which 1.12 requires, although it does
+  # implement the 1.12 menvcfg(h), mseccfg(h) and 64 PMP entries. sail.json uses 1.12
+  # because Sail rejects more than 16 PMP entries before 1.12.
   #   Quote: "The RISC-V Instruction Set Manual Volume II: Privileged Architecture |
   #   20190608-Priv-MSU-Ratified | Specification ratified"
   #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/intro.md
-  # (The 20211203 / 1.12 document is cited separately, but only as the reference for PMP.)
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/csrdecode_mu#L3-L99
   - { name: Sm, version: "= 1.11.0" }
 
 params:
-  # XLEN
-  # Quote: "VeeR EL2 is a machine-mode (M-mode) only, 32-bit CPU core"
-  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/overview.md
   MXLEN: 32
   # Quote (32-bit physical address space, 16 regions of 256 MB):
   #   "The VeeR EL2 core has a 32-bit address space which is divided into 16 fixed
@@ -96,23 +91,23 @@ params:
   TRAP_ON_EBREAK: true
   TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
   TRAP_ON_RESERVED_INSTRUCTION: true
-  # !VERIFIED - the PRM does not state what an access to an unimplemented CSR does.
-  # Set to true (the ordinary RISC-V behaviour) pending an RTL read of
-  # design/dec/dec_decode_ctl.sv; if wrong it shows up as a Zicsr discrepancy.
+  # A CSR instruction is legal only for a decoded CSR.
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L2919-L2922
   TRAP_ON_UNIMPLEMENTED_CSR: true
   TRAP_ON_ILLEGAL_WLRL: false
 
-  # MTVAL reporting. !VERIFIED for EL2 in detail: the PRM has no section enumerating
-  # which exceptions write mtval. These values follow the RISC-V defaults implemented
-  # by the TLU (design/dec/dec_tlu_ctl.sv); mismatches surface as Sm discrepancies.
-  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
+  # mtval takes the PC for ebreak and fetch access faults, the encoding for illegal
+  # instructions, and the address for load/store misaligned and access faults.
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L1887-L1899
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true
   REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
   REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true
   REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
   REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
-  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true # majority behaviour; EL2 leaves mtval 0 for illegal CSR accesses
+  # A U-mode CSR privilege violation (csr_acc_r) sets mtval to 0 instead.
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
   MTVAL_WIDTH: 32
 
   # Misaligned load/store: handled in hardware for ordinary (idempotent) memory.
@@ -148,8 +143,8 @@ params:
 
   # MTVEC. The TLU stores bits [31:2] and bit [0], dropping bit 1, so both Direct
   # (MODE=0) and Vectored (MODE=1) are representable and BASE is 4-byte aligned.
-  #   Quote: "assign mtvec_ns[30:0] = {dec_csr_wrdata_wb[31:2], dec_csr_wrdata_wb[0]} ;"
-  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/dec_tlu_ctl.sv#L1145
+  #   Quote: "assign mtvec_ns[30:0] = {dec_csr_wrdata_r[31:2], dec_csr_wrdata_r[0]} ;"
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L1692
   # Vectored mode is used by the PRM's own interrupt example.
   #   Quote: "trap_vector:            // Interrupt trap starts here when MTVEC[mode]=1"
   #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/external-interrupts.md#L963
@@ -190,11 +185,10 @@ params:
   # No PMA hardware: region attributes come from mrac, whose granularity is one
   # 256 MB region, but the natural access granule on the 64-bit AHB/AXI bus is 8 bytes.
   PMA_GRANULARITY: 3
-  # core implements 1.11, so UDB does not define the parameter for this config.
 
   # PMP: EL2 implements RISC-V PMP, configurable to 0, 16 or 64 entries; 64 is the
   # maximum and is what the RTL is built with (-set pmp_entries=64). OFF/TOR/NA4/NAPOT
-  # are all supported. Smepmp is available but deliberately not enabled or tested.
+  # are all supported. The build leaves Smepmp off.
   #   Quote: "OFF / TOR / NA4 / NAPOT"
   #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/physical-memory-protection.md
   # The granule is hardwired to G=0 (4-byte) in the RTL, not a config knob; UDB encodes

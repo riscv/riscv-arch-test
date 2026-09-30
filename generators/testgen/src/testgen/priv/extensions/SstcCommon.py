@@ -95,16 +95,29 @@ def access_cross(test_data: TestData, coverpoint: str, covergroup: str, mode: st
     return lines
 
 
-def wait_for_trap(count_reg: int, tmp_reg: int) -> list[str]:
-    """Wait until the trap handler has counted another trap, such as a timer interrupt armed to fire soon."""
-    return [
+def wait_for_trap(test_data: TestData) -> list[str]:
+    """Wait until the trap handler has counted another trap, such as a timer interrupt armed to fire soon.
+
+    The wait gives up after RVTEST_TIMER_INT_SOON_DELAY_CYCLES + RVMODEL_INTERRUPT_LATENCY iterations, each at
+    least one cycle, so a missing interrupt shows up as a trap signature mismatch instead of a hang.
+    """
+    count_reg, bound_reg, tmp_reg = test_data.int_regs.get_registers(3)
+    lines = [
         f"LA(x{count_reg}, rvtest_trap_count)",
         f"LREG x{count_reg}, 0(x{count_reg})",
+        f"LI(x{bound_reg}, RVTEST_TIMER_INT_SOON_DELAY_CYCLES)",
+        f"LA(x{tmp_reg}, RVMODEL_INTERRUPT_LATENCY)",
+        f"add x{bound_reg}, x{bound_reg}, x{tmp_reg}",
         "1:",
         f"LA(x{tmp_reg}, rvtest_trap_count)",
         f"LREG x{tmp_reg}, 0(x{tmp_reg})",
-        f"beq x{tmp_reg}, x{count_reg}, 1b",
+        f"bne x{tmp_reg}, x{count_reg}, 2f    # interrupt taken",
+        f"addi x{bound_reg}, x{bound_reg}, -1",
+        f"bnez x{bound_reg}, 1b",
+        "2:",
     ]
+    test_data.int_regs.return_registers([count_reg, bound_reg, tmp_reg])
+    return lines
 
 
 def vstimecmp_int_tests(test_data: TestData, covergroup: str, boot: str) -> list[str]:
@@ -114,7 +127,7 @@ def vstimecmp_int_tests(test_data: TestData, covergroup: str, boot: str) -> list
     the suite boots to HS-mode, else in VS-mode.
     """
     priv = "M" if boot == "machine" else "S"
-    tmp_reg, count_reg = test_data.int_regs.get_registers(2)
+    tmp_reg = test_data.int_regs.get_register()
     lines = [
         comment_banner(
             "cp_vstimecmp_int",
@@ -140,13 +153,13 @@ def vstimecmp_int_tests(test_data: TestData, covergroup: str, boot: str) -> list
                 test_data.add_testcase(f"hideleg{deleg}{'_soon' if soon else ''}", "cp_vstimecmp_int", covergroup),
                 f"RVTEST_SET_VSSTC_INT{'_SOON' if soon else ''}_{priv}",
                 *([] if in_hs else ["RVTEST_TSBI_GOTO_VSMODE"]),
-                *(wait_for_trap(count_reg, tmp_reg) if soon else [f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})"]),
+                *(wait_for_trap(test_data) if soon else [f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})"]),
                 "csrci sstatus, SSTATUS_SIE" if in_hs else f"RVTEST_TSBI_GOTO_{priv}MODE",
                 f"RVTEST_CLR_VSSTC_INT_{priv}",
             ]
         )
     lines.extend(["csrw hideleg, zero", "csrw hie, zero", *stce_tm(test_data, 0, 0, 1, 1, boot)])
-    test_data.int_regs.return_registers([tmp_reg, count_reg])
+    test_data.int_regs.return_register(tmp_reg)
     return lines
 
 

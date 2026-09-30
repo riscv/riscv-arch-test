@@ -35,10 +35,20 @@ def format_sc_type(
 
     retry_start, retry_end = lrsc_retry_loop(test_data.current_testcase_label, params.temp_reg, params.rd)
 
+    # A failed SC writes rd. When rd is also rs1 or rs2, keep a copy of that operand to restore before each retry.
+    save_reg = None
+    save, restore = [], []
+    if params.rd != 0 and params.rd in (params.rs1, params.rs2):
+        save_reg = test_data.int_regs.get_register(exclude_regs=[0])
+        save = [f"mv x{save_reg}, x{params.rd} # save x{params.rd}, which a failed SC overwrites"]
+        restore = [f"mv x{params.rd}, x{save_reg} # restore x{params.rd} before the LR"]
+
     setup = [
         load_int_reg("rs2", params.rs2, params.rs2val, test_data),
         f"LA(x{params.rs1}, scratch) # rs1 = base address",
+        *save,
         *retry_start,
+        *restore,
         f"{lr_insr} x0, (x{params.rs1}) # establish reservation",
     ]
 
@@ -50,6 +60,8 @@ def format_sc_type(
         f"LREG x{params.temp_reg}, 0(x{params.rs1}) # load stored value",
         write_sigupd(params.temp_reg, test_data),
     ]
+    if save_reg is not None:
+        test_data.int_regs.return_register(save_reg)
     return (setup, test, check)
 
 

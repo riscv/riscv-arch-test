@@ -3,7 +3,7 @@ normative_rule_definitions:
   - name: mcause_exccode_st_sc_amo
     coverpoint:
       [
-        "ExceptionsZalrsc_cg/{cp_store_access_fault,cp_store_address_misaligned_illegal_w}",
+        "ExceptionsZalrsc_cg/{cp_store_access_fault, cp_store_address_misaligned_illegal_w}",
       ]
 
   # No SC.W instruction shall retire unless it passes memory permission checks
@@ -22,13 +22,34 @@ normative_rule_definitions:
   - name: lr_sc_alignment
     coverpoint:
       [
-        "ExceptionsZalrsc_cg/{cp_load_address_misaligned,cp_store_address_misaligned}",
+        "ExceptionsZalrsc_cg/{cp_load_address_misaligned, cp_store_address_misaligned_illegal_w, cp_store_address_misaligned_illegal_d}",
+      ]
+
+  # LR/SC instructions are unaffected by this PMA and so always raise an exception when misaligned.
+  - name: pma_mag_op_rsrv
+    coverpoint:
+      [
+        "ExceptionsZalrsc_cg/{cp_load_address_misaligned, cp_store_address_misaligned_illegal_w, cp_store_address_misaligned_illegal_d}",
       ]
 
   # Naturally aligned loads and stores do not raise an address-misaligned
   # exception.
   - name: ldst_no_exc_aligned
+    # Aligned LR/SC; the rule is about base loads and stores, so this is a weak fit
     coverpoint:
       [
-        "ExceptionsZalrsc_cg/cp_{load_address_misaligned, store_address_misaligned_legal_w}",
+        "ExceptionsZalrsc_cg/{cp_load_address_misaligned, cp_store_address_misaligned_legal_w}",
+      ]
+
+  # Load and load-reserved instructions generate load exceptions.
+  - name: mcause_exccode_ld_ldrsv
+    coverpoint:
+      ["ExceptionsZalrsc_cg/{cp_load_address_misaligned, cp_load_access_fault}"]
+
+  # Load/store/AMO address-misaligned exceptions may have either higher or lower
+  # priority than load/store/AMO page-fault and access-fault exceptions.
+  - name: mcause_exccode_priority_misaligned
+    coverpoint:
+      [
+        "ExceptionsZalrsc_cg/{cp_load_access_misaligned_priority, cp_store_access_misaligned_priority}",
       ]

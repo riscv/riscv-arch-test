@@ -111,7 +111,7 @@ module testbench;
 
   // Sample an instruction from the trace file on each clock edge
   // Moves through full list of trace files
-  always_ff @(posedge clk) begin
+  always @(posedge clk) begin
     // Open trace file if needed
     if(traceFileHandler == 0) begin
       fileNum = 0;

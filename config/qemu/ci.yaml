@@ -32,7 +32,23 @@ ci_enabled: true
 #     (https://gitlab.com/qemu-project/qemu/-/work_items/4379)
 #  2. mtval is reported as 0 on the M-mode SSAMOSWAP access fault, disagreeing with
 #     the reference model (https://gitlab.com/qemu-project/qemu/-/work_items/4380)
+#  3. ssp bits [1:0] are writable (https://gitlab.com/qemu-project/qemu/-/issues/4621)
+#  4. sspush and ssamoswap write RW/RWX pages and page-fault on X/RX pages
+#     (https://gitlab.com/qemu-project/qemu/-/issues/4622)
+#  5. sspopchk from a PMP read-only region does not fault
+#     (https://gitlab.com/qemu-project/qemu/-/issues/4623)
+#  6. cbo.clean/flush/inval to a shadow stack page execute once the page is in the TLB
+#     (https://gitlab.com/qemu-project/qemu/-/issues/4624)
 exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,ZicfissU,ZicfissS,ZicfissSm,ZicfissV"
+# qemu-rv32-mu, qemu-rv64-mu: U-mode cbo.zero/clean/flush/inval raise illegal-instruction without S-mode
+#   because check_zicbo_envcfg() also requires senvcfg, which does not exist
+#   (https://gitlab.com/qemu-project/qemu/-/work_items/4596)
+# qemu-rv64-m, qemu-rv64-mu: mstatus.SXL/UXL read as 64-bit when S/U are not implemented
+#   (https://gitlab.com/qemu-project/qemu/-/work_items/4456)
+exclude_configs:
+  - qemu-rv32-mu
+  - qemu-rv64-m
+  - qemu-rv64-mu
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"
 shards: 1

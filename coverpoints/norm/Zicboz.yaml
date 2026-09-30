@@ -23,7 +23,9 @@ normative_rule_definitions:
 
   # It is not required that rs1 is aligned to the size of a cache block.
   - name: cbo-zero_unaligned
-    coverpoint: ["Zicboz_cbo_zero_cg/cp_custom_cbo"]
+    # cp_custom_cbo testcases use rs1 at offsets 0 and 255; cp_zic64b samples rs1 offsets 0 to 64
+    coverpoint:
+      ["Zicboz_cbo_zero_cg/cp_custom_cbo", "Zic64bZicboz_cg/cp_zic64b"]
 
   # These instructions operate on the cache block, or the memory locations
   # corresponding to the cache block, whose effective address is specified in rs1.

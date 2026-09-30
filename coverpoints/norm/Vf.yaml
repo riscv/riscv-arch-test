@@ -1,3 +1,88 @@
 # Mapping of normative rules to coverpoints for a test suite
+#
+# Vf exercises the vector floating-point test suite. General V-extension state is homed in
+# Vx.yaml; the entries below are normative rules specific to vector floating-point
+# instruction behavior.
 
 normative_rule_definitions:
+  # The destination mask vector register may be the same as the source vector mask register
+  # (v0).
+  - name: vmfeq_vmfne_vmflt_vmfle_vmfgt_vmfge_vd_eq_v0
+    coverpoint: ["SsstrictV_vmfeq_vv_cg/cp_ssstrictv_masking_vd_eq_v0"]
+
+  # vmflt, vmfle, vmfgt, and vmfge raise the invalid operation exception on both signaling
+  # and quiet NaN inputs.
+  - name: vmflt_vmfle_vmfgt_vmfge_sqnan_invalid
+    coverpoint: ["Vf16_vmflt_vv_cg/cp_custom_vfp_flags_nv"]
+
+  # vmfne writes 1 to the destination element when either operand is NaN,
+  - name: vmfne_vdval1_nan
+    coverpoint: ["Vf16_vmfeq_vv_cg/cp_custom_vfp_NaN_input"]
+
+  # whereas the other compares write 0 when either operand is NaN.
+  - name: vmfeq_vmflt_vmfle_vmfgt_vmfge_vdval0_nan
+    coverpoint: ["Vf16_vmfeq_vv_cg/cp_custom_vfp_NaN_input"]
+
+  # The instruction must have the vs2 field set to v0, with all other values for vs2
+  # reserved.
+  - name: vfmv_vs2_nv0_rsv
+    coverpoint: ["SsstrictV_vfmv_v_f_cg/cp_ssstrictv_vfmv_vs2_not_v0_reserved"]
+
+  # The encodings corresponding to the masked versions (vm=0) of vfmv.f.s and vfmv.s.f are
+  # reserved.
+  - name: vfmv-s-f_masked_rsv
+    coverpoint: ["SsstrictV_vfmv_s_f_cg/cp_ssstrictv_vfmv_fs_sf_vm0_reserved"]
+
+  # The V extension depends upon the F and D extensions, and implements all vector floating-
+  # point instructions (<<sec-vector-float>>) for floating-point operands with EEW=32 or
+  # EEW=64 (including widening instructions and conversions between FP32 and FP64). Vector
+  # single-width floating-point reductions (<<sec-vector-float-reduce>>) for EEW=32 and
+  # EEW=64 are supported as well as widening reductions from FP32 to FP64.
+  - name: V_dependent_F_D
+    coverpoint:
+      [
+        "Implicit: the F and D dependency is satisfied by the configuration under test; the vector floating-point tests cannot run without it",
+      ]
+
+  # Vector floating-point instructions require the presence of base scalar floating-point
+  # extensions corresponding to the supported vector floating-point element widths.
+  - name: vf_requires_vx
+    coverpoint:
+      [
+        "Implicit: the vector floating-point tests cannot run unless the scalar floating-point extensions are present",
+      ]
+
+  # Vector single-width floating-point reductions for EEW=32 and EEW=64 are supported as well as
+  # widening reductions from FP32 to FP64.
+  - name: V_fp_reductions
+    # Representative coverpoints; also the Vf32/Vf64 vfredusum, vfredmax and vfredmin covergroups
+    coverpoint:
+      [
+        "Vf32_vfredosum_vs_cg/cp_asm_count",
+        "Vf64_vfredosum_vs_cg/cp_asm_count",
+        "Vf32_vfwredosum_vs_cg/cp_asm_count",
+        "Vf32_vfwredusum_vs_cg/cp_asm_count",
+      ]
+
+  # Zve32f supports all vector floating-point permutation instructions for floating-point operands
+  # with EEW=32.
+  - name: Zve32f_instr_perm
+    coverpoint:
+      [
+        "Vf32_vfmv_f_s_cg/cp_asm_count",
+        "Vf32_vfmv_s_f_cg/cp_asm_count",
+        "Vf32_vfslide1up_vf_cg/cp_asm_count",
+        "Vf32_vfslide1down_vf_cg/cp_asm_count",
+      ]
+
+  # Zve64d supports all vector floating-point permutation instructions for floating-point operands
+  # with EEW=32 or EEW=64.
+  - name: Zve64d_instr_perm
+    # Representative coverpoints; EEW=32: the Vf32 covergroups cited for Zve32f_instr_perm
+    coverpoint:
+      [
+        "Vf64_vfmv_f_s_cg/cp_asm_count",
+        "Vf64_vfmv_s_f_cg/cp_asm_count",
+        "Vf64_vfslide1up_vf_cg/cp_asm_count",
+        "Vf64_vfslide1down_vf_cg/cp_asm_count",
+      ]

@@ -6,7 +6,13 @@ normative_rule_definitions:
   # address translation does not permit any access or raises a store access-fault
   # exception otherwise.
   - name: cbm_unperm_fault
-    coverpoint: ["PMPZicbo_cg/cp_cbo_{inval, flush, clean}"]
+    coverpoint: ["PMPZicbo_cg/{cp_cbo_inval, cp_cbo_flush, cp_cbo_clean}"]
+
+  # The permissions required for a cache-block management instruction to access a PMP region are
+  # defined in the CMO chapter; when such access is not permitted, the instruction raises a store
+  # access-fault exception.
+  - name: pmp_cbm_fault
+    coverpoint: ["PMPZicbo_cg/{cp_cbo_inval, cp_cbo_flush, cp_cbo_clean}"]
 
   # If access to the cache block is not permitted, a cache-block zero instruction
   # raises a store page-fault or store guest-page-fault exception if address
@@ -19,4 +25,30 @@ normative_rule_definitions:
   # instruction does not raise any exceptions and shall not access any caches or
   # memory.
   - name: cbp_unperm_noexcep
-    coverpoint: ["PMPZicbo_cg/cp_prefetch_{w, r, i}"]
+    coverpoint: ["PMPZicbo_cg/{cp_prefetch_w, cp_prefetch_r, cp_prefetch_i}"]
+
+  # A cache-block management instruction is permitted to access the specified cache
+  # block whenever a load instruction or store instruction is permitted to access the
+  # corresponding physical addresses.
+  - name: cbm_access
+    coverpoint: ["PMPZicbo_cg/{cp_cbo_clean, cp_cbo_flush, cp_cbo_inval}"]
+
+  # A cache-block zero instruction is permitted to access the specified cache block
+  # whenever a store instruction is permitted to access the corresponding physical
+  # addresses and when the PMAs indicate that cache-block zero instructions are a
+  # supported access type.
+  - name: cbz_access
+    coverpoint: ["PMPZicbo_cg/cp_cbo_zero"]
+
+  # Attempting to execute a store, store-conditional, AMO, or cache-block zero
+  # instruction which accesses a physical address within a PMP region without write
+  # permissions raises a store access-fault exception.
+  - name: pmp_store_fault
+    coverpoint: ["PMPZicbo_cg/cp_cbo_zero"]
+
+  # When a page-fault, guest-page-fault, or access-fault exception is taken, the
+  # relevant *tval CSR is written with the faulting effective address (i.e. the value
+  # of rs1).
+  - name: fault_excep_csr
+    # rs1 is always block-aligned here, so a DUT that reports the block address also passes
+    coverpoint: ["PMPZicbo_cg/{cp_cbo_zero, cp_cbo_clean}"]

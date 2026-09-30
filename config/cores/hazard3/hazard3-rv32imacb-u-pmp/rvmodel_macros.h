@@ -133,7 +133,9 @@
 #   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/test/sim/tb_common/tb_memio.cpp#L167-L171
 #define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
 
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
+# From U-mode, RVTEST_SET_MTIME_INT_SOON_U makes several T-SBI calls of about 900 cycles
+# each, and the interrupt must not fire before the last one returns.
+#define RVMODEL_TIMER_INT_SOON_DELAY 5000
 
 # Hazard3 has no time/timeh CSR, but the testbench provides the standard 64-bit RISC-V
 # machine timer as a memory-mapped mtime/mtimecmp pair, so ACT emulates time reads from

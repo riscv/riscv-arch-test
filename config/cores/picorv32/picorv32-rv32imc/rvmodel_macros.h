@@ -36,8 +36,8 @@
 //#define RVMODEL_BOOT_TO_MMODE
 
 # Address to use for load/store fault tests that should cause an access fault on the DUT.
-// PicoRV32 generates no access faults: the AXI testbench answers every in-range
-// address and $finishes on an out-of-range one. Leave undefined so they are not tested.
+// Undefined: PicoRV32 has no exceptions, and the testbench ends the simulation on
+// an out-of-range access.
 //#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
 
 ##### TERMINATION #####
@@ -97,26 +97,9 @@
 
 ##### Interrupt Latency #####
 
-// PicoRV32 takes no standard interrupts at all, and is built here with
-// ENABLE_IRQ=0, so nothing in the interrupt family is reachable. These are
+// PicoRV32 is built with ENABLE_IRQ=0 and has no standard interrupts. These are
 // required by tests/env/check_defines.h even when unused.
 #define RVMODEL_INTERRUPT_LATENCY 10
-
-##### Machine Timer #####
-
-// No mtime and no mtimecmp exist anywhere in the picorv32 testbench, so
-// RVMODEL_MTIME_ADDRESS is left undefined and timer interrupts are not tested.
-#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
 #define RVMODEL_TIMER_INT_SOON_DELAY 10000
-
-##### Machine Interrupts #####
-
-// The testbench's only interrupt stimulus is two free-running cycle counters
-// driving irq[4] and irq[5]; there is no software-controllable interrupt path.
-// https://github.com/YosysHQ/picorv32/blob/ef203c2b0a3fb793280f5114941416c425c5b461/testbench.v#L79-L87
-#define RVMODEL_SET_MEXT_INT(_R1, _R2)
-#define RVMODEL_CLR_MEXT_INT(_R1, _R2)
-#define RVMODEL_SET_MSW_INT(_R1, _R2)
-#define RVMODEL_CLR_MSW_INT(_R1, _R2)
 
 #endif // _RVMODEL_MACROS_H

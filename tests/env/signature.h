@@ -66,6 +66,7 @@
 // failedtest_trap_x7_x9 in case of a mismatch.
 // On failure, x6/T1 carries the actual value, DEFAULT_TEMP_REG carries the
 // expected value, x7/T2 is the link register, and x9/T4 is scratch.
+// Used only inside RVTEST_TRAP_HANDLER, whose __MODE__ selects RVTEST_TRAP_FAIL_LEAVE.
 // If not in Self Check mode, just store signatures to the trap signature region
 #ifdef RVTEST_SELFCHECK
   #define TRAP_SIGUPD(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR)    \
@@ -73,6 +74,7 @@
     beq  _TMPREG, _R, 2f                                        ;\
     mv   T1, _R                                                 ;\
     mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
+    RVTEST_TRAP_FAIL_LEAVE \__MODE__                            ;\
     jal  T2, failedtest_trap_x7_x9                              ;\
     RVTEST_WORD_PTR _INST_PTR                                   ;\
     RVTEST_WORD_PTR _STR_PTR                                    ;\
@@ -84,6 +86,7 @@
     beq  x0, x0, 2f                                             ;\
     mv   T1, _R                                                 ;\
     mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
+    RVTEST_TRAP_FAIL_LEAVE \__MODE__                            ;\
     jal  T2, failedtest_trap_x7_x9                              ;\
     RVTEST_WORD_PTR _INST_PTR                                   ;\
     RVTEST_WORD_PTR _STR_PTR                                    ;\

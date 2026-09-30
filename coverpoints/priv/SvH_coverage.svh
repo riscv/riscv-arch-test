@@ -272,6 +272,9 @@ covergroup SvH_twostage_cg with function sample(ins_t ins);
     guest_page_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], ins.current.csr[CSR_SCAUSE][4:0]} {
         bins guest_page_fault  = {6'b110100, 6'b110101, 6'b110111};
     }
+    page_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], ins.current.csr[CSR_SCAUSE][4:0]} {
+        bins page_fault = {6'b101100, 6'b101101, 6'b101111};
+    }
     // A page fault delegated to VS-mode
     vs_page_fault : coverpoint {ins.current.csr_wb[CSR_VSCAUSE], ins.current.csr[CSR_VSCAUSE][4:0]} {
         bins page_fault = {6'b101100, 6'b101101, 6'b101111};
@@ -317,6 +320,36 @@ covergroup SvH_twostage_cg with function sample(ins_t ins);
                 bins page15 = {15};
             }
         `endif
+        // A guest virtual address whose bits 63 down to the VS-stage mode's top address bit are not all equal
+        va_noncanonical : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+            `ifdef UDB_SV39_VSMODE_TRANSLATION
+                `ifdef UDB_SV39X4_TRANSLATION
+                    bins sv39 = {8} iff (ins.current.rs1_val[63:38] != 0 && ins.current.rs1_val[63:38] != '1);
+                `endif
+            `endif
+            `ifdef UDB_SV48_VSMODE_TRANSLATION
+                `ifdef UDB_SV48X4_TRANSLATION
+                    bins sv48 = {9} iff (ins.current.rs1_val[63:47] != 0 && ins.current.rs1_val[63:47] != '1);
+                `endif
+            `endif
+            `ifdef UDB_SV57_VSMODE_TRANSLATION
+                `ifdef UDB_SV57X4_TRANSLATION
+                    bins sv57 = {10} iff (ins.current.rs1_val[63:56] != 0 && ins.current.rs1_val[63:56] != '1);
+                `endif
+            `endif
+        }
+        // A guest-page fault on a guest physical address above the G-stage mode's width: htval holds it shifted
+        // right by 2, so bits 63:39 (Sv39x4) or 63:48 (Sv48x4) of htval are not all zero.  A VS-stage PPN reaches
+        // guest physical address bit 55 at most, which is within Sv57x4.
+        htval_gpa_wide : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")
+                         iff (ins.current.csr_wb[CSR_HTVAL]) {
+            `ifdef UDB_SV39X4_TRANSLATION
+                bins sv39x4 = {8} iff (ins.current.csr[CSR_HTVAL][63:39] != 0);
+            `endif
+            `ifdef UDB_SV48X4_TRANSLATION
+                bins sv48x4 = {9} iff (ins.current.csr[CSR_HTVAL][63:48] != 0);
+            `endif
+        }
     `else
         menvcfg_adue : coverpoint ins.current.csr[CSR_MENVCFGH][29] {
             bins off = {0};
@@ -355,6 +388,10 @@ covergroup SvH_twostage_cg with function sample(ins_t ins);
         `ifdef SVNAPOT_SUPPORTED
             cp_twostage_napot   : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, napot_page;
         `endif
+        // A non-canonical guest virtual address raises a page fault, not a guest-page fault
+        cp_twostage_canonical : cross priv_mode_vs_vu, access, va_noncanonical, page_fault;
+        // A guest physical address from a VS-stage leaf or non-leaf PPN that is wider than the G-stage mode allows
+        cp_twostage_gpa_width : cross priv_mode_vs, access, vsatp_paged, htval_gpa_wide, guest_page_fault;
     `else
         // Sv32x4 translates 34-bit guest physical addresses
         cp_hgatp_sv32x4_gpa : cross priv_mode_vs, lw, vsatp_paged, hgatp_paged, htval_gpa_high;

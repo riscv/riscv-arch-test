@@ -882,6 +882,94 @@ def _t_hedeleg(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs:
     test_chunks.append(test_data.end_test_chunk())
 
 
+def _t_canonical(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode, mode: str) -> None:
+    """A guest virtual address that is not sign-extended from the VS-stage mode's top bit page-faults."""
+    width = address_width(vs)
+    chunk = begin_chunk(
+        test_data,
+        f"{g.name}_canonical_{mode.lower()}",
+        "cp_twostage_canonical",
+        f"In {mode}-mode with vsatp = {vs.extension} and hgatp = {g.extension}, store, load and fetch at the mapped\n"
+        f"guest virtual address with bit {width} set, and with bits 63-{width} set.  Bit {width - 1} is clear, so\n"
+        "both addresses are non-canonical and raise page faults, not guest-page faults",
+        stages=(g, vs),
+    )
+    base = int(vs.data_va, 16)
+    upper = ((1 << 64) - 1) ^ ((1 << width) - 1)
+    code = [
+        *guest_chunk_setup(test_data, g, vs, mode),
+        *map_test_page(test_data, g, vs, vs_flags=PteFlags(user=mode == "VU")),
+    ]
+    for name, va in ((f"bit{width}", base | 1 << width), (f"bits63_{width}", base | upper)):
+        code.extend(guest_access(test_data, TWO_CG, "cp_twostage_canonical", name, mode, hex(va)))
+    chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
+    test_chunks.append(test_data.end_test_chunk())
+
+
+def _t_gpa_wide(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode) -> None:
+    """A VS-stage PPN that makes a guest physical address wider than the G-stage mode allows guest-page-faults."""
+    width = address_width(g)
+    chunk = begin_chunk(
+        test_data,
+        f"{g.name}_gpa_wide",
+        "cp_twostage_gpa_width",
+        f"In VS-mode, store, load and fetch through a VS-stage leaf whose PPN sets guest physical address bit {width}\n"
+        "or 55, and through a VS-stage level-1 PTE that points to the leaf table at such an address.  Guest physical\n"
+        f"address bits {width}-63 must be zero for {g.extension}, so each access raises a guest-page fault.  A hart\n"
+        "that drops the high bits reaches a valid G-stage leaf instead",
+        stages=(g, vs),
+    )
+    va = vs.data_va
+    code = guest_chunk_setup(test_data, g, vs, "VS")
+    for bit in (width, 55):
+        high = 1 << bit
+        table, pte, addr, tmp = test_data.int_regs.get_registers(4)
+        regs = (pte, addr, tmp)
+        g_leaf = create_page_mapping(
+            g, leaf_level=0, leaf_flags=G_LEAF, virtual_address=g.data_va, physical_address="svh_page", regs=regs
+        )
+        leaf_setup = [
+            *create_page_mapping(
+                vs,
+                leaf_level=0,
+                leaf_flags=PteFlags(),
+                virtual_address=va,
+                physical_address=hex(int(g.data_va, 16) | high),
+                regs=regs,
+                pa_is_label=False,
+            ),
+            *g_leaf,
+            "hfence.vvma",
+            "hfence.gvma",
+        ]
+        table_setup = [
+            *create_page_walk(vs, leaf_level=1, virtual_address=va, regs=regs),
+            f"LA(x{table}, rvtest_vlvl0_pg_tbl)",
+            f"LI(x{tmp}, {high:#x})",
+            f"or x{table}, x{table}, x{tmp}",
+            *write_pte(
+                vs, level=1, flags=PteFlags.nonleaf(), virtual_address=va, physical_address="", regs=regs, pa_reg=table
+            ),
+            *write_pte(
+                vs,
+                level=0,
+                flags=PteFlags(),
+                virtual_address=va,
+                physical_address=g.data_va,
+                regs=regs,
+                pa_is_label=False,
+            ),
+            *g_leaf,
+            "hfence.vvma",
+            "hfence.gvma",
+        ]
+        test_data.int_regs.return_registers([table, *regs])
+        for name, setup in ((f"leaf_bit{bit}", leaf_setup), (f"table_bit{bit}", table_setup)):
+            code.extend(guest_access(test_data, TWO_CG, "cp_twostage_gpa_width", name, "VS", va, setup=setup))
+    chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
+    test_chunks.append(test_data.end_test_chunk())
+
+
 ###########################
 # HLV, HLVX and HSV in HS-mode
 ###########################
@@ -1268,6 +1356,12 @@ def _two_stage_tests(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChu
     _t_hlv(test_data, test_chunks, g, vs)
     if g.xlen == 32:
         _t_sv32x4_gpa(test_data, test_chunks, g, vs)
+        return test_chunks
+    for mode in ("VS", "VU"):
+        _t_canonical(test_data, test_chunks, g, vs, mode)
+    # A VS-stage PPN reaches guest physical address bit 55, beyond Sv39x4 and Sv48x4 but not Sv57x4
+    if address_width(g) <= 55:
+        _t_gpa_wide(test_data, test_chunks, g, vs)
     return test_chunks
 
 

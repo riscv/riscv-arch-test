@@ -36,9 +36,10 @@ normative_rule_definitions:
       [
         "SvH_gstage_cg/cp_hgatp_gpa_width",
         "SvH_twostage_cg/cp_hgatp_sv32x4_gpa",
+        "SvH_twostage_cg/cp_twostage_gpa_width",
       ]
   # Each G-stage mode walks its tables with the Sv algorithm for permissions, every leaf level and A/D bits, and
-  # faults on guest physical address bits above its width
+  # faults on guest physical address bits above its width, including bits that a VS-stage PPN sets
   - names: [hgatp_mode_sv39x4, hgatp_mode_sv48x4, hgatp_mode_Sv57x4]
     coverpoint:
       [
@@ -46,6 +47,7 @@ normative_rule_definitions:
         "SvH_gstage_cg/cp_hgatp_adue",
         "SvH_twostage_cg/cp_twostage_perm",
         "SvH_gstage_cg/cp_hgatp_gpa_width",
+        "SvH_twostage_cg/cp_twostage_gpa_width",
       ]
   - names: [hgatp_mode_sv32x4]
     coverpoint: ["SvH_twostage_cg/cp_hgatp_sv32x4_gpa"]
@@ -111,6 +113,11 @@ normative_rule_definitions:
         "SvH_gstage_cg/cp_hgatp_mxr",
         "SvH_twostage_cg/cp_twostage_mxr",
       ]
+
+  # Under a VS-stage Sv39, Sv48 or Sv57 vsatp, a non-canonical guest virtual address raises a page fault, not a
+  # guest-page fault
+  - names: [Sv39_va_signext, Sv48_va_signext, Sv57_va_signext]
+    coverpoint: ["SvH_twostage_cg/cp_twostage_canonical"]
 
   # vsstatus.SUM in VS-mode
   - name: vsstatus_sz_acc_op

@@ -129,17 +129,8 @@
 
 ##### Supervisor Interrupts #####
 
-# The CLINT's supervisor software interrupt register, which reaches sip.SSIP while
-# mxstatus.CLINTEE is set.
-#define C910_SSIP_ADDRESS (CLINT_BASE_ADDRESS + 0xC000)
-
-#define RVMODEL_SET_SSW_INT(_R1, _R2) \
-  li _R1, 1                          ;\
-  li _R2, C910_SSIP_ADDRESS          ;\
-  sw _R1, 0(_R2)                     ;
-
-#define RVMODEL_CLR_SSW_INT(_R1, _R2) \
-  li _R2, C910_SSIP_ADDRESS          ;\
-  sw x0, 0(_R2)                      ;
+# RVMODEL_SET/CLR_SSW_INT are undefined, so the framework raises SSI through mip.SSIP.
+# The CLINT's SSIP register rejects writes from U-mode.
+#   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/clint/rtl/ct_clint_func.v#L216-L217
 
 #endif // _RVMODEL_MACROS_H

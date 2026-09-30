@@ -191,13 +191,11 @@ params:
   #   Quote: "soft_int | in | Standard RISC-V software interrupt (async)" /
   #   "timer_int | in | Standard RISC-V timer interrupt (async)"
   #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/complex-ports.md#L53-L58
-  # Testbench: tb_top drives all three lines from mailbox writes (0x83/0x84/0x85/0x86), but
-  # it has no mtime/mtimecmp and rvmodel_macros.h leaves the interrupt macros as stubs, so
-  # ACT does not yet raise any of these interrupts on this config.
-  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/testbench/tb_top.sv#L878-L891
-  # ACT reads {MEI,MTI,MSI}_INTR_IMPL as the machine interrupts the platform can raise
-  # (tests/env/check_defines.h), so each is true only where rvmodel_macros.h can raise it.
-  MEI_INTR_IMPL: false
+  # {MEI,MSI,MTI}_INTR_IMPL say which machine interrupts the platform can raise. The testbench
+  # holds an external interrupt source high until told to lower it, which rvmodel_macros.h
+  # uses. It only pulses the soft and timer lines for one cycle, and it has no mtimecmp.
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/testbench/tb_top.sv#L825-L898
+  MEI_INTR_IMPL: true
   MSI_INTR_IMPL: false
   MTI_INTR_IMPL: false
   # No PMA hardware: region attributes come from mrac, whose granularity is one

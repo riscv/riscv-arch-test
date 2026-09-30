@@ -36,14 +36,6 @@ implemented_extensions:
   #   Quote: "wire co_dbus_en    = ~opcode[2] & ~opcode[4];"
   #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_decode.v#L88
   - { name: Zifencei, version: "= 2.0" }
-  # The same path runs pause (fm=0, pred=W, succ=0, rs1=x0) as a byte load from address 16 that
-  # writes no register.  c.add expands to add, and the register file drops writes to x0, so
-  # ntl.* and c.ntl.* are no-ops.
-  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_decode.v#L124-L127
-  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_compdec.v#L203-L205
-  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_rf_if.v#L62
-  - { name: Zihintntl, version: "= 1.0.0" }
-  - { name: Zihintpause, version: "= 2.0.0" }
   # Sm 1.11.0, NOT 1.12.0.  mstatush arrived in priv 1.12 and SERV has no mstatush: CSR address
   # bits 25:23 and 19:12 are not decoded, so 0x310 (mstatush) decodes as 0x300 (mstatus) and a
   # read or write of mstatush silently hits mstatus.  ACT guards every mstatush access behind

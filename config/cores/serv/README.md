@@ -5,9 +5,9 @@ SERV in its `servant` reference SoC under the stock Verilator testbench, pinned 
 `f200eb2e`. The RTL is built with `width=1`, `compressed=1`, `with_csr=1`, `MDU=1` and
 `memsize=8388608`, and is not patched.
 
-| Config         | ISA                                          | Modes |
-| -------------- | -------------------------------------------- | ----- |
-| `serv-rv32imc` | RV32IMC_Zicsr_Zifencei_Zihintntl_Zihintpause | M     |
+| Config         | ISA                    | Modes |
+| -------------- | ---------------------- | ----- |
+| `serv-rv32imc` | RV32IMC_Zicsr_Zifencei | M     |
 
 SERV implements privileged specification 1.11.
 

@@ -12,7 +12,11 @@ normative_rule_definitions:
 
   - name: Zabha_rs1_align_addr
     coverpoint:
-      ["Zabha_amoswap_b_cg/cp_align_byte, Zabha_amoswap_h_cg/cp_align_hword"]
+      [
+        "Zabha_amoswap_b_cg/cp_align_byte",
+        "Zabha_amoswap_h_cg/cp_align_hword",
+        "ExceptionsZaamo_cg/cp_amo_address_misaligned",
+      ]
 
   # For each level of support, naturally aligned AMOs of a given width are supported if the underlying
   # memory region supports reads and writes of that width.

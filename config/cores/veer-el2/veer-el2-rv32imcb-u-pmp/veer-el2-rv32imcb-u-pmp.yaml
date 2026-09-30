@@ -123,7 +123,7 @@ params:
 
   # Misaligned load/store: handled in hardware for ordinary (idempotent) memory.
   #   Quote: "The core performs a misalignment check during the address calculation."
-  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/memory-map.md#L355
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/memory-map.md#L342
   # Known deviation, accepted for this configuration: misaligned accesses to
   # side-effect regions raise a misaligned exception where the priv spec recommends an
   # access fault.
@@ -131,7 +131,7 @@ params:
   #   to regions with potential side-effects should trigger an access fault exception,
   #   instead of a misaligned exception ... Note that VeeR EL2 triggers a misaligned
   #   exception in this case."
-  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/memory-map.md#L1060
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/memory-map.md#L437
   MISALIGNED_LDST: true
   MISALIGNED_LDST_EXCEPTION_PRIORITY: low
   MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0 # no A extension in EL2
@@ -158,7 +158,7 @@ params:
   #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L1692
   # Vectored mode is used by the PRM's own interrupt example.
   #   Quote: "trap_vector:            // Interrupt trap starts here when MTVEC[mode]=1"
-  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/external-interrupts.md#L963
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/interrupts.md#L1044
   MTVEC_MODES: [0, 1]
   MTVEC_ACCESS: rw
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom # bit 1 of a write is discarded, not retained

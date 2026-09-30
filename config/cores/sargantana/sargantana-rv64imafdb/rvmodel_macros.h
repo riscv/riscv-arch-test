@@ -1,7 +1,7 @@
 // rvmodel_macros.h
 // RVMODEL macro definitions for the BSC Sargantana core tile (bsc-loca/core_tile @ 2528e7df)
 // Copyright (c) 2026, Harvey Mudd College
-// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
@@ -144,14 +144,9 @@
 // is still required to assemble.
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
-// Machine and Supervisor Interrupts //
+// Supervisor Interrupts //
 
-// There is no interrupt controller, so the machine-level macros are empty (MEI_INTR_IMPL and
-// MSI_INTR_IMPL are false).  RVMODEL_SET/CLR_SEXT_INT are left undefined so that ACT raises the
-// supervisor external interrupt through mip.SEIP.
-#define RVMODEL_SET_MEXT_INT(_R1, _R2)
-#define RVMODEL_CLR_MEXT_INT(_R1, _R2)
-#define RVMODEL_SET_MSW_INT(_R1, _R2)
-#define RVMODEL_CLR_MSW_INT(_R1, _R2)
+// There is no interrupt controller, so RVMODEL_SET/CLR_SEXT_INT and RVMODEL_SET/CLR_SSW_INT are
+// left undefined and ACT raises the supervisor interrupts through mip.SEIP and mip.SSIP.
 
 #endif // _RVMODEL_MACROS_H

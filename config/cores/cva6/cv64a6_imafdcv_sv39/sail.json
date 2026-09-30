@@ -80,9 +80,10 @@
       "direct": {
         "supported": true
       },
+      // Vectored interrupts replace base bits 7:2 with the cause, as for mtvec.
       "vectored": {
         "supported": true,
-        "base_alignment": 2
+        "base_alignment": 8
       }
     },
     "vstvec": {
@@ -254,8 +255,7 @@
         },
         // Similarly, a misaligned AMO and LR/SC can be configured with the same
         // option values.
-        // CVA6 raises a misaligned exception for an unaligned atomic.  On this SoC
-        // atomics never reach memory at all - see atomic_support on the DRAM region.
+        // CVA6 raises a misaligned exception for an unaligned atomic.
         "amo": {
           "Some": "AlignmentException"
         },
@@ -373,15 +373,13 @@
             "amo": "AlignmentException",
             "lrsc": "AlignmentException"
           },
-          // AMONone: an axi_atop_filter sits in front of the L2, so no AXI atomic
-          // ever reaches memory.  Quote: "// The L2 memory does not support atomics"
-          // https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_soc.sv#L191
-          // The DUT does not fault on an AMO, it silently drops it; the Zaamo/Zalrsc
-          // suites are excluded in ci.yaml.
-          "atomic_support": "AMONone",
+          // Atomics are modeled as CVA6 performs them.  The Ara L2 cannot execute them
+          // (it sits behind an axi_atop_filter and has no exclusive monitor), so the
+          // Zaamo and Zalrsc suites are excluded in ci.yaml.
+          "atomic_support": "AMOArithmetic",
           "misaligned_atomicity_granule_size_exp": 0,
           "vector_misaligned_atomicity_granule_size_exp": 0,
-          "reservability": "RsrvNone",
+          "reservability": "RsrvEventual",
           "supports_cbo_zero": false,
           "supports_pte_read": true,
           "supports_pte_write": true
@@ -497,12 +495,14 @@
       // the reservation set.
       "invalidate_on_same_hart_store": false
     },
-    // ara_system.sv ties irq_i, ipi_i, time_irq_i and debug_req_i all to zero, so no
-    // interrupt can ever be delivered.  Measured: mip reads 0 with mie all ones.
+    // mie.MSIE/MTIE/MEIE are writable; ara_system.sv ties their pins to zero.
+    //   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1591-L1597
+    // The timer is declared unsupported: Sail drives mip.MTIP from its CLINT, whose
+    // mtimecmp resets to 0, so MTIP would read 1 where the DUT reads 0.
     "interrupts": {
       "machine": {
-        "software": { "supported": false },
-        "external": { "supported": false },
+        "software": { "supported": true },
+        "external": { "supported": true },
         "timer": { "supported": false }
       }
     },
@@ -537,7 +537,9 @@
     // `wfi_is_nop` is set to `true` above, it will still not be
     // available to User mode unless `wfi_available_to_user_mode` is
     // also `true`.
-    "wfi_available_to_user_mode": true,
+    // WFI in U-mode always raises an illegal-instruction exception.
+    //   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/decoder.sv#L281-L286
+    "wfi_available_to_user_mode": false,
     // The maximum increment in the time CSR before a wait instruction
     // (e.g. WFI, WRS.NTO, WRS.STO) that is not a NOP expires its
     // wait. It is not possible to wait indefinitely.
@@ -633,11 +635,12 @@
     },
     "S": {
       "supported": true,
-      // Every interrupt source is tied off in ara_system.sv, S-mode included.
+      // SSIP, STIP and SEIP are writable in mip, mie and mideleg.
+      //   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1661-L1664
       "interrupts": {
-        "software": { "supported": false },
-        "external": { "supported": false },
-        "timer": { "supported": false }
+        "software": { "supported": true },
+        "external": { "supported": true },
+        "timer": { "supported": true }
       }
     },
     "U": {
@@ -695,7 +698,7 @@
       "supported": true
     },
     "Zicclsm": {
-      "supported": true
+      "supported": false
     },
     "Ziccrse": {
       "supported": false
@@ -709,8 +712,11 @@
     "Zicond": {
       "supported": false
     },
+    // Sail makes mcycle and minstret accessible only with Zicntr.  CVA6 implements them,
+    // and cycle and instret, but not time, so UDB does not declare Zicntr.  No test
+    // selected for this configuration reads time.
     "Zicntr": {
-      "supported": false
+      "supported": true
     },
     "Zicsr": {
       "supported": true

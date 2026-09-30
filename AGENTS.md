@@ -68,7 +68,6 @@
 
 - `test_config.yaml` references the UDB configuration, linker script, DUT include directory, compiler, and reference model. Paths are relative to `test_config.yaml`.
 - Audit every field copied from another DUT. The UDB configuration, `sail.json`, linker script, and DUT behavior must agree. For example, mismatched `mtvec` modes or alignment can break trap-handler setup.
-- Use a nonzero `TEST_BASE`. If a DUT starts at address zero, use a runner boot stub to jump to the test image.
 - Keep `.text.rvmodel` after `.data` in linker scripts. Otherwise, DUT and reference-model ELFs can assign different addresses to test data. If the ELF base changes, update the memory map in `sail.json`.
 - `run_cmd.txt` contains one command. `run_tests.py` appends the ELF path. Use `{debug:...}` for debug-only arguments, `__TRACEFILE__` for a separate trace, and `__SUMMARYFILE__` for redirected console summaries.
 - CI discovers matrices from `config/*/ci.yaml` and `run_cmd.txt`. Run `make tests` before `.github/scripts/ci_config.py` because generated tests determine shard weights.

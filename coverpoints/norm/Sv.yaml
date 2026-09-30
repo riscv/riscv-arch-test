@@ -15,10 +15,11 @@ normative_rule_definitions:
   # when executing in U-mode. Note that S-mode can never execute instructions from user
   # pages, regardless of the state of SUM.
   - name: sstatus_sum
+    # Representative coverpoints; also cp_upage_smode_sumunset_nowrite_s and cp_upage_smode_sumset_write_s
     coverpoint:
       [
-        "Sv_vm_permissions_cg/cp_upage_smode_sumunset_{noexec,noread,nowrite}_s",
-        "Sv_vm_permissions_cg/cp_upage_smode_sumset_{noexec,read,write}_s",
+        "Sv_vm_permissions_cg/{cp_upage_smode_sumunset_noread_s, cp_upage_smode_sumunset_noexec_s}",
+        "Sv_vm_permissions_cg/{cp_upage_smode_sumset_read_s, cp_upage_smode_sumset_noexec_s}",
       ]
 
   # The satp CSR is an SXLEN-bit read/write register, formatted as shown in for SXLEN=32
@@ -91,11 +92,11 @@ normative_rule_definitions:
   # U-mode. Executions of the address-translation algorithm may only begin using a given
   # value of satp when satp is active.
   - name: satp_op_active
+    # Representative coverpoints; also the other cp_spage_*_s and cp_upage_umode_*_u crosses and cp_mprv_store
     coverpoint:
       [
-        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
-        "Sv_vm_permissions_cg/cp_upage_umode_{read,write,exec}_u",
-        "SvSm_mstatus_mprv_cg/cp_mprv_{load,store}",
+        "Sv_vm_permissions_cg/{cp_spage_read_s_d, cp_spage_exec_s_i, cp_upage_umode_read_u}",
+        "SvSm_mstatus_mprv_cg/cp_mprv_load",
       ]
 
   # Note that writing satp does not imply any ordering constraints between page-table
@@ -136,7 +137,7 @@ normative_rule_definitions:
   # SFENCE.VMA orders only the local hart’s implicit references to the memory-management
   # data structures.
   - name: sfence_vma_local_only
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint: ["Not tested: needs more than one hart"]
 
   # If rs1=x0 and rs2=x0, the fence orders all reads and writes made to any level of the
   # page tables, for all address spaces. The fence also invalidates all address-
@@ -149,8 +150,10 @@ normative_rule_definitions:
   # Accesses to global mappings (see <<translation>>) are not ordered. The fence also
   # invalidates all address-translation cache entries matching the address space
   # identified by integer register rs2, except for entries containing global mappings.
+  # Needs a PTE change between the accesses: the global_pte test runs SFENCE.VMA x0, ASID but
+  # leaves the PTE unchanged, so the access succeeds whatever the fence does.
   - name: sfence_vma_asid_only
-    coverpoint: ["Sv_res_global_pte_cg/cp_global_{read,write,exec}_{s,u}"]
+    coverpoint: [""]
 
   # If rs1{ne}x0 and rs2=x0, the fence orders only reads and writes made to leaf page
   # table entries corresponding to the virtual address in rs1, for all address spaces.
@@ -234,7 +237,7 @@ normative_rule_definitions:
   # to that hart. In particular, the meaning of an ASID is local to a hart; software may
   # choose to use the same ASID to refer to different address spaces on different harts.
   - name: asid_hart_private
-    coverpoint: ["Not tested in single-hart configurations"]
+    coverpoint: ["Not tested: needs more than one hart"]
 
   # The 20-bit VPN is translated into a 22-bit physical page number (PPN) for Sv32.
   - name: satp_ppn_Sv32_sz
@@ -323,7 +326,7 @@ normative_rule_definitions:
 
   # All harts in a system must employ the same PTE-update scheme as each other.
   - name: pte_ad_scheme_uniform
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint: ["Not tested: needs more than one hart"]
 
   # For implementations with both page-based virtual memory and the A standard extension,
   # the LR/SC reservation set must lie completely within a single base physical page
@@ -374,19 +377,21 @@ normative_rule_definitions:
 
   # must have bits 63–39 all equal to bit 38, or else a page-fault exception will occur
   - name: Sv39_va_signext
-    coverpoint: ["Sv_vm_permissions_cg/cp_canonical_{read,write,exec}_{s,u}"]
+    # Representative coverpoints; also cp_canonical_{read,write,exec}_u
+    coverpoint: ["Sv_vm_permissions_cg/cp_canonical_{read,write,exec}_s"]
 
   # Any level of PTE may be a leaf PTE
   - names: [Sv39_leaf_any_level, Sv39_page_sizes]
+    # The cp_spage crosses include PageType, which has a bin for each leaf level
     coverpoint:
       [
         "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
-        "Sv_vm_permissions_cg/PageType_{i,d}",
       ]
 
   # must be virtually and physically aligned to a boundary equal to its size
   - names: [Sv39_superpage_align, Sv39_superpage_align_fault]
-    coverpoint: ["Sv_vm_permissions_cg/cp_misaligned_{exec,read,write}_{s,u}"]
+    # Representative coverpoints; also cp_misaligned_{exec,read,write}_u
+    coverpoint: ["Sv_vm_permissions_cg/cp_misaligned_{exec,read,write}_s"]
 
   # Sv39 page tables contain 2^9^ page table entries (PTEs), eight bytes each.
   - name: Sv39_pte_count_sz
@@ -467,78 +472,88 @@ normative_rule_definitions:
 
   # must have bits 63–48 all equal to bit 47, or else a page-fault exception will occur
   - name: Sv48_va_signext
-    coverpoint: ["Sv_vm_permissions_cg/cp_canonical_{read,write,exec}_{s,u}"]
+    # Representative coverpoints; also cp_canonical_{read,write,exec}_u
+    coverpoint: ["Sv_vm_permissions_cg/cp_canonical_{read,write,exec}_s"]
 
   # Any level of PTE may be a leaf PTE
   - names: [Sv48_leaf_any_level, Sv48_page_sizes]
+    # The cp_spage crosses include PageType, which has a bin for each leaf level
     coverpoint:
       [
         "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
-        "Sv_vm_permissions_cg/PageType_{i,d}",
       ]
 
   # must be virtually and physically aligned to a boundary equal to its size
   - names: [Sv48_superpage_align, Sv48_superpage_align_fault]
-    coverpoint: ["Sv_vm_permissions_cg/cp_misaligned_{exec,read,write}_{s,u}"]
+    # Representative coverpoints; also cp_misaligned_{exec,read,write}_u
+    coverpoint: ["Sv_vm_permissions_cg/cp_misaligned_{exec,read,write}_s"]
 
   # Implementations that support Sv48 must also support Sv39
   - name: Sv48_requires_Sv39
     coverpoint:
       ["Not tested: extension dependency checked by the UDB configuration"]
 
+  # PageType_*, canonical_page_* and misaligned_PPN_* have no Sv57 bins, so the Sv57 tests
+  # do not reach the cp_spage, cp_canonical and cp_misaligned crosses. The Sv57 rules use
+  # crosses keyed on satp.MODE instead.
   # This section describes a simple paged virtual-memory system designed for RV64 systems,
   # which supports 57-bit virtual address spaces.
   - name: Sv57_sxlen_va_sz
     coverpoint:
       [
-        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+        "Sv_VA_cg/{cp_VA_i_mode, cp_VA_d_mode}",
+        "Sv_add_feature_cg/{cp_read_nofault, cp_exec_nofault}",
       ]
   # 45-bit VPN
   - name: Sv57_vpn_sz
     coverpoint:
       [
-        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+        "Sv_VA_cg/{cp_VA_i_mode, cp_VA_d_mode}",
+        "Sv_add_feature_cg/{cp_read_nofault, cp_exec_nofault}",
       ]
   # 44-bit PPN
   - name: satp_ppn_Sv57_sz
     coverpoint:
       [
-        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+        "Sv_VA_cg/{cp_VA_i_mode, cp_VA_d_mode}",
+        "Sv_add_feature_cg/{cp_read_nofault, cp_exec_nofault}",
       ]
   # five-level page table
   - name: Sv57_levels
     coverpoint:
       [
-        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+        "Sv_VA_cg/{cp_VA_i_mode, cp_VA_d_mode}",
+        "Sv_add_feature_cg/{cp_read_nofault, cp_exec_nofault}",
       ]
   # 12-bit page offset is untranslated
   - name: Sv57_page_offset_sz
     coverpoint:
       [
-        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+        "Sv_VA_cg/{cp_VA_i_mode, cp_VA_d_mode}",
+        "Sv_add_feature_cg/{cp_read_nofault, cp_exec_nofault}",
       ]
   # PTESIZE equals 8
   - name: Sv57_ptesize
     coverpoint:
       [
-        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
+        "Sv_VA_cg/{cp_VA_i_mode, cp_VA_d_mode}",
+        "Sv_add_feature_cg/{cp_read_nofault, cp_exec_nofault}",
       ]
 
   # must have bits 63–57 all equal to bit 56, or else a page-fault exception will occur
+  # Needs Sv57 bins in canonical_page_{i,d}; the Sv57 canonical tests run but no cross records them.
   - name: Sv57_va_signext
-    coverpoint: ["Sv_vm_permissions_cg/cp_canonical_{read,write,exec}_{s,u}"]
+    coverpoint: [""]
 
   # Any level of PTE may be a leaf PTE
+  # Needs Sv57 bins in PageType_{i,d}; the Sv57 superpage tests run but no cross records the leaf level.
   - names: [Sv57_leaf_any_level, Sv57_page_sizes]
-    coverpoint:
-      [
-        "Sv_vm_permissions_cg/{cp_spage_read_s_d,cp_spage_write_s_d,cp_spage_exec_s_i}",
-        "Sv_vm_permissions_cg/PageType_{i,d}",
-      ]
+    coverpoint: [""]
 
   # must be virtually and physically aligned to a boundary equal to its size
+  # Needs Sv57 bins in misaligned_PPN_{i,d}; the Sv57 misaligned-superpage tests run but no cross records them.
   - names: [Sv57_superpage_align, Sv57_superpage_align_fault]
-    coverpoint: ["Sv_vm_permissions_cg/cp_misaligned_{exec,read,write}_{s,u}"]
+    coverpoint: [""]
 
   # Implementations that support Sv57 must also support Sv48
   - name: Sv57_requires_Sv48
@@ -548,11 +563,11 @@ normative_rule_definitions:
   # If stval is written with a nonzero value when a breakpoint, address-misaligned,
   # access-fault, page-fault, or hardware-error exception occurs on an instruction
   # fetch, load, or store, then stval will contain the faulting virtual address.
+  # The trap signature records stval.
   - name: stval_op_faulting_addr
     coverpoint:
       [
-        "Sv_vm_permissions_cg/{load_page_fault,store_page_fault,ins_page_fault}",
-        "stval is checked by the trap signature",
+        "Sv_vm_permissions_cg/{cp_spage_noread_s_d, cp_spage_nowrite_s_d, cp_spage_noexec_s_i}",
       ]
 
   # The csr::[mxr] and csr::[sum] mechanisms only affect the interpretation of

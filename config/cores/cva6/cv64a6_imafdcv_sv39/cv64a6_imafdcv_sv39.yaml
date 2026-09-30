@@ -70,6 +70,14 @@ implemented_extensions:
   - { name: Zbkb, version: "= 1.0.0" }
   - { name: Zbkc, version: "= 1.0.0" }
 
+  # Zihintntl and Zihintpause: the hints execute as no-ops.  ntl.* is add x0, x0, rs2 and
+  # c.ntl.* is c.add x0, rs2, both decoded as an ADD to x0; pause is a FENCE, which CVA6
+  # decodes regardless of its pred/succ fields.
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/compressed_decoder.sv#L844-L845
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/decoder.sv#L457-L460
+  - { name: Zihintntl, version: "= 1.0.0" }
+  - { name: Zihintpause, version: "= 2.0.0" }
+
   # Instruction fetches and page-table walks both read the cacheable, coherent L2.
   - { name: Ziccif, version: "= 1.0.0" }
   - { name: Ssccptr, version: "= 1.0.0" }

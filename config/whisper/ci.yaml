@@ -5,13 +5,14 @@
 # SsstrictSm: Sail does not implement the Smaia/Ssaia, Smcsrind, Smrnmi and Sdtrig CSRs that whisper implements (no issue filed)
 # Smstateen: Sail does not yet support the P1P13 bit (no issue filed)
 # SdtrigSm, SdtrigS, SdtrigU: Sdtrig is not yet implemented in Sail (https://github.com/riscv/sail-riscv/issues/222)
-# ExceptionsZc: on RV32 with H, whisper writes htinst/mtinst for a faulting c.fsw with rs1 and rs2 swapped (TODO: file issue)
-# SsstateenH, SmstateenH (TODO: file issue): on RV32, VS-mode reads of hstateen0h succeed instead of raising
-#     virtual instruction, VU-mode reads of hedelegh with mstateen0.P1P13 = 1 raise illegal instead of virtual
-#     instruction, and the reserved bit 53 of hstateen0 is writable
+# ExceptionsZc: on RV32 with H, whisper writes htinst/mtinst for a faulting c.fsw with rs1 and rs2 swapped
+#   (https://github.com/tenstorrent/whisper/issues/83)
+# SsstateenH, SmstateenH: on RV32, VS-mode reads of hstateen0h succeed instead of raising virtual instruction
+#   (https://github.com/tenstorrent/whisper/issues/84); the pinned whisper also makes the reserved bit 53 of
+#   hstateen0 writable, fixed upstream by 656b8edd
 # ZicfilpH: SRET executed in VS-mode takes the landing pad enable of the new mode from hstatus.SPV, so an SRET
 #   to VS-mode with hstatus.SPV = 0 uses menvcfg.LPE instead of henvcfg.LPE and does not restore ELP from
-#   vsstatus.SPELP (execSret in Hart.cpp). TODO: file issue
+#   vsstatus.SPELP (https://github.com/tenstorrent/whisper/issues/85)
 ci_enabled: true
 exclude_extensions: "SsstrictSm,Smstateen,SdtrigSm,SdtrigS,SdtrigU,ExceptionsZc,SsstateenH,SmstateenH,ZicfilpH"
 exclude_configs:

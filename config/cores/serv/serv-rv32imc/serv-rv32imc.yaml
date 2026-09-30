@@ -175,9 +175,8 @@ params:
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
 
   # No counters at all.  mcycle, minstret, mhpmcounter* and mcountinhibit are not decoded:
-  # 0xB00/0xB02 and 0x320 all collapse onto mstatus or mtvec.  Declaring every HPM counter
-  # absent is what keeps ACT's boot from writing mcountinhibit and mhpmevent3..31, each of
-  # which would otherwise land on mstatus or mtvec and destroy the trap vector.
+  # 0xB00/0xB02 and 0x320 all collapse onto mstatus or mtvec.
+  # MCOUNTINHIBIT_IMPLEMENTED: false keeps the tests from writing mcountinhibit onto mstatus.
   HPM_COUNTER_EN:
     [
       false,

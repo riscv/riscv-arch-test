@@ -77,16 +77,17 @@
         "base_alignment": 2
       }
     },
+    // No S-mode, so nothing is delegatable.
     "medeleg": {
       "delegatable_bits": {
         "len": 64,
-        "value": "0x0000_0000_000c_b3FF"
+        "value": "0x0"
       }
     },
     "mideleg": {
       "delegatable_bits": {
         "len": "xlen",
-        "value": "0x0000_2222"
+        "value": "0x0"
       }
     },
     // These settings control whether the specified exceptions
@@ -154,7 +155,7 @@
       "fs_legal_states": "ExtContext_Off",
       "vs_legal_states": "ExtContext_Off"
     },
-    "privileged_isa_version": "Privileged_ISA_1_12"
+    "privileged_isa_version": "Privileged_ISA_1_11"
   },
   "memory": {
     "physaddr_bits": 32,
@@ -298,11 +299,12 @@
       // the reservation set.
       "invalidate_on_same_hart_store": false
     },
+    // PicoRV32 has no mie or mip.
     "interrupts": {
       "machine": {
-        "software": { "supported": true },
-        "external": { "supported": true },
-        "timer": { "supported": true }
+        "software": { "supported": false },
+        "external": { "supported": false },
+        "timer": { "supported": false }
       }
     },
     "clint": {
@@ -397,9 +399,9 @@
     "S": {
       "supported": false,
       "interrupts": {
-        "software": { "supported": true },
-        "external": { "supported": true },
-        "timer": { "supported": true }
+        "software": { "supported": false },
+        "external": { "supported": false },
+        "timer": { "supported": false }
       }
     },
     "U": {

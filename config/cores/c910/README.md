@@ -13,20 +13,16 @@ out-of-order application-class core. The configuration runs the `smart_run/` SoC
 | --------------- | ---------- | ---------------------- |
 | `c910-openc910` | RV64IMAFDC | M + S + U, Sv39, 8 PMP |
 
-- Privileged specification 1.10: `mconfigptr`, `menvcfg`, `mseccfg`, `mtinst`, `mtval2` and
-  `mstatush` are absent; `mcountinhibit` is present. `Sm`/`S` are declared at 1.11.0, the lowest
-  UDB offers.
-- PMP: 8 entries, 4 KB granule. 16 hardware performance counters.
-- `Zba`/`Zbb`/`Zbs`/`Zicbom`/`Zicboz` are not claimed: C910's bit-manipulation and
-  cache-maintenance instructions are XuanTie custom encodings.
-- `Zicntr`: `time` is implemented natively.
+- C910 implements privileged specification 1.10. `Sm` and `S` are declared at 1.11.0, the lowest
+  version UDB offers.
+- PMP: 16 entries, of which 8 are usable, with a 4 KB granule. 16 hardware performance counters.
 
 ## RTL configuration
 
-- `install-c910.sh` verilates directly with `--no-timing` (the vendor `smart_run/Makefile` flow
-  does not work with Verilator 5).
-- `setup-c910.sh` patches the testbench: the image loader no longer truncates past 256 KB,
-  pass/fail detection is fixed, and the process exit status reflects the result.
+- `install-c910.sh` verilates directly with `--no-timing`, because the vendor `smart_run/Makefile`
+  flow does not work with Verilator 5.
+- `setup-c910.sh` patches the testbench to load a 4 MB image, to end the simulation on a store to
+  a pass or fail address, and to take the cycle limit from the Verilator command line.
 - Hart 1 is held in reset by the SoC wrapper; ACT sees one hart.
 
 ## Building and running
@@ -35,18 +31,24 @@ out-of-order application-class core. The configuration runs the `smart_run/` SoC
 .github/scripts/install-c910.sh ~/c910-install
 export PATH=~/c910-install/bin:$PATH
 export C910_SNAPSHOT=~/c910-install/openc910/smart_run/work
-make CONFIG_FILES=config/cores/c910/c910-openc910/test_config.yaml
-make c910-openc910
+EXCLUDE_EXTENSIONS=Sv make c910-openc910
 ```
+
+The install script checks out the pinned commit and installs `run-c910.sh`. `Sv` is excluded
+because the reference model cannot run `Sv_sv39_VA_all_zeros_Smode`, which maps VA 0 over the
+test image; `ci.yaml` lists the other suites that fail.
+
+The model runs at 1,000 to 2,000 cycles per second. The CSR tests in `S`, `U` and
+`ExceptionsZaamo` take about 280,000 cycles, so on a busy host they can exceed the 300 s limit
+that `run_tests.py` sets for each test.
 
 ## Platform
 
-- RAM: 32 MB AXI SRAM at `0x0000_0000`; hart 0 resets at address 0. AXI error responder from
-  `0x0200_0000`. PLIC at `0xB000_0000`, CLINT at `0xB400_0000`. Testbench character device at
-  `0x01FF_FFF0`.
-- No memory-mapped `mtime`: `RVMODEL_MTIME_ADDRESS` is undefined and machine-timer interrupts are
-  not tested.
-- The CLINT is out of `la` range under `-mcmodel=medany`: `RVMODEL_MSIP_ADDRESS`/
-  `RVMODEL_MTIMECMP_ADDRESS` are undefined and the software-interrupt macros use `li`.
-- `RVMODEL_BOOT` clears `mxstatus.THEADISAEE` (XuanTie custom instructions) and `mxstatus.MAEE`
-  (Sv39 PTE bits 63:59 as memory attributes), both set at reset, and enables the caches.
+- RAM is a 32 MB AXI SRAM at `0x0000_0000`, and hart 0 resets to address 0, so tests link there.
+- The testbench prints stores to `0x01FF_FFF0` and ends the simulation on a store to
+  `0x01FF_FFE0` (pass) or `0x01FF_FFD0` (fail).
+- The CLINT at `0xB400_0000` has no `mtime` register and is beyond the reach of `la`, so
+  `RVMODEL_MTIME_ADDRESS`, `RVMODEL_MTIMECMP_ADDRESS` and `RVMODEL_MSIP_ADDRESS` are undefined.
+- `RVMODEL_BOOT` clears `mxstatus.THEADISAEE` and `mxstatus.MAEE`, which reset to 1, enables the
+  caches and branch prediction, and clears `mtimecmp` so that `mip.MTIP` is pending as it is in the
+  reference model.

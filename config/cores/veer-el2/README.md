@@ -8,9 +8,9 @@ SPDX-License-Identifier: Apache-2.0
 [VeeR EL2](https://github.com/chipsalliance/Cores-VeeR-EL2) is a 32-bit RISC-V core from CHIPS
 Alliance. The configuration runs the RTL under Verilator.
 
-| Config                   | ISA                                         | Modes                 |
-| ------------------------ | ------------------------------------------- | --------------------- |
-| `veer-el2-rv32imc-u-pmp` | RV32IMC_Zicsr_Zifencei_Zba_Zbb_Zbc_Zbs_Zbkc | M + U, 64 PMP entries |
+| Config                    | ISA                                         | Modes                 |
+| ------------------------- | ------------------------------------------- | --------------------- |
+| `veer-el2-rv32imcb-u-pmp` | RV32IMC_Zicsr_Zifencei_Zba_Zbb_Zbc_Zbs_Zbkc | M + U, 64 PMP entries |
 
 - Privileged specification 1.11 (`Sm 1.11.0`).
 - `Zihpm` with `hpmcounter3..6`.
@@ -35,5 +35,5 @@ The two exports do what `.github/scripts/setup-veer-el2.sh` does in CI.
 .github/scripts/install-veer-el2.sh $HOME/veer-el2
 export PATH=$HOME/veer-el2/bin:$PATH
 export VEER_SNAPSHOT=$HOME/veer-el2/el2
-make veer-el2-rv32imc-u-pmp
+make veer-el2-rv32imcb-u-pmp
 ```

@@ -14,7 +14,7 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: veer-el2-rv32imc-u-pmp
+name: veer-el2-rv32imcb-u-pmp
 description: CHIPS Alliance VeeR EL2 - RV32IMC_Zba_Zbb_Zbc_Zbs with U-mode and 64 PMP entries
 
 # misa reads 0x4000_1104: MXL=1 (RV32), plus C (bit 2), I (bit 8) and M (bit 12).

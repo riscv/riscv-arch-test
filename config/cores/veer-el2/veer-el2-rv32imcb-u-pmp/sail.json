@@ -10,7 +10,7 @@
     //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L3002
     "writable_fiom": false,
     // VeeR EL2 implements mhpmcounter3..6 / mhpmevent3..6 only (see HPM_COUNTER_EN in
-    // veer-el2-rv32imc-u-pmp.yaml), so bits 3..6 are the only HPM counters that exist.
+    // veer-el2-rv32imcb-u-pmp.yaml), so bits 3..6 are the only HPM counters that exist.
     //   Quote: "0xB03 ... mhpmcounter3" through "0xB06 ... mhpmcounter6"
     //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/csrs.md
     "writable_hpm_counters": {

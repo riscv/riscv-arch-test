@@ -6,9 +6,9 @@
 VLEN 512. `install-ara.sh` also turns on CVA6's bit-manipulation unit (`RVB`) and its `ZKN`
 instructions, which this CVA6 configuration leaves off.
 
-| Config                | ISA                                                                              | Modes   |
-| --------------------- | -------------------------------------------------------------------------------- | ------- |
-| `cv64a6_imafdcv_sv39` | RV64IMAFDCBV_Zicsr_Zifencei_Zihintntl_Zihintpause_Zihpm_Zbc_Zbkb_Zbkc_Sv39_Svade | M, S, U |
+| Config                | ISA                                                        | Modes   |
+| --------------------- | ---------------------------------------------------------- | ------- |
+| `cv64a6_imafdcv_sv39` | RV64IMAFDCBV_Zicsr_Zifencei_Zihpm_Zbc_Zbkb_Zbkc_Sv39_Svade | M, S, U |
 
 ## Building and running
 

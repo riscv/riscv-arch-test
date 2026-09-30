@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copyright (c) 2026, Harvey Mudd College
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 # Build a verilated XuanTie OpenC910 SoC testbench for CI.
 # Usage: install-c910.sh <install-dir>
 # Cache key derives from sha256(this file); bump the pins below to invalidate.

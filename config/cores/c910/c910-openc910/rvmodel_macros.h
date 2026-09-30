@@ -1,6 +1,7 @@
 # rvmodel_macros.h
 # RVMODEL macro definitions for the XuanTie OpenC910 in its open-source SoC
 # Written against T-head-Semi/openc910 commit b91c90914c19f114d35c8f6b73408eb241ed847c
+# Copyright (c) 2026, Harvey Mudd College
 # SPDX-License-Identifier: Apache-2.0
 
 #ifndef _RVMODEL_MACROS_H

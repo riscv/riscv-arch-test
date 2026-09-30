@@ -1,3 +1,7 @@
+/* Copyright (c) 2026, Harvey Mudd College
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 /* Set these to match the DUT memory map and hart count.
  *
  * The open-source OpenC910 SoC decodes a single 32 MB SRAM at 0x0000_0000.

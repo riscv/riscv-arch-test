@@ -192,8 +192,6 @@ _CANONICAL_VA = {"sv39": "0x8000000140802000", "sv48": "0x8000028500403000", "sv
 
 
 def _t_canonical(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
-    if sv.name not in _CANONICAL_VA:
-        return
     for mode in ("Smode", "Umode"):
         chunk = begin_sv_test(
             test_data,
@@ -927,7 +925,6 @@ def _t_satp_access(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode
 def _make_sv(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     _t_invalid_pte(test_data, test_chunks, sv)
-    _t_canonical(test_data, test_chunks, sv)
     _t_global_pte(test_data, test_chunks, sv)
     _t_misaligned_page(test_data, test_chunks, sv)
     _t_mstatus_mxr(test_data, test_chunks, sv)
@@ -982,3 +979,41 @@ def make_sv48(test_data: TestData) -> list[TestChunk]:
 )
 def make_sv57(test_data: TestData) -> list[TestChunk]:
     return _make_sv(test_data, SV57)
+
+
+def _make_sv_canonical(test_data: TestData, sv: SvMode) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    _t_canonical(test_data, test_chunks, sv)
+    return test_chunks
+
+
+# The canonical tests report non-canonical addresses in sepc and stval, which may convert them to other invalid
+# addresses, so the trap handler accepts any invalid address for the VA width
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["Sv39"],
+    march_extensions=[],
+    extra_defines=["#define BOOT_TO_SMODE", "#define INVALID_VA_WIDTH 39"],
+)
+def make_sv39_canonical(test_data: TestData) -> list[TestChunk]:
+    return _make_sv_canonical(test_data, SV39)
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["Sv48"],
+    march_extensions=[],
+    extra_defines=["#define BOOT_TO_SMODE", "#define INVALID_VA_WIDTH 48"],
+)
+def make_sv48_canonical(test_data: TestData) -> list[TestChunk]:
+    return _make_sv_canonical(test_data, SV48)
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["Sv57"],
+    march_extensions=[],
+    extra_defines=["#define BOOT_TO_SMODE", "#define INVALID_VA_WIDTH 57"],
+)
+def make_sv57_canonical(test_data: TestData) -> list[TestChunk]:
+    return _make_sv_canonical(test_data, SV57)

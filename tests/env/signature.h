@@ -160,6 +160,61 @@
     .option pop
 #endif
 
+// TRAP_SIGUPD_INVALID_ADDR(tempreg, sigreg, offset, instptr, strptr)
+// TRAP_SIGUPD for xepc or xtval when the trap may report an invalid virtual address.  An address is
+// invalid when its bits XLEN-1 to INVALID_VA_WIDTH-1 are not all equal.  xepc and xtval need not hold
+// every invalid address, and an implementation may write some other invalid address in its place
+// (norm:mepc_inv_addr_conv, sepc_acc_invalid_addr, mtval_inv_addr_conv, stval_inv_addr_conv; vsepc and
+// vstval hold the same values as sepc and stval).  In Self Check mode the value passes if it matches the
+// reference, or if the reference and the value are both invalid.  T2 is scratch.  Both compile modes
+// emit the same instructions so the signature and self-check ELFs have identical code layout.
+#ifdef RVTEST_SELFCHECK
+  #define TRAP_SIGUPD_INVALID_ADDR(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR) \
+    .option push                                                ;\
+    .option norvc                                               ;\
+    LREG _TMPREG, _OFF*REGWIDTH(T1)                             ;\
+    beq  _TMPREG, _R, 2f                                        ;\
+    srai T2, _TMPREG, INVALID_VA_WIDTH-1                        ;\
+    addi T2, T2, 1                                              ;\
+    sltiu T2, T2, 2                                             ;\
+    bnez T2, 3f                                                 ;\
+    srai T2, _R, INVALID_VA_WIDTH-1                             ;\
+    addi T2, T2, 1                                              ;\
+    sltiu T2, T2, 2                                             ;\
+    beqz T2, 2f                                                 ;\
+    3:                                                          ;\
+    mv   T1, _R                                                 ;\
+    mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
+    jal  T2, failedtest_trap_x7_x9                              ;\
+    RVTEST_WORD_PTR _INST_PTR                                   ;\
+    RVTEST_WORD_PTR _STR_PTR                                    ;\
+    .word CSR_XEPC                                              ;\
+    2:                                                          ;\
+    .option pop
+#else
+  #define TRAP_SIGUPD_INVALID_ADDR(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR) \
+    .option push                                                ;\
+    .option norvc                                               ;\
+    SREG _R, _OFF*REGWIDTH(T1)                                  ;\
+    beq  x0, x0, 2f                                             ;\
+    nop                                                         ;\
+    nop                                                         ;\
+    nop                                                         ;\
+    nop                                                         ;\
+    nop                                                         ;\
+    nop                                                         ;\
+    nop                                                         ;\
+    nop                                                         ;\
+    mv   T1, _R                                                 ;\
+    mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
+    jal  T2, failedtest_trap_x7_x9                              ;\
+    RVTEST_WORD_PTR _INST_PTR                                   ;\
+    RVTEST_WORD_PTR _STR_PTR                                    ;\
+    .word CSR_XEPC                                              ;\
+    2:                                                          ;\
+    .option pop
+#endif
+
 // RVTEST_SIGUPD_FFLAGS(sigptr, linkreg, tempreg, instptr, strptr)
 // Reads fflags and compares/stores it to the signature at 0(sigptr).
 // In SELFCHECK mode, compares the value in fflags with the value in memory

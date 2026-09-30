@@ -1357,8 +1357,6 @@ def _two_stage_tests(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChu
     if g.xlen == 32:
         _t_sv32x4_gpa(test_data, test_chunks, g, vs)
         return test_chunks
-    for mode in ("VS", "VU"):
-        _t_canonical(test_data, test_chunks, g, vs, mode)
     # A VS-stage PPN reaches guest physical address bit 55, beyond Sv39x4 and Sv48x4 but not Sv57x4
     if address_width(g) <= 55:
         _t_gpa_wide(test_data, test_chunks, g, vs)
@@ -1376,6 +1374,13 @@ def _make_svh(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
         _t_hedeleg(test_data, test_chunks, g, vs, mode)
     if g.xlen == 64:
         _t_atp_mode(test_data, test_chunks)
+    return test_chunks
+
+
+def _make_svh_canonical(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    for mode in ("VS", "VU"):
+        _t_canonical(test_data, test_chunks, g, vs, mode)
     return test_chunks
 
 
@@ -1464,3 +1469,26 @@ def make_svh_g_sv57x4(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator("SvH", required_extensions=["H"], extra_defines=BOOT, params=SV57_PARAMS)
 def make_svh_two_stage_sv57(test_data: TestData) -> list[TestChunk]:
     return _two_stage_tests(test_data, SV57X4, VS_SV57)
+
+
+# The canonical tests report non-canonical guest virtual addresses in sepc and stval, which may convert them to
+# other invalid addresses, so the trap handler accepts any invalid address for the VS-stage VA width
+@add_priv_test_generator(
+    "SvH", required_extensions=["H"], extra_defines=[*BOOT, "#define INVALID_VA_WIDTH 39"], params=SV39_PARAMS
+)
+def make_svh_canonical_sv39(test_data: TestData) -> list[TestChunk]:
+    return _make_svh_canonical(test_data, SV39X4, VS_SV39)
+
+
+@add_priv_test_generator(
+    "SvH", required_extensions=["H"], extra_defines=[*BOOT, "#define INVALID_VA_WIDTH 48"], params=SV48_PARAMS
+)
+def make_svh_canonical_sv48(test_data: TestData) -> list[TestChunk]:
+    return _make_svh_canonical(test_data, SV48X4, VS_SV48)
+
+
+@add_priv_test_generator(
+    "SvH", required_extensions=["H"], extra_defines=[*BOOT, "#define INVALID_VA_WIDTH 57"], params=SV57_PARAMS
+)
+def make_svh_canonical_sv57(test_data: TestData) -> list[TestChunk]:
+    return _make_svh_canonical(test_data, SV57X4, VS_SV57)

@@ -42,6 +42,13 @@ implemented_extensions:
   #   Quote: "VeeR EH1 is a machine-mode (M-mode) only, 32-bit CPU core"
   #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/core-overview.md
   - { name: Zifencei, version: "= 2.0" }
+  # The fence pattern leaves pred and succ free, so pause (fm=0, pred=W, succ=0) is a fence.
+  # add and c.add leave rd free, so ntl.* and c.ntl.* are adds to x0.
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/design/dec/decode#L4
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/design/dec/decode#L56
+  #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/design/dec/cdecode#L7-L11
+  - { name: Zihintntl, version: "= 1.0.0" }
+  - { name: Zihintpause, version: "= 2.0.0" }
   # VeeR EH1 implements privileged spec 1.11, not 1.12. mstatush, which 1.12 added, does
   # not exist on this core, and ACT already guards every mstatush access behind
   # SM1P12P0_OR_LATER_SUPPORTED, so declaring 1.11 is both accurate and necessary.

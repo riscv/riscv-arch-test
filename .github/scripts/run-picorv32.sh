@@ -13,14 +13,11 @@
 # Env:    PICORV32_SNAPSHOT  directory holding obj_dir/Vpicorv32_wrapper
 #                            (default: ~/repos/picorv32-builds/act)
 #         CROSS              toolchain prefix (default: riscv64-unknown-elf)
-#         PICORV32_TEST_BASE load address of the image; must equal TEST_BASE in
-#                            link.ld and PROGADDR_RESET in install-picorv32.sh
 
 set -uo pipefail
 
 SNAPSHOT="${PICORV32_SNAPSHOT:-$HOME/repos/picorv32-builds/act}"
 CROSS="${CROSS:-riscv64-unknown-elf}"
-TEST_BASE="${PICORV32_TEST_BASE:-0x4000}"
 TIMEOUT=280
 MAX_CYCLES=20000000
 KEEP=0
@@ -75,19 +72,18 @@ mkdir -p "$WORK" || exit 2
 # picorv32's testbench loads its image with $readmemh into a word array that
 # starts at address 0, so the hex file is one 32-bit word per line covering
 # address 0 upward. `objcopy -O verilog` is the wrong format here: it emits byte
-# records with @ address directives. Use a flat binary and front-pad it to
-# TEST_BASE, which is what firmware/makehex.py does for picorv32's own firmware.
+# records with @ address directives. Use a flat binary, which is what
+# firmware/makehex.py does for picorv32's own firmware.
 "$CROSS-objcopy" -O binary "$ELF" "$WORK/test.bin" || exit 2
-python3 - "$WORK/test.bin" "$WORK/test.hex" "$TEST_BASE" <<'PYEOF' || exit 2
+python3 - "$WORK/test.bin" "$WORK/test.hex" <<'PYEOF' || exit 2
 import struct
 import sys
 
-src, dst, base = sys.argv[1], sys.argv[2], int(sys.argv[3], 0)
+src, dst = sys.argv[1], sys.argv[2]
 data = open(src, "rb").read()
 data += b"\x00" * (-len(data) % 4)
 words = struct.unpack("<%dI" % (len(data) // 4), data)
 with open(dst, "w") as f:
-    f.write("0\n" * (base // 4))
     f.write("".join("%08x\n" % w for w in words))
 PYEOF
 

@@ -27,7 +27,6 @@ The configuration runs the `picorv32_axi` variant under Verilator 5.036, pinned 
 
 - `COMPRESSED_ISA`, `ENABLE_FAST_MUL=1`, `ENABLE_DIV=1`, `CATCH_MISALIGN=1`, `CATCH_ILLINSN=1`.
 - `ENABLE_IRQ=0`, so `ecall`/`ebreak`/illegal instructions drive `trap`.
-- `PROGADDR_RESET = 0x0000_4000`.
 - Memory raised from 128 KB to 8 MB.
 - `tests_passed` exposed as a top-level port; the failing-trap `$stop` changed to `$finish`.
 - Custom `main()` exits 0 on a trap with the pass token latched, and 1, 2 or 3 on a failing trap,
@@ -45,7 +44,7 @@ make picorv32-rv32imc
 
 ## Platform
 
-- RAM: 8 MB at `0x0000_0000`; tests start at `0x0000_4000`.
+- RAM: 8 MB at `0x0000_0000`, where the core resets and tests start.
 - Console: a word write to `0x1000_0000` emits one character.
 - Exit: `RVMODEL_HALT_PASS` writes `123456789` to `0x2000_0000` and executes `ebreak`;
   `RVMODEL_HALT_FAIL` executes `ebreak` only.

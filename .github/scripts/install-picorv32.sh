@@ -73,9 +73,9 @@ sed -i 's|^\t\t\t\t[$]stop;$|\t\t\t\t\x24finish;|' testbench.v
 #    3c. Configure the core: RV32IMC with fast multiply and divide, misaligned
 #        and illegal-instruction catching (both default 1), and the custom IRQ
 #        scheme disabled so ecall/ebreak/illegal drive `trap` instead of
-#        vectoring to PROGADDR_IRQ. PROGADDR_RESET matches TEST_BASE in link.ld.
+#        vectoring to PROGADDR_IRQ.
 sed -i "s|^\t\t\.ENABLE_MUL(1),$|\t\t.ENABLE_FAST_MUL(1),|" testbench.v
-sed -i "s|^\t\t\.ENABLE_IRQ(1),$|\t\t.ENABLE_IRQ(0),\n\t\t.PROGADDR_RESET(32'h0000_4000),|" testbench.v
+sed -i "s|^\t\t\.ENABLE_IRQ(1),$|\t\t.ENABLE_IRQ(0),|" testbench.v
 
 #    Fail loudly if any of the patches did not apply. The upstream repository is
 #    archived, so these can only break if the pin above is moved.
@@ -93,7 +93,6 @@ reject() {
 expect '0:8\*1024\*1024/4-1'
 expect 'output tests_passed,'
 expect 'ENABLE_FAST_MUL(1)'
-expect "PROGADDR_RESET(32'h0000_4000)"
 expect 'ENABLE_IRQ(0)'
 reject '[$]stop'
 reject '128\*1024'

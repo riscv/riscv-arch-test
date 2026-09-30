@@ -197,7 +197,7 @@
       "value": "0x1000"
     },
     "regions": [
-      // Main memory: code and data. Tests link from 0x4000 (see link.ld).
+      // Main memory: code and data. Tests link from 0, the reset address (see link.ld).
       // Size matches the 8 MB picorv32 testbench array (see install-picorv32.sh).
       {
         "base": {

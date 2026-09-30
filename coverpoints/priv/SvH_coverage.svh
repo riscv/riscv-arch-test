@@ -430,10 +430,46 @@ covergroup SvH_csr_cg with function sample(ins_t ins);
     cp_henvcfg_menvcfg : cross priv_mode_hs, csrrs, henvcfg, menvcfg_adue;
 endgroup
 
+// A fence after a VS-stage or G-stage leaf change, with x0 or a register in rs1 and rs2.  The test checks that the
+// next guest access uses the new leaf.
+covergroup SvH_fence_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    hfence_vvma : coverpoint ins.current.insn {
+        wildcard bins hfence_vvma = {HFENCE_VVMA};
+    }
+    hfence_gvma : coverpoint ins.current.insn {
+        wildcard bins hfence_gvma = {HFENCE_GVMA};
+    }
+    sfence_vma : coverpoint ins.current.insn {
+        wildcard bins sfence_vma = {SFENCE_VMA};
+    }
+    rs1 : coverpoint ins.current.insn[19:15] {
+        bins x0       = {0};
+        bins register = {[1:31]};
+    }
+    rs2 : coverpoint ins.current.insn[24:20] {
+        bins x0       = {0};
+        bins register = {[1:31]};
+    }
+    vsatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+        bins paged = {[1:15]};
+    }
+    hgatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+        bins paged = {[1:15]};
+    }
+
+    cp_hfence_vvma   : cross priv_mode_hs, hfence_vvma, vsatp_paged, hgatp_paged, rs1, rs2;
+    cp_hfence_gvma   : cross priv_mode_hs, hfence_gvma, vsatp_paged, hgatp_paged, rs1, rs2;
+    cp_sfence_vma_vs : cross priv_mode_vs, sfence_vma, vsatp_paged, hgatp_paged, rs1, rs2;
+endgroup
+
 function void svh_sample(int hart, int issue, ins_t ins);
     SvH_vsstage_cg.sample(ins);
     SvH_gstage_cg.sample(ins);
     SvH_twostage_cg.sample(ins);
     SvH_hlv_cg.sample(ins);
     SvH_csr_cg.sample(ins);
+    SvH_fence_cg.sample(ins);
 endfunction

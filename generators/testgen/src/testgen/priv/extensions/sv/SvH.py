@@ -38,6 +38,13 @@ from testgen.priv.extensions.sv.page_tables import (
     write_pte,
 )
 from testgen.priv.extensions.sv.Sv import PAGE_PERMS
+from testgen.priv.extensions.sv.SvHFenceCommon import (
+    HFENCE_GVMA,
+    HFENCE_VVMA,
+    ISOLATION_CASES,
+    SFENCE_VMA_VS,
+    fence_chunk,
+)
 from testgen.priv.registry import add_priv_test_generator
 
 # Guest accesses: a store and a load of the word at offset 8 of the test page, and a fetch of the ret at
@@ -1233,6 +1240,11 @@ def _make_svh(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
     return test_chunks
 
 
+def _fence_chunk(test_data: TestData, g: SvMode, vs: SvMode) -> TestChunk:
+    fences = (HFENCE_VVMA, HFENCE_GVMA, SFENCE_VMA_VS)
+    return fence_chunk(test_data, g, vs, f"{g.name}_fence", fences, "SvH_fence_cg", ISOLATION_CASES)
+
+
 @add_priv_test_generator(
     "SvH",
     required_extensions=["H"],
@@ -1241,7 +1253,7 @@ def _make_svh(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
     params=["TIME_CSR_IMPLEMENTED: true", "SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
 )
 def make_svh_sv32(test_data: TestData) -> list[TestChunk]:
-    return _make_svh(test_data, SV32X4, VS_SV32)
+    return [*_make_svh(test_data, SV32X4, VS_SV32), _fence_chunk(test_data, SV32X4, VS_SV32)]
 
 
 @add_priv_test_generator(
@@ -1252,4 +1264,4 @@ def make_svh_sv32(test_data: TestData) -> list[TestChunk]:
     params=["TIME_CSR_IMPLEMENTED: true", "SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
 )
 def make_svh_sv39(test_data: TestData) -> list[TestChunk]:
-    return _make_svh(test_data, SV39X4, VS_SV39)
+    return [*_make_svh(test_data, SV39X4, VS_SV39), _fence_chunk(test_data, SV39X4, VS_SV39)]

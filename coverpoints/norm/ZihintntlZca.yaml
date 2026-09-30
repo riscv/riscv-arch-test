@@ -8,9 +8,5 @@ normative_rule_definitions:
   - name: ntl_compressed_variants
     coverpoint:
       [
-        "ZihintntlZca_c_ntl_p1_cg/cp_asm_count",
-        "ZihintntlZca_c_ntl_pall_cg/cp_asm_count",
-        "ZihintntlZca_c_ntl_s1_cg/cp_asm_count",
-        "ZihintntlZca_c_ntl_all_cg/cp_asm_count",
         "{ZihintntlZca_c_ntl_p1_cg, ZihintntlZca_c_ntl_pall_cg, ZihintntlZca_c_ntl_s1_cg, ZihintntlZca_c_ntl_all_cg}/cp_asm_count",
       ]

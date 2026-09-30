@@ -1,5 +1,5 @@
 # rvmodel_macros.h
-# RVMODEL macro definitions for XiangShan Kunminghu V2 (DefaultConfig, SimTop + difftest emu)
+# RVMODEL macro definitions for XiangShan Kunminghu V2 (KunminghuV2Config, SimTop difftest emulator)
 # Written against OpenXiangShan/XiangShan @ e7bab53e66dfb3c4a1d11cf9519b0396f8576cae
 #   (branch kunminghu-v2) with its difftest submodule @ 3729300ae233816d332d057f170472ebe35147b0
 # SPDX-License-Identifier: Apache-2.0
@@ -23,10 +23,18 @@
 
 ##### STARTUP #####
 
-# Nothing to program. The reset vector is the simulated flash at 0x1000_0000, whose default
-# image sets mnstatus.NMIE, clears mstatus.MDT and jumps to 0x8000_0000.
+# The reset vector is the simulated flash at 0x1000_0000, whose default image sets
+# mnstatus.NMIE, clears mstatus.MDT and jumps to 0x8000_0000.
 #   https://github.com/OpenXiangShan/difftest/blob/3729300ae233816d332d057f170472ebe35147b0/src/test/csrc/common/flash.cpp#L64
-//#define RVMODEL_BOOT
+# vcsr resets to 7 (vxrm = 3, vxsat = 1), which the vector spec allows ("The vstart, vxrm, vxsat
+# CSRs can have arbitrary values at reset."), but the reference model starts from 0 and some tests
+# use vxrm or read vxsat before writing them, so vcsr and fcsr are cleared here.
+#define RVMODEL_BOOT       \
+  li t0, 0x6600           ;\
+  csrs mstatus, t0        ;\
+  csrwi vcsr, 0           ;\
+  csrwi fcsr, 0           ;\
+  csrc mstatus, t0        ;
 
 ##### TERMINATION #####
 

@@ -46,11 +46,13 @@ git init "$INSTALL_DIR/XiangShan"
   make init
 )
 
-# 4. Elaborate DefaultConfig and build the single-threaded emulator. The Makefile's default
-#    OPT_FAST contains a clang-only flag, so the C++ is compiled with clang.
+# 4. Elaborate KunminghuV2Config and build the single-threaded emulator. KunminghuV2Config is the
+#    Kunminghu V2 system (CHI bus and OpenLLC); the cache-block management instructions are only
+#    enabled on CHI configurations ("def HasCMO = coreParams.HasCMO && p(EnableCHI)"). The
+#    Makefile's default OPT_FAST contains a clang-only flag, so the C++ is compiled with clang.
 (
   cd "$INSTALL_DIR/XiangShan"
-  NOOP_HOME="$PWD" make emu CONFIG=DefaultConfig EMU_THREADS=0 CXX=clang++ -j"$(nproc)"
+  NOOP_HOME="$PWD" make emu CONFIG=KunminghuV2Config EMU_THREADS=0 CXX=clang++ -j"$(nproc)"
 )
 cp -L "$INSTALL_DIR/XiangShan/build/emu" "$INSTALL_DIR/bin/emu"
 install -m 0755 "$SCRIPT_DIR/run-xiangshan.sh" "$INSTALL_DIR/bin/run-xiangshan.sh"

@@ -1,4 +1,4 @@
-// Sail reference-model configuration for XiangShan Kunminghu V2 (DefaultConfig).
+// Sail reference-model configuration for XiangShan Kunminghu V2 (KunminghuV2Config).
 // OpenXiangShan/XiangShan @ e7bab53e66dfb3c4a1d11cf9519b0396f8576cae (kunminghu-v2).
 // Values agree with the UDB configuration in xiangshan-kmhv2.yaml, which cites the source of each.
 // Memory map: RAM at 0x8000_0000 (256 MiB used by the tests); CLINT at 0x3800_0000, as on the DUT.

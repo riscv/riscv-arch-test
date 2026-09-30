@@ -9,7 +9,9 @@ pinned to `e7bab53`, as the SimTop difftest emulator built with Verilator.
 | ----------------- | -------------------------------------- | ---------------------------- |
 | `xiangshan-kmhv2` | RV64GCBVH_Zfa_Zfh_Zcb_Zk_Zks_Zvbb_Zvfh | M + S + U + VS + VU, Sv39/48 |
 
-- XiangShan `DefaultConfig`: privileged 1.13, VLEN 128, ELEN 64, 32 of 64 PMP entries with a
+- XiangShan `KunminghuV2Config` (CHI bus, 1 MB L2, 16 MB OpenLLC). `DefaultConfig`, the Makefile
+  default, is a TileLink system on which the Zicbom/Zicboz instructions raise illegal-instruction
+  exceptions. Privileged 1.13, VLEN 128, ELEN 64, 32 of 64 PMP entries with a
   4 KiB grain (no NA4), 48-bit physical addresses, Sv39x4/Sv48x4 G-stage, GEILEN 7.
 - AIA (Smaia/Ssaia with IMSIC), Smstateen, Sscofpmf, Sstc, Svnapot, Svpbmt, Svinval, Zicbo\*,
   pointer masking and Sdtrig are declared. Smrnmi is implemented but not declared, because the

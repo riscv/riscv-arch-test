@@ -8,12 +8,13 @@
 #   run_tests.py appends the ELF path as the final argument.
 # Env:    XIANGSHAN_EMU       emulator binary (default: ~/repos/xiangshan-builds/emu)
 #         XIANGSHAN_CYCLES    cycle limit (default: 20000000)
-#         XIANGSHAN_EMU_ARGS  extra emulator arguments, e.g. "--dump-commit-trace"
+#         XIANGSHAN_EMU_ARGS  extra emulator arguments
+#         XIANGSHAN_TIMEOUT   wall-clock limit in seconds (default: 86400)
 set -uo pipefail
 
 EMU="${XIANGSHAN_EMU:-$HOME/repos/xiangshan-builds/emu}"
 CYCLES="${XIANGSHAN_CYCLES:-20000000}"
-TIMEOUT=3600
+TIMEOUT="${XIANGSHAN_TIMEOUT:-86400}"
 ELF=""
 
 while [ $# -gt 0 ]; do

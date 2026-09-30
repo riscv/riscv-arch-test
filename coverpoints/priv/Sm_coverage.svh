@@ -421,18 +421,18 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     }
 
     `ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
-    old_mcountinhibit_cy: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "cy") {
-        bins zero = {1'b0};
-        `ifdef UDB_COUNTINHIBIT_EN_0
-            bins one = {1'b1}; // only if counter can be inhibited
-        `endif
-    }
-    old_mcountinhibit_ir: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "ir") {
-        bins zero = {1'b0};
-        `ifdef UDB_COUNTINHIBIT_EN_2
-            bins one = {1'b1}; // only if counter can be inhibited
-        `endif
-    }
+        old_mcountinhibit_cy: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "cy") {
+            bins zero = {1'b0};
+            `ifdef UDB_COUNTINHIBIT_EN_0
+                bins one = {1'b1}; // only if counter can be inhibited
+            `endif
+        }
+        old_mcountinhibit_ir: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "ir") {
+            bins zero = {1'b0};
+            `ifdef UDB_COUNTINHIBIT_EN_2
+                bins one = {1'b1}; // only if counter can be inhibited
+            `endif
+        }
     `endif
 
     mcycle: coverpoint ins.current.insn[31:20] {
@@ -747,7 +747,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         satp : coverpoint ins.current.insn[31:20] {
             bins satp = {CSR_SATP};
         }
-        mstatus_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
+        mstatus_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm")[0] {
         }
 
         cp_scsr_from_m :            cross priv_mode_m, scsrname, csraccesses;

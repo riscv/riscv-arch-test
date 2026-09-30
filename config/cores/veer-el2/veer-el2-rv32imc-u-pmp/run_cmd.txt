@@ -1,1 +1,1 @@
-run-veer-el2.sh --elf
+run-veer-el2.sh

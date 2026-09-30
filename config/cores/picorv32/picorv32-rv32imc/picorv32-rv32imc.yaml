@@ -19,7 +19,7 @@
 # implements a very simple custom interrupt handling scheme."
 #   https://github.com/YosysHQ/picorv32/blob/ef203c2b0a3fb793280f5114941416c425c5b461/README.md#custom-instructions-for-irq-handling
 #
-# Sm 1.11.0 is declared under protest. UDB refuses a fully-configured config
+# Sm 1.11.0 is declared only for MXLEN. UDB refuses a fully-configured config
 # without MXLEN ("Must set MXLEN for a full config"), and MXLEN is only defined
 # when Sm is implemented ("Parameter is not defined by this config: 'MXLEN'.
 # Failing condition(s): `Sm>=0`{false}"). Declaring Sm is how the existing CSR-less

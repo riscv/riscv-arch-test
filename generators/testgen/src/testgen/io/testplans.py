@@ -9,8 +9,16 @@
 """Read testplans for riscv-arch-test test generation."""
 
 import csv
+import re
+from collections.abc import Collection
 from dataclasses import dataclass
 from pathlib import Path
+
+# Optional testplan column listing extensions a row needs beyond its suite's own, separated by colons
+REQUIRED_EXTENSIONS_COLUMN = "REQUIRED_EXTENSIONS"
+
+# Single-letter standard extensions, which are valid in REQUIRED_EXTENSIONS even without their own testplan
+_SINGLE_LETTER_EXTENSIONS = frozenset("IEMAFDQCBVH")
 
 
 def get_extensions(testplan_dir: Path) -> list[str]:
@@ -54,14 +62,52 @@ class TestPlanData:
     rv64: bool
     sews_supported: list[int]
     coverpoints: list[str]
+    required_extensions: tuple[str, ...] = ()
 
 
-def read_testplan(testplan_path: Path) -> list[TestPlanData]:
-    """Read a testplan and return a list of instructions and their associated data (type, coverpoints, etc.)."""
+def known_extension_names(testplan_dir: Path) -> frozenset[str]:
+    """Extension names that REQUIRED_EXTENSIONS may list: testplan name components and single-letter extensions."""
+    names = {name for testplan in testplan_dir.glob("*.csv") for name in re.findall(r"[A-Z][a-z]*", testplan.stem)}
+    return frozenset(names | _SINGLE_LETTER_EXTENSIONS)
+
+
+def parse_required_extensions(value: str, known_extensions: Collection[str], location: str) -> tuple[str, ...]:
+    """Parse a colon-separated REQUIRED_EXTENSIONS entry, checking each name against the known extensions."""
+    if not value.strip():
+        return ()
+    extensions = tuple(ext.strip() for ext in value.split(":"))
+    unknown = [ext for ext in extensions if ext not in known_extensions]
+    if unknown:
+        raise ValueError(f"{location}: unknown extension(s) {unknown} in {REQUIRED_EXTENSIONS_COLUMN} {value!r}")
+    if len(set(extensions)) != len(extensions):
+        raise ValueError(f"{location}: repeated extension in {REQUIRED_EXTENSIONS_COLUMN} {value!r}")
+    return extensions
+
+
+def read_testplan(testplan_path: Path, known_extensions: Collection[str] | None = None) -> list[TestPlanData]:
+    """Read a testplan and return a list of instructions and their associated data (type, coverpoints, etc.).
+
+    Rows with a non-empty REQUIRED_EXTENSIONS entry need those extensions in addition to the suite's own.
+    ``known_extensions`` defaults to the names derived from the testplans next to ``testplan_path``.
+    """
     # Columns that are parsed separately and should not be treated as coverpoints
-    non_coverpoint_columns = {"Instruction", "Type", "RV32", "RV64", "EFFEW8", "EFFEW16", "EFFEW32", "EFFEW64"}
+    non_coverpoint_columns = {
+        "Instruction",
+        "Type",
+        "RV32",
+        "RV64",
+        REQUIRED_EXTENSIONS_COLUMN,
+        "EFFEW8",
+        "EFFEW16",
+        "EFFEW32",
+        "EFFEW64",
+    }
+    if known_extensions is None:
+        known_extensions = known_extension_names(testplan_path.parent)
 
     instructions: list[TestPlanData] = []
+    # XLENs already claimed by each (instruction, REQUIRED_EXTENSIONS) pair; a repeat would reuse a test file name
+    seen_xlens: dict[tuple[str, tuple[str, ...]], set[int]] = {}
     with testplan_path.open() as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
@@ -84,8 +130,20 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                     f"Error: 'Type' column missing in testplan {testplan_path}. Make sure you remembered to shrink the CSV."
                 )
                 raise
+            location = f"{testplan_path}:{reader.line_num}"
+            required_extensions = parse_required_extensions(
+                row.get(REQUIRED_EXTENSIONS_COLUMN, ""), known_extensions, location
+            )
             rv32 = row["RV32"].strip().lower() == "x"
             rv64 = row["RV64"].strip().lower() == "x"
+            xlens = {xlen for xlen, present in ((32, rv32), (64, rv64)) if present}
+            claimed = seen_xlens.setdefault((instr, required_extensions), set())
+            if claimed & xlens:
+                raise ValueError(
+                    f"{location}: duplicate row for {instr!r} with {REQUIRED_EXTENSIONS_COLUMN} "
+                    f"{':'.join(required_extensions)!r}"
+                )
+            claimed |= xlens
             sews = []
             for sew in [8, 16, 32, 64]:
                 if f"EFFEW{sew}" in row and row[f"EFFEW{sew}"].strip().lower() == "x":
@@ -111,6 +169,7 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                     rv64=rv64,
                     sews_supported=sews,
                     coverpoints=coverpoints,
+                    required_extensions=required_extensions,
                 )
             )
     return instructions

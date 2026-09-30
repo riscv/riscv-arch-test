@@ -60,17 +60,11 @@ include::norm/ZfhD_norm_rules.adoc[]
 
 ===== Zfhmin
 
+The rows of <<t-Zfhmin-coverpoints>> with D in the REQUIRED_EXTENSIONS row apply only when D is also supported. They cover fcvt.d.h, fcvt.h.d, and NaN-boxing of half-precision values in 64-bit registers.
+
 include::{testplansdir}/Zfhmin.adoc[]
 
 include::norm/Zfhmin_norm_rules.adoc[]
-
-
-
-===== ZfhminD
-
-include::{testplansdir}/ZfhminD.adoc[]
-
-include::norm/ZfhminD_norm_rules.adoc[]
 
 
 

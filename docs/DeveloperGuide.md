@@ -274,6 +274,7 @@ All testplan CSVs must include the following keys:
 - `Instruction`: The instruction mnemonic. For example, `add`, `mul`, `fadd.d`, etc.
 - `Type`: The instruction type. Note that these types are more specific than the ISA manual types and take the kind of register, size of immediate, etc. into account. For example, `R`, `I`, `IS`, `ISW`. TODO: Document the list of instruction types?
 - `RV32`/`RV64`: Which XLENs the instruction exists for. Place an `x` in the relevant columns.
+- `REQUIRED_EXTENSIONS` (optional, after `RV64`): Extensions a row needs beyond the testplan's own, separated by colons (e.g. `D` or `Zfh:D`). Leave it empty for ordinary rows. Put rows with extensions at the end of the CSV. Their tests go in the testplan's suite directory as `<suite>_<ext>[_<ext>...]-<instr>-NN.S` with the extensions added to `REQUIRED_EXTENSIONS` in the test header, and their covergroups are named `<suite>_<ext>[_<ext>...]_<instr>_cg` inside `` `ifdef <EXT>_SUPPORTED `` guards. An instruction may have one row per distinct entry. See [`Zfhmin.csv`](../testplans/Zfhmin.csv), whose `D` rows apply only when D is also implemented.
 - coverpoints: Which coverpoints apply to the instruction. Place an `x` in the column corresponding to the relevant coverpoints in each instruction's row.
   - Some coverpoints have multiple variants. To indicate that a variant of the coverpoint should be used for a particular instruction, use the variant's suffix in the CSV instead of an `x`. See the `20bit` variant of the `cp_imm_edges` coverpoint for the `auipc` instruction below.
 

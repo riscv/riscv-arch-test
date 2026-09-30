@@ -21,11 +21,6 @@ def _record_seed_reserved(dest_reg: int, test_data: TestData) -> list[str]:
     ]
 
 
-def _mseccfg(mode: str, instr: str) -> str:
-    """mseccfg is an M-mode CSR: access it directly in M-mode, through T-SBI from S/U-mode."""
-    return tsbi_call_or_direct(instr, mode)
-
-
 def _gate(mode: str, lines: list[str]) -> list[str]:
     """In the M-mode suite the mseccfg SEED bits only exist when a lower mode does."""
     return ["#ifdef U_SUPPORTED", *lines, "#endif"] if mode == "M" else lines
@@ -44,7 +39,7 @@ def gen_seed_csrrw_tests(test_data: TestData, covergroup: str, mode: str) -> lis
     lines = [
         comment_banner(coverpoint, f"csrrw seed in {mode}-mode across mseccfg.sseed/useed"),
         f"LI(x{src_reg}, 0)",
-        *_gate(mode, [_mseccfg(mode, f"csrr x{save_reg}, mseccfg")]),
+        *_gate(mode, [tsbi_call_or_direct(f"csrr x{save_reg}, mseccfg", mode)]),
     ]
 
     for sseed in (0, 1):
@@ -59,7 +54,7 @@ def gen_seed_csrrw_tests(test_data: TestData, covergroup: str, mode: str) -> lis
                         mode,
                         [
                             f"LI(x{mseccfg_reg}, {mseccfg_val})",
-                            _mseccfg(mode, f"csrw mseccfg, x{mseccfg_reg}"),
+                            tsbi_call_or_direct(f"csrw mseccfg, x{mseccfg_reg}", mode),
                         ],
                     ),
                     # Test both rs1 fields and record the reserved read-only-zero bits in rd.
@@ -74,7 +69,7 @@ def gen_seed_csrrw_tests(test_data: TestData, covergroup: str, mode: str) -> lis
                 ]
             )
 
-    lines.extend(_gate(mode, [_mseccfg(mode, f"csrw mseccfg, x{save_reg}")]))
+    lines.extend(_gate(mode, [tsbi_call_or_direct(f"csrw mseccfg, x{save_reg}", mode)]))
 
     test_data.int_regs.return_registers([dest_reg, mseccfg_reg, src_reg, save_reg])
     return lines
@@ -92,9 +87,9 @@ def gen_seed_illegal_csr_op_tests(test_data: TestData, covergroup: str, mode: st
         *_gate(
             mode,
             [
-                _mseccfg(mode, f"csrr x{save_reg}, mseccfg"),
+                tsbi_call_or_direct(f"csrr x{save_reg}, mseccfg", mode),
                 f"LI(x{mseccfg_reg}, {sseed_useed_enabled})",
-                _mseccfg(mode, f"csrw mseccfg, x{mseccfg_reg} # enable seed access from all modes"),
+                tsbi_call_or_direct(f"csrw mseccfg, x{mseccfg_reg} # enable seed access from all modes", mode),
             ],
         ),
         f"LI(x{rs1_reg}, 0)",
@@ -126,7 +121,7 @@ def gen_seed_illegal_csr_op_tests(test_data: TestData, covergroup: str, mode: st
                 ]
             )
 
-    lines.extend(_gate(mode, [_mseccfg(mode, f"csrw mseccfg, x{save_reg}")]))
+    lines.extend(_gate(mode, [tsbi_call_or_direct(f"csrw mseccfg, x{save_reg}", mode)]))
 
     test_data.int_regs.return_registers([dest_reg, mseccfg_reg, rs1_reg, save_reg])
     return lines
@@ -151,9 +146,9 @@ def gen_seed_entropy_zero_non_es16_tests(test_data: TestData, covergroup: str, m
         *_gate(
             mode,
             [
-                _mseccfg(mode, f"csrr x{save_reg}, mseccfg"),
+                tsbi_call_or_direct(f"csrr x{save_reg}, mseccfg", mode),
                 f"LI(x{cmp_reg}, {sseed_useed_enabled})",
-                _mseccfg(mode, f"csrw mseccfg, x{cmp_reg}"),
+                tsbi_call_or_direct(f"csrw mseccfg, x{cmp_reg}", mode),
             ],
         ),
         test_data.add_testcase(f"{mode}_es16", coverpoint, covergroup),
@@ -190,7 +185,7 @@ def gen_seed_entropy_zero_non_es16_tests(test_data: TestData, covergroup: str, m
         "# Nonzero entropy while WAIT/BIST: SIGUPD leaked bits vs Sail 0xB0BA",
         write_sigupd(entropy_reg, test_data),
         ".Lzkr_seed_entropy_done:",
-        *_gate(mode, [_mseccfg(mode, f"csrw mseccfg, x{save_reg}")]),
+        *_gate(mode, [tsbi_call_or_direct(f"csrw mseccfg, x{save_reg}", mode)]),
     ]
 
     test_data.int_regs.return_registers([read_reg, opst_reg, entropy_reg, cmp_reg, save_reg, loop_reg])

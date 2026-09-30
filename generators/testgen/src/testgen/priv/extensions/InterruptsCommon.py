@@ -69,14 +69,6 @@ class InterruptSuite:
 Generator = Callable[[TestData, list[TestChunk], InterruptSuite, str], None]
 
 
-def csr_access(instr: str, mode: str) -> str:
-    """A CSR instruction issued directly when ``mode`` can access the CSR, otherwise through T-SBI.
-
-    U-mode reaches m*, s*, h*, and vs* CSRs through T-SBI; S-mode reaches m* CSRs through T-SBI.
-    """
-    return tsbi_call_or_direct(instr, mode)
-
-
 def mode_enter(suite: InterruptSuite, priv: str) -> list[str]:
     """Switch from the suite's boot mode into ``priv``.
 
@@ -222,13 +214,13 @@ def generate_cp_priority(
                 *_raise(raised, pair, "SET", priv),
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait until every raised interrupt is pending",
                 test_data.add_testcase(bin_name, coverpoint, suite.covergroup),
-                csr_access(f"csrr x{check_reg}, {suite.ip}", priv),
+                tsbi_call_or_direct(f"csrr x{check_reg}, {suite.ip}", priv),
                 f"LI(x{tmp_reg}, {raised_mask:#x})",
                 f"and x{check_reg}, x{check_reg}, x{tmp_reg} # raised interrupts that are pending",
                 write_sigupd(check_reg, test_data),
                 # Enable last, so the pending interrupts are arbitrated together and taken in priority order
                 f"LI(x{tmp_reg}, {ie_after})",
-                csr_access(f"csrw {ie}, x{tmp_reg} # {ie} = {ie_after:#x}", priv),
+                tsbi_call_or_direct(f"csrw {ie}, x{tmp_reg} # {ie} = {ie_after:#x}", priv),
                 *_raise(raised, pair, "CLR", priv),
                 *mode_exit(suite, priv),
                 f"#endif // {guard_symbol(second)}",
@@ -289,7 +281,7 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
                 *suite.deleg,
                 *(write_stce(test_data, True, boot) if wfi["stce"] else []),
                 f"LI(x{tmp_reg}, 0x200000)",
-                csr_access(f"{twcmd} mstatus, x{tmp_reg} # mstatus.TW = {tw}", boot),
+                tsbi_call_or_direct(f"{twcmd} mstatus, x{tmp_reg} # mstatus.TW = {tw}", boot),
                 f"LI(x{tmp_reg}, {status['mask']:#x})",
                 f"{enablecmd} {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = {enable}",
                 f"LI(x{tmp_reg}, {ie_mask:#x})",
@@ -367,7 +359,7 @@ def generate_cp_wfi_timeout(
                         else []
                     ),
                     f"LI(x{tmp_reg}, 0x200000)",
-                    csr_access(f"{twcmd} mstatus, x{tmp_reg} # mstatus.TW = {tw}", suite.boot),
+                    tsbi_call_or_direct(f"{twcmd} mstatus, x{tmp_reg} # mstatus.TW = {tw}", suite.boot),
                     f"LI(x{tmp_reg}, {status['mask']:#x})",
                     f"{enablecmd} {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = {enable}",
                     f"LI(x{tmp_reg}, {ie * ie_mask:#x})",

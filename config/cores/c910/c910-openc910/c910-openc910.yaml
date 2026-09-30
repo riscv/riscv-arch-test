@@ -65,17 +65,15 @@ implemented_extensions:
   - { name: Zihpm, version: "= 2.0.0" }
   - { name: U, version: "= 1.0.0" }
   # S and Sm are declared at 1.11.0, NOT 1.12.0.  OpenC910 implements privileged
-  # specification 1.10: mconfigptr (0xF15), menvcfg (0x30A), menvcfgh (0x31A),
-  # mseccfg (0x747), mtinst (0x34A), mtval2 (0x34B), senvcfg (0x10A) and mstatush
-  # (0x310) are all absent from the CSR decoder and raise illegal instruction, while
-  # mcountinhibit (0x320) IS present.  1.11.0 is the lowest version UDB offers.
-  # Declaring 1.12 would make ACT's trap handler read mstatush on every trap and every
-  # trap would then take a nested trap.
+  # specification 1.10: mconfigptr (0xF15), menvcfg (0x30A), mseccfg (0x747), mtinst
+  # (0x34A), mtval2 (0x34B) and senvcfg (0x10A) are all absent from the CSR decoder and
+  # raise illegal instruction, while mcountinhibit (0x320) IS present.  UDB defines
+  # mconfigptr and menvcfg from Sm 1.12, and 1.11.0 is the lowest version it offers.
   #   The decoder is the casez at
   #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_iui.v#L809-L1078
   #   ("MCNTIHBT : addr_inv = 1'b0;" at L906 is mcountinhibit; there is no 0x30A,
-  #    0x31A, 0x310, 0x34A, 0x34B, 0x10A or 0xF15 case, and the custom wildcard ranges
-  #    do not cover 0x747.)
+  #    0x34A, 0x34B, 0x10A or 0xF15 case, and the custom wildcard ranges do not cover
+  #    0x747.)
   - { name: S, version: "= 1.11.0" }
   - { name: Sm, version: "= 1.11.0" }
   # satp.MODE accepts only 0 (Bare) and 8 (Sv39).  Sv48/Sv57 are not implemented.

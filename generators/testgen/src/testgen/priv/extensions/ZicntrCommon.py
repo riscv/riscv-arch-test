@@ -59,8 +59,12 @@ def _access_counter(
 
 
 def _write_counteren(csr: str, operand: str, mode: Mode, comment: str = "") -> str:
-    """csrw csr, operand from mode, with an optional comment."""
-    return tsbi_call_or_direct(f"csrw {csr}, {operand}" + (f"  # {comment}" if comment else ""), mode)
+    """Write csr directly when mode can, otherwise through T-SBI: mcounteren is M-mode only,
+    scounteren is writable from M and S."""
+    instr = f"csrw {csr}, {operand}"
+    if comment:
+        instr += f"  # {comment}"
+    return tsbi_call_or_direct(instr, mode)
 
 
 def counteren_walk_tests(

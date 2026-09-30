@@ -126,6 +126,11 @@ def _add_tc(test_data: TestData, binname: str, coverpoint: str, covergroup: str)
     return "\n" + test_data.add_testcase(binname, coverpoint, covergroup)
 
 
+def _csr_access(instr: str, mode: str) -> str:
+    """Accesses a CSR using an T-SBI or CSR operation based on mode"""
+    return tsbi_call_or_direct(instr, MODE_UDB_LETTER[mode])
+
+
 def _load_tdata1(reg: int, trig_type: int, mode: str, lowfields: int = 0) -> list[str]:
     """Load tdata1 = (type << top) | lowfields into x{reg} and write it to tdata1."""
     lines = [
@@ -135,7 +140,7 @@ def _load_tdata1(reg: int, trig_type: int, mode: str, lowfields: int = 0) -> lis
         f"LI(x{reg}, 0x{(trig_type << 28) | lowfields:x})",
         "#endif",
     ]
-    lines.append(tsbi_call_or_direct(f"csrw tdata1, x{reg} # write trigger type", MODE_UDB_LETTER[mode]))
+    lines.append(_csr_access(f"csrw tdata1, x{reg} # write trigger type", mode))
     return lines
 
 
@@ -187,8 +192,8 @@ def _disable_trigger(reg: int, trig_num: int, mode: str) -> list[str]:
     lines.extend(
         [
             _load_reg(reg, trig_num),
-            tsbi_call_or_direct(f"csrw tselect, x{reg}", MODE_UDB_LETTER[mode]),
-            tsbi_call_or_direct("csrw tdata1, x0", MODE_UDB_LETTER[mode]),
+            _csr_access(f"csrw tselect, x{reg}", mode),
+            _csr_access("csrw tdata1, x0", mode),
         ]
     )
     return lines
@@ -198,13 +203,13 @@ def _cause_interrupt(code: int, mode: str, r1: int) -> list[str]:
     """Emit assembly that makes interrupt ``code`` (mcause interrupt code) pending."""
     flavor = "M" if mode == "Sm" else mode
     if code == 1:  # supervisor software interrupt (SSIP)
-        return [f"LI(x{r1}, 0x2) # SSIP", tsbi_call_or_direct(f"csrs mip, x{r1}", MODE_UDB_LETTER[mode])]
+        return [f"LI(x{r1}, 0x2) # SSIP", _csr_access(f"csrs mip, x{r1}", mode)]
     if code == 5:  # supervisor timer interrupt (STIP)
-        return [f"LI(x{r1}, 0x20) # STIP", tsbi_call_or_direct(f"csrs mip, x{r1}", MODE_UDB_LETTER[mode])]
+        return [f"LI(x{r1}, 0x20) # STIP", _csr_access(f"csrs mip, x{r1}", mode)]
     if code == 9:  # supervisor external interrupt (SEIP)
-        return [f"LI(x{r1}, 0x200) # SEIP", tsbi_call_or_direct(f"csrs mip, x{r1}", MODE_UDB_LETTER[mode])]
+        return [f"LI(x{r1}, 0x200) # SEIP", _csr_access(f"csrs mip, x{r1}", mode)]
     if code == 13:  # local counter overflow interrupt (LCOFIP)
-        return [f"LI(x{r1}, 0x2000) # LCOFIP", tsbi_call_or_direct(f"csrs mip, x{r1}", MODE_UDB_LETTER[mode])]
+        return [f"LI(x{r1}, 0x2000) # LCOFIP", _csr_access(f"csrs mip, x{r1}", mode)]
     if code == 3:  # machine software interrupt (CLINT MSIP; M-mode only)
         return [f"RVTEST_SET_MSW_INT_{flavor}"]
     if code == 7:  # machine timer interrupt (mtimecmp = mtime; M-mode only)
@@ -257,12 +262,12 @@ def _config_mcontrol6(
         [
             f"# configure trigger {tselect} as mcontrol6",
             _load_reg(reg, tselect),
-            tsbi_call_or_direct(f"csrw tselect, x{reg}", MODE_UDB_LETTER[mode]),
-            tsbi_call_or_direct("csrw tdata1, x0 # disable before configuring", MODE_UDB_LETTER[mode]),
+            _csr_access(f"csrw tselect, x{reg}", mode),
+            _csr_access("csrw tdata1, x0 # disable before configuring", mode),
             _load_reg(reg, tdata2),
-            tsbi_call_or_direct(f"csrw tdata2, x{reg} # match value", MODE_UDB_LETTER[mode]),
+            _csr_access(f"csrw tdata2, x{reg} # match value", mode),
             _load_reg(reg, tdata3),
-            tsbi_call_or_direct(f"csrw tdata3, x{reg} # textra context matching ", MODE_UDB_LETTER[mode]),
+            _csr_access(f"csrw tdata3, x{reg} # textra context matching ", mode),
             f"# tdata1: type={mcontrol6} priv={privbits:05b} xsl={xsl:03b} select={select} size={size} match={match} chain={chain}",
             *_load_tdata1(reg, mcontrol6, mode, lowfields),  # load data in tdata1
         ]
@@ -306,10 +311,10 @@ def _config_icount(
         [
             f"# configure trigger {tselect} as icount",
             _load_reg(reg, tselect),
-            tsbi_call_or_direct(f"csrw tselect, x{reg}", MODE_UDB_LETTER[mode]),
-            tsbi_call_or_direct("csrw tdata1, x0 # disable before configuring", MODE_UDB_LETTER[mode]),
+            _csr_access(f"csrw tselect, x{reg}", mode),
+            _csr_access("csrw tdata1, x0 # disable before configuring", mode),
             _load_reg(reg, tdata3),
-            tsbi_call_or_direct(f"csrw tdata3, x{reg} # textra", MODE_UDB_LETTER[mode]),
+            _csr_access(f"csrw tdata3, x{reg} # textra", mode),
             f"# tdata1: type={icount} priv={privbits:05b} count={count} pending={pending} action={action}",
             *_load_tdata1(reg, icount, mode, lowfields),  # load data in tdata1
         ]
@@ -344,13 +349,13 @@ def _config_itrigger(
         [
             f"# configure trigger {tselect} as itrigger",
             _load_reg(reg, tselect),
-            tsbi_call_or_direct(f"csrw tselect, x{reg}", MODE_UDB_LETTER[mode]),
-            tsbi_call_or_direct("csrw tdata1, x0 # disable before configuring", MODE_UDB_LETTER[mode]),
+            _csr_access(f"csrw tselect, x{reg}", mode),
+            _csr_access("csrw tdata1, x0 # disable before configuring", mode),
             _load_reg(reg, tdata2),
-            tsbi_call_or_direct(f"csrw tdata2, x{reg} # interrupt-cause mask", MODE_UDB_LETTER[mode]),
-            tsbi_call_or_direct(f"csrs mie, x{reg} # enable masked interrupt(s)", MODE_UDB_LETTER[mode]),
+            _csr_access(f"csrw tdata2, x{reg} # interrupt-cause mask", mode),
+            _csr_access(f"csrs mie, x{reg} # enable masked interrupt(s)", mode),
             _load_reg(reg, tdata3),
-            tsbi_call_or_direct(f"csrw tdata3, x{reg} # textra context matching ", MODE_UDB_LETTER[mode]),
+            _csr_access(f"csrw tdata3, x{reg} # textra context matching ", mode),
             f"# tdata1: type={itrigger} priv={privbits:05b} nmi={nmi} action={action}",
             *_load_tdata1(reg, itrigger, mode, lowfields),  # load data in tdata1
         ]
@@ -384,12 +389,12 @@ def _config_etrigger(
         [
             f"# configure trigger {tselect} as etrigger",
             _load_reg(reg, tselect),
-            tsbi_call_or_direct(f"csrw tselect, x{reg}", MODE_UDB_LETTER[mode]),
-            tsbi_call_or_direct("csrw tdata1, x0 # disable before configuring", MODE_UDB_LETTER[mode]),
+            _csr_access(f"csrw tselect, x{reg}", mode),
+            _csr_access("csrw tdata1, x0 # disable before configuring", mode),
             _load_reg(reg, tdata2),
-            tsbi_call_or_direct(f"csrw tdata2, x{reg} # exception-cause mask", MODE_UDB_LETTER[mode]),
+            _csr_access(f"csrw tdata2, x{reg} # exception-cause mask", mode),
             _load_reg(reg, tdata3),
-            tsbi_call_or_direct(f"csrw tdata3, x{reg} # textra context matching ", MODE_UDB_LETTER[mode]),
+            _csr_access(f"csrw tdata3, x{reg} # textra context matching ", mode),
             f"# tdata1: type={etrigger} priv={privbits:05b} action={action}",
             *_load_tdata1(reg, etrigger, mode, lowfields),  # load data in tdata1
         ]
@@ -487,19 +492,15 @@ def _generate_access_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                     [
                         _add_tc(test_data, binname, coverpoint, covergroup),
                         f"LI x{temp_reg}, {trig_num} # load trig_num value",
-                        tsbi_call_or_direct(
-                            f"csrw tselect, x{temp_reg} # set tselect = trig_num", MODE_UDB_LETTER[mode]
-                        ),
+                        _csr_access(f"csrw tselect, x{temp_reg} # set tselect = trig_num", mode),
                         *_load_tdata1(type_reg, trig_type, mode),  # load tdata1 with the type
                         f"LI x{temp_reg}, -1 # load all 1's value",
-                        tsbi_call_or_direct(f"csrr x{save_reg}, {csr} # save original value", MODE_UDB_LETTER[mode]),
-                        tsbi_call_or_direct(f"csrw {csr}, x{temp_reg} # write all-1s", MODE_UDB_LETTER[mode]),
-                        tsbi_call_or_direct(f"csrw {csr}, x0 # write all-0s", MODE_UDB_LETTER[mode]),
-                        tsbi_call_or_direct(f"csrs {csr}, x{temp_reg} # set all-1s", MODE_UDB_LETTER[mode]),
-                        tsbi_call_or_direct(f"csrc {csr}, x{temp_reg} # clear all-1s", MODE_UDB_LETTER[mode]),
-                        tsbi_call_or_direct(
-                            f"csrw {csr}, x{save_reg} # write back original value", MODE_UDB_LETTER[mode]
-                        ),
+                        _csr_access(f"csrr x{save_reg}, {csr} # save original value", mode),
+                        _csr_access(f"csrw {csr}, x{temp_reg} # write all-1s", mode),
+                        _csr_access(f"csrw {csr}, x0 # write all-0s", mode),
+                        _csr_access(f"csrs {csr}, x{temp_reg} # set all-1s", mode),
+                        _csr_access(f"csrc {csr}, x{temp_reg} # clear all-1s", mode),
+                        _csr_access(f"csrw {csr}, x{save_reg} # write back original value", mode),
                     ]
                 )
                 lines.append("#endif")
@@ -1236,9 +1237,9 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
     lines.extend(
         [
             f"LI(x{temp_reg}, 0x6000)",
-            tsbi_call_or_direct(
+            _csr_access(
                 f"csrs mstatus, x{temp_reg} # enable mstatus.FS (bits 14:13) so the fp loads/stores below don't trap as illegal instructions",
-                MODE_UDB_LETTER[mode],
+                mode,
             ),
         ]
     )
@@ -1575,7 +1576,7 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     #             _add_tc(test_data, binname, coverpoint, covergroup),
     #             *_config_icount(temp_reg, trig_num, 1, mode, privbits=0b11111),
     #             "nop # decrement count",
-    #             tsbi_call_or_direct(f"csrr x{data_reg}, tdata1 # read back hardwired fields", MODE_UDB_LETTER[mode]),
+    #             _csr_access(f"csrr x{data_reg}, tdata1 # read back hardwired fields", mode),
     #             *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "icount hit bit (bit 24)"),
     #             *_disable_trigger(temp_reg, trig_num, mode)
     #         ]
@@ -1603,7 +1604,7 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     #                 *_config_icount(temp_reg, trig_num, 9, mode, privbits=privbits),
     #                 *["nop # decrement count"] * 9,
     #                 "nop # spacer",
-    #                 tsbi_call_or_direct(f"csrr x{data_reg}, tdata1 # read back hardwired fields", MODE_UDB_LETTER[mode]),
+    #                 _csr_access(f"csrr x{data_reg}, tdata1 # read back hardwired fields", mode),
     #                 *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "icount hit bit (bit 24)"),
     #                 *_disable_trigger(temp_reg, trig_num, mode),
     #             ]
@@ -1630,7 +1631,7 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     #                 *_config_icount(temp_reg, trig_num, 1, mode, privbits=privbits),
     #                 ".word 0x00000000",
     #                 "nop # spacer",
-    #                 tsbi_call_or_direct(f"csrr x{data_reg}, tdata1 # read back hardwired fields", MODE_UDB_LETTER[mode]),
+    #                 _csr_access(f"csrr x{data_reg}, tdata1 # read back hardwired fields", mode),
     #                 *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "icount hit bit (bit 24)"),
     #                 *_disable_trigger(temp_reg, trig_num, mode),
     #             ]
@@ -1656,7 +1657,7 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     #                 *_config_icount(temp_reg, trig_num, 0, mode, pending=pending),
     #                 "nop # Fires trigger when pending = 1",
     #                 *["nop # count must stay zero"] * 9,
-    #                 tsbi_call_or_direct(f"csrr x{data_reg}, tdata1 # read back hardwired fields", MODE_UDB_LETTER[mode]),
+    #                 _csr_access(f"csrr x{data_reg}, tdata1 # read back hardwired fields", mode),
     #                 *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "icount hit bit (bit 24)"),
     #                 *_disable_trigger(temp_reg, trig_num, mode),
     #             ]

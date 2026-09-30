@@ -14,26 +14,31 @@ from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
 from testgen.instructions.params import generate_random_params
 
-# Recognised tokens in a cp_fs*/cr_fs* coverpoint suffix. The width tokens select the edge set;
-# the rest only affect how the variant is generated. Anything else is a testplan typo, which
-# would otherwise fall through to the single-precision default and generate the wrong edges.
-_FP_EDGE_WIDTHS = {"D": "double", "H": "half", "BF16": "bf16"}
+_FP_EDGES_BY_WIDTH: dict[str, tuple[int, ...]] = {
+    "D": FLOAT_EDGES.double,
+    "H": FLOAT_EDGES.half,
+    "BF16": FLOAT_EDGES.bf16,
+}
 _FP_EDGE_MODIFIERS = {"frm", "frm4", "v", "bf16"}
 
 
-def _fp_edges_for(coverpoint: str, base: str) -> list[int]:
+def _fp_edges_for(coverpoint: str, base: str) -> tuple[int, ...]:
     """Select the edge set for a cp_fs*/cr_fs* variant, rejecting unknown suffix tokens."""
-    tokens = [t for t in coverpoint[len(base) :].split("_") if t]
-    width = "single"
+    suffix = coverpoint.removeprefix(base)
+    tokens = filter(None, suffix.split("_"))
+    edges = FLOAT_EDGES.single
+
     for token in tokens:
-        if token in _FP_EDGE_WIDTHS:
-            width = _FP_EDGE_WIDTHS[token]
+        if token in _FP_EDGES_BY_WIDTH:
+            edges = _FP_EDGES_BY_WIDTH[token]
         elif token not in _FP_EDGE_MODIFIERS:
             raise ValueError(
-                f"Unknown suffix '{token}' in coverpoint {coverpoint!r}; "
-                f"expected width {sorted(_FP_EDGE_WIDTHS)} or modifier {sorted(_FP_EDGE_MODIFIERS)}"
+                f"Unknown suffix {token!r} in coverpoint {coverpoint!r}; "
+                f"expected width {sorted(_FP_EDGES_BY_WIDTH)} "
+                f"or modifier {sorted(_FP_EDGE_MODIFIERS)}"
             )
-    return getattr(FLOAT_EDGES, width)
+
+    return edges
 
 
 def _make_fs_edges(

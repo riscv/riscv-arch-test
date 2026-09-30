@@ -488,10 +488,10 @@
       "supported": true
     },
     "Zihintntl": {
-      "supported": false
+      "supported": true
     },
     "Zihintpause": {
-      "supported": false
+      "supported": true
     },
     // EH2 has no hpmcounters, but Sail makes mhpmcounter3..31 accessible only with Zihpm,
     // so enable it here for the mhpmcounter3..6 that EH2 does have.

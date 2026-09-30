@@ -119,6 +119,15 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
     hgatp: coverpoint ins.current.insn[31:20] {
         bins hgatp = {CSR_HGATP};
     }
+    vsatp_hgatp: coverpoint ins.current.insn[31:20] {
+        bins vsatp = {CSR_VSATP};
+        bins hgatp = {CSR_HGATP};
+    }
+    satp_vsatp_hgatp: coverpoint ins.current.insn[31:20] {
+        bins satp  = {CSR_SATP};
+        bins vsatp = {CSR_VSATP};
+        bins hgatp = {CSR_HGATP};
+    }
 
     // Addresses
     adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] {
@@ -187,6 +196,9 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
     }
     mstatus_tvm_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
         bins tvm_disabled = {0};
+    }
+    mstatus_tvm_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
+        bins tvm_enabled = {1};
     }
     mstatus_tw_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tw") {
         bins tw_disabled = {0};
@@ -257,6 +269,10 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
     cp_virtual_instr_vu_wfi:                cross priv_mode_vu, wfi, mstatus_tw_disabled;
     cp_virtual_instr_vu_sret:               cross priv_mode_vu, sret;
     cp_virtual_instr_vu_sfence_vma:         cross priv_mode_vu, sfence_vma;
+
+    // mstatus.TVM affects only HS-mode: with TVM = 1 these accesses still raise virtual instruction
+    cp_virtual_instr_vs_tvm: cross priv_mode_vs, csrr, vsatp_hgatp, mstatus_tvm_enabled;
+    cp_virtual_instr_vu_tvm: cross priv_mode_vu, csrr, satp_vsatp_hgatp, mstatus_tvm_enabled;
 
     // Counter reads from VS-mode and VU-mode that hcounteren or scounteren disables while mcounteren enables them
     `ifdef ZICNTR_SUPPORTED

@@ -235,6 +235,21 @@ def _virtual_instruction_tests(test_data: TestData) -> list[str]:
         *gated(list(P1P13_OFF), HEDELEGH_GATE),
         "csrsi scounteren, MCOUNTEREN_IR",
         f"csrw hcounteren, x{save_reg}",
+        comment_banner(
+            "cp_virtual_instr_vs_tvm, cp_virtual_instr_vu_tvm",
+            "mstatus.TVM affects only HS-mode.  With mstatus.TVM = 1 and hstatus.VTVM = 0, read hgatp and vsatp in\n"
+            "VS-mode and hgatp, vsatp and satp in VU-mode.  Each raises virtual instruction, not illegal instruction",
+        ),
+        "RVTEST_TSBI_CSR_SET(CSR_MSTATUS, MSTATUS_TVM)",
+        "RVTEST_TSBI_GOTO_VSMODE",
+        *trap("hgatp", "cp_virtual_instr_vs_tvm", f"csrr x{rd}, hgatp"),
+        *trap("vsatp", "cp_virtual_instr_vs_tvm", f"csrr x{rd}, vsatp"),
+        "RVTEST_TSBI_GOTO_VUMODE",
+        *trap("hgatp", "cp_virtual_instr_vu_tvm", f"csrr x{rd}, hgatp"),
+        *trap("vsatp", "cp_virtual_instr_vu_tvm", f"csrr x{rd}, vsatp"),
+        *trap("satp", "cp_virtual_instr_vu_tvm", f"csrr x{rd}, satp"),
+        "RVTEST_TSBI_GOTO_SMODE",
+        "RVTEST_TSBI_CSR_CLEAR(CSR_MSTATUS, MSTATUS_TVM)",
     ]
     test_data.int_regs.return_registers([addr_reg, rd, save_reg, temp_reg])
     return lines

@@ -1,6 +1,7 @@
 // picorv32-act-main.cc
 // Verilator harness for running ACT self-checking ELFs on PicoRV32.
-// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+// Copyright (c) 2026, Harvey Mudd College
+// SPDX-License-Identifier: Apache-2.0
 //
 // This replaces picorv32's own testbench.cc, which ends in an unconditional
 // exit(0) and imposes no cycle limit at all under Verilator (the 1,000,000-cycle

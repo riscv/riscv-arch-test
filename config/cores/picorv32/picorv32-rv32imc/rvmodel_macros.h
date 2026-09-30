@@ -1,5 +1,6 @@
 # rvmodel_macros.h
 # RVMODEL macro definitions for the YosysHQ PicoRV32 core (picorv32_axi, RV32IMC)
+# Copyright (c) 2026, Harvey Mudd College
 # SPDX-License-Identifier: Apache-2.0
 
 #ifndef _RVMODEL_MACROS_H

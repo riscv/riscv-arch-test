@@ -1,5 +1,6 @@
 // Sail reference-model configuration for PicoRV32 (picorv32_axi, RV32IMC).
-// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+// Copyright (c) 2026, Harvey Mudd College
+// SPDX-License-Identifier: Apache-2.0
 {
   "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.14.1/sail_riscv_config_schema.json",
   "base": {

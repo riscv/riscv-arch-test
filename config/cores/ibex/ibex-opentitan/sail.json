@@ -604,8 +604,10 @@
     "Zbc": {
       "supported": true
     },
+    // Zbkb and Zbkx instructions are decoded in RV32BOTEarlGrey.
+    //   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_decoder.sv#L622-L638
     "Zbkb": {
-      "supported": false
+      "supported": true
     },
     // clmul and clmulh are decoded in RV32BOTEarlGrey, so Zbc implies Zbkc.
     //   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_decoder.sv#L642-L646
@@ -613,7 +615,7 @@
       "supported": true
     },
     "Zbkx": {
-      "supported": false
+      "supported": true
     },
     "Zknd": {
       "supported": false

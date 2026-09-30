@@ -62,8 +62,8 @@ implemented_extensions:
   #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/01_overview/compliance.rst#L57-L59
   - { name: Zifencei, version: "= 2.0" }
   # RV32B = RV32BOTEarlGrey, which is every bit-manipulation sub-extension except Zbe.
-  # Only Zba/Zbb/Zbc/Zbs are ratified at 1.0.0 and only those are claimed; UDB and Sail
-  # do not model the draft 0.93 Zbf/Zbp/Zbr/Zbt instructions Ibex additionally decodes.
+  # Zba/Zbb/Zbc/Zbs are claimed, plus the Zbkb/Zbkc/Zbkx instructions the draft 0.93
+  # sub-extensions provide. UDB and Sail do not model the rest of Zbf/Zbp/Zbr/Zbt.
   #   Quote: "RV32B                    : "ibex_pkg::RV32BOTEarlGrey""
   #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/ibex_configs.yaml#L45
   #   Quote: ""ibex_pkg::RV32BOTEarlGrey": All sub-extensions except Zbe"
@@ -80,6 +80,16 @@ implemented_extensions:
   #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_decoder.sv#L642-L646
   - { name: Zbkc, version: "= 1.0.0" }
   - { name: Zbs, version: "= 1.0.0" }
+  # Zbkb: pack and packh, brev8 (grevi 7), and zip and unzip (shfli and unshfli 15) are
+  # decoded in RV32BOTEarlGrey; andn, orn, xnor, rol, ror, rori and rev8 come with Zbb.
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_decoder.sv#L510-L516
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_decoder.sv#L554-L556
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_decoder.sv#L572-L577
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_decoder.sv#L622-L624
+  - { name: Zbkb, version: "= 1.0.0" }
+  # Zbkx: xperm4 and xperm8 are the draft xperm.n and xperm.b.
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_decoder.sv#L637-L638
+  - { name: Zbkx, version: "= 1.0.0" }
   # Zicntr: mcycle/minstret and their unprivileged cycle/instret aliases exist. The
   # time CSR does NOT (see TIME_CSR_IMPLEMENTED below), so ACT emulates time reads
   # from the memory-mapped mtime named by RVMODEL_MTIME_ADDRESS.

@@ -16,7 +16,7 @@
 // VS-level interrupt bits {VSEI, VSTI, VSSI} of an hvip, hip, hie or hideleg value
 `define INTERRUPTSH_VS(v) {v[10], v[6], v[2]}
 
-// Every coverpoint is sampled in HS-mode, the guest ones at the T-SBI call that enters the guest
+// Every coverpoint but the WFI ones is sampled in HS-mode, the guest ones at the T-SBI call that enters the guest
 covergroup InterruptsH_hs_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -123,6 +123,19 @@ covergroup InterruptsH_hs_cg with function sample(ins_t ins);
     }
     cp_priority_s: cross priv_mode_hs, set_sie, sip_s, sie_ones, hvip_all, hie_all, hideleg_none;
 
+    // A pending LCOFI with every VS-level interrupt pending and enabled: LCOFI is taken last
+    `ifdef SSCOFPMF_SUPPORTED
+        sip_lcofi : coverpoint {ins.prev.csr[CSR_SIP][13], ins.prev.csr[CSR_SIP][9], ins.prev.csr[CSR_SIP][5],
+                                ins.prev.csr[CSR_SIP][1]} {
+            bins lcofi = {4'b1000};
+        }
+        sie_lcofi : coverpoint {ins.prev.csr[CSR_SIE][13], ins.prev.csr[CSR_SIE][9], ins.prev.csr[CSR_SIE][5],
+                                ins.prev.csr[CSR_SIE][1]} {
+            bins lcofi = {4'b1000};
+        }
+        cp_priority_lcofi: cross priv_mode_hs, set_sie, sip_lcofi, sie_lcofi, hvip_all, hie_all, hideleg_none;
+    `endif
+
     // hie, hip, vsie and vsip through hideleg
     mie_vs_all : coverpoint `INTERRUPTSH_VS(ins.prev.csr[CSR_MIE]) {
         bins all = {3'b111};
@@ -134,7 +147,7 @@ covergroup InterruptsH_hs_cg with function sample(ins_t ins);
     cp_vsip:          cross priv_mode_hs, csrr, vsip, hideleg_vs, hvip_vs;
     cp_vsie_from_hie: cross priv_mode_hs, csrrw, vsie, ones_16, hideleg_vs;
 
-    // hie.SGEIE is an alias of mie.SGEIE, which is read-only zero when GEILEN = 0
+    // hie.SGEIE is an alias of mie.SGEIE, which is writable when GEILEN > 0 and implementation-defined otherwise
     `ifndef UDB_NUM_EXTERNAL_GUEST_INTERRUPTS_0
         mie_1444 : coverpoint ins.prev.csr[CSR_MIE][12:0] {
             bins sgei_vs = {13'h1444};
@@ -203,6 +216,26 @@ covergroup InterruptsH_hs_cg with function sample(ins_t ins);
 
     // Enter U-mode with the VS-level interrupts pending, enabled and delegated: none is taken
     cp_vsint_disabled_u: cross priv_mode_hs, ecall, tsbi_goto_u, hideleg_all, hvip_all, hie_all;
+
+    // WFI in VS-mode and VU-mode with mstatus.TW and hstatus.VTW = 0/1, sampled at the WFI.  In VS-mode, VSSI is
+    // pending and enabled in vsie but masked by vsstatus.SIE = 0
+    wfi : coverpoint ins.current.insn {
+        bins wfi = {WFI};
+    }
+    mstatus_tw : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tw") {
+        bins zero = {0};
+        bins one  = {1};
+    }
+    hstatus_vtw : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtw") {
+        bins zero = {0};
+        bins one  = {1};
+    }
+    vssi_masked : coverpoint {ins.prev.csr[CSR_VSSTATUS][1], ins.prev.csr[CSR_HIDELEG][2], ins.prev.csr[CSR_HVIP][2],
+                              ins.prev.csr[CSR_HIE][2]} {
+        bins masked = {4'b0111};
+    }
+    cp_wfi_vs: cross priv_mode_vs, wfi, mstatus_tw, hstatus_vtw, vssi_masked;
+    cp_wfi_vu: cross priv_mode_vu, wfi, mstatus_tw, hstatus_vtw;
 endgroup
 
 function void interruptsh_sample(int hart, int issue, ins_t ins);

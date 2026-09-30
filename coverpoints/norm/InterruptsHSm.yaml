@@ -19,6 +19,11 @@ normative_rule_definitions:
   - names: [intr_mip_mie_op, hideleg_hs]
     coverpoint: ["InterruptsHSm_m_cg/cp_mideleg_mip_{vs, vu}"]
 
+  # In VS-mode and VU-mode, interrupts for M-mode and HS-mode are always globally enabled, so pending M-level,
+  # HS-level and VS-level interrupts are taken in that order
+  - names: [mstatus_xie_intr_en_dis]
+    coverpoint: ["InterruptsHSm_m_cg/cp_priority_levels_{vs, vu}"]
+
   # An interrupt writes zero to mtinst
   - names: [H_trap_xtinst_interrupt, mtinst_val]
     coverpoint: ["InterruptsHSm_m_cg/cp_mtinst"]

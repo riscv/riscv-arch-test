@@ -15,6 +15,7 @@ ones at the T-SBI call that enters the guest.
 """
 
 from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.InterruptsCommon import (
@@ -174,6 +175,40 @@ def _priority_s_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _priority_lcofi_tests(test_data: TestData) -> list[str]:
+    """A pending LCOFI is taken after the VS-level interrupts."""
+    tmp_reg = test_data.int_regs.get_register()
+    lines = [
+        comment_banner(
+            "cp_priority_lcofi",
+            "With hvip = hie = 0x444, hideleg = 0 and sie.LCOFIE = 1, raise LCOFI, then set sstatus.SIE.\n"
+            "HS-mode takes VSEI, VSSI and VSTI, then LCOFI",
+        ),
+        "#ifdef SSCOFPMF_SUPPORTED",
+        "csrw hideleg, zero",
+        f"LI(x{tmp_reg}, MIP_VS_MASK)",
+        f"csrw hvip, x{tmp_reg}",
+        f"csrw hie, x{tmp_reg}",
+        f"LI(x{tmp_reg}, MIP_LCOFIP)",
+        f"csrw sie, x{tmp_reg}",
+        "RVTEST_SET_LCOFI_INT_S",
+        f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
+        test_data.add_testcase("lcofi", "cp_priority_lcofi", _CG),
+        f"csrr x{tmp_reg}, sip",
+        write_sigupd(tmp_reg, test_data),
+        "csrsi sstatus, SSTATUS_SIE",
+        f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
+        "csrci sstatus, SSTATUS_SIE",
+        "RVTEST_CLR_LCOFI_INT_S",
+        "csrw sie, zero",
+        "csrw hvip, zero",
+        "csrw hie, zero",
+        "#endif // SSCOFPMF_SUPPORTED",
+    ]
+    test_data.int_regs.return_register(tmp_reg)
+    return lines
+
+
 def _alias_tests(test_data: TestData) -> list[str]:
     """hie, hip, vsie and vsip as views of mie, mip and each other through hideleg."""
     tmp_reg, mask_reg = test_data.int_regs.get_registers(2)
@@ -274,12 +309,18 @@ def _alias_tests(test_data: TestData) -> list[str]:
         [
             "csrw hie, zero",
             "csrw hideleg, zero",
-            comment_banner("cp_hie_gilen", "With mie = 0x1444, read hie.  SGEIE is writable if GEILEN > 0"),
+            comment_banner(
+                "cp_hie_gilen",
+                "With mie = 0x1444, read hie.  SGEIE is writable when GEILEN > 0; otherwise mideleg[12] and so\n"
+                "SGEIE are implementation-defined, and the case is skipped",
+            ),
+            "#if UDB_NUM_EXTERNAL_GUEST_INTERRUPTS >= 1",
             "RVTEST_TSBI_CSR_WRITE(CSR_MIE, MIP_HS_MASK)",
             test_data.add_testcase("mie_1444", "cp_hie_gilen", _CG),
             f"csrr x{tmp_reg}, hie",
             write_sigupd(tmp_reg, test_data),
             "RVTEST_TSBI_CSR_WRITE(CSR_MIE, 0)",
+            "#endif",
         ]
     )
     test_data.int_regs.return_registers([tmp_reg, mask_reg])
@@ -405,6 +446,75 @@ def _user_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _wfi_tests(test_data: TestData) -> list[str]:
+    """WFI in VS-mode and VU-mode for each mstatus.TW and hstatus.VTW.
+
+    Where the spec lets WFI either complete or raise an exception, RVTEST_OPTIONAL_TRAP accepts both, so any other
+    exception fails.  mstatus.TW = 1 makes WFI in VS or VU raise illegal instruction unless it completes, and takes
+    precedence over VTW.  With TW = 0, VTW = 1 makes WFI in VS raise virtual instruction unless it completes, and WFI
+    in VU always raises virtual instruction.  With TW = VTW = 0, WFI in VS never traps; a VS-level interrupt that is
+    pending and enabled in vsie but masked by vsstatus.SIE = 0 makes it complete rather than wait.  VS-level
+    interrupts are never masked in VU, so the VU cases have none pending.
+    """
+    tmp_reg, trap_reg = test_data.int_regs.get_registers(2)
+    lines = []
+    for mode in ("vs", "vu"):
+        coverpoint = f"cp_wfi_{mode}"
+        lines.append(
+            comment_banner(
+                coverpoint,
+                f"Execute WFI in {mode.upper()}-mode with mstatus.TW = 0/1 and hstatus.VTW = 0/1"
+                + (", with VSSI pending and\nenabled in vsie but masked by vsstatus.SIE = 0" if mode == "vs" else ""),
+            )
+        )
+        for tw in (0, 1):
+            for vtw in (0, 1):
+                if tw:
+                    cause = "CAUSE_ILLEGAL_INSTRUCTION"
+                elif mode == "vs" and vtw:
+                    cause = "CAUSE_VIRTUAL_INSTRUCTION"
+                else:
+                    cause = None  # VS completes; VU always raises virtual instruction
+                label = test_data.add_testcase(f"tw{tw}_vtw{vtw}", coverpoint, _CG)
+                pending = "MIP_VSSIP" if mode == "vs" else "0"
+                lines.extend(
+                    [
+                        f"LI(x{tmp_reg}, MIP_VSSIP)",
+                        f"csrw hideleg, x{tmp_reg}",
+                        f"csrw hie, x{tmp_reg}",
+                        f"LI(x{tmp_reg}, {pending})",
+                        f"csrw hvip, x{tmp_reg}",
+                        f"LI(x{tmp_reg}, SSTATUS_SIE)",
+                        f"csrc vsstatus, x{tmp_reg}",
+                        f"LI(x{tmp_reg}, HSTATUS_VTW)",
+                        f"csr{'s' if vtw else 'c'} hstatus, x{tmp_reg}",
+                        f"LI(x{tmp_reg}, MSTATUS_TW)",
+                        tsbi_call(f"csr{'s' if tw else 'c'} mstatus, x{tmp_reg}"),
+                        *([f"RVTEST_OPTIONAL_TRAP(x{tmp_reg}, x{trap_reg}, {label[:-1]}, {cause})"] if cause else []),
+                        f"RVTEST_TSBI_GOTO_{mode.upper()}MODE",
+                        label,
+                        "wfi",
+                        *([f"RVTEST_OPTIONAL_TRAP_END(x{tmp_reg})"] if cause else []),
+                        "RVTEST_TSBI_GOTO_SMODE",
+                        f"csrr x{tmp_reg}, hip",
+                        write_sigupd(tmp_reg, test_data),
+                        "csrw hvip, zero",
+                    ]
+                )
+    lines.extend(
+        [
+            f"LI(x{tmp_reg}, MSTATUS_TW)",
+            tsbi_call(f"csrc mstatus, x{tmp_reg}"),
+            f"LI(x{tmp_reg}, HSTATUS_VTW)",
+            f"csrc hstatus, x{tmp_reg}",
+            "csrw hideleg, zero",
+            "csrw hie, zero",
+        ]
+    )
+    test_data.int_regs.return_registers([tmp_reg, trap_reg])
+    return lines
+
+
 @add_priv_test_generator(
     "InterruptsH",
     required_extensions=["H"],
@@ -423,7 +533,12 @@ def make_interruptsh(test_data: TestData) -> list[TestChunk]:
 
     tc = test_data.new_test_chunk(test_chunks, "priority")
     tc.code.extend(
-        [*_priority_tests(test_data, "hie"), *_priority_tests(test_data, "hideleg"), *_priority_s_tests(test_data)]
+        [
+            *_priority_tests(test_data, "hie"),
+            *_priority_tests(test_data, "hideleg"),
+            *_priority_s_tests(test_data),
+            *_priority_lcofi_tests(test_data),
+        ]
     )
 
     tc = test_data.new_test_chunk(test_chunks, "alias")
@@ -446,6 +561,9 @@ def make_interruptsh(test_data: TestData) -> list[TestChunk]:
 
     tc = test_data.new_test_chunk(test_chunks, "vu")
     tc.code.extend([*_guest_cross_tests(test_data, "vu"), *_user_tests(test_data)])
+
+    tc = test_data.new_test_chunk(test_chunks, "wfi")
+    tc.code.extend(_wfi_tests(test_data))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

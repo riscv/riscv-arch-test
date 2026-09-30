@@ -440,6 +440,21 @@
     LI(_R, 0x80000000)
 #endif
 
+// Arm the 4-byte instruction at _LABEL, for which the spec allows either completing or raising exception
+// _CAUSE. If it raises that exception, the trap handler disarms it and resumes after it without recording a
+// trap, so both outcomes give the same signature; any other trap is recorded as usual.
+// RVTEST_OPTIONAL_TRAP_END disarms it in case it completed. Both macros clobber only their register arguments.
+#define RVTEST_OPTIONAL_TRAP(_R1, _R2, _LABEL, _CAUSE) \
+    LA(_R1, rvtest_optional_trap); \
+    LI(_R2, _CAUSE); \
+    SREG _R2, REGWIDTH(_R1); \
+    LA(_R2, _LABEL); \
+    SREG _R2, 0(_R1);
+
+#define RVTEST_OPTIONAL_TRAP_END(_R1) \
+    LA(_R1, rvtest_optional_trap); \
+    SREG zero, 0(_R1);
+
 // Interrupt Macros
 // Idle for interrupt latency
 // using LA to ensure that the tests have consistent code length across different simulators

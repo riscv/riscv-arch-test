@@ -14,14 +14,6 @@
 
 `define COVER_EXCEPTIONSH
 
-// With nothing pending, WFI with hstatus.VTW = 1 traps unless the implementation lets it complete at once.
-// TODO: WFI_TRAP_ON_TIMEOUT_BEHAVIOR is a proposed riscv-unified-db parameter (link the UDB issue here).
-`ifdef UDB_WFI_TRAP_ON_TIMEOUT_BEHAVIOR_ALWAYS_TRAP
-    `define EXCEPTIONSH_WFI_VTW
-`elsif UDB_WFI_TRAP_ON_TIMEOUT_BEHAVIOR_TRAP_ON_TIMEOUT
-    `define EXCEPTIONSH_WFI_VTW
-`endif
-
 covergroup ExceptionsH_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -253,12 +245,6 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
     cp_virtual_instr_vs_sret:               cross priv_mode_vs, sret, hstatus_vtsr_enabled;
     cp_virtual_instr_vs_s_vma_instr:        cross priv_mode_vs, sfence_sinval_vma, hstatus_vtvm_enabled;
     cp_virtual_instr_vs_satp:               cross priv_mode_vs, csrr, satp, hstatus_vtvm_enabled;
-    `ifdef EXCEPTIONSH_WFI_VTW
-        hstatus_vtw_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtw") {
-            bins one = {1};
-        }
-        cp_virtual_instr_vs_wfi:            cross priv_mode_vs, wfi, hstatus_vtw_enabled, mstatus_tw_disabled;
-    `endif
 
     // Virtual-instruction exceptions from VU-mode
     cp_virtual_instr_vu_execute_h:          cross priv_mode_vu, hlvw_hlvxwu_hsvw_hfencevvma_hfencegvma_instr;

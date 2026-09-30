@@ -140,10 +140,6 @@ normative_rule_definitions:
         "ExceptionsH_cg/cp_virtual_instr_vu_execute_h",
       ]
 
-  # WFI in VS-mode with hstatus.VTW = 1 traps unless it completes within an implementation-specific time
-  - names: [hstatus_vtw_op, H_virtinst_wfi_vtw1_tw0]
-    coverpoint: ["ExceptionsH_cg/cp_virtual_instr_vs_wfi"]
-
   # Field HU (Hypervisor in U-mode) controls whether the virtual-machine load/store
   # instructions, HLV, HLVX, and HSV, can be used also in U-mode. When HU=1, these
   # instructions can be executed in U-mode the same as in HS-mode. When HU=0, all
@@ -220,12 +216,4 @@ normative_rule_definitions:
     coverpoint:
       [
         "Not tested: TODO misaligned loads and stores from VS-mode whose second page faults, on a configuration that writes transformed instructions to htinst; every configuration writes zero",
-      ]
-
-  # WFI in VS-mode with hstatus.VTW=1 and mstatus.TW=0 may raise virtual instruction even with a globally-disabled
-  # interrupt pending
-  - name: vtw_virtinstr
-    coverpoint:
-      [
-        "Not tested: with a globally-disabled interrupt pending, WFI may trap or complete, so neither outcome can be required",
       ]

@@ -74,9 +74,9 @@ normative_rule_definitions:
   - name: hip_img
     coverpoint: ["InterruptsH_hs_cg/cp_hip_write"]
 
-  # Simultaneous interrupts destined for HS-mode are taken in the order SEI, SSI, STI, SGEI, VSEI, VSSI, VSTI
+  # Simultaneous interrupts destined for HS-mode are taken in the order SEI, SSI, STI, SGEI, VSEI, VSSI, VSTI, LCOFI
   - names: [hsint_priority]
-    coverpoint: ["InterruptsH_hs_cg/cp_priority_{en_vsi, deleg_vsi, s}"]
+    coverpoint: ["InterruptsH_hs_cg/cp_priority_{en_vsi, deleg_vsi, s, lcofi}"]
 
   # Bits SGEIP, VSEIP, VSTIP, and VSSIP in mip are aliases for the same bits in hypervisor
   # CSR hip, while SGEIE, VSEIE, VSTIE, and VSSIE in mie are aliases for the same bits in
@@ -161,3 +161,8 @@ normative_rule_definitions:
         "H_hscsr_cg/cp_hcsrwalk (vsie and vsip bit 13 read zero while hideleg bit 13 is zero)",
         "Not tested: Shlcofideleg, which UDB and the reference model do not describe",
       ]
+
+  # WFI in VS-mode with hstatus.VTW = 1 and mstatus.TW = 0 raises virtual instruction unless it completes within
+  # an implementation-specific time, and may raise it even with a globally-disabled interrupt pending
+  - names: [hstatus_vtw_op, H_virtinst_wfi_vtw1_tw0, vtw_virtinstr]
+    coverpoint: ["InterruptsH_hs_cg/cp_wfi_vs"]

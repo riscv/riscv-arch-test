@@ -56,7 +56,7 @@ covergroup InterruptsHSm_m_cg with function sample(ins_t ins);
     cp_mie: cross priv_mode_m, csrr, mie, hie_vs;
     cp_mip: cross priv_mode_m, csrr, mip, hvip_all;
 
-    // hie.SGEIE is read-only zero when GEILEN = 0
+    // hie.SGEIE is writable when GEILEN > 0 and implementation-defined otherwise
     `ifndef UDB_NUM_EXTERNAL_GUEST_INTERRUPTS_0
         hie_sgei_vs : coverpoint ins.prev.csr[CSR_HIE][12:0] {
             bins sgei_vs = {13'h1444};
@@ -73,8 +73,8 @@ covergroup InterruptsHSm_m_cg with function sample(ins_t ins);
     }
     cp_nohint_m: cross priv_mode_m, set_mie, mie_vs, hvip_all, hideleg_none;
 
-    // Enter VS or VU mode with one M-level or S-level interrupt pending and mideleg = 0 or 1s, sampled at the
-    // T-SBI call: an ecall with a0 = TSBI_GOTO_VSMODE (4) or TSBI_GOTO_VUMODE (5) (CTP abstraction.adoc)
+    // Enter VS or VU mode with one M-level or S-level interrupt pending and mideleg.SEI/STI/SSI = 0 or 1, sampled at
+    // the T-SBI call: an ecall with a0 = TSBI_GOTO_VSMODE (4) or TSBI_GOTO_VUMODE (5) (CTP abstraction.adoc)
     tsbi_goto_vs : coverpoint ins.prev.x_wdata[10] {
         bins goto_vs = {4};
     }
@@ -103,6 +103,37 @@ covergroup InterruptsHSm_m_cg with function sample(ins_t ins);
     }
     cp_mideleg_mip_vs: cross priv_mode_m, ecall, tsbi_goto_vs, mideleg_s, mip_pending, mie_ones, mstatus_mie_zero;
     cp_mideleg_mip_vu: cross priv_mode_m, ecall, tsbi_goto_vu, mideleg_s, mip_pending, mie_ones, mstatus_mie_zero;
+
+    // Enter VS or VU mode with two or three of MSI (M-level), SSI (delegated to HS-mode by mideleg) and VSSI
+    // (delegated to VS-mode by hideleg) pending and enabled, sampled at the T-SBI call
+    mip_levels : coverpoint {ins.prev.csr[CSR_MIP][3], ins.prev.csr[CSR_MIP][1], ins.prev.csr[CSR_HVIP][2]} {
+        `ifdef UDB_MSI_INTR_IMPL
+            `ifdef UDB_SSI_INTR_IMPL
+                bins m_hs    = {3'b110};
+                bins m_hs_vs = {3'b111};
+            `endif
+            bins m_vs = {3'b101};
+        `endif
+        `ifdef UDB_SSI_INTR_IMPL
+            bins hs_vs = {3'b011};
+        `endif
+    }
+    mie_levels : coverpoint {ins.prev.csr[CSR_MIE][3], ins.prev.csr[CSR_MIE][1], ins.prev.csr[CSR_MIE][2]} {
+        bins all = {3'b111};
+    }
+    mideleg_ssi : coverpoint {ins.prev.csr[CSR_MIDELEG][3], ins.prev.csr[CSR_MIDELEG][1]} {
+        bins hs = {2'b01};
+    }
+    hideleg_vssi : coverpoint ins.prev.csr[CSR_HIDELEG][2] {
+        bins vs = {1};
+    }
+    vsstatus_sie_one : coverpoint ins.prev.csr[CSR_VSSTATUS][1] {
+        bins one = {1};
+    }
+    cp_priority_levels_vs: cross priv_mode_m, ecall, tsbi_goto_vs, mip_levels, mie_levels, mideleg_ssi, hideleg_vssi,
+                                 mstatus_mie_zero, vsstatus_sie_one;
+    cp_priority_levels_vu: cross priv_mode_m, ecall, tsbi_goto_vu, mip_levels, mie_levels, mideleg_ssi, hideleg_vssi,
+                                 mstatus_mie_zero;
 
     // Each interrupt taken into M-mode with mtinst nonzero
     mtinst_nonzero : coverpoint (ins.prev.csr[CSR_MTINST] != 0) {

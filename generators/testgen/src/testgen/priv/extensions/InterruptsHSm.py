@@ -54,13 +54,17 @@ def _mcsr_tests(test_data: TestData) -> list[str]:
         f"csrr x{check_reg}, mie",
         write_sigupd(check_reg, test_data),
         comment_banner(
-            "cp_mie_gilen", "With hie = 0x1444, read mie.  SGEIE is writable if GEILEN > 0 and read-only 0 otherwise"
+            "cp_mie_gilen",
+            "With hie = 0x1444, read mie.  SGEIE is writable when GEILEN > 0; otherwise mideleg[12] and so SGEIE\n"
+            "are implementation-defined, and the case is skipped",
         ),
+        "#if UDB_NUM_EXTERNAL_GUEST_INTERRUPTS >= 1",
         f"LI(x{tmp_reg}, MIP_HS_MASK)",
         f"csrw hie, x{tmp_reg}",
         test_data.add_testcase("hie_1444", "cp_mie_gilen", _CG),
         f"csrr x{check_reg}, mie",
         write_sigupd(check_reg, test_data),
+        "#endif",
         "csrw hie, zero",
         comment_banner("cp_mip", "With hvip = 0x444, read the VS-level and SGEI bits of mip, and hip"),
         f"LI(x{tmp_reg}, MIP_VS_MASK)",
@@ -95,22 +99,24 @@ def _mcsr_tests(test_data: TestData) -> list[str]:
 
 
 def _mideleg_mip_tests(test_data: TestData, mode: str) -> list[str]:
-    """With mideleg = 0 or 1s, enter VS or VU mode with one M-level or S-level interrupt pending.
+    """With mideleg delegating no S-level interrupt or all of them, enter VS or VU mode with one M-level or S-level
+    interrupt pending.
 
     M-mode takes the M-level interrupts, and the S-level ones unless mideleg delegates them, in which case
-    HS-mode takes them.
+    HS-mode takes them.  Only the S-level bits of mideleg are written: an implementation may make the M-level bits
+    writable, which would delegate the M-level interrupts too.
     """
     coverpoint = f"cp_mideleg_mip_{mode.lower()}"
     tmp_reg = test_data.int_regs.get_register()
     lines = [
         comment_banner(
             coverpoint,
-            f"With mstatus.MIE = 0, mie = 1s and mideleg = 0/1s, raise MEI, MTI, MSI, SEI, STI or SSI and enter\n"
-            f"{mode}-mode.  M-mode takes the interrupt, or HS-mode when mideleg delegates it",
+            "With mstatus.MIE = 0, mie = 1s and mideleg.SEI/STI/SSI = 0/1, raise MEI, MTI, MSI, SEI, STI or SSI\n"
+            f"and enter {mode}-mode.  M-mode takes the interrupt, or HS-mode when mideleg delegates it",
         ),
         "csrci mstatus, MSTATUS_MIE",
     ]
-    for deleg in (0, -1):
+    for deleg in ("0", "MIP_S_MASK"):
         for int_type in ["MEI", "MTI", "MSI", "SEI", "STI", "SSI"]:
             macro = int_macro[int_type]
             guard = guard_symbol(int_type)
@@ -124,7 +130,7 @@ def _mideleg_mip_tests(test_data: TestData, mode: str) -> list[str]:
                     f"RVTEST_SET_{macro}_INT_M",
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
                     test_data.add_testcase(
-                        f"mideleg_{'ones' if deleg else 'zeros'}_{int_type.lower()}", coverpoint, _CG
+                        f"mideleg_{'zeros' if deleg == '0' else 'ones'}_{int_type.lower()}", coverpoint, _CG
                     ),
                     f"RVTEST_TSBI_GOTO_{mode}MODE",
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
@@ -135,6 +141,54 @@ def _mideleg_mip_tests(test_data: TestData, mode: str) -> list[str]:
                 ]
             )
     lines.append("csrw mideleg, zero")
+    test_data.int_regs.return_register(tmp_reg)
+    return lines
+
+
+def _priority_level_tests(test_data: TestData, mode: str) -> list[str]:
+    """Enter VS or VU mode with interrupts pending for two or three of M-mode (MSI), HS-mode (SSI, delegated by
+    mideleg) and VS-mode (VSSI, delegated by hideleg).  They are taken in the order M, HS, VS."""
+    coverpoint = f"cp_priority_levels_{mode.lower()}"
+    tmp_reg = test_data.int_regs.get_register()
+    levels = {
+        "m": ("MSI", "MSW", "UDB_MSI_INTR_IMPL"),
+        "hs": ("SSI", "SSW", "UDB_SSI_INTR_IMPL"),
+        "vs": ("VSSI", "VSSW", None),
+    }
+    lines = [
+        comment_banner(
+            coverpoint,
+            "With mstatus.MIE = 0, mideleg.SSI = 1, hideleg.VSSI = 1, mie.MSIE = mie.SSIE = mie.VSSIE = 1 and\n"
+            f"vsstatus.SIE = 1, raise two or three of MSI, SSI and VSSI and enter {mode}-mode.  M-mode takes MSI,\n"
+            "then HS-mode takes SSI, then VS-mode takes VSSI",
+        ),
+        "csrci mstatus, MSTATUS_MIE",
+        f"LI(x{tmp_reg}, MIP_SSIP)",
+        f"csrw mideleg, x{tmp_reg}",
+        f"LI(x{tmp_reg}, MIP_VSSIP)",
+        f"csrw hideleg, x{tmp_reg}",
+        f"LI(x{tmp_reg}, SSTATUS_SIE)",
+        f"csrs vsstatus, x{tmp_reg}",
+    ]
+    for combo in (("m", "hs"), ("m", "vs"), ("hs", "vs"), ("m", "hs", "vs")):
+        guards = [levels[level][2] for level in combo if levels[level][2]]
+        lines.extend(
+            [
+                *[f"#ifdef {guard}" for guard in guards],
+                f"LI(x{tmp_reg}, MIP_MSIP | MIP_SSIP | MIP_VSSIP)",
+                f"csrw mie, x{tmp_reg}",
+                *[f"RVTEST_SET_{levels[level][1]}_INT_M" for level in combo],
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
+                test_data.add_testcase("_".join(combo), coverpoint, _CG),
+                f"RVTEST_TSBI_GOTO_{mode}MODE",
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
+                "RVTEST_TSBI_GOTO_MMODE",
+                *[f"RVTEST_CLR_{levels[level][1]}_INT_M" for level in combo],
+                "csrw mie, zero",
+                *[f"#endif // {guard}" for guard in reversed(guards)],
+            ]
+        )
+    lines.extend(["csrw mideleg, zero", "csrw hideleg, zero"])
     test_data.int_regs.return_register(tmp_reg)
     return lines
 
@@ -155,6 +209,9 @@ def make_interruptshsm(test_data: TestData) -> list[TestChunk]:
 
     tc = test_data.new_test_chunk(test_chunks, "mideleg_mip")
     tc.code.extend([*_mideleg_mip_tests(test_data, "VS"), *_mideleg_mip_tests(test_data, "VU")])
+
+    tc = test_data.new_test_chunk(test_chunks, "priority_levels")
+    tc.code.extend([*_priority_level_tests(test_data, "VS"), *_priority_level_tests(test_data, "VU")])
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

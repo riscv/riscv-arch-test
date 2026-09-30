@@ -71,7 +71,7 @@ normative_rule_definitions:
         "HSm_tvm_cg/cp_tvm_vs",
         "ExceptionsHSm_cg/cp_tsr_vs_sret",
         "ExceptionsH_cg/cp_virtual_instr_{vs_tvm, vu_tvm}",
-        "TODO: wfi in VS-mode and VU-mode with mstatus.TW = 1, once a UDB parameter says whether WFI can complete",
+        "InterruptsH_hs_cg/cp_wfi_{vs, vu}",
       ]
 
   # hstatus.VTVM traps satp accesses and sfence.vma in VS-mode

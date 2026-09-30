@@ -165,9 +165,10 @@ def _sgei_tests(test_data: TestData) -> list[str]:
             "bit i and every implemented bit.  hip.SGEIP = 1 when hgeip & hgeie != 0",
         )
     )
+    # With GEILEN = 1, "all" is the same case as "i", and "others" below is the same case as "none"
     for pending in ("none", "i", "all"):
         if pending == "all":
-            lines.extend(all_gei("SET"))
+            lines.extend(["#if UDB_NUM_EXTERNAL_GUEST_INTERRUPTS >= 2", *all_gei("SET")])
         for gei in geis:
             body = [
                 *(_gei("SET", gei, tmp_reg) if pending == "i" else []),
@@ -176,7 +177,7 @@ def _sgei_tests(test_data: TestData) -> list[str]:
             ]
             lines.extend(each_gei(body, gei))
         if pending == "all":
-            lines.extend(all_gei("CLR"))
+            lines.extend([*all_gei("CLR"), "#endif"])
     lines.append(
         comment_banner(
             "cp_trigger_vsei_hgeip",
@@ -187,7 +188,7 @@ def _sgei_tests(test_data: TestData) -> list[str]:
     # "others" raises every guest external interrupt once and clears bit i around each case
     for pending in ("none", "i", "others"):
         if pending == "others":
-            lines.extend(all_gei("SET"))
+            lines.extend(["#if UDB_NUM_EXTERNAL_GUEST_INTERRUPTS >= 2", *all_gei("SET")])
         for gei in geis:
             body = [
                 *(_gei("SET", gei, tmp_reg) if pending == "i" else []),
@@ -203,7 +204,7 @@ def _sgei_tests(test_data: TestData) -> list[str]:
             body.extend(_gei("SET", gei, tmp_reg) if pending == "others" else [])
             lines.extend(each_gei(body, gei))
         if pending == "others":
-            lines.extend(all_gei("CLR"))
+            lines.extend([*all_gei("CLR"), "#endif"])
     lines.extend(
         [
             comment_banner(

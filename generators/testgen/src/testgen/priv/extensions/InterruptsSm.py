@@ -77,14 +77,16 @@ def _generate_cp_trigger_sm(
         macro = int_macro[int_type]
         guard = guard_symbol(int_type)
         cp = int_coverpoint.get(int_type, "cp_trigger")
-        for mideleg in [0, -1]:
-            delegstr = "zeros" if mideleg == 0 else "ones"
+        # mideleg = ones delegates only the S-level interrupts: an implementation may make the M-level bits
+        # writable, which would delegate the M-level interrupts too
+        for mideleg in ["0", "MIP_S_MASK | MIP_LCOFIP"]:
+            delegstr = "zeros" if mideleg == "0" else "ones"
             # mideleg only exists with S-mode. Without it the mideleg = zeros cases still run and just
             # skip the write, while the mideleg = ones cases are meaningless and are left out entirely.
-            case_open = ["#ifdef S_SUPPORTED // only test delegation if S_SUPPORTED"] if mideleg == -1 else []
-            case_close = ["#endif // S_SUPPORTED"] if mideleg == -1 else []
-            write_open = ["#ifdef S_SUPPORTED // only write mideleg if S_SUPPORTED"] if mideleg == 0 else []
-            write_close = ["#endif // S_SUPPORTED"] if mideleg == 0 else []
+            case_open = ["#ifdef S_SUPPORTED // only test delegation if S_SUPPORTED"] if delegstr == "ones" else []
+            case_close = ["#endif // S_SUPPORTED"] if delegstr == "ones" else []
+            write_open = ["#ifdef S_SUPPORTED // only write mideleg if S_SUPPORTED"] if delegstr == "zeros" else []
+            write_close = ["#endif // S_SUPPORTED"] if delegstr == "zeros" else []
             for mode in [0, 1]:
                 for sie in [0, 1]:
                     for mie in [0, 1]:

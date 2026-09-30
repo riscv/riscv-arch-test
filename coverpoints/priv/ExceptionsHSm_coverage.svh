@@ -62,6 +62,9 @@ covergroup ExceptionsHSm_cg with function sample(ins_t ins);
     csrr: coverpoint ins.current.insn {
         wildcard bins csrr = {CSRR};
     }
+    sret: coverpoint ins.current.insn {
+        bins sret = {SRET};
+    }
     vstval: coverpoint ins.current.insn[31:20] {
         bins vstval = {CSR_VSTVAL};
     }
@@ -120,6 +123,13 @@ covergroup ExceptionsHSm_cg with function sample(ins_t ins);
         bins hu_disabled = {0};
         bins hu_enabled  = {1};
     }
+    hstatus_vtsr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtsr") {
+        bins vtsr_0 = {0};
+        bins vtsr_1 = {1};
+    }
+    mstatus_tsr_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tsr") {
+        bins tsr_enabled = {1};
+    }
     // Written before entering VS-mode, so the trap record shows what the exception writes
     mtval2_mtinst_nonzero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mtval2", "") != 0 &&
                                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mtinst", "") != 0) {
@@ -141,6 +151,9 @@ covergroup ExceptionsHSm_cg with function sample(ins_t ins);
     cp_ecall_to_m:  cross priv_mode_m_hs_vs_u_vu, ecall, medeleg_delegation;
     cp_ebreak_to_m: cross priv_mode_m_hs_vs_u_vu, ebreak, medeleg_delegation;
 
+    // mstatus.TSR affects only HS-mode: sret in VS-mode executes when hstatus.VTSR = 0 and raises virtual instruction
+    // when VTSR = 1
+    cp_tsr_vs_sret: cross priv_mode_vs, sret, mstatus_tsr_enabled, hstatus_vtsr;
     // Every hlv, hlvx and hsv in M-mode at each offset of a doubleword
     cp_hlv_address_misaligned: cross priv_mode_m, hlv_instructions, hlv_adr_LSBs;
     cp_hsv_address_misaligned: cross priv_mode_m, hsv_instructions, hlv_adr_LSBs;

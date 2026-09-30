@@ -46,6 +46,11 @@ normative_rule_definitions:
         "ExceptionsHSm_cg/cp_{hlv_address_misaligned, hsv_address_misaligned, hlv_access_fault, hsv_access_fault}",
       ]
 
+  # sret in VS-mode with mstatus.TSR = 1 executes when hstatus.VTSR = 0 and raises virtual instruction when VTSR = 1
+  - names:
+      [H_cause_virtual_instruction, H_virtinst_vs_sret_vtsr1, hstatus_vtsr_op]
+    coverpoint: ["ExceptionsHSm_cg/cp_tsr_vs_sret"]
+
   # Priority of access fault and address misaligned for hlv and hsv in M-mode
   - names: [H_exception_priority]
     coverpoint: ["ExceptionsHSm_cg/cp_priority"]

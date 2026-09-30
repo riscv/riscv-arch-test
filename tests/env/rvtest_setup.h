@@ -1205,7 +1205,6 @@
         sw t1, 4(t0)
       #elif !defined(RVTEST_SELFCHECK)
         // Sail always has a CLINT, and its mtimecmp resets to 0, so park it even if the DUT has no timer.
-        // The DUT build needs no padding to match, since .text.rvmodel is linked after .data.
         LA(t0, SAIL_MTIMECMP_ADDRESS)
         addi t1, zero, -1
         sw t1, 0(t0)

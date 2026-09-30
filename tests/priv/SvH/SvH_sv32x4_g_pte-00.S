@@ -478,11 +478,6 @@ svh_page:
   .4byte 0x00000013    # nop straddling the next page
   .4byte 0x00008067    # ret
   .skip 4096 - 6
-svh_pbmt_page:
-  .4byte 0x00008067    # ret
-  .4byte 0
-  .4byte 0x5a5a5a5a    # load/store word
-  .skip 4096 - 12
 
 // Testcase strings
 SvH_gstage_cg_cp_hgatp_perm_invalid_store_str: .string "\"test: 225; cg: SvH_gstage_cg; cp: cp_hgatp_perm; bin: invalid_store\""

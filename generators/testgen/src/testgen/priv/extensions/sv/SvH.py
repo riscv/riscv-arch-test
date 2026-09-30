@@ -73,22 +73,13 @@ CSR_CG = "SvH_csr_cg"
 
 
 def begin_chunk(
-    test_data: TestData,
-    split_name: str,
-    title: str,
-    description: str,
-    stages: Sequence[SvMode] = (),
-    *,
-    pbmt_page: bool = False,
+    test_data: TestData, split_name: str, title: str, description: str, stages: Sequence[SvMode] = ()
 ) -> TestChunk:
     """Start a chunk whose data section holds two physical test pages and the page tables ``stages`` need.
 
     svh_page is an odd 4 KiB page, so no superpage leaf maps it aligned.  It starts with ret, holds the load/store
     word at offset 8 and ends with a nop that straddles the next page, which continues with ret.  The framework
     provides the root and level 0-1 tables; the chunk adds the level 2 and 3 tables that Sv48 and Sv57 walk.
-
-    With ``pbmt_page``, svh_pbmt_page follows with the same ret and load/store word.  The NC and IO accesses use it,
-    so no location is accessed with different cacheability attributes, which Svpbmt says may lose coherence.
     """
     chunk = test_data.begin_test_chunk(split_name)
     chunk.section_header = comment_banner(title, description)
@@ -106,16 +97,6 @@ def begin_chunk(
             ".skip 4096 - 6",
         ]
     )
-    if pbmt_page:
-        chunk.raw_data.extend(
-            [
-                "svh_pbmt_page:",
-                ".4byte 0x00008067    # ret",
-                ".4byte 0",
-                ".4byte 0x5a5a5a5a    # load/store word",
-                ".skip 4096 - 12",
-            ]
-        )
     for stage in stages:
         for level in range(2, stage.levels - 1):
             chunk.raw_data.extend([".p2align 12", f"{stage.page_table_label(level)}:", ".skip 4096"])
@@ -165,11 +146,10 @@ def map_test_page(
     vs: SvMode | None,
     vs_flags: PteExpression = VS_LEAF,
     g_flags: PteExpression = G_LEAF,
-    page: str = "svh_page",
 ) -> list[str]:
-    """Map vs.data_va to the guest physical address g.data_va, and that to ``page``, with kilopage leaves.
+    """Map vs.data_va to the guest physical address g.data_va, and that to svh_page, with kilopage leaves.
 
-    A None stage is Bare: vs.data_va then maps to ``page``, or the guest accesses g.data_va directly.
+    A None stage is Bare: vs.data_va then maps to svh_page, or the guest accesses g.data_va directly.
     """
     pte, addr, tmp = test_data.int_regs.get_registers(3)
     regs = (pte, addr, tmp)
@@ -181,7 +161,7 @@ def map_test_page(
                 leaf_level=0,
                 leaf_flags=vs_flags,
                 virtual_address=vs.data_va,
-                physical_address=page if g is None else g.data_va,
+                physical_address="svh_page" if g is None else g.data_va,
                 regs=regs,
                 pa_is_label=g is None,
             )
@@ -189,7 +169,7 @@ def map_test_page(
     if g is not None:
         lines.extend(
             create_page_mapping(
-                g, leaf_level=0, leaf_flags=g_flags, virtual_address=g.data_va, physical_address=page, regs=regs
+                g, leaf_level=0, leaf_flags=g_flags, virtual_address=g.data_va, physical_address="svh_page", regs=regs
             )
         )
     test_data.int_regs.return_registers(list(regs))
@@ -377,7 +357,6 @@ def _t_vs_pte(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode) -> 
         "RSW, reserved or PBMT bits (PBMT with henvcfg.PBMTE = 0, 1), and through leaves with A or D clear\n"
         "with henvcfg.ADUE = 0 (page fault) and 1 (hardware update, checked in the PTE)",
         stages=(vs,),
-        pbmt_page=True,
     )
     va = vs.data_va
     reg = test_data.int_regs.get_register()
@@ -400,9 +379,7 @@ def _t_vs_pte(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode) -> 
             for pbmt in (1, 2, 3):
                 setup = [
                     *henvcfg_bits(64, reg, adue=0, pbmte=pbmte),
-                    *map_test_page(
-                        test_data, None, vs, vs_flags=PteFlags(extra=(f"({pbmt} << 61)",)), page="svh_pbmt_page"
-                    ),
+                    *map_test_page(test_data, None, vs, vs_flags=PteFlags(extra=(f"({pbmt} << 61)",))),
                 ]
                 code.extend(
                     guest_access(test_data, VS_CG, "cp_vsatp_pbmt", f"pbmte{pbmte}_pbmt{pbmt}", "VS", va, setup=setup)
@@ -479,7 +456,6 @@ def _t_g_pte(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> No
         "reserved, G or PBMT bits (PBMT with menvcfg.PBMTE = 0, 1), are misaligned superpages, or have A or D clear\n"
         "with menvcfg.ADUE = 0 (guest-page fault) and 1 (hardware update, checked in the PTE)",
         stages=(g,),
-        pbmt_page=True,
     )
     va = g.data_va
     code = guest_chunk_setup(test_data, g, None, "VS")
@@ -507,13 +483,7 @@ def _t_g_pte(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> No
             for pbmt in (1, 2, 3):
                 setup = [
                     *menvcfg_bits(64, adue=0, pbmte=pbmte),
-                    *map_test_page(
-                        test_data,
-                        g,
-                        None,
-                        g_flags=PteFlags(user=True, extra=(f"({pbmt} << 61)",)),
-                        page="svh_pbmt_page",
-                    ),
+                    *map_test_page(test_data, g, None, g_flags=PteFlags(user=True, extra=(f"({pbmt} << 61)",))),
                 ]
                 name = f"pbmte{pbmte}_pbmt{pbmt}"
                 code.extend(guest_access(test_data, G_CG, "cp_hgatp_pbmt", name, "VS", va, setup=setup))

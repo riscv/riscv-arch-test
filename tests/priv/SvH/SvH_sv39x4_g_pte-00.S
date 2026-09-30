@@ -690,7 +690,7 @@ SvH_gstage_cg_cp_hgatp_perm_misaligned_lvl2_exec:
   or x8, x8, x9
   SREG x8, 0(x14)
   LA(x14, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
-  LA(x8, svh_pbmt_page)
+  LA(x8, svh_page)
   srli x8, x8, 12
   slli x8, x8, 10
   LI(x9, (1 << 61) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
@@ -728,7 +728,7 @@ SvH_gstage_cg_cp_hgatp_pbmt_pbmte0_pbmt1_exec:
   or x15, x15, x14
   SREG x15, 0(x8)
   LA(x8, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
-  LA(x15, svh_pbmt_page)
+  LA(x15, svh_page)
   srli x15, x15, 12
   slli x15, x15, 10
   LI(x14, (2 << 61) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
@@ -766,7 +766,7 @@ SvH_gstage_cg_cp_hgatp_pbmt_pbmte0_pbmt2_exec:
   or x6, x6, x9
   SREG x6, 0(x13)
   LA(x13, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
-  LA(x6, svh_pbmt_page)
+  LA(x6, svh_page)
   srli x6, x6, 12
   slli x6, x6, 10
   LI(x9, (3 << 61) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
@@ -805,7 +805,7 @@ SvH_gstage_cg_cp_hgatp_pbmt_pbmte0_pbmt3_exec:
   or x14, x14, x15
   SREG x14, 0(x8)
   LA(x8, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
-  LA(x14, svh_pbmt_page)
+  LA(x14, svh_page)
   srli x14, x14, 12
   slli x14, x14, 10
   LI(x15, (1 << 61) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
@@ -844,7 +844,7 @@ SvH_gstage_cg_cp_hgatp_pbmt_pbmte1_pbmt1_exec:
   or x14, x14, x13
   SREG x14, 0(x15)
   LA(x15, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
-  LA(x14, svh_pbmt_page)
+  LA(x14, svh_page)
   srli x14, x14, 12
   slli x14, x14, 10
   LI(x13, (2 << 61) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
@@ -883,7 +883,7 @@ SvH_gstage_cg_cp_hgatp_pbmt_pbmte1_pbmt2_exec:
   or x15, x15, x6
   SREG x15, 0(x14)
   LA(x14, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
-  LA(x15, svh_pbmt_page)
+  LA(x15, svh_page)
   srli x15, x15, 12
   slli x15, x15, 10
   LI(x6, (3 << 61) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
@@ -1104,11 +1104,6 @@ svh_page:
   .4byte 0x00000013    # nop straddling the next page
   .4byte 0x00008067    # ret
   .skip 4096 - 6
-svh_pbmt_page:
-  .4byte 0x00008067    # ret
-  .4byte 0
-  .4byte 0x5a5a5a5a    # load/store word
-  .skip 4096 - 12
 
 // Testcase strings
 SvH_gstage_cg_cp_hgatp_perm_invalid_store_str: .string "\"test: 267; cg: SvH_gstage_cg; cp: cp_hgatp_perm; bin: invalid_store\""

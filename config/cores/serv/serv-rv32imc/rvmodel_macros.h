@@ -9,9 +9,23 @@
 
 #define RVMODEL_DATA_SECTION
 
-// The default RVTEST_BOOT_TO_MMODE works: with Sm 1.11.0, no mcountinhibit and no HPM counters in
-// the UDB configuration, it touches no CSR that aliases onto mtvec, mstatus or mscratch.
 #define STANDARD_SM_SUPPORTED
+
+// The default RVTEST_BOOT_TO_MMODE, limited to the CSRs SERV implements.  SERV decodes a CSR
+// address from instruction bits 26, 22, 21 and 20 only, so the default boot's writes to
+// mhpmevent3..31 land on mtvec, mstatus, mie and mcause, and zeroing mtvec breaks every trap.
+// https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_decode.v#L168-L202
+#define RVMODEL_BOOT_TO_MMODE          \
+  rvtest_boot_to_mmode:               ;\
+  csrw mie, zero                      ;\
+  csrw mip, zero                      ;\
+  csrw mepc, zero                     ;\
+  csrw mtval, zero                    ;\
+  csrw mcause, zero                   ;\
+  RVTEST_TRAP_PROLOG M                ;\
+  rvtest_boot_to_mmode_csr_init:      ;\
+  LI(t0, MSTATUS_MPP)                 ;\
+  csrw mstatus, t0
 
 // No address faults: the Wishbone bus has no error response, and servile_mux and servant_mux
 // decode the whole address space into RAM, GPIO and timer.

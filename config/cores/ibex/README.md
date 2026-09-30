@@ -11,9 +11,9 @@ processor in OpenTitan. The configuration runs
 Verilator, pinned to `lowRISC/ibex` at `e9f5534`. The RTL is the `opentitan` named configuration
 with `BaseIsa` set to `RV32I`, and is not patched.
 
-| Config           | ISA                                        | Modes                 |
-| ---------------- | ------------------------------------------ | --------------------- |
-| `ibex-opentitan` | RV32IMC_Zba_Zbb_Zbc_Zbs_Zbkb_Zbkc_Zbkx_Zcb | M + U, 16 PMP entries |
+| Config           | ISA                                                              | Modes                 |
+| ---------------- | ---------------------------------------------------------------- | --------------------- |
+| `ibex-opentitan` | RV32IMC_Zihintntl_Zihintpause_Zba_Zbb_Zbc_Zbs_Zbkb_Zbkc_Zbkx_Zcb | M + U, 16 PMP entries |
 
 Ibex implements privileged specification 1.12.
 

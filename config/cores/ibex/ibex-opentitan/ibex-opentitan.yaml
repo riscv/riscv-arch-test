@@ -61,6 +61,12 @@ implemented_extensions:
   # Quote: "**Zifencei**: Instruction-Fetch Fence | 2.0 | always enabled"
   #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/01_overview/compliance.rst#L57-L59
   - { name: Zifencei, version: "= 2.0" }
+  # The Zihintntl and Zihintpause hints execute as no-ops: ntl.* is add x0, x0, rs2,
+  # c.ntl.* expands to the same add, and every FENCE, including pause, is a no-op.
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_compressed_decoder.sv#L598-L601
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_decoder.sv#L704-L709
+  - { name: Zihintntl, version: "= 1.0.0" }
+  - { name: Zihintpause, version: "= 2.0.0" }
   # RV32B = RV32BOTEarlGrey, which is every bit-manipulation sub-extension except Zbe.
   # Zba/Zbb/Zbc/Zbs are claimed, plus the Zbkb/Zbkc/Zbkx instructions the draft 0.93
   # sub-extensions provide. UDB and Sail do not model the rest of Zbf/Zbp/Zbr/Zbt.

@@ -1419,18 +1419,32 @@
         csrw henvcfg, t0
       #endif
 
-      // hstateen0 gives VS-mode the same state that sstateen0 gives lower modes, plus
-      // access to sstateen0 (SE0) and senvcfg (ENVCFG).
+      // Enable access to standard state from VS/VU-mode, matching mstateen0 above.
+      // hstateen0.SE0 = 1: Enable access to sstateen0
+      // hstateen0.ENVCFG = 1: Enable access to senvcfg
+      // hstateen0.CSRIND = 1: Enable access to supervisor indirect CSR state
+      // hstateen0.AIA = 1: Enable access to Ssaia advanced interrupt architecture state
+      // hstateen0.IMSIC = 1: Enable access to IMSIC state
+      // hstateen0.SCONTEXT = 1: Enable access to scontext
+      // hstateen0.CTR = 1: Enable access to control transfer record state
+      // hstateen0.JVT = 1: Enable access to jvt for Zcmt
+      // hstateen0.FCSR = 1: Enable access to floating-point CSRs for Zfinx
+      // Keep custom state and reserved bits disabled. hstateen0 has no P1P13 or SRMCFG
+      // bit; that state is M-level only. A bit whose feature is not implemented reads
+      // as zero, so enabling the whole set costs nothing on a smaller hart.
       #ifdef SSSTATEEN_SUPPORTED
         #if __riscv_xlen == 64
-          li t0, HSTATEEN_SSTATEEN | HSTATEEN0_SENVCFG
-          csrs hstateen0, t0
-        #else
-          li t0, HSTATEENH_SSTATEEN | HSTATEEN0H_SENVCFG
-          csrs hstateen0h, t0
+          LI(t0, HSTATEEN_SSTATEEN | HSTATEEN0_SENVCFG | HSTATEEN0_CSRIND | HSTATEEN0_AIA | \
+                 HSTATEEN0_IMSIC | HSTATEEN0_SCONTEXT | HSTATEEN0_CTR | HSTATEEN0_JVT | \
+                 HSTATEEN0_FCSR)
+          csrw hstateen0, t0
+        #else    // RV32
+          LI(t0, HSTATEENH_SSTATEEN | HSTATEEN0H_SENVCFG | HSTATEEN0H_CSRIND | HSTATEEN0H_AIA | \
+                 HSTATEEN0H_IMSIC | HSTATEEN0H_SCONTEXT | HSTATEEN0H_CTR)
+          csrw hstateen0h, t0
+          LI(t0, HSTATEEN0_JVT | HSTATEEN0_FCSR)
+          csrw hstateen0, t0
         #endif
-        li t0, HSTATEEN0_JVT | HSTATEEN0_FCSR
-        csrs hstateen0, t0
       #endif
     #endif // H_SUPPORTED
 

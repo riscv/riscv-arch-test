@@ -331,7 +331,9 @@
     },
     "clock_frequency": 1000000000,
     "instructions_per_tick": 2,
-    "wfi_is_nop": false,
+    // WFI is a NOP, so it completes at once and never times out when mstatus.TW=1.
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/power.md#L631
+    "wfi_is_nop": true,
     // WFI is optionally available to User mode.  Note that even if
     // `wfi_is_nop` is set to `true` above, it will still not be
     // available to User mode unless `wfi_available_to_user_mode` is

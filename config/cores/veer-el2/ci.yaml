@@ -7,7 +7,7 @@ ci_enabled: true
 # Cores-VeeR-EL2 @ 925f3a34, https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/
 #   Sm            mstatus.TW is read-only 0; writes to cycle do not trap: design/dec/el2_dec_tlu_ctl.sv#L2919-L2926
 #   U             mtval lacks the encoding for U-mode mret and CSR privilege traps: design/dec/el2_dec_tlu_ctl.sv#L1889
-#   InterruptsSm  mstatus.TW is read-only 0, so U-mode WFI with TW=1 does not trap: design/dec/el2_dec_tlu_ctl.sv#L2926
+#   InterruptsSm  Until riscv-non-isa/riscv-arch-test#2635: Sail's mtimecmp resets to 0, so MTIP is pending only in Sail
 #   PMPSm         Testbench: stores never reach instruction memory, so a jump to stored code fetches stale data
 #   PMPU          mtval is 0, not the encoding, for a U-mode CSR privilege trap: design/dec/el2_dec_tlu_ctl.sv#L1889
 #   PMPZca        PMP checks only a fetch's start, missing a non-executable second half: design/el2_veer.sv#L1097

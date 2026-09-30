@@ -14,8 +14,8 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: veer-eh2-rv32imac
-description: CHIPS Alliance VeeR EH2 - RV32IMAC, machine mode only, single hart
+name: veer-eh2-rv32imacb
+description: CHIPS Alliance VeeR EH2 - RV32IMAC with Zba, Zbb, Zbc, Zbs, Zbkb, Zbkc and Zbkx, machine mode only, single hart
 
 # misa reads 0x4000_1105: MXL=1 (RV32), plus A (bit 0), C (bit 2), I (bit 8) and M (bit 12).
 #   Quote: "0x4000_1105 (with atomics support [^57]) 0x4000_1104 (without atomics support [^57])"

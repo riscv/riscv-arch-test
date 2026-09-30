@@ -6,7 +6,7 @@
     "writable_misa": false,
     "writable_fiom": true,
     // VeeR EH2 implements mhpmcounter3..6 / mhpmevent3..6 only (see HPM_COUNTER_EN in
-    // veer-eh2-rv32imac.yaml), so bits 3..6 are the only HPM counters that exist.
+    // veer-eh2-rv32imacb.yaml), so bits 3..6 are the only HPM counters that exist.
     //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/docs/source/csrs.md#L192-L231
     "writable_hpm_counters": {
       "len": 32,

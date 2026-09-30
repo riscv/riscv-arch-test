@@ -40,7 +40,7 @@ _HEDELEG_CP_SUFFIX = {
 assert set(_HEDELEG_CP_SUFFIX) == set(DELEGATED_FAULT_KINDS)
 
 # Upper bound on traps from one generate_delegated_fault_tests call (RV64)
-DELEGATED_FAULTS = 105
+DELEGATED_FAULTS = 106
 
 
 def hedeleg_tests(

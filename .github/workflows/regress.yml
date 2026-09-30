@@ -50,8 +50,6 @@ jobs:
 
       - name: Set up tools
         uses: $/.github/actions/setup-tools
-        with:
-          udb-gems: "true"
 
       # The act build cache is content-hash based and self-validating, so a
       # stale restore is safe: only configs whose UDB yaml changed rebuild.
@@ -96,7 +94,6 @@ jobs:
         uses: $/.github/actions/setup-tools
         with:
           install-architecture-tools: ${{ matrix.extensions != '' }}
-          udb-gems: "true"
 
       - name: Report shard assignment
         env:
@@ -211,6 +208,14 @@ jobs:
       - name: Build CTP
         run: cd docs/ctp && make docker-pull-latest && make -j6
 
+      - name: Upload CTP
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ctp
+          path: |
+            docs/ctp/build/ctp.pdf
+            docs/ctp/build/ctp.html
+
   crd-build:
     name: Build CRD
     runs-on: ubuntu-latest
@@ -223,6 +228,14 @@ jobs:
 
       - name: Build CRD
         run: cd docs/crd && make docker-pull-latest && make -j6
+
+      - name: Upload CRD
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: crd
+          path: |
+            docs/crd/build/rva23_crd.pdf
+            docs/crd/build/rva23_crd.html
 
   check-tests:
     name: Check generated tests
@@ -274,7 +287,6 @@ jobs:
         uses: $/.github/actions/setup-tools
         with:
           install-architecture-tools: "true"
-          udb-gems: "true"
 
       - name: Verify Python version
         run: uv run python --version

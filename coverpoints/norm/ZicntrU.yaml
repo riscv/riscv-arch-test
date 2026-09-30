@@ -1,14 +1,13 @@
 normative_rule_definitions:
-  # The counter-enable mcounteren register is a 32-bit register
-  - name: mcounteren_sz
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mcounteren"]
-
   # controls the availability of the hardware performance-monitoring counters to the
   # next-lower privileged mode.
   - name: mcounteren_op
     coverpoint:
       [
-        "ZicntrS_cg/cp_mcounteren_access_s, ZicntrU_cg/cp_mcounteren_access_u, ZicntrSm_cg/cp_mcounteren_access_m, ZicntrH_cg/cp_mcounteren_access_vs",
+        "ZicntrS_cg/cp_mcounteren_access_s",
+        "ZicntrU_cg/cp_mcounteren_access_u",
+        "ZicntrSm_cg/cp_mcounteren_access_m",
+        "ZicntrH_cg/cp_mcounteren_access_vs",
       ]
 
   # The settings in this register only control accessibility. The act of reading or
@@ -17,24 +16,23 @@ normative_rule_definitions:
   - name: mcounteren_inc_inaccessible
     coverpoint: ["ZicntrU_cg/cp_mcounter_inc_inaccessible"]
 
-  - name: mcounteren_enc
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mcounteren"]
-
   # When the CY, TM, IR, or HPMn bit in the mcounteren register is clear, attempts
   # to read the cycle, time, instret, or hpmcountern register while executing in
   # S-mode or U-mode will cause an illegal-instruction exception.
   - name: mcounteren_clr_ill_inst_exc
     coverpoint:
-      ["ZicntrS_cg/cp_mcounteren_access_s, ZicntrU_cg/cp_mcounteren_access_u"]
+      ["ZicntrS_cg/cp_mcounteren_access_s", "ZicntrU_cg/cp_mcounteren_access_u"]
 
   # When one of these bits is set, access to the corresponding register is permitted
   # in the next implemented privilege mode (S-mode if implemented, otherwise
   # U-mode).
   - name: mcounteren_set_nxt_priv
     coverpoint:
-      ["ZicntrS_cg/cp_mcounteren_access_s, ZicntrU_cg/cp_mcounteren_access_u"]
+      ["ZicntrS_cg/cp_mcounteren_access_s", "ZicntrU_cg/cp_mcounteren_access_u"]
 
-  # In harts with U-mode, the mcounteren must be implemented, but all fields are
-  # WARL
-  - names: [mcounteren_flds_mandatory, mcounteren_flds_warl]
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mcounteren"]
+  # As ECALL and EBREAK cause synchronous exceptions, they are not considered to
+  # retire, and should not increment the minstret CSR.
+  - name: ecall_ebreak_no_minstret_inc
+    # The instret difference spans T-SBI ecalls; ebreak is not exercised
+    # (PR #1801 adds directed ecall/ebreak minstret tests)
+    coverpoint: ["ZicntrU_cg/cp_mcounter_inc_inaccessible"]

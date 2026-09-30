@@ -1,0 +1,38 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  # PMP checks are also applied to page-table accesses for virtual-address translation,
+  # for which the effective privilege mode is S.
+  - names: [pmp_check_pagetable_access, pmp_with_paging]
+    # Representative coverpoints; also pmp0_pte_{noread,nowrite,noexec}_u
+    coverpoint: ["SvPMP_cg/pmp0_pte_{noread,nowrite,noexec}_s"]
+
+  # Implementations with virtual memory are permitted to perform address translations
+  # speculatively and earlier than required by an explicit memory access, and are
+  # permitted to cache them in address translation cache structures—including possibly
+  # caching the identity mappings from effective address to physical address used in
+  # Bare translation modes and M-mode. The PMP settings for the resulting physical
+  # address may be checked (and possibly cached) at any point between the address
+  # translation and the explicit memory access.
+  - name: pmp_speculative_translations
+    coverpoint:
+      [
+        "Not tested: when translations and PMP checks are cached is not observable",
+      ]
+
+  # when the PMP settings are modified, M-mode software must synchronize the PMP
+  # settings with the virtual memory system and any PMP or address-translation caches.
+  # This is accomplished by executing an SFENCE.VMA instruction with rs1=x0 and rs2=x0,
+  # after the PMP CSRs are written.
+  - name: pmp_sfence_required
+    coverpoint:
+      [
+        "Not tested: the tests always execute SFENCE.VMA after writing the PMP CSRs",
+      ]
+
+  # When page-based virtual memory is enabled, mtval is written with the faulting
+  # virtual address, even for physical-memory access-fault exceptions.
+  - name: mtval_vaddr_not_paddr
+    # The trap signature records the trap value CSR.
+    # Representative coverpoints; also pmp0_PA_{noread,nowrite,noexec}_u
+    coverpoint: ["SvPMP_cg/pmp0_PA_{noread,nowrite,noexec}_s"]

@@ -3,92 +3,101 @@
 
 normative_rule_definitions:
   # machine-mode (M-mode), which is the highest privilege mode in a RISC-V hart.
-  - name: M_highest_priv_mode
+  - name: m_highest_priv_mode
     coverpoint: ["Implicit"]
 
   # M-mode is used for low-level access to a hardware platform and is the first mode
   # entered at reset.
-  - name: M_mode_at_reset
-    coverpoint:
-      ["Sm_mcsr_cg/cp_mcsr_access runs right after booting and requires M-mode"]
+  - name: m_mode_first_at_reset
+    # The Sm tests access M-mode CSRs right after boot, which requires M-mode
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access"]
 
   # M-mode code can access all CSRs at lower privilege levels.
-  - name: M_access_all_lower_priv_CSRs
+  - name: m_access_all_lower_priv_csrs
     coverpoint:
       [
-        "Sm_mcsr_cg/cp_scsr_from_m, SmF_cg/cp_fcsr_access, SmV_cg/cp_vcsrrswc, H_mcsr_cg/cp_hcsr_access",
+        "Sm_mcsr_cg/cp_scsr_from_m",
+        "SmF_cg/cp_fcsr_access",
+        "SmV_cg/cp_vcsrrswc",
+        "H_mcsr_cg/cp_hcsr_access",
       ]
 
   # The misa CSR is a WARL read-write register
   - name: misa_acc
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
+    coverpoint: ["Sm_mcsr_cg/{cp_misa_mxl, cp_misa_dependencies}"]
 
   # This register must be readable in any implementation
   - name: misa_always_rd
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
 
   # a value of zero can be returned to indicate the misa register has not been
   # implemented
   - name: misa_csr_implemented
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
 
-  - name: misa_enc
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
+  - name: misa_enc_img
+    coverpoint: ["Sm_mcsr_cg/{cp_misa_mxl, cp_misa_dependencies}"]
 
-  # The MXL (Machine XLEN) field encodes the native base integer ISA width as shown
-  # in &lt;&lt;norm:misa_mxl_enc&gt;&gt;. If misa is nonzero, the MXL field
-  # indicates the effective XLEN in M-mode, a constant termed MXLEN.
-  - name: misa_mxl_op
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
+  # The csr::[mxl] (Machine XLEN) field encodes the native base integer ISA width as shown
+  # in &lt;&lt;norm:misa_mxl_enc&gt;&gt;.
+  - name: misa_mxl_op_isa
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
+  # If csr:misa[] is nonzero, the csr::[mxl] field indicates the effective XLEN in M-mode,
+  # a constant termed MXLEN.
+  - name: misa_mxl_op_nz
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
 
-  # If misa is nonzero, the MXL field indicates the effective XLEN in M-mode, a
-  # constant termed MXLEN. XLEN is never greater than MXLEN, but XLEN might be
-  # smaller than MXLEN in less-privileged modes.
-  - name: mxlen
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
+  # XLEN is never greater than MXLEN, but XLEN might be smaller than MXLEN in
+  # less-privileged modes.
+  - name: xlen_le_mxlen
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
 
   # The MXL field is read-only.
   - name: misa_mxl_acc
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
 
   # MXL|XLEN === 1 2 3|32 64 Reserved ===
   - name: misa_mxl_enc
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
 
   # The misa CSR is MXLEN bits wide.
   - name: misa_sz
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
 
-  # The Extensions field encodes the presence of the standard extensions, with a
-  # single bit per letter of the alphabet (bit 0 encodes presence of extension "A" ,
-  # bit 1 encodes presence of extension "B", through to bit 25 which encodes "Z").
-  # Bit|Character|Description === 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19
-  # 20 21 22 23 24 25|A B C D E F G H I J K L M N O P Q R S T U V W X Y Z|Atomic
-  # extension B extension Compressed extension Double-precision floating-point
-  # extension RV32E/64E base ISA Single-precision floating-point extension Reserved
-  # Hypervisor extension RV32I/64I base ISA Reserved Reserved Reserved Integer
-  # Multiply/Divide extension Tentatively reserved for User-Level Interrupts
-  # extension Reserved Tentatively reserved for Packed-SIMD extension Quad-precision
-  # floating-point extension Reserved Supervisor mode implemented Reserved User mode
-  # implemented Vector extension Reserved Non-standard extensions present Reserved
-  # Reserved ===
-  - name: misa_extensions_enc
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
+  # The Extensions field encodes the presence of the standard extensions, with a single
+  # bit per letter of the alphabet (bit 0 encodes presence of extension ext:a[], bit 1
+  # encodes presence of extension ext:b[], through to bit 25 which encodes ext:z[]).
+  - name: misa_extensions_enc_txt
+    coverpoint: ["Sm_mcsr_cg/{cp_misa_dependencies, cp_misa_b, cp_misa_v}"]
+  # Bit|Character|Description === 0|csr::[a]|Atomic extension¶1|csr::[b]|B
+  # extension¶2|csr::[c]|Compressed extension¶3|csr::[d]|Double-precision floating-point
+  # extension¶4|csr::[e]|RV32E/64E base ISA¶5|csr::[f]|Single-precision floating-point
+  # extension¶6|csr::[g]|Reserved¶7|csr::[h]|Hypervisor extension¶8|csr::[i]|RV32I/64I
+  # base
+  # ISA¶9|csr::[j]|Reserved¶10|csr::[k]|Reserved¶11|csr::[l]|Reserved¶12|csr::[m]|Integer
+  # Multiply/Divide extension¶13|csr::[n]|Tentatively reserved for User-Level Interrupts
+  # extension¶14|csr::[o]|Reserved¶15|csr::[p]|Tentatively reserved for Packed-SIMD
+  # extension¶16|csr::[q]|Quad-precision floating-point
+  # extension¶17|csr::[r]|Reserved¶18|csr::[s]|Supervisor mode
+  # implemented¶19|csr::[t]|Reserved¶20|csr::[u]|User mode implemented¶21|csr::[v]|Vector
+  # extension¶22|csr::[w]|Reserved¶23|csr::[x]|Non-standard extensions
+  # implemented¶24|csr::[y]|Reserved¶25|csr::[z]|Reserved ===
+  - name: misa_extensions_enc_tbl
+    coverpoint: ["Sm_mcsr_cg/{cp_misa_dependencies, cp_misa_b, cp_misa_v}"]
 
   # The Extensions field is a WARL field that can contain writable bits where the
   # implementation allows the supported ISA to be modified.
-  - names: [misa_extensions_warl, misa_extensions_op]
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
+  - name: misa_extensions_warl_op
+    coverpoint: ["Sm_mcsr_cg/{cp_misa_dependencies, cp_misa_b, cp_misa_v}"]
 
-  # The Extensions field is a WARL field that can contain writable bits where the
-  # implementation allows the supported ISA to be modified.
-  - name: misa_extensions_writable_bits
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
-
-  # At reset, the Extensions field shall contain the maximal set of supported
-  # extensions, and "I" shall be selected over "E" if both are available.
-  - name: misa_extensions_rst
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
+  # At reset, the Extensions field shall contain the maximal set of supported extensions,
+  # and csr::[i] shall be selected over csr::[e] if both are available.
+  - name: misa_extensions_reset_maximal
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
+  # The misa register is reset to enable the maximal set of supported extensions, as
+  # described in &lt;&lt;misa&gt;&gt;.
+  - name: misa_extensions_reset_ref
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
 
   # When a standard extension is disabled by clearing its bit in misa, the
   # instructions and CSRs defined or modified by the extension revert to their
@@ -122,14 +131,14 @@ normative_rule_definitions:
 
   # All bits that are reserved for future use must return zero when read.
   - name: misa_extensions_rsv_ret_0
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
 
   # The "I" bit will be set for the RV32I and RV64I base ISAs
   - name: misa_i_op
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
   # the "E" bit will be set for RV32E and RV64E.
   - name: misa_e_op
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
 
   # The "X" bit will be set if there are any non-standard extensions.
   - name: misa_x_op
@@ -137,74 +146,78 @@ normative_rule_definitions:
 
   # When the "B" bit is 1, the implementation supports the instructions provided by
   # the Zba, Zbb, and Zbs extensions.
-  - name: misa_b_op
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa and tests for Zba, Zbb, Zbs"]
+  - name: misa_B_op
+    # The Zba, Zbb, and Zbs suites check the instructions themselves
+    coverpoint: ["Sm_mcsr_cg/cp_misa_b"]
 
   # When the "M" bit is 1, the implementation supports all multiply and division
   # instructions defined by the M extension.
   - name: misa_m_op
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa and tests for M"]
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
 
   # When the "S" bit is 1, the implementation supports supervisor mode.
   - name: misa_s_op
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa and tests for S"]
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
 
   # When the "U" bit is 1, the implementation supports user mode.
   - name: misa_u_op
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa and tests for U"]
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
 
-  # MISA.C is set if the following extensions are selected: Zca and not F Zca, Zcf
-  # and F (but not D) is specified (RV32 only) Zca, Zcf and Zcd if D is specified
-  # (RV32 only) this configuration excludes Zcmp, Zcmt Zca, Zcd if D is specified
-  # (RV64 only) this configuration excludes Zcmp, Zcmt
-  - name: misa_c_set
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
+  # csr:misa[c] must be clear if any of the following holds:
+  - name: misa_C_set_line
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
+  # ext:zca[] is not implemented MXLEN=32, ext:f[] is implemented, and ext:zcf[] is not
+  # implemented ext:d[] is implemented, and ext:zcd[] is not implemented
+  - name: misa_C_set_list
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
 
   # Unless misa is all read-only zero, the "E" bit always reads as the complement of
   # the "I" bit.
   - name: misa_e_not_i
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
+    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
 
   # if the Zmmul extension is supported then the multiply instructions it specifies
   # are supported irrespective of the value of the "M" bit.
   - name: Zmmul_misa_m
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa and tests for Zmmul"]
+    coverpoint:
+      ["TODO: execute Zmmul multiply instructions with misa.M cleared"]
 
   # The "E" bit is read-only.
   - name: misa_e_acc
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
+    coverpoint: ["TODO: write misa.E and check that it does not change"]
   # If an ISA feature x depends on an ISA feature y, then attempting to enable
   # feature x but disable feature y results in both features being disabled.
   - name: misa_extensions_dependencies
-    coverpoint: ["cp_mcsr_cg/cp_mcsrwalk/misa (clearing F, D, U bits)"]
+    coverpoint: ["Sm_mcsr_cg/cp_misa_dependencies"]
+
+  # An implementation may impose additional constraints on the collective setting of two or more
+  # misa fields, in which case they function collectively as a single WARL field. An attempt
+  # to write an unsupported combination causes those bits to be set to some supported combination.
+  - name: misa_extensions_collective_warl
+    coverpoint: ["Sm_mcsr_cg/cp_misa_dependencies"]
 
   # Writing misa may increase IALIGN, e.g., by disabling the "C" extension. If an
   # instruction that would write misa increases IALIGN, and the subsequent
   # instruction's address is not IALIGN-bit aligned, the write to misa is
   # suppressed, leaving misa unchanged.
   - name: misa_inc_ialign
-    coverpoint: ["Out of scope"]
+    coverpoint: ["Sm_mcsr_cg/cp_misa_clear_c"]
 
-  # The mvendorid CSR is a 32-bit read-only register providing the JEDEC
-  # manufacturer ID of the provider of the core.
-  - names: [mvendorid_sz, mvendorid_acc, mvendorid_op]
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mvendorid"]
+  # When software enables an extension that was previously disabled, then all state uniquely
+  # associated with that extension is UNSPECIFIED, unless otherwise specified by that extension.
+  - name: misa_extensions_reenable_unspec
+    coverpoint: ["Behavior is UNSPECIFIED by the specification; not tested"]
 
-  # The mvendorid CSR is a 32-bit read-only register providing the JEDEC
+  # The csr:mvendorid[] CSR is a 32-bit read-only register providing the JEDEC
   # manufacturer ID of the provider of the core.
-  - name: vendor_id_bank
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mvendorid"]
-
-  # The mvendorid CSR is a 32-bit read-only register providing the JEDEC
-  # manufacturer ID of the provider of the core.
-  - name: vendor_id_offset
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mvendorid"]
+  - name: mvendorid_sz_acc_op
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro/mvendorid"]
 
   # This register must be readable in any implementation, but a value of 0 can be
   # returned to indicate the field is not implemented or that this is a
   # non-commercial implementation.
   - name: mvendorid_always_rd
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mvendorid"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro/mvendorid"]
 
   # JEDEC manufacturer IDs are ordinarily encoded as a sequence of one-byte
   # continuation codes 0x7f, terminated by a one-byte ID not equal to 0x7f, with an
@@ -212,90 +225,67 @@ normative_rule_definitions:
   # number of one-byte continuation codes in the Bank field, and encodes the final
   # byte in the Offset field, discarding the parity bit.
   - name: mvendorid_enc
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mvendorid"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro/mvendorid"]
 
-  # The marchid CSR is an MXLEN-bit read-only register encoding the base
+  # The csr:marchid[] CSR is an MXLEN-bit read-only register encoding the base
   # microarchitecture of the hart.
-  - names: [marchid_sz, marchid_acc, marchid_op]
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/marchid"]
-
-  # The marchid CSR is an MXLEN-bit read-only register encoding the base
-  # microarchitecture of the hart.
-  - name: arch_id
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/marchid"]
+  - name: marchid_sz_acc_op
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro/marchid"]
 
   # This register must be readable in any implementation, but a value of 0 can be
   # returned to indicate the field is not implemented.
   - name: marchid_always_rd
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/marchid"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro/marchid"]
 
-  # The mimpid CSR provides a unique encoding of the version of the processor
+  # The csr:mimpid[] CSR provides a unique encoding of the version of the processor
   # implementation.
   - name: mimpid_op
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mimpid"]
-
-  # The mimpid CSR provides a unique encoding of the version of the processor
-  # implementation.
-  - name: imp_id
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mimpid"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro/mimpid"]
 
   # This register must be readable in any implementation, but a value of 0 can be
   # returned to indicate that the field is not implemented.
   - name: mimpid_always_rd
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mimpid"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro/mimpid"]
 
-  # The mhartid CSR is an MXLEN-bit read-only register containing the integer ID of
+  # The csr:mhartid[] CSR is an MXLEN-bit read-only register containing the integer ID of
   # the hardware thread running the code.
-  - names: [mhartid_sz, mhartid_acc, mhartid_op]
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mhartid"]
-
-  # The mhartid CSR is an MXLEN-bit read-only register containing the integer ID of
-  # the hardware thread running the code.
-  - name: hart_id
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mhartid"]
+  - name: mhartid_sz_acc_op
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro/mhartid"]
 
   # This register must be readable in any implementation.
   - name: mhartid_always_rd
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mhartid"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro/mhartid"]
 
   # one hart must have a hart ID of zero.
   - name: mhartid_one_is_zero
-    coverpoint:
-      ["Sm_mcsr_cg/cp_mcsr_access/mhartid but only one hart is tested"]
+    # Only one hart is tested
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro/mhartid"]
 
   # Hart IDs must be unique within the execution environment.
   - name: mhartid_unique
-    coverpoint:
-      ["Sm_mcsr_cg/cp_mcsr_access/mhartid but only one hart is tested"]
+    # Only one hart is tested
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro/mhartid"]
 
-  # The mstatus register is an MXLEN-bit read/write register formatted as shown in
-  # &lt;&lt;mstatusreg-rv32&gt;&gt; for RV32 and &lt;&lt;mstatusreg&gt;&gt; for
-  # RV64.
-  # The mstatus register is an MXLEN-bit read/write register formatted as shown in
-  # &lt;&lt;mstatusreg-rv32&gt;&gt; for RV32 and &lt;&lt;mstatusreg&gt;&gt; for
-  # RV64.
-  - names: [mstatus_sz, mstatus_acc]
+  # The csr:mstatus[] register is an MXLEN-bit read/write register formatted as shown in
+  # &lt;&lt;mstatusreg-rv32&gt;&gt; for RV32 and &lt;&lt;mstatusreg&gt;&gt; for RV64.
+  # csr:mstatus[] must be implemented.
+  - name: mstatus_sz_acc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
-  # For RV32 only, mstatush is a 32-bit read/write register formatted as shown in
+  # For RV32 only, csr:mstatush[] is a 32-bit read/write register formatted as shown in
   # &lt;&lt;mstatushreg&gt;&gt;.
-  - names: [mstatush_sz, mstatush_acc]
+  - name: mstatush_sz_acc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatush"]
 
-  # When executing an xRET instruction, supposing xPP holds the value y, xIE is set
-  # to xPIE; the privilege mode is changed to y; xPIE is set to 1; and xPP is set to
-  # the least-privileged supported mode (U if U-mode is implemented, else M). If
-  # y{ne}M, xRET also sets MPRV=0.
-  - names:
-      [
-        mstatus_xie_xret_op,
-        mstatus_xpie_xret_op,
-        mstatus_xpp_xret_op,
-        mstatus_mprv_xret_op,
-      ]
+  # When executing an xRET instruction, supposing xPP holds the value y, xIE is set to
+  # xPIE; the privilege mode is changed to y; xPIE is set to 1; and xPP is set to the
+  # least-privileged supported mode (U if U-mode is implemented, else M). If y≠M, xRET
+  # also sets csr::[mprv]=0.
+  - name: mstatus_xret_op
     coverpoint:
       [
-        "Sm_mprivinst_cg/{cp_mret, cp_sret, cp_sret_s}, S_sprivinst_cg/cp_sret_s",
+        "Sm_mprivinst_cg/{cp_mret, cp_sret, cp_sret_s}",
+        "S_sprivinst_cg/cp_sret_s",
       ]
 
   # Bits 30:4 of mstatush generally contain the same fields found in bits 62:36 of
@@ -303,8 +293,9 @@ normative_rule_definitions:
   - name: mstatush_enc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatush"]
 
-  # If supervisor mode is not implemented, then SIE and SPIE are read-only 0.
-  - names: [mstatus_sie_rdonly0, mstatus_spie_rdonly0]
+  # csr::[mie] and csr::[mpie] must be writable. If supervisor mode is not implemented,
+  # then csr::[sie] and csr::[spie] are read-only 0; otherwise, they must be writable.
+  - name: mstatus_sie_spie_rdonly0
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatush"]
 
   # The xPP fields can only hold privilege modes up to x
@@ -329,24 +320,24 @@ normative_rule_definitions:
   - name: mstatus_spp_sz
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
-  # The M-mode-disable-trap (MDT) bit is a WARL field introduced by the Smdbltrp
-  # extension.
-  - names: [mstatus_mdt_sz, mstatus_mdt_warl]
+  # The M-mode-disable-trap (csr::[mdt]) bit is a WARL field introduced by the
+  # ext:smdbltrp[] extension.
+  - name: mstatus_mdt_sz_warl
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
-  # For RV64 harts, the SXL and UXL fields are WARL fields that control the value of
-  # XLEN for S-mode and U-mode, respectively.
-  - names: [mstatus_sxl_warl, mstatus_uxl_warl, mstatus_sxl_op, mstatus_uxl_op]
+  # For RV64 harts, the csr::[sxl] and csr::[uxl] fields are WARL fields that control the
+  # value of XLEN for S-mode and U-mode, respectively.
+  - name: mstatus_sxl_uxl_warl_op
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
-  # For RV64 harts, the SXL and UXL fields are WARL fields that control the value of
-  # XLEN for S-mode and U-mode, respectively. The encoding of these fields is the
-  # same as the MXL field of misa, shown in &lt;&lt;norm:misa_mxl_enc&gt;&gt;.
-  - names: [mstatus_sxl_enc, mstatus_uxl_enc]
+  # The encoding of these fields is the same as the csr::[mxl] field of csr:misa[], shown
+  # in &lt;&lt;norm:misa_mxl_enc&gt;&gt;.
+  - name: mstatus_sxl_uxl_enc
     coverpoint: ["Out of scope"]
 
-  # When MXLEN=32, the SXL and UXL fields do not exist, and SXLEN=32 and UXLEN=32.
-  - names: [mstatus_sxl_exist_mxlen32, mstatus_uxl_exist_mxlen32]
+  # When MXLEN=32, the csr::[sxl] and csr::[uxl] fields do not exist, and SXLEN=32 and
+  # UXLEN=32.
+  - name: mstatus_sxl_uxl_sxlen_uxlen_mxlen32
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # When MXLEN=64, if S-mode is not supported, then SXL is read-only zero.
@@ -379,12 +370,23 @@ normative_rule_definitions:
   # store memory addresses are translated and protected, and endianness is applied,
   # as though the current privilege mode were set to MPP.
   - name: mstatus_mprv_ldst_op
-    coverpoint: ["Sv_cg/{ms.2, ms.3, ms.4}, PMPS_cg/cp_mprv, PMPU_cg/cp_mprv"]
+    # Representative coverpoints; also PMPS_cg/cp_mprv_sw, PMPU_cg/cp_mprv_lw, SvSm SUM+MPRV
+    coverpoint:
+      [
+        "SvSm_mstatus_mprv_cg/{cp_mprv_load, cp_mprv_store}",
+        "PMPS_cg/cp_mprv_lw",
+        "PMPU_cg/cp_mprv_sw",
+      ]
 
   # Instruction address-translation and protection are unaffected by the setting of
   # MPRV.
   - name: mstatus_mprv_inst_xlat_op
-    coverpoint: ["Sv_cg/{ms.2, ms.3, ms.4}, PMPS_cg/cp_mprv, PMPU_cg/cp_mprv"]
+    coverpoint:
+      [
+        "SvSm_mstatus_mprv_cg/{cp_mprv_ins, cp_mprv_upage_smode_sumset_exec}",
+        "PMPS_cg/cp_mprv_jalr",
+        "PMPU_cg/cp_mprv_jalr",
+      ]
 
   # MPRV is read-only 0 if U-mode is not supported.
   - name: mstatus_mprv_rdonly0_no_umode
@@ -395,10 +397,11 @@ normative_rule_definitions:
   - name: mstatus_mprv_clr_mret_sret_less_priv
     coverpoint:
       [
-        "Sm_mprivinst_cg/{cp_mret, cp_sret, cp_sret_s}, S_sprivinst_cg/cp_sret_s",
+        "Sm_mprivinst_cg/{cp_mret, cp_sret, cp_sret_s}",
+        "S_sprivinst_cg/cp_sret_s",
       ]
 
-  - name: mret_op
+  - name: xret_op
     coverpoint: ["Sm_mprivinst_cg/cp_mret"]
 
   - name: sret_presence
@@ -407,7 +410,7 @@ normative_rule_definitions:
   - name: sret_ill_inst_exc_rst
     coverpoint: ["TODO"]
 
-  - name: sret_in_M_mode
+  - name: xret_in_higher_mode
     coverpoint: ["Sm_mprivinst_cg/cp_sret"]
 
   # When MXR=0, only loads from pages marked readable (R=1 in
@@ -415,7 +418,11 @@ normative_rule_definitions:
   # either readable or executable (R=1 or X=1) will succeed. MXR has no effect when
   # page-based virtual memory is not in effect.
   - name: mstatus_mxr_op
-    coverpoint: ["Sv_cg/{pte.11,pte.12}"]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_xpage_mxrunset_read_s, cp_xpage_mxrunset_read_u}",
+        "Sv_vm_permissions_cg/{cp_xpage_mxrset_read_s, cp_xpage_mxrset_read_u}",
+      ]
 
   # MXR is read-only 0 if S-mode is not supported.
   - name: mstatus_mxr_rdonly0_no_smode
@@ -425,16 +432,26 @@ normative_rule_definitions:
   # in &lt;&lt;sv32pte&gt;&gt;) will fault. When SUM=1, these accesses are
   # permitted.
   - name: mstatus_sum_op
-    coverpoint: ["Sv_cg/{ms.3, ms.4, pte.5, pte.6, pte.8, pte.9"]
+    # Representative coverpoints; also Sv_vm_permissions_cg/cp_spage_*, SvSm SUM+MPRV
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_upage_smode_sumunset_noread_s, cp_upage_smode_sumunset_nowrite_s}",
+        "Sv_vm_permissions_cg/{cp_upage_smode_sumset_read_s, cp_upage_smode_sumset_write_s}",
+      ]
 
   # SUM has no effect when page-based virtual memory is not in effect.
-  - name: mstatus_sum_op_no-vm
+  - name: mstatus_sum_op_no_vm
     coverpoint: ["TODO"]
 
   # while SUM is ordinarily ignored when not executing in S-mode, it is in effect
   # when MPRV=1 and MPP=S.
   - name: mstatus_sum_op_mprv_mpp
-    coverpoint: ["Sv_cg/{ms.3, ms.4}"]
+    # Representative coverpoints; also the _noexec and _exec variants
+    coverpoint:
+      [
+        "SvSm_mstatus_mprv_cg/{cp_mprv_upage_smode_sumunset_noread, cp_mprv_upage_smode_sumunset_nowrite}",
+        "SvSm_mstatus_mprv_cg/{cp_mprv_upage_smode_sumset_read, cp_mprv_upage_smode_sumset_write}",
+      ]
 
   # SUM is read-only 0 if S-mode is not supported or if satp.MODE is read-only 0.
   - name: mstatus_sum_rdonly0
@@ -444,18 +461,13 @@ normative_rule_definitions:
   # in page-table entries. In particular, they have no impact on whether
   # access-fault exceptions are raised due to PMAs or PMP.
   - name: mstatus_mxr_sum_op_acc_fault
-    coverpoint: ["TODO by UET: add to {PMPSm/PMPS/PMPU}_cg/cp_cfg_RW tests"]
+    # TODO: PMP-denied loads with MXR=1 and S-mode accesses to U pages with SUM=1 must still take access faults
+    coverpoint: [""]
 
-  # The MBE, SBE, and UBE bits in mstatus and mstatush are WARL fields
-  - names:
-      [
-        mstatus_mbe_warl,
-        mstatus_sbe_warl,
-        mstatus_ube_warl,
-        mstatush_mbe_warl,
-        mstatush_sbe_warl,
-        mstatush_ube_warl,
-      ]
+  # The csr::[mbe], csr::[sbe], and csr::[ube] bits in csr:mstatus[] and csr:mstatush[]
+  # are WARL fields that control the endianness of memory accesses other than instruction
+  # fetches. Each may be read/write or read-only.
+  - name: mstatus_mstatush_xbe_warl
     coverpoint:
       [
         "Sm_mcsr_cg/cp_mcsr_access_masked/mstatus",
@@ -478,7 +490,17 @@ normative_rule_definitions:
   # these operations are permitted in S-mode. TVM is read-only 0 when S-mode is not
   # supported.
   - name: mstatus_tvm_op
-    coverpoint: ["Sv_cg/ms.1, Svinval_cg/cp_svinval"]
+    coverpoint:
+      ["SvSm_mstatus_mprv_cg/cp_tvm_exception_s", "Svinval_cg/cp_svinval"]
+
+  # csr::[tvm] is read-only 0 when S-mode is not supported or if satp.MODE is read-only 0;
+  # otherwise, it must be writable.
+  - name: mstatus_tvm_acc
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mcsr_access_masked/mstatus",
+        "Sm_mcsr_cg/cp_mcsrwalk_masked/mstatus",
+      ]
 
   # TW is read-only 0 when there are no modes less privileged than M.
   - name: mstatus_tw_acc
@@ -499,11 +521,15 @@ normative_rule_definitions:
   - name: mstatus_tsr_acc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
-  # The FS[1:0] and VS[1:0] WARL fields
-  - names: [mstatus_fs_warl, mstatus_vs_warl]
+  # The csr::[fs][1:0] and csr::[vs][1:0] WARL fields and the csr::[xs][1:0] read-only
+  # field are used to reduce the cost of context save and restore by setting and tracking
+  # the current state of the floating-point unit and any other user-mode extensions
+  # respectively.
+  - name: mstatus_fs_vs_warl
     coverpoint:
       [
-        "Sm_mcsr_cg/cp_mcsr_access_masked/mstatus, Sm_mcsr_cg/cp_mcsrwalk_masked/mstatus",
+        "Sm_mcsr_cg/cp_mcsr_access_masked/mstatus",
+        "Sm_mcsr_cg/cp_mcsrwalk_masked/mstatus",
       ]
 
   # The FS field encodes the status of the floating-point unit state, including the
@@ -511,44 +537,48 @@ normative_rule_definitions:
   - name: mstatus_fs_op
     coverpoint: ["SmF_cg/cp_mstatus_FS_transition"]
 
-  # The VS field encodes the status of the vector extension state, including the
-  # vector registers v0–v31 and the CSRs vcsr, vxrm, vxsat, vstart, vl, vtype, and
-  # vlenb.
+  # The csr::[vs] field encodes the status of the vector extension state, including the
+  # vector registers v0&amp;#8205;&amp;#8211;&amp;#8205;v31 and the CSRs csr:vcsr[],
+  # csr:vxrm[], csr:vxsat[], csr:vstart[], csr:vl[], csr:vtype[], and csr:vlenb[].
   - name: mstatus_vs_op
+    coverpoint:
+      ["SmV_cg/{cp_mstatus_vs_set_dirty_vcsr, cp_mstatus_vs_set_dirty_csr}"]
+  # A vector context status field, csr::[vs], is added to csr:mstatus[][10:9] and shadowed
+  # in csr:sstatus[][10:9]. It is defined analogously to the floating-point context status
+  # field, csr::[fs].
+  - name: mstatus_vs_sstatus_vs_op
     coverpoint: ["TODO: test with vector"]
 
-  # The XS field encodes the status of additional user-mode extensions and
-  # associated state. The XS field represents a summary of all extensions' status as
-  # shown in &lt;&lt;norm:mstatus_fs_vs_xs_enc&gt;&gt;.
-  - name: mstatus_xs_op
+  # The csr::[xs] field encodes the status of additional user-mode extensions and
+  # associated state.
+  - name: mstatus_xs_encodes_op
+    coverpoint: ["Untested"]
+  # The csr::[xs] field represents a summary of all extensions' status as shown in
+  # &lt;&lt;norm:mstatus_fs_vs_xs_enc&gt;&gt;.
+  - name: mstatus_xs_summary_op
     coverpoint: ["Untested"]
 
-  # Status|FS and VS Meaning|XS Meaning === 0 1 2 3|Off Initial Clean Dirty|All off
-  # None dirty or clean, some on None dirty, some clean Some dirty ===
-  - names: [mstatus_fs_enc, mstatus_vs_enc, mstatus_xs_enc]
-    coverpoint:
-      [
-        "Sm_mcsr_cg/cp_mcsr_access_masked/mstatus, SmF_cg/cp_mstatus_FS_transition",
-      ]
-
-  # If the F extension is implemented, the FS field shall not be read-only zero. If
-  # neither the F extension nor S-mode is implemented, then FS is read-only zero.
-  - name: mstatus_fs_acc
+  # If neither the ext:f[] extension nor S-mode is implemented, then csr::[fs] is
+  # read-only zero.
+  - name: mstatus_fs_acc2
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # If S-mode is implemented but the F extension is not, FS may optionally be
   # read-only zero.
-  - name: mstatus_fs_rdonly0_s-no-f
+  - name: mstatus_fs_rdonly0_s_no_F
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
-  # If the v registers are implemented, the VS field shall not be read-only zero. If
-  # neither the v registers nor S-mode is implemented, then VS is read-only zero.
-  - name: mstatus_vs_acc
+  # If the v registers are implemented, the csr::[vs] field shall not be read-only zero.
+  - name: mstatus_vs_acc1
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
+  # If neither the v registers nor S-mode is implemented, then csr::[vs] is read-only
+  # zero.
+  - name: mstatus_vs_acc2
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # If S-mode is implemented but the v registers are not, VS may optionally be
   # read-only zero.
-  - name: mstatus_vs_rdonly0_s-no-v
+  - name: mstatus_vs_rdonly0_s_no_V
     coverpoint: ["TODO"]
 
   # In harts without additional user extensions requiring new state, the XS field is
@@ -565,13 +595,23 @@ normative_rule_definitions:
   - name: mstatus_sd_acc
     coverpoint: ["Sm_mstatus_cg/cp_mstatus_sd_write"]
 
-  # summarizes whether either the FS, VS, or XS fields signal the presence of some
-  # dirty state that will require saving extended user context to memory.
-  - name: mstatus_sd_op
+  # summarizes whether either the csr::[fs], csr::[vs], or csr::[xs] fields signal the
+  # presence of some dirty state that will require saving extended user context to memory.
+  - name: mstatus_sd_summary_op
+    coverpoint: ["Sm_mstatus_cg/cp_mstatus_sd_write"]
+  # If csr:mstatus[vs] is Dirty, csr:mstatus[sd] is 1; otherwise, csr:mstatus[sd] is set
+  # in accordance with existing specifications.
+  - name: mstatus_sd_vs_dirty_op
     coverpoint: ["Sm_mstatus_cg/cp_mstatus_sd_write"]
 
   # If FS, XS, and VS are all read-only zero, then SD is also always zero.
   - name: mstatus_sd_rdonly0
+    coverpoint: ["Sm_mstatus_cg/cp_mstatus_sd_write"]
+
+  # The csr::[sd] bit is read-only and is set when either the csr::[fs], csr::[vs], or csr::[xs]
+  # bits encode a Dirty state (i.e., csr::[sd]=(csr::[fs]==0b11 OR csr::[xs]==0b11 OR
+  # csr::[vs]==0b11)).
+  - name: mstatus_sd_formula
     coverpoint: ["Sm_mstatus_cg/cp_mstatus_sd_write"]
 
   # When an extension's status is set to Off, any instruction that attempts to read
@@ -579,15 +619,8 @@ normative_rule_definitions:
   - name: mstatus_fs_vs_xs_off_op
     coverpoint:
       [
-        "SmF_cg/{cp_fcsrwalk, cp_frm_walk, cp_fflags_walk, cp_mstatus_FS_transition}, TODO: some moved to UF; TODO for Vector",
-      ]
-
-  # When the status is Initial, the corresponding state should have an initial
-  # constant value.
-  - name: mstatus_fs_vs_xs_initial_op
-    coverpoint:
-      [
-        "untested because initial constant value is not specified and can be changed by software",
+        "SmF_cg/{cp_fcsr_access, cp_mstatus_FS_transition}",
+        "SmV_cg/{cp_mstatus_vs_off_arithmetic, cp_mstatus_vs_off_csr}",
       ]
 
   # When the status is Clean, the corresponding state is potentially different from
@@ -598,39 +631,21 @@ normative_rule_definitions:
   # When the status is Dirty, the corresponding state has potentially been modified
   # since the last context save.
   - name: mstatus_fs_vs_xs_dirty_op
-    coverpoint: ["cp_mstatus_FS_transition"]
-
-  # The status fields will also be updated during execution of instructions,
-  # regardless of privilege mode.
-  - name: mstatus_fs_vs_xs_update_indep_priv
-    coverpoint: ["TODO: test with float, vector"]
-
-  # Changing the setting of FS has no effect on the contents of the floating-point
-  # register state. In particular, setting FS=Off does not destroy the state, nor
-  # does setting FS=Initial clear the contents.
-  - name: mstatus_fs_wr
-    coverpoint: ["TODO: test with float"]
+    coverpoint: ["SmF_cg/cp_mstatus_FS_transition"]
 
   # the setting of VS has no effect on the contents of the vector register state.
   - name: mstatus_vs_wr
     coverpoint: ["TODO: test with vector"]
 
-  # Implementations may choose to track the dirtiness of the floating-point register
-  # state imprecisely by reporting the state to be dirty even when it has not been
-  # modified. On some implementations, some instructions that do not mutate the
-  # floating-point state may cause the state to transition from Initial or Clean to
-  # Dirty.
-  - name: mstatus_fs_imprecise
-    coverpoint:
-      [
-        "Untestable.  TODO: imprecise dirty tracking could be a problem to match the reference model in cp_mstatus_FS_transition",
-      ]
-
   # dirtiness might not be tracked at all, in which case the valid FS states are Off
   # and Dirty, and an attempt to set FS to Initial or Clean causes it to be set to
   # Dirty.
   - name: mstatus_fs_no_dirty_track
-    coverpoint: ["SmF_cg/{cp_fcsr_frm_write, cp_mstatus_FS_transition}"]
+    coverpoint:
+      [
+        "SmF_cg/cp_mstatus_FS_transition",
+        "Sm_mcsr_cg/cp_mcsrwalk_masked/mstatus",
+      ]
 
   # If an instruction explicitly or implicitly writes a floating-point register or
   # the fcsr but does not alter its contents, and FS=Initial or FS=Clean, it is
@@ -658,70 +673,83 @@ normative_rule_definitions:
     coverpoint: ["Untestable"]
 
   - name: mtvec_enc
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mtvec"]
+    coverpoint:
+      [
+        "TODO: Sm_mcsr_cg has no mtvec bin; Sm.py writes mtvec but checks only bit 1",
+      ]
 
-  # The mtvec register is an MXLEN-bit WARL read/write register that holds trap
-  # vector configuration, consisting of a vector base address (BASE) and a vector
-  # mode (MODE).
-  - names: [mtvec_sz, mtvec_warl, mtvec_acc]
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mtvec"]
+  # The csr:mtvec[] register is an MXLEN-bit WARL read/write register that holds trap
+  # vector configuration, consisting of a vector base address (csr::[base]) and a vector
+  # mode (csr::[mode]).
+  - name: mtvec_sz_warl_acc
+    coverpoint:
+      [
+        "TODO: Sm_mcsr_cg has no mtvec bin; Sm.py writes mtvec but checks only bit 1",
+      ]
 
   # The mtvec register must always be implemented
   - name: mtvec_mandatory
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mtvec"]
+    coverpoint:
+      [
+        "TODO: Sm_mcsr_cg has no mtvec bin; Sm.py writes mtvec but checks only bit 1",
+      ]
 
   # The mtvec register must always be implemented can contain a read-only value.
   - name: mtvec_rdonly
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mtvec"]
+    coverpoint:
+      [
+        "TODO: Sm_mcsr_cg has no mtvec bin; Sm.py writes mtvec but checks only bit 1",
+      ]
 
   # The value in the BASE field must always be aligned on a 4-byte boundary
-  - name: mtvec_base_align_4B
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mtvec"]
+  - name: mtvec_base_align_4b
+    coverpoint:
+      [
+        "TODO: Sm_mcsr_cg has no mtvec bin; Sm.py writes mtvec but checks only bit 1",
+      ]
 
   # the MODE setting may impose additional alignment constraints on the value in the
   # BASE field.
   - name: mtvec_base_align_func_mode
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mtvec"]
+    coverpoint:
+      [
+        "TODO: Sm_mcsr_cg has no mtvec bin; Sm.py writes mtvec but checks only bit 1",
+      ]
 
-  # When XLEN=32, medelegh is a 32-bit read/write register that aliases bits 63:32
-  # of medeleg.
-  - names: [medelegh_sz_xlen32, medelegh_acc_xlen32, medelegh_enc_xlen32]
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/medelegh"]
-
-  # When XLEN=32, medelegh is a 32-bit read/write register that aliases bits 63:32
-  # of medeleg.
-  - name: medelegh_enc_xlen32
+  # When XLEN=32, csr:medelegh[] is a 32-bit read/write register that aliases bits 63:32
+  # of csr:medeleg[].
+  - name: medelegh_sz_acc_enc_xlen32
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/medelegh"]
 
   # The medelegh register does not exist when XLEN=64.
   - name: medelegh_omit_xlen64
-    coverpoint:
-      [
-        "Untested except in Sstrict* because nonexistent register behavior is UNSPECIFIED",
-      ]
+    # Accessing a nonexistent CSR is reserved; only Ssstrict requires the access to trap
+    coverpoint: ["SsstrictSm_mcsr_cg/cp_csrr"]
 
-  # The machine exception delegation register (medeleg) is a 64-bit read/write
+  # The machine exception delegation register (csr:medeleg[]) is a 64-bit read/write
   # register.
-  - name: [medeleg_sz, medeleg_acc]
+  - name: medeleg_sz_acc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/medeleg"]
 
-  # The machine interrupt delegation (mideleg) register is an MXLEN-bit read/write
+  # The machine interrupt delegation (csr:mideleg[]) register is an MXLEN-bit read/write
   # register.
-  - name: [mideleg_sz, mideleg_acc]
+  - name: mideleg_sz_acc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mideleg"]
 
   # In harts with S-mode, the medeleg and mideleg registers must exist
-  - name: [medeleg_mandatory_S_mode, mideleg_mandatory_S_mode]
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/{medeleg/mideleg"]
+  - name: medeleg_mideleg_mandatory_s_mode
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/{medeleg, mideleg}"]
 
-  # In harts without S-mode, the medeleg and mideleg registers should not exist.
-  - name: [medeleg_omit_wo_S_mode, mideleg_omit_wo_S_mode]
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/{medeleg/mideleg"]
+  # In harts without S-mode, the csr:medeleg[] and csr:mideleg[] registers should not
+  # exist.
+  - name: medeleg_mideleg_omit_wo_s_mode
+    # Accessing a nonexistent CSR is reserved; only Ssstrict requires the access to trap
+    coverpoint: ["SsstrictSm_mcsr_cg/cp_csrr"]
 
   # An implementation can choose to subset the delegatable traps, with the supported
-  # delegatable bits found by writing one to every bit location, then reading back
-  # the value in medeleg or mideleg to see which bit positions hold a one.
-  - name: [medeleg_warl, mideleg_warl]
+  # delegatable bits found by writing one to every bit location, then reading back the
+  # value in csr:medeleg[] or csr:mideleg[] to see which bit positions hold a one.
+  - name: medeleg_mideleg_warl
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mideleg"]
 
   # An implementation shall not have any bits of medeleg be read-only one
@@ -744,17 +772,26 @@ normative_rule_definitions:
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/medeleg"]
 
   # The medeleg[16] is read-only zero as double trap is not delegatable.
-  - name: medeleg_16_no_rd0
+  - name: medeleg_16_rdonly0
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/medeleg"]
 
-  # The mip register is an MXLEN-bit read/write register containing information on
+  # The csr:mip[] register is an MXLEN-bit read/write register containing information on
   # pending interrupts
-  - names: [mip_sz, mip_acc]
+  - name: mip_sz_acc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mip"]
 
-  # mie is the corresponding MXLEN-bit read/write register containing interrupt
+  # The mip register must always be implemented, but can contain read-only zeros in any
+  # position, indicating that interrupt can never become pending.
+  - name: mip_mandatory
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mip", "Sm_mcsr_cg/cp_mcsrwalk/mip"]
+
+  # csr:mie[] is the corresponding MXLEN-bit read/write register containing interrupt
   # enable bits.
-  - names: [mie_sz, mie_acc]
+  - name: mie_sz_acc
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mie"]
+
+  # The mie register must always be implemented.
+  - name: mie_mandatory
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mie"]
 
   # Each individual bit in register mip may be writable or may be read-only.
@@ -770,102 +807,363 @@ normative_rule_definitions:
   - name: mie_bits_rdonly0
     coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk/mie"]
 
-  # If a system has only one hart, or if a platform standard supports the delivery
-  # of machine-level interprocessor interrupts through external interrupts (MEI)
-  # instead, then mip.MSIP and mie.MSIE may both be read-only zeros.
-  - names: [mip_msip_maybe_rdonly0, mie_msie_maybe_rdonly0]
+  # If a system has only one hart, or if a platform standard supports the delivery of
+  # machine-level interprocessor interrupts through external interrupts (MEI) instead,
+  # then csr:mip[msip] and csr:mie[msie] may both be read-only zeros.
+  - name: mip_msip_mie_msie_maybe_rdonly0
     coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk/{mip,mie}"]
 
-  # If supervisor mode is not implemented, bits SEIP, STIP, and SSIP of mip and
-  # SEIE, STIE, and SSIE of mie are read-only zeros.
-  - names:
-      [
-        mip_seip_rdonly0,
-        mip_stip_rdonly0,
-        mip_ssip_rdonly0,
-        mie_seie_rdonly0,
-        mie_stie_rdonly0,
-        mie_ssie_rdonly0,
-      ]
+  # Each standard machine interrupt type (MEI, MTI, MSI) might not be implemented, in which case the
+  # corresponding interrupt-pending and interrupt-enable bits are read-only zeros.
+  - name: std_mach_intr_impl
+    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk/{mip,mie}"]
+
+  # If supervisor mode is not implemented, bits csr::[seip], csr::[stip], and csr::[ssip]
+  # of csr:mip[] and csr::[seie], csr::[stie], and csr::[ssie] of csr:mie[] are read-only
+  # zeros.
+  - name: mip_sxip_mie_sxie_rdonly0
     coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk/{mip,mie}"]
 
   # LCOFIP is read-write in mip
   - name: mip_lcofip_acc
     coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk/{mip,mie}"]
 
-  # If the Sscofpmf extension is not implemented, mip.LCOFIP and mie.LCOFIE are
-  # read-only zeros.
-  - names: [mip_lcofip_rdonly0, mie_lcofie_rdonly0]
+  # If the ext:sscofpmf[] extension is not implemented, csr:mip[lcofip] and
+  # csr:mie[lcofie] are read-only zeros.
+  - name: mip_lcofip_mie_lcofie_rdonly0
     coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk/{mip,mie}"]
 
-  # The Sstc extension adds the STCE (STimecmp Enable) bit to menvcfg CSR. When the
-  # Sstc extension is not implemented, STCE is read-only zero. The STCE bit enables
-  # stimecmp for S-mode when set to one. When this extension is implemented and STCE
-  # in menvcfg is zero, an attempt to access stimecmp in a mode other than M-mode
-  # raises an illegal-instruction exception, STCE in henvcfg is read-only zero, and
-  # STIP in mip and sip reverts to its defined behavior as if this extension is not
-  # implemented. Further, if the H extension is implemented, then hip.VSTIP also
-  # reverts its defined behavior as if this extension is not implemented.
-  - name: menvcfg-stce
+  # The menvcfg CSR is a 64-bit read/write register, formatted as shown in menvcfg_enc_img
+  - name: menvcfg_sz_acc
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mcsr_access_masked/menvcfg",
+        "Sm_mcsr_cg/cp_mcsr_access_masked/menvcfgh",
+      ]
+
+  # controls certain characteristics of the execution environment for modes less privileged than M.
+  - name: menvcfg_op
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  - name: menvcfg_enc_img
     coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg"]
 
-  # The Zicboz extension adds the CBZE (Cache Block Zero instruction enable) field
-  # to menvcfg. When the CBZE field is set to 1, it enables execution of the cache
-  # block zero instruction, CBO.ZERO, in modes less privileged than M. Otherwise,
-  # the instruction raises an illegal-instruction exception in modes less privileged
-  # than M. When the Zicboz extension is not implemented, CBZE is read-only zero.
-  - name: menvcfg-cbze
+  # If bit FIOM (Fence of I/O implies Memory) is set to one in menvcfg, FENCE instructions executed
+  # in modes less privileged than M are modified so the requirement to order accesses to device I/O
+  # implies also the requirement to order main memory accesses. menvcfg_fiom_fence_presuc_op details
+  # the modified interpretation of FENCE instruction bits PI, PO, SI, and SO for modes less
+  # privileged than M when FIOM=1.
+  - name: menvcfg_fiom_fence_op
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
+
+  # for modes less privileged than M when FIOM=1, if an atomic instruction that accesses a region
+  # ordered as device I/O has its aq and/or rl bit set, then that instruction is ordered as though
+  # it accesses both device I/O and memory.
+  - name: menvcfg_fiom_atomic_op
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
+
+  # If S-mode is not supported, or if satp.MODE is read-only zero (always Bare), the implementation
+  # may make FIOM read-only zero.
+  - name: menvcfg_fiom_rdonly0_ok
+    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg"]
+
+  # Instruction bit|Meaning when set === PI PO|Predecessor device input and memory reads (PR
+  # implied) Predecessor device output and memory writes (PW implied)¶SI SO|Successor device input
+  # and memory reads (SR implied) Successor device output and memory writes (SW implied) ===
+  - name: menvcfg_fiom_fence_presuc_op
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
+
+  # If Smcdeleg is not implemented, CDE is read-only zero.
+  - name: menvcfg_cde_rdonly0
+    coverpoint:
+      ["TODO: check menvcfg.CDE in the Sm walk once Sail supports Smcdeleg"]
+
+  # The Sstc extension adds the STCE (STimecmp Enable) bit to menvcfg CSR.
+  - name: menvcfg_stce_exists
+    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg"]
+  # When the Sstc extension is not implemented, STCE is read-only zero.
+  - name: menvcfg_stce_rdonly0
+    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg"]
+
+  # The Zicboz extension adds the CBZE (Cache Block Zero instruction enable) field to
+  # menvcfg. When the CBZE field is set to 1, it enables execution of the cache block zero
+  # instruction, CBO.ZERO, in modes less privileged than M. Otherwise, the instruction
+  # raises an illegal-instruction exception in modes less privileged than M.
+  - name: menvcfg_cbze_op
     coverpoint:
       [
-        "Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg, Zicboz_cg/{zero.1, zero.2, zero.4, zero.5}",
+        "Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg",
+        "ExceptionsZicboS_cg/cp_cbze",
+        "ExceptionsZicboU_cg/cp_cbze",
       ]
+  # When the Zicboz extension is not implemented, CBZE is read-only zero.
+  - name: menvcfg_cbze_rdonly0
+    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg"]
 
-  # The Zicbom extension adds the CBCFE (Cache Block Clean and Flush instruction
-  # Enable) field to menvcfg. When the CBCFE field is set to 1, it enables execution
-  # of the cache block clean instruction (CBO.CLEAN) and the cache block flush
-  # instruction (CBO.FLUSH) in modes less privileged than M. Otherwise, these
-  # instructions raise an illegal-instruction exception in modes less privileged
-  # than M. When the Zicbom extension is not implemented, CBCFE is read-only zero.
-  - name: menvcfg-cbcfe
+  # The Zicbom extension adds the CBCFE (Cache Block Clean and Flush instruction Enable)
+  # field to menvcfg. When the CBCFE field is set to 1, it enables execution of the cache
+  # block clean instruction (CBO.CLEAN) and the cache block flush instruction (CBO.FLUSH)
+  # in modes less privileged than M. Otherwise, these instructions raise an
+  # illegal-instruction exception in modes less privileged than M.
+  - name: menvcfg_cbcfe_op
     coverpoint:
       [
-        "Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg, Zicbom_cg/{cl.1, cl.4, fl.1, fl.4}",
+        "Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg",
+        "ExceptionsZicboS_cg/cp_cbcfe",
+        "ExceptionsZicboU_cg/cp_cbcfe",
       ]
+  # When the Zicbom extension is not implemented, CBCFE is read-only zero.
+  - name: menvcfg_cbcfe_rdonly0
+    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg"]
 
-  # The Zicbom extension adds the CBIE (Cache Block Invalidate instruction Enable)
-  # WARL field to menvcfg to control execution of the cache block invalidate
-  # instruction (CBO.INVAL) in modes less privileged than M. When CBIE is set to
-  # 00b, the instruction raises an illegal-instruction exception in modes less
-  # privileged than M. When the Zicbom extension is not implemented, CBIE is
-  # read-only zero. The encoding 10b is reserved.
-  - name: menvcfg-cbie
+  # The Zicbom extension adds the CBIE (Cache Block Invalidate instruction Enable) WARL
+  # field to menvcfg to control execution of the cache block invalidate instruction
+  # (CBO.INVAL) in modes less privileged than M. When CBIE is set to 0b00, the instruction
+  # raises an illegal-instruction exception in modes less privileged than M.
+  - name: menvcfg_cbie_warl_op
     coverpoint:
-      ["Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg, Zicbom_cg/{inv.1, inv.4, inv.6}"]
+      [
+        "Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg",
+        "ExceptionsZicboS_cg/cp_cbie",
+        "ExceptionsZicboU_cg/cp_cbie",
+      ]
+  # When the Zicbom extension is not implemented, CBIE is read-only zero.
+  - name: menvcfg_cbie_rdonly0
+    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg"]
 
-  # When CBIE is set to 01b or 11b, and when enabled for execution in modes less
+  # When CBIE is set to 0b01 or 0b11, and when enabled for execution in modes less
   # privileged than M, it behaves as follows:
-  - name: cbo-inval_m-mode_op
-    coverpoint: ["Zicbom_cg/{inv.1, inv.4, inv.6}"]
+  - name: menvcfg_cbie_cbo-inval_op_lead_in
+    # TODO: cp_cbie checks only whether cbo.inval traps, not whether it flushes or invalidates (#2370)
+    coverpoint: ["ExceptionsZicboS_cg/cp_cbie", "ExceptionsZicboU_cg/cp_cbie"]
+  # 0b01&#8201;&#8212;&#8201;The instruction is executed and performs a flush operation,
+  # even if configured by a mode less privileged than M to perform an invalidate
+  # operation. 0b11&#8201;&#8212;&#8201;The instruction is executed and performs an
+  # invalidate operation, unless configured by a mode less privileged than M to perform a
+  # flush operation.
+  - name: menvcfg_cbie_cbo-inval_op_list
+    # TODO: cp_cbie checks only whether cbo.inval traps, not whether it flushes or invalidates (#2370)
+    coverpoint: ["ExceptionsZicboS_cg/cp_cbie", "ExceptionsZicboU_cg/cp_cbie"]
+
+  # If the Smnpm extension is implemented, the PMM field enables or disables pointer masking (see
+  # Zpm) for the next-lower privilege mode (S-/HS-mode if S-mode is implemented, or U-mode
+  # otherwise), according to the values in menvcfg_pmm_enc.
+  - name: menvcfg_pmm_op
+    coverpoint: ["SmnpmS_cg/cp_pmlen_masking", "SmnpmU_cg/cp_pmlen_masking"]
+
+  # If Smnpm is not implemented, PMM is read-only zero. The PMM field is read-only zero for RV32.
+  - name: menvcfg_pmm_rdonly0
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg",
+        "Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfgh",
+      ]
+
+  # Value|Description === 00|Pointer masking is disabled (PMLEN = 0)¶01|Reserved¶10|Pointer masking
+  # is enabled with PMLEN = XLEN - 57 (PMLEN = 7 on RV64)¶11|Pointer masking is enabled with PMLEN =
+  # XLEN - 48 (PMLEN = 16 on RV64) ===
+  - name: menvcfg_pmm_enc
+    coverpoint:
+      [
+        "SmnpmS_cg/cp_pmlen_masking",
+        "SmnpmU_cg/cp_pmlen_masking",
+        "Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg",
+      ]
+
+  # When Ssdbltrp is not implemented sstatus.SDT, vsstatus.SDT, and henvcfg.DTE bits are read-only
+  # zero.
+  - name: menvcfg_dte_sdt_rdonly0
+    coverpoint:
+      [
+        "TODO: check sstatus.SDT and menvcfg.DTE in the Sm walks once Sail supports Ssdbltrp",
+      ]
+
+  # In harts with U-mode, menvcfg must be implemented, but all WARL fields may be read-only zero.
+  - name: menvcfg_mandatory_u_mode
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/menvcfg"]
+
+  # For harts with S-mode and XLEN=32, menvcfgh must be similarly implemented.
+  - name: menvcfgh_mandatory_s_mode_rv32
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/menvcfgh"]
+
+  # mseccfg is a 64-bit read/write register, formatted as shown in mseccfg_enc_img, that controls
+  # security features.
+  - name: mseccfg_sz_acc
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mcsr_access_masked/mseccfg",
+        "Sm_mcsr_cg/cp_mcsr_access_masked/mseccfgh",
+      ]
+
+  # It exists if any extension that adds a field to mseccfg is implemented. Otherwise, it is
+  # reserved.
+  - name: mseccfg_presence
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mcsr_access_masked/mseccfg",
+        "TODO: check that mseccfg is reserved when no extension adds a field to it",
+      ]
+
+  - name: mseccfg_enc_img
+    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk_masked/mseccfg"]
+
+  # The Zkr extension adds the SSEED and USEED fields to the mseccfg CSR to control access to the
+  # seed CSR from modes less privileged than M.
+  - name: mseccfg_sseed_useed_presence
+    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk_masked/mseccfg"]
+
+  # If Zkr or U-mode is not implemented, USEED is read-only zero.
+  - name: mseccfg_useed_rdonly0
+    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk_masked/mseccfg"]
+
+  # If Zkr or S-mode is not implemented, SSEED is read-only zero.
+  - name: mseccfg_sseed_rdonly0
+    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk_masked/mseccfg"]
+
+  # The Smepmp extension adds the RLB, MMWP, and the MML fields in mseccfg.
+  - name: mseccfg_rlb_mmwp_mml_presence
+    coverpoint:
+      [
+        "TODO: check MML, MMWP, and RLB in the Sm mseccfg walk once Sail supports Smepmp",
+      ]
+
+  # mseccfg.RLB (Rule Locking Bypass) is a WARL field that provides a mechanism to temporarily
+  # modify Locked PMP rules. When mseccfg.RLB is 1, locked PMP rules may be removed or modified.
+  # When mseccfg.RLB is 0 and pmpcfg.L is 1 in any rule or entry (including disabled entries), then
+  # mseccfg.RLB remains 0 and any further modifications to mseccfg.RLB are ignored until a PMP
+  # reset.
+  - name: mseccfg_rlb_op_warl
+    coverpoint: ["TODO: Smepmp is not yet tested"]
+
+  # The mseccfg.MMWP (Machine-Mode Allowlist Policy) is a WARL field. This field changes the default
+  # PMP policy for Machine mode when accessing memory regions that don’t have a matching PMP rule.
+  # This is a sticky bit, meaning that once set it cannot be unset until a PMP reset. When set it
+  # changes the default PMP policy for M-mode when accessing memory regions that don’t have a
+  # matching PMP rule, to denied instead of ignored.
+  - name: mseccfg_mmwp_op_warl
+    coverpoint: ["TODO: Smepmp is not yet tested"]
+
+  # The mseccfg.MML (Machine Mode Lockdown) is a WARL field.
+  - name: mseccfg_mml_warl
+    coverpoint: ["TODO: Smepmp is not yet tested"]
+
+  # This is a sticky bit, meaning that once set it cannot be unset until a PMP reset.
+  - name: mseccfg_mml_sticky
+    coverpoint: ["TODO: Smepmp is not yet tested"]
+
+  # When mseccfg.MML is set the system's behavior changes in the following way:
+  - name: mseccfg_mml_set
+    coverpoint: ["TODO: Smepmp is not yet tested"]
+
+  # The meaning of pmpcfg.L changes: Instead of marking a rule as locked and enforced in all modes,
+  # it now marks a rule as M-mode-only when set and S/U-mode-only when unset. The formerly reserved
+  # encoding of pmpcfg.RW=01, and the encoding pmpcfg.LRWX=1111, now encode a Shared-Region.
+  - name: mseccfg_mml_pmpcfg_l_op
+    coverpoint: ["TODO: Smepmp is not yet tested"]
+
+  # An M-mode-only rule is enforced on accesses whose effective privilege mode is Machine and denied
+  # to accesses whose effective privilege mode is Supervisor or User. It also remains locked so that
+  # any further modifications to its associated configuration or address registers are ignored until
+  # a PMP reset, unless mseccfg.RLB is set.
+  - name: mseccfg_mml_m_rule_op
+    coverpoint: ["TODO: Smepmp is not yet tested"]
+
+  # An S/U-mode-only rule is enforced on accesses whose effective privilege mode is Supervisor or
+  # User and denied to accesses whose effective privilege mode is Machine.
+  - name: mseccfg_mml_soru_rule_op
+    coverpoint: ["TODO: Smepmp is not yet tested"]
+
+  # A Shared-Region rule is enforced on all modes, with restrictions depending on the pmpcfg.L and
+  # pmpcfg.X bits:
+  - name: mseccfg_mml_shared_rule_op
+    coverpoint: ["TODO: Smepmp is not yet tested"]
+
+  # A Shared-Region rule where pmpcfg.L is not set can be used for sharing data between M-mode and
+  # S/U-mode, so is not executable. M-mode has read/write access to that region, and S/U-mode has
+  # read access if pmpcfg.X is not set, or read/write access if pmpcfg.X is set.
+  - name: mseccfg_mml_shared_l0_op
+    coverpoint: ["TODO: Smepmp is not yet tested"]
+
+  # A Shared-Region rule where pmpcfg.L is set can be used for sharing code between M-mode and
+  # S/U-mode, so is not writable. Both M-mode and S/U-mode have execute access on the region, and
+  # M-mode also has read access if pmpcfg.X is set. The rule remains locked so that any further
+  # modifications to its associated configuration or address registers are ignored until a PMP
+  # reset, unless mseccfg.RLB is set.
+  - name: mseccfg_mml_shared_l1_op
+    coverpoint: ["TODO: Smepmp is not yet tested"]
+
+  # The encoding pmpcfg.LRWX=1111 can be used for sharing data between M-mode and S/U mode, where
+  # both modes only have read-only access to the region. The rule remains locked so that any further
+  # modifications to its associated configuration or address registers are ignored until a PMP
+  # reset, unless mseccfg.RLB is set.
+  - name: mseccfg_mml_shared_lrwx_1111_op
+    coverpoint: ["TODO: Smepmp is not yet tested"]
+
+  # Adding a rule with executable privileges that either is M-mode-only or a locked Shared-Region is
+  # not possible and such pmpcfg writes are ignored, leaving pmpcfg unchanged. This restriction can
+  # be temporarily lifted by setting mseccfg.RLB
+  - name: mseccfg_mml_x_restrict
+    coverpoint: ["TODO: Smepmp is not yet tested"]
+
+  # Executing code with Machine mode privileges is only possible from memory regions with a matching
+  # M-mode-only rule or a locked Shared-Region rule with executable privileges. Executing code from
+  # a region without a matching rule or with a matching S/U-mode-only rule is denied.
+  - name: mseccfg_mml_exec_code
+    coverpoint: ["TODO: Smepmp is not yet tested"]
+
+  # If mseccfg.MML is not set, the combination of pmpcfg.RW=01 remains reserved for future standard
+  # use.
+  - name: pmp_rw01_rsv
+    coverpoint: ["Reserved encoding for future use; nothing to test"]
+
+  # If the Smmpm extension is implemented, the PMM field enables or disables pointer masking (see
+  # Zpm) for M-mode according to the values in mseccfg_pmm_enc.
+  - name: mseccfg_pmm_presence_op
+    coverpoint: ["Smmpm_cg/cp_pmlen_masking"]
+
+  # If Smmpm is not implemented, PMM is read-only zero. The PMM field is read-only zero for RV32.
+  - name: mseccfg_pmm_rdonly0
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mcsrwalk_masked/mseccfg",
+        "Sm_mcsr_cg/cp_mcsrwalk_masked/mseccfgh",
+      ]
+
+  # Value|Description === 00|Pointer masking is disabled (PMLEN = 0)¶01|Reserved¶10|Pointer masking
+  # is enabled with PMLEN = XLEN - 57 (PMLEN = 7 on RV64)¶11|Pointer masking is enabled with PMLEN =
+  # XLEN - 48 (PMLEN = 16 on RV64) ===
+  - name: mseccfg_pmm_enc
+    coverpoint:
+      ["Smmpm_cg/cp_pmlen_masking", "Sm_mcsr_cg/cp_mcsrwalk_masked/mseccfg"]
+
+  # When XLEN=32 only, mseccfgh is a 32-bit read/write register that aliases bits 63:32 of mseccfg.
+  - name: mseccfgh_sz_acc_op
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mcsr_access_masked/mseccfgh",
+        "Sm_mcsr_cg/cp_mcsrwalk_masked/mseccfgh",
+      ]
 
   # The mcycle CSR counts the number of clock cycles executed by the processor core
   # on which the hart is running.
   - name: mcycle_op
     coverpoint:
-      ["Sm_mcsr_cg/cp_cntr_access/mcycle, Sm_mcsr_cg/cp_mcycle_wraparound"]
+      ["Sm_mcsr_cg/cp_cntr_access/mcycle", "Sm_mcsr_cg/cp_mcycle_wraparound"]
 
-  # The mcycle and minstret registers have 64-bit precision on all RV32 and RV64
-  # harts.
-  - name: mcycle_sz
-    coverpoint: ["Sm_mcsr_cg/cp_cntr_access/mcycle"]
+  # The csr:mcycle[] and csr:minstret[] registers have 64-bit precision on all RV32 and
+  # RV64 harts.
+  - name: mcycle_minstret_sz
+    coverpoint:
+      ["Sm_mcsr_cg/cp_cntr_access/mcycle", "Sm_mcsr_cg/cp_cntr_access"]
 
-  # The counter registers have an arbitrary value after the hart is reset, and can
-  # be written with a given value.
-  - name: mcycle_rst
-    coverpoint: ["Sm_mcsr_cg/cp_cntr_access/mcycle"]
+  # The counter registers have an arbitrary value after the hart is reset, and can be
+  # written with a given value.
+  - name: mcycle_minstret_rst
+    coverpoint:
+      ["Sm_mcsr_cg/cp_cntr_access/mcycle", "Sm_mcsr_cg/cp_cntr_access/minstret"]
 
-  # Any CSR write takes effect after the writing instruction has otherwise
-  # completed.
-  - name: mcycle_wr
+  # Any CSR write takes effect after the writing instruction has otherwise completed.
+  - name: mcycle_minstret_wr
     coverpoint: ["Sm_mcsr_cg/cp_cntr_access"]
 
   # The mcycle CSR may be shared between harts on the same core, in which case
@@ -873,31 +1171,22 @@ normative_rule_definitions:
   - name: mcycle_shared
     coverpoint: ["Not tested; requires multi-hart core"]
 
-  # reads of the mcycleh, minstreth, mhpmcounternh, and mhpmeventnh CSRs return bits
-  # 63-32 of the corresponding register, and writes change only bits 63-32.
-  - names: [mcycleh_op, minstreth_op, mhpmcounterh_op, mhpmeventh_op]
+  # reads of the csr:mcycleh[], csr:minstreth[], mhpmcounternh, and mhpmeventnh CSRs
+  # return bits 63-32 of the corresponding register, and writes change only bits 63-32.
+  - name: mcycleh_minstreth_mhpmh_op
     coverpoint:
-      ["Sm_mcsr_cg/cp_cntr_access/{mcycleh,minstreth,mhpmcounterh,mhpmeventh}"]
+      [
+        "Sm_mcsr_cg/cp_cntr_access/{mcycleh, minstreth, mhpmcounter3h}",
+        "SscofpmfSm_cg/cp_sscofpmf_access",
+      ]
 
   # The minstret CSR counts the number of instructions the hart has retired.
   - name: minstret_op
     coverpoint:
-      ["Sm_mcsr_cg/cp_cntr_access/minstret, Sm_mcsr_cg/cp_minstret_wraparound"]
-
-  # The mcycle and minstret registers have 64-bit precision on all RV32 and RV64
-  # harts.
-  - name: minstret_sz
-    coverpoint: ["Sm_mcsr_cg/cp_cntr_access"]
-
-  # The counter registers have an arbitrary value after the hart is reset, and can
-  # be written with a given value.
-  - name: minstret_rst
-    coverpoint: ["Sm_mcsr_cg/cp_cntr_access/minstret"]
-
-  # Any CSR write takes effect after the writing instruction has otherwise
-  # completed.
-  - name: minstret_wr
-    coverpoint: ["Sm_mcsr_cg/cp_cntr_access"]
+      [
+        "Sm_mcsr_cg/cp_cntr_access/minstret",
+        "Sm_mcsr_cg/cp_minstret_wraparound",
+      ]
 
   # The hardware performance monitor includes 29 additional 64-bit event counters,
   # mhpmcounter3-mhpmcounter31.
@@ -914,86 +1203,17 @@ normative_rule_definitions:
 
   # a legal implementation is to make both the counter and its corresponding event
   # selector be read-only 0.
-  - names:
-      [
-        mhpmcounter3_rdonly0,
-        mhpmcounter4_rdonly0,
-        mhpmcounter5_rdonly0,
-        mhpmcounter6_rdonly0,
-        mhpmcounter7_rdonly0,
-        mhpmcounter8_rdonly0,
-        mhpmcounter9_rdonly0,
-        mhpmcounter10_rdonly0,
-        mhpmcounter11_rdonly0,
-        mhpmcounter12_rdonly0,
-        mhpmcounter13_rdonly0,
-        mhpmcounter14_rdonly0,
-        mhpmcounter15_rdonly0,
-      ]
-    coverpoint: ["Sm_mcsr_cg/cp_cntr_access"]
-  - names:
-      [
-        mhpmcounter16_rdonly0,
-        mhpmcounter17_rdonly0,
-        mhpmcounter18_rdonly0,
-        mhpmcounter19_rdonly0,
-        mhpmcounter20_rdonly0,
-        mhpmcounter21_rdonly0,
-        mhpmcounter22_rdonly0,
-        mhpmcounter23_rdonly0,
-        mhpmcounter24_rdonly0,
-        mhpmcounter25_rdonly0,
-        mhpmcounter26_rdonly0,
-        mhpmcounter27_rdonly0,
-        mhpmcounter28_rdonly0,
-        mhpmcounter29_rdonly0,
-        mhpmcounter30_rdonly0,
-        mhpmcounter31_rdonly0,
-      ]
-    coverpoint: ["Sm_mcsr_cg/cp_cntr_access"]
+  - name: mhpmcounter_mhpmevent_rdonly0
+    coverpoint: ["Sm_mcsr_cg/cp_cntr_access", "Sm_mcsr_cg/cp_mcsr_access"]
 
   # support up to 64 bits of precision on RV32 and RV64.
-  - names:
-      [
-        mhpmcounter3_sz,
-        mhpmcounter4_sz,
-        mhpmcounter5_sz,
-        mhpmcounter6_sz,
-        mhpmcounter7_sz,
-        mhpmcounter8_sz,
-        mhpmcounter9_sz,
-        mhpmcounter10_sz,
-        mhpmcounter11_sz,
-        mhpmcounter12_sz,
-        mhpmcounter13_sz,
-        mhpmcounter14_sz,
-        mhpmcounter15_sz,
-      ]
-    coverpoint: ["Sm_mcsr_cg/cp_cntr_access"]
-  - names:
-      [
-        mhpmcounter16_sz,
-        mhpmcounter17_sz,
-        mhpmcounter18_sz,
-        mhpmcounter19_sz,
-        mhpmcounter20_sz,
-        mhpmcounter21_sz,
-        mhpmcounter22_sz,
-        mhpmcounter23_sz,
-        mhpmcounter24_sz,
-        mhpmcounter25_sz,
-        mhpmcounter26_sz,
-        mhpmcounter27_sz,
-        mhpmcounter28_sz,
-        mhpmcounter29_sz,
-        mhpmcounter30_sz,
-        mhpmcounter31_sz,
-      ]
+  - name: mhpmcounter_sz
     coverpoint: ["Sm_mcsr_cg/cp_cntr_access"]
 
-  # The event selector CSRs, mhpmevent3-mhpmevent31, are 64-bit WARL registers that
-  # control which event causes the corresponding counter to increment.
-  - names: [mhpmevent_sz, mhpmevent_warl, mhpmevent_op]
+  # The event selector CSRs,
+  # csr:mhpmevent3[]&amp;#8205;&amp;#8211;&amp;#8205;csr:mhpmevent31[], are 64-bit WARL
+  # registers that control which event causes the corresponding counter to increment.
+  - name: mhpmevent_sz_warl_op
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access"]
 
   # The meaning of these events is defined by the platform, but event 0 is defined
@@ -1001,165 +1221,102 @@ normative_rule_definitions:
   - name: mhpmevent_enc
     coverpoint: ["TODO: check no counting on event 0"]
 
-  # a legal implementation is to make both the counter and its corresponding event
-  # selector be read-only 0.
-  - names:
-      [
-        mhpmevent3_rdonly0,
-        mhpmevent4_rdonly0,
-        mhpmevent5_rdonly0,
-        mhpmevent6_rdonly0,
-        mhpmevent7_rdonly0,
-        mhpmevent8_rdonly0,
-        mhpmevent9_rdonly0,
-        mhpmevent10_rdonly0,
-        mhpmevent11_rdonly0,
-        mhpmevent12_rdonly0,
-        mhpmevent13_rdonly0,
-        mhpmevent14_rdonly0,
-        mhpmevent15_rdonly0,
-      ]
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access"]
-  - names:
-      [
-        mhpmevent16_rdonly0,
-        mhpmevent17_rdonly0,
-        mhpmevent18_rdonly0,
-        mhpmevent19_rdonly0,
-        mhpmevent20_rdonly0,
-        mhpmevent21_rdonly0,
-        mhpmevent22_rdonly0,
-        mhpmevent23_rdonly0,
-        mhpmevent24_rdonly0,
-        mhpmevent25_rdonly0,
-        mhpmevent26_rdonly0,
-        mhpmevent27_rdonly0,
-        mhpmevent28_rdonly0,
-        mhpmevent29_rdonly0,
-        mhpmevent30_rdonly0,
-        mhpmevent31_rdonly0,
-      ]
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access"]
-
-  # may be read-only zero, indicating reads to the corresponding counter will cause
-  # an illegal-instruction exception when executing in a less-privileged mode.
-  - names:
-      [
-        mcounteren_cy_rdonly0,
-        mcounteren_tm_rdonly0,
-        mcounteren_ir_rdonly0,
-        mcounteren_hpm3_rdonly0,
-        mcounteren_hpm4_rdonly0,
-        mcounteren_hpm5_rdonly0,
-        mcounteren_hpm6_rdonly0,
-        mcounteren_hpm7_rdonly0,
-        mcounteren_hpm8_rdonly0,
-        mcounteren_hpm9_rdonly0,
-        mcounteren_hpm10_rdonly0,
-        mcounteren_hpm11_rdonly0,
-        mcounteren_hpm12_rdonly0,
-        mcounteren_hpm13_rdonly0,
-        mcounteren_hpm14_rdonly0,
-        mcounteren_hpm15_rdonly0,
-      ]
+  # The counter-enable mcounteren register is a 32-bit register
+  - name: mcounteren_sz
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mcounteren"]
-  - names:
-      [
-        mcounteren_hpm16_rdonly0,
-        mcounteren_hpm17_rdonly0,
-        mcounteren_hpm18_rdonly0,
-        mcounteren_hpm19_rdonly0,
-        mcounteren_hpm20_rdonly0,
-        mcounteren_hpm21_rdonly0,
-        mcounteren_hpm22_rdonly0,
-        mcounteren_hpm23_rdonly0,
-        mcounteren_hpm24_rdonly0,
-        mcounteren_hpm25_rdonly0,
-        mcounteren_hpm26_rdonly0,
-        mcounteren_hpm27_rdonly0,
-        mcounteren_hpm28_rdonly0,
-        mcounteren_hpm29_rdonly0,
-        mcounteren_hpm30_rdonly0,
-        mcounteren_hpm31_rdonly0,
-      ]
+
+  - name: mcounteren_enc_img
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mcounteren"]
+
+  # In harts with U-mode, the csr:mcounteren[] must be implemented, but all fields are
+  # WARL
+  - name: mcounteren_flds_mandatory_warl
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mcounteren"]
+
+  # may be read-only zero, indicating reads to the corresponding counter will cause an
+  # illegal-instruction exception when executing in a less-privileged mode.
+  - name: mcounteren_flds_rdonly0
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mcounteren"]
 
   # In harts without U-mode, the mcounteren register should not exist.
   - name: mcounteren_presence
+    # Accessing a nonexistent CSR is reserved; only Ssstrict requires the access to trap
+    coverpoint: ["SsstrictSm_mcsr_cg/cp_csrr"]
+
+  # The csr:cycle[], csr:instret[], and hpmcountern CSRs are read-only shadows of
+  # csr:mcycle[], csr:minstret[], and mhpmcountern, respectively.
+  - name: cycle_instret_hpmcounter_op_rdonly
+    # cp_csr_ro checks that writes trap. TODO: no test checks that the unprivileged counters
+    # read the same value as the machine counters
     coverpoint:
       [
-        "Untestable because nonexistent registers are reserved and unspecified except in SsstrictM",
+        "Zicntr_csrrs_cg/cp_cntr",
+        "Zihpm_csrrs_cg/cp_cntr_hpm",
+        "Sm_mcsr_cg/cp_csr_ro",
       ]
 
-  # The cycle, instret, and hpmcountern CSRs are read-only shadows of mcycle,
-  # minstret, and mhpmcounter n, respectively.
-  - names:
-      [
-        cycle_op,
-        instret_op,
-        hpmcounter_op,
-        cycle_rdonly,
-        instret_rdonly,
-        hpmcounter_rdonly,
-      ]
+  # The csr:time[] CSR is a read-only shadow of the memory-mapped csr:mtime[] register.
+  - name: time_op_rdonly
     coverpoint:
       [
-        "Zicntr_csrrs_cg/cp_cntr, Zihpm_csrrs_cg/cp_cntr_hpm, Sm_mcsr_cg/cp_csrw_readonly",
+        "Zicntr_csrrs_cg/cp_cntr/csr_time",
+        "Sm_mcsr_cg/{cp_mtime_write, cp_mtime_wraparound, cp_csr_ro}",
       ]
 
-  # The time CSR is a read-only shadow of the memory-mapped mtime register.
-  - names: [time_op, time_rdonly]
+  # when XLEN=32, the csr:cycleh[], csr:instreth[] and hpmcounternh CSRs are read-only
+  # shadows of csr:mcycleh[], csr:minstreth[] and mhpmcounternh, respectively.
+  - name: cycleh_instreth_hpmcounternh_op_rdonly
+    # cp_csr_ro checks that writes trap. TODO: no test checks that the unprivileged counters
+    # read the same value as the machine counters
     coverpoint:
       [
-        "Zicntr_csrrs_cg/cp_cntr/csr_time, Sm_mcsr_cg/cp_mtime_write, Sm_mcsr_cg/cp_csrw_readonly/time, Sm_mcsr_cg/cp_mtime_wraparound",
+        "Zicntr_csrrs_cg/cp_cntr",
+        "Zihpm_csrrs_cg/cp_cntr_hpm",
+        "Sm_mcsr_cg/cp_csr_ro",
       ]
 
-  # when XLEN=32, the cycleh, instreth and hpmcounternh CSRs are read-only shadows
-  # of mcycleh, minstreth and mhpmcounternh, respectively.
-  - names:
-      [
-        cycleh_op,
-        instreth_op,
-        hpmcounternh_op,
-        cycleh_rdonly,
-        instreth_rdonly,
-        hpmcounternh_rdonly,
-      ]
+  # When XLEN=32, the csr:timeh[] CSR is a read-only shadow of the upper 32 bits of the
+  # memory-mapped csr:mtime[] register
+  - name: timeh_op_rdonly
     coverpoint:
       [
-        "Zicntr_csrrs_cg/cp_cntr, Zihpm_csrrs_cg/cp_cntr_hpm, Sm_mcsr_cg/cp_csrw_readonly",
+        "Zicntr_csrrs_cg/cp_cntr/csr_timeh",
+        "Sm_mcsr_cg/{cp_mtimeh_write, cp_csr_ro}",
       ]
 
-  # When XLEN=32, the timeh CSR is a read-only shadow of the upper 32 bits of the
-  # memory-mapped mtime register
-  - names: [timeh_op, timeh_rdonly]
-    coverpoint:
-      [
-        "Zicntr_csrrs_cg/cp_cntr/csr_timeh, Sm_mcsr_cg/cp_mtimeh_write, Sm_mcsr_cg/cp_csrw_readonly",
-      ]
+  # Implementations can convert reads of the time and timeh CSRs into loads to the
+  # memory-mapped mtime register, or emulate this functionality on behalf of less-privileged
+  # modes in M-mode software.
+  - name: time_csr_architectural_availability
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
 
-  - name: mcountinhibit_enc
+  - name: mcountinhibit_enc_img
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mcountinhibit"]
 
-  # The counter-inhibit register mcountinhibit is a 32-bit WARL register that
+  # The counter-inhibit register csr:mcountinhibit[] is a 32-bit WARL register that
   # controls which of the hardware performance-monitoring counters increment.
-  - names: [mcountinhibit_sz, mcountinhibit_warl]
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mcountinhibit"]
+  - name: mcountinhibit_sz_warl
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mcsr_access/mcountinhibit",
+        "Sm_mcsr_cg/{cp_inhibit_mcycle, cp_inhibit_minstret}",
+        "Other counters do not increment predictably and are not tested",
+      ]
 
   # The settings in this register only control whether the counters increment; their
   # accessibility is not affected by the setting of this register.
   - name: mcountinhibit_only_inc
     coverpoint: ["TODO"]
 
-  # The counter-inhibit register mcountinhibit is a 32-bit WARL register that
-  # controls which of the hardware performance-monitoring counters increment. When
-  # the CY, IR, or HPMn bit in the mcountinhibit register is clear, the mcycle,
-  # minstret, or mhpmcountern register increments as usual. When the CY, IR, or HPMn
-  # bit is set, the corresponding counter does not increment.
-  - name: mcountinhibit_op
+  # When the csr::[cy], csr::[ir], or HPMn bit in the csr:mcountinhibit[] register is
+  # clear, the csr:mcycle[], csr:minstret[], or mhpmcountern register increments as usual.
+  # When the csr::[cy], csr::[ir], or HPMn bit is set, the corresponding counter does not
+  # increment.
+  - name: mcountinhibit_clear_op
     coverpoint:
       [
-        "Sm_mcsr_cg/cp_inhibit_{mcycle/minstret}.  Other registers do not increment predictably and thus are untested.",
+        "Sm_mcsr_cg/{cp_inhibit_mcycle, cp_inhibit_minstret}",
+        "Other counters do not increment predictably and are not tested",
       ]
 
   # The mcycle CSR may be shared between harts on the same core, in which case the
@@ -1171,18 +1328,18 @@ normative_rule_definitions:
   # If the mcountinhibit register is not implemented, the implementation behaves as
   # though the register were set to zero.
   - name: mcountinhibit_not_impl
-    coverpoint: ["Sm_mcsr_cg/cp_inhibit_{mcycle/minstret}"]
+    coverpoint: ["Sm_mcsr_cg/{cp_mcycle_wraparound, cp_minstret_wraparound}"]
 
-  # The mscratch register is an MXLEN-bit read/write register dedicated for use by
-  # machine mode.
-  - names: [mscratch_sz, mscratch_acc]
+  # The mscratch register is an MXLEN-bit read/write register dedicated for use by machine
+  # mode. The mscratch register must be implemented.
+  - name: mscratch_sz_acc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mscratch"]
 
-  - name: mscratch_enc
+  - name: mscratch_enc_img
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mscratch"]
 
   # mepc is an MXLEN-bit read/write register
-  - names: [mepc_sz, mepc_acc]
+  - name: mepc_sz_acc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mepc"]
 
   # The low bit of mepc (mepc[0]) is always zero. On implementations that support
@@ -1205,17 +1362,24 @@ normative_rule_definitions:
   # other invalid address that mepc is capable of holding.
   - name: mepc_inv_addr_conv
     coverpoint:
-      ["Sm_mcsr_cg/cp_mepc_vaddr_walk1, Sm_mcsr_cg/cp_mepc_vaddr_walk0"]
+      ["Sm_mcsr_cg/cp_mepc_vaddr_walk1", "Sm_mcsr_cg/cp_mepc_vaddr_walk0"]
 
-  - name: mepc_enc
+  - name: mepc_enc_img
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mepc"]
 
   # The mcause register is an MXLEN-bit read-write register
-  - names: [mcause_sz, mcause_acc]
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mcause"]
+  - name: mcause_sz_acc
+    coverpoint:
+      ["Sm_mcause_cg/{cp_mcause_write_exception, cp_mcause_write_interrupt}"]
 
-  - name: mcause_enc
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mcause"]
+  # The mcause register must be implemented.
+  - name: mcause_mandatory
+    coverpoint:
+      ["Sm_mcause_cg/{cp_mcause_write_exception, cp_mcause_write_interrupt}"]
+
+  - name: mcause_enc_img
+    coverpoint:
+      ["Sm_mcause_cg/{cp_mcause_write_exception, cp_mcause_write_interrupt}"]
 
   # Interrupt|Exception Code|Description === 1 1 1 1|0 1 2 3|Reserved Supervisor
   # software interrupt Reserved Machine software interrupt¶1 1 1 1|4 5 6 7|Reserved
@@ -1230,7 +1394,7 @@ normative_rule_definitions:
   # Environment call from M-mode Instruction page fault Load page fault Reserved
   # Store/AMO page fault Double trap Reserved Software check Hardware error Reserved
   # Designated for custom use Reserved Designated for custom use Reserved ===
-  - name: mcause_exccode_enc
+  - name: mcause_exccode_enc_img
     coverpoint: ["See mcause_op"]
 
   # The Exception Code is a WLRL field, so is only guaranteed to hold supported
@@ -1239,24 +1403,56 @@ normative_rule_definitions:
     coverpoint:
       ["Sm_mcause_cg/{cp_mcause_write_exception, cp_mcause_write_interrupt}"]
 
+  # The priority of any custom synchronous exceptions is implementation-defined.
+  - name: custom_exc_priority
+    coverpoint: ["Custom exceptions are non-standard and not certified"]
+
   # The mtval register is an MXLEN-bit read-write register formatted as shown in
   # &lt;&lt;norm:mtval_enc_img&gt;&gt;
-  - names: [mtval_sz, mtval_acc]
+  - name: mtval_sz_acc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mtval"]
+
+  # The hardware platform will specify which exceptions must set mtval informatively, which may
+  # unconditionally set it to zero, and which may exhibit either behavior, depending on the
+  # underlying event that caused the exception.
+  - name: mtval_per_exc_behavior
+    coverpoint: ["Definition, checked through UDB"]
+
+  # The mtval register must always be implemented. If the hardware platform specifies that no
+  # exceptions set mtval to a nonzero value, then mtval is read-only zero.
+  - name: mtval_rdonly0
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mtval"]
+
+  - name: mtval_enc_img
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mtval"]
+
+  # If mtval is written with a nonzero value when a misaligned load or store causes an access-fault,
+  # page-fault, or hardware-error exception, then mtval will contain the virtual address of the
+  # portion of the access that caused the fault.
+  - name: mtval_vaddr_wr_misaligned_addr
+    coverpoint:
+      [
+        "TODO: misaligned loads and stores that straddle a PMA, PMP, or page boundary and fault on the upper part",
+      ]
+
+  # For other traps, mtval is set to zero
+  - name: mtval_other_traps_zero
+    coverpoint:
+      [
+        "TODO: record mtval after ECALL and interrupts; their trap signatures omit it",
+      ]
 
   # must be able to hold all valid virtual addresses and the value zero.
   - name: mtval_vaddr_and_0_sz
     coverpoint:
-      [
-        "Sm_mcsr_cg/cp_mtval_zero, Sm_mcsr_cg/cp_mtval_vaddr_walk1, Sm_mcsr_cg/cp_mtval_vaddr_walk0",
-      ]
+      ["Sm_mcsr_cg/{cp_mtval_zero, cp_mtval_vaddr_walk1, cp_mtval_vaddr_walk0}"]
 
   # If the feature to return the faulting instruction bits is implemented, mtval
   # must also be able to hold all values less than 2^N^, where N is the smaller of
   # MXLEN and ILEN.
   - name: mtval_instr_bits_sz
     coverpoint:
-      ["Sm_mcsr_cg/cp_mtval_ilen_walk1, Sm_mcsr_cg/cp_mtval_ilen_ones"]
+      ["Sm_mcsr_cg/cp_mtval_ilen_walk1", "Sm_mcsr_cg/cp_mtval_ilen_ones"]
 
   # If mtval is not read-only zero, it is a WARL register
   - name: mtval_warl
@@ -1266,12 +1462,35 @@ normative_rule_definitions:
   # other invalid address that mtval is capable of holding.
   - name: mtval_inv_addr_conv
     coverpoint:
-      ["Sm_mcsr_cg/cp_mtval_vaddr_walk1, Sm_mcsr_cg/cp_mtval_vaddr_walk0"]
+      ["Sm_mcsr_cg/cp_mtval_vaddr_walk1", "Sm_mcsr_cg/cp_mtval_vaddr_walk0"]
 
-  # The effective XLEN in S-mode and U-mode are termed SXLEN and UXLEN,
-  # respectively. When MXLEN=32, the SXL and UXL fields do not exist, and SXLEN=32
-  # and UXLEN=32.
-  - names: [SXLEN, UXLEN]
+  # The mconfigptr register is an MXLEN-bit read-only CSR formatted as shown in mconfigptr_enc_img
+  - name: mconfigptr_sz_acc
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro/mconfigptr"]
+
+  # holds the physical address of a configuration data structure.
+  - name: mconfigptr_op
+    coverpoint: ["Definition, checked through UDB"]
+
+  - name: mconfigptr_enc_img
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro/mconfigptr"]
+
+  # The pointer alignment in bits must be no smaller than MXLEN: i.e., if MXLEN is 8×n, then
+  # mconfigptr[log2(n)-1:0] must be zero.
+  - name: mconfigptr_align
+    coverpoint: ["TODO: check that mconfigptr[log2(MXLEN/8)-1:0] reads as zero"]
+
+  # The mconfigptr register must be implemented
+  - name: mconfigptr_mandatory
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro/mconfigptr"]
+
+  # it may be zero to indicate the configuration data structure does not exist or that an
+  # alternative mechanism must be used to locate it.
+  - name: mconfigptr_val
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro/mconfigptr"]
+
+  # The effective XLEN in S-mode and U-mode are termed SXLEN and UXLEN, respectively.
+  - name: sxlen_uxlen
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # Whenever XLEN in any mode is set to a value less than the widest supported XLEN,
@@ -1300,16 +1519,12 @@ normative_rule_definitions:
     coverpoint: ["Tested by executing instructions"]
 
   # Reset and NMI vector locations are given in a platform specification.
-  - name: reset_addr
-    coverpoint: ["Tested with linker script"]
-
-  # Reset and NMI vector locations are given in a platform specification.
-  - name: nmi_addr
-    coverpoint: ["Out of scope"]
+  - name: rst_and_nmi_addr
+    coverpoint: ["Tested with linker script", "Out of scope"]
 
   # When a trap is delegated to S-mode The mcause, mepc, and mtval registers and the
   # MPP and MPIE fields of mstatus are not written.
-  - name: trap_del_S_mode_no_M_mode
+  - name: trap_del_s_mode_no_m_mode
     coverpoint:
       [
         "Untested; S-mode handler does not have access to M-mode CSRs and changing to M-mode disturbs CSRs",
@@ -1325,16 +1540,22 @@ normative_rule_definitions:
   - name: Zicsr_illegal_mode
     coverpoint: ["Sm_mcsr_cg/cp_csr_insufficient_priv"]
 
+  # 0x7B0-0x7BF are only visible to debug mode. Implementations must raise
+  # illegal-instruction exceptions on machine-mode access to the latter set of
+  # registers.
+  - name: Zicsr_debug_illegal
+    coverpoint: ["Sm_mcsr_cg/cp_csr_insufficient_priv"]
+
   # A read/write register might also contain some bits that are read-only, in which
   # case writes to the read-only bits are ignored.
   - name: Zicsr_write_ro
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access (e.g. misa.MXL)"]
+    coverpoint: ["Sm_mcsr_cg/{cp_mcsr_access, cp_misa_mxl}"]
 
   # For forward compatibility, implementations that do not furnish these fields must
   # make them read-only zero. These fields are labeled WPRI in the register
   # descriptions.
   - name: Zicsr_wpri_roz
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access (e.g. mstatus)"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
 
   # Software should not write anything other than legal values to such a field, and
   # should not assume a read will return a legal value unless the last write was of
@@ -1342,13 +1563,196 @@ normative_rule_definitions:
   # (e.g., reset) set the register to a legal value. These fields are labeled WLRL
   # in the register descriptions.
   - name: Zicsr_wlrl
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access mcause"]
+    coverpoint:
+      ["Sm_mcause_cg/{cp_mcause_write_exception, cp_mcause_write_interrupt}"]
 
   # Implementations will not raise an exception on writes of unsupported values to a
   # WARL field.
   - name: Zicsr_warl
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access"]
 
+  # Platforms provide a real-time counter, exposed as a memory-mapped machine-mode read-write
+  # register, mtime.
+  - name: mtime_acc
+    coverpoint: ["Sm_mcsr_cg/{cp_mtime_write, cp_mtime_wraparound}"]
+
+  # mtime must increment at constant frequency
+  - name: mtime_op
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mtime_wraparound",
+        "Constant frequency is untestable without an independent time reference",
+      ]
+
+  # the platform must provide a mechanism for determining the period of an mtime tick.
+  - name: mtime_tick_period
+    coverpoint: ["Platform requirement outside the ISA; not tested"]
+
   # The mtime register will wrap around if the count overflows.
   - name: mtime_wrap
     coverpoint: ["Sm_mcsr_cg/cp_mtime_wraparound"]
+
+  # The mtime register has a 64-bit precision on all RV32 and RV64 systems.
+  - name: mtime_sz
+    coverpoint:
+      [
+        "Sm_mcsr_cg/{cp_mtimeh_write, cp_mtimeh_wraparound}",
+        "TODO: on RV64, check that mtime bits 63:32 are writable",
+      ]
+
+  # Platforms provide a 64-bit memory-mapped machine-mode timer compare register (mtimecmp).
+  - name: mtimecmp_sz
+    coverpoint: ["TODO: write and read back all 64 bits of mtimecmp"]
+
+  - name: mtime_enc_img
+    coverpoint: ["Sm_mcsr_cg/{cp_mtime_write, cp_mtime_wraparound}"]
+
+  - name: mtimecmp_enc_img
+    coverpoint: ["TODO: write and read back all 64 bits of mtimecmp"]
+
+  # In RV32, memory-mapped writes to mtimecmp modify only one 32-bit part of the register.
+  - name: mtimecmp_rv32_wr
+    coverpoint:
+      ["TODO: on RV32, write each half of mtimecmp and read back both halves"]
+
+  # For RV64, naturally aligned 64-bit memory accesses to the mtime and mtimecmp registers are
+  # additionally supported and are atomic.
+  - name: mtime_mtimecmp_rv64_wr
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mtime_wraparound",
+        "ZawrsSm_cg/cp_wrs_resume",
+        "Atomicity is not observable in a single-hart test",
+      ]
+
+  # When mtime changes, it is guaranteed to be reflected in time and timeh eventually, but not
+  # necessarily immediately.
+  - name: time_timeh_visibility_mtime
+    coverpoint: ["Sm_mcsr_cg/{cp_mtime_write, cp_mtimeh_write}"]
+
+  # ECALL and EBREAK cause the receiving privilege mode’s epc register to be set to the address of
+  # the ECALL or EBREAK instruction itself, not the address of the following instruction.
+  - name: ecall_ebreak_epc_value
+    coverpoint:
+      [
+        "Sm_mprivinst_cg/cp_mprivinst",
+        "ExceptionsSm_cg/{cp_ecall_m, cp_breakpoint}",
+      ]
+
+  - name: xret_enc_img
+    coverpoint: ["Sm_mprivinst_cg/{cp_mret, cp_sret}"]
+
+  # MRET is always provided.
+  - name: mret_presence
+    coverpoint: ["Sm_mprivinst_cg/cp_mret"]
+
+  # If the Zalrsc extension is supported, the xRET instruction is allowed to clear any outstanding
+  # LR address reservation but is not required to.
+  - name: xret_clr_lr_resv
+    coverpoint: ["Either behavior is legal; not tested"]
+
+  # Upon reset, a hart’s privilege mode is set to M.
+  - name: m_mode_priv_at_reset
+    # The Sm tests access M-mode CSRs right after boot, which requires M-mode
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access"]
+
+  # The mstatus fields MIE and MPRV are reset to 0.
+  - name: mstatus_mie_mprv_rst
+    coverpoint:
+      ["TODO: record mstatus.MIE and MPRV before the boot code writes mstatus"]
+
+  # If little-endian memory accesses are supported, the mstatus/mstatush field MBE is reset to 0.
+  - name: mstatus_mstatush_mbe_rst
+    coverpoint:
+      ["TODO: record mstatus/mstatush.MBE before the boot code writes it"]
+
+  # For implementations with the Zalrsc standard extension, there is no valid load reservation.
+  - name: ld_rsv_rst
+    coverpoint:
+      ["TODO: execute an SC before any LR after reset and check that it fails"]
+
+  # The pc is set to an implementation-defined reset vector.
+  - name: pc_rst
+    coverpoint: ["Tested with linker script"]
+
+  # The mcause register is set to a value indicating the cause of the reset.
+  - name: mcause_rst1_val
+    coverpoint: ["Implementation-specific reset cause; not tested"]
+
+  # Writable PMP registers’ A and L fields are set to 0, unless the platform mandates a different
+  # reset value for some PMP registers’ A and L fields.
+  - name: pmp_a_l_rst
+    coverpoint:
+      [
+        "TODO: record the writable pmpcfg A and L fields before the boot code writes them",
+      ]
+
+  # If the hypervisor extension is implemented, the hgatp.MODE and vsatp.MODE fields are reset to 0.
+  - name: hgatp_vsatp_mode_rst
+    coverpoint:
+      ["TODO: record hgatp.MODE and vsatp.MODE after reset, before any write"]
+
+  # No WARL field contains an illegal value.
+  - name: warl_rst
+    coverpoint:
+      [
+        "TODO: check that WARL fields hold legal values before the boot code writes them",
+      ]
+
+  # All other hart state is UNSPECIFIED.
+  - name: rst_other_state_unspec
+    coverpoint: ["Behavior is UNSPECIFIED by the specification; not tested"]
+
+  # The MML, MMWP, and RLB fields of the mseccfg register are set to 0, unless the platform mandates
+  # a different reset value.
+  - name: mseccfg_mml_mmwp_rlb_rst
+    coverpoint:
+      ["TODO: record mseccfg.MML, MMWP, and RLB after reset, before any write"]
+
+  # The mcause values after reset have implementation-specific interpretation
+  - name: mcause_rst2_val
+    coverpoint: ["Implementation-specific reset cause; not tested"]
+
+  # the value 0 should be returned on implementations that do not distinguish different reset
+  # conditions. Implementations that distinguish different reset conditions should only use 0 to
+  # indicate the most complete reset.
+  - name: mcause_rst_zero
+    coverpoint: ["Implementation-specific reset cause; not tested"]
+
+  # The USEED and SSEED fields of the mseccfg CSR must have defined reset values. The system must
+  # not allow them to be in an undefined state after reset.
+  - name: mseccfg_useed_sseed_rst
+    coverpoint:
+      ["TODO: record mseccfg.USEED and SSEED after reset, before any write"]
+
+  # mcause reset values may alias mcause values following synchronous exceptions
+  - name: mcause_rst_alias_ok
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # cause an immediate jump to an implementation-defined NMI vector running in M-mode regardless of
+  # the state of a hart’s interrupt enable bits. The mepc register is written with the virtual
+  # address of the instruction that was interrupted,
+  - name: nmi_op
+    coverpoint:
+      ["TODO: needs a platform mechanism (RVMODEL macro) to raise an NMI"]
+
+  # mcause is set to a value indicating the source of the NMI.
+  - name: nmi_mcause_source
+    coverpoint:
+      ["TODO: needs a platform mechanism (RVMODEL macro) to raise an NMI"]
+
+  # The values written to mcause on an NMI are implementation-defined.
+  - name: nmi_mcause_impl_def
+    coverpoint: ["Implementation-defined; not tested"]
+
+  # The high Interrupt bit of mcause should be set to indicate that this was an interrupt. An
+  # Exception Code of 0 is reserved to mean unknown cause and implementations that do not
+  # distinguish sources of NMIs via the mcause register should return 0 in the Exception Code.
+  - name: nmi_mcause_restrictions
+    coverpoint:
+      ["TODO: needs a platform mechanism (RVMODEL macro) to raise an NMI"]
+
+  # NMIs do not reset processor state
+  - name: nmi_no_rst
+    coverpoint:
+      ["TODO: needs a platform mechanism (RVMODEL macro) to raise an NMI"]

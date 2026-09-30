@@ -117,6 +117,7 @@ PMPSm_cp_cfg_A_tor_bot_unlocked_8_lw_top:
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_unlocked_8_lw_top, PMPSm_cp_cfg_A_tor_bot_unlocked_8_lw_top_str)
 
 // Execute probes
+  RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   addi a4, a4, -4
   LA(ra, 1f)
@@ -206,6 +207,7 @@ PMPSm_cp_cfg_A_tor_bot_locked_8_lw_top:
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_bot_locked_8_lw_top, PMPSm_cp_cfg_A_tor_bot_locked_8_lw_top_str)
 
 // Execute probes
+  RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   addi a4, a4, -4
   LA(ra, 1f)

@@ -7,7 +7,7 @@
 """Ssstateen privileged extension test generator."""
 
 from testgen.asm.csr import csr_walk_test
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import arch_block, comment_banner
 from testgen.asm.tsbi import tsbi_call
 from testgen.constants import INDENT
 from testgen.data.state import TestData
@@ -215,13 +215,13 @@ def _generate_jvt(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"LI(x{temp_reg}, {1 << JVT_BIT})",
-                    f"{jvt_action}(sstateen0, x{temp_reg})  # sstateen0.JVT = {jvt_state}",
+                    f"{jvt_action} sstateen0, x{temp_reg}  # sstateen0.JVT = {jvt_state}",
                 ]
             )
             if mode_label == "umode":
                 lines.append("RVTEST_TSBI_GOTO_UMODE")
             for op in CSR_OPS:
-                insn = f"{op}(x{temp_reg}, jvt)" if op == "csrr" else f"{op}(x{temp_reg}, jvt, x{ones_reg})"
+                insn = f"{op} x{temp_reg}, jvt" if op == "csrr" else f"{op} x{temp_reg}, jvt, x{ones_reg}"
                 lines.extend(
                     [
                         "",
@@ -264,9 +264,13 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
         )
     ]
 
-    temp_reg, save_mstateen, save_mstatenh, save_sstateen, save_reg = test_data.int_regs.get_registers(5)
+    temp_reg, save_mstateen, save_mstatenh, save_sstateen, wdata_reg = test_data.int_regs.get_registers(5)
     fp_csrs = ["frm", "fflags", "fcsr"]
     FCSR_BIT = 1  # sstateen0 bit 1 = FCSR
+
+    # Write data for csrrw/csrrs/csrrc, set outside the gated region so that only the op under test
+    # accesses the FP CSRs. 0 is a legal frm (RNE) and clears fflags.
+    lines.append(f"LI(x{wdata_reg}, 0)  # write data for csrrw/csrrs/csrrc")
 
     for fcsr_bit in [0, 1]:
         fcsr_action = "csrc" if fcsr_bit == 0 else "csrs"
@@ -283,14 +287,14 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"LI(x{temp_reg}, {1 << FCSR_BIT})",
-                    f"{fcsr_action}(sstateen0, x{temp_reg})  # sstateen0.FCSR = {fcsr_bit}",
+                    f"{fcsr_action} sstateen0, x{temp_reg}  # sstateen0.FCSR = {fcsr_bit}",
                 ]
             )
             if mode_label == "umode":
                 lines.append("RVTEST_TSBI_GOTO_UMODE")
             for csr in fp_csrs:
                 for op in CSR_OPS:
-                    insn = f"{op}(x{temp_reg}, {csr})" if op == "csrr" else f"{op}(x{temp_reg}, {csr}, x{save_reg})"
+                    insn = f"{op} x{temp_reg}, {csr}" if op == "csrr" else f"{op} x{temp_reg}, {csr}, x{wdata_reg}"
                     lines.extend(
                         [
                             "",
@@ -299,7 +303,6 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
                                 coverpoint,
                                 covergroup,
                             ),
-                            f"csrr x{save_reg}, {csr}  # read operand for write-back ops",
                             insn,
                         ]
                     )
@@ -308,7 +311,7 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
             lines.append(f"csrw sstateen0, x{save_sstateen}  # restore sstateen0")
             lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
 
-    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, save_sstateen, save_reg])
+    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, save_sstateen, wdata_reg])
     return lines
 
 
@@ -355,7 +358,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"LI(x{temp_reg1}, {1 << FCSR_BIT})",
-                    f"{fcsr_action}(sstateen0, x{temp_reg1})  # sstateen0.FCSR = {fcsr_bit}",
+                    f"{fcsr_action} sstateen0, x{temp_reg1}  # sstateen0.FCSR = {fcsr_bit}",
                 ]
             )
             if mode_label == "umode":
@@ -389,7 +392,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "Ssstateen",
     required_extensions=["Ssstateen"],
-    march_extensions=["Ssstateen", "Zcmt", "Zfinx"],
+    march_extensions=["Ssstateen"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_ssstateen(test_data: TestData) -> list[TestChunk]:
@@ -403,13 +406,13 @@ def make_ssstateen(test_data: TestData) -> list[TestChunk]:
 
     # cp_fcsr_lower, cp_fcsr_fp_instrs — only when Zfinx is supported
     tc.code.append("#ifdef ZFINX_SUPPORTED")
-    tc.code.extend(_generate_fcsr_lower(test_data))
-    tc.code.extend(_generate_fcsr_lower_fp_instrs(test_data))
+    fcsr_lines = [*_generate_fcsr_lower(test_data), *_generate_fcsr_lower_fp_instrs(test_data)]
+    tc.code.extend(arch_block(fcsr_lines, "zfinx"))
     tc.code.append("#endif  // ZFINX_SUPPORTED")
 
     # cp_jvt — only when Zcmt is supported (covers both S-mode and U-mode)
     tc.code.append("#ifdef ZCMT_SUPPORTED")
-    tc.code.extend(_generate_jvt(test_data))
+    tc.code.extend(arch_block(_generate_jvt(test_data), "zcmt"))
     tc.code.append("#endif  // ZCMT_SUPPORTED")
 
     test_chunks.append(test_data.end_test_chunk())

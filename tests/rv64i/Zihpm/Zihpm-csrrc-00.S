@@ -33,7 +33,9 @@ RVTEST_BEGIN
 // cp_cntr_hpm
 /////////////////////////////////
 
-# Testcase: cp_cntr (hpmcounter3)
+#ifdef UDB_HPM_COUNTER_EN_3
+
+# Testcase: cp_cntr_hpm (hpmcounter3)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter3, x0
   addi x12, x18, 1 # delay a bit
@@ -43,14 +45,18 @@ RVTEST_BEGIN
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter3, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter3:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter3:
   csrrc x12, hpmcounter3, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter3, Zihpm_csrrc_cg_cp_cntr_hpmcounter3_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter3, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter3_str)
 
-# Testcase: cp_cntr (hpmcounter4)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_4
+
+# Testcase: cp_cntr_hpm (hpmcounter4)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter4, x0
   addi x12, x18, 1 # delay a bit
@@ -60,14 +66,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter3:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter4, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter4:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter4:
   csrrc x12, hpmcounter4, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter4, Zihpm_csrrc_cg_cp_cntr_hpmcounter4_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter4, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter4_str)
 
-# Testcase: cp_cntr (hpmcounter5)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_5
+
+# Testcase: cp_cntr_hpm (hpmcounter5)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter5, x0
   addi x12, x18, 1 # delay a bit
@@ -77,14 +87,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter4:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter5, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter5:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter5:
   csrrc x12, hpmcounter5, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter5, Zihpm_csrrc_cg_cp_cntr_hpmcounter5_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter5, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter5_str)
 
-# Testcase: cp_cntr (hpmcounter6)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_6
+
+# Testcase: cp_cntr_hpm (hpmcounter6)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter6, x0
   addi x12, x18, 1 # delay a bit
@@ -94,14 +108,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter5:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter6, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter6:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter6:
   csrrc x12, hpmcounter6, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter6, Zihpm_csrrc_cg_cp_cntr_hpmcounter6_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter6, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter6_str)
 
-# Testcase: cp_cntr (hpmcounter7)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_7
+
+# Testcase: cp_cntr_hpm (hpmcounter7)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter7, x0
   addi x12, x18, 1 # delay a bit
@@ -111,14 +129,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter6:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter7, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter7:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter7:
   csrrc x12, hpmcounter7, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter7, Zihpm_csrrc_cg_cp_cntr_hpmcounter7_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter7, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter7_str)
 
-# Testcase: cp_cntr (hpmcounter8)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_8
+
+# Testcase: cp_cntr_hpm (hpmcounter8)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter8, x0
   addi x12, x18, 1 # delay a bit
@@ -128,14 +150,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter7:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter8, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter8:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter8:
   csrrc x12, hpmcounter8, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter8, Zihpm_csrrc_cg_cp_cntr_hpmcounter8_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter8, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter8_str)
 
-# Testcase: cp_cntr (hpmcounter9)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_9
+
+# Testcase: cp_cntr_hpm (hpmcounter9)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter9, x0
   addi x12, x18, 1 # delay a bit
@@ -145,14 +171,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter8:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter9, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter9:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter9:
   csrrc x12, hpmcounter9, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter9, Zihpm_csrrc_cg_cp_cntr_hpmcounter9_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter9, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter9_str)
 
-# Testcase: cp_cntr (hpmcounter10)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_10
+
+# Testcase: cp_cntr_hpm (hpmcounter10)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter10, x0
   addi x12, x18, 1 # delay a bit
@@ -162,14 +192,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter9:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter10, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter10:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter10:
   csrrc x12, hpmcounter10, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter10, Zihpm_csrrc_cg_cp_cntr_hpmcounter10_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter10, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter10_str)
 
-# Testcase: cp_cntr (hpmcounter11)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_11
+
+# Testcase: cp_cntr_hpm (hpmcounter11)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter11, x0
   addi x12, x18, 1 # delay a bit
@@ -179,14 +213,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter10:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter11, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter11:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter11:
   csrrc x12, hpmcounter11, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter11, Zihpm_csrrc_cg_cp_cntr_hpmcounter11_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter11, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter11_str)
 
-# Testcase: cp_cntr (hpmcounter12)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_12
+
+# Testcase: cp_cntr_hpm (hpmcounter12)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter12, x0
   addi x12, x18, 1 # delay a bit
@@ -196,14 +234,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter11:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter12, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter12:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter12:
   csrrc x12, hpmcounter12, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter12, Zihpm_csrrc_cg_cp_cntr_hpmcounter12_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter12, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter12_str)
 
-# Testcase: cp_cntr (hpmcounter13)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_13
+
+# Testcase: cp_cntr_hpm (hpmcounter13)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter13, x0
   addi x12, x18, 1 # delay a bit
@@ -213,14 +255,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter12:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter13, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter13:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter13:
   csrrc x12, hpmcounter13, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter13, Zihpm_csrrc_cg_cp_cntr_hpmcounter13_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter13, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter13_str)
 
-# Testcase: cp_cntr (hpmcounter14)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_14
+
+# Testcase: cp_cntr_hpm (hpmcounter14)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter14, x0
   addi x12, x18, 1 # delay a bit
@@ -230,14 +276,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter13:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter14, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter14:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter14:
   csrrc x12, hpmcounter14, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter14, Zihpm_csrrc_cg_cp_cntr_hpmcounter14_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter14, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter14_str)
 
-# Testcase: cp_cntr (hpmcounter15)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_15
+
+# Testcase: cp_cntr_hpm (hpmcounter15)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter15, x0
   addi x12, x18, 1 # delay a bit
@@ -247,14 +297,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter14:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter15, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter15:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter15:
   csrrc x12, hpmcounter15, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter15, Zihpm_csrrc_cg_cp_cntr_hpmcounter15_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter15, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter15_str)
 
-# Testcase: cp_cntr (hpmcounter16)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_16
+
+# Testcase: cp_cntr_hpm (hpmcounter16)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter16, x0
   addi x12, x18, 1 # delay a bit
@@ -264,14 +318,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter15:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter16, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter16:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter16:
   csrrc x12, hpmcounter16, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter16, Zihpm_csrrc_cg_cp_cntr_hpmcounter16_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter16, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter16_str)
 
-# Testcase: cp_cntr (hpmcounter17)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_17
+
+# Testcase: cp_cntr_hpm (hpmcounter17)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter17, x0
   addi x12, x18, 1 # delay a bit
@@ -281,14 +339,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter16:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter17, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter17:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter17:
   csrrc x12, hpmcounter17, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter17, Zihpm_csrrc_cg_cp_cntr_hpmcounter17_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter17, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter17_str)
 
-# Testcase: cp_cntr (hpmcounter18)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_18
+
+# Testcase: cp_cntr_hpm (hpmcounter18)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter18, x0
   addi x12, x18, 1 # delay a bit
@@ -298,14 +360,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter17:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter18, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter18:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter18:
   csrrc x12, hpmcounter18, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter18, Zihpm_csrrc_cg_cp_cntr_hpmcounter18_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter18_str)
 
-# Testcase: cp_cntr (hpmcounter19)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_19
+
+# Testcase: cp_cntr_hpm (hpmcounter19)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter19, x0
   addi x12, x18, 1 # delay a bit
@@ -315,14 +381,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter18:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter19, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter19:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter19:
   csrrc x12, hpmcounter19, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter19, Zihpm_csrrc_cg_cp_cntr_hpmcounter19_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter19, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter19_str)
 
-# Testcase: cp_cntr (hpmcounter20)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_20
+
+# Testcase: cp_cntr_hpm (hpmcounter20)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter20, x0
   addi x12, x18, 1 # delay a bit
@@ -332,14 +402,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter19:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter20, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter20:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter20:
   csrrc x12, hpmcounter20, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter20, Zihpm_csrrc_cg_cp_cntr_hpmcounter20_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter20, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter20_str)
 
-# Testcase: cp_cntr (hpmcounter21)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_21
+
+# Testcase: cp_cntr_hpm (hpmcounter21)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter21, x0
   addi x12, x18, 1 # delay a bit
@@ -349,14 +423,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter20:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter21, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter21:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter21:
   csrrc x12, hpmcounter21, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter21, Zihpm_csrrc_cg_cp_cntr_hpmcounter21_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter21, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter21_str)
 
-# Testcase: cp_cntr (hpmcounter22)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_22
+
+# Testcase: cp_cntr_hpm (hpmcounter22)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter22, x0
   addi x12, x18, 1 # delay a bit
@@ -366,14 +444,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter21:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter22, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter22:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter22:
   csrrc x12, hpmcounter22, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter22, Zihpm_csrrc_cg_cp_cntr_hpmcounter22_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter22, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter22_str)
 
-# Testcase: cp_cntr (hpmcounter23)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_23
+
+# Testcase: cp_cntr_hpm (hpmcounter23)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter23, x0
   addi x12, x18, 1 # delay a bit
@@ -383,14 +465,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter22:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter23, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter23:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter23:
   csrrc x12, hpmcounter23, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter23, Zihpm_csrrc_cg_cp_cntr_hpmcounter23_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter23, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter23_str)
 
-# Testcase: cp_cntr (hpmcounter24)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_24
+
+# Testcase: cp_cntr_hpm (hpmcounter24)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter24, x0
   addi x12, x18, 1 # delay a bit
@@ -400,14 +486,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter23:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter24, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter24:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter24:
   csrrc x12, hpmcounter24, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter24, Zihpm_csrrc_cg_cp_cntr_hpmcounter24_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter24, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter24_str)
 
-# Testcase: cp_cntr (hpmcounter25)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_25
+
+# Testcase: cp_cntr_hpm (hpmcounter25)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter25, x0
   addi x12, x18, 1 # delay a bit
@@ -417,14 +507,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter24:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter25, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter25:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter25:
   csrrc x12, hpmcounter25, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter25, Zihpm_csrrc_cg_cp_cntr_hpmcounter25_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter25, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter25_str)
 
-# Testcase: cp_cntr (hpmcounter26)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_26
+
+# Testcase: cp_cntr_hpm (hpmcounter26)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter26, x0
   addi x12, x18, 1 # delay a bit
@@ -434,14 +528,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter25:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter26, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter26:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter26:
   csrrc x12, hpmcounter26, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter26, Zihpm_csrrc_cg_cp_cntr_hpmcounter26_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter26, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter26_str)
 
-# Testcase: cp_cntr (hpmcounter27)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_27
+
+# Testcase: cp_cntr_hpm (hpmcounter27)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter27, x0
   addi x12, x18, 1 # delay a bit
@@ -451,14 +549,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter26:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter27, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter27:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter27:
   csrrc x12, hpmcounter27, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter27, Zihpm_csrrc_cg_cp_cntr_hpmcounter27_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter27, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter27_str)
 
-# Testcase: cp_cntr (hpmcounter28)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_28
+
+# Testcase: cp_cntr_hpm (hpmcounter28)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter28, x0
   addi x12, x18, 1 # delay a bit
@@ -468,14 +570,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter27:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter28, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter28:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter28:
   csrrc x12, hpmcounter28, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter28, Zihpm_csrrc_cg_cp_cntr_hpmcounter28_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter28, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter28_str)
 
-# Testcase: cp_cntr (hpmcounter29)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_29
+
+# Testcase: cp_cntr_hpm (hpmcounter29)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter29, x0
   addi x12, x18, 1 # delay a bit
@@ -485,14 +591,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter28:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter29, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter29:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter29:
   csrrc x12, hpmcounter29, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter29, Zihpm_csrrc_cg_cp_cntr_hpmcounter29_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter29, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter29_str)
 
-# Testcase: cp_cntr (hpmcounter30)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_30
+
+# Testcase: cp_cntr_hpm (hpmcounter30)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter30, x0
   addi x12, x18, 1 # delay a bit
@@ -502,14 +612,18 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter29:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter30, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter30:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter30:
   csrrc x12, hpmcounter30, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter30, Zihpm_csrrc_cg_cp_cntr_hpmcounter30_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter30, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter30_str)
 
-# Testcase: cp_cntr (hpmcounter31)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_31
+
+# Testcase: cp_cntr_hpm (hpmcounter31)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter31, x0
   addi x12, x18, 1 # delay a bit
@@ -519,16 +633,20 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter30:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter31, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter31:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter31:
   csrrc x12, hpmcounter31, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   slti x18, x18, 0 # set fail code if difference < 0
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter31, Zihpm_csrrc_cg_cp_cntr_hpmcounter31_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter31, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter31_str)
+
+#endif
 
 #if __riscv_xlen == 32
 
-# Testcase: cp_cntr (hpmcounter3h)
+#ifdef UDB_HPM_COUNTER_EN_3
+
+# Testcase: cp_cntr_hpm (hpmcounter3h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter3h, x0
   addi x12, x18, 1 # delay a bit
@@ -538,13 +656,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter31:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter3h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter3h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter3h:
   csrrc x12, hpmcounter3h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter3h, Zihpm_csrrc_cg_cp_cntr_hpmcounter3h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter3h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter3h_str)
 
-# Testcase: cp_cntr (hpmcounter4h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_4
+
+# Testcase: cp_cntr_hpm (hpmcounter4h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter4h, x0
   addi x12, x18, 1 # delay a bit
@@ -554,13 +676,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter3h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter4h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter4h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter4h:
   csrrc x12, hpmcounter4h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter4h, Zihpm_csrrc_cg_cp_cntr_hpmcounter4h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter4h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter4h_str)
 
-# Testcase: cp_cntr (hpmcounter5h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_5
+
+# Testcase: cp_cntr_hpm (hpmcounter5h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter5h, x0
   addi x12, x18, 1 # delay a bit
@@ -570,13 +696,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter4h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter5h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter5h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter5h:
   csrrc x12, hpmcounter5h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter5h, Zihpm_csrrc_cg_cp_cntr_hpmcounter5h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter5h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter5h_str)
 
-# Testcase: cp_cntr (hpmcounter6h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_6
+
+# Testcase: cp_cntr_hpm (hpmcounter6h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter6h, x0
   addi x12, x18, 1 # delay a bit
@@ -586,13 +716,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter5h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter6h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter6h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter6h:
   csrrc x12, hpmcounter6h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter6h, Zihpm_csrrc_cg_cp_cntr_hpmcounter6h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter6h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter6h_str)
 
-# Testcase: cp_cntr (hpmcounter7h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_7
+
+# Testcase: cp_cntr_hpm (hpmcounter7h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter7h, x0
   addi x12, x18, 1 # delay a bit
@@ -602,13 +736,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter6h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter7h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter7h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter7h:
   csrrc x12, hpmcounter7h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter7h, Zihpm_csrrc_cg_cp_cntr_hpmcounter7h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter7h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter7h_str)
 
-# Testcase: cp_cntr (hpmcounter8h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_8
+
+# Testcase: cp_cntr_hpm (hpmcounter8h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter8h, x0
   addi x12, x18, 1 # delay a bit
@@ -618,13 +756,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter7h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter8h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter8h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter8h:
   csrrc x12, hpmcounter8h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter8h, Zihpm_csrrc_cg_cp_cntr_hpmcounter8h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter8h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter8h_str)
 
-# Testcase: cp_cntr (hpmcounter9h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_9
+
+# Testcase: cp_cntr_hpm (hpmcounter9h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter9h, x0
   addi x12, x18, 1 # delay a bit
@@ -634,13 +776,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter8h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter9h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter9h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter9h:
   csrrc x12, hpmcounter9h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter9h, Zihpm_csrrc_cg_cp_cntr_hpmcounter9h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter9h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter9h_str)
 
-# Testcase: cp_cntr (hpmcounter10h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_10
+
+# Testcase: cp_cntr_hpm (hpmcounter10h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter10h, x0
   addi x12, x18, 1 # delay a bit
@@ -650,13 +796,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter9h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter10h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter10h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter10h:
   csrrc x12, hpmcounter10h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter10h, Zihpm_csrrc_cg_cp_cntr_hpmcounter10h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter10h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter10h_str)
 
-# Testcase: cp_cntr (hpmcounter11h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_11
+
+# Testcase: cp_cntr_hpm (hpmcounter11h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter11h, x0
   addi x12, x18, 1 # delay a bit
@@ -666,13 +816,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter10h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter11h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter11h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter11h:
   csrrc x12, hpmcounter11h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter11h, Zihpm_csrrc_cg_cp_cntr_hpmcounter11h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter11h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter11h_str)
 
-# Testcase: cp_cntr (hpmcounter12h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_12
+
+# Testcase: cp_cntr_hpm (hpmcounter12h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter12h, x0
   addi x12, x18, 1 # delay a bit
@@ -682,13 +836,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter11h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter12h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter12h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter12h:
   csrrc x12, hpmcounter12h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter12h, Zihpm_csrrc_cg_cp_cntr_hpmcounter12h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter12h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter12h_str)
 
-# Testcase: cp_cntr (hpmcounter13h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_13
+
+# Testcase: cp_cntr_hpm (hpmcounter13h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter13h, x0
   addi x12, x18, 1 # delay a bit
@@ -698,13 +856,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter12h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter13h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter13h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter13h:
   csrrc x12, hpmcounter13h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter13h, Zihpm_csrrc_cg_cp_cntr_hpmcounter13h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter13h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter13h_str)
 
-# Testcase: cp_cntr (hpmcounter14h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_14
+
+# Testcase: cp_cntr_hpm (hpmcounter14h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter14h, x0
   addi x12, x18, 1 # delay a bit
@@ -714,13 +876,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter13h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter14h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter14h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter14h:
   csrrc x12, hpmcounter14h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter14h, Zihpm_csrrc_cg_cp_cntr_hpmcounter14h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter14h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter14h_str)
 
-# Testcase: cp_cntr (hpmcounter15h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_15
+
+# Testcase: cp_cntr_hpm (hpmcounter15h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter15h, x0
   addi x12, x18, 1 # delay a bit
@@ -730,13 +896,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter14h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter15h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter15h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter15h:
   csrrc x12, hpmcounter15h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter15h, Zihpm_csrrc_cg_cp_cntr_hpmcounter15h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter15h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter15h_str)
 
-# Testcase: cp_cntr (hpmcounter16h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_16
+
+# Testcase: cp_cntr_hpm (hpmcounter16h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter16h, x0
   addi x12, x18, 1 # delay a bit
@@ -746,13 +916,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter15h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter16h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter16h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter16h:
   csrrc x12, hpmcounter16h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter16h, Zihpm_csrrc_cg_cp_cntr_hpmcounter16h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter16h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter16h_str)
 
-# Testcase: cp_cntr (hpmcounter17h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_17
+
+# Testcase: cp_cntr_hpm (hpmcounter17h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter17h, x0
   addi x12, x18, 1 # delay a bit
@@ -762,13 +936,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter16h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter17h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter17h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter17h:
   csrrc x12, hpmcounter17h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter17h, Zihpm_csrrc_cg_cp_cntr_hpmcounter17h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter17h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter17h_str)
 
-# Testcase: cp_cntr (hpmcounter18h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_18
+
+# Testcase: cp_cntr_hpm (hpmcounter18h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter18h, x0
   addi x12, x18, 1 # delay a bit
@@ -778,13 +956,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter17h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter18h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter18h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter18h:
   csrrc x12, hpmcounter18h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter18h, Zihpm_csrrc_cg_cp_cntr_hpmcounter18h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter18h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter18h_str)
 
-# Testcase: cp_cntr (hpmcounter19h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_19
+
+# Testcase: cp_cntr_hpm (hpmcounter19h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter19h, x0
   addi x12, x18, 1 # delay a bit
@@ -794,13 +976,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter18h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter19h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter19h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter19h:
   csrrc x12, hpmcounter19h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter19h, Zihpm_csrrc_cg_cp_cntr_hpmcounter19h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter19h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter19h_str)
 
-# Testcase: cp_cntr (hpmcounter20h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_20
+
+# Testcase: cp_cntr_hpm (hpmcounter20h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter20h, x0
   addi x12, x18, 1 # delay a bit
@@ -810,13 +996,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter19h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter20h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter20h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter20h:
   csrrc x12, hpmcounter20h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter20h, Zihpm_csrrc_cg_cp_cntr_hpmcounter20h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter20h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter20h_str)
 
-# Testcase: cp_cntr (hpmcounter21h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_21
+
+# Testcase: cp_cntr_hpm (hpmcounter21h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter21h, x0
   addi x12, x18, 1 # delay a bit
@@ -826,13 +1016,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter20h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter21h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter21h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter21h:
   csrrc x12, hpmcounter21h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter21h, Zihpm_csrrc_cg_cp_cntr_hpmcounter21h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter21h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter21h_str)
 
-# Testcase: cp_cntr (hpmcounter22h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_22
+
+# Testcase: cp_cntr_hpm (hpmcounter22h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter22h, x0
   addi x12, x18, 1 # delay a bit
@@ -842,13 +1036,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter21h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter22h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter22h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter22h:
   csrrc x12, hpmcounter22h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter22h, Zihpm_csrrc_cg_cp_cntr_hpmcounter22h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter22h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter22h_str)
 
-# Testcase: cp_cntr (hpmcounter23h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_23
+
+# Testcase: cp_cntr_hpm (hpmcounter23h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter23h, x0
   addi x12, x18, 1 # delay a bit
@@ -858,13 +1056,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter22h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter23h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter23h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter23h:
   csrrc x12, hpmcounter23h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter23h, Zihpm_csrrc_cg_cp_cntr_hpmcounter23h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter23h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter23h_str)
 
-# Testcase: cp_cntr (hpmcounter24h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_24
+
+# Testcase: cp_cntr_hpm (hpmcounter24h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter24h, x0
   addi x12, x18, 1 # delay a bit
@@ -874,13 +1076,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter23h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter24h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter24h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter24h:
   csrrc x12, hpmcounter24h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter24h, Zihpm_csrrc_cg_cp_cntr_hpmcounter24h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter24h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter24h_str)
 
-# Testcase: cp_cntr (hpmcounter25h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_25
+
+# Testcase: cp_cntr_hpm (hpmcounter25h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter25h, x0
   addi x12, x18, 1 # delay a bit
@@ -890,13 +1096,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter24h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter25h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter25h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter25h:
   csrrc x12, hpmcounter25h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter25h, Zihpm_csrrc_cg_cp_cntr_hpmcounter25h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter25h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter25h_str)
 
-# Testcase: cp_cntr (hpmcounter26h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_26
+
+# Testcase: cp_cntr_hpm (hpmcounter26h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter26h, x0
   addi x12, x18, 1 # delay a bit
@@ -906,13 +1116,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter25h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter26h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter26h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter26h:
   csrrc x12, hpmcounter26h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter26h, Zihpm_csrrc_cg_cp_cntr_hpmcounter26h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter26h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter26h_str)
 
-# Testcase: cp_cntr (hpmcounter27h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_27
+
+# Testcase: cp_cntr_hpm (hpmcounter27h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter27h, x0
   addi x12, x18, 1 # delay a bit
@@ -922,13 +1136,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter26h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter27h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter27h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter27h:
   csrrc x12, hpmcounter27h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter27h, Zihpm_csrrc_cg_cp_cntr_hpmcounter27h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter27h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter27h_str)
 
-# Testcase: cp_cntr (hpmcounter28h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_28
+
+# Testcase: cp_cntr_hpm (hpmcounter28h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter28h, x0
   addi x12, x18, 1 # delay a bit
@@ -938,13 +1156,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter27h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter28h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter28h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter28h:
   csrrc x12, hpmcounter28h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter28h, Zihpm_csrrc_cg_cp_cntr_hpmcounter28h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter28h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter28h_str)
 
-# Testcase: cp_cntr (hpmcounter29h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_29
+
+# Testcase: cp_cntr_hpm (hpmcounter29h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter29h, x0
   addi x12, x18, 1 # delay a bit
@@ -954,13 +1176,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter28h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter29h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter29h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter29h:
   csrrc x12, hpmcounter29h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter29h, Zihpm_csrrc_cg_cp_cntr_hpmcounter29h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter29h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter29h_str)
 
-# Testcase: cp_cntr (hpmcounter30h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_30
+
+# Testcase: cp_cntr_hpm (hpmcounter30h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter30h, x0
   addi x12, x18, 1 # delay a bit
@@ -970,13 +1196,17 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter29h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter30h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter30h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter30h:
   csrrc x12, hpmcounter30h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter30h, Zihpm_csrrc_cg_cp_cntr_hpmcounter30h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter30h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter30h_str)
 
-# Testcase: cp_cntr (hpmcounter31h)
+#endif
+
+#ifdef UDB_HPM_COUNTER_EN_31
+
+# Testcase: cp_cntr_hpm (hpmcounter31h)
 # Read two consecutive times to check if counter increments
   csrrc x18, hpmcounter31h, x0
   addi x12, x18, 1 # delay a bit
@@ -986,11 +1216,13 @@ Zihpm_csrrc_cg_cp_cntr_hpmcounter30h:
   addi x12, x12, 1 # delay a bit
   addi x12, x12, 1 # delay a bit
   csrrc x12, hpmcounter31h, x0
-Zihpm_csrrc_cg_cp_cntr_hpmcounter31h:
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter31h:
   csrrc x12, hpmcounter31h, x0 # read again to increase delay a bit more
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpmcounter31h, Zihpm_csrrc_cg_cp_cntr_hpmcounter31h_str)
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter31h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter31h_str)
+
+#endif
 
 #endif
 
@@ -1005,64 +1237,64 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-Zihpm_csrrc_cg_cp_cntr_hpmcounter3_str: .string "\"test: 1; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter3\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter4_str: .string "\"test: 2; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter4\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter5_str: .string "\"test: 3; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter5\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter6_str: .string "\"test: 4; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter6\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter7_str: .string "\"test: 5; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter7\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter8_str: .string "\"test: 6; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter8\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter9_str: .string "\"test: 7; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter9\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter10_str: .string "\"test: 8; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter10\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter11_str: .string "\"test: 9; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter11\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter12_str: .string "\"test: 10; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter12\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter13_str: .string "\"test: 11; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter13\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter14_str: .string "\"test: 12; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter14\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter15_str: .string "\"test: 13; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter15\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter16_str: .string "\"test: 14; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter16\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter17_str: .string "\"test: 15; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter17\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter18_str: .string "\"test: 16; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter18\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter19_str: .string "\"test: 17; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter19\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter20_str: .string "\"test: 18; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter20\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter21_str: .string "\"test: 19; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter21\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter22_str: .string "\"test: 20; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter22\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter23_str: .string "\"test: 21; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter23\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter24_str: .string "\"test: 22; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter24\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter25_str: .string "\"test: 23; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter25\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter26_str: .string "\"test: 24; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter26\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter27_str: .string "\"test: 25; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter27\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter28_str: .string "\"test: 26; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter28\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter29_str: .string "\"test: 27; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter29\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter30_str: .string "\"test: 28; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter30\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter31_str: .string "\"test: 29; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter31\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter3h_str: .string "\"test: 30; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter3h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter4h_str: .string "\"test: 31; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter4h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter5h_str: .string "\"test: 32; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter5h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter6h_str: .string "\"test: 33; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter6h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter7h_str: .string "\"test: 34; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter7h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter8h_str: .string "\"test: 35; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter8h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter9h_str: .string "\"test: 36; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter9h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter10h_str: .string "\"test: 37; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter10h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter11h_str: .string "\"test: 38; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter11h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter12h_str: .string "\"test: 39; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter12h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter13h_str: .string "\"test: 40; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter13h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter14h_str: .string "\"test: 41; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter14h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter15h_str: .string "\"test: 42; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter15h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter16h_str: .string "\"test: 43; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter16h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter17h_str: .string "\"test: 44; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter17h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter18h_str: .string "\"test: 45; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter18h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter19h_str: .string "\"test: 46; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter19h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter20h_str: .string "\"test: 47; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter20h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter21h_str: .string "\"test: 48; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter21h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter22h_str: .string "\"test: 49; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter22h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter23h_str: .string "\"test: 50; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter23h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter24h_str: .string "\"test: 51; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter24h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter25h_str: .string "\"test: 52; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter25h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter26h_str: .string "\"test: 53; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter26h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter27h_str: .string "\"test: 54; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter27h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter28h_str: .string "\"test: 55; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter28h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter29h_str: .string "\"test: 56; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter29h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter30h_str: .string "\"test: 57; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter30h\""
-Zihpm_csrrc_cg_cp_cntr_hpmcounter31h_str: .string "\"test: 58; cg: Zihpm_csrrc_cg; cp: cp_cntr; bin: hpmcounter31h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter3_str: .string "\"test: 1; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter3\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter4_str: .string "\"test: 2; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter4\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter5_str: .string "\"test: 3; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter5\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter6_str: .string "\"test: 4; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter6\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter7_str: .string "\"test: 5; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter7\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter8_str: .string "\"test: 6; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter8\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter9_str: .string "\"test: 7; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter9\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter10_str: .string "\"test: 8; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter10\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter11_str: .string "\"test: 9; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter11\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter12_str: .string "\"test: 10; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter12\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter13_str: .string "\"test: 11; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter13\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter14_str: .string "\"test: 12; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter14\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter15_str: .string "\"test: 13; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter15\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter16_str: .string "\"test: 14; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter16\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter17_str: .string "\"test: 15; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter17\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter18_str: .string "\"test: 16; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter18\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter19_str: .string "\"test: 17; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter19\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter20_str: .string "\"test: 18; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter20\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter21_str: .string "\"test: 19; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter21\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter22_str: .string "\"test: 20; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter22\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter23_str: .string "\"test: 21; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter23\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter24_str: .string "\"test: 22; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter24\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter25_str: .string "\"test: 23; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter25\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter26_str: .string "\"test: 24; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter26\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter27_str: .string "\"test: 25; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter27\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter28_str: .string "\"test: 26; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter28\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter29_str: .string "\"test: 27; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter29\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter30_str: .string "\"test: 28; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter30\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter31_str: .string "\"test: 29; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter31\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter3h_str: .string "\"test: 30; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter3h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter4h_str: .string "\"test: 31; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter4h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter5h_str: .string "\"test: 32; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter5h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter6h_str: .string "\"test: 33; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter6h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter7h_str: .string "\"test: 34; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter7h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter8h_str: .string "\"test: 35; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter8h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter9h_str: .string "\"test: 36; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter9h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter10h_str: .string "\"test: 37; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter10h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter11h_str: .string "\"test: 38; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter11h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter12h_str: .string "\"test: 39; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter12h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter13h_str: .string "\"test: 40; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter13h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter14h_str: .string "\"test: 41; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter14h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter15h_str: .string "\"test: 42; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter15h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter16h_str: .string "\"test: 43; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter16h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter17h_str: .string "\"test: 44; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter17h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter18h_str: .string "\"test: 45; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter18h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter19h_str: .string "\"test: 46; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter19h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter20h_str: .string "\"test: 47; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter20h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter21h_str: .string "\"test: 48; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter21h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter22h_str: .string "\"test: 49; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter22h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter23h_str: .string "\"test: 50; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter23h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter24h_str: .string "\"test: 51; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter24h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter25h_str: .string "\"test: 52; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter25h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter26h_str: .string "\"test: 53; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter26h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter27h_str: .string "\"test: 54; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter27h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter28h_str: .string "\"test: 55; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter28h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter29h_str: .string "\"test: 56; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter29h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter30h_str: .string "\"test: 57; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter30h\""
+Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter31h_str: .string "\"test: 58; cg: Zihpm_csrrc_cg; cp: cp_cntr_hpm; bin: hpmcounter31h\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

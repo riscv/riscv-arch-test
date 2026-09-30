@@ -2,73 +2,95 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
-  # The Zama16b extension requires MAG16 support to main memory regions. If the
-  # ext:zama16b[] extension is implemented, then the
-  # &lt;&lt;sec:misaligned-atomicity-granule,misaligned atomicity granule&gt;&gt; in
-  # main memory regions with both the coherence and cacheability PMAs is 16 bytes.
-  - name: zama16b_pma_mag_req
+  # The misaligned atomicity granule PMA optionally relaxes this alignment requirement. If present,
+  # the misaligned atomicity granule PMA specifies the size of a misaligned atomicity granule, a
+  # power-of-two number of bytes. The misaligned atomicity granule PMA applies only to AMOs; loads and
+  # stores defined in the base ISAs; loads and stores of no more than XLEN bits defined in the
+  # F, D, and Q extensions; the load-acquire and store-release instructions defined
+  # in the Zalasr extension; and compressed encodings of the foregoing loads and stores. For an
+  # instruction in that set, if all accessed bytes lie within the same misaligned atomicity granule,
+  # the instruction will not raise an exception for reasons of address alignment, and the instruction
+  # will give rise to only one memory operation for the purposes of RVWMO--i.e., it will execute
+  # atomically.
+  - name: misaligned_atomicity_granule_size
+    # Loads, stores, FP loads and stores, and AMOs of each size at every in-granule offset
+    coverpoint:
+      [
+        "Zama16b_cg/{cp_zama16b_2byte, cp_zama16b_4byte, cp_zama16b_8byte}",
+        "atomicity OUT-OF-SCOPE for single hart",
+      ]
+
+  # The Zama16b extension requires MAG16 support to main memory regions.
+  - name: Zama16b_pma_mag_req
+    # Loads, stores, FP loads and stores, and AMOs of each size at every in-granule offset
+    coverpoint:
+      [
+        "Zama16b_cg/{cp_zama16b_2byte, cp_zama16b_4byte, cp_zama16b_8byte}",
+        "atomicity OUT-OF-SCOPE for single hart",
+      ]
+  # If the ext:zama16b[] extension is implemented, then the
+  # &lt;&lt;sec:misaligned-atomicity-granule,misaligned atomicity granule&gt;&gt; in main
+  # memory regions with both the coherence and cacheability PMAs is 16 bytes.
+  - name: Zama16b_mag
+    # Loads, stores, FP loads and stores, and AMOs of each size at every in-granule offset
+    coverpoint:
+      [
+        "Zama16b_cg/{cp_zama16b_2byte, cp_zama16b_4byte, cp_zama16b_8byte}",
+        "atomicity OUT-OF-SCOPE for single hart",
+      ]
+
+  # The misaligned atomicity granule PMA provides constrained support for misaligned AMOs. This PMA,
+  # if present, specifies the size of a misaligned atomicity granule, a naturally aligned power-of-two
+  # number of bytes. Specific supported values for this PMA are represented by MAGNN, e.g., MAG16
+  # indicates the misaligned atomicity granule is at least 16 bytes.
+  - name: pma_mag_def
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # The misaligned atomicity granule PMA applies only to AMOs; loads and stores defined in the base
+  # ISAs; loads and stores of no more than XLEN bits defined in the F, D, and Q
+  # extensions; the load-acquire and store-release instructions defined in the Zalasr extension;
+  # and compressed encodings of the foregoing loads and stores.
+  - name: pma_mag_insts
+    # Loads, stores, FP loads and stores, and AMOs of each size at every in-granule offset
+    coverpoint:
+      [
+        "Zama16b_cg/{cp_zama16b_1byte, cp_zama16b_2byte, cp_zama16b_4byte, cp_zama16b_8byte}",
+        "TODO: compressed loads and stores within a 16-byte granule",
+      ]
+
+  # if all accessed bytes lie within the same misaligned atomicity granule, the instruction will not
+  # raise an exception for reasons of address alignment, and the instruction will give rise to only
+  # one memory operation for the purposes of RVWMO--i.e., it will execute atomically.
+  - name: pma_mag_op_within
+    # Loads, stores, FP loads and stores, and AMOs of each size at every in-granule offset
+    coverpoint:
+      [
+        "Zama16b_cg/{cp_zama16b_2byte, cp_zama16b_4byte, cp_zama16b_8byte}",
+        "atomicity OUT-OF-SCOPE for single hart",
+      ]
+
+  # For regular loads and stores that access such a region or for which not all accessed bytes lie
+  # within the same atomicity granule, then either an exception is raised, or the access proceeds but
+  # is not guaranteed to be atomic.
+  - name: pma_mag_op_ldst
+    # TODO: misaligned loads and stores that cross a 16-byte boundary
     coverpoint: [""]
+
+  # Vector memory accesses are also unaffected, so might execute non-atomically even when contained
+  # within a misaligned atomicity granule.
+  - name: pma_mag_op_vec
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+
+  # Implicit accesses are similarly unaffected by this PMA.
+  - name: pma_mag_op_implicit
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
 
   # Misaligned loads, stores and AMOs to those regions that do not cross a naturally
   # aligned 16-byte boundary are atomic.
-  - name: zama16b_atomic_ops
-    coverpoint: [
-        "Zama16b_cg/cp_lb_load,
-        Zama16b_cg/cp_lbu_load,
-        Zama16b_cg/cp_lh_load,
-        Zama16b_cg/cp_lhu_load,
-        Zama16b_cg/cp_flh_load,
-        Zama16b_cg/cp_lw_load,
-        Zama16b_cg/cp_lwu_load,
-        Zama16b_cg/cp_flw_load,
-        Zama16b_cg/cp_ld_load,
-        Zama16b_cg/cp_fld_load,
-        Zama16b_cg/cp_flq_load,
-        Zama16b_cg/cp_sb_store,
-        Zama16b_cg/cp_sh_store,
-        Zama16b_cg/cp_fsh_store,
-        Zama16b_cg/cp_sw_store,
-        Zama16b_cg/cp_fsw_store,
-        Zama16b_cg/cp_sd_store,
-        Zama16b_cg/cp_fsd_store,
-        Zama16b_cg/cp_fsq_store,
-        Zama16b_cg/cp_amoswap_b_amo,
-        Zama16b_cg/cp_amoadd_b_amo,
-        Zama16b_cg/cp_amoand_b_amo,
-        Zama16b_cg/cp_amoor_b_amo,
-        Zama16b_cg/cp_amoxor_b_amo,
-        Zama16b_cg/cp_amomax_b_amo,
-        Zama16b_cg/cp_amomaxu_b_amo,
-        Zama16b_cg/cp_amomin_b_amo,
-        Zama16b_cg/cp_amominu_b_amo,
-        Zama16b_cg/cp_amoswap_h_amo,
-        Zama16b_cg/cp_amoadd_h_amo,
-        Zama16b_cg/cp_amoand_h_amo,
-        Zama16b_cg/cp_amoor_h_amo,
-        Zama16b_cg/cp_amoxor_h_amo,
-        Zama16b_cg/cp_amomax_h_amo,
-        Zama16b_cg/cp_amomaxu_h_amo,
-        Zama16b_cg/cp_amomin_h_amo,
-        Zama16b_cg/cp_amominu_h_amo,
-        Zama16b_cg/cp_amoswap_w_amo,
-        Zama16b_cg/cp_amoadd_w_amo,
-        Zama16b_cg/cp_amoand_w_amo,
-        Zama16b_cg/cp_amoor_w_amo,
-        Zama16b_cg/cp_amoxor_w_amo,
-        Zama16b_cg/cp_amomax_w_amo,
-        Zama16b_cg/cp_amomaxu_w_amo,
-        Zama16b_cg/cp_amomin_w_amo,
-        Zama16b_cg/cp_amominu_w_amo,
-        Zama16b_cg/cp_amocas_w_amo,
-        Zama16b_cg/cp_amoswap_d_amo,
-        Zama16b_cg/cp_amoadd_d_amo,
-        Zama16b_cg/cp_amoand_d_amo,
-        Zama16b_cg/cp_amoor_d_amo,
-        Zama16b_cg/cp_amoxor_d_amo,
-        Zama16b_cg/cp_amomax_d_amo,
-        Zama16b_cg/cp_amomaxu_d_amo,
-        Zama16b_cg/cp_amomin_d_amo,
-        Zama16b_cg/cp_amominu_d_amo,
-        Zama16b_cg/cp_amocas_d_amo,
-        Zama16b_cg/cp_amocas_q_amo",
+  - name: Zama16b_atomic_ops
+    # 1-byte accesses are always aligned and the 16-byte amocas.q is tested only aligned
+    coverpoint:
+      [
+        "Zama16b_cg/{cp_zama16b_2byte, cp_zama16b_4byte, cp_zama16b_8byte}",
+        "atomicity OUT-OF-SCOPE for single hart",
       ]

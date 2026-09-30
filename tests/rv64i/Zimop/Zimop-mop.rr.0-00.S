@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 266
+#define SIGUPD_COUNT 270
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -966,6 +966,22 @@ Zimop_mop_rr_0_cg_cp_rs1_edges_0x100000001:
   # Check if x17 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x17, Zimop_mop_rr_0_cg_cp_rs1_edges_0x100000001, Zimop_mop_rr_0_cg_cp_rs1_edges_0x100000001_str)
 
+# Testcase cp_rs1_edges (Test source rs1 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x18, x10) # load rs1: x10 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x18, x16) # load rs2: x16 = 0x2461da5c5176f35a
+Zimop_mop_rr_0_cg_cp_rs1_edges_0x80000000:
+  mop.rr.0 x21, x10, x16 # perform operation
+  # Check if x21 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x21, Zimop_mop_rr_0_cg_cp_rs1_edges_0x80000000, Zimop_mop_rr_0_cg_cp_rs1_edges_0x80000000_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x18, x25) # load rs1: x25 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x18, x22) # load rs2: x22 = 0x2092d1d4d9ffffda
+Zimop_mop_rr_0_cg_cp_rs1_edges_0x7fffffff:
+  mop.rr.0 x7, x25, x22 # perform operation
+  # Check if x7 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x7, Zimop_mop_rr_0_cg_cp_rs1_edges_0x7fffffff, Zimop_mop_rr_0_cg_cp_rs1_edges_0x7fffffff_str)
+
 /////////////////////////////////
 // cp_rs2_edges
 /////////////////////////////////
@@ -1097,6 +1113,22 @@ Zimop_mop_rr_0_cg_cp_rs2_edges_0x100000001:
   mop.rr.0 x30, x2, x28 # perform operation
   # Check if x30 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x30, Zimop_mop_rr_0_cg_cp_rs2_edges_0x100000001, Zimop_mop_rr_0_cg_cp_rs2_edges_0x100000001_str)
+
+# Testcase cp_rs2_edges (Test source rs2 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x18, x29) # load rs1: x29 = 0xac466a6a744c08bd
+  RVTEST_TESTDATA_LOAD_INT(x18, x28) # load rs2: x28 = 0x0000000080000000
+Zimop_mop_rr_0_cg_cp_rs2_edges_0x80000000:
+  mop.rr.0 x10, x29, x28 # perform operation
+  # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x10, Zimop_mop_rr_0_cg_cp_rs2_edges_0x80000000, Zimop_mop_rr_0_cg_cp_rs2_edges_0x80000000_str)
+
+# Testcase cp_rs2_edges (Test source rs2 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x18, x30) # load rs1: x30 = 0x5a3d39d80ffcabf9
+  RVTEST_TESTDATA_LOAD_INT(x18, x28) # load rs2: x28 = 0x000000007fffffff
+Zimop_mop_rr_0_cg_cp_rs2_edges_0x7fffffff:
+  mop.rr.0 x10, x30, x28 # perform operation
+  # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x10, Zimop_mop_rr_0_cg_cp_rs2_edges_0x7fffffff, Zimop_mop_rr_0_cg_cp_rs2_edges_0x7fffffff_str)
 
 /////////////////////////////////
 // cmp_rd_rs1
@@ -2402,6 +2434,10 @@ RVTEST_DATA_BEGIN
 .dword 0x53954574717d999d
 .dword 0x0000000100000001
 .dword 0xb0ee240c77ab1f5b
+.dword 0x0000000080000000
+.dword 0x2461da5c5176f35a
+.dword 0x000000007fffffff
+.dword 0x2092d1d4d9ffffda
 .dword 0x14a85a40f280bd6e
 .dword 0x0000000000000000
 .dword 0x39ad912b66ed6bd4
@@ -2434,6 +2470,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0xa58d00dde8a80271
 .dword 0x0000000100000001
+.dword 0xac466a6a744c08bd
+.dword 0x0000000080000000
+.dword 0x5a3d39d80ffcabf9
+.dword 0x000000007fffffff
 .dword 0x0fb2b7705b16c11f
 .dword 0xf8ecd5a4da5cf8f2
 .dword 0x2f09270994d53078
@@ -2804,150 +2844,154 @@ Zimop_mop_rr_0_cg_cp_rs1_edges_0xffffffff_str: .string "\"test: 109; cg: Zimop_m
 Zimop_mop_rr_0_cg_cp_rs1_edges_0xfffffffe_str: .string "\"test: 110; cg: Zimop_mop.rr.0_cg; cp: cp_rs1_edges; bin: 0xfffffffe\""
 Zimop_mop_rr_0_cg_cp_rs1_edges_0x100000000_str: .string "\"test: 111; cg: Zimop_mop.rr.0_cg; cp: cp_rs1_edges; bin: 0x100000000\""
 Zimop_mop_rr_0_cg_cp_rs1_edges_0x100000001_str: .string "\"test: 112; cg: Zimop_mop.rr.0_cg; cp: cp_rs1_edges; bin: 0x100000001\""
-Zimop_mop_rr_0_cg_cp_rs2_edges_0x0_str: .string "\"test: 113; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x0\""
-Zimop_mop_rr_0_cg_cp_rs2_edges_0x1_str: .string "\"test: 114; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x1\""
-Zimop_mop_rr_0_cg_cp_rs2_edges_0x2_str: .string "\"test: 115; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x2\""
-Zimop_mop_rr_0_cg_cp_rs2_edges_0x8000000000000000_str: .string "\"test: 116; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x8000000000000000\""
-Zimop_mop_rr_0_cg_cp_rs2_edges_0x8000000000000001_str: .string "\"test: 117; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x8000000000000001\""
-Zimop_mop_rr_0_cg_cp_rs2_edges_0x7fffffffffffffff_str: .string "\"test: 118; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x7fffffffffffffff\""
-Zimop_mop_rr_0_cg_cp_rs2_edges_0x7ffffffffffffffe_str: .string "\"test: 119; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x7ffffffffffffffe\""
-Zimop_mop_rr_0_cg_cp_rs2_edges_0xffffffffffffffff_str: .string "\"test: 120; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0xffffffffffffffff\""
-Zimop_mop_rr_0_cg_cp_rs2_edges_0xfffffffffffffffe_str: .string "\"test: 121; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0xfffffffffffffffe\""
-Zimop_mop_rr_0_cg_cp_rs2_edges_0x5bbc887763ae86f2_str: .string "\"test: 122; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x5bbc887763ae86f2\""
-Zimop_mop_rr_0_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 123; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0xaaaaaaaaaaaaaaaa\""
-Zimop_mop_rr_0_cg_cp_rs2_edges_0x5555555555555555_str: .string "\"test: 124; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x5555555555555555\""
-Zimop_mop_rr_0_cg_cp_rs2_edges_0xffffffff_str: .string "\"test: 125; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0xffffffff\""
-Zimop_mop_rr_0_cg_cp_rs2_edges_0xfffffffe_str: .string "\"test: 126; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0xfffffffe\""
-Zimop_mop_rr_0_cg_cp_rs2_edges_0x100000000_str: .string "\"test: 127; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x100000000\""
-Zimop_mop_rr_0_cg_cp_rs2_edges_0x100000001_str: .string "\"test: 128; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x100000001\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b0_str: .string "\"test: 129; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b0\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b1_str: .string "\"test: 130; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b1\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b2_str: .string "\"test: 131; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b2\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b3_str: .string "\"test: 132; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b3\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b4_str: .string "\"test: 133; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b4\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b5_str: .string "\"test: 134; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b5\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b6_str: .string "\"test: 135; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b6\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b7_str: .string "\"test: 136; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b7\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b8_str: .string "\"test: 137; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b8\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b9_str: .string "\"test: 138; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b9\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b10_str: .string "\"test: 139; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b10\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b11_str: .string "\"test: 140; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b11\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b12_str: .string "\"test: 141; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b12\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b13_str: .string "\"test: 142; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b13\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b14_str: .string "\"test: 143; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b14\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b15_str: .string "\"test: 144; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b15\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b16_str: .string "\"test: 145; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b16\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b17_str: .string "\"test: 146; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b17\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b18_str: .string "\"test: 147; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b18\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b19_str: .string "\"test: 148; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b19\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b20_str: .string "\"test: 149; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b20\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b21_str: .string "\"test: 150; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b21\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b22_str: .string "\"test: 151; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b22\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b23_str: .string "\"test: 152; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b23\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b24_str: .string "\"test: 153; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b24\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b25_str: .string "\"test: 154; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b25\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b26_str: .string "\"test: 155; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b26\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b27_str: .string "\"test: 156; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b27\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b28_str: .string "\"test: 157; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b28\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b29_str: .string "\"test: 158; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b29\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b30_str: .string "\"test: 159; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b30\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_b31_str: .string "\"test: 160; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b31\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b0_str: .string "\"test: 161; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b0\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b1_str: .string "\"test: 162; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b1\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b2_str: .string "\"test: 163; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b2\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b3_str: .string "\"test: 164; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b3\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b4_str: .string "\"test: 165; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b4\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b5_str: .string "\"test: 166; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b5\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b6_str: .string "\"test: 167; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b6\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b7_str: .string "\"test: 168; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b7\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b8_str: .string "\"test: 169; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b8\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b9_str: .string "\"test: 170; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b9\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b10_str: .string "\"test: 171; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b10\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b11_str: .string "\"test: 172; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b11\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b12_str: .string "\"test: 173; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b12\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b13_str: .string "\"test: 174; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b13\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b14_str: .string "\"test: 175; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b14\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b15_str: .string "\"test: 176; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b15\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b16_str: .string "\"test: 177; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b16\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b17_str: .string "\"test: 178; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b17\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b18_str: .string "\"test: 179; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b18\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b19_str: .string "\"test: 180; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b19\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b20_str: .string "\"test: 181; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b20\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b21_str: .string "\"test: 182; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b21\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b22_str: .string "\"test: 183; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b22\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b23_str: .string "\"test: 184; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b23\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b24_str: .string "\"test: 185; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b24\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b25_str: .string "\"test: 186; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b25\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b26_str: .string "\"test: 187; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b26\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b27_str: .string "\"test: 188; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b27\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b28_str: .string "\"test: 189; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b28\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b29_str: .string "\"test: 190; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b29\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b30_str: .string "\"test: 191; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b30\""
-Zimop_mop_rr_0_cg_cmp_rs1_rs2_b31_str: .string "\"test: 192; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b31\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b0_str: .string "\"test: 193; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b0\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b1_str: .string "\"test: 194; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b1\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b2_str: .string "\"test: 195; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b2\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b3_str: .string "\"test: 196; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b3\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b4_str: .string "\"test: 197; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b4\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b5_str: .string "\"test: 198; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b5\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b6_str: .string "\"test: 199; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b6\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b7_str: .string "\"test: 200; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b7\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b8_str: .string "\"test: 201; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b8\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b9_str: .string "\"test: 202; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b9\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b10_str: .string "\"test: 203; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b10\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b11_str: .string "\"test: 204; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b11\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b12_str: .string "\"test: 205; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b12\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b13_str: .string "\"test: 206; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b13\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b14_str: .string "\"test: 207; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b14\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b15_str: .string "\"test: 208; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b15\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b16_str: .string "\"test: 209; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b16\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b17_str: .string "\"test: 210; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b17\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b18_str: .string "\"test: 211; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b18\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b19_str: .string "\"test: 212; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b19\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b20_str: .string "\"test: 213; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b20\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b21_str: .string "\"test: 214; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b21\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b22_str: .string "\"test: 215; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b22\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b23_str: .string "\"test: 216; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b23\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b24_str: .string "\"test: 217; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b24\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b25_str: .string "\"test: 218; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b25\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b26_str: .string "\"test: 219; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b26\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b27_str: .string "\"test: 220; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b27\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b28_str: .string "\"test: 221; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b28\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b29_str: .string "\"test: 222; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b29\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b30_str: .string "\"test: 223; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b30\""
-Zimop_mop_rr_0_cg_cmp_rd_rs2_b31_str: .string "\"test: 224; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b31\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b0_str: .string "\"test: 225; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b0\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b1_str: .string "\"test: 226; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b1\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b2_str: .string "\"test: 227; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b2\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b3_str: .string "\"test: 228; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b3\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b4_str: .string "\"test: 229; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b4\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b5_str: .string "\"test: 230; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b5\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b6_str: .string "\"test: 231; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b6\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b7_str: .string "\"test: 232; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b7\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b8_str: .string "\"test: 233; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b8\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b9_str: .string "\"test: 234; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b9\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b10_str: .string "\"test: 235; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b10\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b11_str: .string "\"test: 236; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b11\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b12_str: .string "\"test: 237; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b12\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b13_str: .string "\"test: 238; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b13\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b14_str: .string "\"test: 239; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b14\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b15_str: .string "\"test: 240; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b15\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b16_str: .string "\"test: 241; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b16\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b17_str: .string "\"test: 242; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b17\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b18_str: .string "\"test: 243; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b18\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b19_str: .string "\"test: 244; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b19\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b20_str: .string "\"test: 245; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b20\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b21_str: .string "\"test: 246; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b21\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b22_str: .string "\"test: 247; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b22\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b23_str: .string "\"test: 248; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b23\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b24_str: .string "\"test: 249; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b24\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b25_str: .string "\"test: 250; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b25\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b26_str: .string "\"test: 251; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b26\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b27_str: .string "\"test: 252; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b27\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b28_str: .string "\"test: 253; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b28\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b29_str: .string "\"test: 254; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b29\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b30_str: .string "\"test: 255; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b30\""
-Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b31_str: .string "\"test: 256; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b31\""
+Zimop_mop_rr_0_cg_cp_rs1_edges_0x80000000_str: .string "\"test: 113; cg: Zimop_mop.rr.0_cg; cp: cp_rs1_edges; bin: 0x80000000\""
+Zimop_mop_rr_0_cg_cp_rs1_edges_0x7fffffff_str: .string "\"test: 114; cg: Zimop_mop.rr.0_cg; cp: cp_rs1_edges; bin: 0x7fffffff\""
+Zimop_mop_rr_0_cg_cp_rs2_edges_0x0_str: .string "\"test: 115; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x0\""
+Zimop_mop_rr_0_cg_cp_rs2_edges_0x1_str: .string "\"test: 116; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x1\""
+Zimop_mop_rr_0_cg_cp_rs2_edges_0x2_str: .string "\"test: 117; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x2\""
+Zimop_mop_rr_0_cg_cp_rs2_edges_0x8000000000000000_str: .string "\"test: 118; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x8000000000000000\""
+Zimop_mop_rr_0_cg_cp_rs2_edges_0x8000000000000001_str: .string "\"test: 119; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x8000000000000001\""
+Zimop_mop_rr_0_cg_cp_rs2_edges_0x7fffffffffffffff_str: .string "\"test: 120; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x7fffffffffffffff\""
+Zimop_mop_rr_0_cg_cp_rs2_edges_0x7ffffffffffffffe_str: .string "\"test: 121; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x7ffffffffffffffe\""
+Zimop_mop_rr_0_cg_cp_rs2_edges_0xffffffffffffffff_str: .string "\"test: 122; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0xffffffffffffffff\""
+Zimop_mop_rr_0_cg_cp_rs2_edges_0xfffffffffffffffe_str: .string "\"test: 123; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0xfffffffffffffffe\""
+Zimop_mop_rr_0_cg_cp_rs2_edges_0x5bbc887763ae86f2_str: .string "\"test: 124; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x5bbc887763ae86f2\""
+Zimop_mop_rr_0_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 125; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0xaaaaaaaaaaaaaaaa\""
+Zimop_mop_rr_0_cg_cp_rs2_edges_0x5555555555555555_str: .string "\"test: 126; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x5555555555555555\""
+Zimop_mop_rr_0_cg_cp_rs2_edges_0xffffffff_str: .string "\"test: 127; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0xffffffff\""
+Zimop_mop_rr_0_cg_cp_rs2_edges_0xfffffffe_str: .string "\"test: 128; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0xfffffffe\""
+Zimop_mop_rr_0_cg_cp_rs2_edges_0x100000000_str: .string "\"test: 129; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x100000000\""
+Zimop_mop_rr_0_cg_cp_rs2_edges_0x100000001_str: .string "\"test: 130; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x100000001\""
+Zimop_mop_rr_0_cg_cp_rs2_edges_0x80000000_str: .string "\"test: 131; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x80000000\""
+Zimop_mop_rr_0_cg_cp_rs2_edges_0x7fffffff_str: .string "\"test: 132; cg: Zimop_mop.rr.0_cg; cp: cp_rs2_edges; bin: 0x7fffffff\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b0_str: .string "\"test: 133; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b0\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b1_str: .string "\"test: 134; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b1\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b2_str: .string "\"test: 135; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b2\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b3_str: .string "\"test: 136; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b3\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b4_str: .string "\"test: 137; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b4\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b5_str: .string "\"test: 138; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b5\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b6_str: .string "\"test: 139; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b6\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b7_str: .string "\"test: 140; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b7\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b8_str: .string "\"test: 141; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b8\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b9_str: .string "\"test: 142; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b9\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b10_str: .string "\"test: 143; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b10\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b11_str: .string "\"test: 144; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b11\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b12_str: .string "\"test: 145; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b12\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b13_str: .string "\"test: 146; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b13\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b14_str: .string "\"test: 147; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b14\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b15_str: .string "\"test: 148; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b15\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b16_str: .string "\"test: 149; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b16\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b17_str: .string "\"test: 150; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b17\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b18_str: .string "\"test: 151; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b18\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b19_str: .string "\"test: 152; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b19\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b20_str: .string "\"test: 153; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b20\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b21_str: .string "\"test: 154; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b21\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b22_str: .string "\"test: 155; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b22\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b23_str: .string "\"test: 156; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b23\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b24_str: .string "\"test: 157; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b24\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b25_str: .string "\"test: 158; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b25\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b26_str: .string "\"test: 159; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b26\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b27_str: .string "\"test: 160; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b27\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b28_str: .string "\"test: 161; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b28\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b29_str: .string "\"test: 162; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b29\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b30_str: .string "\"test: 163; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b30\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_b31_str: .string "\"test: 164; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1; bin: b31\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b0_str: .string "\"test: 165; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b0\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b1_str: .string "\"test: 166; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b1\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b2_str: .string "\"test: 167; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b2\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b3_str: .string "\"test: 168; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b3\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b4_str: .string "\"test: 169; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b4\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b5_str: .string "\"test: 170; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b5\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b6_str: .string "\"test: 171; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b6\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b7_str: .string "\"test: 172; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b7\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b8_str: .string "\"test: 173; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b8\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b9_str: .string "\"test: 174; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b9\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b10_str: .string "\"test: 175; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b10\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b11_str: .string "\"test: 176; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b11\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b12_str: .string "\"test: 177; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b12\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b13_str: .string "\"test: 178; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b13\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b14_str: .string "\"test: 179; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b14\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b15_str: .string "\"test: 180; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b15\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b16_str: .string "\"test: 181; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b16\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b17_str: .string "\"test: 182; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b17\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b18_str: .string "\"test: 183; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b18\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b19_str: .string "\"test: 184; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b19\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b20_str: .string "\"test: 185; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b20\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b21_str: .string "\"test: 186; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b21\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b22_str: .string "\"test: 187; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b22\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b23_str: .string "\"test: 188; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b23\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b24_str: .string "\"test: 189; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b24\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b25_str: .string "\"test: 190; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b25\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b26_str: .string "\"test: 191; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b26\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b27_str: .string "\"test: 192; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b27\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b28_str: .string "\"test: 193; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b28\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b29_str: .string "\"test: 194; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b29\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b30_str: .string "\"test: 195; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b30\""
+Zimop_mop_rr_0_cg_cmp_rs1_rs2_b31_str: .string "\"test: 196; cg: Zimop_mop.rr.0_cg; cp: cmp_rs1_rs2; bin: b31\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b0_str: .string "\"test: 197; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b0\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b1_str: .string "\"test: 198; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b1\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b2_str: .string "\"test: 199; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b2\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b3_str: .string "\"test: 200; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b3\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b4_str: .string "\"test: 201; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b4\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b5_str: .string "\"test: 202; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b5\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b6_str: .string "\"test: 203; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b6\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b7_str: .string "\"test: 204; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b7\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b8_str: .string "\"test: 205; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b8\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b9_str: .string "\"test: 206; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b9\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b10_str: .string "\"test: 207; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b10\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b11_str: .string "\"test: 208; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b11\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b12_str: .string "\"test: 209; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b12\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b13_str: .string "\"test: 210; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b13\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b14_str: .string "\"test: 211; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b14\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b15_str: .string "\"test: 212; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b15\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b16_str: .string "\"test: 213; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b16\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b17_str: .string "\"test: 214; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b17\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b18_str: .string "\"test: 215; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b18\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b19_str: .string "\"test: 216; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b19\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b20_str: .string "\"test: 217; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b20\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b21_str: .string "\"test: 218; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b21\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b22_str: .string "\"test: 219; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b22\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b23_str: .string "\"test: 220; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b23\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b24_str: .string "\"test: 221; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b24\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b25_str: .string "\"test: 222; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b25\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b26_str: .string "\"test: 223; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b26\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b27_str: .string "\"test: 224; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b27\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b28_str: .string "\"test: 225; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b28\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b29_str: .string "\"test: 226; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b29\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b30_str: .string "\"test: 227; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b30\""
+Zimop_mop_rr_0_cg_cmp_rd_rs2_b31_str: .string "\"test: 228; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs2; bin: b31\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b0_str: .string "\"test: 229; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b0\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b1_str: .string "\"test: 230; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b1\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b2_str: .string "\"test: 231; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b2\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b3_str: .string "\"test: 232; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b3\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b4_str: .string "\"test: 233; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b4\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b5_str: .string "\"test: 234; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b5\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b6_str: .string "\"test: 235; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b6\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b7_str: .string "\"test: 236; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b7\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b8_str: .string "\"test: 237; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b8\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b9_str: .string "\"test: 238; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b9\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b10_str: .string "\"test: 239; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b10\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b11_str: .string "\"test: 240; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b11\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b12_str: .string "\"test: 241; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b12\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b13_str: .string "\"test: 242; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b13\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b14_str: .string "\"test: 243; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b14\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b15_str: .string "\"test: 244; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b15\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b16_str: .string "\"test: 245; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b16\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b17_str: .string "\"test: 246; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b17\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b18_str: .string "\"test: 247; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b18\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b19_str: .string "\"test: 248; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b19\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b20_str: .string "\"test: 249; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b20\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b21_str: .string "\"test: 250; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b21\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b22_str: .string "\"test: 251; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b22\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b23_str: .string "\"test: 252; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b23\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b24_str: .string "\"test: 253; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b24\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b25_str: .string "\"test: 254; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b25\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b26_str: .string "\"test: 255; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b26\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b27_str: .string "\"test: 256; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b27\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b28_str: .string "\"test: 257; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b28\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b29_str: .string "\"test: 258; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b29\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b30_str: .string "\"test: 259; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b30\""
+Zimop_mop_rr_0_cg_cmp_rd_rs1_rs2_b31_str: .string "\"test: 260; cg: Zimop_mop.rr.0_cg; cp: cmp_rd_rs1_rs2; bin: b31\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

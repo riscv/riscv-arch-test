@@ -1,0 +1,46 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# CI configuration for the Rocket family (Rocket + Saturn + H, Chipyard 1.14.0).
+#
+# Measured on act4 08a9e6e23: 3096 tests selected, 2677 pass. With the exclusions below every
+# remaining test passes. RC = chipsalliance/rocket-chip@55bcad0f,
+# SAT = ucb-bar/saturn-vectors@dfe75de2.
+
+ci_enabled: true
+
+#   Vx8, Vx16, Vx32, Vx64, Vls8, Vls16, Vls32, Vls64
+#                 108 tests hang. Saturn's SpecialSequencer accepts a slide or permute dispatch
+#                 and then clears valid in the same cycle because a stale acc_done/acc pair
+#                 overrides it (SAT backend/SpecialSequencer.scala:186; acc has no reset), so
+#                 the execute sequencer waits forever. Also: vxsat reads race in-flight vector
+#                 instructions (RC rocket/RocketCore.scala:1066) and vsll.vi/vsra.vi/vssra.vi
+#                 sign-extend their immediate (SAT insns/Instructions.scala:67-68,94).
+#   Vf16, Vf32, Vf64, Zvfhmin, SmVF
+#                 csrr fflags/fcsr is not ordered after in-flight vector FP instructions
+#                 (RC rocket/RocketCore.scala:1065), so the flags read back as 0; inactive
+#                 elements also set fflags through the shared scalar FMA
+#                 (SAT exu/fp/SharedFPFMA.scala:148).
+#   Zvbb64, Zvkb64
+#                 vror.vi with uimm >= 32 rotates left (SAT insns/Instructions.scala:231).
+#   ExceptionsVx, ExceptionsVf16, ExceptionsVf32, ExceptionsVf64, ExceptionsVfmin
+#                 The vstart != 0 illegal-instruction trap writes the PC to mtval
+#                 (SAT frontend/PipelinedFaultCheck.scala:221).
+#   ExceptionsVls Passes, but runs 4 M cycles (500 s), beyond run_tests.py's 300 s per-test limit.
+#   SmV           SmV_vset executes vmv.v.i on odd registers while LMUL = 2 as setup; the
+#                 reserved encoding traps on the reference model and not on Saturn.
+#   SsstrictV     Selected without Ssstrict; Saturn does not trap reserved vector encodings,
+#                 which is legal without Ssstrict.
+#   Za64rs, ExceptionsSvZalrsc, ExceptionsSvZalrscSm
+#                 The tests expect a lone SC after an LR to succeed; the reservation can be
+#                 lost to an I$ miss in between (RC rocket/DCache.scala:477-481).
+#   Sm            mhpmcounter3..31 are 40 bits wide (RC rocket/CSR.scala:212) and mie.SGEIE is
+#                 read-only zero with GEILEN = 0; the reference model cannot express either.
+#   Sv, Sstvecd   Rocket converts non-canonical addresses written to stval/stvec into other
+#                 invalid addresses (bit 51 sign-extended), which the reference model does
+#                 not model.
+exclude_extensions: "Vx8,Vx16,Vx32,Vx64,Vls8,Vls16,Vls32,Vls64,Vf16,Vf32,Vf64,Zvfhmin,SmVF,Zvbb64,Zvkb64,ExceptionsVx,ExceptionsVf16,ExceptionsVf32,ExceptionsVf64,ExceptionsVfmin,ExceptionsVls,SmV,SsstrictV,Za64rs,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Sm,Sv,Sstvecd"
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler"
+install_script: ".github/scripts/install-rocket.sh"
+setup_script: ".github/scripts/setup-rocket.sh"
+shards: 4

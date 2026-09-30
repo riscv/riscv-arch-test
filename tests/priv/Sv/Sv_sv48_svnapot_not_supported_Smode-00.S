@@ -136,9 +136,9 @@ rvtest_slvl2_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_cp_sv48_svnapot_not_supported_Smode_test1_store_str: .string "\"test: 397; cg: Sv; cp: cp_sv48_svnapot_not_supported_Smode; bin: test1_store\""
-Sv_cp_sv48_svnapot_not_supported_Smode_test1_load_str: .string "\"test: 398; cg: Sv; cp: cp_sv48_svnapot_not_supported_Smode; bin: test1_load\""
-Sv_cp_sv48_svnapot_not_supported_Smode_test1_exec_str: .string "\"test: 399; cg: Sv; cp: cp_sv48_svnapot_not_supported_Smode; bin: test1_exec\""
+Sv_cp_sv48_svnapot_not_supported_Smode_test1_store_str: .string "\"test: 373; cg: Sv; cp: cp_sv48_svnapot_not_supported_Smode; bin: test1_store\""
+Sv_cp_sv48_svnapot_not_supported_Smode_test1_load_str: .string "\"test: 374; cg: Sv; cp: cp_sv48_svnapot_not_supported_Smode; bin: test1_load\""
+Sv_cp_sv48_svnapot_not_supported_Smode_test1_exec_str: .string "\"test: 375; cg: Sv; cp: cp_sv48_svnapot_not_supported_Smode; bin: test1_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

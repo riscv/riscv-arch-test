@@ -152,9 +152,9 @@ rvtest_slvl2_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_cp_sv48_VA_all_zeros_Smode_test1_store_str: .string "\"test: 571; cg: Sv; cp: cp_sv48_VA_all_zeros_Smode; bin: test1_store\""
-Sv_cp_sv48_VA_all_zeros_Smode_test1_load_str: .string "\"test: 572; cg: Sv; cp: cp_sv48_VA_all_zeros_Smode; bin: test1_load\""
-Sv_cp_sv48_VA_all_zeros_Smode_test2_exec_str: .string "\"test: 573; cg: Sv; cp: cp_sv48_VA_all_zeros_Smode; bin: test2_exec\""
+Sv_cp_sv48_VA_all_zeros_Smode_test1_store_str: .string "\"test: 547; cg: Sv; cp: cp_sv48_VA_all_zeros_Smode; bin: test1_store\""
+Sv_cp_sv48_VA_all_zeros_Smode_test1_load_str: .string "\"test: 548; cg: Sv; cp: cp_sv48_VA_all_zeros_Smode; bin: test1_load\""
+Sv_cp_sv48_VA_all_zeros_Smode_test2_exec_str: .string "\"test: 549; cg: Sv; cp: cp_sv48_VA_all_zeros_Smode; bin: test2_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

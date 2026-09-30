@@ -607,11 +607,11 @@ SvZicbo_cg_cp_zicbom_test21_inval:
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
   // Test case 22: Access fault on the page-table walk | Test in S-Mode | expected = Store access fault
-  PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_V), va_data, LEVEL1)
+  PTE_SETUP_SV32(((RVMODEL_ACCESS_FAULT_ADDRESS + 3) & ~3), (PTE_V), (((va_data) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS + 3) & ~3) & 0xFFF) / 4) << 12)), LEVEL1)
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, va_data)
+  LI(a5, (((va_data) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS + 3) & ~3) & 0xFFF) / 4) << 12)))
   addi a2, a2, 16
 SvZicbo_cg_cp_zicbom_test22_clean:
   cbo.clean (a5)

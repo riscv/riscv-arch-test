@@ -19,6 +19,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
+#define INVALID_VA_WIDTH 57
 #define TRAP_SIGUPD_COUNT 17
 
 // Include framework macros
@@ -302,21 +303,21 @@ rvtest_slvl3_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_cp_sv57_canonical_Umode_test1_store_str: .string "\"test: 46; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test1_store\""
-Sv_cp_sv57_canonical_Umode_test1_load_str: .string "\"test: 47; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test1_load\""
-Sv_cp_sv57_canonical_Umode_test1_exec_str: .string "\"test: 48; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test1_exec\""
-Sv_cp_sv57_canonical_Umode_test2_store_str: .string "\"test: 49; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test2_store\""
-Sv_cp_sv57_canonical_Umode_test2_load_str: .string "\"test: 50; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test2_load\""
-Sv_cp_sv57_canonical_Umode_test2_exec_str: .string "\"test: 51; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test2_exec\""
-Sv_cp_sv57_canonical_Umode_test3_store_str: .string "\"test: 52; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test3_store\""
-Sv_cp_sv57_canonical_Umode_test3_load_str: .string "\"test: 53; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test3_load\""
-Sv_cp_sv57_canonical_Umode_test3_exec_str: .string "\"test: 54; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test3_exec\""
-Sv_cp_sv57_canonical_Umode_test4_store_str: .string "\"test: 55; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test4_store\""
-Sv_cp_sv57_canonical_Umode_test4_load_str: .string "\"test: 56; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test4_load\""
-Sv_cp_sv57_canonical_Umode_test4_exec_str: .string "\"test: 57; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test4_exec\""
-Sv_cp_sv57_canonical_Umode_test5_store_str: .string "\"test: 58; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test5_store\""
-Sv_cp_sv57_canonical_Umode_test5_load_str: .string "\"test: 59; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test5_load\""
-Sv_cp_sv57_canonical_Umode_test5_exec_str: .string "\"test: 60; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test5_exec\""
+Sv_cp_sv57_canonical_Umode_test1_store_str: .string "\"test: 16; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test1_store\""
+Sv_cp_sv57_canonical_Umode_test1_load_str: .string "\"test: 17; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test1_load\""
+Sv_cp_sv57_canonical_Umode_test1_exec_str: .string "\"test: 18; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test1_exec\""
+Sv_cp_sv57_canonical_Umode_test2_store_str: .string "\"test: 19; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test2_store\""
+Sv_cp_sv57_canonical_Umode_test2_load_str: .string "\"test: 20; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test2_load\""
+Sv_cp_sv57_canonical_Umode_test2_exec_str: .string "\"test: 21; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test2_exec\""
+Sv_cp_sv57_canonical_Umode_test3_store_str: .string "\"test: 22; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test3_store\""
+Sv_cp_sv57_canonical_Umode_test3_load_str: .string "\"test: 23; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test3_load\""
+Sv_cp_sv57_canonical_Umode_test3_exec_str: .string "\"test: 24; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test3_exec\""
+Sv_cp_sv57_canonical_Umode_test4_store_str: .string "\"test: 25; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test4_store\""
+Sv_cp_sv57_canonical_Umode_test4_load_str: .string "\"test: 26; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test4_load\""
+Sv_cp_sv57_canonical_Umode_test4_exec_str: .string "\"test: 27; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test4_exec\""
+Sv_cp_sv57_canonical_Umode_test5_store_str: .string "\"test: 28; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test5_store\""
+Sv_cp_sv57_canonical_Umode_test5_load_str: .string "\"test: 29; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test5_load\""
+Sv_cp_sv57_canonical_Umode_test5_exec_str: .string "\"test: 30; cg: Sv; cp: cp_sv57_canonical_Umode; bin: test5_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -215,15 +215,15 @@ rvtest_slvl1_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_cp_sv39_svpbmt_disabled_Smode_test1_store_str: .string "\"test: 292; cg: Sv; cp: cp_sv39_svpbmt_disabled_Smode; bin: test1_store\""
-Sv_cp_sv39_svpbmt_disabled_Smode_test1_load_str: .string "\"test: 293; cg: Sv; cp: cp_sv39_svpbmt_disabled_Smode; bin: test1_load\""
-Sv_cp_sv39_svpbmt_disabled_Smode_test1_exec_str: .string "\"test: 294; cg: Sv; cp: cp_sv39_svpbmt_disabled_Smode; bin: test1_exec\""
-Sv_cp_sv39_svpbmt_disabled_Smode_test2_store_str: .string "\"test: 295; cg: Sv; cp: cp_sv39_svpbmt_disabled_Smode; bin: test2_store\""
-Sv_cp_sv39_svpbmt_disabled_Smode_test2_load_str: .string "\"test: 296; cg: Sv; cp: cp_sv39_svpbmt_disabled_Smode; bin: test2_load\""
-Sv_cp_sv39_svpbmt_disabled_Smode_test2_exec_str: .string "\"test: 297; cg: Sv; cp: cp_sv39_svpbmt_disabled_Smode; bin: test2_exec\""
-Sv_cp_sv39_svpbmt_disabled_Smode_test3_store_str: .string "\"test: 298; cg: Sv; cp: cp_sv39_svpbmt_disabled_Smode; bin: test3_store\""
-Sv_cp_sv39_svpbmt_disabled_Smode_test3_load_str: .string "\"test: 299; cg: Sv; cp: cp_sv39_svpbmt_disabled_Smode; bin: test3_load\""
-Sv_cp_sv39_svpbmt_disabled_Smode_test3_exec_str: .string "\"test: 300; cg: Sv; cp: cp_sv39_svpbmt_disabled_Smode; bin: test3_exec\""
+Sv_cp_sv39_svpbmt_disabled_Smode_test1_store_str: .string "\"test: 274; cg: Sv; cp: cp_sv39_svpbmt_disabled_Smode; bin: test1_store\""
+Sv_cp_sv39_svpbmt_disabled_Smode_test1_load_str: .string "\"test: 275; cg: Sv; cp: cp_sv39_svpbmt_disabled_Smode; bin: test1_load\""
+Sv_cp_sv39_svpbmt_disabled_Smode_test1_exec_str: .string "\"test: 276; cg: Sv; cp: cp_sv39_svpbmt_disabled_Smode; bin: test1_exec\""
+Sv_cp_sv39_svpbmt_disabled_Smode_test2_store_str: .string "\"test: 277; cg: Sv; cp: cp_sv39_svpbmt_disabled_Smode; bin: test2_store\""
+Sv_cp_sv39_svpbmt_disabled_Smode_test2_load_str: .string "\"test: 278; cg: Sv; cp: cp_sv39_svpbmt_disabled_Smode; bin: test2_load\""
+Sv_cp_sv39_svpbmt_disabled_Smode_test2_exec_str: .string "\"test: 279; cg: Sv; cp: cp_sv39_svpbmt_disabled_Smode; bin: test2_exec\""
+Sv_cp_sv39_svpbmt_disabled_Smode_test3_store_str: .string "\"test: 280; cg: Sv; cp: cp_sv39_svpbmt_disabled_Smode; bin: test3_store\""
+Sv_cp_sv39_svpbmt_disabled_Smode_test3_load_str: .string "\"test: 281; cg: Sv; cp: cp_sv39_svpbmt_disabled_Smode; bin: test3_load\""
+Sv_cp_sv39_svpbmt_disabled_Smode_test3_exec_str: .string "\"test: 282; cg: Sv; cp: cp_sv39_svpbmt_disabled_Smode; bin: test3_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

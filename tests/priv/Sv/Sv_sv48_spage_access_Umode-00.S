@@ -256,18 +256,18 @@ rvtest_slvl2_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_cp_sv48_spage_access_Umode_test1_store_str: .string "\"test: 400; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test1_store\""
-Sv_cp_sv48_spage_access_Umode_test1_load_str: .string "\"test: 401; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test1_load\""
-Sv_cp_sv48_spage_access_Umode_test1_exec_str: .string "\"test: 402; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test1_exec\""
-Sv_cp_sv48_spage_access_Umode_test2_store_str: .string "\"test: 403; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test2_store\""
-Sv_cp_sv48_spage_access_Umode_test2_load_str: .string "\"test: 404; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test2_load\""
-Sv_cp_sv48_spage_access_Umode_test2_exec_str: .string "\"test: 405; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test2_exec\""
-Sv_cp_sv48_spage_access_Umode_test3_store_str: .string "\"test: 406; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test3_store\""
-Sv_cp_sv48_spage_access_Umode_test3_load_str: .string "\"test: 407; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test3_load\""
-Sv_cp_sv48_spage_access_Umode_test3_exec_str: .string "\"test: 408; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test3_exec\""
-Sv_cp_sv48_spage_access_Umode_test4_store_str: .string "\"test: 409; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test4_store\""
-Sv_cp_sv48_spage_access_Umode_test4_load_str: .string "\"test: 410; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test4_load\""
-Sv_cp_sv48_spage_access_Umode_test4_exec_str: .string "\"test: 411; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test4_exec\""
+Sv_cp_sv48_spage_access_Umode_test1_store_str: .string "\"test: 376; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test1_store\""
+Sv_cp_sv48_spage_access_Umode_test1_load_str: .string "\"test: 377; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test1_load\""
+Sv_cp_sv48_spage_access_Umode_test1_exec_str: .string "\"test: 378; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test1_exec\""
+Sv_cp_sv48_spage_access_Umode_test2_store_str: .string "\"test: 379; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test2_store\""
+Sv_cp_sv48_spage_access_Umode_test2_load_str: .string "\"test: 380; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test2_load\""
+Sv_cp_sv48_spage_access_Umode_test2_exec_str: .string "\"test: 381; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test2_exec\""
+Sv_cp_sv48_spage_access_Umode_test3_store_str: .string "\"test: 382; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test3_store\""
+Sv_cp_sv48_spage_access_Umode_test3_load_str: .string "\"test: 383; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test3_load\""
+Sv_cp_sv48_spage_access_Umode_test3_exec_str: .string "\"test: 384; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test3_exec\""
+Sv_cp_sv48_spage_access_Umode_test4_store_str: .string "\"test: 385; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test4_store\""
+Sv_cp_sv48_spage_access_Umode_test4_load_str: .string "\"test: 386; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test4_load\""
+Sv_cp_sv48_spage_access_Umode_test4_exec_str: .string "\"test: 387; cg: Sv; cp: cp_sv48_spage_access_Umode; bin: test4_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

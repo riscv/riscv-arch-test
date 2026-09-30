@@ -18,7 +18,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 38
+#define SIGUPD_COUNT 42
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_MMODE
@@ -48,269 +48,280 @@ RVTEST_BEGIN
   srli x15, x15, 30
   slli x15, x15, 53
   srli x15, x15, 50
-  LA(x13, rvtest_Hroot_pg_tbl)
-  add x15, x15, x13
-  LA(x9, rvtest_code_begin)
-  srli x9, x9, 30
-  slli x9, x9, 28
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x15)
+  LA(x9, rvtest_Hroot_pg_tbl)
+  add x15, x15, x9
+  LA(x13, rvtest_code_begin)
+  srli x13, x13, 30
+  slli x13, x13, 28
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x15)
   LA(x15, rvtest_code_begin)
   srli x15, x15, 30
   slli x15, x15, 55
   srli x15, x15, 52
-  LA(x13, rvtest_Vroot_pg_tbl)
-  add x15, x15, x13
-  LA(x9, rvtest_code_begin)
-  srli x9, x9, 30
-  slli x9, x9, 28
-  LI(x13, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x15)
+  LA(x9, rvtest_Vroot_pg_tbl)
+  add x15, x15, x9
+  LA(x13, rvtest_code_begin)
+  srli x13, x13, 30
+  slli x13, x13, 28
+  LI(x9, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x15)
   LA(x15, rvtest_data_begin)
   srli x15, x15, 30
   slli x15, x15, 53
   srli x15, x15, 50
-  LA(x13, rvtest_Hroot_pg_tbl)
-  add x15, x15, x13
-  LA(x9, rvtest_data_begin)
-  srli x9, x9, 30
-  slli x9, x9, 28
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x15)
+  LA(x9, rvtest_Hroot_pg_tbl)
+  add x15, x15, x9
+  LA(x13, rvtest_data_begin)
+  srli x13, x13, 30
+  slli x13, x13, 28
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x15)
   LA(x15, rvtest_data_begin)
   srli x15, x15, 30
   slli x15, x15, 55
   srli x15, x15, 52
-  LA(x13, rvtest_Vroot_pg_tbl)
-  add x15, x15, x13
-  LA(x9, rvtest_data_begin)
-  srli x9, x9, 30
-  slli x9, x9, 28
-  LI(x13, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x15)
+  LA(x9, rvtest_Vroot_pg_tbl)
+  add x15, x15, x9
+  LA(x13, rvtest_data_begin)
+  srli x13, x13, 30
+  slli x13, x13, 28
+  LI(x9, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x15)
   LA(x15, rvtest_sig_end)
   srli x15, x15, 30
   slli x15, x15, 53
   srli x15, x15, 50
-  LA(x13, rvtest_Hroot_pg_tbl)
-  add x15, x15, x13
-  LA(x9, rvtest_sig_end)
-  srli x9, x9, 30
-  slli x9, x9, 28
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x15)
+  LA(x9, rvtest_Hroot_pg_tbl)
+  add x15, x15, x9
+  LA(x13, rvtest_sig_end)
+  srli x13, x13, 30
+  slli x13, x13, 28
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x15)
   LA(x15, rvtest_sig_end)
   srli x15, x15, 30
   slli x15, x15, 55
   srli x15, x15, 52
-  LA(x13, rvtest_Vroot_pg_tbl)
-  add x15, x15, x13
-  LA(x9, rvtest_sig_end)
-  srli x9, x9, 30
-  slli x9, x9, 28
-  LI(x13, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x15)
+  LA(x9, rvtest_Vroot_pg_tbl)
+  add x15, x15, x9
+  LA(x13, rvtest_sig_end)
+  srli x13, x13, 30
+  slli x13, x13, 28
+  LI(x9, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x15)
 // Map the code region again at the guest alias
   LA(x15, rvtest_Hroot_pg_tbl + (((0x240000000) >> 30) & 0x7ff) * 8)
-  LA(x9, rvtest_code_begin)
-  srli x9, x9, 30
-  slli x9, x9, 28
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x15)
+  LA(x13, rvtest_code_begin)
+  srli x13, x13, 30
+  slli x13, x13, 28
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x15)
   LA(x15, rvtest_Vroot_pg_tbl + (((0x180000000) >> 30) & 0x1ff) * 8)
-  LI(x9, (((0x240000000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x9, 0(x15)
+  LI(x13, (((0x240000000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x13, 0(x15)
 // Register the alias of rvtest_code_begin
-  LI(x9, ((0x180000000) >> 30) << 30)
+  LI(x13, ((0x180000000) >> 30) << 30)
   LA(x15, rvtest_code_begin)
   slli x15, x15, 34
   srli x15, x15, 34
-  or x9, x9, x15
+  or x13, x13, x15
   LA(x15, Vtramptbl_sv)
-  SREG x9, code_bgn_off(x15)
+  SREG x13, code_bgn_off(x15)
 
-  LI(x9, 0x8000000000000000)
+  LI(x13, 0x8000000000000000)
   LA(x15, rvtest_Hroot_pg_tbl)
   srli x15, x15, 12
-  or x15, x15, x9
+  or x15, x15, x13
   csrw hgatp, x15
-  LI(x9, 0x8000000000000000)
+  LI(x13, 0x8000000000000000)
   LA(x15, rvtest_Vroot_pg_tbl)
   srli x15, x15, 12
-  or x15, x15, x9
+  or x15, x15, x13
   csrw vsatp, x15
   hfence.gvma
   hfence.vvma
 // Mapping vs: VS-stage kilopage over the G-stage identity map
   LA(x15, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
-  LA(x8, rvtest_vlvl1_pg_tbl)
-  srli x8, x8, 12
-  slli x8, x8, 10
+  LA(x9, rvtest_vlvl1_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
   LI(x13, PTE_V)
-  or x8, x8, x13
-  SREG x8, 0(x15)
+  or x9, x9, x13
+  SREG x9, 0(x15)
   LA(x15, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
-  LA(x8, rvtest_vlvl0_pg_tbl)
-  srli x8, x8, 12
-  slli x8, x8, 10
+  LA(x9, rvtest_vlvl0_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
   LI(x13, PTE_V)
-  or x8, x8, x13
-  SREG x8, 0(x15)
+  or x9, x9, x13
+  SREG x9, 0(x15)
   LA(x15, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
-  LA(x8, TEST_FOR_EXECUTION)
-  srli x8, x8, 12
-  slli x8, x8, 10
+  LA(x9, TEST_FOR_EXECUTION)
+  srli x9, x9, 12
+  slli x9, x9, 10
   LI(x13, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x13
-  SREG x8, 0(x15)
+  or x9, x9, x13
+  SREG x9, 0(x15)
 // Mapping g: VS-stage identity superpage over a G-stage kilopage
   LA(x15, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
-  LI(x8, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x8, 0(x15)
+  LI(x9, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x9, 0(x15)
   LA(x15, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
-  LA(x8, rvtest_hlvl1_pg_tbl)
-  srli x8, x8, 12
-  slli x8, x8, 10
+  LA(x9, rvtest_hlvl1_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
   LI(x13, PTE_V)
-  or x8, x8, x13
-  SREG x8, 0(x15)
+  or x9, x9, x13
+  SREG x9, 0(x15)
   LA(x15, rvtest_hlvl1_pg_tbl + (((0x2C0802000) >> 21) & 0x1ff) * 8)
-  LA(x8, rvtest_hlvl0_pg_tbl)
-  srli x8, x8, 12
-  slli x8, x8, 10
+  LA(x9, rvtest_hlvl0_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
   LI(x13, PTE_V)
-  or x8, x8, x13
-  SREG x8, 0(x15)
+  or x9, x9, x13
+  SREG x9, 0(x15)
   LA(x15, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
-  LA(x8, TEST_FOR_EXECUTION)
-  srli x8, x8, 12
-  slli x8, x8, 10
+  LA(x9, TEST_FOR_EXECUTION)
+  srli x9, x9, 12
+  slli x9, x9, 10
   LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x13
-  SREG x8, 0(x15)
+  or x9, x9, x13
+  SREG x9, 0(x15)
+// vlvl0 at a guest physical address that G-stage translation moves
+  LA(x15, rvtest_hlvl0_pg_tbl + ((((0x2C0802000 + 0x1000)) >> 12) & 0x1ff) * 8)
+  LA(x9, rvtest_vlvl0_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x13
+  SREG x9, 0(x15)
+  LA(x15, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
+  LI(x9, ((((0x2C0802000 + 0x1000)) >> 12) << 10) | (PTE_V))
+  SREG x9, 0(x15)
   hfence.gvma
   hfence.vvma
   LI(x14, (0x140802000 >> 12) << 12)
-  LA(x8, TEST_FOR_EXECUTION)
-  slli x8, x8, 52
-  srli x8, x8, 52
-  add x14, x14, x8
+  LA(x9, TEST_FOR_EXECUTION)
+  slli x9, x9, 52
+  srli x9, x9, 52
+  add x14, x14, x9
   LI(x6, (0x2C0802000 >> 12) << 12)
-  LA(x8, TEST_FOR_EXECUTION)
-  slli x8, x8, 52
-  srli x8, x8, 52
-  add x6, x6, x8
+  LA(x9, TEST_FOR_EXECUTION)
+  slli x9, x9, 52
+  srli x9, x9, 52
+  add x6, x6, x9
 #else
 // Identity map the test image in both stages
-  LA(x15, rvtest_code_begin)
-  srli x15, x15, 22
-  slli x15, x15, 20
-  srli x15, x15, 18
-  LA(x9, rvtest_Hroot_pg_tbl)
-  add x15, x15, x9
-  LA(x8, rvtest_code_begin)
-  srli x8, x8, 22
-  slli x8, x8, 20
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x9
-  SREG x8, 0(x15)
-  LA(x15, rvtest_code_begin)
-  srli x15, x15, 22
-  slli x15, x15, 22
-  srli x15, x15, 20
-  LA(x9, rvtest_Vroot_pg_tbl)
-  add x15, x15, x9
-  LA(x8, rvtest_code_begin)
-  srli x8, x8, 22
-  slli x8, x8, 20
-  LI(x9, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x9
-  SREG x8, 0(x15)
-  LA(x15, rvtest_data_begin)
-  srli x15, x15, 22
-  slli x15, x15, 20
-  srli x15, x15, 18
-  LA(x9, rvtest_Hroot_pg_tbl)
-  add x15, x15, x9
-  LA(x8, rvtest_data_begin)
-  srli x8, x8, 22
-  slli x8, x8, 20
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x9
-  SREG x8, 0(x15)
-  LA(x15, rvtest_data_begin)
-  srli x15, x15, 22
-  slli x15, x15, 22
-  srli x15, x15, 20
-  LA(x9, rvtest_Vroot_pg_tbl)
-  add x15, x15, x9
-  LA(x8, rvtest_data_begin)
-  srli x8, x8, 22
-  slli x8, x8, 20
-  LI(x9, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x9
-  SREG x8, 0(x15)
-  LA(x15, rvtest_sig_end)
-  srli x15, x15, 22
-  slli x15, x15, 20
-  srli x15, x15, 18
-  LA(x9, rvtest_Hroot_pg_tbl)
-  add x15, x15, x9
-  LA(x8, rvtest_sig_end)
-  srli x8, x8, 22
-  slli x8, x8, 20
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x9
-  SREG x8, 0(x15)
-  LA(x15, rvtest_sig_end)
-  srli x15, x15, 22
-  slli x15, x15, 22
-  srli x15, x15, 20
-  LA(x9, rvtest_Vroot_pg_tbl)
-  add x15, x15, x9
-  LA(x8, rvtest_sig_end)
-  srli x8, x8, 22
-  slli x8, x8, 20
-  LI(x9, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x9
-  SREG x8, 0(x15)
-// Map the code region again at the guest alias
-  LA(x15, rvtest_Hroot_pg_tbl + (((0xC0000000) >> 22) & 0xfff) * 4)
-  LA(x8, rvtest_code_begin)
-  srli x8, x8, 22
-  slli x8, x8, 20
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x9
-  SREG x8, 0(x15)
-  LA(x15, rvtest_Vroot_pg_tbl + (((0x30000000) >> 22) & 0x3ff) * 4)
-  LI(x8, (((0xC0000000) >> 22) << 20) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x8, 0(x15)
-// Register the alias of rvtest_code_begin
-  LI(x8, ((0x30000000) >> 22) << 22)
-  LA(x15, rvtest_code_begin)
-  slli x15, x15, 10
-  srli x15, x15, 10
-  or x8, x8, x15
-  LA(x15, Vtramptbl_sv)
-  SREG x8, code_bgn_off(x15)
-
-  LI(x8, 0x80000000)
+  LA(x13, rvtest_code_begin)
+  srli x13, x13, 22
+  slli x13, x13, 20
+  srli x13, x13, 18
   LA(x15, rvtest_Hroot_pg_tbl)
-  srli x15, x15, 12
-  or x15, x15, x8
-  csrw hgatp, x15
-  LI(x8, 0x80000000)
+  add x13, x13, x15
+  LA(x9, rvtest_code_begin)
+  srli x9, x9, 22
+  slli x9, x9, 20
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x15
+  SREG x9, 0(x13)
+  LA(x13, rvtest_code_begin)
+  srli x13, x13, 22
+  slli x13, x13, 22
+  srli x13, x13, 20
   LA(x15, rvtest_Vroot_pg_tbl)
-  srli x15, x15, 12
-  or x15, x15, x8
-  csrw vsatp, x15
+  add x13, x13, x15
+  LA(x9, rvtest_code_begin)
+  srli x9, x9, 22
+  slli x9, x9, 20
+  LI(x15, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x15
+  SREG x9, 0(x13)
+  LA(x13, rvtest_data_begin)
+  srli x13, x13, 22
+  slli x13, x13, 20
+  srli x13, x13, 18
+  LA(x15, rvtest_Hroot_pg_tbl)
+  add x13, x13, x15
+  LA(x9, rvtest_data_begin)
+  srli x9, x9, 22
+  slli x9, x9, 20
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x15
+  SREG x9, 0(x13)
+  LA(x13, rvtest_data_begin)
+  srli x13, x13, 22
+  slli x13, x13, 22
+  srli x13, x13, 20
+  LA(x15, rvtest_Vroot_pg_tbl)
+  add x13, x13, x15
+  LA(x9, rvtest_data_begin)
+  srli x9, x9, 22
+  slli x9, x9, 20
+  LI(x15, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x15
+  SREG x9, 0(x13)
+  LA(x13, rvtest_sig_end)
+  srli x13, x13, 22
+  slli x13, x13, 20
+  srli x13, x13, 18
+  LA(x15, rvtest_Hroot_pg_tbl)
+  add x13, x13, x15
+  LA(x9, rvtest_sig_end)
+  srli x9, x9, 22
+  slli x9, x9, 20
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x15
+  SREG x9, 0(x13)
+  LA(x13, rvtest_sig_end)
+  srli x13, x13, 22
+  slli x13, x13, 22
+  srli x13, x13, 20
+  LA(x15, rvtest_Vroot_pg_tbl)
+  add x13, x13, x15
+  LA(x9, rvtest_sig_end)
+  srli x9, x9, 22
+  slli x9, x9, 20
+  LI(x15, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x15
+  SREG x9, 0(x13)
+// Map the code region again at the guest alias
+  LA(x13, rvtest_Hroot_pg_tbl + (((0xC0000000) >> 22) & 0xfff) * 4)
+  LA(x9, rvtest_code_begin)
+  srli x9, x9, 22
+  slli x9, x9, 20
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x15
+  SREG x9, 0(x13)
+  LA(x13, rvtest_Vroot_pg_tbl + (((0x30000000) >> 22) & 0x3ff) * 4)
+  LI(x9, (((0xC0000000) >> 22) << 20) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x9, 0(x13)
+// Register the alias of rvtest_code_begin
+  LI(x9, ((0x30000000) >> 22) << 22)
+  LA(x13, rvtest_code_begin)
+  slli x13, x13, 10
+  srli x13, x13, 10
+  or x9, x9, x13
+  LA(x13, Vtramptbl_sv)
+  SREG x9, code_bgn_off(x13)
+
+  LI(x9, 0x80000000)
+  LA(x13, rvtest_Hroot_pg_tbl)
+  srli x13, x13, 12
+  or x13, x13, x9
+  csrw hgatp, x13
+  LI(x9, 0x80000000)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  or x13, x13, x9
+  csrw vsatp, x13
   hfence.gvma
   hfence.vvma
 // Mapping vs: VS-stage kilopage over the G-stage identity map
@@ -318,15 +329,15 @@ RVTEST_BEGIN
   LA(x13, rvtest_vlvl0_pg_tbl)
   srli x13, x13, 12
   slli x13, x13, 10
-  LI(x8, PTE_V)
-  or x13, x13, x8
+  LI(x15, PTE_V)
+  or x13, x13, x15
   SREG x13, 0(x9)
   LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
   LA(x13, TEST_FOR_EXECUTION)
   srli x13, x13, 12
   slli x13, x13, 10
-  LI(x8, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x8
+  LI(x15, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x15
   SREG x13, 0(x9)
 // Mapping g: VS-stage identity superpage over a G-stage kilopage
   LA(x9, rvtest_Vroot_pg_tbl + (((0xD0407000) >> 22) & 0x3ff) * 4)
@@ -336,15 +347,26 @@ RVTEST_BEGIN
   LA(x13, rvtest_hlvl0_pg_tbl)
   srli x13, x13, 12
   slli x13, x13, 10
-  LI(x8, PTE_V)
-  or x13, x13, x8
+  LI(x15, PTE_V)
+  or x13, x13, x15
   SREG x13, 0(x9)
   LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
   LA(x13, TEST_FOR_EXECUTION)
   srli x13, x13, 12
   slli x13, x13, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x8
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x15
+  SREG x13, 0(x9)
+// vlvl0 at a guest physical address that G-stage translation moves
+  LA(x9, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LA(x13, rvtest_vlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x15
+  SREG x13, 0(x9)
+  LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LI(x13, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_V))
   SREG x13, 0(x9)
   hfence.gvma
   hfence.vvma
@@ -358,6 +380,11 @@ RVTEST_BEGIN
   slli x13, x13, 20
   srli x13, x13, 20
   add x6, x6, x13
+#endif
+#if __riscv_xlen == 64
+  LI(x8, (0x2C0802000 + 0x1000))
+#else
+  LI(x8, (0xD0407000 + 0x1000))
 #endif
 // VS-mode: PMP denies the guest virtual addresses, which does not affect the accesses
 // Clear every pmpcfg and pmpaddr CSR
@@ -400,26 +427,26 @@ RVTEST_BEGIN
 PMPH_cp_pmp_after_translation_vs_gva_vs_jalr:
   jalr x0, 0(x14)
 1:
-  LI(x13, RVTEST_PMP_RET_ENCODING)
+  LI(x15, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_after_translation_vs_gva_vs_sw:
-  sw x13, 0(x14)
-  LI(x13, 42)
+  sw x15, 0(x14)
+  LI(x15, 42)
 PMPH_cp_pmp_after_translation_vs_gva_vs_lw:
-  lw x13, 0(x14)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMPH_cp_pmp_after_translation_vs_gva_vs_lw, PMPH_cp_pmp_after_translation_vs_gva_vs_lw_str)
+  lw x15, 0(x14)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMPH_cp_pmp_after_translation_vs_gva_vs_lw, PMPH_cp_pmp_after_translation_vs_gva_vs_lw_str)
   LA(ra, 1f)
 PMPH_cp_pmp_after_translation_vs_gva_g_jalr:
   jalr x0, 0(x6)
 1:
-  LI(x15, RVTEST_PMP_RET_ENCODING)
+  LI(x13, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_after_translation_vs_gva_g_sw:
-  sw x15, 0(x6)
-  LI(x15, 42)
+  sw x13, 0(x6)
+  LI(x13, 42)
 PMPH_cp_pmp_after_translation_vs_gva_g_lw:
-  lw x15, 0(x6)
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, PMPH_cp_pmp_after_translation_vs_gva_g_lw, PMPH_cp_pmp_after_translation_vs_gva_g_lw_str)
+  lw x13, 0(x6)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMPH_cp_pmp_after_translation_vs_gva_g_lw, PMPH_cp_pmp_after_translation_vs_gva_g_lw_str)
   RVTEST_TSBI_GOTO_MMODE
 // VS-mode: PMP denies the supervisor physical address
 // Clear every pmpcfg and pmpaddr CSR
@@ -454,26 +481,26 @@ PMPH_cp_pmp_after_translation_vs_gva_g_lw:
 PMPH_cp_pmp_after_translation_vs_spa_vs_jalr:
   jalr x0, 0(x14)
 1:
-  LI(x13, RVTEST_PMP_RET_ENCODING)
+  LI(x15, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_after_translation_vs_spa_vs_sw:
-  sw x13, 0(x14)
-  LI(x13, 42)
+  sw x15, 0(x14)
+  LI(x15, 42)
 PMPH_cp_pmp_after_translation_vs_spa_vs_lw:
-  lw x13, 0(x14)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMPH_cp_pmp_after_translation_vs_spa_vs_lw, PMPH_cp_pmp_after_translation_vs_spa_vs_lw_str)
+  lw x15, 0(x14)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMPH_cp_pmp_after_translation_vs_spa_vs_lw, PMPH_cp_pmp_after_translation_vs_spa_vs_lw_str)
   LA(ra, 1f)
 PMPH_cp_pmp_after_translation_vs_spa_g_jalr:
   jalr x0, 0(x6)
 1:
-  LI(x15, RVTEST_PMP_RET_ENCODING)
+  LI(x13, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_after_translation_vs_spa_g_sw:
-  sw x15, 0(x6)
-  LI(x15, 42)
+  sw x13, 0(x6)
+  LI(x13, 42)
 PMPH_cp_pmp_after_translation_vs_spa_g_lw:
-  lw x15, 0(x6)
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, PMPH_cp_pmp_after_translation_vs_spa_g_lw, PMPH_cp_pmp_after_translation_vs_spa_g_lw_str)
+  lw x13, 0(x6)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMPH_cp_pmp_after_translation_vs_spa_g_lw, PMPH_cp_pmp_after_translation_vs_spa_g_lw_str)
   RVTEST_TSBI_GOTO_MMODE
 #if __riscv_xlen == 64
 // VS-mode: PMP denies the VS-stage table vlvl1; accesses whose walk reads it raise access faults
@@ -509,26 +536,26 @@ PMPH_cp_pmp_after_translation_vs_spa_g_lw:
 PMPH_cp_pmp_pt_vs_vlvl1_vs_jalr:
   jalr x0, 0(x14)
 1:
-  LI(x13, RVTEST_PMP_RET_ENCODING)
+  LI(x9, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_pt_vs_vlvl1_vs_sw:
-  sw x13, 0(x14)
-  LI(x13, 42)
+  sw x9, 0(x14)
+  LI(x9, 42)
 PMPH_cp_pmp_pt_vs_vlvl1_vs_lw:
-  lw x13, 0(x14)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMPH_cp_pmp_pt_vs_vlvl1_vs_lw, PMPH_cp_pmp_pt_vs_vlvl1_vs_lw_str)
+  lw x9, 0(x14)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMPH_cp_pmp_pt_vs_vlvl1_vs_lw, PMPH_cp_pmp_pt_vs_vlvl1_vs_lw_str)
   LA(ra, 1f)
 PMPH_cp_pmp_pt_vs_vlvl1_g_jalr:
   jalr x0, 0(x6)
 1:
-  LI(x8, RVTEST_PMP_RET_ENCODING)
+  LI(x15, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_pt_vs_vlvl1_g_sw:
-  sw x8, 0(x6)
-  LI(x8, 42)
+  sw x15, 0(x6)
+  LI(x15, 42)
 PMPH_cp_pmp_pt_vs_vlvl1_g_lw:
-  lw x8, 0(x6)
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMPH_cp_pmp_pt_vs_vlvl1_g_lw, PMPH_cp_pmp_pt_vs_vlvl1_g_lw_str)
+  lw x15, 0(x6)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMPH_cp_pmp_pt_vs_vlvl1_g_lw, PMPH_cp_pmp_pt_vs_vlvl1_g_lw_str)
   RVTEST_TSBI_GOTO_MMODE
 #endif // __riscv_xlen == 64
 // VS-mode: PMP denies the VS-stage table vlvl0; accesses whose walk reads it raise access faults
@@ -564,60 +591,114 @@ PMPH_cp_pmp_pt_vs_vlvl1_g_lw:
 PMPH_cp_pmp_pt_vs_vlvl0_vs_jalr:
   jalr x0, 0(x14)
 1:
-  LI(x8, RVTEST_PMP_RET_ENCODING)
+  LI(x13, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_pt_vs_vlvl0_vs_sw:
-  sw x8, 0(x14)
-  LI(x8, 42)
+  sw x13, 0(x14)
+  LI(x13, 42)
 PMPH_cp_pmp_pt_vs_vlvl0_vs_lw:
-  lw x8, 0(x14)
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMPH_cp_pmp_pt_vs_vlvl0_vs_lw, PMPH_cp_pmp_pt_vs_vlvl0_vs_lw_str)
+  lw x13, 0(x14)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMPH_cp_pmp_pt_vs_vlvl0_vs_lw, PMPH_cp_pmp_pt_vs_vlvl0_vs_lw_str)
   LA(ra, 1f)
 PMPH_cp_pmp_pt_vs_vlvl0_g_jalr:
   jalr x0, 0(x6)
 1:
-  LI(x9, RVTEST_PMP_RET_ENCODING)
+  LI(x15, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_pt_vs_vlvl0_g_sw:
+  sw x15, 0(x6)
+  LI(x15, 42)
+PMPH_cp_pmp_pt_vs_vlvl0_g_lw:
+  lw x15, 0(x6)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMPH_cp_pmp_pt_vs_vlvl0_g_lw, PMPH_cp_pmp_pt_vs_vlvl0_g_lw_str)
+  RVTEST_TSBI_GOTO_MMODE
+// VS-mode: PMP denies the guest physical address of vlvl0, which does not affect the accesses
+// Clear every pmpcfg and pmpaddr CSR
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES / (UDB_MXLEN / 8)
+  csrw pmpcfgi, x0
+  .set pmpcfgi, pmpcfgi + (UDB_MXLEN / 32)
+  .endr
+  .set pmpaddri, CSR_PMPADDR0
+  .rept UDB_NUM_PMP_ENTRIES
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri + 1
+  .endr
+  mv x5, x8
+  srli x5, x5, PMP_SHIFT
+  ori x5, x5, 0x1FF
+  csrw pmpaddr8, x5
+#if __riscv_xlen == 32
+  LI(x4, (((PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(8)))
+  csrw pmpcfg2, x4
+#endif
+#if __riscv_xlen == 64
+  LI(x4, (((PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(8)))
+  csrw pmpcfg2, x4
+#endif
+  sfence.vma
+  hfence.gvma
+  hfence.vvma
+  fence.i
+  RVTEST_TSBI_GOTO_VSMODE
+  LA(ra, 1f)
+PMPH_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_jalr:
+  jalr x0, 0(x14)
+1:
+  LI(x15, RVTEST_PMP_RET_ENCODING)
+PMPH_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_sw:
+  sw x15, 0(x14)
+  LI(x15, 42)
+PMPH_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_lw:
+  lw x15, 0(x14)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMPH_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_lw, PMPH_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_lw_str)
+  LA(ra, 1f)
+PMPH_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_jalr:
+  jalr x0, 0(x6)
+1:
+  LI(x9, RVTEST_PMP_RET_ENCODING)
+PMPH_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_sw:
   sw x9, 0(x6)
   LI(x9, 42)
-PMPH_cp_pmp_pt_vs_vlvl0_g_lw:
+PMPH_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_lw:
   lw x9, 0(x6)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, PMPH_cp_pmp_pt_vs_vlvl0_g_lw, PMPH_cp_pmp_pt_vs_vlvl0_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMPH_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_lw, PMPH_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_lw_str)
   RVTEST_TSBI_GOTO_MMODE
 // VS-mode: PMP denies the supervisor physical address; R-only leaves fault jalr and sw, and lw raises an access fault
 #if __riscv_xlen == 64
-  LA(x15, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
-  LA(x13, TEST_FOR_EXECUTION)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x8, PTE_D | PTE_A | PTE_R | PTE_V)
-  or x13, x13, x8
-  SREG x13, 0(x15)
-  LA(x15, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
-  LA(x13, TEST_FOR_EXECUTION)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_R | PTE_V)
-  or x13, x13, x8
-  SREG x13, 0(x15)
+  LA(x13, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
+  LA(x9, TEST_FOR_EXECUTION)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x15, PTE_D | PTE_A | PTE_R | PTE_V)
+  or x9, x9, x15
+  SREG x9, 0(x13)
+  LA(x13, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
+  LA(x9, TEST_FOR_EXECUTION)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_R | PTE_V)
+  or x9, x9, x15
+  SREG x9, 0(x13)
   hfence.gvma
   hfence.vvma
 #else
-  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LA(x8, TEST_FOR_EXECUTION)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x13, PTE_D | PTE_A | PTE_R | PTE_V)
-  or x8, x8, x13
-  SREG x8, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x8, TEST_FOR_EXECUTION)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_R | PTE_V)
-  or x8, x8, x13
-  SREG x8, 0(x9)
+  LA(x15, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LA(x13, TEST_FOR_EXECUTION)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_D | PTE_A | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x15)
+  LA(x15, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x13, TEST_FOR_EXECUTION)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x15)
   hfence.gvma
   hfence.vvma
 #endif
@@ -665,48 +746,48 @@ PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_vs_lw:
 PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_g_jalr:
   jalr x0, 0(x6)
 1:
-  LI(x13, RVTEST_PMP_RET_ENCODING)
+  LI(x9, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_g_sw:
-  sw x13, 0(x6)
-  LI(x13, 42)
+  sw x9, 0(x6)
+  LI(x9, 42)
 PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_g_lw:
-  lw x13, 0(x6)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_g_lw, PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_g_lw_str)
+  lw x9, 0(x6)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_g_lw, PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_g_lw_str)
   RVTEST_TSBI_GOTO_MMODE
 // VS-mode: PMP denies the supervisor physical address; X-only leaves fault sw and lw, and jalr raises an access fault
 #if __riscv_xlen == 64
-  LA(x9, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
+  LA(x15, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
   LA(x13, TEST_FOR_EXECUTION)
   srli x13, x13, 12
   slli x13, x13, 10
-  LI(x8, PTE_D | PTE_A | PTE_X | PTE_V)
-  or x13, x13, x8
-  SREG x13, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
+  LI(x9, PTE_D | PTE_A | PTE_X | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x15)
+  LA(x15, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
   LA(x13, TEST_FOR_EXECUTION)
   srli x13, x13, 12
   slli x13, x13, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
-  or x13, x13, x8
-  SREG x13, 0(x9)
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x15)
   hfence.gvma
   hfence.vvma
 #else
-  LA(x13, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LA(x15, TEST_FOR_EXECUTION)
-  srli x15, x15, 12
-  slli x15, x15, 10
+  LA(x15, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LA(x13, TEST_FOR_EXECUTION)
+  srli x13, x13, 12
+  slli x13, x13, 10
   LI(x9, PTE_D | PTE_A | PTE_X | PTE_V)
-  or x15, x15, x9
-  SREG x15, 0(x13)
-  LA(x13, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x15, TEST_FOR_EXECUTION)
-  srli x15, x15, 12
-  slli x15, x15, 10
+  or x13, x13, x9
+  SREG x13, 0(x15)
+  LA(x15, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x13, TEST_FOR_EXECUTION)
+  srli x13, x13, 12
+  slli x13, x13, 10
   LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
-  or x15, x15, x9
-  SREG x15, 0(x13)
+  or x13, x13, x9
+  SREG x13, 0(x15)
   hfence.gvma
   hfence.vvma
 #endif
@@ -742,43 +823,43 @@ PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_g_lw:
 PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_vs_jalr:
   jalr x0, 0(x14)
 1:
-  LI(x8, RVTEST_PMP_RET_ENCODING)
+  LI(x15, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_vs_sw:
-  sw x8, 0(x14)
-  LI(x8, 42)
+  sw x15, 0(x14)
+  LI(x15, 42)
 PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_vs_lw:
-  lw x8, 0(x14)
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_vs_lw, PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_vs_lw_str)
+  lw x15, 0(x14)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_vs_lw, PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_vs_lw_str)
   LA(ra, 1f)
 PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_g_jalr:
   jalr x0, 0(x6)
 1:
-  LI(x9, RVTEST_PMP_RET_ENCODING)
+  LI(x13, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_g_sw:
-  sw x9, 0(x6)
-  LI(x9, 42)
+  sw x13, 0(x6)
+  LI(x13, 42)
 PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_g_lw:
-  lw x9, 0(x6)
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_g_lw, PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_g_lw_str)
+  lw x13, 0(x6)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_g_lw, PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_g_lw_str)
   RVTEST_TSBI_GOTO_MMODE
 // VS-mode: PMP denies vlvl0, which holds the invalid VS-stage leaf, so its read raises an access fault first
 #if __riscv_xlen == 64
-  LA(x13, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
+  LA(x9, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
   LA(x15, TEST_FOR_EXECUTION)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x8, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R)
-  or x15, x15, x8
-  SREG x15, 0(x13)
-  LA(x13, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
+  LI(x13, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R)
+  or x15, x15, x13
+  SREG x15, 0(x9)
+  LA(x9, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
   LA(x15, TEST_FOR_EXECUTION)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R)
-  or x15, x15, x8
-  SREG x15, 0(x13)
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R)
+  or x15, x15, x13
+  SREG x15, 0(x9)
   hfence.gvma
   hfence.vvma
 #else
@@ -786,15 +867,15 @@ PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_g_lw:
   LA(x13, TEST_FOR_EXECUTION)
   srli x13, x13, 12
   slli x13, x13, 10
-  LI(x8, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R)
-  or x13, x13, x8
+  LI(x9, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R)
+  or x13, x13, x9
   SREG x13, 0(x15)
   LA(x15, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
   LA(x13, TEST_FOR_EXECUTION)
   srli x13, x13, 12
   slli x13, x13, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R)
-  or x13, x13, x8
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R)
+  or x13, x13, x9
   SREG x13, 0(x15)
   hfence.gvma
   hfence.vvma
@@ -831,26 +912,26 @@ PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_g_lw:
 PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_jalr:
   jalr x0, 0(x14)
 1:
-  LI(x15, RVTEST_PMP_RET_ENCODING)
+  LI(x9, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_sw:
-  sw x15, 0(x14)
-  LI(x15, 42)
+  sw x9, 0(x14)
+  LI(x9, 42)
 PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_lw:
-  lw x15, 0(x14)
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_lw, PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_lw_str)
+  lw x9, 0(x14)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_lw, PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_lw_str)
   LA(ra, 1f)
 PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_jalr:
   jalr x0, 0(x6)
 1:
-  LI(x9, RVTEST_PMP_RET_ENCODING)
+  LI(x15, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_sw:
-  sw x9, 0(x6)
-  LI(x9, 42)
+  sw x15, 0(x6)
+  LI(x15, 42)
 PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_lw:
-  lw x9, 0(x6)
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_lw, PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_lw_str)
+  lw x15, 0(x6)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_lw, PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_lw_str)
   RVTEST_TSBI_GOTO_MMODE
 // Clear every pmpcfg and pmpaddr CSR
   .set pmpcfgi, CSR_PMPCFG0
@@ -867,325 +948,352 @@ PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_lw:
   csrw hgatp, zero
   hfence.gvma
   hfence.vvma
-  LA(x9, rvtest_code_begin)
-  LA(x13, Vtramptbl_sv)
-  SREG x9, code_bgn_off(x13)
+  LA(x6, rvtest_code_begin)
+  LA(x8, Vtramptbl_sv)
+  SREG x6, code_bgn_off(x8)
 #if __riscv_xlen == 64
 // Identity map the test image in both stages
-  LA(x8, rvtest_code_begin)
-  srli x8, x8, 30
-  slli x8, x8, 53
-  srli x8, x8, 50
-  LA(x13, rvtest_Hroot_pg_tbl)
-  add x8, x8, x13
+  LA(x15, rvtest_code_begin)
+  srli x15, x15, 30
+  slli x15, x15, 53
+  srli x15, x15, 50
+  LA(x6, rvtest_Hroot_pg_tbl)
+  add x15, x15, x6
   LA(x9, rvtest_code_begin)
   srli x9, x9, 30
   slli x9, x9, 28
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x8)
-  LA(x8, rvtest_code_begin)
-  srli x8, x8, 30
-  slli x8, x8, 55
-  srli x8, x8, 52
-  LA(x13, rvtest_Vroot_pg_tbl)
-  add x8, x8, x13
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x6
+  SREG x9, 0(x15)
+  LA(x15, rvtest_code_begin)
+  srli x15, x15, 30
+  slli x15, x15, 55
+  srli x15, x15, 52
+  LA(x6, rvtest_Vroot_pg_tbl)
+  add x15, x15, x6
   LA(x9, rvtest_code_begin)
   srli x9, x9, 30
   slli x9, x9, 28
-  LI(x13, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x8)
-  LA(x8, rvtest_data_begin)
-  srli x8, x8, 30
-  slli x8, x8, 53
-  srli x8, x8, 50
-  LA(x13, rvtest_Hroot_pg_tbl)
-  add x8, x8, x13
+  LI(x6, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x6
+  SREG x9, 0(x15)
+  LA(x15, rvtest_data_begin)
+  srli x15, x15, 30
+  slli x15, x15, 53
+  srli x15, x15, 50
+  LA(x6, rvtest_Hroot_pg_tbl)
+  add x15, x15, x6
   LA(x9, rvtest_data_begin)
   srli x9, x9, 30
   slli x9, x9, 28
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x8)
-  LA(x8, rvtest_data_begin)
-  srli x8, x8, 30
-  slli x8, x8, 55
-  srli x8, x8, 52
-  LA(x13, rvtest_Vroot_pg_tbl)
-  add x8, x8, x13
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x6
+  SREG x9, 0(x15)
+  LA(x15, rvtest_data_begin)
+  srli x15, x15, 30
+  slli x15, x15, 55
+  srli x15, x15, 52
+  LA(x6, rvtest_Vroot_pg_tbl)
+  add x15, x15, x6
   LA(x9, rvtest_data_begin)
   srli x9, x9, 30
   slli x9, x9, 28
-  LI(x13, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x8)
-  LA(x8, rvtest_sig_end)
-  srli x8, x8, 30
-  slli x8, x8, 53
-  srli x8, x8, 50
-  LA(x13, rvtest_Hroot_pg_tbl)
-  add x8, x8, x13
+  LI(x6, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x6
+  SREG x9, 0(x15)
+  LA(x15, rvtest_sig_end)
+  srli x15, x15, 30
+  slli x15, x15, 53
+  srli x15, x15, 50
+  LA(x6, rvtest_Hroot_pg_tbl)
+  add x15, x15, x6
   LA(x9, rvtest_sig_end)
   srli x9, x9, 30
   slli x9, x9, 28
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x8)
-  LA(x8, rvtest_sig_end)
-  srli x8, x8, 30
-  slli x8, x8, 55
-  srli x8, x8, 52
-  LA(x13, rvtest_Vroot_pg_tbl)
-  add x8, x8, x13
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x6
+  SREG x9, 0(x15)
+  LA(x15, rvtest_sig_end)
+  srli x15, x15, 30
+  slli x15, x15, 55
+  srli x15, x15, 52
+  LA(x6, rvtest_Vroot_pg_tbl)
+  add x15, x15, x6
   LA(x9, rvtest_sig_end)
   srli x9, x9, 30
   slli x9, x9, 28
-  LI(x13, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x8)
+  LI(x6, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x6
+  SREG x9, 0(x15)
 // Map the code region again at the guest alias
-  LA(x8, rvtest_Hroot_pg_tbl + (((0x240000000) >> 30) & 0x7ff) * 8)
+  LA(x15, rvtest_Hroot_pg_tbl + (((0x240000000) >> 30) & 0x7ff) * 8)
   LA(x9, rvtest_code_begin)
   srli x9, x9, 30
   slli x9, x9, 28
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x8)
-  LA(x8, rvtest_Vroot_pg_tbl + (((0x180000000) >> 30) & 0x1ff) * 8)
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x6
+  SREG x9, 0(x15)
+  LA(x15, rvtest_Vroot_pg_tbl + (((0x180000000) >> 30) & 0x1ff) * 8)
   LI(x9, (((0x240000000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x9, 0(x8)
+  SREG x9, 0(x15)
 // Register the alias of rvtest_code_begin
   LI(x9, ((0x180000000) >> 30) << 30)
-  LA(x8, rvtest_code_begin)
-  slli x8, x8, 34
-  srli x8, x8, 34
-  or x9, x9, x8
-  LA(x8, Vtramptbl_sv)
-  SREG x9, code_bgn_off(x8)
+  LA(x15, rvtest_code_begin)
+  slli x15, x15, 34
+  srli x15, x15, 34
+  or x9, x9, x15
+  LA(x15, Vtramptbl_sv)
+  SREG x9, code_bgn_off(x15)
 
   LI(x9, 0x8000000000000000)
-  LA(x8, rvtest_Hroot_pg_tbl)
-  srli x8, x8, 12
-  or x8, x8, x9
-  csrw hgatp, x8
+  LA(x15, rvtest_Hroot_pg_tbl)
+  srli x15, x15, 12
+  or x15, x15, x9
+  csrw hgatp, x15
   LI(x9, 0x8000000000000000)
-  LA(x8, rvtest_Vroot_pg_tbl)
-  srli x8, x8, 12
-  or x8, x8, x9
-  csrw vsatp, x8
+  LA(x15, rvtest_Vroot_pg_tbl)
+  srli x15, x15, 12
+  or x15, x15, x9
+  csrw vsatp, x15
   hfence.gvma
   hfence.vvma
 // Mapping vs: VS-stage kilopage over the G-stage identity map
-  LA(x8, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
+  LA(x9, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
   LA(x15, rvtest_vlvl1_pg_tbl)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x13, PTE_V)
-  or x15, x15, x13
-  SREG x15, 0(x8)
-  LA(x8, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
+  LI(x6, PTE_V)
+  or x15, x15, x6
+  SREG x15, 0(x9)
+  LA(x9, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
   LA(x15, rvtest_vlvl0_pg_tbl)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x13, PTE_V)
-  or x15, x15, x13
-  SREG x15, 0(x8)
-  LA(x8, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
+  LI(x6, PTE_V)
+  or x15, x15, x6
+  SREG x15, 0(x9)
+  LA(x9, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
   LA(x15, TEST_FOR_EXECUTION)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x13
-  SREG x15, 0(x8)
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x6
+  SREG x15, 0(x9)
 // Mapping g: VS-stage identity superpage over a G-stage kilopage
-  LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
+  LA(x9, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x15, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x15, 0(x8)
-  LA(x8, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
+  SREG x15, 0(x9)
+  LA(x9, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
   LA(x15, rvtest_hlvl1_pg_tbl)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x13, PTE_V)
-  or x15, x15, x13
-  SREG x15, 0(x8)
-  LA(x8, rvtest_hlvl1_pg_tbl + (((0x2C0802000) >> 21) & 0x1ff) * 8)
+  LI(x6, PTE_V)
+  or x15, x15, x6
+  SREG x15, 0(x9)
+  LA(x9, rvtest_hlvl1_pg_tbl + (((0x2C0802000) >> 21) & 0x1ff) * 8)
   LA(x15, rvtest_hlvl0_pg_tbl)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x13, PTE_V)
-  or x15, x15, x13
-  SREG x15, 0(x8)
-  LA(x8, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
+  LI(x6, PTE_V)
+  or x15, x15, x6
+  SREG x15, 0(x9)
+  LA(x9, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
   LA(x15, TEST_FOR_EXECUTION)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x13
-  SREG x15, 0(x8)
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x6
+  SREG x15, 0(x9)
+// vlvl0 at a guest physical address that G-stage translation moves
+  LA(x9, rvtest_hlvl0_pg_tbl + ((((0x2C0802000 + 0x1000)) >> 12) & 0x1ff) * 8)
+  LA(x15, rvtest_vlvl0_pg_tbl)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x6
+  SREG x15, 0(x9)
+  LA(x9, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
+  LI(x15, ((((0x2C0802000 + 0x1000)) >> 12) << 10) | (PTE_V))
+  SREG x15, 0(x9)
   hfence.gvma
   hfence.vvma
-  LI(x6, (0x140802000 >> 12) << 12)
+  LI(x13, (0x140802000 >> 12) << 12)
   LA(x15, TEST_FOR_EXECUTION)
   slli x15, x15, 52
   srli x15, x15, 52
-  add x6, x6, x15
-  LI(x14, (0x2C0802000 >> 12) << 12)
+  add x13, x13, x15
+  LI(x8, (0x2C0802000 >> 12) << 12)
   LA(x15, TEST_FOR_EXECUTION)
   slli x15, x15, 52
   srli x15, x15, 52
-  add x14, x14, x15
+  add x8, x8, x15
 #else
 // Identity map the test image in both stages
   LA(x9, rvtest_code_begin)
   srli x9, x9, 22
   slli x9, x9, 20
   srli x9, x9, 18
-  LA(x8, rvtest_Hroot_pg_tbl)
-  add x9, x9, x8
-  LA(x13, rvtest_code_begin)
-  srli x13, x13, 22
-  slli x13, x13, 20
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x8
-  SREG x13, 0(x9)
+  LA(x15, rvtest_Hroot_pg_tbl)
+  add x9, x9, x15
+  LA(x6, rvtest_code_begin)
+  srli x6, x6, 22
+  slli x6, x6, 20
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x15
+  SREG x6, 0(x9)
   LA(x9, rvtest_code_begin)
   srli x9, x9, 22
   slli x9, x9, 22
   srli x9, x9, 20
-  LA(x8, rvtest_Vroot_pg_tbl)
-  add x9, x9, x8
-  LA(x13, rvtest_code_begin)
-  srli x13, x13, 22
-  slli x13, x13, 20
-  LI(x8, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x8
-  SREG x13, 0(x9)
+  LA(x15, rvtest_Vroot_pg_tbl)
+  add x9, x9, x15
+  LA(x6, rvtest_code_begin)
+  srli x6, x6, 22
+  slli x6, x6, 20
+  LI(x15, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x15
+  SREG x6, 0(x9)
   LA(x9, rvtest_data_begin)
   srli x9, x9, 22
   slli x9, x9, 20
   srli x9, x9, 18
-  LA(x8, rvtest_Hroot_pg_tbl)
-  add x9, x9, x8
-  LA(x13, rvtest_data_begin)
-  srli x13, x13, 22
-  slli x13, x13, 20
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x8
-  SREG x13, 0(x9)
+  LA(x15, rvtest_Hroot_pg_tbl)
+  add x9, x9, x15
+  LA(x6, rvtest_data_begin)
+  srli x6, x6, 22
+  slli x6, x6, 20
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x15
+  SREG x6, 0(x9)
   LA(x9, rvtest_data_begin)
   srli x9, x9, 22
   slli x9, x9, 22
   srli x9, x9, 20
-  LA(x8, rvtest_Vroot_pg_tbl)
-  add x9, x9, x8
-  LA(x13, rvtest_data_begin)
-  srli x13, x13, 22
-  slli x13, x13, 20
-  LI(x8, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x8
-  SREG x13, 0(x9)
+  LA(x15, rvtest_Vroot_pg_tbl)
+  add x9, x9, x15
+  LA(x6, rvtest_data_begin)
+  srli x6, x6, 22
+  slli x6, x6, 20
+  LI(x15, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x15
+  SREG x6, 0(x9)
   LA(x9, rvtest_sig_end)
   srli x9, x9, 22
   slli x9, x9, 20
   srli x9, x9, 18
-  LA(x8, rvtest_Hroot_pg_tbl)
-  add x9, x9, x8
-  LA(x13, rvtest_sig_end)
-  srli x13, x13, 22
-  slli x13, x13, 20
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x8
-  SREG x13, 0(x9)
+  LA(x15, rvtest_Hroot_pg_tbl)
+  add x9, x9, x15
+  LA(x6, rvtest_sig_end)
+  srli x6, x6, 22
+  slli x6, x6, 20
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x15
+  SREG x6, 0(x9)
   LA(x9, rvtest_sig_end)
   srli x9, x9, 22
   slli x9, x9, 22
   srli x9, x9, 20
-  LA(x8, rvtest_Vroot_pg_tbl)
-  add x9, x9, x8
-  LA(x13, rvtest_sig_end)
-  srli x13, x13, 22
-  slli x13, x13, 20
-  LI(x8, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x8
-  SREG x13, 0(x9)
+  LA(x15, rvtest_Vroot_pg_tbl)
+  add x9, x9, x15
+  LA(x6, rvtest_sig_end)
+  srli x6, x6, 22
+  slli x6, x6, 20
+  LI(x15, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x15
+  SREG x6, 0(x9)
 // Map the code region again at the guest alias
   LA(x9, rvtest_Hroot_pg_tbl + (((0xC0000000) >> 22) & 0xfff) * 4)
-  LA(x13, rvtest_code_begin)
-  srli x13, x13, 22
-  slli x13, x13, 20
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x8
-  SREG x13, 0(x9)
+  LA(x6, rvtest_code_begin)
+  srli x6, x6, 22
+  slli x6, x6, 20
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x15
+  SREG x6, 0(x9)
   LA(x9, rvtest_Vroot_pg_tbl + (((0x30000000) >> 22) & 0x3ff) * 4)
-  LI(x13, (((0xC0000000) >> 22) << 20) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x13, 0(x9)
+  LI(x6, (((0xC0000000) >> 22) << 20) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x6, 0(x9)
 // Register the alias of rvtest_code_begin
-  LI(x13, ((0x30000000) >> 22) << 22)
+  LI(x6, ((0x30000000) >> 22) << 22)
   LA(x9, rvtest_code_begin)
   slli x9, x9, 10
   srli x9, x9, 10
-  or x13, x13, x9
+  or x6, x6, x9
   LA(x9, Vtramptbl_sv)
-  SREG x13, code_bgn_off(x9)
+  SREG x6, code_bgn_off(x9)
 
-  LI(x13, 0x80000000)
+  LI(x6, 0x80000000)
   LA(x9, rvtest_Hroot_pg_tbl)
   srli x9, x9, 12
-  or x9, x9, x13
+  or x9, x9, x6
   csrw hgatp, x9
-  LI(x13, 0x80000000)
+  LI(x6, 0x80000000)
   LA(x9, rvtest_Vroot_pg_tbl)
   srli x9, x9, 12
-  or x9, x9, x13
+  or x9, x9, x6
   csrw vsatp, x9
   hfence.gvma
   hfence.vvma
 // Mapping vs: VS-stage kilopage over the G-stage identity map
-  LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x13, rvtest_vlvl0_pg_tbl)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x9, PTE_V)
-  or x13, x13, x9
-  SREG x13, 0(x15)
-  LA(x15, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LA(x13, TEST_FOR_EXECUTION)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x9
-  SREG x13, 0(x15)
+  LA(x6, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x9, rvtest_vlvl0_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x15, PTE_V)
+  or x9, x9, x15
+  SREG x9, 0(x6)
+  LA(x6, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LA(x9, TEST_FOR_EXECUTION)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x15
+  SREG x9, 0(x6)
 // Mapping g: VS-stage identity superpage over a G-stage kilopage
-  LA(x15, rvtest_Vroot_pg_tbl + (((0xD0407000) >> 22) & 0x3ff) * 4)
-  LI(x13, (((0xD0407000) >> 22) << 20) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x13, 0(x15)
-  LA(x15, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x13, rvtest_hlvl0_pg_tbl)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x9, PTE_V)
-  or x13, x13, x9
-  SREG x13, 0(x15)
-  LA(x15, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x13, TEST_FOR_EXECUTION)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x9
-  SREG x13, 0(x15)
+  LA(x6, rvtest_Vroot_pg_tbl + (((0xD0407000) >> 22) & 0x3ff) * 4)
+  LI(x9, (((0xD0407000) >> 22) << 20) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x9, 0(x6)
+  LA(x6, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x9, rvtest_hlvl0_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x15, PTE_V)
+  or x9, x9, x15
+  SREG x9, 0(x6)
+  LA(x6, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x9, TEST_FOR_EXECUTION)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x15
+  SREG x9, 0(x6)
+// vlvl0 at a guest physical address that G-stage translation moves
+  LA(x6, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LA(x9, rvtest_vlvl0_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x15
+  SREG x9, 0(x6)
+  LA(x6, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LI(x9, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_V))
+  SREG x9, 0(x6)
   hfence.gvma
   hfence.vvma
-  LI(x6, (0x90407000 >> 12) << 12)
-  LA(x13, TEST_FOR_EXECUTION)
-  slli x13, x13, 20
-  srli x13, x13, 20
-  add x6, x6, x13
-  LI(x14, (0xD0407000 >> 12) << 12)
-  LA(x13, TEST_FOR_EXECUTION)
-  slli x13, x13, 20
-  srli x13, x13, 20
-  add x14, x14, x13
+  LI(x13, (0x90407000 >> 12) << 12)
+  LA(x9, TEST_FOR_EXECUTION)
+  slli x9, x9, 20
+  srli x9, x9, 20
+  add x13, x13, x9
+  LI(x8, (0xD0407000 >> 12) << 12)
+  LA(x9, TEST_FOR_EXECUTION)
+  slli x9, x9, 20
+  srli x9, x9, 20
+  add x8, x8, x9
+#endif
+#if __riscv_xlen == 64
+  LI(x14, (0x2C0802000 + 0x1000))
+#else
+  LI(x14, (0xD0407000 + 0x1000))
 #endif
 // VU-mode: PMP denies the guest virtual addresses, which does not affect the accesses
 // Clear every pmpcfg and pmpaddr CSR
@@ -1199,11 +1307,11 @@ PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_lw:
   csrw pmpaddri, x0
   .set pmpaddri, pmpaddri + 1
   .endr
-  mv x5, x6
+  mv x5, x13
   srli x5, x5, PMP_SHIFT
   ori x5, x5, PMP_REGION_SIZE
   csrw pmpaddr7, x5
-  mv x5, x14
+  mv x5, x8
   srli x5, x5, PMP_SHIFT
   ori x5, x5, PMP_REGION_SIZE
   csrw pmpaddr8, x5
@@ -1226,29 +1334,29 @@ PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_lw:
   RVTEST_TSBI_GOTO_VUMODE
   LA(ra, 1f)
 PMPH_cp_pmp_after_translation_vu_gva_vs_jalr:
-  jalr x0, 0(x6)
+  jalr x0, 0(x13)
 1:
-  LI(x9, RVTEST_PMP_RET_ENCODING)
+  LI(x15, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_after_translation_vu_gva_vs_sw:
-  sw x9, 0(x6)
-  LI(x9, 42)
+  sw x15, 0(x13)
+  LI(x15, 42)
 PMPH_cp_pmp_after_translation_vu_gva_vs_lw:
-  lw x9, 0(x6)
+  lw x15, 0(x13)
   LA(ra, 1f)
 PMPH_cp_pmp_after_translation_vu_gva_g_jalr:
-  jalr x0, 0(x14)
+  jalr x0, 0(x8)
 1:
-  LI(x13, RVTEST_PMP_RET_ENCODING)
+  LI(x6, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_after_translation_vu_gva_g_sw:
-  sw x13, 0(x14)
-  LI(x13, 42)
+  sw x6, 0(x8)
+  LI(x6, 42)
 PMPH_cp_pmp_after_translation_vu_gva_g_lw:
-  lw x13, 0(x14)
+  lw x6, 0(x8)
   RVTEST_TSBI_GOTO_MMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, PMPH_cp_pmp_after_translation_vu_gva_vs_lw, PMPH_cp_pmp_after_translation_vu_gva_vs_lw_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMPH_cp_pmp_after_translation_vu_gva_g_lw, PMPH_cp_pmp_after_translation_vu_gva_g_lw_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMPH_cp_pmp_after_translation_vu_gva_vs_lw, PMPH_cp_pmp_after_translation_vu_gva_vs_lw_str)
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMPH_cp_pmp_after_translation_vu_gva_g_lw, PMPH_cp_pmp_after_translation_vu_gva_g_lw_str)
 // VU-mode: PMP denies the supervisor physical address
 // Clear every pmpcfg and pmpaddr CSR
   .set pmpcfgi, CSR_PMPCFG0
@@ -1280,29 +1388,29 @@ PMPH_cp_pmp_after_translation_vu_gva_g_lw:
   RVTEST_TSBI_GOTO_VUMODE
   LA(ra, 1f)
 PMPH_cp_pmp_after_translation_vu_spa_vs_jalr:
-  jalr x0, 0(x6)
+  jalr x0, 0(x13)
 1:
-  LI(x13, RVTEST_PMP_RET_ENCODING)
+  LI(x9, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_after_translation_vu_spa_vs_sw:
-  sw x13, 0(x6)
-  LI(x13, 42)
+  sw x9, 0(x13)
+  LI(x9, 42)
 PMPH_cp_pmp_after_translation_vu_spa_vs_lw:
-  lw x13, 0(x6)
+  lw x9, 0(x13)
   LA(ra, 1f)
 PMPH_cp_pmp_after_translation_vu_spa_g_jalr:
-  jalr x0, 0(x14)
+  jalr x0, 0(x8)
 1:
-  LI(x15, RVTEST_PMP_RET_ENCODING)
+  LI(x6, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_after_translation_vu_spa_g_sw:
-  sw x15, 0(x14)
-  LI(x15, 42)
+  sw x6, 0(x8)
+  LI(x6, 42)
 PMPH_cp_pmp_after_translation_vu_spa_g_lw:
-  lw x15, 0(x14)
+  lw x6, 0(x8)
   RVTEST_TSBI_GOTO_MMODE
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMPH_cp_pmp_after_translation_vu_spa_vs_lw, PMPH_cp_pmp_after_translation_vu_spa_vs_lw_str)
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, PMPH_cp_pmp_after_translation_vu_spa_g_lw, PMPH_cp_pmp_after_translation_vu_spa_g_lw_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMPH_cp_pmp_after_translation_vu_spa_vs_lw, PMPH_cp_pmp_after_translation_vu_spa_vs_lw_str)
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMPH_cp_pmp_after_translation_vu_spa_g_lw, PMPH_cp_pmp_after_translation_vu_spa_g_lw_str)
 #if __riscv_xlen == 64
 // VU-mode: PMP denies the VS-stage table vlvl1; accesses whose walk reads it raise access faults
 // Clear every pmpcfg and pmpaddr CSR
@@ -1335,24 +1443,24 @@ PMPH_cp_pmp_after_translation_vu_spa_g_lw:
   RVTEST_TSBI_GOTO_VUMODE
   LA(ra, 1f)
 PMPH_cp_pmp_pt_vu_vlvl1_vs_jalr:
-  jalr x0, 0(x6)
+  jalr x0, 0(x13)
 1:
   LI(x9, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_pt_vu_vlvl1_vs_sw:
-  sw x9, 0(x6)
+  sw x9, 0(x13)
   LI(x9, 42)
 PMPH_cp_pmp_pt_vu_vlvl1_vs_lw:
-  lw x9, 0(x6)
+  lw x9, 0(x13)
   LA(ra, 1f)
 PMPH_cp_pmp_pt_vu_vlvl1_g_jalr:
-  jalr x0, 0(x14)
+  jalr x0, 0(x8)
 1:
   LI(x15, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_pt_vu_vlvl1_g_sw:
-  sw x15, 0(x14)
+  sw x15, 0(x8)
   LI(x15, 42)
 PMPH_cp_pmp_pt_vu_vlvl1_g_lw:
-  lw x15, 0(x14)
+  lw x15, 0(x8)
   RVTEST_TSBI_GOTO_MMODE
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, PMPH_cp_pmp_pt_vu_vlvl1_vs_lw, PMPH_cp_pmp_pt_vu_vlvl1_vs_lw_str)
@@ -1390,62 +1498,116 @@ PMPH_cp_pmp_pt_vu_vlvl1_g_lw:
   RVTEST_TSBI_GOTO_VUMODE
   LA(ra, 1f)
 PMPH_cp_pmp_pt_vu_vlvl0_vs_jalr:
-  jalr x0, 0(x6)
+  jalr x0, 0(x13)
 1:
-  LI(x9, RVTEST_PMP_RET_ENCODING)
+  LI(x6, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_pt_vu_vlvl0_vs_sw:
-  sw x9, 0(x6)
-  LI(x9, 42)
+  sw x6, 0(x13)
+  LI(x6, 42)
 PMPH_cp_pmp_pt_vu_vlvl0_vs_lw:
-  lw x9, 0(x6)
+  lw x6, 0(x13)
   LA(ra, 1f)
 PMPH_cp_pmp_pt_vu_vlvl0_g_jalr:
-  jalr x0, 0(x14)
+  jalr x0, 0(x8)
 1:
-  LI(x15, RVTEST_PMP_RET_ENCODING)
+  LI(x9, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_pt_vu_vlvl0_g_sw:
-  sw x15, 0(x14)
-  LI(x15, 42)
+  sw x9, 0(x8)
+  LI(x9, 42)
 PMPH_cp_pmp_pt_vu_vlvl0_g_lw:
-  lw x15, 0(x14)
+  lw x9, 0(x8)
   RVTEST_TSBI_GOTO_MMODE
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMPH_cp_pmp_pt_vu_vlvl0_vs_lw, PMPH_cp_pmp_pt_vu_vlvl0_vs_lw_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, PMPH_cp_pmp_pt_vu_vlvl0_vs_lw, PMPH_cp_pmp_pt_vu_vlvl0_vs_lw_str)
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, PMPH_cp_pmp_pt_vu_vlvl0_g_lw, PMPH_cp_pmp_pt_vu_vlvl0_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMPH_cp_pmp_pt_vu_vlvl0_g_lw, PMPH_cp_pmp_pt_vu_vlvl0_g_lw_str)
+// VU-mode: PMP denies the guest physical address of vlvl0, which does not affect the accesses
+// Clear every pmpcfg and pmpaddr CSR
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES / (UDB_MXLEN / 8)
+  csrw pmpcfgi, x0
+  .set pmpcfgi, pmpcfgi + (UDB_MXLEN / 32)
+  .endr
+  .set pmpaddri, CSR_PMPADDR0
+  .rept UDB_NUM_PMP_ENTRIES
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri + 1
+  .endr
+  mv x5, x14
+  srli x5, x5, PMP_SHIFT
+  ori x5, x5, 0x1FF
+  csrw pmpaddr8, x5
+#if __riscv_xlen == 32
+  LI(x4, (((PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(8)))
+  csrw pmpcfg2, x4
+#endif
+#if __riscv_xlen == 64
+  LI(x4, (((PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(8)))
+  csrw pmpcfg2, x4
+#endif
+  sfence.vma
+  hfence.gvma
+  hfence.vvma
+  fence.i
+  RVTEST_TSBI_GOTO_VUMODE
+  LA(ra, 1f)
+PMPH_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_jalr:
+  jalr x0, 0(x13)
+1:
+  LI(x6, RVTEST_PMP_RET_ENCODING)
+PMPH_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_sw:
+  sw x6, 0(x13)
+  LI(x6, 42)
+PMPH_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_lw:
+  lw x6, 0(x13)
+  LA(ra, 1f)
+PMPH_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_jalr:
+  jalr x0, 0(x8)
+1:
+  LI(x9, RVTEST_PMP_RET_ENCODING)
+PMPH_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_sw:
+  sw x9, 0(x8)
+  LI(x9, 42)
+PMPH_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_lw:
+  lw x9, 0(x8)
+  RVTEST_TSBI_GOTO_MMODE
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMPH_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_lw, PMPH_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_lw_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMPH_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_lw, PMPH_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_lw_str)
 // VU-mode: PMP denies the supervisor physical address; R-only leaves fault jalr and sw, and lw raises an access fault
 #if __riscv_xlen == 64
-  LA(x15, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
+  LA(x6, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
   LA(x9, TEST_FOR_EXECUTION)
   srli x9, x9, 12
   slli x9, x9, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_R | PTE_V)
-  or x9, x9, x8
-  SREG x9, 0(x15)
-  LA(x15, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_R | PTE_V)
+  or x9, x9, x15
+  SREG x9, 0(x6)
+  LA(x6, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
   LA(x9, TEST_FOR_EXECUTION)
   srli x9, x9, 12
   slli x9, x9, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_R | PTE_V)
-  or x9, x9, x8
-  SREG x9, 0(x15)
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_R | PTE_V)
+  or x9, x9, x15
+  SREG x9, 0(x6)
   hfence.gvma
   hfence.vvma
 #else
   LA(x15, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LA(x13, TEST_FOR_EXECUTION)
-  srli x13, x13, 12
-  slli x13, x13, 10
+  LA(x6, TEST_FOR_EXECUTION)
+  srli x6, x6, 12
+  slli x6, x6, 10
   LI(x9, PTE_D | PTE_A | PTE_U | PTE_R | PTE_V)
-  or x13, x13, x9
-  SREG x13, 0(x15)
+  or x6, x6, x9
+  SREG x6, 0(x15)
   LA(x15, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x13, TEST_FOR_EXECUTION)
-  srli x13, x13, 12
-  slli x13, x13, 10
+  LA(x6, TEST_FOR_EXECUTION)
+  srli x6, x6, 12
+  slli x6, x6, 10
   LI(x9, PTE_D | PTE_A | PTE_U | PTE_R | PTE_V)
-  or x13, x13, x9
-  SREG x13, 0(x15)
+  or x6, x6, x9
+  SREG x6, 0(x15)
   hfence.gvma
   hfence.vvma
 #endif
@@ -1479,62 +1641,62 @@ PMPH_cp_pmp_pt_vu_vlvl0_g_lw:
   RVTEST_TSBI_GOTO_VUMODE
   LA(ra, 1f)
 PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_vs_jalr:
-  jalr x0, 0(x6)
+  jalr x0, 0(x13)
 1:
-  LI(x8, RVTEST_PMP_RET_ENCODING)
+  LI(x15, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_vs_sw:
-  sw x8, 0(x6)
-  LI(x8, 42)
+  sw x15, 0(x13)
+  LI(x15, 42)
 PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_vs_lw:
-  lw x8, 0(x6)
+  lw x15, 0(x13)
   LA(ra, 1f)
 PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_g_jalr:
-  jalr x0, 0(x14)
+  jalr x0, 0(x8)
 1:
-  LI(x13, RVTEST_PMP_RET_ENCODING)
+  LI(x9, RVTEST_PMP_RET_ENCODING)
 PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_g_sw:
-  sw x13, 0(x14)
-  LI(x13, 42)
+  sw x9, 0(x8)
+  LI(x9, 42)
 PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_g_lw:
-  lw x13, 0(x14)
+  lw x9, 0(x8)
   RVTEST_TSBI_GOTO_MMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_vs_lw, PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_vs_lw_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_g_lw, PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_g_lw_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_vs_lw, PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_vs_lw_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_g_lw, PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_g_lw_str)
 // VU-mode: PMP denies the supervisor physical address; X-only leaves fault sw and lw, and jalr raises an access fault
 #if __riscv_xlen == 64
-  LA(x8, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
-  LA(x13, TEST_FOR_EXECUTION)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
-  or x13, x13, x9
-  SREG x13, 0(x8)
-  LA(x8, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
-  LA(x13, TEST_FOR_EXECUTION)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
-  or x13, x13, x9
-  SREG x13, 0(x8)
+  LA(x15, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
+  LA(x9, TEST_FOR_EXECUTION)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
+  or x9, x9, x6
+  SREG x9, 0(x15)
+  LA(x15, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
+  LA(x9, TEST_FOR_EXECUTION)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
+  or x9, x9, x6
+  SREG x9, 0(x15)
   hfence.gvma
   hfence.vvma
 #else
-  LA(x8, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LA(x6, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
   LA(x15, TEST_FOR_EXECUTION)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
-  or x15, x15, x13
-  SREG x15, 0(x8)
-  LA(x8, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
+  or x15, x15, x9
+  SREG x15, 0(x6)
+  LA(x6, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
   LA(x15, TEST_FOR_EXECUTION)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
-  or x15, x15, x13
-  SREG x15, 0(x8)
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
+  or x15, x15, x9
+  SREG x15, 0(x6)
   hfence.gvma
   hfence.vvma
 #endif
@@ -1568,62 +1730,62 @@ PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_g_lw:
   RVTEST_TSBI_GOTO_VUMODE
   LA(ra, 1f)
 PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_vs_jalr:
-  jalr x0, 0(x6)
-1:
-  LI(x8, RVTEST_PMP_RET_ENCODING)
-PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_vs_sw:
-  sw x8, 0(x6)
-  LI(x8, 42)
-PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_vs_lw:
-  lw x8, 0(x6)
-  LA(ra, 1f)
-PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_g_jalr:
-  jalr x0, 0(x14)
+  jalr x0, 0(x13)
 1:
   LI(x15, RVTEST_PMP_RET_ENCODING)
-PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_g_sw:
-  sw x15, 0(x14)
+PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_vs_sw:
+  sw x15, 0(x13)
   LI(x15, 42)
+PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_vs_lw:
+  lw x15, 0(x13)
+  LA(ra, 1f)
+PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_g_jalr:
+  jalr x0, 0(x8)
+1:
+  LI(x9, RVTEST_PMP_RET_ENCODING)
+PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_g_sw:
+  sw x9, 0(x8)
+  LI(x9, 42)
 PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_g_lw:
-  lw x15, 0(x14)
+  lw x9, 0(x8)
   RVTEST_TSBI_GOTO_MMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_vs_lw, PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_vs_lw_str)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_g_lw, PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_vs_lw, PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_vs_lw_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_g_lw, PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_g_lw_str)
 // VU-mode: PMP denies vlvl0, which holds the invalid VS-stage leaf, so its read raises an access fault first
 #if __riscv_xlen == 64
-  LA(x13, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
+  LA(x15, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
   LA(x9, TEST_FOR_EXECUTION)
   srli x9, x9, 12
   slli x9, x9, 10
-  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R)
-  or x9, x9, x15
-  SREG x9, 0(x13)
-  LA(x13, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R)
+  or x9, x9, x6
+  SREG x9, 0(x15)
+  LA(x15, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
   LA(x9, TEST_FOR_EXECUTION)
   srli x9, x9, 12
   slli x9, x9, 10
-  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R)
-  or x9, x9, x15
-  SREG x9, 0(x13)
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R)
+  or x9, x9, x6
+  SREG x9, 0(x15)
   hfence.gvma
   hfence.vvma
 #else
-  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LA(x13, TEST_FOR_EXECUTION)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R)
-  or x13, x13, x8
-  SREG x13, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x13, TEST_FOR_EXECUTION)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R)
-  or x13, x13, x8
-  SREG x13, 0(x9)
+  LA(x15, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LA(x6, TEST_FOR_EXECUTION)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R)
+  or x6, x6, x9
+  SREG x6, 0(x15)
+  LA(x15, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x6, TEST_FOR_EXECUTION)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R)
+  or x6, x6, x9
+  SREG x6, 0(x15)
   hfence.gvma
   hfence.vvma
 #endif
@@ -1657,29 +1819,29 @@ PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_g_lw:
   RVTEST_TSBI_GOTO_VUMODE
   LA(ra, 1f)
 PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_jalr:
-  jalr x0, 0(x6)
-1:
-  LI(x8, RVTEST_PMP_RET_ENCODING)
-PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_sw:
-  sw x8, 0(x6)
-  LI(x8, 42)
-PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_lw:
-  lw x8, 0(x6)
-  LA(ra, 1f)
-PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_jalr:
-  jalr x0, 0(x14)
+  jalr x0, 0(x13)
 1:
   LI(x15, RVTEST_PMP_RET_ENCODING)
-PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_sw:
-  sw x15, 0(x14)
+PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_sw:
+  sw x15, 0(x13)
   LI(x15, 42)
+PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_lw:
+  lw x15, 0(x13)
+  LA(ra, 1f)
+PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_jalr:
+  jalr x0, 0(x8)
+1:
+  LI(x9, RVTEST_PMP_RET_ENCODING)
+PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_sw:
+  sw x9, 0(x8)
+  LI(x9, 42)
 PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_lw:
-  lw x15, 0(x14)
+  lw x9, 0(x8)
   RVTEST_TSBI_GOTO_MMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_lw, PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_lw_str)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_lw, PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_lw, PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_lw_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_lw, PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_lw_str)
 // Clear every pmpcfg and pmpaddr CSR
   .set pmpcfgi, CSR_PMPCFG0
   .rept UDB_NUM_PMP_ENTRIES / (UDB_MXLEN / 8)
@@ -1695,9 +1857,9 @@ PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_lw:
   csrw hgatp, zero
   hfence.gvma
   hfence.vvma
-  LA(x15, rvtest_code_begin)
-  LA(x9, Vtramptbl_sv)
-  SREG x15, code_bgn_off(x9)
+  LA(x9, rvtest_code_begin)
+  LA(x14, Vtramptbl_sv)
+  SREG x9, code_bgn_off(x14)
 #endif
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -1754,66 +1916,78 @@ PMPH_cp_pmp_pt_vs_vlvl0_vs_lw_str: .string "\"test: 177; cg: PMPH; cp: cp_pmp_pt
 PMPH_cp_pmp_pt_vs_vlvl0_g_jalr_str: .string "\"test: 178; cg: PMPH; cp: cp_pmp_pt; bin: vs_vlvl0_g_jalr\""
 PMPH_cp_pmp_pt_vs_vlvl0_g_sw_str: .string "\"test: 179; cg: PMPH; cp: cp_pmp_pt; bin: vs_vlvl0_g_sw\""
 PMPH_cp_pmp_pt_vs_vlvl0_g_lw_str: .string "\"test: 180; cg: PMPH; cp: cp_pmp_pt; bin: vs_vlvl0_g_lw\""
-PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_vs_jalr_str: .string "\"test: 181; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_vs_jalr\""
-PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_vs_sw_str: .string "\"test: 182; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_vs_sw\""
-PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_vs_lw_str: .string "\"test: 183; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_vs_lw\""
-PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_g_jalr_str: .string "\"test: 184; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_g_jalr\""
-PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_g_sw_str: .string "\"test: 185; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_g_sw\""
-PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_g_lw_str: .string "\"test: 186; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_g_lw\""
-PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_vs_jalr_str: .string "\"test: 187; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_vs_jalr\""
-PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_vs_sw_str: .string "\"test: 188; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_vs_sw\""
-PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_vs_lw_str: .string "\"test: 189; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_vs_lw\""
-PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_g_jalr_str: .string "\"test: 190; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_g_jalr\""
-PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_g_sw_str: .string "\"test: 191; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_g_sw\""
-PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_g_lw_str: .string "\"test: 192; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_g_lw\""
-PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_jalr_str: .string "\"test: 193; cg: PMPH; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_vs_jalr\""
-PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_sw_str: .string "\"test: 194; cg: PMPH; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_vs_sw\""
-PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_lw_str: .string "\"test: 195; cg: PMPH; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_vs_lw\""
-PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_jalr_str: .string "\"test: 196; cg: PMPH; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_g_jalr\""
-PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_sw_str: .string "\"test: 197; cg: PMPH; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_g_sw\""
-PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_lw_str: .string "\"test: 198; cg: PMPH; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_g_lw\""
-PMPH_cp_pmp_after_translation_vu_gva_vs_jalr_str: .string "\"test: 199; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_gva_vs_jalr\""
-PMPH_cp_pmp_after_translation_vu_gva_vs_sw_str: .string "\"test: 200; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_gva_vs_sw\""
-PMPH_cp_pmp_after_translation_vu_gva_vs_lw_str: .string "\"test: 201; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_gva_vs_lw\""
-PMPH_cp_pmp_after_translation_vu_gva_g_jalr_str: .string "\"test: 202; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_gva_g_jalr\""
-PMPH_cp_pmp_after_translation_vu_gva_g_sw_str: .string "\"test: 203; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_gva_g_sw\""
-PMPH_cp_pmp_after_translation_vu_gva_g_lw_str: .string "\"test: 204; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_gva_g_lw\""
-PMPH_cp_pmp_after_translation_vu_spa_vs_jalr_str: .string "\"test: 205; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_spa_vs_jalr\""
-PMPH_cp_pmp_after_translation_vu_spa_vs_sw_str: .string "\"test: 206; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_spa_vs_sw\""
-PMPH_cp_pmp_after_translation_vu_spa_vs_lw_str: .string "\"test: 207; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_spa_vs_lw\""
-PMPH_cp_pmp_after_translation_vu_spa_g_jalr_str: .string "\"test: 208; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_spa_g_jalr\""
-PMPH_cp_pmp_after_translation_vu_spa_g_sw_str: .string "\"test: 209; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_spa_g_sw\""
-PMPH_cp_pmp_after_translation_vu_spa_g_lw_str: .string "\"test: 210; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_spa_g_lw\""
-PMPH_cp_pmp_pt_vu_vlvl1_vs_jalr_str: .string "\"test: 211; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl1_vs_jalr\""
-PMPH_cp_pmp_pt_vu_vlvl1_vs_sw_str: .string "\"test: 212; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl1_vs_sw\""
-PMPH_cp_pmp_pt_vu_vlvl1_vs_lw_str: .string "\"test: 213; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl1_vs_lw\""
-PMPH_cp_pmp_pt_vu_vlvl1_g_jalr_str: .string "\"test: 214; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl1_g_jalr\""
-PMPH_cp_pmp_pt_vu_vlvl1_g_sw_str: .string "\"test: 215; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl1_g_sw\""
-PMPH_cp_pmp_pt_vu_vlvl1_g_lw_str: .string "\"test: 216; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl1_g_lw\""
-PMPH_cp_pmp_pt_vu_vlvl0_vs_jalr_str: .string "\"test: 217; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl0_vs_jalr\""
-PMPH_cp_pmp_pt_vu_vlvl0_vs_sw_str: .string "\"test: 218; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl0_vs_sw\""
-PMPH_cp_pmp_pt_vu_vlvl0_vs_lw_str: .string "\"test: 219; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl0_vs_lw\""
-PMPH_cp_pmp_pt_vu_vlvl0_g_jalr_str: .string "\"test: 220; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl0_g_jalr\""
-PMPH_cp_pmp_pt_vu_vlvl0_g_sw_str: .string "\"test: 221; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl0_g_sw\""
-PMPH_cp_pmp_pt_vu_vlvl0_g_lw_str: .string "\"test: 222; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl0_g_lw\""
-PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_vs_jalr_str: .string "\"test: 223; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_vs_jalr\""
-PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_vs_sw_str: .string "\"test: 224; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_vs_sw\""
-PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_vs_lw_str: .string "\"test: 225; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_vs_lw\""
-PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_g_jalr_str: .string "\"test: 226; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_g_jalr\""
-PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_g_sw_str: .string "\"test: 227; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_g_sw\""
-PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_g_lw_str: .string "\"test: 228; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_g_lw\""
-PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_vs_jalr_str: .string "\"test: 229; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_vs_jalr\""
-PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_vs_sw_str: .string "\"test: 230; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_vs_sw\""
-PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_vs_lw_str: .string "\"test: 231; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_vs_lw\""
-PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_g_jalr_str: .string "\"test: 232; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_g_jalr\""
-PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_g_sw_str: .string "\"test: 233; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_g_sw\""
-PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_g_lw_str: .string "\"test: 234; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_g_lw\""
-PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_jalr_str: .string "\"test: 235; cg: PMPH; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_vs_jalr\""
-PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_sw_str: .string "\"test: 236; cg: PMPH; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_vs_sw\""
-PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_lw_str: .string "\"test: 237; cg: PMPH; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_vs_lw\""
-PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_jalr_str: .string "\"test: 238; cg: PMPH; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_g_jalr\""
-PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_sw_str: .string "\"test: 239; cg: PMPH; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_g_sw\""
-PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_lw_str: .string "\"test: 240; cg: PMPH; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_g_lw\""
+PMPH_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_jalr_str: .string "\"test: 181; cg: PMPH; cp: cp_pmp_pt_gpa; bin: vs_vlvl0_gpa_vs_jalr\""
+PMPH_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_sw_str: .string "\"test: 182; cg: PMPH; cp: cp_pmp_pt_gpa; bin: vs_vlvl0_gpa_vs_sw\""
+PMPH_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_lw_str: .string "\"test: 183; cg: PMPH; cp: cp_pmp_pt_gpa; bin: vs_vlvl0_gpa_vs_lw\""
+PMPH_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_jalr_str: .string "\"test: 184; cg: PMPH; cp: cp_pmp_pt_gpa; bin: vs_vlvl0_gpa_g_jalr\""
+PMPH_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_sw_str: .string "\"test: 185; cg: PMPH; cp: cp_pmp_pt_gpa; bin: vs_vlvl0_gpa_g_sw\""
+PMPH_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_lw_str: .string "\"test: 186; cg: PMPH; cp: cp_pmp_pt_gpa; bin: vs_vlvl0_gpa_g_lw\""
+PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_vs_jalr_str: .string "\"test: 187; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_vs_jalr\""
+PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_vs_sw_str: .string "\"test: 188; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_vs_sw\""
+PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_vs_lw_str: .string "\"test: 189; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_vs_lw\""
+PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_g_jalr_str: .string "\"test: 190; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_g_jalr\""
+PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_g_sw_str: .string "\"test: 191; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_g_sw\""
+PMPH_cp_pmp_pf_priority_vs_spa_leaf_r_g_lw_str: .string "\"test: 192; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_g_lw\""
+PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_vs_jalr_str: .string "\"test: 193; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_vs_jalr\""
+PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_vs_sw_str: .string "\"test: 194; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_vs_sw\""
+PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_vs_lw_str: .string "\"test: 195; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_vs_lw\""
+PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_g_jalr_str: .string "\"test: 196; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_g_jalr\""
+PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_g_sw_str: .string "\"test: 197; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_g_sw\""
+PMPH_cp_pmp_pf_priority_vs_spa_leaf_x_g_lw_str: .string "\"test: 198; cg: PMPH; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_g_lw\""
+PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_jalr_str: .string "\"test: 199; cg: PMPH; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_vs_jalr\""
+PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_sw_str: .string "\"test: 200; cg: PMPH; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_vs_sw\""
+PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_lw_str: .string "\"test: 201; cg: PMPH; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_vs_lw\""
+PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_jalr_str: .string "\"test: 202; cg: PMPH; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_g_jalr\""
+PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_sw_str: .string "\"test: 203; cg: PMPH; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_g_sw\""
+PMPH_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_lw_str: .string "\"test: 204; cg: PMPH; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_g_lw\""
+PMPH_cp_pmp_after_translation_vu_gva_vs_jalr_str: .string "\"test: 205; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_gva_vs_jalr\""
+PMPH_cp_pmp_after_translation_vu_gva_vs_sw_str: .string "\"test: 206; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_gva_vs_sw\""
+PMPH_cp_pmp_after_translation_vu_gva_vs_lw_str: .string "\"test: 207; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_gva_vs_lw\""
+PMPH_cp_pmp_after_translation_vu_gva_g_jalr_str: .string "\"test: 208; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_gva_g_jalr\""
+PMPH_cp_pmp_after_translation_vu_gva_g_sw_str: .string "\"test: 209; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_gva_g_sw\""
+PMPH_cp_pmp_after_translation_vu_gva_g_lw_str: .string "\"test: 210; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_gva_g_lw\""
+PMPH_cp_pmp_after_translation_vu_spa_vs_jalr_str: .string "\"test: 211; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_spa_vs_jalr\""
+PMPH_cp_pmp_after_translation_vu_spa_vs_sw_str: .string "\"test: 212; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_spa_vs_sw\""
+PMPH_cp_pmp_after_translation_vu_spa_vs_lw_str: .string "\"test: 213; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_spa_vs_lw\""
+PMPH_cp_pmp_after_translation_vu_spa_g_jalr_str: .string "\"test: 214; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_spa_g_jalr\""
+PMPH_cp_pmp_after_translation_vu_spa_g_sw_str: .string "\"test: 215; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_spa_g_sw\""
+PMPH_cp_pmp_after_translation_vu_spa_g_lw_str: .string "\"test: 216; cg: PMPH; cp: cp_pmp_after_translation; bin: vu_spa_g_lw\""
+PMPH_cp_pmp_pt_vu_vlvl1_vs_jalr_str: .string "\"test: 217; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl1_vs_jalr\""
+PMPH_cp_pmp_pt_vu_vlvl1_vs_sw_str: .string "\"test: 218; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl1_vs_sw\""
+PMPH_cp_pmp_pt_vu_vlvl1_vs_lw_str: .string "\"test: 219; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl1_vs_lw\""
+PMPH_cp_pmp_pt_vu_vlvl1_g_jalr_str: .string "\"test: 220; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl1_g_jalr\""
+PMPH_cp_pmp_pt_vu_vlvl1_g_sw_str: .string "\"test: 221; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl1_g_sw\""
+PMPH_cp_pmp_pt_vu_vlvl1_g_lw_str: .string "\"test: 222; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl1_g_lw\""
+PMPH_cp_pmp_pt_vu_vlvl0_vs_jalr_str: .string "\"test: 223; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl0_vs_jalr\""
+PMPH_cp_pmp_pt_vu_vlvl0_vs_sw_str: .string "\"test: 224; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl0_vs_sw\""
+PMPH_cp_pmp_pt_vu_vlvl0_vs_lw_str: .string "\"test: 225; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl0_vs_lw\""
+PMPH_cp_pmp_pt_vu_vlvl0_g_jalr_str: .string "\"test: 226; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl0_g_jalr\""
+PMPH_cp_pmp_pt_vu_vlvl0_g_sw_str: .string "\"test: 227; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl0_g_sw\""
+PMPH_cp_pmp_pt_vu_vlvl0_g_lw_str: .string "\"test: 228; cg: PMPH; cp: cp_pmp_pt; bin: vu_vlvl0_g_lw\""
+PMPH_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_jalr_str: .string "\"test: 229; cg: PMPH; cp: cp_pmp_pt_gpa; bin: vu_vlvl0_gpa_vs_jalr\""
+PMPH_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_sw_str: .string "\"test: 230; cg: PMPH; cp: cp_pmp_pt_gpa; bin: vu_vlvl0_gpa_vs_sw\""
+PMPH_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_lw_str: .string "\"test: 231; cg: PMPH; cp: cp_pmp_pt_gpa; bin: vu_vlvl0_gpa_vs_lw\""
+PMPH_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_jalr_str: .string "\"test: 232; cg: PMPH; cp: cp_pmp_pt_gpa; bin: vu_vlvl0_gpa_g_jalr\""
+PMPH_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_sw_str: .string "\"test: 233; cg: PMPH; cp: cp_pmp_pt_gpa; bin: vu_vlvl0_gpa_g_sw\""
+PMPH_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_lw_str: .string "\"test: 234; cg: PMPH; cp: cp_pmp_pt_gpa; bin: vu_vlvl0_gpa_g_lw\""
+PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_vs_jalr_str: .string "\"test: 235; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_vs_jalr\""
+PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_vs_sw_str: .string "\"test: 236; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_vs_sw\""
+PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_vs_lw_str: .string "\"test: 237; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_vs_lw\""
+PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_g_jalr_str: .string "\"test: 238; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_g_jalr\""
+PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_g_sw_str: .string "\"test: 239; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_g_sw\""
+PMPH_cp_pmp_pf_priority_vu_spa_leaf_r_g_lw_str: .string "\"test: 240; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_g_lw\""
+PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_vs_jalr_str: .string "\"test: 241; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_vs_jalr\""
+PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_vs_sw_str: .string "\"test: 242; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_vs_sw\""
+PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_vs_lw_str: .string "\"test: 243; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_vs_lw\""
+PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_g_jalr_str: .string "\"test: 244; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_g_jalr\""
+PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_g_sw_str: .string "\"test: 245; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_g_sw\""
+PMPH_cp_pmp_pf_priority_vu_spa_leaf_x_g_lw_str: .string "\"test: 246; cg: PMPH; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_g_lw\""
+PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_jalr_str: .string "\"test: 247; cg: PMPH; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_vs_jalr\""
+PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_sw_str: .string "\"test: 248; cg: PMPH; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_vs_sw\""
+PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_lw_str: .string "\"test: 249; cg: PMPH; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_vs_lw\""
+PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_jalr_str: .string "\"test: 250; cg: PMPH; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_g_jalr\""
+PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_sw_str: .string "\"test: 251; cg: PMPH; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_g_sw\""
+PMPH_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_lw_str: .string "\"test: 252; cg: PMPH; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_g_lw\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

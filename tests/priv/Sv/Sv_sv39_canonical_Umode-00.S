@@ -19,6 +19,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
+#define INVALID_VA_WIDTH 39
 #define TRAP_SIGUPD_COUNT 11
 
 // Include framework macros
@@ -211,15 +212,15 @@ rvtest_slvl1_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_cp_sv39_canonical_Umode_test1_store_str: .string "\"test: 28; cg: Sv; cp: cp_sv39_canonical_Umode; bin: test1_store\""
-Sv_cp_sv39_canonical_Umode_test1_load_str: .string "\"test: 29; cg: Sv; cp: cp_sv39_canonical_Umode; bin: test1_load\""
-Sv_cp_sv39_canonical_Umode_test1_exec_str: .string "\"test: 30; cg: Sv; cp: cp_sv39_canonical_Umode; bin: test1_exec\""
-Sv_cp_sv39_canonical_Umode_test2_store_str: .string "\"test: 31; cg: Sv; cp: cp_sv39_canonical_Umode; bin: test2_store\""
-Sv_cp_sv39_canonical_Umode_test2_load_str: .string "\"test: 32; cg: Sv; cp: cp_sv39_canonical_Umode; bin: test2_load\""
-Sv_cp_sv39_canonical_Umode_test2_exec_str: .string "\"test: 33; cg: Sv; cp: cp_sv39_canonical_Umode; bin: test2_exec\""
-Sv_cp_sv39_canonical_Umode_test3_store_str: .string "\"test: 34; cg: Sv; cp: cp_sv39_canonical_Umode; bin: test3_store\""
-Sv_cp_sv39_canonical_Umode_test3_load_str: .string "\"test: 35; cg: Sv; cp: cp_sv39_canonical_Umode; bin: test3_load\""
-Sv_cp_sv39_canonical_Umode_test3_exec_str: .string "\"test: 36; cg: Sv; cp: cp_sv39_canonical_Umode; bin: test3_exec\""
+Sv_cp_sv39_canonical_Umode_test1_store_str: .string "\"test: 10; cg: Sv; cp: cp_sv39_canonical_Umode; bin: test1_store\""
+Sv_cp_sv39_canonical_Umode_test1_load_str: .string "\"test: 11; cg: Sv; cp: cp_sv39_canonical_Umode; bin: test1_load\""
+Sv_cp_sv39_canonical_Umode_test1_exec_str: .string "\"test: 12; cg: Sv; cp: cp_sv39_canonical_Umode; bin: test1_exec\""
+Sv_cp_sv39_canonical_Umode_test2_store_str: .string "\"test: 13; cg: Sv; cp: cp_sv39_canonical_Umode; bin: test2_store\""
+Sv_cp_sv39_canonical_Umode_test2_load_str: .string "\"test: 14; cg: Sv; cp: cp_sv39_canonical_Umode; bin: test2_load\""
+Sv_cp_sv39_canonical_Umode_test2_exec_str: .string "\"test: 15; cg: Sv; cp: cp_sv39_canonical_Umode; bin: test2_exec\""
+Sv_cp_sv39_canonical_Umode_test3_store_str: .string "\"test: 16; cg: Sv; cp: cp_sv39_canonical_Umode; bin: test3_store\""
+Sv_cp_sv39_canonical_Umode_test3_load_str: .string "\"test: 17; cg: Sv; cp: cp_sv39_canonical_Umode; bin: test3_load\""
+Sv_cp_sv39_canonical_Umode_test3_exec_str: .string "\"test: 18; cg: Sv; cp: cp_sv39_canonical_Umode; bin: test3_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

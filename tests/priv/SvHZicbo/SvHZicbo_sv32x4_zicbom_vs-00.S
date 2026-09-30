@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'H', 'Zicbom']
+# REQUIRED_EXTENSIONS: ['I', 'H', 'Zicbom']
 # params:
 #   TIME_CSR_IMPLEMENTED: true
 #   SV32X4_TRANSLATION: true
@@ -21,7 +21,7 @@
 #define SIGUPD_COUNT 10
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 #define TRAP_SIGUPD_COUNT 1500
 
 // Include framework macros
@@ -37,6 +37,8 @@ RVTEST_BEGIN
 //   Each VS-stage PTE, and VS-stage PTEs at unmapped or faulting guest physical addresses, for cbo.clean, cbo.flush, cbo.inval from VS and VU
 /////////////////////////////////
 
+  LI(x8, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE)
+  csrs henvcfg, x8
   LI(x8, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE)
   csrs senvcfg, x8
 // Identity map the test image in both stages
@@ -166,7 +168,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l1_valid_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l1_valid_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 1, v0: store page fault
   LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x6, svhzicbo_data)
@@ -189,7 +191,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l1_v0_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l1_v0_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 1, w: store page fault: W without R is reserved
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x14, svhzicbo_data)
@@ -212,7 +214,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l1_w_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l1_w_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 1, wx: store page fault: W without R is reserved
   LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x9, svhzicbo_data)
@@ -235,7 +237,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l1_wx_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l1_wx_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 1, rx: no fault: a load is permitted
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x6, svhzicbo_data)
@@ -258,7 +260,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l1_rx_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l1_rx_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 1, a0: store page fault
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x6, svhzicbo_data)
@@ -281,7 +283,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l1_a0_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l1_a0_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 1, d0: no fault: D is not checked
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x6, svhzicbo_data)
@@ -304,7 +306,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l1_d0_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l1_d0_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 1, misaligned: store page fault
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x6, svhzicbo_data)
@@ -327,7 +329,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l1_misaligned_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l1_misaligned_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 1, u1_sum0: store page fault: VS-mode cannot access a user page with vsstatus.SUM = 0
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x15, svhzicbo_data)
@@ -350,7 +352,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l1_u1_sum0_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l1_u1_sum0_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 1, u1_sum1: no fault: vsstatus.SUM = 1
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x15, svhzicbo_data)
@@ -376,7 +378,7 @@ SvHZicbo_cg_cp_vs_sum_vs_sv32_l1_u1_sum1_cbo_flush:
 SvHZicbo_cg_cp_vs_sum_vs_sv32_l1_u1_sum1_cbo_inval:
   cbo.inval (x8)
   csrc sstatus, x13
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 1, leaf_gpa_unmapped: store guest-page fault on the final guest physical address
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LI(x14, (((0xD0407000) >> 22) << 20) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
@@ -398,7 +400,7 @@ SvHZicbo_cg_cp_vs_gpa_vs_sv32_l1_leaf_gpa_unmapped_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_gpa_vs_sv32_l1_leaf_gpa_unmapped_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 0, valid: no fault
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x14, rvtest_vlvl0_pg_tbl)
@@ -428,7 +430,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_valid_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_valid_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 0, v0: store page fault
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x6, rvtest_vlvl0_pg_tbl)
@@ -458,7 +460,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_v0_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_v0_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 0, w: store page fault: W without R is reserved
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x14, rvtest_vlvl0_pg_tbl)
@@ -488,7 +490,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_w_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_w_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 0, wx: store page fault: W without R is reserved
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x9, rvtest_vlvl0_pg_tbl)
@@ -518,7 +520,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_wx_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_wx_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 0, rx: no fault: a load is permitted
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x14, rvtest_vlvl0_pg_tbl)
@@ -548,7 +550,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_rx_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_rx_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 0, a0: store page fault
   LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x9, rvtest_vlvl0_pg_tbl)
@@ -578,7 +580,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_a0_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_a0_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 0, d0: no fault: D is not checked
   LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x15, rvtest_vlvl0_pg_tbl)
@@ -608,7 +610,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_d0_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_d0_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 0, pointer: store page fault: a pointer in place of a leaf
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x6, rvtest_vlvl0_pg_tbl)
@@ -638,7 +640,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_pointer_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_pointer_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 0, nonleaf_d: store page fault: D is reserved in a non-leaf PTE
   LA(x6, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x14, rvtest_vlvl0_pg_tbl)
@@ -668,7 +670,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_nonleaf_d_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_nonleaf_d_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 0, nonleaf_a: store page fault: A is reserved in a non-leaf PTE
   LA(x6, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x14, rvtest_vlvl0_pg_tbl)
@@ -698,7 +700,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_nonleaf_a_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_nonleaf_a_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 0, nonleaf_u: store page fault: U is reserved in a non-leaf PTE
   LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x15, rvtest_vlvl0_pg_tbl)
@@ -728,7 +730,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_nonleaf_u_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_nonleaf_u_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 0, u1_sum0: store page fault: VS-mode cannot access a user page with vsstatus.SUM = 0
   LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x9, rvtest_vlvl0_pg_tbl)
@@ -758,7 +760,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_u1_sum0_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vs_sv32_l0_u1_sum0_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 0, u1_sum1: no fault: vsstatus.SUM = 1
   LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x9, rvtest_vlvl0_pg_tbl)
@@ -791,7 +793,7 @@ SvHZicbo_cg_cp_vs_sum_vs_sv32_l0_u1_sum1_cbo_flush:
 SvHZicbo_cg_cp_vs_sum_vs_sv32_l0_u1_sum1_cbo_inval:
   cbo.inval (x8)
   csrc sstatus, x13
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 0, leaf_gpa_unmapped: store guest-page fault on the final guest physical address
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x14, rvtest_vlvl0_pg_tbl)
@@ -820,7 +822,7 @@ SvHZicbo_cg_cp_vs_gpa_vs_sv32_l0_leaf_gpa_unmapped_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_gpa_vs_sv32_l0_leaf_gpa_unmapped_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv32 level 0, nonleaf_gpa_unmapped: store guest-page fault on reading a table at an unmapped guest physical address
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x14, rvtest_vlvl0_pg_tbl)
@@ -856,7 +858,7 @@ SvHZicbo_cg_cp_vs_gpa_vs_sv32_l0_nonleaf_gpa_unmapped_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_gpa_vs_sv32_l0_nonleaf_gpa_unmapped_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
 // VS-mode, sv32 level 0, nonleaf_gpa_access_fault: store access fault on reading a table whose supervisor physical address faults
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
@@ -884,11 +886,11 @@ SvHZicbo_cg_cp_vs_gpa_vs_sv32_l0_nonleaf_gpa_unmapped_cbo_inval:
   or x14, x14, x15
   SREG x14, 0(x6)
   LA(x6, rvtest_hlvl0_pg_tbl + (((0xd0400000) >> 12) & 0x3ff) * 4)
-  LI(x14, (((RVMODEL_ACCESS_FAULT_ADDRESS) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI(x14, (((((RVMODEL_ACCESS_FAULT_ADDRESS + 3) & ~3)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x6)
   hfence.gvma
   hfence.vvma
-  LI(x8, (0x90407000 >> 12) << 12)
+  LI(x8, ((((0x90407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS + 3) & ~3) & 0xFFF) / 4) << 12)) >> 12) << 12)
   LA(x6, svhzicbo_data)
   slli x6, x6, 20
   srli x6, x6, 20
@@ -900,7 +902,7 @@ SvHZicbo_cg_cp_vs_gpa_vs_sv32_l0_nonleaf_gpa_access_fault_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_gpa_vs_sv32_l0_nonleaf_gpa_access_fault_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 #endif
   csrw vsatp, zero
   csrw hgatp, zero
@@ -1036,7 +1038,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l1_valid_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l1_valid_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 1, v0: store page fault
   LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x6, svhzicbo_data)
@@ -1059,7 +1061,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l1_v0_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l1_v0_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 1, w: store page fault: W without R is reserved
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x6, svhzicbo_data)
@@ -1082,7 +1084,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l1_w_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l1_w_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 1, wx: store page fault: W without R is reserved
   LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x13, svhzicbo_data)
@@ -1105,7 +1107,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l1_wx_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l1_wx_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 1, rx: no fault: a load is permitted
   LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x15, svhzicbo_data)
@@ -1128,7 +1130,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l1_rx_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l1_rx_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 1, a0: store page fault
   LA(x6, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x13, svhzicbo_data)
@@ -1151,7 +1153,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l1_a0_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l1_a0_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 1, d0: no fault: D is not checked
   LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x15, svhzicbo_data)
@@ -1174,7 +1176,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l1_d0_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l1_d0_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 1, misaligned: store page fault
   LA(x6, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x14, svhzicbo_data)
@@ -1197,7 +1199,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l1_misaligned_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l1_misaligned_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 1, u0: store page fault: VU-mode cannot access a supervisor page
   LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x15, svhzicbo_data)
@@ -1220,7 +1222,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l1_u0_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l1_u0_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 1, leaf_gpa_unmapped: store guest-page fault on the final guest physical address
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LI(x13, (((0xD0407000) >> 22) << 20) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
@@ -1242,7 +1244,7 @@ SvHZicbo_cg_cp_vs_gpa_vu_sv32_l1_leaf_gpa_unmapped_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_gpa_vu_sv32_l1_leaf_gpa_unmapped_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 0, valid: no fault
   LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x6, rvtest_vlvl0_pg_tbl)
@@ -1272,7 +1274,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_valid_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_valid_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 0, v0: store page fault
   LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x6, rvtest_vlvl0_pg_tbl)
@@ -1302,7 +1304,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_v0_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_v0_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 0, w: store page fault: W without R is reserved
   LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x15, rvtest_vlvl0_pg_tbl)
@@ -1332,7 +1334,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_w_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_w_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 0, wx: store page fault: W without R is reserved
   LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x6, rvtest_vlvl0_pg_tbl)
@@ -1362,7 +1364,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_wx_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_wx_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 0, rx: no fault: a load is permitted
   LA(x6, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x13, rvtest_vlvl0_pg_tbl)
@@ -1392,7 +1394,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_rx_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_rx_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 0, a0: store page fault
   LA(x6, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x15, rvtest_vlvl0_pg_tbl)
@@ -1422,7 +1424,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_a0_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_a0_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 0, d0: no fault: D is not checked
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x13, rvtest_vlvl0_pg_tbl)
@@ -1452,7 +1454,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_d0_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_d0_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 0, pointer: store page fault: a pointer in place of a leaf
   LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x6, rvtest_vlvl0_pg_tbl)
@@ -1482,7 +1484,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_pointer_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_pointer_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 0, nonleaf_d: store page fault: D is reserved in a non-leaf PTE
   LA(x6, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x15, rvtest_vlvl0_pg_tbl)
@@ -1512,7 +1514,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_nonleaf_d_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_nonleaf_d_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 0, nonleaf_a: store page fault: A is reserved in a non-leaf PTE
   LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x6, rvtest_vlvl0_pg_tbl)
@@ -1542,7 +1544,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_nonleaf_a_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_nonleaf_a_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 0, nonleaf_u: store page fault: U is reserved in a non-leaf PTE
   LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x15, rvtest_vlvl0_pg_tbl)
@@ -1572,7 +1574,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_nonleaf_u_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_nonleaf_u_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 0, u0: store page fault: VU-mode cannot access a supervisor page
   LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x6, rvtest_vlvl0_pg_tbl)
@@ -1602,7 +1604,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_u0_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_pte_vu_sv32_l0_u0_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 0, leaf_gpa_unmapped: store guest-page fault on the final guest physical address
   LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x6, rvtest_vlvl0_pg_tbl)
@@ -1631,7 +1633,7 @@ SvHZicbo_cg_cp_vs_gpa_vu_sv32_l0_leaf_gpa_unmapped_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_gpa_vu_sv32_l0_leaf_gpa_unmapped_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv32 level 0, nonleaf_gpa_unmapped: store guest-page fault on reading a table at an unmapped guest physical address
   LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x6, rvtest_vlvl0_pg_tbl)
@@ -1667,7 +1669,7 @@ SvHZicbo_cg_cp_vs_gpa_vu_sv32_l0_nonleaf_gpa_unmapped_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_gpa_vu_sv32_l0_nonleaf_gpa_unmapped_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
 // VU-mode, sv32 level 0, nonleaf_gpa_access_fault: store access fault on reading a table whose supervisor physical address faults
   LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
@@ -1695,11 +1697,11 @@ SvHZicbo_cg_cp_vs_gpa_vu_sv32_l0_nonleaf_gpa_unmapped_cbo_inval:
   or x14, x14, x13
   SREG x14, 0(x6)
   LA(x6, rvtest_hlvl0_pg_tbl + (((0xd0400000) >> 12) & 0x3ff) * 4)
-  LI(x14, (((RVMODEL_ACCESS_FAULT_ADDRESS) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI(x14, (((((RVMODEL_ACCESS_FAULT_ADDRESS + 3) & ~3)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x6)
   hfence.gvma
   hfence.vvma
-  LI(x8, (0x90407000 >> 12) << 12)
+  LI(x8, ((((0x90407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS + 3) & ~3) & 0xFFF) / 4) << 12)) >> 12) << 12)
   LA(x13, svhzicbo_data)
   slli x13, x13, 20
   srli x13, x13, 20
@@ -1711,7 +1713,7 @@ SvHZicbo_cg_cp_vs_gpa_vu_sv32_l0_nonleaf_gpa_access_fault_cbo_flush:
   cbo.flush (x8)
 SvHZicbo_cg_cp_vs_gpa_vu_sv32_l0_nonleaf_gpa_access_fault_cbo_inval:
   cbo.inval (x8)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 #endif
   csrw vsatp, zero
   csrw hgatp, zero

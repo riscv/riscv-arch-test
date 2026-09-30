@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'H', 'Zicboz']
+# REQUIRED_EXTENSIONS: ['I', 'H', 'Zicboz']
 # params:
 #   TIME_CSR_IMPLEMENTED: true
 #   SV39X4_TRANSLATION: true
@@ -21,7 +21,7 @@
 #define SIGUPD_COUNT 95
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 #define TRAP_SIGUPD_COUNT 1500
 
 // Include framework macros
@@ -37,6 +37,8 @@ RVTEST_BEGIN
 //   Each VS-stage PTE, and VS-stage PTEs at unmapped or faulting guest physical addresses, for cbo.zero from VS and VU
 /////////////////////////////////
 
+  LI(x13, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE)
+  csrs henvcfg, x13
   LI(x13, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE)
   csrs senvcfg, x13
 // Identity map the test image in both stages
@@ -165,7 +167,7 @@ RVTEST_BEGIN
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_valid_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x14)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_valid_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_valid_cbo_zero_str)
@@ -190,7 +192,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_valid_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_v0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x14)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_v0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_v0_cbo_zero_str)
@@ -215,7 +217,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_v0_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_w_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_w_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_w_cbo_zero_str)
@@ -240,7 +242,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_w_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_wx_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x8)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_wx_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_wx_cbo_zero_str)
@@ -265,7 +267,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_wx_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_rx_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_rx_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_rx_cbo_zero_str)
@@ -290,7 +292,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_rx_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_x_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x14)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_x_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_x_cbo_zero_str)
@@ -315,7 +317,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_x_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_a0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x8, 0(x15)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_a0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_a0_cbo_zero_str)
@@ -340,7 +342,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_a0_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_d0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x14)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_d0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_d0_cbo_zero_str)
@@ -362,7 +364,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_d0_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_misaligned_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv39 level 2, u1_sum0: store page fault: VS-mode cannot access a user page with vsstatus.SUM = 0
   LA(x8, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
   LA(x14, svhzicbo_data)
@@ -384,7 +386,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_misaligned_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_u1_sum0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x14)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_u1_sum0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_u1_sum0_cbo_zero_str)
@@ -412,7 +414,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l2_u1_sum0_cbo_zero:
 SvHZicbo_cg_cp_vs_sum_vs_sv39_l2_u1_sum1_cbo_zero:
   cbo.zero (x13)
   csrc sstatus, x9
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvHZicbo_cg_cp_vs_sum_vs_sv39_l2_u1_sum1_cbo_zero, SvHZicbo_cg_cp_vs_sum_vs_sv39_l2_u1_sum1_cbo_zero_str)
@@ -436,7 +438,7 @@ SvHZicbo_cg_cp_vs_sum_vs_sv39_l2_u1_sum1_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_gpa_vs_sv39_l2_leaf_gpa_unmapped_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x15)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvHZicbo_cg_cp_vs_gpa_vs_sv39_l2_leaf_gpa_unmapped_cbo_zero, SvHZicbo_cg_cp_vs_gpa_vs_sv39_l2_leaf_gpa_unmapped_cbo_zero_str)
@@ -468,7 +470,7 @@ SvHZicbo_cg_cp_vs_gpa_vs_sv39_l2_leaf_gpa_unmapped_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_valid_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x8, 0(x14)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_valid_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_valid_cbo_zero_str)
@@ -500,7 +502,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_valid_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_v0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x8, 0(x6)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_v0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_v0_cbo_zero_str)
@@ -532,7 +534,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_v0_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_w_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x15)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_w_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_w_cbo_zero_str)
@@ -564,7 +566,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_w_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_wx_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x8, 0(x6)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_wx_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_wx_cbo_zero_str)
@@ -596,7 +598,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_wx_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_rx_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x8, 0(x6)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_rx_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_rx_cbo_zero_str)
@@ -628,7 +630,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_rx_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_x_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x14)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_x_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_x_cbo_zero_str)
@@ -660,7 +662,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_x_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_a0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x14)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_a0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_a0_cbo_zero_str)
@@ -692,7 +694,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_a0_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_d0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x8, 0(x14)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_d0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_d0_cbo_zero_str)
@@ -724,7 +726,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_d0_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_nonleaf_d_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x14)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_nonleaf_d_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_nonleaf_d_cbo_zero_str)
@@ -756,7 +758,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_nonleaf_d_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_nonleaf_a_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x15)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_nonleaf_a_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_nonleaf_a_cbo_zero_str)
@@ -788,7 +790,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_nonleaf_a_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_nonleaf_u_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_nonleaf_u_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_nonleaf_u_cbo_zero_str)
@@ -817,7 +819,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_nonleaf_u_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_misaligned_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VS-mode, sv39 level 1, u1_sum0: store page fault: VS-mode cannot access a user page with vsstatus.SUM = 0
   LA(x15, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
   LA(x14, rvtest_vlvl1_pg_tbl)
@@ -846,7 +848,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_misaligned_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_u1_sum0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_u1_sum0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_u1_sum0_cbo_zero_str)
@@ -881,7 +883,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l1_u1_sum0_cbo_zero:
 SvHZicbo_cg_cp_vs_sum_vs_sv39_l1_u1_sum1_cbo_zero:
   cbo.zero (x13)
   csrc sstatus, x9
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x14)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_sum_vs_sv39_l1_u1_sum1_cbo_zero, SvHZicbo_cg_cp_vs_sum_vs_sv39_l1_u1_sum1_cbo_zero_str)
@@ -912,7 +914,7 @@ SvHZicbo_cg_cp_vs_sum_vs_sv39_l1_u1_sum1_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_gpa_vs_sv39_l1_leaf_gpa_unmapped_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x8, 0(x14)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_cg_cp_vs_gpa_vs_sv39_l1_leaf_gpa_unmapped_cbo_zero, SvHZicbo_cg_cp_vs_gpa_vs_sv39_l1_leaf_gpa_unmapped_cbo_zero_str)
@@ -950,7 +952,7 @@ SvHZicbo_cg_cp_vs_gpa_vs_sv39_l1_leaf_gpa_unmapped_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_gpa_vs_sv39_l1_nonleaf_gpa_unmapped_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvHZicbo_cg_cp_vs_gpa_vs_sv39_l1_nonleaf_gpa_unmapped_cbo_zero, SvHZicbo_cg_cp_vs_gpa_vs_sv39_l1_nonleaf_gpa_unmapped_cbo_zero_str)
@@ -988,11 +990,11 @@ SvHZicbo_cg_cp_vs_gpa_vs_sv39_l1_nonleaf_gpa_unmapped_cbo_zero:
   or x15, x15, x8
   SREG x15, 0(x14)
   LA(x14, rvtest_hlvl0_pg_tbl + (((0x2c0000000) >> 12) & 0x1ff) * 8)
-  LI(x15, (((RVMODEL_ACCESS_FAULT_ADDRESS) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI(x15, (((((RVMODEL_ACCESS_FAULT_ADDRESS + 7) & ~7)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x15, 0(x14)
   hfence.gvma
   hfence.vvma
-  LI(x13, (0x140802000 >> 21) << 21)
+  LI(x13, ((((0x140802000) & ~0x3fe00000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS + 7) & ~7) & 0xFFF) / 8) << 21)) >> 21) << 21)
   LA(x6, svhzicbo_data)
   slli x6, x6, 43
   srli x6, x6, 43
@@ -1003,7 +1005,7 @@ SvHZicbo_cg_cp_vs_gpa_vs_sv39_l1_nonleaf_gpa_unmapped_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_gpa_vs_sv39_l1_nonleaf_gpa_access_fault_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x8, 0(x6)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_cg_cp_vs_gpa_vs_sv39_l1_nonleaf_gpa_access_fault_cbo_zero, SvHZicbo_cg_cp_vs_gpa_vs_sv39_l1_nonleaf_gpa_access_fault_cbo_zero_str)
@@ -1043,7 +1045,7 @@ SvHZicbo_cg_cp_vs_gpa_vs_sv39_l1_nonleaf_gpa_access_fault_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_valid_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_valid_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_valid_cbo_zero_str)
@@ -1082,7 +1084,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_valid_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_v0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x8)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_v0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_v0_cbo_zero_str)
@@ -1121,7 +1123,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_v0_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_w_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x8, 0(x6)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_w_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_w_cbo_zero_str)
@@ -1160,7 +1162,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_w_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_wx_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x14)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_wx_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_wx_cbo_zero_str)
@@ -1199,7 +1201,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_wx_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_rx_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x8)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_rx_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_rx_cbo_zero_str)
@@ -1238,7 +1240,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_rx_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_x_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x8)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_x_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_x_cbo_zero_str)
@@ -1277,7 +1279,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_x_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_a0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x8, 0(x15)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_a0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_a0_cbo_zero_str)
@@ -1316,7 +1318,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_a0_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_d0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x15)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_d0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_d0_cbo_zero_str)
@@ -1355,7 +1357,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_d0_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_pointer_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x8)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_pointer_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_pointer_cbo_zero_str)
@@ -1394,7 +1396,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_pointer_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_nonleaf_d_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x8)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_nonleaf_d_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_nonleaf_d_cbo_zero_str)
@@ -1433,7 +1435,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_nonleaf_d_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_nonleaf_a_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x14)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_nonleaf_a_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_nonleaf_a_cbo_zero_str)
@@ -1472,7 +1474,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_nonleaf_a_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_nonleaf_u_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x14)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_nonleaf_u_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_nonleaf_u_cbo_zero_str)
@@ -1511,7 +1513,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_nonleaf_u_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_u1_sum0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x8, 0(x15)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_u1_sum0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_u1_sum0_cbo_zero_str)
@@ -1553,7 +1555,7 @@ SvHZicbo_cg_cp_vs_pte_vs_sv39_l0_u1_sum0_cbo_zero:
 SvHZicbo_cg_cp_vs_sum_vs_sv39_l0_u1_sum1_cbo_zero:
   cbo.zero (x13)
   csrc sstatus, x9
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x14)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_sum_vs_sv39_l0_u1_sum1_cbo_zero, SvHZicbo_cg_cp_vs_sum_vs_sv39_l0_u1_sum1_cbo_zero_str)
@@ -1591,7 +1593,7 @@ SvHZicbo_cg_cp_vs_sum_vs_sv39_l0_u1_sum1_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_gpa_vs_sv39_l0_leaf_gpa_unmapped_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_gpa_vs_sv39_l0_leaf_gpa_unmapped_cbo_zero, SvHZicbo_cg_cp_vs_gpa_vs_sv39_l0_leaf_gpa_unmapped_cbo_zero_str)
@@ -1636,7 +1638,7 @@ SvHZicbo_cg_cp_vs_gpa_vs_sv39_l0_leaf_gpa_unmapped_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_gpa_vs_sv39_l0_nonleaf_gpa_unmapped_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_gpa_vs_sv39_l0_nonleaf_gpa_unmapped_cbo_zero, SvHZicbo_cg_cp_vs_gpa_vs_sv39_l0_nonleaf_gpa_unmapped_cbo_zero_str)
@@ -1681,11 +1683,11 @@ SvHZicbo_cg_cp_vs_gpa_vs_sv39_l0_nonleaf_gpa_unmapped_cbo_zero:
   or x6, x6, x8
   SREG x6, 0(x15)
   LA(x15, rvtest_hlvl0_pg_tbl + (((0x2c0000000) >> 12) & 0x1ff) * 8)
-  LI(x6, (((RVMODEL_ACCESS_FAULT_ADDRESS) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI(x6, (((((RVMODEL_ACCESS_FAULT_ADDRESS + 7) & ~7)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x15)
   hfence.gvma
   hfence.vvma
-  LI(x13, (0x140802000 >> 12) << 12)
+  LI(x13, ((((0x140802000) & ~0x1ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS + 7) & ~7) & 0xFFF) / 8) << 12)) >> 12) << 12)
   LA(x6, svhzicbo_data)
   slli x6, x6, 52
   srli x6, x6, 52
@@ -1696,7 +1698,7 @@ SvHZicbo_cg_cp_vs_gpa_vs_sv39_l0_nonleaf_gpa_unmapped_cbo_zero:
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_cg_cp_vs_gpa_vs_sv39_l0_nonleaf_gpa_access_fault_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvHZicbo_cg_cp_vs_gpa_vs_sv39_l0_nonleaf_gpa_access_fault_cbo_zero, SvHZicbo_cg_cp_vs_gpa_vs_sv39_l0_nonleaf_gpa_access_fault_cbo_zero_str)
@@ -1834,7 +1836,7 @@ SvHZicbo_cg_cp_vs_gpa_vs_sv39_l0_nonleaf_gpa_access_fault_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_valid_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_valid_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_valid_cbo_zero_str)
@@ -1859,7 +1861,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_valid_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_v0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x15)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_v0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_v0_cbo_zero_str)
@@ -1884,7 +1886,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_v0_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_w_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_w_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_w_cbo_zero_str)
@@ -1909,7 +1911,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_w_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_wx_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_wx_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_wx_cbo_zero_str)
@@ -1934,7 +1936,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_wx_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_rx_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x14)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_rx_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_rx_cbo_zero_str)
@@ -1959,7 +1961,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_rx_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_x_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x8)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_x_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_x_cbo_zero_str)
@@ -1984,7 +1986,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_x_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_a0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_a0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_a0_cbo_zero_str)
@@ -2009,7 +2011,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_a0_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_d0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x8)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_d0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_d0_cbo_zero_str)
@@ -2031,7 +2033,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_d0_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_misaligned_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv39 level 2, u0: store page fault: VU-mode cannot access a supervisor page
   LA(x8, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
   LA(x6, svhzicbo_data)
@@ -2053,7 +2055,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_misaligned_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_u0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x8)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_u0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_u0_cbo_zero_str)
@@ -2077,7 +2079,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l2_u0_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_gpa_vu_sv39_l2_leaf_gpa_unmapped_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x15)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_gpa_vu_sv39_l2_leaf_gpa_unmapped_cbo_zero, SvHZicbo_cg_cp_vs_gpa_vu_sv39_l2_leaf_gpa_unmapped_cbo_zero_str)
@@ -2109,7 +2111,7 @@ SvHZicbo_cg_cp_vs_gpa_vu_sv39_l2_leaf_gpa_unmapped_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_valid_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x14)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_valid_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_valid_cbo_zero_str)
@@ -2141,7 +2143,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_valid_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_v0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x15)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_v0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_v0_cbo_zero_str)
@@ -2173,7 +2175,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_v0_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_w_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_w_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_w_cbo_zero_str)
@@ -2205,7 +2207,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_w_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_wx_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x15)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_wx_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_wx_cbo_zero_str)
@@ -2237,7 +2239,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_wx_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_rx_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_rx_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_rx_cbo_zero_str)
@@ -2269,7 +2271,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_rx_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_x_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x14)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_x_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_x_cbo_zero_str)
@@ -2301,7 +2303,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_x_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_a0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x8)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_a0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_a0_cbo_zero_str)
@@ -2333,7 +2335,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_a0_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_d0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_d0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_d0_cbo_zero_str)
@@ -2365,7 +2367,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_d0_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_nonleaf_d_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x8)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_nonleaf_d_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_nonleaf_d_cbo_zero_str)
@@ -2397,7 +2399,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_nonleaf_d_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_nonleaf_a_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x8)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_nonleaf_a_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_nonleaf_a_cbo_zero_str)
@@ -2429,7 +2431,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_nonleaf_a_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_nonleaf_u_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_nonleaf_u_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_nonleaf_u_cbo_zero_str)
@@ -2458,7 +2460,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_nonleaf_u_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_misaligned_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 // VU-mode, sv39 level 1, u0: store page fault: VU-mode cannot access a supervisor page
   LA(x15, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
   LA(x14, rvtest_vlvl1_pg_tbl)
@@ -2487,7 +2489,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_misaligned_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_u0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x8, 0(x6)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_u0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_u0_cbo_zero_str)
@@ -2518,7 +2520,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l1_u0_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_gpa_vu_sv39_l1_leaf_gpa_unmapped_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x15)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_gpa_vu_sv39_l1_leaf_gpa_unmapped_cbo_zero, SvHZicbo_cg_cp_vs_gpa_vu_sv39_l1_leaf_gpa_unmapped_cbo_zero_str)
@@ -2556,7 +2558,7 @@ SvHZicbo_cg_cp_vs_gpa_vu_sv39_l1_leaf_gpa_unmapped_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_gpa_vu_sv39_l1_nonleaf_gpa_unmapped_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x8)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_gpa_vu_sv39_l1_nonleaf_gpa_unmapped_cbo_zero, SvHZicbo_cg_cp_vs_gpa_vu_sv39_l1_nonleaf_gpa_unmapped_cbo_zero_str)
@@ -2594,11 +2596,11 @@ SvHZicbo_cg_cp_vs_gpa_vu_sv39_l1_nonleaf_gpa_unmapped_cbo_zero:
   or x15, x15, x14
   SREG x15, 0(x8)
   LA(x8, rvtest_hlvl0_pg_tbl + (((0x2c0000000) >> 12) & 0x1ff) * 8)
-  LI(x15, (((RVMODEL_ACCESS_FAULT_ADDRESS) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI(x15, (((((RVMODEL_ACCESS_FAULT_ADDRESS + 7) & ~7)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x15, 0(x8)
   hfence.gvma
   hfence.vvma
-  LI(x13, (0x140802000 >> 21) << 21)
+  LI(x13, ((((0x140802000) & ~0x3fe00000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS + 7) & ~7) & 0xFFF) / 8) << 21)) >> 21) << 21)
   LA(x14, svhzicbo_data)
   slli x14, x14, 43
   srli x14, x14, 43
@@ -2609,7 +2611,7 @@ SvHZicbo_cg_cp_vs_gpa_vu_sv39_l1_nonleaf_gpa_unmapped_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_gpa_vu_sv39_l1_nonleaf_gpa_access_fault_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x14)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_gpa_vu_sv39_l1_nonleaf_gpa_access_fault_cbo_zero, SvHZicbo_cg_cp_vs_gpa_vu_sv39_l1_nonleaf_gpa_access_fault_cbo_zero_str)
@@ -2649,7 +2651,7 @@ SvHZicbo_cg_cp_vs_gpa_vu_sv39_l1_nonleaf_gpa_access_fault_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_valid_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_valid_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_valid_cbo_zero_str)
@@ -2688,7 +2690,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_valid_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_v0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x8, 0(x15)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_v0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_v0_cbo_zero_str)
@@ -2727,7 +2729,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_v0_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_w_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x8)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_w_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_w_cbo_zero_str)
@@ -2766,7 +2768,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_w_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_wx_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x14)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_wx_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_wx_cbo_zero_str)
@@ -2805,7 +2807,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_wx_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_rx_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x8)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_rx_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_rx_cbo_zero_str)
@@ -2844,7 +2846,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_rx_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_x_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x8, 0(x14)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_x_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_x_cbo_zero_str)
@@ -2883,7 +2885,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_x_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_a0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_a0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_a0_cbo_zero_str)
@@ -2922,7 +2924,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_a0_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_d0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x15)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_d0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_d0_cbo_zero_str)
@@ -2961,7 +2963,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_d0_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_pointer_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x8)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_pointer_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_pointer_cbo_zero_str)
@@ -3000,7 +3002,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_pointer_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_nonleaf_d_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_nonleaf_d_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_nonleaf_d_cbo_zero_str)
@@ -3039,7 +3041,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_nonleaf_d_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_nonleaf_a_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_nonleaf_a_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_nonleaf_a_cbo_zero_str)
@@ -3078,7 +3080,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_nonleaf_a_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_nonleaf_u_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x8)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_nonleaf_u_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_nonleaf_u_cbo_zero_str)
@@ -3117,7 +3119,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_nonleaf_u_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_u0_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x14)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_u0_cbo_zero, SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_u0_cbo_zero_str)
@@ -3155,7 +3157,7 @@ SvHZicbo_cg_cp_vs_pte_vu_sv39_l0_u0_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_gpa_vu_sv39_l0_leaf_gpa_unmapped_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x8, 0(x14)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_cg_cp_vs_gpa_vu_sv39_l0_leaf_gpa_unmapped_cbo_zero, SvHZicbo_cg_cp_vs_gpa_vu_sv39_l0_leaf_gpa_unmapped_cbo_zero_str)
@@ -3200,7 +3202,7 @@ SvHZicbo_cg_cp_vs_gpa_vu_sv39_l0_leaf_gpa_unmapped_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_gpa_vu_sv39_l0_nonleaf_gpa_unmapped_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x8, 0(x14)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_cg_cp_vs_gpa_vu_sv39_l0_nonleaf_gpa_unmapped_cbo_zero, SvHZicbo_cg_cp_vs_gpa_vu_sv39_l0_nonleaf_gpa_unmapped_cbo_zero_str)
@@ -3245,11 +3247,11 @@ SvHZicbo_cg_cp_vs_gpa_vu_sv39_l0_nonleaf_gpa_unmapped_cbo_zero:
   or x15, x15, x8
   SREG x15, 0(x14)
   LA(x14, rvtest_hlvl0_pg_tbl + (((0x2c0000000) >> 12) & 0x1ff) * 8)
-  LI(x15, (((RVMODEL_ACCESS_FAULT_ADDRESS) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI(x15, (((((RVMODEL_ACCESS_FAULT_ADDRESS + 7) & ~7)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x15, 0(x14)
   hfence.gvma
   hfence.vvma
-  LI(x13, (0x140802000 >> 12) << 12)
+  LI(x13, ((((0x140802000) & ~0x1ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS + 7) & ~7) & 0xFFF) / 8) << 12)) >> 12) << 12)
   LA(x6, svhzicbo_data)
   slli x6, x6, 52
   srli x6, x6, 52
@@ -3260,7 +3262,7 @@ SvHZicbo_cg_cp_vs_gpa_vu_sv39_l0_nonleaf_gpa_unmapped_cbo_zero:
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_cg_cp_vs_gpa_vu_sv39_l0_nonleaf_gpa_access_fault_cbo_zero:
   cbo.zero (x13)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_cg_cp_vs_gpa_vu_sv39_l0_nonleaf_gpa_access_fault_cbo_zero, SvHZicbo_cg_cp_vs_gpa_vu_sv39_l0_nonleaf_gpa_access_fault_cbo_zero_str)

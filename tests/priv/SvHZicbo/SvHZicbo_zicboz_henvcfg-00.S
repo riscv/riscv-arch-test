@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'H', 'Zicboz']
+# REQUIRED_EXTENSIONS: ['I', 'H', 'Zicboz']
 # params:
 #   TIME_CSR_IMPLEMENTED: true
 # MARCH: rv${XLEN}ih_zicboz_zicsr_zifencei
@@ -19,7 +19,7 @@
 #define SIGUPD_COUNT 22
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 #define TRAP_SIGUPD_COUNT 1500
 
 // Include framework macros
@@ -37,7 +37,15 @@ RVTEST_BEGIN
 #ifdef ZICBOZ_SUPPORTED
   LA(x6, scratch)
   LI(x14, 0x80)  # cbze field mask
-  csrc menvcfg, x14
+  # T-SBI call to execute instruction: csrc menvcfg, x14
+  # Copy rs1 (x14) to a1 for T-SBI call
+  mv a1, x14
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x14
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x14
   RVTEST_TSBI_GOTO_VSMODE
 # Store a nonzero value so the test can check cbo.zero
@@ -48,8 +56,16 @@ SvHZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze0:
   lw x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze0, SvHZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_str)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x14
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x14
+  # Copy rs1 (x14) to a1 for T-SBI call
+  mv a1, x14
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x14
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x14
   LI(x8, 0x80)
   csrs henvcfg, x8
@@ -62,10 +78,26 @@ SvHZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze1:
   lw x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze1, SvHZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_str)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x14
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x14
+  # Copy rs1 (x14) to a1 for T-SBI call
+  mv a1, x14
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x14
+  ecall # T-SBI call to execute instruction at suitable privilege level
   LI(x8, 0x80)
-  csrs menvcfg, x8
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x14
   RVTEST_TSBI_GOTO_VSMODE
 # Store a nonzero value so the test can check cbo.zero
@@ -76,10 +108,26 @@ SvHZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze0:
   lw x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze0, SvHZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_str)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x14
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x14
+  # Copy rs1 (x14) to a1 for T-SBI call
+  mv a1, x14
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x14
+  ecall # T-SBI call to execute instruction at suitable privilege level
   LI(x8, 0x80)
-  csrs menvcfg, x8
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x14
   LI(x8, 0x80)
   csrs henvcfg, x8
@@ -92,7 +140,7 @@ SvHZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze1:
   lw x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SvHZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze1, SvHZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_str)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 #endif // ZICBOZ_SUPPORTED
 
 
@@ -103,7 +151,15 @@ SvHZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze1:
 #ifdef ZICBOZ_SUPPORTED
   LA(x9, scratch)
   LI(x13, 0x80)  # cbze field mask
-  csrc menvcfg, x13
+  # T-SBI call to execute instruction: csrc menvcfg, x13
+  # Copy rs1 (x13) to a1 for T-SBI call
+  mv a1, x13
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x13
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x13
   csrc senvcfg, x13
   RVTEST_TSBI_GOTO_VUMODE
@@ -115,8 +171,16 @@ SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze0
   lw x8, 0(x9)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze0, SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze0_str)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x13
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x13
+  # Copy rs1 (x13) to a1 for T-SBI call
+  mv a1, x13
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x13
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x13
   csrc senvcfg, x13
   LI(x6, 0x80)
@@ -130,8 +194,16 @@ SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze1
   lw x8, 0(x9)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze1, SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze1_str)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x13
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x13
+  # Copy rs1 (x13) to a1 for T-SBI call
+  mv a1, x13
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x13
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x13
   LI(x6, 0x80)
   csrs henvcfg, x6
@@ -145,8 +217,16 @@ SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze0
   lw x8, 0(x9)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze0, SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze0_str)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x13
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x13
+  # Copy rs1 (x13) to a1 for T-SBI call
+  mv a1, x13
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x13
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x13
   LI(x6, 0x80)
   csrs henvcfg, x6
@@ -162,10 +242,26 @@ SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze1
   lw x8, 0(x9)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze1, SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze1_str)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x13
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x13
+  # Copy rs1 (x13) to a1 for T-SBI call
+  mv a1, x13
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x13
+  ecall # T-SBI call to execute instruction at suitable privilege level
   LI(x6, 0x80)
-  csrs menvcfg, x6
+  # T-SBI call to execute instruction: csrs menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x13
   csrc senvcfg, x13
   RVTEST_TSBI_GOTO_VUMODE
@@ -177,10 +273,26 @@ SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze0
   lw x8, 0(x9)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze0, SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze0_str)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x13
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x13
+  # Copy rs1 (x13) to a1 for T-SBI call
+  mv a1, x13
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x13
+  ecall # T-SBI call to execute instruction at suitable privilege level
   LI(x6, 0x80)
-  csrs menvcfg, x6
+  # T-SBI call to execute instruction: csrs menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x13
   csrc senvcfg, x13
   LI(x6, 0x80)
@@ -194,10 +306,26 @@ SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze1
   lw x8, 0(x9)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze1, SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze1_str)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x13
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x13
+  # Copy rs1 (x13) to a1 for T-SBI call
+  mv a1, x13
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x13
+  ecall # T-SBI call to execute instruction at suitable privilege level
   LI(x6, 0x80)
-  csrs menvcfg, x6
+  # T-SBI call to execute instruction: csrs menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x13
   LI(x6, 0x80)
   csrs henvcfg, x6
@@ -211,10 +339,26 @@ SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze0
   lw x8, 0(x9)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze0, SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze0_str)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x13
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x13
+  # Copy rs1 (x13) to a1 for T-SBI call
+  mv a1, x13
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x13
+  ecall # T-SBI call to execute instruction at suitable privilege level
   LI(x6, 0x80)
-  csrs menvcfg, x6
+  # T-SBI call to execute instruction: csrs menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x13
   LI(x6, 0x80)
   csrs henvcfg, x6
@@ -230,7 +374,7 @@ SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze1
   lw x8, 0(x9)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze1, SvHZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze1_str)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 #endif // ZICBOZ_SUPPORTED
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test

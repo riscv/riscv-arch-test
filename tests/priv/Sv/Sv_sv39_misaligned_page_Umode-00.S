@@ -170,12 +170,12 @@ rvtest_slvl1_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_cp_sv39_misaligned_page_Umode_test1_store_str: .string "\"test: 79; cg: Sv; cp: cp_sv39_misaligned_page_Umode; bin: test1_store\""
-Sv_cp_sv39_misaligned_page_Umode_test1_load_str: .string "\"test: 80; cg: Sv; cp: cp_sv39_misaligned_page_Umode; bin: test1_load\""
-Sv_cp_sv39_misaligned_page_Umode_test1_exec_str: .string "\"test: 81; cg: Sv; cp: cp_sv39_misaligned_page_Umode; bin: test1_exec\""
-Sv_cp_sv39_misaligned_page_Umode_test2_store_str: .string "\"test: 82; cg: Sv; cp: cp_sv39_misaligned_page_Umode; bin: test2_store\""
-Sv_cp_sv39_misaligned_page_Umode_test2_load_str: .string "\"test: 83; cg: Sv; cp: cp_sv39_misaligned_page_Umode; bin: test2_load\""
-Sv_cp_sv39_misaligned_page_Umode_test2_exec_str: .string "\"test: 84; cg: Sv; cp: cp_sv39_misaligned_page_Umode; bin: test2_exec\""
+Sv_cp_sv39_misaligned_page_Umode_test1_store_str: .string "\"test: 61; cg: Sv; cp: cp_sv39_misaligned_page_Umode; bin: test1_store\""
+Sv_cp_sv39_misaligned_page_Umode_test1_load_str: .string "\"test: 62; cg: Sv; cp: cp_sv39_misaligned_page_Umode; bin: test1_load\""
+Sv_cp_sv39_misaligned_page_Umode_test1_exec_str: .string "\"test: 63; cg: Sv; cp: cp_sv39_misaligned_page_Umode; bin: test1_exec\""
+Sv_cp_sv39_misaligned_page_Umode_test2_store_str: .string "\"test: 64; cg: Sv; cp: cp_sv39_misaligned_page_Umode; bin: test2_store\""
+Sv_cp_sv39_misaligned_page_Umode_test2_load_str: .string "\"test: 65; cg: Sv; cp: cp_sv39_misaligned_page_Umode; bin: test2_load\""
+Sv_cp_sv39_misaligned_page_Umode_test2_exec_str: .string "\"test: 66; cg: Sv; cp: cp_sv39_misaligned_page_Umode; bin: test2_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

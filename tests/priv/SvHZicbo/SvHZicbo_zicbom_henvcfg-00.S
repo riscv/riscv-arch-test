@@ -9,17 +9,17 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'H', 'Zicbom']
+# REQUIRED_EXTENSIONS: ['I', 'H', 'Zicbom']
 # params:
 #   TIME_CSR_IMPLEMENTED: true
 # MARCH: rv${XLEN}ih_zicbom_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 10
+#define SIGUPD_COUNT 20
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 #define TRAP_SIGUPD_COUNT 1500
 
 // Include framework macros
@@ -37,84 +37,219 @@ RVTEST_BEGIN
 #ifdef ZICBOM_SUPPORTED
   LA(x6, scratch)
   LI(x15, 0x30)  # cbie field mask
-  csrc menvcfg, x15
+  # T-SBI call to execute instruction: csrc menvcfg, x15
+  # Copy rs1 (x15) to a1 for T-SBI call
+  mv a1, x15
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x15
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x15
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie00_henvcfg_cbie00:
   cbo.inval    0(x6)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x15
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x15
+  # Copy rs1 (x15) to a1 for T-SBI call
+  mv a1, x15
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x15
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x15
   LI(x14, 0x10)
   csrs henvcfg, x14
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie00_henvcfg_cbie01:
   cbo.inval    0(x6)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x15
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x15
+  # Copy rs1 (x15) to a1 for T-SBI call
+  mv a1, x15
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x15
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x15
   LI(x14, 0x30)
   csrs henvcfg, x14
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie00_henvcfg_cbie11:
   cbo.inval    0(x6)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x15
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x15
+  # Copy rs1 (x15) to a1 for T-SBI call
+  mv a1, x15
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x15
+  ecall # T-SBI call to execute instruction at suitable privilege level
   LI(x14, 0x10)
-  csrs menvcfg, x14
+  # T-SBI call to execute instruction: csrs menvcfg, x14
+  # Copy rs1 (x14) to a1 for T-SBI call
+  mv a1, x14
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x14
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x15
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie00:
   cbo.inval    0(x6)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x15
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x15
+  # Copy rs1 (x15) to a1 for T-SBI call
+  mv a1, x15
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x15
+  ecall # T-SBI call to execute instruction at suitable privilege level
   LI(x14, 0x10)
-  csrs menvcfg, x14
+  # T-SBI call to execute instruction: csrs menvcfg, x14
+  # Copy rs1 (x14) to a1 for T-SBI call
+  mv a1, x14
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x14
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x15
   LI(x14, 0x10)
   csrs henvcfg, x14
   RVTEST_TSBI_GOTO_VSMODE
+  LI(x9, 0x7dd802ee)
+  sw x9, 0(x6)
 SvHZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie01:
   cbo.inval    0(x6)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x15
+  lw x9, 0(x6)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SvHZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie01, SvHZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_str)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x15
+  # Copy rs1 (x15) to a1 for T-SBI call
+  mv a1, x15
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x15
+  ecall # T-SBI call to execute instruction at suitable privilege level
   LI(x14, 0x10)
-  csrs menvcfg, x14
+  # T-SBI call to execute instruction: csrs menvcfg, x14
+  # Copy rs1 (x14) to a1 for T-SBI call
+  mv a1, x14
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x14
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x15
   LI(x14, 0x30)
   csrs henvcfg, x14
   RVTEST_TSBI_GOTO_VSMODE
+  LI(x9, 0xc8f751fc)
+  sw x9, 0(x6)
 SvHZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie11:
   cbo.inval    0(x6)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x15
+  lw x9, 0(x6)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SvHZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie11, SvHZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_str)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x15
+  # Copy rs1 (x15) to a1 for T-SBI call
+  mv a1, x15
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x15
+  ecall # T-SBI call to execute instruction at suitable privilege level
   LI(x14, 0x30)
-  csrs menvcfg, x14
+  # T-SBI call to execute instruction: csrs menvcfg, x14
+  # Copy rs1 (x14) to a1 for T-SBI call
+  mv a1, x14
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x14
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x15
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie00:
   cbo.inval    0(x6)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x15
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x15
+  # Copy rs1 (x15) to a1 for T-SBI call
+  mv a1, x15
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x15
+  ecall # T-SBI call to execute instruction at suitable privilege level
   LI(x14, 0x30)
-  csrs menvcfg, x14
+  # T-SBI call to execute instruction: csrs menvcfg, x14
+  # Copy rs1 (x14) to a1 for T-SBI call
+  mv a1, x14
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x14
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x15
   LI(x14, 0x10)
   csrs henvcfg, x14
   RVTEST_TSBI_GOTO_VSMODE
+  LI(x9, 0x2f4fb171)
+  sw x9, 0(x6)
 SvHZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie01:
   cbo.inval    0(x6)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x15
+  lw x9, 0(x6)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SvHZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie01, SvHZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_str)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x15
+  # Copy rs1 (x15) to a1 for T-SBI call
+  mv a1, x15
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x15
+  ecall # T-SBI call to execute instruction at suitable privilege level
   LI(x14, 0x30)
-  csrs menvcfg, x14
+  # T-SBI call to execute instruction: csrs menvcfg, x14
+  # Copy rs1 (x14) to a1 for T-SBI call
+  mv a1, x14
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x14
+  ecall # T-SBI call to execute instruction at suitable privilege level
   csrc henvcfg, x15
   LI(x14, 0x30)
   csrs henvcfg, x14
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie11:
   cbo.inval    0(x6)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 #endif // ZICBOM_SUPPORTED
 
 
@@ -123,305 +258,700 @@ SvHZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie11:
 //   Exercise cbo.inval in VU-mode across menvcfg.cbie, henvcfg.cbie, senvcfg.cbie
 /////////////////////////////////
 #ifdef ZICBOM_SUPPORTED
-  LA(x13, scratch)
-  LI(x8, 0x30)  # cbie field mask
-  csrc menvcfg, x8
-  csrc henvcfg, x8
-  csrc senvcfg, x8
+  LA(x14, scratch)
+  LI(x6, 0x30)  # cbie field mask
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  csrc senvcfg, x6
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie00_senvcfg_cbie00:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  csrc henvcfg, x8
-  csrc senvcfg, x8
-  LI(x15, 0x10)
-  csrs senvcfg, x15
+  cbo.inval    0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  csrc senvcfg, x6
+  LI(x8, 0x10)
+  csrs senvcfg, x8
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie00_senvcfg_cbie01:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  csrc henvcfg, x8
-  csrc senvcfg, x8
-  LI(x15, 0x30)
-  csrs senvcfg, x15
+  cbo.inval    0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  csrc senvcfg, x6
+  LI(x8, 0x30)
+  csrs senvcfg, x8
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie00_senvcfg_cbie11:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  csrc henvcfg, x8
-  LI(x15, 0x10)
-  csrs henvcfg, x15
-  csrc senvcfg, x8
+  cbo.inval    0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  LI(x8, 0x10)
+  csrs henvcfg, x8
+  csrc senvcfg, x6
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie01_senvcfg_cbie00:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  csrc henvcfg, x8
-  LI(x15, 0x10)
-  csrs henvcfg, x15
-  csrc senvcfg, x8
-  LI(x15, 0x10)
-  csrs senvcfg, x15
+  cbo.inval    0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  LI(x8, 0x10)
+  csrs henvcfg, x8
+  csrc senvcfg, x6
+  LI(x8, 0x10)
+  csrs senvcfg, x8
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie01_senvcfg_cbie01:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  csrc henvcfg, x8
-  LI(x15, 0x10)
-  csrs henvcfg, x15
-  csrc senvcfg, x8
-  LI(x15, 0x30)
-  csrs senvcfg, x15
+  cbo.inval    0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  LI(x8, 0x10)
+  csrs henvcfg, x8
+  csrc senvcfg, x6
+  LI(x8, 0x30)
+  csrs senvcfg, x8
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie01_senvcfg_cbie11:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  csrc henvcfg, x8
-  LI(x15, 0x30)
-  csrs henvcfg, x15
-  csrc senvcfg, x8
+  cbo.inval    0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  LI(x8, 0x30)
+  csrs henvcfg, x8
+  csrc senvcfg, x6
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie11_senvcfg_cbie00:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  csrc henvcfg, x8
-  LI(x15, 0x30)
-  csrs henvcfg, x15
-  csrc senvcfg, x8
-  LI(x15, 0x10)
-  csrs senvcfg, x15
+  cbo.inval    0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  LI(x8, 0x30)
+  csrs henvcfg, x8
+  csrc senvcfg, x6
+  LI(x8, 0x10)
+  csrs senvcfg, x8
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie11_senvcfg_cbie01:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  csrc henvcfg, x8
-  LI(x15, 0x30)
-  csrs henvcfg, x15
-  csrc senvcfg, x8
-  LI(x15, 0x30)
-  csrs senvcfg, x15
+  cbo.inval    0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  LI(x8, 0x30)
+  csrs henvcfg, x8
+  csrc senvcfg, x6
+  LI(x8, 0x30)
+  csrs senvcfg, x8
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie11_senvcfg_cbie11:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x15, 0x10)
-  csrs menvcfg, x15
-  csrc henvcfg, x8
-  csrc senvcfg, x8
+  cbo.inval    0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x8, 0x10)
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  csrc senvcfg, x6
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie00_senvcfg_cbie00:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x15, 0x10)
-  csrs menvcfg, x15
-  csrc henvcfg, x8
-  csrc senvcfg, x8
-  LI(x15, 0x10)
-  csrs senvcfg, x15
+  cbo.inval    0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x8, 0x10)
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  csrc senvcfg, x6
+  LI(x8, 0x10)
+  csrs senvcfg, x8
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie00_senvcfg_cbie01:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x15, 0x10)
-  csrs menvcfg, x15
-  csrc henvcfg, x8
-  csrc senvcfg, x8
-  LI(x15, 0x30)
-  csrs senvcfg, x15
+  cbo.inval    0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x8, 0x10)
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  csrc senvcfg, x6
+  LI(x8, 0x30)
+  csrs senvcfg, x8
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie00_senvcfg_cbie11:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x15, 0x10)
-  csrs menvcfg, x15
-  csrc henvcfg, x8
-  LI(x15, 0x10)
-  csrs henvcfg, x15
-  csrc senvcfg, x8
+  cbo.inval    0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x8, 0x10)
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  LI(x8, 0x10)
+  csrs henvcfg, x8
+  csrc senvcfg, x6
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie00:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x15, 0x10)
-  csrs menvcfg, x15
-  csrc henvcfg, x8
-  LI(x15, 0x10)
-  csrs henvcfg, x15
-  csrc senvcfg, x8
-  LI(x15, 0x10)
-  csrs senvcfg, x15
+  cbo.inval    0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x8, 0x10)
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  LI(x8, 0x10)
+  csrs henvcfg, x8
+  csrc senvcfg, x6
+  LI(x8, 0x10)
+  csrs senvcfg, x8
   RVTEST_TSBI_GOTO_VUMODE
+  LI(x9, 0xccaf3a0a)
+  sw x9, 0(x14)
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie01:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x15, 0x10)
-  csrs menvcfg, x15
-  csrc henvcfg, x8
-  LI(x15, 0x10)
-  csrs henvcfg, x15
-  csrc senvcfg, x8
-  LI(x15, 0x30)
-  csrs senvcfg, x15
+  cbo.inval    0(x14)
+  lw x9, 0(x14)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie01, SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie01_str)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x8, 0x10)
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  LI(x8, 0x10)
+  csrs henvcfg, x8
+  csrc senvcfg, x6
+  LI(x8, 0x30)
+  csrs senvcfg, x8
   RVTEST_TSBI_GOTO_VUMODE
+  LI(x9, 0xfe7d086f)
+  sw x9, 0(x14)
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie11:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x15, 0x10)
-  csrs menvcfg, x15
-  csrc henvcfg, x8
-  LI(x15, 0x30)
-  csrs henvcfg, x15
-  csrc senvcfg, x8
+  cbo.inval    0(x14)
+  lw x9, 0(x14)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie11, SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie11_str)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x8, 0x10)
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  LI(x8, 0x30)
+  csrs henvcfg, x8
+  csrc senvcfg, x6
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie00:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x15, 0x10)
-  csrs menvcfg, x15
-  csrc henvcfg, x8
-  LI(x15, 0x30)
-  csrs henvcfg, x15
-  csrc senvcfg, x8
-  LI(x15, 0x10)
-  csrs senvcfg, x15
+  cbo.inval    0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x8, 0x10)
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  LI(x8, 0x30)
+  csrs henvcfg, x8
+  csrc senvcfg, x6
+  LI(x8, 0x10)
+  csrs senvcfg, x8
   RVTEST_TSBI_GOTO_VUMODE
+  LI(x9, 0x1478e62c)
+  sw x9, 0(x14)
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie01:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x15, 0x10)
-  csrs menvcfg, x15
-  csrc henvcfg, x8
-  LI(x15, 0x30)
-  csrs henvcfg, x15
-  csrc senvcfg, x8
-  LI(x15, 0x30)
-  csrs senvcfg, x15
+  cbo.inval    0(x14)
+  lw x9, 0(x14)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie01, SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie01_str)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x8, 0x10)
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  LI(x8, 0x30)
+  csrs henvcfg, x8
+  csrc senvcfg, x6
+  LI(x8, 0x30)
+  csrs senvcfg, x8
   RVTEST_TSBI_GOTO_VUMODE
+  LI(x9, 0x213cb5d)
+  sw x9, 0(x14)
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie11:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x15, 0x30)
-  csrs menvcfg, x15
-  csrc henvcfg, x8
-  csrc senvcfg, x8
+  cbo.inval    0(x14)
+  lw x9, 0(x14)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie11, SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie11_str)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x8, 0x30)
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  csrc senvcfg, x6
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie00:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x15, 0x30)
-  csrs menvcfg, x15
-  csrc henvcfg, x8
-  csrc senvcfg, x8
-  LI(x15, 0x10)
-  csrs senvcfg, x15
+  cbo.inval    0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x8, 0x30)
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  csrc senvcfg, x6
+  LI(x8, 0x10)
+  csrs senvcfg, x8
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie01:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x15, 0x30)
-  csrs menvcfg, x15
-  csrc henvcfg, x8
-  csrc senvcfg, x8
-  LI(x15, 0x30)
-  csrs senvcfg, x15
+  cbo.inval    0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x8, 0x30)
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  csrc senvcfg, x6
+  LI(x8, 0x30)
+  csrs senvcfg, x8
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie11:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x15, 0x30)
-  csrs menvcfg, x15
-  csrc henvcfg, x8
-  LI(x15, 0x10)
-  csrs henvcfg, x15
-  csrc senvcfg, x8
+  cbo.inval    0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x8, 0x30)
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  LI(x8, 0x10)
+  csrs henvcfg, x8
+  csrc senvcfg, x6
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie00:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x15, 0x30)
-  csrs menvcfg, x15
-  csrc henvcfg, x8
-  LI(x15, 0x10)
-  csrs henvcfg, x15
-  csrc senvcfg, x8
-  LI(x15, 0x10)
-  csrs senvcfg, x15
+  cbo.inval    0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x8, 0x30)
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  LI(x8, 0x10)
+  csrs henvcfg, x8
+  csrc senvcfg, x6
+  LI(x8, 0x10)
+  csrs senvcfg, x8
   RVTEST_TSBI_GOTO_VUMODE
+  LI(x9, 0x8d3d73f0)
+  sw x9, 0(x14)
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie01:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x15, 0x30)
-  csrs menvcfg, x15
-  csrc henvcfg, x8
-  LI(x15, 0x10)
-  csrs henvcfg, x15
-  csrc senvcfg, x8
-  LI(x15, 0x30)
-  csrs senvcfg, x15
+  cbo.inval    0(x14)
+  lw x9, 0(x14)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie01, SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie01_str)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x8, 0x30)
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  LI(x8, 0x10)
+  csrs henvcfg, x8
+  csrc senvcfg, x6
+  LI(x8, 0x30)
+  csrs senvcfg, x8
   RVTEST_TSBI_GOTO_VUMODE
+  LI(x9, 0xca1a6908)
+  sw x9, 0(x14)
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie11:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x15, 0x30)
-  csrs menvcfg, x15
-  csrc henvcfg, x8
-  LI(x15, 0x30)
-  csrs henvcfg, x15
-  csrc senvcfg, x8
+  cbo.inval    0(x14)
+  lw x9, 0(x14)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie11, SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie11_str)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x8, 0x30)
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  LI(x8, 0x30)
+  csrs henvcfg, x8
+  csrc senvcfg, x6
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie00:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x15, 0x30)
-  csrs menvcfg, x15
-  csrc henvcfg, x8
-  LI(x15, 0x30)
-  csrs henvcfg, x15
-  csrc senvcfg, x8
-  LI(x15, 0x10)
-  csrs senvcfg, x15
+  cbo.inval    0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x8, 0x30)
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  LI(x8, 0x30)
+  csrs henvcfg, x8
+  csrc senvcfg, x6
+  LI(x8, 0x10)
+  csrs senvcfg, x8
   RVTEST_TSBI_GOTO_VUMODE
+  LI(x9, 0xec9488ff)
+  sw x9, 0(x14)
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie01:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x15, 0x30)
-  csrs menvcfg, x15
-  csrc henvcfg, x8
-  LI(x15, 0x30)
-  csrs henvcfg, x15
-  csrc senvcfg, x8
-  LI(x15, 0x30)
-  csrs senvcfg, x15
+  cbo.inval    0(x14)
+  lw x9, 0(x14)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie01, SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie01_str)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  # Copy rs1 (x6) to a1 for T-SBI call
+  mv a1, x6
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x6
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x8, 0x30)
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x6
+  LI(x8, 0x30)
+  csrs henvcfg, x8
+  csrc senvcfg, x6
+  LI(x8, 0x30)
+  csrs senvcfg, x8
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie11:
-  cbo.inval    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
+  cbo.inval    0(x14)
+  RVTEST_TSBI_GOTO_SMODE
 #endif // ZICBOM_SUPPORTED
 
 
@@ -430,48 +960,96 @@ SvHZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cb
 //   Exercise cbo.clean, cbo.flush in VS-mode across menvcfg.cbcfe, henvcfg.cbcfe
 /////////////////////////////////
 #ifdef ZICBOM_SUPPORTED
-  LA(x13, scratch)
-  LI(x8, 0x40)  # cbcfe field mask
-  csrc menvcfg, x8
-  csrc henvcfg, x8
+  LA(x15, scratch)
+  LI(x13, 0x40)  # cbcfe field mask
+  # T-SBI call to execute instruction: csrc menvcfg, x13
+  # Copy rs1 (x13) to a1 for T-SBI call
+  mv a1, x13
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x13
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x13
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_envcfg_cg_cp_cbcfe_vs_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe0:
-  cbo.clean    0(x13)
+  cbo.clean    0(x15)
 SvHZicbo_envcfg_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe0:
-  cbo.flush    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  csrc henvcfg, x8
-  LI(x14, 0x40)
-  csrs henvcfg, x14
+  cbo.flush    0(x15)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x13
+  # Copy rs1 (x13) to a1 for T-SBI call
+  mv a1, x13
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x13
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x13
+  LI(x8, 0x40)
+  csrs henvcfg, x8
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_envcfg_cg_cp_cbcfe_vs_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe1:
-  cbo.clean    0(x13)
+  cbo.clean    0(x15)
 SvHZicbo_envcfg_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe1:
-  cbo.flush    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x14, 0x40)
-  csrs menvcfg, x14
-  csrc henvcfg, x8
+  cbo.flush    0(x15)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x13
+  # Copy rs1 (x13) to a1 for T-SBI call
+  mv a1, x13
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x13
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x8, 0x40)
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x13
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_envcfg_cg_cp_cbcfe_vs_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe0:
-  cbo.clean    0(x13)
+  cbo.clean    0(x15)
 SvHZicbo_envcfg_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe0:
-  cbo.flush    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x14, 0x40)
-  csrs menvcfg, x14
-  csrc henvcfg, x8
-  LI(x14, 0x40)
-  csrs henvcfg, x14
+  cbo.flush    0(x15)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x13
+  # Copy rs1 (x13) to a1 for T-SBI call
+  mv a1, x13
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x13
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x8, 0x40)
+  # T-SBI call to execute instruction: csrs menvcfg, x8
+  # Copy rs1 (x8) to a1 for T-SBI call
+  mv a1, x8
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x8
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x13
+  LI(x8, 0x40)
+  csrs henvcfg, x8
   RVTEST_TSBI_GOTO_VSMODE
 SvHZicbo_envcfg_cg_cp_cbcfe_vs_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe1:
-  cbo.clean    0(x13)
+  cbo.clean    0(x15)
 SvHZicbo_envcfg_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe1:
-  cbo.flush    0(x13)
-  RVTEST_TSBI_GOTO_MMODE
+  cbo.flush    0(x15)
+  RVTEST_TSBI_GOTO_SMODE
 #endif // ZICBOM_SUPPORTED
 
 
@@ -480,104 +1058,200 @@ SvHZicbo_envcfg_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe1:
 //   Exercise cbo.clean, cbo.flush in VU-mode across menvcfg.cbcfe, henvcfg.cbcfe, senvcfg.cbcfe
 /////////////////////////////////
 #ifdef ZICBOM_SUPPORTED
-  LA(x15, scratch)
-  LI(x8, 0x40)  # cbcfe field mask
-  csrc menvcfg, x8
-  csrc henvcfg, x8
-  csrc senvcfg, x8
+  LA(x8, scratch)
+  LI(x9, 0x40)  # cbcfe field mask
+  # T-SBI call to execute instruction: csrc menvcfg, x9
+  # Copy rs1 (x9) to a1 for T-SBI call
+  mv a1, x9
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x9
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x9
+  csrc senvcfg, x9
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_cbcfe0:
-  cbo.clean    0(x15)
+  cbo.clean    0(x8)
 SvHZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_cbcfe0:
-  cbo.flush    0(x15)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  csrc henvcfg, x8
-  csrc senvcfg, x8
-  LI(x9, 0x40)
-  csrs senvcfg, x9
+  cbo.flush    0(x8)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x9
+  # Copy rs1 (x9) to a1 for T-SBI call
+  mv a1, x9
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x9
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x9
+  csrc senvcfg, x9
+  LI(x13, 0x40)
+  csrs senvcfg, x13
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_cbcfe1:
-  cbo.clean    0(x15)
+  cbo.clean    0(x8)
 SvHZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_cbcfe1:
-  cbo.flush    0(x15)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  csrc henvcfg, x8
-  LI(x9, 0x40)
-  csrs henvcfg, x9
-  csrc senvcfg, x8
+  cbo.flush    0(x8)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x9
+  # Copy rs1 (x9) to a1 for T-SBI call
+  mv a1, x9
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x9
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x9
+  LI(x13, 0x40)
+  csrs henvcfg, x13
+  csrc senvcfg, x9
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_cbcfe0:
-  cbo.clean    0(x15)
+  cbo.clean    0(x8)
 SvHZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_cbcfe0:
-  cbo.flush    0(x15)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  csrc henvcfg, x8
-  LI(x9, 0x40)
-  csrs henvcfg, x9
-  csrc senvcfg, x8
-  LI(x9, 0x40)
-  csrs senvcfg, x9
+  cbo.flush    0(x8)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x9
+  # Copy rs1 (x9) to a1 for T-SBI call
+  mv a1, x9
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x9
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x9
+  LI(x13, 0x40)
+  csrs henvcfg, x13
+  csrc senvcfg, x9
+  LI(x13, 0x40)
+  csrs senvcfg, x13
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_cbcfe1:
-  cbo.clean    0(x15)
+  cbo.clean    0(x8)
 SvHZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_cbcfe1:
-  cbo.flush    0(x15)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x9, 0x40)
-  csrs menvcfg, x9
-  csrc henvcfg, x8
-  csrc senvcfg, x8
+  cbo.flush    0(x8)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x9
+  # Copy rs1 (x9) to a1 for T-SBI call
+  mv a1, x9
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x9
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x13, 0x40)
+  # T-SBI call to execute instruction: csrs menvcfg, x13
+  # Copy rs1 (x13) to a1 for T-SBI call
+  mv a1, x13
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x13
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x9
+  csrc senvcfg, x9
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_cbcfe0:
-  cbo.clean    0(x15)
+  cbo.clean    0(x8)
 SvHZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_cbcfe0:
-  cbo.flush    0(x15)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x9, 0x40)
-  csrs menvcfg, x9
-  csrc henvcfg, x8
-  csrc senvcfg, x8
-  LI(x9, 0x40)
-  csrs senvcfg, x9
+  cbo.flush    0(x8)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x9
+  # Copy rs1 (x9) to a1 for T-SBI call
+  mv a1, x9
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x9
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x13, 0x40)
+  # T-SBI call to execute instruction: csrs menvcfg, x13
+  # Copy rs1 (x13) to a1 for T-SBI call
+  mv a1, x13
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x13
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x9
+  csrc senvcfg, x9
+  LI(x13, 0x40)
+  csrs senvcfg, x13
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_cbcfe1:
-  cbo.clean    0(x15)
+  cbo.clean    0(x8)
 SvHZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_cbcfe1:
-  cbo.flush    0(x15)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x9, 0x40)
-  csrs menvcfg, x9
-  csrc henvcfg, x8
-  LI(x9, 0x40)
-  csrs henvcfg, x9
-  csrc senvcfg, x8
+  cbo.flush    0(x8)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x9
+  # Copy rs1 (x9) to a1 for T-SBI call
+  mv a1, x9
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x9
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x13, 0x40)
+  # T-SBI call to execute instruction: csrs menvcfg, x13
+  # Copy rs1 (x13) to a1 for T-SBI call
+  mv a1, x13
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x13
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x9
+  LI(x13, 0x40)
+  csrs henvcfg, x13
+  csrc senvcfg, x9
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_cbcfe0:
-  cbo.clean    0(x15)
+  cbo.clean    0(x8)
 SvHZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_cbcfe0:
-  cbo.flush    0(x15)
-  RVTEST_TSBI_GOTO_MMODE
-  csrc menvcfg, x8
-  LI(x9, 0x40)
-  csrs menvcfg, x9
-  csrc henvcfg, x8
-  LI(x9, 0x40)
-  csrs henvcfg, x9
-  csrc senvcfg, x8
-  LI(x9, 0x40)
-  csrs senvcfg, x9
+  cbo.flush    0(x8)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x9
+  # Copy rs1 (x9) to a1 for T-SBI call
+  mv a1, x9
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5b073) # csrc menvcfg, x9
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  LI(x13, 0x40)
+  # T-SBI call to execute instruction: csrs menvcfg, x13
+  # Copy rs1 (x13) to a1 for T-SBI call
+  mv a1, x13
+
+  # Copy rs2 (x0) to a2 for T-SBI call
+  mv a2, x0
+
+  LI(a0, 0x30a5a073) # csrs menvcfg, x13
+  ecall # T-SBI call to execute instruction at suitable privilege level
+  csrc henvcfg, x9
+  LI(x13, 0x40)
+  csrs henvcfg, x13
+  csrc senvcfg, x9
+  LI(x13, 0x40)
+  csrs senvcfg, x13
   RVTEST_TSBI_GOTO_VUMODE
 SvHZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_cbcfe1:
-  cbo.clean    0(x15)
+  cbo.clean    0(x8)
 SvHZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_cbcfe1:
-  cbo.flush    0(x15)
-  RVTEST_TSBI_GOTO_MMODE
+  cbo.flush    0(x8)
+  RVTEST_TSBI_GOTO_SMODE
 #endif // ZICBOM_SUPPORTED
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test

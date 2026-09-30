@@ -511,17 +511,28 @@ def sret_tests(test_data: TestData, covergroup: str, coverpoint: str, home: str)
     """Execute sret in home ("m" or "s") with each SPP, SPIE and hstatus.SPV.
 
     home writes SPP and SPIE through its own status CSR, which the coverage samples.  After each sret, a read of
-    mscratch traps and the trap record shows the mode reached.  home then checks SPP, SPIE, SIE and hstatus.SPV.
+    mscratch traps into M-mode and the trap record shows the mode reached.  home then checks SPP, SPIE, SIE and
+    hstatus.SPV.  For home "s", medeleg sends illegal instructions and U/VU and VS ecalls to M-mode during the test,
+    so that no trap into HS-mode rewrites SPP, SPIE or SPV before they are checked.
     """
     status = "mstatus" if home == "m" else "sstatus"
     save_reg, save_h_reg, temp_reg, rd = test_data.int_regs.get_registers(4)
+    to_m = "(1 << CAUSE_ILLEGAL_INSTRUCTION) | (1 << CAUSE_USER_ECALL) | (1 << CAUSE_VIRTUAL_SUPERVISOR_ECALL)"
     lines = [
         comment_banner(
             coverpoint, f"Execute sret with {status}.SPP = {{0, 1}}, SPIE = {{0, 1}} and hstatus.SPV = {{0, 1}}"
-        ),
-        f"csrr x{save_reg}, {status}",
-        f"csrr x{save_h_reg}, hstatus",
+        )
     ]
+    if home == "s":
+        lines.extend(
+            [
+                "RVTEST_TSBI_GOTO_MMODE",
+                f"LI(x{temp_reg}, {to_m})",
+                f"csrc medeleg, x{temp_reg}",
+                "RVTEST_TSBI_GOTO_SMODE",
+            ]
+        )
+    lines.extend([f"csrr x{save_reg}, {status}", f"csrr x{save_h_reg}, hstatus"])
     for spp in (0, 1):
         for spie in (0, 1):
             for spv in (0, 1):
@@ -558,6 +569,15 @@ def sret_tests(test_data: TestData, covergroup: str, coverpoint: str, home: str)
                     ]
                 )
     lines.extend([f"csrw {status}, x{save_reg}", f"csrw hstatus, x{save_h_reg}"])
+    if home == "s":
+        lines.extend(
+            [
+                "RVTEST_TSBI_GOTO_MMODE",
+                f"LI(x{temp_reg}, {to_m})",
+                f"csrs medeleg, x{temp_reg}",
+                "RVTEST_TSBI_GOTO_SMODE",
+            ]
+        )
     test_data.int_regs.return_registers([save_reg, save_h_reg, temp_reg, rd])
     return lines
 

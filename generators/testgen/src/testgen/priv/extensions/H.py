@@ -244,7 +244,7 @@ def _user_csr_tests(test_data: TestData, test_chunks: list[TestChunk], mode: str
 def _xret_tests(test_data: TestData) -> list[str]:
     """Illegal mret and sret, and sret from HS-mode and VS-mode.
 
-    After each sret, a read of mscratch traps into HS-mode and the trap record shows the mode reached.
+    After each sret, a read of mscratch traps and the trap record shows the mode reached.
     """
     lines = [
         comment_banner("cp_mret_illegal, cp_sret_illegal", "Execute mret in HS, VS and VU modes and sret in VU-mode"),

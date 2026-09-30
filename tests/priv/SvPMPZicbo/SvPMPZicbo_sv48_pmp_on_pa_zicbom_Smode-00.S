@@ -93,7 +93,7 @@ SvPMPZicbo_cp_pmpcfg_pmpcfg0_x:
   slli a0, a0, 25
   srli a0, a0, 25
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
 SvPMPZicbo_cg_cp_pmp_zicbo_test1_cbo_clean:
   cbo.clean (a5)
   nop
@@ -103,7 +103,7 @@ SvPMPZicbo_cg_cp_pmp_zicbo_test1_cbo_flush:
 SvPMPZicbo_cg_cp_pmp_zicbo_test1_cbo_inval:
   cbo.inval (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+  RVTEST_TSBI_GOTO_MMODE
 
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
@@ -114,7 +114,7 @@ SvPMPZicbo_cg_cp_pmp_zicbo_test1_cbo_inval:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
 SvPMPZicbo_cg_cp_pmp_zicbo_test2_cbo_clean:
   cbo.clean (a5)
   nop
@@ -124,7 +124,7 @@ SvPMPZicbo_cg_cp_pmp_zicbo_test2_cbo_flush:
 SvPMPZicbo_cg_cp_pmp_zicbo_test2_cbo_inval:
   cbo.inval (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+  RVTEST_TSBI_GOTO_MMODE
 
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -136,7 +136,7 @@ SvPMPZicbo_cg_cp_pmp_zicbo_test2_cbo_inval:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
 SvPMPZicbo_cg_cp_pmp_zicbo_test3_cbo_clean:
   cbo.clean (a5)
   nop
@@ -146,7 +146,7 @@ SvPMPZicbo_cg_cp_pmp_zicbo_test3_cbo_flush:
 SvPMPZicbo_cg_cp_pmp_zicbo_test3_cbo_inval:
   cbo.inval (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+  RVTEST_TSBI_GOTO_MMODE
 
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -159,7 +159,7 @@ SvPMPZicbo_cg_cp_pmp_zicbo_test3_cbo_inval:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
 SvPMPZicbo_cg_cp_pmp_zicbo_test4_cbo_clean:
   cbo.clean (a5)
   nop
@@ -169,7 +169,7 @@ SvPMPZicbo_cg_cp_pmp_zicbo_test4_cbo_flush:
 SvPMPZicbo_cg_cp_pmp_zicbo_test4_cbo_inval:
   cbo.inval (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+  RVTEST_TSBI_GOTO_MMODE
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test

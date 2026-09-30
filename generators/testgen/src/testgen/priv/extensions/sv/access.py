@@ -11,7 +11,6 @@
 from collections.abc import Mapping, Sequence
 
 from testgen.asm.helpers import write_sigupd
-from testgen.asm.tsbi import in_mode
 from testgen.data.state import TestData
 from testgen.priv.extensions.sv.page_tables import SvMode
 
@@ -42,9 +41,11 @@ def virtual_address(
     ]
 
 
-def tsbi_mode(mode: str) -> str:
-    """The in_mode name ("M", "S", "U") of an Sv mode name ("Mmode", "Smode", "Umode")."""
-    return mode.removesuffix("mode").upper()
+def mode_switch(mode: str, driver_mode: str | None) -> tuple[list[str], list[str]]:
+    """Return the T-SBI calls that enter ``mode`` from ``driver_mode`` and return."""
+    if driver_mode is None or mode == driver_mode:
+        return [], []
+    return [f"RVTEST_TSBI_GOTO_{mode.upper()}"], [f"RVTEST_TSBI_GOTO_{driver_mode.upper()}"]
 
 
 def add_rwx_test(
@@ -81,8 +82,11 @@ def add_rwx_test(
         ).removesuffix(":")
         for operation in operations
     }
+    enter, leave = mode_switch(mode, driver_mode)
     repeated = setup if repeat_setup else ()
     lines = [
+        *(virtual_address(sv, va, level) if address is None else address),
+        *enter,
         *setup,
         "addi a2, a2, 16",
         "",
@@ -111,11 +115,11 @@ def add_rwx_test(
         )
     if cleanup:
         lines.extend(["", *cleanup])
-    return [
-        *(virtual_address(sv, va, level) if address is None else address),
-        *in_mode(tsbi_mode(mode), tsbi_mode(driver_mode or mode), lines),
-        "",
-        write_sigupd(12, test_data, label=labels["store"]),
-        write_sigupd(13, test_data, label=labels["load"]),
-        *([write_sigupd(14, test_data, label=labels["exec"])] if include_exec else []),
-    ]
+    if leave:
+        lines.extend(["", *leave])
+    lines.extend(
+        ["", write_sigupd(12, test_data, label=labels["store"]), write_sigupd(13, test_data, label=labels["load"])]
+    )
+    if include_exec:
+        lines.append(write_sigupd(14, test_data, label=labels["exec"]))
+    return lines

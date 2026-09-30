@@ -94,7 +94,7 @@ SvPMP_cp_pmpcfg_pmpcfg0_rx:
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -111,7 +111,8 @@ SvPMP_cp_sv32_pmp_on_pa_Umode_test1_load:
 SvPMP_cp_sv32_pmp_on_pa_Umode_test1_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvPMP_cp_sv32_pmp_on_pa_Umode_test1_store, SvPMP_cp_sv32_pmp_on_pa_Umode_test1_store_str)
@@ -126,7 +127,7 @@ SvPMP_cp_sv32_pmp_on_pa_Umode_test1_exec:
   sfence.vma
 
   LI(a5, va_data)
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -143,7 +144,8 @@ SvPMP_cp_sv32_pmp_on_pa_Umode_test2_load:
 SvPMP_cp_sv32_pmp_on_pa_Umode_test2_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvPMP_cp_sv32_pmp_on_pa_Umode_test2_store, SvPMP_cp_sv32_pmp_on_pa_Umode_test2_store_str)
@@ -167,7 +169,7 @@ SvPMP_cp_pmpcfg_pmpcfg0_rw:
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -184,7 +186,8 @@ SvPMP_cp_sv32_pmp_on_pa_Umode_test3_load:
 SvPMP_cp_sv32_pmp_on_pa_Umode_test3_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvPMP_cp_sv32_pmp_on_pa_Umode_test3_store, SvPMP_cp_sv32_pmp_on_pa_Umode_test3_store_str)
@@ -199,7 +202,7 @@ SvPMP_cp_sv32_pmp_on_pa_Umode_test3_exec:
   sfence.vma
 
   LI(a5, va_data)
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -216,7 +219,8 @@ SvPMP_cp_sv32_pmp_on_pa_Umode_test4_load:
 SvPMP_cp_sv32_pmp_on_pa_Umode_test4_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvPMP_cp_sv32_pmp_on_pa_Umode_test4_store, SvPMP_cp_sv32_pmp_on_pa_Umode_test4_store_str)
@@ -240,7 +244,7 @@ SvPMP_cp_pmpcfg_pmpcfg0_x:
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -257,7 +261,8 @@ SvPMP_cp_sv32_pmp_on_pa_Umode_test5_load:
 SvPMP_cp_sv32_pmp_on_pa_Umode_test5_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvPMP_cp_sv32_pmp_on_pa_Umode_test5_store, SvPMP_cp_sv32_pmp_on_pa_Umode_test5_store_str)
@@ -272,7 +277,7 @@ SvPMP_cp_sv32_pmp_on_pa_Umode_test5_exec:
   sfence.vma
 
   LI(a5, va_data)
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -289,7 +294,8 @@ SvPMP_cp_sv32_pmp_on_pa_Umode_test6_load:
 SvPMP_cp_sv32_pmp_on_pa_Umode_test6_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvPMP_cp_sv32_pmp_on_pa_Umode_test6_store, SvPMP_cp_sv32_pmp_on_pa_Umode_test6_store_str)

@@ -10,7 +10,7 @@
 
 from testgen.asm.csr import write_stce
 from testgen.asm.helpers import comment_banner, write_sigupd
-from testgen.asm.tsbi import in_mode, tsbi_call_or_direct
+from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.state import TestData
 
 
@@ -469,8 +469,9 @@ def wrs_timeout_helper(
                         "csrw hedeleg, zero",
                     ]
                 )
-            body: list[str] = []
-            body.extend(
+            if mode != priv:
+                lines.append(f"RVTEST_TSBI_GOTO_{mode}MODE")
+            lines.extend(
                 [
                     *_read_trap_count_helper(r_cause),
                     "# lr.w to set up reservation",
@@ -482,7 +483,7 @@ def wrs_timeout_helper(
                 ]
             )
             if op == "WRS.NTO":
-                body.extend(
+                lines.extend(
                     [
                         "#ifndef UDB_ZAWRS_NTO_IS_NOP",
                         f"# check if x{r_cause} = 0, WRS.NTO terminated prematurely, repeat until timeout",
@@ -491,13 +492,14 @@ def wrs_timeout_helper(
                         "#endif",
                     ]
                 )
-            body.extend(
+            lines.extend(
                 [
                     write_sigupd(r_cause, test_data),
                     "#### Clean up ####",
                 ]
             )
-            lines.extend(in_mode(mode, priv, body))
+            if mode != priv:
+                lines.append(f"RVTEST_TSBI_GOTO_{priv}MODE")
 
     if virtualized:
         lines.append("#endif // H_SUPPORTED")

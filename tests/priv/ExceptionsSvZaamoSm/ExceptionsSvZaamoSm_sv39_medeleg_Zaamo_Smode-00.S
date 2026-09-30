@@ -73,13 +73,14 @@ main:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test1_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test1_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test1_amoadd_str)
@@ -92,13 +93,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test1_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test2_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test2_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test2_amoadd_str)
@@ -113,13 +115,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test2_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test3_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test3_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test3_amoadd_str)
@@ -132,13 +135,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test3_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test4_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test4_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test4_amoadd_str)
@@ -153,13 +157,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test4_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test5_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test5_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test5_amoadd_str)
@@ -172,13 +177,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test5_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test6_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test6_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test6_amoadd_str)
@@ -193,13 +199,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test6_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test7_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test7_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test7_amoadd_str)
@@ -212,13 +219,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test7_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test8_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test8_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test8_amoadd_str)
@@ -233,13 +241,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test8_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test9_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test9_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test9_amoadd_str)
@@ -252,13 +261,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test9_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test10_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test10_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test10_amoadd_str)
@@ -273,13 +283,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test10_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test11_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test11_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test11_amoadd_str)
@@ -292,13 +303,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test11_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test12_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test12_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test12_amoadd_str)
@@ -313,13 +325,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test12_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test13_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test13_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test13_amoadd_str)
@@ -332,13 +345,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test13_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test14_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test14_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test14_amoadd_str)
@@ -353,13 +367,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test14_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test15_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test15_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test15_amoadd_str)
@@ -372,13 +387,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test15_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test16_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test16_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test16_amoadd_str)
@@ -393,13 +409,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test16_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test17_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test17_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test17_amoadd_str)
@@ -412,13 +429,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test17_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test18_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test18_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test18_amoadd_str)
@@ -433,13 +451,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test18_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test19_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test19_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test19_amoadd_str)
@@ -452,13 +471,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test19_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test20_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test20_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test20_amoadd_str)
@@ -473,13 +493,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test20_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test21_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test21_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test21_amoadd_str)
@@ -492,13 +513,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test21_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test22_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test22_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test22_amoadd_str)
@@ -513,13 +535,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test22_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test23_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test23_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test23_amoadd_str)
@@ -532,13 +555,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test23_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test24_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test24_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test24_amoadd_str)
@@ -553,13 +577,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test24_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test25_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test25_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test25_amoadd_str)
@@ -572,13 +597,14 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_s_test25_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_s_test26_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test26_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_s_test26_amoadd_str)

@@ -40,7 +40,7 @@ Svinval_cg_cp_svinval_test1_sfence_inval_ir:
 Svinval_cg_cp_svinval_test1_sfence_vma:
   sfence.vma x0, x0
 
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
 Svinval_cg_cp_svinval_test2_sfence_w_inval:
   sfence.w.inval
 
@@ -53,7 +53,7 @@ Svinval_cg_cp_svinval_test2_sfence_inval_ir:
 Svinval_cg_cp_svinval_test2_sfence_vma:
   sfence.vma x0, x0
 
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+  RVTEST_TSBI_GOTO_SMODE
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

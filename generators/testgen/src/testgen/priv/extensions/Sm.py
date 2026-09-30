@@ -10,7 +10,6 @@
 
 from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd, gen_csr_write_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
-from testgen.asm.tsbi import in_mode
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -267,14 +266,10 @@ def _generate_sfence_tvm_tests(test_data: TestData) -> list[str]:
                 f"{set_or_clear} mstatus, x{tvm_reg}          # {'set' if tvm else 'clear'} TVM bit",
                 test_data.add_testcase(f"sfence_vma_m_tvm{tvm}", coverpoint, covergroup),
                 "sfence.vma             # permitted in M-mode whatever TVM says",
-                *in_mode(
-                    "S",
-                    "M",
-                    [
-                        test_data.add_testcase(f"sfence_vma_s_tvm{tvm}", coverpoint, covergroup),
-                        "sfence.vma             # TVM restricts S-mode only",
-                    ],
-                ),
+                "RVTEST_TSBI_GOTO_SMODE      # TVM restricts S-mode only",
+                test_data.add_testcase(f"sfence_vma_s_tvm{tvm}", coverpoint, covergroup),
+                "sfence.vma             # test sfence.vma instruction",
+                "RVTEST_TSBI_GOTO_MMODE      # back to M-mode to twiddle mstatus.TVM",
             ]
         )
 
@@ -929,23 +924,15 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             "#ifdef S_SUPPORTED",
             f"LI(x{tvm_reg}, 0x00100000) # mstatus.TVM (bit 20)",
             f"csrs mstatus, x{tvm_reg}",
-            *in_mode(
-                "S",
-                "M",
-                [
-                    test_data.add_testcase("tvm_enabled", coverpoint, covergroup),
-                    f"csrr x{temp_reg}, satp # read satp from S-mode with mstatus.TVM = 1; expect illegal instruction trap",
-                ],
-            ),
+            "RVTEST_TSBI_GOTO_SMODE",
+            test_data.add_testcase("tvm_enabled", coverpoint, covergroup),
+            f"csrr x{temp_reg}, satp # read satp from S-mode with mstatus.TVM = 1; expect illegal instruction trap",
+            "RVTEST_TSBI_GOTO_MMODE",
             f"csrc mstatus, x{tvm_reg}",
-            *in_mode(
-                "S",
-                "M",
-                [
-                    test_data.add_testcase("tvm_disabled", coverpoint, covergroup),
-                    f"csrr x{temp_reg}, satp # read satp from S-mode with mstatus.TVM = 0; expect no trap.  Value is WARL and unpredictable so don't sigupd it",
-                ],
-            ),
+            "RVTEST_TSBI_GOTO_SMODE",
+            test_data.add_testcase("tvm_disabled", coverpoint, covergroup),
+            f"csrr x{temp_reg}, satp # read satp from S-mode with mstatus.TVM = 0; expect no trap.  Value is WARL and unpredictable so don't sigupd it",
+            "RVTEST_TSBI_GOTO_MMODE",
             "#endif // S_SUPPORTED",
         ]
     )

@@ -10,7 +10,6 @@
 """InterruptsS privileged extension test generator for interrupts not relying on M-mode."""
 
 from testgen.asm.helpers import comment_banner
-from testgen.asm.tsbi import in_mode
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.InterruptsCommon import (
@@ -24,6 +23,8 @@ from testgen.priv.extensions.InterruptsCommon import (
     guard_symbol,
     int_coverpoint,
     int_macro,
+    mode_enter,
+    mode_exit,
     reg_ints,
     sstc_ints,
     supervisor_ints,
@@ -91,15 +92,11 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                         cp,
                         COVERGROUP,
                     ),
-                    *in_mode(
-                        priv,
-                        suite.boot,
-                        [
-                            f"RVTEST_SET_{macro}_INT_{priv} # Set the interrupt",
-                            f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
-                            f"RVTEST_CLR_{macro}_INT_{priv} # Clear the interrupt if the handler hasn't done so",
-                        ],
-                    ),
+                    *mode_enter(suite, priv),
+                    f"RVTEST_SET_{macro}_INT_{priv} # Set the interrupt",
+                    f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
+                    f"RVTEST_CLR_{macro}_INT_{priv} # Clear the interrupt if the handler hasn't done so",
+                    *mode_exit(suite, priv),
                     f"#endif // UDB_STVEC_MODES_{mode}",
                     f"#endif // {guard}",
                     "",

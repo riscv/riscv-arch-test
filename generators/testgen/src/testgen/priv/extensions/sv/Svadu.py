@@ -9,10 +9,10 @@
 """Generate hardware A/D-bit update tests."""
 
 from testgen.asm.helpers import write_sigupd
-from testgen.asm.tsbi import in_mode, tsbi_call
+from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.sv.access import tsbi_mode, virtual_address
+from testgen.priv.extensions.sv.access import virtual_address
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
     SV32,
@@ -69,22 +69,18 @@ def _add_adu_access(test_data: TestData, sv: SvMode, mode: str, level: int, numb
         *virtual_address(sv, f"va_data_l{level}_w", level, destination="s0", scratch="t0", merge_sv32_base_page=True),
         *virtual_address(sv, f"va_data_l{level}_r", level, destination="s1", scratch="t0", merge_sv32_base_page=True),
         *virtual_address(sv, f"va_data_l{level}_x", level, destination="a5", scratch="t0", merge_sv32_base_page=True),
-        *in_mode(
-            tsbi_mode(mode),
-            "S",
-            [
-                "addi a2, a2, 16",
-                f"{labels['store']}:",
-                "sw a2, 20(s0)",
-                "nop",
-                f"{labels['load']}:",
-                "lw a3, 20(s1)",
-                "nop",
-                f"{labels['exec']}:",
-                "jalr ra, a5, 0",
-                "nop",
-            ],
-        ),
+        *([] if mode == "Smode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"]),
+        "addi a2, a2, 16",
+        f"{labels['store']}:",
+        "sw a2, 20(s0)",
+        "nop",
+        f"{labels['load']}:",
+        "lw a3, 20(s1)",
+        "nop",
+        f"{labels['exec']}:",
+        "jalr ra, a5, 0",
+        "nop",
+        *([] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"]),
         write_sigupd(12, test_data, label=labels["store"]),
         write_sigupd(13, test_data, label=labels["load"]),
         write_sigupd(14, test_data, label=labels["exec"]),

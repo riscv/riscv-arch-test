@@ -9,10 +9,10 @@
 """Generate cache-block operation tests under virtual memory."""
 
 from testgen.asm.helpers import write_sigupd
-from testgen.asm.tsbi import in_mode, tsbi_call
+from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.sv.access import tsbi_mode, virtual_address
+from testgen.priv.extensions.sv.access import virtual_address
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
     SV32,
@@ -32,8 +32,7 @@ from testgen.priv.registry import add_priv_test_generator
 def _add_operation(
     test_data: TestData, sv: SvMode, family: str, mode: str, address: list[str], number: int
 ) -> list[str]:
-    lines: list[str] = []
-    results: list[str] = []
+    lines = [*address, *([] if mode == "Smode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"])]
     if family == "zicbop":
         for operation in ("prefetch.i", "prefetch.r", "prefetch.w"):
             lines.extend(
@@ -51,14 +50,31 @@ def _add_operation(
         lines.extend(["addi a2, a2, 16"])
         for operation, register in (("clean", "a2"), ("flush", "a3"), ("inval", "a4")):
             lines.extend([f"{labels[operation]}:", f"cbo.{operation} (a5)", f"addi {register}, a2, 4"])
-        results = [
-            write_sigupd(reg, test_data, label=labels[op]) for op, reg in (("clean", 12), ("flush", 13), ("inval", 14))
-        ]
+        lines.extend(
+            [
+                *([] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"]),
+                *(
+                    write_sigupd(reg, test_data, label=labels[op])
+                    for op, reg in (("clean", 12), ("flush", 13), ("inval", 14))
+                ),
+            ]
+        )
+        return lines
     else:
         label = test_data.add_testcase(f"test{number}_zero", "cp_zicboz", "SvZicbo_cg").removesuffix(":")
-        lines.extend(["addi a2, a2, 16", f"{label}:", "cbo.zero (a5)", "addi a4, a2, 4"])
-        results = [write_sigupd(14, test_data, label=label)]
-    return [*address, *in_mode(tsbi_mode(mode), "S", lines), *results]
+        lines.extend(
+            [
+                "addi a2, a2, 16",
+                f"{label}:",
+                "cbo.zero (a5)",
+                "addi a4, a2, 4",
+                *([] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"]),
+                write_sigupd(14, test_data, label=label),
+            ]
+        )
+        return lines
+    lines.extend([] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"])
+    return lines
 
 
 def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode: str, family: str) -> None:

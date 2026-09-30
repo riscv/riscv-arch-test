@@ -53,11 +53,11 @@ Sv_cg_cp_satp_access_s_csrc:
   # Read satp into x14 and check against expected.
   RVTEST_SIGUPD_CSR_READ(satp, x14, Sv_cg_cp_satp_access_s_csrc, Sv_cg_cp_satp_access_s_csrc_str)
   csrw satp, zero
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   csrw satp, x0
   csrs satp, x0
   csrc satp, x0
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+  RVTEST_TSBI_GOTO_SMODE
 // satp.PPN points at the identity-mapped root table so the S-mode code keeps running
   LA(a1, rvtest_Sroot_pg_tbl)
   srli a1, a1, 12

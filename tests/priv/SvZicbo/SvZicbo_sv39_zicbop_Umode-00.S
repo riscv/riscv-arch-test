@@ -74,7 +74,7 @@ main:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
 SvZicbo_cg_cp_prefetch_test1_prefetch_i:
   prefetch.i 0(a5)
   nop
@@ -84,7 +84,7 @@ SvZicbo_cg_cp_prefetch_test1_prefetch_r:
 SvZicbo_cg_cp_prefetch_test1_prefetch_w:
   prefetch.w 0(a5)
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+  RVTEST_TSBI_GOTO_SMODE
 
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
@@ -95,7 +95,7 @@ SvZicbo_cg_cp_prefetch_test1_prefetch_w:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
 SvZicbo_cg_cp_prefetch_test2_prefetch_i:
   prefetch.i 0(a5)
   nop
@@ -105,7 +105,7 @@ SvZicbo_cg_cp_prefetch_test2_prefetch_r:
 SvZicbo_cg_cp_prefetch_test2_prefetch_w:
   prefetch.w 0(a5)
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+  RVTEST_TSBI_GOTO_SMODE
 
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
@@ -117,7 +117,7 @@ SvZicbo_cg_cp_prefetch_test2_prefetch_w:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
 SvZicbo_cg_cp_prefetch_test3_prefetch_i:
   prefetch.i 0(a5)
   nop
@@ -127,7 +127,7 @@ SvZicbo_cg_cp_prefetch_test3_prefetch_r:
 SvZicbo_cg_cp_prefetch_test3_prefetch_w:
   prefetch.w 0(a5)
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+  RVTEST_TSBI_GOTO_SMODE
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test

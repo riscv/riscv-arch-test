@@ -92,7 +92,7 @@ main:
   slli t0, t0, 10
   srli t0, t0, 10
   add a5, a5, t0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test1_store:
   sw a2, 20(s0)
@@ -103,7 +103,7 @@ Svadu_cg_cp_ad_update_test1_load:
 Svadu_cg_cp_ad_update_test1_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+  RVTEST_TSBI_GOTO_SMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test1_store, Svadu_cg_cp_ad_update_test1_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -145,7 +145,7 @@ Svadu_cg_cp_ad_update_test1_read_exec_pte:
   slli t0, t0, 10
   srli t0, t0, 10
   add a5, a5, t0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test2_store:
   sw a2, 20(s0)
@@ -156,7 +156,7 @@ Svadu_cg_cp_ad_update_test2_load:
 Svadu_cg_cp_ad_update_test2_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+  RVTEST_TSBI_GOTO_SMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test2_store, Svadu_cg_cp_ad_update_test2_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -198,7 +198,7 @@ Svadu_cg_cp_ad_update_test2_read_exec_pte:
   slli t0, t0, 10
   srli t0, t0, 10
   add a5, a5, t0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test3_store:
   sw a2, 20(s0)
@@ -209,7 +209,7 @@ Svadu_cg_cp_ad_update_test3_load:
 Svadu_cg_cp_ad_update_test3_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+  RVTEST_TSBI_GOTO_SMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test3_store, Svadu_cg_cp_ad_update_test3_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -252,7 +252,7 @@ Svadu_cg_cp_ad_update_test3_read_exec_pte:
   slli t0, t0, 20
   srli t0, t0, 20
   add a5, a5, t0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test4_store:
   sw a2, 20(s0)
@@ -263,7 +263,7 @@ Svadu_cg_cp_ad_update_test4_load:
 Svadu_cg_cp_ad_update_test4_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+  RVTEST_TSBI_GOTO_SMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test4_store, Svadu_cg_cp_ad_update_test4_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -306,7 +306,7 @@ Svadu_cg_cp_ad_update_test4_read_exec_pte:
   slli t0, t0, 20
   srli t0, t0, 20
   add a5, a5, t0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test5_store:
   sw a2, 20(s0)
@@ -317,7 +317,7 @@ Svadu_cg_cp_ad_update_test5_load:
 Svadu_cg_cp_ad_update_test5_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+  RVTEST_TSBI_GOTO_SMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test5_store, Svadu_cg_cp_ad_update_test5_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -360,7 +360,7 @@ Svadu_cg_cp_ad_update_test5_read_exec_pte:
   slli t0, t0, 20
   srli t0, t0, 20
   add a5, a5, t0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 Svadu_cg_cp_ad_update_test6_store:
   sw a2, 20(s0)
@@ -371,7 +371,7 @@ Svadu_cg_cp_ad_update_test6_load:
 Svadu_cg_cp_ad_update_test6_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+  RVTEST_TSBI_GOTO_SMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svadu_cg_cp_ad_update_test6_store, Svadu_cg_cp_ad_update_test6_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

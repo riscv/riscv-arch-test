@@ -8,7 +8,6 @@
 
 from testgen.asm.csr import csr_walk_test
 from testgen.asm.helpers import arch_block, comment_banner
-from testgen.asm.tsbi import in_mode
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -24,13 +23,15 @@ MSTATEEN_CSRS_H = ["mstateen0h", "mstateen1h", "mstateen2h", "mstateen3h"]
 CSR_OPS = ["csrrw", "csrrs", "csrrc", "csrr"]
 
 
+IN_MMODE = f"{INDENT}# already in M-mode"  # M-mode is the default; just a marker comment
+
 # Mode dispatch for the priv_mode_m_maybes_u coverpoints. Each entry is
-# (label, mode the accesses run in, whether an S_SUPPORTED guard is needed).
-# Lower-mode-only coverpoints slice [1:].
+# (label, line that switches into the mode, whether an S_SUPPORTED guard is needed).
+# RVTEST_TSBI_GOTO_MMODE returns from any lower mode. Lower-mode-only coverpoints slice [1:].
 _MODES_MUS = [
-    ("mmode", "M", False),
-    ("umode", "U", False),
-    ("smode", "S", True),
+    ("mmode", IN_MMODE, False),
+    ("umode", "RVTEST_TSBI_GOTO_UMODE", False),
+    ("smode", "RVTEST_TSBI_GOTO_SMODE", True),
 ]
 
 
@@ -62,11 +63,11 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
     temp_reg = test_data.int_regs.get_register()
 
     # ── U-mode ──────────────────────────────────────────────────────────────
-    body: list[str] = []
+    lines.append("RVTEST_TSBI_GOTO_UMODE")
 
     for csr in MSTATEEN_CSRS_64:
         for op in CSR_OPS:
-            body.extend(
+            lines.extend(
                 [
                     "",
                     test_data.add_testcase(f"{csr}_{op.lower()}_umode", coverpoint, covergroup),
@@ -74,27 +75,27 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
                 ]
             )
 
-    body.append("#if __riscv_xlen == 32")
+    lines.append("#if __riscv_xlen == 32")
     for csr in MSTATEEN_CSRS_H:
         for op in CSR_OPS:
-            body.extend(
+            lines.extend(
                 [
                     "",
                     test_data.add_testcase(f"{csr}_{op.lower()}_umode", coverpoint, covergroup),
                     _csr_insn(op, temp_reg, csr, temp_reg),
                 ]
             )
-    body.append("#endif  // __riscv_xlen == 32")
+    lines.append("#endif  // __riscv_xlen == 32")
 
-    lines.extend(in_mode("U", "M", body))
+    lines.append("RVTEST_TSBI_GOTO_MMODE")
 
     # ── S-mode ──────────────────────────────────────────────────────────────
     lines.append("#ifdef S_SUPPORTED")
-    body = []
+    lines.append("RVTEST_TSBI_GOTO_SMODE")
 
     for csr in MSTATEEN_CSRS_64:
         for op in CSR_OPS:
-            body.extend(
+            lines.extend(
                 [
                     "",
                     test_data.add_testcase(f"{csr}_{op.lower()}_smode", coverpoint, covergroup),
@@ -102,19 +103,19 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
                 ]
             )
 
-    body.append("#if __riscv_xlen == 32")
+    lines.append("#if __riscv_xlen == 32")
     for csr in MSTATEEN_CSRS_H:
         for op in CSR_OPS:
-            body.extend(
+            lines.extend(
                 [
                     "",
                     test_data.add_testcase(f"{csr}_{op.lower()}_smode", coverpoint, covergroup),
                     _csr_insn(op, temp_reg, csr, temp_reg),
                 ]
             )
-    body.append("#endif  // __riscv_xlen == 32")
+    lines.append("#endif  // __riscv_xlen == 32")
 
-    lines.extend(in_mode("S", "M", body))
+    lines.append("RVTEST_TSBI_GOTO_MMODE")
     lines.append("#endif  // S_SUPPORTED")
 
     test_data.int_regs.return_registers([temp_reg])
@@ -238,16 +239,16 @@ def _generate_bit_controlled(
             ]
         )
 
-        for mode_label, mode, needs_guard in _MODES_MUS:
+        for mode_label, enter_line, needs_guard in _MODES_MUS:
             if needs_guard:
                 lines.append("#ifdef S_SUPPORTED")
-            body: list[str] = []
-            body.extend(emit_ops(csrs, state, mode_label))
+            lines.append(enter_line)
+            lines.extend(emit_ops(csrs, state, mode_label))
             if csrs_rv32:
-                body.append("#if __riscv_xlen == 32")
-                body.extend(emit_ops(csrs_rv32, state, mode_label))
-                body.append("#endif  // __riscv_xlen == 32")
-            lines.extend(in_mode(mode, "M", body))
+                lines.append("#if __riscv_xlen == 32")
+                lines.extend(emit_ops(csrs_rv32, state, mode_label))
+                lines.append("#endif  // __riscv_xlen == 32")
+            lines.append("RVTEST_TSBI_GOTO_MMODE")
             if needs_guard:
                 lines.append("#endif  // S_SUPPORTED")
 
@@ -280,7 +281,7 @@ def _generate_jvt(test_data: TestData) -> list[str]:
     lines.append(f"LI(x{ones_reg}, -1)")
 
     # Lower modes only (U + S); the cp_jvt_access cross does not sample M-mode.
-    for mode_label, mode, needs_guard in _MODES_MUS[1:]:
+    for mode_label, enter_line, needs_guard in _MODES_MUS[1:]:
         if needs_guard:
             lines.append("#ifdef S_SUPPORTED")
         for state in [0, 1]:
@@ -293,9 +294,9 @@ def _generate_jvt(test_data: TestData) -> list[str]:
                     f"{bit_action} mstateen0, x{temp_reg}",
                 ]
             )
-            body: list[str] = []
+            lines.append(enter_line)
             for op in CSR_OPS:
-                body.extend(
+                lines.extend(
                     [
                         "",
                         test_data.add_testcase(
@@ -306,7 +307,7 @@ def _generate_jvt(test_data: TestData) -> list[str]:
                         _csr_insn(op, temp_reg, "jvt", ones_reg),
                     ]
                 )
-            lines.extend(in_mode(mode, "M", body))
+            lines.append("RVTEST_TSBI_GOTO_MMODE")
         if needs_guard:
             lines.append("#endif  // S_SUPPORTED")
 
@@ -450,7 +451,7 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
     lines.append(f"LI(x{ones_reg}, -1)")
 
     # Lower modes only (U + S); these crosses do not sample M-mode.
-    for mode_label, mode, needs_guard in _MODES_MUS[1:]:
+    for mode_label, enter_line, needs_guard in _MODES_MUS[1:]:
         if needs_guard:
             lines.append("#ifdef S_SUPPORTED")
         for state in [0, 1]:
@@ -463,10 +464,10 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
                     f"{bit_action} mstateen0, x{temp_reg}",
                 ]
             )
-            body: list[str] = []
+            lines.append(enter_line)
             for csr in fp_csrs:
                 for op in CSR_OPS:
-                    body.extend(
+                    lines.extend(
                         [
                             "",
                             test_data.add_testcase(
@@ -477,7 +478,7 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
                             _csr_insn(op, temp_reg, csr, ones_reg),
                         ]
                     )
-            lines.extend(in_mode(mode, "M", body))
+            lines.append("RVTEST_TSBI_GOTO_MMODE")
         if needs_guard:
             lines.append("#endif  // S_SUPPORTED")
 
@@ -514,7 +515,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
     ]
 
     # Lower modes only (U + S); these crosses do not sample M-mode.
-    for mode_label, mode, needs_guard in _MODES_MUS[1:]:
+    for mode_label, enter_line, needs_guard in _MODES_MUS[1:]:
         if needs_guard:
             lines.append("#ifdef S_SUPPORTED")
         for state in [0, 1]:
@@ -527,16 +528,16 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
                     f"{bit_action} mstateen0, x{temp_reg1}",
                 ]
             )
-            body: list[str] = []
+            lines.append(enter_line)
             for insn, label in fp_instrs:
-                body.extend(
+                lines.extend(
                     [
                         "",
                         test_data.add_testcase(f"{label}_fcsr{state}_{mode_label}", coverpoint, covergroup),
                         insn,
                     ]
                 )
-            lines.extend(in_mode(mode, "M", body))
+            lines.append("RVTEST_TSBI_GOTO_MMODE")
         if needs_guard:
             lines.append("#endif  // S_SUPPORTED")
 
@@ -588,10 +589,11 @@ def _generate_se0_controls_sstateen0(test_data: TestData, *, se0: int) -> list[s
         ]
     )
     lines.extend(_write_se0(temp_reg, enable=bool(se0)))
-    body: list[str] = []
+    lines.append("RVTEST_TSBI_GOTO_SMODE")
+
     for op in CSR_OPS:
         insn = f"{op} x{temp_reg}, sstateen0" if op == "csrr" else f"{op} x{temp_reg}, sstateen0, x{ones_reg}"
-        body.extend(
+        lines.extend(
             [
                 "",
                 test_data.add_testcase(f"sstateen0_{op.lower()}_se0_{se0}_smode", coverpoint, "Smstateen_cg"),
@@ -599,9 +601,9 @@ def _generate_se0_controls_sstateen0(test_data: TestData, *, se0: int) -> list[s
             ]
         )
 
-    lines.extend(in_mode("S", "M", body))
     lines.extend(
         [
+            "RVTEST_TSBI_GOTO_MMODE",
             "",
             f"csrw sstateen0, x{save_sstateen}  # restore sstateen0",
             f"csrw mstateen0, x{save_mstateen}  # restore mstateen0",

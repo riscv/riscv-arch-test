@@ -69,7 +69,7 @@ main:
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -86,7 +86,8 @@ ExceptionsSv_cg_cp_load_page_fault_u_test1_load:
 ExceptionsSv_cg_cp_instr_page_fault_u_test1_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, ExceptionsSv_cg_cp_store_page_fault_u_test1_store, ExceptionsSv_cg_cp_store_page_fault_u_test1_store_str)
@@ -104,7 +105,7 @@ ExceptionsSv_cg_cp_instr_page_fault_u_test1_exec:
   srli a0, a0, 10
   add a5, a5, a0
   addi a5, a5, 2
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -121,7 +122,8 @@ ExceptionsSv_cg_cp_misaligned_priority_u_test2_load:
 ExceptionsSv_cg_cp_misaligned_priority_fetch_u_test2_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, ExceptionsSv_cg_cp_misaligned_priority_u_test2_store, ExceptionsSv_cg_cp_misaligned_priority_u_test2_store_str)
@@ -139,7 +141,7 @@ ExceptionsSv_cg_cp_misaligned_priority_fetch_u_test2_exec:
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -156,7 +158,8 @@ ExceptionsSv_cg_cp_load_page_fault_u_test3_load:
 ExceptionsSv_cg_cp_instr_page_fault_u_test3_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, ExceptionsSv_cg_cp_store_page_fault_u_test3_store, ExceptionsSv_cg_cp_store_page_fault_u_test3_store_str)
@@ -177,7 +180,7 @@ ExceptionsSv_cg_cp_instr_page_fault_u_test3_exec:
   srli a0, a0, 10
   add a5, a5, a0
   addi a5, a5, 2
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -194,7 +197,8 @@ ExceptionsSv_cg_cp_misaligned_priority_u_test4_load:
 ExceptionsSv_cg_cp_misaligned_priority_fetch_u_test4_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, ExceptionsSv_cg_cp_misaligned_priority_u_test4_store, ExceptionsSv_cg_cp_misaligned_priority_u_test4_store_str)
@@ -213,7 +217,7 @@ ExceptionsSv_cg_cp_misaligned_priority_fetch_u_test4_exec:
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -230,7 +234,8 @@ ExceptionsSv_cg_cp_load_page_fault_u_test5_load:
 ExceptionsSv_cg_cp_instr_page_fault_u_test5_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, ExceptionsSv_cg_cp_store_page_fault_u_test5_store, ExceptionsSv_cg_cp_store_page_fault_u_test5_store_str)
@@ -248,7 +253,7 @@ ExceptionsSv_cg_cp_instr_page_fault_u_test5_exec:
   srli a0, a0, 10
   add a5, a5, a0
   addi a5, a5, 2
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -265,7 +270,8 @@ ExceptionsSv_cg_cp_misaligned_priority_u_test6_load:
 ExceptionsSv_cg_cp_misaligned_priority_fetch_u_test6_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, ExceptionsSv_cg_cp_misaligned_priority_u_test6_store, ExceptionsSv_cg_cp_misaligned_priority_u_test6_store_str)
@@ -283,7 +289,7 @@ ExceptionsSv_cg_cp_misaligned_priority_fetch_u_test6_exec:
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -300,7 +306,8 @@ ExceptionsSv_cg_cp_load_page_fault_u_test7_load:
 ExceptionsSv_cg_cp_instr_page_fault_u_test7_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, ExceptionsSv_cg_cp_store_page_fault_u_test7_store, ExceptionsSv_cg_cp_store_page_fault_u_test7_store_str)
@@ -321,7 +328,7 @@ ExceptionsSv_cg_cp_instr_page_fault_u_test7_exec:
   srli a0, a0, 10
   add a5, a5, a0
   addi a5, a5, 2
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -338,7 +345,8 @@ ExceptionsSv_cg_cp_misaligned_priority_u_test8_load:
 ExceptionsSv_cg_cp_misaligned_priority_fetch_u_test8_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, ExceptionsSv_cg_cp_misaligned_priority_u_test8_store, ExceptionsSv_cg_cp_misaligned_priority_u_test8_store_str)

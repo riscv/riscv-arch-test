@@ -69,7 +69,7 @@ RVTEST_BEGIN
   csrw pmpcfg0, x4
 #endif
   RVTEST_SFENCE_VMA_IF_SUPPORTED
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
 
   RVTEST_FENCEI
   LI(t0, PMP_TOR_REGION_BYTES - 8)
@@ -165,7 +165,7 @@ PMPS_cp_cfg_A_tor_entry5_lxwr0100_15_lw_address_g:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_cfg_A_tor_entry5_lxwr0100_15_lw_address_g, PMPS_cp_cfg_A_tor_entry5_lxwr0100_15_lw_address_g_str)
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+  RVTEST_TSBI_GOTO_MMODE
 
 // PMP configuration 5: L = 0, XR permissions, entry 3
   LA(x5, REGIONSTART)
@@ -177,7 +177,7 @@ PMPS_cp_cfg_A_tor_entry5_lxwr0100_15_lw_address_g:
   LI(x4, PMPREGION_LXWR_0101)
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
 
   RVTEST_FENCEI
   LI(t0, PMP_TOR_REGION_BYTES - 8)
@@ -273,7 +273,7 @@ PMPS_cp_cfg_A_tor_entry3_lxwr0101_15_lw_address_g:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_cfg_A_tor_entry3_lxwr0101_15_lw_address_g, PMPS_cp_cfg_A_tor_entry3_lxwr0101_15_lw_address_g_str)
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+  RVTEST_TSBI_GOTO_MMODE
 
 // PMP configuration 6: L = 0, XWR permissions, entry 1
   LA(x5, REGIONSTART)
@@ -285,7 +285,7 @@ PMPS_cp_cfg_A_tor_entry3_lxwr0101_15_lw_address_g:
   LI(x4, PMPREGION_LXWR_0111)
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
 
   RVTEST_FENCEI
   LI(t0, PMP_TOR_REGION_BYTES - 8)
@@ -381,7 +381,7 @@ PMPS_cp_cfg_A_tor_entry1_lxwr0111_15_lw_address_g:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_cfg_A_tor_entry1_lxwr0111_15_lw_address_g, PMPS_cp_cfg_A_tor_entry1_lxwr0111_15_lw_address_g_str)
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+  RVTEST_TSBI_GOTO_MMODE
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

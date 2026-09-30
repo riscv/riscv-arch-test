@@ -69,7 +69,7 @@ main:
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test1_lr:
@@ -78,7 +78,8 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test1_lr:
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test1_sc:
   sc.w a4, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test1_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test1_lr_str)
@@ -94,7 +95,7 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test1_sc:
   srli a0, a0, 10
   add a5, a5, a0
   addi a5, a5, 2
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test2_lr:
@@ -103,7 +104,8 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test2_lr:
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test2_sc:
   sc.w a4, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test2_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test2_lr_str)
@@ -119,7 +121,7 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test2_sc:
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test3_lr:
@@ -128,7 +130,8 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test3_lr:
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test3_sc:
   sc.w a4, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test3_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test3_lr_str)
@@ -147,7 +150,7 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test3_sc:
   srli a0, a0, 10
   add a5, a5, a0
   addi a5, a5, 2
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test4_lr:
@@ -156,7 +159,8 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test4_lr:
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test4_sc:
   sc.w a4, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test4_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test4_lr_str)
@@ -173,7 +177,7 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test4_sc:
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test5_lr:
@@ -182,7 +186,8 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test5_lr:
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test5_sc:
   sc.w a4, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test5_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test5_lr_str)
@@ -198,7 +203,7 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test5_sc:
   srli a0, a0, 10
   add a5, a5, a0
   addi a5, a5, 2
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test6_lr:
@@ -207,7 +212,8 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test6_lr:
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test6_sc:
   sc.w a4, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test6_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test6_lr_str)
@@ -223,7 +229,7 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test6_sc:
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test7_lr:
@@ -232,7 +238,8 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test7_lr:
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test7_sc:
   sc.w a4, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test7_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test7_lr_str)
@@ -251,7 +258,7 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test7_sc:
   srli a0, a0, 10
   add a5, a5, a0
   addi a5, a5, 2
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test8_lr:
@@ -260,7 +267,8 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test8_lr:
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test8_sc:
   sc.w a4, a2, (a5)
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test8_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test8_lr_str)

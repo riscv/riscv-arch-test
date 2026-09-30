@@ -8,7 +8,6 @@
 
 """ZicntrS extension test generator: counter access from S/U-mode"""
 
-from testgen.asm.tsbi import in_mode
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZicntrCommon import counter_inc_inaccessible_tests, counteren_walk_tests
@@ -49,8 +48,8 @@ def make_zicntrs(test_data: TestData) -> list[TestChunk]:
             mcounteren="ones",
         )
     )
-    body: list[str] = []
-    body.extend(
+    tc.code.append("RVTEST_TSBI_GOTO_UMODE")
+    tc.code.extend(
         counteren_walk_tests(
             test_data,
             covergroup,
@@ -61,7 +60,7 @@ def make_zicntrs(test_data: TestData) -> list[TestChunk]:
             mcounteren="ones",
         )
     )
-    body.extend(
+    tc.code.extend(
         counteren_walk_tests(
             test_data,
             covergroup,
@@ -71,7 +70,7 @@ def make_zicntrs(test_data: TestData) -> list[TestChunk]:
             mode="U",
         )
     )
-    tc.code.extend(in_mode("U", "S", body))
+    tc.code.append("RVTEST_TSBI_GOTO_SMODE")
     tc.code.extend(counter_inc_inaccessible_tests(test_data, covergroup, "S"))
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

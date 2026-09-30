@@ -68,7 +68,7 @@ RVTEST_BEGIN
   LI(x4, PMPREGION_LXWR_0100)
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
 
   RVTEST_FENCEI
   LI(t0, PMP_NAPOT_REGION_BYTES - 8)
@@ -203,7 +203,7 @@ PMPU_cp_cfg_A_napot_entry2_lxwr0100_24_lwu_address:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry2_lxwr0100_24_lwu_address, PMPU_cp_cfg_A_napot_entry2_lxwr0100_24_lwu_address_str)
 #endif
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+  RVTEST_TSBI_GOTO_MMODE
 
 // PMP configuration 5: L = 0, XR permissions, entry 1
   LA(x5, REGIONSTART)
@@ -216,7 +216,7 @@ PMPU_cp_cfg_A_napot_entry2_lxwr0100_24_lwu_address:
   LI(x4, PMPREGION_LXWR_0101)
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
 
   RVTEST_FENCEI
   LI(t0, PMP_NAPOT_REGION_BYTES - 8)
@@ -351,7 +351,7 @@ PMPU_cp_cfg_A_napot_entry1_lxwr0101_24_lwu_address:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry1_lxwr0101_24_lwu_address, PMPU_cp_cfg_A_napot_entry1_lxwr0101_24_lwu_address_str)
 #endif
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+  RVTEST_TSBI_GOTO_MMODE
 
 // PMP configuration 6: L = 0, XWR permissions, entry 0
   LA(x5, REGIONSTART)
@@ -364,7 +364,7 @@ PMPU_cp_cfg_A_napot_entry1_lxwr0101_24_lwu_address:
   LI(x4, PMPREGION_LXWR_0111)
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
 
   RVTEST_FENCEI
   LI(t0, PMP_NAPOT_REGION_BYTES - 8)
@@ -499,7 +499,7 @@ PMPU_cp_cfg_A_napot_entry0_lxwr0111_24_lwu_address:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_napot_entry0_lxwr0111_24_lwu_address, PMPU_cp_cfg_A_napot_entry0_lxwr0111_24_lwu_address_str)
 #endif
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+  RVTEST_TSBI_GOTO_MMODE
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

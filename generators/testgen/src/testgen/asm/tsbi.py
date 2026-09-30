@@ -9,7 +9,6 @@
 """Assembly generation helpers for test code."""
 
 import re
-from collections.abc import Iterable
 
 from testgen.constants import INDENT
 
@@ -76,27 +75,6 @@ def tsbi_call_or_direct(instr: str, mode: str) -> str:
     csr = csr_match.group(3) if csr_match.group(1).lower() == "csrr" else csr_match.group(2)
     level = (_parse_csr(csr) >> 8) & 3
     return instr if _MODE_LEVEL[mode] >= level else tsbi_call(instr)
-
-
-def in_mode(target: str, current: str, lines: Iterable[str]) -> list[str]:
-    """
-    Run lines in ``target`` mode: switch to it from ``current`` with T-SBI and switch back afterwards.
-
-    Args:
-      target: mode the lines run in: "M", "S", "U", "VS" or "VU"
-      current: mode the code runs in before and after the lines
-      lines: assembly lines that start and end in ``target`` mode
-
-    Returns:
-      lines, wrapped in the mode switches when target differs from current
-    """
-    if target == current:
-        return list(lines)
-    return [
-        f"RVTEST_TSBI_GOTO_{target}MODE # enter {target}-mode",
-        *lines,
-        f"RVTEST_TSBI_GOTO_{current}MODE # return to {current}-mode",
-    ]
 
 
 _REGISTER_ALIASES = {

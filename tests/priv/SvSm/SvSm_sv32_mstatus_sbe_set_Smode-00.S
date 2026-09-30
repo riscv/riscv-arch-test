@@ -116,7 +116,7 @@ main:
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 16
 
 // Store
@@ -133,7 +133,8 @@ SvSm_cp_sv32_mstatus_sbe_set_Smode_test1_load:
 SvSm_cp_sv32_mstatus_sbe_set_Smode_test1_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvSm_cp_sv32_mstatus_sbe_set_Smode_test1_store, SvSm_cp_sv32_mstatus_sbe_set_Smode_test1_store_str)
@@ -173,7 +174,7 @@ SvSm_cp_sv32_mstatus_sbe_set_Smode_test1_exec:
   sfence.vma
 
   LI(a5, va_data)
-  RVTEST_TSBI_GOTO_SMODE # enter S-mode
+  RVTEST_TSBI_GOTO_SMODE
   addi a2, a2, 16
 
 // Store
@@ -190,7 +191,8 @@ SvSm_cp_sv32_mstatus_sbe_set_Smode_test2_load:
 SvSm_cp_sv32_mstatus_sbe_set_Smode_test2_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvSm_cp_sv32_mstatus_sbe_set_Smode_test2_store, SvSm_cp_sv32_mstatus_sbe_set_Smode_test2_store_str)

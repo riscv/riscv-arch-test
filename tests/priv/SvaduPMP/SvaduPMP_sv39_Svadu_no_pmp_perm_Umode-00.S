@@ -90,7 +90,7 @@ SvaduPMP_cp_pmpcfg_write_pmpcfg0:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -107,7 +107,8 @@ SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test1_load:
 SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test1_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test1_store, SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test1_store_str)
@@ -130,7 +131,7 @@ SvaduPMP_cg_cp_ad_update_test1_read_pte:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -147,7 +148,8 @@ SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test2_load:
 SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test2_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test2_store, SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test2_store_str)
@@ -170,7 +172,7 @@ SvaduPMP_cg_cp_ad_update_test2_read_pte:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -187,7 +189,8 @@ SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test3_load:
 SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test3_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test3_store, SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test3_store_str)
@@ -221,7 +224,7 @@ SvaduPMP_cg_cp_ad_update_test3_read_pte:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -238,7 +241,8 @@ SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test4_load:
 SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test4_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test4_store, SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test4_store_str)
@@ -262,7 +266,7 @@ SvaduPMP_cg_cp_ad_update_test4_read_pte:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -279,7 +283,8 @@ SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test5_load:
 SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test5_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test5_store, SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test5_store_str)
@@ -303,7 +308,7 @@ SvaduPMP_cg_cp_ad_update_test5_read_pte:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -320,7 +325,8 @@ SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test6_load:
 SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test6_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test6_store, SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test6_store_str)
@@ -355,7 +361,7 @@ SvaduPMP_cg_cp_ad_update_test6_read_pte:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -372,7 +378,8 @@ SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test7_load:
 SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test7_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test7_store, SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test7_store_str)
@@ -397,7 +404,7 @@ SvaduPMP_cg_cp_ad_update_test7_read_pte:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -414,7 +421,8 @@ SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test8_load:
 SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test8_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test8_store, SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test8_store_str)
@@ -439,7 +447,7 @@ SvaduPMP_cg_cp_ad_update_test8_read_pte:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -456,7 +464,8 @@ SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test9_load:
 SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test9_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+
+  RVTEST_TSBI_GOTO_MMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test9_store, SvaduPMP_cp_sv39_Svadu_no_pmp_perm_Umode_test9_store_str)

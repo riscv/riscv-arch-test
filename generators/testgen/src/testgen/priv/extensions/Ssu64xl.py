@@ -10,7 +10,6 @@
 """Ssu64xl privileged extension test generator."""
 
 from testgen.asm.helpers import comment_banner, load_int_reg, write_sigupd
-from testgen.asm.tsbi import in_mode
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
@@ -44,16 +43,12 @@ def _generate_ssu64xl_tests(test_data: TestData) -> list[str]:
             f"andi x{uxl_reg}, x{uxl_reg}, 3",
             write_sigupd(uxl_reg, test_data),
             "",
-            *in_mode(
-                "U",
-                "S",
-                [
-                    test_data.add_testcase("uxlen64_gpr_bit63", coverpoint, covergroup),
-                    load_int_reg("64b_value", check_reg, 0xFEDCBA9876543210, test_data),
-                    write_sigupd(check_reg, test_data),
-                    "",
-                ],
-            ),
+            "RVTEST_TSBI_GOTO_UMODE",
+            test_data.add_testcase("uxlen64_gpr_bit63", coverpoint, covergroup),
+            load_int_reg("64b_value", check_reg, 0xFEDCBA9876543210, test_data),
+            write_sigupd(check_reg, test_data),
+            "",
+            "RVTEST_TSBI_GOTO_SMODE",
             f"csrw sstatus, x{orig_reg}",
         ]
     )

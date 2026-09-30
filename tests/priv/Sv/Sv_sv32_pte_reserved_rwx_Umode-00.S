@@ -74,7 +74,7 @@ main:
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -91,7 +91,8 @@ Sv_cp_sv32_pte_reserved_rwx_Umode_test1_load:
 Sv_cp_sv32_pte_reserved_rwx_Umode_test1_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_pte_reserved_rwx_Umode_test1_store, Sv_cp_sv32_pte_reserved_rwx_Umode_test1_store_str)
@@ -112,7 +113,7 @@ Sv_cp_sv32_pte_reserved_rwx_Umode_test1_exec:
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -129,7 +130,8 @@ Sv_cp_sv32_pte_reserved_rwx_Umode_test2_load:
 Sv_cp_sv32_pte_reserved_rwx_Umode_test2_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_pte_reserved_rwx_Umode_test2_store, Sv_cp_sv32_pte_reserved_rwx_Umode_test2_store_str)
@@ -147,7 +149,7 @@ Sv_cp_sv32_pte_reserved_rwx_Umode_test2_exec:
   sfence.vma
 
   LI(a5, va_data)
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -164,7 +166,8 @@ Sv_cp_sv32_pte_reserved_rwx_Umode_test3_load:
 Sv_cp_sv32_pte_reserved_rwx_Umode_test3_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_pte_reserved_rwx_Umode_test3_store, Sv_cp_sv32_pte_reserved_rwx_Umode_test3_store_str)
@@ -182,7 +185,7 @@ Sv_cp_sv32_pte_reserved_rwx_Umode_test3_exec:
   sfence.vma
 
   LI(a5, va_data)
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -199,7 +202,8 @@ Sv_cp_sv32_pte_reserved_rwx_Umode_test4_load:
 Sv_cp_sv32_pte_reserved_rwx_Umode_test4_exec:
   jalr ra, a5, 0
   nop
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_pte_reserved_rwx_Umode_test4_store, Sv_cp_sv32_pte_reserved_rwx_Umode_test4_store_str)

@@ -12,10 +12,10 @@ from collections.abc import Mapping
 
 from testgen.asm.csr import gen_csr_read_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
-from testgen.asm.tsbi import in_mode, tsbi_call
+from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
-from testgen.priv.extensions.sv.access import add_rwx_test, tsbi_mode
+from testgen.priv.extensions.sv.access import add_rwx_test
 from testgen.priv.extensions.sv.assembly import VA_ONES_DATA, VA_ZEROS_DATA
 from testgen.priv.extensions.sv.generate import begin_sv_test, keep_image_mapped, sv_data
 from testgen.priv.extensions.sv.page_tables import (
@@ -101,7 +101,7 @@ def _extreme_access(
         operation: test_data.add_testcase(f"{name}_{operation}", coverpoint, test_data.testsuite).removesuffix(":")
         for operation in operations
     }
-    lines = [f"LI(a5, {va})"]
+    lines = [*([] if mode == driver_mode else [f"RVTEST_TSBI_GOTO_{mode.upper()}"]), f"LI(a5, {va})"]
     if style.startswith("rw"):
         instruction = "sw" if style == "rw_word" else "sb"
         load = "lw" if style == "rw_word" else "lbu"
@@ -114,16 +114,22 @@ def _extreme_access(
                 f"{labels['load']}:",
                 f"{load} a3, 0(a5)",
                 "nop",
+                *([] if mode == driver_mode else [f"RVTEST_TSBI_GOTO_{driver_mode.upper()}"]),
+                write_sigupd(12, test_data, label=labels["store"]),
+                write_sigupd(13, test_data, label=labels["load"]),
             ]
         )
-        results = [
-            write_sigupd(12, test_data, label=labels["store"]),
-            write_sigupd(13, test_data, label=labels["load"]),
-        ]
     else:
-        lines.extend([f"{labels['exec']}:", "jalr ra, a5, 0", "nop"])
-        results = [write_sigupd(14, test_data, label=labels["exec"])]
-    return [*in_mode(tsbi_mode(mode), tsbi_mode(driver_mode), lines), *results]
+        lines.extend(
+            [
+                f"{labels['exec']}:",
+                "jalr ra, a5, 0",
+                "nop",
+                *([] if mode == driver_mode else [f"RVTEST_TSBI_GOTO_{driver_mode.upper()}"]),
+                write_sigupd(14, test_data, label=labels["exec"]),
+            ]
+        )
+    return lines
 
 
 def emit_access(
@@ -892,7 +898,11 @@ def _t_satp_access(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode
         chunk.code.extend(
             [
                 "csrw satp, zero",
-                *in_mode("U", "S", ["csrw satp, x0", "csrs satp, x0", "csrc satp, x0"]),
+                "RVTEST_TSBI_GOTO_UMODE",
+                "csrw satp, x0",
+                "csrs satp, x0",
+                "csrc satp, x0",
+                "RVTEST_TSBI_GOTO_SMODE",
             ]
         )
     chunk.code.extend(

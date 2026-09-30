@@ -53,7 +53,7 @@ RVTEST_BEGIN
   csrw pmpaddr0, x5
   csrw pmpcfg0, x0
   RVTEST_SFENCE_VMA_IF_SUPPORTED
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
 
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
@@ -73,7 +73,7 @@ PMPU_cp_cfg_A_off_off_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_A_off_off_3_lw, PMPU_cp_cfg_A_off_off_3_lw_str)
-  RVTEST_TSBI_GOTO_MMODE # return to M-mode
+  RVTEST_TSBI_GOTO_MMODE
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

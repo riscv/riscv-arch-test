@@ -10,15 +10,14 @@
 
 from testgen.asm.csr import gen_csr_read_sigupd
 from testgen.asm.helpers import write_sigupd
-from testgen.asm.tsbi import in_mode
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.assembly import DATA_REGION
 from testgen.priv.registry import add_priv_test_generator
 
 
-def bare_rwx(test_data: TestData, name: str) -> list[str]:
-    lines = ["LA(a5, rvtest_data_1)", "addi a2, a2, 16"]
+def bare_rwx(test_data: TestData, name: str, *, enter: tuple[str, ...] = (), leave: tuple[str, ...] = ()) -> list[str]:
+    lines = [*enter, "LA(a5, rvtest_data_1)", "addi a2, a2, 16"]
     for operation, register, instruction in (
         ("store", 12, "sw a2, 20(a5)"),
         ("load", 13, "lw a3, 20(a5)"),
@@ -26,6 +25,7 @@ def bare_rwx(test_data: TestData, name: str) -> list[str]:
     ):
         lines.append(test_data.add_testcase(f"{name}_{operation}", "cp_bare_access", f"{test_data.testsuite}_cg"))
         lines.extend([instruction, write_sigupd(register, test_data, label=test_data.current_testcase_label)])
+    lines.extend(leave)
     return lines
 
 
@@ -64,5 +64,7 @@ def make_svbare_smode(test_data: TestData) -> list[TestChunk]:
 )
 def make_svbare_umode(test_data: TestData) -> list[TestChunk]:
     chunk = begin_bare_test(test_data, "Svbare_Umode")
-    chunk.code.extend(in_mode("U", "S", bare_rwx(test_data, "test1")))
+    chunk.code.extend(
+        bare_rwx(test_data, "test1", enter=("RVTEST_TSBI_GOTO_UMODE",), leave=("RVTEST_TSBI_GOTO_SMODE",))
+    )
     return [test_data.end_test_chunk()]

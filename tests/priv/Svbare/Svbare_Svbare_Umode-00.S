@@ -33,7 +33,7 @@ main:
 Svbare_cg_cp_satp_satp_bare:
   # Read satp into x14 and check against expected.
   RVTEST_SIGUPD_CSR_READ(satp, x14, Svbare_cg_cp_satp_satp_bare, Svbare_cg_cp_satp_satp_bare_str)
-  RVTEST_TSBI_GOTO_UMODE # enter U-mode
+  RVTEST_TSBI_GOTO_UMODE
   LA(a5, rvtest_data_1)
   addi a2, a2, 16
 Svbare_cg_cp_bare_access_test1_store:
@@ -48,7 +48,7 @@ Svbare_cg_cp_bare_access_test1_exec:
   jalr ra, a5, 0
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svbare_cg_cp_bare_access_test1_exec, Svbare_cg_cp_bare_access_test1_exec_str)
-  RVTEST_TSBI_GOTO_SMODE # return to S-mode
+  RVTEST_TSBI_GOTO_SMODE
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

@@ -16,7 +16,7 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.random import random_int
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.PrivCommon import S_SSTATUS_MASK
+from testgen.priv.extensions.PrivCommon import S_SSTATUS_MASK, addr_csr_tests
 from testgen.priv.extensions.sv.generate import guest_translation_setup, guest_translation_teardown, per_xlen
 from testgen.priv.extensions.sv.page_tables import SV_MODES, PteFlags, SvMode, write_pte
 
@@ -29,6 +29,8 @@ class HCsr:
     masked: write only the mask bits, because other bits are WLRL or otherwise unsafe to write
     zero: the CSR need only hold zero, so the access test checks the readback only after writing zero and after
         clearing every bit, and the walk test skips it
+    vaddr: the CSR holds a virtual address, which it may legalize when invalid, so the walk test writes only valid
+        addresses (addr_csr_tests)
     gate: preprocessor condition under which the CSR exists
     warl_fields: WARL fields with reserved encodings, as for csr_walk_test
     setup, restore: lines before and after the test that make the CSR accessible or its value visible
@@ -38,6 +40,7 @@ class HCsr:
     mask: int | None = None
     masked: bool = False
     zero: bool = False
+    vaddr: bool = False
     gate: str | None = None
     warl_fields: tuple[tuple, ...] = ()
     setup: tuple[str, ...] = ()
@@ -129,11 +132,11 @@ H_HS_CSRS = [
 H_VS_CSRS = [
     HCsr("vsstatus", S_SSTATUS_MASK),
     HCsr("vsie", 0xFFFF, setup=HIDELEG_ON, restore=HIDELEG_OFF),
-    HCsr("vstval"),
+    HCsr("vstval", vaddr=True),
     HCsr("vsip", 0xFFFF, setup=HIDELEG_ON, restore=HIDELEG_OFF),
     HCsr("vstvec", 0b10),  # as stvec: legal BASE values are implementation-defined
     HCsr("vsscratch"),
-    HCsr("vsepc"),
+    HCsr("vsepc", vaddr=True),
     HCsr("vsatp", zero=True),
     HCsr("vstimecmp", gate="defined(SSTC_SUPPORTED)", setup=STCE_ON, restore=STCE_OFF),
     HCsr("vstimecmph", gate="__riscv_xlen == 32 && defined(SSTC_SUPPORTED)", setup=STCE_ON, restore=STCE_OFF),
@@ -159,7 +162,10 @@ def gated(lines: list[str], gate: str | None) -> list[str]:
 
 
 def hcsr_tests(test_data: TestData, test_chunks: list[TestChunk], csrs: list[HCsr], covergroup: str) -> None:
-    """Access and walk each H CSR in csrs, access the read-only hgeip, and walk hgatp and vsatp with a paged MODE."""
+    """Access and walk each H CSR in csrs, access the read-only hgeip, and walk hgatp and vsatp with a paged MODE.
+
+    The walk writes each bit alone, so CSRs that hold virtual addresses are walked with valid addresses instead.
+    """
     tc = test_data.new_test_chunk(test_chunks, "hcsr_access")
     tc.section_header = comment_banner(
         "cp_hcsr_access",
@@ -195,9 +201,11 @@ def hcsr_tests(test_data: TestData, test_chunks: list[TestChunk], csrs: list[HCs
     tc.code.extend(csr_access_test(test_data, ("hgeip", None), covergroup, "cp_hcsr_access_ro"))
 
     tc = test_data.new_test_chunk(test_chunks, "hcsr_walk")
-    tc.section_header = comment_banner("cp_hcsrwalk", "Set and clear each bit of each H CSR that holds more than zero")
+    tc.section_header = comment_banner(
+        "cp_hcsrwalk", "Set and clear each bit of each H CSR that holds more than zero and is not an address"
+    )
     for csr in csrs:
-        if not csr.zero:
+        if not (csr.zero or csr.vaddr):
             tc = test_data.new_test_chunk(test_chunks)
             coverpoint = "cp_hcsrwalk_masked" if csr.masked else "cp_hcsrwalk"
             lines = csr_walk_test(
@@ -209,6 +217,7 @@ def hcsr_tests(test_data: TestData, test_chunks: list[TestChunk], csrs: list[HCs
                 maskedwrites=csr.masked,
             )
             tc.code.extend(gated([*csr.setup, *lines, *csr.restore], csr.gate))
+    addr_csr_tests(test_data, test_chunks, {csr.name: (0, {}) for csr in csrs if csr.vaddr}, covergroup, "hcsr_addr")
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.section_header = comment_banner(

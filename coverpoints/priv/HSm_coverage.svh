@@ -102,7 +102,10 @@ covergroup HSm_mcsr_cg with function sample(ins_t ins);
     cp_hcsr_access_zero:    cross priv_mode_m, hcsrname_zero, csraccesses;
     cp_hcsr_access_masked:  cross priv_mode_m, hcsrname_masked, csraccesses_masked;
     cp_hcsr_access_ro:      cross priv_mode_m, hgeip, csraccesses;
-    cp_hcsrwalk:            cross priv_mode_m, hcsrname, csrop, walking_ones;
+    cp_hcsrwalk:            cross priv_mode_m, hcsrname, csrop, walking_ones {
+        // vsepc and vstval may legalize invalid addresses, so they are walked with valid addresses instead
+        ignore_bins vaddr = binsof(hcsrname.vsepc) || binsof(hcsrname.vstval);
+    }
     // Keep the lists below in sync with the masks in HCommon.py
     cp_hcsrwalk_masked:     cross priv_mode_m, hcsrname_masked, csrop, walking_ones {
         ignore_bins hstatus_not_walked = binsof(hcsrname_masked.hstatus) &&
@@ -157,6 +160,38 @@ covergroup HSm_mcsr_cg with function sample(ins_t ins);
     `endif
     cp_atpwalk1:            cross priv_mode_m, csrrw, atpname, atp_walk1;
     cp_atpwalk0:            cross priv_mode_m, csrrw, atpname, atp_walk0;
+
+    // vsepc and vstval hold every address that sepc and stval hold: the current pc, an address in scratch, and each
+    // canonical virtual address with one bit walked.  vsepc bit 0 is always 0, and bit 1 is 0 unless Zca allows
+    // 2-byte instruction alignment.
+    vsepc : coverpoint ins.current.insn[31:20] {
+        bins vsepc = {CSR_VSEPC};
+    }
+    vstval : coverpoint ins.current.insn[31:20] {
+        bins vstval = {CSR_VSTVAL};
+    }
+    xaddr_pc : coverpoint (ins.current.rs1_val + 4 == ins.current.pc_rdata) {
+        bins pc = {1};
+    }
+    xaddr_scratch : coverpoint (ins.current.rs1_val[7:0] == 8'hA8) {
+        bins scratch = {1};
+    }
+    cp_vsepc_vaddr_pc:       cross priv_mode_m, csrrw, vsepc, xaddr_pc;
+    cp_vsepc_vaddr_scratch:  cross priv_mode_m, csrrw, vsepc, xaddr_scratch;
+    cp_vstval_vaddr_pc:      cross priv_mode_m, csrrw, vstval, xaddr_pc;
+    cp_vstval_vaddr_scratch: cross priv_mode_m, csrrw, vstval, xaddr_scratch;
+    `ifdef H_VADDR_WALK_MSB
+        vaddr_walk1 : coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+            bins b_1[] = { [0:`H_VADDR_WALK_MSB] };
+        }
+        vaddr_walk0 : coverpoint $clog2(~ins.current.rs1_val) iff ($onehot(~ins.current.rs1_val)) {
+            bins b_0[] = { [0:`H_VADDR_WALK_MSB] };
+        }
+        cp_vsepc_vaddr_walk1:    cross priv_mode_m, csrrw, vsepc, vaddr_walk1;
+        cp_vsepc_vaddr_walk0:    cross priv_mode_m, csrrw, vsepc, vaddr_walk0;
+        cp_vstval_vaddr_walk1:   cross priv_mode_m, csrrw, vstval, vaddr_walk1;
+        cp_vstval_vaddr_walk0:   cross priv_mode_m, csrrw, vstval, vaddr_walk0;
+    `endif
 
     // Read an S CSR right after writing its VS replica
     csrw_prev : coverpoint ins.prev.insn {

@@ -4,9 +4,7 @@
 
 ci_enabled: true
 
-# YosysHQ/picorv32 @ ef203c2:
-#   I  I-fence-00: a FENCE with nonzero rd writes the ALU result to rd instead of ignoring the
-#      field.
+# I: FENCE with rd != x0 writes rd (I-fence-00): https://github.com/YosysHQ/picorv32/blob/ef203c2/picorv32.v#L1821-L1825
 exclude_extensions: "I"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"

@@ -217,6 +217,9 @@
     `ifdef COVER_SMVF
         smvf_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SMCNTRPMFH
+        smcntrpmfh_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SMMPM
         smmpm_sample(hart, issue, ins);
     `endif
@@ -226,11 +229,11 @@
     `ifdef COVER_SMNPMU
         smnpmu_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_SMCNTRPMFH
-        smcntrpmfh_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_SMSTATEEN
         smstateen_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SMSTATEENH
+        smstateenh_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SSCCPTR
         ssccptr_sample(hart, issue, ins);
@@ -255,6 +258,9 @@
     `endif
     `ifdef COVER_SSSTATEEN
         ssstateen_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSSTATEENH
+        ssstateenh_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SSSTRICTS
         ssstricts_sample(hart, issue, ins);

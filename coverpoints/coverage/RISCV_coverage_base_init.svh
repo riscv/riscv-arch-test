@@ -286,6 +286,10 @@
         `cover_info("//      SmVF - Enabled");
         `include "SmVF_coverage_init.svh"
     `endif
+    `ifdef COVER_SMCNTRPMFH
+        `cover_info("//      SmcntrpmfH - Enabled");
+        `include "SmcntrpmfH_coverage_init.svh"
+    `endif
     `ifdef COVER_SMMPM
         `cover_info("//      Smmpm - Enabled");
         `include "Smmpm_coverage_init.svh"
@@ -298,13 +302,13 @@
         `cover_info("//      SmnpmU - Enabled");
         `include "SmnpmU_coverage_init.svh"
     `endif
-    `ifdef COVER_SMCNTRPMFH
-        `cover_info("//      SmcntrpmfH - Enabled");
-        `include "SmcntrpmfH_coverage_init.svh"
-    `endif
     `ifdef COVER_SMSTATEEN
         `cover_info("//      Smstateen - Enabled");
         `include "Smstateen_coverage_init.svh"
+    `endif
+    `ifdef COVER_SMSTATEENH
+        `cover_info("//      SmstateenH - Enabled");
+        `include "SmstateenH_coverage_init.svh"
     `endif
     `ifdef COVER_SSCCPTR
         `cover_info("//      Ssccptr - Enabled");
@@ -337,6 +341,10 @@
     `ifdef COVER_SSSTATEEN
         `cover_info("//      Ssstateen - Enabled");
         `include "Ssstateen_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSSTATEENH
+        `cover_info("//      SsstateenH - Enabled");
+        `include "SsstateenH_coverage_init.svh"
     `endif
     `ifdef COVER_SSSTRICTS
         `cover_info("//      SsstrictS - Enabled");

@@ -1,0 +1,15 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# CI configuration for the XiangShan core
+#
+# XiangShan cannot run in the hosted CI: Chisel elaboration of DefaultConfig needs about 22 GB of
+# memory, and the emulator runs at a few hundred cycles per second, so one ACT run takes days.
+# These exclusions do not affect CI; they record the suites that fail and why.
+
+ci_enabled: false
+
+exclude_extensions: ""
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache clang"
+install_script: ".github/scripts/install-xiangshan.sh"
+setup_script: ".github/scripts/setup-xiangshan.sh"

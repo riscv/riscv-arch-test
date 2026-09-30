@@ -1,0 +1,699 @@
+// Sail reference-model configuration for XiangShan Kunminghu V2 (DefaultConfig).
+// OpenXiangShan/XiangShan @ e7bab53e66dfb3c4a1d11cf9519b0396f8576cae (kunminghu-v2).
+// Values agree with the UDB configuration in xiangshan-kmhv2.yaml, which cites the source of each.
+// Memory map: RAM at 0x8000_0000 (256 MiB used by the tests); CLINT at 0x3800_0000, as on the DUT.
+// The simple interrupt generator at 0x3805_0000 exists only in the reference model. The DUT's
+// PMA-denied range 0x3900_2000-0x39FF_FFFF (RVMODEL_ACCESS_FAULT_ADDRESS) is in no region.
+// writable_fiom is true because Sail requires FIOM to be writable when Sv39 is supported; on the
+// DUT menvcfg.FIOM is read-only zero.
+{
+  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.14.1/sail_riscv_config_schema.json",
+  "base": {
+    "xlen": 64,
+    "E": false,
+    "writable_misa": false,
+    "writable_fiom": true,
+    "writable_hpm_counters": {
+      "len": 32,
+      "value": "0xFFFF_FFF8"
+    },
+    "scounteren_writable_bits": {
+      "len": 32,
+      "value": "0xFFFF_FFFF"
+    },
+    "mcounteren_writable_bits": {
+      "len": 32,
+      "value": "0xFFFF_FFFF"
+    },
+    "hcounteren_writable_bits": {
+      "len": 32,
+      "value": "0xFFFF_FFFF"
+    },
+    "mtvec": {
+      "direct": {
+        "supported": true,
+        "base_alignment": 2
+      },
+      "vectored": {
+        "supported": true,
+        "base_alignment": 2
+      }
+    },
+    "stvec": {
+      "direct": {
+        "supported": true
+      },
+      "vectored": {
+        "supported": true,
+        "base_alignment": 2
+      }
+    },
+    "vstvec": {
+      "direct": {
+        "supported": true
+      },
+      "vectored": {
+        "supported": true,
+        "base_alignment": 2
+      }
+    },
+    "medeleg": {
+      "delegatable_bits": {
+        "len": 64,
+        "value": "0x0000_0000_00FC_B7FF"
+      }
+    },
+    "mideleg": {
+      "delegatable_bits": {
+        "len": "xlen",
+        "value": "0x0000_0000_0000_2222"
+      }
+    },
+    "xtval_nonzero": {
+      "illegal_instruction": true,
+      "virtual_instruction": true,
+      "load_guest_page_fault": true,
+      "samo_guest_page_fault": true,
+      "fetch_guest_page_fault": true,
+      "software_breakpoint": true,
+      "hardware_breakpoint": true,
+      "load_address_misaligned": true,
+      "load_access_fault": true,
+      "load_page_fault": true,
+      "samo_address_misaligned": true,
+      "samo_access_fault": true,
+      "samo_page_fault": true,
+      "fetch_address_misaligned": true,
+      "fetch_access_fault": true,
+      "fetch_page_fault": true,
+      "software_check": true,
+      "hardware_error": true,
+      "reserved_exceptions": false
+    },
+    "reserved_behavior": {
+      "amocas_odd_register": "AMOCAS_Illegal",
+      "fcsr_rm": "Fcsr_RM_Illegal",
+      "pmpcfg_write_only": "PMP_ClearPermissions",
+      "xenvcfg_cbie": "Xenvcfg_ClearPermissions",
+      "xtvec_mode": "Xtvec_Ignore",
+      "rv32zdinx_odd_register": "Zdinx_Illegal"
+    },
+    "mstatus": {
+      "fs_legal_states": "ExtContext_FourState",
+      "vs_legal_states": "ExtContext_FourState"
+    },
+    "privileged_isa_version": "Privileged_ISA_1_13"
+  },
+  "memory": {
+    "physaddr_bits": 48,
+    "asidlen": 16,
+    "vmidlen": 14,
+    "pmp": {
+      "grain": 10,
+      "count": 64,
+      "usable_count": 32,
+      "tor_supported": true,
+      "na4_supported": false,
+      "napot_supported": true
+    },
+    "misaligned": {
+      "exceptions": {
+        "load_store": {
+          "None": null
+        },
+        "vector": {
+          "None": null
+        },
+        "amo": {
+          "Some": "AlignmentException"
+        },
+        "lrsc": {
+          "Some": "AlignmentException"
+        }
+      },
+      "order_decreasing": false,
+      "default_allowed_within_exp": 0,
+      "byte_by_byte": false
+    },
+    "dtb_address": {
+      "len": 64,
+      "value": "0x1000"
+    },
+    "regions": [
+      {
+        "base": {
+          "len": 64,
+          "value": "0x1000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x1000"
+        },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": true,
+          "coherent": false,
+          "executable": false,
+          "readable": true,
+          "writable": false,
+          "read_idempotent": true,
+          "write_idempotent": true,
+          "misaligned_exceptions": {
+            "load_store": {
+              "None": null
+            },
+            "vector": {
+              "None": null
+            },
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": false
+      },
+      {
+        "base": {
+          "len": 64,
+          "value": "0x38000000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x100000"
+        },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": true,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": {
+              "None": null
+            },
+            "vector": {
+              "None": null
+            },
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": false
+      },
+      {
+        "base": {
+          "len": 64,
+          "value": "0x80000000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x10000000"
+        },
+        "attributes": {
+          "mem_type": "MainMemory",
+          "cacheable": true,
+          "coherent": true,
+          "executable": true,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": true,
+          "write_idempotent": true,
+          "misaligned_exceptions": {
+            "load_store": {
+              "None": null
+            },
+            "vector": {
+              "None": null
+            },
+            "amo": "AlignmentException",
+            "lrsc": "AlignmentException"
+          },
+          "atomic_support": "AMOCASQ",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
+          "reservability": "RsrvEventual",
+          "supports_cbo_zero": true,
+          "supports_pte_read": true,
+          "supports_pte_write": true
+        },
+        "include_in_device_tree": true
+      }
+    ]
+  },
+  "platform": {
+    "vendorid": 2159,
+    "archid": 25,
+    "impid": 0,
+    "hartid": 0,
+    "cache_block_size_exp": 6,
+    "reservation": {
+      "reservation_set_size_exp": 6,
+      "require_exact_reservation_addr": false,
+      "invalidate_on_same_hart_store": false
+    },
+    "interrupts": {
+      "machine": {
+        "software": {
+          "supported": true
+        },
+        "external": {
+          "supported": true
+        },
+        "timer": {
+          "supported": true
+        }
+      }
+    },
+    "clint": {
+      "supported": true,
+      "base": 939524096,
+      "size": 65536
+    },
+    "simple_interrupt_generator": {
+      "supported": true,
+      "base": 939851776
+    },
+    "clock_frequency": 1000000000,
+    "instructions_per_tick": 2,
+    "wfi_is_nop": false,
+    "wfi_available_to_user_mode": false,
+    "max_time_to_wait": 200
+  },
+  "extensions": {
+    "M": {
+      "supported": true
+    },
+    "A": {
+      "supported": true
+    },
+    "F": {
+      "supported": true,
+      "fflags_dirty_policy": "Fflags_Dirty_Precise"
+    },
+    "D": {
+      "supported": true
+    },
+    "V": {
+      "support_level": "Full",
+      "vlen_exp": 7,
+      "elen_exp": 6,
+      "reserved_behavior": {
+        "illegal_vtype": "IllegalVtype_SetVill",
+        "vstart_out_of_bounds": "Vstart_Illegal"
+      },
+      "vl_use_ceil": false,
+      "max_index_eew_exp": 6,
+      "vstart": {
+        "zero_required": {
+          "arith": true,
+          "scalar_move": true
+        }
+      }
+    },
+    "B": {
+      "supported": true
+    },
+    "S": {
+      "supported": true,
+      "interrupts": {
+        "software": {
+          "supported": true
+        },
+        "external": {
+          "supported": true
+        },
+        "timer": {
+          "supported": true
+        }
+      }
+    },
+    "U": {
+      "supported": true
+    },
+    "H": {
+      "supported": true,
+      "geilen": 7,
+      "guest_page_fault_writes_htval": true,
+      "hgatp_modes": {
+        "Sv32x4": false,
+        "Sv39x4": true,
+        "Sv48x4": true,
+        "Sv57x4": false
+      },
+      "vsatp_modes": {
+        "Sv32": false,
+        "Sv39": true,
+        "Sv48": true,
+        "Sv57": false
+      }
+    },
+    "Sha": {
+      "supported": true
+    },
+    "Shcounterenw": {
+      "supported": true
+    },
+    "Shgatpa": {
+      "supported": true
+    },
+    "Shtvala": {
+      "supported": true
+    },
+    "Shvsatpa": {
+      "supported": true
+    },
+    "Shvstvala": {
+      "supported": true
+    },
+    "Shvstvecd": {
+      "supported": true
+    },
+    "Sstvecd": {
+      "supported": true
+    },
+    "Svukte": {
+      "supported": false
+    },
+    "Zilx": {
+      "supported": false
+    },
+    "Zibi": {
+      "supported": false
+    },
+    "Zic64b": {
+      "supported": true
+    },
+    "Zicbom": {
+      "supported": true
+    },
+    "Zicbop": {
+      "supported": true
+    },
+    "Zicboz": {
+      "supported": true
+    },
+    "Ziccamoa": {
+      "supported": true
+    },
+    "Ziccamoc": {
+      "supported": false
+    },
+    "Ziccif": {
+      "supported": true
+    },
+    "Zicclsm": {
+      "supported": true
+    },
+    "Ziccrse": {
+      "supported": true
+    },
+    "Zicfilp": {
+      "supported": false
+    },
+    "Zicfiss": {
+      "supported": false
+    },
+    "Zicond": {
+      "supported": true
+    },
+    "Zicntr": {
+      "supported": true
+    },
+    "Zicsr": {
+      "supported": true
+    },
+    "Zifencei": {
+      "supported": true
+    },
+    "Zihintntl": {
+      "supported": true
+    },
+    "Zihintpause": {
+      "supported": true
+    },
+    "Zihpm": {
+      "supported": true
+    },
+    "Zimop": {
+      "supported": true
+    },
+    "Zmmul": {
+      "supported": true
+    },
+    "Zaamo": {
+      "supported": true
+    },
+    "Zabha": {
+      "supported": false
+    },
+    "Zacas": {
+      "supported": true
+    },
+    "Zalrsc": {
+      "supported": true
+    },
+    "Zama16b": {
+      "supported": false
+    },
+    "Zawrs": {
+      "supported": true,
+      "nto": {
+        "is_nop": false
+      },
+      "sto": {
+        "is_nop": false
+      }
+    },
+    "Zfa": {
+      "supported": true
+    },
+    "Zfbfmin": {
+      "supported": false
+    },
+    "Zfh": {
+      "supported": true
+    },
+    "Zfhmin": {
+      "supported": true
+    },
+    "Zfinx": {
+      "supported": false
+    },
+    "Zdinx": {
+      "supported": false
+    },
+    "Zca": {
+      "supported": true
+    },
+    "Zcf": {
+      "supported": false
+    },
+    "Zcd": {
+      "supported": true
+    },
+    "Zcb": {
+      "supported": true
+    },
+    "Zcmop": {
+      "supported": true
+    },
+    "Zba": {
+      "supported": true
+    },
+    "Zbb": {
+      "supported": true
+    },
+    "Zbs": {
+      "supported": true
+    },
+    "Zbc": {
+      "supported": true
+    },
+    "Zbkb": {
+      "supported": true
+    },
+    "Zbkc": {
+      "supported": true
+    },
+    "Zbkx": {
+      "supported": true
+    },
+    "Zknd": {
+      "supported": true
+    },
+    "Zkne": {
+      "supported": true
+    },
+    "Zknh": {
+      "supported": true
+    },
+    "Zkr": {
+      "supported": false,
+      "sseed_reset_value": false,
+      "useed_reset_value": false,
+      "sseed_read_only_zero": false,
+      "useed_read_only_zero": false
+    },
+    "Zksed": {
+      "supported": true
+    },
+    "Zksh": {
+      "supported": true
+    },
+    "Zkt": {
+      "supported": true
+    },
+    "Zhinx": {
+      "supported": false
+    },
+    "Zhinxmin": {
+      "supported": false
+    },
+    "Zvabd": {
+      "supported": false
+    },
+    "Zvfbfmin": {
+      "supported": false
+    },
+    "Zvfbfwma": {
+      "supported": false
+    },
+    "Zvfh": {
+      "supported": true
+    },
+    "Zvfhmin": {
+      "supported": true
+    },
+    "Zvbb": {
+      "supported": true
+    },
+    "Zvbc": {
+      "supported": false
+    },
+    "Zvkb": {
+      "supported": true
+    },
+    "Zvkg": {
+      "supported": false
+    },
+    "Zvkned": {
+      "supported": false
+    },
+    "Zvknha": {
+      "supported": false
+    },
+    "Zvknhb": {
+      "supported": false
+    },
+    "Zvksed": {
+      "supported": false
+    },
+    "Zvksh": {
+      "supported": false
+    },
+    "Zvkt": {
+      "supported": true
+    },
+    "Ssccptr": {
+      "supported": true
+    },
+    "Sscofpmf": {
+      "supported": true
+    },
+    "Sscounterenw": {
+      "supported": true
+    },
+    "Sstc": {
+      "supported": true
+    },
+    "Sstvala": {
+      "supported": true
+    },
+    "Svade": {
+      "supported": true
+    },
+    "Svadu": {
+      "supported": false
+    },
+    "Svinval": {
+      "supported": true
+    },
+    "Svrsw60t59b": {
+      "supported": false
+    },
+    "Svnapot": {
+      "supported": true
+    },
+    "Ssnpm": {
+      "supported": true,
+      "supported_pmlen_7": true,
+      "supported_pmlen_16": true
+    },
+    "Smnpm": {
+      "supported": true,
+      "supported_pmlen_7": true,
+      "supported_pmlen_16": true
+    },
+    "Smmpm": {
+      "supported": true,
+      "supported_pmlen_7": true,
+      "supported_pmlen_16": true
+    },
+    "Smcntrpmf": {
+      "supported": false
+    },
+    "Svbare": {
+      "supported": true,
+      "sfence_vma_illegal_if_svbare_only": true
+    },
+    "Sv32": {
+      "supported": false
+    },
+    "Sv39": {
+      "supported": true
+    },
+    "Sv48": {
+      "supported": true
+    },
+    "Sv57": {
+      "supported": false
+    },
+    "Stateen": {
+      "Smstateen": {
+        "supported": true
+      },
+      "Ssstateen": {
+        "supported": true
+      },
+      "C_readonly_zero": false,
+      "SE0_readonly_zero": false
+    },
+    "Ssqosid": {
+      "supported": false,
+      "rcid_length": 12,
+      "mcid_length": 12
+    },
+    "Svpbmt": {
+      "supported": true
+    },
+    "Svvptc": {
+      "supported": false
+    }
+  }
+}

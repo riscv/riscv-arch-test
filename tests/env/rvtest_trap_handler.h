@@ -1157,27 +1157,6 @@ init_\__MODE__\()timecmp:               // init MTIMECMP to largest value if its
         SREG T2,  4(T4)
   .endif
         nop                                       // padding to keep code size constant vs #else branch
-#elif defined(SAIL_CLINT_BASE_ADDRESS)
-// The DUT has no timer, but the Sail reference model always has a CLINT, and its mtimecmp
-// resets to 0, so mip.MTIP would be pending in the reference run only. The signature build
-// parks Sail's mtimecmp at the largest value; the self-checking DUT build jumps over the same
-// instructions so both builds keep the same layout.
-init_\__MODE__\()timecmp_sail:
-        .option push
-        .option norvc
-  #ifdef SIGNATURE
-        nop
-  #else
-        j       init_\__MODE__\()timecmp_sail_end
-  #endif
-        LI(  T2,  -1)
-        LI(  T4,  SAIL_CLINT_BASE_ADDRESS + 0x4000)   // Sail's mtimecmp
-        SREG T2,  0(T4)
-  .if (UDB_MXLEN==32)
-        SREG T2,  4(T4)
-  .endif
-        .option pop
-init_\__MODE__\()timecmp_sail_end:
 #else
         nop                                       // no timer: 5 nops to match the #ifdef branch size
         nop

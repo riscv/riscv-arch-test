@@ -217,9 +217,6 @@ params:
   # mcounteren and scounteren are plain 32-bit registers with every bit writable.
   #   Quote: "mcnten_reg[31:0] <= iui_regs_src0[31:0];" / "scnten_reg[31:0] <= iui_regs_src0[31:0];"
   #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L1949
-  # Bits 19-31 are declared false here ONLY because UDB refuses an enable bit for a
-  # counter that HPM_COUNTER_EN says does not exist.  On the DUT those bits really are
-  # writable even though mhpmcounter19-31 read 0 - recorded as a discrepancy.
   SCOUNTENABLE_EN:
     [
       true,
@@ -241,19 +238,19 @@ params:
       true,
       true,
       true,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
     ]
   # stvec mirrors mtvec: BASE is bits 63:2 (fully writable), MODE bit 0 is writable and
   # MODE bit 1 reads as zero.  Both Direct and Vectored are supported; in Vectored mode
@@ -452,10 +449,12 @@ params:
   HPM_COUNTER17_WIDTH: 64
   HPM_COUNTER18_WIDTH: 64
   HPM_EVENTS: [0]
-  # mcountinhibit (0x320) exists with CY (bit 0), IR (bit 2) and HPM3..31 (bits 31:3);
-  # bit 1 is read-only zero, as the architecture requires.
+  # mcountinhibit (0x320) exists with CY (bit 0), IR (bit 2) and HPM3..31 (bits 31:3)
+  # writable; bit 1 is read-only zero.
   #   Quote: "assign mcntinhbt_value[63:0] = {32'b0,hpm[28:0], ir, 1'b0, cy};"
   #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/pmu/rtl/ct_hpcp_top.v#L2563
+  # Sail 0.14.1 derives the writable mcountinhibit bits from writable_hpm_counters, so
+  # it models bits 19-31 as read-only zero.
   MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
     [
@@ -478,20 +477,21 @@ params:
       true,
       true,
       true,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
     ]
+  # mcounteren is a plain 32-bit register (see SCOUNTENABLE_EN above).
   MCOUNTENABLE_EN:
     [
       true,
@@ -513,17 +513,17 @@ params:
       true,
       true,
       true,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
     ]

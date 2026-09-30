@@ -427,6 +427,28 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       default: val = 0; // Todo: error
     endcase
   end
+  if (name == "mcyclecfg") begin
+    case(field)
+`ifdef UDB_MXLEN_64
+      "minh" : val = (val >> 62) & 64'h1;
+      "sinh" : val = (val >> 61) & 64'h1;
+      "uinh" : val = (val >> 60) & 64'h1;
+      "vsinh" : val = (val >> 59) & 64'h1;
+      "vuinh" : val = (val >> 58) & 64'h1;
+`endif
+      default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "mcyclecfgh") begin
+    case(field)
+      "minh" : val = (val >> 30) & 32'h1;
+      "sinh" : val = (val >> 29) & 32'h1;
+      "uinh" : val = (val >> 28) & 32'h1;
+      "vsinh" : val = (val >> 27) & 32'h1;
+      "vuinh" : val = (val >> 26) & 32'h1;
+      default: val = 0; // Todo: error
+    endcase
+  end
   if (name == "medeleg") begin
     case(field)
       "deleg" : val = val & 'hffffffff;
@@ -490,6 +512,28 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "vgeie" : val = (val >> 10) & 'h1;
       "vssie" : val = (val >> 2) & 'h1;
       "vstie" : val = (val >> 6) & 'h1;
+      default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "minstretcfg") begin
+    case(field)
+`ifdef UDB_MXLEN_64
+      "minh" : val = (val >> 62) & 64'h1;
+      "sinh" : val = (val >> 61) & 64'h1;
+      "uinh" : val = (val >> 60) & 64'h1;
+      "vsinh" : val = (val >> 59) & 64'h1;
+      "vuinh" : val = (val >> 58) & 64'h1;
+`endif
+      default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "minstretcfgh") begin
+    case(field)
+      "minh" : val = (val >> 30) & 32'h1;
+      "sinh" : val = (val >> 29) & 32'h1;
+      "uinh" : val = (val >> 28) & 32'h1;
+      "vsinh" : val = (val >> 27) & 32'h1;
+      "vuinh" : val = (val >> 26) & 32'h1;
       default: val = 0; // Todo: error
     endcase
   end

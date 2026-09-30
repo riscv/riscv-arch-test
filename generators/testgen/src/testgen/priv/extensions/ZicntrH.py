@@ -9,7 +9,9 @@
 """ZicntrH extension test generator.
 
 The suite boots to HS-mode.  The HS-mode handler takes the illegal- and virtual-instruction traps
-from U, VS and VU (hedeleg = 0).
+from U, VS and VU (hedeleg = 0).  A counter read in VS or VU raises illegal instruction when its
+mcounteren bit is 0, whatever hcounteren and scounteren hold, and virtual instruction when only
+hcounteren (or, in VU, scounteren) forbids it.
 """
 
 from testgen.data.state import TestData
@@ -23,8 +25,11 @@ _CG = "ZicntrH_cg"
 _WALKS: list[tuple[str, Mode, str, Counteren | None, Counteren | None, Counteren | None]] = [
     ("cp_scounteren_access_hs", "S", "scounteren", "ones", "zeros", None),
     ("cp_mcounteren_access_vs", "VS", "mcounteren", None, "ones", "zeros"),
+    ("cp_mcounteren_access_vs_h0", "VS", "mcounteren", None, "zeros", "zeros"),
     ("cp_hcounteren_access_vs", "VS", "hcounteren", "ones", None, "zeros"),
     ("cp_scounteren_access_u", "U", "scounteren", "ones", "zeros", None),
+    ("cp_mcounteren_access_vu", "VU", "mcounteren", None, "ones", "ones"),
+    ("cp_mcounteren_access_vu_hs0", "VU", "mcounteren", None, "zeros", "zeros"),
     ("cp_hcounteren_access_vu", "VU", "hcounteren", "ones", None, "ones"),
     ("cp_scounteren_access_vu", "VU", "scounteren", "ones", "ones", None),
 ]

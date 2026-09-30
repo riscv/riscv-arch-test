@@ -302,6 +302,10 @@
         `cover_info("//      SmnpmU - Enabled");
         `include "SmnpmU_coverage_init.svh"
     `endif
+    `ifdef COVER_SMCNTRPMFH
+        `cover_info("//      SmcntrpmfH - Enabled");
+        `include "SmcntrpmfH_coverage_init.svh"
+    `endif
     `ifdef COVER_SMSTATEEN
         `cover_info("//      Smstateen - Enabled");
         `include "Smstateen_coverage_init.svh"

@@ -14,6 +14,8 @@ normative_rule_definitions:
       [
         "ZicntrH_cg/cp_hcounteren_access_vs",
         "ZicntrH_cg/cp_hcounteren_access_vu",
+        "ZicntrH_cg/cp_mcounteren_access_vs_h0",
+        "ZicntrH_cg/cp_mcounteren_access_vu_hs0",
       ]
 
   # In VU-mode, a counter is readable only when its hcounteren and scounteren bits are set
@@ -27,11 +29,20 @@ normative_rule_definitions:
       [
         "ZicntrH_cg/cp_hcounteren_access_vu",
         "ZicntrH_cg/cp_scounteren_access_vu",
+        "ZicntrH_cg/cp_mcounteren_access_vu",
+        "ZicntrH_cg/cp_mcounteren_access_vu_hs0",
       ]
 
-  # A counter whose mcounteren bit is clear raises illegal instruction below M-mode
+  # A counter whose mcounteren bit is clear raises illegal instruction below M-mode, whatever hcounteren and
+  # scounteren hold
   - name: mcounteren_clr_ill_inst_exc
-    coverpoint: ["ZicntrH_cg/cp_mcounteren_access_vs"]
+    coverpoint:
+      [
+        "ZicntrH_cg/cp_mcounteren_access_vs",
+        "ZicntrH_cg/cp_mcounteren_access_vs_h0",
+        "ZicntrH_cg/cp_mcounteren_access_vu",
+        "ZicntrH_cg/cp_mcounteren_access_vu_hs0",
+      ]
 
   # A counter whose mcounteren bit is set is accessible in HS-mode
   - name: mcounteren_set_nxt_priv

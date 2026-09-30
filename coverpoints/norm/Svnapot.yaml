@@ -3,8 +3,12 @@
 normative_rule_definitions:
   # The Svnapot extension depends on the Sv39 extension.
   - name: Svnapot_depends_Sv39
-    coverpoint: ["Svnapot_cg/Svnapot_legal_enc_exec_{s, u}"]
+    coverpoint:
+      ["Not tested: extension dependency checked by the UDB configuration"]
 
+  # In Sv39, Sv48, and Sv57, when a PTE has N=1, the PTE represents a translation that is
+  # part of a range of contiguous virtual-to-physical translations with the same values for
+  # PTE bits 5–0.
   - name: Svnapot_pte_n
     coverpoint: ["Svnapot_cg/Svnapot_legal_enc_exec_{s, u}"]
 
@@ -41,7 +45,10 @@ normative_rule_definitions:
   # by vpn[i][pte.napot_bits-1:0], for any or all j such that j >> napot_bits = vpn[i] >> napot_bits,
   # all for the address space identified in satp as loaded by step 1.
   - name: Svnapot_cache_entries
-    coverpoint: ["Not tested"]
+    coverpoint:
+      [
+        "Not tested: address-translation cache contents are not observable in signature tests",
+      ]
 
   # If the hypervisor extension is also implemented, Svnapot is also supported in G-stage translation.
   - name: Svnapot_hyp_gstage

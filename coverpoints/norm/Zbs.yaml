@@ -3,10 +3,11 @@
 
 normative_rule_definitions:
   - name: Zbs_single_bit_functionality
+    # Representative coverpoints; also the other Zbs register and immediate forms
     coverpoint:
       [
-        "{Zbs_bset_cg, Zbs_bclr_cg, Zbs_binv_cg, Zbs_bext_cg}/cr_rs1_rs2_edges",
-        "{Zbs_bseti_cg, Zbs_bclri_cg, Zbs_binvi_cg, Zbs_bexti_cg}/{cr_rs1_imm_edges_uimm, cp_uimm}",
+        "{Zbs_bset_cg, Zbs_bclr_cg, Zbs_binv_cg}/cr_rs1_rs2_edges",
+        "Zbs_bexti_cg/cr_rs1_imm_edges_uimm",
       ]
 
   - name: bclr_enc

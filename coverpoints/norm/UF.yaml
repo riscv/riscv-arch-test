@@ -1,14 +1,31 @@
-# Normative rule to coverpoint mappings
-# Generated from riscv-isa-manual normative rule definitions
+# Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  # The status fields will also be updated during execution of instructions,
-  # regardless of privilege mode.
-  - name: mstatus_fs_vs_xs_update_indep_priv
-    coverpoint: ["TODO.  *** also for S-mode"]
-
-  # For forward compatibility, implementations that do not furnish these fields must
-  # make them read-only zero. These fields are labeled WPRI in the register
-  # descriptions.
-  - name: Zicsr_wpri_roz
+  # The floating-point CSR, csr:fcsr[], is a 32-bit read/write register that selects the
+  # dynamic rounding mode for floating-point arithmetic operations and holds the accrued
+  # exception flags, as shown in .
+  - name: fcsr_op_sz_acc
+    coverpoint: ["UF_ufcsr_cg/cp_ufcsr_access"]
+  # The fields within the csr:fcsr[] can also be accessed individually through different
+  # CSR addresses, and separate assembler pseudoinstructions are defined for these
+  # accesses. The insn:frrm[] instruction reads the Rounding Mode field csr:frm[]
+  # (csr:fcsr[] bits 7&#8205;&#8211;&#8205;5) and copies it into the least-significant
+  # three bits of integer register rd, with zero in all other bits. insn:fsrm[] swaps
+  # the value in csr:frm[] by copying the original value into integer register rd, and
+  # then writing a new value obtained from the three least-significant bits of integer
+  # register rs1 into csr:frm[]. insn:frflags[] and insn:fsflags[] are defined
+  # analogously for the Accrued Exception Flags field csr:fflags[] (csr:fcsr[] bits
+  # 4&#8205;&#8211;&#8205;0).
+  - name: fflags_frm_op_sz_acc
     coverpoint: ["UF_ufcsr_cg/cp_ufcsrwalk"]
+  # Bits 31&#8205;&#8211;&#8205;8 of the csr:fcsr[] are reserved for other standard
+  # extensions. If these extensions are not present, implementations shall ignore writes
+  # to these bits and supply a zero value when read. Standard software should preserve
+  # the contents of these bits.
+  - name: fcsr_rsv
+    coverpoint: ["UF_ufcsr_cg/cp_ufcsrwalk"]
+  # The status fields are also updated during execution of instructions, regardless of
+  # privilege mode.
+  - name: mstatus_fs_vs_xs_update_indep_priv
+    # TODO: needs FP instructions run in U-mode with mstatus.FS and SD read back through T-SBI
+    coverpoint: [""]

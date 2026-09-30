@@ -29,3 +29,6 @@ normative_rule_definitions:
     coverpoint:
       ["Zcb_c_zext_b_cg/{cp_rs1_p, cp_rs1_edges}"]
       # zero-extends the least-significant byte of the operand to XLEN bits by inserting zeros into all of the bits more significant than 7.
+  # The Zce extension depends upon the Zca, Zcb, Zcmp, and Zcmt extensions.
+  - name: Zce_dep
+    coverpoint: ["Definition, checked through UDB"]

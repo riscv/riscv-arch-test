@@ -46,7 +46,8 @@ from testgen.priv.registry import add_priv_test_generator
 
 # The PMP entry each scenario programs, so that coverage can tell the scenarios apart: a page table
 # (0-5), the final supervisor physical address (6), the guest virtual addresses of the two mappings
-# (7, 8), and the table that holds an invalid leaf (9, 10).
+# (7 and 8 together), the guest physical address of vlvl0 (8 alone), and the table that holds an invalid
+# leaf (9, 10).
 # table: (entry, NAPOT low ones for its size, RV64 only)
 _TABLES = {
     "vlvl0": (0, "0x1FF", False),
@@ -147,12 +148,18 @@ def _make_hlv_chunk(test_data: TestData, hs: bool) -> TestChunk:
 #####################################################################
 
 
+def _vlvl0_gpa(g: SvMode) -> str:
+    """The guest physical address of rvtest_vlvl0_pg_tbl: the page after g.data_va, in the same G-stage table."""
+    return f"({g.data_va} + 0x1000)"
+
+
 def _guest_mappings(test_data: TestData, g: SvMode, vs: SvMode, user: bool, gvas: tuple[int, int]) -> list[str]:
     """Map TEST_FOR_EXECUTION for a guest in two ways and leave the guest virtual addresses in ``gvas``.
 
     Mapping "vs" is a VS-stage 4 KiB page at vs.data_va over the G-stage identity map, and mapping "g" is a
     G-stage 4 KiB page at g.data_va reached through a VS-stage identity superpage.  VS-stage leaves are
-    user pages when ``user``.
+    user pages when ``user``.  The VS-stage walk of mapping vs reaches its last table, vlvl0, through the
+    guest physical address _vlvl0_gpa, which differs from its supervisor physical address.
     """
     lines = guest_translation_setup(test_data, g, vs, "VUmode" if user else "VSmode")
     pte, addr, tmp = test_data.int_regs.get_registers(3)
@@ -185,6 +192,24 @@ def _guest_mappings(test_data: TestData, g: SvMode, vs: SvMode, user: bool, gvas
                 virtual_address=g.data_va,
                 physical_address="TEST_FOR_EXECUTION",
                 regs=(pte, addr, tmp),
+            ),
+            "// vlvl0 at a guest physical address that G-stage translation moves",
+            *write_pte(
+                g,
+                level=0,
+                flags=PteFlags(user=True),
+                virtual_address=_vlvl0_gpa(g),
+                physical_address="rvtest_vlvl0_pg_tbl",
+                regs=(pte, addr, tmp),
+            ),
+            *write_pte(
+                vs,
+                level=1,
+                flags=PteFlags.nonleaf(),
+                virtual_address=vs.data_va,
+                physical_address=_vlvl0_gpa(g),
+                regs=(pte, addr, tmp),
+                pa_is_label=False,
             ),
             "hfence.gvma",
             "hfence.vvma",
@@ -238,7 +263,8 @@ class _Scenario:
     """One PMP and leaf configuration that the probes run under.
 
     regions are (address, entry, NAPOT low ones) as for _deny; an address "{gva0}" or "{gva1}" is the guest
-    virtual address of mapping vs or g.  leaves, if set, first rewrite both kilopage leaves.
+    virtual address of mapping vs or g, and "{vlvl0_gpa}" is the guest physical address of vlvl0.  leaves, if
+    set, first rewrite both kilopage leaves.
     """
 
     name: str
@@ -273,14 +299,17 @@ def _guest_scenarios(test_data: TestData, mode: str, scenarios: list[_Scenario])
     map, which is not a user page, so M-mode checks its loads.
     """
     user = mode == "vu"
-    gva_vs, gva_g = test_data.int_regs.get_registers(2)
-    lines = per_xlen(lambda g, vs: _guest_mappings(test_data, g, vs, user, (gva_vs, gva_g)))
+    gva_vs, gva_g, vlvl0_gpa = test_data.int_regs.get_registers(3)
+    lines = [
+        *per_xlen(lambda g, vs: _guest_mappings(test_data, g, vs, user, (gva_vs, gva_g))),
+        *per_xlen(lambda g, _vs: [f"LI(x{vlvl0_gpa}, {_vlvl0_gpa(g)})"]),
+    ]
     for scenario in scenarios:
         body = [f"// {mode.upper()}-mode: {scenario.description}"]
         if scenario.leaves is not None:
             body.extend(per_xlen(partial(_guest_leaves, test_data, user=user, flags=scenario.leaves)))
         regions = [
-            (address.format(gva0=f"x{gva_vs}", gva1=f"x{gva_g}"), entry, ones)
+            (address.format(gva0=f"x{gva_vs}", gva1=f"x{gva_g}", vlvl0_gpa=f"x{vlvl0_gpa}"), entry, ones)
             for address, entry, ones in scenario.regions
         ]
         body.extend([*_deny(regions), "fence.i", f"RVTEST_TSBI_GOTO_{mode.upper()}MODE"])
@@ -310,7 +339,7 @@ def _guest_scenarios(test_data: TestData, mode: str, scenarios: list[_Scenario])
         test_data.int_regs.return_registers(rds)
         body.extend(["RVTEST_TSBI_GOTO_MMODE", *checks])
         lines.extend(gated(body, "__riscv_xlen == 64" if scenario.rv64 else None))
-    test_data.int_regs.return_registers([gva_vs, gva_g])
+    test_data.int_regs.return_registers([gva_vs, gva_g, vlvl0_gpa])
     return [*lines, *zero_pmp_regs(), *guest_translation_teardown(test_data)]
 
 
@@ -362,6 +391,12 @@ _GUEST_SCENARIOS = [
     _Scenario("spa", "cp_pmp_after_translation", "PMP denies the supervisor physical address", (_SPA,)),
     _table_scenario("vlvl1", "cp_pmp_pt", "VS-stage"),
     _table_scenario("vlvl0", "cp_pmp_pt", "VS-stage"),
+    _Scenario(
+        "vlvl0_gpa",
+        "cp_pmp_pt_gpa",
+        "PMP denies the guest physical address of vlvl0, which does not affect the accesses",
+        (("{vlvl0_gpa}", 8, "0x1FF"),),
+    ),
     _Scenario(
         "spa_leaf_r",
         "cp_pmp_pf_priority",

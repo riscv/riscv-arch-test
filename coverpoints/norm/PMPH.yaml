@@ -48,7 +48,8 @@ normative_rule_definitions:
 
   # PMP checks the implicit page-table reads of both stages
   - names: [pmp_with_paging, pmp_check_pagetable_access, H_vm_gstagetrans]
-    coverpoint: ["PMPH_guest_cg/cp_pmp_pt", "PMPH_hlv_cg/cp_pmp_hlv_pt"]
+    coverpoint:
+      ["PMPH_guest_cg/{cp_pmp_pt,cp_pmp_pt_gpa}", "PMPH_hlv_cg/cp_pmp_hlv_pt"]
 
   # Page and guest-page faults take priority over an access fault on the final address
   - names: [H_exception_priority, pmp_violation_precise_trap]

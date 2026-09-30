@@ -303,6 +303,49 @@ covergroup PMPH_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
 
 endgroup
 
+`include "general/RISCV_coverage_hypervisor.svh"
+
+// PMPH_TWO_STAGE: the two-stage chunks of PMPH.py run, which needs H_TWO_STAGE, a PMP grain of at most 4 KiB
+// (UDB_PMP_GRANULARITY <= 10) and PMP entries 0-10 below the background entry (UDB_NUM_USABLE_PMP_ENTRIES >= 12)
+`ifdef H_TWO_STAGE
+  `ifdef UDB_PMP_GRANULARITY_2
+    `define PMPH_TABLE_GRAIN
+  `elsif UDB_PMP_GRANULARITY_3
+    `define PMPH_TABLE_GRAIN
+  `elsif UDB_PMP_GRANULARITY_4
+    `define PMPH_TABLE_GRAIN
+  `elsif UDB_PMP_GRANULARITY_5
+    `define PMPH_TABLE_GRAIN
+  `elsif UDB_PMP_GRANULARITY_6
+    `define PMPH_TABLE_GRAIN
+  `elsif UDB_PMP_GRANULARITY_7
+    `define PMPH_TABLE_GRAIN
+  `elsif UDB_PMP_GRANULARITY_8
+    `define PMPH_TABLE_GRAIN
+  `elsif UDB_PMP_GRANULARITY_9
+    `define PMPH_TABLE_GRAIN
+  `elsif UDB_PMP_GRANULARITY_10
+    `define PMPH_TABLE_GRAIN
+  `endif
+  `ifdef PMPH_TABLE_GRAIN
+    `ifdef UDB_NUM_USABLE_PMP_ENTRIES_0
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_1
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_2
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_3
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_4
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_5
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_6
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_7
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_8
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_9
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_10
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_11
+    `else
+      `define PMPH_TWO_STAGE
+    `endif
+  `endif
+`endif
+
 // Guest virtual addresses of the two mappings in PMPH.py: mapping vs is a VS-stage kilopage at
 // VS_SV39/VS_SV32 data_va, and mapping g a G-stage kilopage at SV39X4/SV32X4 data_va.
 `ifdef UDB_MXLEN_64
@@ -368,6 +411,7 @@ covergroup PMPH_hlv_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0]
   hgatp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
     bins bare = {0};
   }
+  `ifdef PMPH_TWO_STAGE
   vsatp_paged: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
     bins paged = {[1:15]};
   }
@@ -391,17 +435,22 @@ covergroup PMPH_hlv_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0]
     bins hroot = {5};
     bins spa   = {6};
   }
+  `endif
 
   cp_pmp_hlv:  cross priv_mode_m_s, hlv, unlocked_lxwr, addr_in_napot_region, vsatp_bare, hgatp_bare;
   cp_pmp_hlvx: cross priv_mode_m_s, hlvx, unlocked_lxwr, addr_in_napot_region, vsatp_bare, hgatp_bare;
   cp_pmp_hsv:  cross priv_mode_m_s, hsv, unlocked_lxwr, addr_in_napot_region, vsatp_bare, hgatp_bare;
+  `ifdef PMPH_TWO_STAGE
   cp_pmp_hlv_pt: cross priv_mode_hs, hlv_w_hsv_w_hlvx_wu, mapping, pmp_scenario, vsatp_paged, hgatp_paged;
+  `endif
 endgroup
 
 // jalr, sw and lw from VS-mode and VU-mode through both mappings
 covergroup PMPH_guest_cg with function sample(ins_t ins, int pmp_entry);
   option.per_instance = 0;
   `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+  `ifdef PMPH_TWO_STAGE
 
   access_instr: coverpoint ins.current.insn {
     wildcard bins jalr = {JALR};
@@ -440,6 +489,11 @@ covergroup PMPH_guest_cg with function sample(ins_t ins, int pmp_entry);
       bins hlvl1 = {3};
     `endif
   }
+  // PMP denies the guest physical address of vlvl0, which G-stage translation maps to a different
+  // supervisor physical address
+  pmp_table_gpa: coverpoint pmp_entry {
+    bins vlvl0_gpa = {8};
+  }
   // The trap the access takes, from the mcause the trace shows it writing
   translation_fault: coverpoint {ins.current.csr_wb[CSR_MCAUSE], ins.current.csr[CSR_MCAUSE][4:0]} {
     bins page_fault       = {6'b101100, 6'b101101, 6'b101111};
@@ -451,10 +505,13 @@ covergroup PMPH_guest_cg with function sample(ins_t ins, int pmp_entry);
 
   cp_pmp_after_translation: cross priv_mode_vs_vu, access_instr, mapping, pmp_final, vsatp_paged, hgatp_paged;
   cp_pmp_pt:                cross priv_mode_vs_vu, access_instr, mapping, pmp_table, vsatp_paged, hgatp_paged;
+  // PMP checks the supervisor physical address of a VS-stage page-table read, not its guest physical address
+  cp_pmp_pt_gpa:            cross priv_mode_vs_vu, access_instr, mapping, pmp_table_gpa, vsatp_paged, hgatp_paged;
   // A page or guest-page fault precedes an access fault on the final address
   cp_pmp_pf_priority:       cross priv_mode_vs_vu, access_instr, pmp_spa, translation_fault;
   // An access fault on reading the table that holds an invalid leaf precedes the page or guest-page fault
   cp_pmp_pt_priority:       cross priv_mode_vs_vu, access_instr, pmp_leaf_table, access_fault;
+  `endif
 endgroup
 
 function void pmph_sample(int hart, int issue, ins_t ins);

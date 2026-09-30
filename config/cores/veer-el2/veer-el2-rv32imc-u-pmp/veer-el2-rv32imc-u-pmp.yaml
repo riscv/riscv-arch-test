@@ -15,7 +15,7 @@ $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
 name: veer-el2-rv32imc-u-pmp
-description: CHIPS Alliance VeeR EL2 - RV32IMC with U-mode and 64 PMP entries
+description: CHIPS Alliance VeeR EL2 - RV32IMC_Zba_Zbb_Zbc_Zbs with U-mode and 64 PMP entries
 
 # misa reads 0x4000_1104: MXL=1 (RV32), plus C (bit 2), I (bit 8) and M (bit 12).
 #   Quote: "0x301 | MRW | misa | ISA and extensions (**Note:** writes ignored) | 0x4000_1104"
@@ -32,6 +32,17 @@ implemented_extensions:
   - { name: C, version: "= 2.0" }
   - { name: Zca, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }
+  # Zba, Zbb, Zbc and Zbs are built in (bitmanip_zba/zbb/zbc/zbs=1). Their 0.94 encodings match
+  # the ratified ones. Zbc includes clmul and clmulh, which make up Zbkc. Zbkb and Zbkx need
+  # pack, brev8, zip and xperm, which only the draft Zbe, Zbf and Zbp provide, and those are off.
+  # misa.B reads 0, so B is not claimed.
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/decode#L433-L507
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_decode_ctl.sv#L1073-L1111
+  - { name: Zba, version: "= 1.0.0" }
+  - { name: Zbb, version: "= 1.0.0" }
+  - { name: Zbc, version: "= 1.0.0" }
+  - { name: Zbs, version: "= 1.0.0" }
+  - { name: Zbkc, version: "= 1.0.0" }
   # Zihpm: the unprivileged hpmcounter3..6 shadows exist in the U-mode build, which is what
   # Zihpm provides. Confirmed empirically by the UDB feature extractor and in the CSR decode.
   #   Quote: "csr_hpmc3 ... csr_hpmc6" (and their high halves) in the M+U decode table
@@ -76,8 +87,8 @@ params:
   MUTABLE_MISA_C: false
   MUTABLE_MISA_U: false
   # misa.X (bit 23) reads 0 in the value above. EL2 has vendor CSRs (mrac, the PIC
-  # registers, ...) but no non-standard instruction-set extension; the draft bitmanip
-  # subset is disabled in this build.
+  # registers, ...) but no non-standard instruction-set extension; the draft Zbe, Zbf, Zbp
+  # and Zbr are off in this build.
   NON_STANDARD_EXTENSION_IMPLEMENTED: false
 
   # Endianness: RISC-V little-endian; EL2 implements no mstatus.MBE/SBE/UBE fields.

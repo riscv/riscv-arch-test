@@ -8,22 +8,21 @@ SPDX-License-Identifier: Apache-2.0
 [VeeR EL2](https://github.com/chipsalliance/Cores-VeeR-EL2) is a 32-bit RISC-V core from CHIPS
 Alliance. The configuration runs the RTL under Verilator.
 
-| Config                   | ISA                    | Modes                 |
-| ------------------------ | ---------------------- | --------------------- |
-| `veer-el2-rv32imc-u-pmp` | RV32IMC_Zicsr_Zifencei | M + U, 64 PMP entries |
+| Config                   | ISA                                         | Modes                 |
+| ------------------------ | ------------------------------------------- | --------------------- |
+| `veer-el2-rv32imc-u-pmp` | RV32IMC_Zicsr_Zifencei_Zba_Zbb_Zbc_Zbs_Zbkc | M + U, 64 PMP entries |
 
 - Privileged specification 1.11 (`Sm 1.11.0`).
 - `Zihpm` with `hpmcounter3..6`.
 
 ## RTL configuration
 
-`.github/scripts/install-veer-el2.sh` builds commit `925f3a34` with these changes from the
-upstream defaults:
+`.github/scripts/install-veer-el2.sh` builds commit `925f3a34` with these options:
 
 - `user_mode=1`, `pmp_entries=64`: U-mode and the largest PMP.
-- `smepmp=0`.
-- `bitmanip_zba=0`, `bitmanip_zbb=0`, `bitmanip_zbc=0`, `bitmanip_zbs=0`: VeeR implements the
-  0.94 draft of these extensions.
+- `smepmp=0`, the default.
+- `bitmanip_zba=1`, `bitmanip_zbb=1`, `bitmanip_zbc=1`, `bitmanip_zbs=1`, the default. The draft
+  Zbe, Zbf, Zbp and Zbr stay off.
 - `fast_interrupt_redirect=0`: otherwise external interrupts vector through `meivt` instead of
   `mtvec`.
 

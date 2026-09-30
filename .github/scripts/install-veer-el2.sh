@@ -36,7 +36,7 @@ git init "$INSTALL_DIR/Cores-VeeR-EL2"
 )
 
 # 3. Verilate at the maximum ratified feature set: user mode and 64 PMP entries on, Smepmp off,
-#    and bit-manipulation off because VeeR's Zb* is the 0.94 draft rather than ratified B.
+#    and Zba, Zbb, Zbc and Zbs on. The draft Zbe, Zbf, Zbp and Zbr stay off by default.
 #    fast_interrupt_redirect must be off, or external interrupts vector through the meivt table
 #    instead of mtvec and never reach the ACT trap handler.
 mkdir -p "$INSTALL_DIR/el2"
@@ -44,7 +44,7 @@ mkdir -p "$INSTALL_DIR/el2"
   cd "$INSTALL_DIR/el2"
   RV_ROOT="$INSTALL_DIR/Cores-VeeR-EL2" \
     make -f "$INSTALL_DIR/Cores-VeeR-EL2/tools/Makefile" verilator-build -j"$(nproc)" \
-    CONF_PARAMS='-set build_axi4 -set user_mode=1 -set pmp_entries=64 -set smepmp=0 -set bitmanip_zba=0 -set bitmanip_zbb=0 -set bitmanip_zbc=0 -set bitmanip_zbs=0 -set fast_interrupt_redirect=0'
+    CONF_PARAMS='-set build_axi4 -set user_mode=1 -set pmp_entries=64 -set smepmp=0 -set bitmanip_zba=1 -set bitmanip_zbb=1 -set bitmanip_zbc=1 -set bitmanip_zbs=1 -set fast_interrupt_redirect=0'
 )
 
 # 4. Install the per-test runner

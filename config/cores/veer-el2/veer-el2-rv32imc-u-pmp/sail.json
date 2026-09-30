@@ -405,6 +405,8 @@
         }
       }
     },
+    // misa.B reads 0, although Zba, Zbb and Zbs are implemented.
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L2945
     "B": {
       "supported": false
     },
@@ -577,23 +579,24 @@
     "Zcmop": {
       "supported": false
     },
+    // Built with bitmanip_zba/zbb/zbc/zbs=1; Zbc includes Zbkc. See the yaml for citations.
     "Zba": {
-      "supported": false
+      "supported": true
     },
     "Zbb": {
-      "supported": false
+      "supported": true
     },
     "Zbs": {
-      "supported": false
+      "supported": true
     },
     "Zbc": {
-      "supported": false
+      "supported": true
     },
     "Zbkb": {
       "supported": false
     },
     "Zbkc": {
-      "supported": false
+      "supported": true
     },
     "Zbkx": {
       "supported": false

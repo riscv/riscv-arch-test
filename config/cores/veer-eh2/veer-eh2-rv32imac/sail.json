@@ -472,8 +472,10 @@
     "Zicond": {
       "supported": false
     },
+    // EH2 has no cycle or instret, but Sail makes mcycle and minstret accessible only with
+    // Zicntr (model/extensions/Zicntr/zicntr_control.sail), so enable it here for them.
     "Zicntr": {
-      "supported": false
+      "supported": true
     },
     "Zicsr": {
       "supported": true
@@ -487,11 +489,10 @@
     "Zihintpause": {
       "supported": false
     },
-    // Zihpm provides the unprivileged hpmcounter3..31 shadows for S/U access; EH1 is
-    // machine-mode only, so it is not implemented. The M-mode mhpmcounter3..6 that EH1
-    // does have belong to Sm and are described by writable_hpm_counters above.
+    // EH2 has no hpmcounters, but Sail makes mhpmcounter3..31 accessible only with Zihpm,
+    // so enable it here for the mhpmcounter3..6 that EH2 does have.
     "Zihpm": {
-      "supported": false
+      "supported": true
     },
     "Zimop": {
       "supported": false

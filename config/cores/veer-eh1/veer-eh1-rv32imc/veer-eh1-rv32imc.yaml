@@ -86,10 +86,9 @@ params:
   TRAP_ON_UNIMPLEMENTED_CSR: true
   TRAP_ON_ILLEGAL_WLRL: false
 
-  # MTVAL reporting. !VERIFIED for EH1 in detail: the PRM has no section enumerating
-  # which exceptions write mtval. These values follow the RISC-V defaults implemented
-  # by the TLU (design/dec/dec_tlu_ctl.sv); mismatches surface as Sm discrepancies.
-  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
+  # MTVAL reporting, from design/dec/dec_tlu_ctl.sv: ebreak and instruction access faults
+  # capture the PC, illegal instructions the encoding, and load/store faults the address.
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true
   REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
   REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true

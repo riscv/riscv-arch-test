@@ -102,15 +102,15 @@
       "load_guest_page_fault": false,
       "samo_guest_page_fault": false,
       "fetch_guest_page_fault": false,
-      "software_breakpoint": false,
+      "software_breakpoint": true,
       "hardware_breakpoint": false,
-      "load_address_misaligned": false,
+      "load_address_misaligned": true,
       "load_access_fault": true,
       "load_page_fault": false,
-      "samo_address_misaligned": false,
+      "samo_address_misaligned": true,
       "samo_access_fault": true,
       "samo_page_fault": false,
-      "fetch_address_misaligned": false,
+      "fetch_address_misaligned": true,
       "fetch_access_fault": true,
       "fetch_page_fault": false,
       "software_check": false,
@@ -157,7 +157,7 @@
       "fs_legal_states": "ExtContext_Off",
       "vs_legal_states": "ExtContext_Off"
     },
-    "privileged_isa_version": "Privileged_ISA_1_12"
+    "privileged_isa_version": "Privileged_ISA_1_11"
   },
   "memory": {
     "physaddr_bits": 32,
@@ -471,8 +471,10 @@
     "Zicond": {
       "supported": false
     },
+    // EH1 has no cycle or instret, but Sail makes mcycle and minstret accessible only with
+    // Zicntr (model/extensions/Zicntr/zicntr_control.sail), so enable it here for them.
     "Zicntr": {
-      "supported": false
+      "supported": true
     },
     "Zicsr": {
       "supported": true
@@ -486,11 +488,10 @@
     "Zihintpause": {
       "supported": false
     },
-    // Zihpm provides the unprivileged hpmcounter3..31 shadows for S/U access; EH1 is
-    // machine-mode only, so it is not implemented. The M-mode mhpmcounter3..6 that EH1
-    // does have belong to Sm and are described by writable_hpm_counters above.
+    // EH1 has no hpmcounters, but Sail makes mhpmcounter3..31 accessible only with Zihpm,
+    // so enable it here for the mhpmcounter3..6 that EH1 does have.
     "Zihpm": {
-      "supported": false
+      "supported": true
     },
     "Zimop": {
       "supported": false

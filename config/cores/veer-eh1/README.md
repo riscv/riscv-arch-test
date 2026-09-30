@@ -3,9 +3,9 @@
 [VeeR EH1](https://github.com/chipsalliance/Cores-VeeR-EH1) is a 32-bit RISC-V core from CHIPS
 Alliance. The configuration is pinned to commit `d04b1c7a` and runs the core under Verilator.
 
-| Config     | ISA                          | Modes  |
-| ---------- | ---------------------------- | ------ |
-| `veer-eh1` | RV32IMC_Zicsr_Zifencei       | M only |
+| Config     | ISA                    | Modes  |
+| ---------- | ---------------------- | ------ |
+| `veer-eh1` | RV32IMC_Zicsr_Zifencei | M only |
 
 ## Building and running
 

@@ -5,16 +5,11 @@
 ci_enabled: true
 
 # chipsalliance/Cores-VeeR-EH1 @ d04b1c7a:
-#   Sm            mip is pin-driven and read-only, and mcycle writes do not stick;
-#                 Sm_mcsr_walk-03..10 disagree with the reference model about which CSR accesses
-#                 trap; Sm_inst-00 has the ExceptionsSm mtval mismatch.
-#   ExceptionsSm  The core writes a nonzero mtval where the reference model expects 0.
-#   ExceptionsZc  Same mtval mismatch as ExceptionsSm.
-#   Zifencei      The testbench's instruction memory never sees stores, so fence.i fetches the stale
-#                 instruction.
-#   I             fence.tso raises an illegal-instruction exception; the decoder requires fm = 0:
-#                 https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/design/dec/decode#L56
-exclude_extensions: "Sm,ExceptionsSm,ExceptionsZc,Zifencei,I"
+#   Sm        Sail's mtimecmp resets to 0, so mip.MTIP is set in the reference run only (#2635)
+#   Zifencei  The testbench's instruction memory never sees stores, so fence.i fetches stale code
+#   I         fence.tso is illegal: the decoder requires fm = 0
+#             https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/design/dec/decode#L56
+exclude_extensions: "Sm,Zifencei,I"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-veer-eh1.sh"

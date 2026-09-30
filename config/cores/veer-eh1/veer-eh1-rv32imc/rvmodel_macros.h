@@ -74,14 +74,10 @@
 
 ##### Access faults #####
 
-# Not defined: VeeR EH1 reports out-of-window accesses as either a misaligned or an
-# access fault depending on configuration, and with no data access windows enabled
-# (the default) ordinary addresses never fault.
-#   Quote: "However, any access not within the DCCM's or PIC memory-mapped control
-#   register's address range results in a precise load/store address misaligned or
-#   access fault exception."
-#   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/memory-map.md#L201
-# Leaving this undefined means access-fault tests are not exercised.
+# Not defined: ACT needs one address where both fetches and loads/stores fault, and EH1 has
+# none. Fetches fault only in the ICCM region (0xE) outside the ICCM, and loads/stores only in
+# the DCCM/PIC region (0xF) outside the DCCM and PIC; elsewhere accesses go to the system bus.
+#   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/memory-map.md#L247
 //#define RVMODEL_ACCESS_FAULT_ADDRESS
 
 ##### Interrupt Latency #####
@@ -96,24 +92,5 @@
 //#define RVMODEL_MTIME_ADDRESS
 //#define RVMODEL_MTIMECMP_ADDRESS
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
-
-##### Machine Interrupts #####
-
-# Stubs for the first bring-up pass.  The testbench can drive interrupts through the
-# mailbox stimulus hooks, but external interrupts additionally require programming the
-# VeeR PIC (meipl/meie/meicurpl), so these are left empty until the interrupt suites
-# are brought up deliberately.
-#define RVMODEL_SET_MEXT_INT(_R1, _R2)
-#define RVMODEL_CLR_MEXT_INT(_R1, _R2)
-#define RVMODEL_SET_MSW_INT(_R1, _R2)
-#define RVMODEL_CLR_MSW_INT(_R1, _R2)
-
-##### Supervisor Interrupts #####
-# VeeR EH1 is M-mode only; these cannot occur but must be defined.
-
-#define RVMODEL_SET_SEXT_INT(_R1, _R2)
-#define RVMODEL_CLR_SEXT_INT(_R1, _R2)
-#define RVMODEL_SET_SSW_INT(_R1, _R2)
-#define RVMODEL_CLR_SSW_INT(_R1, _R2)
 
 #endif // _RVMODEL_MACROS_H

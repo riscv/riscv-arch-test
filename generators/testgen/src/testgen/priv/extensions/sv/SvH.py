@@ -472,7 +472,7 @@ def _t_g_pte(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> No
     test_chunks.append(test_data.end_test_chunk())
 
 
-def _t_gpa_width(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, first_bit: int, gate: str) -> None:
+def _t_gpa_width(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, first_bit: int) -> None:
     """Guest physical addresses with one bit set from ``first_bit`` up; bits beyond the mode's width fault."""
     top = g.levels - 1
     width = g.page_offset_bits(top) + g.index_bits(top)
@@ -484,7 +484,7 @@ def _t_gpa_width(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, f
         f"bits {first_bit}-63 set.  Bits below {width} translate through a root-table leaf; bits {width}-63 must be\n"
         "zero, or a guest-page fault occurs",
     )
-    code = [f"#ifdef {gate}", *guest_chunk_setup(test_data, g, None, "VS")]
+    code = guest_chunk_setup(test_data, g, None, "VS")
     for bit in range(first_bit, 64):
         setup = []
         if bit < width:
@@ -516,7 +516,7 @@ def _t_gpa_width(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, f
                 level=top,
             )
         )
-    chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen), f"#endif // {gate}"])
+    chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
     test_chunks.append(test_data.end_test_chunk())
 
 
@@ -790,7 +790,7 @@ def _t_straddle(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs
     )
     next_va = f"({vs.data_va} + 0x1000)"
     next_gpa = f"({g.data_va} + 0x1000)"
-    code = ["#ifdef ZCA_SUPPORTED", *guest_chunk_setup(test_data, g, vs, "VS")]
+    code = guest_chunk_setup(test_data, g, vs, "VS")
     for name, vs_valid, g_valid in (("mapped", True, True), ("g_invalid", True, False), ("vs_invalid", False, True)):
         pte, addr, tmp = test_data.int_regs.get_registers(3)
         regs = (pte, addr, tmp)
@@ -819,7 +819,7 @@ def _t_straddle(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs
         test_data.int_regs.return_registers(list(regs))
         va = f"{vs.data_va} + 0xffe"
         code.extend(guest_access(test_data, TWO_CG, "cp_straddle", name, "VS", va, setup=setup, ops=("exec",)))
-    chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen), "#endif // ZCA_SUPPORTED"])
+    chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
     test_chunks.append(test_data.end_test_chunk())
 
 
@@ -964,7 +964,7 @@ def _t_napot(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: S
     user = mode == "VU"
     vs_base = int(vs.data_va, 16) & ~0xFFFF
     g_base = int(g.data_va, 16) & ~0xFFFF
-    code = ["#ifdef SVNAPOT_SUPPORTED"]
+    code = []
     for vs_stage, g_stage, covergroup, name in (
         (vs, None, VS_CG, "vsatp_napot"),
         (None, g, G_CG, "hgatp_napot"),
@@ -982,7 +982,7 @@ def _t_napot(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: S
         for page in (0, 2, 15):
             va = hex(base + page * 0x1000)
             code.extend(guest_access(test_data, covergroup, f"cp_{name}", f"{name}_page{page}", mode, va))
-    chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen), "#endif // SVNAPOT_SUPPORTED"])
+    chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
     test_chunks.append(test_data.end_test_chunk())
 
 
@@ -996,7 +996,7 @@ def _t_napot_reserved(test_data: TestData, test_chunks: list[TestChunk], g: SvMo
         "superpage, or with N set and PPN[3:0] = 0000, 0001, 0010 or 0100",
     )
     chunk.raw_data.extend(NAPOT_PAGES)
-    code = ["#ifdef SVNAPOT_SUPPORTED"]
+    code = []
     for stage, covergroup, coverpoint in ((vs, VS_CG, "cp_vsatp_napot"), (g, G_CG, "cp_hgatp_napot")):
         g_stage, vs_stage = (None, vs) if stage is vs else (g, None)
         code.extend(guest_chunk_setup(test_data, g_stage, vs_stage, "VS"))
@@ -1032,7 +1032,7 @@ def _t_napot_reserved(test_data: TestData, test_chunks: list[TestChunk], g: SvMo
                     test_data, covergroup, coverpoint, name, "VS", stage.data_va, setup=setup, sv=stage, level=level
                 )
             )
-    chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen), "#endif // SVNAPOT_SUPPORTED"])
+    chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
     test_chunks.append(test_data.end_test_chunk())
 
 
@@ -1215,41 +1215,75 @@ def _make_svh(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
         _t_hedeleg(test_data, test_chunks, g, vs, mode)
     _t_implicit(test_data, test_chunks, g, vs)
     _t_page_sizes(test_data, test_chunks, g, vs)
-    _t_straddle(test_data, test_chunks, g, vs)
     _t_hlv(test_data, test_chunks, g, vs)
     if g.xlen == 32:
         _t_sv32x4_gpa(test_data, test_chunks, g, vs)
         return test_chunks
-    for mode in ("VS", "VU"):
-        _t_napot(test_data, test_chunks, g, vs, mode)
-    _t_napot_reserved(test_data, test_chunks, g, vs)
     _t_atp_mode(test_data, test_chunks)
-    for gpa_mode, first_bit, gate in (
-        (SV39X4, 37, "UDB_SV39X4_TRANSLATION"),
-        (SV48X4, 39, "UDB_SV48X4_TRANSLATION"),
-        (SV57X4, 48, "UDB_SV57X4_TRANSLATION"),
-    ):
-        _t_gpa_width(test_data, test_chunks, gpa_mode, first_bit, gate)
+    _t_gpa_width(test_data, test_chunks, SV39X4, 37)
     return test_chunks
 
 
-@add_priv_test_generator(
-    "SvH",
-    required_extensions=["H"],
-    extra_defines=["#define BOOT_TO_SMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true", "SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
-)
+def _make_svh_straddle(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    _t_straddle(test_data, test_chunks, g, vs)
+    return test_chunks
+
+
+def _make_svh_napot(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    for mode in ("VS", "VU"):
+        _t_napot(test_data, test_chunks, g, vs, mode)
+    _t_napot_reserved(test_data, test_chunks, g, vs)
+    return test_chunks
+
+
+# VS and VU traps need the visible trap handler
+TIME_CSR = "TIME_CSR_IMPLEMENTED: true"
+SV32_PARAMS = [TIME_CSR, "SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"]
+SV39_PARAMS = [TIME_CSR, "SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"]
+BOOT = ["#define BOOT_TO_SMODE"]
+
+
+@add_priv_test_generator("SvH", required_extensions=["H"], extra_defines=BOOT, params=SV32_PARAMS)
 def make_svh_sv32(test_data: TestData) -> list[TestChunk]:
     return _make_svh(test_data, SV32X4, VS_SV32)
 
 
-@add_priv_test_generator(
-    "SvH",
-    required_extensions=["H"],
-    extra_defines=["#define BOOT_TO_SMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true", "SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
-)
+@add_priv_test_generator("SvH", required_extensions=["H"], extra_defines=BOOT, params=SV39_PARAMS)
 def make_svh_sv39(test_data: TestData) -> list[TestChunk]:
     return _make_svh(test_data, SV39X4, VS_SV39)
+
+
+# A 4-byte instruction in the last halfword of a page needs IALIGN = 16
+@add_priv_test_generator("SvH", required_extensions=["H", "Zca"], extra_defines=BOOT, params=SV32_PARAMS)
+def make_svh_straddle_sv32(test_data: TestData) -> list[TestChunk]:
+    return _make_svh_straddle(test_data, SV32X4, VS_SV32)
+
+
+@add_priv_test_generator("SvH", required_extensions=["H", "Zca"], extra_defines=BOOT, params=SV39_PARAMS)
+def make_svh_straddle_sv39(test_data: TestData) -> list[TestChunk]:
+    return _make_svh_straddle(test_data, SV39X4, VS_SV39)
+
+
+@add_priv_test_generator("SvH", required_extensions=["H", "Svnapot"], extra_defines=BOOT, params=SV39_PARAMS)
+def make_svh_napot_sv39(test_data: TestData) -> list[TestChunk]:
+    return _make_svh_napot(test_data, SV39X4, VS_SV39)
+
+
+@add_priv_test_generator(
+    "SvH", required_extensions=["H"], extra_defines=BOOT, params=[TIME_CSR, "SV48X4_TRANSLATION: true"]
+)
+def make_svh_gpa_width_sv48x4(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    _t_gpa_width(test_data, test_chunks, SV48X4, 39)
+    return test_chunks
+
+
+@add_priv_test_generator(
+    "SvH", required_extensions=["H"], extra_defines=BOOT, params=[TIME_CSR, "SV57X4_TRANSLATION: true"]
+)
+def make_svh_gpa_width_sv57x4(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    _t_gpa_width(test_data, test_chunks, SV57X4, 48)
+    return test_chunks

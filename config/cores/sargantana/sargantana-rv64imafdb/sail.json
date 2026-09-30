@@ -428,7 +428,7 @@
     // available to User mode unless `wfi_available_to_user_mode` is
     // also `true`.
     // WFI is an S-level system instruction, so U-mode WFI raises an illegal-instruction exception
-    // at once (csr_bsc.sv#L2603).
+    // at once (csr_bsc.sv#L2531).
     "wfi_available_to_user_mode": false,
     // The maximum increment in the time CSR before a wait instruction
     // (e.g. WFI, WRS.NTO, WRS.STO) that is not a NOP expires its

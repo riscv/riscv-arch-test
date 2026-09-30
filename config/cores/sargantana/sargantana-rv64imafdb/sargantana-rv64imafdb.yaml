@@ -98,8 +98,7 @@ implemented_extensions:
   # accessible; the resulting Zicntr failures are listed in ci.yaml.
   - { name: Zicntr, version: "= 2.0" }
   # 29 unprivileged hpmcounter shadows, readable from S/U when mcounteren/scounteren
-  # permit ("privilege_violation = ~mcounteren_q[csr_addr.address[4:0]];",
-  # csr_bsc.sv#L2554-L2560):
+  # permit ("privilege_violation = ~mcounteren_q[sel_cnt_en];", csr_bsc.sv#L2400-L2413):
   #   "// This module implements the Zihpm (v2.0) ... extensions" / "parameter HPM_NUM_COUNTERS = 29"
   #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/hpm_counters.sv#L22-L27
   - { name: Zihpm, version: "= 2.0.0" }
@@ -202,9 +201,9 @@ params:
   #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L2749-L2760
   WFI_FINITE: false
   # WFI is decoded as a system instruction at privilege S (rw_addr[9:8] = 01), so in U mode
-  # "if ((system_insn && !priv_sufficient) || ... privilege_violation = 1'b1;"
+  # "if ((system_insn && !priv_sufficient && !v_mode_q) || ... privilege_violation = 1'b1;"
   # raises an illegal-instruction exception:
-  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L2602-L2606
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L2531-L2535
   WFI_U_MODE: false
   # mie.MEIE/MSIE/MTIE are writable ("mask = riscv_pkg::MIP_SSIP | riscv_pkg::MIP_STIP |
   # riscv_pkg::MIP_SEIP | riscv_pkg::MIP_MSIP | riscv_pkg::MIP_MTIP | riscv_pkg::MIP_MEIP | ...",

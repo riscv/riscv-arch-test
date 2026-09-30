@@ -87,6 +87,7 @@ normative_rule_definitions:
       [
         "ExceptionsH_cg/cp_virtual_instr_vs_{read_vstval_htval, mstatus_hgatp}",
         "ExceptionsH_cg/cp_virtual_instr_vu_{read_vstval_htval, vsatp}",
+        "ExceptionsH_cg/cp_virtual_instr_{vs_tvm, vu_tvm}",
       ]
   # in VS-mode or VU-mode, if XLEN=32, attempts to access an implemented high-half
   # hypervisor CSR or high-half VS CSR when the same access (read/write) to the CSR's

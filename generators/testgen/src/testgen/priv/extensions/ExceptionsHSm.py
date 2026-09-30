@@ -108,6 +108,55 @@ def _hlv_fault_tests(test_data: TestData) -> list[str]:
     return [*lines, *gated(fault_lines, "defined(RVMODEL_ACCESS_FAULT_ADDRESS)")]
 
 
+def _tsr_tests(test_data: TestData) -> list[str]:
+    """cp_tsr_vs_sret: sret in VS-mode with mstatus.TSR = 1 and hstatus.VTSR = 0 and 1.
+
+    sret returns to 1f in VS-mode.  If it traps instead, the handler resumes at the next instruction, which changes rd.
+    """
+    temp_reg, rd = test_data.int_regs.get_registers(2)
+    lines = [
+        comment_banner(
+            "cp_tsr_vs_sret",
+            "mstatus.TSR affects only HS-mode.  With mstatus.TSR = 1, sret in VS-mode executes when hstatus.VTSR = 0\n"
+            "and raises virtual instruction when hstatus.VTSR = 1",
+        ),
+        f"LI(x{temp_reg}, MSTATUS_TSR)",
+        f"csrs mstatus, x{temp_reg}",
+    ]
+    for vtsr in (0, 1):
+        lines.extend(
+            [
+                f"LI(x{temp_reg}, HSTATUS_VTSR)",
+                f"{'csrs' if vtsr else 'csrc'} hstatus, x{temp_reg}",
+                "RVTEST_TSBI_GOTO_VSMODE",
+                "# vsstatus.SPP = 1 and SPIE = 0, so sret stays in VS-mode with interrupts disabled",
+                f"LI(x{temp_reg}, SSTATUS_SPP)",
+                f"csrs sstatus, x{temp_reg}",
+                f"LI(x{temp_reg}, SSTATUS_SPIE)",
+                f"csrc sstatus, x{temp_reg}",
+                f"LA(x{temp_reg}, 1f)",
+                f"csrw sepc, x{temp_reg}",
+                f"LI(x{rd}, 1)",
+                test_data.add_testcase(f"vtsr{vtsr}", "cp_tsr_vs_sret", CG),
+                "sret",
+                f"LI(x{rd}, 2)  # reached only if sret traps",
+                "1:",
+                write_sigupd(rd, test_data),
+                "RVTEST_TSBI_GOTO_MMODE",
+            ]
+        )
+    lines.extend(
+        [
+            f"LI(x{temp_reg}, HSTATUS_VTSR)",
+            f"csrc hstatus, x{temp_reg}",
+            f"LI(x{temp_reg}, MSTATUS_TSR)",
+            f"csrc mstatus, x{temp_reg}",
+        ]
+    )
+    test_data.int_regs.return_registers([temp_reg, rd])
+    return lines
+
+
 @add_priv_test_generator(
     "ExceptionsHSm",
     required_extensions=["Sm", "H"],
@@ -127,6 +176,9 @@ def make_exceptionshsm(test_data: TestData) -> list[TestChunk]:
 
     tc = test_data.new_test_chunk(test_chunks, "ecall")
     tc.code.extend(_ecall_ebreak_tests(test_data))
+
+    tc = test_data.new_test_chunk(test_chunks, "tsr")
+    tc.code.extend(_tsr_tests(test_data))
 
     tc = test_data.new_test_chunk(test_chunks, "hlv")
     tc.code.extend([*_hlv_fault_tests(test_data), *hlv_priority_tests(test_data, CG, "m", "m")])

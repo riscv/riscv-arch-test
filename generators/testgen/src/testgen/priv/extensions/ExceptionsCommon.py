@@ -333,9 +333,7 @@ def generate_delegated_fault_tests(
     lines.extend(
         [
             test_data.add_testcase(tag, coverpoints["ecall"], covergroup),
-            "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
-            "# ecall returns xepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
-            write_sigupd(10, test_data),
+            "RVTEST_TSBI_ECALL_RECORD  # the trap record shows which mode took the ecall and its cause",
         ]
     )
     return lines

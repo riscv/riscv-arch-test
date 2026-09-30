@@ -2610,7 +2610,8 @@ skp_\__MODE__\()tval:
       .endif
         // Record a transformation of the trapping instruction (T6) as zero, which is always legal
         // (hypervisor.adoc tinst values; cmo.adoc for CBOs): loads, stores, AMOs, HLV/HSV and CBOs on
-        // causes 4-7, 13, 15, 21 and 23. Bits 1:0 = 01 mark a transformed compressed instruction.
+        // causes 4-7, 13, 15, 21 and 23. A compressed load or store is expanded, transformed, and
+        // has bit 1 cleared.
         LI(     T2, 0xA0A0F0)                        // causes 4-7, 13, 15, 21, 23
         srl     T2, T2, T5
         andi    T2, T2, 1
@@ -2618,14 +2619,88 @@ skp_\__MODE__\()tval:
         andi    T2, T6, 3
         addi    T2, T2, -3
         beqz    T2, 6f
-        andi    T2, T3, 3                            // compressed trapping instruction
-        addi    T2, T2, -1
-        bnez    T2, 7f                               // not a transformed compressed instruction
-        j       8f
+        // Compressed: T2 = register number, T4 = c.funct3 (inst[15:13]) on the way to 12f, and T5 = the
+        // expected transformation.  T5 (xcause) is reread at 7f.
+        srli    T4, T6, 13
+        andi    T2, T6, 3                            // quadrant
+        beqz    T2, 10f
+        addi    T2, T2, -2
+        bnez    T2, 7f                               // quadrant 1 has no loads or stores
+        andi    T2, T4, 3
+        beqz    T2, 7f                               // c.funct3 000 or 100: not a load or store
+        andi    T2, T4, 4
+        bnez    T2, 11f
+        srli    T2, T6, 7                            // c.fldsp, c.lwsp, c.ldsp, c.flwsp: rd in 11:7
+        j       9f
+11:     srli    T2, T6, 2                            // c.fsdsp, c.swsp, c.sdsp, c.fswsp: rs2 in 6:2
+9:      andi    T2, T2, 0x1F
+        j       12f
+10:     beqz    T4, 7f                               // c.addi4spn
+        srli    T2, T6, 2
+        andi    T2, T2, 7
+        addi    T2, T2, 8                            // rd' or rs2' in 4:2
+        addi    T4, T4, -4
+        beqz    T4, 15f                              // Zcb loads and stores
+        addi    T4, T4, 4
+12:     andi    T5, T4, 4
+        bnez    T5, 16f
+        slli    T5, T2, 7                            // load: rd
+        j       17f
+16:     slli    T5, T2, 20                           // store: rs2
+        ori     T5, T5, 0x20                         // STORE or STORE-FP
+17:     andi    T4, T4, 3                            // c.funct3[1:0]
+        LI(     T2, 0x3005)                          // 1: FLD or FSD
+        addi    T4, T4, -1
+        beqz    T4, 13f
+        LI(     T2, 0x2001)                          // 2: LW or SW
+        addi    T4, T4, -1
+        beqz    T4, 13f
+  #if UDB_MXLEN == 64 || defined(ZCLSD_SUPPORTED)
+        LI(     T2, 0x3001)                          // 3: LD or SD
+  #else
+        LI(     T2, 0x2005)                          // 3: FLW or FSW
+  #endif
+        j       13f
+15:     srli    T4, T6, 10
+        andi    T4, T4, 7                            // inst[12:10]: 0 c.lbu, 1 c.lhu or c.lh, 2 c.sb, 3 c.sh
+        andi    T5, T6, 0x40                         // inst[6] = 1: c.lh
+        beqz    T4, 18f
+        addi    T4, T4, -1
+        beqz    T4, 19f
+        slli    T2, T2, 20                           // c.sb and c.sh: rs2'
+        addi    T4, T4, -1
+        mv      T5, T2
+        LI(     T2, 0x0021)                          // c.sb: SB
+        beqz    T4, 13f
+        addi    T4, T4, -1
+        bnez    T4, 7f                               // reserved
+        LI(     T2, 0x1021)                          // c.sh: SH
+        j       13f
+18:     slli    T5, T2, 7
+        LI(     T2, 0x4001)                          // c.lbu: LBU
+        j       13f
+19:     slli    T2, T2, 7
+        LI(     T4, 0x5001)                          // c.lhu: LHU
+        beqz    T5, 14f
+        LI(     T4, 0x1001)                          // c.lh: LH
+14:     mv      T5, T2
+        mv      T2, T4
+13:     or      T5, T5, T2                           // expected transformation, bit 1 cleared
+        LI(     T4, ~0xF8000)
+        and     T4, T4, T3                           // recorded value without Addr. Offset
+        bne     T4, T5, 7f
+        j       20f
 6:      andi    T4, T6, 0x5B                         // LOAD, LOAD-FP, STORE and STORE-FP -> 0x03
         LI(     T2, 0x03)
         bne     T4, T2, 5f
-        LI(     T2, 0x00007FFF)                      // load: funct3, rd, opcode
+        andi    T4, T6, 0x04
+        beqz    T4, 1f                               // integer load or store
+        srli    T4, T6, 12
+        andi    T4, T4, 7
+        addi    T4, T4, -1
+        sltiu   T4, T4, 4
+        beqz    T4, 7f                               // vector widths have no transformation
+1:      LI(     T2, 0x00007FFF)                      // load: funct3, rd, opcode
         andi    T4, T6, 0x20
         beqz    T4, 4f
         LI(     T2, 0x01F0707F)                      // store: rs2, funct3, opcode
@@ -2634,16 +2709,171 @@ skp_\__MODE__\()tval:
         LI(     T2, 0x2F)                            // AMO
         beq     T4, T2, 3f
         LI(     T2, 0x0F)                            // CBO
-        beq     T4, T2, 3f
-        LI(     T2, 0x73)                            // HLV, HLVX, HSV
+        beq     T4, T2, 2f
+        LI(     T2, 0x73)
         bne     T4, T2, 7f
+        srli    T4, T6, 12                           // HLV, HLVX and HSV: funct3 = 100 and inst[31:28] = 0110
+        andi    T4, T4, 7
+        addi    T4, T4, -4
+        bnez    T4, 7f
+        srli    T4, T6, 28
+        addi    T4, T4, -6
+        bnez    T4, 7f
 3:      LI(     T2, 0xFFF07FFF)                      // every field but rs1
 4:      and     T2, T2, T6                           // transformation with Addr. Offset = 0
         LI(     T4, ~0xF8000)
         and     T4, T4, T3                           // recorded value without Addr. Offset
         bne     T4, T2, 7f
+        j       20f
+2:      LI(     T2, 0xFFF07FFF)                      // CBO: bits 19:15 are 0 (cmo.adoc)
+        and     T2, T2, T6
+        bne     T3, T2, 7f
+        j       8f
+        // Addr. Offset (bits 19:15) must be xtval minus the original address, rs1 + immediate
+20:     andi    T2, T6, 3
+        addi    T2, T2, -3
+        bnez    T2, 21f                              // compressed
+        srli    T4, T6, 15
+        andi    T4, T4, 0x1F                         // T4 = rs1
+        li      T2, 0
+        andi    T5, T6, 0x48                         // AMO, HLV, HLVX and HSV have no immediate
+        bnez    T5, 30f
+        slli    T2, T6, UDB_MXLEN-32
+        srai    T2, T2, UDB_MXLEN-12                 // I-immediate
+        andi    T5, T6, 0x20
+        beqz    T5, 30f                              // load
+        andi    T2, T2, -32
+        srli    T5, T6, 7
+        andi    T5, T5, 0x1F
+        or      T2, T2, T5                           // S-immediate
+        j       30f
+21:     srli    T5, T6, 13                           // T5 = c.funct3
+        andi    T2, T6, 3
+        bnez    T2, 25f                              // quadrant 2: sp-relative
+        srli    T4, T6, 7
+        andi    T4, T4, 7
+        addi    T4, T4, 8                            // T4 = rs1' (inst[9:7])
+        addi    T2, T5, -4
+        beqz    T2, 24f                              // Zcb
+        srli    T2, T6, 7
+        andi    T2, T2, 0x38                         // uimm[5:3] = inst[12:10]
+        andi    T5, T5, 3
+        addi    T5, T5, -2
+        beqz    T5, 22f                              // c.lw, c.sw
+  #if UDB_MXLEN == 32 && !defined(ZCLSD_SUPPORTED)
+        addi    T5, T5, -1
+        beqz    T5, 22f                              // c.flw, c.fsw
+  #else
+        nop
+        nop
+  #endif
+        slli    T5, T6, 1
+        andi    T5, T5, 0xC0                         // doubleword: uimm[7:6] = inst[6:5]
+        j       23f
+22:     srli    T5, T6, 4
+        andi    T5, T5, 0x04                         // word: uimm[2] = inst[6]
+        or      T2, T2, T5
+        slli    T5, T6, 1
+        andi    T5, T5, 0x40                         // uimm[6] = inst[5]
+23:     or      T2, T2, T5
+        j       30f
+24:     srli    T2, T6, 4
+        andi    T2, T2, 0x02                         // uimm[1] = inst[5]
+        andi    T5, T6, 0x400
+        bnez    T5, 30f                              // c.lh, c.lhu, c.sh
+        srli    T5, T6, 6
+        andi    T5, T5, 1                            // c.lbu, c.sb: uimm[0] = inst[6]
+        or      T2, T2, T5
+        j       30f
+25:     li      T4, 2                                // rs1 = sp
+        andi    T2, T5, 4
+        bnez    T2, 27f                              // store
+        srli    T2, T6, 7
+        andi    T2, T2, 0x20                         // uimm[5] = inst[12]
+        andi    T5, T5, 3
+        addi    T5, T5, -2
+        beqz    T5, 26f                              // c.lwsp
+  #if UDB_MXLEN == 32 && !defined(ZCLSD_SUPPORTED)
+        addi    T5, T5, -1
+        beqz    T5, 26f                              // c.flwsp
+  #else
+        nop
+        nop
+  #endif
+        srli    T5, T6, 2
+        andi    T5, T5, 0x18                         // uimm[4:3] = inst[6:5]
+        or      T2, T2, T5
+        slli    T5, T6, 4
+        andi    T5, T5, 0x1C0                        // uimm[8:6] = inst[4:2]
+        j       23b
+26:     srli    T5, T6, 2
+        andi    T5, T5, 0x1C                         // uimm[4:2] = inst[6:4]
+        or      T2, T2, T5
+        slli    T5, T6, 4
+        andi    T5, T5, 0xC0                         // uimm[7:6] = inst[3:2]
+        j       23b
+27:     srli    T2, T6, 7
+        andi    T5, T5, 3
+        addi    T5, T5, -2
+        beqz    T5, 28f                              // c.swsp
+  #if UDB_MXLEN == 32 && !defined(ZCLSD_SUPPORTED)
+        addi    T5, T5, -1
+        beqz    T5, 28f                              // c.fswsp
+  #else
+        nop
+        nop
+  #endif
+        andi    T2, T2, 0x38                         // uimm[5:3] = inst[12:10]
+        srli    T5, T6, 1
+        andi    T5, T5, 0x1C0                        // uimm[8:6] = inst[9:7]
+        j       23b
+28:     andi    T2, T2, 0x3C                         // uimm[5:2] = inst[12:9]
+        srli    T5, T6, 1
+        andi    T5, T5, 0xC0                         // uimm[7:6] = inst[8:7]
+        j       23b
+        // T4 = the value of register x[T4] when the trap was taken. Handler temporaries and sp
+        // come from the register save area.
+        .option push
+        .option norvc
+30:     slli    T4, T4, 3
+        auipc   T5, 0
+        add     T5, T5, T4
+        jalr    x0, 12(T5)                           // entry x[T4] of the two-instruction table below
+        li      T4, 0
+        j       31f
+        mv      T4, x1
+        j       31f
+        LREG    T4, trap_sv_off+7*REGWIDTH(sp)       // sp
+        j       31f
+  .irp reg, x3, x4, x5
+        mv      T4, \reg
+        j       31f
+  .endr
+  .irp slot, 1, 2, 3, 4                              // T1-T4 (x6-x9)
+        LREG    T4, trap_sv_off+\slot*REGWIDTH(sp)
+        j       31f
+  .endr
+  .irp reg, x10, x11, x12, x13
+        mv      T4, \reg
+        j       31f
+  .endr
+  .irp slot, 5, 6                                    // T5, T6 (x14, x15)
+        LREG    T4, trap_sv_off+\slot*REGWIDTH(sp)
+        j       31f
+  .endr
+  .irp reg, x16, x17, x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, x31
+        mv      T4, \reg
+        j       31f
+  .endr
+        .option pop
+31:     add     T2, T2, T4                           // original address
+        csrr    T4, CSR_XTVAL
+        sub     T4, T4, T2                           // required Addr. Offset
+        srli    T2, T3, 15
+        andi    T2, T2, 0x1F
+        bne     T2, T4, 7f
 8:      LI(     T3, 0)
-7:
+7:      csrr    T5, CSR_XCAUSE
         // A pseudoinstruction is required only when mtval2/htval is nonzero
       .ifc \__MODE__ , M
         csrr    T2, CSR_MTVAL2

@@ -11,7 +11,7 @@
 from typing import Literal
 
 from testgen.asm.helpers import comment_banner, write_sigupd
-from testgen.asm.tsbi import tsbi_call
+from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.state import TestData
 
 Mode = Literal["M", "S", "U"]
@@ -59,14 +59,8 @@ def _access_counter(
 
 
 def _write_counteren(csr: str, operand: str, mode: Mode, comment: str = "") -> str:
-    """Write csr directly when mode can, otherwise through T-SBI: mcounteren is M-mode only,
-    scounteren is writable from M and S."""
-    instr = f"csrw {csr}, {operand}"
-    if comment:
-        instr += f"  # {comment}"
-    if mode == "M" or (mode == "S" and csr == "scounteren"):
-        return instr
-    return tsbi_call(instr)
+    """csrw csr, operand from mode, with an optional comment."""
+    return tsbi_call_or_direct(f"csrw {csr}, {operand}" + (f"  # {comment}" if comment else ""), mode)
 
 
 def counteren_walk_tests(

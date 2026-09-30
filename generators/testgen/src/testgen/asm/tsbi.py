@@ -21,35 +21,60 @@ def tsbi_call(instr: str) -> str:
     Generate assembly for a T-SBI call
 
     Args:
-      instr: the instruction to be executed in the T-SBI call
+      instr: the instruction to be executed in the T-SBI call; it must be in the handler's tsbi_instr_table
 
     Returns:
       A string containing the assembly code for the T-SBI call
     """
 
     normalized_instr = _normalize_instr(instr)
-    rs1 = get_rs1(normalized_instr)
-    rs2 = get_rs2(normalized_instr)
-    rd = get_rd(normalized_instr)
+    rd, rs1, rs2 = _operands(normalized_instr)
 
     preamble = []
     postscript = []
-    if rs1 not in [11]:
-        preamble.append(f"{INDENT}# Copy rs1 (x{rs1}) to a1 for T-SBI call\n{INDENT}mv a1, x{rs1}\n")
-    if rs2 not in [12]:
-        preamble.append(f"{INDENT}# Copy rs2 (x{rs2}) to a2 for T-SBI call\n{INDENT}mv a2, x{rs2}\n")
-    if rd not in [0, 10]:
-        postscript.append(f"{INDENT}# Copy a0 to rd (x{rd}) for T-SBI call\n{INDENT}mv x{rd}, a0\n")
+    if rs1 is not None and rs1 != 11:
+        preamble.append(f"{INDENT}# Copy rs1 (x{rs1}) to a1 for T-SBI call\n{INDENT}mv a1, x{rs1}")
+    if rs2 is not None and rs2 != 12:
+        preamble.append(f"{INDENT}# Copy rs2 (x{rs2}) to a2 for T-SBI call\n{INDENT}mv a2, x{rs2}")
+    if rd not in [None, 0, 10]:
+        postscript.append(f"{INDENT}# Copy a0 to rd (x{rd}) for T-SBI call\n{INDENT}mv x{rd}, a0")
 
     return "\n".join(
         [
             f"{INDENT}# T-SBI call to execute instruction: {instr}",
             *preamble,
-            f"{INDENT}LI(a0, {add_opcode(normalized_instr, rs1, rs2, rd)}) # {instr}",
+            f"{INDENT}LI(a0, {add_opcode(normalized_instr)}) # {instr}",
             f"{INDENT}ecall # T-SBI call to execute instruction at suitable privilege level",
             *postscript,
         ]
     )
+
+
+# Privilege level of each mode, compared against a CSR's lowest privilege level csr[9:8]
+# (0 = U, 1 = S, 2 = HS for hypervisor and VS CSRs, 3 = M).
+_MODE_LEVEL = {"M": 3, "S": 2, "VS": 1, "U": 0, "VU": 0}
+
+
+def tsbi_call_or_direct(instr: str, mode: str) -> str:
+    """
+    Generate a CSR instruction that runs directly when ``mode`` may access the CSR, otherwise through T-SBI.
+
+    Only CSR instructions: whether a load or store needs T-SBI depends on its address, not its encoding,
+    so call tsbi_call for those.
+
+    Args:
+      instr: csrr/csrw/csrs/csrc instruction, optionally followed by a # comment
+      mode: privilege mode the code runs in: "M", "S" (HS when H is implemented), "VS", "U" or "VU"
+
+    Returns:
+      instr unchanged, or the T-SBI call that executes it
+    """
+    csr_match = _CSR_INSTR_RE.fullmatch(_normalize_instr(instr))
+    if csr_match is None:
+        raise ValueError(f"tsbi_call_or_direct takes a csrr/csrw/csrs/csrc instruction: {instr}")
+    csr = csr_match.group(3) if csr_match.group(1).lower() == "csrr" else csr_match.group(2)
+    level = (_parse_csr(csr) >> 8) & 3
+    return instr if _MODE_LEVEL[mode] >= level else tsbi_call(instr)
 
 
 _REGISTER_ALIASES = {
@@ -112,6 +137,7 @@ _CSR_ALIASES = {
     "mip": 0x344,
     "menvcfg": 0x30A,
     "mseccfg": 0x747,
+    "mcountinhibit": 0x320,
     "menvcfgh": 0x31A,
     "mstateen0": 0x30C,
     "mstateen0h": 0x31C,
@@ -128,6 +154,17 @@ _CSR_ALIASES = {
     "scontext": 0x5A8,
     "hcontext": 0x6A8,
 }
+
+# CSRs and loads/stores in tsbi_instr_table in tests/env/rvtest_trap_handler.h; keep them in sync.
+# The handler fails the test at run time on anything else, so tsbi_call rejects it at generation time.
+_TSBI_CSRS = frozenset(
+    {
+        *(0x300, 0x304, 0x306, 0x30A, 0x30C, 0x31C, 0x31A, 0x344, 0x747, 0x320),  # machine
+        *(0x100, 0x104, 0x106, 0x10A, 0x144, 0x14D, 0x15D, 0x180),  # supervisor
+        *(0x7A0, 0x7A1, 0x7A2, 0x7A3, 0x7A4, 0x7A5, 0x7A8, 0x7AA, 0x5A8, 0x6A8),  # Sdtrig
+    }
+)
+_TSBI_MEM = frozenset({("lw", 0), ("lw", 4), ("sw", 0), ("sw", 4), ("ld", 0), ("sd", 0)})
 
 
 def _parse_register(reg: str) -> int:
@@ -166,52 +203,21 @@ def _normalize_instr(instr: str) -> str:
     return instr.split("#", 1)[0].strip()
 
 
-def get_rd(normalized_instr: str) -> int:
+def _operands(normalized_instr: str) -> tuple[int | None, int | None, int | None]:
+    """Return (rd, rs1, rs2) of a CSR or memory instruction, None for an operand it does not have."""
     if csr_match := _CSR_INSTR_RE.fullmatch(normalized_instr):
-        mnemonic = csr_match.group(1).lower()
-        if mnemonic == "csrr":
-            return _parse_register(csr_match.group(2))
-        return 0
+        if csr_match.group(1).lower() == "csrr":
+            return _parse_register(csr_match.group(2)), None, None
+        return None, _parse_register(csr_match.group(3)), None
 
     if mem_match := _MEM_INSTR_RE.fullmatch(normalized_instr):
         mnemonic = mem_match.group(1).lower()
+        rs1 = _parse_register(mem_match.group(4))
         if mnemonic in {"lw", "ld"}:
-            return _parse_register(mem_match.group(2))
-        return 0
+            return _parse_register(mem_match.group(2)), rs1, None
+        return None, rs1, _parse_register(mem_match.group(2))
 
     raise ValueError(f"Unsupported instruction format for register extraction: {normalized_instr}")
-
-
-def get_rs1(normalized_instr: str) -> int:
-    if csr_match := _CSR_INSTR_RE.fullmatch(normalized_instr):
-        mnemonic = csr_match.group(1).lower()
-        if mnemonic == "csrr":
-            return 0
-        return _parse_register(csr_match.group(3))
-
-    if mem_match := _MEM_INSTR_RE.fullmatch(normalized_instr):
-        return _parse_register(mem_match.group(4))
-
-    raise ValueError(f"Unsupported instruction format for register extraction: {normalized_instr}")
-
-
-def get_rs2(normalized_instr: str) -> int:
-    if csr_match := _CSR_INSTR_RE.fullmatch(normalized_instr):
-        mnemonic = csr_match.group(1).lower()
-        if mnemonic in {"csrr", "csrw", "csrs", "csrc"}:
-            return 0
-
-    if mem_match := _MEM_INSTR_RE.fullmatch(normalized_instr):
-        mnemonic = mem_match.group(1).lower()
-        if mnemonic in {"sw", "sd"}:
-            return _parse_register(mem_match.group(2))
-        return 0
-
-    raise ValueError(f"Unsupported instruction format for register extraction: {normalized_instr}")
-
-
-def _tsbi_rd_reg(rd: int) -> int:
-    return rd if rd in {0, 10} else 10
 
 
 def _encode_i_type(opcode: int, funct3: int, rd: int, rs1: int, imm12: int) -> int:
@@ -231,42 +237,35 @@ def _encode_s_type(opcode: int, funct3: int, rs1: int, rs2: int, imm12: int) -> 
     )
 
 
-def add_opcode(normalized_instr: str, rs1: int, rs2: int, rd: int) -> str:
-    """Return the 32-bit opcode encoding for a supported assembly instruction."""
-    csr_match = _CSR_INSTR_RE.fullmatch(normalized_instr)
-    if csr_match:
+def add_opcode(normalized_instr: str) -> str:
+    """Return the encoding of the tsbi_instr_table entry that runs a supported instruction.
+
+    The table's entries read into a0, write from a1, and store a2 at a1, so the caller's registers are
+    moved there around the ecall.
+    """
+    if csr_match := _CSR_INSTR_RE.fullmatch(normalized_instr):
         mnemonic = csr_match.group(1).lower()
-        first_arg = csr_match.group(2)
-        second_arg = csr_match.group(3)
-        opcode = 0x73
-        tsbi_rd = _tsbi_rd_reg(rd)
-        tsbi_rs1 = 11
-
+        csr = _parse_csr(csr_match.group(3) if mnemonic == "csrr" else csr_match.group(2))
+        if csr not in _TSBI_CSRS:
+            raise ValueError(f"CSR {csr:#x} is not in tsbi_instr_table: {normalized_instr}")
         if mnemonic == "csrr":
-            csr = _parse_csr(second_arg)
-            encoded = _encode_i_type(opcode, 0b010, tsbi_rd, 0, csr)
+            encoded = _encode_i_type(0x73, 0b010, 10, 0, csr)  # csrr a0, csr
         else:
-            csr = _parse_csr(first_arg)
             funct3 = {"csrw": 0b001, "csrs": 0b010, "csrc": 0b011}[mnemonic]
-            encoded = _encode_i_type(opcode, funct3, tsbi_rd, tsbi_rs1, csr)
-
+            encoded = _encode_i_type(0x73, funct3, 0, 11, csr)  # csrw/csrs/csrc csr, a1
         return f"0x{encoded:08x}"
 
-    mem_match = _MEM_INSTR_RE.fullmatch(normalized_instr)
-    if mem_match:
+    if mem_match := _MEM_INSTR_RE.fullmatch(normalized_instr):
         mnemonic = mem_match.group(1).lower()
         imm12 = _parse_imm12(mem_match.group(3))
-        tsbi_rd = _tsbi_rd_reg(rd)
-        tsbi_rs1 = 11
-        tsbi_rs2 = 12
-
+        if (mnemonic, imm12) not in _TSBI_MEM:
+            raise ValueError(f"{mnemonic} with offset {imm12} is not in tsbi_instr_table: {normalized_instr}")
         if mnemonic in {"lw", "ld"}:
             funct3 = {"lw": 0b010, "ld": 0b011}[mnemonic]
-            encoded = _encode_i_type(0x03, funct3, tsbi_rd, tsbi_rs1, imm12)
+            encoded = _encode_i_type(0x03, funct3, 10, 11, imm12)  # lw/ld a0, imm(a1)
         else:
             funct3 = {"sw": 0b010, "sd": 0b011}[mnemonic]
-            encoded = _encode_s_type(0x23, funct3, tsbi_rs1, tsbi_rs2, imm12)
-
+            encoded = _encode_s_type(0x23, funct3, 11, 12, imm12)  # sw/sd a2, imm(a1)
         return f"0x{encoded:08x}"
 
     raise ValueError(f"Unsupported instruction format for opcode conversion: {normalized_instr}")

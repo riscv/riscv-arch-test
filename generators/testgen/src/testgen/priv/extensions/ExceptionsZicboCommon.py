@@ -12,7 +12,7 @@ across different privilege-modes."""
 from typing import NamedTuple
 
 from testgen.asm.helpers import comment_banner, write_sigupd
-from testgen.asm.tsbi import tsbi_call
+from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 
@@ -78,13 +78,8 @@ def _cbo_test(
     return lines
 
 
-def _csr_op(op: str, csr: str, reg: int, mode: str) -> str:
-    """Return a CSR instruction (csrs/csrc/csrw on ``csr`` using ``reg``),
-    issued directly when ``mode`` has direct access to ``csr``, and routed
-    through T-SBI otherwise."""
-    instr = f"{op}  {csr}, x{reg}"
-    needs_tsbi = (mode == "U") if csr == "senvcfg" else (mode != "Sm")
-    return tsbi_call(instr) if needs_tsbi else instr
+# Privilege mode each suite's tests run in.
+_PRIV = {"Sm": "M", "S": "S", "U": "U"}
 
 
 def _mode_tag(mode: str, cross_senvcfg: bool) -> str:
@@ -138,14 +133,14 @@ def cbo_config_helper(
             [
                 "",
                 f"# menvcfg.{field} = {m_val}",
-                _csr_op("csrc", "menvcfg", mask_reg, mode),
+                tsbi_call_or_direct(f"csrc  menvcfg, x{mask_reg}", _PRIV[mode]),
             ]
         )
         if int(m_val, 2):
             lines.extend(
                 [
                     f"LI(x{cfg_reg}, 0b{int(m_val, 2) << shift:0{mask_bits}b})",
-                    _csr_op("csrs", "menvcfg", cfg_reg, mode),
+                    tsbi_call_or_direct(f"csrs  menvcfg, x{cfg_reg}", _PRIV[mode]),
                 ]
             )
 
@@ -157,12 +152,12 @@ def cbo_config_helper(
             lines.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
             for s_val in bins:
                 senvcfg_tag = f"_senvcfg.{field}{s_val}"
-                lines.append(_csr_op("csrc", "senvcfg", mask_reg, mode))
+                lines.append(tsbi_call_or_direct(f"csrc  senvcfg, x{mask_reg}", _PRIV[mode]))
                 if int(s_val, 2):
                     lines.extend(
                         [
                             f"LI(x{cfg_reg}, 0b{int(s_val, 2) << shift:0{mask_bits}b})",
-                            _csr_op("csrs", "senvcfg", cfg_reg, mode),
+                            tsbi_call_or_direct(f"csrs  senvcfg, x{cfg_reg}", _PRIV[mode]),
                         ]
                     )
                 for instr in instrs:
@@ -210,7 +205,7 @@ def cbo_access_fault_helper(
     lines.extend(
         [
             f"LI(x{cfg_reg}, 0b{_ENVCFG_ALL_ENABLE:08b})  # enable cbie/cbcfe/cbze",
-            _csr_op("csrs", "menvcfg", cfg_reg, mode),
+            tsbi_call_or_direct(f"csrs  menvcfg, x{cfg_reg}", _PRIV[mode]),
         ]
     )
     if mode == "Sm":
@@ -222,7 +217,7 @@ def cbo_access_fault_helper(
             [
                 "#ifdef S1P12P0_OR_LATER_SUPPORTED",
                 f"LI(x{cfg_reg}, 0b{_ENVCFG_ALL_ENABLE:08b})  # enable cbie/cbcfe/cbze",
-                _csr_op("csrs", "senvcfg", cfg_reg, mode),
+                tsbi_call_or_direct(f"csrs  senvcfg, x{cfg_reg}", _PRIV[mode]),
                 "#endif // S1P12P0_OR_LATER_SUPPORTED",
             ]
         )
@@ -285,7 +280,7 @@ def cbo_misaligned_helper(
     lines.extend(
         [
             f"LI(x{cfg_reg}, 0b{_ENVCFG_ALL_ENABLE:08b})  # enable cbie/cbcfe/cbze",
-            _csr_op("csrs", "menvcfg", cfg_reg, mode),
+            tsbi_call_or_direct(f"csrs  menvcfg, x{cfg_reg}", _PRIV[mode]),
         ]
     )
     if mode == "Sm":
@@ -297,7 +292,7 @@ def cbo_misaligned_helper(
             [
                 "#ifdef S1P12P0_OR_LATER_SUPPORTED",
                 f"LI(x{cfg_reg}, 0b{_ENVCFG_ALL_ENABLE:08b})  # enable cbie/cbcfe/cbze",
-                _csr_op("csrs", "senvcfg", cfg_reg, mode),
+                tsbi_call_or_direct(f"csrs  senvcfg, x{cfg_reg}", _PRIV[mode]),
                 "#endif // S1P12P0_OR_LATER_SUPPORTED",
             ]
         )

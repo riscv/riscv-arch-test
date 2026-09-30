@@ -61,10 +61,6 @@ main:
   # T-SBI call to execute instruction: csrs menvcfg, t0
   # Copy rs1 (x5) to a1 for T-SBI call
   mv a1, x5
-
-  # Copy rs2 (x0) to a2 for T-SBI call
-  mv a2, x0
-
   LI(a0, 0x30a5a073) # csrs menvcfg, t0
   ecall # T-SBI call to execute instruction at suitable privilege level
   csrs senvcfg, t0

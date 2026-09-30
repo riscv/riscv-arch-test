@@ -256,6 +256,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Ssrnmi|Supervisor Resumable Interrupts|<<t-Ssrnmi-coverpoints>>|||||
 |Sm1p13|Machine 1p13|<<t-Sm1p13-coverpoints>>||||x|x
 |Smstateen|Machine State Enable|<<t-Smstateen-coverpoints>>|||||
+|SmstateenH|Hypervisor Machine State Enable|<<t-SmstateenH-coverpoints>>|||||
 |Smcntrpmf|Cycle and Instret Mode Filtering|<<t-Smcntrpmf-coverpoints>>|||||
 |Smcdeleg|Counter Delegation|<<t-Smcdeleg-coverpoints>>|||||
 |Ssccfg|Counter Delegation|<<t-Ssccfg-coverpoints>>|||||

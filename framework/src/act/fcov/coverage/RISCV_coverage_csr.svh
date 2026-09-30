@@ -271,6 +271,37 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       default: val = 0; // Todo: error
     endcase
   end
+  if (name == "hstateen0") begin
+    case(field)
+      "c" : val = val & 'h1;
+      "fcsr" : val = (val >> 1) & 'h1;
+      "jvt" : val = (val >> 2) & 'h1;
+`ifdef UDB_MXLEN_64
+      "ctr" : val = (val >> 54) & 64'h1;
+      "context" : val = (val >> 57) & 64'h1;
+      "imsic" : val = (val >> 58) & 64'h1;
+      "aia" : val = (val >> 59) & 64'h1;
+      "csrind" : val = (val >> 60) & 64'h1;
+      "envcfg" : val = (val >> 62) & 64'h1;
+      "se0" : val = (val >> 63) & 64'h1;
+`endif
+      default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "hstateen0h") begin
+    case(field)
+`ifdef UDB_MXLEN_32
+      "ctr" : val = (val >> 22) & 32'h1;
+      "context" : val = (val >> 25) & 32'h1;
+      "imsic" : val = (val >> 26) & 32'h1;
+      "aia" : val = (val >> 27) & 32'h1;
+      "csrind" : val = (val >> 28) & 32'h1;
+      "envcfg" : val = (val >> 30) & 32'h1;
+      "se0" : val = (val >> 31) & 32'h1;
+`endif
+      default: val = 0; // Todo: error
+    endcase
+  end
   if (name == "hstatus") begin
     case(field)
       "gva" : val = (val >> 6) & 'h1;

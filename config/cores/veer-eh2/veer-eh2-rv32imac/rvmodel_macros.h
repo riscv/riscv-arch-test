@@ -1,6 +1,7 @@
 # rvmodel_macros.h
 # RVMODEL macro definitions for the CHIPS Alliance VeeR EH2 core
 # Written against Cores-VeeR-EH2 commit bd52450b144db1c2bb441e53b442c2af5a8e7b59
+# Copyright (c) 2026, Harvey Mudd College
 # SPDX-License-Identifier: Apache-2.0
 
 #ifndef _RVMODEL_MACROS_H
@@ -17,17 +18,14 @@
 
 ##### STARTUP #####
 
-# Program mrac (0x7C0) so that the memory regions behave sensibly before any test
-# code runs.  This is the "custom register initialization" hook: VeeR's own
-# hello_world does exactly this before printing.
+# Program mrac (0x7C0) as VeeR's own hello_world does.
 #   Quote: "// Enable Caches in MRAC / li x1, 0x5f555555 / csrw 0x7c0, x1"
-#   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/testbench/asm/hello_world.s#L41
-# Each 256 MB region gets two bits in mrac: {side-effect, cacheable}.  0x5F555555
-# marks every region cacheable and additionally marks region 0xD (the mailbox)
-# side-effect, which keeps console byte stores from being merged in the store buffer.
-# Measured: with this write hello_world completes in 1038 cycles, without it 1659,
-# and console output is identical either way, so this is required for performance
-# and store ordering rather than for output correctness.
+#   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/testbench/asm/hello_world.s#L73-L75
+# Each 256 MB region gets two bits in mrac: {side-effect, cacheable}. 0x5F555555 makes
+# every region cacheable except 0xC and 0xD (the mailbox), whose value 11 the hardware
+# maps to 10: side-effect and not cacheable. This keeps console byte stores from being
+# merged in the store buffer.
+#   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/docs/source/memory-map.md#L681-L684
 #define RVMODEL_BOOT \
   li t0, 0x5f555555       ;\
   csrw 0x7c0, t0          ;
@@ -36,7 +34,7 @@
 
 # A byte store of 0xFF to the mailbox makes the testbench print TEST_PASSED and $finish.
 #   Quote: "if(mailbox_write && WriteData[7:0] == 8'hff) begin"
-#   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/testbench/tb_top.sv#L340
+#   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/testbench/tb_top.sv#L372
 #define RVMODEL_HALT_PASS  \
   li t0, VEER_MAILBOX     ;\
   li t1, 0xff             ;\
@@ -46,7 +44,7 @@
 
 # A byte store of 0x01 takes the testbench failure path.
 #   Quote: "else if(mailbox_write && WriteData[7:0] == 8'h1) begin"
-#   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/testbench/tb_top.sv#L346
+#   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/testbench/tb_top.sv#L380
 #define RVMODEL_HALT_FAIL \
   li t0, VEER_MAILBOX     ;\
   li t1, 0x1              ;\
@@ -56,11 +54,10 @@
 
 ##### IO #####
 
-# Byte stores in the range 0x06..0x7E are echoed to stdout and to console.log.
+# Byte stores in the range 0x06..0x7E are echoed to stdout and to console.log. ACT's
+# RVCP-SUMMARY strings are printable ASCII plus \n (0x0A).
 #   Quote: "assign mailbox_data_val = WriteData[7:0] > 8'h5 && WriteData[7:0] < 8'h7f;"
-#   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/testbench/tb_top.sv#L321
-# Note this excludes \n (0x0A is > 0x05, so newlines DO print) but silently drops
-# characters below 0x06.  ACT's RVCP-SUMMARY strings are printable ASCII plus \n.
+#   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/testbench/tb_top.sv#L336
 #define RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR) \
 1:                           ;                        \
   lbu  _R1, 0(_STR_PTR)      ; /* Load byte */        \
@@ -74,15 +71,13 @@
 
 ##### Access faults #####
 
-# Not defined: VeeR EH2 reports out-of-window accesses as either a misaligned or an
-# access fault depending on configuration, and with no data access windows enabled
-# (the default) ordinary addresses never fault.
-#   Quote: "However, any access not within the DCCM's or PIC memory-mapped control
-#   register's address range results in a precise load/store address misaligned or
-#   access fault exception."
-#   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/docs/source/memory-map.md#L201
-# Leaving this undefined means access-fault tests are not exercised.
-//#define RVMODEL_ACCESS_FAULT_ADDRESS
+# With no access windows requested, veer.config enables four instruction and four data
+# access windows that leave region 0x9 as a hole (RV_EXTERNAL_MEM_HOLE = 0x90000000).
+# Fetches, loads and stores there raise access faults.
+#   Quote: "# Create the memory map hole for random testing"
+#   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/configs/veer.config#L1944-L1999
+#   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/docs/source/memory-map.md#L182-L190
+#define RVMODEL_ACCESS_FAULT_ADDRESS 0x90000000
 
 ##### Interrupt Latency #####
 
@@ -90,30 +85,13 @@
 
 ##### Machine Timer #####
 
-# VeeR EH2 has no mtime/mtimecmp: the PRM states the SoC must supply them, and the
-# testbench does not.  Leaving RVMODEL_MTIME_ADDRESS undefined disables all machine
-# timer interrupt testing, which is the documented behaviour in check_defines.h.
-//#define RVMODEL_MTIME_ADDRESS
-//#define RVMODEL_MTIMECMP_ADDRESS
+# VeeR EH2 has no mtime/mtimecmp and the testbench supplies none, so RVMODEL_MTIME_ADDRESS
+# and RVMODEL_MTIMECMP_ADDRESS are not defined.
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
 ##### Machine Interrupts #####
 
-# Stubs for the first bring-up pass.  The testbench can drive interrupts through the
-# mailbox stimulus hooks, but external interrupts additionally require programming the
-# VeeR PIC (meipl/meie/meicurpl), so these are left empty until the interrupt suites
-# are brought up deliberately.
-#define RVMODEL_SET_MEXT_INT(_R1, _R2)
-#define RVMODEL_CLR_MEXT_INT(_R1, _R2)
-#define RVMODEL_SET_MSW_INT(_R1, _R2)
-#define RVMODEL_CLR_MSW_INT(_R1, _R2)
-
-##### Supervisor Interrupts #####
-# VeeR EH2 is M-mode only; these cannot occur but must be defined.
-
-#define RVMODEL_SET_SEXT_INT(_R1, _R2)
-#define RVMODEL_CLR_SEXT_INT(_R1, _R2)
-#define RVMODEL_SET_SSW_INT(_R1, _R2)
-#define RVMODEL_CLR_SSW_INT(_R1, _R2)
+# The testbench ties the external, timer and software interrupt inputs to 0, so no
+# RVMODEL_SET/CLR_*_INT macros are defined (UDB MEI/MSI/MTI_INTR_IMPL are false).
 
 #endif // _RVMODEL_MACROS_H

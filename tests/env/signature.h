@@ -92,13 +92,19 @@
 #endif
 
 // TRAP_SIGUPD_ZERO_OK(tempreg, sigreg, offset, instptr, strptr)
-// TRAP_SIGUPD for a field that may be written with zero instead of its defined
-// value, such as xtinst. Passes if the DUT value matches the reference or is zero.
+// TRAP_SIGUPD for a field a hart may leave at zero instead of its defined value.
+// xtinst holds either the transformed instruction or zero, at the hart's choice,
+// so neither value can be required: the check passes when the two values match or
+// when either side is zero. Two non-zero values must still match, so a hart that
+// transforms the wrong instruction is caught. Sail writes zero on every trap, so
+// nothing is compared against a Sail reference until sail-riscv#1982 adds the
+// option to write the transformed instruction.
 #ifdef RVTEST_SELFCHECK
   #define TRAP_SIGUPD_ZERO_OK(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR) \
     LREG _TMPREG, _OFF*REGWIDTH(T1)                             ;\
     beq  _TMPREG, _R, 2f                                        ;\
     beqz _R, 2f                                                 ;\
+    beqz _TMPREG, 2f                                            ;\
     mv   T1, _R                                                 ;\
     mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
     jal  T2, failedtest_trap_x7_x9                              ;\

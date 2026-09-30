@@ -66,17 +66,6 @@ implemented_extensions:
   #   Quote: "VeeR EH2 is a machinemode (M-mode) only, 32-bit CPU core"
   #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/docs/source/overview.md#L5
   - { name: Zifencei, version: "= 2.0" }
-  # The NTL hints are add/c.add with rd=x0, and pause is a FENCE with pred=W, succ=0. The
-  # decoder accepts any rd for add and c.add and any pred/succ/fm for fence, so each hint
-  # executes as an ordinary instruction with no architectural effect.
-  #   Quote: "add       =  [0000000..........000.....0110011]"
-  #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/design/dec/decode#L103
-  #   Quote: "fence     =  [.................000.....0001111]"
-  #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/design/dec/decode#L168
-  #   Quote: "c.add0 =        [1001.....1....10]"
-  #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/design/dec/cdecode#L7
-  - { name: Zihintntl, version: "= 1.0.0" }
-  - { name: Zihintpause, version: "= 2.0.0" }
   # VeeR EH2 implements privileged spec 1.11, not 1.12. mstatush, which 1.12 added, does
   # not exist on this core, and ACT already guards every mstatush access behind
   # SM1P12P0_OR_LATER_SUPPORTED, so declaring 1.11 is both accurate and necessary.

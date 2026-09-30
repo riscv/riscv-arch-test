@@ -4,7 +4,7 @@ normative_rule_definitions:
   # However, unlike SFENCE.VMA, SINVAL.VMA instructions are only ordered with respect to
   # SFENCE.VMA, SFENCE.W.INVAL, and SFENCE.INVAL.IR instructions as defined below.
   - name: Svinval_sinval_vma_invalidates_same_as_sfence_vma
-    coverpoint: ["Svinval_cg/cr_svinival"]
+    coverpoint: ["Svinval_cg/cr_svinival", "SvinvalH_cg/cp_sinval_vma_vs"]
 
   # The SFENCE.INVAL.IR instruction guarantees that any previous SINVAL.VMA instructions
   # executed by the current hart are ordered before subsequent implicit references by
@@ -65,7 +65,4 @@ normative_rule_definitions:
 
   # HINVAL.GVMA uses VMIDs instead of ASIDs.
   - name: Svinval_hinval_gvma_uses_vmid
-    coverpoint:
-      [
-        "Not tested: address-translation cache contents are not observable in signature tests",
-      ]
+    coverpoint: ["SvinvalH_cg/cp_hinval_gvma"]

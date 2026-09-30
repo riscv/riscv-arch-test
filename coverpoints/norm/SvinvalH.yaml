@@ -6,14 +6,16 @@ normative_rule_definitions:
   # SFENCE.W.INVAL and SFENCE.INVAL.IR to replace HFENCE.VVMA and HFENCE.GVMA,
   # respectively, instead of SFENCE.VMA.
   - name: Svinval_hinval_vvma_gvma
-    coverpoint: ["SvinvalH_cg/cp_svinval"]
+    coverpoint:
+      [
+        "SvinvalH_cg/cp_svinval",
+        "SvinvalH_cg/cp_hinval_vvma",
+        "SvinvalH_cg/cp_hinval_gvma",
+      ]
 
   # HINVAL.GVMA uses VMIDs instead of ASIDs.
   - name: Svinval_hinval_gvma_uses_vmid
-    coverpoint:
-      [
-        "Not tested: address-translation cache contents are not observable in signature tests",
-      ]
+    coverpoint: ["SvinvalH_cg/cp_hinval_gvma"]
 
   # In particular, an attempt to execute any of these instructions in U-mode always
   # raises an illegal-instruction exception.

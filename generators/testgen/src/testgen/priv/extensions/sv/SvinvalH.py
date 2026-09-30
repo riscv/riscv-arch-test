@@ -9,11 +9,15 @@
 """Generate Svinval tests in HS, VS, U and VU modes with hstatus.VTVM clear and set.
 
 The suite boots to HS-mode, and the HS-mode handler takes every trap (hedeleg = 0).  Tests with
-mstatus.TVM = 1 are in SvinvalHSm because the HS-mode handler reads satp.
+mstatus.TVM = 1 are in SvinvalHSm because the HS-mode handler reads satp.  Under two-stage translation, the
+SFENCE.W.INVAL, HINVAL.VVMA or HINVAL.GVMA (or SINVAL.VMA in VS-mode), SFENCE.INVAL.IR sequence must remove a
+changed VS-stage or G-stage leaf (SvHFenceCommon).
 """
 
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
+from testgen.priv.extensions.sv.page_tables import SV32X4, SV39X4, VS_SV32, VS_SV39
+from testgen.priv.extensions.sv.SvHFenceCommon import HINVAL_GVMA, HINVAL_VVMA, SINVAL_VMA_VS, fence_chunk
 from testgen.priv.extensions.sv.Svinval import H_OPERATIONS
 from testgen.priv.registry import add_priv_test_generator
 
@@ -62,3 +66,26 @@ def make_svinvalh(test_data: TestData) -> list[TestChunk]:
     chunk.code.extend(svinval_h_tests(test_data, "S", (0,)))
     chunk.trap_sigupd_count = trap_sigupd_count(25)  # VS, VU and U traps with VTVM = 0 and 1
     return [test_data.end_test_chunk()]
+
+
+INVAL_FENCES = (HINVAL_VVMA, HINVAL_GVMA, SINVAL_VMA_VS)
+
+
+@add_priv_test_generator(
+    "SvinvalH",
+    required_extensions=["H", "Svinval"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+    params=["TIME_CSR_IMPLEMENTED: true", "SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
+)
+def make_svinvalh_sv39x4(test_data: TestData) -> list[TestChunk]:
+    return [fence_chunk(test_data, SV39X4, VS_SV39, "sv39x4_inval", INVAL_FENCES, "SvinvalH_cg")]
+
+
+@add_priv_test_generator(
+    "SvinvalH",
+    required_extensions=["H", "Svinval"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+    params=["TIME_CSR_IMPLEMENTED: true", "SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
+)
+def make_svinvalh_sv32x4(test_data: TestData) -> list[TestChunk]:
+    return [fence_chunk(test_data, SV32X4, VS_SV32, "sv32x4_inval", INVAL_FENCES, "SvinvalH_cg")]

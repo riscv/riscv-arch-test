@@ -17,7 +17,7 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.sv.access import add_rwx_test
 from testgen.priv.extensions.sv.assembly import VA_ONES_DATA, VA_ZEROS_DATA
-from testgen.priv.extensions.sv.generate import begin_sv_test, keep_image_mapped, sv_data
+from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
     SV32,
     SV39,
@@ -748,6 +748,7 @@ def _add_va_extreme_test(
     physical_label: str,
     permissions: PteExpression,
     style: str,
+    driver_mode: str = "Smode",
 ) -> None:
     chunk.code.extend(
         [
@@ -762,7 +763,7 @@ def _add_va_extreme_test(
             ),
             "sfence.vma",
             "",
-            *emit_access(test_data, sv, 0, style, f"test{number}", va, "Smode"),
+            *emit_access(test_data, sv, 0, style, f"test{number}", va, "Smode", driver_mode),
             "",
         ]
     )
@@ -817,9 +818,13 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
         f"{sv.name}_VA_all_zeros_Smode",
         sig_init=sig_init,
         va_defs=(("va_data", all_zeros),),
+        setup_asm=(
+            "// Mapping VA 0 can replace the boot identity map of an image linked at a low address,",
+            "// so M-mode writes the page tables and signature, and S-mode runs only the accesses,",
+            "// fetching through va_rvtest_code_begin.",
+            "RVTEST_TSBI_GOTO_MMODE",
+        ),
     )
-    if sv.levels > 3:
-        chunk.code.extend(keep_image_mapped(sv))
     _add_va_extreme_test(
         test_data,
         chunk,
@@ -829,6 +834,7 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
         physical_label="rvtest_data_1_l0_rw",
         permissions=PteFlags(execute=False),
         style="rw_word" if sv.name in ("sv32", "sv39") else "rw_byte",
+        driver_mode="Mmode",
     )
     _add_va_extreme_test(
         test_data,
@@ -839,6 +845,7 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
         physical_label="rvtest_data_1_l0_x",
         permissions=PteFlags(read=False, write=False),
         style="x_only",
+        driver_mode="Mmode",
     )
     chunk.raw_data.extend(sv_data(sv, (0,), data_region_body=VA_ZEROS_DATA))
     chunk.trap_sigupd_count = 10

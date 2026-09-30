@@ -58,30 +58,13 @@ main:
   SATP_SETUP_RV64(sv57) // Enable address translation.
   sfence.vma
 
+// Mapping VA 0 can replace the boot identity map of an image linked at a low address,
+// so M-mode writes the page tables and signature, and S-mode runs only the accesses,
+// fetching through va_rvtest_code_begin.
+  RVTEST_TSBI_GOTO_MMODE
+
   li a2, 0x12                 // Test signature initialization
 
-// Keep the identity-mapped test image reachable through the level 2 table.
-  LA(t0, rvtest_code_begin)
-  srli t1, t0, 39
-  andi t1, t1, 0x1FF
-  slli t1, t1, 3
-  LA(a0, rvtest_slvl3_pg_tbl)
-  add a0, a0, t1
-  LA(t0, rvtest_slvl2_pg_tbl)
-  srli t0, t0, 12
-  slli t0, t0, 10
-  ori t0, t0, PTE_V
-  SREG t0, 0(a0)
-  LA(t0, rvtest_code_begin)
-  srli t1, t0, 30
-  andi t1, t1, 0x1FF
-  slli t1, t1, 3
-  LA(a0, rvtest_slvl2_pg_tbl)
-  add a0, a0, t1
-  srli t0, t0, 30
-  slli t0, t0, 28
-  ori t0, t0, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V
-  SREG t0, 0(a0)
 
 // 4KB page at level 0
 
@@ -93,6 +76,7 @@ main:
   PTE_SETUP_SV57(rvtest_data_1_l0_rw, (PTE_D | PTE_A | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
+  RVTEST_TSBI_GOTO_SMODE
   LI(a5, va_data)
   addi a2, a2, 16
 Sv_cp_sv57_VA_all_zeros_Smode_test1_store:
@@ -101,6 +85,7 @@ Sv_cp_sv57_VA_all_zeros_Smode_test1_store:
 Sv_cp_sv57_VA_all_zeros_Smode_test1_load:
   lbu a3, 0(a5)
   nop
+  RVTEST_TSBI_GOTO_MMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_VA_all_zeros_Smode_test1_store, Sv_cp_sv57_VA_all_zeros_Smode_test1_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -117,10 +102,12 @@ Sv_cp_sv57_VA_all_zeros_Smode_test1_load:
   PTE_SETUP_SV57(rvtest_data_1_l0_x, (PTE_D | PTE_A | PTE_X | PTE_V), va_data, LEVEL0)
   sfence.vma
 
+  RVTEST_TSBI_GOTO_SMODE
   LI(a5, va_data)
 Sv_cp_sv57_VA_all_zeros_Smode_test2_exec:
   jalr ra, a5, 0
   nop
+  RVTEST_TSBI_GOTO_MMODE
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_VA_all_zeros_Smode_test2_exec, Sv_cp_sv57_VA_all_zeros_Smode_test2_exec_str)
 

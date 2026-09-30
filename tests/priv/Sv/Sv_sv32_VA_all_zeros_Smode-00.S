@@ -58,6 +58,11 @@ main:
   SATP_SETUP_SV32 // Enable address translation.
   sfence.vma
 
+// Mapping VA 0 can replace the boot identity map of an image linked at a low address,
+// so M-mode writes the page tables and signature, and S-mode runs only the accesses,
+// fetching through va_rvtest_code_begin.
+  RVTEST_TSBI_GOTO_MMODE
+
   LI( a2, 0x800)              // Test signature initialization
 
 
@@ -68,6 +73,7 @@ main:
   PTE_SETUP_SV32(rvtest_data_1_l0_rw, (PTE_D | PTE_A | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
+  RVTEST_TSBI_GOTO_SMODE
   LI(a5, va_data)
   addi a2, a2, 16
 Sv_cp_sv32_VA_all_zeros_Smode_test1_store:
@@ -76,6 +82,7 @@ Sv_cp_sv32_VA_all_zeros_Smode_test1_store:
 Sv_cp_sv32_VA_all_zeros_Smode_test1_load:
   lw a3, 0(a5)
   nop
+  RVTEST_TSBI_GOTO_MMODE
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_VA_all_zeros_Smode_test1_store, Sv_cp_sv32_VA_all_zeros_Smode_test1_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -89,10 +96,12 @@ Sv_cp_sv32_VA_all_zeros_Smode_test1_load:
   PTE_SETUP_SV32(rvtest_data_1_l0_x, (PTE_D | PTE_A | PTE_X | PTE_V), va_data, LEVEL0)
   sfence.vma
 
+  RVTEST_TSBI_GOTO_SMODE
   LI(a5, va_data)
 Sv_cp_sv32_VA_all_zeros_Smode_test2_exec:
   jalr ra, a5, 0
   nop
+  RVTEST_TSBI_GOTO_MMODE
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_VA_all_zeros_Smode_test2_exec, Sv_cp_sv32_VA_all_zeros_Smode_test2_exec_str)
 

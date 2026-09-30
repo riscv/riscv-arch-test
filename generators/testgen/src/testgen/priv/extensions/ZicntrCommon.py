@@ -191,7 +191,7 @@ def htimedelta_tests(test_data: TestData, covergroup: str, mode: Mode) -> list[s
     lines = [
         comment_banner(
             coverpoint,
-            "With htimedelta = {0, 2^30, 2^60, -2^30, -2^60}, read time (and timeh on RV32) in "
+            "With htimedelta = {0, 2^30, 2^32-1, 2^60, -1, -2^30, -2^60}, read time (and timeh on RV32) in "
             f"{'HS' if mode == 'S' else mode}-mode.\n"
             + ("It reads time + htimedelta." if virtual else "It reads time, unaffected by htimedelta."),
         ),

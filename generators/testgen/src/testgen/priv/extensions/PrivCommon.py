@@ -346,11 +346,15 @@ def priv_inst_trap_tests(
     return lines
 
 
-# htimedelta values: the negative ones make time + htimedelta wrap modulo 2^64
+# htimedelta values.  time is far below 2^30 when the tests run.  The negative ones make time + htimedelta
+# wrap modulo 2^64 once time exceeds their magnitude; neg_1 wraps for any time >= 1.  pos_2p32m1 and neg_1
+# make the low-word add carry into the upper word on RV32.
 HTIMEDELTAS = {
     "zero": 0,
     "pos_2p30": 1 << 30,
+    "pos_2p32m1": (1 << 32) - 1,
     "pos_2p60": 1 << 60,
+    "neg_1": -1,
     "neg_2p30": -(1 << 30),
     "neg_2p60": -(1 << 60),
 }

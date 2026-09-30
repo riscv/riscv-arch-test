@@ -64,7 +64,9 @@ covergroup SstcHSm_m_cg with function sample(ins_t ins);
         htimedelta_val : coverpoint ins.prev.csr[CSR_HTIMEDELTA] {
             bins zero    = {64'h0};
             bins p2_30   = {64'h0000000040000000};
+            bins p2_32m1 = {64'h00000000FFFFFFFF};
             bins p2_60   = {64'h1000000000000000};
+            bins neg1    = {64'hFFFFFFFFFFFFFFFF};
             bins neg2_30 = {64'hFFFFFFFFC0000000};
             bins neg2_60 = {64'hF000000000000000};
         }
@@ -90,7 +92,9 @@ covergroup SstcHSm_m_cg with function sample(ins_t ins);
         htimedelta_val : coverpoint {ins.prev.csr[CSR_HTIMEDELTAH], ins.prev.csr[CSR_HTIMEDELTA]} {
             bins zero    = {64'h0};
             bins p2_30   = {64'h0000000040000000};
+            bins p2_32m1 = {64'h00000000FFFFFFFF};
             bins p2_60   = {64'h1000000000000000};
+            bins neg1    = {64'hFFFFFFFFFFFFFFFF};
             bins neg2_30 = {64'hFFFFFFFFC0000000};
             bins neg2_60 = {64'hF000000000000000};
         }

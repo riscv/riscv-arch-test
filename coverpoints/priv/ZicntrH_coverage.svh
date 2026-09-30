@@ -469,7 +469,7 @@ covergroup ZicntrH_cg with function sample(ins_t ins);
         wildcard bins csrw = {CSRW};
     }
 
-    // htimedelta = {0, 2^30, 2^60, -2^30, -2^60} while time and timeh are read
+    // htimedelta = {0, 2^30, 2^32-1, 2^60, -1, -2^30, -2^60} while time and timeh are read
     csrr_time: coverpoint ins.current.insn[31:20] iff (ins.current.insn ==? CSRR) {
         bins read_time = {CSR_TIME};
         `ifdef UDB_MXLEN_32
@@ -481,11 +481,13 @@ covergroup ZicntrH_cg with function sample(ins_t ins);
     `else
         htimedelta: coverpoint {ins.current.csr[CSR_HTIMEDELTAH][31:0], ins.current.csr[CSR_HTIMEDELTA][31:0]} {
     `endif
-        bins zero     = {64'h0000000000000000};
-        bins pos_2p30 = {64'h0000000040000000};
-        bins pos_2p60 = {64'h1000000000000000};
-        bins neg_2p30 = {64'hFFFFFFFFC0000000};
-        bins neg_2p60 = {64'hF000000000000000};
+        bins zero       = {64'h0000000000000000};
+        bins pos_2p30   = {64'h0000000040000000};
+        bins pos_2p32m1 = {64'h00000000FFFFFFFF};
+        bins pos_2p60   = {64'h1000000000000000};
+        bins neg_1      = {64'hFFFFFFFFFFFFFFFF};
+        bins neg_2p30   = {64'hFFFFFFFFC0000000};
+        bins neg_2p60   = {64'hF000000000000000};
     }
 
     // HS-mode

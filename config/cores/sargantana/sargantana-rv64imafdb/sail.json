@@ -616,10 +616,10 @@
       "supported": true
     },
     "Zihintntl": {
-      "supported": true
+      "supported": false
     },
     "Zihintpause": {
-      "supported": true
+      "supported": false
     },
     "Zihpm": {
       "supported": true

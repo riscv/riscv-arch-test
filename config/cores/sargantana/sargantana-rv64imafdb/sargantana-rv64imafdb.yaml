@@ -76,11 +76,6 @@ implemented_extensions:
   #  {F7_CZERO, F3_SRL_SRA}: begin ... decode_instr_int.instr_type = CZ_EQZ;"
   #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/datapath/rtl/id_stage/rtl/decoder.sv#L694-L699
   - { name: Zicond, version: "= 1.0.0" }
-  # The NTL hints are ADD with rd = x0 ("{F7_NORMAL,F3_ADD_SUB}: ... instr_type = ADD;",
-  # decoder.sv#L579-L580), and PAUSE is a FENCE, which decodes for any pred/succ
-  # ("F3_FENCE: begin decode_instr_int.instr_type = FENCE;", decoder.sv#L2892-L2894).
-  - { name: Zihintntl, version: "= 1.0.0" }
-  - { name: Zihintpause, version: "= 2.0.0" }
   # All six CSR instruction forms: decoder.sv#L3191-L3218
   - { name: Zicsr, version: "= 2.0" }
   # "F3_FENCE_I: begin ... decode_instr_int.instr_type = FENCE_I;" (decoder.sv#L2896), and

@@ -71,11 +71,17 @@ main:
   add a5, a5, a0
   addi a2, a2, 1
 
+  LI(x8, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_sc_retry:
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_lr:
   lr.w a3, (a5)
   nop
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_sc_success # SC succeeded, skip retry
+  addi x8, x8, -1 # decrement retry count
+  bnez x8, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_sc_success:
   nop
 
 

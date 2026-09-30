@@ -44,11 +44,17 @@ ci_enabled: true
 #      (https://gitlab.com/qemu-project/qemu/-/work_items/4594)
 #    - raises instruction page faults instead of load page faults for HLVX
 #      (https://gitlab.com/qemu-project/qemu/-/work_items/4595)
+#    - raises virtual instead of illegal instruction for WFI in VU-mode with mstatus.TW = 1 (https://gitlab.com/qemu-project/qemu/-/work_items/4612)
+#    - masks VS-mode reads of sie/sip with mideleg (https://gitlab.com/qemu-project/qemu/-/work_items/4613)
+#    - lets VS-stage A/D updates write page tables the G-stage maps read-only (https://gitlab.com/qemu-project/qemu/-/work_items/4615)
+#    - reports a PMP fault on a G-stage page-table read during a VS-stage walk as a guest-page fault
+#      (https://gitlab.com/qemu-project/qemu/-/work_items/4616)
+#    - on RV32, clears minstretcfgh on a minstretcfg write (https://gitlab.com/qemu-project/qemu/-/work_items/4617)
 #    InterruptsHSm also needs a writable mip.LCOFIP (https://gitlab.com/qemu-project/qemu/-/work_items/3969).
 #    qemu-rv32-max: the max CPU does not implement Zicfilp on RV32, so henvcfg.LPE is read-only zero.
-# SsstateenH, SmstateenH (TODO: file issues): besides the VS/VU entry bug above, on RV32 a write to mstateen0 or
-#    hstateen0 clears bits 63:62 of the 64-bit register, and VS/VU accesses to henvcfg, senvcfg or hedelegh with
-#    the mstateen0 bit clear raise virtual instruction instead of illegal instruction.
+# SsstateenH, SmstateenH: besides the VS/VU entry bug above, on RV32 a write to mstateen0 or hstateen0 clears
+#    bits 63:62 of the 64-bit register (https://gitlab.com/qemu-project/qemu/-/work_items/4611), and VS/VU accesses to henvcfg or senvcfg
+#    with mstateen0.ENVCFG = 0 raise virtual instead of illegal instruction (https://gitlab.com/qemu-project/qemu/-/work_items/4614).
 # ZicfilpSm: an RV32 mstatus write clears mstatush.MPELP, so MRET does not restore ELP
 #     (https://gitlab.com/qemu-project/qemu/-/work_items/4488), and mstatush.MPELP is not
 #     writable (https://gitlab.com/qemu-project/qemu/-/work_items/4220). ZicfilpSm passes on

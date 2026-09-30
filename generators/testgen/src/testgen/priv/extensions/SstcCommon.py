@@ -14,13 +14,13 @@ machine mode and through T-SBI otherwise; user-mode tests are entered from S-mod
 
 from testgen.asm.csr import write_stce
 from testgen.asm.helpers import comment_banner
-from testgen.asm.tsbi import tsbi_call
+from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.state import TestData
 
 
 def csr_op(instr: str, mode: str) -> str:
     """An M-mode CSR instruction, issued directly in machine mode and through T-SBI otherwise."""
-    return instr if mode == "machine" else tsbi_call(instr)
+    return tsbi_call_or_direct(instr, "M" if mode == "machine" else "S")  # user tests do their setup in S-mode
 
 
 def mcounteren_tm(test_data: TestData, enable: bool, mode: str) -> list[str]:

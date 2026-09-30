@@ -31,6 +31,8 @@
 #   read-only vsip.STIP/SEIP bits (csrr reads them correctly):
 #   https://solvnetplus.synopsys.com/s/case/500WQ000029snvFYAQ/csrrccsrrscsrrw-return-0-as-the-old-value-of-vsipstipseip
 # - SmstateenH (TODO: file issue): on RV64 the reserved bit 56 of hstateen0 is writable, like mstateen0.P1P13 above
+# - SsnpmH: HLV/HSV from U-mode with hstatus.SPVP = 0 take their pointer masking from senvcfg.PMM instead of
+#   hstatus.HUPMM, and HLVX applies pointer masking, which it must not. TODO: file issue
 #
 ci_enabled: false
-exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,PMPH,SvH,SvHZicbo,InterruptsH,SstcH,SstcHSm,SmstateenH"
+exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,PMPH,SvH,SvHZicbo,InterruptsH,SstcH,SstcHSm,SmstateenH,SsnpmH"

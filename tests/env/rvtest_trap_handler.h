@@ -2489,7 +2489,11 @@ sv_\__MODE__\()epc:
         LI(     T6, CAUSE_BREAKPOINT)                 //   at a slightly different instr) -> don't record xEPC for
         beq     T2, T6, skpsv_\__MODE__\()epc         //   mcause==3, else self-check mismatches on word 2
 #endif
+#ifdef INVALID_VA_WIDTH
+        TRAP_SIGUPD_INVALID_ADDR(T4, T3, 2, sv_\__MODE__\()epc, sv_\__MODE__\()epc_str) // word 2: xEPC, may be converted
+#else
         TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()epc, sv_\__MODE__\()epc_str) // write word 2: xEPC
+#endif
 skpsv_\__MODE__\()epc:
         csrr    T3, CSR_XEPC                          // reload xEPC (TRAP_SIGUPD may clobber T3 on its failure path)
 
@@ -2590,7 +2594,11 @@ skp_adj_\__MODE__\()epc:
         csrr    T3, CSR_XTVAL                         // T3 = xtval (trap value: faulting addr or instruction)
 
 sv_\__MODE__\()tval:
+#ifdef INVALID_VA_WIDTH
+        TRAP_SIGUPD_INVALID_ADDR(T4, T3, 3, sv_\__MODE__\()tval, sv_\__MODE__\()tval_str) // word 3: xtval, may be converted
+#else
         TRAP_SIGUPD(T4, T3, 3, sv_\__MODE__\()tval, sv_\__MODE__\()tval_str) // write word 3: xtval
+#endif
 
 skp_\__MODE__\()tval:
 

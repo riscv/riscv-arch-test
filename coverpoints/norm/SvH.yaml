@@ -36,9 +36,19 @@ normative_rule_definitions:
       [
         "SvH_gstage_cg/cp_hgatp_gpa_width",
         "SvH_twostage_cg/cp_hgatp_sv32x4_gpa",
+        "SvH_twostage_cg/cp_twostage_gpa_width",
       ]
+  # Each G-stage mode walks its tables with the Sv algorithm for permissions, every leaf level and A/D bits, and
+  # faults on guest physical address bits above its width, including bits that a VS-stage PPN sets
   - names: [hgatp_mode_sv39x4, hgatp_mode_sv48x4, hgatp_mode_Sv57x4]
-    coverpoint: ["SvH_gstage_cg/cp_hgatp_gpa_width"]
+    coverpoint:
+      [
+        "SvH_gstage_cg/cp_hgatp_perm",
+        "SvH_gstage_cg/cp_hgatp_adue",
+        "SvH_twostage_cg/cp_twostage_perm",
+        "SvH_gstage_cg/cp_hgatp_gpa_width",
+        "SvH_twostage_cg/cp_twostage_gpa_width",
+      ]
   - names: [hgatp_mode_sv32x4]
     coverpoint: ["SvH_twostage_cg/cp_hgatp_sv32x4_gpa"]
 
@@ -104,6 +114,11 @@ normative_rule_definitions:
         "SvH_twostage_cg/cp_twostage_mxr",
       ]
 
+  # Under a VS-stage Sv39, Sv48 or Sv57 vsatp, a non-canonical guest virtual address raises a page fault, not a
+  # guest-page fault
+  - names: [Sv39_va_signext, Sv48_va_signext, Sv57_va_signext]
+    coverpoint: ["SvH_twostage_cg/cp_twostage_canonical"]
+
   # vsstatus.SUM in VS-mode
   - name: vsstatus_sz_acc_op
     coverpoint: ["SvH_vsstage_cg/cp_vsatp_sum"]
@@ -111,15 +126,12 @@ normative_rule_definitions:
   # HLV, HLVX and HSV: hstatus.SPVP selects the privilege, vsstatus.SUM applies and sstatus.SUM does not,
   # sstatus.MXR affects both stages and vsstatus.MXR the VS-stage, and HLVX needs execute permission
   - names:
-      [
-        hlsv_priv,
-        hlsv_trans,
-        hlsv_sstatus_mxr,
-        hlsv_vsstatus_mxr,
-        hlsv_u_op,
-        vsatp_v0,
-      ]
+      [hlsv_priv, hlsv_trans, hlsv_sstatus_mxr, hlsv_vsstatus_mxr, vsatp_v0]
     coverpoint: ["SvH_hlv_cg/cp_hlv_priv", "SvH_hlv_cg/cp_hlv_mxr"]
+  # HLVX reads execute-only pages, and raises a load page fault or load guest-page fault on a readable page that is
+  # not executable in the VS-stage or the G-stage
+  - names: [hlsv_u_op]
+    coverpoint: ["SvH_hlv_cg/cp_hlv_mxr", "SvH_hlv_cg/cp_hlvx_perm"]
 
   # henvcfg.PBMTE gates Svpbmt in the VS-stage, and menvcfg.PBMTE in the G-stage
   - names: [henvcfg_pbmte_op, Svpbmt_vsatp_stage_override_rule]

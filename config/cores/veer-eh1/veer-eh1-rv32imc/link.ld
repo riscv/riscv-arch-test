@@ -1,7 +1,7 @@
 /* Set these to match the DUT memory map and hart count.
  *
- * VeeR EH1 boots from address 0: the testbench hardcodes the reset vector rather
- * than using the RV_RESET_VEC build define.
+ * VeeR EH1 boots from address 0, where the tests are linked: the testbench hardcodes the
+ * reset vector rather than using the RV_RESET_VEC build define.
  *   Quote: "reset_vector = 32'h0;"
  *   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/testbench/tb_top.sv#L418
  * The testbench memory is a sparse associative array over the whole 32-bit space, so
@@ -15,7 +15,7 @@
  */
 RAM_ORIGIN = 0x00000000;
 RAM_LENGTH = 0x10000000;
-TEST_BASE = 0x00001000;
+TEST_BASE = RAM_ORIGIN;
 NUM_HARTS = 1;
 
 /* Most users should not need to modify anything below this line. */

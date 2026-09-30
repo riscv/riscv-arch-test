@@ -86,12 +86,12 @@ def _atomic_access(
         op: test_data.add_testcase(f"{name}_{op}", coverpoint, covergroup).removesuffix(":")
         for op, coverpoint in coverpoints.items()
     }
-    body = [*target.setup, "addi a2, a2, 1", ""]
+    lines = [*target.setup, "addi a2, a2, 1", ""]
     if target.operation == "Zaamo":
-        body.extend([f"{labels['amoadd']}:", "amoadd.w a3, a2, (a5)", "nop"])
+        lines.extend([f"{labels['amoadd']}:", "amoadd.w a3, a2, (a5)", "nop"])
         results = ((13, labels["amoadd"]),)
     else:
-        body.extend(
+        lines.extend(
             [
                 f"{labels['lr']}:",
                 "lr.w a3, (a5)",
@@ -104,13 +104,13 @@ def _atomic_access(
         )
         results = ((13, labels["lr"]), (14, labels["sc"]))
     if target.mprv:
-        body.extend(["", *MPRV_CLEANUP])
-    if target.driver_mode is not None and target.driver_mode != target.mode:
-        body.append("")
-    current = tsbi_mode(target.driver_mode or target.mode)
-    lines = [*address, *in_mode(tsbi_mode(target.mode), current, body)]
-    lines.extend(["", *(write_sigupd(reg, test_data, label=label) for reg, label in results)])
-    return lines
+        lines.extend(["", *MPRV_CLEANUP])
+    return [
+        *address,
+        *in_mode(tsbi_mode(target.mode), tsbi_mode(target.driver_mode or target.mode), lines),
+        "",
+        *(write_sigupd(reg, test_data, label=label) for reg, label in results),
+    ]
 
 
 def _add_access(

@@ -75,7 +75,6 @@ main:
 ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test1_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -96,7 +95,6 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test1_amoadd:
 ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test2_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -117,7 +115,6 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test2_amoadd:
 ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test3_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -141,7 +138,6 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test3_amoadd:
 ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test4_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -163,7 +159,6 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test4_amoadd:
 ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test5_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -184,7 +179,6 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test5_amoadd:
 ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test6_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -205,7 +199,6 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test6_amoadd:
 ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test7_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -229,7 +222,6 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test7_amoadd:
 ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test8_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

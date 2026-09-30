@@ -130,7 +130,6 @@ SvSm_cp_sv57_mstatus_sbe_and_sum_set_Smode_test1_store:
 SvSm_cp_sv57_mstatus_sbe_and_sum_set_Smode_test1_load:
   lw a3, 20(a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -185,7 +184,6 @@ SvSm_cp_sv57_mstatus_sbe_and_sum_set_Smode_test2_store:
 SvSm_cp_sv57_mstatus_sbe_and_sum_set_Smode_test2_load:
   lw a3, 20(a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -252,7 +250,6 @@ SvSm_cp_sv57_mstatus_sbe_and_sum_set_Smode_test3_store:
 SvSm_cp_sv57_mstatus_sbe_and_sum_set_Smode_test3_load:
   lw a3, 20(a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -331,7 +328,6 @@ SvSm_cp_sv57_mstatus_sbe_and_sum_set_Smode_test4_store:
 SvSm_cp_sv57_mstatus_sbe_and_sum_set_Smode_test4_load:
   lw a3, 20(a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -422,7 +418,6 @@ SvSm_cp_sv57_mstatus_sbe_and_sum_set_Smode_test5_store:
 SvSm_cp_sv57_mstatus_sbe_and_sum_set_Smode_test5_load:
   lw a3, 20(a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

@@ -94,7 +94,6 @@ Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test1_load:
 Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test1_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -131,7 +130,6 @@ Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test2_load:
 Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test2_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -168,7 +166,6 @@ Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test3_load:
 Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test3_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -206,7 +203,6 @@ Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test4_load:
 Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test4_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -244,7 +240,6 @@ Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test5_load:
 Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test5_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -282,7 +277,6 @@ Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test6_load:
 Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test6_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -321,7 +315,6 @@ Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test7_load:
 Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test7_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -360,7 +353,6 @@ Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test8_load:
 Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test8_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -399,7 +391,6 @@ Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test9_load:
 Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test9_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -439,7 +430,6 @@ Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test10_load:
 Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test10_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -479,7 +469,6 @@ Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test11_load:
 Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test11_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -519,7 +508,6 @@ Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test12_load:
 Svpbmt_cp_sv57_Svpbmt_nonleaf_Umode_test12_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

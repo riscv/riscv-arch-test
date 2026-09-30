@@ -79,7 +79,6 @@ main:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test1_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -99,7 +98,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test1_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test2_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -121,7 +119,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test2_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test3_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -141,7 +138,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test3_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test4_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -163,7 +159,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test4_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test5_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -183,7 +178,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test5_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test6_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -205,7 +199,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test6_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test7_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -225,7 +218,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test7_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test8_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -247,7 +239,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test8_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test9_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -267,7 +258,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test9_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test10_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -289,7 +279,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test10_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test11_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -309,7 +298,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test11_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test12_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -331,7 +319,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test12_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test13_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -351,7 +338,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test13_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test14_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -373,7 +359,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test14_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test15_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -393,7 +378,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test15_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test16_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -415,7 +399,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test16_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test17_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -435,7 +418,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test17_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test18_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -457,7 +439,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test18_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test19_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -477,7 +458,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test19_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test20_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -499,7 +479,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test20_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test21_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -519,7 +498,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test21_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test22_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -541,7 +519,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test22_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test23_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -561,7 +538,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test23_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test24_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -583,7 +559,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test24_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test25_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -603,7 +578,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test25_amoadd:
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test26_amoadd:
   amoadd.w a3, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

@@ -166,13 +166,13 @@ def lxwr_walk_body(
     coverpoint: str,
     *,
     first: int = 1,
-    lower_mode: str | None = None,
+    lower_mode: str = "M",
     extra_setup: list[str] | None = None,
     napot_mask: list[str] | None = None,
 ) -> list[str]:
     """Walk LXWR encodings against one region: clear the PMPs, define one
     ``PMPREGION_LXWR_*`` per case, set the background, then configure and probe each
-    case. ``probe_generator`` emits and registers the access probes."""
+    case. ``probe_generator`` emits and registers the access probes, which run in ``lower_mode``."""
     defines = [f"#define PMPREGION_LXWR_{lxwr} {cfg_byte(lxwr, amode, cfg_shift(entry))}" for lxwr, entry in cases]
     lines = [*zero_pmp_regs(), "", *defines, "", "#define REGIONSTART TEST_FOR_EXECUTION"]
     if amode == "napot":
@@ -188,7 +188,7 @@ def lxwr_walk_body(
         lines.append("RVTEST_SFENCE_VMA_IF_SUPPORTED")
         generator = probe_generator[lxwr] if isinstance(probe_generator, dict) else probe_generator
         probes = generator(test_data, f"entry{entry}_lxwr{lxwr}", coverpoint, "TEST_FOR_EXECUTION")
-        lines.extend(in_mode(lower_mode or "M", "M", probes))
+        lines.extend(in_mode(lower_mode, "M", probes))
     return lines
 
 

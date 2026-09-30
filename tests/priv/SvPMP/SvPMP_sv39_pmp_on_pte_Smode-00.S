@@ -105,7 +105,6 @@ SvPMP_cp_sv39_pmp_on_pte_Smode_test1_load:
 SvPMP_cp_sv39_pmp_on_pte_Smode_test1_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -153,7 +152,6 @@ SvPMP_cp_sv39_pmp_on_pte_Smode_test2_load:
 SvPMP_cp_sv39_pmp_on_pte_Smode_test2_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -201,7 +199,6 @@ SvPMP_cp_sv39_pmp_on_pte_Smode_test3_load:
 SvPMP_cp_sv39_pmp_on_pte_Smode_test3_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

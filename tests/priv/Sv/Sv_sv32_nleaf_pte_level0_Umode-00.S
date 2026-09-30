@@ -86,7 +86,6 @@ Sv_cp_sv32_nleaf_pte_level0_Umode_test1_load:
 Sv_cp_sv32_nleaf_pte_level0_Umode_test1_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

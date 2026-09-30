@@ -31,17 +31,17 @@ def _setup_envcfg(extension: str, mode: str) -> tuple[str, ...]:
 
 
 def _add_operations(test_data: TestData, sv: SvMode, mode: str, level: int, extension: str, number: int) -> list[str]:
-    body: list[str] = []
+    lines: list[str] = []
     for operation in _FAMILIES[extension][1]:
         name = operation.split()[0].replace(".", "_")
-        body.extend(
+        lines.extend(
             [
                 test_data.add_testcase(f"test{number}_{name}", "cp_pmp_zicbo", "SvPMPZicbo_cg"),
                 operation,
                 "nop",
             ]
         )
-    return [*virtual_address(sv, "va_data", level), *in_mode(tsbi_mode(mode), "M", body)]
+    return [*virtual_address(sv, "va_data", level), *in_mode(tsbi_mode(mode), "M", lines)]
 
 
 def _begin_test(

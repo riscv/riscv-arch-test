@@ -96,7 +96,6 @@ Svade_cp_sv32_Svade_Umode_test1_load:
 Svade_cp_sv32_Svade_Umode_test1_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -132,7 +131,6 @@ Svade_cp_sv32_Svade_Umode_test2_load:
 Svade_cp_sv32_Svade_Umode_test2_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -168,7 +166,6 @@ Svade_cp_sv32_Svade_Umode_test3_load:
 Svade_cp_sv32_Svade_Umode_test3_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -204,7 +201,6 @@ Svade_cp_sv32_Svade_Umode_test4_load:
 Svade_cp_sv32_Svade_Umode_test4_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -240,7 +236,6 @@ Svade_cp_sv32_Svade_Umode_test5_load:
 Svade_cp_sv32_Svade_Umode_test5_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -273,7 +268,6 @@ Svade_cp_sv32_Svade_Umode_test6_load:
 Svade_cp_sv32_Svade_Umode_test6_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -306,7 +300,6 @@ Svade_cp_sv32_Svade_Umode_test7_load:
 Svade_cp_sv32_Svade_Umode_test7_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -339,7 +332,6 @@ Svade_cp_sv32_Svade_Umode_test8_load:
 Svade_cp_sv32_Svade_Umode_test8_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

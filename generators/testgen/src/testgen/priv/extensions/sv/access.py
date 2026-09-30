@@ -82,7 +82,7 @@ def add_rwx_test(
         for operation in operations
     }
     repeated = setup if repeat_setup else ()
-    body = [
+    lines = [
         *setup,
         "addi a2, a2, 16",
         "",
@@ -99,7 +99,7 @@ def add_rwx_test(
         *repeated,
     ]
     if include_exec:
-        body.extend(
+        lines.extend(
             [
                 *(("LA(a5, rvtest_data_1)",) if physical_fetch else ()),
                 "",
@@ -110,16 +110,12 @@ def add_rwx_test(
             ]
         )
     if cleanup:
-        body.extend(["", *cleanup])
-    if driver_mode is not None and driver_mode != mode:
-        body.append("")
-    lines = [
+        lines.extend(["", *cleanup])
+    return [
         *(virtual_address(sv, va, level) if address is None else address),
-        *in_mode(tsbi_mode(mode), tsbi_mode(driver_mode or mode), body),
+        *in_mode(tsbi_mode(mode), tsbi_mode(driver_mode or mode), lines),
+        "",
+        write_sigupd(12, test_data, label=labels["store"]),
+        write_sigupd(13, test_data, label=labels["load"]),
+        *([write_sigupd(14, test_data, label=labels["exec"])] if include_exec else []),
     ]
-    lines.extend(
-        ["", write_sigupd(12, test_data, label=labels["store"]), write_sigupd(13, test_data, label=labels["load"])]
-    )
-    if include_exec:
-        lines.append(write_sigupd(14, test_data, label=labels["exec"]))
-    return lines

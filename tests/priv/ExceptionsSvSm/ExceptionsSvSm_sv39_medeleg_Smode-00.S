@@ -90,7 +90,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test1_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test1_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -125,7 +124,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test2_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test2_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -162,7 +160,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test3_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test3_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -197,7 +194,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test4_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test4_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -234,7 +230,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test5_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test5_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -269,7 +264,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test6_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test6_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -306,7 +300,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test7_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test7_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -341,7 +334,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test8_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test8_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -378,7 +370,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test9_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test9_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -413,7 +404,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test10_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test10_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -450,7 +440,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test11_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test11_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -485,7 +474,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test12_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test12_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -522,7 +510,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test13_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test13_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -557,7 +544,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test14_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test14_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -594,7 +580,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test15_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test15_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -629,7 +614,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test16_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test16_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -666,7 +650,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test17_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test17_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -701,7 +684,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test18_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test18_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -738,7 +720,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test19_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test19_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -773,7 +754,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test20_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test20_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -810,7 +790,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test21_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test21_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -845,7 +824,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test22_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test22_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -882,7 +860,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test23_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test23_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -917,7 +894,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test24_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test24_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -954,7 +930,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test25_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test25_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -989,7 +964,6 @@ ExceptionsSvSm_cg_cp_medeleg_s_test26_load:
 ExceptionsSvSm_cg_cp_medeleg_fetch_s_test26_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

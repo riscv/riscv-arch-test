@@ -89,7 +89,6 @@ Sv_cp_sv48_global_pte_Umode_test1_access1_load:
 Sv_cp_sv48_global_pte_Umode_test1_access1_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -127,7 +126,6 @@ Sv_cp_sv48_global_pte_Umode_test1_access2_load:
 Sv_cp_sv48_global_pte_Umode_test1_access2_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -167,7 +165,6 @@ Sv_cp_sv48_global_pte_Umode_test2_access1_load:
 Sv_cp_sv48_global_pte_Umode_test2_access1_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -205,7 +202,6 @@ Sv_cp_sv48_global_pte_Umode_test2_access2_load:
 Sv_cp_sv48_global_pte_Umode_test2_access2_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -246,7 +242,6 @@ Sv_cp_sv48_global_pte_Umode_test3_access1_load:
 Sv_cp_sv48_global_pte_Umode_test3_access1_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -284,7 +279,6 @@ Sv_cp_sv48_global_pte_Umode_test3_access2_load:
 Sv_cp_sv48_global_pte_Umode_test3_access2_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -326,7 +320,6 @@ Sv_cp_sv48_global_pte_Umode_test4_access1_load:
 Sv_cp_sv48_global_pte_Umode_test4_access1_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -364,7 +357,6 @@ Sv_cp_sv48_global_pte_Umode_test4_access2_load:
 Sv_cp_sv48_global_pte_Umode_test4_access2_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

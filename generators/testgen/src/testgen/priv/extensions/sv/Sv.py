@@ -101,11 +101,11 @@ def _extreme_access(
         operation: test_data.add_testcase(f"{name}_{operation}", coverpoint, test_data.testsuite).removesuffix(":")
         for operation in operations
     }
-    body = [f"LI(a5, {va})"]
+    lines = [f"LI(a5, {va})"]
     if style.startswith("rw"):
         instruction = "sw" if style == "rw_word" else "sb"
         load = "lw" if style == "rw_word" else "lbu"
-        body.extend(
+        lines.extend(
             [
                 "addi a2, a2, 16",
                 f"{labels['store']}:",
@@ -121,9 +121,9 @@ def _extreme_access(
             write_sigupd(13, test_data, label=labels["load"]),
         ]
     else:
-        body.extend([f"{labels['exec']}:", "jalr ra, a5, 0", "nop"])
+        lines.extend([f"{labels['exec']}:", "jalr ra, a5, 0", "nop"])
         results = [write_sigupd(14, test_data, label=labels["exec"])]
-    return [*in_mode(tsbi_mode(mode), tsbi_mode(driver_mode), body), *results]
+    return [*in_mode(tsbi_mode(mode), tsbi_mode(driver_mode), lines), *results]
 
 
 def emit_access(

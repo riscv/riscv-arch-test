@@ -78,7 +78,6 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test1_lr:
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test1_sc:
   sc.w a4, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -104,7 +103,6 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test2_lr:
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test2_sc:
   sc.w a4, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -130,7 +128,6 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test3_lr:
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test3_sc:
   sc.w a4, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -159,7 +156,6 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test4_lr:
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test4_sc:
   sc.w a4, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -186,7 +182,6 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test5_lr:
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test5_sc:
   sc.w a4, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -212,7 +207,6 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test6_lr:
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test6_sc:
   sc.w a4, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -238,7 +232,6 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test7_lr:
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test7_sc:
   sc.w a4, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -267,7 +260,6 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test8_lr:
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_u_test8_sc:
   sc.w a4, a2, (a5)
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

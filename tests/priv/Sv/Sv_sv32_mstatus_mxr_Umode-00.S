@@ -91,7 +91,6 @@ Sv_cp_sv32_mstatus_mxr_Umode_test1_load:
 Sv_cp_sv32_mstatus_mxr_Umode_test1_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -132,7 +131,6 @@ Sv_cp_sv32_mstatus_mxr_Umode_test2_load:
 Sv_cp_sv32_mstatus_mxr_Umode_test2_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -170,7 +168,6 @@ Sv_cp_sv32_mstatus_mxr_Umode_test3_load:
 Sv_cp_sv32_mstatus_mxr_Umode_test3_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -208,7 +205,6 @@ Sv_cp_sv32_mstatus_mxr_Umode_test4_load:
 Sv_cp_sv32_mstatus_mxr_Umode_test4_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

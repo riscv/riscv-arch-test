@@ -107,7 +107,6 @@ SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test1_load:
 SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test1_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -148,7 +147,6 @@ SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test2_load:
 SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test2_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -189,7 +187,6 @@ SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test3_load:
 SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test3_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -241,7 +238,6 @@ SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test4_load:
 SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test4_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -283,7 +279,6 @@ SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test5_load:
 SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test5_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -325,7 +320,6 @@ SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test6_load:
 SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test6_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -378,7 +372,6 @@ SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test7_load:
 SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test7_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -421,7 +414,6 @@ SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test8_load:
 SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test8_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -464,7 +456,6 @@ SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test9_load:
 SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test9_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -518,7 +509,6 @@ SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test10_load:
 SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test10_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -562,7 +552,6 @@ SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test11_load:
 SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test11_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -606,7 +595,6 @@ SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test12_load:
 SvaduPMP_cp_sv48_Svadu_no_pmp_perm_Umode_test12_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

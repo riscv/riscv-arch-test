@@ -133,7 +133,6 @@ SvSm_cp_sv32_mstatus_sbe_set_Smode_test1_load:
 SvSm_cp_sv32_mstatus_sbe_set_Smode_test1_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -191,7 +190,6 @@ SvSm_cp_sv32_mstatus_sbe_set_Smode_test2_load:
 SvSm_cp_sv32_mstatus_sbe_set_Smode_test2_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

@@ -32,11 +32,11 @@ from testgen.priv.registry import add_priv_test_generator
 def _add_operation(
     test_data: TestData, sv: SvMode, family: str, mode: str, address: list[str], number: int
 ) -> list[str]:
-    body: list[str] = []
+    lines: list[str] = []
     results: list[str] = []
     if family == "zicbop":
         for operation in ("prefetch.i", "prefetch.r", "prefetch.w"):
-            body.extend(
+            lines.extend(
                 [
                     test_data.add_testcase(f"test{number}_{operation.replace('.', '_')}", "cp_prefetch", "SvZicbo_cg"),
                     f"{operation} 0(a5)",
@@ -48,17 +48,17 @@ def _add_operation(
             operation: test_data.add_testcase(f"test{number}_{operation}", "cp_zicbom", "SvZicbo_cg").removesuffix(":")
             for operation in ("clean", "flush", "inval")
         }
-        body.append("addi a2, a2, 16")
+        lines.extend(["addi a2, a2, 16"])
         for operation, register in (("clean", "a2"), ("flush", "a3"), ("inval", "a4")):
-            body.extend([f"{labels[operation]}:", f"cbo.{operation} (a5)", f"addi {register}, a2, 4"])
+            lines.extend([f"{labels[operation]}:", f"cbo.{operation} (a5)", f"addi {register}, a2, 4"])
         results = [
             write_sigupd(reg, test_data, label=labels[op]) for op, reg in (("clean", 12), ("flush", 13), ("inval", 14))
         ]
     else:
         label = test_data.add_testcase(f"test{number}_zero", "cp_zicboz", "SvZicbo_cg").removesuffix(":")
-        body.extend(["addi a2, a2, 16", f"{label}:", "cbo.zero (a5)", "addi a4, a2, 4"])
+        lines.extend(["addi a2, a2, 16", f"{label}:", "cbo.zero (a5)", "addi a4, a2, 4"])
         results = [write_sigupd(14, test_data, label=label)]
-    return [*address, *in_mode(tsbi_mode(mode), "S", body), *results]
+    return [*address, *in_mode(tsbi_mode(mode), "S", lines), *results]
 
 
 def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode: str, family: str) -> None:

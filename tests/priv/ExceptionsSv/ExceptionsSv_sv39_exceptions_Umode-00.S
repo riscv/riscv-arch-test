@@ -86,7 +86,6 @@ ExceptionsSv_cg_cp_load_page_fault_u_test1_load:
 ExceptionsSv_cg_cp_instr_page_fault_u_test1_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -122,7 +121,6 @@ ExceptionsSv_cg_cp_misaligned_priority_u_test2_load:
 ExceptionsSv_cg_cp_misaligned_priority_fetch_u_test2_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -158,7 +156,6 @@ ExceptionsSv_cg_cp_load_page_fault_u_test3_load:
 ExceptionsSv_cg_cp_instr_page_fault_u_test3_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -197,7 +194,6 @@ ExceptionsSv_cg_cp_misaligned_priority_u_test4_load:
 ExceptionsSv_cg_cp_misaligned_priority_fetch_u_test4_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -234,7 +230,6 @@ ExceptionsSv_cg_cp_load_page_fault_u_test5_load:
 ExceptionsSv_cg_cp_instr_page_fault_u_test5_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -270,7 +265,6 @@ ExceptionsSv_cg_cp_misaligned_priority_u_test6_load:
 ExceptionsSv_cg_cp_misaligned_priority_fetch_u_test6_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -306,7 +300,6 @@ ExceptionsSv_cg_cp_load_page_fault_u_test7_load:
 ExceptionsSv_cg_cp_instr_page_fault_u_test7_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -345,7 +338,6 @@ ExceptionsSv_cg_cp_misaligned_priority_u_test8_load:
 ExceptionsSv_cg_cp_misaligned_priority_fetch_u_test8_exec:
   jalr ra, a5, 0
   nop
-
   RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

@@ -6,43 +6,15 @@
 #
 # Usage: setup-c910.sh <install-dir> [--patch-only]
 #
-# The OpenC910 testbench (smart_run/logical/tb/tb_verilator.v) is written for the
-# vendor's own bare-metal smoke tests, and three of its properties make it unusable as
-# an ACT DUT harness.  All three are fixed here, as one reviewable patch against the
-# pinned commit, rather than by carrying a fork:
+# The patch to smart_run/logical/tb/tb_verilator.v:
+#   1. Loads one 4 MB image, mem.pat.  The vendor loader copies only 256 KB each of
+#      inst.pat and data.pat, which silently truncates an ACT ELF.
+#   2. Ends the simulation on a store to 0x01FF_FFE0 (pass) or 0x01FF_FFD0 (fail).  The
+#      vendor testbench ends it when a write-back bus carries a magic value, which a
+#      test can compute by accident.
+#   3. Lets MAX_RUN_TIME and LAST_CYCLE be set on the verilator command line.
 #
-#   1. THE IMAGE LOADER IS CAPPED AT 256 KB AND SPLIT IN TWO.  It stages inst.pat and
-#      data.pat into two `bit [31:0] mem_*_temp[65536]` arrays and copies only
-#      `i < 32'h4000` sixteen-byte rows of each, so anything past 256 KB of text (or
-#      256 KB of data) is DROPPED SILENTLY - no warning, no error, the core simply
-#      fetches zeros.  A self-checking ACT ELF is about 275 KB.  The patch merges the
-#      two halves into one 4 MB image called mem.pat and raises the copy bound to
-#      0x40000 rows.  Verified by linking a 395 KB image whose last function lives at
-#      byte offset 0x62AB0 and jumping to it: it executes and halts correctly.
-#
-#   2. PASS/FAIL IS SNOOPED OFF THE INTEGER WRITE-BACK BUS, NOT OFF MEMORY.  The
-#      testbench watches three write-back data buses for 64'h444333222 (pass) and
-#      64'h2382348720 (fail).  That is unusable for ACT twice over: any test that
-#      legitimately computes 0x444333222 in a register ends the simulation as a PASS,
-#      and the fail comparison is buggy - its third disjunct repeats the PASS constant
-#      (`value2 == 64'h444333222`), so a failing value arriving on the load write-back
-#      bus is scored as a pass.  The patch deletes the three taps and ends the
-#      simulation on a store to a magic address instead: 0x01FF_FFE0 = pass,
-#      0x01FF_FFD0 = fail.  Those are what RVMODEL_HALT_PASS / RVMODEL_HALT_FAIL write.
-#      Both addresses sit in the strongly-ordered device region 0x0100_0000-0x01FF_FFFF
-#      (gen_rtl/mmu/rtl/sysmap.h), so the store is never absorbed by the D-cache.
-#
-#   3. THE EXIT STATUS IS ALWAYS 0.  sim_main1.cpp returns 0 unconditionally, and the
-#      verdict only ever appears in a file called run_case.report as the literal text
-#      "TEST PASS" or "TEST FAIL".  Rather than patch the C++, run-c910.sh deletes that
-#      file before the run and requires both a "TEST PASS" report and an
-#      "RVCP-SUMMARY: TEST PASSED" console line; a timeout, a hang or a crash leaves
-#      the file absent and fails.  The patch does add one thing here: `ifndef` guards
-#      around MAX_RUN_TIME and LAST_CYCLE so the cycle cap can be set at verilate time
-#      (install-c910.sh uses 4 M instead of the vendor's 50.3 M).
-#
-# Applying the patch is idempotent: if it is already applied the script says so and
-# succeeds, so a cache restore that already contains a patched tree is fine.
+# Applying the patch is idempotent, so a cached, already patched tree is fine.
 
 set -euo pipefail
 

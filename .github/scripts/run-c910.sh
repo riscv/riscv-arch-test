@@ -2,36 +2,15 @@
 # Copyright (c) 2026, Harvey Mudd College
 # SPDX-License-Identifier: Apache-2.0
 #
-# Run one ACT self-checking ELF on a verilated XuanTie OpenC910 SoC.
-#
-# ACT4 tests self-check and report by printing to the console, so this runner does not
-# produce or compare a signature. Three OpenC910 facts shape it:
-#
-#   1. The testbench loads "mem.pat" from the CURRENT DIRECTORY and writes
-#      "run_case.report" there, so every test needs its own directory.
-#   2. mem.pat is a $readmemh file of 32-bit words in which the MOST significant byte
-#      is the LOWEST address (ram0 of the 16-byte-wide SRAM holds bits [31:24]).  That
-#      is the opposite of the little-endian word value, so the image is produced with
-#      objcopy -O binary and hexdumped in address order, not with objcopy -O verilog.
-#   3. The simulator ALWAYS exits 0 - sim_main1.cpp returns 0 unconditionally and both
-#      halt paths reach it through $finish. The verdict therefore comes from
-#      run_case.report, which the testbench writes on the halt store, and the file is
-#      deleted first so that a timeout, a hang or a crash cannot look like a pass.
-#      The console RVCP-SUMMARY line is used only as a cross-check for an explicit
-#      failure, NOT as the pass condition: the testbench's character output drops or
-#      mangles roughly one byte in every few hundred tests (measured: 1 corrupted
-#      summary line in 538 runs), so requiring an intact "TEST PASSED" string would
-#      turn that into a spurious failure. RVMODEL_HALT_PASS is only reached after the
-#      test's own self-check has passed, so the report is the authoritative verdict.
+# Run one ACT ELF on a verilated XuanTie OpenC910 SoC.
 #
 # Usage:  run-c910.sh [--snapshot DIR] [--timeout SEC] [--keep] --elf <path>
 #   run_tests.py appends the ELF path as the final argument.
 # Env:    C910_SNAPSHOT  directory holding obj_dir/Vtop
-#                        (default: ~/repos/openc910/smart_run/work)
 #         CROSS          toolchain prefix (default: riscv64-unknown-elf)
 set -uo pipefail
 
-SNAPSHOT="${C910_SNAPSHOT:-$HOME/repos/openc910/smart_run/work}"
+SNAPSHOT="${C910_SNAPSHOT:-}"
 CROSS="${CROSS:-riscv64-unknown-elf}"
 TIMEOUT=1200
 KEEP=0
@@ -72,17 +51,18 @@ done
 
 SIM="$SNAPSHOT/obj_dir/Vtop"
 [ -x "$SIM" ] || {
-  echo "run-c910.sh: no simulator at $SIM (build it with .github/scripts/install-c910.sh)" >&2
+  echo "run-c910.sh: no simulator at $SIM (set C910_SNAPSHOT; build with .github/scripts/install-c910.sh)" >&2
   exit 2
 }
 SIM_ABS="$(readlink -f "$SIM")"
 
+# The testbench reads mem.pat from, and writes run_case.report to, its working directory.
 WORK="${ELF%.elf}.c910run"
 rm -rf "$WORK"
 mkdir -p "$WORK" || exit 2
 
-# The image is a flat binary starting at address 0, the reset vector, emitted as one
-# 32-bit hex word per line with byte 0 in the top nibble pair.
+# mem.pat holds one 32-bit hex word per line with the lowest address in the most
+# significant byte, so hexdump the flat image in address order.
 "$CROSS-objcopy" -O binary --gap-fill 0 "$ELF" "$WORK/image.bin" || exit 2
 od -An -tx1 -v -w4 "$WORK/image.bin" | tr -d ' ' | grep -v '^$' >"$WORK/mem.pat" || exit 2
 rm -f "$WORK/image.bin"
@@ -91,6 +71,7 @@ out="$(cd "$WORK" && timeout --foreground -k 5 "$TIMEOUT" "$SIM_ABS" 2>&1)"
 simrc=$?
 printf '%s\n' "$out"
 
+# Vtop always exits 0. The testbench writes run_case.report on the halt store.
 report=""
 [ -f "$WORK/run_case.report" ] && report="$(cat "$WORK/run_case.report")"
 
@@ -108,6 +89,8 @@ others=$(printf '%s' "$out" | grep -c 'RVCP-SUMMARY: TEST \(FAILED\|SIGRUN\)' ||
 if [ "$others" -ne 0 ]; then
   rc=1
 fi
+# The testbench console occasionally drops a character, so a missing PASSED line is
+# only reported.
 passes=$(printf '%s' "$out" | grep -c 'RVCP-SUMMARY: TEST PASSED' || true)
 if [ "$rc" -eq 0 ] && [ "$passes" -eq 0 ]; then
   echo "run-c910.sh: run_case.report says TEST PASS but no intact RVCP-SUMMARY line reached the console (dropped console byte)" >&2

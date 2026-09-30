@@ -95,22 +95,23 @@
     },
     // These settings control whether the specified exceptions
     // cause information to be written into the appropriate
-    // `xtval` registers.
+    // `xtval` registers. Must agree with REPORT_*_IN_MTVAL_* in the UDB config.
+    //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/design/dec/eh2_dec_tlu_ctl.sv#L1469-L1481
     "xtval_nonzero": {
       "illegal_instruction": true,
       "virtual_instruction": false,
       "load_guest_page_fault": false,
       "samo_guest_page_fault": false,
       "fetch_guest_page_fault": false,
-      "software_breakpoint": false,
+      "software_breakpoint": true,
       "hardware_breakpoint": false,
-      "load_address_misaligned": false,
+      "load_address_misaligned": true,
       "load_access_fault": true,
       "load_page_fault": false,
-      "samo_address_misaligned": false,
+      "samo_address_misaligned": true,
       "samo_access_fault": true,
       "samo_page_fault": false,
-      "fetch_address_misaligned": false,
+      "fetch_address_misaligned": true,
       "fetch_access_fault": true,
       "fetch_page_fault": false,
       "software_check": false,

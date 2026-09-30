@@ -103,10 +103,14 @@ params:
   TRAP_ON_UNIMPLEMENTED_CSR: true
   TRAP_ON_ILLEGAL_WLRL: false
 
-  # MTVAL reporting. !VERIFIED for EH2 in detail: the PRM has no section enumerating
-  # which exceptions write mtval. These values follow the RISC-V defaults implemented
-  # by the TLU (design/dec/dec_tlu_ctl.sv); mismatches surface as Sm discrepancies.
-  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
+  # MTVAL reporting. The TLU writes the PC for ebreak and instruction access faults, the
+  # encoding for illegal instructions, the access address for load/store misaligned and
+  # access faults, and zero otherwise. The core raises no instruction-address-misaligned
+  # exception, since C is always enabled.
+  #   Quote: "assign mtval_capture_pc_wb = exc_or_int_valid_wb & (ebreak_wb | (inst_acc_wb & ~inst_acc_second_wb) | mepc_trigger_hit_sel_pc_wb) & ~take_nmi_wb;"
+  #   Quote: "assign mtval_capture_lsu_wb = exc_or_int_valid_wb & lsu_exc_valid_wb & ~take_nmi_wb;"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/design/dec/eh2_dec_tlu_ctl.sv#L1469-L1481
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true
   REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
   REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true

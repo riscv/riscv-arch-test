@@ -1,5 +1,5 @@
 # Copyright (c) 2026, Harvey Mudd College
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 name: hazard3-rv32imacb-u-pmp
 compiler_exe: riscv64-unknown-elf-gcc # executable name on $PATH or full path to executable
 objdump_exe: riscv64-unknown-elf-objdump # executable name on $PATH or full path to executable, optional

@@ -1,27 +1,17 @@
-// Sail reference-model configuration for the Hazard3 core (the RP2350 CPU).
-//
-// Written against Wren6991/Hazard3 commit ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6 (develop).
-// Every non-obvious value cites the supporting text plus a permalink pinned to that commit.
-// Must stay consistent with hazard3-rv32imacb-u-pmp.yaml and link.ld.
+// Sail configuration for Hazard3 at Wren6991/Hazard3 commit
+// ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6. Must agree with hazard3-rv32imacb-u-pmp.yaml.
 {
   "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.14.1/sail_riscv_config_schema.json",
   "base": {
     "xlen": 32,
     "E": false,
     "writable_misa": false,
-    // menvcfg / menvcfgh are decoded but every field is tied to 0, so FIOM is not writable.
-    //   Quote: "MENVCFG is seemingly mandatory as of M-mode v1.12, if U-mode is implemented.
-    //   All of its fields are tied to 0 in our implementation."
-    //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/hdl/hazard3_csr.v#L810-L820
+    // menvcfg is read-only zero.
     "writable_fiom": false,
-    // Hazard3 hardwires mhpmcounter3..31 and mhpmevent3..31 to 0, so no HPM counter exists.
-    //   Quote: "==== mhpmcounter3...31 / Address: `0xb03` through `0xb1f` / Hardwired to 0."
-    //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/csr.adoc#L392-L394
     "writable_hpm_counters": {
       "len": 32,
       "value": "0x0000_0000"
     },
-    // Hazard3 has no S-mode, so scounteren does not exist and every bit is read-only zero.
     "scounteren_writable_bits": {
       "len": 32,
       "value": "0x0"
@@ -32,13 +22,6 @@
     // modes, are read-only zero. A set bit specifies that the
     // corresponding bit of `mcounteren` is writable, otherwise the
     // bit is read-only zero.
-    // mcounteren exists because U-mode does. CY (0), TM (1) and IR (2) are writable; TM has
-    // no hardware effect because there is no time CSR, but the field still exists so that
-    // M-mode software can decide to emulate U-mode time reads. Bits 3..31 are RES0 because
-    // no HPM counter exists.
-    //   Quote: "| 31:3 | - | RES0 | 2 | `ir` | ... | 1 | `tm` | No hardware effect, as the
-    //   `time`/`timeh` CSRs are not implemented. However, this field still exists ... | 0 | `cy` |"
-    //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/csr.adoc#L302-L306
     "mcounteren_writable_bits": {
       "len": 32,
       "value": "0x7"
@@ -57,19 +40,8 @@
     // can range from a minimum of 2 upto a maximum of 24. If
     // unaligned values are written to these CSRs, the lowest bits
     // will be zeroed to respect the specified alignment.
-    // Hazard3 reads mtvec back as {mtvec[31:2], 1'b0, irq_vector_enable}: BASE keeps all 30
-    // bits (base_alignment 2) in both modes, mode bit 1 is hardwired 0, and both Direct and
-    // Vectored are supported. Must agree with MTVEC_MODES and MTVEC_BASE_ALIGNMENT_* in the
-    // UDB config.
-    //   Quote: "rdata = { mtvec[XLEN-1:2],  // BASE  1'b0, // Reserved mode bit gets WARL'd to 0
-    //   irq_vector_enable // MODE is vectored (2'h1) or direct (2'h0) };"
-    //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/hdl/hazard3_csr.v#L864-L872
-    // NOTE: in Vectored mode Hazard3 ORs the offset into BASE rather than adding it. Sail
-    // adds. They agree whenever BASE is aligned to the rounded-up table size, which ACT's
-    // 64-byte-aligned M-mode trampoline satisfies.
-    //   Quote: "In Vectored mode, this is _OR'd_ with the trap offset ... so the table must be
-    //   aligned to its total size, rounded up to a power of 2."
-    //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/csr.adoc#L202
+    // Hazard3 ORs the vectored offset into BASE rather than adding it. The two agree
+    // because ACT aligns its M-mode trampoline to 64 bytes.
     "mtvec": {
       "direct": {
         "supported": true,
@@ -104,20 +76,12 @@
       }
     },
     "medeleg": {
-      // medeleg is not implemented at all: no S-mode and no U-mode traps.
-      //   Quote: "==== medeleg / Address: `0x302` / Unimplemented, as neither U-mode traps
-      //   nor S-mode are supported. Access will cause an illegal instruction exception."
-      //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/csr.adoc#L141-L145
       "delegatable_bits": {
         "len": 64,
         "value": "0x0000_0000_0000_0000"
       }
     },
     "mideleg": {
-      // mideleg is likewise unimplemented.
-      //   Quote: "==== mideleg / Address: `0x303` / Unimplemented, as neither U-mode traps
-      //   nor S-mode are supported."
-      //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/csr.adoc#L148-L152
       "delegatable_bits": {
         "len": "xlen",
         "value": "0x0000_0000"
@@ -126,9 +90,7 @@
     // These settings control whether the specified exceptions
     // cause information to be written into the appropriate
     // `xtval` registers.
-    // mtval is hardwired to 0 for every trap cause on Hazard3, so no exception writes it.
-    //   Quote: "==== mtval / Address: `0x343` / Hardwired to 0."
-    //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/csr.adoc#L277-L281
+    // mtval is read-only zero.
     "xtval_nonzero": {
       "illegal_instruction": false,
       "virtual_instruction": false,
@@ -197,21 +159,9 @@
     "asidlen": 9,
     "vmidlen": 7,
     "pmp": {
-      // PMP_GRAIN = 0 in config_act.vh, i.e. a 4-byte granule, which is also the RTL default
-      // and is what makes NA4 available.
-      //   Quote: "This is the _G_ parameter in the privileged spec ... If _G_ > 0, `pmcfg.a`
-      //   cannot be set to NA4 ... Default value: `0`"
-      //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/configuration_and_integration.adoc#L571-L585
       "grain": 0,
-      // 16 regions, all dynamically configurable (PMP_HARDWIRED is all-zeroes).
-      //   Quote: "Physical memory protection (PMP) with up to 16 regions"
-      //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/introduction.adoc#L24
       "count": 16,
       "usable_count": 16,
-      // TOR is a build-time option that the CSR chapter describes as unsupported because it
-      // documents the default build; config_act.vh sets PMP_MATCH_TOR = 1, so it IS supported
-      // here. See the PMP_TOR_SUPPORTED comment in the UDB yaml for both citations.
-      //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/hdl/hazard3_pmp.v#L180
       "tor_supported": true,
       "na4_supported": true,
       "napot_supported": true
@@ -220,16 +170,6 @@
     // checked before address translation. `misaligned_exceptions` in
     // `regions` is checked after address translation.
     "misaligned": {
-      // Hazard3 has no misaligned load/store support. Every bus access is naturally aligned
-      // and a misaligned address raises an alignment exception (cause 4 / 6), never an
-      // access fault. This applies to ordinary loads and stores, to lr.w/sc.w and to AMOs.
-      //   Quote: "All Hazard3 bus accesses are naturally aligned. That is, address modulo
-      //   access size is always zero; `HADDR % (1 << HSIZE) == 0`"
-      //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/bus_behaviour.adoc#L24
-      //   Quote: "|EXTENSION_A && x_unaligned_addr &&  d_memop_is_amo      ? EXCEPT_STORE_ALIGN :
-      //   ... x_unaligned_addr &&  x_memop_write ? EXCEPT_STORE_ALIGN :
-      //   x_unaligned_addr && !x_memop_write ? EXCEPT_LOAD_ALIGN :"
-      //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/hdl/hazard3_core.v#L1121-L1125
       "exceptions": {
         "load_store": { "Some": "AlignmentException" },
         "vector": { "None": null },
@@ -246,11 +186,8 @@
       "value": "0x1000"
     },
     "regions": [
-      // MMIO. This region exists only for the Sail reference build: tests/env/sail_macros.h
-      // redefines RVMODEL_MTIME_ADDRESS / RVMODEL_MTIMECMP_ADDRESS / the interrupt macros to
-      // Sail's own CLINT and simple-interrupt-generator, so the DUT's 0xC000_0000 IO window
-      // never appears in the reference ELF and does not need a region here. Laid out to match
-      // config/sail/sail-rv32-max so the reference behaviour is identical.
+      // Sail's CLINT and interrupt generator, which tests/env/sail_macros.h uses in the
+      // reference build in place of the testbench IO registers.
       {
         "base": {
           "len": 64,
@@ -285,12 +222,7 @@
         },
         "include_in_device_tree": false
       },
-      // Main memory: the whole 16 MB the Hazard3 testbench backs at 0x8000_0000. Code, data
-      // and the signature all live here, and it must match RAM_ORIGIN/RAM_LENGTH in link.ld.
-      // Nothing above 0x80FF_FFFF is backed, which is why 0x9000_0000 is usable as
-      // RVMODEL_ACCESS_FAULT_ADDRESS in both the DUT and the reference model.
-      //   Quote: "#define MEM_BASE 0x80000000"  /  "#define MEM_SIZE (16 * 1024 * 1024)"
-      //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/test/sim/tb_common/include/tb_constants.h#L10-L11
+      // Must match RAM_ORIGIN and RAM_LENGTH in link.ld.
       {
         "base": {
           "len": 64,
@@ -315,10 +247,6 @@
             "amo": "AlignmentException",
             "lrsc": "AlignmentException"
           },
-          // Hazard3 implements the full ratified A set (swap/add/and/or/xor/min/max and
-          // unsigned variants) but not Zacas, so AMOArithmetic is the right level.
-          //   Quote: "|`amoswap.w rd, rs2, (rs1)` | ... |`amomaxu.w rd, rs2, (rs1)` |"
-          //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/instruction_timings.adoc#L94-L102
           "atomic_support": "AMOArithmetic",
           "misaligned_atomicity_granule_size_exp": 0,
           "vector_misaligned_atomicity_granule_size_exp": 0,
@@ -332,41 +260,17 @@
     ]
   },
   "platform": {
-    // mvendorid / marchid / mimpid as the RTL reports them. mvendorid is all-zeroes because
-    // config_act.vh sets MVENDORID_VAL to 0 (the manual permits all-zeroes); marchid is the
-    // registered open-source architecture ID 27; mimpid encodes prerelease v1.2.0 with the
-    // testbench's eco_version of 0xa, giving 0x810200a0 = 2164392096.
-    //   Quote: "MARCHID: ... rdata = 32'd27;"
-    //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/hdl/hazard3_csr.v#L763-L767
-    //   Quote: "| 27:24 | `major` | ... | 23:16 | `minor` | ... | 15:8 | `patch` | ... | 7:4 | `eco` |"
-    //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/csr.adoc#L51-L57
     "vendorid": 0,
     "archid": 27,
     "impid": 2164392096,
     "hartid": 0,
-    // Hazard3 has no caches, so this only has to be a legal value; Zicbo* are not claimed.
     "cache_block_size_exp": 6,
     "reservation": {
-      // The testbench's AHB5 global monitor compares reservation addresses masked to an
-      // aligned 64-byte granule, so the reservation set is 64 bytes (exp 6).
-      //   Quote: "#define RESERVATION_ADDR_MASK (0xffffffc0u)"
-      //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/test/sim/tb_common/include/tb_constants.h#L13
+      // The testbench's global exclusive monitor compares addresses masked to 64 bytes.
       "reservation_set_size_exp": 6,
-      // An sc.w anywhere inside the reserved 64 bytes succeeds; Hazard3's own local monitor
-      // is a single flag with no address, so it never adds an exact-address requirement.
-      //   Quote: "mw_local_exclusive_reserved <= bus_dph_exokay_d && !bus_dph_err_d;"
-      //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/hdl/hazard3_core.v#L1509
       "require_exact_reservation_addr": false,
-      // The testbench clears only *other* masters' reservations on a plain store, and
-      // Hazard3's local flag is not cleared by a store at all.
-      //   Quote: "// Non-exclusive write still clears others' reservations"
-      //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/test/sim/tb_common/tb_memio.cpp#L66
       "invalidate_on_same_hart_store": false
     },
-    // All three standard machine interrupts exist: mip.MSIP, mip.MTIP and mip.MEIP are the
-    // only writable bits of mip and are driven from core input pins.
-    //   Quote: "| 11 | `meip` | ... | 7 | `mtip` | ... | 3 | `msip` |"
-    //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/csr.adoc#L187-L191
     "interrupts": {
       "machine": {
         "software": { "supported": true },
@@ -374,11 +278,6 @@
         "timer": { "supported": true }
       }
     },
-    // The CLINT and the simple interrupt generator belong to the Sail reference model only.
-    // The Hazard3 testbench's own timer and interrupt-injection registers live at
-    // 0xC000_0100 / 0xC000_0010 / 0xC000_0020 and are named in rvmodel_macros.h;
-    // tests/env/sail_macros.h replaces them with these addresses for the reference build,
-    // so the two never have to agree. Laid out to match config/sail/sail-rv32-max.
     "clint": {
       "supported": true,
       "base": 33554432,
@@ -390,15 +289,7 @@
     },
     "clock_frequency": 1000000000,
     "instructions_per_tick": 2,
-    // WFI stalls until an interrupt is pending; it is not a no-op.
-    //   Quote: "Privileged instructions `ecall`, `ebreak`, `mret` and `wfi`"
-    //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/introduction.adoc#L23
     "wfi_is_nop": false,
-    // WFI is legal in U-mode unless mstatus.TW is set, which is the standard behaviour.
-    //   Quote: "| 21 | `tw` | Timeout wait. Only present if U-mode is supported. When 1,
-    //   attempting to execute a WFI instruction in U-mode will instantly cause an illegal
-    //   instruction exception."
-    //   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/csr.adoc#L126
     "wfi_available_to_user_mode": true,
     "max_time_to_wait": 1000
   },
@@ -651,7 +542,6 @@
     "Zbkb": {
       "supported": true
     },
-    // Zbkc is an instruction subset of Zbc and is present whenever Zbc is (see the UDB yaml).
     "Zbkc": {
       "supported": true
     },

@@ -59,13 +59,13 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         `endif
     }
 
-    // mideleg written all 0s or all 1s in every delegable field.
+    // mideleg delegating none or all of the S-level interrupts.
     // mideleg does not exist without S, so it becomes a trivial always-hit bin that leaves the
     // crosses below intact.
     `ifdef S_SUPPORTED
         mideleg_both: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "mideleg")[15:0] {
-            // Sail does not let M-level interrupts be delegated (mideleg MEI, MTI, and MSI stay 0),
-            // so bits 11, 7, and 3 are don't care in ones.
+            // Whether M-level interrupts can be delegated is implementation-defined, so the tests
+            // leave mideleg bits 11, 7, and 3 clear and ones does not constrain them.
             `ifdef SSCOFPMF_SUPPORTED
                 wildcard bins ones  = {16'b??1???1???1???1?}; // LCOFI, SEI, STI, SSI delegated
                 wildcard bins zeros = {16'b??0?0?0?0?0?0?0?};

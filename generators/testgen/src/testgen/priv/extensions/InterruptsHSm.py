@@ -95,22 +95,24 @@ def _mcsr_tests(test_data: TestData) -> list[str]:
 
 
 def _mideleg_mip_tests(test_data: TestData, mode: str) -> list[str]:
-    """With mideleg = 0 or 1s, enter VS or VU mode with one M-level or S-level interrupt pending.
+    """With mideleg delegating no S-level interrupt or all of them, enter VS or VU mode with one M-level or S-level
+    interrupt pending.
 
     M-mode takes the M-level interrupts, and the S-level ones unless mideleg delegates them, in which case
-    HS-mode takes them.
+    HS-mode takes them.  Only the S-level bits of mideleg are written: an implementation may make the M-level bits
+    writable, which would delegate the M-level interrupts too.
     """
     coverpoint = f"cp_mideleg_mip_{mode.lower()}"
     tmp_reg = test_data.int_regs.get_register()
     lines = [
         comment_banner(
             coverpoint,
-            f"With mstatus.MIE = 0, mie = 1s and mideleg = 0/1s, raise MEI, MTI, MSI, SEI, STI or SSI and enter\n"
-            f"{mode}-mode.  M-mode takes the interrupt, or HS-mode when mideleg delegates it",
+            "With mstatus.MIE = 0, mie = 1s and mideleg.SEI/STI/SSI = 0/1, raise MEI, MTI, MSI, SEI, STI or SSI\n"
+            f"and enter {mode}-mode.  M-mode takes the interrupt, or HS-mode when mideleg delegates it",
         ),
         "csrci mstatus, MSTATUS_MIE",
     ]
-    for deleg in (0, -1):
+    for deleg in ("0", "MIP_S_MASK"):
         for int_type in ["MEI", "MTI", "MSI", "SEI", "STI", "SSI"]:
             macro = int_macro[int_type]
             guard = guard_symbol(int_type)
@@ -124,7 +126,7 @@ def _mideleg_mip_tests(test_data: TestData, mode: str) -> list[str]:
                     f"RVTEST_SET_{macro}_INT_M",
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
                     test_data.add_testcase(
-                        f"mideleg_{'ones' if deleg else 'zeros'}_{int_type.lower()}", coverpoint, _CG
+                        f"mideleg_{'zeros' if deleg == '0' else 'ones'}_{int_type.lower()}", coverpoint, _CG
                     ),
                     f"RVTEST_TSBI_GOTO_{mode}MODE",
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",

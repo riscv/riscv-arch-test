@@ -4,17 +4,13 @@
 
 ci_enabled: true
 
-# olofk/serv @ f200eb2e:
-#   Zicsr         mepc bit 0 is writable; the spec requires it to read zero.
-#   Zifencei      fence.i is not decoded as a fence; it executes as a halfword load and can take a
-#                 load-address-misaligned exception.
-#   Sm            No illegal-instruction exceptions; mstatus.MPIE not implemented; mie is
-#                 write-only; mip, misa, mcycle, minstret, mvendorid, marchid, mimpid are absent
-#                 and alias onto other CSRs.
-#   ExceptionsSm  No illegal-instruction exception (cause 2).
-#   ExceptionsZc  No illegal-instruction exception (cause 2).
-#   InterruptsSm  mie is write-only, mip aliases onto mscratch and mstatus.MPIE is not implemented.
-exclude_extensions: "Zicsr,Zifencei,Sm,ExceptionsSm,ExceptionsZc,InterruptsSm"
+# DUT bugs at olofk/serv f200eb2e; paths are under https://github.com/olofk/serv/blob/f200eb2e/
+#   Zicsr         mepc bit 0 is writable: rtl/serv_rf_if.v#L75
+#   Zifencei      fence.i executes as a halfword load from rs1 + imm and can trap: rtl/serv_decode.v#L88
+#   Sm            Unimplemented CSRs alias onto implemented ones; mstatus.MPIE and mie read 0: rtl/serv_decode.v#L168
+#   ExceptionsSm  No illegal-instruction exception: README.md#L209
+#   ExceptionsZc  No illegal-instruction exception: README.md#L209
+exclude_extensions: "Zicsr,Zifencei,Sm,ExceptionsSm,ExceptionsZc"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-serv.sh"

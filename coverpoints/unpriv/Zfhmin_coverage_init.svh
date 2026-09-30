@@ -17,12 +17,12 @@
     Zfhmin_fmv_x_h_cg = new(); Zfhmin_fmv_x_h_cg.set_inst_name("obj_Zfhmin_fmv_x_h");
     Zfhmin_fsh_cg = new(); Zfhmin_fsh_cg.set_inst_name("obj_Zfhmin_fsh");
 `ifdef D_SUPPORTED
-    Zfhmin_D_fcvt_d_h_cg = new(); Zfhmin_D_fcvt_d_h_cg.set_inst_name("obj_Zfhmin_D_fcvt_d_h");
-    Zfhmin_D_fcvt_h_d_cg = new(); Zfhmin_D_fcvt_h_d_cg.set_inst_name("obj_Zfhmin_D_fcvt_h_d");
-    Zfhmin_D_fcvt_h_s_cg = new(); Zfhmin_D_fcvt_h_s_cg.set_inst_name("obj_Zfhmin_D_fcvt_h_s");
-    Zfhmin_D_fcvt_s_h_cg = new(); Zfhmin_D_fcvt_s_h_cg.set_inst_name("obj_Zfhmin_D_fcvt_s_h");
-    Zfhmin_D_flh_cg = new(); Zfhmin_D_flh_cg.set_inst_name("obj_Zfhmin_D_flh");
-    Zfhmin_D_fmv_h_x_cg = new(); Zfhmin_D_fmv_h_x_cg.set_inst_name("obj_Zfhmin_D_fmv_h_x");
-    Zfhmin_D_fmv_x_h_cg = new(); Zfhmin_D_fmv_x_h_cg.set_inst_name("obj_Zfhmin_D_fmv_x_h");
-    Zfhmin_D_fsh_cg = new(); Zfhmin_D_fsh_cg.set_inst_name("obj_Zfhmin_D_fsh");
+    ZfhminD_fcvt_d_h_cg = new(); ZfhminD_fcvt_d_h_cg.set_inst_name("obj_ZfhminD_fcvt_d_h");
+    ZfhminD_fcvt_h_d_cg = new(); ZfhminD_fcvt_h_d_cg.set_inst_name("obj_ZfhminD_fcvt_h_d");
+    ZfhminD_fcvt_h_s_cg = new(); ZfhminD_fcvt_h_s_cg.set_inst_name("obj_ZfhminD_fcvt_h_s");
+    ZfhminD_fcvt_s_h_cg = new(); ZfhminD_fcvt_s_h_cg.set_inst_name("obj_ZfhminD_fcvt_s_h");
+    ZfhminD_flh_cg = new(); ZfhminD_flh_cg.set_inst_name("obj_ZfhminD_flh");
+    ZfhminD_fmv_h_x_cg = new(); ZfhminD_fmv_h_x_cg.set_inst_name("obj_ZfhminD_fmv_h_x");
+    ZfhminD_fmv_x_h_cg = new(); ZfhminD_fmv_x_h_cg.set_inst_name("obj_ZfhminD_fmv_x_h");
+    ZfhminD_fsh_cg = new(); ZfhminD_fsh_cg.set_inst_name("obj_ZfhminD_fsh");
 `endif

@@ -357,6 +357,25 @@ def _parse_testplan_groups(csv_path: Path, known_extensions: frozenset[str] | No
     return groups
 
 
+def _check_cg_prefixes(csv_path: Path, extra_extension_groups: list[tuple[str, ...]]) -> None:
+    """Check that REQUIRED_EXTENSIONS covergroup prefixes, <suite><ext>..., are unique and not other testplans."""
+    other_testplans = {path.stem for path in csv_path.parent.glob("*.csv")} - {csv_path.stem}
+    prefixes: dict[str, tuple[str, ...]] = {}
+    for extensions in sorted(extra_extension_groups):
+        prefix = _cg_prefix(csv_path.stem, extensions)
+        if prefix in other_testplans:
+            raise ValueError(
+                f"{csv_path}: {REQUIRED_EXTENSIONS_COLUMN} {':'.join(extensions)!r} names covergroups "
+                f"{prefix!r}, which is also the testplan {prefix}.csv"
+            )
+        if prefix in prefixes:
+            raise ValueError(
+                f"{csv_path}: {REQUIRED_EXTENSIONS_COLUMN} {':'.join(extensions)!r} and "
+                f"{':'.join(prefixes[prefix])!r} both name covergroups {prefix!r}"
+            )
+        prefixes[prefix] = extensions
+
+
 def _parse_testplan_csv(csv_path: Path) -> Testplan:
     """Parse a testplan CSV without REQUIRED_EXTENSIONS rows into (instruction, type) -> coverpoints."""
     return _parse_testplan_groups(csv_path)[()]
@@ -385,6 +404,7 @@ def read_testplans(testplan_dir: Path) -> tuple[dict[str, Testplan], dict[str, T
         if groups:
             if _is_vector(arch) or arch == "I":  # E reuses the I testplan without these rows
                 raise ValueError(f"{csv_path}: {REQUIRED_EXTENSIONS_COLUMN} is not supported in this testplan")
+            _check_cg_prefixes(csv_path, list(groups))
             extra_testplans[arch] = groups
 
         # Duplicate I testplan for E
@@ -661,7 +681,7 @@ def _gen_instrs(
 ) -> tuple[str, str]:
     """Generate covergroup definitions and init content for matching instructions.
 
-    cg_prefix replaces arch in covergroup names (e.g. "Zfhmin_D" for rows that also require D).
+    cg_prefix replaces arch in covergroup names (e.g. "ZfhminD" for rows that also require D).
     Returns (covergroup_content, init_content).
     """
     name = cg_prefix or arch
@@ -744,8 +764,8 @@ def _extension_guards(extra_extensions: tuple[str, ...]) -> tuple[str, str]:
 
 
 def _cg_prefix(arch: str, extra_extensions: tuple[str, ...]) -> str:
-    """Covergroup name prefix for rows that require extra_extensions, e.g. Zfhmin_D."""
-    return "_".join((arch, *extra_extensions))
+    """Covergroup name prefix for rows that require extra_extensions, e.g. ZfhminD."""
+    return "".join((arch, *extra_extensions))
 
 
 def _gen_covergroup_samples(

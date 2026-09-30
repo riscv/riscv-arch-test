@@ -16,7 +16,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "{Zfhmin_flh_cg, Zfhmin_fmv_h_x_cg, Zfhmin_fcvt_h_s_cg}/cp_NaNBox_S_H",
-        "{Zfhmin_D_fcvt_h_d_cg, Zfhmin_D_fcvt_h_s_cg, Zfhmin_D_flh_cg, Zfhmin_D_fmv_h_x_cg}/cp_NaNBox_D_H",
+        "{ZfhminD_fcvt_h_d_cg, ZfhminD_fcvt_h_s_cg, ZfhminD_flh_cg, ZfhminD_fmv_h_x_cg}/cp_NaNBox_D_H",
       ]
   # A narrower n-bit transfer, n&lt;FLEN, into the f registers will create a valid
   # NaN-boxed value
@@ -24,7 +24,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "{Zfhmin_flh_cg, Zfhmin_fmv_h_x_cg}/cp_NaNBox_S_H",
-        "{Zfhmin_D_flh_cg, Zfhmin_D_fmv_h_x_cg}/cp_NaNBox_D_H",
+        "{ZfhminD_flh_cg, ZfhminD_fmv_h_x_cg}/cp_NaNBox_D_H",
       ]
   # A narrower n-bit transfer out of the floating-point registers will transfer the
   # lower n bits of the register ignoring the upper FLEN-n bits
@@ -33,8 +33,8 @@ normative_rule_definitions:
       [
         "Zfhmin_fmv_x_h_cg/cp_fs1_badNB_S_H",
         "Zfhmin_fsh_cg/cp_fs2_badNB_S_H",
-        "Zfhmin_D_fmv_x_h_cg/cp_fs1_badNB_D_H",
-        "Zfhmin_D_fsh_cg/cp_fs2_badNB_D_H",
+        "ZfhminD_fmv_x_h_cg/cp_fs1_badNB_D_H",
+        "ZfhminD_fsh_cg/cp_fs2_badNB_D_H",
       ]
   # Apart from transfer operations described in the previous paragraph, all other
   # floating-point operations on narrower n-bit operations, n&lt;FLEN, check if the
@@ -45,7 +45,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Zfhmin_fcvt_s_h_cg/cp_fs1_badNB_S_H",
-        "{Zfhmin_D_fcvt_d_h_cg, Zfhmin_D_fcvt_s_h_cg}/cp_fs1_badNB_D_H",
+        "{ZfhminD_fcvt_d_h_cg, ZfhminD_fcvt_s_h_cg}/cp_fs1_badNB_D_H",
       ]
   # For half-precision floating-point, the canonical NaN corresponds to the pattern
   # 0x7e00.
@@ -54,7 +54,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Zfhmin_fcvt_h_s_cg/cp_fs1_edges",
-        "Zfhmin_D_fcvt_h_d_cg/cr_fs1_edges_frm_D",
+        "ZfhminD_fcvt_h_d_cg/cr_fs1_edges_frm_D",
       ]
   # New 16-bit variants of LOAD-FP and STORE-FP instructions are added, encoded with a
   # new value for the funct3 width field.
@@ -62,8 +62,8 @@ normative_rule_definitions:
     coverpoint:
       [
         "{Zfhmin_flh_cg, Zfhmin_fsh_cg}/{cp_rs1_nx0, cp_imm_edges}",
-        "Zfhmin_D_flh_cg/cp_NaNBox_D_H",
-        "Zfhmin_D_fsh_cg/cp_fs2_badNB_D_H",
+        "ZfhminD_flh_cg/cp_NaNBox_D_H",
+        "ZfhminD_fsh_cg/cp_fs2_badNB_D_H",
       ]
   # insn:flh[] and insn:fsh[] are only guaranteed to execute atomically if the effective
   # address is naturally aligned.
@@ -78,8 +78,8 @@ normative_rule_definitions:
       [
         "Zfhmin_flh_cg/{cp_memval_fp_half, cp_NaNBox_S_H}",
         "Zfhmin_fsh_cg/{cp_fs2_edges_H, cp_fs2_badNB_S_H}",
-        "Zfhmin_D_flh_cg/cp_NaNBox_D_H",
-        "Zfhmin_D_fsh_cg/cp_fs2_badNB_D_H",
+        "ZfhminD_flh_cg/cp_NaNBox_D_H",
+        "ZfhminD_fsh_cg/cp_fs2_badNB_D_H",
       ]
   # insn:fcvt.s.h[] or insn:fcvt.h.s[] converts a half-precision floating-point number
   # to a single-precision floating-point number, or vice-versa, respectively
@@ -88,8 +88,8 @@ normative_rule_definitions:
       [
         "Zfhmin_fcvt_h_s_cg/{cp_fd, cp_fs1_edges, cp_frm_2}",
         "Zfhmin_fcvt_s_h_cg/cp_fs1_edges_H",
-        "Zfhmin_D_fcvt_h_s_cg/cp_NaNBox_D_H",
-        "Zfhmin_D_fcvt_s_h_cg/cp_fs1_badNB_D_H",
+        "ZfhminD_fcvt_h_s_cg/cp_NaNBox_D_H",
+        "ZfhminD_fcvt_s_h_cg/cp_fs1_badNB_D_H",
       ]
   # If the ext:d[] extension is present, insn:fcvt.d.h[] or insn:fcvt.h.d[] converts a
   # half-precision floating-point number to a double-precision floating-point number, or
@@ -97,8 +97,8 @@ normative_rule_definitions:
   - name: fcvt-d-h_fcvt-h-d_op
     coverpoint:
       [
-        "Zfhmin_D_fcvt_d_h_cg/{cp_fd, cp_fs1_edges_H}",
-        "Zfhmin_D_fcvt_h_d_cg/{cp_fd, cr_fs1_edges_frm_D}",
+        "ZfhminD_fcvt_d_h_cg/{cp_fd, cp_fs1_edges_H}",
+        "ZfhminD_fcvt_h_d_cg/{cp_fd, cr_fs1_edges_frm_D}",
       ]
   # If the ext:q[] extension is present, insn:fcvt.q.h[] or insn:fcvt.h.q[] converts a
   # half-precision floating-point number to a quad-precision floating-point number, or
@@ -113,7 +113,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Zfhmin_fmv_x_h_cg/{cp_rd, cp_fs1, cp_fs1_edges_H}",
-        "Zfhmin_D_fmv_x_h_cg/cp_fs1_badNB_D_H",
+        "ZfhminD_fmv_x_h_cg/cp_fs1_badNB_D_H",
       ]
   # insn:fmv.h.x[] moves the half-precision value encoded in the IEEE 754-2008 encoding
   # from the lower 16 bits of integer register rs1 to the floating-point register rd,
@@ -122,7 +122,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Zfhmin_fmv_h_x_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_NaNBox_S_H}",
-        "Zfhmin_D_fmv_h_x_cg/cp_NaNBox_D_H",
+        "ZfhminD_fmv_h_x_cg/cp_NaNBox_D_H",
       ]
   # insn:fmv.x.h[] and insn:fmv.h.x[] do not modify the bits being transferred; in
   # particular, the payloads of non-canonical NaNs are preserved.
@@ -136,7 +136,7 @@ normative_rule_definitions:
   # insn:fcvt.h.d[] instructions are also included. If the ext:q[] extension is present,
   # the insn:fcvt.q.h[] and insn:fcvt.h.q[] instructions are additionally included.
   - name: Zfhmin
-    # Representative coverpoints; also Zfhmin_{fmv_h_x, fcvt_s_h}_cg and Zfhmin_D_fcvt_{d_h, h_d}_cg.
+    # Representative coverpoints; also Zfhmin_{fmv_h_x, fcvt_s_h}_cg and ZfhminD_fcvt_{d_h, h_d}_cg.
     # fcvt.q.h and fcvt.h.q need a Q test suite.
     coverpoint:
       [

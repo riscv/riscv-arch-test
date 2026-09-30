@@ -170,7 +170,27 @@ def read_testplan(testplan_path: Path, known_extensions: Collection[str] | None 
                     required_extensions=required_extensions,
                 )
             )
+    check_name_prefixes(testplan_path, {instr.required_extensions for instr in instructions})
     return instructions
+
+
+def check_name_prefixes(testplan_path: Path, required_extensions: set[tuple[str, ...]]) -> None:
+    """Check that the names of REQUIRED_EXTENSIONS rows, <suite><ext>..., are unique and not other testplans."""
+    other_testplans = {path.stem for path in testplan_path.parent.glob("*.csv")} - {testplan_path.stem}
+    prefixes: dict[str, tuple[str, ...]] = {}
+    for extensions in sorted(ext for ext in required_extensions if ext):
+        prefix = "".join((testplan_path.stem, *extensions))
+        if prefix in other_testplans:
+            raise ValueError(
+                f"{testplan_path}: {REQUIRED_EXTENSIONS_COLUMN} {':'.join(extensions)!r} names tests and covergroups "
+                f"{prefix!r}, which is also the testplan {prefix}.csv"
+            )
+        if prefix in prefixes:
+            raise ValueError(
+                f"{testplan_path}: {REQUIRED_EXTENSIONS_COLUMN} {':'.join(extensions)!r} and "
+                f"{':'.join(prefixes[prefix])!r} both name tests and covergroups {prefix!r}"
+            )
+        prefixes[prefix] = extensions
 
 
 def expand_coverpoints(coverpoints: list[str]) -> list[str]:

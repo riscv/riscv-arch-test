@@ -251,6 +251,7 @@ def _clear_interrupt(code: int, mode: str, r1: int) -> list[str]:
         return [f"RVTEST_CLR_MEXT_INT_{flavor}"]
     raise ValueError(f"unsupported interrupt code {code}")
 
+
 # TODO: Remove when PR#2591 gets merged. (Same function)
 def _config_textra_trigger(reg: int, trig_num: int, trig_type: str, tdata3_lines: list[str], mode: str) -> list[str]:
     """Configure trig_num as trig_type with the given XLEN-guarded tdata3 lines, reusing each
@@ -264,6 +265,7 @@ def _config_textra_trigger(reg: int, trig_num: int, trig_type: str, tdata3_lines
     if trig_type == "mcontrol6":
         return _config_mcontrol6(reg, trig_num, 0x12345678, mode, xsl=0b010, select=1, tdata3=tdata3_lines)
     raise ValueError(f"unsupported textra trigger type: {trig_type}")
+
 
 # TODO: Remove when PR#2591 gets merged. (Same function)
 def _fire_textra_trigger(trig_type: str, mode: str, cfg_reg: int, addr_reg: int, data_reg: int) -> list[str]:
@@ -297,17 +299,9 @@ def _textra3_double_context(mhselect: int, mhvalue: int, sselect: int, svalue: i
     """tdata3 combining mhselect/mhvalue with sselect/svalue; sbytemask stays 0."""
     if xlen == 64:
         return (
-            (mhselect << 48)
-            | ((mhvalue & ((1 << 13) - 1)) << 51)
-            | ((svalue & ((1 << 34) - 1)) << 2)
-            | (sselect << 0)
+            (mhselect << 48) | ((mhvalue & ((1 << 13) - 1)) << 51) | ((svalue & ((1 << 34) - 1)) << 2) | (sselect << 0)
         )
-    return (
-        (mhselect << 23)
-        | ((mhvalue & ((1 << 6) - 1)) << 26)
-        | ((svalue & ((1 << 16) - 1)) << 2)
-        | (sselect << 0)
-    )
+    return (mhselect << 23) | ((mhvalue & ((1 << 6) - 1)) << 26) | ((svalue & ((1 << 16) - 1)) << 2) | (sselect << 0)
 
 
 def _load_textra_double_context_tdata3(
@@ -343,6 +337,7 @@ def _load_double_context_live_scontext(reg: int) -> list[str]:
         f"LI(x{reg}, 0x{_DOUBLE_CONTEXT_LIVE_SCONTEXT_RV32:x})",
         "#endif",
     ]
+
 
 # TODO: Remove when PR#2592 gets merged (Same function)
 def _load_value_or_lines(reg: int, val: int | str | list[str]) -> list[str]:
@@ -1971,10 +1966,6 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             for sselect in (0, 1):
                 for mhvalue_case, mhvalue_rv32, mhvalue_rv64 in _DOUBLE_CONTEXT_MHVALUE_CASES:
                     for svalue_case, svalue_rv32, svalue_rv64 in _DOUBLE_CONTEXT_SVALUE_CASES:
-                        expect_fire = (mhselect == 0 or mhvalue_case == "match") and (
-                            sselect == 0 or svalue_case == "match"
-                        )
-
                         for trig_type in ("icount", "itrigger", "etrigger", "mcontrol6"):
                             guards = [g.format(trig_num=trig_num) for g in _TEXTRA_TYPE_GUARDS[trig_type]]
                             lines.extend(guards)
@@ -2002,7 +1993,6 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                                         mode,
                                     ),
                                     *_fire_textra_trigger(trig_type, mode, dc_cfg_reg, dc_addr_reg, dc_data_reg),
-                                    # *_check_textra_result(dc_data_reg, dc_temp_reg, mode, test_data, expect_fire),
                                 ]
                             )
                             lines.extend(_disable_trigger(dc_cfg_reg, trig_num, mode))

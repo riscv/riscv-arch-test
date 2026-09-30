@@ -5,8 +5,11 @@
 # SsstrictSm: Sail does not implement the Smaia/Ssaia, Smcsrind, Smrnmi and Sdtrig CSRs that whisper implements (no issue filed)
 # Smstateen: Sail does not yet support the P1P13 bit (no issue filed)
 # SdtrigSm, SdtrigS, SdtrigU: Sdtrig is not yet implemented in Sail (https://github.com/riscv/sail-riscv/issues/222)
+# SsstateenH, SmstateenH (TODO: file issue): on RV32, VS-mode reads of hstateen0h succeed instead of raising
+#     virtual instruction, VU-mode reads of hedelegh with mstateen0.P1P13 = 1 raise illegal instead of virtual
+#     instruction, and the reserved bit 53 of hstateen0 is writable
 ci_enabled: true
-exclude_extensions: "SsstrictSm,Smstateen,SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions: "SsstrictSm,Smstateen,SdtrigSm,SdtrigS,SdtrigU,SsstateenH,SmstateenH"
 exclude_configs:
   - whisper-rv32-max-spike-ref
   - whisper-rv64-max-spike-ref

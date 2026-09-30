@@ -30,11 +30,9 @@ implemented_extensions:
   - { name: C, version: "= 2.0" }
   - { name: Zca, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }
-  # Zifencei is trivially satisfied: SERV has no instruction cache and no store buffer, and
-  # fetches through the same Wishbone port that stores use, so a store is visible to the very
-  # next fetch with no synchronisation.  SERV does not decode MISC-MEM at all -- it falls into
-  # the load path (co_dbus_en = ~opcode[2] & ~opcode[4]) and retires as a discarded byte/halfword
-  # load -- so fence.i neither traps nor needs to do anything.
+  # SERV has no instruction cache or store buffer, so a store is visible to the next fetch.  It
+  # does not decode MISC-MEM: fence.i executes as a halfword load from rs1 + imm, which can take a
+  # load-address-misaligned exception when the reserved rs1 and imm fields are nonzero.
   #   Quote: "wire co_dbus_en    = ~opcode[2] & ~opcode[4];"
   #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_decode.v#L88
   - { name: Zifencei, version: "= 2.0" }

@@ -155,15 +155,23 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
             and params.rs2val is not None
             and params.temp_reg is not None
         )
+        label_line = test_data.add_testcase(
+            f"prev_lr_{lr_insn} & address_difference_{addr_diff}", "cp_custom_sc_addresses"
+        )
+        # The sc may succeed when the reservation set is large enough to include its address
+        retry_reg = test_data.int_regs.get_register(exclude_regs=[0])
+        retry_start, retry_end = lrsc_retry_loop(test_data.current_testcase_label, retry_reg, params.rd)
         tc.code.extend(
             [
                 f"# Testcase: cp_custom_sc_addresses (address difference of {addr_diff})",
                 load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                 f"LA(x{params.temp_reg}, scratch) # rs1 = base address",
                 f"addi x{params.rs1}, x{params.temp_reg}, {addr_diff} # offset rs1 by {addr_diff}",
+                *retry_start,
                 f"{lr_insn} x0, (x{params.temp_reg}) # establish reservation",
-                test_data.add_testcase(f"prev_lr_{lr_insn} & address_difference_{addr_diff}", "cp_custom_sc_addresses"),
+                label_line,
                 f"{instr_name} x{params.rd}, x{params.rs2}, (x{params.rs1}) # perform operation",
+                *retry_end,
                 write_sigupd(params.rd, test_data),
                 f"LA(x{params.rs1}, scratch) # reload base address",
                 f"LREG x{params.temp_reg}, {addr_diff}(x{params.rs1}) # load stored value",
@@ -171,6 +179,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
                 "",
             ]
         )
+        test_data.int_regs.return_register(retry_reg)
         return_testcase_registers(test_data, params)
 
     return [test_data.end_test_chunk()]

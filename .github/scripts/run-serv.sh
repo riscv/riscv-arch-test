@@ -1,30 +1,17 @@
 #!/usr/bin/env bash
-# Run one ACT self-checking ELF on a verilated SERV core in the servant reference SoC.
-#
-# ACT4 tests self-check and report by printing to the console, so this runner does not
-# produce or compare a signature.  It converts the ELF to the word-per-line hex image that
-# servant_sim's +firmware loader expects, runs the testbench, and prints whatever the test
-# wrote to servile_mux's sim_sig_adr hook, which this port uses as the console.
-#
-# The stock bench/servant_tb.cpp ends in an unconditional exit(0), so a timeout, a hang and
-# a failing test all look like success to the shell.  The verdict therefore comes from the
-# console text: a run that does not reach the sim_halt_adr hook (which prints
-# "Test complete") fails, and so does one whose RVCP-SUMMARY line says TEST FAILED.
-#
-# Usage:  run-serv.sh [--snapshot DIR] [--timeout SEC] [--sim-timeout NS] [--keep] --elf <path>
-#   run_tests.py appends the ELF path as the final argument.
-# Env:    SERV_SNAPSHOT  directory holding obj/Vservant_sim (default: ~/repos/serv-builds/act)
-#         CROSS          toolchain prefix (default: riscv64-unknown-elf)
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+# Run one ACT self-checking ELF on SERV in the servant SoC under Verilator.
+# Usage: run-serv.sh [--snapshot DIR] [--timeout SEC] [--sim-timeout NS] [--keep] --elf <path>
+# Env:   SERV_SNAPSHOT  directory holding obj/Vservant_sim (default: ~/repos/serv-builds/act)
+#        CROSS          toolchain prefix (default: riscv64-unknown-elf)
 set -uo pipefail
 
 SNAPSHOT="${SERV_SNAPSHOT:-$HOME/repos/serv-builds/act}"
 CROSS="${CROSS:-riscv64-unknown-elf}"
-# Wall-clock ceiling.  SERV needs 32+ cycles per instruction, so an ACT test that takes a
-# reference model a second takes SERV minutes.
+# Wall-clock limit in seconds.  SERV takes 32+ cycles per instruction.
 TIMEOUT=3600
-# Simulated-time ceiling in ns, passed to the testbench as +timeout.  servant_tb advances
-# 31.25 ns per half cycle, so 16 ns of simulated time is one clock cycle:
-# 4e9 ns is about 250 M cycles.
+# Simulated-time limit in ns, passed as +timeout.
 SIM_TIMEOUT=4000000000
 KEEP=0
 ELF=""
@@ -75,25 +62,23 @@ WORK="${ELF%.elf}.servrun"
 rm -rf "$WORK"
 mkdir -p "$WORK" || exit 2
 
-# servant_sim's +firmware loader is a bare $readmemh into the RAM array, so the image must be
-# one 32-bit little-endian word per line starting at address 0 with no address records.  The
-# tests link at 0 (see link.ld), so a flat objcopy image is already in the right place.
+# +firmware is a $readmemh into the RAM array: one 32-bit word per line, starting at address 0.
 "$CROSS-objcopy" -O binary "$ELF" "$WORK/test.bin" || exit 2
-# $readmemh fills the array in order, so the image must be a whole number of words.
+# Pad the image to a whole number of words.
 truncate -s "$(((($(stat -c %s "$WORK/test.bin") + 3) / 4) * 4))" "$WORK/test.bin" || exit 2
 od -An -tx4 -v -w4 "$WORK/test.bin" | tr -d ' ' >"$WORK/test.hex" || exit 2
 
 out="$(cd "$WORK" && timeout --foreground -k 5 "$TIMEOUT" "$SIM" \
   "+firmware=test.hex" "+signature=console.txt" "+timeout=$SIM_TIMEOUT" 2>&1)"
 rc=$?
-# The console is written through $fwrite, so it lands in the file rather than on stdout.
+# servile_mux appends each byte stored to 0x8000_0000 to the +signature= file, which the tests
+# use as their console.
 console="$(cat "$WORK/console.txt" 2>/dev/null)"
 printf '%s\n' "$console"
 printf '%s\n' "$out"
 
-# Matched with shell globs rather than `grep -q`: under `set -o pipefail` a `grep -q` that
-# exits on its first match can SIGPIPE the writer and turn the whole pipeline's status into
-# 141, which reads as "no match" and silently inverts the verdict.
+# bench/servant_tb.cpp always exits 0, so the verdict comes from the output: the run must reach
+# the halt hook ("Test complete") and the console must not report TEST FAILED.
 if [ "$rc" -eq 0 ]; then
   case "$out" in
   *"Timeout: Exiting at time"*)

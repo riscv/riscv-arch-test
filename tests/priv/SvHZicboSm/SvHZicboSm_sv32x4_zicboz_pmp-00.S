@@ -11,7 +11,6 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'Sm', 'H', 'Zicboz']
 # params:
-#   TIME_CSR_IMPLEMENTED: true
 #   NUM_PMP_ENTRIES: '>1'
 #   PMP_NAPOT_SUPPORTED: true
 #   PMP_GRANULARITY: '<=10'

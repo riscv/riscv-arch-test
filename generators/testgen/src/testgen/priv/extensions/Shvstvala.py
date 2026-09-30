@@ -115,8 +115,6 @@ def _page_fault_leaves(g: SvMode, vs: SvMode, user: bool, regs: tuple[int, int, 
     "Shvstvala",
     required_extensions=["H", "Shvstvala"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_shvstvala(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Shvstvala coverpoints."""

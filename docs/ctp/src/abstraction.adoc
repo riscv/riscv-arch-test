@@ -152,7 +152,7 @@ Therefore, when booting to a non-M privilege mode, the boot code attempts to del
 
 . Check if the trap is a T-SBI call and if so, perform the requested T-SBI function and return from the `ecall`.
 . Call custom firmware, if any exists, to handle invisible traps, as described in the next section.
-. Otherwise, delegate the trap to the S-mode handler via software.  This involves setting up `sstatus`, `sepc`, `scause`, and `stval` with values coming from the machine-mode trap CSRs, setting `sstatus.SPP`, `SIE`, and `SPIE` appropriately, and returning to the S-mode trap handler at `stvec` (possibly vectored).  Traps from VS or VU must also set `htval`, `htinst`, and relevant `hstatus` bits.
+. Otherwise, delegate the trap to the S-mode handler via software.  This involves setting up `sstatus`, `sepc`, `scause`, and `stval` with values coming from the machine-mode trap CSRs, setting `sstatus.SPP`, `SIE`, and `SPIE` appropriately, and returning to the S-mode trap handler at `stvec` (possibly vectored).  Traps from VS or VU must also set `htval`, `htinst`, and relevant `hstatus` bits. A trap from VS or VU that `hedeleg` also delegates goes on to the VS-mode handler instead, through `vsstatus`, `vsepc`, `vscause`, `vstval`, and `vstvec`.
 
 The rvtest_setup.S and rvtest_trap_handler.S files implement the boot code, T-SBI, and machine-mode trap handler using standard M-mode capabilities. In theory, a DUT that does not implement standard M-mode might have to reimplement some or all of this code.  In practice, we have not yet encountered any DUT that cannot use this standard M-mode code.
 
@@ -161,7 +161,7 @@ The rvtest_setup.S and rvtest_trap_handler.S files implement the boot code, T-SB
 
 A DUT can use an invisible trap to emulate an instruction that is not implemented in hardware or has a known bug.
 When invisible traps are enabled, all illegal-instruction exceptions are first sent to M-mode for possible
-emulation before being forwarded to the normal trap handler. Invisible traps are enabled when `RVMODEL_INVISIBLE_TRAP_HANDLER` is defined or `UDB_TIME_CSR_IMPLEMENTED` is false. In the latter case, the framework emulates the `time` and `timeh` CSRs using `mtime`.
+emulation before being forwarded to the normal trap handler. Invisible traps are enabled when `RVMODEL_INVISIBLE_TRAP_HANDLER` is defined or `UDB_TIME_CSR_IMPLEMENTED` is false. In the latter case, the framework emulates the `time` and `timeh` CSRs using `mtime`, adding `htimedelta` in VS and VU and applying the `mcounteren`, `hcounteren`, and `scounteren` checks.
 
 Custom invisible traps implemented using the `RVMODEL_INVISIBLE_TRAP_HANDLER` macro must follow the conventions described below.
 
@@ -178,6 +178,7 @@ The supported return codes in the `_ACTION_REG` are:
   - `0`: The macro did not handle the instruction. Continue with the normal trap handling. `_ACTION_REG` is preset to 0 before `RVMODEL_INVISIBLE_TRAP_HANDLER`.
   - `1`: The macro handled the instruction and wrote all required architectural state. Resume after the instruction.
   - `2`: The macro handled the instruction and needs to write a GPR result. Write `_VALUE_REG` to the GPR whose number is in `_DEST_REG`, then resume after the instruction.
+  - `3`: The instruction raises a virtual-instruction exception, which is taken in HS-mode if `medeleg` delegates it and in M-mode otherwise. Valid only when H is supported.
   - Any other code is invalid and the test will produce an error.
 
 Action 2 must be used to write GPR results because a direct write to a saved GPR would be lost when the trap

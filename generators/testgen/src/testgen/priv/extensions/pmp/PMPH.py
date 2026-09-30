@@ -512,8 +512,7 @@ def _lower_mode_chunks(chunks: Callable[[Mode], list[TestChunk]]) -> list[TestCh
     return result
 
 
-# VS and VU traps need the visible trap handler
-_PARAMS = ["NUM_PMP_ENTRIES: '>0'", "TIME_CSR_IMPLEMENTED: true"]
+_PARAMS = ["NUM_PMP_ENTRIES: '>0'"]
 
 
 @add_priv_test_generator(

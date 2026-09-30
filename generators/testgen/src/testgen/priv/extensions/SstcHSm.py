@@ -167,8 +167,6 @@ def _access_tests(test_data: TestData) -> list[str]:
     "SstcHSm",
     required_extensions=["Sm", "H", "Sstc"],
     extra_defines=["#define BOOT_TO_MMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_sstchsm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the SstcHSm suite."""

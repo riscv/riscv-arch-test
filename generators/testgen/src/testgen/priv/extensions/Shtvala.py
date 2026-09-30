@@ -66,8 +66,6 @@ def _leaves(g: SvMode, vs: SvMode, user: bool, regs: tuple[int, int, int]) -> li
     "Shtvala",
     required_extensions=["H", "Shtvala"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_shtvala(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Shtvala coverpoints."""
@@ -181,9 +179,9 @@ def _hs_straddle_tests(test_data: TestData) -> list[str]:
     "Shtvala",
     required_extensions=["H", "Shtvala"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    # VS and VU traps need the visible trap handler.  The hart performs the first part of a misaligned access in
+    # The hart performs the first part of a misaligned access in
     # main memory and faults on the second, so stval holds the page-boundary address.
-    params=["TIME_CSR_IMPLEMENTED: true", "MISALIGNED_LDST: true", "MISALIGNED_SPLIT_STRATEGY: sequential_bytes"],
+    params=["MISALIGNED_LDST: true", "MISALIGNED_SPLIT_STRATEGY: sequential_bytes"],
 )
 def make_shtvala_straddle(test_data: TestData) -> list[TestChunk]:
     """Misaligned loads and stores whose second part has an unmapped guest physical address."""

@@ -22,8 +22,6 @@ coverpoint = "cp_shcounterenw"
     "Shcounterenw",
     required_extensions=["H", "Shcounterenw"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_shcounterenw(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Shcounterenw coverpoints."""

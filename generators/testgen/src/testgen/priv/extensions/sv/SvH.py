@@ -1440,12 +1440,10 @@ def _make_svh_napot(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChun
     return test_chunks
 
 
-# VS and VU traps need the visible trap handler
-TIME_CSR = "TIME_CSR_IMPLEMENTED: true"
-SV32_PARAMS = [TIME_CSR, "SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"]
-SV39_PARAMS = [TIME_CSR, "SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"]
-SV48_PARAMS = [TIME_CSR, "SV48X4_TRANSLATION: true", "SV48_VSMODE_TRANSLATION: true"]
-SV57_PARAMS = [TIME_CSR, "SV57X4_TRANSLATION: true", "SV57_VSMODE_TRANSLATION: true"]
+SV32_PARAMS = ["SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"]
+SV39_PARAMS = ["SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"]
+SV48_PARAMS = ["SV48X4_TRANSLATION: true", "SV48_VSMODE_TRANSLATION: true"]
+SV57_PARAMS = ["SV57X4_TRANSLATION: true", "SV57_VSMODE_TRANSLATION: true"]
 BOOT = ["#define BOOT_TO_SMODE"]
 
 
@@ -1475,16 +1473,12 @@ def make_svh_napot_sv39(test_data: TestData) -> list[TestChunk]:
     return _make_svh_napot(test_data, SV39X4, VS_SV39)
 
 
-@add_priv_test_generator(
-    "SvH", required_extensions=["H"], extra_defines=BOOT, params=[TIME_CSR, "SV48_VSMODE_TRANSLATION: true"]
-)
+@add_priv_test_generator("SvH", required_extensions=["H"], extra_defines=BOOT, params=["SV48_VSMODE_TRANSLATION: true"])
 def make_svh_vs_sv48(test_data: TestData) -> list[TestChunk]:
     return _vs_stage_tests(test_data, VS_SV48)
 
 
-@add_priv_test_generator(
-    "SvH", required_extensions=["H"], extra_defines=BOOT, params=[TIME_CSR, "SV48X4_TRANSLATION: true"]
-)
+@add_priv_test_generator("SvH", required_extensions=["H"], extra_defines=BOOT, params=["SV48X4_TRANSLATION: true"])
 def make_svh_g_sv48x4(test_data: TestData) -> list[TestChunk]:
     return _g_stage_tests(test_data, SV48X4)
 
@@ -1494,16 +1488,12 @@ def make_svh_two_stage_sv48(test_data: TestData) -> list[TestChunk]:
     return _two_stage_tests(test_data, SV48X4, VS_SV48)
 
 
-@add_priv_test_generator(
-    "SvH", required_extensions=["H"], extra_defines=BOOT, params=[TIME_CSR, "SV57_VSMODE_TRANSLATION: true"]
-)
+@add_priv_test_generator("SvH", required_extensions=["H"], extra_defines=BOOT, params=["SV57_VSMODE_TRANSLATION: true"])
 def make_svh_vs_sv57(test_data: TestData) -> list[TestChunk]:
     return _vs_stage_tests(test_data, VS_SV57)
 
 
-@add_priv_test_generator(
-    "SvH", required_extensions=["H"], extra_defines=BOOT, params=[TIME_CSR, "SV57X4_TRANSLATION: true"]
-)
+@add_priv_test_generator("SvH", required_extensions=["H"], extra_defines=BOOT, params=["SV57X4_TRANSLATION: true"])
 def make_svh_g_sv57x4(test_data: TestData) -> list[TestChunk]:
     return _g_stage_tests(test_data, SV57X4)
 

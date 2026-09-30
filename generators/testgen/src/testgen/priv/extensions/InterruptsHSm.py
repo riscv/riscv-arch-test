@@ -197,8 +197,6 @@ def _priority_level_tests(test_data: TestData, mode: str) -> list[str]:
     "InterruptsHSm",
     required_extensions=["Sm", "H"],
     extra_defines=["#define BOOT_TO_MMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_interruptshsm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the InterruptsHSm hypervisor interrupt suite."""

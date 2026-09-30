@@ -20,8 +20,6 @@ _CG = "ZicntrHSm_cg"
     "ZicntrHSm",
     required_extensions=["Sm", "H", "Zicntr"],
     extra_defines=["#define BOOT_TO_MMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_zicntrhsm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZicntrHSm coverpoints."""

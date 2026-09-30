@@ -443,8 +443,6 @@ def _make_henvcfg(test_data: TestData, family: str) -> list[TestChunk]:
     "SvHZicbo",
     required_extensions=["H", "Zicbom"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_svhzicbo_zicbom_henvcfg(test_data: TestData) -> list[TestChunk]:
     return _make_henvcfg(test_data, "zicbom")
@@ -454,8 +452,6 @@ def make_svhzicbo_zicbom_henvcfg(test_data: TestData) -> list[TestChunk]:
     "SvHZicbo",
     required_extensions=["H", "Zicboz"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_svhzicbo_zicboz_henvcfg(test_data: TestData) -> list[TestChunk]:
     return _make_henvcfg(test_data, "zicboz")
@@ -465,7 +461,7 @@ def make_svhzicbo_zicboz_henvcfg(test_data: TestData) -> list[TestChunk]:
     "SvHZicbo",
     required_extensions=["H", "Zicbom"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    params=["TIME_CSR_IMPLEMENTED: true", "SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
+    params=["SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
 )
 def make_svhzicbo_sv39x4_zicbom(test_data: TestData) -> list[TestChunk]:
     return _make_svhzicbo(test_data, SV39X4, VS_SV39, "zicbom")
@@ -475,7 +471,7 @@ def make_svhzicbo_sv39x4_zicbom(test_data: TestData) -> list[TestChunk]:
     "SvHZicbo",
     required_extensions=["H", "Zicboz"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    params=["TIME_CSR_IMPLEMENTED: true", "SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
+    params=["SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
 )
 def make_svhzicbo_sv39x4_zicboz(test_data: TestData) -> list[TestChunk]:
     return _make_svhzicbo(test_data, SV39X4, VS_SV39, "zicboz")
@@ -485,7 +481,7 @@ def make_svhzicbo_sv39x4_zicboz(test_data: TestData) -> list[TestChunk]:
     "SvHZicbo",
     required_extensions=["H", "Zicbom"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    params=["TIME_CSR_IMPLEMENTED: true", "SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
+    params=["SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
 )
 def make_svhzicbo_sv32x4_zicbom(test_data: TestData) -> list[TestChunk]:
     return _make_svhzicbo(test_data, SV32X4, VS_SV32, "zicbom")
@@ -495,7 +491,7 @@ def make_svhzicbo_sv32x4_zicbom(test_data: TestData) -> list[TestChunk]:
     "SvHZicbo",
     required_extensions=["H", "Zicboz"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    params=["TIME_CSR_IMPLEMENTED: true", "SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
+    params=["SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
 )
 def make_svhzicbo_sv32x4_zicboz(test_data: TestData) -> list[TestChunk]:
     return _make_svhzicbo(test_data, SV32X4, VS_SV32, "zicboz")

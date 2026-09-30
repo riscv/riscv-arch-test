@@ -10,8 +10,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'Sm', 'H']
-# params:
-#   TIME_CSR_IMPLEMENTED: true
+# # # no param constraints
 # MARCH: rv${XLEN}ih_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 

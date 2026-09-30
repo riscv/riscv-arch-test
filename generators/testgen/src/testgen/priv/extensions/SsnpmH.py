@@ -227,8 +227,7 @@ def _make_ssnpmh(test_data: TestData, g: SvMode) -> list[TestChunk]:
     "SsnpmH",
     required_extensions=["H", "Ssnpm"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true", "SV57X4_TRANSLATION: true"],
+    params=["SV57X4_TRANSLATION: true"],
 )
 def make_ssnpmh_sv57x4(test_data: TestData) -> list[TestChunk]:
     return _make_ssnpmh(test_data, SV57X4)
@@ -238,8 +237,7 @@ def make_ssnpmh_sv57x4(test_data: TestData) -> list[TestChunk]:
     "SsnpmH",
     required_extensions=["H", "Ssnpm"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true", "SV48X4_TRANSLATION: true"],
+    params=["SV48X4_TRANSLATION: true"],
 )
 def make_ssnpmh_sv48x4(test_data: TestData) -> list[TestChunk]:
     return _make_ssnpmh(test_data, SV48X4)

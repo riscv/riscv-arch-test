@@ -24,8 +24,6 @@ CG = "ExceptionsHV_cg"
     "ExceptionsHV",
     required_extensions=["H", "V"],
     extra_defines=["#define BOOT_TO_SMODE", "#define RVTEST_VECTOR", "#define RVTEST_SEW 0", "#define VDSEW 0"],
-    # VS and VU traps need the visible trap handler
-    params=["TIME_CSR_IMPLEMENTED: true"],
 )
 def make_exceptionshv(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the ExceptionsHV hypervisor vector exception testsuite."""

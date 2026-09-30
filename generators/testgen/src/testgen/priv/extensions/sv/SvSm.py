@@ -9,6 +9,7 @@
 """Generate Sv tests that execute or check state in M-mode."""
 
 from testgen.asm.helpers import comment_banner
+from testgen.asm.tsbi import in_mode
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
@@ -283,12 +284,7 @@ def make_svsm_mstatus_tvm(test_data: TestData) -> list[TestChunk]:
             "li a0, 0",
             *satp_access_ops(test_data, "Mmode", ("a0", "a0", "a0")),
             "sfence.vma",
-            "RVTEST_TSBI_GOTO_SMODE",
-            "csrw satp, zero",
-            "csrs satp, zero",
-            "csrc satp, zero",
-            "sfence.vma",
-            "RVTEST_TSBI_GOTO_MMODE",
+            *in_mode("S", "M", ["csrw satp, zero", "csrs satp, zero", "csrc satp, zero", "sfence.vma"]),
         ]
     )
     chunk.trap_sigupd_count = 30

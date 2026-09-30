@@ -74,7 +74,7 @@ main:
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
 SvZicbo_cg_cp_prefetch_test1_prefetch_i:
   prefetch.i 0(a5)
   nop
@@ -84,14 +84,14 @@ SvZicbo_cg_cp_prefetch_test1_prefetch_r:
 SvZicbo_cg_cp_prefetch_test1_prefetch_w:
   prefetch.w 0(a5)
   nop
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
   LI(a5, va_data)
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
 SvZicbo_cg_cp_prefetch_test2_prefetch_i:
   prefetch.i 0(a5)
   nop
@@ -101,7 +101,7 @@ SvZicbo_cg_cp_prefetch_test2_prefetch_r:
 SvZicbo_cg_cp_prefetch_test2_prefetch_w:
   prefetch.w 0(a5)
   nop
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test

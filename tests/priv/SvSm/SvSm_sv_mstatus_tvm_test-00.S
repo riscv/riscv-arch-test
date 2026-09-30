@@ -53,12 +53,12 @@ SvSm_cg_cp_satp_access_m_csrc:
   # Read satp into x14 and check against expected.
   RVTEST_SIGUPD_CSR_READ(satp, x14, SvSm_cg_cp_satp_access_m_csrc, SvSm_cg_cp_satp_access_m_csrc_str)
   sfence.vma
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # enter S-mode
   csrw satp, zero
   csrs satp, zero
   csrc satp, zero
   sfence.vma
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

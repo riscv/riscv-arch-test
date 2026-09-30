@@ -41,11 +41,11 @@ PMPS_cp_pmpaddr_access_s_write_all:
   LI(x4, -1)
   .set pmpaddri, CSR_PMPADDR0
   .rept 64
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # enter S-mode
 99:
   RVTEST_SIGUPD_CSR_WRITE(pmpaddri, x4, 99b, PMPS_cp_pmpaddr_access_s_write_all_str)
   nop
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
   .set pmpaddri, pmpaddri+1
   .endr
 
@@ -53,11 +53,11 @@ PMPS_cp_pmpcfg_access_s_write_all:
 // Write all ones to every pmpcfg CSR from S mode
   .set pmpcfgi, CSR_PMPCFG0
   .rept 16
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # enter S-mode
 99:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, x4, 99b, PMPS_cp_pmpcfg_access_s_write_all_str)
   nop
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
   .set pmpcfgi, pmpcfgi+1
   .endr
 

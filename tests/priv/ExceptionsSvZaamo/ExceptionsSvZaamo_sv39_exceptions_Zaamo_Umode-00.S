@@ -69,14 +69,14 @@ main:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 1
 
 ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test1_amoadd:
   amoadd.w a3, a2, (a5)
   nop
 
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test1_amoadd, ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test1_amoadd_str)
@@ -90,14 +90,14 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test1_amoadd:
   srli a0, a0, 34
   add a5, a5, a0
   addi a5, a5, 2
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 1
 
 ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test2_amoadd:
   amoadd.w a3, a2, (a5)
   nop
 
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test2_amoadd, ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test2_amoadd_str)
@@ -111,14 +111,14 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test2_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 1
 
 ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test3_amoadd:
   amoadd.w a3, a2, (a5)
   nop
 
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test3_amoadd, ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test3_amoadd_str)
@@ -135,14 +135,14 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test3_amoadd:
   srli a0, a0, 34
   add a5, a5, a0
   addi a5, a5, 2
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 1
 
 ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test4_amoadd:
   amoadd.w a3, a2, (a5)
   nop
 
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test4_amoadd, ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test4_amoadd_str)
@@ -157,14 +157,14 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test4_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 1
 
 ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test5_amoadd:
   amoadd.w a3, a2, (a5)
   nop
 
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test5_amoadd, ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test5_amoadd_str)
@@ -178,14 +178,14 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test5_amoadd:
   srli a0, a0, 34
   add a5, a5, a0
   addi a5, a5, 2
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 1
 
 ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test6_amoadd:
   amoadd.w a3, a2, (a5)
   nop
 
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test6_amoadd, ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test6_amoadd_str)
@@ -199,14 +199,14 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test6_amoadd:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 1
 
 ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test7_amoadd:
   amoadd.w a3, a2, (a5)
   nop
 
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test7_amoadd, ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test7_amoadd_str)
@@ -223,14 +223,14 @@ ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test7_amoadd:
   srli a0, a0, 34
   add a5, a5, a0
   addi a5, a5, 2
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 1
 
 ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test8_amoadd:
   amoadd.w a3, a2, (a5)
   nop
 
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test8_amoadd, ExceptionsSvZaamo_cg_cp_misaligned_priority_u_test8_amoadd_str)

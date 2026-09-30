@@ -11,9 +11,10 @@
 from dataclasses import dataclass
 
 from testgen.asm.helpers import write_sigupd
+from testgen.asm.tsbi import in_mode
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
-from testgen.priv.extensions.sv.access import add_rwx_test, mode_switch, virtual_address
+from testgen.priv.extensions.sv.access import add_rwx_test, tsbi_mode, virtual_address
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import PteFlags, SvMode, create_page_mapping
 from testgen.priv.extensions.sv.Sv import MPRV_CLEANUP, mstatus_setup
@@ -85,13 +86,12 @@ def _atomic_access(
         op: test_data.add_testcase(f"{name}_{op}", coverpoint, covergroup).removesuffix(":")
         for op, coverpoint in coverpoints.items()
     }
-    enter, leave = mode_switch(target.mode, target.driver_mode)
-    lines = [*address, *enter, *target.setup, "addi a2, a2, 1", ""]
+    body = [*target.setup, "addi a2, a2, 1", ""]
     if target.operation == "Zaamo":
-        lines.extend([f"{labels['amoadd']}:", "amoadd.w a3, a2, (a5)", "nop"])
+        body.extend([f"{labels['amoadd']}:", "amoadd.w a3, a2, (a5)", "nop"])
         results = ((13, labels["amoadd"]),)
     else:
-        lines.extend(
+        body.extend(
             [
                 f"{labels['lr']}:",
                 "lr.w a3, (a5)",
@@ -104,8 +104,12 @@ def _atomic_access(
         )
         results = ((13, labels["lr"]), (14, labels["sc"]))
     if target.mprv:
-        lines.extend(["", *MPRV_CLEANUP])
-    lines.extend(["", *leave, "", *(write_sigupd(reg, test_data, label=label) for reg, label in results)])
+        body.extend(["", *MPRV_CLEANUP])
+    if target.driver_mode is not None and target.driver_mode != target.mode:
+        body.append("")
+    current = tsbi_mode(target.driver_mode or target.mode)
+    lines = [*address, *in_mode(tsbi_mode(target.mode), current, body)]
+    lines.extend(["", *(write_sigupd(reg, test_data, label=label) for reg, label in results)])
     return lines
 
 

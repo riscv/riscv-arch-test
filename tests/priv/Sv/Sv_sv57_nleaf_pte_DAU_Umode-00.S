@@ -78,7 +78,7 @@ main:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 
 // Store
@@ -96,7 +96,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test1_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_nleaf_pte_DAU_Umode_test1_store, Sv_cp_sv57_nleaf_pte_DAU_Umode_test1_store_str)
@@ -121,7 +121,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test1_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 
 // Store
@@ -139,7 +139,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test2_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_nleaf_pte_DAU_Umode_test2_store, Sv_cp_sv57_nleaf_pte_DAU_Umode_test2_store_str)
@@ -164,7 +164,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test2_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 
 // Store
@@ -182,7 +182,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test3_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_nleaf_pte_DAU_Umode_test3_store, Sv_cp_sv57_nleaf_pte_DAU_Umode_test3_store_str)
@@ -207,7 +207,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test3_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 
 // Store
@@ -225,7 +225,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test4_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_nleaf_pte_DAU_Umode_test4_store, Sv_cp_sv57_nleaf_pte_DAU_Umode_test4_store_str)
@@ -250,7 +250,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test4_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 
 // Store
@@ -268,7 +268,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test5_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_nleaf_pte_DAU_Umode_test5_store, Sv_cp_sv57_nleaf_pte_DAU_Umode_test5_store_str)
@@ -293,7 +293,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test5_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 
 // Store
@@ -311,7 +311,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test6_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_nleaf_pte_DAU_Umode_test6_store, Sv_cp_sv57_nleaf_pte_DAU_Umode_test6_store_str)
@@ -336,7 +336,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test6_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 
 // Store
@@ -354,7 +354,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test7_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_nleaf_pte_DAU_Umode_test7_store, Sv_cp_sv57_nleaf_pte_DAU_Umode_test7_store_str)
@@ -379,7 +379,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test7_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 
 // Store
@@ -397,7 +397,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test8_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_nleaf_pte_DAU_Umode_test8_store, Sv_cp_sv57_nleaf_pte_DAU_Umode_test8_store_str)
@@ -422,7 +422,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test8_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 
 // Store
@@ -440,7 +440,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test9_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_nleaf_pte_DAU_Umode_test9_store, Sv_cp_sv57_nleaf_pte_DAU_Umode_test9_store_str)
@@ -465,7 +465,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test9_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 
 // Store
@@ -483,7 +483,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test10_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_nleaf_pte_DAU_Umode_test10_store, Sv_cp_sv57_nleaf_pte_DAU_Umode_test10_store_str)
@@ -508,7 +508,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test10_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 
 // Store
@@ -526,7 +526,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test11_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_nleaf_pte_DAU_Umode_test11_store, Sv_cp_sv57_nleaf_pte_DAU_Umode_test11_store_str)
@@ -551,7 +551,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test11_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 
 // Store
@@ -569,7 +569,7 @@ Sv_cp_sv57_nleaf_pte_DAU_Umode_test12_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv57_nleaf_pte_DAU_Umode_test12_store, Sv_cp_sv57_nleaf_pte_DAU_Umode_test12_store_str)

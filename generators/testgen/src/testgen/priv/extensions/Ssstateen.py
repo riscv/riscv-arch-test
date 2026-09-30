@@ -8,7 +8,7 @@
 
 from testgen.asm.csr import csr_walk_test
 from testgen.asm.helpers import arch_block, comment_banner
-from testgen.asm.tsbi import tsbi_call
+from testgen.asm.tsbi import in_mode, tsbi_call
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -91,7 +91,7 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
 
     lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
     lines.extend(_write_se0(temp_reg, enable=True))
-    lines.append("RVTEST_TSBI_GOTO_UMODE")
+    body: list[str] = []
 
     for csr in sstateen_csrs:
         for op in CSR_OPS:
@@ -99,7 +99,7 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
                 insn = f"{op} x{temp_reg}, {csr}  # illegal from U-mode"
             else:
                 insn = f"{op} x{temp_reg}, {csr}, x{temp_reg}  # illegal from U-mode"
-            lines.extend(
+            body.extend(
                 [
                     "",
                     test_data.add_testcase(f"{csr}_{op.lower()}_umode_se0_1", coverpoint, covergroup),
@@ -107,7 +107,7 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
                 ]
             )
 
-    lines.append("RVTEST_TSBI_GOTO_SMODE")
+    lines.extend(in_mode("U", "S", body))
     lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
 
     test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh])
@@ -218,11 +218,10 @@ def _generate_jvt(test_data: TestData) -> list[str]:
                     f"{jvt_action} sstateen0, x{temp_reg}  # sstateen0.JVT = {jvt_state}",
                 ]
             )
-            if mode_label == "umode":
-                lines.append("RVTEST_TSBI_GOTO_UMODE")
+            body: list[str] = []
             for op in CSR_OPS:
                 insn = f"{op} x{temp_reg}, jvt" if op == "csrr" else f"{op} x{temp_reg}, jvt, x{ones_reg}"
-                lines.extend(
+                body.extend(
                     [
                         "",
                         test_data.add_testcase(
@@ -233,8 +232,7 @@ def _generate_jvt(test_data: TestData) -> list[str]:
                         insn,
                     ]
                 )
-            if mode_label == "umode":
-                lines.append("RVTEST_TSBI_GOTO_SMODE")
+            lines.extend(in_mode("U" if mode_label == "umode" else "S", "S", body))
             lines.extend(
                 [
                     f"csrw sstateen0, x{save_sstateen}  # restore sstateen0",
@@ -290,12 +288,11 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
                     f"{fcsr_action} sstateen0, x{temp_reg}  # sstateen0.FCSR = {fcsr_bit}",
                 ]
             )
-            if mode_label == "umode":
-                lines.append("RVTEST_TSBI_GOTO_UMODE")
+            body: list[str] = []
             for csr in fp_csrs:
                 for op in CSR_OPS:
                     insn = f"{op} x{temp_reg}, {csr}" if op == "csrr" else f"{op} x{temp_reg}, {csr}, x{wdata_reg}"
-                    lines.extend(
+                    body.extend(
                         [
                             "",
                             test_data.add_testcase(
@@ -306,8 +303,7 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
                             insn,
                         ]
                     )
-            if mode_label == "umode":
-                lines.append("RVTEST_TSBI_GOTO_SMODE")
+            lines.extend(in_mode("U" if mode_label == "umode" else "S", "S", body))
             lines.append(f"csrw sstateen0, x{save_sstateen}  # restore sstateen0")
             lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
 
@@ -361,10 +357,9 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
                     f"{fcsr_action} sstateen0, x{temp_reg1}  # sstateen0.FCSR = {fcsr_bit}",
                 ]
             )
-            if mode_label == "umode":
-                lines.append("RVTEST_TSBI_GOTO_UMODE")
+            body: list[str] = []
             for insn, label in fp_instrs:
-                lines.extend(
+                body.extend(
                     [
                         "",
                         test_data.add_testcase(
@@ -375,8 +370,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
                         f"{insn}  # fp instr from {mode_label} fcsr={fcsr_bit}",
                     ]
                 )
-            if mode_label == "umode":
-                lines.append("RVTEST_TSBI_GOTO_SMODE")
+            lines.extend(in_mode("U" if mode_label == "umode" else "S", "S", body))
             lines.append(f"csrw sstateen0, x{save_sstateen}  # restore sstateen0")
             lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
 

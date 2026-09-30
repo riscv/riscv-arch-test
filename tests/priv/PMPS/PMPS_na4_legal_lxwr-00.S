@@ -69,7 +69,7 @@ RVTEST_BEGIN
   csrw pmpcfg0, x4
 #endif
   RVTEST_SFENCE_VMA_IF_SUPPORTED
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # enter S-mode
 
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
@@ -121,7 +121,7 @@ PMPS_cp_cfg_A_na4_entry5_lxwr0000_9_lw_address_4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_cfg_A_na4_entry5_lxwr0000_9_lw_address_4, PMPS_cp_cfg_A_na4_entry5_lxwr0000_9_lw_address_4_str)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
 // PMP configuration 2: L = 0, R permissions, entry 4
   LA(x5, REGIONSTART)
@@ -134,7 +134,7 @@ PMPS_cp_cfg_A_na4_entry5_lxwr0000_9_lw_address_4:
   csrw pmpcfg0, x4
 #endif
   RVTEST_SFENCE_VMA_IF_SUPPORTED
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # enter S-mode
 
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
@@ -186,7 +186,7 @@ PMPS_cp_cfg_A_na4_entry4_lxwr0001_9_lw_address_4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_cfg_A_na4_entry4_lxwr0001_9_lw_address_4, PMPS_cp_cfg_A_na4_entry4_lxwr0001_9_lw_address_4_str)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
 // PMP configuration 3: L = 0, WR permissions, entry 3
   LA(x5, REGIONSTART)
@@ -195,7 +195,7 @@ PMPS_cp_cfg_A_na4_entry4_lxwr0001_9_lw_address_4:
   LI(x4, PMPREGION_LXWR_0011)
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # enter S-mode
 
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
@@ -247,7 +247,7 @@ PMPS_cp_cfg_A_na4_entry3_lxwr0011_9_lw_address_4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_cfg_A_na4_entry3_lxwr0011_9_lw_address_4, PMPS_cp_cfg_A_na4_entry3_lxwr0011_9_lw_address_4_str)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
 // PMP configuration 4: L = 0, X permissions, entry 2
   LA(x5, REGIONSTART)
@@ -256,7 +256,7 @@ PMPS_cp_cfg_A_na4_entry3_lxwr0011_9_lw_address_4:
   LI(x4, PMPREGION_LXWR_0100)
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # enter S-mode
 
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
@@ -308,7 +308,7 @@ PMPS_cp_cfg_A_na4_entry2_lxwr0100_9_lw_address_4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_cfg_A_na4_entry2_lxwr0100_9_lw_address_4, PMPS_cp_cfg_A_na4_entry2_lxwr0100_9_lw_address_4_str)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
 // PMP configuration 5: L = 0, XR permissions, entry 1
   LA(x5, REGIONSTART)
@@ -317,7 +317,7 @@ PMPS_cp_cfg_A_na4_entry2_lxwr0100_9_lw_address_4:
   LI(x4, PMPREGION_LXWR_0101)
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # enter S-mode
 
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
@@ -369,7 +369,7 @@ PMPS_cp_cfg_A_na4_entry1_lxwr0101_9_lw_address_4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_cfg_A_na4_entry1_lxwr0101_9_lw_address_4, PMPS_cp_cfg_A_na4_entry1_lxwr0101_9_lw_address_4_str)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
 // PMP configuration 6: L = 0, XWR permissions, entry 0
   LA(x5, REGIONSTART)
@@ -378,7 +378,7 @@ PMPS_cp_cfg_A_na4_entry1_lxwr0101_9_lw_address_4:
   LI(x4, PMPREGION_LXWR_0111)
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # enter S-mode
 
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
@@ -430,7 +430,7 @@ PMPS_cp_cfg_A_na4_entry0_lxwr0111_9_lw_address_4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPS_cp_cfg_A_na4_entry0_lxwr0111_9_lw_address_4, PMPS_cp_cfg_A_na4_entry0_lxwr0111_9_lw_address_4_str)
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

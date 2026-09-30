@@ -14,7 +14,7 @@ tests and in S-mode otherwise; user-mode tests enter U-mode with RVTEST_TSBI_GOT
 
 from testgen.asm.csr import write_stce
 from testgen.asm.helpers import comment_banner
-from testgen.asm.tsbi import tsbi_call_or_direct
+from testgen.asm.tsbi import in_mode, tsbi_call_or_direct
 from testgen.data.state import TestData
 
 
@@ -67,10 +67,16 @@ def tm_tests(test_data: TestData, covergroup: str, mode: str) -> list[str]:
                 "",
                 f"# {coverpoint}: TM = {tm_val}" + (f", scounteren.TM = {stm_val}" if user else ""),
                 *([] if stm_val else ["csrci scounteren, 0x2"]),
-                *(["RVTEST_TSBI_GOTO_UMODE"] if user else []),
-                test_data.add_testcase(f"tm{tm_val}_stm{stm_val}" if user else f"tm{tm_val}", coverpoint, covergroup),
-                *access_stimecmp(test_data),
-                *(["RVTEST_TSBI_GOTO_SMODE"] if user else []),
+                *in_mode(
+                    "U" if user else setup_mode(mode),
+                    setup_mode(mode),
+                    [
+                        test_data.add_testcase(
+                            f"tm{tm_val}_stm{stm_val}" if user else f"tm{tm_val}", coverpoint, covergroup
+                        ),
+                        *access_stimecmp(test_data),
+                    ],
+                ),
                 *([] if stm_val else ["csrsi scounteren, 0x2"]),
             ]
     return [*lines, "", *write_stce(test_data, False, setup_mode(mode))]
@@ -89,9 +95,10 @@ def stce_tests(test_data: TestData, covergroup: str, mode: str) -> list[str]:
             "",
             f"# {coverpoint}: STCE = {stce_val}",
             *write_stce(test_data, bool(stce_val), setup_mode(mode)),
-            *(["RVTEST_TSBI_GOTO_UMODE"] if user else []),
-            test_data.add_testcase(f"stce{stce_val}", coverpoint, covergroup),
-            *access_stimecmp(test_data),
-            *(["RVTEST_TSBI_GOTO_SMODE"] if user else []),
+            *in_mode(
+                "U" if user else setup_mode(mode),
+                setup_mode(mode),
+                [test_data.add_testcase(f"stce{stce_val}", coverpoint, covergroup), *access_stimecmp(test_data)],
+            ),
         ]
     return [*lines, "", *write_stce(test_data, False, setup_mode(mode))]

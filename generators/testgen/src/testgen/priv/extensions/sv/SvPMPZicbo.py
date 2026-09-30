@@ -8,10 +8,11 @@
 
 """Generate cache-block operations against PMP-protected translated regions."""
 
+from testgen.asm.tsbi import in_mode
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.pmp import helpers as pmp
-from testgen.priv.extensions.sv.access import virtual_address
+from testgen.priv.extensions.sv.access import tsbi_mode, virtual_address
 from testgen.priv.extensions.sv.assembly import DATA_REGION_ALIGNED
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import SV32, SV39, SV48, SV57, PteFlags, SvMode, create_page_mapping
@@ -30,20 +31,17 @@ def _setup_envcfg(extension: str, mode: str) -> tuple[str, ...]:
 
 
 def _add_operations(test_data: TestData, sv: SvMode, mode: str, level: int, extension: str, number: int) -> list[str]:
-    enter = [] if mode == "Mmode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"]
-    leave = [] if mode == "Mmode" else ["RVTEST_TSBI_GOTO_MMODE"]
-    lines = [*virtual_address(sv, "va_data", level), *enter]
+    body: list[str] = []
     for operation in _FAMILIES[extension][1]:
         name = operation.split()[0].replace(".", "_")
-        lines.extend(
+        body.extend(
             [
                 test_data.add_testcase(f"test{number}_{name}", "cp_pmp_zicbo", "SvPMPZicbo_cg"),
                 operation,
                 "nop",
             ]
         )
-    lines.extend(leave)
-    return lines
+    return [*virtual_address(sv, "va_data", level), *in_mode(tsbi_mode(mode), "M", body)]
 
 
 def _begin_test(

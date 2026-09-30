@@ -74,7 +74,7 @@ RVTEST_BEGIN
   csrw pmpcfg0, x4
 #endif
   RVTEST_SFENCE_VMA_IF_SUPPORTED
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
 
 // Execute probe
   RVTEST_FENCEI
@@ -139,7 +139,7 @@ PMPU_cp_cfg_RW_entry5_lxwr1000_11_ld:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_RW_entry5_lxwr1000_11_ld, PMPU_cp_cfg_RW_entry5_lxwr1000_11_ld_str)
 #endif
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
 // PMP configuration 2: L = 1, R permissions, entry 4
   LA(x5, REGIONSTART)
@@ -156,7 +156,7 @@ PMPU_cp_cfg_RW_entry5_lxwr1000_11_ld:
   csrw pmpcfg0, x4
 #endif
   RVTEST_SFENCE_VMA_IF_SUPPORTED
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
 
 // Execute probe
   RVTEST_FENCEI
@@ -221,7 +221,7 @@ PMPU_cp_cfg_RW_entry4_lxwr1001_11_ld:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_RW_entry4_lxwr1001_11_ld, PMPU_cp_cfg_RW_entry4_lxwr1001_11_ld_str)
 #endif
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
 // PMP configuration 3: L = 1, WR permissions, entry 3
   LA(x5, REGIONSTART)
@@ -234,7 +234,7 @@ PMPU_cp_cfg_RW_entry4_lxwr1001_11_ld:
   LI(x4, PMPREGION_LXWR_1011)
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
 
 // Execute probe
   RVTEST_FENCEI
@@ -299,7 +299,7 @@ PMPU_cp_cfg_RW_entry3_lxwr1011_11_ld:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_RW_entry3_lxwr1011_11_ld, PMPU_cp_cfg_RW_entry3_lxwr1011_11_ld_str)
 #endif
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
 // PMP configuration 4: L = 1, X permissions, entry 2
   LA(x5, REGIONSTART)
@@ -312,7 +312,7 @@ PMPU_cp_cfg_RW_entry3_lxwr1011_11_ld:
   LI(x4, PMPREGION_LXWR_1100)
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
 
 // Execute probe
   RVTEST_FENCEI
@@ -377,7 +377,7 @@ PMPU_cp_cfg_RW_entry2_lxwr1100_11_ld:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_RW_entry2_lxwr1100_11_ld, PMPU_cp_cfg_RW_entry2_lxwr1100_11_ld_str)
 #endif
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
 // PMP configuration 5: L = 1, XR permissions, entry 1
   LA(x5, REGIONSTART)
@@ -390,7 +390,7 @@ PMPU_cp_cfg_RW_entry2_lxwr1100_11_ld:
   LI(x4, PMPREGION_LXWR_1101)
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
 
 // Execute probe
   RVTEST_FENCEI
@@ -455,7 +455,7 @@ PMPU_cp_cfg_RW_entry1_lxwr1101_11_ld:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_RW_entry1_lxwr1101_11_ld, PMPU_cp_cfg_RW_entry1_lxwr1101_11_ld_str)
 #endif
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
 // PMP configuration 6: L = 1, XWR permissions, entry 0
   LA(x5, REGIONSTART)
@@ -468,7 +468,7 @@ PMPU_cp_cfg_RW_entry1_lxwr1101_11_ld:
   LI(x4, PMPREGION_LXWR_1111)
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
 
 // Execute probe
   RVTEST_FENCEI
@@ -533,7 +533,7 @@ PMPU_cp_cfg_RW_entry0_lxwr1111_11_ld:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMPU_cp_cfg_RW_entry0_lxwr1111_11_ld, PMPU_cp_cfg_RW_entry0_lxwr1111_11_ld_str)
 #endif
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

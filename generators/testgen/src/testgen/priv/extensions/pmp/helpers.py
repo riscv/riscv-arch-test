@@ -10,6 +10,7 @@
 from collections.abc import Callable, Iterable
 
 from testgen.asm.csr import gen_csr_write_sigupd
+from testgen.asm.tsbi import in_mode
 from testgen.data.state import TestData
 from testgen.priv.extensions.pmp.probes import ProbeGenerator
 
@@ -185,12 +186,9 @@ def lxwr_walk_body(
         lines.extend(set_pmpaddr(amode, entry))
         lines.extend(set_pmpcfg(entry, f"PMPREGION_LXWR_{lxwr}"))
         lines.append("RVTEST_SFENCE_VMA_IF_SUPPORTED")
-        if lower_mode:
-            lines.append(f"RVTEST_TSBI_GOTO_{lower_mode}MODE")
         generator = probe_generator[lxwr] if isinstance(probe_generator, dict) else probe_generator
-        lines.extend(generator(test_data, f"entry{entry}_lxwr{lxwr}", coverpoint, "TEST_FOR_EXECUTION"))
-        if lower_mode:
-            lines.append("RVTEST_TSBI_GOTO_MMODE")
+        probes = generator(test_data, f"entry{entry}_lxwr{lxwr}", coverpoint, "TEST_FOR_EXECUTION")
+        lines.extend(in_mode(lower_mode or "M", "M", probes))
     return lines
 
 

@@ -118,7 +118,7 @@ main:
   slli a0, a0, 25
   srli a0, a0, 25
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # enter S-mode
   addi a2, a2, 16
 
 // Store
@@ -131,7 +131,7 @@ SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test1_load:
   lw a3, 20(a5)
   nop
 
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test1_store, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test1_store_str)
@@ -173,7 +173,7 @@ SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test1_load:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # enter S-mode
   addi a2, a2, 16
 
 // Store
@@ -186,7 +186,7 @@ SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test2_load:
   lw a3, 20(a5)
   nop
 
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test2_store, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test2_store_str)
@@ -240,7 +240,7 @@ SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test2_load:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # enter S-mode
   addi a2, a2, 16
 
 // Store
@@ -253,7 +253,7 @@ SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test3_load:
   lw a3, 20(a5)
   nop
 
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test3_store, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test3_store_str)
@@ -319,7 +319,7 @@ SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test3_load:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # enter S-mode
   addi a2, a2, 16
 
 // Store
@@ -332,7 +332,7 @@ SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test4_load:
   lw a3, 20(a5)
   nop
 
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test4_store, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test4_store_str)

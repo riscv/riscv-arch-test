@@ -15,7 +15,7 @@ from itertools import combinations
 
 from testgen.asm.csr import write_stce
 from testgen.asm.helpers import comment_banner, write_sigupd
-from testgen.asm.tsbi import tsbi_call_or_direct
+from testgen.asm.tsbi import in_mode, tsbi_call_or_direct
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 
@@ -69,24 +69,6 @@ class InterruptSuite:
 Generator = Callable[[TestData, list[TestChunk], InterruptSuite, str], None]
 
 
-def mode_enter(suite: InterruptSuite, priv: str) -> list[str]:
-    """Switch from the suite's boot mode into ``priv``.
-
-    Emitted at the start of every chunk because chunks may be split into separate files,
-    each of which boots afresh. Clobbers a0 only.
-    """
-    if priv == suite.boot:
-        return []
-    return [f"RVTEST_TSBI_GOTO_{priv}MODE # enter {priv}-mode"]
-
-
-def mode_exit(suite: InterruptSuite, priv: str) -> list[str]:
-    """Return from ``priv`` to the suite's boot mode at the end of a chunk. Clobbers a0 only."""
-    if priv == suite.boot:
-        return []
-    return [f"RVTEST_TSBI_GOTO_{suite.boot}MODE # return to {suite.boot}-mode"]
-
-
 def generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str) -> None:
     """Raise each interrupt with only its enable bit set, then with every enable bit but its own."""
 
@@ -116,11 +98,15 @@ def generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite:
                 f"LI(x{tmp_reg}, {ie_val})",
                 f"csrw {ie}, x{tmp_reg} # {ie} = {int_type} {enable}",
                 test_data.add_testcase(f"priv_{priv}_{int_type}_{ie}_{enable}", coverpoint, suite.covergroup),
-                *mode_enter(suite, priv),
-                f"RVTEST_SET_{macro}_INT_{priv} # Set the interrupt",
-                f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
-                f"RVTEST_CLR_{macro}_INT_{priv} # Clear the interrupt if the interrupt handler hasn't done so",
-                *mode_exit(suite, priv),
+                *in_mode(
+                    priv,
+                    suite.boot,
+                    [
+                        f"RVTEST_SET_{macro}_INT_{priv} # Set the interrupt",
+                        f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
+                        f"RVTEST_CLR_{macro}_INT_{priv} # Clear the interrupt if the interrupt handler hasn't done so",
+                    ],
+                ),
                 f"#endif // {guard}",
                 "",
             ]
@@ -210,19 +196,23 @@ def generate_cp_priority(
                 f"csrs {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = 1",
                 f"LI(x{tmp_reg}, 0)",
                 f"csrw {ie}, x{tmp_reg} # {ie} = 0",
-                *mode_enter(suite, priv),
-                *_raise(raised, pair, "SET", priv),
-                f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait until every raised interrupt is pending",
-                test_data.add_testcase(bin_name, coverpoint, suite.covergroup),
-                tsbi_call_or_direct(f"csrr x{check_reg}, {suite.ip}", priv),
-                f"LI(x{tmp_reg}, {raised_mask:#x})",
-                f"and x{check_reg}, x{check_reg}, x{tmp_reg} # raised interrupts that are pending",
-                write_sigupd(check_reg, test_data),
-                # Enable last, so the pending interrupts are arbitrated together and taken in priority order
-                f"LI(x{tmp_reg}, {ie_after})",
-                tsbi_call_or_direct(f"csrw {ie}, x{tmp_reg} # {ie} = {ie_after:#x}", priv),
-                *_raise(raised, pair, "CLR", priv),
-                *mode_exit(suite, priv),
+                *in_mode(
+                    priv,
+                    suite.boot,
+                    [
+                        *_raise(raised, pair, "SET", priv),
+                        f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait until every raised interrupt is pending",
+                        test_data.add_testcase(bin_name, coverpoint, suite.covergroup),
+                        tsbi_call_or_direct(f"csrr x{check_reg}, {suite.ip}", priv),
+                        f"LI(x{tmp_reg}, {raised_mask:#x})",
+                        f"and x{check_reg}, x{check_reg}, x{tmp_reg} # raised interrupts that are pending",
+                        write_sigupd(check_reg, test_data),
+                        # Enable last, so the pending interrupts are arbitrated together and taken in priority order
+                        f"LI(x{tmp_reg}, {ie_after})",
+                        tsbi_call_or_direct(f"csrw {ie}, x{tmp_reg} # {ie} = {ie_after:#x}", priv),
+                        *_raise(raised, pair, "CLR", priv),
+                    ],
+                ),
                 f"#endif // {guard_symbol(second)}",
                 f"#endif // {guard_symbol(first)}",
                 "",
@@ -287,37 +277,41 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
                 f"LI(x{tmp_reg}, {ie_mask:#x})",
                 f"csrw {suite.ie}, x{tmp_reg} # {suite.ie}.{ie_name} = 1",
                 test_data.add_testcase(f"priv_{priv}_tw_{tw}_{status['field']}_{enable}", coverpoint, suite.covergroup),
-                *mode_enter(suite, priv),
-                # Below M-mode the SOON macro reaches the timer through T-SBI traps; RVMODEL_TIMER_INT_SOON_DELAY
-                # is sized so the interrupt cannot fire before those return and the trap count is sampled.
-                f"RVTEST_SET_{wfi['timer']}_INT_SOON_{priv} # timer interrupt after RVMODEL_TIMER_INT_SOON_DELAY",
-                # Every trap, including the interrupt, bumps rvtest_trap_count. Sample it after the last
-                # trap of the setup so that any later change means the timer interrupt was taken.
-                f"LA(x{count_reg}, rvtest_trap_count)",
-                f"LREG x{count_reg}, 0(x{count_reg}) # trap count before waiting",
-                # WFI may return before the timer fires (it may even be a no-op), so repeat it until the interrupt
-                # has arrived. Check before each WFI: if the interrupt was already taken, a WFI would sleep with
-                # nothing left to wake it.
-                "1:",
-                f"LA(x{tmp_reg}, rvtest_trap_count)",
-                f"LREG x{tmp_reg}, 0(x{tmp_reg})",
-                f"bne x{tmp_reg}, x{count_reg}, 2f # timer interrupt taken",
-                *(
-                    []
-                    if taken
-                    # Masked here, the interrupt is never taken, so the trap count never changes; WFI still
-                    # wakes once it is pending, which is the only observable sign that it fired.
-                    else [
-                        f"csrr x{tmp_reg}, {ip_csr}",
-                        f"andi x{tmp_reg}, x{tmp_reg}, {ip_mask:#x} # {ip_csr}.{ip_name}",
-                        f"bnez x{tmp_reg}, 2f # timer interrupt pending but masked",
-                    ]
+                *in_mode(
+                    priv,
+                    suite.boot,
+                    [
+                        # Below M-mode the SOON macro reaches the timer through T-SBI traps; RVMODEL_TIMER_INT_SOON_DELAY
+                        # is sized so the interrupt cannot fire before those return and the trap count is sampled.
+                        f"RVTEST_SET_{wfi['timer']}_INT_SOON_{priv} # timer interrupt after RVMODEL_TIMER_INT_SOON_DELAY",
+                        # Every trap, including the interrupt, bumps rvtest_trap_count. Sample it after the last
+                        # trap of the setup so that any later change means the timer interrupt was taken.
+                        f"LA(x{count_reg}, rvtest_trap_count)",
+                        f"LREG x{count_reg}, 0(x{count_reg}) # trap count before waiting",
+                        # WFI may return before the timer fires (it may even be a no-op), so repeat it until the interrupt
+                        # has arrived. Check before each WFI: if the interrupt was already taken, a WFI would sleep with
+                        # nothing left to wake it.
+                        "1:",
+                        f"LA(x{tmp_reg}, rvtest_trap_count)",
+                        f"LREG x{tmp_reg}, 0(x{tmp_reg})",
+                        f"bne x{tmp_reg}, x{count_reg}, 2f # timer interrupt taken",
+                        *(
+                            []
+                            if taken
+                            # Masked here, the interrupt is never taken, so the trap count never changes; WFI still
+                            # wakes once it is pending, which is the only observable sign that it fired.
+                            else [
+                                f"csrr x{tmp_reg}, {ip_csr}",
+                                f"andi x{tmp_reg}, x{tmp_reg}, {ip_mask:#x} # {ip_csr}.{ip_name}",
+                                f"bnez x{tmp_reg}, 2f # timer interrupt pending but masked",
+                            ]
+                        ),
+                        "wfi",
+                        "j 1b",
+                        "2:",
+                        f"RVTEST_CLR_{wfi['timer']}_INT_{priv} # Clear the timer interrupt",
+                    ],
                 ),
-                "wfi",
-                "j 1b",
-                "2:",
-                f"RVTEST_CLR_{wfi['timer']}_INT_{priv} # Clear the timer interrupt",
-                *mode_exit(suite, priv),
                 f"#endif // {wfi['guard']}",
                 "",
             ]
@@ -367,9 +361,13 @@ def generate_cp_wfi_timeout(
                     test_data.add_testcase(
                         f"priv_{priv}_tw_{tw}_{status['field']}_{enable}_{ie_name}_{ie}", coverpoint, suite.covergroup
                     ),
-                    *mode_enter(suite, priv),
-                    "wfi # nothing is pending, so this times out and traps as an illegal instruction",
-                    *mode_exit(suite, priv),
+                    *in_mode(
+                        priv,
+                        suite.boot,
+                        [
+                            "wfi # nothing is pending, so this times out and traps as an illegal instruction",
+                        ],
+                    ),
                     *(["#endif // S_SUPPORTED"] if tw == 0 else []),
                     "",
                 ]

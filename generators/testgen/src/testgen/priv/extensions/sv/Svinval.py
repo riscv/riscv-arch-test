@@ -8,6 +8,7 @@
 
 """Generate Svinval privilege and TVM tests."""
 
+from testgen.asm.tsbi import in_mode
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
@@ -44,9 +45,7 @@ def make_svinval(test_data: TestData) -> list[TestChunk]:
         [
             "main:",
             *add_operations(test_data, 1),
-            "RVTEST_TSBI_GOTO_UMODE",
-            *add_operations(test_data, 2),
-            "RVTEST_TSBI_GOTO_SMODE",
+            *in_mode("U", "S", add_operations(test_data, 2)),
         ]
     )
     chunk.trap_sigupd_count = 30

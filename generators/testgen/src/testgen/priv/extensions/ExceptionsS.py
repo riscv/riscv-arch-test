@@ -9,7 +9,7 @@
 """Exceptions S-mode test generator (refactored, calls ExceptionsCommon)."""
 
 from testgen.asm.helpers import comment_banner, write_sigupd
-from testgen.asm.tsbi import tsbi_call, tsbi_call_or_direct
+from testgen.asm.tsbi import in_mode, tsbi_call, tsbi_call_or_direct
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ExceptionsCommon import (
@@ -68,17 +68,9 @@ def _generate_stvec_tests(test_data: TestData, mode_tag: str, priv_mode: int) ->
     """Delegated illegal-instruction exceptions in S/U-mode trap through stvec (cp_stvec crosses illegalops)."""
     covergroup, coverpoint = _CG, "cp_stvec"
 
-    lines = [
-        comment_banner(coverpoint, "delegated illegal instruction in S/U mode goes to stvec"),
-    ]
-
-    if priv_mode == 1:
-        lines.append("RVTEST_TSBI_GOTO_SMODE")
-    elif priv_mode == 0:
-        lines.append("RVTEST_TSBI_GOTO_UMODE")
-
+    body: list[str] = []
     for name, word in (("zeros", "0x00000000"), ("ones", "0xFFFFFFFF")):
-        lines.extend(
+        body.extend(
             [
                 f"# Illegal instruction ({name}) should trap through stvec",
                 test_data.add_testcase(f"stvec_illegalinstr_{name}_{mode_tag}", coverpoint, covergroup),
@@ -86,10 +78,10 @@ def _generate_stvec_tests(test_data: TestData, mode_tag: str, priv_mode: int) ->
                 f".word {word}",
             ]
         )
-    if priv_mode == 0:
-        lines.append("RVTEST_TSBI_GOTO_SMODE  # back to S-mode for the tests that follow")
-
-    return lines
+    return [
+        comment_banner(coverpoint, "delegated illegal instruction in S/U mode goes to stvec"),
+        *in_mode("S" if priv_mode == 1 else "U", "S", body),
+    ]
 
 
 def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: int) -> list[str]:
@@ -101,13 +93,12 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
         "# Save mstatus before modifying it",
         tsbi_call(f"csrr x{save_reg}, mstatus"),
     ]
-    if priv_mode == 0:
-        lines.append("RVTEST_TSBI_GOTO_UMODE")
-
+    mode = "S" if priv_mode == 1 else "U"
+    body: list[str] = []
     for mie in (0, 1):
         for sie in (0, 1):
             tag = f"{mode_tag}_mie_{mie}_sie_{sie}"
-            lines.extend(
+            body.extend(
                 [
                     f"\n# {tag}",
                     f"LI(x{mask_mie}, 0x88)",  # MPIE | MIE: mret in the T-SBI handler copies MPIE into MIE
@@ -118,9 +109,9 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
             )
 
             sie_cmd = f"{'csrs' if sie else 'csrc'} sstatus, x{mask_sie}"
-            lines.append(tsbi_call_or_direct(sie_cmd, "S" if priv_mode == 1 else "U"))
+            body.append(tsbi_call_or_direct(sie_cmd, mode))
 
-            lines.extend(
+            body.extend(
                 [
                     test_data.add_testcase(tag, coverpoint, covergroup),
                     "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
@@ -129,14 +120,8 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
                 ]
             )
 
-    lines.extend(
-        [
-            "\n# Restore mstatus",
-            tsbi_call(f"csrw mstatus, x{save_reg}"),
-        ]
-    )
-    if priv_mode == 0:
-        lines.append("RVTEST_TSBI_GOTO_SMODE")
+    body.extend(["\n# Restore mstatus", tsbi_call(f"csrw mstatus, x{save_reg}")])
+    lines.extend(in_mode(mode, "S", body))
 
     test_data.int_regs.return_registers([save_reg, mask_mie, mask_sie])
     return lines

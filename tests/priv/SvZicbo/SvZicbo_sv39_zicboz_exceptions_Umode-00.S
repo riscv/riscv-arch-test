@@ -76,12 +76,12 @@ main:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test1_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test1_zero, SvZicbo_cg_cp_zicboz_test1_zero_str)
 
@@ -95,12 +95,12 @@ SvZicbo_cg_cp_zicboz_test1_zero:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test2_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test2_zero, SvZicbo_cg_cp_zicboz_test2_zero_str)
 #endif
@@ -115,12 +115,12 @@ SvZicbo_cg_cp_zicboz_test2_zero:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test3_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test3_zero, SvZicbo_cg_cp_zicboz_test3_zero_str)
 #endif
@@ -134,12 +134,12 @@ SvZicbo_cg_cp_zicboz_test3_zero:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test4_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test4_zero, SvZicbo_cg_cp_zicboz_test4_zero_str)
 
@@ -152,12 +152,12 @@ SvZicbo_cg_cp_zicboz_test4_zero:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test5_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test5_zero, SvZicbo_cg_cp_zicboz_test5_zero_str)
 
@@ -170,12 +170,12 @@ SvZicbo_cg_cp_zicboz_test5_zero:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test6_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test6_zero, SvZicbo_cg_cp_zicboz_test6_zero_str)
 
@@ -188,12 +188,12 @@ SvZicbo_cg_cp_zicboz_test6_zero:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test7_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test7_zero, SvZicbo_cg_cp_zicboz_test7_zero_str)
 
@@ -206,12 +206,12 @@ SvZicbo_cg_cp_zicboz_test7_zero:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test8_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test8_zero, SvZicbo_cg_cp_zicboz_test8_zero_str)
 
@@ -225,12 +225,12 @@ SvZicbo_cg_cp_zicboz_test8_zero:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test9_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test9_zero, SvZicbo_cg_cp_zicboz_test9_zero_str)
 #endif
@@ -245,12 +245,12 @@ SvZicbo_cg_cp_zicboz_test9_zero:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test10_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test10_zero, SvZicbo_cg_cp_zicboz_test10_zero_str)
 
@@ -265,12 +265,12 @@ SvZicbo_cg_cp_zicboz_test10_zero:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test11_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test11_zero, SvZicbo_cg_cp_zicboz_test11_zero_str)
 #endif
@@ -286,12 +286,12 @@ SvZicbo_cg_cp_zicboz_test11_zero:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test12_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test12_zero, SvZicbo_cg_cp_zicboz_test12_zero_str)
 #endif
@@ -306,12 +306,12 @@ SvZicbo_cg_cp_zicboz_test12_zero:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test13_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test13_zero, SvZicbo_cg_cp_zicboz_test13_zero_str)
 
@@ -325,12 +325,12 @@ SvZicbo_cg_cp_zicboz_test13_zero:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test14_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test14_zero, SvZicbo_cg_cp_zicboz_test14_zero_str)
 
@@ -344,12 +344,12 @@ SvZicbo_cg_cp_zicboz_test14_zero:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test15_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test15_zero, SvZicbo_cg_cp_zicboz_test15_zero_str)
 
@@ -363,12 +363,12 @@ SvZicbo_cg_cp_zicboz_test15_zero:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test16_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test16_zero, SvZicbo_cg_cp_zicboz_test16_zero_str)
 
@@ -382,12 +382,12 @@ SvZicbo_cg_cp_zicboz_test16_zero:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test17_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test17_zero, SvZicbo_cg_cp_zicboz_test17_zero_str)
 
@@ -402,12 +402,12 @@ SvZicbo_cg_cp_zicboz_test17_zero:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test18_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test18_zero, SvZicbo_cg_cp_zicboz_test18_zero_str)
 #endif
@@ -423,12 +423,12 @@ SvZicbo_cg_cp_zicboz_test18_zero:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test19_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test19_zero, SvZicbo_cg_cp_zicboz_test19_zero_str)
 #endif
@@ -444,12 +444,12 @@ SvZicbo_cg_cp_zicboz_test19_zero:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test20_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test20_zero, SvZicbo_cg_cp_zicboz_test20_zero_str)
 #endif
@@ -465,12 +465,12 @@ SvZicbo_cg_cp_zicboz_test20_zero:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test21_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test21_zero, SvZicbo_cg_cp_zicboz_test21_zero_str)
 #endif
@@ -486,12 +486,12 @@ SvZicbo_cg_cp_zicboz_test21_zero:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test22_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test22_zero, SvZicbo_cg_cp_zicboz_test22_zero_str)
 #endif
@@ -507,12 +507,12 @@ SvZicbo_cg_cp_zicboz_test22_zero:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test23_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test23_zero, SvZicbo_cg_cp_zicboz_test23_zero_str)
 
@@ -528,12 +528,12 @@ SvZicbo_cg_cp_zicboz_test23_zero:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test24_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test24_zero, SvZicbo_cg_cp_zicboz_test24_zero_str)
 #endif
@@ -550,12 +550,12 @@ SvZicbo_cg_cp_zicboz_test24_zero:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test25_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test25_zero, SvZicbo_cg_cp_zicboz_test25_zero_str)
 #endif
@@ -571,12 +571,12 @@ SvZicbo_cg_cp_zicboz_test25_zero:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test26_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test26_zero, SvZicbo_cg_cp_zicboz_test26_zero_str)
 
@@ -591,12 +591,12 @@ SvZicbo_cg_cp_zicboz_test26_zero:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test27_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test27_zero, SvZicbo_cg_cp_zicboz_test27_zero_str)
 
@@ -611,12 +611,12 @@ SvZicbo_cg_cp_zicboz_test27_zero:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test28_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test28_zero, SvZicbo_cg_cp_zicboz_test28_zero_str)
 
@@ -631,12 +631,12 @@ SvZicbo_cg_cp_zicboz_test28_zero:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test29_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test29_zero, SvZicbo_cg_cp_zicboz_test29_zero_str)
 
@@ -651,12 +651,12 @@ SvZicbo_cg_cp_zicboz_test29_zero:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test30_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test30_zero, SvZicbo_cg_cp_zicboz_test30_zero_str)
 
@@ -672,12 +672,12 @@ SvZicbo_cg_cp_zicboz_test30_zero:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test31_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test31_zero, SvZicbo_cg_cp_zicboz_test31_zero_str)
 #endif
@@ -694,12 +694,12 @@ SvZicbo_cg_cp_zicboz_test31_zero:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test32_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test32_zero, SvZicbo_cg_cp_zicboz_test32_zero_str)
 #endif
@@ -716,12 +716,12 @@ SvZicbo_cg_cp_zicboz_test32_zero:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test33_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test33_zero, SvZicbo_cg_cp_zicboz_test33_zero_str)
 #endif
@@ -738,12 +738,12 @@ SvZicbo_cg_cp_zicboz_test33_zero:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test34_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test34_zero, SvZicbo_cg_cp_zicboz_test34_zero_str)
 #endif
@@ -760,12 +760,12 @@ SvZicbo_cg_cp_zicboz_test34_zero:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE # enter U-mode
   addi a2, a2, 16
 SvZicbo_cg_cp_zicboz_test35_zero:
   cbo.zero (a5)
   addi a4, a2, 4
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # return to S-mode
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test35_zero, SvZicbo_cg_cp_zicboz_test35_zero_str)
 #endif

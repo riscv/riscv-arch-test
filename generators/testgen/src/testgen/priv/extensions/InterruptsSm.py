@@ -11,6 +11,7 @@
 
 from testgen.asm.csr import write_stce
 from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.tsbi import in_mode
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.InterruptsCommon import (
@@ -26,8 +27,6 @@ from testgen.priv.extensions.InterruptsCommon import (
     int_coverpoint,
     int_macro,
     machine_ints,
-    mode_enter,
-    mode_exit,
     reg_ints,
     sstc_ints,
     supervisor_ints,
@@ -113,11 +112,15 @@ def _generate_cp_trigger_sm(
                                 cp,
                                 COVERGROUP,
                             ),
-                            *mode_enter(suite, priv),
-                            f"RVTEST_SET_{macro}_INT_{priv} # Set the interrupt",
-                            f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
-                            f"RVTEST_CLR_{macro}_INT_{priv} # Clear the interrupt if the handler hasn't done so",
-                            *mode_exit(suite, priv),
+                            *in_mode(
+                                priv,
+                                suite.boot,
+                                [
+                                    f"RVTEST_SET_{macro}_INT_{priv} # Set the interrupt",
+                                    f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
+                                    f"RVTEST_CLR_{macro}_INT_{priv} # Clear the interrupt if the handler hasn't done so",
+                                ],
+                            ),
                             f"#endif // UDB_MTVEC_MODES_{mode}",
                             *case_close,
                             f"#endif // {guard}",

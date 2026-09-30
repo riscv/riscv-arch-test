@@ -93,7 +93,7 @@ SvPMPZicbo_cp_pmpcfg_pmpcfg0_x:
   slli a0, a0, 10
   srli a0, a0, 10
   add a5, a5, a0
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # enter S-mode
 SvPMPZicbo_cg_cp_pmp_zicbo_test1_cbo_clean:
   cbo.clean (a5)
   nop
@@ -103,14 +103,14 @@ SvPMPZicbo_cg_cp_pmp_zicbo_test1_cbo_flush:
 SvPMPZicbo_cg_cp_pmp_zicbo_test1_cbo_inval:
   cbo.inval (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
   PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
   LI(a5, va_data)
-  RVTEST_TSBI_GOTO_SMODE
+  RVTEST_TSBI_GOTO_SMODE # enter S-mode
 SvPMPZicbo_cg_cp_pmp_zicbo_test2_cbo_clean:
   cbo.clean (a5)
   nop
@@ -120,7 +120,7 @@ SvPMPZicbo_cg_cp_pmp_zicbo_test2_cbo_flush:
 SvPMPZicbo_cg_cp_pmp_zicbo_test2_cbo_inval:
   cbo.inval (a5)
   nop
-  RVTEST_TSBI_GOTO_MMODE
+  RVTEST_TSBI_GOTO_MMODE # return to M-mode
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test

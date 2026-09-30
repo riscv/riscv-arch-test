@@ -10,6 +10,7 @@
 from dataclasses import dataclass
 
 from testgen.asm.helpers import comment_banner
+from testgen.asm.tsbi import in_mode
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.pmp.helpers import (
@@ -67,9 +68,7 @@ def _make_cfg_a_off_chunk(test_data: TestData, mode: Mode) -> TestChunk:
         "csrw pmpaddr0, x5",
         "csrw pmpcfg0, x0",
         "RVTEST_SFENCE_VMA_IF_SUPPORTED",
-        f"RVTEST_TSBI_GOTO_{mode.letter}MODE",
-        *gen_rwx(test_data, "off", "cp_cfg_A_off"),
-        "RVTEST_TSBI_GOTO_MMODE",
+        *in_mode(mode.letter, "M", gen_rwx(test_data, "off", "cp_cfg_A_off")),
     ]
     chunk.section_header = comment_banner(
         f"{mode.suite} cp_cfg_A_off",
@@ -99,11 +98,7 @@ def _csr_walk(symbol: str, first: str, count: int, string_label: str, mode: Mode
     return [
         f".set {symbol}, {first}",
         f".rept {count}",
-        f"RVTEST_TSBI_GOTO_{mode.letter}MODE",
-        "99:",
-        f"RVTEST_SIGUPD_CSR_WRITE({symbol}, x4, 99b, {string_label}_str)",
-        "nop",
-        "RVTEST_TSBI_GOTO_MMODE",
+        *in_mode(mode.letter, "M", ["99:", f"RVTEST_SIGUPD_CSR_WRITE({symbol}, x4, 99b, {string_label}_str)", "nop"]),
         f".set {symbol}, {symbol}+1",
         ".endr",
     ]

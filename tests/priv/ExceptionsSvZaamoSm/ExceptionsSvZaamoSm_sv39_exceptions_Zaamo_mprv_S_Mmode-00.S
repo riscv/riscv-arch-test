@@ -86,7 +86,6 @@ ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test1_amoadd:
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
 
-
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test1_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test1_amoadd_str)
 
@@ -114,7 +113,6 @@ ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test2_amoadd:
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
 
-
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test2_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test2_amoadd_str)
 
@@ -141,7 +139,6 @@ ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test3_amoadd:
 
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
-
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test3_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test3_amoadd_str)
@@ -173,7 +170,6 @@ ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test4_amoadd:
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
 
-
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test4_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test4_amoadd_str)
 
@@ -202,7 +198,6 @@ ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test5_amoadd:
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
 
-
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test5_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test5_amoadd_str)
 
@@ -230,7 +225,6 @@ ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test6_amoadd:
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
 
-
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test6_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test6_amoadd_str)
 
@@ -257,7 +251,6 @@ ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test7_amoadd:
 
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
-
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test7_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test7_amoadd_str)
@@ -289,7 +282,6 @@ ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test8_amoadd:
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
 
-
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test8_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test8_amoadd_str)
 
@@ -320,7 +312,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test9_amoadd:
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
 
-
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test9_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test9_amoadd_str)
 
@@ -346,7 +337,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test10_amoadd:
 
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
-
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test10_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test10_amoadd_str)
@@ -376,7 +366,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test11_amoadd:
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
 
-
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test11_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test11_amoadd_str)
 
@@ -402,7 +391,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test12_amoadd:
 
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
-
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test12_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test12_amoadd_str)
@@ -432,7 +420,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test13_amoadd:
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
 
-
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test13_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test13_amoadd_str)
 
@@ -458,7 +445,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test14_amoadd:
 
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
-
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test14_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test14_amoadd_str)
@@ -488,7 +474,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test15_amoadd:
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
 
-
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test15_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test15_amoadd_str)
 
@@ -514,7 +499,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test16_amoadd:
 
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
-
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test16_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test16_amoadd_str)
@@ -544,7 +528,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test17_amoadd:
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
 
-
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test17_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test17_amoadd_str)
 
@@ -570,7 +553,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test18_amoadd:
 
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
-
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test18_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test18_amoadd_str)
@@ -600,7 +582,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test19_amoadd:
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
 
-
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test19_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test19_amoadd_str)
 
@@ -626,7 +607,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test20_amoadd:
 
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
-
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test20_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test20_amoadd_str)
@@ -656,7 +636,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test21_amoadd:
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
 
-
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test21_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test21_amoadd_str)
 
@@ -682,7 +661,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test22_amoadd:
 
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
-
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test22_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test22_amoadd_str)
@@ -712,7 +690,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test23_amoadd:
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
 
-
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test23_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test23_amoadd_str)
 
@@ -738,7 +715,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test24_amoadd:
 
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
-
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test24_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test24_amoadd_str)
@@ -768,7 +744,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test25_amoadd:
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
 
-
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test25_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test25_amoadd_str)
 
@@ -794,7 +769,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test26_amoadd:
 
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
-
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test26_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test26_amoadd_str)
@@ -824,7 +798,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test27_amoadd:
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
 
-
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test27_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test27_amoadd_str)
 
@@ -850,7 +823,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test28_amoadd:
 
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
-
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test28_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test28_amoadd_str)
@@ -880,7 +852,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test29_amoadd:
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
 
-
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test29_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test29_amoadd_str)
 
@@ -906,7 +877,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test30_amoadd:
 
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
-
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test30_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test30_amoadd_str)
@@ -936,7 +906,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test31_amoadd:
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
 
-
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test31_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test31_amoadd_str)
 
@@ -962,7 +931,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test32_amoadd:
 
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
-
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test32_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test32_amoadd_str)
@@ -992,7 +960,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test33_amoadd:
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
 
-
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test33_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test33_amoadd_str)
 
@@ -1018,7 +985,6 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_m_test34_amoadd:
 
   LI(t0, MSTATUS_MPRV)
   csrc mstatus, t0
-
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test34_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test34_amoadd_str)

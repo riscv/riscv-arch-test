@@ -1,1 +1,43 @@
+# Mapping of normative rules to coverpoints for a test suite
+
 normative_rule_definitions:
+  # No sc.w instruction shall retire unless it passes memory permission checks,
+  # The sc.w has no reservation, yet it must still raise the page fault or access fault.
+  - name: sc_retire_permission
+    coverpoint:
+      [
+        "ExceptionsSvZalrsc_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u}",
+      ]
+
+  # For lr and sc, the Zalrsc extension requires that the address held in rs1 be naturally
+  # aligned to the size of the operand. If the address is not naturally aligned, an
+  # address-misaligned exception or an access-fault exception will be generated.
+  - name: lr_sc_alignment
+    coverpoint:
+      [
+        "ExceptionsSvZalrsc_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u}",
+      ]
+
+  # Priority|Exc.Code|Description === Highest|3|Instruction address breakpoint¶|12,
+  # 1|During instruction address translation: First encountered page fault or access
+  # fault¶|1|With physical address for instruction: Instruction access fault¶|2 0
+  # 8,9,11 3 3|Illegal instruction Instruction address misaligned Environment call
+  # Environment break Load/store/AMO address breakpoint¶|4,6|Optionally:
+  # Load/store/AMO address misaligned¶|13, 15, 5, 7|During address translation for
+  # an explicit memory access: First encountered page fault or access
+  # fault¶|5,7|With physical address for an explicit memory access: Load/store/AMO
+  # access fault¶Lowest|4,6|If not higher priority: Load/store/AMO address
+  # misaligned ===
+  - name: exc_priority
+    coverpoint:
+      [
+        "ExceptionsSvZalrsc_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u}",
+      ]
+
+  # Load/store/AMO address-misaligned exceptions may have either higher or lower
+  # priority than load/store/AMO page-fault and access-fault exceptions.
+  - name: mcause_exccode_priority_misaligned
+    coverpoint:
+      [
+        "ExceptionsSvZalrsc_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u}",
+      ]

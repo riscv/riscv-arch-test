@@ -6,3 +6,10 @@ normative_rule_definitions:
     # of instruction retirement should be temporarily reduced or paused. The
     # duration of its effect must be bounded and may be zero.
     coverpoint: ["Zihintpause_pause_cg/cp_asm_count"]
+  # PAUSE is encoded as a FENCE instruction with pred=W, succ=0, fm=0, rd=x0, and
+  # rs1=x0.
+  - name: pause_enc_fence
+    coverpoint: ["Zihintpause_pause_cg/cp_asm_count"]
+  # PAUSE
+  - name: pause_enc
+    coverpoint: ["Zihintpause_pause_cg/cp_asm_count"]

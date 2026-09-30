@@ -1,0 +1,71 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # ... raises an illegal-instruction exception, or, if executing in VS or VU mode and
+  # the circumstances for a virtual-instruction exception apply, raises a
+  # virtual-instruction exception instead of an illegal-instruction exception.
+  - name: stateen_illegal_state_access
+    coverpoint:
+      [
+        "SmstateenH_{hs,vs,vu}_cg/cp_{hs,vs,vu}_mstateen0_{se0, envcfg}",
+        "SmstateenH_{vs,vu}_cg/cp_{vs,vu}_mstateen0_p1p13",
+      ]
+  # Each standard-defined bit of a stateen CSR is WARL and may be read-only zero or one.
+  - name: stateen_warl_access
+    coverpoint: ["SmstateenH_hs_cg/{cp_hs_hstateen0_roz, cp_hs_hstateen0_walk}"]
+  # Likewise, all reserved bits not yet given a defined meaning are also read-only zeros.
+  - name: stateen_reserved_roz
+    coverpoint: ["SmstateenH_hs_cg/{cp_hs_hstateen0_roz, cp_hs_hstateen0_walk}"]
+  # For every bit in an mstateen CSR that is zero (whether read-only zero or set to
+  # zero), the same bit appears as read-only zero in the matching hstateen and sstateen
+  # CSRs.
+  - name: mstateen_lower_priv_roz
+    coverpoint: ["SmstateenH_hs_cg/cp_hs_hstateen0_roz"]
+  # A bit in an hstateen CSR cannot be read-only one unless the same bit is read-only one
+  # in the matching mstateen CSR.
+  - name: hstateen_ro1_bits
+    coverpoint: ["SmstateenH_hs_cg/cp_hs_hstateen0_roz"]
+  # For each mstateen CSR, bit 63 is defined to control access to the matching sstateen
+  # and hstateen CSRs.
+  - name: mstateen_bit_63_op
+    coverpoint: ["SmstateenH_{hs,vs,vu}_cg/cp_{hs,vs,vu}_mstateen0_se0"]
+  # Bit 63 of each hstateen CSR is always writable (not read-only).
+  - name: hstateen_bit_63_writable
+    coverpoint: ["SmstateenH_hs_cg/{cp_hs_hstateen0_roz, cp_hs_hstateen0_walk}"]
+  # Figure: Hypervisor State Enable 0 Register (hstateen0).
+  - name: hstateen0_enc_img
+    coverpoint: ["SmstateenH_hs_cg/cp_hs_hstateen0_walk"]
+  # The SE0 bit in mstateen0 controls access to the hstateen0, hstateen0h, and the
+  # sstateen0 CSRs.
+  - name: mstateen0_se0_op
+    coverpoint: ["SmstateenH_{hs,vs,vu}_cg/cp_{hs,vs,vu}_mstateen0_se0"]
+  # The SE0 bit in hstateen0 controls access to the sstateen0 CSR.
+  - name: hstateen0_se0_op
+    coverpoint: ["SmstateenH_vs_cg/cp_vs_mstateen0_se0"]
+  # The ENVCFG bit in mstateen0 controls access to the henvcfg, henvcfgh, and the senvcfg
+  # CSRs.
+  - name: mstateen0_envcfg_op
+    coverpoint: ["SmstateenH_{hs,vs,vu}_cg/cp_{hs,vs,vu}_mstateen0_envcfg"]
+  # The ENVCFG bit in hstateen0 controls access to the senvcfg CSRs.
+  - name: hstateen0_envcfg_op
+    coverpoint: ["SmstateenH_vs_cg/cp_vs_mstateen0_envcfg"]
+  # The P1P13 bit in mstateen0 controls access to the hedelegh introduced by Privileged
+  # Specification Version 1.13.
+  - name: mstateen0_p1p13_op
+    coverpoint: ["SmstateenH_{vs,vu}_cg/cp_{vs,vu}_mstateen0_p1p13"]
+  # in VS-mode or VU-mode, attempts to access an implemented non-high-half hypervisor CSR
+  # or VS CSR when the same access (read/write) would be allowed in HS-mode, assuming
+  # mstatus.TVM=0;
+  - name: H_virtinst_vu_vs_nonhigh_allowedhs_tvm0
+    coverpoint: ["SmstateenH_{vs,vu}_cg/cp_{vs,vu}_mstateen0_{se0, envcfg}"]
+  # in VS-mode or VU-mode, if XLEN=32, attempts to access an implemented high-half
+  # hypervisor CSR or high-half VS CSR when the same access (read/write) to the CSR's
+  # low-half partner would be allowed in HS-mode, assuming mstatus.TVM=0;
+  - name: H_virtinst_vu_vs32_high_allowedhs_tvm0
+    coverpoint:
+      ["SmstateenH_{vs,vu}_cg/cp_{vs,vu}_mstateen0_{se0, envcfg, p1p13}"]
+  # in VU-mode, attempts to access an implemented non-high-half supervisor CSR when the
+  # same access (read/write) would be allowed in HS-mode, assuming mstatus.TVM=0;
+  - name: H_virtinst_vu_nonhigh_supervisor_allowedhs_tvm0
+    coverpoint: ["SmstateenH_vu_cg/cp_vu_mstateen0_{se0, envcfg}"]

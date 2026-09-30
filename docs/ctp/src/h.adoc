@@ -240,13 +240,30 @@ include::norm/SstcHSm_norm_rules.adoc[]
 
 include::norm/SstcH_norm_rules.adoc[]
 
-==== SsstateenH Hypervisor State Enable
+==== SsstateenH and SmstateenH Hypervisor State Enable
+
+SsstateenH walks hstateen0 from HS-mode and checks that hstateen0.SE0 and ENVCFG control sstateen0 and senvcfg
+accesses from VS and VU modes but not from HS-mode.  It leaves mstateen at its boot value, so it also runs without
+Smstateen.  SmstateenH checks that mstateen0.SE0, ENVCFG and P1P13 control accesses to hstateen0, sstateen0, henvcfg,
+senvcfg and hedelegh from HS, VS and VU modes, and that hstateen0 bits whose mstateen0 bit is 0 are read-only zero.
+The CSRIND, AIA, IMSIC, CONTEXT and CTR bits of hstateen0 are not tested because Sail does not model the state they
+control.
 
 [[t-SsstateenH-coverpoints]]
 .SsstateenH Coverpoints
 ,===
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=311784014#gid=311784014[Google Sheet Testplan]
 ,===
+
+[[t-SmstateenH-coverpoints]]
+.SmstateenH Coverpoints
+,===
+See <<t-SmstateenH-normative-rules>>
+,===
+
+include::norm/SsstateenH_norm_rules.adoc[]
+
+include::norm/SmstateenH_norm_rules.adoc[]
 
 ==== SscrindH Hypervisor Indirect CSR Access
 

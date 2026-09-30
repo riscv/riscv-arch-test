@@ -494,6 +494,7 @@ covergroup ZicntrH_cg with function sample(ins_t ins);
 
     // VS-mode
     cp_mcounteren_access_vs: cross csraccess, counters_mcounteren, hcounteren_ones, scounteren_zeros, priv_mode_vs;
+    cp_mcounteren_access_vs_h0: cross csraccess, counters_mcounteren, hcounteren_zeros, scounteren_zeros, priv_mode_vs;
     cp_hcounteren_access_vs: cross csraccess, counters_hcounteren, mcounteren_ones, scounteren_zeros, priv_mode_vs;
     cp_delta_vs: cross csrr_time, htimedelta, priv_mode_vs;
 
@@ -502,6 +503,8 @@ covergroup ZicntrH_cg with function sample(ins_t ins);
     cp_delta_u: cross csrr_time, htimedelta, priv_mode_u;
 
     // VU-mode
+    cp_mcounteren_access_vu: cross csraccess, counters_mcounteren, hcounteren_ones, scounteren_ones, priv_mode_vu;
+    cp_mcounteren_access_vu_hs0: cross csraccess, counters_mcounteren, hcounteren_zeros, scounteren_zeros, priv_mode_vu;
     cp_hcounteren_access_vu: cross csraccess, counters_hcounteren, mcounteren_ones, scounteren_ones, priv_mode_vu;
     cp_scounteren_access_vu: cross csraccess, counters_scounteren, mcounteren_ones, hcounteren_ones, priv_mode_vu;
     cp_delta_vu: cross csrr_time, htimedelta, priv_mode_vu;

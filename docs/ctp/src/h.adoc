@@ -7,7 +7,7 @@ The Hypervisor Extension adds an H coverage file containing new Hypervisor instr
 
 HSm boots to M-mode and tests the hypervisor CSRs and instructions from M-mode.  It also holds the
 mstatus.TVM tests of HS-mode and VS-mode, whose traps must be taken in M-mode because the HS-mode trap
-handler reads satp, vsatp and hgatp.  H boots to HS-mode and tests hypervisor CSRs and instructions in
+handler accesses satp and hgatp.  H boots to HS-mode and tests hypervisor CSRs and instructions in
 HS, VS, U and VU modes.
 
 [[t-H-coverpoints]]

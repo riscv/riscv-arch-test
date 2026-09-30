@@ -241,9 +241,11 @@ covergroup HSm_tvm_cg with function sample(ins_t ins);
         wildcard bins csrr = {CSRR};
         wildcard bins csrw = {CSRW};
     }
-    satp_hgatp : coverpoint ins.current.insn[31:20] {
+    // mstatus.TVM = 1 traps satp and hgatp accesses in HS-mode, but not vsatp accesses
+    atp_hs : coverpoint ins.current.insn[31:20] {
         bins satp  = {CSR_SATP};
         bins hgatp = {CSR_HGATP};
+        bins vsatp = {CSR_VSATP};
     }
     satp : coverpoint ins.current.insn[31:20] {
         bins satp = {CSR_SATP};
@@ -256,7 +258,7 @@ covergroup HSm_tvm_cg with function sample(ins_t ins);
         wildcard bins sfence_vma = {SFENCE_VMA};
     }
 
-    cp_tvm_hs:  cross priv_mode_hs, satp_hgatp, csr_rw, mstatus_tvm;
+    cp_tvm_hs:  cross priv_mode_hs, atp_hs, csr_rw, mstatus_tvm;
     cp_tvm_vs:  cross priv_mode_vs, satp, csr_rw, mstatus_tvm, hstatus_vtvm;
     cp_hfence:  cross priv_mode_m_hs_vs_u_vu, hfence, mstatus_tvm, hstatus_vtvm;
     cp_sfence:  cross priv_mode_m_hs_vs_u_vu, sfence, mstatus_tvm, hstatus_vtvm;

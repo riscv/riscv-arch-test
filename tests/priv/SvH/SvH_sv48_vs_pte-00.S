@@ -703,7 +703,7 @@ SvH_vsstage_cg_cp_vsatp_perm_reserved_all_exec:
   or x15, x15, x6
   SREG x15, 0(x14)
   LA(x14, rvtest_vlvl0_pg_tbl + (((0x028500403000) >> 12) & 0x1ff) * 8)
-  LA(x15, svh_page)
+  LA(x15, svh_pbmt_page)
   srli x15, x15, 12
   slli x15, x15, 10
   LI(x6, (1 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
@@ -749,7 +749,7 @@ SvH_vsstage_cg_cp_vsatp_pbmt_pbmte0_pbmt1_exec:
   or x13, x13, x6
   SREG x13, 0(x8)
   LA(x8, rvtest_vlvl0_pg_tbl + (((0x028500403000) >> 12) & 0x1ff) * 8)
-  LA(x13, svh_page)
+  LA(x13, svh_pbmt_page)
   srli x13, x13, 12
   slli x13, x13, 10
   LI(x6, (2 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
@@ -795,7 +795,7 @@ SvH_vsstage_cg_cp_vsatp_pbmt_pbmte0_pbmt2_exec:
   or x8, x8, x15
   SREG x8, 0(x13)
   LA(x13, rvtest_vlvl0_pg_tbl + (((0x028500403000) >> 12) & 0x1ff) * 8)
-  LA(x8, svh_page)
+  LA(x8, svh_pbmt_page)
   srli x8, x8, 12
   slli x8, x8, 10
   LI(x15, (3 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
@@ -843,7 +843,7 @@ SvH_vsstage_cg_cp_vsatp_pbmt_pbmte0_pbmt3_exec:
   or x13, x13, x6
   SREG x13, 0(x15)
   LA(x15, rvtest_vlvl0_pg_tbl + (((0x028500403000) >> 12) & 0x1ff) * 8)
-  LA(x13, svh_page)
+  LA(x13, svh_pbmt_page)
   srli x13, x13, 12
   slli x13, x13, 10
   LI(x6, (1 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
@@ -891,7 +891,7 @@ SvH_vsstage_cg_cp_vsatp_pbmt_pbmte1_pbmt1_exec:
   or x14, x14, x8
   SREG x14, 0(x15)
   LA(x15, rvtest_vlvl0_pg_tbl + (((0x028500403000) >> 12) & 0x1ff) * 8)
-  LA(x14, svh_page)
+  LA(x14, svh_pbmt_page)
   srli x14, x14, 12
   slli x14, x14, 10
   LI(x8, (2 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
@@ -939,7 +939,7 @@ SvH_vsstage_cg_cp_vsatp_pbmt_pbmte1_pbmt2_exec:
   or x15, x15, x8
   SREG x15, 0(x14)
   LA(x14, rvtest_vlvl0_pg_tbl + (((0x028500403000) >> 12) & 0x1ff) * 8)
-  LA(x15, svh_page)
+  LA(x15, svh_pbmt_page)
   srli x15, x15, 12
   slli x15, x15, 10
   LI(x8, (3 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
@@ -1256,6 +1256,11 @@ svh_page:
   .4byte 0x00000013    # nop straddling the next page
   .4byte 0x00008067    # ret
   .skip 4096 - 6
+svh_pbmt_page:
+  .4byte 0x00008067    # ret
+  .4byte 0
+  .4byte 0x5a5a5a5a    # load/store word
+  .skip 4096 - 12
   .p2align 12
 rvtest_vlvl2_pg_tbl:
   .skip 4096

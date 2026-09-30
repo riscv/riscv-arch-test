@@ -317,6 +317,9 @@
       // the reservation set.
       "invalidate_on_same_hart_store": false
     },
+    // mie.MSIE/MTIE/MEIE are writable and mip.MSIP/MTIP/MEIP exist, although Simple System
+    // ties the software and external interrupt inputs to 0.
+    //   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/rtl/ibex_cs_registers.sv#L409-L411
     "interrupts": {
       "machine": {
         "software": { "supported": true },

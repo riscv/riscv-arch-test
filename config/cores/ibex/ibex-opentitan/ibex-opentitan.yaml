@@ -236,10 +236,9 @@ params:
   #   CSR to the current program counter"
   #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/exception_interrupts.rst#L8
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
-  # mie.MSIE/MTIE/MEIE are all writable, whatever the integration connects. Simple
-  # System drives only irq_timer_i and ties irq_software_i and irq_external_i to 0
-  # (see rvmodel_macros.h), so software and external interrupts are implemented but
-  # can never become pending in this testbench.
+  # mie.MSIE/MTIE/MEIE are all writable, and mip.MSIP/MTIP/MEIP follow the irq inputs.
+  # Simple System drives only irq_timer_i and ties irq_software_i and irq_external_i to 0,
+  # so software and external interrupts can never become pending in this testbench.
   #   Quote: "assign mie_d.irq_software = csr_wdata_int[CSR_MSIX_BIT];
   #   assign mie_d.irq_timer    = csr_wdata_int[CSR_MTIX_BIT];
   #   assign mie_d.irq_external = csr_wdata_int[CSR_MEIX_BIT];"
@@ -247,8 +246,7 @@ params:
   #   Quote: ".irq_software_i            (1'b0), .irq_timer_i               (timer_irq),
   #   .irq_external_i            (1'b0),"
   #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/examples/simple_system/rtl/ibex_simple_system.sv#L281-L283
-  # ACT reads {MEI,MTI,MSI}_INTR_IMPL as the machine interrupts the platform can raise
-  # (tests/env/check_defines.h), so each is true only where rvmodel_macros.h can raise it.
+  # {MEI,MTI,MSI}_INTR_IMPL name the machine interrupts the platform can raise.
   MEI_INTR_IMPL: false
   MSI_INTR_IMPL: false
   MTI_INTR_IMPL: true

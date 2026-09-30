@@ -1,24 +1,10 @@
 /* Set these to match the DUT memory map and hart count.
  *
- * Ibex Simple System has a single 1 MB RAM at 0x0010_0000.
- *   Quote: "assign cfg_device_addr_base[Ram] = 32'h100000;
- *           assign cfg_device_addr_mask[Ram] = ~32'hFFFFF; // 1 MB"
+ * Ibex Simple System has a 1 MB RAM at 0x0010_0000. The core boots at boot_addr_i
+ * (0x0010_0000) with 0x80 as the least significant byte, so TEST_BASE is 0x0010_0080.
  *   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/examples/simple_system/rtl/ibex_simple_system.sv#L118-L119
- *
- * TEST_BASE is the reset vector, so the tests need no boot stub: the core takes its
- * boot address from boot_addr_i (0x0010_0000 in Simple System) and starts fetching at
- * that address with 0x80 as the least significant byte.
- *   Quote: ".boot_addr_i               (32'h00100000),"
  *   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/examples/simple_system/rtl/ibex_simple_system.sv#L247
- *   Quote: "The core starts fetching at the address made by concatenating the most
- *   significant 3 bytes of the boot address and the reset value (0x80) as the least
- *   significant byte."
  *   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/03_reference/exception_interrupts.rst#L17
- *
- * The same boot address is also the reset value of mtvec's BASE field, which is why
- * 0x0010_0000 (256-byte aligned, as mtvec requires) is left free ahead of TEST_BASE.
- *
- * If RAM_ORIGIN/RAM_LENGTH change here, change memory.regions in sail.json to match.
  */
 RAM_ORIGIN = 0x00100000;
 RAM_LENGTH = 0x00100000;

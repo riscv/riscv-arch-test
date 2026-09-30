@@ -61,9 +61,12 @@ include::norm/ExceptionsHV_norm_rules.adoc[]
 
 ==== InterruptsHSm, InterruptsH and InterruptsHGei Hypervisor Interrupts
 
-InterruptsHSm boots to M-mode and checks mideleg, mie and mip with the hypervisor interrupts and mtinst on interrupts.
+InterruptsHSm boots to M-mode and checks mideleg, mie and mip with the hypervisor interrupts, mtinst on interrupts,
+and that M-level, HS-level and VS-level interrupts pending together in VS-mode or VU-mode are taken in that order.
 InterruptsH boots to HS-mode and raises VS-level interrupts through hvip, checking hideleg, hie, hip, vsie, vsip,
-priorities and delivery to HS-mode and VS-mode.  InterruptsHGei covers guest external interrupts: hgeip, hgeie,
+priorities and delivery to HS-mode and VS-mode.  It also executes WFI in VS-mode and VU-mode with each mstatus.TW
+and hstatus.VTW.  Where the specification lets WFI either complete or raise an exception, the test accepts either
+outcome but no other exception.  InterruptsHGei covers guest external interrupts: hgeip, hgeie,
 hip.SGEIP, hstatus.VGEIN, the SGEI priority and mip.SGEIP from M-mode.  hgeip is read-only, so only the platform
 can raise a guest external interrupt, through the optional RVMODEL_SET_GUEST_EXT_INT and
 RVMODEL_CLR_GUEST_EXT_INT hooks.  Without them, InterruptsHGei has no testcases.  The Sail configurations raise them

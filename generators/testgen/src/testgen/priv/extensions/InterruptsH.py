@@ -15,6 +15,7 @@ ones at the T-SBI call that enters the guest.
 """
 
 from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.InterruptsCommon import (
@@ -445,6 +446,75 @@ def _user_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _wfi_tests(test_data: TestData) -> list[str]:
+    """WFI in VS-mode and VU-mode for each mstatus.TW and hstatus.VTW.
+
+    Where the spec lets WFI either complete or raise an exception, RVTEST_OPTIONAL_TRAP accepts both, so any other
+    exception fails.  mstatus.TW = 1 makes WFI in VS or VU raise illegal instruction unless it completes, and takes
+    precedence over VTW.  With TW = 0, VTW = 1 makes WFI in VS raise virtual instruction unless it completes, and WFI
+    in VU always raises virtual instruction.  With TW = VTW = 0, WFI in VS never traps; a VS-level interrupt that is
+    pending and enabled in vsie but masked by vsstatus.SIE = 0 makes it complete rather than wait.  VS-level
+    interrupts are never masked in VU, so the VU cases have none pending.
+    """
+    tmp_reg, trap_reg = test_data.int_regs.get_registers(2)
+    lines = []
+    for mode in ("vs", "vu"):
+        coverpoint = f"cp_wfi_{mode}"
+        lines.append(
+            comment_banner(
+                coverpoint,
+                f"Execute WFI in {mode.upper()}-mode with mstatus.TW = 0/1 and hstatus.VTW = 0/1"
+                + (", with VSSI pending and\nenabled in vsie but masked by vsstatus.SIE = 0" if mode == "vs" else ""),
+            )
+        )
+        for tw in (0, 1):
+            for vtw in (0, 1):
+                if tw:
+                    cause = "CAUSE_ILLEGAL_INSTRUCTION"
+                elif mode == "vs" and vtw:
+                    cause = "CAUSE_VIRTUAL_INSTRUCTION"
+                else:
+                    cause = None  # VS completes; VU always raises virtual instruction
+                label = test_data.add_testcase(f"tw{tw}_vtw{vtw}", coverpoint, _CG)
+                pending = "MIP_VSSIP" if mode == "vs" else "0"
+                lines.extend(
+                    [
+                        f"LI(x{tmp_reg}, MIP_VSSIP)",
+                        f"csrw hideleg, x{tmp_reg}",
+                        f"csrw hie, x{tmp_reg}",
+                        f"LI(x{tmp_reg}, {pending})",
+                        f"csrw hvip, x{tmp_reg}",
+                        f"LI(x{tmp_reg}, SSTATUS_SIE)",
+                        f"csrc vsstatus, x{tmp_reg}",
+                        f"LI(x{tmp_reg}, HSTATUS_VTW)",
+                        f"csr{'s' if vtw else 'c'} hstatus, x{tmp_reg}",
+                        f"LI(x{tmp_reg}, MSTATUS_TW)",
+                        tsbi_call(f"csr{'s' if tw else 'c'} mstatus, x{tmp_reg}"),
+                        *([f"RVTEST_OPTIONAL_TRAP(x{tmp_reg}, x{trap_reg}, {label[:-1]}, {cause})"] if cause else []),
+                        f"RVTEST_TSBI_GOTO_{mode.upper()}MODE",
+                        label,
+                        "wfi",
+                        *([f"RVTEST_OPTIONAL_TRAP_END(x{tmp_reg})"] if cause else []),
+                        "RVTEST_TSBI_GOTO_SMODE",
+                        f"csrr x{tmp_reg}, hip",
+                        write_sigupd(tmp_reg, test_data),
+                        "csrw hvip, zero",
+                    ]
+                )
+    lines.extend(
+        [
+            f"LI(x{tmp_reg}, MSTATUS_TW)",
+            tsbi_call(f"csrc mstatus, x{tmp_reg}"),
+            f"LI(x{tmp_reg}, HSTATUS_VTW)",
+            f"csrc hstatus, x{tmp_reg}",
+            "csrw hideleg, zero",
+            "csrw hie, zero",
+        ]
+    )
+    test_data.int_regs.return_registers([tmp_reg, trap_reg])
+    return lines
+
+
 @add_priv_test_generator(
     "InterruptsH",
     required_extensions=["H"],
@@ -491,6 +561,9 @@ def make_interruptsh(test_data: TestData) -> list[TestChunk]:
 
     tc = test_data.new_test_chunk(test_chunks, "vu")
     tc.code.extend([*_guest_cross_tests(test_data, "vu"), *_user_tests(test_data)])
+
+    tc = test_data.new_test_chunk(test_chunks, "wfi")
+    tc.code.extend(_wfi_tests(test_data))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

@@ -175,25 +175,6 @@ def _virtual_instruction_tests(test_data: TestData) -> list[str]:
         f"LI(x{temp_reg}, HSTATUS_VTSR | HSTATUS_VTVM)",
         f"csrc hstatus, x{temp_reg}",
         comment_banner(
-            "cp_virtual_instr_vs_wfi",
-            "With nothing pending, WFI in VS-mode with hstatus.VTW = 1 and mstatus.TW = 0 raises virtual instruction\n"
-            "unless the implementation lets WFI complete at once",
-        ),
-        # TODO: WFI_TRAP_ON_TIMEOUT_BEHAVIOR is a proposed riscv-unified-db parameter (link the UDB issue here).
-        # Until a configuration defines it, this case is not assembled.
-        *gated(
-            [
-                f"LI(x{temp_reg}, HSTATUS_VTW)",
-                f"csrs hstatus, x{temp_reg}",
-                "RVTEST_TSBI_GOTO_VSMODE",
-                *trap("wfi", "cp_virtual_instr_vs_wfi", "wfi", writes_rd=False),
-                "RVTEST_TSBI_GOTO_SMODE",
-                f"csrc hstatus, x{temp_reg}",
-            ],
-            "defined(UDB_WFI_TRAP_ON_TIMEOUT_BEHAVIOR_ALWAYS_TRAP) || "
-            "defined(UDB_WFI_TRAP_ON_TIMEOUT_BEHAVIOR_TRAP_ON_TIMEOUT)",
-        ),
-        comment_banner(
             "cp_virtual_instr_vu_*",
             "In VU-mode with mstatus.TVM = TW = 0: read instret(h) with hcounteren.IR or scounteren.IR = 0 and\n"
             "mcounteren.IR = 1; execute hlv.w, hlvx.wu, hsv.w, hfence.vvma and hfence.gvma; read vstval, htval,\n"

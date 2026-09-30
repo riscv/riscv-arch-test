@@ -50,7 +50,7 @@ ci_enabled: true
 #     (https://gitlab.com/qemu-project/qemu/-/work_items/4488), and mstatush.MPELP is not
 #     writable (https://gitlab.com/qemu-project/qemu/-/work_items/4220). ZicfilpSm passes on
 #     qemu-rv64-max, but exclusions apply to every QEMU config.
-exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H,HSm,ExceptionsH,ExceptionsHSm,ExceptionsHF,ExceptionsHV,InterruptsH,InterruptsHSm,SstcH,SstcHSm,ZicntrH,SvinvalH,SvinvalHSm,Shvstvala,Shtvala,SvH,SvHSm,PMPH,SvHZicbo,HTrap,ZicfilpSm"
+exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H,HSm,ExceptionsH,ExceptionsHSm,ExceptionsHF,ExceptionsHV,InterruptsH,InterruptsHSm,SstcH,SstcHSm,ZicntrH,SvinvalH,SvinvalHSm,Shvstvala,Shtvala,SvH,SvHSm,PMPH,SvHZicbo,HTrap,ZicfilpH,ZicfilpSm"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"
 shards: 1

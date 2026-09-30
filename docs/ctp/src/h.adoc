@@ -301,6 +301,11 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 
 ==== ZicfilpH Hypervisor Landing Pads
 
+ZicfilpH boots to HS-mode.  It checks that henvcfg.LPE, not menvcfg.LPE, enables landing pads in VS-mode and
+that senvcfg.LPE, not henvcfg.LPE, enables them in VU-mode.  It checks that traps into VS-mode save ELP in
+vsstatus.SPELP and traps into HS-mode in sstatus.SPELP, and that SRET restores ELP from vsstatus.SPELP when
+executed in VS-mode and from sstatus.SPELP when executed in HS-mode.  Its normative rules are listed with Zicfilp.
+
 [[t-ZicfilpH-coverpoints]]
 .ZicfilpH Coverpoints
 ,===

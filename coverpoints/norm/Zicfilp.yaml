@@ -136,7 +136,7 @@ normative_rule_definitions:
   # To store the previous ELP state on traps to VS-mode, a SPELP bit is defined in the vsstatus (VS-modes
   # version of sstatus).
   - name: vsstatus_spelp_op2
-    coverpoint: ["Hypervisor: belongs to ZicfilpH"]
+    coverpoint: ["ZicfilpH_cg/{cp_trap_entry_spelp,cp_vs_sret_spelp}"]
 
   # To store the previous ELP state on transition to Debug Mode, a pelp bit is defined in the dcsr register.
   # Upon entry into Debug Mode, the pelp bit in dcsr is updated with the ELP at the privilege level the hart
@@ -242,6 +242,7 @@ normative_rule_definitions:
       [
         "{ZicfilpS_cg,ZicfilpU_cg}/cp_zicfilp_lpad_label_exception_delivery (V=0)",
         "ZicfilpS_cg/cp_pelp_trap_return_s_zicfilp (SPELP written through sstatus)",
+        "ZicfilpH_cg/{cp_vs_sstatus_spelp,cp_vs_sret_spelp} (V=1)",
       ]
 
   # The Zicfilp extension adds the LPE field in senvcfg. When the LPE field is set to 1, the Zicfilp extension
@@ -250,16 +251,20 @@ normative_rule_definitions:
     coverpoint:
       [
         "ZicfilpU_cg/{cp_zicfilp_indirect_elp_state_update,cp_zicfilp_indirect_elp_state_update_c,cp_disabled_zicfilp}",
+        "ZicfilpH_cg/cp_vu_lpe (VU-mode)",
       ]
 
   # The Zicfilp extension adds the LPE field in henvcfg. When the LPE field is set to 1, the Zicfilp extension
   # is enabled in VS-mode.
   - name: henvcfg_lpe_op
-    coverpoint: ["Hypervisor: belongs to ZicfilpH"]
+    coverpoint: ["ZicfilpH_cg/{cp_vs_lpe,cp_vu_lpe}"]
 
   # The Zicfilp extension adds the SPELP field that holds the previous ELP.
   - name: vsstatus_spelp_op
-    coverpoint: ["Hypervisor: belongs to ZicfilpH"]
+    coverpoint:
+      [
+        "ZicfilpH_cg/{cp_trap_entry_spelp,cp_vs_sret_spelp,cp_hs_sret_spelp,cp_vs_sstatus_spelp}",
+      ]
 
   # On a trap caused by a software-check exception, the mtval register holds the cause for the exception.
   - name: mtval_swchk
@@ -344,7 +349,7 @@ normative_rule_definitions:
   # To store the previous ELP state on traps to VS-mode, a SPELP bit is defined in
   # the vsstatus (VS-modes version of sstatus).
   - name: vsstatus_spelp_exists
-    coverpoint: [""]
+    coverpoint: ["ZicfilpH_cg/{cp_trap_entry_spelp,cp_vs_sret_spelp}"]
 
   # To store the previous ELP state on transition to Debug Mode, a csr::[pelp] bit is
   # defined in the csr:dcsr[] register.

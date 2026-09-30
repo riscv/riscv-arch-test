@@ -35,14 +35,14 @@ git init "$INSTALL_DIR/Cores-VeeR-EH2"
   git checkout FETCH_HEAD
 )
 
-# 3. Verilate at the maximum ratified feature set: atomics on, bit-manipulation off (VeeR's Zb*
-#    is the 0.94 draft, not ratified B), and a single hart since ACT is single-hart.
+# 3. Verilate with atomics and every bit-manipulation extension, and a single hart since ACT
+#    is single-hart. Zbkb and Zbkx are off by default.
 mkdir -p "$INSTALL_DIR/eh2"
 (
   cd "$INSTALL_DIR/eh2"
   RV_ROOT="$INSTALL_DIR/Cores-VeeR-EH2" \
     make -f "$INSTALL_DIR/Cores-VeeR-EH2/tools/Makefile" verilator-build -j"$(nproc)" \
-    CONF_PARAMS='-set atomic_enable=1 -set num_threads=1 -set bitmanip_zba=0 -set bitmanip_zbb=0 -set bitmanip_zbc=0 -set bitmanip_zbs=0 -set bitmanip_zbkb=0 -set bitmanip_zbkx=0'
+    CONF_PARAMS='-set atomic_enable=1 -set num_threads=1 -set bitmanip_zba=1 -set bitmanip_zbb=1 -set bitmanip_zbc=1 -set bitmanip_zbs=1 -set bitmanip_zbkb=1 -set bitmanip_zbkx=1'
 )
 
 # 4. Install the per-test runner

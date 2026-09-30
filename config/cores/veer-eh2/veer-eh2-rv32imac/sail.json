@@ -562,25 +562,25 @@
       "supported": false
     },
     "Zba": {
-      "supported": false
+      "supported": true
     },
     "Zbb": {
-      "supported": false
+      "supported": true
     },
     "Zbs": {
-      "supported": false
+      "supported": true
     },
     "Zbc": {
-      "supported": false
+      "supported": true
     },
     "Zbkb": {
-      "supported": false
+      "supported": true
     },
     "Zbkc": {
-      "supported": false
+      "supported": true
     },
     "Zbkx": {
-      "supported": false
+      "supported": true
     },
     "Zknd": {
       "supported": false

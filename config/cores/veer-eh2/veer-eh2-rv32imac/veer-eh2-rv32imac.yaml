@@ -25,8 +25,7 @@ description: CHIPS Alliance VeeR EH2 - RV32IMAC, machine mode only, single hart
 # The bundled tests are built -march=rv32imac_zicsr_zifencei, confirming Zicsr and Zifencei.
 #   Quote: "ABI = -mabi=ilp32 -march=rv32imac_zicsr_zifencei"
 #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/tools/Makefile#L22
-# EH2 has no F/D and no U-mode. Its Zb* options implement draft bit-manipulation and are
-# disabled in this build.
+# EH2 has no F/D and no U-mode.
 implemented_extensions:
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
@@ -46,6 +45,19 @@ implemented_extensions:
   - { name: Zaamo, version: "= 1.0.0" }
   - { name: Zalrsc, version: "= 1.0.0" }
   - { name: Zca, version: "= 1.0.0" }
+  # Bit manipulation, all enabled in this build (bitmanip_*=1). Zbkc is the clmul/clmulh
+  # subset of Zbc. misa.B reads 0 whatever the bitmanip options, so B itself is not claimed.
+  #   Quote: "the Zba, Zbb, Zbc, Zbs, Zbkb and Zbkx bit manipulation extensions"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/README.md#L7
+  #   Quote: "((pt.ATOMIC_ENABLE==0) ? (pt.XLEN)'('h40001104) : (pt.XLEN)'('h40001105))"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/design/dec/eh2_dec_tlu_top.sv#L893
+  - { name: Zba, version: "= 1.0.0" }
+  - { name: Zbb, version: "= 1.0.0" }
+  - { name: Zbc, version: "= 1.0.0" }
+  - { name: Zbs, version: "= 1.0.0" }
+  - { name: Zbkb, version: "= 1.0.0" }
+  - { name: Zbkc, version: "= 1.0.0" }
+  - { name: Zbkx, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }
   # Zihpm is NOT implemented: it provides the unprivileged hpmcounter3..31 shadows for
   # S/U-mode access, and EH2 is machine-mode only. The M-mode mhpmcounter3..6 /
@@ -81,8 +93,7 @@ params:
   MUTABLE_MISA_C: false
   MUTABLE_MISA_A: false
   # misa.X is 0 in the fixed misa value (0x4000_1105 has bit 23 clear). EH2's custom CSRs
-  # (mrac, mcpc, ...) are not a non-standard instruction extension, and the Zb* bitmanip
-  # options that would add draft instructions are disabled in this build.
+  # (mrac, mcpc, ...) are not a non-standard instruction extension.
   #   Quote: "0x4000_1105 (with atomics support [^57]) 0x4000_1104 (without atomics support [^57])"
   #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/docs/source/csrs.md#L27
   NON_STANDARD_EXTENSION_IMPLEMENTED: false

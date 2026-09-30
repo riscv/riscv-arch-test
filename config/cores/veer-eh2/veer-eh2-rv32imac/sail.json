@@ -7,7 +7,7 @@
     "writable_fiom": true,
     // VeeR EH2 implements mhpmcounter3..6 / mhpmevent3..6 only (see HPM_COUNTER_EN in
     // veer-eh2-rv32imac.yaml), so bits 3..6 are the only HPM counters that exist.
-    //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/docs/source/csrs.md#L192-L231
+    //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/docs/source/csrs.md#L192-L231
     "writable_hpm_counters": {
       "len": 32,
       "value": "0x0000_0078"
@@ -47,7 +47,7 @@
     // 4-byte aligned (base_alignment 2) and both MODE=0 (Direct) and MODE=1 (Vectored)
     // are representable. Must agree with MTVEC_MODES and MTVEC_BASE_ALIGNMENT_* in the
     // UDB config.
-    //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/design/dec/eh2_dec_tlu_ctl.sv#L1253
+    //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/design/dec/eh2_dec_tlu_ctl.sv#L1253
     "mtvec": {
       "direct": {
         "supported": true,
@@ -96,7 +96,7 @@
     // These settings control whether the specified exceptions
     // cause information to be written into the appropriate
     // `xtval` registers. Must agree with REPORT_*_IN_MTVAL_* in the UDB config.
-    //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/design/dec/eh2_dec_tlu_ctl.sv#L1469-L1481
+    //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/design/dec/eh2_dec_tlu_ctl.sv#L1469-L1481
     "xtval_nonzero": {
       "illegal_instruction": true,
       "virtual_instruction": false,
@@ -241,7 +241,7 @@
       // and 0x06..0x7E are echoed to the console. RVMODEL_BOOT marks this region
       // side-effect in mrac, and a misaligned access to a side-effect region raises
       // an address-misaligned exception.
-      //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/design/lsu/eh2_lsu_addrcheck.sv#L222-L225
+      //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/design/lsu/eh2_lsu_addrcheck.sv#L222-L225
       {
         "base": {
           "len": 64,
@@ -318,7 +318,7 @@
     "clock_frequency": 1000000000,
     "instructions_per_tick": 2,
     // WFI decodes as an ALU no-op.
-    //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/docs/source/power.md#L750
+    //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/docs/source/power.md#L750
     "wfi_is_nop": true,
     // WFI is optionally available to User mode.  Note that even if
     // `wfi_is_nop` is set to `true` above, it will still not be

@@ -3,11 +3,11 @@
  * VeeR EH2 boots from address 0: the testbench hardcodes the reset vector rather
  * than using the RV_RESET_VEC build define.
  *   Quote: "reset_vector = {`RV_XLEN{1'b0}};"
- *   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/testbench/tb_top.sv#L505
+ *   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/testbench/tb_top.sv#L505
  * The testbench memory is a sparse associative array over the whole 32-bit space, so
  * RAM_LENGTH is bounded only by the region size, not by a physical array.
  *   Quote: "bit [7:0] mem [bit[`RV_XLEN-1:0]];"
- *   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/bd52450b/testbench/ahb_sif.sv#L165
+ *   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/testbench/ahb_sif.sv#L165
  * Region 0 is an ordinary system-bus region: it is not the DCCM (0xF004_0000), the
  * ICCM (0xEE00_0000), the PIC (0xF00C_0000) or the console mailbox (0xD058_0000), and
  * the whole image stays inside one 256 MB region so no access can cross a region

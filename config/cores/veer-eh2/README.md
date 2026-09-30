@@ -1,7 +1,7 @@
 # ACT Configuration for the CHIPS Alliance VeeR EH2 Core
 
 [VeeR EH2](https://github.com/chipsalliance/Cores-VeeR-EH2) is a dual-threaded 32-bit RISC-V core
-from CHIPS Alliance. The configuration runs the RTL under Verilator, pinned to commit `bd52450b`.
+from CHIPS Alliance. The configuration runs the RTL under Verilator, pinned to commit `a7203d02`.
 
 | Config              | ISA                     | Modes               |
 | ------------------- | ----------------------- | ------------------- |

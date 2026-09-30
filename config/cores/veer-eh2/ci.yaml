@@ -4,7 +4,7 @@
 
 ci_enabled: true
 
-# chipsalliance/Cores-VeeR-EH2 @ bd52450b:
+# chipsalliance/Cores-VeeR-EH2 @ a7203d02:
 #   Zaamo, Zalrsc  Atomic instructions are illegal outside the 64 KB DCCM, and ACT images run from
 #                  system memory, so every AMO and LR/SC faults; the suites do not build.
 #   Sm             Trap-count and mtval mismatches; mip is read-only to software and a mcycle write
@@ -13,8 +13,7 @@ ci_enabled: true
 #   ExceptionsZc   REPORT_VA_IN_MTVAL_ON_* parameter is wrong for this core.
 #   Zifencei       The testbench's instruction and data memories are separate, so stores are never
 #                  fetched and fence.i returns the stale instruction.
-#   I              fence.tso (FENCE with fm=1000) raises an illegal instruction.
-exclude_extensions: "Zaamo,Zalrsc,Sm,ExceptionsSm,ExceptionsZc,Zifencei,I"
+exclude_extensions: "Zaamo,Zalrsc,Sm,ExceptionsSm,ExceptionsZc,Zifencei"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-veer-eh2.sh"

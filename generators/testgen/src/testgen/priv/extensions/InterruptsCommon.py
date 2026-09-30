@@ -359,9 +359,11 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
 def generate_cp_wfi_timeout(
     test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str
 ) -> None:
-    """With nothing pending, WFI below M-mode times out and traps as an illegal instruction.
+    """With nothing pending, WFI below M-mode either completes or times out and raises illegal instruction.
 
-    mstatus.TW = 1 makes any lower mode trap; with S-mode implemented, U-mode traps even with TW = 0.
+    mstatus.TW = 1 makes WFI in any lower mode raise illegal instruction unless it completes within an
+    implementation-specific bounded time; with S-mode implemented, U-mode does so even with TW = 0.  A WFI that
+    completes at once (e.g. a NOP) is also legal, so RVTEST_OPTIONAL_TRAP accepts both outcomes and fails any other.
     """
 
     ######################################
@@ -374,13 +376,16 @@ def generate_cp_wfi_timeout(
         coverpoint,
         f"WFI timeout in {priv} mode with {status['csr']}.{status['field']} = 0/1 x {suite.ie}.{ie_name} = 0/1",
     )
-    tmp_reg = test_data.int_regs.get_register()
+    tmp_reg, arm_reg = test_data.int_regs.get_registers(2)
 
     for tw in [1, 0] if priv == "U" else [1]:
         twcmd = "csrs" if tw == 1 else "csrc"
         for enable in [0, 1]:
             for ie in [0, 1]:
                 enablecmd = "csrs" if enable == 1 else "csrc"
+                label = test_data.add_testcase(
+                    f"priv_{priv}_tw_{tw}_{status['field']}_{enable}_{ie_name}_{ie}", coverpoint, suite.covergroup
+                )
                 tc.code += [
                     *(
                         ["#ifdef S_SUPPORTED // U-mode WFI also times out with TW = 0 when S-mode exists"]
@@ -393,17 +398,17 @@ def generate_cp_wfi_timeout(
                     f"{enablecmd} {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = {enable}",
                     f"LI(x{tmp_reg}, {ie * ie_mask:#x})",
                     f"csrw {suite.ie}, x{tmp_reg} # {suite.ie}.{ie_name} = {ie}",
-                    test_data.add_testcase(
-                        f"priv_{priv}_tw_{tw}_{status['field']}_{enable}_{ie_name}_{ie}", coverpoint, suite.covergroup
-                    ),
+                    f"RVTEST_OPTIONAL_TRAP(x{tmp_reg}, x{arm_reg}, {label[:-1]}, CAUSE_ILLEGAL_INSTRUCTION)",
                     *mode_enter(suite, priv),
-                    "wfi # nothing is pending, so this times out and traps as an illegal instruction",
+                    label,
+                    "wfi # nothing is pending: completes, or times out and raises illegal instruction",
                     *mode_exit(suite, priv),
+                    f"RVTEST_OPTIONAL_TRAP_END(x{tmp_reg})",
                     *(["#endif // S_SUPPORTED"] if tw == 0 else []),
                     "",
                 ]
 
-    test_data.int_regs.return_register(tmp_reg)
+    test_data.int_regs.return_registers([tmp_reg, arm_reg])
 
 
 def emit_interrupts(

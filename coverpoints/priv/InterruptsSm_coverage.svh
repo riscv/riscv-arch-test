@@ -41,7 +41,7 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         bins zero = {0}; // WFI is permitted outside M mode
     }
     mstatus_tw_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tw")[0] {
-        bins one = {1}; // WFI outside M mode traps after the implementation-defined timeout
+        bins one = {1}; // WFI outside M mode completes or raises illegal instruction after a bounded time
     }
 
     // Privilege modes this config implements.

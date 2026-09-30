@@ -133,8 +133,8 @@ def _interrupts(test_data: TestData) -> list[str]:
     for kind, guard in (("MSW", "UDB_MSI_INTR_IMPL"), ("MEXT", "UDB_MEI_INTR_IMPL")):
         lines.extend(
             [
-                f"#ifdef {guard}",
                 test_data.add_testcase(f"rvtest_set_{kind.lower()}_int", "cp_interrupts", _CG),
+                f"#ifdef {guard}",
                 f"RVTEST_SET_{kind}_INT_M",
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{r_idle})",
                 f"RVTEST_CLR_{kind}_INT_M",
@@ -162,11 +162,11 @@ def _timer(test_data: TestData) -> list[str]:
     r_idle, reg = test_data.int_regs.get_registers(2)
     lines = [
         comment_banner("Hello: timer", "Arm mtimecmp through the model's device addresses"),
+        test_data.add_testcase("mtimecmp", "cp_timer", _CG),
         "#ifdef UDB_MTI_INTR_IMPL",
         f"LI(x{reg}, -1)",
         f"csrw mie, x{reg}",
         "csrsi mstatus, 8    # mstatus.MIE = 1",
-        test_data.add_testcase("mtimecmp", "cp_timer", _CG),
         "RVTEST_SET_MTIME_INT_SOON_M",
         f"RVTEST_IDLE_FOR_INTERRUPT(x{r_idle})",
         "RVTEST_CLR_MTIME_INT_M",

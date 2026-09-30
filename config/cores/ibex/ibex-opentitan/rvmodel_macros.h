@@ -51,10 +51,10 @@
 
 ##### Access faults #####
 
-# Simple System decodes only RAM, SimCtrl and Timer, so a load or store to any other address
-# raises an access fault.
-#   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/shared/rtl/bus.sv#L99
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00400000
+# RVMODEL_ACCESS_FAULT_ADDRESS is left undefined because no fetch address faults. Simple System
+# ties the instruction error off and indexes the RAM with addr[19:2] for every fetch.
+#   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/examples/simple_system/rtl/ibex_simple_system.sv#L134
+#   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/shared/rtl/ram_2p.sv#L48
 
 ##### Interrupt Latency #####
 

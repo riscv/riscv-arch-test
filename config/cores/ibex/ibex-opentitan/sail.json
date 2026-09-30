@@ -253,13 +253,8 @@
         },
         "include_in_device_tree": true
       },
-      // IO memory for the reference model only: Sail's CLINT at 0x0200_0000 and its
-      // simple interrupt generator at 0x0C00_0000.  The DUT's own devices (SimCtrl at
-      // 0x0002_0000, Timer at 0x0003_0000) are deliberately NOT mapped here: the Sail
-      // signature ELF is built with sail_macros.h, which replaces every DUT address
-      // (console, halt, mtime, mtimecmp, msip) with the HTIF/CLINT equivalents.
-      // RVMODEL_ACCESS_FAULT_ADDRESS (0x0040_0000) is outside every region on purpose,
-      // so both the DUT and Sail fault on it.
+      // Sail's CLINT at 0x0200_0000 and simple interrupt generator at 0x0C00_0000. The DUT's
+      // SimCtrl and Timer are not mapped because the Sail build uses HTIF and the CLINT instead.
       {
         "base": {
           "len": 64,

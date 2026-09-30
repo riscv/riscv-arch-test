@@ -4,14 +4,10 @@
 
 ci_enabled: true
 
-# lowRISC/ibex @ e9f5534, Ibex Simple System, opentitan configuration with BaseIsa=RV32I:
-#   ExceptionsSm  Simple System ties the instruction fetch error off and aliases every fetch
-#                 address into RAM, so a fetch from RVMODEL_ACCESS_FAULT_ADDRESS does not fault.
-#   ExceptionsU   Same missing instruction access fault.
-#   PMPSm         Same: a fetch from address 0 retires instead of faulting.
-#   Sm            mhpmcounter3h..12h are read-only zero (32-bit HPM counters); legal, but
-#                 sail.json cannot express HPM counter width.
-exclude_extensions: "ExceptionsSm,ExceptionsU,PMPSm,Sm"
+# lowRISC/ibex e9f5534; paths are under https://github.com/lowRISC/ibex/blob/e9f5534/
+#   PMPSm  Testbench never faults a fetch; a jump to address 0 runs RAM: examples/simple_system/rtl/ibex_simple_system.sv#L134
+#   Sm     Sail cannot model 32-bit HPM counters (mhpmcounter3h..12h read 0): ibex_configs.yaml#L60
+exclude_extensions: "PMPSm,Sm"
 
 apt_packages: "autoconf flex bison help2man libfl-dev libelf-dev ccache python3-venv"
 install_script: ".github/scripts/install-ibex.sh"

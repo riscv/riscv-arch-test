@@ -53,6 +53,14 @@ implemented_extensions:
   # so Zcf and Zcd cannot exist.
   - { name: C, version: "= 2.0" }
   - { name: Zca, version: "= 1.0.0" }
+  # FENCE is decoded from opcode and funct3 alone, so pause (fm=0, pred=W, succ=0) is a fence.
+  # add and C.ADD leave rd free, and the register file drops writes to x0, so ntl.* and c.ntl.*
+  # are no-ops.
+  # https://github.com/YosysHQ/picorv32/blob/ef203c2b0a3fb793280f5114941416c425c5b461/picorv32.v#L1088
+  # https://github.com/YosysHQ/picorv32/blob/ef203c2b0a3fb793280f5114941416c425c5b461/picorv32.v#L1019-L1024
+  # https://github.com/YosysHQ/picorv32/blob/ef203c2b0a3fb793280f5114941416c425c5b461/picorv32.v#L1338
+  - { name: Zihintntl, version: "= 1.0.0" }
+  - { name: Zihintpause, version: "= 2.0.0" }
   # Sm: see the header comment. Declared only to make MXLEN expressible.
   - { name: Sm, version: "= 1.11.0" }
   #
